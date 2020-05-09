@@ -68,6 +68,7 @@ a:hover {
   font-size: 1rem;
   font-family: "Roboto Mono";
   width: 100%;
+  border-radius: var(--roundness);
 }
 
 #commandLineWrapper #commandLine .separator {
@@ -218,6 +219,7 @@ a:hover {
   -webkit-animation-duration: 1s;
           animation-duration: 1s;
   position: absolute;
+  border-radius: var(--roundness);
 }
 
 @-webkit-keyframes caretFlash {
@@ -579,6 +581,25 @@ key {
 #result .stats .wpm .top {
   font-size: 3rem;
   line-height: 3rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+#result .stats .wpm .top .crown {
+  font-size: .7rem;
+  line-height: 1.7rem;
+  background: var(--sub-color);
+  color: var(--main-color);
+  border-radius: .6rem;
+  text-align: center;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+  margin-left: .5rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  margin-top: .6rem;
 }
 
 #result .stats .wpm .bottom {

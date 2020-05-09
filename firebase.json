@@ -9,12 +9,11 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "redirects": [{
-      "source": "/",
-      "destination": "/app",
-      "type": 301
-    }],
     "rewrites": [{
+      "source": "/app",
+      "destination": "/"
+    },
+    {
       "source": "/**",
       "destination": "/app"
     }],

@@ -2,19 +2,22 @@ let wordsList = [];
 let currentWordIndex = 0;
 let inputHistory = [];
 let currentInput = "";
-let wordsConfig = 100;
-let timeConfig = 30;
 let time = 0;
 let timer = null;
 let testActive = false;
-let testMode = "words";
 let testStart, testEnd;
 let missedChars = 0;
-let punctuationMode = true;
 let wpmHistory = [];
+let currentCommands = commands;
 
-
-let quickTabMode = true;
+let config = {
+  smoothCaret: true,
+  quickTab: true,
+  punctuation: true,
+  words: 100,
+  time: 30,
+  mode: "words"
+}
 
 let customText = "The quick brown fox jumps over the lazy dog";
 
@@ -55,9 +58,9 @@ function initWords() {
   missedChars = 0;
   inputHistory = [];
   currentInput = "";
-  if (testMode == "time") {
+  if (config.mode == "time") {
     let randomWord = words[Math.floor(Math.random() * words.length)];
-    if (punctuationMode) {
+    if (config.punctuation) {
       wordsList.push(capitalizeFirstLetter(randomWord));
     } else {
       wordsList.push(randomWord);
@@ -75,13 +78,13 @@ function initWords() {
       ) {
         randomWord = words[Math.floor(Math.random() * words.length)];
       }
-      if (punctuationMode) {
+      if (config.punctuation) {
         if (previousWord.charAt(previousWord.length - 1) == ".") {
           randomWord = capitalizeFirstLetter(randomWord);
         } else if (
           (Math.random() < 0.1 &&
             previousWord.charAt(previousWord.length - 1) != ".") ||
-          i == wordsConfig - 1
+          i == config.words - 1
         ) {
           randomWord += ".";
         } else if (Math.random() < 0.01) {
@@ -104,14 +107,14 @@ function initWords() {
       }
       wordsList.push(randomWord);
     }
-  } else if (testMode == "words") {
+  } else if (config.mode == "words") {
     let randomWord = words[Math.floor(Math.random() * words.length)];
-    if (punctuationMode) {
+    if (config.punctuation) {
       wordsList.push(capitalizeFirstLetter(randomWord));
     } else {
       wordsList.push(randomWord);
     }
-    for (let i = 1; i < wordsConfig; i++) {
+    for (let i = 1; i < config.words; i++) {
       randomWord = words[Math.floor(Math.random() * words.length)];
       previousWord = wordsList[i - 1];
       while (
@@ -124,13 +127,13 @@ function initWords() {
       ) {
         randomWord = words[Math.floor(Math.random() * words.length)];
       }
-      if (punctuationMode) {
+      if (config.punctuation) {
         if (previousWord.charAt(previousWord.length - 1) == ".") {
           randomWord = capitalizeFirstLetter(randomWord);
         } else if (
           (Math.random() < 0.1 &&
             previousWord.charAt(previousWord.length - 1) != ".") ||
-          i == wordsConfig - 1
+          i == config.words - 1
         ) {
           randomWord += ".";
         } else if (Math.random() < 0.01) {
@@ -153,7 +156,7 @@ function initWords() {
       }
       wordsList.push(randomWord);
     }
-  } else if (testMode == "custom") {
+  } else if (config.mode == "custom") {
     let w = customText.split(" ");
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
@@ -175,7 +178,7 @@ function addWord() {
 
 function showWords() {
   $("#words").empty();
-  if (testMode == "words" || testMode == "custom") {
+  if (config.mode == "words" || config.mode == "custom") {
     $("#words").css("height", "auto");
     for (let i = 0; i < wordsList.length; i++) {
       let w = "<div class='word'>";
@@ -185,7 +188,7 @@ function showWords() {
       w += "</div>";
       $("#words").append(w);
     }
-  } else if (testMode == "time") {
+  } else if (config.mode == "time") {
     $("#words").css("height", "78px").css("overflow", "hidden");
     for (let i = 0; i < wordsList.length; i++) {
       let w = "<div class='word'>";
@@ -295,12 +298,17 @@ function updateCaretPosition() {
 
   let duration = 0;
 
-  if (true) {
+  // if (config.smoothCaret && Math.round(caret.position().top) == Math.round(newTop)) {
+  //   duration = 100;
+  // }
+
+  if (config.smoothCaret) {
     duration = 100;
   }
 
-  if (caret.position().top != newTop) {
-    duration = 0;
+  if (Math.round(caret.position().top) != Math.round(newTop)) {
+    caret.css("top", newTop);
+    duration = 10;
   }
 
   caret.stop(true,true).animate({
@@ -310,8 +318,27 @@ function updateCaretPosition() {
 
 }
 
+function saveConfigToCookie() {
+  let d = new Date();
+  d.setFullYear(d.getFullYear() + 1)
+  $.cookie("config",JSON.stringify(config),{expires:d})
+}
+
+function loadConfigFromCookie() {
+  let newConfig = $.cookie('config');
+  if (newConfig) {
+    newConfig = JSON.parse(newConfig);
+    config = newConfig;
+    setPunctuation(config.punctuation)
+    changeTimeConfig(config.time);
+    changeWordCount(config.words);
+    changeMode(config.mode);
+    restartTest();
+  }
+}
+
 function calculateStats() {
-  if (testMode == "words") {
+  if (config.mode == "words") {
     if (inputHistory.length != wordsList.length) return;
   }
   let correctWords = 0;
@@ -345,9 +372,8 @@ function calculateStats() {
   avgWordLen = 5;
   wpm = calculateWpm();
   // let acc = (correctChars / totalChars) * 100;
-  let acc = ((totalChars - missedChars) / totalChars) * 100;
-  let key = correctChars + "/" + (totalChars - correctChars);
-  return { wpm: wpm, acc: acc, key: key };
+  let acc = Math.round(((totalChars - missedChars) / totalChars) * 100);
+  return { wpm: wpm, acc: acc, correctChars: correctChars, incorrectChars: (totalChars - correctChars) };
 }
 
 function calculateWpm() {
@@ -391,13 +417,13 @@ function showResult() {
   $("#top .result .wpm .val").text(stats.wpm);
   $("#top .result .acc .val").text(Math.round(stats.acc) + "%");
   $("#top .result .key .val").text(stats.key);
-  $("#top .result .testmode .mode1").text(testMode);
-  if (testMode == "time") {
-    $("#top .result .testmode .mode2").text(timeConfig);
-  } else if (testMode == "words") {
-    $("#top .result .testmode .mode2").text(wordsConfig);
+  $("#top .result .testmode .mode1").text(config.mode);
+  if (config.mode == "time") {
+    $("#top .result .testmode .mode2").text(config.time);
+  } else if (config.mode == "words") {
+    $("#top .result .testmode .mode2").text(config.words);
   }
-  if (punctuationMode) {
+  if (config.punctuation) {
     $("#top .result .testmode .mode3").text("punc.");
   } else {
     $("#top .result .testmode .mode3").text("");
@@ -495,19 +521,40 @@ function showResult2() {
   clearInterval(timer);
   timer = null;
   $("#result .stats .wpm .bottom").text(stats.wpm);
-  $("#result .stats .acc .bottom").text(Math.round(stats.acc) + "%");
-  $("#result .stats .key .bottom").text(stats.key);
+  $("#result .stats .acc .bottom").text(stats.acc + "%");
+  $("#result .stats .key .bottom").text(stats.correctChars+"/"+stats.incorrectChars);
+
+  let mode2 = "";
+  if (config.mode == "time") {
+    mode2 = config.time;
+  } else if (config.mode == "words") {
+    mode2 = config.words;
+  }
+  $("#result .stats .wpm .top .crown").remove();
+
+  if (stats.wpm < 250 && stats.acc > 50 && stats.acc <= 100) {
+    db_getUserHighestWpm(config.mode, mode2).then(data => {
+      if (data.wpm < stats.wpm || data == false) {
+        $("#result .stats .wpm .top").append('<div class="crown"><i class="fas fa-crown"></i></div>');
+      }
+      db_testCompleted(stats.wpm, stats.correctChars, stats.incorrectChars, stats.acc, config.mode, mode2);
+    })
+  } else {
+    alert('test invalid');
+  }
+
+  
 
   let infoText = "";
 
-  infoText = testMode;
+  infoText = config.mode;
 
-  if (testMode == "time") {
-    infoText += " " + timeConfig
-  } else if (testMode == "words") {
-    infoText += " " + wordsConfig
+  if (config.mode == "time") {
+    infoText += " " + config.time
+  } else if (config.mode == "words") {
+    infoText += " " + config.words
   }
-  if (punctuationMode) {
+  if (config.punctuation) {
     infoText += " with punctuation"
   }
 
@@ -538,7 +585,7 @@ function showResult2() {
 }
 
 function updateTimer() {
-  let percent = ((time + 1) / timeConfig) * 100;
+  let percent = ((time + 1) / config.time) * 100;
   $("#timer")
     .stop(true, true)
     .css("width", percent + "vw");
@@ -679,15 +726,16 @@ function compareInput() {
 }
 
 $(document).ready(() => {
+  loadConfigFromCookie();
   $("#centerContent").css("opacity", "0").removeClass("hidden");
   // initWords();
   $("#centerContent")
     .stop(true, true)
     .animate({ opacity: 1 }, 250, () => {
-      updateCaretPosition();
+      // updateCaretPosition();
     });
   restartTest();
-  if (quickTabMode) {
+  if (config.quickTab) {
     $("#restartTestButton").remove();
   }
 });
@@ -699,12 +747,13 @@ $(document).on("click", "#top .config .wordCount .button", (e) => {
 
 function changeWordCount(wordCount) {
   changeMode("words");
-  wordsConfig = parseInt(wordCount);
+  config.words = parseInt(wordCount);
   $("#top .config .wordCount .button").removeClass("active");
   $("#top .config .wordCount .button[wordCount='" + wordCount + "']").addClass(
     "active"
   );
   restartTest();
+  saveConfigToCookie();
 }
 
 $(document).on("click", "#top .config .time .button", (e) => {
@@ -714,10 +763,11 @@ $(document).on("click", "#top .config .time .button", (e) => {
 
 function changeTimeConfig(time) {
   changeMode("time");
-  timeConfig = time;
+  config.time = time;
   $("#top .config .time .button").removeClass("active");
   $("#top .config .time .button[timeConfig='" + time + "']").addClass("active");
   restartTest();
+  saveConfigToCookie();
 }
 
 $(document).on("click", "#top .config .customText .button", (e) => {
@@ -737,13 +787,40 @@ function focusWords() {
   $("#wordsInput").focus();
 }
 
-function togglePunctuation() {
-  if (punctuationMode) {
+function toggleSmoothCaret() {
+  config.smoothCaret = !config.smoothCaret;
+  saveConfigToCookie();
+}
+
+function toggleQuickTabMode() {
+  config.quickTab = !config.quickTab;
+  if (!config.quickTab) {
+    $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
+    $("#restartTestButton").css("opacity",1);
+  } else {
+    $("#restartTestButton").remove();
+  }
+  saveConfigToCookie();
+}
+
+function setPunctuation(punc) {
+  config.punctuation = punc;
+  if (!config.punctuation) {
     $("#top .config .punctuationMode .button").removeClass("active");
   } else {
     $("#top .config .punctuationMode .button").addClass("active");
   }
-  punctuationMode = !punctuationMode;
+  saveConfigToCookie();
+}
+
+function togglePunctuation() {
+  if (config.punctuation) {
+    $("#top .config .punctuationMode .button").removeClass("active");
+  } else {
+    $("#top .config .punctuationMode .button").addClass("active");
+  }
+  config.punctuation = !config.punctuation;
+  saveConfigToCookie();
 }
 
 $(document).on("click", "#top .config .mode .button", (e) => {
@@ -755,7 +832,7 @@ $(document).on("click", "#top .config .mode .button", (e) => {
 
 $(document).on("click", "#top #menu .button", (e) => {
   href = $(e.currentTarget).attr('href');
-  history.pushState(href, null, href);
+  // history.pushState(href, null, href);
   changePage(href.replace('/', ''));
 })
 
@@ -767,7 +844,11 @@ $(window).on('popstate', (e) => {
     // show about
     changePage("about");
   } else if (e.originalEvent.state == "account") {
-    changePage("account")
+    if (firebase.auth().currentUser) {
+      changePage("account");
+    } else {
+      changePage('login');
+    }
   }
 
 
@@ -782,30 +863,37 @@ function changePage(page) {
   } else if (page == "about") {
     $(".page.pageAbout").removeClass('hidden');
   } else if (page == "account") {
-    $(".page.pageAccount").removeClass('hidden');
+    if (!firebase.auth().currentUser) {
+      changePage("login");
+    } else {
+      $(".page.pageAccount").removeClass('hidden');
+    }
+  } else if (page == "login") {
+    $(".page.pageLogin").removeClass('hidden');
   }
 }
 
 function changeMode(mode) {
-  testMode = mode;
+  config.mode = mode;
   $("#top .config .mode .button").removeClass("active");
   $("#top .config .mode .button[mode='" + mode + "']").addClass("active");
-  if (testMode == "time") {
+  if (config.mode == "time") {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").removeClass("hidden");
     $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("hidden");
-  } else if (testMode == "words") {
+  } else if (config.mode == "words") {
     $("#top .config .wordCount").removeClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("hidden");
-  } else if (testMode == "custom") {
+  } else if (config.mode == "custom") {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").removeClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
   }
+  saveConfigToCookie();
 }
 
 $("#restartTestButton").keypress((event) => {
@@ -842,7 +930,7 @@ $(document).keypress(function(event) {
     testActive = true;
     stopCaretAnimation();
     testStart = Date.now();
-    if (testMode == "time") {
+    if (config.mode == "time") {
       showTimer();
     }
     updateTimer();
@@ -851,8 +939,8 @@ $(document).keypress(function(event) {
       updateTimer();
       let wpm = calculateWpm();
       wpmHistory.push(wpm);
-      if (testMode == "time") {
-        if (time == timeConfig) {
+      if (config.mode == "time") {
+        if (time == config.time) {
           clearInterval(timer);
           timesUp();
         }
@@ -893,7 +981,7 @@ $(document).keydown((event) => {
     }
   }
 
-  if (quickTabMode) {
+  if (config.quickTab) {
     if (event["keyCode"] == 9) {
       event.preventDefault();
       restartTest();
@@ -941,7 +1029,7 @@ $(document).keydown((event) => {
       event.preventDefault();
       if (currentInput == "") return;
       let currentWord = wordsList[currentWordIndex];
-      if (testMode == "time") {
+      if (config.mode == "time") {
         let currentTop = $($("#words .word")[currentWordIndex]).position().top;
         let nextTop = $($("#words .word")[currentWordIndex + 1]).position().top;
         if (nextTop > currentTop) {
@@ -972,303 +1060,9 @@ $(document).keydown((event) => {
         updateActiveElement();
         updateCaretPosition();
       }
-      if (testMode == "time") {
+      if (config.mode == "time") {
         addWord();
       }
     }
   }
 });
-
-let commands = {
-  title: "",
-  list: [
-    {
-      id: "togglePunctuation",
-      display: "Toggle punctuation",
-      exec: () => {
-        togglePunctuation();
-        restartTest();
-      }
-    },
-    {
-      id: "changeMode",
-      display: "Change mode...",
-      subgroup: true,
-      exec: () => {
-        currentCommands = commandsMode;
-        showCommandLine();
-      }
-    },
-    {
-      id: "changeTimeConfig",
-      display: "Change time config...",
-      subgroup: true,
-      exec: () => {
-        currentCommands = commandsTimeConfig;
-        showCommandLine();
-      }
-    },
-    {
-      id: "changeWordCount",
-      display: "Change word count...",
-      subgroup: true,
-      exec: () => {
-        currentCommands = commandsWordCount;
-        showCommandLine();
-      }
-    }
-  ]
-};
-
-let commandsWordCount = {
-  title: "Change word count...",
-  list: [
-    {
-      id: "changeWordCount10",
-      display: "10",
-      exec: () => {
-        changeWordCount("10");
-        restartTest();
-      }
-    },
-    {
-      id: "changeWordCount25",
-      display: "25",
-      exec: () => {
-        changeWordCount("25");
-        restartTest();
-      }
-    },
-    {
-      id: "changeWordCount50",
-      display: "50",
-      exec: () => {
-        changeWordCount("50");
-        restartTest();
-      }
-    },
-    {
-      id: "changeWordCount100",
-      display: "100",
-      exec: () => {
-        changeWordCount("100");
-        restartTest();
-      }
-    },
-    {
-      id: "changeWordCount200",
-      display: "200",
-      exec: () => {
-        changeWordCount("200");
-        restartTest();
-      }
-    }
-  ]
-};
-let commandsMode = {
-  title: "Change mode...",
-  list: [
-    {
-      id: "changeModeTime",
-      display: "time",
-      exec: () => {
-        changeMode("time");
-        restartTest();
-      }
-    },
-    {
-      id: "changeModeWords",
-      display: "words",
-      exec: () => {
-        changeMode("words");
-        restartTest();
-      }
-    },
-    {
-      id: "changeModeCustom",
-      display: "custom",
-      exec: () => {
-        changeMode("custom");
-        restartTest();
-      }
-    }
-  ]
-};
-let commandsTimeConfig = {
-  title: "Change time config...",
-  list: [
-    {
-      id: "changeTimeConfig15",
-      display: "15",
-      exec: () => {
-        changeTimeConfig("15");
-        restartTest();
-      }
-    },
-    {
-      id: "changeTimeConfig30",
-      display: "30",
-      exec: () => {
-        changeTimeConfig("30");
-        restartTest();
-      }
-    },
-    {
-      id: "changeTimeConfig60",
-      display: "60",
-      exec: () => {
-        changeTimeConfig("60");
-        restartTest();
-      }
-    },
-    {
-      id: "changeTimeConfig120",
-      display: "120",
-      exec: () => {
-        changeTimeConfig("120");
-        restartTest();
-      }
-    }
-  ]
-};
-
-let currentCommands = commands;
-
-$("#commandLine input").keydown((e) => {
-  if (e.keyCode == 13) {
-    //enter
-    e.preventDefault();
-    let command = $(".suggestions .entry.active").attr("command");
-    let subgroup = false;
-    $.each(currentCommands.list, (i, obj) => {
-      if (obj.id == command) {
-        obj.exec();
-        subgroup = obj.subgroup;
-      }
-    });
-    if (!subgroup) hideCommandLine();
-    return;
-  }
-  if (e.keyCode == 38 || e.keyCode == 40) {
-    //up
-    let entries = $(".suggestions .entry");
-    let activenum = -1;
-    $.each(entries, (index, obj) => {
-      if ($(obj).hasClass("active")) activenum = index;
-    });
-    if (e.keyCode == 38) {
-      entries.removeClass("active");
-      if (activenum == 0) {
-        $(entries[entries.length - 1]).addClass("active");
-      } else {
-        $(entries[--activenum]).addClass("active");
-      }
-    }
-    if (e.keyCode == 40) {
-      entries.removeClass("active");
-      if (activenum + 1 == entries.length) {
-        $(entries[0]).addClass("active");
-      } else {
-        $(entries[++activenum]).addClass("active");
-      }
-    }
-
-    return false;
-  }
-});
-
-$("#commandLine input").keyup((e) => {
-  if (e.keyCode == 38 || e.keyCode == 40) return;
-  updateSuggestedCommands();
-});
-
-function hideCommandLine() {
-  $("#commandLineWrapper")
-    .stop(true, true)
-    .css("opacity", 1)
-    .animate(
-      {
-        opacity: 0
-      },
-      100,
-      () => {
-        $("#commandLineWrapper").addClass("hidden");
-      }
-    );
-  focusWords();
-}
-
-function showCommandLine() {
-  if ($("#commandLineWrapper").hasClass("hidden")) {
-    $("#commandLineWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate(
-        {
-          opacity: 1
-        },
-        100
-      );
-  }
-  $("#commandLine input").val("");
-  updateSuggestedCommands();
-  $("#commandLine input").focus();
-}
-
-function updateSuggestedCommands() {
-  let inputVal = $("#commandLine input").val().toLowerCase().split(" ");
-  if (inputVal[0] == "") {
-    $.each(currentCommands.list, (index, obj) => {
-      obj.found = true;
-    });
-  } else {
-    $.each(currentCommands.list, (index, obj) => {
-      let foundcount = 0;
-      $.each(inputVal, (index2, obj2) => {
-        if (obj2 == "") return;
-        let re = new RegExp(obj2, "g");
-        let res = obj.display.toLowerCase().match(re);
-        if (res != null && res.length > 0) {
-          foundcount++;
-        } else {
-          foundcount--;
-        }
-      });
-      if (foundcount > 0) {
-        obj.found = true;
-      } else {
-        obj.found = false;
-      }
-    });
-  }
-  displayFoundCommands();
-}
-
-function displayFoundCommands() {
-  $("#commandLine .suggestions").empty();
-  $.each(currentCommands.list, (index, obj) => {
-    if (obj.found) {
-      $("#commandLine .suggestions").append(
-        '<div class="entry" command="' + obj.id + '">' + obj.display + "</div>"
-      );
-    }
-  });
-  if ($("#commandLine .suggestions .entry").length == 0) {
-    $("#commandLine .separator").css({ height: 0, margin: 0 });
-  } else {
-    $("#commandLine .separator").css({
-      height: "1px",
-      "margin-bottom": ".5rem"
-    });
-  }
-  let entries = $("#commandLine .suggestions .entry");
-  if (entries.length > 0) {
-    $(entries[0]).addClass("active");
-  }
-  $("#commandLine .listTitle").remove();
-  // if(currentCommands.title != ''){
-  //   $("#commandLine .suggestions").before("<div class='listTitle'>"+currentCommands.title+"</div>");
-  // }
-}
-

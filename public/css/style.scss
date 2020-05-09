@@ -59,6 +59,7 @@ a:hover {
       font-size: 1rem;
       font-family: "Roboto Mono";
       width: 100%;
+      border-radius: var(--roundness);
     }
     .separator {
       background: black;
@@ -195,6 +196,7 @@ a:hover {
   animation-iteration-count: infinite;
   animation-duration: 1s;
   position: absolute;
+  border-radius: var(--roundness);
   // transition: 0.05s;
 }
 
@@ -485,6 +487,20 @@ key {
       .top{
         font-size: 3rem;
         line-height: 3rem;
+        display: flex;
+        .crown{
+          font-size: .7rem;
+          line-height: 1.7rem;
+          background: var(--sub-color);
+          color: var(--main-color);
+          border-radius: .6rem;
+          text-align: center;
+          align-self: center;
+          margin-left: .5rem;
+          width: 1.7rem;
+          height: 1.7rem;
+          margin-top: .6rem;
+        }
       }
       .bottom{
         font-size: 4rem;
