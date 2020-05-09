@@ -1,227 +1,24 @@
-var words = [
-  "the",
-  "be",
-  "of",
-  "and",
-  "a",
-  "to",
-  "in",
-  "he",
-  "have",
-  "it",
-  "that",
-  "for",
-  "they",
-  "I",
-  "with",
-  "as",
-  "not",
-  "on",
-  "she",
-  "at",
-  "by",
-  "this",
-  "we",
-  "you",
-  "do",
-  "but",
-  "from",
-  "or",
-  "which",
-  "one",
-  "would",
-  "all",
-  "will",
-  "there",
-  "say",
-  "who",
-  "make",
-  "when",
-  "can",
-  "more",
-  "if",
-  "no",
-  "man",
-  "out",
-  "other",
-  "so",
-  "what",
-  "time",
-  "up",
-  "go",
-  "about",
-  "than",
-  "into",
-  "could",
-  "state",
-  "only",
-  "new",
-  "year",
-  "some",
-  "take",
-  "come",
-  "these",
-  "know",
-  "see",
-  "use",
-  "get",
-  "like",
-  "then",
-  "first",
-  "any",
-  "work",
-  "now",
-  "may",
-  "such",
-  "give",
-  "over",
-  "think",
-  "most",
-  "even",
-  "find",
-  "day",
-  "also",
-  "after",
-  "way",
-  "many",
-  "must",
-  "look",
-  "before",
-  "great",
-  "back",
-  "through",
-  "long",
-  "where",
-  "much",
-  "should",
-  "well",
-  "people",
-  "down",
-  "own",
-  "just",
-  "because",
-  "good",
-  "each",
-  "those",
-  "feel",
-  "seem",
-  "how",
-  "high",
-  "too",
-  "place",
-  "little",
-  "world",
-  "very",
-  "still",
-  "nation",
-  "hand",
-  "old",
-  "life",
-  "tell",
-  "write",
-  "become",
-  "here",
-  "show",
-  "house",
-  "both",
-  "between",
-  "need",
-  "mean",
-  "call",
-  "develop",
-  "under",
-  "last",
-  "right",
-  "move",
-  "thing",
-  "general",
-  "school",
-  "never",
-  "same",
-  "another",
-  "begin",
-  "while",
-  "number",
-  "part",
-  "turn",
-  "real",
-  "leave",
-  "might",
-  "want",
-  "point",
-  "form",
-  "off",
-  "child",
-  "few",
-  "small",
-  "since",
-  "against",
-  "ask",
-  "late",
-  "home",
-  "interest",
-  "large",
-  "person",
-  "end",
-  "open",
-  "public",
-  "follow",
-  "during",
-  "present",
-  "without",
-  "again",
-  "hold",
-  "govern",
-  "around",
-  "possible",
-  "head",
-  "consider",
-  "word",
-  "program",
-  "problem",
-  "however",
-  "lead",
-  "system",
-  "set",
-  "order",
-  "eye",
-  "plan",
-  "run",
-  "keep",
-  "face",
-  "fact",
-  "group",
-  "play",
-  "stand",
-  "increase",
-  "early",
-  "course",
-  "change",
-  "help",
-  "line"
-];
-
 let wordsList = [];
 let currentWordIndex = 0;
 let inputHistory = [];
 let currentInput = "";
 let wordsConfig = 100;
 let timeConfig = 30;
-let time = timeConfig;
+let time = 0;
 let timer = null;
 let testActive = false;
 let testMode = "words";
 let testStart, testEnd;
 let missedChars = 0;
-// let focus = false;
 let punctuationMode = true;
+let wpmHistory = [];
 
-let customText = "The quick brown fox jumped over the lazy dog";
+let customText = "The quick brown fox jumps over the lazy dog";
 
 function test() {
   $("#resultScreenshot").removeClass("hidden");
   html2canvas($("#resultScreenshot"), {
-    onclone: function (clonedDoc) {
+    onclone: function(clonedDoc) {
       clonedDoc.getElementById("resultScreenshot").style.display = "block";
     }
   }).then((canvas) => {
@@ -439,6 +236,7 @@ function hideCaret() {
 }
 
 function showCaret() {
+  updateCaretPosition();
   $("#caret").removeClass("hidden");
   startCaretAnimation();
 }
@@ -518,22 +316,16 @@ function calculateStats() {
   avgWordLen = totalChars / inputHistory.length;
   // console.log(avgWordLen);
   avgWordLen = 5;
-  let testSeconds = (testEnd - testStart) / 1000;
-  let wpm = 0;
-  if (testMode == "time") {
-    wpm = (correctChars * (60 / timeConfig)) / avgWordLen;
-  } else if (testMode == "words" || testMode == "custom") {
-    wpm = (correctChars * (60 / testSeconds)) / avgWordLen;
-  }
+  wpm = calculateWpm();
   // let acc = (correctChars / totalChars) * 100;
   let acc = ((totalChars - missedChars) / totalChars) * 100;
   let key = correctChars + "/" + (totalChars - correctChars);
-  return { wpm: Math.round(wpm), acc: acc, key: key };
+  return { wpm: wpm, acc: acc, key: key };
 }
 
-function liveWPM() {
+function calculateWpm() {
   let testNow = Date.now();
-  let testSeconds = Math.round((testNow - testStart) / 1000);
+  let testSeconds = (testNow - testStart) / 1000;
   let correctChars = 0;
   for (let i = 0; i < inputHistory.length; i++) {
     for (let c = 0; c < wordsList[i].length; c++) {
@@ -541,27 +333,33 @@ function liveWPM() {
         if (inputHistory[i][c] == wordsList[i][c]) {
           correctChars++;
         }
-      } catch (err) {}
+      } catch (err) { }
     }
     correctChars++;
   }
   wpm = (correctChars * (60 / testSeconds)) / 5;
-  if (wpm > 0) {
-    if ($("#liveWpm").css("opacity") == 0) {
-      $("#liveWpm").css("opacity", 0.25);
-    }
-    if (wpm < 100) {
-      $("#liveWpm").html("&nbsp;" + Math.round(wpm).toString());
-      $("#liveWpm").css("margin-left", "-3rem");
-    } else {
-      $("#liveWpm").text(Math.round(wpm));
-      $("#liveWpm").css("margin-left", 0);
-    }
-  }
+  return Math.round(wpm);
+}
+
+function liveWPM() {
+  wpm = calculateWpm();
+  // if (wpm > 0) {
+  //   if ($("#liveWpm").css("opacity") == 0) {
+  //     $("#liveWpm").css("opacity", 0.25);
+  //   }
+  //   if (wpm < 100) {
+  //     $("#liveWpm").html("&nbsp;" + Math.round(wpm).toString());
+  //     $("#liveWpm").css("margin-left", "-3rem");
+  //   } else {
+  //     $("#liveWpm").text(Math.round(wpm));
+  //     $("#liveWpm").css("margin-left", 0);
+  //   }
+  // }
 }
 
 function showResult() {
   testEnd = Date.now();
+  testActive = false;
   let stats = calculateStats();
   $("#top .result .wpm .val").text(stats.wpm);
   $("#top .result .acc .val").text(Math.round(stats.acc) + "%");
@@ -577,7 +375,6 @@ function showResult() {
   } else {
     $("#top .result .testmode .mode3").text("");
   }
-  testActive = false;
   $("#top .config").addClass("hidden");
   $("#top .result")
     .removeClass("hidden")
@@ -610,78 +407,200 @@ function showResult() {
   //   },
   //   250
   // );
+  console.log(wpmHistory);
+}
+
+var ctx = $("#wpmChart");
+  var wpmHistoryChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: "wpm",
+        data: [],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+        ],
+        borderWidth: 1
+      }],
+    },
+    options: {
+      legend: {
+        display: false,
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      tooltips: {
+        mode: 'index',
+        intersect: false,
+      },
+      hover: {
+        mode: 'nearest',
+        intersect: true
+      },
+      scales: {
+        xAxes: [{
+          display: true,
+          scaleLabel: {
+            display: false,
+            labelString: 'Seconds'
+          }
+        }],
+        yAxes: [{
+          display: true,
+          scaleLabel: {
+            display: false,
+            labelString: 'Words per Minute'
+          }
+        }]
+      }
+    }
+  });
+
+function showResult2() {
+  testEnd = Date.now();
+  let stats = calculateStats();
+  clearInterval(timer);
+  timer = null;
+  $("#result .stats .wpm .bottom").text(stats.wpm);
+  $("#result .stats .acc .bottom").text(Math.round(stats.acc) + "%");
+  $("#result .stats .key .bottom").text(stats.key);
+
+  let infoText = "";
+
+  infoText = testMode;
+
+  if (testMode == "time") {
+    infoText += " "+timeConfig
+  } else if (testMode == "words") {
+    infoText += " "+wordsConfig
+  }
+  if (punctuationMode) {
+    infoText += " with punctuation"
+  }
+
+  $("#result .stats .info .bottom").html(infoText);
+  testActive = false;
+  setFocus(false);
+  hideCaret();
+
+  let labels = [];
+  for (let i = 1; i <= wpmHistory.length; i++){
+    labels.push(i);
+  }
+
+  wpmHistoryChart.data.labels = labels;
+  wpmHistoryChart.data.datasets[0].data = wpmHistory;
+  wpmHistoryChart.update({ duration: 0 });
+  $("#words").animate({
+    opacity: 0
+  }, 125, () => {
+      $("#words").addClass('hidden');
+      $("#result").css('opacity', 0).removeClass('hidden');
+      $("#result").animate({
+        opacity: 1
+      }, 125);
+  })
+  // $("#words").addClass("hidden");
+  // $("#result").removeClass('hidden');
 }
 
 function updateTimer() {
-  liveWPM();
-  let percent = ((time - 1) / timeConfig) * 100;
+  let percent = ((time + 1) / timeConfig) * 100;
   $("#timer")
     .stop(true, true)
-    .css("width", 100 - percent + "vw");
+    .css("width", percent + "vw");
 }
 
 function restartTest() {
-  let oldHeight = $("#words").height();
-  let resultShown = !$("#top .result").hasClass("hidden");
-  $("#top .result")
-    .css("opacity", "1")
-    .css("transition", "none")
-    .stop(true, true)
-    .animate({ opacity: 0 }, 250, () => {
-      $("#top .result").addClass("hidden").css("transition", "0.25s");
-      if (testActive || resultShown) {
-        $("#top .config")
-          .css("opacity", "0")
-          .removeClass("hidden")
-          .css("transition", "none")
-          .stop(true, true)
-          .animate({ opacity: 1 }, 250, () => {
-            $("#top .config").css("transition", "0.25s");
-          });
-      }
-    });
+  let fadetime = 125;
   setFocus(false);
-  $("#liveWpm").css("opacity", 0);
-  $("#wordsInput").focus();
-  initWords();
+  if ($("#words").hasClass("hidden")) fadetime = 125;
+  
+    $("#words").animate({ opacity: 0 }, 125);
+    
+    $("#result").animate({
+      opacity: 0
+    }, 125, () => {
+      initWords();
+      
+        
+      $("#result").addClass('hidden');
+      $("#words").css('opacity', 0).removeClass('hidden');
+      $("#words").animate({
+        opacity: 1
+      }, 125, () => {
+        $("#restartTestButton").css('opacity',1);
+        focusWords();
+      
+
+  // $("#top .result")
+  //   .css("opacity", "1")
+  //   .css("transition", "none")
+  //   .stop(true, true)
+  //   .animate({ opacity: 0 }, 250, () => {
+  //     $("#top .result").addClass("hidden").css("transition", "0.25s");
+  //     if (testActive || resultShown) {
+  //       $("#top .config")
+  //         .css("opacity", "0")
+  //         .removeClass("hidden")
+  //         .css("transition", "none")
+  //         .stop(true, true)
+  //         .animate({ opacity: 1 }, 250, () => {
+  //           $("#top .config").css("transition", "0.25s");
+  //         });
+  //     }
+  //   });
+  
+  
+  
   testActive = false;
-  startCaretAnimation();
-  if (testMode == "time") {
-    hideTimer();
-    setTimeout(function () {
-      $("#timer")
-        .css("transition", "none")
-        .css("width", "0vw")
-        .animate({ top: 0 }, 0, () => {
-          $("#timer").css("transition", "1s linear");
-        });
-    }, 250);
-    clearInterval(timer);
-    timer = null;
-    time = timeConfig;
-  }
-  let newHeight = $("#words")
-    .css("height", "fit-content")
-    .css("height", "-moz-fit-content")
-    .height();
-  if (testMode == "words" || testMode == "custom") {
-    $("#words")
-      .stop(true, true)
-      .css("height", oldHeight)
-      .animate({ height: newHeight }, 250, () => {
-        $("#words")
-          .css("height", "fit-content")
-          .css("height", "-moz-fit-content");
-        updateCaretPosition();
+  wpmHistory = [];
+  hideTimer();
+  setTimeout(function() {
+    $("#timer")
+      .css("transition", "none")
+      .css("width", "0vw")
+      .animate({ top: 0 }, 0, () => {
+        $("#timer").css("transition", "1s linear");
       });
-  } else if (testMode == "time") {
-    $("#words")
-      .stop(true, true)
-      .css("height", oldHeight)
-      .animate({ height: 78 }, 250, () => {
-        updateCaretPosition();
-      });
-  }
+  }, 250);
+  clearInterval(timer);
+  timer = null;
+  time = 0;
+  focusWords();
+
+  // let oldHeight = $("#words").height();
+  // let newHeight = $("#words")
+  //   .css("height", "fit-content")
+  //   .css("height", "-moz-fit-content")
+  //   .height();
+  // if (testMode == "words" || testMode == "custom") {
+  //   $("#words")
+  //     .stop(true, true)
+  //     .css("height", oldHeight)
+  //     .animate({ height: newHeight }, 250, () => {
+  //       $("#words")
+  //         .css("height", "fit-content")
+  //         .css("height", "-moz-fit-content");
+  //       $("#wordsInput").focus();  
+  //       updateCaretPosition();
+  //     });
+  // } else if (testMode == "time") {
+  //   $("#words")
+  //     .stop(true, true)
+  //     .css("height", oldHeight)
+  //     .animate({ height: 78 }, 250, () => {
+  //       $("#wordsInput").focus();  
+  //       updateCaretPosition();
+  //     });
+  // }
+
+});
+})
 }
 
 function changeCustomText() {
@@ -692,7 +611,7 @@ function changeCustomText() {
 function timesUp() {
   hideCaret();
   testActive = false;
-  showResult();
+  showResult2();
 }
 
 function compareInput() {
@@ -723,7 +642,7 @@ function compareInput() {
   if (currentWord == currentInput && currentWordIndex == wordsList.length - 1) {
     inputHistory.push(currentInput);
     currentInput = "";
-    showResult();
+    showResult2();
   }
   $(".word.active").html(ret);
   // liveWPM()
@@ -731,15 +650,15 @@ function compareInput() {
 
 $(document).ready(() => {
   $("#centerContent").css("opacity", "0").removeClass("hidden");
-  initWords();
+  // initWords();
   $("#centerContent")
     .stop(true, true)
     .animate({ opacity: 1 }, 250, () => {
       updateCaretPosition();
     });
-  $("#words").click((e) => {
-    $("#wordsInput").focus();
-  });
+    togglePunctuation();
+    changeWordCount(10);
+    restartTest();
 });
 
 $(document).on("click", "#top .config .wordCount .button", (e) => {
@@ -776,7 +695,16 @@ $(document).on("click", "#top .config .customText .button", (e) => {
 
 $(document).on("click", "#top .config .punctuationMode .button", (e) => {
   togglePunctuation();
+  restartTest();
 });
+
+$("#words").click((e) => {
+  focusWords();
+});
+
+function focusWords() {
+  $("#wordsInput").focus();
+}
 
 function togglePunctuation() {
   if (punctuationMode) {
@@ -785,14 +713,47 @@ function togglePunctuation() {
     $("#top .config .punctuationMode .button").addClass("active");
   }
   punctuationMode = !punctuationMode;
-  restartTest();
 }
 
 $(document).on("click", "#top .config .mode .button", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   mode = e.currentTarget.innerHTML;
   changeMode(mode);
+  restartTest();
 });
+
+$(document).on("click", "#top #menu .button", (e) => {
+  href = $(e.currentTarget).attr('href');
+  history.pushState(href, null, href);
+  changePage(href.replace('/', ''));
+})
+
+$(window).on('popstate', (e) => {
+  if (e.originalEvent.state == "") {
+    // show test
+    changePage('test')
+  } else if (e.originalEvent.state == "about") {
+    // show about
+    changePage("about");
+  } else if (e.originalEvent.state == "account") {
+    changePage("account")
+  }
+
+
+})
+
+function changePage(page) {
+  $(".page").addClass('hidden');
+  $("#wordsInput").focusout();
+  if (page == "test" || page == "") {
+    $(".page.pageTest").removeClass('hidden');
+    focusWords();
+  } else if (page == "about") {
+    $(".page.pageAbout").removeClass('hidden');
+  } else if (page == "account") {
+    $(".page.pageAccount").removeClass('hidden');
+  }
+}
 
 function changeMode(mode) {
   testMode = mode;
@@ -814,13 +775,11 @@ function changeMode(mode) {
     $("#top .config .customText").removeClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
   }
-  restartTest();
 }
 
 $("#restartTestButton").keypress((event) => {
   if (event.keyCode == 32 || event.keyCode == 13) {
     restartTest();
-    $("#wordsInput").focus();
   }
 });
 
@@ -842,7 +801,9 @@ $("#wordsInput").on("focusout", (event) => {
   hideCaret();
 });
 
-$(document).keypress(function (event) {
+
+
+$(document).keypress(function(event) {
   if (!$("#wordsInput").is(":focus")) return;
   if (event["keyCode"] == 13) return;
   if (event["keyCode"] == 32) return;
@@ -852,16 +813,20 @@ $(document).keypress(function (event) {
     testStart = Date.now();
     if (testMode == "time") {
       showTimer();
+    }
+    updateTimer();
+    timer = setInterval(function() {
+      time++;
       updateTimer();
-      timer = setInterval(function () {
-        time--;
-        updateTimer();
-        if (time == 0) {
+      let wpm = calculateWpm();
+      wpmHistory.push(wpm);
+      if (testMode == "time") { 
+        if (time == timeConfig) {
           clearInterval(timer);
           timesUp();
         }
-      }, 1000);
-    }
+      }
+    }, 1000);
   } else {
     if (!testActive) return;
   }
@@ -883,7 +848,7 @@ $(window).resize(() => {
   updateCaretPosition();
 });
 
-$(document).mousemove(function (event) {
+$(document).mousemove(function(event) {
   setFocus(false);
 });
 
@@ -906,7 +871,7 @@ $(document).keydown((event) => {
       if (currentInput == "" && inputHistory.length > 0) {
         if (
           inputHistory[currentWordIndex - 1] ==
-            wordsList[currentWordIndex - 1] ||
+          wordsList[currentWordIndex - 1] ||
           $($(".word")[currentWordIndex - 1]).hasClass("hidden")
         ) {
           return;
@@ -965,7 +930,7 @@ $(document).keydown((event) => {
         currentInput = "";
         currentWordIndex++;
         if (currentWordIndex == wordsList.length) {
-          showResult();
+          showResult2();
           return;
         }
         updateActiveElement();
@@ -984,7 +949,10 @@ let commands = {
     {
       id: "togglePunctuation",
       display: "Toggle punctuation",
-      exec: () => togglePunctuation()
+      exec: () => {
+        togglePunctuation();
+        restartTest();
+      }
     },
     {
       id: "changeMode",
@@ -1022,27 +990,42 @@ let commandsWordCount = {
     {
       id: "changeWordCount10",
       display: "10",
-      exec: () => changeWordCount("10")
+      exec: () => {
+        changeWordCount("10");
+        restartTest();
+      }
     },
     {
       id: "changeWordCount25",
       display: "25",
-      exec: () => changeWordCount("25")
+      exec: () => {
+        changeWordCount("25");
+        restartTest();
+      }
     },
     {
       id: "changeWordCount50",
       display: "50",
-      exec: () => changeWordCount("50")
+      exec: () => {
+        changeWordCount("50");
+        restartTest();
+      }
     },
     {
       id: "changeWordCount100",
       display: "100",
-      exec: () => changeWordCount("100")
+      exec: () => {
+        changeWordCount("100");
+        restartTest();
+      }
     },
     {
       id: "changeWordCount200",
       display: "200",
-      exec: () => changeWordCount("200")
+      exec: () => {
+        changeWordCount("200");
+        restartTest();
+      }
     }
   ]
 };
@@ -1052,17 +1035,26 @@ let commandsMode = {
     {
       id: "changeModeTime",
       display: "time",
-      exec: () => changeMode("time")
+      exec: () => {
+        changeMode("time");
+        restartTest();
+      }
     },
     {
       id: "changeModeWords",
       display: "words",
-      exec: () => changeMode("words")
+      exec: () => {
+        changeMode("words");
+        restartTest();
+      }
     },
     {
       id: "changeModeCustom",
       display: "custom",
-      exec: () => changeMode("custom")
+      exec: () => {
+        changeMode("custom");
+        restartTest();
+      }
     }
   ]
 };
@@ -1072,22 +1064,34 @@ let commandsTimeConfig = {
     {
       id: "changeTimeConfig15",
       display: "15",
-      exec: () => changeTimeConfig("15")
+      exec: () => {
+        changeTimeConfig("15");
+        restartTest();
+      }
     },
     {
       id: "changeTimeConfig30",
       display: "30",
-      exec: () => changeTimeConfig("30")
+      exec: () => {
+        changeTimeConfig("30");
+        restartTest();
+      }
     },
     {
       id: "changeTimeConfig60",
       display: "60",
-      exec: () => changeTimeConfig("60")
+      exec: () => {
+        changeTimeConfig("60");
+        restartTest();
+      }
     },
     {
       id: "changeTimeConfig120",
       display: "120",
-      exec: () => changeTimeConfig("120")
+      exec: () => {
+        changeTimeConfig("120");
+        restartTest();
+      }
     }
   ]
 };
@@ -1155,7 +1159,7 @@ function hideCommandLine() {
         $("#commandLineWrapper").addClass("hidden");
       }
     );
-  $("#wordsInput").focus();
+  focusWords();
 }
 
 function showCommandLine() {
@@ -1231,3 +1235,4 @@ function displayFoundCommands() {
   //   $("#commandLine .suggestions").before("<div class='listTitle'>"+currentCommands.title+"</div>");
   // }
 }
+

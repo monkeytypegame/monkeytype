@@ -183,7 +183,7 @@ a:hover {
   /* margin-bottom: 1rem; */
   align-items: center;
   z-index: 999;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: auto 1fr auto;
 }
 
 #caret {
@@ -401,6 +401,7 @@ key {
   background-color: var(--sub-color);
   /*   font-weight: bold; */
   padding: 3px 5px;
+  margin: 3px 0;
   border-radius: 0.1rem;
   display: inline-block;
 }
@@ -433,28 +434,72 @@ key {
 }
 
 #result {
-  height: 400px;
   display: grid;
+  // height: 200px;
+  gap: 1rem;
+  grid-template-columns: auto 1fr;
   justify-content: center;
   align-items: center;
+  .chart{
+    .title{
+      color: var(--sub-color);
+      margin-bottom: 1rem;
+    }
+    height: 100%;
+  }
+  .stats{
+    display: grid;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    grid-template-areas: 
+                         "wpm acc"
+                         "wpm key"
+                         "info info";
+    .group{
+      .top{
+        color: var(--sub-color);
+        font-size: 1rem;
+        line-height: 1rem;
+      }
+      .bottom{
+        color: var(--main-color);
+        font-size: 2rem;
+        line-height: 2rem;
+      }
+    }
+    .info{
+      grid-area: info;
+      color: var(--sub-color);
+      .top{
+        font-size: 1rem;
+        line-height: 1.25rem;
+      }
+      .bottom{
+        font-size: 1rem;
+        line-height: 1rem;
+      }
+    }
+    .wpm{
+      grid-area: wpm;
+      .top{
+        font-size: 3rem;
+        line-height: 3rem;
+      }
+      .bottom{
+        font-size: 4rem;
+        line-height: 4rem;
+      }
+    }
+    .acc{
+      grid-area: acc;
+    }
+    .key{
+      grid-area: key;
+    }
+  }
 }
 
-#result .groups {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 1rem;
-  width: min-content;
-}
-
-#result .group .title {
-  color: var(--sub-color);
-  line-height: 1rem;
-}
-
-#result .group .val {
-  font-size: 2rem;
-  line-height: 2rem;
-}
 
 #wordsInput {
   height: 0;
@@ -475,13 +520,14 @@ key {
 }
 
 #restartTestButton {
+  opacity: 0;
   border-radius: var(--roundness);
   padding: 1rem 5rem;
   width: min-content;
   width: -moz-min-content;
   color: var(--sub-color);
   transition: 0.25s;
-  margin: 0 auto 0 auto;
+  margin: 1rem auto 0 auto;
   cursor: pointer;
   &:hover,
   &:focus {
