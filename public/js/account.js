@@ -34,6 +34,30 @@ $(".pageAccount .register input").keyup(e => {
     }
 })
 
+$(".pageLogin .login input").keyup(e => {
+  if (e.key == "Enter") {
+
+      let email = $(".pageLogin .login input")[0].value;
+      let password = $(".pageLogin .login input")[1].value;
+
+      firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+        alert(error.message);
+      });
+
+      
+  }
+})
+
+
+
+function signOut() {
+  firebase.auth().signOut().then(function() {
+    alert('signed out');
+  }).catch(function(error) {
+    alert(error.message);
+  });
+}
+
 firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       // User is signed in.
