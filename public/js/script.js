@@ -13,6 +13,9 @@ let missedChars = 0;
 let punctuationMode = true;
 let wpmHistory = [];
 
+
+let quickTabMode = true;
+
 let customText = "The quick brown fox jumps over the lazy dog";
 
 function test() {
@@ -173,6 +176,7 @@ function addWord() {
 function showWords() {
   $("#words").empty();
   if (testMode == "words" || testMode == "custom") {
+    $("#words").css("height", "auto");
     for (let i = 0; i < wordsList.length; i++) {
       let w = "<div class='word'>";
       for (let c = 0; c < wordsList[i].length; c++) {
@@ -270,17 +274,40 @@ function updateCaretPosition() {
   let currentLetterPos = currentLetter.position();
   let letterHeight = currentLetter.height();
 
+  let newTop = 0;
+  let newLeft = 0;
+
+  newTop = currentLetterPos.top - letterHeight / 4;
   if (inputLen == 0) {
-    caret.css({
-      top: currentLetterPos.top - letterHeight / 4,
-      left: currentLetterPos.left - caret.width() / 2
-    });
+    // caret.css({
+    //   top: currentLetterPos.top - letterHeight / 4,
+    //   left: currentLetterPos.left - caret.width() / 2
+    // });
+    
+    newLeft = currentLetterPos.left - caret.width() / 2;
   } else {
-    caret.css({
-      top: currentLetterPos.top - letterHeight / 4,
-      left: currentLetterPos.left + currentLetter.width() - caret.width() / 2
-    });
+    // caret.css({
+    //   top: currentLetterPos.top - letterHeight / 4,
+    //   left: currentLetterPos.left + currentLetter.width() - caret.width() / 2
+    // });
+    newLeft = currentLetterPos.left + currentLetter.width() - caret.width() / 2;
   }
+
+  let duration = 0;
+
+  if (true) {
+    duration = 100;
+  }
+
+  if (caret.position().top != newTop) {
+    duration = 0;
+  }
+
+  caret.stop(true,true).animate({
+    top: newTop,
+    left: newLeft
+  },duration)
+
 }
 
 function calculateStats() {
@@ -411,54 +438,56 @@ function showResult() {
 }
 
 var ctx = $("#wpmChart");
-  var wpmHistoryChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        label: "wpm",
-        data: [],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-        ],
-        borderWidth: 1
-      }],
-    },
-    options: {
-      legend: {
-        display: false,
-      },
-      responsive: true,
-      maintainAspectRatio: false,
-      tooltips: {
-        mode: 'index',
-        intersect: false,
-      },
-      hover: {
-        mode: 'nearest',
-        intersect: true
-      },
-      scales: {
-        xAxes: [{
-          display: true,
-          scaleLabel: {
-            display: false,
-            labelString: 'Seconds'
-          }
-        }],
-        yAxes: [{
-          display: true,
-          scaleLabel: {
-            display: false,
-            labelString: 'Words per Minute'
-          }
-        }]
+var wpmHistoryChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [{
+      label: "wpm",
+      data: [],
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgba(255, 99, 132, 1)',
+      borderWidth: 1
+    }],
+  },
+  options: {
+    legend: {
+      display: false,
+      labels: {
+        defaultFontFamily: "Roboto Mono"
       }
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+    tooltips: {
+      mode: 'index',
+      intersect: false,
+    },
+    hover: {
+      mode: 'nearest',
+      intersect: true
+    },
+    scales: {
+      xAxes: [{
+        ticks: {
+          fontFamily: "Roboto Mono",
+        },
+        display: true,
+        scaleLabel: {
+          display: false,
+          labelString: 'Seconds'
+        }
+      }],
+      yAxes: [{
+        display: true,
+        scaleLabel: {
+          display: false,
+          labelString: 'Words per Minute'
+        }
+      }]
     }
-  });
+  }
+});
 
 function showResult2() {
   testEnd = Date.now();
@@ -474,9 +503,9 @@ function showResult2() {
   infoText = testMode;
 
   if (testMode == "time") {
-    infoText += " "+timeConfig
+    infoText += " " + timeConfig
   } else if (testMode == "words") {
-    infoText += " "+wordsConfig
+    infoText += " " + wordsConfig
   }
   if (punctuationMode) {
     infoText += " with punctuation"
@@ -488,8 +517,8 @@ function showResult2() {
   hideCaret();
 
   let labels = [];
-  for (let i = 1; i <= wpmHistory.length; i++){
-    labels.push(i);
+  for (let i = 1; i <= wpmHistory.length; i++) {
+    labels.push(i.toString());
   }
 
   wpmHistoryChart.data.labels = labels;
@@ -498,11 +527,11 @@ function showResult2() {
   $("#words").animate({
     opacity: 0
   }, 125, () => {
-      $("#words").addClass('hidden');
-      $("#result").css('opacity', 0).removeClass('hidden');
-      $("#result").animate({
-        opacity: 1
-      }, 125);
+    $("#words").addClass('hidden');
+    $("#result").css('opacity', 0).removeClass('hidden');
+    $("#result").animate({
+      opacity: 1
+    }, 125);
   })
   // $("#words").addClass("hidden");
   // $("#result").removeClass('hidden');
@@ -518,89 +547,90 @@ function updateTimer() {
 function restartTest() {
   let fadetime = 125;
   setFocus(false);
+  hideCaret();
   if ($("#words").hasClass("hidden")) fadetime = 125;
-  
-    $("#words").animate({ opacity: 0 }, 125);
-    
-    $("#result").animate({
-      opacity: 0
+
+  $("#words").animate({ opacity: 0 }, 125);
+
+  $("#result").animate({
+    opacity: 0
+  }, 125, () => {
+    initWords();
+
+
+    $("#result").addClass('hidden');
+    $("#words").css('opacity', 0).removeClass('hidden');
+    $("#words").animate({
+      opacity: 1
     }, 125, () => {
-      initWords();
-      
-        
-      $("#result").addClass('hidden');
-      $("#words").css('opacity', 0).removeClass('hidden');
-      $("#words").animate({
-        opacity: 1
-      }, 125, () => {
-        $("#restartTestButton").css('opacity',1);
-        focusWords();
-      
+      $("#restartTestButton").css('opacity', 1);
+      focusWords();
 
-  // $("#top .result")
-  //   .css("opacity", "1")
-  //   .css("transition", "none")
-  //   .stop(true, true)
-  //   .animate({ opacity: 0 }, 250, () => {
-  //     $("#top .result").addClass("hidden").css("transition", "0.25s");
-  //     if (testActive || resultShown) {
-  //       $("#top .config")
-  //         .css("opacity", "0")
-  //         .removeClass("hidden")
-  //         .css("transition", "none")
-  //         .stop(true, true)
-  //         .animate({ opacity: 1 }, 250, () => {
-  //           $("#top .config").css("transition", "0.25s");
-  //         });
-  //     }
-  //   });
-  
-  
-  
-  testActive = false;
-  wpmHistory = [];
-  hideTimer();
-  setTimeout(function() {
-    $("#timer")
-      .css("transition", "none")
-      .css("width", "0vw")
-      .animate({ top: 0 }, 0, () => {
-        $("#timer").css("transition", "1s linear");
-      });
-  }, 250);
-  clearInterval(timer);
-  timer = null;
-  time = 0;
-  focusWords();
 
-  // let oldHeight = $("#words").height();
-  // let newHeight = $("#words")
-  //   .css("height", "fit-content")
-  //   .css("height", "-moz-fit-content")
-  //   .height();
-  // if (testMode == "words" || testMode == "custom") {
-  //   $("#words")
-  //     .stop(true, true)
-  //     .css("height", oldHeight)
-  //     .animate({ height: newHeight }, 250, () => {
-  //       $("#words")
-  //         .css("height", "fit-content")
-  //         .css("height", "-moz-fit-content");
-  //       $("#wordsInput").focus();  
-  //       updateCaretPosition();
-  //     });
-  // } else if (testMode == "time") {
-  //   $("#words")
-  //     .stop(true, true)
-  //     .css("height", oldHeight)
-  //     .animate({ height: 78 }, 250, () => {
-  //       $("#wordsInput").focus();  
-  //       updateCaretPosition();
-  //     });
-  // }
+      // $("#top .result")
+      //   .css("opacity", "1")
+      //   .css("transition", "none")
+      //   .stop(true, true)
+      //   .animate({ opacity: 0 }, 250, () => {
+      //     $("#top .result").addClass("hidden").css("transition", "0.25s");
+      //     if (testActive || resultShown) {
+      //       $("#top .config")
+      //         .css("opacity", "0")
+      //         .removeClass("hidden")
+      //         .css("transition", "none")
+      //         .stop(true, true)
+      //         .animate({ opacity: 1 }, 250, () => {
+      //           $("#top .config").css("transition", "0.25s");
+      //         });
+      //     }
+      //   });
 
-});
-})
+
+
+      testActive = false;
+      wpmHistory = [];
+      hideTimer();
+      setTimeout(function() {
+        $("#timer")
+          .css("transition", "none")
+          .css("width", "0vw")
+          .animate({ top: 0 }, 0, () => {
+            $("#timer").css("transition", "1s linear");
+          });
+      }, 250);
+      clearInterval(timer);
+      timer = null;
+      time = 0;
+      focusWords();
+
+      // let oldHeight = $("#words").height();
+      // let newHeight = $("#words")
+      //   .css("height", "fit-content")
+      //   .css("height", "-moz-fit-content")
+      //   .height();
+      // if (testMode == "words" || testMode == "custom") {
+      //   $("#words")
+      //     .stop(true, true)
+      //     .css("height", oldHeight)
+      //     .animate({ height: newHeight }, 250, () => {
+      //       $("#words")
+      //         .css("height", "fit-content")
+      //         .css("height", "-moz-fit-content");
+      //       $("#wordsInput").focus();  
+      //       updateCaretPosition();
+      //     });
+      // } else if (testMode == "time") {
+      //   $("#words")
+      //     .stop(true, true)
+      //     .css("height", oldHeight)
+      //     .animate({ height: 78 }, 250, () => {
+      //       $("#wordsInput").focus();  
+      //       updateCaretPosition();
+      //     });
+      // }
+
+    });
+  })
 }
 
 function changeCustomText() {
@@ -656,9 +686,10 @@ $(document).ready(() => {
     .animate({ opacity: 1 }, 250, () => {
       updateCaretPosition();
     });
-    togglePunctuation();
-    changeWordCount(10);
-    restartTest();
+  restartTest();
+  if (quickTabMode) {
+    $("#restartTestButton").remove();
+  }
 });
 
 $(document).on("click", "#top .config .wordCount .button", (e) => {
@@ -820,7 +851,7 @@ $(document).keypress(function(event) {
       updateTimer();
       let wpm = calculateWpm();
       wpmHistory.push(wpm);
-      if (testMode == "time") { 
+      if (testMode == "time") {
         if (time == timeConfig) {
           clearInterval(timer);
           timesUp();
@@ -862,8 +893,13 @@ $(document).keydown((event) => {
     }
   }
 
+  if (quickTabMode) {
+    if (event["keyCode"] == 9) {
+      event.preventDefault();
+      restartTest();
+    }
+  }
   //backspace
-
   if ($("#wordsInput").is(":focus")) {
     if (event["keyCode"] == 8) {
       event.preventDefault();

@@ -195,7 +195,7 @@ a:hover {
   animation-iteration-count: infinite;
   animation-duration: 1s;
   position: absolute;
-  transition: 0.05s;
+  // transition: 0.05s;
 }
 
 @keyframes caretFlash {
@@ -560,7 +560,7 @@ key {
 }
 
 .word letter {
-  /*   transition: 0.1s; */
+  transition: .1s;
   height: 1rem;
   line-height: 1rem;
   /* margin: 0 1px; */
