@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monkey Type</title>
+  <script src="https://kit.fontawesome.com/f3f87d89b4.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div id="commandLineWrapper" class="hidden">
+    <div id="commandLine">
+      <input type="text" class="input" placeholder="Command">
+      <div class="separator hidden"></div>
+      <div class="listTitle">Title</div>
+      <div class="suggestions">
+      </div>
+    </div>
+  </div>
+  <div id="timerWrapper">
+    <div id="timer"></div>
+  </div>
+  <div id="resultScreenshot" class="">
+    <div class="stats">
+      <div class="group">
+        <div class="top">wpm</div>
+        <div class="bottom">100</div>
+      </div>
+      <div class="group">
+        <div class="top">key</div>
+        <div class="bottom">100/2</div>
+      </div>
+      <div class="group">
+        <div class="top">acc</div>
+        <div class="bottom">100%</div>
+      </div>
+    </div>
+    <div class="logo">
+      <!--     <div class="top">monkey-see</div> -->
+      <div class="bottom">monkey-type.com</div>
+    </div>
+  </div>
+  <div id="centerContent" class="hidden">
+    <div id="top">
+      <div class="logo">
+        <div class="top">monkey-see</div>
+        <div class="bottom">monkey-type</sup></div>
+      </div>
+      <div id="menu">
+        <div class="button" tabindex="2" href="/">
+          <div class="icon">
+            <i class="fas fa-fw fa-keyboard"></i>
+          </div>
+          <div class="text">
+            Test
+          </div>
+        </div>
+        <div class="button" tabindex="2" href="/about">
+          <div class="icon">
+            <i class="fas fa-fw fa-info"></i>
+          </div>
+          <div class="text">
+            About
+          </div>
+        </div>
+        <div class="button" tabindex="2" href="/settings">
+          <div class="icon">
+            <i class="fas fa-fw fa-cog"></i>
+          </div>
+          <div class="text">
+            Settings
+          </div>
+        </div>
+        <div class="button" tabindex="2" href="/account">
+          <div class="icon">
+            <i class="fas fa-fw fa-user"></i>
+          </div>
+          <div class="text">
+            Login
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="config">
+        <div class="group punctuationMode">
+          <!--           <div class="title">time</div> -->
+          <div class="buttons">
+            <div class="button toggleButton active" tabindex="2">punctuation</div>
+          </div>
+        </div>
+        <div class="group mode">
+          <!--           <div class="title">mode</div> -->
+          <div class="buttons">
+            <div class="button" mode="time">time</div>
+            <div class="button active" mode="words">words</div>
+            <div class="button" mode="custom">custom</div>
+          </div>
+        </div>
+        <div class="group wordCount">
+          <!--           <div class="title">words</div> -->
+          <div class="buttons">
+            <div class="button" wordCount="10">10</div>
+            <div class="button" wordCount="25">25</div>
+            <div class="button active" wordCount="50">50</div>
+            <div class="button" wordCount="100">100</div>
+            <div class="button" wordCount="200">200</div>
+          </div>
+        </div>
+        <div class="group time hidden">
+          <!--           <div class="title">time</div> -->
+          <div class="buttons">
+            <div class="button" timeConfig="15">15</div>
+            <div class="button active" timeConfig="30">30</div>
+            <div class="button" timeConfig="60">60</div>
+            <div class="button" timeConfig="120">120</div>
+          </div>
+        </div>
+        <div class="group customText hidden">
+          <!--           <div class="title">time</div> -->
+          <div class="buttons">
+            <div class="button">change</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <div id="middle">
+      
+      <div class="page pageTest">
+        <div id="caret" class="hidden"></div>
+        <div id="words" class=""></div>
+        <input id="wordsInput" class="" tabindex="0"></input>
+        <div id="result" class="hidden">
+          <div class="stats">
+            <!-- <div class="info">words 10<br>punctuation</div> -->
+            <div class="group info">
+              <div class="top">test type</div>
+              <div class="bottom">100</div>
+            </div>
+            <div class="group wpm">
+              <div class="top">wpm</div>
+              <div class="bottom">100</div>
+            </div>
+            <div class="group acc">
+              <div class="top">acc</div>
+              <div class="bottom">100%</div>
+            </div>
+            <div class="group key">
+              <div class="top">key</div>
+              <div class="bottom">100/1</div>
+            </div>
+          </div>
+          <div class="chart">
+            <div class="title">wpm over time</div>
+            <canvas id="wpmChart"></canvas>
+          </div>
+        </div>
+        <div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>
+
+      </div>
+      <div class="page pageAbout hidden">
+        this is the about page
+      </div>
+      <div class="page pageAccount hidden">
+        <div class="register">
+          register
+          <input type="text" placeholder="name">
+          <input type="text" placeholder="email">
+          <input type="text" placeholder="password">
+
+        </div>
+        <div class="login">
+          login
+          <input type="text" placeholder="email">
+          <input type="text" placeholder="password">
+
+        </div>
+
+      </div>
+    </div>
+    <div id="bottom">
+      <key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
+      <key>esc</key> - command line
+      <br><br>
+      Created by <a href="https://www.reddit.com/message/compose?to=Miodec">Miodec</a>
+    </div>
+
+  </div>
+</body>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="/__/firebase/7.14.3/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="/__/firebase/7.14.3/firebase-analytics.js"></script>
+<script src="/__/firebase/7.14.3/firebase-auth.js"></script>
+
+
+<!-- Initialize Firebase -->
+<script src="/__/firebase/init.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="js/words.js"></script>
+<script src="js/script.js"></script>
+<script src="js/account.js"></script>
+<script>
+
+
+
+</script>
+
+</html>

@@ -9,12 +9,16 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [ {
-      "source": "**",
-      "destination": "/index.html"
-    },{
-      "source": "!/@(js|css)/**",
-      "destination": "/index.html"
-    } ]
+    "redirects": [{
+      "source": "/",
+      "destination": "/app",
+      "type": 301
+    }],
+    "rewrites": [{
+      "source": "/**",
+      "destination": "/app"
+    }],
+    "cleanUrls": true,
+    "trailingSlash": false
   }
 }

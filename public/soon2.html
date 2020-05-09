@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monkey Type - Coming Soon!</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <style>
+        *{
+            font-family: "Roboto Mono";
+            color: var(--main-color);
+        }
+        :root {
+        --main-color: #eee;
+        --sub-color: #444;
+        --bg-color: #111;
+        --caret-color: #fff;
+        --active-word-color: #444;
+        --roundness: 0.25rem;
+        }
+        body{
+            background-color: var(--bg-color);
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            align-content: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+        }
+        .grid{
+            display: grid;
+            gap: 1rem;
+        }
+        .logo {
+            margin-bottom: -0.12rem;
+            white-space: nowrap;
+            
+        }
+
+        .logo .top {
+            font-size: 0.65rem;
+            line-height: 0.65rem;
+            margin-bottom: -0.4rem;
+            margin-left: -0.1rem;
+            color: var(--sub-color);
+            }
+
+        .logo .bottom {
+            margin-left: -0.15rem;
+            font-size: 2.3rem;
+            line-height: 2.3rem;
+        }
+        .soon{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid">
+        <div class="logo">
+            <div class="top">monkey-see</div>
+            <div class="bottom">monkey-type</div>
+        </div>
+        <div class="soon">Coming very soon...</div>
+    </div>
+</body>
+</html>
