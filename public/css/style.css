@@ -218,8 +218,6 @@ a:hover {
   -webkit-animation-duration: 1s;
           animation-duration: 1s;
   position: absolute;
-  -webkit-transition: 0.05s;
-  transition: 0.05s;
 }
 
 @-webkit-keyframes caretFlash {
@@ -673,7 +671,8 @@ key {
 }
 
 .word letter {
-  /*   transition: 0.1s; */
+  -webkit-transition: .1s;
+  transition: .1s;
   height: 1rem;
   line-height: 1rem;
   /* margin: 0 1px; */
