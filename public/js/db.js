@@ -1,6 +1,6 @@
 const db = firebase.firestore();
 
-function db_testCompleted(wpm, correctChars, incorrectChars, acc, mode, mode2) {
+function db_testCompleted(wpm, correctChars, incorrectChars, acc, mode, mode2, punctuation) {
 
     if (wpm > 250 || acc < 50 || acc > 100) return false;
 
@@ -17,6 +17,7 @@ function db_testCompleted(wpm, correctChars, incorrectChars, acc, mode, mode2) {
         acc: acc,
         mode: mode,
         mode2: mode2,
+        punctuation: punctuation,
         timestamp: Date.now()
     })
 }
