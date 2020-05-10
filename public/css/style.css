@@ -17,11 +17,15 @@
 } */
 body {
   margin: 0;
-  padding: 2rem;
+  padding: 2rem 2rem 0 2rem;
   height: 100vh;
   background: var(--bg-color);
   font-family: "Roboto Mono";
   color: var(--main-color);
+}
+
+html {
+  overflow-y: scroll;
 }
 
 a {
@@ -484,6 +488,11 @@ key {
   color: var(--sub-color);
   -webkit-transition: 0.5s;
   transition: 0.5s;
+  margin-bottom: 2rem;
+}
+
+#bottom .keyTips {
+  margin-bottom: 1rem;
 }
 
 #top.focus {
@@ -713,6 +722,66 @@ key {
 
 .word letter.missing {
   opacity: 0.5;
+}
+
+.pageAccount {
+  display: -ms-grid;
+  display: grid;
+  gap: 1rem;
+}
+
+.pageAccount .signOut {
+  -ms-grid-column-align: end;
+      justify-self: end;
+  background: var(--sub-color);
+  color: var(--bg-color);
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: .5rem;
+  border-radius: var(--roundness);
+  cursor: pointer;
+  -webkit-transition: .25s;
+  transition: .25s;
+  float: right;
+}
+
+.pageAccount .signOut:hover {
+  color: var(--main-color);
+}
+
+.pageAccount .triplegroup {
+  display: -ms-grid;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1rem;
+}
+
+.pageAccount .group .title {
+  color: var(--sub-color);
+}
+
+.pageAccount .group .val {
+  font-size: 3rem;
+  line-height: 3rem;
+}
+
+.pageAccount table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+.pageAccount table td {
+  padding: .5rem .25rem;
+}
+
+.pageAccount table thead {
+  color: var(--sub-color);
+  font-size: .75rem;
+}
+
+.pageAccount table tbody tr:nth-child(odd) td {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 * {
