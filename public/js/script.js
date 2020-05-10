@@ -472,9 +472,9 @@ var wpmOverTimeChart = new Chart(ctx, {
     datasets: [{
       label: "wpm",
       data: [],
-      backgroundColor: 'rgba(255, 99, 132, 0.2)',
-      borderColor: 'rgba(255, 99, 132, 1)',
-      borderWidth: 1
+      backgroundColor: 'rgba(255, 255, 255, 0.25',
+      borderColor: 'rgba(255, 255, 255, 1)',
+      borderWidth: 2
     }],
   },
   options: {
@@ -538,7 +538,7 @@ function showResult2() {
       if (data.wpm < stats.wpm || data == false) {
         $("#result .stats .wpm .top").append('<div class="crown"><i class="fas fa-crown"></i></div>');
       }
-      db_testCompleted(stats.wpm, stats.correctChars, stats.incorrectChars, stats.acc, config.mode, mode2);
+      db_testCompleted(stats.wpm, stats.correctChars, stats.incorrectChars, stats.acc, config.mode, mode2, config.punctuation);
     })
   } else {
     alert('test invalid');
