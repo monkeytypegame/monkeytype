@@ -265,13 +265,17 @@ function refreshAccountPage() {
     let testCount = data.length;
 
     data.forEach(result => {
+      let withpunc = '';
+      if (result.punctuation) {
+        withpunc = ', with punctuation';
+      }
       $(".pageAccount .history table tbody").prepend(`
       <tr>
       <td>${result.wpm}</td>
       <td>${result.acc}%</td>
       <td>${result.correctChars}</td>
       <td>${result.incorrectChars}</td>
-      <td>${result.mode} ${result.mode2}</td>
+      <td>${result.mode} ${result.mode2}${withpunc}</td>
       <td>${moment(result.timestamp).format('DD MMM YYYY HH:mm')}</td>
       </tr>`)
       if (result.mode == "words" && result.mode2 == 10) {
@@ -306,8 +310,9 @@ function refreshAccountPage() {
       }
 
       if (result.wpm > topWpm) {
+        let puncsctring = result.punctuation ? ",<br>with punctuatin" : "";
         topWpm = result.wpm;
-        topMode = result.mode + " " + result.mode2;
+        topMode = result.mode + " " + result.mode2 + puncsctring;
       }
     })
 
@@ -323,10 +328,11 @@ function refreshAccountPage() {
     resultHistoryChart.data.datasets[9].data = testModes.custom;
 
 
+
     resultHistoryChart.update({ duration: 0 });
 
     $(".pageAccount .highestWpm .val").text(topWpm);
-    $(".pageAccount .highestWpm .mode").text(topMode);
+    $(".pageAccount .highestWpm .mode").html(topMode);
 
     $(".pageAccount .testsTaken .val").text(testCount);
 
