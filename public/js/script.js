@@ -329,7 +329,8 @@ function loadConfigFromCookie() {
   if (newConfig) {
     newConfig = JSON.parse(newConfig);
     config = newConfig;
-    setPunctuation(config.punctuation)
+    setQuickTabMode(config.quickTab);
+    setPunctuation(config.punctuation);
     changeTimeConfig(config.time);
     changeWordCount(config.words);
     changeMode(config.mode);
@@ -464,7 +465,7 @@ function showResult() {
 }
 
 var ctx = $("#wpmChart");
-var wpmHistoryChart = new Chart(ctx, {
+var wpmOverTimeChart = new Chart(ctx, {
   type: 'line',
   data: {
     labels: [],
@@ -568,9 +569,9 @@ function showResult2() {
     labels.push(i.toString());
   }
 
-  wpmHistoryChart.data.labels = labels;
-  wpmHistoryChart.data.datasets[0].data = wpmHistory;
-  wpmHistoryChart.update({ duration: 0 });
+  wpmOverTimeChart.data.labels = labels;
+  wpmOverTimeChart.data.datasets[0].data = wpmHistory;
+  wpmOverTimeChart.update({ duration: 0 });
   $("#words").animate({
     opacity: 0
   }, 125, () => {
@@ -792,13 +793,34 @@ function toggleSmoothCaret() {
   saveConfigToCookie();
 }
 
+function setQuickTabMode(mode) {
+  config.quickTab = mode;
+  if (!config.quickTab) {
+    $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
+    $("#restartTestButton").css("opacity", 1);
+    $("#bottom .keyTips").html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
+    <key>esc</key> - command line`);
+    
+  } else {
+    $("#restartTestButton").remove();
+    $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
+    <key>esc</key> - command line`);
+  }
+  saveConfigToCookie();
+}
+
 function toggleQuickTabMode() {
   config.quickTab = !config.quickTab;
   if (!config.quickTab) {
     $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
-    $("#restartTestButton").css("opacity",1);
+    $("#restartTestButton").css("opacity", 1);
+    $("#bottom .keyTips").html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
+    <key>esc</key> - command line`);
+    
   } else {
     $("#restartTestButton").remove();
+    $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
+    <key>esc</key> - command line`);
   }
   saveConfigToCookie();
 }
@@ -866,7 +888,7 @@ function changePage(page) {
     if (!firebase.auth().currentUser) {
       changePage("login");
     } else {
-      $(".page.pageAccount").removeClass('hidden');
+      refreshAccountPage();
     }
   } else if (page == "login") {
     $(".page.pageLogin").removeClass('hidden');
