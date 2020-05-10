@@ -14,17 +14,6 @@ let accuracyStats = {
   incorrect: 0
 }
 
-let config = {
-  showKeyTips: true,
-  showLiveWpm: true,
-  smoothCaret: true,
-  quickTab: false,
-  punctuation: true,
-  words: 100,
-  time: 30,
-  mode: "words"
-}
-
 let customText = "The quick brown fox jumps over the lazy dog";
 
 function test() {
@@ -37,6 +26,10 @@ function test() {
     $("#resultScreenshot").removeClass("hidden");
     document.body.appendChild(canvas);
   });
+}
+
+function getLastChar(word) {
+  return word.charAt(word.length - 1);
 }
 
 function setFocus(foc) {
@@ -94,10 +87,6 @@ function initWords() {
   showWords();
 }
 
-function getLastChar(word) {
-  return word.charAt(word.length - 1);
-}
-
 function buildSentences() {
   let returnList = [];
   $.each(wordsList, (index, word) => {
@@ -107,7 +96,7 @@ function buildSentences() {
       word = capitalizeFirstLetter(word);
     } else if (
       //10% chance to add a dot or if its a last word
-      (Math.random() < 0.1 && getLastChar(previousWord) != "." && index != wordsList.length - 2) || index == wordsList.length - 1 ) {
+      (Math.random() < 0.1 && getLastChar(previousWord) != "." && index != wordsList.length - 2) || index == wordsList.length - 1) {
       word += ".";
     } else if (Math.random() < 0.01 &&
       getLastChar(previousWord) != "," &&
@@ -182,32 +171,63 @@ function updateActiveElement() {
     .removeClass("error");
 }
 
-function highlightMissedLetters() {
+function compareInput() {
+  $(".word.active").empty();
+  let ret = "";
   let currentWord = wordsList[currentWordIndex];
-  $(".word.active letter").addClass("incorrect");
+  let letterElems = $($("#words .word")[currentWordIndex]).children("letter");
   for (let i = 0; i < currentInput.length; i++) {
     if (currentWord[i] == currentInput[i]) {
-      $($(".word.active letter")[i])
-        .removeClass("incorrect")
-        .addClass("correct");
+      ret += '<letter class="correct">' + currentWord[i] + "</letter>";
+      // $(letterElems[i]).removeClass('incorrect').addClass('correct');
+    } else {
+      if (currentWord[i] == undefined) {
+        ret +=
+          '<letter class="incorrect extra">' + currentInput[i] + "</letter>";
+        // $($('#words .word')[currentWordIndex]).append('<letter class="incorrect">' + currentInput[i] + "</letter>");
+      } else {
+        ret += '<letter class="incorrect">' + currentWord[i] + "</letter>";
+        // $(letterElems[i]).removeClass('correct').addClass('incorrect');
+      }
     }
   }
+  if (currentInput.length < currentWord.length) {
+    for (let i = currentInput.length; i < currentWord.length; i++) {
+      ret += "<letter>" + currentWord[i] + "</letter>";
+    }
+  }
+  $(".word.active").html(ret);
+  if (currentWord == currentInput && currentWordIndex == wordsList.length - 1) {
+    inputHistory.push(currentInput);
+    currentInput = "";
+    showResult();
+  }
+  // liveWPM()
 }
 
 function highlightBadWord() {
   $(".word.active").addClass("error");
 }
 
-function hideMissedLetters() {
-  let currentWord = wordsList[currentWordIndex];
-  $(".word.active letter").addClass("missing");
-  for (let i = 0; i < currentInput.length; i++) {
-    if (currentWord[i] == currentInput[i]) {
-      $($(".word.active letter")[i])
-        .removeClass("missing")
-        .addClass("incorrect");
-    }
-  }
+function showTimer() {
+  $("#timerWrapper").css("opacity", 1);
+}
+
+function hideTimer() {
+  $("#timerWrapper").css("opacity", 0);
+}
+
+function updateTimerBar() {
+  let percent = ((time + 1) / config.time) * 100;
+  $("#timer")
+    .stop(true, true)
+    .css("width", percent + "vw");
+}
+
+function timesUp() {
+  hideCaret();
+  testActive = false;
+  showResult();
 }
 
 function hideCaret() {
@@ -227,14 +247,6 @@ function stopCaretAnimation() {
 
 function startCaretAnimation() {
   $("#caret").css("animation-name", "caretFlash");
-}
-
-function showTimer() {
-  $("#timerWrapper").css("opacity", 1);
-}
-
-function hideTimer() {
-  $("#timerWrapper").css("opacity", 0);
 }
 
 function updateCaretPosition() {
@@ -258,7 +270,7 @@ function updateCaretPosition() {
     //   top: currentLetterPos.top - letterHeight / 4,
     //   left: currentLetterPos.left - caret.width() / 2
     // });
-    
+
     newLeft = currentLetterPos.left - caret.width() / 2;
   } else {
     // caret.css({
@@ -283,46 +295,11 @@ function updateCaretPosition() {
     duration = 10;
   }
 
-  caret.stop(true,true).animate({
+  caret.stop(true, true).animate({
     top: newTop,
     left: newLeft
-  },duration)
+  }, duration)
 
-}
-
-function saveConfigToCookie() {
-  let d = new Date();
-  d.setFullYear(d.getFullYear() + 1)
-  $.cookie("config",JSON.stringify(config),{expires:d})
-}
-
-function loadConfigFromCookie() {
-  let newConfig = $.cookie('config');
-  if (newConfig) {
-    newConfig = JSON.parse(newConfig);
-    config = newConfig;
-    setQuickTabMode(config.quickTab);
-    setPunctuation(config.punctuation);
-    setKeyTips(config.showKeyTips);
-    changeTimeConfig(config.time);
-    changeWordCount(config.words);
-    changeMode(config.mode);
-    restartTest();
-  }
-}
-
-function calculateStats() {
-  if (config.mode == "words") {
-    if (inputHistory.length != wordsList.length) return;
-  }
-  let chars = countChars();
-  let totalChars = chars.allCorrectChars + chars.incorrectChars + chars.extraChars + chars.missedChars;
-
-  let testNow = Date.now();
-  let testSeconds = (testNow - testStart) / 1000;
-  let wpm = Math.round((chars.correctWordChars * (60 / testSeconds)) / 5);
-  let acc = Math.round((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
-  return { wpm: wpm, acc: acc, correctChars: chars.allCorrectChars, incorrectChars: chars.incorrectChars+chars.extraChars+chars.missedChars };
 }
 
 function countChars() {
@@ -339,7 +316,7 @@ function countChars() {
       correctChars += wordsList[i].length;
     } else if (inputHistory[i].length >= wordsList[i].length) {
       //too many chars
-      for (let c = 0; c < inputHistory[i].length; c++){
+      for (let c = 0; c < inputHistory[i].length; c++) {
         if (c < wordsList[i].length) {
           //on char that still has a word list pair
           if (inputHistory[i][c] == wordsList[i][c]) {
@@ -354,7 +331,7 @@ function countChars() {
       }
     } else {
       //not enough chars
-      for (let c = 0; c < wordsList[i].length; c++){
+      for (let c = 0; c < wordsList[i].length; c++) {
         if (c < inputHistory[i].length) {
           //on char that still has a word list pair
           if (inputHistory[i][c] == wordsList[i][c]) {
@@ -378,135 +355,28 @@ function countChars() {
   }
 }
 
-
-function liveWPM() {
-  let correctWordChars = 0;
-  for (let i = 0; i < inputHistory.length; i++) {
-    if (inputHistory[i] == wordsList[i]) {
-      //the word is correct
-      //+1 for space
-      correctWordChars += wordsList[i].length + 1;
-    }
+function calculateStats() {
+  if (config.mode == "words") {
+    if (inputHistory.length != wordsList.length) return;
   }
+  let chars = countChars();
+  let totalChars = chars.allCorrectChars + chars.incorrectChars + chars.extraChars + chars.missedChars;
+
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
-  wpm = (correctWordChars * (60 / testSeconds)) / 5;
-  return Math.round(wpm);
+  let wpm = Math.round((chars.correctWordChars * (60 / testSeconds)) / 5);
+  let acc = Math.round((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
+  return { wpm: wpm, acc: acc, correctChars: chars.allCorrectChars, incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars };
 }
 
 function showResult() {
-  testEnd = Date.now();
-  testActive = false;
-  let stats = calculateStats();
-  $("#top .result .wpm .val").text(stats.wpm);
-  $("#top .result .acc .val").text(Math.round(stats.acc) + "%");
-  $("#top .result .key .val").text(stats.key);
-  $("#top .result .testmode .mode1").text(config.mode);
-  if (config.mode == "time") {
-    $("#top .result .testmode .mode2").text(config.time);
-  } else if (config.mode == "words") {
-    $("#top .result .testmode .mode2").text(config.words);
-  }
-  if (config.punctuation) {
-    $("#top .result .testmode .mode3").text("punc.");
-  } else {
-    $("#top .result .testmode .mode3").text("");
-  }
-  $("#top .config").addClass("hidden");
-  $("#top .result")
-    .removeClass("hidden")
-    .animate({ opacity: 1 }, 0, () => {
-      setFocus(false);
-    });
-  // $("#top #liveWpm").css("opacity", 0);
-  hideCaret();
-  //show all words after the test is finished
-  // delWords = false;
-  // $.each($(".word"), (index, el) => {
-  //   if (delWords) {
-  //     $(el).remove();
-  //   } else {
-  //     $(el).removeClass("hidden");
-  //     if ($(el).hasClass("active")) {
-  //       delWords = true;
-  //     }
-  //   }
-  // });
-  // newHeight =
-  //   $(".word.active").outerHeight(true) +
-  //   $(".word.active").position().top -
-  //   $("#words").position().top;
-  // $(".word.active").addClass("hidden");
-  // $("#words").stop(true, true).css("opacity", "1").animate(
-  //   {
-  //     opacity: 1,
-  //     height: newHeight
-  //   },
-  //   250
-  // );
-  console.log(wpmHistory);
-}
-
-var ctx = $("#wpmChart");
-var wpmOverTimeChart = new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: [],
-    datasets: [{
-      label: "wpm",
-      data: [],
-      backgroundColor: 'rgba(255, 255, 255, 0.25',
-      borderColor: 'rgba(255, 255, 255, 1)',
-      borderWidth: 2
-    }],
-  },
-  options: {
-    legend: {
-      display: false,
-      labels: {
-        defaultFontFamily: "Roboto Mono"
-      }
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-    tooltips: {
-      mode: 'index',
-      intersect: false,
-    },
-    hover: {
-      mode: 'nearest',
-      intersect: true
-    },
-    scales: {
-      xAxes: [{
-        ticks: {
-          fontFamily: "Roboto Mono",
-        },
-        display: true,
-        scaleLabel: {
-          display: false,
-          labelString: 'Seconds'
-        }
-      }],
-      yAxes: [{
-        display: true,
-        scaleLabel: {
-          display: false,
-          labelString: 'Words per Minute'
-        }
-      }]
-    }
-  }
-});
-
-function showResult2() {
   testEnd = Date.now();
   let stats = calculateStats();
   clearInterval(timer);
   timer = null;
   $("#result .stats .wpm .bottom").text(stats.wpm);
   $("#result .stats .acc .bottom").text(stats.acc + "%");
-  $("#result .stats .key .bottom").text(stats.correctChars+"/"+stats.incorrectChars);
+  $("#result .stats .key .bottom").text(stats.correctChars + "/" + stats.incorrectChars);
 
   let mode2 = "";
   if (config.mode == "time") {
@@ -526,8 +396,6 @@ function showResult2() {
   } else {
     alert('test invalid');
   }
-
-  
 
   let infoText = "";
 
@@ -565,15 +433,6 @@ function showResult2() {
       opacity: 1
     }, 125);
   })
-  // $("#words").addClass("hidden");
-  // $("#result").removeClass('hidden');
-}
-
-function updateTimer() {
-  let percent = ((time + 1) / config.time) * 100;
-  $("#timer")
-    .stop(true, true)
-    .css("width", percent + "vw");
 }
 
 function restartTest() {
@@ -599,26 +458,6 @@ function restartTest() {
     }, 125, () => {
       $("#restartTestButton").css('opacity', 1);
       focusWords();
-
-
-      // $("#top .result")
-      //   .css("opacity", "1")
-      //   .css("transition", "none")
-      //   .stop(true, true)
-      //   .animate({ opacity: 0 }, 250, () => {
-      //     $("#top .result").addClass("hidden").css("transition", "0.25s");
-      //     if (testActive || resultShown) {
-      //       $("#top .config")
-      //         .css("opacity", "0")
-      //         .removeClass("hidden")
-      //         .css("transition", "none")
-      //         .stop(true, true)
-      //         .animate({ opacity: 1 }, 250, () => {
-      //           $("#top .config").css("transition", "0.25s");
-      //         });
-      //     }
-      //   });
-
 
 
       wpmHistory = [];
@@ -666,70 +505,14 @@ function restartTest() {
   })
 }
 
+function focusWords() {
+  $("#wordsInput").focus();
+}
+
 function changeCustomText() {
   customText = prompt("Custom text");
   initWords();
 }
-
-function timesUp() {
-  hideCaret();
-  testActive = false;
-  showResult2();
-}
-
-function compareInput() {
-  $(".word.active").empty();
-  let ret = "";
-  let currentWord = wordsList[currentWordIndex];
-  let letterElems = $($("#words .word")[currentWordIndex]).children("letter");
-  for (let i = 0; i < currentInput.length; i++) {
-    if (currentWord[i] == currentInput[i]) {
-      ret += '<letter class="correct">' + currentWord[i] + "</letter>";
-      // $(letterElems[i]).removeClass('incorrect').addClass('correct');
-    } else {
-      if (currentWord[i] == undefined) {
-        ret +=
-          '<letter class="incorrect extra">' + currentInput[i] + "</letter>";
-        // $($('#words .word')[currentWordIndex]).append('<letter class="incorrect">' + currentInput[i] + "</letter>");
-      } else {
-        ret += '<letter class="incorrect">' + currentWord[i] + "</letter>";
-        // $(letterElems[i]).removeClass('correct').addClass('incorrect');
-      }
-    }
-  }
-  if (currentInput.length < currentWord.length) {
-    for (let i = currentInput.length; i < currentWord.length; i++) {
-      ret += "<letter>" + currentWord[i] + "</letter>";
-    }
-  }
-  $(".word.active").html(ret);
-  if (currentWord == currentInput && currentWordIndex == wordsList.length - 1) {
-    inputHistory.push(currentInput);
-    currentInput = "";
-    showResult2();
-  }
-  // liveWPM()
-}
-
-$(document).ready(() => {
-  loadConfigFromCookie();
-  $("#centerContent").css("opacity", "0").removeClass("hidden");
-  // initWords();
-  $("#centerContent")
-    .stop(true, true)
-    .animate({ opacity: 1 }, 250, () => {
-      // updateCaretPosition();
-    });
-  restartTest();
-  if (config.quickTab) {
-    $("#restartTestButton").remove();
-  }
-});
-
-$(document).on("click", "#top .config .wordCount .button", (e) => {
-  wrd = e.currentTarget.innerHTML;
-  changeWordCount(wrd);
-});
 
 function changeWordCount(wordCount) {
   changeMode("words");
@@ -742,11 +525,6 @@ function changeWordCount(wordCount) {
   saveConfigToCookie();
 }
 
-$(document).on("click", "#top .config .time .button", (e) => {
-  time = e.currentTarget.innerHTML;
-  changeTimeConfig(time);
-});
-
 function changeTimeConfig(time) {
   changeMode("time");
   config.time = time;
@@ -755,131 +533,6 @@ function changeTimeConfig(time) {
   restartTest();
   saveConfigToCookie();
 }
-
-$(document).on("click", "#top .config .customText .button", (e) => {
-  changeCustomText();
-});
-
-$(document).on("click", "#top .config .punctuationMode .button", (e) => {
-  togglePunctuation();
-  restartTest();
-});
-
-$("#words").click((e) => {
-  focusWords();
-});
-
-function focusWords() {
-  $("#wordsInput").focus();
-}
-
-function setKeyTips(keyTips) {
-  config.showKeyTips = keyTips;
-  if (config.showKeyTips) {
-    $("#bottom .keyTips").removeClass("hidden");
-  } else {
-    $("#bottom .keyTips").addClass("hidden");
-  }
-  saveConfigToCookie();
-}
-
-function toggleKeyTips() {
-  config.showKeyTips = !config.showKeyTips;
-  if (config.showKeyTips) {
-    $("#bottom .keyTips").removeClass("hidden");
-  } else {
-    $("#bottom .keyTips").addClass("hidden");
-  }
-  saveConfigToCookie();
-}
-
-function toggleSmoothCaret() {
-  config.smoothCaret = !config.smoothCaret;
-  saveConfigToCookie();
-}
-
-function setQuickTabMode(mode) {
-  config.quickTab = mode;
-  if (!config.quickTab) {
-    $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
-    $("#restartTestButton").css("opacity", 1);
-    $("#bottom .keyTips").html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
-    <key>esc</key> - command line`);
-    
-  } else {
-    $("#restartTestButton").remove();
-    $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
-    <key>esc</key> - command line`);
-  }
-  saveConfigToCookie();
-}
-
-function toggleQuickTabMode() {
-  config.quickTab = !config.quickTab;
-  if (!config.quickTab) {
-    $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
-    $("#restartTestButton").css("opacity", 1);
-    $("#bottom .keyTips").html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
-    <key>esc</key> - command line`);
-    
-  } else {
-    $("#restartTestButton").remove();
-    $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
-    <key>esc</key> - command line`);
-  }
-  saveConfigToCookie();
-}
-
-function setPunctuation(punc) {
-  config.punctuation = punc;
-  if (!config.punctuation) {
-    $("#top .config .punctuationMode .button").removeClass("active");
-  } else {
-    $("#top .config .punctuationMode .button").addClass("active");
-  }
-  saveConfigToCookie();
-}
-
-function togglePunctuation() {
-  if (config.punctuation) {
-    $("#top .config .punctuationMode .button").removeClass("active");
-  } else {
-    $("#top .config .punctuationMode .button").addClass("active");
-  }
-  config.punctuation = !config.punctuation;
-  saveConfigToCookie();
-}
-
-$(document).on("click", "#top .config .mode .button", (e) => {
-  if ($(e.currentTarget).hasClass("active")) return;
-  mode = e.currentTarget.innerHTML;
-  changeMode(mode);
-  restartTest();
-});
-
-$(document).on("click", "#top #menu .button", (e) => {
-  href = $(e.currentTarget).attr('href');
-  // history.pushState(href, null, href);
-  changePage(href.replace('/', ''));
-})
-
-$(window).on('popstate', (e) => {
-  if (e.originalEvent.state == "") {
-    // show test
-    changePage('test')
-  } else if (e.originalEvent.state == "about") {
-    // show about
-    changePage("about");
-  } else if (e.originalEvent.state == "account") {
-    if (firebase.auth().currentUser) {
-      changePage("account");
-    } else {
-      changePage('login');
-    }
-  }
-
-
-})
 
 function changePage(page) {
   $(".page").addClass('hidden');
@@ -923,6 +576,91 @@ function changeMode(mode) {
   saveConfigToCookie();
 }
 
+function liveWPM() {
+  let correctWordChars = 0;
+  for (let i = 0; i < inputHistory.length; i++) {
+    if (inputHistory[i] == wordsList[i]) {
+      //the word is correct
+      //+1 for space
+      correctWordChars += wordsList[i].length + 1;
+    }
+  }
+  let testNow = Date.now();
+  let testSeconds = (testNow - testStart) / 1000;
+  wpm = (correctWordChars * (60 / testSeconds)) / 5;
+  return Math.round(wpm);
+}
+
+function updateLiveWpm(wpm) {
+  if (!config.showLiveWpm) return;
+  if (wpm == 0 || !testActive) hideLiveWpm();
+  let wpmstring = wpm < 100 ? `&nbsp;${wpm}` : `${wpm}`;
+  $("#liveWpm").html(wpmstring);
+}
+
+function showLiveWpm() {
+  if (!config.showLiveWpm) return;
+  if (!testActive) return;
+  $("#liveWpm").css('opacity', 0.25);
+}
+
+function hideLiveWpm() {
+  $("#liveWpm").css('opacity', 0);
+}
+
+$(document).on("click", "#top .config .wordCount .button", (e) => {
+  wrd = e.currentTarget.innerHTML;
+  changeWordCount(wrd);
+});
+
+$(document).on("click", "#top .config .time .button", (e) => {
+  time = e.currentTarget.innerHTML;
+  changeTimeConfig(time);
+});
+
+$(document).on("click", "#top .config .customText .button", (e) => {
+  changeCustomText();
+});
+
+$(document).on("click", "#top .config .punctuationMode .button", (e) => {
+  togglePunctuation();
+  restartTest();
+});
+
+$("#words").click((e) => {
+  focusWords();
+});
+
+$(document).on("click", "#top .config .mode .button", (e) => {
+  if ($(e.currentTarget).hasClass("active")) return;
+  mode = e.currentTarget.innerHTML;
+  changeMode(mode);
+  restartTest();
+});
+
+$(document).on("click", "#top #menu .button", (e) => {
+  href = $(e.currentTarget).attr('href');
+  // history.pushState(href, null, href);
+  changePage(href.replace('/', ''));
+})
+
+$(window).on('popstate', (e) => {
+  if (e.originalEvent.state == "") {
+    // show test
+    changePage('test')
+  } else if (e.originalEvent.state == "about") {
+    // show about
+    changePage("about");
+  } else if (e.originalEvent.state == "account") {
+    if (firebase.auth().currentUser) {
+      changePage("account");
+    } else {
+      changePage('login');
+    }
+  }
+
+});
+
 $("#restartTestButton").keypress((event) => {
   if (event.keyCode == 32 || event.keyCode == 13) {
     restartTest();
@@ -937,8 +675,6 @@ $("#wordsInput").keypress((event) => {
   event.preventDefault();
 });
 
-
-
 $("#wordsInput").on("focus", (event) => {
   showCaret();
 });
@@ -947,24 +683,18 @@ $("#wordsInput").on("focusout", (event) => {
   hideCaret();
 });
 
-function updateLiveWpm(wpm) {
-  if (!config.showLiveWpm) return;
-  if (wpm == 0 || !testActive) hideLiveWpm();
-  let wpmstring = wpm < 100 ? `&nbsp;${wpm}` : `${wpm}`;
-  $("#liveWpm").html(wpmstring);
-}
-
-function showLiveWpm() {
-  if (!config.showLiveWpm) return;
-  if (!testActive) return;
-  $("#liveWpm").css('opacity',0.25);
-}
-
-function hideLiveWpm() {
-  $("#liveWpm").css('opacity',0);
-}
 
 
+
+$(window).resize(() => {
+  updateCaretPosition();
+});
+
+$(document).mousemove(function(event) {
+  setFocus(false);
+});
+
+//keypresses for the test, using different method to be more responsive
 $(document).keypress(function(event) {
   if (!$("#wordsInput").is(":focus")) return;
   if (event["keyCode"] == 13) return;
@@ -977,10 +707,10 @@ $(document).keypress(function(event) {
     if (config.mode == "time") {
       showTimer();
     }
-    updateTimer();
+    updateTimerBar();
     timer = setInterval(function() {
       time++;
-      updateTimer();
+      updateTimerBar();
       let wpm = liveWPM();
       updateLiveWpm(wpm);
       showLiveWpm();
@@ -995,7 +725,7 @@ $(document).keypress(function(event) {
   } else {
     if (!testActive) return;
   }
-  if (wordsList[currentWordIndex].substring(currentInput.length,currentInput.length + 1) != event["key"]) {
+  if (wordsList[currentWordIndex].substring(currentInput.length, currentInput.length + 1) != event["key"]) {
     accuracyStats.incorrect++;
   } else {
     accuracyStats.correct++;
@@ -1006,15 +736,10 @@ $(document).keypress(function(event) {
   updateCaretPosition();
 });
 
-$(window).resize(() => {
-  updateCaretPosition();
-});
-
-$(document).mousemove(function(event) {
-  setFocus(false);
-});
-
+//handle keyboard events
 $(document).keydown((event) => {
+
+  //escape
   if (event.keyCode == 27) {
     if ($("#commandLineWrapper").hasClass("hidden")) {
       currentCommands = commands;
@@ -1024,14 +749,17 @@ $(document).keydown((event) => {
     }
   }
 
+  //tab
   if (config.quickTab) {
     if (event["keyCode"] == 9) {
       event.preventDefault();
       restartTest();
     }
   }
-  //backspace
+
+  //only for the typing test
   if ($("#wordsInput").is(":focus")) {
+    //backspace
     if (event["keyCode"] == 8) {
       event.preventDefault();
       if (!testActive) return;
@@ -1091,13 +819,11 @@ $(document).keydown((event) => {
         updateCaretPosition();
       } else {
         inputHistory.push(currentInput);
-        // highlightMissedLetters();
-        // hideMissedLetters();
         highlightBadWord();
         currentInput = "";
         currentWordIndex++;
         if (currentWordIndex == wordsList.length) {
-          showResult2();
+          showResult();
           return;
         }
         updateActiveElement();
@@ -1106,6 +832,67 @@ $(document).keydown((event) => {
       if (config.mode == "time") {
         addWord();
       }
+    }
+  }
+});
+
+$(document).ready(() => {
+  loadConfigFromCookie();
+  restartTest();
+  if (config.quickTab) {
+    $("#restartTestButton").remove();
+  }
+  $("#centerContent").css("opacity", "0").removeClass("hidden").stop(true, true).animate({ opacity: 1 }, 250);
+});
+
+var ctx = $("#wpmChart");
+var wpmOverTimeChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [{
+      label: "wpm",
+      data: [],
+      backgroundColor: 'rgba(255, 255, 255, 0.25',
+      borderColor: 'rgba(255, 255, 255, 1)',
+      borderWidth: 2
+    }],
+  },
+  options: {
+    legend: {
+      display: false,
+      labels: {
+        defaultFontFamily: "Roboto Mono"
+      }
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+    tooltips: {
+      mode: 'index',
+      intersect: false,
+    },
+    hover: {
+      mode: 'nearest',
+      intersect: true
+    },
+    scales: {
+      xAxes: [{
+        ticks: {
+          fontFamily: "Roboto Mono",
+        },
+        display: true,
+        scaleLabel: {
+          display: false,
+          labelString: 'Seconds'
+        }
+      }],
+      yAxes: [{
+        display: true,
+        scaleLabel: {
+          display: false,
+          labelString: 'Words per Minute'
+        }
+      }]
     }
   }
 });
