@@ -24,6 +24,21 @@ let commands = {
             }
         },
         {
+            id: "toggleShowLiveWpm",
+            display: "Toggle live wpm display",
+            exec: () => {
+                config.showLiveWpm = !config.showLiveWpm;
+                saveConfigToCookie();
+            }
+        },
+        {
+            id: "toggleKeyTips",
+            display: "Toggle keybind tips",
+            exec: () => {
+                toggleKeyTips();
+            }
+        },
+        {
             id: "changeMode",
             display: "Change mode...",
             subgroup: true,

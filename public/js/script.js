@@ -6,13 +6,19 @@ let time = 0;
 let timer = null;
 let testActive = false;
 let testStart, testEnd;
-let missedChars = 0;
 let wpmHistory = [];
 let currentCommands = commands;
 
+let accuracyStats = {
+  correct: 0,
+  incorrect: 0
+}
+
 let config = {
+  showKeyTips: true,
+  showLiveWpm: true,
   smoothCaret: true,
-  quickTab: true,
+  quickTab: false,
   punctuation: true,
   words: 100,
   time: 30,
@@ -55,114 +61,80 @@ function initWords() {
   testActive = false;
   wordsList = [];
   currentWordIndex = 0;
-  missedChars = 0;
+  accuracyStats = {
+    correct: 0,
+    incorrect: 0
+  }
   inputHistory = [];
   currentInput = "";
-  if (config.mode == "time") {
+
+  if (config.mode == "time" || config.mode == "words") {
+
+    let wordsBound = config.mode == "time" ? 50 : config.words;
     let randomWord = words[Math.floor(Math.random() * words.length)];
-    if (config.punctuation) {
-      wordsList.push(capitalizeFirstLetter(randomWord));
-    } else {
-      wordsList.push(randomWord);
-    }
-    for (let i = 1; i < 50; i++) {
+    wordsList.push(randomWord);
+    for (let i = 1; i < wordsBound; i++) {
       randomWord = words[Math.floor(Math.random() * words.length)];
       previousWord = wordsList[i - 1];
-      while (
-        randomWord ==
-        previousWord
-          .replace(".", "")
-          .replace(",", "")
-          .replace("'", "")
-          .replace(":", "")
-      ) {
+      while (randomWord == previousWord) {
         randomWord = words[Math.floor(Math.random() * words.length)];
       }
-      if (config.punctuation) {
-        if (previousWord.charAt(previousWord.length - 1) == ".") {
-          randomWord = capitalizeFirstLetter(randomWord);
-        } else if (
-          (Math.random() < 0.1 &&
-            previousWord.charAt(previousWord.length - 1) != ".") ||
-          i == config.words - 1
-        ) {
-          randomWord += ".";
-        } else if (Math.random() < 0.01) {
-          randomWord = "'" + randomWord + "'";
-        } else if (Math.random() < 0.01) {
-          randomWord = randomWord + ":";
-        } else if (
-          Math.random() < 0.01 &&
-          previousWord.charAt(previousWord.length - 1) != "," &&
-          previousWord.charAt(previousWord.length - 1) != "." &&
-          previousWord != "-"
-        ) {
-          randomWord = "-";
-        } else if (
-          Math.random() < 0.2 &&
-          previousWord.charAt(previousWord.length - 1) != ","
-        ) {
-          randomWord += ",";
-        }
-      }
       wordsList.push(randomWord);
     }
-  } else if (config.mode == "words") {
-    let randomWord = words[Math.floor(Math.random() * words.length)];
-    if (config.punctuation) {
-      wordsList.push(capitalizeFirstLetter(randomWord));
-    } else {
-      wordsList.push(randomWord);
-    }
-    for (let i = 1; i < config.words; i++) {
-      randomWord = words[Math.floor(Math.random() * words.length)];
-      previousWord = wordsList[i - 1];
-      while (
-        randomWord ==
-        previousWord
-          .replace(".", "")
-          .replace(",", "")
-          .replace("'", "")
-          .replace(":", "")
-      ) {
-        randomWord = words[Math.floor(Math.random() * words.length)];
-      }
-      if (config.punctuation) {
-        if (previousWord.charAt(previousWord.length - 1) == ".") {
-          randomWord = capitalizeFirstLetter(randomWord);
-        } else if (
-          (Math.random() < 0.1 &&
-            previousWord.charAt(previousWord.length - 1) != ".") ||
-          i == config.words - 1
-        ) {
-          randomWord += ".";
-        } else if (Math.random() < 0.01) {
-          randomWord = "'" + randomWord + "'";
-        } else if (Math.random() < 0.01) {
-          randomWord = randomWord + ":";
-        } else if (
-          Math.random() < 0.01 &&
-          previousWord.charAt(previousWord.length - 1) != "," &&
-          previousWord.charAt(previousWord.length - 1) != "." &&
-          previousWord != "-"
-        ) {
-          randomWord = "-";
-        } else if (
-          Math.random() < 0.2 &&
-          previousWord.charAt(previousWord.length - 1) != ","
-        ) {
-          randomWord += ",";
-        }
-      }
-      wordsList.push(randomWord);
-    }
+
   } else if (config.mode == "custom") {
     let w = customText.split(" ");
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
     }
   }
+  if (config.punctuation) {
+    wordsList = buildSentences(wordsList);
+  }
   showWords();
+}
+
+function getLastChar(word) {
+  return word.charAt(word.length - 1);
+}
+
+function buildSentences() {
+  let returnList = [];
+  $.each(wordsList, (index, word) => {
+    let previousWord = returnList[index - 1];
+    if (index == 0 || getLastChar(previousWord) == ".") {
+      //always capitalise the first word or if there was a dot
+      word = capitalizeFirstLetter(word);
+    } else if (
+      //10% chance to add a dot or if its a last word
+      (Math.random() < 0.1 && getLastChar(previousWord) != "." && index != wordsList.length - 2) || index == wordsList.length - 1 ) {
+      word += ".";
+    } else if (Math.random() < 0.01 &&
+      getLastChar(previousWord) != "," &&
+      getLastChar(previousWord) != ".") {
+      //1% chance to add quotes
+      word = `"${word}"`;
+    } else if (Math.random() < 0.01) {
+      //1% chance to add a colon
+      word = word + ":";
+    } else if (
+      Math.random() < 0.01 &&
+      getLastChar(previousWord) != "," &&
+      getLastChar(previousWord) != "." &&
+      previousWord != "-"
+    ) {
+      //1% chance to add a dash
+      word = "-";
+    } else if (
+      Math.random() < 0.2 &&
+      getLastChar(previousWord) != ","
+    ) {
+      //2% chance to add a comma
+      word += ",";
+    }
+    returnList.push(word);
+  })
+  return returnList;
 }
 
 function addWord() {
@@ -331,6 +303,7 @@ function loadConfigFromCookie() {
     config = newConfig;
     setQuickTabMode(config.quickTab);
     setPunctuation(config.punctuation);
+    setKeyTips(config.showKeyTips);
     changeTimeConfig(config.time);
     changeWordCount(config.words);
     changeMode(config.mode);
@@ -342,73 +315,83 @@ function calculateStats() {
   if (config.mode == "words") {
     if (inputHistory.length != wordsList.length) return;
   }
-  let correctWords = 0;
-  let incorrectWords = 0;
-  let correctChars = 0;
-  let incorrectChars = 0;
-  let totalChars = 0;
-  let avgWordLen = 0;
-  for (let i = 0; i < inputHistory.length; i++) {
-    totalChars += wordsList[i].length + 1;
-    correctChars++;
-    for (let c = 0; c < wordsList[i].length; c++) {
-      try {
-        if (inputHistory[i][c] == wordsList[i][c]) {
-          correctChars++;
-        } else {
-          incorrectChars++;
-        }
-      } catch (err) {
-        incorrectChars++;
-      }
-    }
-    if (inputHistory[i].length < wordsList[i].length) {
-      missedChars += wordsList[i].length - inputHistory[i].length;
-    }
-  }
-  totalChars--;
-  correctChars--;
-  avgWordLen = totalChars / inputHistory.length;
-  // console.log(avgWordLen);
-  avgWordLen = 5;
-  wpm = calculateWpm();
-  // let acc = (correctChars / totalChars) * 100;
-  let acc = Math.round(((totalChars - missedChars) / totalChars) * 100);
-  return { wpm: wpm, acc: acc, correctChars: correctChars, incorrectChars: (totalChars - correctChars) };
-}
+  let chars = countChars();
+  let totalChars = chars.allCorrectChars + chars.incorrectChars + chars.extraChars + chars.missedChars;
 
-function calculateWpm() {
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
-  let correctChars = 0;
-  for (let i = 0; i < inputHistory.length; i++) {
-    for (let c = 0; c < wordsList[i].length; c++) {
-      try {
-        if (inputHistory[i][c] == wordsList[i][c]) {
-          correctChars++;
-        }
-      } catch (err) { }
-    }
-    correctChars++;
-  }
-  wpm = (correctChars * (60 / testSeconds)) / 5;
-  return Math.round(wpm);
+  let wpm = Math.round((chars.correctWordChars * (60 / testSeconds)) / 5);
+  let acc = Math.round((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
+  return { wpm: wpm, acc: acc, correctChars: chars.allCorrectChars, incorrectChars: chars.incorrectChars+chars.extraChars+chars.missedChars };
 }
 
+function countChars() {
+  let correctWordChars = 0;
+  let correctChars = 0;
+  let incorrectChars = 0;
+  let extraChars = 0;
+  let missedChars = 0;
+  for (let i = 0; i < inputHistory.length; i++) {
+    if (inputHistory[i] == wordsList[i]) {
+      //the word is correct
+      //+1 for space
+      correctWordChars += wordsList[i].length + 1;
+      correctChars += wordsList[i].length;
+    } else if (inputHistory[i].length >= wordsList[i].length) {
+      //too many chars
+      for (let c = 0; c < inputHistory[i].length; c++){
+        if (c < wordsList[i].length) {
+          //on char that still has a word list pair
+          if (inputHistory[i][c] == wordsList[i][c]) {
+            correctChars++;
+          } else {
+            incorrectChars++;
+          }
+        } else {
+          //on char that is extra
+          extraChars++;
+        }
+      }
+    } else {
+      //not enough chars
+      for (let c = 0; c < wordsList[i].length; c++){
+        if (c < inputHistory[i].length) {
+          //on char that still has a word list pair
+          if (inputHistory[i][c] == wordsList[i][c]) {
+            correctChars++;
+          } else {
+            incorrectChars++;
+          }
+        } else {
+          //on char that is extra
+          missedChars++;
+        }
+      }
+    }
+  }
+  return {
+    correctWordChars: correctWordChars,
+    allCorrectChars: correctChars,
+    incorrectChars: incorrectChars,
+    extraChars: extraChars,
+    missedChars: missedChars
+  }
+}
+
+
 function liveWPM() {
-  wpm = calculateWpm();
-  // if (wpm > 0) {
-  //   if ($("#liveWpm").css("opacity") == 0) {
-  //     $("#liveWpm").css("opacity", 0.25);
-  //   }
-  //   if (wpm < 100) {
-  //     $("#liveWpm").html("&nbsp;" + Math.round(wpm).toString());
-  //     $("#liveWpm").css("margin-left", "-3rem");
-  //   } else {
-  //     $("#liveWpm").text(Math.round(wpm));
-  //     $("#liveWpm").css("margin-left", 0);
-  //   }
-  // }
+  let correctWordChars = 0;
+  for (let i = 0; i < inputHistory.length; i++) {
+    if (inputHistory[i] == wordsList[i]) {
+      //the word is correct
+      //+1 for space
+      correctWordChars += wordsList[i].length + 1;
+    }
+  }
+  let testNow = Date.now();
+  let testSeconds = (testNow - testStart) / 1000;
+  wpm = (correctWordChars * (60 / testSeconds)) / 5;
+  return Math.round(wpm);
 }
 
 function showResult() {
@@ -435,7 +418,7 @@ function showResult() {
     .animate({ opacity: 1 }, 0, () => {
       setFocus(false);
     });
-  $("#top #liveWpm").css("opacity", 0);
+  // $("#top #liveWpm").css("opacity", 0);
   hideCaret();
   //show all words after the test is finished
   // delWords = false;
@@ -563,6 +546,7 @@ function showResult2() {
   testActive = false;
   setFocus(false);
   hideCaret();
+  hideLiveWpm();
 
   let labels = [];
   for (let i = 1; i <= wpmHistory.length; i++) {
@@ -596,6 +580,8 @@ function restartTest() {
   let fadetime = 125;
   setFocus(false);
   hideCaret();
+  testActive = false;
+  hideLiveWpm();
   if ($("#words").hasClass("hidden")) fadetime = 125;
 
   $("#words").animate({ opacity: 0 }, 125);
@@ -635,7 +621,6 @@ function restartTest() {
 
 
 
-      testActive = false;
       wpmHistory = [];
       hideTimer();
       setTimeout(function() {
@@ -717,12 +702,12 @@ function compareInput() {
       ret += "<letter>" + currentWord[i] + "</letter>";
     }
   }
+  $(".word.active").html(ret);
   if (currentWord == currentInput && currentWordIndex == wordsList.length - 1) {
     inputHistory.push(currentInput);
     currentInput = "";
     showResult2();
   }
-  $(".word.active").html(ret);
   // liveWPM()
 }
 
@@ -786,6 +771,26 @@ $("#words").click((e) => {
 
 function focusWords() {
   $("#wordsInput").focus();
+}
+
+function setKeyTips(keyTips) {
+  config.showKeyTips = keyTips;
+  if (config.showKeyTips) {
+    $("#bottom .keyTips").removeClass("hidden");
+  } else {
+    $("#bottom .keyTips").addClass("hidden");
+  }
+  saveConfigToCookie();
+}
+
+function toggleKeyTips() {
+  config.showKeyTips = !config.showKeyTips;
+  if (config.showKeyTips) {
+    $("#bottom .keyTips").removeClass("hidden");
+  } else {
+    $("#bottom .keyTips").addClass("hidden");
+  }
+  saveConfigToCookie();
 }
 
 function toggleSmoothCaret() {
@@ -942,12 +947,29 @@ $("#wordsInput").on("focusout", (event) => {
   hideCaret();
 });
 
+function updateLiveWpm(wpm) {
+  if (!config.showLiveWpm) return;
+  if (wpm == 0 || !testActive) hideLiveWpm();
+  let wpmstring = wpm < 100 ? `&nbsp;${wpm}` : `${wpm}`;
+  $("#liveWpm").html(wpmstring);
+}
+
+function showLiveWpm() {
+  if (!config.showLiveWpm) return;
+  if (!testActive) return;
+  $("#liveWpm").css('opacity',0.25);
+}
+
+function hideLiveWpm() {
+  $("#liveWpm").css('opacity',0);
+}
 
 
 $(document).keypress(function(event) {
   if (!$("#wordsInput").is(":focus")) return;
   if (event["keyCode"] == 13) return;
   if (event["keyCode"] == 32) return;
+  //start the test
   if (currentInput == "" && inputHistory.length == 0) {
     testActive = true;
     stopCaretAnimation();
@@ -959,7 +981,9 @@ $(document).keypress(function(event) {
     timer = setInterval(function() {
       time++;
       updateTimer();
-      let wpm = calculateWpm();
+      let wpm = liveWPM();
+      updateLiveWpm(wpm);
+      showLiveWpm();
       wpmHistory.push(wpm);
       if (config.mode == "time") {
         if (time == config.time) {
@@ -971,13 +995,10 @@ $(document).keypress(function(event) {
   } else {
     if (!testActive) return;
   }
-  if (
-    wordsList[currentWordIndex].substring(
-      currentInput.length,
-      currentInput.length + 1
-    ) != event["key"]
-  ) {
-    missedChars++;
+  if (wordsList[currentWordIndex].substring(currentInput.length,currentInput.length + 1) != event["key"]) {
+    accuracyStats.incorrect++;
+  } else {
+    accuracyStats.correct++;
   }
   currentInput += event["key"];
   setFocus(true);
