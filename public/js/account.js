@@ -1,9 +1,9 @@
-$(".pageAccount .register input").keyup(e => {
+$(".pageLogin .register input").keyup(e => {
   if (e.key == "Enter") {
 
-    let name = $(".pageAccount .register input")[0].value;
-    let email = $(".pageAccount .register input")[1].value;
-    let password = $(".pageAccount .register input")[2].value;
+    let name = $(".pageLogin .register input")[0].value;
+    let email = $(".pageLogin .register input")[1].value;
+    let password = $(".pageLogin .register input")[2].value;
 
     firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
       // Account has been created here.
@@ -12,12 +12,12 @@ $(".pageAccount .register input").keyup(e => {
         displayName: name
       }).then(function() {
         // Update successful.
-        alert('user created');
+        showNotification("Account created", 2000);
       }).catch(function(error) {
         // An error happened.
         usr.delete().then(function() {
           // User deleted.
-          alert('cant have this display name');
+          showNotification("Name invalid", 2000);
         }).catch(function(error) {
           // An error happened.
 
@@ -27,7 +27,7 @@ $(".pageAccount .register input").keyup(e => {
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
-      alert(errorMessage);
+      showNotification(errorMessage, 5000);
     });
 
 
@@ -36,25 +36,31 @@ $(".pageAccount .register input").keyup(e => {
 
 $(".pageLogin .login input").keyup(e => {
   if (e.key == "Enter") {
-
+    $(".pageLogin .preloader").removeClass('hidden');
     let email = $(".pageLogin .login input")[0].value;
     let password = $(".pageLogin .login input")[1].value;
 
-    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-      alert(error.message);
+    firebase.auth().signInWithEmailAndPassword(email, password).then(e => {
+      changePage('account');
+    }).catch(function(error) {
+      showNotification(error.message, 5000);
+      $(".pageLogin .preloader").addClass('hidden');
     });
-
-
   }
 })
 
+$(".pageAccount .signOut").click(e => {
+  signOut();
+})
 
 
 function signOut() {
   firebase.auth().signOut().then(function() {
-    alert('signed out');
+    showNotification("Signed out", 2000);
+    updateAccountLoginButton();
+    changePage('login');
   }).catch(function(error) {
-    alert(error.message);
+    showNotification(error.message, 5000);
   });
 }
 
@@ -68,11 +74,9 @@ firebase.auth().onAuthStateChanged(function(user) {
     var isAnonymous = user.isAnonymous;
     var uid = user.uid;
     var providerData = user.providerData;
-    console.log('user signed in');
-    // ...
-  } else {
-    // User is signed out.
-    // ...
+    showNotification('Signed in', 2000);
+    $(".pageLogin .preloader").addClass('hidden');
+    updateAccountLoginButton() 
   }
 });
 
@@ -203,10 +207,15 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
     ],
   },
   options: {
+    tooltips: {
+      titleFontFamily: "Roboto Mono",
+      bodyFontFamily: "Roboto Mono"
+    },
     legend: {
       display: true,
       labels: {
-        defaultFontFamily: "Roboto Mono"
+        fontFamily: "Roboto Mono",
+        fontColor: "#ffffff"
       }
     },
     responsive: true,
@@ -221,9 +230,14 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
     },
     scales: {
       xAxes: [{
+        ticks: {
+          fontFamily: "Roboto Mono"
+        },
         type: 'time',
+        time: {
+          tooltipFormat:'DD MMM YYYY HH:mm'
+        },
         bounds: 'ticks',
-
         distribution: 'series',
         display: false,
         scaleLabel: {
@@ -232,6 +246,9 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
         },
       }],
       yAxes: [{
+        ticks: {
+          fontFamily: "Roboto Mono"
+        },
         display: true,
         scaleLabel: {
           display: false,
@@ -242,9 +259,11 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
   }
 });
 
-function refreshAccountPage() {
-  db_getUserResults().then(data => {
 
+function refreshAccountPage() {
+
+  function cont(){
+    
     let testModes = {
       words10: [],
       words25: [],
@@ -262,14 +281,14 @@ function refreshAccountPage() {
     let topWpm = 0;
     let topMode = '';
 
-    let testCount = data.length;
-
-    data.forEach(result => {
+    let testCount = dbSnapshot.length;
+    $(".pageAccount .history table tbody").empty();
+    dbSnapshot.forEach(result => {
       let withpunc = '';
       if (result.punctuation) {
         withpunc = ', with punctuation';
       }
-      $(".pageAccount .history table tbody").prepend(`
+      $(".pageAccount .history table tbody").append(`
       <tr>
       <td>${result.wpm}</td>
       <td>${result.acc}%</td>
@@ -316,6 +335,12 @@ function refreshAccountPage() {
       }
     })
 
+    let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ','');
+  
+    resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
+    resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor = subColor;
+    resultHistoryChart.options.legend.labels.fontColor = subColor;
+
     resultHistoryChart.data.datasets[0].data = testModes.words10;
     resultHistoryChart.data.datasets[1].data = testModes.words25;
     resultHistoryChart.data.datasets[2].data = testModes.words50;
@@ -326,10 +351,6 @@ function refreshAccountPage() {
     resultHistoryChart.data.datasets[7].data = testModes.time60;
     resultHistoryChart.data.datasets[8].data = testModes.time120;
     resultHistoryChart.data.datasets[9].data = testModes.custom;
-
-
-
-    resultHistoryChart.update({ duration: 0 });
 
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .highestWpm .mode").html(topMode);
@@ -346,9 +367,19 @@ function refreshAccountPage() {
     })
 
     $(".pageAccount .favouriteTest .val").text(`${favModeName} (${Math.floor((favMode.length/testCount) * 100)}%)`);
+    
+    resultHistoryChart.update({ duration: 0 });
+    
+    swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
+  }
 
-
-
-    $(".page.pageAccount").removeClass('hidden');
-  })
+  if (dbSnapshot == null) {
+    console.log('no db snap');
+    db_getUserResults().then(data => {
+      cont();
+    })
+  } else {
+    console.log('using db snap');
+    cont();
+  }
 }

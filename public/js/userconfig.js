@@ -64,7 +64,8 @@ function toggleSmoothCaret() {
 function setQuickTabMode(mode) {
     config.quickTab = mode;
     if (!config.quickTab) {
-        $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
+        // $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
+        $("#restartTestButton").removeClass('hidden');
         $("#restartTestButton").css("opacity", 1);
         $("#bottom .keyTips").html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
       <key>esc</key> - command line`);
