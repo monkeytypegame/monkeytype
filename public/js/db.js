@@ -2,7 +2,7 @@ const db = firebase.firestore();
 
 function db_testCompleted(wpm, correctChars, incorrectChars, acc, mode, mode2, punctuation) {
 
-    if (wpm > 250 || acc < 50 || acc > 100) return false;
+    if (wpm == 0 || wpm > 250 || acc < 50 || acc > 100) return false;
 
     let uid = "";
     let user = firebase.auth().currentUser;
