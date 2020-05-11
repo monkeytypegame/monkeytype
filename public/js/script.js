@@ -386,7 +386,7 @@ function showResult() {
   }
   $("#result .stats .wpm .top .crown").remove();
 
-  if (stats.wpm < 250 && stats.acc > 50 && stats.acc <= 100) {
+  if (stats.wpm > 0 && stats.wpm < 250 && stats.acc > 50 && stats.acc <= 100) {
     db_getUserHighestWpm(config.mode, mode2).then(data => {
       if (data.wpm < stats.wpm || data == false) {
         $("#result .stats .wpm .top").append('<div class="crown"><i class="fas fa-crown"></i></div>');
