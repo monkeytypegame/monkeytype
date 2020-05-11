@@ -694,7 +694,7 @@ key {
 .word.error {
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid #da3333;
-  text-shadow: 1px 0px 0px #111, 2px 0px 0px #111, -1px 0px 0px #111, -2px 0px 0px #111, 0px 1px 0px #111, 1px 1px 0px #111, -1px 1px 0px #111;
+  text-shadow: 1px 0px 0px var(--bg-color), 2px 0px 0px var(--bg-color), -1px 0px 0px var(--bg-color), -2px 0px 0px var(--bg-color), 0px 1px 0px var(--bg-color), 1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
 .word.active {
