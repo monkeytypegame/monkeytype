@@ -1,20 +1,12 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap");
-
-:root {
-  --main-color: #eee;
-  --sub-color: #444;
-  --bg-color: #111;
-  --caret-color: #fff;
-  --active-word-color: #444;
-  --roundness: 0.25rem;
+:root{
+  --roundness: .25rem;
 }
-/* 
-:root {
-  --main-color: #111;
-  --sub-color: #444;
-  --sub2-color: #444;
-  --bg-color: #fff;
-} */
+
+::placeholder{
+  color: var(--sub-color);
+  opacity: 1; /* Firefox */
+}
 
 body {
   margin: 0;
@@ -82,9 +74,12 @@ a:hover {
         font-size: 0.75rem;
         line-height: 0.75rem;
         color: var(--sub-color);
+        &:last-child{
+          border-radius: 0 0 var(--roundness) var(--roundness);
+        }
         &.active {
-          color: var(--main-color);
-          background: rgba(0, 0, 0, 0.5);
+          color: var(--bg-color);
+          background: var(--main-color);
         }
       }
     }
@@ -225,15 +220,22 @@ a:hover {
   width: fit-content;
   width: -moz-fit-content;
   /*   transition: 0.25s; */
+  .button{
+    display: grid;
+    grid-auto-flow: column;
+    align-content: center;
+    transition: 0.25s;
+    padding: 0.5rem;
+    border-radius: var(--roundness);
+    &:focus{
+      background: var(--sub-color);
+      color: var(--main-color);
+      border: none;
+      outline: none;
+    }
+  }
 }
 
-#menu .button {
-  display: grid;
-  grid-auto-flow: column;
-  align-content: center;
-  transition: 0.25s;
-  padding: 0.5rem;
-}
 
 #menu .button .icon {
   display: grid;
@@ -558,7 +560,7 @@ key {
     outline: none;
   }
   &:focus {
-    background: #0d0d0d;
+    background: var(--sub-color);
   }
 }
 
@@ -574,8 +576,13 @@ key {
 .word.error {
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid #da3333;
-  text-shadow: 1px 0px 0px var(--bg-color), 2px 0px 0px var(--bg-color), -1px 0px 0px var(--bg-color),
-    -2px 0px 0px var(--bg-color), 0px 1px 0px var(--bg-color), 1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
+  text-shadow:  1px 0px 0px var(--bg-color),
+                // 2px 0px 0px var(--bg-color),
+                -1px 0px 0px var(--bg-color),
+                // -2px 0px 0px var(--bg-color),
+                0px 1px 0px var(--bg-color),
+                1px 1px 0px var(--bg-color),
+                -1px 1px 0px var(--bg-color);
 }
 
 .word.active {
@@ -583,7 +590,7 @@ key {
 }
 
 .word letter {
-  transition: .1s;
+  // transition: .1s;
   height: 1rem;
   line-height: 1rem;
   /* margin: 0 1px; */
@@ -647,7 +654,7 @@ key {
       font-size: .75rem;
     }
     tbody tr:nth-child(odd) td{
-      background: rgba(0, 0, 0, 0.5); 
+      background: rgba(0, 0, 0, 0.1); 
     }
   }
 }

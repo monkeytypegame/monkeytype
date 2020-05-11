@@ -1,0 +1,11 @@
+/* Dark Blue:   #3c4756
+Light Blue:  #a2aebd
+Pink:        #f44c7f */
+
+:root {
+    --main-color: #f44c7f;
+    --sub-color: #a2aebd;
+    --bg-color: #3c4756;
+    --caret-color: #fff;
+    --active-word-color: #a2aebd;
+}

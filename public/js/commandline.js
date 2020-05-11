@@ -1,3 +1,7 @@
+function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
 let commands = {
     title: "",
     list: [
@@ -39,6 +43,15 @@ let commands = {
             }
         },
         {
+            id: "changeTheme",
+            display: "Change theme...",
+            subgroup: true,
+            exec: () => {
+                currentCommands = commandsThemes;
+                showCommandLine();
+            }
+        },
+        {
             id: "changeMode",
             display: "Change mode...",
             subgroup: true,
@@ -67,6 +80,7 @@ let commands = {
         }
     ]
 };
+
 
 let commandsWordCount = {
     title: "Change word count...",
@@ -180,11 +194,53 @@ let commandsTimeConfig = {
     ]
 };
 
+
+$.getJSON("themes/list.json", function(data) {
+    commandsThemes.list = [];
+    data.forEach(theme => {
+        commandsThemes.list.push({
+            id: "changeTheme" + capitalizeFirstLetter(theme),
+            display: theme.replace('_',' '),
+            hover: () => {
+                previewTheme(theme);
+            },
+            exec: () => {
+                setTheme(theme);
+                saveConfigToCookie();
+            }
+        })
+    })
+});
+
+let commandsThemes = {
+    title: "Change theme...",
+    list: [
+        {
+            id: "couldnotload",
+            display: "Could not load the themes list :("
+        }
+    ]
+};
+
 $("#commandLine input").keyup((e) => {
     if (e.keyCode == 38 || e.keyCode == 40) return;
     updateSuggestedCommands();
 });
 
+$(document).ready(e => {
+    $(document).keydown((event) => {
+        //escape
+        if (event.keyCode == 27) {
+            if ($("#commandLineWrapper").hasClass("hidden")) {
+                currentCommands = commands;
+                showCommandLine();
+            } else {
+                hideCommandLine();
+                setTheme(config.theme);
+            }
+        }
+    })
+})
 
 $("#commandLine input").keydown((e) => {
     if (e.keyCode == 13) {
@@ -205,6 +261,7 @@ $("#commandLine input").keydown((e) => {
         //up
         let entries = $(".suggestions .entry");
         let activenum = -1;
+        let hoverId;
         $.each(entries, (index, obj) => {
             if ($(obj).hasClass("active")) activenum = index;
         });
@@ -212,18 +269,29 @@ $("#commandLine input").keydown((e) => {
             entries.removeClass("active");
             if (activenum == 0) {
                 $(entries[entries.length - 1]).addClass("active");
+                hoverId = $(entries[entries.length - 1]).attr('command');
             } else {
                 $(entries[--activenum]).addClass("active");
+                hoverId = $(entries[activenum]).attr('command');
             }
         }
         if (e.keyCode == 40) {
             entries.removeClass("active");
             if (activenum + 1 == entries.length) {
                 $(entries[0]).addClass("active");
+                hoverId = $(entries[0]).attr('command');
             } else {
                 $(entries[++activenum]).addClass("active");
+                hoverId = $(entries[activenum]).attr('command');
             }
         }
+        try{
+            $.each(currentCommands.list, (index, obj) => {
+                if (obj.id == hoverId) {
+                    obj.hover();
+                }
+            });
+        }catch(e){}
 
         return false;
     }
@@ -276,7 +344,7 @@ function updateSuggestedCommands() {
             let foundcount = 0;
             $.each(inputVal, (index2, obj2) => {
                 if (obj2 == "") return;
-                let re = new RegExp(obj2, "g");
+                let re = new RegExp("\\b"+obj2, "g");
                 let res = obj.display.toLowerCase().match(re);
                 if (res != null && res.length > 0) {
                     foundcount++;
@@ -314,6 +382,14 @@ function displayFoundCommands() {
     let entries = $("#commandLine .suggestions .entry");
     if (entries.length > 0) {
         $(entries[0]).addClass("active");
+        try{
+            $.each(currentCommands.list, (index, obj) => {
+                if (obj.found) {
+                    obj.hover();
+                    return false;
+                }
+            });
+        }catch(e){}
     }
     $("#commandLine .listTitle").remove();
     // if(currentCommands.title != ''){

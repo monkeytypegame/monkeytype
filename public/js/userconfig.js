@@ -1,4 +1,5 @@
 let config = {
+    theme: 'light',
     showKeyTips: true,
     showLiveWpm: true,
     smoothCaret: true,
@@ -21,6 +22,7 @@ function loadConfigFromCookie() {
     if (newConfig) {
         newConfig = JSON.parse(newConfig);
         config = newConfig;
+        setTheme(config.theme);
         setQuickTabMode(config.quickTab);
         setPunctuation(config.punctuation);
         setKeyTips(config.showKeyTips);
@@ -110,4 +112,13 @@ function togglePunctuation() {
     }
     config.punctuation = !config.punctuation;
     saveConfigToCookie();
+}
+
+function previewTheme(name) {
+    $("#currentTheme").attr("href", `themes/${name}.css`);
+}
+
+function setTheme(name) {
+    config.theme = name;
+    $("#currentTheme").attr("href", `themes/${name}.css`);
 }
