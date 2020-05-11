@@ -1,7 +1,7 @@
 :root {
-    --main-color: #111;
-    --sub-color: #ccc;
     --bg-color: #fff;
+    --main-color: #111;
     --caret-color: #111;
+    --sub-color: #ccc;
     --active-word-color: #ccc;
 }
