@@ -9,13 +9,10 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [],
     "rewrites": [{
-      "source": "/app",
-      "destination": "/"
-    },
-    {
-      "source": "/**",
-      "destination": "/app"
+      "source": "**",
+      "destination": "/soon.html"
     }],
     "cleanUrls": true,
     "trailingSlash": false

@@ -5,13 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monkey Type</title>
-  <script src="https://kit.fontawesome.com/f3f87d89b4.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="css/fa.css">
   <link rel="stylesheet" href="themes/light.css" id="currentTheme">
   <link rel="stylesheet" href="css/style.css">
   <link rel="shortcut icon" href="favicon.png">
+  
 </head>
 
 <body>
+  <div class="notification">Signed in</div>
   <div id="commandLineWrapper" class="hidden">
     <div id="commandLine">
       <input type="text" class="input" placeholder="Command">
@@ -51,36 +53,29 @@
         <div class="bottom">monkey-type</sup></div>
       </div>
       <div id="menu">
-        <div class="button" tabindex="2" href="/">
+        <div class="button" tabindex="2" href="/" onclick="this.blur();">
           <div class="icon">
             <i class="fas fa-fw fa-keyboard"></i>
           </div>
-          <div class="text">
-            Test
-          </div>
         </div>
-        <div class="button" tabindex="2" href="/about">
+        <div class="button" tabindex="2" href="/about" onclick="this.blur();">
           <div class="icon">
             <i class="fas fa-fw fa-info"></i>
           </div>
-          <div class="text">
-            About
-          </div>
         </div>
-        <div class="button" tabindex="2" href="/settings">
+        <div class="button" tabindex="2" href="/settings" onclick="this.blur();">
           <div class="icon">
             <i class="fas fa-fw fa-cog"></i>
           </div>
-          <div class="text">
-            Settings
-          </div>
         </div>
-        <div class="button" tabindex="2" href="/account">
+        <div class="button hidden account" tabindex="2" href="/account" onclick="this.blur();">
           <div class="icon">
             <i class="fas fa-fw fa-user"></i>
           </div>
-          <div class="text">
-            Login
+        </div>
+        <div class="button login" tabindex="2" href="/login" onclick="this.blur();">
+          <div class="icon">
+            <i class="fas fa-fw fa-sign-in-alt"></i>
           </div>
         </div>
       </div>
@@ -96,28 +91,28 @@
         <div class="group mode">
           <!--           <div class="title">mode</div> -->
           <div class="buttons">
-            <div class="button" mode="time">time</div>
-            <div class="button active" mode="words">words</div>
-            <div class="button" mode="custom">custom</div>
+            <div class="button" mode="time" tabindex="2">time</div>
+            <div class="button active" mode="words" tabindex="2">words</div>
+            <div class="button" mode="custom" tabindex="2">custom</div>
           </div>
         </div>
         <div class="group wordCount">
           <!--           <div class="title">words</div> -->
           <div class="buttons">
-            <div class="button" wordCount="10">10</div>
-            <div class="button" wordCount="25">25</div>
-            <div class="button active" wordCount="50">50</div>
-            <div class="button" wordCount="100">100</div>
-            <div class="button" wordCount="200">200</div>
+            <div class="button" wordCount="10" tabindex="2">10</div>
+            <div class="button" wordCount="25" tabindex="2">25</div>
+            <div class="button active" wordCount="50" tabindex="2">50</div>
+            <div class="button" wordCount="100" tabindex="2">100</div>
+            <div class="button" wordCount="200" tabindex="2">200</div>
           </div>
         </div>
         <div class="group time hidden">
           <!--           <div class="title">time</div> -->
           <div class="buttons">
-            <div class="button" timeConfig="15">15</div>
-            <div class="button active" timeConfig="30">30</div>
-            <div class="button" timeConfig="60">60</div>
-            <div class="button" timeConfig="120">120</div>
+            <div class="button" timeConfig="15" tabindex="2">15</div>
+            <div class="button active" timeConfig="30" tabindex="2">30</div>
+            <div class="button" timeConfig="60" tabindex="2">60</div>
+            <div class="button" timeConfig="120" tabindex="2">120</div>
           </div>
         </div>
         <div class="group customText hidden">
@@ -132,7 +127,7 @@
     </div>
     <div id="middle">
 
-      <div class="page pageTest">
+      <div class="page pageTest active">
         <div id="caret" class="hidden"></div>
         <div id="words" class=""></div>
         <input id="wordsInput" class="" tabindex="0"></input>
@@ -144,7 +139,7 @@
               <div class="bottom">100</div>
             </div>
             <div class="group wpm">
-              <div class="top">wpm</div>
+              <div class="top">wpm<div class="crownWrapper"><div class="crown"><i class="fas fa-crown"></i></div></div></div>
               <div class="bottom">100</div>
             </div>
             <div class="group acc">
@@ -165,64 +160,95 @@
         <div id="liveWpm">123</div>
       </div>
       <div class="page pageAbout hidden">
-        this is the about page
+        <div class="section">
+          <h1>about</h1>
+          <p>Monkey-type is a minimalistic typing test, featuring many test modes, an account system to save your
+            typing speed history and user configurable features like themes, a smooth caret and more.</p>
+        </div>
+        <div class="section">
+          <h1>keybinds</h1>
+          <p>You can use <key>tab</key> and <key>enter</key> (or just <key>tab</key> if you have quick tab mode enabled) to restart the typing test.
+            Open the command line by pressing <key>esc</key> - there you can access all the functionality you need without touching your mouse. </p>
+        </div>
+        <div class="section">
+          <h1>stats</h1>
+          <p>wpm - total amount of characters in the correctly typed words, divided by 5</p>
+          <p>acc - percentage of correctly pressed keys</p>
+          <p>key - correct characters / incorrect characters. Calculated after the test has ended</p>
+        </div>
+        <div class="section">
+          <h1>bug report or feature request</h1>
+          <p>If you encounter a bug, or have a feature request - send me a message on Reddit, or create an issue on GitHub.</p>
+        </div>
+        <div class="section">
+          <h1>credits</h1>
+          <p><a href="https://www.reddit.com/user/montydrei">montydrei</a> - name suggestion</p>
+          <p><a href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/">everyone</a> who provided
+            valuable feedback on the original reddit post for the prototype of this website</p>
+        </div>
       </div>
       <div class="page pageLogin hidden">
-        <div class="register">
-          register
-          <input type="text" placeholder="name">
-          <input type="text" placeholder="email">
-          <input type="text" placeholder="password">
-
+        <div class="preloader hidden"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>
+        <div class="register side">
+          <div class="title">register</div>
+          <form action="" autocomplete="off">
+            <input type="text" placeholder="name">
+            <input type="text" placeholder="email">
+            <input type="password" placeholder="password">
+          </form>
         </div>
-        <div class="login">
-          login
-          <input type="text" placeholder="email">
-          <input type="text" placeholder="password">
-
+        <div class="login side">
+          <div class="title">login</div>
+          <form action="">
+            <input type="text" placeholder="email">
+            <input type="password" placeholder="password">
+          </form>
         </div>
 
       </div>
       <div class="page pageAccount hidden">
-        <div class="signOut">sign out</div>
-        <div class="group">
-          <div class="title"></div>
-          <div class="chart">
-            <canvas id="resultHistoryChart"></canvas>
+        <div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>
+        <div class="content hidden">
+          <div class="signOut"><i class="fas fa-sign-out-alt"></i>sign out</div>
+          <div class="group">
+            <div class="title"></div>
+            <div class="chart">
+              <canvas id="resultHistoryChart"></canvas>
+            </div>
           </div>
-        </div>
-        <div class="triplegroup">
-          <div class="group highestWpm">
-            <div class="title">highest wpm</div>
-            <div class="val">1</div>
-            <div class="mode"></div>
+          <div class="triplegroup">
+            <div class="group highestWpm">
+              <div class="title">highest wpm</div>
+              <div class="val">1</div>
+              <div class="mode"></div>
+            </div>
+            <div class="group testsTaken">
+              <div class="title">tests taken</div>
+              <div class="val">1</div>
+            </div>
+            <div class="group favouriteTest">
+              <div class="title">favourite test</div>
+              <div class="val">words 10</div>
+            </div>
           </div>
-          <div class="group testsTaken">
-            <div class="title">tests taken</div>
-            <div class="val">1</div>
-          </div>
-          <div class="group favouriteTest">
-            <div class="title">favourite test</div>
-            <div class="val">words 10</div>
-          </div>
-        </div>
-        <div class="group history">
-          <!-- <div class="title">result history</div> -->
-          <table width="100%">
-            <thead>
-              <tr>
-                <td>wpm</td>
-                <td>accuracy</td>
-                <td>correct<br>chars</td>
-                <td>incorrect<br>chars</td>
-                <td>mode</td>
-                <td>date</td>
-              </tr>
-            </thead>
-            <tbody>
+          <div class="group history">
+            <!-- <div class="title">result history</div> -->
+            <table width="100%">
+              <thead>
+                <tr>
+                  <td>wpm</td>
+                  <td>accuracy</td>
+                  <td>correct<br>chars</td>
+                  <td>incorrect<br>chars</td>
+                  <td>mode</td>
+                  <td>date</td>
+                </tr>
+              </thead>
+              <tbody>
 
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -232,7 +258,13 @@
         <key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
         <key>esc</key> - command line
       </div>
-      Created by <a tabindex="0" href="https://www.reddit.com/message/compose?to=Miodec">Miodec</a>
+      <div>
+        Crafted with &lt;3 by
+        <a tabindex="0" href="https://www.reddit.com/message/compose?to=Miodec">Miodec</a>
+      </div>
+      <div>
+        Contribute to this project on GitHub
+      </div>
     </div>
 
   </div>
@@ -254,17 +286,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-trendline@0.1.3/src/chartjs-plugin-trendline.min.js"></script>
+
 <script src="js/db.js"></script>
 <script src="js/commandline.js"></script>
 <script src="js/userconfig.js"></script>
 <script src="js/words.js"></script>
 <script src="js/script.js"></script>
 <script src="js/account.js"></script>
-
-<script>
-
-
-
-</script>
 
 </html>

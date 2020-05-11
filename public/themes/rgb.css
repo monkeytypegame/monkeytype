@@ -1,0 +1,44 @@
+:root {
+    --bg-color: #111;
+    --main-color: #eee;
+    --caret-color: #eee;
+    --sub-color: #444;
+    --active-word-color: #444;
+}
+
+@keyframes rgb{
+    0%{
+        color: #f44336;
+    }
+    25%{
+        color: #FFC107;
+    }
+    50%{
+        color: #4CAF50;
+    }
+    75%{
+        color: #3F51B5;
+    }
+    100%{
+        color: #f44336;
+    }
+}
+
+.logo .bottom,
+#top .config .group .buttons .button.active,
+#result .stats .group .bottom,
+#menu .button:hover,
+#top .config .group .buttons .button:hover,
+a:hover {
+    animation-name: rgb;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.word letter.correct{
+    animation-name: rgb;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
