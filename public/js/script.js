@@ -425,8 +425,8 @@ function showResult() {
   let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ','');
   
 
-  wpmOverTimeChart.options.scales.xAxes[0].ticks.fontColor = subColor;
-  wpmOverTimeChart.options.scales.yAxes[0].ticks.fontColor = subColor;
+  wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
+  wpmOverTimeChart.options.scales.yAxes[0].ticks.minor.fontColor = subColor;
   wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
   wpmOverTimeChart.data.labels = labels;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
