@@ -310,7 +310,7 @@ function refreshAccountPage() {
       }
 
       if (result.wpm > topWpm) {
-        let puncsctring = result.punctuation ? ",<br>with punctuatin" : "";
+        let puncsctring = result.punctuation ? ",<br>with punctuation" : "";
         topWpm = result.wpm;
         topMode = result.mode + " " + result.mode2 + puncsctring;
       }

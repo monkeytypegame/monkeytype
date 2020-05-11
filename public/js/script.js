@@ -421,6 +421,13 @@ function showResult() {
     labels.push(i.toString());
   }
 
+  let mainColor = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ', '');
+  let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ','');
+  
+
+  wpmOverTimeChart.options.scales.xAxes[0].ticks.fontColor = subColor;
+  wpmOverTimeChart.options.scales.yAxes[0].ticks.fontColor = subColor;
+  wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
   wpmOverTimeChart.data.labels = labels;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
   wpmOverTimeChart.update({ duration: 0 });
@@ -457,8 +464,8 @@ function restartTest() {
       opacity: 1
     }, 125, () => {
       $("#restartTestButton").css('opacity', 1);
-      focusWords();
 
+      if ($("#commandLineWrapper").hasClass('hidden')) focusWords();
 
       wpmHistory = [];
       hideTimer();
@@ -473,7 +480,6 @@ function restartTest() {
       clearInterval(timer);
       timer = null;
       time = 0;
-      focusWords();
 
       // let oldHeight = $("#words").height();
       // let newHeight = $("#words")
@@ -683,9 +689,6 @@ $("#wordsInput").on("focusout", (event) => {
   hideCaret();
 });
 
-
-
-
 $(window).resize(() => {
   updateCaretPosition();
 });
@@ -739,15 +742,6 @@ $(document).keypress(function(event) {
 //handle keyboard events
 $(document).keydown((event) => {
 
-  //escape
-  if (event.keyCode == 27) {
-    if ($("#commandLineWrapper").hasClass("hidden")) {
-      currentCommands = commands;
-      showCommandLine();
-    } else {
-      hideCommandLine();
-    }
-  }
 
   //tab
   if (config.quickTab) {
@@ -836,8 +830,9 @@ $(document).keydown((event) => {
   }
 });
 
+loadConfigFromCookie();
+
 $(document).ready(() => {
-  loadConfigFromCookie();
   restartTest();
   if (config.quickTab) {
     $("#restartTestButton").remove();
@@ -845,16 +840,16 @@ $(document).ready(() => {
   $("#centerContent").css("opacity", "0").removeClass("hidden").stop(true, true).animate({ opacity: 1 }, 250);
 });
 
-var ctx = $("#wpmChart");
-var wpmOverTimeChart = new Chart(ctx, {
+let ctx = $("#wpmChart");
+let wpmOverTimeChart = new Chart(ctx, {
   type: 'line',
   data: {
     labels: [],
     datasets: [{
       label: "wpm",
       data: [],
-      backgroundColor: 'rgba(255, 255, 255, 0.25',
-      borderColor: 'rgba(255, 255, 255, 1)',
+      // backgroundColor: 'rgba(255, 255, 255, 0.25)',
+      borderColor: 'rgba(125, 125, 125, 1)',
       borderWidth: 2
     }],
   },
@@ -878,7 +873,7 @@ var wpmOverTimeChart = new Chart(ctx, {
     scales: {
       xAxes: [{
         ticks: {
-          fontFamily: "Roboto Mono",
+          fontFamily: "Roboto Mono"
         },
         display: true,
         scaleLabel: {
@@ -891,6 +886,9 @@ var wpmOverTimeChart = new Chart(ctx, {
         scaleLabel: {
           display: false,
           labelString: 'Words per Minute'
+        },
+        ticks: {
+          fontFamily: 'Roboto Mono'
         }
       }]
     }

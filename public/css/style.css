@@ -1,20 +1,32 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap");
 :root {
-  --main-color: #eee;
-  --sub-color: #444;
-  --bg-color: #111;
-  --caret-color: #fff;
-  --active-word-color: #444;
-  --roundness: 0.25rem;
+  --roundness: .25rem;
 }
 
-/* 
-:root {
-  --main-color: #111;
-  --sub-color: #444;
-  --sub2-color: #444;
-  --bg-color: #fff;
-} */
+::-webkit-input-placeholder {
+  color: var(--sub-color);
+  opacity: 1;
+  /* Firefox */
+}
+
+:-ms-input-placeholder {
+  color: var(--sub-color);
+  opacity: 1;
+  /* Firefox */
+}
+
+::-ms-input-placeholder {
+  color: var(--sub-color);
+  opacity: 1;
+  /* Firefox */
+}
+
+::placeholder {
+  color: var(--sub-color);
+  opacity: 1;
+  /* Firefox */
+}
+
 body {
   margin: 0;
   padding: 2rem 2rem 0 2rem;
@@ -101,9 +113,13 @@ a:hover {
   color: var(--sub-color);
 }
 
+#commandLineWrapper #commandLine .suggestions .entry:last-child {
+  border-radius: 0 0 var(--roundness) var(--roundness);
+}
+
 #commandLineWrapper #commandLine .suggestions .entry.active {
-  color: var(--main-color);
-  background: rgba(0, 0, 0, 0.5);
+  color: var(--bg-color);
+  background: var(--main-color);
 }
 
 #resultScreenshot {
@@ -274,6 +290,14 @@ a:hover {
   -webkit-transition: 0.25s;
   transition: 0.25s;
   padding: 0.5rem;
+  border-radius: var(--roundness);
+}
+
+#menu .button:focus {
+  background: var(--sub-color);
+  color: var(--main-color);
+  border: none;
+  outline: none;
 }
 
 #menu .button .icon {
@@ -676,7 +700,7 @@ key {
 }
 
 #restartTestButton:focus {
-  background: #0d0d0d;
+  background: var(--sub-color);
 }
 
 .word {
@@ -694,7 +718,7 @@ key {
 .word.error {
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid #da3333;
-  text-shadow: 1px 0px 0px var(--bg-color), 2px 0px 0px var(--bg-color), -1px 0px 0px var(--bg-color), -2px 0px 0px var(--bg-color), 0px 1px 0px var(--bg-color), 1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
+  text-shadow: 1px 0px 0px var(--bg-color), -1px 0px 0px var(--bg-color), 0px 1px 0px var(--bg-color), 1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
 .word.active {
@@ -702,8 +726,6 @@ key {
 }
 
 .word letter {
-  -webkit-transition: .1s;
-  transition: .1s;
   height: 1rem;
   line-height: 1rem;
   /* margin: 0 1px; */
@@ -782,7 +804,7 @@ key {
 }
 
 .pageAccount table tbody tr:nth-child(odd) td {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 * {
