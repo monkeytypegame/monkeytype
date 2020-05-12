@@ -13,6 +13,7 @@ $(".pageLogin .register input").keyup(e => {
       }).then(function() {
         // Update successful.
         showNotification("Account created", 2000);
+        firebase.analytics().logEvent("accountCreated", usr.uid);
       }).catch(function(error) {
         // An error happened.
         usr.delete().then(function() {

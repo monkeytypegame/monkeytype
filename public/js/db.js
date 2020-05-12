@@ -23,7 +23,7 @@ async function db_getUserResults() {
         .where('uid', '==', user.uid)
         .get()
         .then(data => {
-
+            console.log('getting data from db!');
             data.docs.forEach(doc => {
                 ret.push(doc.data());
             })
