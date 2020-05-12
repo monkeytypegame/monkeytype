@@ -412,6 +412,16 @@ function showResult() {
     mode2 = config.words;
   }
   hideCrown();
+  let completedEvent = {
+    wpm: stats.wpm,
+    correctChars: stats.correctChars,
+    incorrectChars: stats.incorrectChars,
+    acc: stats.acc,
+    mode: config.mode,
+    mode2: mode2,
+    punctuation: config.punctuation,
+    timestamp: Date.now()
+  };
   if (stats.wpm > 0 && stats.wpm < 250 && stats.acc > 50 && stats.acc <= 100) {
     if (firebase.auth().currentUser != null) {
       db_getUserHighestWpm(config.mode, mode2).then(data => {
@@ -419,29 +429,22 @@ function showResult() {
         if (data < stats.wpm) {
           showCrown();
         }
-        let dbObj = {
-          uid: firebase.auth().currentUser.uid,
-          wpm: stats.wpm,
-          correctChars: stats.correctChars,
-          incorrectChars: stats.incorrectChars,
-          acc: stats.acc,
-          mode: config.mode,
-          mode2: mode2,
-          punctuation: config.punctuation,
-          timestamp: Date.now()
-        };
-        db_testCompleted(dbObj);
-        dbSnapshot.unshift(dbObj);
+        completedEvent.uid = firebase.auth().currentUser.uid;
+        db_testCompleted(completedEvent);
+        dbSnapshot.unshift(completedEvent);
       });
     } else {
       showNotification("Sign in to save your result",3000);
     }  
+    completedEvent.valid = true;
   } else {
-    showNotification("Test invalid",3000);
+    showNotification("Test invalid", 3000);
+    completedEvent.valid = false;
   }
 
-  let infoText = "";
+  firebase.analytics().logEvent('testCompleted', completedEvent);
 
+  let infoText = "";
   infoText = config.mode;
 
   if (config.mode == "time") {
@@ -609,6 +612,9 @@ function changePage(page) {
       swapElements(activePage, $(".page.pageLogin"), 250);
     }
   }
+  firebase.analytics().logEvent('changedPage', {
+    page: page
+  });
 }
 
 function changeMode(mode) {

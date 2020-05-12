@@ -254,7 +254,12 @@ $("#commandLine input").keydown((e) => {
                 subgroup = obj.subgroup;
             }
         });
-        if (!subgroup) hideCommandLine();
+        if (!subgroup) {
+            firebase.analytics().logEvent('usedCommandLine', {
+                command: command
+            });
+            hideCommandLine();
+        }
         return;
     }
     if (e.keyCode == 38 || e.keyCode == 40) {
