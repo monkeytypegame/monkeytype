@@ -430,19 +430,23 @@ function showResult() {
           showCrown();
         }
         completedEvent.uid = firebase.auth().currentUser.uid;
+        firebase.analytics().logEvent('testCompleted', completedEvent);
         db_testCompleted(completedEvent);
         dbSnapshot.unshift(completedEvent);
       });
+      $("#result .loginTip").addClass('hidden');
     } else {
-      showNotification("Sign in to save your result",3000);
+      firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
+      $("#result .loginTip").removeClass('hidden');
+
+      // showNotification("Sign in to save your result",3000);
     }  
-    completedEvent.valid = true;
   } else {
     showNotification("Test invalid", 3000);
-    completedEvent.valid = false;
+    firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
+
   }
 
-  firebase.analytics().logEvent('testCompleted', completedEvent);
 
   let infoText = "";
   infoText = config.mode;
