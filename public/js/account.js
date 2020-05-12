@@ -4,6 +4,12 @@ $(".pageLogin .register input").keyup(e => {
     let name = $(".pageLogin .register input")[0].value;
     let email = $(".pageLogin .register input")[1].value;
     let password = $(".pageLogin .register input")[2].value;
+    let passwordVerify = $(".pageLogin .register input")[3].value;
+
+    if (password != passwordVerify) {
+      showNotification("Passwords do not match",3000);
+      return;
+    }
 
     firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
       // Account has been created here.
