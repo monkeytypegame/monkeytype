@@ -74,7 +74,7 @@ function db_addEmailToQueue(type, body) {
     }
   
     if (firebase.auth().currentUser != null) {
-      from = firebase.auth().currentUser.email;
+      from = firebase.auth().currentUser.email + ' (' + firebase.auth().currentUser.uid + ')';
     }
   
     // $.get("https://us-central1-monkey-type.cloudfunctions.net/sendEmailNotification",
@@ -96,7 +96,7 @@ function db_addEmailToQueue(type, body) {
         to: "bartnikjack@gmail.com",
         message: {
             subject: subject,
-            html: body + "<br><br>From: " + from,
+            html: body.replace(/\r\n|\r|\n/g,"<br>") + "<br><br>From: " + from,
         }
     }).then(() => {
         showNotification('Email sent',3000);
