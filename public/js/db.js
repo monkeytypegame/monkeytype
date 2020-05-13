@@ -57,3 +57,51 @@ async function db_getUserHighestWpm(mode, mode2) {
     return retval;
 
 }
+
+function db_addEmailToQueue(type, body) {
+
+    let from = 'Annonymous';
+    let subject = '';
+    if (type == 'bug') {
+        subject = 'New Bug Report';
+    } else if (type == 'feature') {
+        subject = 'New Feature Request';
+    } else if (type == 'feedback') {
+        subject = 'New Feedback';
+    } else {
+        showNotification('Error: Unsupported type',3000);
+        return;
+    }
+  
+    if (firebase.auth().currentUser != null) {
+      from = firebase.auth().currentUser.email;
+    }
+  
+    // $.get("https://us-central1-monkey-type.cloudfunctions.net/sendEmailNotification",
+    //   {
+    //     subject: "New " + subject,
+    //     body: body
+    // })
+    //   .done(data => {
+    //     if (data == 'Email queued') {
+    //       showNotification("Message sent. Thanks!", 3000);
+    //     } else {
+    //       showNotification("Unknown error", 3000);
+    //     }
+    //   }).fail(error => {
+    //     showNotification("Unexpected error", 3000);
+    //   });
+  
+    db.collection('mail').add({
+        to: "bartnikjack@gmail.com",
+        message: {
+            subject: subject,
+            html: body + "<br><br>From: " + from,
+        }
+    }).then(() => {
+        showNotification('Email sent',3000);
+    }).catch((e) => {
+        showNotification('Error while sending email: ' + e,5000);
+    });
+  
+  }

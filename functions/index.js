@@ -1,5 +1,5 @@
 const functions = require('firebase-functions');
-
+const cors = require('cors');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
@@ -12,19 +12,21 @@ admin.initializeApp();
 // });
 
 
-exports.sendEmailNotification = functions.https.onRequest(async (request, response) => {
-    admin.firestore().collection('mail').add({
-       to: "bartnikjack@gmail.com",
-       message: {
-         subject: request.query.subject,
-         html: request.query.body,
-       }
-    }).then(() => {
-        console.log('Email queued');
-        return response.send('Email queued');
-    }).catch((e) => {
-        console.log('Error adding email to queue ' + e);
-        return response.send('Error adding email to queue ' + e);
+exports.sendEmailNotification = functions.https.onRequest(async (req, res) => {
+    return cors(req, res, () => {
 
+        admin.firestore().collection('mail').add({
+            to: "bartnikjack@gmail.com",
+            message: {
+                subject: req.query.subject,
+                html: req.query.body,
+            }
+        }).then(() => {
+            console.log('Email queued');
+            return res.send('Email queued');
+        }).catch((e) => {
+            console.log('Error adding email to queue ' + e);
+            return res.send('Error adding email to queue ' + e);
+        });
     });
 });
