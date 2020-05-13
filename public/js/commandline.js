@@ -77,9 +77,48 @@ let commands = {
                 currentCommands = commandsWordCount;
                 showCommandLine();
             }
+        },
+        {
+            id: "sendDevMessage",
+            display: "Send a message ( bug report / feature request / feedback )...",
+            subgroup: true,
+            exec: () => {
+                currentCommands = commandsSendDevMessage;
+                showCommandLine();
+            }
         }
     ]
 };
+
+let commandsSendDevMessage = {
+    title: "Send a message...",
+    list: [
+        {
+            id: "sendBugReport",
+            display: "Bug report",
+            input: true,
+            exec: (txt) => {
+                db_addEmailToQueue('bug', txt);
+            }
+        },
+        {
+            id: "sendFeatureRequest",
+            display: "Feature request",
+            input: true,
+            exec: (txt) => {
+                db_addEmailToQueue('feature', txt);
+            }
+        },
+        {
+            id: "sendFeedback",
+            display: "Other feedback",
+            input: true,
+            exec: (txt) => {
+                db_addEmailToQueue('feedback', txt);
+            }
+        }
+    ]
+}
 
 
 let commandsWordCount = {
@@ -242,19 +281,45 @@ $(document).ready(e => {
     })
 })
 
+$("#commandInput textarea").keydown((e) => {
+    if (e.keyCode == 13 && e.shiftKey) {
+        //enter
+        e.preventDefault();
+        let command = $("#commandInput textarea").attr("command");
+        let value = $("#commandInput textarea").val();
+        $.each(currentCommands.list, (i, obj) => {
+            if (obj.id == command) {
+                obj.exec(value);
+                subgroup = obj.subgroup;
+            }
+        });
+        firebase.analytics().logEvent('usedCommandLine', {
+            command: command
+        });
+        hideCommandLine();
+    }
+    return;
+});
+
 $("#commandLine input").keydown((e) => {
     if (e.keyCode == 13) {
         //enter
         e.preventDefault();
         let command = $(".suggestions .entry.active").attr("command");
         let subgroup = false;
+        let input = false;
         $.each(currentCommands.list, (i, obj) => {
             if (obj.id == command) {
-                obj.exec();
-                subgroup = obj.subgroup;
+                if (obj.input) {
+                    input = true;
+                    showCommandInput(obj.id, obj.display);
+                } else {
+                    obj.exec();
+                    subgroup = obj.subgroup;
+                }
             }
         });
-        if (!subgroup) {
+        if (!subgroup && !input) {
             firebase.analytics().logEvent('usedCommandLine', {
                 command: command
             });
@@ -290,13 +355,13 @@ $("#commandLine input").keydown((e) => {
                 hoverId = $(entries[activenum]).attr('command');
             }
         }
-        try{
+        try {
             $.each(currentCommands.list, (index, obj) => {
                 if (obj.id == hoverId) {
                     obj.hover();
                 }
             });
-        }catch(e){}
+        } catch (e) { }
 
         return false;
     }
@@ -321,6 +386,8 @@ function hideCommandLine() {
 }
 
 function showCommandLine() {
+    $("#commandLine").removeClass('hidden');
+    $("#commandInput").addClass('hidden');
     if ($("#commandLineWrapper").hasClass("hidden")) {
         $("#commandLineWrapper")
             .stop(true, true)
@@ -336,6 +403,17 @@ function showCommandLine() {
     $("#commandLine input").val("");
     updateSuggestedCommands();
     $("#commandLine input").focus();
+}
+
+function showCommandInput(command, placeholder) {
+    $("#commandLineWrapper").removeClass('hidden');
+    $("#commandLine").addClass('hidden');
+    $("#commandInput").removeClass('hidden');
+    $("#commandInput textarea").attr('placeholder', placeholder);
+    $("#commandInput textarea").val('');
+    $("#commandInput textarea").focus();
+    $("#commandInput textarea").attr('command', '');
+    $("#commandInput textarea").attr('command', command);
 }
 
 function updateSuggestedCommands() {

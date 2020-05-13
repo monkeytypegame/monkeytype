@@ -708,6 +708,7 @@ function swapElements(el1, el2, totalDuration, callback = function(){ return; })
 
 }
 
+
 function updateAccountLoginButton() {
   if (firebase.auth().currentUser != null) {
     swapElements($("#menu .button.login"), $("#menu .button.account"), 250);

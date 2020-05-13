@@ -94,6 +94,34 @@ a:hover {
   padding: 5rem 0;
 }
 
+#commandLineWrapper #commandInput {
+  width: 50vw;
+  background: var(--bg-color);
+  border-radius: var(--roundness);
+}
+
+#commandLineWrapper #commandInput textarea {
+  background: var(--bg-color);
+  padding: 1rem;
+  color: var(--main-color);
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-family: "Roboto Mono";
+  width: 100%;
+  border-radius: var(--roundness);
+  resize: vertical;
+  height: 200px;
+}
+
+#commandLineWrapper #commandInput .shiftEnter {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  line-height: 0.75rem;
+  color: var(--sub-color);
+  text-align: center;
+}
+
 #commandLineWrapper #commandLine {
   width: 50vw;
   background: var(--bg-color);
