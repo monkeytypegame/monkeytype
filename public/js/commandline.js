@@ -233,9 +233,11 @@ let commandsTimeConfig = {
     ]
 };
 
+let themesList;
 
 $.getJSON("themes/list.json", function(data) {
     commandsThemes.list = [];
+    themesList = data;
     data.forEach(theme => {
         commandsThemes.list.push({
             id: "changeTheme" + capitalizeFirstLetter(theme),
