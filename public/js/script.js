@@ -3,7 +3,7 @@ let currentWordIndex = 0;
 let inputHistory = [];
 let currentInput = "";
 let time = 0;
-let timer = null;
+let timers = [];
 let testActive = false;
 let testStart, testEnd;
 let wpmHistory = [];
@@ -241,11 +241,6 @@ function updateTimerBar() {
     .css("width", percent + "vw");
 }
 
-function timesUp() {
-  hideCaret();
-  testActive = false;
-  showResult();
-}
 
 function hideCaret() {
   $("#caret").addClass("hidden");
@@ -400,8 +395,7 @@ function showResult() {
   //TODO: #2 Sometimes the caret jumps to the top left corner when showing results
   testEnd = Date.now();
   let stats = calculateStats();
-  clearInterval(timer);
-  timer = null;
+  clearIntervals();
   $("#result .stats .wpm .bottom").text(stats.wpm);
   $("#result .stats .acc .bottom").text(stats.acc + "%");
   $("#result .stats .key .bottom").text(stats.correctChars + "/" + stats.incorrectChars);
@@ -494,44 +488,38 @@ function showResult() {
 }
 
 function restartTest() {
-  clearInterval(timer);
-  timer = null;
+  clearIntervals();
   time = 0;
   let fadetime = 125;
   setFocus(false);
   hideCaret();
   testActive = false;
   hideLiveWpm();
-  if ($("#words").hasClass("hidden")) fadetime = 125;
 
-  $("#words").animate({ opacity: 0 }, 125);
-
-  $("#result").animate({
+  $("#words").stop(true,true).animate({ opacity: 0 }, 125);
+  $("#result").stop(true,true).animate({
     opacity: 0
   }, 125, () => {
     initWords();
-
-
     $("#result").addClass('hidden');
-    $("#words").css('opacity', 0).removeClass('hidden');
-    $("#words").animate({
+    $("#words").css('opacity', 0).removeClass('hidden').stop(true,true).animate({
       opacity: 1
     }, 125, () => {
+      clearIntervals();
       $("#restartTestButton").css('opacity', 1);
-
       if ($("#commandLineWrapper").hasClass('hidden')) focusWords();
-
       wpmHistory = [];
       hideTimer();
       setTimeout(function() {
         $("#timer")
           .css("transition", "none")
           .css("width", "0vw")
+          .stop(true,true)
           .animate({ top: 0 }, 0, () => {
             $("#timer").css("transition", "1s linear");
           });
       }, 250);
-      
+
 
       // let oldHeight = $("#words").height();
       // let newHeight = $("#words")
@@ -724,6 +712,11 @@ function swapElements(el1, el2, totalDuration, callback = function(){ return; })
 
 }
 
+function clearIntervals() {
+  timers.forEach(timer => {
+    clearInterval(timer);
+  })
+}
 
 function updateAccountLoginButton() {
   if (firebase.auth().currentUser != null) {
@@ -835,21 +828,23 @@ $(document).keypress(function(event) {
     }
     updateTimerBar();
     //TODO: #1 Sometimes the timer counts up at double speed for some reason
-    timer = setInterval(function() {
+    clearIntervals();
+    timers.push(setInterval(function() {
       time++;
-      console.log(time);
       updateTimerBar();
       let wpm = liveWPM();
       updateLiveWpm(wpm);
       showLiveWpm();
       wpmHistory.push(wpm);
       if (config.mode == "time") {
-        if (time == config.time) {
-          clearInterval(timer);
-          timesUp();
+        if (time >= config.time) {
+          clearIntervals();
+          hideCaret();
+          testActive = false;
+          showResult();
         }
       }
-    }, 1000);
+    }, 1000));
   } else {
     if (!testActive) return;
   }
