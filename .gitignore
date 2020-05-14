@@ -66,3 +66,7 @@ node_modules/
 
 #vs code
 .vscode
+
+#css
+css/style.css
+css/style.css.map
