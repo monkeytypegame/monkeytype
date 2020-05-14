@@ -397,6 +397,7 @@ function showCrown() {
 }
 
 function showResult() {
+  //TODO: #2 Sometimes the caret jumps to the top left corner when showing results
   testEnd = Date.now();
   let stats = calculateStats();
   clearInterval(timer);
@@ -493,6 +494,9 @@ function showResult() {
 }
 
 function restartTest() {
+  clearInterval(timer);
+  timer = null;
+  time = 0;
   let fadetime = 125;
   setFocus(false);
   hideCaret();
@@ -527,9 +531,7 @@ function restartTest() {
             $("#timer").css("transition", "1s linear");
           });
       }, 250);
-      clearInterval(timer);
-      timer = null;
-      time = 0;
+      
 
       // let oldHeight = $("#words").height();
       // let newHeight = $("#words")
@@ -597,9 +599,18 @@ function changePage(page) {
   if (page == "test" || page == "") {
     $(".page.pageTest").addClass('active');
     swapElements(activePage, $(".page.pageTest"), 250, focusWords);
+    history.pushState('/', null, '/');
+    $('.config').css('opacity', 1);
   } else if (page == "about") {
     $(".page.pageAbout").addClass('active');
     swapElements(activePage, $(".page.pageAbout"), 250);
+    history.pushState('about', null, 'about');
+    $('.config').css('opacity', 0);
+  }  else if (page == "settings") {
+    $(".page.pageSettings").addClass('active');
+    swapElements(activePage, $(".page.pageSettings"), 250);
+    history.pushState('settings', null, 'settings');
+    $('.config').css('opacity', 0);
   } else if (page == "account") {
     if (!firebase.auth().currentUser) {
       changePage("login");
@@ -607,6 +618,8 @@ function changePage(page) {
       $(".page.pageAccount").addClass('active');
       swapElements(activePage, $(".page.pageAccount"), 250);
       refreshAccountPage();
+      history.pushState('account', null, 'account');
+      $('.config').css('opacity', 0);
     }
   } else if (page == "login") {
     if (firebase.auth().currentUser != null) {
@@ -614,6 +627,8 @@ function changePage(page) {
     } else {
     $(".page.pageLogin").addClass('active');
       swapElements(activePage, $(".page.pageLogin"), 250);
+      history.pushState('login', null, 'login');
+      $('.config').css('opacity', 0);
     }
   }
   firebase.analytics().logEvent('changedPage', {
@@ -753,18 +768,18 @@ $(document).on("click", "#top .config .mode .button", (e) => {
 
 $(document).on("click", "#top #menu .button", (e) => {
   href = $(e.currentTarget).attr('href');
-  // history.pushState(href, null, href);
   changePage(href.replace('/', ''));
 })
 
 $(window).on('popstate', (e) => {
-  if (e.originalEvent.state == "") {
+  let state = e.originalEvent.state;
+  if (state == "" || state == "/") {
     // show test
     changePage('test')
-  } else if (e.originalEvent.state == "about") {
+  } else if (state == "about") {
     // show about
     changePage("about");
-  } else if (e.originalEvent.state == "account") {
+  } else if (state == "account" || state == "login") {
     if (firebase.auth().currentUser) {
       changePage("account");
     } else {
@@ -818,8 +833,10 @@ $(document).keypress(function(event) {
       showTimer();
     }
     updateTimerBar();
+    //TODO: #1 Sometimes the timer counts up at double speed for some reason
     timer = setInterval(function() {
       time++;
+      console.log(time);
       updateTimerBar();
       let wpm = liveWPM();
       updateLiveWpm(wpm);
