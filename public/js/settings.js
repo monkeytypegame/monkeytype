@@ -1,17 +1,13 @@
 function updateSettingsPage(){
 
     let themesEl = $(".pageSettings .section .themes").empty();
-
-    $.getJSON("themes/list.json", function(data) {
-        commandsThemes.list = [];
-        data.forEach(theme => {
-            if (config.theme == 'theme') {
-                themesEl.append(`<div class="theme active" theme='${theme}'>${theme.replace('_', ' ')}</div>`);     
-            } else {
-                themesEl.append(`<div class="theme" theme='${theme}'>${theme.replace('_', ' ')}</div>`); 
-            }
-        })
-    });
+    themesList.forEach(theme => {
+        if (config.theme == 'theme') {
+            themesEl.append(`<div class="theme active" theme='${theme}'>${theme.replace('_', ' ')}</div>`);     
+        } else {
+            themesEl.append(`<div class="theme" theme='${theme}'>${theme.replace('_', ' ')}</div>`); 
+        }
+    })
 
 
 
