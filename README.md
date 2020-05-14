@@ -15,3 +15,6 @@ If you encounter a bug, or have a feature request - send me a message on Reddit,
 # credits 
 montydrei for the name suggestion
 everyone who provided valuable feedback on the original reddit post for the prototype of this website
+
+# support
+If you wish to support further development and feeling extra awesome, you can do so [here](https://www.paypal.me/jackbartnik).
