@@ -262,6 +262,7 @@ function startCaretAnimation() {
 }
 
 function updateCaretPosition() {
+  if ($("#words").hasClass('hidden')) return;
   let caret = $("#caret");
   let activeWord = $("#words .word.active");
   let inputLen = currentInput.length;
