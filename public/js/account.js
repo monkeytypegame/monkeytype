@@ -1,13 +1,22 @@
 $(".pageLogin .register input").keyup(e => {
   if (e.key == "Enter") {
+    $(".pageLogin .preloader").removeClass('hidden');
+
 
     let name = $(".pageLogin .register input")[0].value;
     let email = $(".pageLogin .register input")[1].value;
     let password = $(".pageLogin .register input")[2].value;
     let passwordVerify = $(".pageLogin .register input")[3].value;
 
+    if (name == "") {
+      showNotification("Name is required", 3000);
+      $(".pageLogin .preloader").addClass('hidden');
+      return;
+    }
+
     if (password != passwordVerify) {
-      showNotification("Passwords do not match",3000);
+      showNotification("Passwords do not match", 3000);
+      $(".pageLogin .preloader").addClass('hidden');
       return;
     }
 
@@ -20,14 +29,17 @@ $(".pageLogin .register input").keyup(e => {
         // Update successful.
         showNotification("Account created", 2000);
         firebase.analytics().logEvent("accountCreated", usr.uid);
+        $(".pageLogin .preloader").addClass('hidden');
+        changePage('account');
       }).catch(function(error) {
         // An error happened.
         usr.delete().then(function() {
           // User deleted.
           showNotification("Name invalid", 2000);
+           $(".pageLogin .preloader").addClass('hidden');
         }).catch(function(error) {
           // An error happened.
-
+          $(".pageLogin .preloader").addClass('hidden');
         });
       });
     }).catch(function(error) {
@@ -35,6 +47,7 @@ $(".pageLogin .register input").keyup(e => {
       var errorCode = error.code;
       var errorMessage = error.message;
       showNotification(errorMessage, 5000);
+      $(".pageLogin .preloader").addClass('hidden');
     });
 
 
@@ -372,8 +385,13 @@ function refreshAccountPage() {
         favModeName = key;
       }
     })
+    if (favModeName == 'words10' && testModes.words10.length == 0) {
+      //new user  
+      $(".pageAccount .favouriteTest .val").text(`-`);
+    } else {
+      $(".pageAccount .favouriteTest .val").text(`${favModeName} (${Math.floor((favMode.length/testCount) * 100)}%)`);
+    }
 
-    $(".pageAccount .favouriteTest .val").text(`${favModeName} (${Math.floor((favMode.length/testCount) * 100)}%)`);
     
     resultHistoryChart.update({ duration: 0 });
     
