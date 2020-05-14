@@ -28,6 +28,7 @@ body {
   background: var(--bg-color);
   font-family: "Roboto Mono";
   color: var(--main-color);
+  transition: .25s;
 }
 
 html { overflow-y: scroll; }
@@ -140,6 +141,7 @@ a:hover {
   display: none;
   position: absolute;
   width: min-content;
+  width: -moz-min-content;
   white-space: nowrap;
   padding: 0.5rem;
   border-radius: 0.25rem;
@@ -329,7 +331,7 @@ a:hover {
   line-height: 2.3rem;
   font-size: 2.3rem;
   /* text-align: center; */
-  transition: 0.5s;
+  transition: 0.25s;
   padding: 0 5px;
   display: grid;
   grid-auto-flow: column;
@@ -362,6 +364,7 @@ a:hover {
   grid-auto-flow: row;
   grid-gap: 0.2rem;
   width: min-content;
+  width: -moz-min-content;
   transition: 0.25s;
   /*   margin-bottom: 0.1rem; */
   grid-column: 3/4;
@@ -421,6 +424,7 @@ a:hover {
   grid-auto-flow: column;
   grid-gap: 1rem;
   width: min-content;
+  width: -moz-min-content;
   transition: 0.25s;
   grid-column: 3/4;
   grid-row: 1/2;
@@ -725,6 +729,70 @@ key {
     p{
       margin: 0;
       padding: 0;
+    }
+  }
+}
+
+.pageSettings{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  .tip{
+    color: var(--sub-color);
+  }
+  .section{
+    display: grid;
+    gap: .5rem;
+    grid-template-rows: auto 1fr auto;
+    h1{
+      font-size: 1rem;
+      line-height: 1rem;
+      color: var(--sub-color);
+      margin: 0;
+    }
+    .button{
+      color: var(--sub-color);
+      cursor: pointer;
+      transition: .25s;
+      padding: .2rem .5rem;
+      border-radius: var(--roundness);
+      &:hover{
+        color: var(--main-color);
+      }
+      &.active{
+        color: var(--main-color);
+      }
+      &:focus{
+        background: var(--sub-color);
+        color: var(--bg-color);
+        border: none;
+        outline: none;
+      }
+    }
+    .buttons{
+      display: grid;
+      grid-auto-flow: column;
+      gap: 1rem;
+      width: min-content;
+      width: -moz-min-content;
+    }
+    .themes{
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      // gap: 1rem;
+      .theme{
+        // padding: 1rem 2rem;
+        text-align: center;
+        color: var(--sub-color);
+        transition: .25s;
+        cursor: pointer;
+        &:hover{
+          color: var(--main-color);
+        }
+        &.active{
+          color: var(--main-color);
+        }
+      }
     }
   }
 }

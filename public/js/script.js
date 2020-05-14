@@ -606,7 +606,8 @@ function changePage(page) {
     swapElements(activePage, $(".page.pageAbout"), 250);
     history.pushState('about', null, 'about');
     $('.config').css('opacity', 0);
-  }  else if (page == "settings") {
+  } else if (page == "settings") {
+    updateSettingsPage()
     $(".page.pageSettings").addClass('active');
     swapElements(activePage, $(".page.pageSettings"), 250);
     history.pushState('settings', null, 'settings');
