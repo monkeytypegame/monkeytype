@@ -21,14 +21,14 @@ function loadConfigFromCookie() {
     let newConfig = $.cookie('config');
     if (newConfig) {
         newConfig = JSON.parse(newConfig);
+        setTheme(newConfig.theme);
+        setQuickTabMode(newConfig.quickTab);
+        setPunctuation(newConfig.punctuation);
+        setKeyTips(newConfig.showKeyTips);
+        changeTimeConfig(newConfig.time);
+        changeWordCount(newConfig.words);
+        changeMode(newConfig.mode);
         config = newConfig;
-        setTheme(config.theme);
-        setQuickTabMode(config.quickTab);
-        setPunctuation(config.punctuation);
-        setKeyTips(config.showKeyTips);
-        changeTimeConfig(config.time);
-        changeWordCount(config.words);
-        changeMode(config.mode);
         restartTest();
     }
 }
