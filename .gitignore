@@ -68,5 +68,5 @@ node_modules/
 .vscode
 
 #css
-css/style.css
-css/style.css.map
+public/css/style.css
+public/css/style.css.map
