@@ -55,6 +55,11 @@ function toggleKeyTips() {
 }
 
 //caret
+function setSmoothCaret(mode) {
+    config.smoothCaret = mode;
+    saveConfigToCookie();
+}
+
 function toggleSmoothCaret() {
     config.smoothCaret = !config.smoothCaret;
     saveConfigToCookie();
