@@ -9,19 +9,19 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "redirects": [],
+    "redirects": [
+      { 
+        "source": "/soon",
+        "destination": "/"
+      }
+    ],
     "rewrites": [
-      {
+      { 
         "source": "**",
-        "destination": "/soon.html"
+        "destination": "/index.html"
       }
     ],
     "cleanUrls": true,
     "trailingSlash": false
-  },
-  "functions": {
-    "predeploy": [
-      "npm --prefix \"$RESOURCE_DIR\" run lint"
-    ]
   }
 }
