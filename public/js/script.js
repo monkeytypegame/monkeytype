@@ -421,7 +421,7 @@ function showResult() {
   if (stats.wpm > 0 && stats.wpm < 250 && stats.acc > 50 && stats.acc <= 100) {
     if (firebase.auth().currentUser != null) {
       db_getUserHighestWpm(config.mode, mode2).then(data => {
-        console.log(`highest wpm for this mode is ${data}, current is ${stats.wpm}`);
+        // console.log(`highest wpm for this mode is ${data}, current is ${stats.wpm}`);
         if (data < stats.wpm) {
           showCrown();
         }
@@ -621,9 +621,9 @@ function changePage(page) {
       $('.config').css('opacity', 0);
     }
   }
-  firebase.analytics().logEvent('changedPage', {
-    page: page
-  });
+  // firebase.analytics().logEvent('changedPage', {
+  //   page: page
+  // });
 }
 
 function changeMode(mode) {
@@ -821,6 +821,11 @@ $(document).keypress(function(event) {
   if (event["keyCode"] == 32) return;
   //start the test
   if (currentInput == "" && inputHistory.length == 0) {
+    if (firebase.auth().currentUser != null) {
+      firebase.analytics().logEvent('testStarted');      
+    } else {
+      firebase.analytics().logEvent('testStartedNoLogin');
+    }
     testActive = true;
     stopCaretAnimation();
     testStart = Date.now();
@@ -828,7 +833,6 @@ $(document).keypress(function(event) {
       showTimer();
     }
     updateTimerBar();
-    //TODO: #1 Sometimes the timer counts up at double speed for some reason
     clearIntervals();
     timers.push(setInterval(function() {
       time++;
