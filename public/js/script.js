@@ -553,7 +553,7 @@ function restartTest() {
 }
 
 function focusWords() {
-  $("#wordsInput").focus();
+  if(!$("#words").hasClass('hidden')) $("#wordsInput").focus();
 }
 
 function changeCustomText() {
