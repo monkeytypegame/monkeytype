@@ -399,12 +399,12 @@ function refreshAccountPage() {
   }
 
   if (dbSnapshot == null) {
-    console.log('no db snap');
+    // console.log('no db snap');
     db_getUserResults().then(data => {
       cont();
     })
   } else {
-    console.log('using db snap');
+    // console.log('using db snap');
     cont();
   }
 }
