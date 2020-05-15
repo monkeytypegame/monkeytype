@@ -1030,7 +1030,8 @@ let wpmOverTimeChart = new Chart(ctx, {
           labelString: 'Words per Minute'
         },
         ticks: {
-          fontFamily: 'Roboto Mono'
+          fontFamily: 'Roboto Mono',
+          beginAtZero: true
         }
       }]
     }
