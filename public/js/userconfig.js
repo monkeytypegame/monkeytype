@@ -4,7 +4,7 @@ let config = {
     showLiveWpm: false,
     smoothCaret: true,
     quickTab: false,
-    punctuation: true,
+    punctuation: false,
     words: 50,
     time: 30,
     mode: "words"
