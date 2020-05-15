@@ -969,6 +969,7 @@ $(document).keydown((event) => {
 loadConfigFromCookie();
 
 $(document).ready(() => {
+  $('body').css('transition', '.25s');
   restartTest();
   if (config.quickTab) {
     $("#restartTestButton").addClass('hidden');
