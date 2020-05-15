@@ -1,78 +1,99 @@
 $(".pageLogin .register input").keyup(e => {
   if (e.key == "Enter") {
-    $(".pageLogin .preloader").removeClass('hidden');
-
-
-    let name = $(".pageLogin .register input")[0].value;
-    let email = $(".pageLogin .register input")[1].value;
-    let password = $(".pageLogin .register input")[2].value;
-    let passwordVerify = $(".pageLogin .register input")[3].value;
-
-    if (name == "") {
-      showNotification("Name is required", 3000);
-      $(".pageLogin .preloader").addClass('hidden');
-      return;
-    }
-
-    if (password != passwordVerify) {
-      showNotification("Passwords do not match", 3000);
-      $(".pageLogin .preloader").addClass('hidden');
-      return;
-    }
-
-    firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
-      // Account has been created here.
-      let usr = user.user;
-      usr.updateProfile({
-        displayName: name
-      }).then(function() {
-        // Update successful.
-        showNotification("Account created", 2000);
-        firebase.analytics().logEvent("accountCreated", usr.uid);
-        $(".pageLogin .preloader").addClass('hidden');
-        changePage('account');
-      }).catch(function(error) {
-        // An error happened.
-        usr.delete().then(function() {
-          // User deleted.
-          showNotification("Name invalid", 2000);
-           $(".pageLogin .preloader").addClass('hidden');
-        }).catch(function(error) {
-          // An error happened.
-          $(".pageLogin .preloader").addClass('hidden');
-        });
-      });
-    }).catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      showNotification(errorMessage, 5000);
-      $(".pageLogin .preloader").addClass('hidden');
-    });
-
-
+    signUp();
   }
+})
+
+$(".pageLogin .register .button").click(e => {
+    signUp();
 })
 
 $(".pageLogin .login input").keyup(e => {
   if (e.key == "Enter") {
-    $(".pageLogin .preloader").removeClass('hidden');
-    let email = $(".pageLogin .login input")[0].value;
-    let password = $(".pageLogin .login input")[1].value;
-
-    firebase.auth().signInWithEmailAndPassword(email, password).then(e => {
-      changePage('account');
-    }).catch(function(error) {
-      showNotification(error.message, 5000);
-      $(".pageLogin .preloader").addClass('hidden');
-    });
+    signIn();
   }
 })
 
-$(".pageAccount .signOut").click(e => {
+$(".pageLogin .login .button").click(e => {
+  signIn();
+})
+
+$(".signOut").click(e => {
   signOut();
 })
 
+function showSignOutButton() {
+  $(".signOut").removeClass('hidden').css("opacity",1);
+}
+
+function hideSignOutButton() {
+  $(".signOut").css("opacity",0).addClass('hidden');
+}
+
+function signIn() {
+  $(".pageLogin .preloader").removeClass('hidden');
+  let email = $(".pageLogin .login input")[0].value;
+  let password = $(".pageLogin .login input")[1].value;
+
+  firebase.auth().signInWithEmailAndPassword(email, password).then(e => {
+    changePage('account');
+  }).catch(function(error) {
+    showNotification(error.message, 5000);
+    $(".pageLogin .preloader").addClass('hidden');
+  });
+}
+
+function signUp() {
+  $(".pageLogin .preloader").removeClass('hidden');
+  let name = $(".pageLogin .register input")[0].value;
+  let email = $(".pageLogin .register input")[1].value;
+  let password = $(".pageLogin .register input")[2].value;
+  let passwordVerify = $(".pageLogin .register input")[3].value;
+
+  if (name == "") {
+    showNotification("Name is required", 3000);
+    $(".pageLogin .preloader").addClass('hidden');
+    return;
+  }
+
+  if (password != passwordVerify) {
+    showNotification("Passwords do not match", 3000);
+    $(".pageLogin .preloader").addClass('hidden');
+    return;
+  }
+
+  firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
+    // Account has been created here.
+    let usr = user.user;
+    usr.updateProfile({
+      displayName: name
+    }).then(function() {
+      // Update successful.
+      showNotification("Account created", 2000);
+      firebase.analytics().logEvent("accountCreated", usr.uid);
+      $(".pageLogin .preloader").addClass('hidden');
+      changePage('account');
+    }).catch(function(error) {
+      // An error happened.
+      usr.delete().then(function() {
+        // User deleted.
+        showNotification("Name invalid", 2000);
+         $(".pageLogin .preloader").addClass('hidden');
+      }).catch(function(error) {
+        // An error happened.
+        $(".pageLogin .preloader").addClass('hidden');
+      });
+    });
+  }).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    showNotification(errorMessage, 5000);
+    $(".pageLogin .preloader").addClass('hidden');
+  });
+
+
+}
 
 function signOut() {
   firebase.auth().signOut().then(function() {

@@ -705,6 +705,23 @@ key {
     display: grid;
     gap: .5rem;
     width: 100%;
+    .button{
+      border-radius: var(--roundness);
+      background: var(--sub-color);
+      color: var(--bg-color);
+      padding: .5rem;
+      font-size: 1rem;
+      line-height: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: .25s;
+      &:hover{
+        background: var(--main-color);
+      }
+      .fas{
+        margin-right: .5rem;
+      }
+    }
   }
   .preloader{
     position: fixed;
@@ -800,6 +817,26 @@ key {
   }
 }
 
+.signOut{
+  font-size: 1rem;
+  line-height: 1rem;
+  justify-self: end;
+  // background: var(--sub-color);
+  color: var(--sub-color); 
+  width: fit-content;
+  padding: .5rem;
+  border-radius: var(--roundness);
+  cursor: pointer;
+  transition: .25s;
+  float: right;
+  &:hover{
+    color: var(--main-color);
+  }
+  .fas{
+    margin-right: .5rem;
+  }
+}
+
 .pageAccount{
   display: grid;
   gap: 1rem;
@@ -810,23 +847,6 @@ key {
   .preloader{
     font-size: 2rem;
     justify-self: center;
-  }
-  .signOut{
-    justify-self: end;
-    // background: var(--sub-color);
-    color: var(--sub-color); 
-    width: fit-content;
-    padding: .5rem;
-    border-radius: var(--roundness);
-    cursor: pointer;
-    transition: .25s;
-    float: right;
-    &:hover{
-      color: var(--main-color);
-    }
-    .fas{
-      margin-right: .5rem;
-    }
   }
   .triplegroup{
     display: grid;
