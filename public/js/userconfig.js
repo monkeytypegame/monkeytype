@@ -136,5 +136,7 @@ function previewTheme(name) {
 function setTheme(name) {
     config.theme = name;
     $("#currentTheme").attr("href", `themes/${name}.css`);
-    firebase.analytics().logEvent('changedTheme', name);
+    firebase.analytics().logEvent('changedTheme', {
+        theme: name
+    });
 }
