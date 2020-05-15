@@ -1,5 +1,5 @@
 let config = {
-    theme: 'light',
+    theme: 'dark',
     showKeyTips: true,
     showLiveWpm: true,
     smoothCaret: true,
