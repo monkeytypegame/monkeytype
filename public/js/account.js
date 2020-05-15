@@ -100,6 +100,7 @@ function signOut() {
     showNotification("Signed out", 2000);
     updateAccountLoginButton();
     changePage('login');
+    dbSnapshot = null;
   }).catch(function(error) {
     showNotification(error.message, 5000);
   });
