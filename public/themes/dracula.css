@@ -1,23 +1,23 @@
 :root {
   --bg-color: #282a36;
-  --main-color: #F8F8F2;
-  --caret-color: #F8F8F2;
-  --sub-color: #6272A4;
-  --active-word-color: #F1FA8C;
+  --main-color: #f8f8f2;
+  --caret-color: #f8f8f2;
+  --sub-color: #6272a4;
+  --active-word-color: #f1fa8c;
 }
 
 #menu .button:nth-child(1){
-  color: #8BE9FD;
+  color: #8be9fd;
 }
 
 #menu .button:nth-child(2){
-  color: #50FA7B;
+  color: #50fa7b;
 }
 
 #menu .button:nth-child(3){
-  color: #FF79C6;
+  color: #ff79c6;
 }
 
 #menu .button:nth-child(4){
-  color: #FFB86C;
+  color: #ffb86c;
 }
