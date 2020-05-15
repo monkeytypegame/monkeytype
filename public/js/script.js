@@ -86,7 +86,7 @@ function initWords() {
     for (let i = 1; i < wordsBound; i++) {
       randomWord = words[Math.floor(Math.random() * words.length)];
       previousWord = wordsList[i - 1];
-      while (randomWord == previousWord) {
+      while (randomWord == previousWord && (!config.punctuation && "I")) {
         randomWord = words[Math.floor(Math.random() * words.length)];
       }
       wordsList.push(randomWord);
