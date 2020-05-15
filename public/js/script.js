@@ -20,16 +20,16 @@ function showNotification(text, time) {
   let noti = $(".notification");
   noti.text(text);
   noti.css('top', `-${noti.outerHeight()}px`);
-  noti.stop(true,true).animate({
+  noti.stop(true, true).animate({
     top: "1rem"
   }, 250, 'swing', () => {
-      noti.stop(true,true).animate({
-        opacity: 1
-      }, time, () => {
-        noti.stop(true,true).animate({
-          top: `-${noti.outerHeight()}px`
-        }, 250, 'swing');
-      })
+    noti.stop(true, true).animate({
+      opacity: 1
+    }, time, () => {
+      noti.stop(true, true).animate({
+        top: `-${noti.outerHeight()}px`
+      }, 250, 'swing');
+    })
   });
 }
 
@@ -389,7 +389,7 @@ function hideCrown() {
 function showCrown() {
   $("#result .stats .wpm .crownWrapper").animate({
     width: '1.7rem'
-  },250);
+  }, 250);
 }
 
 function showResult() {
@@ -436,7 +436,7 @@ function showResult() {
       $("#result .loginTip").removeClass('hidden');
 
       // showNotification("Sign in to save your result",3000);
-    }  
+    }
   } else {
     showNotification("Test invalid", 3000);
     firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
@@ -468,8 +468,8 @@ function showResult() {
   }
 
   let mainColor = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ', '');
-  let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ','');
-  
+  let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ', '');
+
 
   wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
   wpmOverTimeChart.options.scales.yAxes[0].ticks.minor.fontColor = subColor;
@@ -497,13 +497,13 @@ function restartTest() {
   testActive = false;
   hideLiveWpm();
 
-  $("#words").stop(true,true).animate({ opacity: 0 }, 125);
-  $("#result").stop(true,true).animate({
+  $("#words").stop(true, true).animate({ opacity: 0 }, 125);
+  $("#result").stop(true, true).animate({
     opacity: 0
   }, 125, () => {
     initWords();
     $("#result").addClass('hidden');
-    $("#words").css('opacity', 0).removeClass('hidden').stop(true,true).animate({
+    $("#words").css('opacity', 0).removeClass('hidden').stop(true, true).animate({
       opacity: 1
     }, 125, () => {
       clearIntervals();
@@ -515,7 +515,7 @@ function restartTest() {
         $("#timer")
           .css("transition", "none")
           .css("width", "0vw")
-          .stop(true,true)
+          .stop(true, true)
           .animate({ top: 0 }, 0, () => {
             $("#timer").css("transition", "1s linear");
           });
@@ -553,7 +553,7 @@ function restartTest() {
 }
 
 function focusWords() {
-  if(!$("#words").hasClass('hidden')) $("#wordsInput").focus();
+  if (!$("#words").hasClass('hidden')) $("#wordsInput").focus();
 }
 
 function changeCustomText() {
@@ -589,18 +589,21 @@ function changePage(page) {
     $(".page.pageTest").addClass('active');
     swapElements(activePage, $(".page.pageTest"), 250, focusWords);
     history.pushState('/', null, '/');
-    $('.config').css('opacity', 1);
+    showTestConfig();
+    hideSignOutButton();
   } else if (page == "about") {
     $(".page.pageAbout").addClass('active');
     swapElements(activePage, $(".page.pageAbout"), 250);
     history.pushState('about', null, 'about');
-    $('.config').css('opacity', 0);
+    hideTestConfig();
+    hideSignOutButton();
   } else if (page == "settings") {
     updateSettingsPage()
     $(".page.pageSettings").addClass('active');
     swapElements(activePage, $(".page.pageSettings"), 250);
     history.pushState('settings', null, 'settings');
-    $('.config').css('opacity', 0);
+    hideTestConfig();
+    hideSignOutButton();
   } else if (page == "account") {
     if (!firebase.auth().currentUser) {
       changePage("login");
@@ -609,16 +612,19 @@ function changePage(page) {
       swapElements(activePage, $(".page.pageAccount"), 250);
       refreshAccountPage();
       history.pushState('account', null, 'account');
-      $('.config').css('opacity', 0);
+      hideTestConfig();
+      showSignOutButton();
     }
   } else if (page == "login") {
     if (firebase.auth().currentUser != null) {
       changePage('account');
     } else {
-    $(".page.pageLogin").addClass('active');
+      $(".page.pageLogin").addClass('active');
       swapElements(activePage, $(".page.pageLogin"), 250);
       history.pushState('login', null, 'login');
-      $('.config').css('opacity', 0);
+      hideTestConfig();
+      hideSignOutButton();
+
     }
   }
   // firebase.analytics().logEvent('changedPage', {
@@ -681,7 +687,7 @@ function hideLiveWpm() {
   $("#liveWpm").css('opacity', 0);
 }
 
-function swapElements(el1, el2, totalDuration, callback = function(){ return; }) {
+function swapElements(el1, el2, totalDuration, callback = function() { return; }) {
   if (
     (el1.hasClass('hidden') && !el2.hasClass('hidden')) ||
     (!el1.hasClass('hidden') && el2.hasClass('hidden'))
@@ -698,16 +704,16 @@ function swapElements(el1, el2, totalDuration, callback = function(){ return; })
       $(el2).stop(true, true).removeClass('hidden').css('opacity', 0).animate({
         opacity: 1
       }, totalDuration / 2, () => {
-          callback();
+        callback();
       });
     });
-    
-  } else if (el1.hasClass('hidden') && el2.hasClass('hidden')){
+
+  } else if (el1.hasClass('hidden') && el2.hasClass('hidden')) {
     //both are hidden, only fade in the second
     $(el2).stop(true, true).removeClass('hidden').css('opacity', 0).animate({
       opacity: 1
     }, totalDuration, () => {
-        callback();
+      callback();
     });
   }
 
@@ -725,7 +731,7 @@ function updateAccountLoginButton() {
     // $("#menu .button.account").removeClass('hidden');
     // $("#menu .button.login").addClass('hidden');
   } else {
-    swapElements($("#menu .button.login"), $("#menu .button.account"),  250);
+    swapElements($("#menu .button.login"), $("#menu .button.account"), 250);
     // $("#menu .button.login").removeClass('hidden');
     // $("#menu .button.account").addClass('hidden');
   }
@@ -788,13 +794,13 @@ $(window).on('popstate', (e) => {
 
 });
 
-$(document).on("keypress",  "#restartTestButton", (event) => {
+$(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 32 || event.keyCode == 13) {
     restartTest();
   }
 });
 
-$(document.body).on("click",  "#restartTestButton", (event) => {
+$(document.body).on("click", "#restartTestButton", (event) => {
   restartTest();
 });
 
@@ -826,7 +832,7 @@ $(document).keypress(function(event) {
   //start the test
   if (currentInput == "" && inputHistory.length == 0) {
     if (firebase.auth().currentUser != null) {
-      firebase.analytics().logEvent('testStarted');      
+      firebase.analytics().logEvent('testStarted');
     } else {
       firebase.analytics().logEvent('testStartedNoLogin');
     }
@@ -873,7 +879,7 @@ $(document).keydown((event) => {
 
 
   //tab
-  
+
   if (event["keyCode"] == 9) {
     if (config.quickTab && $(".pageTest").hasClass("active")) {
       event.preventDefault();
@@ -1005,7 +1011,7 @@ let wpmOverTimeChart = new Chart(ctx, {
       intersect: true
     },
     scales: {
-      
+
       xAxes: [{
         ticks: {
           fontFamily: "Roboto Mono"

@@ -33,6 +33,15 @@ function loadConfigFromCookie() {
     }
 }
 
+function showTestConfig() {
+    $("#top .config").removeClass('hidden').css("opacity",1);
+  }
+
+function hideTestConfig() {
+  $("#top .config").css("opacity",0).addClass('hidden');
+    
+}
+
 //key tips
 function setKeyTips(keyTips) {
     config.showKeyTips = keyTips;
