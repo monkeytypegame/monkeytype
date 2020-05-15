@@ -731,6 +731,10 @@ function updateAccountLoginButton() {
   }
 }
 
+$(document).on("click", "#top .logo", (e) => {
+  changePage('test');
+});
+
 $(document).on("click", "#top .config .wordCount .button", (e) => {
   wrd = e.currentTarget.innerHTML;
   changeWordCount(wrd);
