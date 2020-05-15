@@ -667,8 +667,8 @@ function liveWPM() {
 function updateLiveWpm(wpm) {
   if (!config.showLiveWpm) return;
   if (wpm == 0 || !testActive) hideLiveWpm();
-  let wpmstring = wpm < 100 ? `&nbsp;${wpm}` : `${wpm}`;
-  $("#liveWpm").html(wpmstring);
+  // let wpmstring = wpm < 100 ? `&nbsp;${wpm}` : `${wpm}`;
+  $("#liveWpm").html(wpm);
 }
 
 function showLiveWpm() {
