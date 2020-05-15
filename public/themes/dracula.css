@@ -1,0 +1,23 @@
+:root {
+  --bg-color: #282a36;
+  --main-color: #F8F8F2;
+  --caret-color: #F8F8F2;
+  --sub-color: #6272A4;
+  --active-word-color: #F1FA8C;
+}
+
+#menu .button:nth-child(1){
+  color: #8BE9FD;
+}
+
+#menu .button:nth-child(2){
+  color: #50FA7B;
+}
+
+#menu .button:nth-child(3){
+  color: #FF79C6;
+}
+
+#menu .button:nth-child(4){
+  color: #FFB86C;
+}
