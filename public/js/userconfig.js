@@ -1,11 +1,11 @@
 let config = {
     theme: 'dark',
     showKeyTips: true,
-    showLiveWpm: true,
+    showLiveWpm: false,
     smoothCaret: true,
     quickTab: false,
     punctuation: true,
-    words: 100,
+    words: 50,
     time: 30,
     mode: "words"
 }
