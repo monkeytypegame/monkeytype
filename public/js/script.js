@@ -81,8 +81,8 @@ function initWords() {
   let language = words[config.language];
 
   if (language == undefined || language == []) {
-    showNotification("Error generating word list", 3000);
-    return;
+    config.language = "english";
+    language = words[config.language];
   }
 
   if (config.mode == "time" || config.mode == "words") {
