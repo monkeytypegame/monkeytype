@@ -108,7 +108,7 @@ function initWords() {
       wordsList.push(w[i]);
     }
   }
-  if (config.punctuation && !config.mode == "custom") {
+  if (config.punctuation && config.mode != "custom") {
     wordsList = buildSentences(wordsList);
   }
   showWords();
