@@ -2,19 +2,21 @@ function updateSettingsPage(){
 
     let themesEl = $(".pageSettings .section .themes").empty();
     themesList.forEach(theme => {
-        if (config.theme == 'theme') {
-            themesEl.append(`<div class="theme active" theme='${theme}'>${theme.replace('_', ' ')}</div>`);     
-        } else {
-            themesEl.append(`<div class="theme" theme='${theme}'>${theme.replace('_', ' ')}</div>`); 
-        }
+        themesEl.append(`<div class="theme" theme='${theme}'>${theme.replace('_', ' ')}</div>`); 
+    })
+
+    let langEl = $(".pageSettings .section .languages").empty();
+    Object.keys(words).forEach(language => {
+        langEl.append(`<div class="language" language='${language}'>${language.replace('_', ' ')}</div>`); 
     })
 
     setSettingsButton('smoothCaret', config.smoothCaret);
     setSettingsButton('quickTab', config.quickTab);
     setSettingsButton('liveWpm', config.showLiveWpm);
     setSettingsButton('keyTips', config.showKeyTips);
-    setActiveThemeButton(config.theme);
 
+    setActiveThemeButton();
+    setActiveLanguageButton();
 
     if (config.showKeyTips) {
         $(".pageSettings .tip").removeClass('hidden');
@@ -25,9 +27,14 @@ function updateSettingsPage(){
 
 }
 
-function setActiveThemeButton(theme) {
-    $(".pageSettings .themes .theme").removeClass('active');
-    $(".pageSettings .themes .theme[theme=" + theme + "]").addClass('active');
+function setActiveThemeButton() {
+    $(`.pageSettings .section .themes .theme`).removeClass('active');
+    $(`.pageSettings .section .themes .theme[theme=${config.theme}]`).addClass('active');
+}
+
+function setActiveLanguageButton() {
+    $(`.pageSettings .section .languages .language`).removeClass('active');
+    $(`.pageSettings .section .languages .language[language=${config.language}]`).addClass('active'); 
 }
 
 function setSettingsButton(buttonSection,tf) {
@@ -99,6 +106,7 @@ $(".pageSettings .section.keyTips .buttons .button.off").click(e => {
     }
 })
 
+//themes
 $(document).on("mouseover",".pageSettings .section .themes .theme", (e) => {
     let theme = $(e.currentTarget).attr('theme');
     previewTheme(theme);
@@ -107,8 +115,17 @@ $(document).on("mouseover",".pageSettings .section .themes .theme", (e) => {
 $(document).on("click",".pageSettings .section .themes .theme", (e) => {
     let theme = $(e.currentTarget).attr('theme');
     setTheme(theme);
+    setActiveThemeButton();
 })
 
 $(document).on("mouseleave",".pageSettings .section .themes", (e) => {
     setTheme(config.theme);
+})
+
+//languages
+$(document).on("click",".pageSettings .section .languages .language", (e) => {
+    let language = $(e.currentTarget).attr('language');
+    changeLanguage(language);
+    restartTest();
+    setActiveLanguageButton();
 })

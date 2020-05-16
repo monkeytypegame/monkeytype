@@ -78,18 +78,28 @@ function initWords() {
   inputHistory = [];
   currentInput = "";
 
+  let language = words[config.language];
+
+  if (language == undefined || language == []) {
+    showNotification("Error generating word list", 3000);
+    return;
+  }
+
   if (config.mode == "time" || config.mode == "words") {
 
     let wordsBound = config.mode == "time" ? 50 : config.words;
-    let randomWord = words[Math.floor(Math.random() * words.length)];
-    wordsList.push(randomWord);
+    let randomWord = language[Math.floor(Math.random() * language.length)];
+    while (randomWord.indexOf(' ') > -1) {
+      randomWord = language[Math.floor(Math.random() * language.length)];
+    }
+    wordsList.push(randomWord.toLowerCase());
     for (let i = 1; i < wordsBound; i++) {
-      randomWord = words[Math.floor(Math.random() * words.length)];
+      randomWord = language[Math.floor(Math.random() * language.length)];
       previousWord = wordsList[i - 1];
-      while (randomWord == previousWord && (!config.punctuation && randomWord == "I")) {
-        randomWord = words[Math.floor(Math.random() * words.length)];
+      while (randomWord == previousWord || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
+        randomWord = language[Math.floor(Math.random() * language.length)];
       }
-      wordsList.push(randomWord);
+      wordsList.push(randomWord.toLowerCase());
     }
 
   } else if (config.mode == "custom") {
@@ -423,7 +433,8 @@ function showResult() {
     mode: config.mode,
     mode2: mode2,
     punctuation: config.punctuation,
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    language: config.language
   };
   if (stats.wpm > 0 && stats.wpm < 250 && stats.acc > 50 && stats.acc <= 100) {
     if (firebase.auth().currentUser != null) {
@@ -452,15 +463,17 @@ function showResult() {
 
 
   let infoText = "";
-  infoText = config.mode;
 
+
+  infoText += config.mode;
   if (config.mode == "time") {
     infoText += " " + config.time
   } else if (config.mode == "words") {
     infoText += " " + config.words
   }
+  infoText += "<br>" + config.language.replace('_', ' ') ;
   if (config.punctuation) {
-    infoText += " with punctuation"
+    infoText += "<br>with punctuation"
   }
 
   $("#result .stats .info .bottom").html(infoText);
