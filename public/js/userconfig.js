@@ -7,7 +7,8 @@ let config = {
     punctuation: false,
     words: 50,
     time: 30,
-    mode: "words"
+    mode: "words",
+    language: "english"
 }
 
 //cookies
@@ -28,6 +29,7 @@ function loadConfigFromCookie() {
         changeTimeConfig(newConfig.time);
         changeWordCount(newConfig.words);
         changeMode(newConfig.mode);
+        changeLanguage(newConfig.language);
         config = newConfig;
         restartTest();
     }
@@ -139,4 +141,15 @@ function setTheme(name) {
     firebase.analytics().logEvent('changedTheme', {
         theme: name
     });
+}
+
+function changeLanguage(language) {
+    if (language == null || language == undefined) {
+        language = "english";
+    }
+    config.language = language;
+    firebase.analytics().logEvent('changedLanguage', {
+        language: language
+    });
+    saveConfigToCookie();
 }

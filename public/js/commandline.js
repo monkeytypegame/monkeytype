@@ -52,6 +52,15 @@ let commands = {
             }
         },
         {
+            id: "changeLanguage",
+            display: "Change language...",
+            subgroup: true,
+            exec: () => {
+                currentCommands = commandsLanguages;
+                showCommandLine();
+            }
+        },
+        {
             id: "changeMode",
             display: "Change mode...",
             subgroup: true,
@@ -262,6 +271,31 @@ let commandsThemes = {
         }
     ]
 };
+
+let commandsLanguages = {
+    title: "Change language...",
+    list: [
+        {
+            id: "couldnotload",
+            display: "Could not load the languages list :("
+        }
+    ]
+};
+
+if (Object.keys(words).length > 0) {
+    commandsLanguages.list = [];
+    Object.keys(words).forEach(language => {
+        commandsLanguages.list.push({
+            id: "changeLanguage" + capitalizeFirstLetter(language),
+            display: language.replace('_', ' '),
+            exec: () => {
+                changeLanguage(language);
+                restartTest();
+                saveConfigToCookie();
+            }
+        })
+    })
+}
 
 $("#commandLine input").keyup((e) => {
     if (e.keyCode == 38 || e.keyCode == 40) return;
