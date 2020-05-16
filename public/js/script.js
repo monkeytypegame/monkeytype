@@ -108,13 +108,20 @@ function buildSentences() {
   let returnList = [];
   $.each(wordsList, (index, word) => {
     let previousWord = returnList[index - 1];
-    if (index == 0 || getLastChar(previousWord) == ".") {
+    if (index == 0 || getLastChar(previousWord) == "." || getLastChar(previousWord) == "?" || getLastChar(previousWord) == "!") {
       //always capitalise the first word or if there was a dot
       word = capitalizeFirstLetter(word);
     } else if (
-      //10% chance to add a dot or if its a last word
+      //10% chance to end a sentence
       (Math.random() < 0.1 && getLastChar(previousWord) != "." && index != wordsList.length - 2) || index == wordsList.length - 1) {
-      word += ".";
+      let rand = Math.random();
+      if (rand <= 0.8) {
+        word += ".";
+      } else if (rand > .8 && rand < .9){
+        word += "?";
+      } else {
+        word += "!";
+      }
     } else if (Math.random() < 0.01 &&
       getLastChar(previousWord) != "," &&
       getLastChar(previousWord) != ".") {
