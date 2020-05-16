@@ -3,7 +3,6 @@
     --main-color: #ec4c56;
     --caret-color: #ec4c56;
     --sub-color: #ebeaef;
-    --active-word-color: #ebeaef;
 }
 .word letter.incorrect{
     color: #ebe04c;
