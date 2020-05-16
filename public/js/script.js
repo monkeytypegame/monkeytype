@@ -161,7 +161,8 @@ function buildSentences() {
 }
 
 function addWord() {
-  let randomWord = words[Math.floor(Math.random() * words.length)];
+  let language = words[config.language]
+  let randomWord = language[Math.floor(Math.random() * language.length)];
   wordsList.push(randomWord);
   let w = "<div class='word'>";
   for (let c = 0; c < randomWord.length; c++) {
