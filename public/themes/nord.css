@@ -1,0 +1,19 @@
+:root {
+	--bg-color: #242933;
+	--caret-color: #d8dee9;
+	--main-color: #d8dee9;
+	--sub-color: #4c566a;
+	--active-word-color: #81a1c1;
+}
+
+.word letter.incorrect {
+  color: #bf616a;
+}
+
+.word letter.incorrect.extra {
+  color: #793e44;
+}
+
+.word.error {
+  border-bottom: 2px solid #bf616a;
+}
