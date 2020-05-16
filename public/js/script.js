@@ -829,6 +829,7 @@ $(document).keypress(function(event) {
   if (!$("#wordsInput").is(":focus")) return;
   if (event["keyCode"] == 13) return;
   if (event["keyCode"] == 32) return;
+  if (event["keyCode"] == 27) return;
   //start the test
   if (currentInput == "" && inputHistory.length == 0) {
     if (firebase.auth().currentUser != null) {
