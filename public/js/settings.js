@@ -9,12 +9,12 @@ function updateSettingsPage(){
         }
     })
 
-
-
     setSettingsButton('smoothCaret', config.smoothCaret);
     setSettingsButton('quickTab', config.quickTab);
     setSettingsButton('liveWpm', config.showLiveWpm);
     setSettingsButton('keyTips', config.showKeyTips);
+    setActiveThemeButton(config.theme);
+
 
     if (config.showKeyTips) {
         $(".pageSettings .tip").removeClass('hidden');
@@ -23,6 +23,11 @@ function updateSettingsPage(){
     }
 
 
+}
+
+function setActiveThemeButton(theme) {
+    $(".pageSettings .themes .theme").removeClass('active');
+    $(".pageSettings .themes .theme[theme=" + theme + "]").addClass('active');
 }
 
 function setSettingsButton(buttonSection,tf) {
