@@ -378,7 +378,7 @@ function calculateStats() {
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round((chars.correctWordChars * (60 / testSeconds)) / 5);
-  let acc = Math.round((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
+  let acc = Math.floor((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
   return { wpm: wpm, acc: acc, correctChars: chars.allCorrectChars, incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars };
 }
 
