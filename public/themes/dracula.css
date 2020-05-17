@@ -1,0 +1,38 @@
+:root {
+  --bg-color: #282a36;
+  --main-color: #f2f2f2;
+  --caret-color: #f2f2f2;
+  --sub-color: #bd93f9;
+}
+
+.word letter.incorrect{
+  color: #f758a0;
+}
+
+.word letter.incorrect.extra{
+  color: #732e51;
+}
+
+.word.error{
+  border-bottom: 2px solid #f758a0;
+}
+
+#menu .button:nth-child(1){
+  color: #8be9fd;
+}
+
+#menu .button:nth-child(2){
+  color: #50fa7b;
+}
+
+#menu .button:nth-child(3){
+  color: #f1fa8c;
+}
+
+#menu .button:nth-child(4){
+  color: #ffb86c;
+}
+
+#menu .button:nth-child(5){
+  color: #ffb86c;
+}
