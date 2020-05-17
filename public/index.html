@@ -9,11 +9,26 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="themes/dark.css" id="currentTheme">
   <link rel="shortcut icon" href="favicon.png">
-  
 </head>
-
 <body>
   <div class="notification">Signed in</div>
+  <div id="versionHistoryWrapper" class="hidden">
+    <div id="versionHistory">
+      <div class="tip">Click anywhere to dismiss</div>
+      <div class="releases">
+        <div class="release">
+          <div class="title">v1</div>
+          <div class="date">010101</div>
+          <div class="body">test</div>
+        </div>
+        <div class="release">
+          <div class="title">v2</div>
+          <div class="date">010101</div>
+          <div class="body">test</div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div id="commandLineWrapper" class="hidden">
     <div id="commandLine">
       <input type="text" class="input" placeholder="Command">
@@ -307,6 +322,7 @@
       <div>
         Contribute to this project on <a href="https://github.com/Miodec/monkey-type">GitHub</a> 
       </div>
+      <div class="version">version</div>
     </div>
 
   </div>

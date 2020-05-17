@@ -45,6 +45,24 @@ function test() {
   });
 }
 
+function getReleasesFromGitHub() {
+  $.getJSON("https://api.github.com/repos/Miodec/monkey-type/releases", data => {
+    $('#bottom .version').text(data[0].name).css('opacity', 1);
+    $("#versionHistory .releases").empty();
+    data.forEach(release => {
+      if (!release.draft && !release.prerelease) {
+        $("#versionHistory .releases").append(`
+          <div class="release">
+            <div class="title">${release.name}</div>
+            <div class="date">${moment(release.published_at).format('DD MMM YYYY')}</div>
+            <div class="body">${release.body.replace(/\r\n/g, '<br>')}</div>
+          </div>
+        `);
+      }
+    })
+  })
+}
+
 function getLastChar(word) {
   return word.charAt(word.length - 1);
 }
@@ -828,6 +846,16 @@ $(document.body).on("click", "#restartTestButton", (event) => {
   restartTest();
 });
 
+$(document.body).on("click", ".version", (event) => {
+  $("#versionHistoryWrapper").css('opacity', 0).removeClass('hidden').animate({ opacity: 1 }, 125);
+});
+
+$(document.body).on("click", "#versionHistoryWrapper", (event) => {
+  $("#versionHistoryWrapper").css('opacity', 1).animate({ opacity: 0 }, 125, () => {
+    $("#versionHistoryWrapper").addClass('hidden');
+  });
+});
+
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
 });
@@ -992,6 +1020,7 @@ $(document).keydown((event) => {
 });
 
 loadConfigFromCookie();
+getReleasesFromGitHub();
 
 $(document).ready(() => {
   $('body').css('transition', '.25s');
