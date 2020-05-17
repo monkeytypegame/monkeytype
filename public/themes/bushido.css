@@ -1,11 +1,15 @@
-/* yellow #e2b714
-dark #323437
-light #d1d0c5 */
-
 :root {
     --bg-color: #414755;
     --main-color: #ec4c56;
     --caret-color: #ec4c56;
     --sub-color: #ebeaef;
-    --active-word-color: #ebeaef;
+}
+.word letter.incorrect{
+    color: #ebe04c;
+}
+.word.error{
+    border-bottom: 2px solid #ebe04c;
+}
+.word letter.incorrect.extra {
+    color: #797717;
 }

@@ -78,18 +78,28 @@ function initWords() {
   inputHistory = [];
   currentInput = "";
 
+  let language = words[config.language];
+
+  if (language == undefined || language == []) {
+    config.language = "english";
+    language = words[config.language];
+  }
+
   if (config.mode == "time" || config.mode == "words") {
 
     let wordsBound = config.mode == "time" ? 50 : config.words;
-    let randomWord = words[Math.floor(Math.random() * words.length)];
-    wordsList.push(randomWord);
+    let randomWord = language[Math.floor(Math.random() * language.length)];
+    while (randomWord.indexOf(' ') > -1) {
+      randomWord = language[Math.floor(Math.random() * language.length)];
+    }
+    wordsList.push(randomWord.toLowerCase());
     for (let i = 1; i < wordsBound; i++) {
-      randomWord = words[Math.floor(Math.random() * words.length)];
+      randomWord = language[Math.floor(Math.random() * language.length)];
       previousWord = wordsList[i - 1];
-      while (randomWord == previousWord && (!config.punctuation && "I")) {
-        randomWord = words[Math.floor(Math.random() * words.length)];
+      while (randomWord == previousWord || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
+        randomWord = language[Math.floor(Math.random() * language.length)];
       }
-      wordsList.push(randomWord);
+      wordsList.push(randomWord.toLowerCase());
     }
 
   } else if (config.mode == "custom") {
@@ -98,7 +108,7 @@ function initWords() {
       wordsList.push(w[i]);
     }
   }
-  if (config.punctuation) {
+  if (config.punctuation && config.mode != "custom") {
     wordsList = buildSentences(wordsList);
   }
   showWords();
@@ -108,13 +118,20 @@ function buildSentences() {
   let returnList = [];
   $.each(wordsList, (index, word) => {
     let previousWord = returnList[index - 1];
-    if (index == 0 || getLastChar(previousWord) == ".") {
+    if (index == 0 || getLastChar(previousWord) == "." || getLastChar(previousWord) == "?" || getLastChar(previousWord) == "!") {
       //always capitalise the first word or if there was a dot
       word = capitalizeFirstLetter(word);
     } else if (
-      //10% chance to add a dot or if its a last word
+      //10% chance to end a sentence
       (Math.random() < 0.1 && getLastChar(previousWord) != "." && index != wordsList.length - 2) || index == wordsList.length - 1) {
-      word += ".";
+      let rand = Math.random();
+      if (rand <= 0.8) {
+        word += ".";
+      } else if (rand > .8 && rand < .9){
+        word += "?";
+      } else {
+        word += "!";
+      }
     } else if (Math.random() < 0.01 &&
       getLastChar(previousWord) != "," &&
       getLastChar(previousWord) != ".") {
@@ -144,7 +161,11 @@ function buildSentences() {
 }
 
 function addWord() {
-  let randomWord = words[Math.floor(Math.random() * words.length)];
+  let language = words[config.language]
+  let randomWord = language[Math.floor(Math.random() * language.length)];
+  while (randomWord.indexOf(' ') > -1) {
+    randomWord = language[Math.floor(Math.random() * language.length)];
+  }
   wordsList.push(randomWord);
   let w = "<div class='word'>";
   for (let c = 0; c < randomWord.length; c++) {
@@ -378,7 +399,7 @@ function calculateStats() {
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round((chars.correctWordChars * (60 / testSeconds)) / 5);
-  let acc = Math.round((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
+  let acc = Math.floor((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
   return { wpm: wpm, acc: acc, correctChars: chars.allCorrectChars, incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars };
 }
 
@@ -416,7 +437,8 @@ function showResult() {
     mode: config.mode,
     mode2: mode2,
     punctuation: config.punctuation,
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    language: config.language
   };
   if (stats.wpm > 0 && stats.wpm < 250 && stats.acc > 50 && stats.acc <= 100) {
     if (firebase.auth().currentUser != null) {
@@ -445,15 +467,17 @@ function showResult() {
 
 
   let infoText = "";
-  infoText = config.mode;
 
+
+  infoText += config.mode;
   if (config.mode == "time") {
     infoText += " " + config.time
   } else if (config.mode == "words") {
     infoText += " " + config.words
   }
+  infoText += "<br>" + config.language.replace('_', ' ') ;
   if (config.punctuation) {
-    infoText += " with punctuation"
+    infoText += "<br>with punctuation"
   }
 
   $("#result .stats .info .bottom").html(infoText);
@@ -829,6 +853,7 @@ $(document).keypress(function(event) {
   if (!$("#wordsInput").is(":focus")) return;
   if (event["keyCode"] == 13) return;
   if (event["keyCode"] == 32) return;
+  if (event["keyCode"] == 27) return;
   //start the test
   if (currentInput == "" && inputHistory.length == 0) {
     if (firebase.auth().currentUser != null) {
@@ -1030,7 +1055,8 @@ let wpmOverTimeChart = new Chart(ctx, {
           labelString: 'Words per Minute'
         },
         ticks: {
-          fontFamily: 'Roboto Mono'
+          fontFamily: 'Roboto Mono',
+          beginAtZero: true
         }
       }]
     }

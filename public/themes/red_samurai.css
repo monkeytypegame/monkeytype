@@ -1,15 +1,6 @@
-/* :root{
-    --bg-color: #17171b;
-    --main-color: #c79e6e;
-    --caret-color: #c79e6e;
-    --sub-color: #b43a49;
-    --active-word-color: #b43a49;
-} */
-
 :root{
     --bg-color: #84202c;
     --main-color: #17171b;
     --caret-color: #17171b;
     --sub-color: #c79e6e;
-    --active-word-color: #c79e6e;
 }

@@ -645,7 +645,7 @@ key {
   margin: 5px 5px;
   color: var(--sub-color);
   display: flex;
-  transition: 0.25s;
+  // transition: 0.25s;
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid transparent;
 }
@@ -663,7 +663,7 @@ key {
 }
 
 .word.active {
-  color: var(--active-word-color);
+  color: var(--sub-color);
 }
 
 .word letter {
@@ -795,11 +795,11 @@ key {
       width: min-content;
       width: -moz-min-content;
     }
-    .themes{
+    .themes, .languages{
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       // gap: 1rem;
-      .theme{
+      .theme, .language{
         // padding: 1rem 2rem;
         text-align: center;
         color: var(--sub-color);
