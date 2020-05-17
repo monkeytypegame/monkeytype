@@ -1,11 +1,6 @@
-/* yellow #e2b714
-dark #323437
-light #d1d0c5 */
-
 :root {
     --bg-color: #323437;
     --main-color: #e2b714;
     --caret-color: #e2b714;
     --sub-color: #d1d0c5;
-    --active-word-color: #d1d0c5;
 }

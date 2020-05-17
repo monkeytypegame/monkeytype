@@ -289,7 +289,8 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
       }],
       yAxes: [{
         ticks: {
-          fontFamily: "Roboto Mono"
+          fontFamily: "Roboto Mono",
+          beginAtZero: true
         },
         display: true,
         scaleLabel: {

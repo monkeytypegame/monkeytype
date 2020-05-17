@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monkey Type</title>
   <link rel="stylesheet" href="css/fa.css">
-  <link rel="stylesheet" href="themes/dark.css" id="currentTheme">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="themes/dark.css" id="currentTheme">
   <link rel="shortcut icon" href="favicon.png">
   
 </head>
@@ -89,7 +89,7 @@
         <div class="group punctuationMode">
           <!--           <div class="title">time</div> -->
           <div class="buttons">
-            <div class="button toggleButton active" tabindex="2">punctuation</div>
+            <div class="button toggleButton" tabindex="2">punctuation</div>
           </div>
         </div>
         <div class="group mode">
@@ -193,11 +193,6 @@
           <p><a href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/">everyone</a> who provided
             valuable feedback on the original reddit post for the prototype of this website</p>
         </div>
-        <div class="section">
-          <h1>support</h1>
-          <p>If yo are feeling extra awesome and wish to support further development, you can do so <a href="https://www.paypal.me/jackbartnik">here</a>.
- 
-        </div>
       </div>
       <div class="page pageSettings hidden">
         <div class="tip" style="grid-column: 1/3;">tip: You can also change all these settings quickly using the command line (<key>esc</key>)</div>
@@ -222,15 +217,13 @@
           <div class="buttons"><div class="button on" tabindex="0">show</div><div class="button off" tabindex="0">hide</div></div>
         </div>
         <div class="section" style="grid-column: 1/3;">
+          <h1>languages</h1>
+          <div class="languages">
+          </div>
+        </div>
+        <div class="section" style="grid-column: 1/3;">
           <h1>theme</h1>
           <div class="themes">
-            <div class="theme">light</div>
-            <div class="theme active">dark</div>
-            <div class="theme">light</div>
-            <div class="theme">light</div>
-            <div class="theme">light</div>
-            <div class="theme">light</div>
-            
           </div>
         </div>
       </div>
@@ -335,12 +328,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-trendline@0.1.3/src/chartjs-plugin-trendline.min.js"></script>
-
+<script src="js/words.js"></script>
 <script src="js/db.js"></script>
 <script src="js/commandline.js"></script>
 <script src="js/settings.js"></script>
 <script src="js/userconfig.js"></script>
-<script src="js/words.js"></script>
 <script src="js/script.js"></script>
 <script src="js/account.js"></script>
 
