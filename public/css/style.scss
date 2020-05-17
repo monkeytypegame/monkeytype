@@ -238,6 +238,8 @@ a:hover {
   opacity: 0;
   transition: 0.25s;
   z-index: -1;
+  position: relative;
+  z-index: 99;
 }
 
 #timer {
