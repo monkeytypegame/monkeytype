@@ -53,6 +53,60 @@ a:hover {
   top: -5rem;
 }
 
+#versionHistoryWrapper{
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  display: grid;
+  justify-content: center;
+  align-items: start;
+  padding: 5rem 0;
+  #versionHistory{
+    width: 75vw;
+    height: 100%;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    overflow-y: scroll;
+    .tip{
+      text-align: center;
+      color: var(--sub-color);
+    }
+    .releases{
+      display: grid;
+      gap: 2rem;
+      .release{
+        display: grid;
+        grid-template-areas: "title date"
+                              "body body";
+        .title{
+          grid-area: title;
+          font-size: 2rem;
+          color: var(--sub-color);
+        }
+        .date{
+          grid-area: date;
+          text-align: right;
+          color: var(--sub-color);
+          align-self: center;
+        }
+        .body{
+          grid-area: body;
+        }
+        &:last-child{
+          margin-bottom: 2rem;
+        }
+      }
+    }
+  }
+}
+
 #commandLineWrapper {
   width: 100%;
   height: 100%;
@@ -201,7 +255,7 @@ a:hover {
 }
 
 #liveWpm {
-  position: absolute;
+  position: relative;
   // font-size: 1.7rem;
   // line-height: 1.7rem;
   // color: var(--sub-color);
@@ -483,6 +537,14 @@ key {
   .keyTips{
     margin-bottom: 1rem;
   }
+  .version{
+    opacity: 0;
+    transition: .25s;
+    &:hover{
+      cursor: pointer;
+      color: var(--main-color);
+    }
+  }
 }
 
 #top.focus {
@@ -495,13 +557,6 @@ key {
 
 #bottom.focus {
   opacity: 0 !important;
-}
-
-#middle {
-  /* display:grid; */
-  /* align-items: center; */
-  /* justify-content: center; */
-  z-index: 999;
 }
 
 #result {
@@ -622,6 +677,7 @@ key {
 }
 
 #restartTestButton {
+  position: relative;
   opacity: 0;
   border-radius: var(--roundness);
   padding: 1rem 5rem;
