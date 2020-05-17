@@ -320,13 +320,16 @@ function refreshAccountPage() {
       custom: []
     }
     
-
     let topWpm = 0;
     let topMode = '';
+    let testRestarts = 0;
 
     let testCount = dbSnapshot.length;
     $(".pageAccount .history table tbody").empty();
     dbSnapshot.forEach(result => {
+      if (result.restartCount != undefined) {
+        testRestarts += result.restartCount;
+      }
       let withpunc = '';
       if (result.punctuation) {
         withpunc = ', with punctuation';
@@ -397,8 +400,15 @@ function refreshAccountPage() {
 
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .highestWpm .mode").html(topMode);
-
     $(".pageAccount .testsTaken .val").text(testCount);
+
+    $(".pageAccount .testCompletion .val").text(
+      Math.floor((testCount / (testCount + testRestarts) * 100)) + "%"
+    );
+
+    $(".pageAccount .avgRestart .val").text(
+      ((testCount + testRestarts) / testCount).toFixed(1)
+    );
 
     let favMode = testModes.words10;
     let favModeName = 'words10';

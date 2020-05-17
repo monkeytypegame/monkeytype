@@ -8,6 +8,7 @@ let testActive = false;
 let testStart, testEnd;
 let wpmHistory = [];
 let currentCommands = commands;
+let restartCount = 0;
 
 let accuracyStats = {
   correct: 0,
@@ -432,14 +433,12 @@ function showCrown() {
 }
 
 function showResult() {
-  //TODO: #2 Sometimes the caret jumps to the top left corner when showing results
   testEnd = Date.now();
   let stats = calculateStats();
   clearIntervals();
   $("#result .stats .wpm .bottom").text(stats.wpm);
   $("#result .stats .acc .bottom").text(stats.acc + "%");
   $("#result .stats .key .bottom").text(stats.correctChars + "/" + stats.incorrectChars);
-
   let mode2 = "";
   if (config.mode == "time") {
     mode2 = config.time;
@@ -456,8 +455,11 @@ function showResult() {
     mode2: mode2,
     punctuation: config.punctuation,
     timestamp: Date.now(),
-    language: config.language
+    language: config.language,
+    restartCount: restartCount
   };
+  console.log(restartCount);
+  restartCount = 0;
   if (stats.wpm > 0 && stats.wpm < 250 && stats.acc > 50 && stats.acc <= 100) {
     if (firebase.auth().currentUser != null) {
       db_getUserHighestWpm(config.mode, mode2).then(data => {
@@ -538,7 +540,6 @@ function restartTest() {
   hideCaret();
   testActive = false;
   hideLiveWpm();
-
   $("#words").stop(true, true).animate({ opacity: 0 }, 125);
   $("#result").stop(true, true).animate({
     opacity: 0
@@ -633,6 +634,7 @@ function changePage(page) {
     history.pushState('/', null, '/');
     showTestConfig();
     hideSignOutButton();
+    restartCount = 0;
   } else if (page == "about") {
     $(".page.pageAbout").addClass('active');
     swapElements(activePage, $(".page.pageAbout"), 250);
@@ -838,6 +840,9 @@ $(window).on('popstate', (e) => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 32 || event.keyCode == 13) {
+    if (testActive) {
+      restartCount++;
+    }
     restartTest();
   }
 });
@@ -936,6 +941,9 @@ $(document).keydown((event) => {
   if (event["keyCode"] == 9) {
     if (config.quickTab && $(".pageTest").hasClass("active")) {
       event.preventDefault();
+      if (testActive) {
+        restartCount++;
+      }
       restartTest();
     }
   }
