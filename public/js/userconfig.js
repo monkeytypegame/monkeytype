@@ -14,8 +14,9 @@ let config = {
 //cookies
 function saveConfigToCookie() {
     let d = new Date();
-    d.setFullYear(d.getFullYear() + 1)
-    $.cookie("config", JSON.stringify(config), { expires: d })
+    d.setFullYear(d.getFullYear() + 1);
+    $.cookie("config", JSON.stringify(config), { expires: d });
+    restartCount = 0;
 }
 
 function loadConfigFromCookie() {

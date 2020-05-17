@@ -907,7 +907,7 @@ key {
   }
   .triplegroup{
     display: grid;
-    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr 2fr;
     gap: 1rem;
   }
   .group{
