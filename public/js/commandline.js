@@ -298,7 +298,7 @@ if (Object.keys(words).length > 0) {
 }
 
 $("#commandLine input").keyup((e) => {
-    if (e.keyCode == 38 || e.keyCode == 40) return;
+    if (e.keyCode == 38 || e.keyCode == 40 || e.keyCode == 13) return;
     updateSuggestedCommands();
 });
 
@@ -326,7 +326,9 @@ $("#commandInput textarea").keydown((e) => {
         $.each(currentCommands.list, (i, obj) => {
             if (obj.id == command) {
                 obj.exec(value);
-                subgroup = obj.subgroup;
+                if (obj.subgroup !== null && obj.subgroup !== undefined) {
+                    subgroup = obj.subgroup;
+                }
             }
         });
         firebase.analytics().logEvent('usedCommandLine', {
@@ -351,7 +353,9 @@ $("#commandLine input").keydown((e) => {
                     showCommandInput(obj.id, obj.display);
                 } else {
                     obj.exec();
-                    subgroup = obj.subgroup;
+                    if (obj.subgroup !== null && obj.subgroup !== undefined) {
+                        subgroup = obj.subgroup;
+                    }
                 }
             }
         });
