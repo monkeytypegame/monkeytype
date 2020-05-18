@@ -8,7 +8,8 @@ let config = {
     words: 50,
     time: 30,
     mode: "words",
-    language: "english"
+    language: "english",
+    fontSize: 1
 }
 
 //cookies
@@ -31,6 +32,7 @@ function loadConfigFromCookie() {
         changeWordCount(newConfig.words);
         changeMode(newConfig.mode);
         changeLanguage(newConfig.language);
+        changeFontSize(newConfig.fontSize);
         config = newConfig;
         restartTest();
     }
@@ -152,5 +154,31 @@ function changeLanguage(language) {
     firebase.analytics().logEvent('changedLanguage', {
         language: language
     });
+    saveConfigToCookie();
+}
+
+function changeFontSize(fontSize) {
+    if (fontSize == null || fontSize == undefined) {
+        fontSize = 1;
+    }
+    config.fontSize = fontSize;
+    $("#words").removeClass('size125');
+    $("#caret").removeClass('size125');
+    $("#words").removeClass('size15');
+    $("#caret").removeClass('size15');
+    $("#words").removeClass('size2');
+    $("#caret").removeClass('size2');
+
+    if (fontSize == 125) {
+        $("#words").addClass('size125');
+        $("#caret").addClass('size125');
+    } else if (fontSize == 15) {
+        $("#words").addClass('size15');     
+        $("#caret").addClass('size15');     
+    } else if (fontSize == 2) {
+        $("#words").addClass('size2');
+        $("#caret").addClass('size2');
+    }
+    updateCaretPosition();
     saveConfigToCookie();
 }

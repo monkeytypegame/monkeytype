@@ -306,6 +306,21 @@ a:hover {
   // transition: 0.05s;
 }
 
+#caret.size125{
+  height: 2rem;
+  width: 2px;
+}
+
+#caret.size15{
+  height: 2.25rem;
+  width: 3px;
+}
+
+#caret.size2{
+  height: 3rem;
+  width: 4px;
+}
+
 @keyframes caretFlash {
   0% {
     background: transparent;
@@ -700,12 +715,31 @@ key {
 }
 
 .word {
-  margin: 5px 5px;
+  margin: .25rem;
   color: var(--sub-color);
   display: flex;
   // transition: 0.25s;
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid transparent;
+  line-height: 1rem;
+}
+
+#words.size125 .word{
+  line-height: 1.25rem;
+  font-size: 1.25rem;
+  margin: .31rem;
+}
+
+#words.size15 .word{
+  line-height: 1.5rem;
+  font-size: 1.5rem;
+  margin: .37rem;
+}
+
+#words.size2 .word{
+  line-height: 2rem;
+  font-size: 2rem;
+  margin: .5rem;
 }
 
 .word.error {
@@ -726,8 +760,8 @@ key {
 
 .word letter {
   // transition: .1s;
-  height: 1rem;
-  line-height: 1rem;
+  // height: 1rem;
+  // line-height: 1rem;
   /* margin: 0 1px; */
 }
 

@@ -17,6 +17,7 @@ function updateSettingsPage(){
 
     setActiveThemeButton();
     setActiveLanguageButton();
+    setActiveFontSizeButton();
 
     if (config.showKeyTips) {
         $(".pageSettings .tip").removeClass('hidden');
@@ -30,6 +31,11 @@ function updateSettingsPage(){
 function setActiveThemeButton() {
     $(`.pageSettings .section .themes .theme`).removeClass('active');
     $(`.pageSettings .section .themes .theme[theme=${config.theme}]`).addClass('active');
+}
+
+function setActiveFontSizeButton() {
+    $(`.pageSettings .section.fontSize .buttons .button`).removeClass('active');
+    $(`.pageSettings .section.fontSize .buttons .button[fontsize=`+config.fontSize+`]`).addClass('active');
 }
 
 function setActiveLanguageButton() {
@@ -126,6 +132,15 @@ $(document).on("mouseleave",".pageSettings .section .themes", (e) => {
 $(document).on("click",".pageSettings .section .languages .language", (e) => {
     let language = $(e.currentTarget).attr('language');
     changeLanguage(language);
+    showNotification('Language changed', 1000);
     restartTest();
     setActiveLanguageButton();
+})
+
+//fontsize
+$(document).on("click",".pageSettings .section.fontSize .button", (e) => {
+    let fontSize = $(e.currentTarget).attr('fontsize');
+    changeFontSize(fontSize);
+    showNotification('Font size changed', 1000);
+    setActiveFontSizeButton();
 })
