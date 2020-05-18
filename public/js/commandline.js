@@ -61,6 +61,15 @@ let commands = {
             }
         },
         {
+            id: "changeFontSize",
+            display: "Change font size...",
+            subgroup: true,
+            exec: () => {
+                currentCommands = commandsFontSize;
+                showCommandLine();
+            }
+        },
+        {
             id: "changeMode",
             display: "Change mode...",
             subgroup: true,
@@ -237,6 +246,40 @@ let commandsTimeConfig = {
             exec: () => {
                 changeTimeConfig("120");
                 restartTest();
+            }
+        }
+    ]
+};
+
+let commandsFontSize = {
+    title: "Change font size...",
+    list: [
+        {
+            id: "changeFontSize1",
+            display: "1x",
+            exec: () => {
+                changeFontSize(1)
+            }
+        },
+        {
+            id: "changeFontSize125",
+            display: "1.25x",
+            exec: () => {
+                changeFontSize(125)
+            }
+        },
+        {
+            id: "changeFontSize15",
+            display: "1.5x",
+            exec: () => {
+                changeFontSize(15)
+            }
+        },
+        {
+            id: "changeFontSize2",
+            display: "2x",
+            exec: () => {
+                changeFontSize(2)
             }
         }
     ]
