@@ -30,3 +30,11 @@ everyone who provided valuable feedback on the original reddit post for the prot
 
 # support
 If you wish to support further development and feeling extra awesome, you can do so [here](https://www.paypal.me/jackbartnik).
+
+# how to contribue
+1. Head to [the firebase console](https://console.firebase.google.com/u/0/) and make a new project (the project name doesnt really matter, but just name it `monkey-type`). You dont need to enable analytics for it.
+2. Install the [Firebase Command Line Interface](https://firebase.google.com/docs/cli), and use `firebase login` to log in to the same google account as you just used to make the project
+3. Make sure the project name inside `.firebaserc` is the same as what you made it in step 1
+4. Git clone the project and then run `firebase serve --only functions` to start a local server on post 5000. Use ctrl+c to stop it.
+
+That should be it. If you run into any problems, let me know.
