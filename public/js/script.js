@@ -1045,6 +1045,17 @@ $(document).keydown((event) => {
 loadConfigFromCookie();
 getReleasesFromGitHub();
 
+if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
+  $("#top .logo .bottom").text("monkey-dev");
+  $("head title").text("Monkey Dev")
+}
+
+if (window.location.hostname === "localhost") {
+  $("#top .logo .top").text("localhost");
+  $("head title").text($("head title").text() + " (localhost)");
+
+}
+
 $(document).ready(() => {
   $('body').css('transition', '.25s');
   restartTest();
