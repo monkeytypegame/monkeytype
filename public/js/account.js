@@ -127,11 +127,12 @@ firebase.auth().onAuthStateChanged(function(user) {
 });
 
 var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
+  animationSteps: 60,
   type: 'line',
   data: {
     datasets: [
       {
-        label: "words 10",
+        label: "wpm",
         fill: false,
         data: [],
         borderColor: '#f44336',
@@ -142,120 +143,57 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
         //   width: 1
         // }
       },
-      {
-        label: "words 25",
-        fill: false,
-        data: [],
-        borderColor: '#FF5722',
-        borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(255,87,34,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
-      },
-      {
-        label: "words 50",
-        fill: false,
-        data: [],
-        borderColor: '#FF9800',
-        borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(255,152,0,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
-      },
-      {
-        label: "words 100",
-        fill: false,
-        data: [],
-        borderColor: '#FFC107',
-        borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(255,193,7,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
-      },
-      {
-        label: "words 200",
-        fill: false,
-        data: [],
-        borderColor: '#FFEB3B',
-        borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(255,235,59,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
-      },
-      {
-        label: "time 15",
-        fill: false,
-        data: [],
-        borderColor: '#3F51B5',
-        borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(63,81,181,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
-      },
-      {
-        label: "time 30",
-        fill: false,
-        data: [],
-        borderColor: '#2196F3',
-        borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(33,150,243,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
-      },
-      {
-        label: "time 60",
-        fill: false,
-        data: [],
-        borderColor: '#03A9F4',
-        borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(3,169,244,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
-      },
-      {
-        label: "time 120",
-        fill: false,
-        data: [],
-        borderColor: '#00BCD4',
-        borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(0,188,212,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
-      },
-      {
-        label: "custom",
-        fill: false,
-        data: [],
-        borderColor: '#4CAF50',
-        borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(76,175,80,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
-      }
     ],
   },
   options: {
     tooltips: {
+      // Disable the on-canvas tooltip
+      enabled: true,
       titleFontFamily: "Roboto Mono",
-      bodyFontFamily: "Roboto Mono"
+      bodyFontFamily: "Roboto Mono",
+      intersect: false,
+      custom: function(tooltip) {
+        if (!tooltip) return;
+        // disable displaying the color box;
+        tooltip.displayColors = false;
+      }, 
+      callbacks : { // HERE YOU CUSTOMIZE THE LABELS
+        title: function(){
+          return;
+        },
+        beforeLabel : function(tooltipItem, data) {
+          let resultData = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+          let label = `${data.datasets[tooltipItem.datasetIndex].label}: ${tooltipItem.yLabel}`
+          + '\n' +
+          `acc: ${resultData.acc}`
+          + '\n\n' +
+          `mode: ${resultData.mode} `;
+        
+          if(resultData.mode == "time"){
+            label += resultData.mode2;
+          }else if(resultData.mode == "words"){
+            label += resultData.mode2;
+          }
+
+          label += '\n' +
+          `punctuation: ${resultData.punctuation}`
+          + '\n' +
+          `language: ${resultData.language}`
+          + '\n\n' +
+          `date: ${moment(resultData.timestamp).format('DD MMM YYYY HH:mm')}`;
+        
+          return label;
+        },
+        label : function(tooltipItem, data) {
+            return;
+        },
+        afterLabel : function(tooltipItem, data) {
+          return;
+        },
+      }
+    },
+    animation: {
+      duration: 2500
     },
     legend: {
       display: true,
@@ -280,9 +218,6 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           fontFamily: "Roboto Mono"
         },
         type: 'time',
-        time: {
-          tooltipFormat:'DD MMM YYYY HH:mm'
-        },
         bounds: 'ticks',
         distribution: 'series',
         display: false,
@@ -306,38 +241,144 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
   }
 });
 
+Object.keys(words).forEach(language => {
+  $(".pageAccount .content .filterButtons .buttons.languages")
+  .append(`<div class="button" filter="${language}">${language.replace('_',' ')}</div>`); 
+})
+
+let activeFilters = [];
+toggleFilterButton('all');
+
+function toggleFilterButton(filter){
+  const element = $(`.pageAccount .content .filterButtons .button[filter=${filter}]`);
+  if(element.hasClass('active')){
+    //disable that filter
+    
+    if(filter == 'all' || filter == 'none'){
+      return;
+    }else if(filter == "words"){
+      $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
+        let f = $(obj).attr('filter')
+        disableFilterButton(f)
+      })
+    }else if(filter == "time"){
+      $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
+        let f = $(obj).attr('filter')
+        disableFilterButton(f)
+      })
+    }
+    disableFilterButton(filter);
+    disableFilterButton('all'); 
+    
+  }else{
+    //enable that filter
+    disableFilterButton('none');
+    
+    if(filter == 'all'){
+      $.each($(`.pageAccount .content .filterButtons .button`),(index,obj)=>{
+        let f = $(obj).attr('filter');
+        if(f != 'none'){
+          enableFilterButton(f);
+        }
+      })
+    }else if(filter == 'none'){
+      disableFilterButton('all');
+      $.each($(`.pageAccount .content .filterButtons .button`),(index,obj)=>{
+        let f = $(obj).attr('filter');
+        if(f != 'none'){
+          disableFilterButton(f);
+        }
+      })
+    }else if(filter == "words"){
+      $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
+        let f = $(obj).attr('filter');
+        enableFilterButton(f);
+      })
+    }else if(filter == "time"){
+      $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
+        let f = $(obj).attr('filter');
+        enableFilterButton(f);
+      })
+    }else if(['10','25','50','100','200'].includes(filter)){
+      enableFilterButton('words');
+    }else if(['15','30','60','120'].includes(filter)){
+      enableFilterButton('time');
+    }
+
+    enableFilterButton(filter);
+  }
+  updateActiveFilters();
+}
+
+function disableFilterButton(filter){
+  const element = $(`.pageAccount .content .filterButtons .button[filter=${filter}]`);
+  element.removeClass('active');
+}
+
+function enableFilterButton(filter){
+  const element = $(`.pageAccount .content .filterButtons .button[filter=${filter}]`);
+  element.addClass('active');
+}
+
+function updateActiveFilters(){
+  activeFilters = [];
+  $.each($(".pageAccount .filterButtons .button"),(i,obj)=>{
+    if($(obj).hasClass('active')){
+      activeFilters.push($(obj).attr('filter'));
+    }
+  })
+  refreshAccountPage();
+}
+
 
 function refreshAccountPage() {
 
   function cont(){
     
-    let testModes = {
-      words10: [],
-      words25: [],
-      words50: [],
-      words100: [],
-      words200: [],
-      time15: [],
-      time30: [],
-      time60: [],
-      time120: [],
-      custom: []
-    }
+    let chartData = [];
     
     let topWpm = 0;
     let topMode = '';
     let testRestarts = 0;
     let totalWpm = 0;
+    let testCount = 0;
 
-    let testCount = dbSnapshot.length;
+    let wpmLast10total = 0;
+    let wpmLast10count = 0;
     $(".pageAccount .history table tbody").empty();
     dbSnapshot.forEach(result => {
+      
+      //apply filters
+      if(!activeFilters.includes(result.mode)){
+        return
+      }
+      if(!activeFilters.includes(String(result.mode2))){
+        return
+      }
+      if(!activeFilters.includes(result.language)){
+        return
+      }
+      let puncfilter = "puncOff";
+      if(result.punctuation){
+        puncfilter = "puncOn";
+      }
+      if(!activeFilters.includes(puncfilter)){
+        return
+      }
+
+      if(wpmLast10count < 10){
+        wpmLast10count++;
+        wpmLast10total += result.wpm;
+      }
+      testCount++;
+
+
       if (result.restartCount != undefined) {
         testRestarts += result.restartCount;
       }
       let withpunc = '';
       if (result.punctuation) {
-        withpunc = ', with punctuation';
+        withpunc = 'on';
       }
       $(".pageAccount .history table tbody").append(`
       <tr>
@@ -345,96 +386,87 @@ function refreshAccountPage() {
       <td>${result.acc}%</td>
       <td>${result.correctChars}</td>
       <td>${result.incorrectChars}</td>
-      <td>${result.mode} ${result.mode2}${withpunc}</td>
+      <td>${result.mode} ${result.mode2}</td>
+      <td>${withpunc}</td>
+      <td>${result.language.replace('_',' ')}</td>
       <td>${moment(result.timestamp).format('DD MMM YYYY HH:mm')}</td>
       </tr>`)
-      if (result.mode == "words" && result.mode2 == 10) {
-        testModes.words10.push({ x: result.timestamp, y: result.wpm });
-      }
-      if (result.mode == "words" && result.mode2 == 25) {
-        testModes.words25.push({ x: result.timestamp, y: result.wpm });
-      }
-      if (result.mode == "words" && result.mode2 == 50) {
-        testModes.words50.push({ x: result.timestamp, y: result.wpm });
-      }
-      if (result.mode == "words" && result.mode2 == 100) {
-        testModes.words100.push({ x: result.timestamp, y: result.wpm });
-      }
-      if (result.mode == "words" && result.mode2 == 200) {
-        testModes.words200.push({ x: result.timestamp, y: result.wpm });
-      }
-      if (result.mode == "time" && result.mode2 == 15) {
-        testModes.time15.push({ x: result.timestamp, y: result.wpm });
-      }
-      if (result.mode == "time" && result.mode2 == 30) {
-        testModes.time30.push({ x: result.timestamp, y: result.wpm });
-      }
-      if (result.mode == "time" && result.mode2 == 60) {
-        testModes.time60.push({ x: result.timestamp, y: result.wpm });
-      }
-      if (result.mode == "time" && result.mode2 == 120) {
-        testModes.time120.push({ x: result.timestamp, y: result.wpm });
-      }
-      if (result.mode == "custom") {
-        testModes.custom.push({ x: result.timestamp, y: result.wpm });
-      }
+      chartData.push({
+        x: result.timestamp,
+        y: result.wpm,
+        acc: result.acc,
+        mode: result.mode,
+        mode2: result.mode2,
+        punctuation: result.punctuation,
+        language: result.language,
+        timestamp: result.timestamp
+      });
 
       if (result.wpm > topWpm) {
-        let puncsctring = result.punctuation ? ",<br>with punctuation" : "";
         topWpm = result.wpm;
-        topMode = result.mode + " " + result.mode2 + puncsctring;
       }
 
       totalWpm += result.wpm;
     })
+    ////////
 
+    let totalWpm10 = 0;
+
+    let mainColor = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ', '');
     let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ','');
   
     resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
     resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor = subColor;
+    resultHistoryChart.data.datasets[0].borderColor = mainColor;
     resultHistoryChart.options.legend.labels.fontColor = subColor;
 
-    resultHistoryChart.data.datasets[0].data = testModes.words10;
-    resultHistoryChart.data.datasets[1].data = testModes.words25;
-    resultHistoryChart.data.datasets[2].data = testModes.words50;
-    resultHistoryChart.data.datasets[3].data = testModes.words100;
-    resultHistoryChart.data.datasets[4].data = testModes.words200;
-    resultHistoryChart.data.datasets[5].data = testModes.time15;
-    resultHistoryChart.data.datasets[6].data = testModes.time30;
-    resultHistoryChart.data.datasets[7].data = testModes.time60;
-    resultHistoryChart.data.datasets[8].data = testModes.time120;
-    resultHistoryChart.data.datasets[9].data = testModes.custom;
+    resultHistoryChart.data.datasets[0].data = chartData;
 
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm/testCount));
-    $(".pageAccount .highestWpm .mode").html(topMode);
+    $(".pageAccount .averageWpm10 .val").text(Math.round(wpmLast10total/wpmLast10count));
+    // $(".pageAccount .highestWpm .mode").html(topMode);
     $(".pageAccount .testsTaken .val").text(testCount);
 
-    $(".pageAccount .testCompletion .val").text(
-      Math.floor((testCount / (testCount + testRestarts) * 100)) + "%"
+    $(".pageAccount .testsStarted .val").text(
+      `${testCount + testRestarts}`
+    );
+
+    $(".pageAccount .testsCompleted .val").text(
+      `${testCount}(${Math.floor((testCount / (testCount + testRestarts) * 100))}%)`
     );
 
     $(".pageAccount .avgRestart .val").text(
-      ((testCount + testRestarts) / testCount).toFixed(1)
+      ((testRestarts) / testCount).toFixed(1)
     );
 
-    let favMode = testModes.words10;
-    let favModeName = 'words10';
-    $.each(testModes, (key, mode) => {
-      if (mode.length > favMode.length) {
-        favMode = mode;
-        favModeName = key;
-      }
-    })
-    if (favModeName == 'words10' && testModes.words10.length == 0) {
-      //new user  
-      $(".pageAccount .favouriteTest .val").text(`-`);
-    } else {
-      $(".pageAccount .favouriteTest .val").text(`${favModeName} (${Math.floor((favMode.length/testCount) * 100)}%)`);
-    }
+    // if(testCount == 0){
+    //   $('.pageAccount .group.chart').fadeOut(125);
+    //   $('.pageAccount .triplegroup.stats').fadeOut(125);
+    //   $('.pageAccount .group.history').fadeOut(125);
+    // }else{
+    //   $('.pageAccount .group.chart').fadeIn(125);
+    //   $('.pageAccount .triplegroup.stats').fadeIn(125);
+    //   $('.pageAccount .group.history').fadeIn(125);
+    // }
+
+    // let favMode = testModes.words10;
+    // let favModeName = 'words10';
+    // $.each(testModes, (key, mode) => {
+    //   if (mode.length > favMode.length) {
+    //     favMode = mode;
+    //     favModeName = key;
+    //   }
+    // })
+    // if (favModeName == 'words10' && testModes.words10.length == 0) {
+    //   //new user  
+    //   $(".pageAccount .favouriteTest .val").text(`-`);
+    // } else {
+    //   $(".pageAccount .favouriteTest .val").text(`${favModeName} (${Math.floor((favMode.length/testCount) * 100)}%)`);
+    // }
 
     
-    resultHistoryChart.update({ duration: 0 });
+    resultHistoryChart.update();
     
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
@@ -442,6 +474,8 @@ function refreshAccountPage() {
   if (dbSnapshot == null) {
     // console.log('no db snap');
     db_getUserResults().then(data => {
+      if(!data) return;
+      dbSnapshot = data;
       cont();
     })
   } else {
@@ -449,3 +483,8 @@ function refreshAccountPage() {
     cont();
   }
 }
+
+$('.pageAccount .filterButtons').click('.button',e =>{
+  const filter = $(e.target).attr('filter');
+  toggleFilterButton(filter);
+})
