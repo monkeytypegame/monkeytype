@@ -277,38 +277,94 @@
       <div class="page pageAccount hidden">
         <div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>
         <div class="content hidden">
-          <div class="group">
+          <div class="group filterButtons">
+            <div class="buttonsAndTitle">
+              <div class="title">filters</div>
+              <div class="buttons globalFilters">
+                <div class="button" filter="all">all</div>
+                <div class="button" filter="none">none</div>
+              </div>
+            </div>
+            <div class="buttonsAndTitle">
+              <div class="title">mode</div>
+              <div class="buttons modeFilters">
+                <div class="button" filter="words">words</div>
+                <div class="button" filter="time">time</div>
+                <div class="button" filter="custom">custom</div>
+              </div>
+            </div>
+            <div class="buttonsAndTitle">
+              <div class="title">words</div>
+              <div class="buttons wordsFilter">
+                <div class="button" filter="10">10</div>
+                <div class="button" filter="25">25</div>
+                <div class="button" filter="50">50</div>
+                <div class="button" filter="100">100</div>
+                <div class="button" filter="200">200</div>
+              </div>
+            </div>
+            <div class="buttonsAndTitle">
+              <div class="title">time</div>
+              <div class="buttons timeFilter">
+                <div class="button" filter="15">15</div>
+                <div class="button" filter="30">30</div>
+                <div class="button" filter="60">60</div>
+                <div class="button" filter="120">120</div>
+              </div>
+            </div>
+            <div class="buttonsAndTitle">
+              <div class="title">punctuation</div>
+              <div class="buttons punctuationFilter">
+                <div class="button" filter="puncOn">on</div>
+                <div class="button" filter="puncOff">off</div>
+              </div>
+            </div>
+            <div class="buttonsAndTitle">
+              <div class="title">language</div>
+              <div class="buttons languages">
+
+              </div>
+            </div>
+          </div>
+          <div class="group chart">
             <div class="title"></div>
             <div class="chart">
               <canvas id="resultHistoryChart"></canvas>
             </div>
           </div>
-          <div class="triplegroup">
+          <div class="triplegroup stats">
             <div class="group highestWpm">
               <div class="title">highest wpm</div>
-              <div class="val">1</div>
+              <div class="val">-</div>
               <div class="mode"></div>
-            </div>
-            <div class="group testsTaken">
-              <div class="title">tests taken</div>
-              <div class="val">1</div>
-            </div>
-            <div class="group favouriteTest">
-              <div class="title">favourite test</div>
-              <div class="val">words 10</div>
             </div>
             <div class="group averageWpm">
               <div class="title">average wpm</div>
-              <div class="val">1</div>
+              <div class="val">-</div>
             </div>
-            <div class="group testCompletion">
-              <div class="title">test completion</div>
+            <div class="group averageWpm10">
+              <div class="title">average wpm<br>(last 10 tests)</div>
+              <div class="val">-</div>
+            </div>
+            <div class="group testsStarted">
+              <div class="title">tests started</div>
+              <div class="val">-</div>
+            </div>
+            <div class="group testsCompleted">
+              <div class="title">tests completed</div>
               <div class="val">-</div>
             </div>
             <div class="group avgRestart">
-              <div class="title">avg restarts per completed test</div>
+              <div class="title">avg restarts<br>per completed test</div>
               <div class="val">-</div>
             </div>
+            <!-- <div class="group favouriteTest">
+              <div class="title">favourite test</div>
+              <div class="val">words 10</div>
+            </div> -->
+            
+            
+            
           </div>
           <div class="group history">
             <!-- <div class="title">result history</div> -->
@@ -320,6 +376,8 @@
                   <td>correct<br>chars</td>
                   <td>incorrect<br>chars</td>
                   <td>mode</td>
+                  <td>punctuation</td>
+                  <td>language</td>
                   <td>date</td>
                 </tr>
               </thead>
@@ -370,8 +428,9 @@
 <script src="js/db.js"></script>
 <script src="js/commandline.js"></script>
 <script src="js/settings.js"></script>
+<script src="js/account.js"></script>
 <script src="js/userconfig.js"></script>
 <script src="js/script.js"></script>
-<script src="js/account.js"></script>
+
 
 </html>
