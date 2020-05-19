@@ -207,7 +207,6 @@ function showWords() {
       $("#words").append(w);
     }
   } else if (config.mode == "time") {
-    $("#words").css("height", "78px").css("overflow", "hidden");
     for (let i = 0; i < wordsList.length; i++) {
       let w = "<div class='word'>";
       for (let c = 0; c < wordsList[i].length; c++) {
@@ -216,6 +215,8 @@ function showWords() {
       w += "</div>";
       $("#words").append(w);
     }
+    const wordHeight = $($(".word")[0]).outerHeight();
+    $("#words").css("height", wordHeight * 3 + 'px').css("overflow", "hidden");
   }
   updateActiveElement();
   updateCaretPosition();
@@ -460,7 +461,7 @@ function showResult() {
   };
   console.log(restartCount);
   restartCount = 0;
-  if (stats.wpm > 0 && stats.wpm < 250 && stats.acc > 50 && stats.acc <= 100) {
+  if (stats.wpm > 0 && stats.wpm < 600 && stats.acc > 50 && stats.acc <= 100) {
     if (firebase.auth().currentUser != null) {
       db_getUserHighestWpm(config.mode, mode2).then(data => {
         // console.log(`highest wpm for this mode is ${data}, current is ${stats.wpm}`);
