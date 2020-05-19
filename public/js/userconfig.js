@@ -187,6 +187,6 @@ function changeFontSize(fontSize) {
         $("#words").addClass('size2');
         $("#caret").addClass('size2');
     }
-    updateCaretPosition();
     saveConfigToCookie();
+    restartTest();
 }
