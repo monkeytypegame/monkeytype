@@ -169,24 +169,26 @@ function changeFontSize(fontSize) {
     if (fontSize == null || fontSize == undefined) {
         fontSize = 1;
     }
-    config.fontSize = fontSize;
-    $("#words").removeClass('size125');
-    $("#caret").removeClass('size125');
-    $("#words").removeClass('size15');
-    $("#caret").removeClass('size15');
-    $("#words").removeClass('size2');
-    $("#caret").removeClass('size2');
+    $("#words").stop(true, true).animate({ opacity: 0 }, 125, e => {
+        config.fontSize = fontSize;
+        $("#words").removeClass('size125');
+        $("#caret").removeClass('size125');
+        $("#words").removeClass('size15');
+        $("#caret").removeClass('size15');
+        $("#words").removeClass('size2');
+        $("#caret").removeClass('size2');
 
-    if (fontSize == 125) {
-        $("#words").addClass('size125');
-        $("#caret").addClass('size125');
-    } else if (fontSize == 15) {
-        $("#words").addClass('size15');     
-        $("#caret").addClass('size15');     
-    } else if (fontSize == 2) {
-        $("#words").addClass('size2');
-        $("#caret").addClass('size2');
-    }
-    saveConfigToCookie();
-    restartTest();
+        if (fontSize == 125) {
+            $("#words").addClass('size125');
+            $("#caret").addClass('size125');
+        } else if (fontSize == 15) {
+            $("#words").addClass('size15');     
+            $("#caret").addClass('size15');     
+        } else if (fontSize == 2) {
+            $("#words").addClass('size2');
+            $("#caret").addClass('size2');
+        }
+        saveConfigToCookie();
+        restartTest();
+    });
 }
