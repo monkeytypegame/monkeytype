@@ -111,14 +111,14 @@ function initWords() {
     while (randomWord.indexOf(' ') > -1) {
       randomWord = language[Math.floor(Math.random() * language.length)];
     }
-    wordsList.push(randomWord.toLowerCase());
+    wordsList.push(randomWord);
     for (let i = 1; i < wordsBound; i++) {
       randomWord = language[Math.floor(Math.random() * language.length)];
       previousWord = wordsList[i - 1];
       while (randomWord == previousWord || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
         randomWord = language[Math.floor(Math.random() * language.length)];
       }
-      wordsList.push(randomWord.toLowerCase());
+      wordsList.push(randomWord);
     }
 
   } else if (config.mode == "custom") {
@@ -180,7 +180,7 @@ function buildSentences() {
 }
 
 function addWord() {
-  let language = words[config.language]
+  let language = words[config.language];
   let randomWord = language[Math.floor(Math.random() * language.length)];
   while (randomWord.indexOf(' ') > -1) {
     randomWord = language[Math.floor(Math.random() * language.length)];
