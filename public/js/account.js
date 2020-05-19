@@ -70,7 +70,11 @@ function signUp() {
     }).then(function() {
       // Update successful.
       showNotification("Account created", 2000);
-      firebase.analytics().logEvent("accountCreated", usr.uid);
+      try{
+        firebase.analytics().logEvent("accountCreated", usr.uid);
+      }catch(e){
+        console.log("Analytics unavailable");
+      }
       $(".pageLogin .preloader").addClass('hidden');
       changePage('account');
     }).catch(function(error) {

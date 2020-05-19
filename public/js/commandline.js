@@ -1,6 +1,6 @@
 function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
-  }
+}
 
 let commands = {
     title: "",
@@ -374,9 +374,13 @@ $("#commandInput textarea").keydown((e) => {
                 }
             }
         });
-        firebase.analytics().logEvent('usedCommandLine', {
-            command: command
-        });
+        try{
+            firebase.analytics().logEvent('usedCommandLine', {
+                command: command
+            });
+        }catch(e){
+            console.log("Analytics unavailable");
+        }
         hideCommandLine();
     }
     return;
@@ -403,9 +407,13 @@ $("#commandLine input").keydown((e) => {
             }
         });
         if (!subgroup && !input) {
-            firebase.analytics().logEvent('usedCommandLine', {
-                command: command
-            });
+            try{
+                firebase.analytics().logEvent('usedCommandLine', {
+                    command: command
+                });
+            }catch(e){
+                console.log("Analytics unavailable");
+            }
             hideCommandLine();
         }
         return;
@@ -445,7 +453,7 @@ $("#commandLine input").keydown((e) => {
                 }
             });
         } catch (e) { }
-
+        
         return false;
     }
 });
@@ -454,25 +462,25 @@ $("#commandLine input").keydown((e) => {
 
 function hideCommandLine() {
     $("#commandLineWrapper")
-        .stop(true, true)
-        .css("opacity", 1)
-        .animate(
-            {
-                opacity: 0
-            },
-            100,
-            () => {
-                $("#commandLineWrapper").addClass("hidden");
-            }
+    .stop(true, true)
+    .css("opacity", 1)
+    .animate(
+        {
+            opacity: 0
+        },
+        100,
+        () => {
+            $("#commandLineWrapper").addClass("hidden");
+        }
         );
-    focusWords();
-}
-
-function showCommandLine() {
-    $("#commandLine").removeClass('hidden');
-    $("#commandInput").addClass('hidden');
-    if ($("#commandLineWrapper").hasClass("hidden")) {
-        $("#commandLineWrapper")
+        focusWords();
+    }
+    
+    function showCommandLine() {
+        $("#commandLine").removeClass('hidden');
+        $("#commandInput").addClass('hidden');
+        if ($("#commandLineWrapper").hasClass("hidden")) {
+            $("#commandLineWrapper")
             .stop(true, true)
             .css("opacity", 0)
             .removeClass("hidden")
@@ -481,84 +489,85 @@ function showCommandLine() {
                     opacity: 1
                 },
                 100
-            );
-    }
-    $("#commandLine input").val("");
-    updateSuggestedCommands();
-    $("#commandLine input").focus();
-}
-
-function showCommandInput(command, placeholder) {
-    $("#commandLineWrapper").removeClass('hidden');
-    $("#commandLine").addClass('hidden');
-    $("#commandInput").removeClass('hidden');
-    $("#commandInput textarea").attr('placeholder', placeholder);
-    $("#commandInput textarea").val('');
-    $("#commandInput textarea").focus();
-    $("#commandInput textarea").attr('command', '');
-    $("#commandInput textarea").attr('command', command);
-}
-
-function updateSuggestedCommands() {
-    let inputVal = $("#commandLine input").val().toLowerCase().split(" ");
-    if (inputVal[0] == "") {
-        $.each(currentCommands.list, (index, obj) => {
-            obj.found = true;
-        });
-    } else {
-        $.each(currentCommands.list, (index, obj) => {
-            let foundcount = 0;
-            $.each(inputVal, (index2, obj2) => {
-                if (obj2 == "") return;
-                let re = new RegExp("\\b"+obj2, "g");
-                let res = obj.display.toLowerCase().match(re);
-                if (res != null && res.length > 0) {
-                    foundcount++;
-                } else {
-                    foundcount--;
-                }
-            });
-            if (foundcount > 0) {
-                obj.found = true;
-            } else {
-                obj.found = false;
+                );
             }
-        });
-    }
-    displayFoundCommands();
-}
-
-function displayFoundCommands() {
-    $("#commandLine .suggestions").empty();
-    $.each(currentCommands.list, (index, obj) => {
-        if (obj.found) {
-            $("#commandLine .suggestions").append(
-                '<div class="entry" command="' + obj.id + '">' + obj.display + "</div>"
-            );
+            $("#commandLine input").val("");
+            updateSuggestedCommands();
+            $("#commandLine input").focus();
         }
-    });
-    if ($("#commandLine .suggestions .entry").length == 0) {
-        $("#commandLine .separator").css({ height: 0, margin: 0 });
-    } else {
-        $("#commandLine .separator").css({
-            height: "1px",
-            "margin-bottom": ".5rem"
-        });
-    }
-    let entries = $("#commandLine .suggestions .entry");
-    if (entries.length > 0) {
-        $(entries[0]).addClass("active");
-        try{
+        
+        function showCommandInput(command, placeholder) {
+            $("#commandLineWrapper").removeClass('hidden');
+            $("#commandLine").addClass('hidden');
+            $("#commandInput").removeClass('hidden');
+            $("#commandInput textarea").attr('placeholder', placeholder);
+            $("#commandInput textarea").val('');
+            $("#commandInput textarea").focus();
+            $("#commandInput textarea").attr('command', '');
+            $("#commandInput textarea").attr('command', command);
+        }
+        
+        function updateSuggestedCommands() {
+            let inputVal = $("#commandLine input").val().toLowerCase().split(" ");
+            if (inputVal[0] == "") {
+                $.each(currentCommands.list, (index, obj) => {
+                    obj.found = true;
+                });
+            } else {
+                $.each(currentCommands.list, (index, obj) => {
+                    let foundcount = 0;
+                    $.each(inputVal, (index2, obj2) => {
+                        if (obj2 == "") return;
+                        let re = new RegExp("\\b"+obj2, "g");
+                        let res = obj.display.toLowerCase().match(re);
+                        if (res != null && res.length > 0) {
+                            foundcount++;
+                        } else {
+                            foundcount--;
+                        }
+                    });
+                    if (foundcount > 0) {
+                        obj.found = true;
+                    } else {
+                        obj.found = false;
+                    }
+                });
+            }
+            displayFoundCommands();
+        }
+        
+        function displayFoundCommands() {
+            $("#commandLine .suggestions").empty();
             $.each(currentCommands.list, (index, obj) => {
                 if (obj.found) {
-                    obj.hover();
-                    return false;
+                    $("#commandLine .suggestions").append(
+                        '<div class="entry" command="' + obj.id + '">' + obj.display + "</div>"
+                        );
+                    }
+                });
+                if ($("#commandLine .suggestions .entry").length == 0) {
+                    $("#commandLine .separator").css({ height: 0, margin: 0 });
+                } else {
+                    $("#commandLine .separator").css({
+                        height: "1px",
+                        "margin-bottom": ".5rem"
+                    });
                 }
-            });
-        }catch(e){}
-    }
-    $("#commandLine .listTitle").remove();
-    // if(currentCommands.title != ''){
-    //   $("#commandLine .suggestions").before("<div class='listTitle'>"+currentCommands.title+"</div>");
-    // }
-}
+                let entries = $("#commandLine .suggestions .entry");
+                if (entries.length > 0) {
+                    $(entries[0]).addClass("active");
+                    try{
+                        $.each(currentCommands.list, (index, obj) => {
+                            if (obj.found) {
+                                obj.hover();
+                                return false;
+                            }
+                        });
+                    }catch(e){}
+                }
+                $("#commandLine .listTitle").remove();
+                // if(currentCommands.title != ''){
+                //   $("#commandLine .suggestions").before("<div class='listTitle'>"+currentCommands.title+"</div>");
+                // }
+            }
+            
