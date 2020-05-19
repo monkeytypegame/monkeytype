@@ -17,6 +17,7 @@
     color: #2984a5;
 }
 
-#menu .button:nth-child(4){
+#menu .button:nth-child(4),
+#menu .button:nth-child(5){
     color: #dd452e;
 }
