@@ -141,9 +141,13 @@ function previewTheme(name) {
 function setTheme(name) {
     config.theme = name;
     $("#currentTheme").attr("href", `themes/${name}.css`);
-    firebase.analytics().logEvent('changedTheme', {
-        theme: name
-    });
+    try{
+        firebase.analytics().logEvent('changedTheme', {
+            theme: name
+        });
+    }catch(e){
+        console.log("Analytics unavailable");
+    }
 }
 
 function changeLanguage(language) {
@@ -151,9 +155,13 @@ function changeLanguage(language) {
         language = "english";
     }
     config.language = language;
-    firebase.analytics().logEvent('changedLanguage', {
-        language: language
-    });
+    try{
+        firebase.analytics().logEvent('changedLanguage', {
+            language: language
+        });
+    }catch(e){
+        console.log("Analytics unavailable");
+    }
     saveConfigToCookie();
 }
 

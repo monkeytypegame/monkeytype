@@ -468,21 +468,32 @@ function showResult() {
           showCrown();
         }
         completedEvent.uid = firebase.auth().currentUser.uid;
-        firebase.analytics().logEvent('testCompleted', completedEvent);
+        try{
+          firebase.analytics().logEvent('testCompleted', completedEvent);
+        }catch(e){
+          console.log("Analytics unavailable");
+        }
         db_testCompleted(completedEvent);
         dbSnapshot.unshift(completedEvent);
       });
       $("#result .loginTip").addClass('hidden');
     } else {
-      firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
+      try{
+        firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
+      }catch(e){
+        console.log("Analytics unavailable");
+      }
       $("#result .loginTip").removeClass('hidden');
 
       // showNotification("Sign in to save your result",3000);
     }
   } else {
     showNotification("Test invalid", 3000);
-    firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
-
+    try{
+      firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
+    }catch(e){
+      console.log("Analytics unavailable");
+    }
   }
 
 
@@ -671,9 +682,6 @@ function changePage(page) {
 
     }
   }
-  // firebase.analytics().logEvent('changedPage', {
-  //   page: page
-  // });
 }
 
 function changeMode(mode) {
@@ -889,10 +897,14 @@ $(document).keypress(function(event) {
   if (event["keyCode"] == 27) return;
   //start the test
   if (currentInput == "" && inputHistory.length == 0) {
-    if (firebase.auth().currentUser != null) {
-      firebase.analytics().logEvent('testStarted');
-    } else {
-      firebase.analytics().logEvent('testStartedNoLogin');
+    try{
+      if (firebase.auth().currentUser != null) {
+        firebase.analytics().logEvent('testStarted');
+      } else {
+        firebase.analytics().logEvent('testStartedNoLogin');
+      }
+    }catch(e){
+      console.log("Analytics unavailable");
     }
     testActive = true;
     stopCaretAnimation();
@@ -927,9 +939,9 @@ $(document).keypress(function(event) {
     accuracyStats.correct++;
   }
   currentInput += event["key"];
-  setFocus(true);
-  compareInput();
-  updateCaretPosition();
+    setFocus(true);
+    compareInput();
+    updateCaretPosition();
 });
 
 //handle keyboard events
