@@ -327,6 +327,7 @@ function refreshAccountPage() {
     let topWpm = 0;
     let topMode = '';
     let testRestarts = 0;
+    let totalWpm = 0;
 
     let testCount = dbSnapshot.length;
     $(".pageAccount .history table tbody").empty();
@@ -383,6 +384,8 @@ function refreshAccountPage() {
         topWpm = result.wpm;
         topMode = result.mode + " " + result.mode2 + puncsctring;
       }
+
+      totalWpm += result.wpm;
     })
 
     let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ','');
@@ -403,6 +406,7 @@ function refreshAccountPage() {
     resultHistoryChart.data.datasets[9].data = testModes.custom;
 
     $(".pageAccount .highestWpm .val").text(topWpm);
+    $(".pageAccount .averageWpm .val").text(Math.round(totalWpm/testCount));
     $(".pageAccount .highestWpm .mode").html(topMode);
     $(".pageAccount .testsTaken .val").text(testCount);
 
