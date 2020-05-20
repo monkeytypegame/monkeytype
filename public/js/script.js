@@ -533,15 +533,7 @@ function showResult() {
   wpmOverTimeChart.data.labels = labels;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
   wpmOverTimeChart.update({ duration: 0 });
-  $("#words").animate({
-    opacity: 0
-  }, 125, () => {
-    $("#words").addClass('hidden');
-    $("#result").css('opacity', 0).removeClass('hidden');
-    $("#result").animate({
-      opacity: 1
-    }, 125);
-  })
+  swapElements($("#words"),$("#result"),250);
 }
 
 function restartTest() {
@@ -552,8 +544,17 @@ function restartTest() {
   hideCaret();
   testActive = false;
   hideLiveWpm();
-  $("#words").stop(true, true).animate({ opacity: 0 }, 125);
-  $("#result").stop(true, true).animate({
+
+  let el = null;
+  if($("#words").hasClass('hidden')){
+    //results are being displayed
+    el = $("#result");
+  }else if($("#result").hasClass('hidden')){
+    //words are being displayed
+    el = $("#words");
+  }
+
+  el.stop(true, true).animate({
     opacity: 0
   }, 125, () => {
     initWords();
