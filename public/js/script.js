@@ -215,6 +215,7 @@ function showWords() {
       w += "</div>";
       $("#words").append(w);
     }
+    $("#words").removeClass('hidden');
     const wordHeight = $($(".word")[0]).outerHeight();
     $("#words").css("height", wordHeight * 3 + 'px').css("overflow", "hidden");
   }
