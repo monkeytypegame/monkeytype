@@ -193,7 +193,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
       }
     },
     animation: {
-      duration: 2500
+      duration: 250
     },
     legend: {
       display: true,
