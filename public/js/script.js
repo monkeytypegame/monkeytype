@@ -508,7 +508,9 @@ function showResult() {
   } else if (config.mode == "words") {
     infoText += " " + config.words
   }
-  infoText += "<br>" + config.language.replace('_', ' ') ;
+  if(config.mode != "custom"){
+    infoText += "<br>" + config.language.replace('_', ' ');
+  }
   if (config.punctuation) {
     infoText += "<br>with punctuation"
   }
