@@ -141,6 +141,7 @@ function previewTheme(name) {
 function setTheme(name) {
     config.theme = name;
     $("#currentTheme").attr("href", `themes/${name}.css`);
+    updateFavicon(32,14);
     try{
         firebase.analytics().logEvent('changedTheme', {
             theme: name
@@ -148,6 +149,32 @@ function setTheme(name) {
     }catch(e){
         console.log("Analytics unavailable");
     }
+}
+
+function updateFavicon(size,curveSize){
+    var canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    let ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(0,curveSize);
+    //top left
+    ctx.quadraticCurveTo(0, 0, curveSize, 0);
+    ctx.lineTo(size-curveSize,0);
+    //top right
+    ctx.quadraticCurveTo(size, 0, size, curveSize);
+    ctx.lineTo(size,size-curveSize);
+    ctx.quadraticCurveTo(size, size, size-curveSize, size);
+    ctx.lineTo(curveSize,size);
+    ctx.quadraticCurveTo(0, size, 0, size-curveSize);
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-color').replace(' ','');
+    ctx.fill(); 
+    ctx.font = "900 "+ size/2*1.2 + "px Roboto Mono";
+    ctx.textAlign = "center";
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ','');
+    ctx.fillText("mt", size/2+(size/32), size/3*2.1);
+    // document.body.appendChild(canvas);
+    $("#favicon").attr('href',canvas.toDataURL('image/png'));
 }
 
 function changeLanguage(language) {

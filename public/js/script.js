@@ -1061,6 +1061,7 @@ if (window.location.hostname === "localhost") {
 }
 
 $(document).ready(() => {
+  updateFavicon(32,14);
   $('body').css('transition', '.25s');
   restartTest();
   if (config.quickTab) {
