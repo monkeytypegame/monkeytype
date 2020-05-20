@@ -81,11 +81,13 @@ $(".pageSettings .section.quickTab .buttons .button.off").click(e => {
 //live wpm
 $(".pageSettings .section.liveWpm .buttons .button.on").click(e => {
     config.showLiveWpm = true;
+    saveConfigToCookie();
     showNotification('Live WPM on', 1000);
     setSettingsButton('liveWpm', config.showLiveWpm);
 })
 $(".pageSettings .section.liveWpm .buttons .button.off").click(e => {
     config.showLiveWpm = false;
+    saveConfigToCookie();
     showNotification('Live WPM off', 1000);
     setSettingsButton('liveWpm', config.showLiveWpm);
 })
