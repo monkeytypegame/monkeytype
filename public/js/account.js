@@ -266,6 +266,10 @@ function toggleFilterButton(filter){
         let f = $(obj).attr('filter')
         disableFilterButton(f)
       })
+    }else if(filter == "puncOff"){
+      enableFilterButton("puncOn");
+    }else if(filter == "puncOn"){
+      enableFilterButton("puncOff");
     }
     disableFilterButton(filter);
     disableFilterButton('all'); 
