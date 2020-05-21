@@ -246,8 +246,17 @@ Object.keys(words).forEach(language => {
   .append(`<div class="button" filter="${language}">${language.replace('_',' ')}</div>`); 
 })
 
-let activeFilters = [];
-toggleFilterButton('all');
+let activeFilters = ["all"];
+
+
+$(document).ready(e =>{
+  activeFilters = config.resultFilters;
+  console.log(activeFilters);
+  activeFilters.forEach(filter => {
+    enableFilterButton(filter);
+  })
+})
+
 
 function toggleFilterButton(filter){
   const element = $(`.pageAccount .content .filterButtons .button[filter=${filter}]`);
@@ -334,6 +343,13 @@ function updateActiveFilters(){
   refreshAccountPage();
 }
 
+
+$('.pageAccount .filterButtons').click('.button',e =>{
+  const filter = $(e.target).attr('filter');
+  toggleFilterButton(filter);
+  config.resultFilters = activeFilters;
+  saveConfigToCookie();
+})
 
 function refreshAccountPage() {
 
@@ -487,8 +503,3 @@ function refreshAccountPage() {
     cont();
   }
 }
-
-$('.pageAccount .filterButtons').click('.button',e =>{
-  const filter = $(e.target).attr('filter');
-  toggleFilterButton(filter);
-})
