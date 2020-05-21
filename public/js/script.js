@@ -643,6 +643,7 @@ function changeTimeConfig(time) {
 }
 
 function changePage(page) {
+  restartTest();
   let activePage = $(".page.active");
   $(".page").removeClass('active');
   $("#wordsInput").focusout();
@@ -653,6 +654,7 @@ function changePage(page) {
     showTestConfig();
     hideSignOutButton();
     restartCount = 0;
+    restartTest();
   } else if (page == "about") {
     $(".page.pageAbout").addClass('active');
     swapElements(activePage, $(".page.pageAbout"), 250);
