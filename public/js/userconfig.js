@@ -9,7 +9,8 @@ let config = {
     time: 30,
     mode: "words",
     language: "english",
-    fontSize: 1
+    fontSize: 1,
+    resultFilters: ["all"]
 }
 
 //cookies
@@ -33,6 +34,9 @@ function loadConfigFromCookie() {
         changeMode(newConfig.mode);
         changeLanguage(newConfig.language);
         changeFontSize(newConfig.fontSize);
+        if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
+            newConfig.resultFilters = ["all"];
+        }
         config = newConfig;
         restartTest();
     }
