@@ -151,7 +151,17 @@ function setTheme(name) {
     }
 }
 
-function updateFavicon(size,curveSize){
+function updateFavicon(size, curveSize) {
+    let maincolor, bgcolor;
+    
+    bgcolor = getComputedStyle(document.body).getPropertyValue('--bg-color').replace(' ','');
+    maincolor = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ','');
+
+    if (bgcolor == maincolor) {
+        bgcolor = "#111";
+        maincolor = "#eee";
+    }
+
     var canvas = document.createElement('canvas');
     canvas.width = size;
     canvas.height = size;
@@ -166,12 +176,12 @@ function updateFavicon(size,curveSize){
     ctx.lineTo(size,size-curveSize);
     ctx.quadraticCurveTo(size, size, size-curveSize, size);
     ctx.lineTo(curveSize,size);
-    ctx.quadraticCurveTo(0, size, 0, size-curveSize);
-    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-color').replace(' ','');
+    ctx.quadraticCurveTo(0, size, 0, size - curveSize);
+    ctx.fillStyle = bgcolor;
     ctx.fill(); 
     ctx.font = "900 "+ size/2*1.2 + "px Roboto Mono";
     ctx.textAlign = "center";
-    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ','');
+    ctx.fillStyle = maincolor;
     ctx.fillText("mt", size/2+(size/32), size/3*2.1);
     // document.body.appendChild(canvas);
     $("#favicon").attr('href',canvas.toDataURL('image/png'));
