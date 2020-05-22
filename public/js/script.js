@@ -424,18 +424,26 @@ function calculateStats() {
 }
 
 function hideCrown() {
-  $("#result .stats .wpm .crownWrapper").css('width', 0);
+  $("#result .stats .wpm .crownWrapper").css('opacity', 0);
 }
 
 function showCrown() {
   $("#result .stats .wpm .crownWrapper").animate({
-    width: '1.7rem'
-  }, 250);
+    opacity: 1
+  }, 250,"easeOutCubic");
 }
 
 function showResult() {
   testEnd = Date.now();
   let stats = calculateStats();
+  if(stats === undefined){
+    stats = {
+      wpm: 0,
+      acc: 0,
+      correctChars: 0,
+      incorrectChars: 0
+    }
+  }
   clearIntervals();
   $("#result .stats .wpm .bottom").text(stats.wpm);
   $("#result .stats .acc .bottom").text(stats.acc + "%");
