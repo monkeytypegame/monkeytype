@@ -9,6 +9,7 @@ let testStart, testEnd;
 let wpmHistory = [];
 let currentCommands = commands;
 let restartCount = 0;
+let currentTestLine = 0;
 
 let accuracyStats = {
   correct: 0,
@@ -215,7 +216,7 @@ function showWords() {
       $("#words").append(w);
     }
     $("#words").removeClass('hidden');
-    const wordHeight = $($(".word")[0]).outerHeight();
+    const wordHeight = $($(".word")[0]).outerHeight(true);
     $("#words").css("height", wordHeight * 3 + 'px').css("overflow", "hidden");
   }
   updateActiveElement();
@@ -554,7 +555,7 @@ function restartTest() {
   hideCaret();
   testActive = false;
   hideLiveWpm();
-
+  currentTestLine = 0;
   let el = null;
   if($("#words").hasClass('hidden')){
     //results are being displayed
@@ -1024,10 +1025,18 @@ $(document).keydown((event) => {
         let nextTop = $($("#words .word")[currentWordIndex + 1]).position().top;
         if (nextTop > currentTop) {
           //last word of the line
-          for (let i = 0; i < currentWordIndex + 1; i++) {
-            $($("#words .word")[i]).addClass("hidden");
-            // addWordLine();
+          if(currentTestLine > 0){
+            let toHide = [];
+            for (let i = 0; i < currentWordIndex + 1; i++) {
+              let forWordTop = $($("#words .word")[i]).position().top;
+              if(forWordTop < currentTop){
+                // $($("#words .word")[i]).addClass("hidden");
+                toHide.push($($("#words .word")[i]));
+              }
+            }
+            toHide.forEach(el => el.addClass('hidden'));
           }
+          currentTestLine++;
         }
       }
       if (currentWord == currentInput) {
