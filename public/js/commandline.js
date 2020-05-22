@@ -43,6 +43,13 @@ let commands = {
             }
         },
         {
+            id: "toggleFreedom",
+            display: "Toggle freedom mode",
+            exec: () => {
+                toggleFreedomMode();
+            }
+        },
+        {
             id: "changeTheme",
             display: "Change theme...",
             subgroup: true,

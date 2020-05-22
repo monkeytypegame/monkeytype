@@ -14,6 +14,8 @@ function updateSettingsPage(){
     setSettingsButton('quickTab', config.quickTab);
     setSettingsButton('liveWpm', config.showLiveWpm);
     setSettingsButton('keyTips', config.showKeyTips);
+    setSettingsButton('freedomMode', config.freedomMode);
+
 
     setActiveThemeButton();
     setActiveLanguageButton();
@@ -90,6 +92,20 @@ $(".pageSettings .section.liveWpm .buttons .button.off").click(e => {
     saveConfigToCookie();
     showNotification('Live WPM off', 1000);
     setSettingsButton('liveWpm', config.showLiveWpm);
+})
+
+//freedom mode
+$(".pageSettings .section.freedomMode .buttons .button.on").click(e => {
+    setFreedomMode(true);
+    saveConfigToCookie();
+    showNotification('Freedom mode on', 1000);
+    setSettingsButton('freedomMode', config.freedomMode);
+})
+$(".pageSettings .section.freedomMode .buttons .button.off").click(e => {
+    setFreedomMode(false);
+    saveConfigToCookie();
+    showNotification('Freedom mode off', 1000);
+    setSettingsButton('freedomMode', config.freedomMode);
 })
 
 //keytips
