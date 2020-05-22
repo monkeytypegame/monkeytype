@@ -791,7 +791,7 @@ function updateAccountLoginButton() {
     // $("#menu .button.account").removeClass('hidden');
     // $("#menu .button.login").addClass('hidden');
   } else {
-    swapElements($("#menu .button.login"), $("#menu .button.account"), 250);
+    swapElements($("#menu .button.account"), $("#menu .button.login"), 250);
     // $("#menu .button.login").removeClass('hidden');
     // $("#menu .button.account").addClass('hidden');
   }
