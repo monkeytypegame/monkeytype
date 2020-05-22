@@ -97,6 +97,13 @@ let commands = {
             }
         },
         {
+            id: "joinDiscord",
+            display: "Join the Discord server",
+            exec: () => {
+                window.open("https://discord.gg/xMYrWg6")
+            }
+        },
+        {
             id: "sendDevMessage",
             display: "Send a message ( bug report / feature request / feedback )...",
             subgroup: true,

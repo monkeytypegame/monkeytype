@@ -18,21 +18,25 @@
 }
 
 #menu .button:nth-child(1){
-  color: #8be9fd;
+  color: #ec75c4;
 }
 
 #menu .button:nth-child(2){
-  color: #50fa7b;
+  color: #8be9fd;
 }
 
 #menu .button:nth-child(3){
-  color: #f1fa8c;
+  color: #50fa7b;
 }
 
 #menu .button:nth-child(4){
-  color: #ffb86c;
+  color: #f1fa8c;
 }
 
 #menu .button:nth-child(5){
+  color: #ffb86c;
+}
+
+#menu .button:nth-child(6){
   color: #ffb86c;
 }
