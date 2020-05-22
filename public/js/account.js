@@ -370,20 +370,20 @@ function refreshAccountPage() {
       
       //apply filters
       if(!activeFilters.includes(result.mode)){
-        return
+        return;
       }
       if(!activeFilters.includes(String(result.mode2))){
-        return
+        return;
       }
       if(!activeFilters.includes(result.language)){
-        return
+        return;
       }
       let puncfilter = "puncOff";
       if(result.punctuation){
         puncfilter = "puncOn";
       }
       if(!activeFilters.includes(puncfilter)){
-        return
+        return;
       }
 
       if(wpmLast10count < 10){
