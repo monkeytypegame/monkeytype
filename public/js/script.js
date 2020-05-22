@@ -10,6 +10,7 @@ let wpmHistory = [];
 let currentCommands = commands;
 let restartCount = 0;
 let currentTestLine = 0;
+let pageTransition = false;
 
 let accuracyStats = {
   correct: 0,
@@ -651,39 +652,55 @@ function changeTimeConfig(time) {
 }
 
 function changePage(page) {
+  if(pageTransition){
+    return;
+  }
   restartTest();
   let activePage = $(".page.active");
   $(".page").removeClass('active');
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
-    $(".page.pageTest").addClass('active');
-    swapElements(activePage, $(".page.pageTest"), 250, focusWords);
-    history.pushState('/', null, '/');
+    pageTransition = true;
+    swapElements(activePage, $(".page.pageTest"), 250, () => {
+      pageTransition = false;
+      focusWords();
+      $(".page.pageTest").addClass('active');
+      history.pushState('/', null, '/');
+    });
     showTestConfig();
     hideSignOutButton();
     restartCount = 0;
     restartTest();
   } else if (page == "about") {
-    $(".page.pageAbout").addClass('active');
-    swapElements(activePage, $(".page.pageAbout"), 250);
-    history.pushState('about', null, 'about');
+    pageTransition = true;
+    swapElements(activePage, $(".page.pageAbout"), 250, ()=>{
+      pageTransition = false;
+      history.pushState('about', null, 'about');
+      $(".page.pageAbout").addClass('active');
+    });
     hideTestConfig();
     hideSignOutButton();
   } else if (page == "settings") {
-    updateSettingsPage()
-    $(".page.pageSettings").addClass('active');
-    swapElements(activePage, $(".page.pageSettings"), 250);
-    history.pushState('settings', null, 'settings');
+    pageTransition = true;
+    swapElements(activePage, $(".page.pageSettings"), 250, ()=>{
+      pageTransition = false;
+      history.pushState('settings', null, 'settings');
+      $(".page.pageSettings").addClass('active');
+    });
+    updateSettingsPage();
     hideTestConfig();
     hideSignOutButton();
   } else if (page == "account") {
     if (!firebase.auth().currentUser) {
       changePage("login");
     } else {
-      $(".page.pageAccount").addClass('active');
-      swapElements(activePage, $(".page.pageAccount"), 250);
+      pageTransition = true;
+      swapElements(activePage, $(".page.pageAccount"), 250, () =>{
+        pageTransition = false;
+        history.pushState('account', null, 'account');
+        $(".page.pageAccount").addClass('active');
+      });
       refreshAccountPage();
-      history.pushState('account', null, 'account');
       hideTestConfig();
       showSignOutButton();
     }
@@ -691,12 +708,14 @@ function changePage(page) {
     if (firebase.auth().currentUser != null) {
       changePage('account');
     } else {
-      $(".page.pageLogin").addClass('active');
-      swapElements(activePage, $(".page.pageLogin"), 250);
-      history.pushState('login', null, 'login');
+      pageTransition = true;
+      swapElements(activePage, $(".page.pageLogin"), 250, ()=>{
+        pageTransition = false;
+        history.pushState('login', null, 'login');
+        $(".page.pageLogin").addClass('active');
+      });
       hideTestConfig();
       hideSignOutButton();
-
     }
   }
 }
@@ -763,14 +782,14 @@ function swapElements(el1, el2, totalDuration, callback = function() { return; }
   ) {
     //one of them is hidden and the other is visible
     if (el1.hasClass("hidden")) {
+      callback();
       return false;
     }
-
-    $(el1).stop(true, true).removeClass('hidden').css('opacity', 1).animate({
+    $(el1).removeClass('hidden').css('opacity', 1).animate({
       opacity: 0
     }, totalDuration / 2, () => {
       $(el1).addClass('hidden');
-      $(el2).stop(true, true).removeClass('hidden').css('opacity', 0).animate({
+      $(el2).removeClass('hidden').css('opacity', 0).animate({
         opacity: 1
       }, totalDuration / 2, () => {
         callback();
@@ -779,11 +798,13 @@ function swapElements(el1, el2, totalDuration, callback = function() { return; }
 
   } else if (el1.hasClass('hidden') && el2.hasClass('hidden')) {
     //both are hidden, only fade in the second
-    $(el2).stop(true, true).removeClass('hidden').css('opacity', 0).animate({
+    $(el2).removeClass('hidden').css('opacity', 0).animate({
       opacity: 1
     }, totalDuration, () => {
       callback();
     });
+  }else{
+    callback();
   }
 
 }
