@@ -1,0 +1,43 @@
+:root {
+    --bg-color: #d3d3d3;
+    --main-color: #1d1d1d;
+    --caret-color: #8fadc9;
+    --sub-color: #919395;
+}
+
+#top .logo .bottom{
+    color: #8fadc9;
+}
+
+#top .config .group .buttons .button.active{
+    color: #daa99b;
+} 
+
+.word letter.incorrect {
+    color: #bf6464;
+  }
+  
+  .word letter.incorrect.extra {
+    color: #793e44;
+  }
+  
+  .word.error {
+    border-bottom: 2px solid #bf6464;
+  }
+
+/* #menu .button:nth-child(1){
+    color: #daa99b;
+}
+
+#menu .button:nth-child(2){
+    color: #daa99b;
+}
+
+#menu .button:nth-child(3){
+    color: #8fadc9;
+}
+
+#menu .button:nth-child(4),
+#menu .button:nth-child(5){
+    color: #8fadc9;
+} */
