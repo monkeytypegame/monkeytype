@@ -107,16 +107,14 @@ function initWords() {
   if (config.mode == "time" || config.mode == "words") {
 
     let wordsBound = config.mode == "time" ? 50 : config.words;
-    let randomWord = language[Math.floor(Math.random() * language.length)];
-    while (randomWord.indexOf(' ') > -1) {
-      randomWord = language[Math.floor(Math.random() * language.length)];
-    }
-    wordsList.push(randomWord);
-    for (let i = 1; i < wordsBound; i++) {
+    for (let i = 0; i < wordsBound; i++) {
       randomWord = language[Math.floor(Math.random() * language.length)];
       previousWord = wordsList[i - 1];
       while (randomWord == previousWord || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
         randomWord = language[Math.floor(Math.random() * language.length)];
+      }
+      if (config.punctuation && config.mode != "custom"){
+        randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
       }
       wordsList.push(randomWord);
     }
@@ -127,65 +125,66 @@ function initWords() {
       wordsList.push(w[i]);
     }
   }
-  if (config.punctuation && config.mode != "custom") {
-    wordsList = buildSentences(wordsList);
-  }
   showWords();
 }
 
-function buildSentences() {
-  let returnList = [];
-  $.each(wordsList, (index, word) => {
-    let previousWord = returnList[index - 1];
-    if (index == 0 || getLastChar(previousWord) == "." || getLastChar(previousWord) == "?" || getLastChar(previousWord) == "!") {
-      //always capitalise the first word or if there was a dot
-      word = capitalizeFirstLetter(word);
-    } else if (
-      //10% chance to end a sentence
-      (Math.random() < 0.1 && getLastChar(previousWord) != "." && index != wordsList.length - 2) || index == wordsList.length - 1) {
-      let rand = Math.random();
-      if (rand <= 0.8) {
-        word += ".";
-      } else if (rand > .8 && rand < .9){
-        word += "?";
-      } else {
-        word += "!";
-      }
-    } else if (Math.random() < 0.01 &&
-      getLastChar(previousWord) != "," &&
-      getLastChar(previousWord) != ".") {
-      //1% chance to add quotes
-      word = `"${word}"`;
-    } else if (Math.random() < 0.01) {
-      //1% chance to add a colon
-      word = word + ":";
-    } else if (
-      Math.random() < 0.01 &&
-      getLastChar(previousWord) != "," &&
-      getLastChar(previousWord) != "." &&
-      previousWord != "-"
-    ) {
-      //1% chance to add a dash
-      word = "-";
-    } else if (
-      Math.random() < 0.2 &&
-      getLastChar(previousWord) != ","
-    ) {
-      //2% chance to add a comma
-      word += ",";
+function punctuateWord(previousWord, currentWord, index, maxindex){
+
+  let word = currentWord;
+
+  if (index == 0 || getLastChar(previousWord) == "." || getLastChar(previousWord) == "?" || getLastChar(previousWord) == "!") {
+    //always capitalise the first word or if there was a dot
+    word = capitalizeFirstLetter(word);
+  } else if (
+    //10% chance to end a sentence
+    (Math.random() < 0.1 && getLastChar(previousWord) != "." && index != maxindex - 2) || index == maxindex - 1) {
+    let rand = Math.random();
+    if (rand <= 0.8) {
+      word += ".";
+    } else if (rand > .8 && rand < .9){
+      word += "?";
+    } else {
+      word += "!";
     }
-    returnList.push(word);
-  })
-  return returnList;
+  } else if (Math.random() < 0.01 &&
+    getLastChar(previousWord) != "," &&
+    getLastChar(previousWord) != ".") {
+    //1% chance to add quotes
+    word = `"${word}"`;
+  } else if (Math.random() < 0.01) {
+    //1% chance to add a colon
+    word = word + ":";
+  } else if (
+    Math.random() < 0.01 &&
+    getLastChar(previousWord) != "," &&
+    getLastChar(previousWord) != "." &&
+    previousWord != "-"
+  ) {
+    //1% chance to add a dash
+    word = "-";
+  } else if (
+    Math.random() < 0.2 &&
+    getLastChar(previousWord) != ","
+  ) {
+    //2% chance to add a comma
+    word += ",";
+  }
+  return word;
+
 }
 
 function addWord() {
   let language = words[config.language];
   let randomWord = language[Math.floor(Math.random() * language.length)];
+  previousWord = wordsList[wordsList.length - 1];
   while (randomWord.indexOf(' ') > -1) {
     randomWord = language[Math.floor(Math.random() * language.length)];
   }
+  if (config.punctuation && config.mode != "custom"){
+    randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0)
+  }
   wordsList.push(randomWord);
+
   let w = "<div class='word'>";
   for (let c = 0; c < randomWord.length; c++) {
     w += "<letter>" + randomWord.charAt(c) + "</letter>";
