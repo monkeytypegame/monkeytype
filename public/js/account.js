@@ -122,7 +122,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     var providerData = user.providerData;
     showNotification('Signed in', 2000);
     $(".pageLogin .preloader").addClass('hidden');
-    updateAccountLoginButton() 
+    updateAccountLoginButton();
   }
 });
 
