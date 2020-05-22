@@ -463,7 +463,7 @@ function showResult() {
   restartCount = 0;
   if (stats.wpm > 0 && stats.wpm < 600 && stats.acc > 50 && stats.acc <= 100) {
     if (firebase.auth().currentUser != null) {
-      db_getUserHighestWpm(config.mode, mode2).then(data => {
+      db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language).then(data => {
         // console.log(`highest wpm for this mode is ${data}, current is ${stats.wpm}`);
         if (data < stats.wpm) {
           showCrown();
