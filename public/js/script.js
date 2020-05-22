@@ -430,7 +430,7 @@ function hideCrown() {
 }
 
 function showCrown() {
-  $("#result .stats .wpm .crownWrapper").animate({
+  $("#result .stats .wpm .crownWrapper").delay(275).animate({
     opacity: 1
   }, 250,"easeOutCubic");
 }
@@ -456,7 +456,7 @@ function showResult() {
   } else if (config.mode == "words") {
     mode2 = config.words;
   }
-  hideCrown();
+  
   let completedEvent = {
     wpm: stats.wpm,
     correctChars: stats.correctChars,
@@ -476,6 +476,7 @@ function showResult() {
       db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language).then(data => {
         // console.log(`highest wpm for this mode is ${data}, current is ${stats.wpm}`);
         if (data < stats.wpm) {
+          hideCrown();
           showCrown();
         }
         completedEvent.uid = firebase.auth().currentUser.uid;
@@ -574,6 +575,7 @@ function restartTest() {
     $("#words").css('opacity', 0).removeClass('hidden').stop(true, true).animate({
       opacity: 1
     }, 125, () => {
+      hideCrown();
       clearIntervals();
       $("#restartTestButton").css('opacity', 1);
       if ($("#commandLineWrapper").hasClass('hidden')) focusWords();
