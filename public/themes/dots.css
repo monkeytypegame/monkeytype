@@ -58,3 +58,7 @@
     padding: .5rem;
     border-radius: 10rem;
 }
+
+#top.focus #menu .button.discord::after{
+    border-color: transparent;
+  }
