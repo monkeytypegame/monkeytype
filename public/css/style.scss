@@ -351,6 +351,21 @@ a:hover {
     transition: 0.25s;
     padding: 0.5rem;
     border-radius: var(--roundness);
+    &.discord{
+      position: relative;
+      &::after{ 
+        transition: .25s;
+        width: .5rem;
+        height: .5rem;
+        content: "";
+        position: absolute;
+        background: #da3333;
+        border-radius: 1rem;
+        top: .25rem;
+        right: .25rem;
+        border: 2px solid var(--bg-color);
+      }
+    }
     &:focus{
       background: var(--sub-color);
       color: var(--main-color);
@@ -360,6 +375,9 @@ a:hover {
   }
 }
 
+#top.focus #menu .button.discord::after{
+  background: transparent;
+}
 
 #menu .button .icon {
   display: grid;
