@@ -9,7 +9,8 @@ let config = {
     time: 30,
     mode: "words",
     language: "english",
-    fontSize: 1
+    fontSize: 1,
+    freedomMode: false
 }
 
 //cookies
@@ -33,6 +34,7 @@ function loadConfigFromCookie() {
         changeMode(newConfig.mode);
         changeLanguage(newConfig.language);
         changeFontSize(newConfig.fontSize);
+        setFreedomMode(newConfig.freedomMode);
         config = newConfig;
         restartTest();
     }
@@ -131,6 +133,17 @@ function togglePunctuation() {
         $("#top .config .punctuationMode .button").addClass("active");
     }
     config.punctuation = !config.punctuation;
+    saveConfigToCookie();
+}
+
+//freedom
+function setFreedomMode(freedom) {
+    config.freedomMode = freedom;
+    saveConfigToCookie();
+}
+
+function toggleFreedomMode() {
+    config.freedomMode = !config.freedomMode;
     saveConfigToCookie();
 }
 

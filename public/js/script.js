@@ -1019,9 +1019,7 @@ $(document).keydown((event) => {
       if (!testActive) return;
       if (currentInput == "" && inputHistory.length > 0) {
         if (
-          inputHistory[currentWordIndex - 1] ==
-          wordsList[currentWordIndex - 1] ||
-          $($(".word")[currentWordIndex - 1]).hasClass("hidden")
+          (inputHistory[currentWordIndex - 1] == wordsList[currentWordIndex - 1] && !config.freedomMode) || $($(".word")[currentWordIndex - 1]).hasClass("hidden")
         ) {
           return;
         } else {
