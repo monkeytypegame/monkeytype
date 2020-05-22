@@ -353,7 +353,8 @@ a:hover {
     border-radius: var(--roundness);
     &.discord{
       position: relative;
-      &::after{
+      &::after{ 
+        transition: .25s;
         width: .5rem;
         height: .5rem;
         content: "";
@@ -374,6 +375,9 @@ a:hover {
   }
 }
 
+#top.focus #menu .button.discord::after{
+  background: transparent;
+}
 
 #menu .button .icon {
   display: grid;
