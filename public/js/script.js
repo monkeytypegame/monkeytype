@@ -645,9 +645,13 @@ function changeWordCount(wordCount) {
 }
 
 function changeTimeConfig(time) {
+  time = parseInt(time);
   changeMode("time");
   config.time = time;
   $("#top .config .time .button").removeClass("active");
+  if(![15,30,60,120].includes(time)){
+    time = "custom";
+  }
   $("#top .config .time .button[timeConfig='" + time + "']").addClass("active");
   restartTest();
   saveConfigToCookie();
@@ -839,8 +843,15 @@ $(document).on("click", "#top .config .wordCount .button", (e) => {
 });
 
 $(document).on("click", "#top .config .time .button", (e) => {
-  time = e.currentTarget.innerHTML;
-  changeTimeConfig(time);
+  time = $(e.currentTarget).attr('timeConfig');
+  if(time == "custom"){
+    let newTime = prompt('Custom time in seconds');
+    if(newTime !== null && !isNaN(newTime) && newTime > 0){
+      changeTimeConfig(newTime);
+    }
+  }else{
+    changeTimeConfig(time);
+  }
 });
 
 $(document).on("click", "#top .config .customText .button", (e) => {
