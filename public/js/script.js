@@ -14,6 +14,8 @@ let pageTransition = false;
 let keypressPerSecond = [];
 let currentKeypressCount = 0;
 let afkDetected = false;
+let errorsPerSecond = [];
+let currentErrorCount = 0;
 
 let accuracyStats = {
   correct: 0,
@@ -293,9 +295,11 @@ function hideCaret() {
 }
 
 function showCaret() {
-  updateCaretPosition();
-  $("#caret").removeClass("hidden");
-  startCaretAnimation();
+  if($("#result").hasClass('hidden')){
+    updateCaretPosition();
+    $("#caret").removeClass("hidden");
+    startCaretAnimation();
+  }
 }
 
 function stopCaretAnimation() {
@@ -545,12 +549,21 @@ function showResult() {
   let mainColor = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ', '');
   let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ', '');
 
-
   wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
+  wpmOverTimeChart.options.scales.xAxes[0].scaleLabel.fontColor = subColor;
   wpmOverTimeChart.options.scales.yAxes[0].ticks.minor.fontColor = subColor;
+  wpmOverTimeChart.options.scales.yAxes[1].ticks.minor.fontColor = subColor;
+  wpmOverTimeChart.options.scales.yAxes[0].scaleLabel.fontColor = subColor;
+  wpmOverTimeChart.options.scales.yAxes[1].scaleLabel.fontColor = subColor;
+
+
   wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
   wpmOverTimeChart.data.labels = labels;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
+  wpmOverTimeChart.data.datasets[1].data = errorsPerSecond;
+
+
+
   wpmOverTimeChart.update({ duration: 0 });
   swapElements($("#words"),$("#result"),250);
 }
@@ -559,12 +572,15 @@ function restartTest() {
   clearIntervals();
   time = 0;
   afkDetected = false;
-  keypressPerSecond = [];
   wpmHistory = [];
   setFocus(false);
   hideCaret();
   testActive = false;
   hideLiveWpm();
+  keypressPerSecond = [];
+  currentKeypressCount = 0;
+  errorsPerSecond = [];
+  currentErrorCount = 0;
   currentTestLine = 0;
   let el = null;
   if($("#words").hasClass('hidden')){
@@ -981,6 +997,9 @@ $(document).keypress(function(event) {
       wpmHistory.push(wpm);
       keypressPerSecond.push(currentKeypressCount);
       currentKeypressCount = 0;
+      errorsPerSecond.push(currentErrorCount);
+      currentErrorCount = 0;
+      console.log(errorsPerSecond);
       if(keypressPerSecond[time-1] == 0 && keypressPerSecond[time-2] == 0 && !afkDetected){
         showNotification("AFK detected",3000);
         afkDetected = true;
@@ -999,6 +1018,7 @@ $(document).keypress(function(event) {
   }
   if (wordsList[currentWordIndex].substring(currentInput.length, currentInput.length + 1) != event["key"]) {
     accuracyStats.incorrect++;
+    currentErrorCount++;
   } else {
     accuracyStats.correct++;
   }
@@ -1144,7 +1164,16 @@ let wpmOverTimeChart = new Chart(ctx, {
       data: [],
       // backgroundColor: 'rgba(255, 255, 255, 0.25)',
       borderColor: 'rgba(125, 125, 125, 1)',
-      borderWidth: 2
+      borderWidth: 2,
+      yAxisID: "wpm"
+    },
+    {
+      label: "errors",
+      data: [],
+      // backgroundColor: 'rgba(255, 255, 255, 0.25)',
+      borderColor: 'rgba(255, 125, 125, 1)',
+      borderWidth: 2,
+      yAxisID: "error"
     }],
   },
   options: {
@@ -1172,21 +1201,39 @@ let wpmOverTimeChart = new Chart(ctx, {
         },
         display: true,
         scaleLabel: {
-          display: false,
-          labelString: 'Seconds'
+          display: true,
+          labelString: 'Seconds',
+          fontFamily: "Roboto Mono"
         }
       }],
       yAxes: [{
+        id: "wpm",
         display: true,
         scaleLabel: {
-          display: false,
-          labelString: 'Words per Minute'
+          display: true,
+          labelString: 'Words per Minute',
+          fontFamily: 'Roboto Mono'
         },
         ticks: {
           fontFamily: 'Roboto Mono',
           beginAtZero: true
         }
-      }]
+      },
+      {
+        id: "error",
+        display: true,
+        scaleLabel: {
+          display: true,
+          labelString: 'Errors',
+          fontFamily: 'Roboto Mono'
+        },
+        ticks: {
+          precision:0,
+          fontFamily: 'Roboto Mono',
+          beginAtZero: true
+        }
+      }
+    ]
     }
   }
 });
