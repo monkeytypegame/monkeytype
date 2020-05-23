@@ -36,8 +36,8 @@ function loadConfigFromCookie() {
         changeFontSize(newConfig.fontSize);
         setFreedomMode(newConfig.freedomMode);
         config = newConfig;
-        restartTest();
     }
+    restartTest();
 }
 
 function showTestConfig() {
