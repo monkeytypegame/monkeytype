@@ -11,6 +11,9 @@ let currentCommands = commands;
 let restartCount = 0;
 let currentTestLine = 0;
 let pageTransition = false;
+let keypressPerSecond = [];
+let currentKeypressCount = 0;
+let afkDetected = false;
 
 let accuracyStats = {
   correct: 0,
@@ -457,54 +460,57 @@ function showResult() {
     mode2 = config.words;
   }
   
-  let completedEvent = {
-    wpm: stats.wpm,
-    correctChars: stats.correctChars,
-    incorrectChars: stats.incorrectChars,
-    acc: stats.acc,
-    mode: config.mode,
-    mode2: mode2,
-    punctuation: config.punctuation,
-    timestamp: Date.now(),
-    language: config.language,
-    restartCount: restartCount
-  };
-  console.log(restartCount);
-  restartCount = 0;
-  if (stats.wpm > 0 && stats.wpm < 600 && stats.acc > 50 && stats.acc <= 100) {
-    if (firebase.auth().currentUser != null) {
-      db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language).then(data => {
-        // console.log(`highest wpm for this mode is ${data}, current is ${stats.wpm}`);
-        if (data < stats.wpm) {
-          hideCrown();
-          showCrown();
-        }
-        completedEvent.uid = firebase.auth().currentUser.uid;
+  if(afkDetected){
+    showNotification("Test invalid",3000);
+  }else{
+    let completedEvent = {
+      wpm: stats.wpm,
+      correctChars: stats.correctChars,
+      incorrectChars: stats.incorrectChars,
+      acc: stats.acc,
+      mode: config.mode,
+      mode2: mode2,
+      punctuation: config.punctuation,
+      timestamp: Date.now(),
+      language: config.language,
+      restartCount: restartCount
+    };
+    restartCount = 0;
+    if (stats.wpm > 0 && stats.wpm < 600 && stats.acc > 50 && stats.acc <= 100) {
+      if (firebase.auth().currentUser != null) {
+        db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language).then(data => {
+          // console.log(`highest wpm for this mode is ${data}, current is ${stats.wpm}`);
+          if (data < stats.wpm) {
+            hideCrown();
+            showCrown();
+          }
+          completedEvent.uid = firebase.auth().currentUser.uid;
+          try{
+            firebase.analytics().logEvent('testCompleted', completedEvent);
+          }catch(e){
+            console.log("Analytics unavailable");
+          }
+          db_testCompleted(completedEvent);
+          dbSnapshot.unshift(completedEvent);
+        });
+        $("#result .loginTip").addClass('hidden');
+      } else {
         try{
-          firebase.analytics().logEvent('testCompleted', completedEvent);
+          firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
         }catch(e){
           console.log("Analytics unavailable");
         }
-        db_testCompleted(completedEvent);
-        dbSnapshot.unshift(completedEvent);
-      });
-      $("#result .loginTip").addClass('hidden');
+        $("#result .loginTip").removeClass('hidden');
+
+        // showNotification("Sign in to save your result",3000);
+      }
     } else {
+      showNotification("Test invalid", 3000);
       try{
-        firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
+        firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
       }catch(e){
         console.log("Analytics unavailable");
       }
-      $("#result .loginTip").removeClass('hidden');
-
-      // showNotification("Sign in to save your result",3000);
-    }
-  } else {
-    showNotification("Test invalid", 3000);
-    try{
-      firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
-    }catch(e){
-      console.log("Analytics unavailable");
     }
   }
 
@@ -552,7 +558,9 @@ function showResult() {
 function restartTest() {
   clearIntervals();
   time = 0;
-  let fadetime = 125;
+  afkDetected = false;
+  keypressPerSecond = [];
+  wpmHistory = [];
   setFocus(false);
   hideCaret();
   testActive = false;
@@ -579,7 +587,6 @@ function restartTest() {
       clearIntervals();
       $("#restartTestButton").css('opacity', 1);
       if ($("#commandLineWrapper").hasClass('hidden')) focusWords();
-      wpmHistory = [];
       hideTimer();
       setTimeout(function() {
         $("#timer")
@@ -972,12 +979,18 @@ $(document).keypress(function(event) {
       updateLiveWpm(wpm);
       showLiveWpm();
       wpmHistory.push(wpm);
+      keypressPerSecond.push(currentKeypressCount);
+      currentKeypressCount = 0;
+      if(keypressPerSecond[time-1] == 0 && keypressPerSecond[time-2] == 0 && !afkDetected){
+        showNotification("AFK detected",3000);
+        afkDetected = true;
+      }
       if (config.mode == "time") {
         if (time >= config.time) {
           clearIntervals();
           hideCaret();
           testActive = false;
-          showResult();
+          showResult(false);
         }
       }
     }, 1000));
@@ -989,10 +1002,11 @@ $(document).keypress(function(event) {
   } else {
     accuracyStats.correct++;
   }
+  currentKeypressCount++;
   currentInput += event["key"];
-    setFocus(true);
-    compareInput();
-    updateCaretPosition();
+  setFocus(true);
+  compareInput();
+  updateCaretPosition();
 });
 
 //handle keyboard events
