@@ -1113,7 +1113,7 @@ if (window.location.hostname === "localhost") {
 $(document).ready(() => {
   updateFavicon(32,14);
   $('body').css('transition', '.25s');
-  restartTest();
+  // restartTest();
   if (config.quickTab) {
     $("#restartTestButton").addClass('hidden');
   }

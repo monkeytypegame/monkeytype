@@ -219,7 +219,7 @@ function changeFontSize(fontSize) {
     if (fontSize == null || fontSize == undefined) {
         fontSize = 1;
     }
-    $("#words").stop(true, true).animate({ opacity: 0 }, 125, e => {
+    // $("#words").stop(true, true).animate({ opacity: 0 }, 125, e => {
         config.fontSize = fontSize;
         $("#words").removeClass('size125');
         $("#caret").removeClass('size125');
@@ -239,6 +239,6 @@ function changeFontSize(fontSize) {
             $("#caret").addClass('size2');
         }
         saveConfigToCookie();
-        restartTest();
-    });
+        // restartTest();
+    // });
 }
