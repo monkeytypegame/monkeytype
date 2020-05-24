@@ -340,7 +340,7 @@ a:hover {
   display: grid;
   grid-auto-flow: column;
   gap: .5rem;
-  margin-bottom: -0.4rem;
+  // margin-bottom: -0.4rem;
   width: fit-content;
   width: -moz-fit-content;
   /*   transition: 0.25s; */
@@ -459,6 +459,7 @@ a:hover {
   /*   margin-bottom: 0.1rem; */
   grid-column: 3/4;
   grid-row: 1/2;
+  justify-items: self-end;
 }
 
 #top .config .group {
