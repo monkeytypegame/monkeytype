@@ -10,7 +10,8 @@ let config = {
     mode: "words",
     language: "english",
     fontSize: 1,
-    freedomMode: false
+    freedomMode: false,
+    resultFilters: ["all"]
 }
 
 //cookies
@@ -35,6 +36,9 @@ function loadConfigFromCookie() {
         changeLanguage(newConfig.language);
         changeFontSize(newConfig.fontSize);
         setFreedomMode(newConfig.freedomMode);
+        if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
+            newConfig.resultFilters = ["all"];
+        }
         config = newConfig;
     }
     restartTest();
