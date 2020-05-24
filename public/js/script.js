@@ -971,7 +971,7 @@ $(window).resize(() => {
 });
 
 $(document).mousemove(function(event) {
-  if($("#top").hasClass("focus")){
+  if($("#top").hasClass("focus") && (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)){
     setFocus(false);
   }
 });
