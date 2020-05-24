@@ -1029,6 +1029,8 @@ key {
         cursor: pointer;
         transition: .25s;
         -webkit-user-select: none;
+        display: grid;
+        align-content: center;
         &.active{
           background: var(--sub-color);
           color: var(--bg-color);
