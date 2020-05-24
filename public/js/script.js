@@ -657,9 +657,13 @@ function changeCustomText() {
 }
 
 function changeWordCount(wordCount) {
+  wordCount = parseInt(wordCount);
   changeMode("words");
-  config.words = parseInt(wordCount);
+  config.words = wordCount;
   $("#top .config .wordCount .button").removeClass("active");
+  if(![10,25,50,100,200].includes(wordCount)){
+    wordCount = "custom";
+  }
   $("#top .config .wordCount .button[wordCount='" + wordCount + "']").addClass(
     "active"
   );
@@ -861,8 +865,15 @@ $(document).on("click", "#top .logo", (e) => {
 });
 
 $(document).on("click", "#top .config .wordCount .button", (e) => {
-  wrd = e.currentTarget.innerHTML;
-  changeWordCount(wrd);
+  wrd = $(e.currentTarget).attr('wordCount');
+  if(wrd == "custom"){
+    let newWrd = prompt('Custom word amount');
+    if(newWrd !== null && !isNaN(newWrd) && newWrd > 0){
+      changeWordCount(newWrd);
+    }
+  }else{
+    changeWordCount(wrd);
+  }
 });
 
 $(document).on("click", "#top .config .time .button", (e) => {
