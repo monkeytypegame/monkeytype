@@ -971,7 +971,9 @@ $(window).resize(() => {
 });
 
 $(document).mousemove(function(event) {
-  setFocus(false);
+  if($("#top").hasClass("focus")){
+    setFocus(false);
+  }
 });
 
 //keypresses for the test, using different method to be more responsive
