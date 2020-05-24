@@ -1178,7 +1178,9 @@ let wpmOverTimeChart = new Chart(ctx, {
   options: {
     tooltips: {
       titleFontFamily: "Roboto Mono",
-      bodyFontFamily: "Roboto Mono"
+      bodyFontFamily: "Roboto Mono",
+      mode: 'x',
+      intersect: false
     },
     legend: {
       display: false,
