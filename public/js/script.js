@@ -465,7 +465,7 @@ function showResult() {
   }
   
   if(afkDetected){
-    showNotification("Test invalid",3000);
+    showNotification("Test invalid - AFK detected",3000);
   }else{
     let completedEvent = {
       wpm: stats.wpm,
