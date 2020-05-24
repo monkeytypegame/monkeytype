@@ -999,7 +999,6 @@ $(document).keypress(function(event) {
       currentKeypressCount = 0;
       errorsPerSecond.push(currentErrorCount);
       currentErrorCount = 0;
-      console.log(errorsPerSecond);
       if(keypressPerSecond[time-1] == 0 && keypressPerSecond[time-2] == 0 && !afkDetected){
         showNotification("AFK detected",3000);
         afkDetected = true;
@@ -1189,9 +1188,13 @@ let wpmOverTimeChart = new Chart(ctx, {
     },
     responsive: true,
     maintainAspectRatio: false,
+    tooltips: {
+      mode: 'x',
+      intersect: false
+    },
     hover: {
-      mode: 'nearest',
-      intersect: true
+      mode: 'x',
+      intersect: false
     },
     scales: {
 
@@ -1231,6 +1234,9 @@ let wpmOverTimeChart = new Chart(ctx, {
           precision:0,
           fontFamily: 'Roboto Mono',
           beginAtZero: true
+        },
+        gridLines: {
+          display:false
         }
       }
     ]
