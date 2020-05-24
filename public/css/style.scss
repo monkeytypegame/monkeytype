@@ -340,7 +340,7 @@ a:hover {
   display: grid;
   grid-auto-flow: column;
   gap: .5rem;
-  margin-bottom: -0.4rem;
+  margin-bottom: -0.4rem; 
   width: fit-content;
   width: -moz-fit-content;
   /*   transition: 0.25s; */
@@ -952,6 +952,20 @@ key {
       font-size: 3rem;
       line-height: 3rem;
     }
+    &.chart{
+      position: relative;
+      .chartPreloader{
+        position: absolute;
+        width: 100%;
+        background: rgba(0,0,0,0.5);
+        height: 100%;
+        display: grid;
+        align-items: center;
+        justify-content: center;
+        font-size: 5rem;
+        text-shadow: 0 0 3rem black;
+      }
+    }
   }
   table{
     border-spacing:0;
@@ -973,7 +987,10 @@ key {
   .group.filterButtons{
     gap: 1rem;
     display: grid;
+    grid-template-columns: 1fr 1fr;
     .buttonsAndTitle{
+      height: fit-content;
+      height: -moz-fit-content;
       display: grid;
       gap: .25rem;
       color: var(--sub-color);
