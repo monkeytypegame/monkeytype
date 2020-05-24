@@ -1090,6 +1090,7 @@ $(document).keydown((event) => {
         }
         compareInput();
       }
+      currentKeypressCount++;
       updateCaretPosition();
     }
     //space
