@@ -252,9 +252,13 @@ let activeFilters = ["all"];
 $(document).ready(e =>{
   activeFilters = config.resultFilters;
   console.log(activeFilters);
-  activeFilters.forEach(filter => {
-    enableFilterButton(filter);
-  })
+  if(activeFilters.includes("all")){
+    toggleFilterButton("all")
+  }else{
+    activeFilters.forEach(filter => {
+      toggleFilterButton(filter);
+    })
+  }
 })
 
 
@@ -265,20 +269,20 @@ function toggleFilterButton(filter){
     
     if(filter == 'all' || filter == 'none'){
       return;
-    }else if(filter == "words"){
-      $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
-        let f = $(obj).attr('filter')
-        disableFilterButton(f)
-      })
-    }else if(filter == "time"){
-      $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
-        let f = $(obj).attr('filter')
-        disableFilterButton(f)
-      })
-    }else if(filter == "puncOff"){
-      enableFilterButton("puncOn");
-    }else if(filter == "puncOn"){
-      enableFilterButton("puncOff");
+    }else if(filter == "mode_words"){
+      // $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
+      //   let f = $(obj).attr('filter')
+      //   disableFilterButton(f)
+      // })
+    }else if(filter == "mode_time"){
+      // $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
+      //   let f = $(obj).attr('filter')
+      //   disableFilterButton(f)
+      // })
+    }else if(filter == "punc_off"){
+      enableFilterButton("punc_on");
+    }else if(filter == "punc_on"){
+      enableFilterButton("punc_off");
     }
     disableFilterButton(filter);
     disableFilterButton('all'); 
@@ -302,21 +306,22 @@ function toggleFilterButton(filter){
           disableFilterButton(f);
         }
       })
-    }else if(filter == "words"){
-      $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
-        let f = $(obj).attr('filter');
-        enableFilterButton(f);
-      })
-    }else if(filter == "time"){
-      $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
-        let f = $(obj).attr('filter');
-        enableFilterButton(f);
-      })
-    }else if(['10','25','50','100','200'].includes(filter)){
-      enableFilterButton('words');
-    }else if(['15','30','60','120'].includes(filter)){
-      enableFilterButton('time');
     }
+    // else if(filter == "mode_words"){
+    //   $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
+    //     let f = $(obj).attr('filter');
+    //     enableFilterButton(f);
+    //   })
+    // }else if(filter == "mode_time"){
+    //   $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
+    //     let f = $(obj).attr('filter');
+    //     enableFilterButton(f);
+    //   })
+    // }else if(['10','25','50','100','200'].includes(filter)){
+    //   enableFilterButton('words');
+    // }else if(['15','30','60','120'].includes(filter)){
+    //   enableFilterButton('time');
+    // }
 
     enableFilterButton(filter);
   }
@@ -344,6 +349,19 @@ function updateActiveFilters(){
 }
 
 
+function showChartPreloader(){
+  $(".pageAccount .group.chart .preloader").stop(true,true).animate({
+    opacity: 1
+  },125);
+}
+
+function hideChartPreloader(){
+  $(".pageAccount .group.chart .preloader").stop(true,true).animate({
+    opacity: 0
+  },125);
+}
+
+
 $('.pageAccount .filterButtons').click('.button',e =>{
   const filter = $(e.target).attr('filter');
   toggleFilterButton(filter);
@@ -367,24 +385,30 @@ function refreshAccountPage() {
     let wpmLast10count = 0;
     $(".pageAccount .history table tbody").empty();
     dbSnapshot.forEach(result => {
-      
+      // console.log(result);
       //apply filters
-      if(!activeFilters.includes(result.mode)){
-        return;
+      if(!activeFilters.includes("mode_"+result.mode)) return;
+      if(result.mode == "time"){
+        let timefilter = "time_custom";
+        if([15,30,60,120].includes(parseInt(result.mode2))){
+          timefilter = "time_"+result.mode2;
+        }
+        if(!activeFilters.includes(timefilter)) return;
+      }else if(result.mode == "words"){
+        let wordfilter = "words_custom";
+        if([10,25,50,100,200].includes(parseInt(result.mode2))){
+          wordfilter = "words_"+result.mode2;
+        }
+        if(!activeFilters.includes(wordfilter)) return;
       }
-      if(!activeFilters.includes(String(result.mode2))){
-        return;
-      }
-      if(!activeFilters.includes(result.language)){
-        return;
-      }
-      let puncfilter = "puncOff";
+
+      if(!activeFilters.includes(result.language)) return;
+
+      let puncfilter = "punc_off";
       if(result.punctuation){
-        puncfilter = "puncOn";
+        puncfilter = "punc_on";
       }
-      if(!activeFilters.includes(puncfilter)){
-        return;
-      }
+      if(!activeFilters.includes(puncfilter)) return;
 
       if(wpmLast10count < 10){
         wpmLast10count++;
@@ -408,7 +432,7 @@ function refreshAccountPage() {
       <td>${result.incorrectChars}</td>
       <td>${result.mode} ${result.mode2}</td>
       <td>${withpunc}</td>
-      <td>${result.language.replace('_',' ')}</td>
+      <td>${result.language.replace('_','<br>')}</td>
       <td>${moment(result.timestamp).format('DD MMM YYYY HH:mm')}</td>
       </tr>`)
       chartData.push({
@@ -423,7 +447,9 @@ function refreshAccountPage() {
       });
 
       if (result.wpm > topWpm) {
+        let puncsctring = result.punctuation ? ",<br>with punctuation" : "";
         topWpm = result.wpm;
+        topMode = result.mode + " " + result.mode2 + puncsctring;
       }
 
       totalWpm += result.wpm;
@@ -445,7 +471,7 @@ function refreshAccountPage() {
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm/testCount));
     $(".pageAccount .averageWpm10 .val").text(Math.round(wpmLast10total/wpmLast10count));
-    // $(".pageAccount .highestWpm .mode").html(topMode);
+    $(".pageAccount .highestWpm .mode").html(topMode);
     $(".pageAccount .testsTaken .val").text(testCount);
 
     $(".pageAccount .testsStarted .val").text(
@@ -486,7 +512,7 @@ function refreshAccountPage() {
     // }
 
     
-    resultHistoryChart.update();
+    resultHistoryChart.update({duration: 0});
     
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
