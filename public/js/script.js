@@ -1188,10 +1188,6 @@ let wpmOverTimeChart = new Chart(ctx, {
     },
     responsive: true,
     maintainAspectRatio: false,
-    tooltips: {
-      mode: 'x',
-      intersect: false
-    },
     hover: {
       mode: 'x',
       intersect: false
