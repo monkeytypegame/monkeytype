@@ -668,7 +668,7 @@ function changeCustomText() {
   customText = prompt("Custom text");
   customText = customText.replace(/[\n\r\t ]/gm, ' ');
   customText = customText.replace(/ +/gm, ' ');
-  initWords();
+  // initWords();
 }
 
 function changeWordCount(wordCount) {
@@ -682,7 +682,6 @@ function changeWordCount(wordCount) {
   $("#top .config .wordCount .button[wordCount='" + wordCount + "']").addClass(
     "active"
   );
-  restartTest();
   saveConfigToCookie();
 }
 
@@ -695,7 +694,6 @@ function changeTimeConfig(time) {
     time = "custom";
   }
   $("#top .config .time .button[timeConfig='" + time + "']").addClass("active");
-  restartTest();
   saveConfigToCookie();
 }
 
@@ -889,6 +887,7 @@ $(document).on("click", "#top .config .wordCount .button", (e) => {
   }else{
     changeWordCount(wrd);
   }
+  restartTest();
 });
 
 $(document).on("click", "#top .config .time .button", (e) => {
@@ -901,10 +900,13 @@ $(document).on("click", "#top .config .time .button", (e) => {
   }else{
     changeTimeConfig(time);
   }
+  restartTest();
 });
 
 $(document).on("click", "#top .config .customText .button", (e) => {
   changeCustomText();
+  restartTest();
+
 });
 
 $(document).on("click", "#top .config .punctuationMode .button", (e) => {
@@ -1176,7 +1178,7 @@ if (window.location.hostname === "localhost") {
 $(document).ready(() => {
   updateFavicon(32,14);
   $('body').css('transition', '.25s');
-  // restartTest();
+  restartTest();
   if (config.quickTab) {
     $("#restartTestButton").addClass('hidden');
   }

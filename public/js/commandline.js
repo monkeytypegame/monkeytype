@@ -272,28 +272,32 @@ let commandsFontSize = {
             id: "changeFontSize1",
             display: "1x",
             exec: () => {
-                changeFontSize(1)
+                changeFontSize(1);
+                restartTest();
             }
         },
         {
             id: "changeFontSize125",
             display: "1.25x",
             exec: () => {
-                changeFontSize(125)
+                changeFontSize(125);
+                restartTest();
             }
         },
         {
             id: "changeFontSize15",
             display: "1.5x",
             exec: () => {
-                changeFontSize(15)
+                changeFontSize(15);
+                restartTest();
             }
         },
         {
             id: "changeFontSize2",
             display: "2x",
             exec: () => {
-                changeFontSize(2)
+                changeFontSize(2);
+                restartTest();
             }
         }
     ]
@@ -313,7 +317,6 @@ $.getJSON("themes/list.json", function(data) {
             },
             exec: () => {
                 setTheme(theme);
-                saveConfigToCookie();
             }
         })
     })
