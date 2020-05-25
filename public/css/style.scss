@@ -628,7 +628,7 @@ key {
     grid-template-areas: 
                          "wpm acc"
                          "wpm key"
-                         "info info";
+                         "info time";
     .group{
       .top{
         color: var(--sub-color);
@@ -689,6 +689,9 @@ key {
     }
     .key{
       grid-area: key;
+    }
+    .time{
+      grid-area: time;
     }
   }
 }

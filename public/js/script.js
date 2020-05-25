@@ -93,6 +93,11 @@ function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function roundedToFixed(float, digits){
+  let rounded = Math.pow(10, digits);
+  return (Math.round(float * rounded) / rounded).toFixed(digits);
+}
+
 function initWords() {
   testActive = false;
   wordsList = [];
@@ -429,7 +434,13 @@ function calculateStats() {
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round((chars.correctWordChars * (60 / testSeconds)) / 5);
   let acc = Math.floor((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
-  return { wpm: wpm, acc: acc, correctChars: chars.allCorrectChars, incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars };
+  return {
+    wpm: wpm,
+    acc: acc,
+    correctChars: chars.allCorrectChars,
+    incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars,
+    time: testSeconds
+  };
 }
 
 function hideCrown() {
@@ -444,13 +455,18 @@ function showCrown() {
 
 function showResult() {
   testEnd = Date.now();
+  testActive = false;
+  setFocus(false);
+  hideCaret();
+  hideLiveWpm();
   let stats = calculateStats();
   if(stats === undefined){
     stats = {
       wpm: 0,
       acc: 0,
       correctChars: 0,
-      incorrectChars: 0
+      incorrectChars: 0,
+      time: 0
     }
   }
   clearIntervals();
@@ -460,8 +476,11 @@ function showResult() {
   let mode2 = "";
   if (config.mode == "time") {
     mode2 = config.time;
+    $("#result .stats .time").addClass('hidden');
   } else if (config.mode == "words") {
     mode2 = config.words;
+    $("#result .stats .time").removeClass('hidden');
+    $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
   }
   
   if(afkDetected){
@@ -532,15 +551,11 @@ function showResult() {
     infoText += "<br>" + config.language.replace('_', ' ');
   }
   if (config.punctuation) {
-    infoText += "<br>with punctuation"
+    infoText += "<br>punctuation"
   }
 
   $("#result .stats .info .bottom").html(infoText);
-  testActive = false;
-  setFocus(false);
-  hideCaret();
-  hideLiveWpm();
-
+  
   let labels = [];
   for (let i = 1; i <= wpmHistory.length; i++) {
     labels.push(i.toString());
@@ -1096,8 +1111,8 @@ $(document).keydown((event) => {
     //space
     if (event["keyCode"] == 32) {
       if (!testActive) return;
-      event.preventDefault();
       if (currentInput == "") return;
+      event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
       if (config.mode == "time") {
         let currentTop = $($("#words .word")[currentWordIndex]).position().top;
