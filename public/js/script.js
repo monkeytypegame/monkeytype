@@ -924,6 +924,7 @@ $(document).on("click", "#top .config .mode .button", (e) => {
 });
 
 $(document).on("click", "#top #menu .button", (e) => {
+  if($(e.currentTarget).hasClass('discord')) return;
   href = $(e.currentTarget).attr('href');
   changePage(href.replace('/', ''));
 })
