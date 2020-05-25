@@ -41,7 +41,6 @@ function loadConfigFromCookie() {
         }
         config = newConfig;
     }
-    restartTest();
 }
 
 function showTestConfig() {
@@ -166,6 +165,7 @@ function setTheme(name) {
     }catch(e){
         console.log("Analytics unavailable");
     }
+    saveConfigToCookie();
 }
 
 function updateFavicon(size, curveSize) {
