@@ -192,7 +192,7 @@ function addWord() {
   while (randomWord.indexOf(' ') > -1) {
     randomWord = language[Math.floor(Math.random() * language.length)];
   }
-  if (config.punctuation && config.mode != "custom"){
+  if (config.punctuation && config.mode != "custom" || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1){
     randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0)
   }
   wordsList.push(randomWord);
@@ -428,16 +428,17 @@ function calculateStats() {
     if (inputHistory.length != wordsList.length) return;
   }
   let chars = countChars();
-  let totalChars = chars.allCorrectChars + chars.incorrectChars + chars.extraChars + chars.missedChars;
 
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round((chars.correctWordChars * (60 / testSeconds)) / 5);
+  let wpmraw = Math.round(((chars.correctWordChars + chars.incorrectChars) * (60/testSeconds))/5)
   let acc = Math.floor((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
   return {
     wpm: wpm,
+    wpmRaw: wpmraw,
     acc: acc,
-    correctChars: chars.allCorrectChars,
+    correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars,
     time: testSeconds
   };
@@ -463,6 +464,7 @@ function showResult() {
   if(stats === undefined){
     stats = {
       wpm: 0,
+      wpmRaw: 0,
       acc: 0,
       correctChars: 0,
       incorrectChars: 0,
@@ -471,16 +473,19 @@ function showResult() {
   }
   clearIntervals();
   $("#result .stats .wpm .bottom").text(stats.wpm);
+  $("#result .stats .raw .bottom").text(stats.wpmRaw);
   $("#result .stats .acc .bottom").text(stats.acc + "%");
   $("#result .stats .key .bottom").text(stats.correctChars + "/" + stats.incorrectChars);
+  $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
+
   let mode2 = "";
   if (config.mode == "time") {
     mode2 = config.time;
-    $("#result .stats .time").addClass('hidden');
+    // $("#result .stats .time").addClass('hidden');
   } else if (config.mode == "words") {
     mode2 = config.words;
-    $("#result .stats .time").removeClass('hidden');
-    $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
+    // $("#result .stats .time").removeClass('hidden');
+    // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
   }
   
   if(afkDetected){
