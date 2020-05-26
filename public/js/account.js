@@ -201,7 +201,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
       duration: 250
     },
     legend: {
-      display: true,
+      display: false,
       labels: {
         fontFamily: "Roboto Mono",
         fontColor: "#ffffff"
