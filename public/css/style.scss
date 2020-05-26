@@ -628,7 +628,8 @@ key {
     grid-template-areas: 
                          "wpm acc"
                          "wpm key"
-                         "info time";
+                         "raw time"
+                         "info info";
     .group{
       .top{
         color: var(--sub-color);
@@ -692,6 +693,9 @@ key {
     }
     .time{
       grid-area: time;
+    }
+    .raw{
+      grid-area: raw;
     }
   }
 }
@@ -967,6 +971,11 @@ key {
     gap: 1rem;
   }
   .group{
+    &.noDataError{
+      height: 30rem;
+      line-height: 30rem;
+      text-align: center;
+    }
     .title{
       color: var(--sub-color);
     }
