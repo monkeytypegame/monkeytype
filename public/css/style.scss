@@ -972,8 +972,9 @@ key {
   }
   .group{
     &.noDataError{
-      height: 30rem;
-      line-height: 30rem;
+      margin: 20rem 0;
+      // height: 30rem;
+      // line-height: 30rem;
       text-align: center;
     }
     .title{
