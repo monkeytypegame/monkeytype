@@ -23,6 +23,22 @@
     }
 }
 
+
+.word.error {
+    border-bottom: 2px solid #ccc;
+}
+
+.word letter.incorrect {
+    color: white;
+}
+
+.word letter.incorrect.extra {
+    color: white;
+}
+
+
+
+
 .logo .bottom,
 #top .config .group .buttons .button.active,
 #result .stats .group .bottom,
