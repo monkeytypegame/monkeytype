@@ -1186,7 +1186,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
   $("head title").text("Monkey Dev")
 }
-
+1
 if (window.location.hostname === "localhost") {
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
@@ -1227,7 +1227,11 @@ let wpmOverTimeChart = new Chart(ctx, {
       maxBarThickness: 10,
       type: "scatter",
       pointStyle: "crossRot",
-      radius: 4
+      radius: function(context) {
+        var index = context.dataIndex;
+        var value = context.dataset.data[index];
+        return value.y <= 0 ? 0 : 4
+      }
     }],
   },
   options: {
