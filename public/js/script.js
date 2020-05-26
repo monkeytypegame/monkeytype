@@ -585,12 +585,12 @@ function showResult() {
   let errorsNoZero = [];
 
   for(let i = 0; i < errorsPerSecond.length; i++){
-    if(errorsPerSecond[i] != 0){
+    // if(errorsPerSecond[i] != 0){
       errorsNoZero.push({
         x: i+1,
         y: errorsPerSecond[i]
       });
-    }
+    // }
   }
 
   wpmOverTimeChart.data.datasets[1].data = errorsNoZero;
