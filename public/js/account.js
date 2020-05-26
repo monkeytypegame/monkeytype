@@ -486,8 +486,6 @@ function refreshAccountPage() {
       $(".pageAccount .triplegroup.stats").removeClass('hidden');
     }
 
-
-
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm/testCount));
     $(".pageAccount .averageWpm10 .val").text(Math.round(wpmLast10total/wpmLast10count));
