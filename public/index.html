@@ -159,8 +159,8 @@
 
       <div class="page pageTest active">
         <div id="caret" class="hidden"></div>
-        <div id="words" class=""></div>
         <input id="wordsInput" class="" tabindex="0"></input>
+        <div id="words" class=""></div>
         <div id="result" class="hidden">
           <div class="stats">
             <!-- <div class="info">words 10<br>punctuation</div> -->
@@ -182,6 +182,10 @@
             </div>
             <div class="group time">
               <div class="top">time</div>
+              <div class="bottom">-</div>
+            </div>
+            <div class="group raw">
+              <div class="top">raw wpm</div>
               <div class="bottom">-</div>
             </div>
           </div>
@@ -362,6 +366,9 @@
               </div>
             </div>
           </div>
+          <div class="group noDataError hidden">
+            No data found.
+          </div>
           <div class="group chart">
             <!-- <div class="chartPreloader">
               <i class="fas fa-fw fa-spin fa-circle-notch"></i>
@@ -463,7 +470,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-trendline@0.1.3/src/chartjs-plugin-trendline.min.js"></script>
+<script src="js/chartjs-plugin-trendline.js"></script>
 <script src="js/words.js"></script>
 <script src="js/db.js"></script>
 <script src="js/userconfig.js"></script>
