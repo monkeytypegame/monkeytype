@@ -580,7 +580,20 @@ function showResult() {
   wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
   wpmOverTimeChart.data.labels = labels;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
-  wpmOverTimeChart.data.datasets[1].data = errorsPerSecond;
+
+
+  let errorsNoZero = [];
+
+  for(let i = 0; i < errorsPerSecond.length; i++){
+    if(errorsPerSecond[i] != 0){
+      errorsNoZero.push({
+        x: i+1,
+        y: errorsPerSecond[i]
+      });
+    }
+  }
+
+  wpmOverTimeChart.data.datasets[1].data = errorsNoZero;
 
 
 
@@ -1201,7 +1214,7 @@ let wpmOverTimeChart = new Chart(ctx, {
       // backgroundColor: 'rgba(255, 255, 255, 0.25)',
       borderColor: 'rgba(125, 125, 125, 1)',
       borderWidth: 2,
-      yAxisID: "wpm"
+      yAxisID: "wpm",
     },
     {
       label: "errors",
@@ -1209,7 +1222,12 @@ let wpmOverTimeChart = new Chart(ctx, {
       // backgroundColor: 'rgba(255, 255, 255, 0.25)',
       borderColor: 'rgba(255, 125, 125, 1)',
       borderWidth: 2,
-      yAxisID: "error"
+      yAxisID: "error",
+      // barPercentage: 0.1,
+      maxBarThickness: 10,
+      type: "scatter",
+      pointStyle: "crossRot",
+      radius: 4
     }],
   },
   options: {
@@ -1255,11 +1273,15 @@ let wpmOverTimeChart = new Chart(ctx, {
         ticks: {
           fontFamily: 'Roboto Mono',
           beginAtZero: true
+        },
+        gridLines: {
+          display:false
         }
       },
       {
         id: "error",
         display: true,
+        position: 'right',
         scaleLabel: {
           display: true,
           labelString: 'Errors',
@@ -1271,7 +1293,7 @@ let wpmOverTimeChart = new Chart(ctx, {
           beginAtZero: true
         },
         gridLines: {
-          display:false
+          display:true
         }
       }
     ]
