@@ -142,6 +142,11 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
         //   lineStyle: "solid",
         //   width: 1
         // }
+        trendlineLinear: {
+          style: "rgba(255,105,180, .8)",
+          lineStyle: "dotted",
+          width: 2
+        }
       },
     ],
   },
@@ -237,7 +242,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           labelString: 'Words per Minute'
         }
       }]
-    }
+    },
   }
 });
 
@@ -465,8 +470,23 @@ function refreshAccountPage() {
     resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor = subColor;
     resultHistoryChart.data.datasets[0].borderColor = mainColor;
     resultHistoryChart.options.legend.labels.fontColor = subColor;
+    resultHistoryChart.data.datasets[0].trendlineLinear.style = subColor;
 
     resultHistoryChart.data.datasets[0].data = chartData;
+
+    if(chartData == [] || chartData.length == 0){
+      $(".pageAccount .group.noDataError").removeClass('hidden');
+      $(".pageAccount .group.chart").addClass('hidden');
+      $(".pageAccount .group.history").addClass('hidden');
+      $(".pageAccount .triplegroup.stats").addClass('hidden');
+    }else{
+      $(".pageAccount .group.noDataError").addClass('hidden');
+      $(".pageAccount .group.chart").removeClass('hidden');
+      $(".pageAccount .group.history").removeClass('hidden');
+      $(".pageAccount .triplegroup.stats").removeClass('hidden');
+    }
+
+
 
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm/testCount));
@@ -511,6 +531,11 @@ function refreshAccountPage() {
     //   $(".pageAccount .favouriteTest .val").text(`${favModeName} (${Math.floor((favMode.length/testCount) * 100)}%)`);
     // }
 
+    if(resultHistoryChart.data.datasets[0].length > 0){
+      resultHistoryChart.options.plugins.trendlineLinear = true;
+    }else{
+      resultHistoryChart.options.plugins.trendlineLinear = false;
+    }
     
     resultHistoryChart.update({duration: 0});
     
