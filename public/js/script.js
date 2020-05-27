@@ -190,7 +190,8 @@ function addWord() {
   let language = words[config.language];
   let randomWord = language[Math.floor(Math.random() * language.length)];
   previousWord = wordsList[wordsList.length - 1];
-  while (randomWord.indexOf(' ') > -1 || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
+  previousWordStripped = previousWord.replace(/[.?!":\-,]/g,'').toLowerCase();
+  while (previousWordStripped == randomWord || randomWord.indexOf(' ') > -1 || (!config.punctuation && randomWord == "I")) {
     randomWord = language[Math.floor(Math.random() * language.length)];
   }
   if (config.punctuation && config.mode != "custom"){
