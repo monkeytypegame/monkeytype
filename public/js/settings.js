@@ -1,11 +1,11 @@
 function updateSettingsPage(){
 
-    let themesEl = $(".pageSettings .section .themes").empty();
+    let themesEl = $(".pageSettings .section.themes .buttons").empty();
     themesList.forEach(theme => {
         themesEl.append(`<div class="theme" theme='${theme}'>${theme.replace('_', ' ')}</div>`); 
     })
 
-    let langEl = $(".pageSettings .section .languages").empty();
+    let langEl = $(".pageSettings .section.languages .buttons").empty();
     Object.keys(words).forEach(language => {
         langEl.append(`<div class="language" language='${language}'>${language.replace('_', ' ')}</div>`); 
     })
@@ -31,8 +31,8 @@ function updateSettingsPage(){
 }
 
 function setActiveThemeButton() {
-    $(`.pageSettings .section .themes .theme`).removeClass('active');
-    $(`.pageSettings .section .themes .theme[theme=${config.theme}]`).addClass('active');
+    $(`.pageSettings .section.themes .theme`).removeClass('active');
+    $(`.pageSettings .section.themes .theme[theme=${config.theme}]`).addClass('active');
 }
 
 function setActiveFontSizeButton() {
@@ -41,8 +41,8 @@ function setActiveFontSizeButton() {
 }
 
 function setActiveLanguageButton() {
-    $(`.pageSettings .section .languages .language`).removeClass('active');
-    $(`.pageSettings .section .languages .language[language=${config.language}]`).addClass('active'); 
+    $(`.pageSettings .section.languages .language`).removeClass('active');
+    $(`.pageSettings .section.languages .language[language=${config.language}]`).addClass('active'); 
 }
 
 function setSettingsButton(buttonSection,tf) {
@@ -131,23 +131,23 @@ $(".pageSettings .section.keyTips .buttons .button.off").click(e => {
 })
 
 //themes
-$(document).on("mouseover",".pageSettings .section .themes .theme", (e) => {
+$(document).on("mouseover",".pageSettings .section.themes .theme", (e) => {
     let theme = $(e.currentTarget).attr('theme');
     previewTheme(theme);
 })
 
-$(document).on("click",".pageSettings .section .themes .theme", (e) => {
+$(document).on("click",".pageSettings .section.themes .theme", (e) => {
     let theme = $(e.currentTarget).attr('theme');
     setTheme(theme);
     setActiveThemeButton();
 })
 
-$(document).on("mouseleave",".pageSettings .section .themes", (e) => {
+$(document).on("mouseleave",".pageSettings .section.themes", (e) => {
     setTheme(config.theme);
 })
 
 //languages
-$(document).on("click",".pageSettings .section .languages .language", (e) => {
+$(document).on("click",".pageSettings .section.languages .language", (e) => {
     let language = $(e.currentTarget).attr('language');
     changeLanguage(language);
     showNotification('Language changed', 1000);

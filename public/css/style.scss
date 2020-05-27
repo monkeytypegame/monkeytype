@@ -290,7 +290,7 @@ a:hover {
   grid-auto-flow: row;
   /* grid-template-rows: 2rem auto 1rem; */
   height: 100%;
-  gap: 1rem;
+  gap: 2rem;
   /* margin-top: 1rem; */
   /* margin-bottom: 1rem; */
   align-items: center;
@@ -431,7 +431,6 @@ a:hover {
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: auto 1fr auto;
-  margin-bottom: 1rem;
   z-index: 2;
   align-items: center;
   gap: 0.5rem;
@@ -897,62 +896,113 @@ key {
 
 .pageSettings{
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  // grid-template-columns: 1fr 1fr;
   gap: 2rem;
   .tip{
     color: var(--sub-color);
   }
   .section{
     display: grid;
-    gap: .5rem;
-    grid-template-rows: auto 1fr auto;
+    // gap: .5rem;
+    grid-template-areas: "title title"
+                          "text buttons";
+    grid-template-columns: 2fr 1fr;
+    align-items: center;
     h1{
       font-size: 1rem;
       line-height: 1rem;
       color: var(--sub-color);
       margin: 0;
+      grid-area: title;
     }
-    .button{
-      color: var(--sub-color);
-      cursor: pointer;
-      transition: .25s;
-      padding: .2rem .5rem;
-      border-radius: var(--roundness);
-      &:hover{
-        color: var(--main-color);
-      }
-      &.active{
-        color: var(--main-color);
-      }
-      &:focus{
-        background: var(--sub-color);
-        color: var(--bg-color);
-        border: none;
-        outline: none;
-      }
+    p{
+      grid-area: text;
     }
+    // .button{
+    //   color: var(--sub-color);
+    //   cursor: pointer;
+    //   transition: .25s;
+    //   padding: .2rem .5rem;
+    //   border-radius: var(--roundness);
+    //   &:hover{
+    //     color: var(--main-color);
+    //   }
+    //   &.active{
+    //     color: var(--main-color);
+    //   }
+    //   &:focus{
+    //     background: var(--sub-color);
+    //     color: var(--bg-color);
+    //     border: none;
+    //     outline: none;
+    //   }
+    // }
     .buttons{
+      margin-left: 2rem;
       display: grid;
       grid-auto-flow: column;
-      gap: 1rem;
-      width: min-content;
-      width: -moz-min-content;
-    }
-    .themes, .languages{
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      // gap: 1rem;
-      .theme, .language{
-        // padding: 1rem 2rem;
-        text-align: center;
+      grid-template-columns: 1fr 1fr;
+      gap: .5rem;
+      grid-area: buttons;
+      .button{
         color: var(--sub-color);
-        transition: .25s;
         cursor: pointer;
-        &:hover{
-          color: var(--main-color);
-        }
+        transition: .25s;
+        padding: .2rem .5rem;
+        border-radius: var(--roundness);
+
+        background: rgba(0,0,0,.1);
+        text-align: center;
+        -webkit-user-select: none;
+        display: grid;
+        align-content: center;
+        height: min-content;
+        height: -moz-min-content;
         &.active{
-          color: var(--main-color);
+          background: var(--sub-color);
+          color: var(--bg-color);
+        }
+        &:hover,&:focus{
+          color: var(--sub-color);
+          background: var(--main-color);
+          outline: none;
+        }
+      }
+    }
+    &.fontSize .buttons{
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+    &.themes, &.languages{
+      grid-template-columns: 1fr;
+      grid-template-areas: "title"
+                            "buttons";
+      gap: .5rem;
+      .buttons{
+        margin-left: 0;
+        grid-auto-flow: dense;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: .5rem;
+        .theme, .language{
+          color: var(--sub-color);
+        cursor: pointer;
+        transition: .25s;
+        padding: .2rem .5rem;
+        border-radius: var(--roundness);
+
+        background: rgba(0,0,0,.1);
+        text-align: center;
+        -webkit-user-select: none;
+        display: grid;
+        align-content: center;
+        &.active{
+          background: var(--sub-color);
+          color: var(--bg-color);
+        }
+        &:hover,&:focus{
+          color: var(--sub-color);
+          background: var(--main-color);
+        }
         }
       }
     }
