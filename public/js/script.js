@@ -16,6 +16,7 @@ let currentKeypressCount = 0;
 let afkDetected = false;
 let errorsPerSecond = [];
 let currentErrorCount = 0;
+let resultVisible = false;
 
 let accuracyStats = {
   correct: 0,
@@ -478,6 +479,12 @@ function showResult() {
   $("#result .stats .key .bottom").text(stats.correctChars + "/" + stats.incorrectChars);
   $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
 
+  setTimeout(function() {
+    $("#showWordHistoryButton").removeClass('hidden').css('opacity',1);
+  }, 125);
+  
+
+
   let mode2 = "";
   if (config.mode == "time") {
     mode2 = config.time;
@@ -598,13 +605,25 @@ function showResult() {
 
 
   wpmOverTimeChart.update({ duration: 0 });
-  swapElements($("#words"),$("#result"),250);
+  swapElements($("#words"),$("#result"),250, () => {
+    resultVisible=true;
+    let remove = false;
+    $.each($('#words .word'),(i,obj)=>{
+      if(remove){
+        $(obj).remove();
+      }else{
+        $(obj).removeClass('hidden');
+        if($(obj).hasClass('active')) remove = true;
+      }
+    });
+  });
 }
 
 function restartTest() {
   clearIntervals();
   time = 0;
   afkDetected = false;
+  resultHistoryChart = false;
   wpmHistory = [];
   setFocus(false);
   hideCaret();
@@ -616,12 +635,28 @@ function restartTest() {
   currentErrorCount = 0;
   currentTestLine = 0;
   let el = null;
-  if($("#words").hasClass('hidden')){
+  if(resultVisible){
     //results are being displayed
     el = $("#result");
-  }else if($("#result").hasClass('hidden')){
+  }else{
     //words are being displayed
     el = $("#words");
+  }
+
+  if(resultVisible){
+    $("#words").stop(true, true).animate({
+      opacity: 0
+    }, 125);
+    $("#wordsTitle").stop(true,true).animate({
+      opacity: 0
+    }, 125, ()=>{
+      $("#wordsTitle").slideUp(0);
+    });
+    $("#showWordHistoryButton").stop(true,true).animate({
+      opacity: 0
+    }, 125, ()=>{
+      $("#showWordHistoryButton").addClass('hidden');
+    });
   }
 
   el.stop(true, true).animate({
@@ -891,6 +926,43 @@ function updateAccountLoginButton() {
   }
 }
 
+function toggleResultWordsDisplay(){
+  if(resultVisible){
+    if($("#words").hasClass('hidden')){
+      //show 
+      $("#wordsTitle").css('opacity',1).removeClass('hidden').slideDown(250);
+
+
+      let newHeight = $("#words").removeClass('hidden').css('height','auto').outerHeight();
+
+      $("#words").css({
+        height: 0,
+        opacity: 0
+      }).animate({
+        height: newHeight,
+        opacity: 1
+      }, 250);
+    }else{
+      //hide
+
+      $("#wordsTitle").slideUp(250);
+
+      let oldHeight = $("#words").outerHeight();
+      $("#words").removeClass('hidden');
+      $("#words").css({
+        opacity: 1,
+        height: oldHeight
+      }).animate({
+        height: 0,
+        opacity: 0
+      }, 250, ()=>{
+        $("#words").addClass('hidden');
+      });
+    }
+  }
+}
+
+
 $(document).on("click", "#top .logo", (e) => {
   changePage('test');
 });
@@ -980,6 +1052,19 @@ $(document.body).on("click", "#restartTestButton", (event) => {
   restartTest();
 });
 
+$(document).on("keypress", "#showWordHistoryButton", (event) => {
+  if (event.keyCode == 32 || event.keyCode == 13) {
+    if (testActive) {
+      restartCount++;
+    }
+    toggleResultWordsDisplay();
+  }
+});
+
+$(document.body).on("click", "#showWordHistoryButton", (event) => {
+  toggleResultWordsDisplay();
+});
+
 $(document.body).on("click", ".version", (event) => {
   $("#versionHistoryWrapper").css('opacity', 0).removeClass('hidden').animate({ opacity: 1 }, 125);
 });
@@ -1057,7 +1142,7 @@ $(document).keypress(function(event) {
           clearIntervals();
           hideCaret();
           testActive = false;
-          showResult(false);
+          showResult();
         }
       }
     }, 1000));
