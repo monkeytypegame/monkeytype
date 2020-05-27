@@ -1133,7 +1133,7 @@ $(document).keypress(function(event) {
       currentKeypressCount = 0;
       errorsPerSecond.push(currentErrorCount);
       currentErrorCount = 0;
-      if(keypressPerSecond[time-1] == 0 && keypressPerSecond[time-2] == 0 && !afkDetected){
+      if(keypressPerSecond[time-1] == 0 && keypressPerSecond[time-2] == 0 && keypressPerSecond[time-3] == 0 && keypressPerSecond[time-4] == 0 && !afkDetected){
         showNotification("AFK detected",3000);
         afkDetected = true;
       }
