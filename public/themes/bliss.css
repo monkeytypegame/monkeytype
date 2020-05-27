@@ -1,0 +1,25 @@
+:root {
+  --bg-color: #262727;
+  --main-color: #665957;
+  --caret-color: #f0d3c9;
+  --sub-color: #f0d3c9;
+  --error-color: #77516a;
+}
+
+.word letter.incorrect,
+.word letter.incorrect.extra{
+  color: var(--error-color);
+  text-decoration: line-through;
+}
+
+.word{
+  transition: border .5s ease-in-out;
+}
+
+.word.error{
+  border-bottom: dotted 2px var(--error-color);
+}
+
+.button.discord::after{
+  background: var(--main-color) !important;
+}
