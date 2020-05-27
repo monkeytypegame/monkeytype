@@ -7,7 +7,6 @@ let timers = [];
 let testActive = false;
 let testStart, testEnd;
 let wpmHistory = [];
-let currentCommands = commands;
 let restartCount = 0;
 let currentTestLine = 0;
 let pageTransition = false;

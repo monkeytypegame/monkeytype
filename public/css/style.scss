@@ -185,6 +185,11 @@ a:hover {
           color: var(--bg-color);
           background: var(--main-color);
         }
+        &:hover{
+          color: var(--bg-color);
+          background: var(--main-color);
+          cursor: pointer;
+        }
       }
     }
   }

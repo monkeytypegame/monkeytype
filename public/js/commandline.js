@@ -54,7 +54,7 @@ let commands = {
             display: "Change theme...",
             subgroup: true,
             exec: () => {
-                currentCommands = commandsThemes;
+                currentCommands.push(commandsThemes);
                 showCommandLine();
             }
         },
@@ -63,7 +63,7 @@ let commands = {
             display: "Change language...",
             subgroup: true,
             exec: () => {
-                currentCommands = commandsLanguages;
+                currentCommands.push(commandsLanguages);
                 showCommandLine();
             }
         },
@@ -72,7 +72,7 @@ let commands = {
             display: "Change font size...",
             subgroup: true,
             exec: () => {
-                currentCommands = commandsFontSize;
+                currentCommands.push(commandsFontSize);
                 showCommandLine();
             }
         },
@@ -81,7 +81,7 @@ let commands = {
             display: "Change mode...",
             subgroup: true,
             exec: () => {
-                currentCommands = commandsMode;
+                currentCommands.push(commandsMode);
                 showCommandLine();
             }
         },
@@ -90,7 +90,7 @@ let commands = {
             display: "Change time config...",
             subgroup: true,
             exec: () => {
-                currentCommands = commandsTimeConfig;
+                currentCommands.push(commandsTimeConfig);
                 showCommandLine();
             }
         },
@@ -99,7 +99,7 @@ let commands = {
             display: "Change word count...",
             subgroup: true,
             exec: () => {
-                currentCommands = commandsWordCount;
+                currentCommands.push(commandsWordCount);
                 showCommandLine();
             }
         },
@@ -115,7 +115,7 @@ let commands = {
             display: "Send a message ( bug report / feature request / feedback )...",
             subgroup: true,
             exec: () => {
-                currentCommands = commandsSendDevMessage;
+                currentCommands.push(commandsSendDevMessage);
                 showCommandLine();
             }
         }
@@ -342,6 +342,7 @@ let commandsLanguages = {
     ]
 };
 
+
 if (Object.keys(words).length > 0) {
     commandsLanguages.list = [];
     Object.keys(words).forEach(language => {
@@ -367,10 +368,15 @@ $(document).ready(e => {
         //escape
         if (event.keyCode == 27) {
             if ($("#commandLineWrapper").hasClass("hidden")) {
-                currentCommands = commands;
+                currentCommands = [commands];
                 showCommandLine();
             } else {
-                hideCommandLine();
+                if(currentCommands.length > 1){
+                    currentCommands.pop();
+                    showCommandLine();
+                }else{
+                    hideCommandLine();
+                }
                 setTheme(config.theme);
             }
         }
@@ -383,7 +389,8 @@ $("#commandInput textarea").keydown((e) => {
         e.preventDefault();
         let command = $("#commandInput textarea").attr("command");
         let value = $("#commandInput textarea").val();
-        $.each(currentCommands.list, (i, obj) => {
+        let list = currentCommands[currentCommands.length-1];
+        $.each(list.list, (i, obj) => {
             if (obj.id == command) {
                 obj.exec(value);
                 if (obj.subgroup !== null && obj.subgroup !== undefined) {
@@ -403,79 +410,108 @@ $("#commandInput textarea").keydown((e) => {
     return;
 });
 
-$("#commandLine input").keydown((e) => {
-    if (e.keyCode == 13) {
-        //enter
-        e.preventDefault();
-        let command = $(".suggestions .entry.active").attr("command");
-        let subgroup = false;
-        let input = false;
-        $.each(currentCommands.list, (i, obj) => {
-            if (obj.id == command) {
-                if (obj.input) {
-                    input = true;
-                    showCommandInput(obj.id, obj.display);
-                } else {
-                    obj.exec();
-                    if (obj.subgroup !== null && obj.subgroup !== undefined) {
-                        subgroup = obj.subgroup;
-                    }
-                }
+
+$("#commandLineWrapper #commandLine .suggestions").on('mouseover', e => {
+    $("#commandLineWrapper #commandLine .suggestions .entry").removeClass('active'); 
+    let hoverId = $(e.target).attr('command');
+    try {
+        let list = currentCommands[currentCommands.length-1];
+        $.each(list.list, (index, obj) => {
+            if (obj.id == hoverId) {
+                obj.hover();
             }
         });
-        if (!subgroup && !input) {
-            try{
-                firebase.analytics().logEvent('usedCommandLine', {
-                    command: command
-                });
-            }catch(e){
-                console.log("Analytics unavailable");
-            }
-            hideCommandLine();
+    } catch (e) { }
+})
+
+
+
+$("#commandLineWrapper #commandLine .suggestions").click(e =>{
+    triggerCommand($(e.target).attr('command'));
+})
+
+$(document).keydown((e) => {
+    if(!$("#commandLineWrapper").hasClass("hidden")){
+        $("#commandLine input").focus();
+        if (e.keyCode == 13) {
+            //enter
+            e.preventDefault();
+            let command = $(".suggestions .entry.active").attr("command");
+            triggerCommand(command);
+            return;
         }
-        return;
-    }
-    if (e.keyCode == 38 || e.keyCode == 40) {
-        //up
-        let entries = $(".suggestions .entry");
-        let activenum = -1;
-        let hoverId;
-        $.each(entries, (index, obj) => {
-            if ($(obj).hasClass("active")) activenum = index;
-        });
-        if (e.keyCode == 38) {
-            entries.removeClass("active");
-            if (activenum == 0) {
-                $(entries[entries.length - 1]).addClass("active");
-                hoverId = $(entries[entries.length - 1]).attr('command');
-            } else {
-                $(entries[--activenum]).addClass("active");
-                hoverId = $(entries[activenum]).attr('command');
-            }
-        }
-        if (e.keyCode == 40) {
-            entries.removeClass("active");
-            if (activenum + 1 == entries.length) {
-                $(entries[0]).addClass("active");
-                hoverId = $(entries[0]).attr('command');
-            } else {
-                $(entries[++activenum]).addClass("active");
-                hoverId = $(entries[activenum]).attr('command');
-            }
-        }
-        try {
-            $.each(currentCommands.list, (index, obj) => {
-                if (obj.id == hoverId) {
-                    obj.hover();
-                }
+        if (e.keyCode == 38 || e.keyCode == 40) {
+            $("#commandLineWrapper #commandLine .suggestions .entry").unbind("mouseenter mouseleave");
+            let entries = $(".suggestions .entry");
+            let activenum = -1;
+            let hoverId;
+            $.each(entries, (index, obj) => {
+                if ($(obj).hasClass("active")) activenum = index;
             });
-        } catch (e) { }
-        
-        return false;
+            if (e.keyCode == 38) {
+                entries.removeClass("active");
+                if (activenum == 0) {
+                    $(entries[entries.length - 1]).addClass("active");
+                    hoverId = $(entries[entries.length - 1]).attr('command');
+                } else {
+                    $(entries[--activenum]).addClass("active");
+                    hoverId = $(entries[activenum]).attr('command');
+                }
+            }
+            if (e.keyCode == 40) {
+                entries.removeClass("active");
+                if (activenum + 1 == entries.length) {
+                    $(entries[0]).addClass("active");
+                    hoverId = $(entries[0]).attr('command');
+                } else {
+                    $(entries[++activenum]).addClass("active");
+                    hoverId = $(entries[activenum]).attr('command');
+                }
+            }
+            try {
+                let list = currentCommands[currentCommands.length-1];
+                $.each(list.list, (index, obj) => {
+                    if (obj.id == hoverId) {
+                        obj.hover();
+                    }
+                });
+            } catch (e) { }
+            
+            return false;
+        }
     }
 });
 
+let currentCommands = [commands];
 
+function triggerCommand(command){
+    let subgroup = false;
+    let input = false;
+    let list = currentCommands[currentCommands.length-1];
+    $.each(list.list, (i, obj) => {
+        if (obj.id == command) {
+            if (obj.input) {
+                input = true;
+                showCommandInput(obj.id, obj.display);
+            } else {
+                obj.exec();
+                if (obj.subgroup !== null && obj.subgroup !== undefined) {
+                    subgroup = obj.subgroup;
+                }
+            }
+        }
+    });
+    if (!subgroup && !input) {
+        try{
+            firebase.analytics().logEvent('usedCommandLine', {
+                command: command
+            });
+        }catch(e){
+            console.log("Analytics unavailable");
+        }
+        hideCommandLine();
+    }
+}
 
 function hideCommandLine() {
     $("#commandLineWrapper")
@@ -526,12 +562,13 @@ function hideCommandLine() {
         
         function updateSuggestedCommands() {
             let inputVal = $("#commandLine input").val().toLowerCase().split(" ");
+            let list = currentCommands[currentCommands.length-1];
             if (inputVal[0] == "") {
-                $.each(currentCommands.list, (index, obj) => {
+                $.each(list.list, (index, obj) => {
                     obj.found = true;
                 });
             } else {
-                $.each(currentCommands.list, (index, obj) => {
+                $.each(list.list, (index, obj) => {
                     let foundcount = 0;
                     $.each(inputVal, (index2, obj2) => {
                         if (obj2 == "") return;
@@ -555,7 +592,8 @@ function hideCommandLine() {
         
         function displayFoundCommands() {
             $("#commandLine .suggestions").empty();
-            $.each(currentCommands.list, (index, obj) => {
+            let list = currentCommands[currentCommands.length-1];
+            $.each(list.list, (index, obj) => {
                 if (obj.found) {
                     $("#commandLine .suggestions").append(
                         '<div class="entry" command="' + obj.id + '">' + obj.display + "</div>"
@@ -574,7 +612,7 @@ function hideCommandLine() {
                 if (entries.length > 0) {
                     $(entries[0]).addClass("active");
                     try{
-                        $.each(currentCommands.list, (index, obj) => {
+                        $.each(list.list, (index, obj) => {
                             if (obj.found) {
                                 obj.hover();
                                 return false;
