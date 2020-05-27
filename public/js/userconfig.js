@@ -95,7 +95,8 @@ function setQuickTabMode(mode) {
       <key>esc</key> - command line`);
 
     } else {
-        $("#restartTestButton").remove();
+        // $("#restartTestButton").remove();
+        $("#restartTestButton").addClass('hidden');
         $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
       <key>esc</key> - command line`);
     }
@@ -105,13 +106,15 @@ function setQuickTabMode(mode) {
 function toggleQuickTabMode() {
     config.quickTab = !config.quickTab;
     if (!config.quickTab) {
-        $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
+        // $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
+        $("#restartTestButton").removeClass('hidden');
         $("#restartTestButton").css("opacity", 1);
         $("#bottom .keyTips").html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
       <key>esc</key> - command line`);
 
     } else {
-        $("#restartTestButton").remove();
+        // $("#restartTestButton").remove();
+        $("#restartTestButton").addClass('hidden');
         $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
       <key>esc</key> - command line`);
     }
