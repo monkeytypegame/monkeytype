@@ -623,7 +623,6 @@ function restartTest() {
   clearIntervals();
   time = 0;
   afkDetected = false;
-  resultVisible = false;
   wpmHistory = [];
   setFocus(false);
   hideCaret();
@@ -658,6 +657,7 @@ function restartTest() {
       $("#showWordHistoryButton").addClass('hidden');
     });
   }
+  resultVisible = false;
 
   el.stop(true, true).animate({
     opacity: 0
