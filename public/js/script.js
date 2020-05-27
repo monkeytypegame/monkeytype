@@ -190,10 +190,10 @@ function addWord() {
   let language = words[config.language];
   let randomWord = language[Math.floor(Math.random() * language.length)];
   previousWord = wordsList[wordsList.length - 1];
-  while (randomWord.indexOf(' ') > -1) {
+  while (randomWord.indexOf(' ') > -1 || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
     randomWord = language[Math.floor(Math.random() * language.length)];
   }
-  if (config.punctuation && config.mode != "custom" || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1){
+  if (config.punctuation && config.mode != "custom"){
     randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0)
   }
   wordsList.push(randomWord);
@@ -623,7 +623,7 @@ function restartTest() {
   clearIntervals();
   time = 0;
   afkDetected = false;
-  resultHistoryChart = false;
+  resultVisible = false;
   wpmHistory = [];
   setFocus(false);
   hideCaret();
