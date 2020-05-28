@@ -431,7 +431,7 @@ function countChars() {
 }
 
 function calculateStats() {
-  if (config.mode == "words") {
+  if (config.mode == "words" && config.difficulty == "normal") {
     if (inputHistory.length != wordsList.length) return;
   }
   let chars = countChars();
