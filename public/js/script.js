@@ -729,31 +729,6 @@ function changeCustomText() {
   // initWords();
 }
 
-function changeWordCount(wordCount) {
-  wordCount = parseInt(wordCount);
-  changeMode("words");
-  config.words = wordCount;
-  $("#top .config .wordCount .button").removeClass("active");
-  if(![10,25,50,100,200].includes(wordCount)){
-    wordCount = "custom";
-  }
-  $("#top .config .wordCount .button[wordCount='" + wordCount + "']").addClass(
-    "active"
-  );
-  saveConfigToCookie();
-}
-
-function changeTimeConfig(time) {
-  time = parseInt(time);
-  changeMode("time");
-  config.time = time;
-  $("#top .config .time .button").removeClass("active");
-  if(![15,30,60,120].includes(time)){
-    time = "custom";
-  }
-  $("#top .config .time .button[timeConfig='" + time + "']").addClass("active");
-  saveConfigToCookie();
-}
 
 function changePage(page) {
   if(pageTransition){
@@ -824,7 +799,7 @@ function changePage(page) {
   }
 }
 
-function changeMode(mode) {
+function changeMode(mode,nosave) {
   config.mode = mode;
   $("#top .config .mode .button").removeClass("active");
   $("#top .config .mode .button[mode='" + mode + "']").addClass("active");
@@ -844,7 +819,7 @@ function changeMode(mode) {
     $("#top .config .customText").removeClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
   }
-  saveConfigToCookie();
+  if(!nosave) saveConfigToCookie();
 }
 
 function liveWPM() {
