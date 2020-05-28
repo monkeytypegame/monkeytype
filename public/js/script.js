@@ -16,7 +16,6 @@ let afkDetected = false;
 let errorsPerSecond = [];
 let currentErrorCount = 0;
 let resultVisible = false;
-let browserHeight = document.documentElement.clientHeight;
 
 let accuracyStats = {
   correct: 0,
@@ -372,9 +371,11 @@ function updateCaretPosition() {
     left: newLeft
   }, duration)
 
+  let browserHeight = window.innerHeight;
   let middlePos = (browserHeight / 2) - $("#caret").outerHeight()/2;
+  let contentHeight = document.body.scrollHeight;
   
-  if (newTop >= middlePos && window.innerHeight > browserHeight) {
+  if (newTop >= middlePos &&  contentHeight > browserHeight) {
     window.scrollTo({
       left: 0,
       top: newTop - middlePos,
