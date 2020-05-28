@@ -1,0 +1,39 @@
+:root {
+  --bg-color: #f4f3ed;
+  --main-color: #ada78f;
+  --caret-color: #7fa480;
+  --sub-color: #080909;
+  --error-color: #c87e74;
+  --extra-error-color: #a56961; 
+}
+
+.word letter.incorrect{
+  color: var(--error-color);
+  font-weight: bold;
+}
+
+.word letter.incorrect.extra{
+  color: var(--extra-error-color);
+}
+
+.word.error{
+  border-bottom: solid 2px var(--error-color);
+}
+
+key{
+  color: var(--sub-color);
+  background-color: var(--main-color);
+}
+
+#menu .button{
+  color: var(--main-color);
+}
+
+#menu .button:nth-child(1){
+  color: var(--error-color);
+}
+
+#menu .button:nth-child(4){
+  color: var(--caret-color);
+}
+
