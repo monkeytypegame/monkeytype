@@ -20,8 +20,6 @@ function saveConfigToCookie() {
     let d = new Date();
     d.setFullYear(d.getFullYear() + 1);
     $.cookie("config", null);
-    console.log('saving');
-    console.log(config);
     $.cookie("config", JSON.stringify(config), {
         expires: d,
         path: '/'
