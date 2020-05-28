@@ -1,0 +1,29 @@
+:root {
+  --bg-color: linear-gradient(215deg, #cbb8ba, #706768);
+  --main-color: #8a6071;
+  --caret-color: #ede8ec;
+  --sub-color: #524149;
+  --error-color: #ede8ec;
+  --extra-error-color: #dabed2; 
+}
+
+.word letter.incorrect{
+  color: var(--error-color);
+}
+
+.word letter.incorrect.extra{
+  color: var(--extra-error-color);
+}
+
+.word.error{
+  border-bottom: double 2px var(--error-color);
+}
+
+key,
+.notification{
+ color: var(--caret-color);
+}
+
+#menu .button:nth-child(1){
+  color: var(--caret-color);
+}
