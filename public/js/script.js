@@ -380,7 +380,6 @@ function updateCaretPosition() {
       top: newTop - middlePos,
       behavior: 'smooth'
     })
-    console.log("run")
   }
 
 }
