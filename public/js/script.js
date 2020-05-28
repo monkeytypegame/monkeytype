@@ -376,11 +376,11 @@ function countChars() {
   let incorrectChars = 0;
   let extraChars = 0;
   let missedChars = 0;
+  let spaces = 0;
   for (let i = 0; i < inputHistory.length; i++) {
     if (inputHistory[i] == wordsList[i]) {
       //the word is correct
-      //+1 for space
-      correctWordChars += wordsList[i].length + 1;
+      correctWordChars += wordsList[i].length;
       correctChars += wordsList[i].length;
     } else if (inputHistory[i].length >= wordsList[i].length) {
       //too many chars
@@ -413,8 +413,13 @@ function countChars() {
         }
       }
     }
+    if(i < inputHistory.length-1){
+      spaces++;
+    }
+    
   }
   return {
+    spaces: spaces,
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
     incorrectChars: incorrectChars,
@@ -431,8 +436,8 @@ function calculateStats() {
 
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
-  let wpm = Math.round((chars.correctWordChars * (60 / testSeconds)) / 5);
-  let wpmraw = Math.round(((chars.correctWordChars + chars.incorrectChars) * (60/testSeconds))/5)
+  let wpm = Math.round(((chars.correctWordChars + chars.spaces) * (60 / testSeconds)) / 5);
+  let wpmraw = Math.round(((chars.allCorrectChars + chars.spaces + chars.incorrectChars + chars.extraChars) * (60/testSeconds))/5);
   let acc = Math.floor((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
   return {
     wpm: wpm,
