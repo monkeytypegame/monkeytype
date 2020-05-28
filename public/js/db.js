@@ -4,7 +4,7 @@ let dbSnapshot = null;
 
 function db_testCompleted(obj) {
 
-    if (obj.wpm == 0 || obj.wpm > 600 || obj.acc < 50 || obj.acc > 100) return false;
+    if (obj.wpm == 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) return false;
 
     let uid = "";
     let user = firebase.auth().currentUser;
