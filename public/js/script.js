@@ -416,7 +416,6 @@ function countChars() {
     if(i < inputHistory.length-1){
       spaces++;
     }
-    
   }
   return {
     spaces: spaces,
@@ -445,7 +444,8 @@ function calculateStats() {
     acc: acc,
     correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars,
-    time: testSeconds
+    time: testSeconds,
+    spaces: chars.spaces
   };
 }
 
@@ -473,14 +473,15 @@ function showResult() {
       acc: 0,
       correctChars: 0,
       incorrectChars: 0,
-      time: 0
+      time: 0,
+      spaces: 0
     }
   }
   clearIntervals();
   $("#result .stats .wpm .bottom").text(stats.wpm);
   $("#result .stats .raw .bottom").text(stats.wpmRaw);
   $("#result .stats .acc .bottom").text(stats.acc + "%");
-  $("#result .stats .key .bottom").text(stats.correctChars + "/" + stats.incorrectChars);
+  $("#result .stats .key .bottom").text(stats.correctChars + stats.spaces + "/" + stats.incorrectChars);
   $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
 
   setTimeout(function() {
