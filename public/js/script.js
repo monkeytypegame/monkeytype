@@ -253,7 +253,7 @@ function compareInput() {
       // $(letterElems[i]).removeClass('incorrect').addClass('correct');
     } else {
       if(config.difficulty == "master"){
-        showResult();
+        showResult(true);
       }
       if (currentWord[i] == undefined) {
         ret +=
@@ -462,7 +462,7 @@ function showCrown() {
   }, 250,"easeOutCubic");
 }
 
-function showResult() {
+function showResult(difficultyFailed = false) {
   testEnd = Date.now();
   testActive = false;
   setFocus(false);
@@ -503,7 +503,9 @@ function showResult() {
     // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
   }
   
-  if(afkDetected){
+  if(difficultyFailed){
+    showNotification("Test failed",3000);
+  }else if(afkDetected){
     showNotification("Test invalid - AFK detected",3000);
   }else{
     let completedEvent = {
@@ -1239,8 +1241,11 @@ $(document).keydown((event) => {
         highlightBadWord();
         currentInput = "";
         currentWordIndex++;
-        if (currentWordIndex == wordsList.length || config.difficulty == "expert") {
+        if (currentWordIndex == wordsList.length) {
           showResult();
+          return;
+        }else if(config.difficulty == "expert"){
+          showResult(true);
           return;
         }
         updateActiveElement();
