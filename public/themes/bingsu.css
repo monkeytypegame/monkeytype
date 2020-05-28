@@ -20,8 +20,9 @@
 }
 
 key,
-.notification{
- color: var(--caret-color);
+.notification,
+.entry{
+ color: var(--caret-color) !important;
 }
 
 #menu .button:nth-child(1){
