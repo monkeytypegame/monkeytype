@@ -371,6 +371,16 @@ function updateCaretPosition() {
     left: newLeft
   }, duration)
 
+  let middlePos = (document.documentElement.clientHeight / 2);
+  
+  if (newTop >= middlePos) {
+    window.scrollTo({
+      left: 0,
+      top: newTop - middlePos,
+      behavior: 'smooth'
+    })
+  }
+
 }
 
 function countChars() {
