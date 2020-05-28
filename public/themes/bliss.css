@@ -3,23 +3,19 @@
   --main-color: #665957;
   --caret-color: #f0d3c9;
   --sub-color: #f0d3c9;
-  --error-color: #77516a;
+  --error-color: #bd4141;
+  --extra-error-color: #883434; 
 }
 
-.word letter.incorrect,
-.word letter.incorrect.extra{
+.word letter.incorrect{
   color: var(--error-color);
-  text-decoration: line-through;
+  /* text-decoration: line-through; */
 }
 
-.word{
-  transition: border .5s ease-in-out;
+.word letter.incorrect.extra{
+  color: var(--extra-error-color);
 }
 
 .word.error{
   border-bottom: dotted 2px var(--error-color);
-}
-
-.button.discord::after{
-  background: var(--main-color) !important;
 }
