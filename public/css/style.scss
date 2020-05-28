@@ -24,7 +24,7 @@ input{
 body {
   margin: 0;
   padding: 2rem 2rem 0 2rem;
-  height: 100vh;
+  min-height: 100vh;
   background: var(--bg-color);
   font-family: "Roboto Mono";
   color: var(--main-color);
