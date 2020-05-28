@@ -1244,7 +1244,7 @@ $(document).keydown((event) => {
         if (currentWordIndex == wordsList.length) {
           showResult();
           return;
-        }else if(config.difficulty == "expert"){
+        }else if(config.difficulty == "expert" || config.difficulty == "master"){
           showResult(true);
           return;
         }
