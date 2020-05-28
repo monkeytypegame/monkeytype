@@ -12,7 +12,7 @@ let config = {
     fontSize: 1,
     freedomMode: false,
     resultFilters: ["all"],
-    difficulty: "master",
+    difficulty: "normal",
 }
 
 //cookies
