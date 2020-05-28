@@ -7,7 +7,7 @@
   <title>Monkey Type</title>
   <link rel="stylesheet" href="css/fa.css">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="themes/dark.css" id="currentTheme">
+  <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme">
   <link id="favicon" rel="shortcut icon" href="favicon.png">
   <meta name="description" content="A super customisable, minimalistic typing test.">
   <meta name="keywords" content="typing, test, typing-test, typing test, monkey-type, monkey, type, miodec, wpm">
@@ -118,12 +118,12 @@
         <div class="group mode">
           <!--           <div class="title">mode</div> -->
           <div class="buttons">
-            <div class="button" mode="time" tabindex="2">time</div>
-            <div class="button active" mode="words" tabindex="2">words</div>
+            <div class="button active" mode="time" tabindex="2">time</div>
+            <div class="button" mode="words" tabindex="2">words</div>
             <div class="button" mode="custom" tabindex="2">custom</div>
           </div>
         </div>
-        <div class="group wordCount">
+        <div class="group wordCount hidden">
           <!--           <div class="title">words</div> -->
           <div class="buttons">
             <div class="button" wordCount="10" tabindex="2">10</div>
@@ -134,12 +134,12 @@
             <div class="button" wordCount="custom" tabindex="2"><i class="fas fa-tools"></i></div>
           </div>
         </div>
-        <div class="group time hidden">
+        <div class="group time">
           <!--           <div class="title">time</div> -->
           <div class="buttons">
             <div class="button" timeConfig="15" tabindex="2">15</div>
-            <div class="button active" timeConfig="30" tabindex="2">30</div>
-            <div class="button" timeConfig="60" tabindex="2">60</div>
+            <div class="button" timeConfig="30" tabindex="2">30</div>
+            <div class="button active" timeConfig="60" tabindex="2">60</div>
             <div class="button" timeConfig="120" tabindex="2">120</div>
             <div class="button" timeConfig="custom" tabindex="2"><i class="fas fa-tools"></i></div>
           </div>
@@ -209,6 +209,11 @@
           <h1>about</h1>
           <p>Monkey-type is a minimalistic typing test, featuring many test modes, an account system to save your
             typing speed history and user configurable features like themes, a smooth caret and more.</p>
+        </div>
+        <div class="section">
+          <h1>word set</h1>
+          <p>By default, the website uses the most common 200 words in the english language to generate its tests.
+            You can change to an expanded set (1000 most common words) in the options, or change the language entirely.</p>
         </div>
         <div class="section">
           <h1>keybinds</h1>
