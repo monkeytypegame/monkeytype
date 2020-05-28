@@ -50,6 +50,15 @@ let commands = {
             }
         },
         {
+            id: "changeDifficulty",
+            display: "Change difficulty...",
+            subgroup: true,
+            exec: () => {
+                currentCommands.push(commandsDifficulty);
+                showCommandLine();
+            }
+        },
+        {
             id: "changeTheme",
             display: "Change theme...",
             subgroup: true,
@@ -147,6 +156,33 @@ let commandsSendDevMessage = {
             input: true,
             exec: (txt) => {
                 db_addEmailToQueue('feedback', txt);
+            }
+        }
+    ]
+}
+
+let commandsDifficulty = {
+    title: "Change difficulty...",
+    list: [
+        {
+            id: "setDifficultyNormal",
+            display: "Normal",
+            exec: () => {
+                setDifficulty('normal');
+            }
+        },
+        {
+            id: "setDifficultyExpert",
+            display: "Expert",
+            exec: () => {
+                setDifficulty('expert');
+            }
+        },
+        {
+            id: "setDifficultyMaster",
+            display: "Master",
+            exec: () => {
+                setDifficulty('master');
             }
         }
     ]

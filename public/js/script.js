@@ -252,6 +252,9 @@ function compareInput() {
       ret += '<letter class="correct">' + currentWord[i] + "</letter>";
       // $(letterElems[i]).removeClass('incorrect').addClass('correct');
     } else {
+      if(config.difficulty == "master"){
+        showResult();
+      }
       if (currentWord[i] == undefined) {
         ret +=
           '<letter class="incorrect extra">' + currentInput[i] + "</letter>";
@@ -516,9 +519,9 @@ function showResult() {
       restartCount: restartCount
     };
     restartCount = 0;
-    if (stats.wpm > 0 && stats.wpm < 600 && stats.acc > 50 && stats.acc <= 100) {
+    if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
       if (firebase.auth().currentUser != null) {
-        db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language).then(data => {
+        db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language, config.difficulty).then(data => {
           // console.log(`highest wpm for this mode is ${data}, current is ${stats.wpm}`);
           if (data < stats.wpm) {
             hideCrown();
@@ -569,6 +572,11 @@ function showResult() {
   }
   if (config.punctuation) {
     infoText += "<br>punctuation"
+  }
+  if (config.difficulty == "expert") {
+    infoText += "<br>expert";
+  }else if(config.difficulty == "master"){
+    infoText += "<br>master";
   }
 
   $("#result .stats .info .bottom").html(infoText);
@@ -1231,7 +1239,7 @@ $(document).keydown((event) => {
         highlightBadWord();
         currentInput = "";
         currentWordIndex++;
-        if (currentWordIndex == wordsList.length) {
+        if (currentWordIndex == wordsList.length || config.difficulty == "expert") {
           showResult();
           return;
         }

@@ -32,12 +32,12 @@ async function db_getUserResults() {
     return ret;
 }
 
-async function db_getUserHighestWpm(mode, mode2, punctuation, language) {
+async function db_getUserHighestWpm(mode, mode2, punctuation, language, difficulty) {
 
     function cont() {   
         let topWpm = 0;
         dbSnapshot.forEach(result => {
-            if (result.mode == mode && result.mode2 == mode2 && result.punctuation == punctuation && result.language == language) {
+            if (result.mode == mode && result.mode2 == mode2 && result.punctuation == punctuation && result.language == language && result.difficulty == difficulty) {
                 if (result.wpm > topWpm) {
                     topWpm = result.wpm;
                 }

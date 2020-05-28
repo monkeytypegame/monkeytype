@@ -20,6 +20,7 @@ function updateSettingsPage(){
     setActiveThemeButton();
     setActiveLanguageButton();
     setActiveFontSizeButton();
+    setActiveDifficultyButton();
 
     if (config.showKeyTips) {
         $(".pageSettings .tip").removeClass('hidden');
@@ -38,6 +39,11 @@ function setActiveThemeButton() {
 function setActiveFontSizeButton() {
     $(`.pageSettings .section.fontSize .buttons .button`).removeClass('active');
     $(`.pageSettings .section.fontSize .buttons .button[fontsize=`+config.fontSize+`]`).addClass('active');
+}
+
+function setActiveDifficultyButton() {
+    $(`.pageSettings .section.difficulty .buttons .button`).removeClass('active');
+    $(`.pageSettings .section.difficulty .buttons .button[difficulty=`+config.difficulty+`]`).addClass('active');
 }
 
 function setActiveLanguageButton() {
@@ -161,4 +167,12 @@ $(document).on("click",".pageSettings .section.fontSize .button", (e) => {
     changeFontSize(fontSize);
     showNotification('Font size changed', 1000);
     setActiveFontSizeButton();
+})
+
+//difficulty
+$(document).on("click",".pageSettings .section.difficulty .button", (e) => {
+    let difficulty = $(e.currentTarget).attr('difficulty');
+    setDifficulty(difficulty);
+    showNotification('Difficulty changed', 1000);
+    setActiveDifficultyButton();
 })

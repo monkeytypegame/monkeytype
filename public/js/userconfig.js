@@ -11,7 +11,8 @@ let config = {
     language: "english",
     fontSize: 1,
     freedomMode: false,
-    resultFilters: ["all"]
+    resultFilters: ["all"],
+    difficulty: "master",
 }
 
 //cookies
@@ -42,6 +43,7 @@ function loadConfigFromCookie() {
         changeLanguage(newConfig.language,true);
         changeFontSize(newConfig.fontSize,true);
         setFreedomMode(newConfig.freedomMode,true);
+        setDifficulty(newConfig.difficulty,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
         }
@@ -55,7 +57,16 @@ function showTestConfig() {
 
 function hideTestConfig() {
   $("#top .config").css("opacity",0).addClass('hidden');
-    
+}
+
+//difficulty
+function setDifficulty(diff, nosave){
+    if(diff !== "normal" && diff !== "expert" && diff !== "master"){
+        diff = "normal";
+    }
+    config.difficulty = diff;
+    restartTest();
+    if(!nosave) saveConfigToCookie();
 }
 
 //key tips

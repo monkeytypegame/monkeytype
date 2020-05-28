@@ -242,7 +242,18 @@
         </div>
       </div>
       <div class="page pageSettings hidden">
-        <div class="tip" style="grid-column: 1/3;">tip: You can also change all these settings quickly using the command line (<key>esc</key>)</div>
+        <div class="tip">tip: You can also change all these settings quickly using the command line (<key>esc</key>)</div>
+        <div class="section difficulty">
+          <h1>test difficulty</h1>
+          <div class="text">Normal is the classic type test experience. Expert fails the test if you submit (press space) an incorrect word.
+            Master fails if you press a single incorrect key (meaning you have to achieve 100% accuracy).
+          </div>
+          <div class="buttons">
+            <div class="button" difficulty="normal" tabindex="0" onclick="this.blur();">normal</div>
+            <div class="button" difficulty="expert" tabindex="0" onclick="this.blur();">expert</div>
+            <div class="button" difficulty="master" tabindex="0" onclick="this.blur();">master</div>
+          </div>
+        </div>
         <div class="section smoothCaret" section="">
           <h1>smooth caret</h1>
           <div class="text">The caret will move smoothly between letters and words.</div>
