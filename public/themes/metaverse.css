@@ -1,0 +1,10 @@
+:root {
+    --bg-color: #232323;
+    --main-color: #e8e8e8;
+    --caret-color: #d82934;
+    --sub-color: #5e5e5e;
+}
+
+#top .logo .bottom{
+    color: #d82934;
+}
