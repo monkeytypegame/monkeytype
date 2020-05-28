@@ -107,7 +107,7 @@ let commands = {
             id: "joinDiscord",
             display: "Join the Discord server",
             exec: () => {
-                window.open("https://discord.gg/xMYrWg6")
+                window.open("https://discord.gg/yENzqcB")
             }
         },
         {
