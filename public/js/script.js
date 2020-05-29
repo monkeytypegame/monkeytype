@@ -313,7 +313,7 @@ function showCaret() {
 
 function stopCaretAnimation() {
   $("#caret").css("animation-name", "none");
-  $("#caret").css("background-color", "var(--caret-color)");
+  $("#caret").css("opacity", "1");
 }
 
 function startCaretAnimation() {

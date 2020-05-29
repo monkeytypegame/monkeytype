@@ -299,7 +299,6 @@ a:hover {
 }
 
 #caret {
-  width: 2px;
   height: 1.5rem;
   background: var(--caret-color);
   animation-name: caretFlash;
@@ -309,32 +308,54 @@ a:hover {
   position: absolute;
   border-radius: var(--roundness);
   // transition: 0.05s;
+  transform-origin: top left;
 }
 
-#caret.size125{
-  height: 2rem;
+#caret.default{
   width: 2px;
 }
 
+#caret.block{
+  width: .7em;
+  margin-left: 0.25em;
+  border-radius: 0;
+}
+
+#caret.outline{
+  @extend #caret, .block;
+  background: transparent;
+  border: 1px solid var(--caret-color);
+}
+
+#caret.underline{
+  height: 2px;
+  width: 0.8em;
+  margin-top: 1.3em;
+  margin-left: 0.3em;
+}
+
+#caret.underline.size125{margin-top: 1.8em;}
+#caret.underline.size15{margin-top: 2.1em;}
+#caret.underline.size2{margin-top: 2.7em;}
+
+#caret.size125{
+  transform: scale(1.25);
+}
+
 #caret.size15{
-  height: 2.25rem;
-  width: 3px;
+  transform: scale(1.45);
 }
 
 #caret.size2{
-  height: 3rem;
-  width: 4px;
+  transform: scale(1.9);
 }
 
 @keyframes caretFlash {
-  0% {
-    background: transparent;
+  0%, 100% {
+    opacity: 0;
   }
   50% {
-    background: var(--caret-color);
-  }
-  100% {
-    background: transparent;
+    opacity: 1;
   }
 }
 
@@ -942,7 +963,7 @@ key {
       margin-left: 2rem;
       display: grid;
       grid-auto-flow: column;
-      grid-template-columns: 1fr 1fr;
+      grid-auto-columns: 1fr;
       gap: .5rem;
       grid-area: buttons;
       .button{

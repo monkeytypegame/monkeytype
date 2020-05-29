@@ -21,6 +21,7 @@ function updateSettingsPage(){
     setActiveLanguageButton();
     setActiveFontSizeButton();
     setActiveDifficultyButton();
+    setActiveCaretStyleButton();
 
     if (config.showKeyTips) {
         $(".pageSettings .tip").removeClass('hidden');
@@ -49,6 +50,11 @@ function setActiveDifficultyButton() {
 function setActiveLanguageButton() {
     $(`.pageSettings .section.languages .language`).removeClass('active');
     $(`.pageSettings .section.languages .language[language=${config.language}]`).addClass('active'); 
+}
+
+function setActiveCaretStyleButton() {
+    $(`.pageSettings .section.caretStyle .buttons .button`).removeClass('active');
+    $(`.pageSettings .section.caretStyle .buttons .button[caret=`+config.caretStyle+`]`).addClass('active');
 }
 
 function setSettingsButton(buttonSection,tf) {
@@ -175,4 +181,12 @@ $(document).on("click",".pageSettings .section.difficulty .button", (e) => {
     setDifficulty(difficulty);
     showNotification('Difficulty changed', 1000);
     setActiveDifficultyButton();
+})
+
+//caret style
+$(document).on("click",".pageSettings .section.caretStyle .button", (e) => {
+    let caretStyle = $(e.currentTarget).attr('caret');
+    setCaretStyle(caretStyle);
+    showNotification('Caret style updated', 1000);
+    setActiveCaretStyleButton();
 })

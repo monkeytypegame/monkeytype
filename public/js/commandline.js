@@ -59,6 +59,15 @@ let commands = {
             }
         },
         {
+            id: "changeCaretStyle",
+            display: "Change caret...",
+            subgroup: true,
+            exec: () => {
+                currentCommands.push(commandsCaretStyle);
+                showCommandLine();
+            }
+        },
+        {
             id: "changeTheme",
             display: "Change theme...",
             subgroup: true,
@@ -188,6 +197,40 @@ let commandsDifficulty = {
     ]
 }
 
+
+let commandsCaretStyle = {
+    title: "Change caret...",
+    list: [
+        {
+            id: "setCaretStyleDefault",
+            display: "line",
+            exec: () => {
+                setCaretStyle('default');
+            }
+        },
+        {
+            id: "setCaretStyleBlock",
+            display: "block",
+            exec: () => {
+                setCaretStyle('block');
+            }
+        },
+        {
+            id: "setCaretStyleOutline",
+            display: "outline-block",
+            exec: () => {
+                setCaretStyle('outline');
+            }
+        },
+        {
+            id: "setCaretStyleUnderline",
+            display: "underline",
+            exec: () => {
+                setCaretStyle('underline');
+            }
+        }
+    ]
+}
 
 let commandsWordCount = {
     title: "Change word count...",

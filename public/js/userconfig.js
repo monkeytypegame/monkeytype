@@ -41,6 +41,7 @@ function loadConfigFromCookie() {
         changeLanguage(newConfig.language,true);
         changeFontSize(newConfig.fontSize,true);
         setFreedomMode(newConfig.freedomMode,true);
+        setCaretStyle(newConfig.caretStyle,true);
         setDifficulty(newConfig.difficulty,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
@@ -64,6 +65,28 @@ function setDifficulty(diff, nosave){
     }
     config.difficulty = diff;
     restartTest();
+    if(!nosave) saveConfigToCookie();
+}
+
+function setCaretStyle(caretStyle, nosave) {
+    if (caretStyle == null || caretStyle == undefined) {
+        caretStyle = 'default';
+    }
+    config.caretStyle = caretStyle;
+    $("#caret").removeClass('default');
+    $("#caret").removeClass('underline');
+    $("#caret").removeClass('outline');
+    $("#caret").removeClass('block');
+
+    if (caretStyle == 'default') {
+        $("#caret").addClass('default');
+    } else if (caretStyle == 'block') {   
+        $("#caret").addClass('block');     
+    } else if (caretStyle == 'outline') {
+        $("#caret").addClass('outline');
+    } else if (caretStyle == 'underline') {
+        $("#caret").addClass('underline');
+    }
     if(!nosave) saveConfigToCookie();
 }
 
