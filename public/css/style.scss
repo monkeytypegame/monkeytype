@@ -299,7 +299,6 @@ a:hover {
 }
 
 #caret {
-  width: 2px;
   height: 1.5rem;
   background: var(--caret-color);
   animation-name: caretFlash;
@@ -309,6 +308,11 @@ a:hover {
   position: absolute;
   border-radius: var(--roundness);
   // transition: 0.05s;
+  transform-origin: top left;
+}
+
+#caret.default{
+  width: 2px;
 }
 
 #caret.block{
@@ -325,24 +329,25 @@ a:hover {
 
 #caret.underline{
   height: 2px;
-  width: .7em;
-  margin-top: 1.2em;
-  padding-left: .5em;
+  width: 0.8em;
+  margin-top: 1.3em;
+  margin-left: 0.3em;
 }
 
+#caret.underline.size125{margin-top: 1.8em;}
+#caret.underline.size15{margin-top: 2.1em;}
+#caret.underline.size2{margin-top: 2.7em;}
+
 #caret.size125{
-  height: 2rem;
-  width: 2px;
+  transform: scale(1.25);
 }
 
 #caret.size15{
-  height: 2.25rem;
-  width: 3px;
+  transform: scale(1.45);
 }
 
 #caret.size2{
-  height: 3rem;
-  width: 4px;
+  transform: scale(1.9);
 }
 
 @keyframes caretFlash {
