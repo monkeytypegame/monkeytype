@@ -321,7 +321,6 @@ a:hover {
   @extend #caret, .block;
   background: transparent;
   border: 1px solid var(--caret-color);
-  animation-name: caretOutlineFlash;
 }
 
 #caret.underline{
@@ -348,19 +347,10 @@ a:hover {
 
 @keyframes caretFlash {
   0%, 100% {
-    background: transparent;
+    opacity: 0;
   }
   50% {
-    background: var(--caret-color);
-  }
-}
-
-@keyframes caretOutlineFlash {
-  0%, 100% {
-    border-color: transparent;
-  }
-  50% {
-    border-color: var(--caret-color);
+    opacity: 1;
   }
 }
 
