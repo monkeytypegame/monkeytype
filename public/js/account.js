@@ -180,6 +180,15 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
             label += resultData.mode2;
           }
 
+          let diff = resultData.difficulty;
+          if(diff == undefined){
+            diff = "normal"
+          }
+          label += '\n' +
+          `difficulty: ${diff}`
+
+          
+
           label += '\n' +
           `punctuation: ${resultData.punctuation}`
           + '\n' +
@@ -392,6 +401,11 @@ function refreshAccountPage() {
     dbSnapshot.forEach(result => {
       // console.log(result);
       //apply filters
+      let resdiff = result.difficulty;
+      if(resdiff == undefined){
+        resdiff = "normal";
+      }
+      if(!activeFilters.includes("difficulty_"+resdiff)) return;
       if(!activeFilters.includes("mode_"+result.mode)) return;
       if(result.mode == "time"){
         let timefilter = "time_custom";
@@ -427,7 +441,11 @@ function refreshAccountPage() {
       }
       let withpunc = '';
       if (result.punctuation) {
-        withpunc = 'on';
+        withpunc = '<br>punctuation';
+      }
+      let diff = result.difficulty;
+      if (result.difficulty == undefined){
+        diff = 'normal';
       }
       $(".pageAccount .history table tbody").append(`
       <tr>
@@ -435,8 +453,8 @@ function refreshAccountPage() {
       <td>${result.acc}%</td>
       <td>${result.correctChars}</td>
       <td>${result.incorrectChars}</td>
-      <td>${result.mode} ${result.mode2}</td>
-      <td>${withpunc}</td>
+      <td>${result.mode}<br>${result.mode2}${withpunc}</td>
+      <td>${diff}</td>
       <td>${result.language.replace('_','<br>')}</td>
       <td>${moment(result.timestamp).format('DD MMM YYYY HH:mm')}</td>
       </tr>`)
@@ -448,7 +466,8 @@ function refreshAccountPage() {
         mode2: result.mode2,
         punctuation: result.punctuation,
         language: result.language,
-        timestamp: result.timestamp
+        timestamp: result.timestamp,
+        difficulty: result.difficulty
       });
 
       if (result.wpm > topWpm) {

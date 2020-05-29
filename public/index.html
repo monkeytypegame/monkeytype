@@ -355,11 +355,19 @@
         <div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>
         <div class="content hidden">
           <div class="group filterButtons">
-            <div class="buttonsAndTitle" style="grid-column:1/3;">
+            <div class="buttonsAndTitle">
               <div class="title">filters</div>
               <div class="buttons globalFilters">
                 <div class="button" filter="all">all</div>
                 <div class="button" filter="none">none</div>
+              </div>
+            </div>
+            <div class="buttonsAndTitle">
+              <div class="title">difficulty</div>
+              <div class="buttons difficultyFilters">
+                <div class="button" filter="difficulty_normal">normal</div>
+                <div class="button" filter="difficulty_expert">expert</div>
+                <div class="button" filter="difficulty_master">master</div>
               </div>
             </div>
             <div class="buttonsAndTitle">
@@ -461,7 +469,8 @@
                   <td>correct<br>chars</td>
                   <td>incorrect<br>chars</td>
                   <td>mode</td>
-                  <td>punctuation</td>
+                  <!-- <td>punctuation</td> -->
+                  <td>difficulty</td>
                   <td>language</td>
                   <td>date</td>
                 </tr>
