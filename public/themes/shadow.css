@@ -1,0 +1,53 @@
+:root {
+    --bg-color: #000;
+    --main-color: #eee;
+    --caret-color: #eee;
+    --sub-color: #444;
+}
+
+@keyframes shadow {
+    to {
+        color: #000;
+    }
+}
+
+@keyframes shadow-repeat {
+    50% {
+        color: #000;
+    }
+    100% {
+        color: #eee;
+    }
+}
+
+.word.error {
+    border-bottom: 2px solid #fff;
+}
+
+.word letter.incorrect {
+    color: #fff;
+}
+
+.word letter.incorrect.extra {
+    color: #fff;
+}
+
+#top .config .group .buttons .button.active,
+#result .stats .group,
+#menu .button:hover,
+#top .config .group .buttons .button:hover,
+a:hover {
+    animation-name: shadow-repeat;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+}
+
+#logo, .word letter.correct{
+    animation-name: shadow;
+    animation-duration: 5s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+}
