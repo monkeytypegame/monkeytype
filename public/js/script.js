@@ -495,11 +495,12 @@ function showResult(difficultyFailed = false) {
     }
   }
   clearIntervals();
+  let testtime = roundedToFixed(stats.time,1);
   $("#result .stats .wpm .bottom").text(stats.wpm);
   $("#result .stats .raw .bottom").text(stats.wpmRaw);
   $("#result .stats .acc .bottom").text(stats.acc + "%");
   $("#result .stats .key .bottom").text(stats.correctChars + stats.spaces + "/" + stats.incorrectChars);
-  $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
+  $("#result .stats .time .bottom").text(testtime+'s');
 
   setTimeout(function() {
     $("#showWordHistoryButton").removeClass('hidden').css('opacity',1);
@@ -533,7 +534,8 @@ function showResult(difficultyFailed = false) {
       timestamp: Date.now(),
       language: config.language,
       restartCount: restartCount,
-      difficulty: config.difficulty
+      difficulty: config.difficulty,
+      testDuration: testtime
     };
     if(config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)){
       restartCount = 0;
