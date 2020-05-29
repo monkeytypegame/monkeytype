@@ -2,7 +2,7 @@ function updateSettingsPage(){
 
     let themesEl = $(".pageSettings .section.themes .buttons").empty();
     themesList.forEach(theme => {
-        themesEl.append(`<div class="theme" theme='${theme}'>${theme.replace('_', ' ')}</div>`); 
+        themesEl.append(`<div class="theme" theme='${theme.name}' style="color:${theme.textColor};background:${theme.bgColor}">${theme.name.replace('_', ' ')}</div>`); 
     })
 
     let langEl = $(".pageSettings .section.languages .buttons").empty();

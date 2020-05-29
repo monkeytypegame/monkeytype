@@ -389,13 +389,13 @@ $.getJSON("themes/list.json", function(data) {
     themesList = data.sort();
     data.forEach(theme => {
         commandsThemes.list.push({
-            id: "changeTheme" + capitalizeFirstLetter(theme),
-            display: theme.replace('_',' '),
+            id: "changeTheme" + capitalizeFirstLetter(theme.name),
+            display: theme.name.replace('_',' '),
             hover: () => {
-                previewTheme(theme);
+                previewTheme(theme.name);
             },
             exec: () => {
-                setTheme(theme);
+                setTheme(theme.name);
             }
         })
     })

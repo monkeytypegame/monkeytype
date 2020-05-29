@@ -1,27 +1,127 @@
 [
-    "light",
-    "dark",
-    "8008",
-    "carbon",
-    "dots",
-    "nautilus",
-    "serika",
-    "serika_dark",
-    "bushido",
-    "red_samurai",
-    "rgb",
-    "oblivion",
-    "laser",
-    "retro",
-    "dracula",
-    "nord",
-    "mr_sleeves",
-    "olivia",
-    "bliss",
-    "mizu",
-    "metaverse",
-    "shadow",
-    "mint",
-    "miami",
-    "miami_nights"
+    {
+        "name": "light",
+        "bgColor": "#fff",
+        "textColor": "#111"
+    },
+    {
+        "name": "dark",
+        "bgColor": "#111",
+        "textColor": "#eee"
+    },
+    {
+        "name": "8008",
+        "bgColor": "#3c4756",
+        "textColor": "#f44c7f"
+    },
+    {
+        "name": "carbon",
+        "bgColor": "#575d5e",
+        "textColor": "#ed6b21"
+    },
+    {
+        "name": "dots",
+        "bgColor": "#121520",
+        "textColor": "#7f88ab"
+    },
+    {
+        "name": "nautilus",
+        "bgColor": "#20304a",
+        "textColor": "#eab622"
+    },
+    {
+        "name": "serika",
+        "bgColor": "#e2b714",
+        "textColor": "#323437"
+    },
+    {
+        "name": "serika_dark",
+        "bgColor": "#323437",
+        "textColor": "#e2b714"
+    },
+    {
+        "name": "bushido",
+        "bgColor": "#414755",
+        "textColor": "#ec4c56"
+    },
+    {
+        "name": "red_samurai",
+        "bgColor": "#84202c",
+        "textColor": "#c79e6e"
+    },
+    {
+        "name": "rgb",
+        "bgColor": "#111",
+        "textColor": "#eee"
+    },
+    {
+        "name": "oblivion",
+        "bgColor": "#313231",
+        "textColor": "#a5a096"
+    },
+    {
+        "name": "laser",
+        "bgColor": "#221b44",
+        "textColor": "#b82356"
+    },
+    {
+        "name": "retro",
+        "bgColor": "#b3b0a8",
+        "textColor": "#1d181a"
+    },
+    {
+        "name": "dracula",
+        "bgColor": "#282a36",
+        "textColor": "#bd93f9"
+    },
+    {
+        "name": "nord",
+        "bgColor": "#242933",
+        "textColor": "#617b94"
+    },
+    {
+        "name": "mr_sleeves",
+        "bgColor": "#8fadc9",
+        "textColor": "#daa99b"
+    },
+    {
+        "name": "olivia",
+        "bgColor": "#1c1b1d",
+        "textColor": "#deaf9d"
+    },
+    {
+        "name": "bliss",
+        "bgColor": "#262727",
+        "textColor": "#665957"
+    },
+    {
+        "name": "mizu",
+        "bgColor": "#afcbdd",
+        "textColor": "#1a2633"
+    },
+    {
+        "name": "metaverse",
+        "bgColor": "#232323",
+        "textColor": "#d82934"
+    },
+    {
+        "name": "shadow",
+        "bgColor": "#000",
+        "textColor": "#444"
+    },
+    {
+        "name": "mint",
+        "bgColor": "#05385b",
+        "textColor": "#5cdb95"
+    },
+    {
+        "name": "miami",
+        "bgColor": "#f35588",
+        "textColor": "#05dfd7"
+    },
+    {
+        "name": "miami_nights",
+        "bgColor": "#18181a",
+        "textColor": "#e4609b"
+    }
 ]
