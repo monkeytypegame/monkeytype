@@ -8,3 +8,8 @@
 #top .logo .bottom{
     color: #d82934;
 }
+
+#top.focus .logo .bottom{
+    transition: .25s;
+    color: #5e5e5e;
+}
