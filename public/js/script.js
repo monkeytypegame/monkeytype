@@ -523,7 +523,7 @@ function showResult(difficultyFailed = false) {
   }else{
     let completedEvent = {
       wpm: stats.wpm,
-      correctChars: stats.correctChars,
+      correctChars: stats.correctChars + stats.spaces,
       incorrectChars: stats.incorrectChars,
       acc: stats.acc,
       mode: config.mode,
