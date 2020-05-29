@@ -1080,6 +1080,10 @@ key {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 1rem;
+    .text{
+      align-self: center;
+      color: var(--sub-color);
+    }
   }
   .group{
     &.noDataError{
@@ -1087,6 +1091,28 @@ key {
       // height: 30rem;
       // line-height: 30rem;
       text-align: center;
+    }
+    &.history{
+      .loadMoreButton{
+        background: rgba(0, 0, 0, 0.1);
+        color: var(--sub-color);
+        text-align: center;
+        padding: .5rem;
+        border-radius: var(--roundness);
+        cursor: pointer;
+        -webkit-transition: .25s;
+        transition: .25s;
+        -webkit-user-select: none;
+        display: -ms-grid;
+        display: grid;
+        -ms-flex-line-pack: center;
+        align-content: center;
+        margin-top: 1rem;
+        &:hover,&:focus{
+          color: var(--sub-color);
+          background: var(--main-color);
+        }
+      }
     }
     .title{
       color: var(--sub-color);

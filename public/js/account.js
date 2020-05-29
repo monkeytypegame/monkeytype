@@ -22,6 +22,10 @@ $(".signOut").click(e => {
   signOut();
 })
 
+$(".pageAccount .loadMoreButton").click(e => {
+  loadMoreLines();
+})
+
 function showSignOutButton() {
   $(".signOut").removeClass('hidden').css("opacity",1);
 }
@@ -383,6 +387,36 @@ $('.pageAccount .filterButtons').click('.button',e =>{
   saveConfigToCookie();
 })
 
+let filteredResults = [];
+let visibleTableLines = 0;
+
+function loadMoreLines(){
+  if(filteredResults == []) return;
+  for(let i = visibleTableLines; i < visibleTableLines+10; i++){
+    result = filteredResults[i];
+    let withpunc = '';
+    if (result.punctuation) {
+      withpunc = '<br>punctuation';
+    }
+    let diff = result.difficulty;
+    if (result.difficulty == undefined){
+      diff = 'normal';
+    }
+    
+    $(".pageAccount .history table tbody").append(`
+    <tr>
+    <td>${result.wpm}</td>
+    <td>${result.acc}%</td>
+    <td>${result.correctChars}</td>
+    <td>${result.incorrectChars}</td>
+    <td>${result.mode}<br>${result.mode2}${withpunc}</td>
+    <td>${diff}</td>
+    <td>${result.language.replace('_','<br>')}</td>
+    <td>${moment(result.timestamp).format('DD MMM YYYY HH:mm')}</td>
+    </tr>`);
+  }
+}
+
 function refreshAccountPage() {
 
   function cont(){
@@ -409,8 +443,33 @@ function refreshAccountPage() {
       max: 0
     }
 
+    let totalSeconds = 0;
+    let totalSecondsFiltered = 0;
+    
+    let tableEl = "";
+
+    filteredResults = [];
     $(".pageAccount .history table tbody").empty();
     dbSnapshot.forEach(result => {
+
+
+      let tt = 0;
+      if(result.timeDuration == null){
+        //test finished before timeduration field was introduced - estimate
+        if(result.mode == "time"){
+          tt = parseFloat(result.mode2);
+        }else if(result.mode == "words"){
+          tt = (parseFloat(result.mode2)/parseFloat(result.wpm)) * 60;
+        }
+      }else{
+        tt = parseFloat(result.timeDuration);
+      }
+      if(result.restartCount != null){
+        tt += (tt/2) * result.restartCount;
+      }
+      totalSeconds += tt;
+
+
       // console.log(result);
       //apply filters
       let resdiff = result.difficulty;
@@ -441,6 +500,28 @@ function refreshAccountPage() {
       }
       if(!activeFilters.includes(puncfilter)) return;
 
+      filteredResults.push(result);
+
+      //filters done
+
+      tt = 0;
+      if(result.timeDuration == null){
+        //test finished before timeduration field was introduced - estimate
+        if(result.mode == "time"){
+          tt = parseFloat(result.mode2);
+        }else if(result.mode == "words"){
+          tt = (parseFloat(result.mode2)/parseFloat(result.wpm)) * 60;
+        }
+      }else{
+        tt = parseFloat(result.timeDuration);
+      }
+      if(result.restartCount != null){
+        tt += (tt/2) * result.restartCount;
+      }
+      totalSecondsFiltered += tt;
+
+
+
       if(last10 < 10){
         last10++;
         wpmLast10total += result.wpm;
@@ -467,25 +548,9 @@ function refreshAccountPage() {
       if (result.restartCount != undefined) {
         testRestarts += result.restartCount;
       }
-      let withpunc = '';
-      if (result.punctuation) {
-        withpunc = '<br>punctuation';
-      }
-      let diff = result.difficulty;
-      if (result.difficulty == undefined){
-        diff = 'normal';
-      }
-      $(".pageAccount .history table tbody").append(`
-      <tr>
-      <td>${result.wpm}</td>
-      <td>${result.acc}%</td>
-      <td>${result.correctChars}</td>
-      <td>${result.incorrectChars}</td>
-      <td>${result.mode}<br>${result.mode2}${withpunc}</td>
-      <td>${diff}</td>
-      <td>${result.language.replace('_','<br>')}</td>
-      <td>${moment(result.timestamp).format('DD MMM YYYY HH:mm')}</td>
-      </tr>`)
+      
+
+
       chartData.push({
         x: result.timestamp,
         y: result.wpm,
@@ -506,9 +571,8 @@ function refreshAccountPage() {
 
       totalWpm += result.wpm;
     })
+    loadMoreLines();
     ////////
-
-    let totalWpm10 = 0;
 
     let mainColor = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ', '');
     let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ','');
@@ -532,6 +596,10 @@ function refreshAccountPage() {
       $(".pageAccount .group.history").removeClass('hidden');
       $(".pageAccount .triplegroup.stats").removeClass('hidden');
     }
+
+    $(".pageAccount .timeTotal .val").text(moment.utc(moment.duration(totalSeconds, "seconds").asMilliseconds()).format("HH:mm:ss"));
+    $(".pageAccount .timeTotalFiltered .val").text(moment.utc(moment.duration(totalSecondsFiltered, "seconds").asMilliseconds()).format("HH:mm:ss"));
+
 
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm/testCount));
