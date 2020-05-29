@@ -6,44 +6,14 @@
 }
 
 @keyframes shadow {
-    0%{
-        color: #eee;
-    }
-    20% {
-        color: #aaa;
-    }
-    40% {
-        color: #888;
-    }
-    60% {
-        color: #444;
-    }
-    80% {
-        color: #222;
-    }
-    100% {
+    to {
         color: #000;
     }
 }
 
 @keyframes shadow-repeat {
-    0%{
-        color: #eee;
-    }
-    20% {
-        color: #aaa;
-    }
-    30% {
-        color: #444;
-    }
     50% {
         color: #000;
-    }
-    70% {
-        color: #444;
-    }
-    80% {
-        color: #aaa;
     }
     100% {
         color: #eee;
