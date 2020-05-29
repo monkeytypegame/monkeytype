@@ -143,10 +143,10 @@ $(".pageSettings .section.keyTips .buttons .button.off").click(e => {
 })
 
 //themes
-$(document).on("mouseover",".pageSettings .section.themes .theme", (e) => {
-    let theme = $(e.currentTarget).attr('theme');
-    previewTheme(theme);
-})
+// $(document).on("mouseover",".pageSettings .section.themes .theme", (e) => {
+//     let theme = $(e.currentTarget).attr('theme');
+//     previewTheme(theme);
+// })
 
 $(document).on("click",".pageSettings .section.themes .theme", (e) => {
     let theme = $(e.currentTarget).attr('theme');
@@ -154,9 +154,9 @@ $(document).on("click",".pageSettings .section.themes .theme", (e) => {
     setActiveThemeButton();
 })
 
-$(document).on("mouseleave",".pageSettings .section.themes", (e) => {
-    setTheme(config.theme);
-})
+// $(document).on("mouseleave",".pageSettings .section.themes", (e) => {
+//     setTheme(config.theme);
+// })
 
 //languages
 $(document).on("click",".pageSettings .section.languages .language", (e) => {
