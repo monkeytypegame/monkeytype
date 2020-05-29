@@ -371,6 +371,18 @@ function updateCaretPosition() {
     left: newLeft
   }, duration)
 
+  let browserHeight = window.innerHeight;
+  let middlePos = (browserHeight / 2) - $("#caret").outerHeight()/2;
+  let contentHeight = document.body.scrollHeight;
+  
+  if (newTop >= middlePos &&  contentHeight > browserHeight) {
+    window.scrollTo({
+      left: 0,
+      top: newTop - middlePos,
+      behavior: 'smooth'
+    })
+  }
+
 }
 
 function countChars() {
