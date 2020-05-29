@@ -525,7 +525,7 @@ function showResult(difficultyFailed = false) {
   }else{
     let completedEvent = {
       wpm: stats.wpm,
-      rawWpm: stats.rawWpm,
+      rawWpm: stats.wpmRaw,
       correctChars: stats.correctChars + stats.spaces,
       incorrectChars: stats.incorrectChars,
       acc: stats.acc,

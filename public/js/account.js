@@ -401,6 +401,14 @@ function refreshAccountPage() {
     let totalAcc = 0;
     let totalAcc10 = 0;
 
+    let rawWpm = {
+      total: 0,
+      count: 0,
+      last10Total: 0,
+      last10Count: 0,
+      max: 0
+    }
+
     $(".pageAccount .history table tbody").empty();
     dbSnapshot.forEach(result => {
       // console.log(result);
@@ -439,6 +447,20 @@ function refreshAccountPage() {
         totalAcc10 += result.acc;
       }
       testCount++;
+
+
+      if(result.rawWpm != null){
+        if(rawWpm.last10Count < 10){
+          rawWpm.last10Count++;
+          rawWpm.last10Total += result.rawWpm;
+        }
+        rawWpm.total += result.rawWpm;
+        rawWpm.count++;
+        if(result.rawWpm > rawWpm.max){
+          rawWpm.max = result.rawWpm;
+        }
+      }
+
 
       totalAcc += result.acc;
 
@@ -514,6 +536,11 @@ function refreshAccountPage() {
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm/testCount));
     $(".pageAccount .averageWpm10 .val").text(Math.round(wpmLast10total/last10));
+
+    $(".pageAccount .highestRaw .val").text(rawWpm.max);
+    $(".pageAccount .averageRaw .val").text(Math.round(rawWpm.total/rawWpm.count));
+    $(".pageAccount .averageRaw10 .val").text(Math.round(rawWpm.last10Total/rawWpm.last10Count));
+
     $(".pageAccount .highestWpm .mode").html(topMode);
     $(".pageAccount .testsTaken .val").text(testCount);
 
