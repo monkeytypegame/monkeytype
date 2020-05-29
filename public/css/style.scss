@@ -311,6 +311,26 @@ a:hover {
   // transition: 0.05s;
 }
 
+#caret.block{
+  width: .7em;
+  margin-left: 0.25em;
+  border-radius: 0;
+}
+
+#caret.outline{
+  @extend #caret, .block;
+  background: transparent;
+  border: 1px solid var(--caret-color);
+  animation-name: caretOutlineFlash;
+}
+
+#caret.underline{
+  height: 2px;
+  width: .7em;
+  margin-top: 1.2em;
+  padding-left: .5em;
+}
+
 #caret.size125{
   height: 2rem;
   width: 2px;
@@ -327,14 +347,20 @@ a:hover {
 }
 
 @keyframes caretFlash {
-  0% {
+  0%, 100% {
     background: transparent;
   }
   50% {
     background: var(--caret-color);
   }
-  100% {
-    background: transparent;
+}
+
+@keyframes caretOutlineFlash {
+  0%, 100% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: var(--caret-color);
   }
 }
 
@@ -942,7 +968,7 @@ key {
       margin-left: 2rem;
       display: grid;
       grid-auto-flow: column;
-      grid-template-columns: 1fr 1fr;
+      grid-auto-columns: 1fr;
       gap: .5rem;
       grid-area: buttons;
       .button{
