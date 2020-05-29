@@ -531,7 +531,8 @@ function showResult(difficultyFailed = false) {
       punctuation: config.punctuation,
       timestamp: Date.now(),
       language: config.language,
-      restartCount: restartCount
+      restartCount: restartCount,
+      difficulty: config.difficulty
     };
     restartCount = 0;
     if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
