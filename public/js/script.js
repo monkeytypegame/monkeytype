@@ -254,6 +254,7 @@ function compareInput() {
     } else {
       if(config.difficulty == "master"){
         showResult(true);
+        restartCount++;
       }
       if (currentWord[i] == undefined) {
         ret +=
@@ -534,7 +535,9 @@ function showResult(difficultyFailed = false) {
       restartCount: restartCount,
       difficulty: config.difficulty
     };
-    restartCount = 0;
+    if(config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)){
+      restartCount = 0;
+    }
     if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
       if (firebase.auth().currentUser != null) {
         db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language, config.difficulty).then(data => {
@@ -1281,6 +1284,7 @@ $(document).keydown((event) => {
           return;
         }else if(config.difficulty == "expert" || config.difficulty == "master"){
           showResult(true);
+          restartCount++;
           return;
         }
         updateActiveElement();
