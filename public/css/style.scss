@@ -653,7 +653,7 @@ key {
                          "wpm acc"
                          "wpm key" 
                          "raw time"
-                         "info info";
+                         "testType info";
     .group{
       .top{
         color: var(--sub-color);
@@ -666,7 +666,21 @@ key {
         line-height: 2rem;
       }
     }
+    .testType{
+      align-self: baseline;
+      grid-area: testType;
+      color: var(--sub-color);
+      .top{
+        font-size: 1rem;
+        line-height: 1.25rem;
+      }
+      .bottom{
+        font-size: 1rem;
+        line-height: 1rem;
+      }
+    }
     .info{
+      align-self: baseline;
       grid-area: info;
       color: var(--sub-color);
       .top{

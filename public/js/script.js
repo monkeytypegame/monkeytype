@@ -480,6 +480,7 @@ function showResult(difficultyFailed = false) {
   setFocus(false);
   hideCaret();
   hideLiveWpm();
+  testInvalid = false;
   let stats = calculateStats();
   if(stats === undefined){
     stats = {
@@ -563,6 +564,7 @@ function showResult(difficultyFailed = false) {
       }
     } else {
       showNotification("Test invalid", 3000);
+      testInvalid = true;
       try{
         firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
       }catch(e){
@@ -572,29 +574,49 @@ function showResult(difficultyFailed = false) {
   }
 
 
-  let infoText = "";
+  let testType = "";
 
 
-  infoText += config.mode;
+  testType += config.mode;
   if (config.mode == "time") {
-    infoText += " " + config.time
+    testType += " " + config.time
   } else if (config.mode == "words") {
-    infoText += " " + config.words
+    testType += " " + config.words
   }
   if(config.mode != "custom"){
-    infoText += "<br>" + config.language.replace('_', ' ');
+    testType += "<br>" + config.language.replace('_', ' ');
   }
   if (config.punctuation) {
-    infoText += "<br>punctuation"
+    testType += "<br>punctuation"
   }
   if (config.difficulty == "expert") {
-    infoText += "<br>expert";
+    testType += "<br>expert";
   }else if(config.difficulty == "master"){
-    infoText += "<br>master";
+    testType += "<br>master";
   }
 
-  $("#result .stats .info .bottom").html(infoText);
-  
+  $("#result .stats .testType .bottom").html(testType);
+
+
+  let otherText = "";
+  if(difficultyFailed){
+    otherText += "<br>failed"
+  }
+  if(afkDetected){
+    otherText += "<br>afk detected"
+  }
+  if(testInvalid){
+    otherText += "<br>invalid"
+  }
+
+  if(otherText == ""){
+    $("#result .stats .info").addClass('hidden');
+  }else{
+    $("#result .stats .info").removeClass('hidden');
+    otherText = otherText.substring(4);
+    $("#result .stats .info .bottom").html(otherText); 
+  }
+
   let labels = [];
   for (let i = 1; i <= wpmHistory.length; i++) {
     labels.push(i.toString());
