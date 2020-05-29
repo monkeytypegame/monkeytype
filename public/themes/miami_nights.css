@@ -1,0 +1,21 @@
+:root {
+    --bg-color: #18181a;
+    --main-color: #e4609b;
+    --caret-color: #47bac0;
+    --sub-color: #47bac0;
+    --error-color: #cb3030;
+    --error-extra-color: #962929;
+}
+
+.word letter.incorrect, 
+.word.error{
+    color: var(--error-color);
+}
+
+.word letter.incorrect.extra{
+    color: var(--error-extra-color)
+}
+
+.word.error {
+    border-bottom: solid 2px var(--error-color);
+}
