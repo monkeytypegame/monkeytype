@@ -395,8 +395,12 @@ function refreshAccountPage() {
     let totalWpm = 0;
     let testCount = 0;
 
+    let last10 = 0;
     let wpmLast10total = 0;
-    let wpmLast10count = 0;
+
+    let totalAcc = 0;
+    let totalAcc10 = 0;
+
     $(".pageAccount .history table tbody").empty();
     dbSnapshot.forEach(result => {
       // console.log(result);
@@ -429,12 +433,14 @@ function refreshAccountPage() {
       }
       if(!activeFilters.includes(puncfilter)) return;
 
-      if(wpmLast10count < 10){
-        wpmLast10count++;
+      if(last10 < 10){
+        last10++;
         wpmLast10total += result.wpm;
+        totalAcc10 += result.acc;
       }
       testCount++;
 
+      totalAcc += result.acc;
 
       if (result.restartCount != undefined) {
         testRestarts += result.restartCount;
@@ -507,9 +513,12 @@ function refreshAccountPage() {
 
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm/testCount));
-    $(".pageAccount .averageWpm10 .val").text(Math.round(wpmLast10total/wpmLast10count));
+    $(".pageAccount .averageWpm10 .val").text(Math.round(wpmLast10total/last10));
     $(".pageAccount .highestWpm .mode").html(topMode);
     $(".pageAccount .testsTaken .val").text(testCount);
+
+    $(".pageAccount .avgAcc .val").text(Math.round(totalAcc/testCount)+"%");
+    $(".pageAccount .avgAcc10 .val").text(Math.round(totalAcc10/last10)+"%");
 
     $(".pageAccount .testsStarted .val").text(
       `${testCount + testRestarts}`
