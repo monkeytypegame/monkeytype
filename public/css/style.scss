@@ -818,6 +818,7 @@ key {
     border-radius: var(--roundness);
     // box-shadow: 0 0 10px rgba(0,0,0,.25);
     transition: .25s;
+    text-shadow:  none;
   }
   // &::after{
   //   content: attr(input);
