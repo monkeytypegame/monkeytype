@@ -400,14 +400,19 @@ function loadMoreLines(){
       withpunc = '<br>punctuation';
     }
     let diff = result.difficulty;
-    if (result.difficulty == undefined){
+    if (diff == undefined){
       diff = 'normal';
+    }
+
+    let raw = result.rawWpm;
+    if (raw == undefined){
+      raw = '-';
     }
     
     $(".pageAccount .history table tbody").append(`
     <tr>
     <td>${result.wpm}</td>
-    <td>${result.rawWpm}</td>
+    <td>${raw}</td>
     <td>${result.acc}%</td>
     <td>${result.correctChars}</td>
     <td>${result.incorrectChars}</td>
@@ -425,6 +430,7 @@ function refreshAccountPage() {
   function cont(){
     
     let chartData = [];
+    visibleTableLines = 0;
     
     let topWpm = 0;
     let topMode = '';
