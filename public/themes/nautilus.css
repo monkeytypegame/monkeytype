@@ -1,6 +1,9 @@
 :root {
-    --bg-color: #20304a;
-    --main-color: #eab622;
-    --caret-color: #eab622;
-    --sub-color: #1db8a8;
+    --bg-color: #132237;
+    --main-color: #ebb723;
+    --caret-color: #ebb723;
+    --sub-color: #0b4c6c;
+    --text-color: #1cbaac;
+    --error-color: #da3333;
+    --error-extra-color: #791717;
 }
