@@ -13,6 +13,7 @@ let config = {
     freedomMode: false,
     resultFilters: ["all"],
     difficulty: "normal",
+    blindMode: false
 }
 
 //cookies
@@ -43,6 +44,7 @@ function loadConfigFromCookie() {
         setFreedomMode(newConfig.freedomMode,true);
         setCaretStyle(newConfig.caretStyle,true);
         setDifficulty(newConfig.difficulty,true);
+        setBlindMode(newConfig.blindMode,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
         }
@@ -65,6 +67,24 @@ function setDifficulty(diff, nosave){
     }
     config.difficulty = diff;
     restartTest();
+    if(!nosave) saveConfigToCookie();
+}
+
+//blind mode
+function toggleBlindMode(){
+    blind = !config.blindMode;
+    if(blind == undefined){
+        blind = false;
+    }
+    config.blindMode = blind;
+    if(!nosave) saveConfigToCookie();
+}
+
+function setBlindMode(blind, nosave){
+    if(blind == undefined){
+        blind = false;
+    }
+    config.blindMode = blind;
     if(!nosave) saveConfigToCookie();
 }
 

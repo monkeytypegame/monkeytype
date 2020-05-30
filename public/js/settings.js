@@ -15,7 +15,7 @@ function updateSettingsPage(){
     setSettingsButton('liveWpm', config.showLiveWpm);
     setSettingsButton('keyTips', config.showKeyTips);
     setSettingsButton('freedomMode', config.freedomMode);
-
+    setSettingsButton('blindMode', config.blindMode);
 
     setActiveThemeButton();
     setActiveLanguageButton();
@@ -189,4 +189,16 @@ $(document).on("click",".pageSettings .section.caretStyle .button", (e) => {
     setCaretStyle(caretStyle);
     showNotification('Caret style updated', 1000);
     setActiveCaretStyleButton();
+})
+
+//blind mode
+$(".pageSettings .section.blindMode .buttons .button.on").click(e => {
+    setBlindMode(true);
+    showNotification('Blind mode on', 1000);
+    setSettingsButton('blindMode', config.blindMode);
+})
+$(".pageSettings .section.blindMode .buttons .button.off").click(e => {
+    setBlindMode(false);
+    showNotification('Blind mode off', 1000);
+    setSettingsButton('blindMode', config.blindMode);
 })

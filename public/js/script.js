@@ -256,13 +256,18 @@ function compareInput() {
         showResult(true);
         restartCount++;
       }
-      if (currentWord[i] == undefined) {
-        ret +=
-          '<letter class="incorrect extra">' + currentInput[i] + "</letter>";
-        // $($('#words .word')[currentWordIndex]).append('<letter class="incorrect">' + currentInput[i] + "</letter>");
-      } else {
-        ret += '<letter class="incorrect">' + currentWord[i] + "</letter>";
-        // $(letterElems[i]).removeClass('correct').addClass('incorrect');
+      if(config.blindMode){
+        if (currentWord[i] == undefined) {
+          // ret += '<letter class="correct">' + currentInput[i] + "</letter>";
+        } else {
+          ret += '<letter class="correct">' + currentWord[i] + "</letter>";
+        }
+      }else{
+        if (currentWord[i] == undefined) {
+          ret += '<letter class="incorrect extra">' + currentInput[i] + "</letter>";
+        } else {
+          ret += '<letter class="incorrect">' + currentWord[i] + "</letter>";
+        }
       }
     }
   }
@@ -281,6 +286,7 @@ function compareInput() {
 }
 
 function highlightBadWord() {
+  if(config.blindMode) return;
   $(".word.active").addClass("error");
 }
 

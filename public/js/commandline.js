@@ -50,6 +50,13 @@ let commands = {
             }
         },
         {
+            id: "toggleBlindMode",
+            display: "Toggle blind mode",
+            exec: () => {
+                toggleBlindMode();
+            }
+        },
+        {
             id: "changeDifficulty",
             display: "Change difficulty...",
             subgroup: true,
