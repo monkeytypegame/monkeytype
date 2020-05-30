@@ -2,16 +2,8 @@
     --bg-color: #05385b;
     --main-color: #5cdb95;
     --caret-color: #5cdb95;
-    --sub-color: #edf5e1;
+    --sub-color: #20688a;
+    --text-color: #edf5e1;
     --error-color:  #F35588;
-}
-
-.word letter.incorrect, 
-.word.error, 
-.word letter.incorrect.extra {
-    color: var(--error-color);
-}
-
-.word.error {
-    border-bottom: solid 2px var(--error-color);
+    --error-extra-color:  rgb(163, 56, 90);
 }
