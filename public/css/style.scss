@@ -925,6 +925,7 @@ key {
     p{
       margin: 0;
       padding: 0;
+      color: var(--text-color);
     }
   }
 }
@@ -954,25 +955,9 @@ key {
     p{
       grid-area: text;
     }
-    // .button{
-    //   color: var(--sub-color);
-    //   cursor: pointer;
-    //   transition: .25s;
-    //   padding: .2rem .5rem;
-    //   border-radius: var(--roundness);
-    //   &:hover{
-    //     color: var(--main-color);
-    //   }
-    //   &.active{
-    //     color: var(--main-color);
-    //   }
-    //   &:focus{
-    //     background: var(--sub-color);
-    //     color: var(--bg-color);
-    //     border: none;
-    //     outline: none;
-    //   }
-    // }
+    .text{
+      color: var(--text-color);
+    }
     .buttons{
       margin-left: 2rem;
       display: grid;
@@ -1139,6 +1124,7 @@ key {
   table{
     border-spacing:0;
     border-collapse: collapse;
+    color: var(--text-color);
     td{
       padding: .5rem .25rem;
     }
