@@ -384,7 +384,7 @@ a:hover {
         height: .5rem;
         content: "";
         position: absolute;
-        background: #da3333;
+        background: var(--main-color);
         border-radius: 1rem;
         top: .25rem;
         right: .25rem;
