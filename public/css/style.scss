@@ -216,7 +216,6 @@ a:hover {
     .bottom {
       font-size: 0.75rem;
       line-height: 0.75rem;
-      color: var(--sub-color);
       padding: 0 0.5rem 0.5rem 0.5rem;
     }
   }
@@ -472,6 +471,7 @@ a:hover {
 
 #top .logo .bottom {
   margin-left: -0.15rem;
+  color: var(--logo-color);
 }
 
 #top .config {
@@ -841,15 +841,15 @@ key {
 }
 
 .word letter.correct {
-  color: var(--main-color);
+  color: var(--text-color);
 }
 
 .word letter.incorrect {
-  color: #da3333;
+  color: var(--error-color);
 }
 
 .word letter.incorrect.extra {
-  color: #791717;
+  color: var(--error-extra-color);
 }
 
 .word letter.missing {
