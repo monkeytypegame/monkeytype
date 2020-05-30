@@ -243,53 +243,51 @@ function updateActiveElement() {
     .removeClass("error");
 }
 
-function compareInput() {
-  $(".word.active").empty();
+function compareInput(wrdIndex,input,showError) {
+  $($('#words .word')[wrdIndex]).empty();
   let ret = "";
-  let currentWord = wordsList[currentWordIndex];
-  let letterElems = $($("#words .word")[currentWordIndex]).children("letter");
-  for (let i = 0; i < currentInput.length; i++) {
-    if (currentWord[i] == currentInput[i]) {
+  let currentWord = wordsList[wrdIndex];
+  for (let i = 0; i < input.length; i++) {
+    if (currentWord[i] == input[i]) {
       ret += '<letter class="correct">' + currentWord[i] + "</letter>";
       // $(letterElems[i]).removeClass('incorrect').addClass('correct');
     } else {
       if(config.difficulty == "master"){
-        showResult(true);
+        if(!resultVisible) showResult(true);
         restartCount++;
       }
-      if(config.blindMode){
+      if(!showError){
         if (currentWord[i] == undefined) {
-          // ret += '<letter class="correct">' + currentInput[i] + "</letter>";
+          // ret += '<letter class="correct">' + input[i] + "</letter>";
         } else {
           ret += '<letter class="correct">' + currentWord[i] + "</letter>";
         }
       }else{
         if (currentWord[i] == undefined) {
-          ret += '<letter class="incorrect extra">' + currentInput[i] + "</letter>";
+          ret += '<letter class="incorrect extra">' + input[i] + "</letter>";
         } else {
           ret += '<letter class="incorrect">' + currentWord[i] + "</letter>";
         }
       }
     }
   }
-  if (currentInput.length < currentWord.length) {
-    for (let i = currentInput.length; i < currentWord.length; i++) {
+  if (input.length < currentWord.length) {
+    for (let i = input.length; i < currentWord.length; i++) {
       ret += "<letter>" + currentWord[i] + "</letter>";
     }
   }
-  $(".word.active").html(ret);
-  if ((currentWord == currentInput || (config.quickEnd && currentWord.length == currentInput.length)) && currentWordIndex == wordsList.length - 1) {
-    $("#words .word.active").attr('input',currentInput);
-    inputHistory.push(currentInput);
+  $($('#words .word')[wrdIndex]).html(ret);
+  if ((currentWord == input || (config.quickEnd && currentWord.length == input.length)) && wrdIndex == wordsList.length - 1) {
+    inputHistory.push(input);
     currentInput = "";
-    showResult();
+    if(!resultVisible) showResult();
   }
   // liveWPM()
 }
 
-function highlightBadWord() {
-  if(config.blindMode) return;
-  $(".word.active").addClass("error");
+function highlightBadWord(index,showError) {
+  if(!showError) return;
+  $($("#words .word")[index]).addClass("error");
 }
 
 function showTimer() {
@@ -676,6 +674,17 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.update({ duration: 0 });
   swapElements($("#words"),$("#result"),250, () => {
     resultVisible=true;
+
+    if(config.blindMode){
+      $.each($('#words .word'),(i,word)=>{
+        compareInput(i,inputHistory[i],true);
+        if(inputHistory[i] != wordsList[i]){
+          highlightBadWord(i,true);
+        }
+      })
+    }
+
+
     let remove = false;
     $.each($('#words .word'),(i,obj)=>{
       if(remove){
@@ -1201,8 +1210,9 @@ $(document).keypress(function(event) {
   }
   currentKeypressCount++;
   currentInput += event["key"];
+  $("#words .word.active").attr('input',currentInput);
   setFocus(true);
-  compareInput();
+  compareInput(currentWordIndex,currentInput,!config.blindMode);
   updateCaretPosition();
 });
 
@@ -1242,7 +1252,7 @@ $(document).keydown((event) => {
           }
           currentWordIndex--;
           updateActiveElement();
-          compareInput();
+          compareInput(currentWordIndex,currentInput,!config.blindMode);
         }
       } else {
         // if ($($(".word")[currentWordIndex - 1]).hasClass("hidden")) {
@@ -1253,7 +1263,7 @@ $(document).keydown((event) => {
         } else {
           currentInput = currentInput.substring(0, currentInput.length - 1);
         }
-        compareInput();
+        compareInput(currentWordIndex,currentInput,!config.blindMode);
       }
       currentKeypressCount++;
       updateCaretPosition();
@@ -1283,7 +1293,6 @@ $(document).keydown((event) => {
           currentTestLine++;
         }
       }
-      $("#words .word.active").attr('input',currentInput);
       if (currentWord == currentInput) {
         inputHistory.push(currentInput);
         currentInput = "";
@@ -1292,7 +1301,7 @@ $(document).keydown((event) => {
         updateCaretPosition();
       } else {
         inputHistory.push(currentInput);
-        highlightBadWord();
+        highlightBadWord(currentWordIndex,!config.blindMode)
         currentInput = "";
         currentWordIndex++;
         if (currentWordIndex == wordsList.length) {
