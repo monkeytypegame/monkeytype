@@ -16,6 +16,8 @@ function updateSettingsPage(){
     setSettingsButton('keyTips', config.showKeyTips);
     setSettingsButton('freedomMode', config.freedomMode);
     setSettingsButton('blindMode', config.blindMode);
+    setSettingsButton('quickEnd', config.quickEnd);
+
 
     setActiveThemeButton();
     setActiveLanguageButton();
@@ -201,4 +203,16 @@ $(".pageSettings .section.blindMode .buttons .button.off").click(e => {
     setBlindMode(false);
     showNotification('Blind mode off', 1000);
     setSettingsButton('blindMode', config.blindMode);
+})
+
+//blind mode
+$(".pageSettings .section.quickEnd .buttons .button.on").click(e => {
+    setQuickEnd(true);
+    showNotification('Quick end on', 1000);
+    setSettingsButton('quickEnd', config.quickEnd);
+})
+$(".pageSettings .section.quickEnd .buttons .button.off").click(e => {
+    setQuickEnd(false);
+    showNotification('Quick end off', 1000);
+    setSettingsButton('quickEnd', config.quickEnd);
 })

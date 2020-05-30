@@ -57,6 +57,13 @@ let commands = {
             }
         },
         {
+            id: "toggleQuickEnd",
+            display: "Toggle quick end",
+            exec: () => {
+                toggleQuickEnd();
+            }
+        },
+        {
             id: "changeDifficulty",
             display: "Change difficulty...",
             subgroup: true,

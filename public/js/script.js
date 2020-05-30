@@ -277,7 +277,7 @@ function compareInput() {
     }
   }
   $(".word.active").html(ret);
-  if (currentWord == currentInput && currentWordIndex == wordsList.length - 1) {
+  if ((currentWord == currentInput || (config.quickEnd && currentWord.length == currentInput.length)) && currentWordIndex == wordsList.length - 1) {
     inputHistory.push(currentInput);
     currentInput = "";
     showResult();

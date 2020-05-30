@@ -13,7 +13,8 @@ let config = {
     freedomMode: false,
     resultFilters: ["all"],
     difficulty: "normal",
-    blindMode: false
+    blindMode: false,
+    quickEnd: false
 }
 
 //cookies
@@ -45,6 +46,7 @@ function loadConfigFromCookie() {
         setCaretStyle(newConfig.caretStyle,true);
         setDifficulty(newConfig.difficulty,true);
         setBlindMode(newConfig.blindMode,true);
+        setQuickEnd(newConfig.quickEnd,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
         }
@@ -77,7 +79,6 @@ function toggleBlindMode(){
         blind = false;
     }
     config.blindMode = blind;
-    if(!nosave) saveConfigToCookie();
 }
 
 function setBlindMode(blind, nosave){
@@ -85,6 +86,23 @@ function setBlindMode(blind, nosave){
         blind = false;
     }
     config.blindMode = blind;
+    if(!nosave) saveConfigToCookie();
+}
+
+//quickend
+function toggleQuickEnd(){
+    qe = !config.quickEnd;
+    if(qe == undefined){
+        qe = false;
+    }
+    config.quickEnd = qe;
+}
+
+function setQuickEnd(qe, nosave){
+    if(qe == undefined){
+        qe = false;
+    }
+    config.quickEnd = qe;
     if(!nosave) saveConfigToCookie();
 }
 
