@@ -3,6 +3,9 @@
     --main-color: #eee;
     --caret-color: #eee;
     --sub-color: #444;
+    --text-color: #eee;
+    --error-color: #eee;
+    --error-extra-color: rgb(179, 179, 179);
 }
 
 @keyframes rgb{
@@ -23,21 +26,36 @@
     }
 }
 
-
-.word.error {
-    border-bottom: 2px solid #ccc;
+@keyframes rgb-bg{
+    0%{
+        background: #f44336;
+    }
+    25%{
+        background: #FFC107;
+    }
+    50%{
+        background: #4CAF50;
+    }
+    75%{
+        background: #3F51B5;
+    }
+    100%{
+        background: #f44336;
+    }
 }
 
-.word letter.incorrect {
-    color: white;
+
+.button.discord::after,
+#caret{
+    animation-name: rgb-bg !important;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
 }
 
-.word letter.incorrect.extra {
-    color: white;
+#top.focus .button.discord::after{
+    animation-name: none !important;
 }
-
-
-
 
 .logo .bottom,
 #top .config .group .buttons .button.active,
