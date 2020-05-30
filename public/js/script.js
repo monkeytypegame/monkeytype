@@ -677,7 +677,9 @@ function showResult(difficultyFailed = false) {
 
     if(config.blindMode){
       $.each($('#words .word'),(i,word)=>{
-        compareInput(i,inputHistory[i],true);
+        let input = inputHistory[i];
+        if(input == undefined) input = currentInput;
+        compareInput(i,input,true);
         if(inputHistory[i] != wordsList[i]){
           highlightBadWord(i,true);
         }
@@ -1329,7 +1331,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
   $("head title").text("Monkey Dev")
 }
-1
+
 if (window.location.hostname === "localhost") {
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
@@ -1337,7 +1339,10 @@ if (window.location.hostname === "localhost") {
 }
 
 $(document).on('mouseenter','#words .word',e =>{
-  if(resultVisible) $(e.currentTarget).append(`<div class="wordInputAfter">${$(e.currentTarget).attr('input')}</div>`);
+  if(resultVisible){
+    let input = $(e.currentTarget).attr('input');
+    if(input != undefined) $(e.currentTarget).append(`<div class="wordInputAfter">${input}</div>`);
+  }
 })
 
 $(document).on('mouseleave','#words .word',e =>{
