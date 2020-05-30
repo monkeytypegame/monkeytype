@@ -78,6 +78,7 @@ function getLastChar(word) {
 function setFocus(foc) {
   if (foc) {
     // focus = true;
+    stopCaretAnimation();
     $("#top").addClass("focus");
     $("#bottom").addClass("focus");
     $("body").css("cursor", "none");
@@ -1154,7 +1155,6 @@ $(document).keypress(function(event) {
       console.log("Analytics unavailable");
     }
     testActive = true;
-    stopCaretAnimation();
     testStart = Date.now();
     if (config.mode == "time") {
       showTimer();
