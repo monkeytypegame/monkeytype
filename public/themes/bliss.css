@@ -3,19 +3,7 @@
   --main-color: #665957;
   --caret-color: #f0d3c9;
   --sub-color: #f0d3c9;
+  --text-color: #665957;
   --error-color: #bd4141;
-  --extra-error-color: #883434; 
-}
-
-.word letter.incorrect{
-  color: var(--error-color);
-  /* text-decoration: line-through; */
-}
-
-.word letter.incorrect.extra{
-  color: var(--extra-error-color);
-}
-
-.word.error{
-  border-bottom: dotted 2px var(--error-color);
+  --error-extra-color: #883434; 
 }
