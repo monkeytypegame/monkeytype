@@ -123,5 +123,10 @@
         "name": "miami_nights",
         "bgColor": "#18181a",
         "textColor": "#e4609b"
+    },
+    {
+        "name": "modern_dolch",
+        "bgColor": "#585b5f",
+        "textColor": "#65d2cd"
     }
 ]

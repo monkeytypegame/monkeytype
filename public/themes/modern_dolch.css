@@ -1,0 +1,27 @@
+:root {
+    --bg-color: #2d2e30;
+    --main-color: #e3e6eb;
+    --caret-color: #65d2cd;
+    --sub-color: #7e8389;
+    --error-color: #d36a7b;
+    --error-extra-color: #994154;
+}
+
+#top .logo .bottom{
+    color: var(--caret-color);
+}
+
+#top.focus .logo .bottom{
+    transition: .25s;
+    color: var(--sub-color);
+}
+
+.word letter.incorrect{
+    color: var(--error-color);
+}
+.word.error{
+    border-bottom: 2px solid var(--error-color);
+}
+.word letter.incorrect.extra {
+    color: var(--error-extra-color);
+}
