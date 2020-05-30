@@ -3,19 +3,11 @@
   --main-color: #f2f2f2;
   --caret-color: #f2f2f2;
   --sub-color: #bd93f9;
+  --text-color: #f2f2f2;
+  --error-color: #f758a0;
+  --error-extra-color: #732e51;
 }
 
-.word letter.incorrect{
-  color: #f758a0;
-}
-
-.word letter.incorrect.extra{
-  color: #732e51;
-}
-
-.word.error{
-  border-bottom: 2px solid #f758a0;
-}
 
 #menu .button:nth-child(1){
   color: #ec75c4;
