@@ -407,6 +407,7 @@ function loadMoreLines(){
     $(".pageAccount .history table tbody").append(`
     <tr>
     <td>${result.wpm}</td>
+    <td>${result.rawWpm}</td>
     <td>${result.acc}%</td>
     <td>${result.correctChars}</td>
     <td>${result.incorrectChars}</td>
