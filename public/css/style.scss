@@ -472,6 +472,12 @@ a:hover {
 #top .logo .bottom {
   margin-left: -0.15rem;
   color: var(--main-color);
+  transition: .25s;
+}
+
+
+#top.focus .logo .bottom{
+  color: var(--sub-color) !important;
 }
 
 #top .config {
@@ -611,6 +617,7 @@ key {
 #top.focus {
   color: var(--sub-color) !important;
 }
+
 
 #top.focus .config {
   opacity: 0 !important;
