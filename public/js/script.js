@@ -605,6 +605,9 @@ function showResult(difficultyFailed = false) {
   if (config.punctuation) {
     testType += "<br>punctuation"
   }
+  if (config.blindMode) {
+    testType += "<br>blind"
+  }
   if (config.difficulty == "expert") {
     testType += "<br>expert";
   }else if(config.difficulty == "master"){

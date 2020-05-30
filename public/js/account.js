@@ -399,6 +399,9 @@ function loadMoreLines(){
     if (result.punctuation) {
       withpunc = '<br>punctuation';
     }
+    if (result.blindMode) {
+      withpunc = '<br>blind';
+    }
     let diff = result.difficulty;
     if (diff == undefined){
       diff = 'normal';
@@ -416,10 +419,10 @@ function loadMoreLines(){
     <td>${result.acc}%</td>
     <td>${result.correctChars}</td>
     <td>${result.incorrectChars}</td>
-    <td>${result.mode}<br>${result.mode2}${withpunc}</td>
+    <td>${result.mode} ${result.mode2}${withpunc}</td>
     <td>${diff}</td>
     <td>${result.language.replace('_','<br>')}</td>
-    <td>${moment(result.timestamp).format('DD MMM YYYY HH:mm')}</td>
+    <td>${moment(result.timestamp).format('DD MMM YYYY<br>HH:mm')}</td>
     </tr>`);
   }
   visibleTableLines+=10;
