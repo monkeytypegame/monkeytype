@@ -394,6 +394,7 @@ function loadMoreLines(){
   if(filteredResults == [] || filteredResults.length == 0) return;
   for(let i = visibleTableLines; i < visibleTableLines+10; i++){
     result = filteredResults[i];
+    if(result == undefined) continue;
     let withpunc = '';
     if (result.punctuation) {
       withpunc = '<br>punctuation';
@@ -415,6 +416,7 @@ function loadMoreLines(){
     <td>${moment(result.timestamp).format('DD MMM YYYY HH:mm')}</td>
     </tr>`);
   }
+  visibleTableLines+=10;
 }
 
 function refreshAccountPage() {
