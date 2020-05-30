@@ -1,15 +1,9 @@
 :root {
-    --bg-color: #414755;
+    --bg-color: #242933;
     --main-color: #ec4c56;
     --caret-color: #ec4c56;
-    --sub-color: #ebeaef;
-}
-.word letter.incorrect{
-    color: #ebe04c;
-}
-.word.error{
-    border-bottom: 2px solid #ebe04c;
-}
-.word letter.incorrect.extra {
-    color: #797717;
+    --sub-color: #596172;
+    --text-color: #f6f0e9;
+    --error-color: #ec4c56;
+    --error-extra-color: #9b333a; 
 }
