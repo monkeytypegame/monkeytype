@@ -2,6 +2,7 @@ let config = {
     theme: 'serika_dark',
     showKeyTips: true,
     showLiveWpm: false,
+    showTimerBar: true,
     smoothCaret: true,
     quickTab: false,
     punctuation: false,

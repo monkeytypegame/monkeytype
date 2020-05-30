@@ -108,6 +108,20 @@ $(".pageSettings .section.liveWpm .buttons .button.off").click(e => {
     setSettingsButton('liveWpm', config.showLiveWpm);
 })
 
+//timer bar
+$(".pageSettings .section.timerBar .buttons .button.on").click(e => {
+    config.showTimerBar = true;
+    saveConfigToCookie();
+    showNotification('Timer Bar on', 1000);
+    setSettingsButton('timerBar', config.showTimerBar);
+})
+$(".pageSettings .section.timerBar .buttons .button.off").click(e => {
+    config.showTimerBar = false;
+    saveConfigToCookie();
+    showNotification('Timer Bar off', 1000);
+    setSettingsButton('timerBar', config.showTimerBar);
+})
+
 //freedom mode
 $(".pageSettings .section.freedomMode .buttons .button.on").click(e => {
     setFreedomMode(true);

@@ -36,6 +36,14 @@ let commands = {
             }
         },
         {
+            id: "toggleTimerBar",
+            display: "Toggle timer bar display",
+            exec: () => {
+                config.showTimerBar = !config.showTimerBar;
+                saveConfigToCookie();
+            }
+        },
+        {
             id: "toggleKeyTips",
             display: "Toggle keybind tips",
             exec: () => {

@@ -291,6 +291,7 @@ function highlightBadWord(index,showError) {
 }
 
 function showTimer() {
+  if (!config.showTimerBar) return;
   $("#timerWrapper").css("opacity", 1);
 }
 
