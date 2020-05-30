@@ -826,7 +826,7 @@ key {
 
 .word.error {
   /*   margin-bottom: 1px; */
-  border-bottom: 2px solid #da3333;
+  border-bottom: 2px solid var(--error-color);
   text-shadow:  1px 0px 0px var(--bg-color),
                 // 2px 0px 0px var(--bg-color),
                 -1px 0px 0px var(--bg-color),
