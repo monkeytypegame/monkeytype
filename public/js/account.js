@@ -391,7 +391,7 @@ let filteredResults = [];
 let visibleTableLines = 0;
 
 function loadMoreLines(){
-  if(filteredResults == []) return;
+  if(filteredResults == [] || filteredResults.length == 0) return;
   for(let i = visibleTableLines; i < visibleTableLines+10; i++){
     result = filteredResults[i];
     let withpunc = '';
