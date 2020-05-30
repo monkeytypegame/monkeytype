@@ -3,16 +3,7 @@
 	--caret-color: #d8dee9;
 	--main-color: #d8dee9;
 	--sub-color: #617b94;
-}
-
-.word letter.incorrect {
-  color: #bf616a;
-}
-
-.word letter.incorrect.extra {
-  color: #793e44;
-}
-
-.word.error {
-  border-bottom: 2px solid #bf616a;
+	--text-color: #d8dee9;
+	--error-color: #bf616a;
+	--error-extra-color: #793e44;
 }
