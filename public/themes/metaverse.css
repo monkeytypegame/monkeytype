@@ -1,15 +1,9 @@
 :root {
     --bg-color: #232323;
-    --main-color: #e8e8e8;
+    --main-color: #d82934;
     --caret-color: #d82934;
     --sub-color: #5e5e5e;
-}
-
-#top .logo .bottom{
-    color: #d82934;
-}
-
-#top.focus .logo .bottom{
-    transition: .25s;
-    color: #5e5e5e;
+    --text-color: #e8e8e8;
+    --error-color: #da3333;
+    --error-extra-color: #791717;
 }
