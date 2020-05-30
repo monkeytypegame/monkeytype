@@ -3,6 +3,7 @@
     --main-color: #eee;
     --caret-color: #eee;
     --sub-color: #444;
+    --text-color: #eee;
 }
 
 @keyframes shadow {
@@ -30,6 +31,10 @@
 
 .word letter.incorrect.extra {
     color: #fff;
+}
+
+#liveWpm{
+    color: white;
 }
 
 #top .config .group .buttons .button.active,
