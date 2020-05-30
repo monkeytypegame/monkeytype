@@ -544,7 +544,8 @@ function showResult(difficultyFailed = false) {
       restartCount: restartCount,
       difficulty: config.difficulty,
       testDuration: testtime,
-      blindMode: config.blindMode
+      blindMode: config.blindMode,
+      theme: config.theme
     };
     if(config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)){
       restartCount = 0;
