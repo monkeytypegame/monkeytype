@@ -279,6 +279,7 @@ function compareInput() {
   }
   $(".word.active").html(ret);
   if ((currentWord == currentInput || (config.quickEnd && currentWord.length == currentInput.length)) && currentWordIndex == wordsList.length - 1) {
+    $("#words .word.active").attr('input',currentInput);
     inputHistory.push(currentInput);
     currentInput = "";
     showResult();
@@ -1282,6 +1283,7 @@ $(document).keydown((event) => {
           currentTestLine++;
         }
       }
+      $("#words .word.active").attr('input',currentInput);
       if (currentWord == currentInput) {
         inputHistory.push(currentInput);
         currentInput = "";
@@ -1324,6 +1326,14 @@ if (window.location.hostname === "localhost") {
   $("head title").text($("head title").text() + " (localhost)");
 
 }
+
+$(document).on('mouseenter','#words .word',e =>{
+  if(resultVisible) $(e.currentTarget).append(`<div class="wordInputAfter">${$(e.currentTarget).attr('input')}</div>`);
+})
+
+$(document).on('mouseleave','#words .word',e =>{
+  $('.wordInputAfter').remove();
+})
 
 $(document).ready(() => {
   updateFavicon(32,14);
