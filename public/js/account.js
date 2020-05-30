@@ -467,7 +467,7 @@ function refreshAccountPage() {
         tt = parseFloat(result.timeDuration);
       }
       if(result.restartCount != null){
-        tt += (tt/2) * result.restartCount;
+        tt += (tt/4) * result.restartCount;
       }
       totalSeconds += tt;
 
@@ -518,7 +518,7 @@ function refreshAccountPage() {
         tt = parseFloat(result.timeDuration);
       }
       if(result.restartCount != null){
-        tt += (tt/2) * result.restartCount;
+        tt += (tt/4) * result.restartCount;
       }
       totalSecondsFiltered += tt;
 
