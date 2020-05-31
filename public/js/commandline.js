@@ -400,7 +400,14 @@ let themesList;
 
 $.getJSON("themes/list.json", function(data) {
     commandsThemes.list = [];
-    themesList = data.sort();
+    themesList = data.sort(function(a, b) {
+        nameA = a.name.toLowerCase(), nameB = b.name.toLowerCase()
+        if (nameA < nameB)
+            return -1
+        if (nameA > nameB)
+            return 1
+        return 0
+    })
     data.forEach(theme => {
         commandsThemes.list.push({
             id: "changeTheme" + capitalizeFirstLetter(theme.name),
