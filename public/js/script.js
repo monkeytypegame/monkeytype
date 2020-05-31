@@ -17,6 +17,9 @@ let afkDetected = false;
 let errorsPerSecond = [];
 let currentErrorCount = 0;
 let resultVisible = false;
+let activeWordTopBeforeJump = 0;
+let activeWordTop = 0;
+let activeWordJumped = false;
 
 let accuracyStats = {
   correct: 0,
@@ -242,6 +245,7 @@ function updateActiveElement() {
   $($("#words .word")[currentWordIndex])
     .addClass("active")
     .removeClass("error");
+  activeWordTop = $("#words .word.active").position().top;
 }
 
 function compareInput(wrdIndex,input,showError) {
@@ -1254,7 +1258,12 @@ $(document).keypress(function(event) {
   currentInput += event["key"];
   $("#words .word.active").attr('input',currentInput);
   setFocus(true);
+  activeWordTopBeforeJump = activeWordTop;
   compareInput(currentWordIndex,currentInput,!config.blindMode);
+  let newActiveTop = $("#words .word.active").position().top;
+  if(activeWordTopBeforeJump != newActiveTop){
+    activeWordJumped = true;
+  }
   updateCaretPosition();
 });
 
@@ -1319,13 +1328,20 @@ $(document).keydown((event) => {
       if (config.mode == "time") {
         let currentTop = $($("#words .word")[currentWordIndex]).position().top;
         let nextTop = $($("#words .word")[currentWordIndex + 1]).position().top;
-        if (nextTop > currentTop) {
+        if (nextTop > currentTop || activeWordJumped) {
           //last word of the line
           if(currentTestLine > 0){
+
+            let hideBound = currentTop;
+            if(activeWordJumped){
+              hideBound = activeWordTopBeforeJump;
+            }
+            activeWordJumped = false;
+
             let toHide = [];
             for (let i = 0; i < currentWordIndex + 1; i++) {
               let forWordTop = $($("#words .word")[i]).position().top;
-              if(forWordTop < currentTop){
+              if(forWordTop < hideBound){
                 // $($("#words .word")[i]).addClass("hidden");
                 toHide.push($($("#words .word")[i]));
               }
