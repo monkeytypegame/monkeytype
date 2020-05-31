@@ -143,5 +143,10 @@
         "name": "bingsu",
         "bgColor": "#524149",
         "textColor": "#ede8ec"
+    },
+    {
+        "name": "terminal",
+        "bgColor": "#1b1c1d",
+        "textColor": "#79a617"
     }
 ]
