@@ -1317,6 +1317,7 @@ $(document).keydown((event) => {
           currentTestLine++;
         }
       }
+      if(config.blindMode) $("#words .word.active letter").addClass('correct');
       if (currentWord == currentInput) {
         inputHistory.push(currentInput);
         currentInput = "";
