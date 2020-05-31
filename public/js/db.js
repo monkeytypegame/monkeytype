@@ -11,9 +11,11 @@ function db_testCompleted(obj) {
     if (user) {
         uid = user.uid;
     }
-    db.collection('results').add(obj).catch(e =>{
-        showNotification("Error saving result! Please contact Miodec on Discord.");
-    })
+    try{
+    db.collection('results').add(obj);
+    }catch(e){
+        showNotification("Error saving result! Please contact Miodec on Discord.",5000);
+    }
 }
 
 async function db_getUserResults() {
