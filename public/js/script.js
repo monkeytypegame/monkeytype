@@ -510,9 +510,9 @@ function showResult(difficultyFailed = false) {
   }
   clearIntervals();
   let testtime = roundedToFixed(stats.time,1);
-  $("#result .stats .wpm .bottom").text(stats.wpm);
-  $("#result .stats .raw .bottom").text(stats.wpmRaw);
-  $("#result .stats .acc .bottom").text(stats.acc + "%");
+  $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
+  $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
+  $("#result .stats .acc .bottom").text(Math.round(stats.acc) + "%");
   $("#result .stats .key .bottom").text(stats.correctChars + stats.spaces + "/" + stats.incorrectChars);
   $("#result .stats .time .bottom").text(testtime+'s');
 
