@@ -769,6 +769,15 @@ key {
   user-select: none;
 }
 
+#words.flipped{
+  .word{
+    color: var(--text-color);
+    & letter.correct{
+      color: var(--sub-color);
+    }
+  }
+}
+
 #restartTestButton, #showWordHistoryButton {
   position: relative;
   opacity: 0;
@@ -872,10 +881,6 @@ key {
                 0px 1px 0px var(--bg-color),
                 1px 1px 0px var(--bg-color),
                 -1px 1px 0px var(--bg-color);
-}
-
-.word.active {
-  color: var(--sub-color);
 }
 
 .word letter {

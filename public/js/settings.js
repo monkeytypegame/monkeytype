@@ -18,6 +18,7 @@ function updateSettingsPage(){
     setSettingsButton('freedomMode', config.freedomMode);
     setSettingsButton('blindMode', config.blindMode);
     setSettingsButton('quickEnd', config.quickEnd);
+    setSettingsButton('flipTestColors', config.flipTestColors);
 
 
     setActiveThemeButton();
@@ -230,4 +231,16 @@ $(".pageSettings .section.quickEnd .buttons .button.off").click(e => {
     setQuickEnd(false);
     showNotification('Quick end off', 1000);
     setSettingsButton('quickEnd', config.quickEnd);
+})
+
+//flip test
+$(".pageSettings .section.flipTestColors .buttons .button.on").click(e => {
+    setFlipTestColors(true);
+    showNotification('Flip test colors on', 1000);
+    setSettingsButton('flipTestColors', config.flipTestColors);
+})
+$(".pageSettings .section.flipTestColors .buttons .button.off").click(e => {
+    setFlipTestColors(false);
+    showNotification('Flip test colors off', 1000);
+    setSettingsButton('flipTestColors', config.flipTestColors);
 })

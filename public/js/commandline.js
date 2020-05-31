@@ -72,6 +72,13 @@ let commands = {
             }
         },
         {
+            id: "toggleFlipTestColors",
+            display: "Toggle flip test colors",
+            exec: () => {
+                toggleFlipTestColors();
+            }
+        },
+        {
             id: "changeDifficulty",
             display: "Change difficulty...",
             subgroup: true,

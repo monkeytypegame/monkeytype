@@ -16,7 +16,8 @@ let config = {
     difficulty: "normal",
     blindMode: false,
     quickEnd: false,
-    caretStyle: "default"
+    caretStyle: "default",
+    flipTestColors: false
 }
 
 //cookies
@@ -49,6 +50,7 @@ function loadConfigFromCookie() {
         setDifficulty(newConfig.difficulty,true);
         setBlindMode(newConfig.blindMode,true);
         setQuickEnd(newConfig.quickEnd,true);
+        setFlipTestColors(newConfig.flipTestColors,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
         }
@@ -81,6 +83,7 @@ function toggleBlindMode(){
         blind = false;
     }
     config.blindMode = blind;
+    saveConfigToCookie();
 }
 
 function setBlindMode(blind, nosave){
@@ -98,6 +101,7 @@ function toggleQuickEnd(){
         qe = false;
     }
     config.quickEnd = qe;
+    saveConfigToCookie();
 }
 
 function setQuickEnd(qe, nosave){
@@ -106,6 +110,23 @@ function setQuickEnd(qe, nosave){
     }
     config.quickEnd = qe;
     if(!nosave) saveConfigToCookie();
+}
+
+
+//flip colors
+function setFlipTestColors(flip,nosave){
+    if(flip == undefined){
+        flip = false;
+    }
+    config.flipTestColors = flip;
+    flipTestColors(flip);
+    if(!nosave) saveConfigToCookie();
+}
+
+function toggleFlipTestColors(){
+    config.flipTestColors = !config.flipTestColors;
+    flipTestColors(config.flipTestColors);
+    saveConfigToCookie();
 }
 
 function setCaretStyle(caretStyle, nosave) {

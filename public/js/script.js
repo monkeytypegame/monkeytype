@@ -1048,6 +1048,14 @@ function toggleResultWordsDisplay(){
   }
 }
 
+function flipTestColors(tf){
+  if(tf){
+    $("#words").addClass('flipped');
+  }else{
+    $("#words").removeClass('flipped');
+  }
+}
+
 
 $(document).on("click", "#top .logo", (e) => {
   changePage('test');
