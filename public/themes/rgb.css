@@ -44,11 +44,14 @@
     }
 }
 
-
 .button.discord::after,
-#caret{
+#caret,
+.pageSettings .section .buttons .button.active,
+.pageSettings .section.languages .buttons .language.active,
+.pageAccount .group.filterButtons .buttons .button.active
+{
     animation-name: rgb-bg !important;
-    animation-duration: 1s;
+    animation-duration: 5s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 }
@@ -62,14 +65,27 @@
 #result .stats .group .bottom,
 #menu .button:hover,
 #top .config .group .buttons .button:hover,
-a:hover {
+a:hover,
+#words.flipped .word{
     animation-name: rgb;
-    animation-duration: 1s;
+    animation-duration: 5s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
 }
 
-.word letter.correct{
+/* .word letter.correct{
+    animation-name: rgb;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}  */
+
+
+#words.flipped .word letter.correct {
+    color: var(--sub-color);
+}
+
+#words:not(.flipped) .word letter.correct {
     animation-name: rgb;
     animation-duration: 5s;
     animation-iteration-count: infinite;
