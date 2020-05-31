@@ -128,5 +128,20 @@
         "name": "modern_dolch",
         "bgColor": "#585b5f",
         "textColor": "#65d2cd"
+    },
+    {
+        "name": "botanical",
+        "bgColor": "#7b9c98",
+        "textColor": "#abc6c4"
+    },
+    {
+        "name": "9009",
+        "bgColor": "#99947f",
+        "textColor": "#080909"
+    },
+    {
+        "name": "bingsu",
+        "bgColor": "#524149",
+        "textColor": "#ede8ec"
     }
 ]

@@ -23,8 +23,8 @@ input{
 
 body {
   margin: 0;
-  padding: 2rem 2rem 0 2rem;
-  height: 100vh;
+  padding: 0;
+  min-height: 100vh;
   background: var(--bg-color);
   font-family: "Roboto Mono";
   color: var(--main-color);
@@ -287,11 +287,9 @@ a:hover {
   margin: 0 auto;
   display: grid;
   grid-auto-flow: row;
-  /* grid-template-rows: 2rem auto 1rem; */
-  height: 100%;
+  min-height: 100vh;
+  padding: 2rem;
   gap: 2rem;
-  /* margin-top: 1rem; */
-  /* margin-bottom: 1rem; */
   align-items: center;
   z-index: 999;
   grid-template-rows: auto 1fr auto;
