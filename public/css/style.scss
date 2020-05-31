@@ -1016,7 +1016,7 @@ key {
       gap: .5rem;
       grid-area: buttons;
       .button{
-        color: var(--sub-color);
+        color: var(--text-color);
         cursor: pointer;
         transition: .25s;
         padding: .2rem .5rem;
@@ -1030,11 +1030,11 @@ key {
         height: min-content;
         height: -moz-min-content;
         &.active{
-          background: var(--sub-color);
+          background: var(--main-color);
           color: var(--bg-color);
         }
         &:hover,&:focus{
-          color: var(--sub-color);
+          color: var(--bg-color);
           background: var(--main-color);
           outline: none;
         }
@@ -1055,25 +1055,25 @@ key {
         grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: .5rem;
         .theme, .language{
-          color: var(--sub-color);
-        cursor: pointer;
-        transition: .25s;
-        padding: .2rem .5rem;
-        border-radius: var(--roundness);
+          color: var(--text-color);
+          cursor: pointer;
+          transition: .25s;
+          padding: .2rem .5rem;
+          border-radius: var(--roundness);
 
-        background: rgba(0,0,0,.1);
-        text-align: center;
-        -webkit-user-select: none;
-        display: grid;
-        align-content: center;
-        &.active{
-          background: var(--sub-color);
-          color: var(--bg-color);
-        }
-        &:hover,&:focus{
-          color: var(--sub-color);
-          background: var(--main-color);
-        }
+          background: rgba(0,0,0,.1);
+          text-align: center;
+          -webkit-user-select: none;
+          display: grid;
+          align-content: center;
+          &.active{
+            background: var(--main-color);
+            color: var(--bg-color);
+          }
+          &:hover,&:focus{
+            color: var(--bg-color);
+            background: var(--main-color);
+          }
         }
       }
     }
@@ -1129,8 +1129,8 @@ key {
     }
     &.history{
       .loadMoreButton{
-        background: rgba(0, 0, 0, 0.1);
-        color: var(--sub-color);
+        background: rgba(0,0,0,.1);
+        color: var(--text-color);
         text-align: center;
         padding: .5rem;
         border-radius: var(--roundness);
@@ -1144,7 +1144,7 @@ key {
         align-content: center;
         margin-top: 1rem;
         &:hover,&:focus{
-          color: var(--sub-color);
+          color: var(--bg-color);
           background: var(--main-color);
         }
       }
@@ -1208,7 +1208,7 @@ key {
       gap: 1rem;
       .button{
         background: rgba(0,0,0,.1);
-        color: var(--sub-color);
+        color: var(--text-color);
         text-align: center;
         padding: .5rem;
         border-radius: var(--roundness);
@@ -1218,11 +1218,11 @@ key {
         display: grid;
         align-content: center;
         &.active{
-          background: var(--sub-color);
+          background: var(--main-color);
           color: var(--bg-color);
         }
         &:hover{
-          color: var(--sub-color);
+          color: var(--bg-color);
           background: var(--main-color);
         }
       }
