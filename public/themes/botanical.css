@@ -3,18 +3,7 @@
   --main-color: #eaf1f3;
   --caret-color: #abc6c4;
   --sub-color: #495755;
-  --error-color: #a85050;
-  --extra-error-color: #6c3333; 
-}
-
-.word letter.incorrect{
-  color: var(--error-color);
-}
-
-.word letter.incorrect.extra{
-  color: var(--extra-error-color);
-}
-
-.word.error{
-  border-bottom: solid 1px var(--error-color);
+  --text-color: #eaf1f3;
+  --error-color: #f6c9b4;
+  --error-extra-color: #f59a71; 
 }

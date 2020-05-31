@@ -1,15 +1,15 @@
 :root {
-  --bg-color: #f4f3ed;
+  --bg-color: #ebe5d8;
   --main-color: #080909;
   --caret-color: #7fa480;
-  --sub-color: #ada78f;
+  --sub-color: #99947f;
+  --text-color: #080909;
   --error-color: #c87e74;
   --extra-error-color: #a56961; 
 }
 
 .word letter.incorrect{
   color: var(--error-color);
-  font-weight: bold;
 }
 
 .word letter.incorrect.extra{
