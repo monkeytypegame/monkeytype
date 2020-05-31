@@ -282,7 +282,7 @@ a:hover {
 }
 
 #centerContent {
-  max-width: 800px;
+  max-width: 1000px;
   min-width: 600px;
   margin: 0 auto;
   display: grid;
@@ -811,7 +811,7 @@ key {
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid transparent;
   line-height: 1rem;
-  transition: .25s;
+  // transition: .25s;
   .wordInputAfter{
     opacity: 1;
     position: absolute;
