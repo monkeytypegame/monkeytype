@@ -56,6 +56,14 @@ function loadConfigFromCookie() {
         }
         config = newConfig;
     }
+    if(config.difficulty == undefined){
+        config.difficulty = "normal";
+        saveConfigToCookie();
+    }
+    if(config.blindMode == undefined){
+        config.blindMode = false;
+        saveConfigToCookie();
+    }
 }
 
 function showTestConfig() {
@@ -68,7 +76,7 @@ function hideTestConfig() {
 
 //difficulty
 function setDifficulty(diff, nosave){
-    if(diff !== "normal" && diff !== "expert" && diff !== "master"){
+    if((diff !== "normal" && diff !== "expert" && diff !== "master") || diff == undefined){
         diff = "normal";
     }
     config.difficulty = diff;
