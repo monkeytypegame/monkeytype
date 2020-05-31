@@ -13,6 +13,7 @@ function updateSettingsPage(){
     setSettingsButton('smoothCaret', config.smoothCaret);
     setSettingsButton('quickTab', config.quickTab);
     setSettingsButton('liveWpm', config.showLiveWpm);
+    setSettingsButton('timerBar', config.showTimerBar)
     setSettingsButton('keyTips', config.showKeyTips);
     setSettingsButton('freedomMode', config.freedomMode);
     setSettingsButton('blindMode', config.blindMode);
@@ -112,13 +113,13 @@ $(".pageSettings .section.liveWpm .buttons .button.off").click(e => {
 $(".pageSettings .section.timerBar .buttons .button.on").click(e => {
     config.showTimerBar = true;
     saveConfigToCookie();
-    showNotification('Timer Bar on', 1000);
+    showNotification('Timer bar on', 1000);
     setSettingsButton('timerBar', config.showTimerBar);
 })
 $(".pageSettings .section.timerBar .buttons .button.off").click(e => {
     config.showTimerBar = false;
     saveConfigToCookie();
-    showNotification('Timer Bar off', 1000);
+    showNotification('Timer bar off', 1000);
     setSettingsButton('timerBar', config.showTimerBar);
 })
 
