@@ -338,6 +338,7 @@ function updateCaretPosition() {
     currentLetterIndex = 0;
   }
   let currentLetter = $($("#words .word.active letter")[currentLetterIndex]);
+  if(currentLetter.length == 0) return;
   let currentLetterPos = currentLetter.position();
   let letterHeight = currentLetter.height();
 
