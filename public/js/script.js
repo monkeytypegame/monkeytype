@@ -665,6 +665,15 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.data.datasets[1].data = rawHistory;
 
 
+  let maxVal = 0;
+  rawHistory.forEach(raw =>{
+    if(raw >= maxVal){
+      maxVal = raw;
+    }
+  })
+  wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxVal;
+  wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxVal;
+
 
   let errorsNoZero = [];
 
