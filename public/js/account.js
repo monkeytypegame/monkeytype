@@ -269,7 +269,7 @@ let activeFilters = ["all"];
 
 $(document).ready(e =>{
   activeFilters = config.resultFilters;
-  console.log(activeFilters);
+  // console.log(activeFilters);
   if(activeFilters.includes("all")){
     toggleFilterButton("all")
   }else{
