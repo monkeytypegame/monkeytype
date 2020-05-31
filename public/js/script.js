@@ -652,14 +652,17 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
   wpmOverTimeChart.options.scales.xAxes[0].scaleLabel.fontColor = subColor;
   wpmOverTimeChart.options.scales.yAxes[0].ticks.minor.fontColor = subColor;
-  wpmOverTimeChart.options.scales.yAxes[1].ticks.minor.fontColor = subColor;
+  wpmOverTimeChart.options.scales.yAxes[2].ticks.minor.fontColor = subColor;
   wpmOverTimeChart.options.scales.yAxes[0].scaleLabel.fontColor = subColor;
-  wpmOverTimeChart.options.scales.yAxes[1].scaleLabel.fontColor = subColor;
+  wpmOverTimeChart.options.scales.yAxes[2].scaleLabel.fontColor = subColor;
 
+  wpmOverTimeChart.data.labels = labels;
 
   wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
-  wpmOverTimeChart.data.labels = labels;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
+  wpmOverTimeChart.data.datasets[1].borderColor = subColor;
+  wpmOverTimeChart.data.datasets[1].data = rawHistory;
+
 
 
   let errorsNoZero = [];
@@ -673,7 +676,7 @@ function showResult(difficultyFailed = false) {
     // }
   }
 
-  wpmOverTimeChart.data.datasets[1].data = errorsNoZero;
+  wpmOverTimeChart.data.datasets[2].data = errorsNoZero;
 
 
 
@@ -1090,9 +1093,6 @@ $(document).on("click", "#top .config .mode .button", (e) => {
 
 $(document).on("click", "#top #menu .button", (e) => {
   if($(e.currentTarget).hasClass('discord')) return;
-  if($(e.currentTarget).hasClass('leaderboards')){
-    showLeaderboards();
-  }
   href = $(e.currentTarget).attr('href');
   changePage(href.replace('/', ''));
 })
@@ -1396,6 +1396,18 @@ let wpmOverTimeChart = new Chart(ctx, {
       borderColor: 'rgba(125, 125, 125, 1)',
       borderWidth: 2,
       yAxisID: "wpm",
+      order: 2,
+      radius: 2
+    },
+    {
+      label: "raw",
+      data: [],
+      // backgroundColor: 'rgba(255, 255, 255, 0.25)',
+      borderColor: 'rgba(125, 125, 125, 1)',
+      borderWidth: 2,
+      yAxisID: "raw",
+      order: 3,
+      radius: 2
     },
     {
       label: "errors",
@@ -1403,6 +1415,7 @@ let wpmOverTimeChart = new Chart(ctx, {
       // backgroundColor: 'rgba(255, 255, 255, 0.25)',
       borderColor: 'rgba(255, 125, 125, 1)',
       borderWidth: 2,
+      order: 1,
       yAxisID: "error",
       // barPercentage: 0.1,
       maxBarThickness: 10,
@@ -1411,7 +1424,7 @@ let wpmOverTimeChart = new Chart(ctx, {
       radius: function(context) {
         var index = context.dataIndex;
         var value = context.dataset.data[index];
-        return value.y <= 0 ? 0 : 4
+        return value.y <= 0 ? 0 : 3
       }
     }],
   },
@@ -1453,6 +1466,22 @@ let wpmOverTimeChart = new Chart(ctx, {
         scaleLabel: {
           display: true,
           labelString: 'Words per Minute',
+          fontFamily: 'Roboto Mono'
+        },
+        ticks: {
+          fontFamily: 'Roboto Mono',
+          beginAtZero: true
+        },
+        gridLines: {
+          display:false
+        }
+      },
+      {
+        id: "raw",
+        display: false,
+        scaleLabel: {
+          display: true,
+          labelString: 'Raw Words per Minute',
           fontFamily: 'Roboto Mono'
         },
         ticks: {
