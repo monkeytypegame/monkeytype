@@ -15,7 +15,8 @@ let config = {
     resultFilters: ["all"],
     difficulty: "normal",
     blindMode: false,
-    quickEnd: false
+    quickEnd: false,
+    caretStyle: "default"
 }
 
 //cookies
