@@ -464,7 +464,6 @@ function calculateStats() {
 
   let testNow = Date.now();
   let testSeconds = roundTo2((testNow - testStart) / 1000);
-  console.log(testSeconds);
   let wpm = roundTo2(((chars.correctWordChars + chars.spaces) * (60 / testSeconds)) / 5);
   let wpmraw = roundTo2(((chars.allCorrectChars + chars.spaces + chars.incorrectChars + chars.extraChars) * (60/testSeconds))/5);
   let acc = roundTo2((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
