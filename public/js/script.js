@@ -123,7 +123,7 @@ function initWords() {
 
   if (config.mode == "time" || config.mode == "words") {
 
-    let wordsBound = config.mode == "time" ? 50 : config.words;
+    let wordsBound = config.mode == "time" ? 60 : config.words;
     for (let i = 0; i < wordsBound; i++) {
       randomWord = language[Math.floor(Math.random() * language.length)];
       previousWord = wordsList[i - 1];
