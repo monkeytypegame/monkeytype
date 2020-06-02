@@ -148,5 +148,10 @@
         "name": "terminal",
         "bgColor": "#1b1c1d",
         "textColor": "#79a617"
+    },
+    {
+        "name": "taro",
+        "bgColor": "#b3baff",
+        "textColor": "#130f1a"
     }
 ]
