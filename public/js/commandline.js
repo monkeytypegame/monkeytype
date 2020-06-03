@@ -115,6 +115,15 @@ let commands = {
             }
         },
         {
+            id: "changeLayout",
+            display: "Change layout...",
+            subgroup: true,
+            exec: () => {
+                currentCommands.push(commandsLayouts);
+                showCommandLine();
+            }
+        },
+        {
             id: "changeFontSize",
             display: "Change font size...",
             subgroup: true,
@@ -466,6 +475,32 @@ if (Object.keys(words).length > 0) {
             display: language.replace('_', ' '),
             exec: () => {
                 changeLanguage(language);
+                restartTest();
+                saveConfigToCookie();
+            }
+        })
+    })
+}
+
+let commandsLayouts = {
+    title: "Change layout...",
+    list: [
+        {
+            id: "couldnotload",
+            display: "Could not load the layouts list :("
+        }
+    ]
+};
+
+
+if (Object.keys(layouts).length > 0) {
+    commandsLayouts.list = [];
+    Object.keys(layouts).forEach(layout => {
+        commandsLayouts.list.push({
+            id: "changeLayout" + capitalizeFirstLetter(layout),
+            display: layout.replace('_', ' '),
+            exec: () => {
+                changeLayout(layout);
                 restartTest();
                 saveConfigToCookie();
             }

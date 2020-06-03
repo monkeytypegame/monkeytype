@@ -1043,7 +1043,7 @@ key {
     &.fontSize .buttons{
       grid-template-columns: 1fr 1fr 1fr 1fr;
     }
-    &.themes, &.languages{
+    &.themes, &.languages, &.layouts{
       grid-template-columns: 1fr;
       grid-template-areas: "title"
                             "buttons";
@@ -1054,7 +1054,7 @@ key {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: .5rem;
-        .theme, .language{
+        .theme, .language, .layout{
           color: var(--text-color);
           cursor: pointer;
           transition: .25s;
@@ -1226,7 +1226,7 @@ key {
           background: var(--main-color);
         }
       }
-      &.languages{
+      &.languages, &.layouts{
         grid-template-columns: repeat(4,1fr);
         grid-auto-flow: unset;
       }

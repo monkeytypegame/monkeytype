@@ -145,6 +145,33 @@ function initWords() {
   showWords();
 }
 
+function emulateLayout(event){
+  if (config.layout == "qwerty")
+    return event;
+  let layoutMap = layouts[config.layout];
+  let qwertyMap = layouts["qwerty"];
+
+  let mapIndex;
+  let newKey;
+  let shift = false;
+  for (let i = 0; i < qwertyMap.length; i++) {
+    const key = qwertyMap[i];
+    let keyIndex = key.indexOf(event.key);
+    if (keyIndex != -1){
+      mapIndex = i;
+      shift = keyIndex;
+    }
+  }
+
+  newKey = layoutMap[mapIndex][shift];
+  event.keyCode = newKey.charCodeAt(0);
+  event.charCode = newKey.charCodeAt(0);
+  event.which = newKey.charCodeAt(0);
+  event.code = `key${newKey}`;
+  event.key = newKey;
+  return event;
+}
+
 function punctuateWord(previousWord, currentWord, index, maxindex){
 
   let word = currentWord;
@@ -1197,6 +1224,7 @@ $(document).mousemove(function(event) {
 
 //keypresses for the test, using different method to be more responsive
 $(document).keypress(function(event) {
+  event = emulateLayout(event);
   if (!$("#wordsInput").is(":focus")) return;
   if (event["keyCode"] == 13) return;
   if (event["keyCode"] == 32) return;
