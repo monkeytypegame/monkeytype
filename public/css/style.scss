@@ -987,6 +987,14 @@ key {
   .tip{
     color: var(--sub-color);
   }
+  .sectionGroupTitle{
+    font-size: 1.5rem;
+    color: var(--sub-color);
+    line-height: 1.5rem;
+  }
+  .sectionSpacer{
+    height: 1.5rem;
+  }
   .section{
     display: grid;
     // gap: .5rem;

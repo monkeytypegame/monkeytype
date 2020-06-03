@@ -248,6 +248,9 @@
       </div>
       <div class="page pageSettings hidden">
         <div class="tip">tip: You can also change all these settings quickly using the command line (<key>esc</key>)</div>
+
+
+        <div class="sectionGroupTitle">behaviour</div>
         <div class="section difficulty">
           <h1>test difficulty</h1>
           <div class="text">Normal is the classic type test experience. Expert fails the test if you submit (press space) an incorrect word.
@@ -259,54 +262,12 @@
             <div class="button" difficulty="master" tabindex="0" onclick="this.blur();">master</div>
           </div>
         </div>
-        <div class="section smoothCaret" section="">
-          <h1>smooth caret</h1>
-          <div class="text">The caret will move smoothly between letters and words.</div>
-          <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
-            <div class="button off" tabindex="0" onclick="this.blur();">off</div>
-          </div>
-        </div>
-        <div class="section caretStyle" section="">
-          <h1>caret style</h1>
-          <div class="text">Change the style of the caret during the test.</div>
-          <div class="buttons">
-            <div class="button" caret="default" tabindex="0" onclick="this.blur();">|</div>
-            <div class="button" caret="block" tabindex="0" onclick="this.blur();">▮</div>
-            <div class="button" caret="outline" tabindex="0" onclick="this.blur();">▯</div>
-            <div class="button" caret="underline" tabindex="0" onclick="this.blur();">_</div>
-          </div>
-        </div>
         <div class="section quickTab">
           <h1>quick tab mode</h1>
           <div class="text">Press <key>tab</key> to quickly restart the test. This function disables tab navigation on some parts of the website.</div>
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
-          </div>
-        </div>
-        <div class="section liveWpm">
-          <h1>live wpm</h1>
-          <div class="text">Displays a live WPM speed during the test. Updates once every second.</div>
-          <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
-            <div class="button off" tabindex="0" onclick="this.blur();">off</div>
-          </div>
-        </div>
-        <div class="section timerBar">
-          <h1>timer bar</h1>
-          <div class="text">Displays a live timer bar at the top of the screen when in timed mode.</div>
-          <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
-            <div class="button off" tabindex="0" onclick="this.blur();">off</div>
-          </div>
-        </div>
-        <div class="section keyTips">
-          <h1>show key tips</h1>
-          <div class="text">Shows the keybind tips at the bottom of the page.</div>
-          <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
-            <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
           </div>
         </div>
         <div class="section freedomMode">
@@ -335,6 +296,38 @@
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
           </div>
         </div>
+        <div class="section layouts">
+          <h1>layout</h1>
+          <div class="buttons">
+          </div>
+        </div>
+        <div class="section languages">
+          <h1>language</h1>
+          <div class="buttons">
+          </div>
+        </div>
+
+
+        <div class="sectionSpacer"></div>
+        <div class="sectionGroupTitle">appearance</div>
+        <div class="section smoothCaret" section="">
+          <h1>smooth caret</h1>
+          <div class="text">The caret will move smoothly between letters and words.</div>
+          <div class="buttons">
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
+            <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+          </div>
+        </div>
+        <div class="section caretStyle" section="">
+          <h1>caret style</h1>
+          <div class="text">Change the style of the caret during the test.</div>
+          <div class="buttons">
+            <div class="button" caret="default" tabindex="0" onclick="this.blur();">|</div>
+            <div class="button" caret="block" tabindex="0" onclick="this.blur();">▮</div>
+            <div class="button" caret="outline" tabindex="0" onclick="this.blur();">▯</div>
+            <div class="button" caret="underline" tabindex="0" onclick="this.blur();">_</div>
+          </div>
+        </div>
         <div class="section flipTestColors">
           <h1>flip test colors</h1>
           <div class="text">By default, typed text is brighter than the future text. When enabled, the colors will be flipped
@@ -355,22 +348,41 @@
             <div class="button" fontsize="2" tabindex="0" onclick="this.blur();">2</div>
           </div>
         </div>
-        <div class="section languages">
-          <h1>language</h1>
-          <div class="buttons">
-          </div>
-        </div>
-
-        <div class="section layouts">
-          <h1>layout</h1>
-          <div class="buttons">
-          </div>
-        </div>
         <div class="section themes">
           <h1>theme</h1>
           <div class="buttons">
           </div>
         </div>
+
+
+        <div class="sectionSpacer"></div>
+        <div class="sectionGroupTitle">hide elements</div>
+        <div class="section liveWpm">
+          <h1>live wpm</h1>
+          <div class="text">Displays a live WPM speed during the test. Updates once every second.</div>
+          <div class="buttons">
+            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
+            <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
+          </div>
+        </div>
+        <div class="section timerBar">
+          <h1>timer bar</h1>
+          <div class="text">Displays a live timer bar at the top of the screen when in timed mode.</div>
+          <div class="buttons">
+            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
+            <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
+          </div>
+        </div>
+        <div class="section keyTips">
+          <h1>key tips</h1>
+          <div class="text">Shows the keybind tips at the bottom of the page.</div>
+          <div class="buttons">
+            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
+            <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
+          </div>
+        </div>
+
+
       </div>
       <div class="page pageLogin hidden">
         <div class="preloader hidden"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>
