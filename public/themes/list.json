@@ -148,5 +148,10 @@
         "name": "terminal",
         "bgColor": "#1b1c1d",
         "textColor": "#79a617"
+    },
+    {
+        "name": "striker",
+        "bgColor": "#124883",
+        "textColor": "#d6dbd9"
     }
 ]
