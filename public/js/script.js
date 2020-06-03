@@ -520,6 +520,7 @@ function showCrown() {
 }
 
 function showResult(difficultyFailed = false) {
+  resultVisible=true;
   testEnd = Date.now();
   testActive = false;
   setFocus(false);
@@ -723,7 +724,6 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.update({ duration: 0 });
   swapElements($("#words"),$("#result"),250, () => {
-    resultVisible=true;
 
     if(config.blindMode){
       $.each($('#words .word'),(i,word)=>{
