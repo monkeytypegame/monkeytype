@@ -146,28 +146,30 @@ function initWords() {
 }
 
 function emulateLayout(event){
-  if (config.layout == "qwerty")
+  if (config.layout == "default")
     return event;
+  const qwertyMasterLayout = {"Backquote":"`~","Digit1":"1!","Digit2":"2@","Digit3":"3#","Digit4":"4$","Digit5":"5%","Digit6":"6^","Digit7":"7&","Digit8":"8*","Digit9":"9(","Digit0":"0)","Minus":"-_","Equal":"=+","KeyQ":"qQ","KeyW":"wW","KeyE":"eE","KeyR":"rR","KeyT":"tT","KeyY":"yY","KeyU":"uU","KeyI":"iI","KeyO":"oO","KeyP":"pP","BracketLeft":"[{","BracketRight":"]}","KeyA":"aA","KeyS":"sS","KeyD":"dD","KeyF":"fF","KeyG":"gG","KeyH":"hH","KeyJ":"jJ","KeyK":"kK","KeyL":"lL","Semicolon":";:","Quote":"'\"","Backslash":"\\|","KeyZ":"zZ","KeyX":"xX","KeyC":"cC","KeyV":"vV","KeyB":"bB","KeyN":"nN","KeyM":"mM","Comma":",<","Period":".>","Slash":"/?","Space":"  "}
   let layoutMap = layouts[config.layout];
   let qwertyMap = layouts["qwerty"];
 
+  let qwertyKey = qwertyMasterLayout[event.code];
   let mapIndex;
   let newKey;
-  let shift = false;
+  let shift = event.shiftKey ? 1 : 0;
   for (let i = 0; i < qwertyMap.length; i++) {
     const key = qwertyMap[i];
-    let keyIndex = key.indexOf(event.key);
+    let keyIndex = key.indexOf(qwertyKey);
     if (keyIndex != -1){
       mapIndex = i;
-      shift = keyIndex;
     }
   }
-
+  if (!shift && /[A-Z]/gm.test(event.key)){
+    shift = 1;
+  }
   newKey = layoutMap[mapIndex][shift];
   event.keyCode = newKey.charCodeAt(0);
   event.charCode = newKey.charCodeAt(0);
   event.which = newKey.charCodeAt(0);
-  event.code = `key${newKey}`;
   event.key = newKey;
   return event;
 }
