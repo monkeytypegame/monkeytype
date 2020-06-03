@@ -1080,6 +1080,10 @@ key {
   }
 }
 
+.buttons div.theme:hover{
+  transform: scale(1.1);
+}
+
 .signOut{
   font-size: 1rem;
   line-height: 1rem;
