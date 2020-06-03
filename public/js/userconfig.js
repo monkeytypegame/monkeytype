@@ -366,15 +366,7 @@ function changeLayout(layout, nosave){
     if (layout == null || layout == undefined){
         layout = "qwerty"
     }
-
     config.layout = layout;
-    try{
-        firebase.analytics().logEvent('changedLanguage', {
-            language: language
-        });
-    }catch(e){
-        console.log("Analytics unavailable");
-    }
     if(!nosave) saveConfigToCookie();
 }
 
