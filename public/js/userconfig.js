@@ -18,7 +18,7 @@ let config = {
     quickEnd: false,
     caretStyle: "default",
     flipTestColors: false,
-    layout:"qwerty"
+    layout:"default"
 }
 
 //cookies
@@ -67,7 +67,7 @@ function loadConfigFromCookie() {
         saveConfigToCookie();
     }
     if(config.layout == undefined){
-        config.layout = "qwerty";
+        config.layout = "default";
         saveConfigToCookie();
     }
 }
