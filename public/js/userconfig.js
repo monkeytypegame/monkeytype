@@ -66,6 +66,10 @@ function loadConfigFromCookie() {
         config.blindMode = false;
         saveConfigToCookie();
     }
+    if(config.layout == undefined){
+        config.layout = "qwerty";
+        saveConfigToCookie();
+    }
 }
 
 function showTestConfig() {
