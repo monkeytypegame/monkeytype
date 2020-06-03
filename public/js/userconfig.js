@@ -17,7 +17,8 @@ let config = {
     blindMode: false,
     quickEnd: false,
     caretStyle: "default",
-    flipTestColors: false
+    flipTestColors: false,
+    layout:"qwerty"
 }
 
 //cookies
@@ -44,6 +45,7 @@ function loadConfigFromCookie() {
         changeWordCount(newConfig.words,true);
         changeMode(newConfig.mode,true);
         changeLanguage(newConfig.language,true);
+        changeLayout(newConfig.layout, true);
         changeFontSize(newConfig.fontSize,true);
         setFreedomMode(newConfig.freedomMode,true);
         setCaretStyle(newConfig.caretStyle,true);
@@ -346,6 +348,22 @@ function changeLanguage(language, nosave) {
         language = "english";
     }
     config.language = language;
+    try{
+        firebase.analytics().logEvent('changedLanguage', {
+            language: language
+        });
+    }catch(e){
+        console.log("Analytics unavailable");
+    }
+    if(!nosave) saveConfigToCookie();
+}
+
+function changeLayout(layout, nosave){
+    if (layout == null || layout == undefined){
+        layout = "qwerty"
+    }
+
+    config.layout = layout;
     try{
         firebase.analytics().logEvent('changedLanguage', {
             language: language

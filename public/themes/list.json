@@ -153,5 +153,20 @@
         "name": "taro",
         "bgColor": "#b3baff",
         "textColor": "#130f1a"
+    },
+    {
+        "name": "striker",
+        "bgColor": "#124883",
+        "textColor": "#d6dbd9"
+    },
+    {
+        "name": "gruvbox_dark",
+        "bgColor": "#282828",
+        "textColor": "#ebdbb2"
+    },
+    {
+        "name": "gruvbox_light",
+        "bgColor": "#fbf1c7",
+        "textColor": "#458588"
     }
 ]

@@ -7,8 +7,14 @@ function updateSettingsPage(){
 
     let langEl = $(".pageSettings .section.languages .buttons").empty();
     Object.keys(words).forEach(language => {
-        langEl.append(`<div class="language" language='${language}'>${language.replace('_', ' ')}</div>`); 
+        langEl.append(`<div class="language" language='${language}'>${language.replace('_', ' ')}</div>`);
     })
+
+    let layoutEl = $(".pageSettings .section.layouts .buttons").empty();
+    Object.keys(layouts).forEach(layout => {
+        layoutEl.append(`<div class="layout button" layout='${layout}'>${layout.replace('_', ' ')}</div>`);
+    });
+    
 
     setSettingsButton('smoothCaret', config.smoothCaret);
     setSettingsButton('quickTab', config.quickTab);
@@ -23,6 +29,7 @@ function updateSettingsPage(){
 
     setActiveThemeButton();
     setActiveLanguageButton();
+    setActiveLayoutButton();
     setActiveFontSizeButton();
     setActiveDifficultyButton();
     setActiveCaretStyleButton();
@@ -39,6 +46,11 @@ function updateSettingsPage(){
 function setActiveThemeButton() {
     $(`.pageSettings .section.themes .theme`).removeClass('active');
     $(`.pageSettings .section.themes .theme[theme=${config.theme}]`).addClass('active');
+}
+
+function setActiveLayoutButton(){
+    $(`.pageSettings .section.layouts .layout`).removeClass('active');
+    $(`.pageSettings .section.layouts .layout[layout=${config.layout}]`).addClass('active');
 }
 
 function setActiveFontSizeButton() {
@@ -183,6 +195,16 @@ $(document).on("click",".pageSettings .section.languages .language", (e) => {
     showNotification('Language changed', 1000);
     restartTest();
     setActiveLanguageButton();
+})
+
+//layouts
+$(document).on("click",".pageSettings .section.layouts .layout", (e) => {
+    console.log("clicked")
+    let layout = $(e.currentTarget).attr('layout');
+    changeLayout(layout);
+    showNotification('Layout changed', 1000);
+    restartTest();
+    setActiveLayoutButton();
 })
 
 //fontsize
