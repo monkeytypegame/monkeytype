@@ -565,6 +565,8 @@ function showResult(difficultyFailed = false) {
     // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
   }
   
+  let pbVal = 0;
+
   if(difficultyFailed){
     showNotification("Test failed",3000);
   }else if(afkDetected){
@@ -597,6 +599,9 @@ function showResult(difficultyFailed = false) {
           if (data < stats.wpm) {
             hideCrown();
             showCrown();
+          }else{
+            wpmOverTimeChart.options.annotation.annotations[0].value = data;
+            wpmOverTimeChart.update();
           }
           completedEvent.uid = firebase.auth().currentUser.uid;
           try{
@@ -683,6 +688,8 @@ function showResult(difficultyFailed = false) {
 
   let mainColor = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ', '');
   let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ', '');
+  let bgColor = getComputedStyle(document.body).getPropertyValue('--bg-color').replace(' ', '');
+
 
   wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
   wpmOverTimeChart.options.scales.xAxes[0].scaleLabel.fontColor = subColor;
@@ -697,6 +704,11 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
   wpmOverTimeChart.data.datasets[1].borderColor = subColor;
   wpmOverTimeChart.data.datasets[1].data = rawHistory;
+
+  wpmOverTimeChart.options.annotation.annotations[0].borderColor = subColor;
+  wpmOverTimeChart.options.annotation.annotations[0].label.backgroundColor = subColor;
+  wpmOverTimeChart.options.annotation.annotations[0].label.fontColor = bgColor;
+  
 
 
   let maxVal = 0;
@@ -814,6 +826,8 @@ function restartTest() {
             $("#timer").css("transition", "1s linear");
           });
       }, 250);
+      wpmOverTimeChart.options.annotation.annotations[0].value = "-20";
+      wpmOverTimeChart.update();
 
 
       // let oldHeight = $("#words").height();
@@ -1535,7 +1549,9 @@ let wpmOverTimeChart = new Chart(ctx, {
         },
         ticks: {
           fontFamily: 'Roboto Mono',
-          beginAtZero: true
+          beginAtZero: true,
+          min: 0,
+          autoSkipPadding: 5
         },
         gridLines: {
           display:false
@@ -1551,7 +1567,8 @@ let wpmOverTimeChart = new Chart(ctx, {
         },
         ticks: {
           fontFamily: 'Roboto Mono',
-          beginAtZero: true
+          beginAtZero: true,
+          min: 0
         },
         gridLines: {
           display:false
@@ -1576,6 +1593,51 @@ let wpmOverTimeChart = new Chart(ctx, {
         }
       }
     ]
+    },
+    annotation: {
+      annotations: [{
+        enabled: false,
+        type: 'line',
+        mode: 'horizontal',
+        scaleID: 'wpm',
+        value: '-20',
+        borderColor: 'red',
+        borderWidth: 1,
+        borderDash: [2,2],
+        label: {
+          // Background color of label, default below
+          backgroundColor: 'blue',
+          fontFamily: "Roboto Mono",
+
+          // Font size of text, inherits from global
+          fontSize: 11,
+      
+          // Font style of text, default below
+          fontStyle: "normal",
+      
+          // Font color of text, default below
+          fontColor: "#fff",
+      
+          // Padding of label to add left/right, default below
+          xPadding: 6,
+      
+          // Padding of label to add top/bottom, default below
+          yPadding: 6,
+      
+          // Radius of label rectangle, default below
+          cornerRadius: 3,
+      
+          // Anchor position of label on line, can be one of: top, bottom, left, right, center. Default below.
+          position: "center",
+      
+          // Whether the label is enabled and should be displayed
+          enabled: true,
+      
+          // Text to display in label - default is null. Provide an array to display values on a new line
+          content: "PB",
+
+        },
+      }]
     }
   }
 });
