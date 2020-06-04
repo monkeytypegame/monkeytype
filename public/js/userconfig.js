@@ -300,7 +300,9 @@ function previewTheme(name) {
 function setTheme(name,nosave) {
     config.theme = name;
     $("#currentTheme").attr("href", `themes/${name}.css`);
-    updateFavicon(32,14);
+    setTimeout(() => {
+      updateFavicon(32,14);
+    }, 500);
     try{
         firebase.analytics().logEvent('changedTheme', {
             theme: name
