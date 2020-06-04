@@ -45,15 +45,35 @@ function showNotification(text, time) {
   });
 }
 
-function test() {
-  $("#resultScreenshot").removeClass("hidden");
-  html2canvas($("#resultScreenshot"), {
-    onclone: function(clonedDoc) {
-      clonedDoc.getElementById("resultScreenshot").style.display = "block";
-    }
-  }).then((canvas) => {
-    $("#resultScreenshot").removeClass("hidden");
-    document.body.appendChild(canvas);
+function copyResultToClipboard() {
+  let src = $('#middle');
+  var sourceX = src.position().left;/*X position from div#target*/
+  var sourceY = src.position().top;/*Y position from div#target*/
+  var sourceWidth = src.width();/*clientWidth/offsetWidth from div#target*/
+  var sourceHeight = src.height();/*clientHeight/offsetHeight from div#target*/
+
+  let bgColor = getComputedStyle(document.body).getPropertyValue('--bg-color').replace(' ', '');
+
+  html2canvas(document.body,{
+    backgroundColor: bgColor,
+    height: sourceHeight + 50,
+    width: sourceWidth + 50,
+    x: sourceX - 25,
+    y: sourceY - 25
+  }).then(function(canvas) {
+    // document.body.appendChild(canvas);
+    canvas.toBlob(function(blob) {
+      navigator.clipboard
+        .write([
+          new ClipboardItem(
+            Object.defineProperty({}, blob.type, {
+              value: blob,
+              enumerable: true
+            })
+          )
+        ])
+    });
+    showNotification('Copied to clipboard',1000);
   });
 }
 
@@ -551,6 +571,7 @@ function showResult(difficultyFailed = false) {
 
   setTimeout(function() {
     $("#showWordHistoryButton").removeClass('hidden').css('opacity',1);
+    $("#copyResultToClipboardButton").removeClass('hidden').css('opacity',1);
   }, 125);
   
 
@@ -800,6 +821,11 @@ function restartTest() {
       opacity: 0
     }, 125, ()=>{
       $("#showWordHistoryButton").addClass('hidden');
+    });
+    $("#copyResultToClipboardButton").stop(true,true).animate({
+      opacity: 0
+    }, 125, ()=>{
+      $("#copyResultToClipboardButton").addClass('hidden');
     });
   }
   resultVisible = false;
@@ -1204,6 +1230,10 @@ $(document).on("keypress", "#showWordHistoryButton", (event) => {
 
 $(document.body).on("click", "#showWordHistoryButton", (event) => {
   toggleResultWordsDisplay();
+});
+
+$(document.body).on("click", "#copyResultToClipboardButton", (event) => {
+  copyResultToClipboard();
 });
 
 $(document.body).on("click", ".version", (event) => {

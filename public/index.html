@@ -205,8 +205,9 @@
         <div id="words" class=""></div>
         <div id="liveWpm">123</div>
         <div class="buttons">
+          <div id="showWordHistoryButton" class="hidden" tabindex="0" onclick="this.blur();"><i class="fas fa-align-left"></i></div>
           <div id="restartTestButton" class="" tabindex="0" onclick="this.blur();"><i class="fas fa-redo-alt"></i></div>
-          <div id="showWordHistoryButton" class="hidden" tabindex="0" onclick="this.blur();"><i class="fas fa-bars"></i></div>
+          <div id="copyResultToClipboardButton" class="hidden" tabindex="0" onclick="this.blur();"><i class="far fa-image"></i></div>
         </div>
       </div>
       <div class="page pageAbout hidden">
@@ -615,6 +616,7 @@
 <script src="js/chart.js"></script>
 <script src="js/chartjs-plugin-trendline.js"></script>
 <script src="js/chartjs-plugin-annotation.js"></script>
+<script src="js/html2canvas.js"></script>
 <script src="js/words.js?v=3"></script>
 <script src="js/layouts.js?v=3"></script>
 <script src="js/db.js?v=3"></script>
