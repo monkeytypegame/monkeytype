@@ -466,15 +466,15 @@ function refreshAccountPage() {
 
 
       let tt = 0;
-      if(result.timeDuration == null){
-        //test finished before timeduration field was introduced - estimate
+      if(result.testDuration == undefined){
+        //test finished before testDuration field was introduced - estimate
         if(result.mode == "time"){
           tt = parseFloat(result.mode2);
         }else if(result.mode == "words"){
           tt = (parseFloat(result.mode2)/parseFloat(result.wpm)) * 60;
         }
       }else{
-        tt = parseFloat(result.timeDuration);
+        tt = parseFloat(result.testDuration);
       }
       if(result.restartCount != null){
         tt += (tt/4) * result.restartCount;
