@@ -12,7 +12,8 @@ function db_testCompleted(obj) {
         uid = user.uid;
     }
     try{
-    db.collection('results').add(obj);
+    db.collection(`users/${uid}/results`).add(obj);
+    // db.collection(`results`).add(obj);
     }catch(e){
         showNotification("Error saving result! Please contact Miodec on Discord.",5000);
     }
@@ -22,9 +23,18 @@ async function db_getUserResults() {
     let user = firebase.auth().currentUser;
     if (user == null) return false;
     let ret = [];
-    await db.collection('results')
+    // await db.collection('results')
+    //     .orderBy('timestamp', 'desc')
+    //     .where('uid', '==', user.uid)
+    //     .get()
+    //     .then(data => {
+    //         // console.log('getting data from db!');
+    //         data.docs.forEach(doc => {
+    //             ret.push(doc.data());
+    //         })
+    //     })
+    await db.collection(`users/${user.uid}/results/`)
         .orderBy('timestamp', 'desc')
-        .where('uid', '==', user.uid)
         .get()
         .then(data => {
             // console.log('getting data from db!');
@@ -80,21 +90,6 @@ function db_addEmailToQueue(type, body) {
     if (firebase.auth().currentUser != null) {
       from = firebase.auth().currentUser.email + ' (' + firebase.auth().currentUser.uid + ')';
     }
-  
-    // $.get("https://us-central1-monkey-type.cloudfunctions.net/sendEmailNotification",
-    //   {
-    //     subject: "New " + subject,
-    //     body: body
-    // })
-    //   .done(data => {
-    //     if (data == 'Email queued') {
-    //       showNotification("Message sent. Thanks!", 3000);
-    //     } else {
-    //       showNotification("Unknown error", 3000);
-    //     }
-    //   }).fail(error => {
-    //     showNotification("Unexpected error", 3000);
-    //   });
   
     db.collection('mail').add({
         to: "bartnikjack@gmail.com",

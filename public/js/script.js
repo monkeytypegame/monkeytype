@@ -1469,7 +1469,7 @@ if (window.location.hostname === "localhost") {
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
-
+  firebase.functions().useFunctionsEmulator("http://localhost:5001");
 }
 
 $(document).on('mouseenter','#words .word',e =>{
