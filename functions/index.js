@@ -1,11 +1,11 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-var serviceAccount = require("./serviceAccountKey.json");
+var serviceAccount = require("./serviceAccountKey_live.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://monkey-type-dev-67af4.firebaseio.com"
+  databaseURL: "https://monkey-type.firebaseio.com"
 });
 
 
