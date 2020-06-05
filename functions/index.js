@@ -19,10 +19,10 @@ admin.initializeApp({
 
 exports.moveResults = functions.https.onCall((request,response) => {
 
-    admin.firestore().collection('results').get().then(data => {
+    return admin.firestore().collection('results').get().then(data => {
         data.docs.forEach(doc => {
             let result = doc.data();
-            if(result.moved == undefined || result.moved == false){
+            if(result.moved === undefined || result.moved === false){
                 admin.firestore().collection(`results`).doc(doc.id).update({moved:true});
                 admin.firestore().collection(`users/${result.uid}/results`).add(result);
                 console.log(`moving doc ${doc.id}`);
@@ -30,6 +30,7 @@ exports.moveResults = functions.https.onCall((request,response) => {
                 console.log(`doc already moved`);
             }
         })
+        return
     })
 
 })
