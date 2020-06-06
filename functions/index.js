@@ -17,17 +17,15 @@ admin.initializeApp({
 // });
 
 
-exports.moveResults = functions.https.onCall((request,response) => {
+exports.moveResults = functions.runWith({timeoutSeconds:540,memory: '2GB'}).https.onCall((request,response) => {
 
-    return admin.firestore().collection('results').get().then(data => {
+    return admin.firestore().collection('results').orderBy('timestamp','desc').limit(1000).get().then(data => {
         data.docs.forEach(doc => {
             let result = doc.data();
             if(result.moved === undefined || result.moved === false){
                 admin.firestore().collection(`results`).doc(doc.id).update({moved:true});
                 admin.firestore().collection(`users/${result.uid}/results`).add(result);
                 console.log(`moving doc ${doc.id}`);
-            }else{
-                console.log(`doc already moved`);
             }
         })
         return
