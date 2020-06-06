@@ -19,7 +19,6 @@ let defaultConfig = {
     caretStyle: "default",
     flipTestColors: false,
     layout:"default",
-    highlightMode:false
     showDiscordDot: true
 }
 
@@ -56,29 +55,12 @@ function loadConfigFromCookie() {
         setDifficulty(newConfig.difficulty,true);
         setBlindMode(newConfig.blindMode,true);
         setQuickEnd(newConfig.quickEnd,true);
-        setHighlightMode(newConfig.highlightMode, true);
         setFlipTestColors(newConfig.flipTestColors,true);
         setDiscordDot(newConfig.hideDiscordDot,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
         }
         config = newConfig;
-    }
-    if(config.difficulty == undefined){
-        config.difficulty = "normal";
-        saveConfigToCookie();
-    }
-    if(config.blindMode == undefined){
-        config.blindMode = false;
-        saveConfigToCookie();
-    }
-    if(config.layout == undefined){
-        config.layout = "default";
-        saveConfigToCookie();
-    }
-    if (config.highlightMode == undefined){
-        config.highlightMode = false;
-        saveConfigToCookie();
     }
     Object.keys(defaultConfig).forEach(configKey => {
         if(config[configKey] == undefined){
@@ -168,23 +150,6 @@ function setQuickEnd(qe, nosave){
     }
     config.quickEnd = qe;
     if(!nosave) saveConfigToCookie();
-}
-
-function toggleHighlightMode(){
-    hm = !config.highlightMode;
-    if(hm == undefined){
-        hm = false;
-    }
-    config.highlightMode = hm;
-    saveConfigToCookie();
-}
-
-function setHighlightMode(hm, nosave){
-    if(hm == undefined){
-        hm = false;
-    }
-    config.highlightMode = hm;
-    saveConfigToCookie();
 }
 
 
