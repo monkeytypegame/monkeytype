@@ -20,6 +20,7 @@ let resultVisible = false;
 let activeWordTopBeforeJump = 0;
 let activeWordTop = 0;
 let activeWordJumped = false;
+let sameWordset = false;
 
 let accuracyStats = {
   correct: 0,
@@ -570,8 +571,7 @@ function showResult(difficultyFailed = false) {
   $("#result .stats .time .bottom").text(testtime+'s');
 
   setTimeout(function() {
-    $("#showWordHistoryButton").removeClass('hidden').css('opacity',1);
-    $("#copyResultToClipboardButton").removeClass('hidden').css('opacity',1);
+    $("#resultExtraButtons").removeClass('hidden').css('opacity',1);
   }, 125);
   
 
@@ -589,9 +589,11 @@ function showResult(difficultyFailed = false) {
   let pbVal = 0;
 
   if(difficultyFailed){
-    showNotification("Test failed",3000);
+    showNotification("Test failed",2000);
   }else if(afkDetected){
-    showNotification("Test invalid - AFK detected",3000);
+    showNotification("Test invalid - AFK detected",2000);
+  }else if(sameWordset){
+    showNotification("Test invalid - repeated",2000);
   }else{
     let completedEvent = {
       wpm: stats.wpm,
@@ -693,6 +695,9 @@ function showResult(difficultyFailed = false) {
   if(testInvalid){
     otherText += "<br>invalid"
   }
+  if(sameWordset){
+    otherText += "<br>repeated"
+  }
 
   if(otherText == ""){
     $("#result .stats .info").addClass('hidden');
@@ -784,7 +789,7 @@ function showResult(difficultyFailed = false) {
   });
 }
 
-function restartTest() {
+function restartTest(withSameWordset = false) {
   clearIntervals();
   time = 0;
   afkDetected = false;
@@ -817,15 +822,10 @@ function restartTest() {
     }, 125, ()=>{
       $("#wordsTitle").slideUp(0);
     });
-    $("#showWordHistoryButton").stop(true,true).animate({
+    $("#resultExtraButtons").stop(true,true).animate({
       opacity: 0
     }, 125, ()=>{
-      $("#showWordHistoryButton").addClass('hidden');
-    });
-    $("#copyResultToClipboardButton").stop(true,true).animate({
-      opacity: 0
-    }, 125, ()=>{
-      $("#copyResultToClipboardButton").addClass('hidden');
+      $("#resultExtraButtons").addClass('hidden');
     });
   }
   resultVisible = false;
@@ -833,7 +833,21 @@ function restartTest() {
   el.stop(true, true).animate({
     opacity: 0
   }, 125, () => {
-    initWords();
+    if(!withSameWordset){
+      sameWordset = false;
+      initWords();
+    }else{
+      sameWordset = true;
+      testActive = false;
+      currentWordIndex = 0;
+      accuracyStats = {
+        correct: 0,
+        incorrect: 0
+      }
+      inputHistory = [];
+      currentInput = "";
+      showWords();
+    }
     $("#result").addClass('hidden');
     $("#words").css('opacity', 0).removeClass('hidden').stop(true, true).animate({
       opacity: 1
@@ -1231,6 +1245,20 @@ $(document).on("keypress", "#showWordHistoryButton", (event) => {
 $(document.body).on("click", "#showWordHistoryButton", (event) => {
   toggleResultWordsDisplay();
 });
+
+
+
+$(document.body).on("click", "#restartTestButtonWithSameWordset", (event) => {
+  restartTest(true);
+});
+
+$(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
+  if (event.keyCode == 32 || event.keyCode == 13) {
+    restartTest(true);
+  }
+});
+
+
 
 $(document.body).on("click", "#copyResultToClipboardButton", (event) => {
   copyResultToClipboard();
