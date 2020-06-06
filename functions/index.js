@@ -113,11 +113,11 @@ exports.changeName = functions.https.onCall((request,response) => {
 
 exports.checkIfNeedsToChangeName = functions.https.onCall((request,response) => {
     try{
-        console.log(`checking if user ${request.uid} needs to change name`);
         return admin.auth().getUser(request.uid).then(requestUser => {
 
             if(!isUsernameValid(requestUser.displayName)){
                 //invalid name, needs to change
+                console.log(`user ${requestUser.uid} ${requestUser.displayName} needs to change name`);
                 return 1;
             }else{
                 //valid name, but need to change if not duplicate
@@ -152,6 +152,7 @@ exports.checkIfNeedsToChangeName = functions.https.onCall((request,response) => 
                         })
 
                         if((new Date(requestUser.metadata.creationTime).getTime() / 1000) > earliestTimestamp){
+                            console.log(`user ${requestUser.uid} ${requestUser.displayName} needs to change name`);
                             return 2;
                         }else{
                             return 0;
