@@ -1,4 +1,4 @@
-let config = {
+let defaultConfig = {
     theme: 'serika_dark',
     showKeyTips: true,
     showLiveWpm: false,
@@ -18,8 +18,11 @@ let config = {
     quickEnd: false,
     caretStyle: "default",
     flipTestColors: false,
-    layout:"default"
+    layout:"default",
+    showDiscordDot: true
 }
+
+let config = defaultConfig;
 
 //cookies
 function saveConfigToCookie() {
@@ -53,23 +56,18 @@ function loadConfigFromCookie() {
         setBlindMode(newConfig.blindMode,true);
         setQuickEnd(newConfig.quickEnd,true);
         setFlipTestColors(newConfig.flipTestColors,true);
+        setDiscordDot(newConfig.hideDiscordDot,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
         }
         config = newConfig;
     }
-    if(config.difficulty == undefined){
-        config.difficulty = "normal";
-        saveConfigToCookie();
-    }
-    if(config.blindMode == undefined){
-        config.blindMode = false;
-        saveConfigToCookie();
-    }
-    if(config.layout == undefined){
-        config.layout = "default";
-        saveConfigToCookie();
-    }
+    Object.keys(defaultConfig).forEach(configKey => {
+        if(config[configKey] == undefined){
+            config[configKey] = defaultConfig[configKey];
+        }
+    })
+    saveConfigToCookie();
 }
 
 function showTestConfig() {
@@ -87,6 +85,34 @@ function setDifficulty(diff, nosave){
     }
     config.difficulty = diff;
     restartTest();
+    if(!nosave) saveConfigToCookie();
+}
+
+//blind mode
+function toggleDiscordDot(){
+    dot = !config.showDiscordDot;
+    if(dot == undefined){
+        dot = false;
+    }
+    config.showDiscordDot = dot;
+    if(!dot){
+        $("#menu .discord").addClass('dotHidden');
+    }else{
+        $("#menu .discord").removeClass('dotHidden');
+    }
+    saveConfigToCookie();
+}
+
+function setDiscordDot(dot, nosave){
+    if(dot == undefined){
+        dot = false;
+    }
+    config.showDiscordDot = dot;
+    if(!dot){
+        $("#menu .discord").addClass('dotHidden');
+    }else{
+        $("#menu .discord").removeClass('dotHidden');
+    }
     if(!nosave) saveConfigToCookie();
 }
 
