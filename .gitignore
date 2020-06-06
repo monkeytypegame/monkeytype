@@ -70,3 +70,5 @@ node_modules/
 #css
 public/css/style.css
 public/css/style.css.map
+functions/serviceAccountKey.json
+functions/serviceAccountKey_live.json

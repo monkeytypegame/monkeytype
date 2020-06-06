@@ -26,6 +26,7 @@ function updateSettingsPage(){
     setSettingsButton('quickEnd', config.quickEnd);
     setSettingsButton('flipTestColors', config.flipTestColors);
     setSettingsButton('highlightMode', config.highlightMode);
+    setSettingsButton('discordDot', config.showDiscordDot);
 
 
     setActiveThemeButton();
@@ -171,6 +172,16 @@ $(".pageSettings .section.keyTips .buttons .button.off").click(e => {
     } else {
         $(".pageSettings .tip").addClass('hidden');
     }
+})
+
+//keytips
+$(".pageSettings .section.discordDot .buttons .button.on").click(e => {
+    setDiscordDot(true);
+    setSettingsButton('discordDot', config.showDiscordDot);
+})
+$(".pageSettings .section.discordDot .buttons .button.off").click(e => {
+    setDiscordDot(false);
+    setSettingsButton('discordDot', config.showDiscordDot);
 })
 
 //themes

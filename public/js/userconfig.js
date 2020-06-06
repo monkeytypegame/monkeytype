@@ -1,4 +1,4 @@
-let config = {
+let defaultConfig = {
     theme: 'serika_dark',
     showKeyTips: true,
     showLiveWpm: false,
@@ -20,7 +20,10 @@ let config = {
     flipTestColors: false,
     layout:"default",
     highlightMode:false
+    showDiscordDot: true
 }
+
+let config = defaultConfig;
 
 //cookies
 function saveConfigToCookie() {
@@ -55,6 +58,7 @@ function loadConfigFromCookie() {
         setQuickEnd(newConfig.quickEnd,true);
         setHighlightMode(newConfig.highlightMode, true);
         setFlipTestColors(newConfig.flipTestColors,true);
+        setDiscordDot(newConfig.hideDiscordDot,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
         }
@@ -76,6 +80,12 @@ function loadConfigFromCookie() {
         config.highlightMode = false;
         saveConfigToCookie();
     }
+    Object.keys(defaultConfig).forEach(configKey => {
+        if(config[configKey] == undefined){
+            config[configKey] = defaultConfig[configKey];
+        }
+    })
+    saveConfigToCookie();
 }
 
 function showTestConfig() {
@@ -93,6 +103,34 @@ function setDifficulty(diff, nosave){
     }
     config.difficulty = diff;
     restartTest();
+    if(!nosave) saveConfigToCookie();
+}
+
+//blind mode
+function toggleDiscordDot(){
+    dot = !config.showDiscordDot;
+    if(dot == undefined){
+        dot = false;
+    }
+    config.showDiscordDot = dot;
+    if(!dot){
+        $("#menu .discord").addClass('dotHidden');
+    }else{
+        $("#menu .discord").removeClass('dotHidden');
+    }
+    saveConfigToCookie();
+}
+
+function setDiscordDot(dot, nosave){
+    if(dot == undefined){
+        dot = false;
+    }
+    config.showDiscordDot = dot;
+    if(!dot){
+        $("#menu .discord").addClass('dotHidden');
+    }else{
+        $("#menu .discord").removeClass('dotHidden');
+    }
     if(!nosave) saveConfigToCookie();
 }
 

@@ -388,6 +388,10 @@ a:hover {
         right: .25rem;
         border: 2px solid var(--bg-color);
       }
+      &.dotHidden::after{
+        background: transparent;
+        border-color: transparent;
+      }
     }
     &:focus{
       background: var(--sub-color);
@@ -778,11 +782,17 @@ key {
   }
 }
 
-#restartTestButton, #showWordHistoryButton, #copyResultToClipboardButton {
-  position: relative;
+.pageTest #resultExtraButtons{
   opacity: 0;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1rem;
+}
+
+#restartTestButton, #showWordHistoryButton, #copyResultToClipboardButton, #restartTestButtonWithSameWordset { 
+  position: relative;
   border-radius: var(--roundness);
-  padding: 1rem 5rem;
+  padding: 1rem 2rem;
   width: min-content;
   width: -moz-min-content;
   color: var(--sub-color);

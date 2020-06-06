@@ -6,13 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monkey Type</title>
   <link rel="stylesheet" href="css/fa.css">
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="css/style.css?v=4">
   <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme">
-  <link id="favicon" rel="shortcut icon" href="favicon.png">
-  <link rel="shortcut icon" href="favicon.png">
+  <link id="favicon" rel="shortcut icon" href="fav.png">
+  <link rel="shortcut icon" href="fav.png">
+  <meta name="name" content="Monkey Type">
+  <meta name="image" content="https://monkey-type.com/mtsocial_large.png">
   <meta name="description" content="A super customisable, minimalistic typing test.">
-  <meta name="keywords" content="typing, test, typing-test, typing test, monkey-type, monkey, type, miodec, wpm">
+  <meta name="keywords" content="typing, test, typing-test, typing test, monkey-type, monkeytype, monkey, type, miodec, wpm">
   <meta name="author" content="Miodec">
+  <meta property="og:title" content="Monkey Type">
+  <meta property="og:url" content="https://monkey-type.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:description" content="A super customisable, minimalistic typing test.">
+  <meta property="og:image" content="https://monkey-type.com/mtsocial_large.png">
+  <meta name="theme-color" content="#e2b714">
 </head>
 <body>
   <div class="notification">Signed in</div>
@@ -205,9 +213,12 @@
         <div id="words" class=""></div>
         <div id="liveWpm">123</div>
         <div class="buttons">
-          <div id="restartTestButton" class="" tabindex="0" onclick="this.blur();"><i class="fas fa-redo-alt"></i></div>
-          <div id="showWordHistoryButton" class="hidden" tabindex="0" onclick="this.blur();"><i class="fas fa-align-left"></i></div>
-          <div id="copyResultToClipboardButton" class="hidden" tabindex="0" onclick="this.blur();"><i class="far fa-image"></i></div>
+          <div id="restartTestButton" class="" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-redo-alt"></i></div>
+          <div id="resultExtraButtons" class="hidden">
+            <div id="restartTestButtonWithSameWordset" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-sync-alt"></i></div>
+            <div id="showWordHistoryButton" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-align-left"></i></div>
+            <div id="copyResultToClipboardButton" tabindex="0" onclick="this.blur();"><i class="far fa-fw fa-image"></i></div>
+          </div>
         </div>
       </div>
       <div class="page pageAbout hidden">
@@ -392,6 +403,14 @@
             <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
           </div>
         </div>
+        <div class="section discordDot">
+          <h1>discord dot</h1>
+          <div class="text">Shows the notification dot on the Discord icon.</div>
+          <div class="buttons">
+            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
+            <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
+          </div>
+        </div>
 
 
       </div>
@@ -420,6 +439,9 @@
       <div class="page pageAccount hidden">
         <div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>
         <div class="content hidden">
+          <div style="margin: 2rem 0">
+            Hey, im currently moving to a new database design. You might not see your previous data for now, but don't worry - its all safe and will be moved over soon.
+          </div>
           <div class="group filterButtons">
             <div class="buttonsAndTitle">
               <div class="title">filters</div>
@@ -614,6 +636,7 @@
 <script src="/__/firebase/7.14.3/firebase-analytics.js"></script>
 <script src="/__/firebase/7.14.3/firebase-auth.js"></script>
 <script src="/__/firebase/7.14.2/firebase-firestore.js"></script>
+<script src="/__/firebase/7.14.2/firebase-functions.js"></script>
 
 
 <!-- Initialize Firebase -->
@@ -627,14 +650,14 @@
 <script src="js/chartjs-plugin-trendline.js"></script>
 <script src="js/chartjs-plugin-annotation.js"></script>
 <script src="js/html2canvas.js"></script>
-<script src="js/words.js?v=3"></script>
-<script src="js/layouts.js?v=3"></script>
-<script src="js/db.js?v=3"></script>
-<script src="js/userconfig.js?v=3"></script>
-<script src="js/commandline.js?v=3"></script>
-<script src="js/settings.js?v=3"></script>
-<script src="js/account.js?v=3"></script>
-<script src="js/script.js?v=3"></script>
+<script src="js/words.js?v=5"></script>
+<script src="js/layouts.js?v=5"></script>
+<script src="js/db.js?v=6"></script>
+<script src="js/userconfig.js?v=5"></script>
+<script src="js/commandline.js?v=5"></script>
+<script src="js/settings.js?v=5"></script>
+<script src="js/account.js?v=5"></script>
+<script src="js/script.js?v=5"></script>
 
 
 </html>
