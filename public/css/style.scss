@@ -421,9 +421,10 @@ a:hover {
 }
 
 #menu .button .text {
-  width: 0;
-  overflow: hidden;
-  /*   transition: .25s; */
+  font-size: .65rem;
+  line-height: .65rem;
+  align-self: center;
+  margin-left: .25rem;
 }
 
 /* #menu .button:hover .text{

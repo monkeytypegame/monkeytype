@@ -49,56 +49,61 @@ function signIn() {
 
 function signUp() {
   $(".pageLogin .preloader").removeClass('hidden');
-  let name = $(".pageLogin .register input")[0].value;
+  let nname = $(".pageLogin .register input")[0].value;
   let email = $(".pageLogin .register input")[1].value;
   let password = $(".pageLogin .register input")[2].value;
   let passwordVerify = $(".pageLogin .register input")[3].value;
 
-  if (name == "") {
-    showNotification("Name is required", 3000);
-    $(".pageLogin .preloader").addClass('hidden');
-    return;
-  }
+  const namecheck = firebase.functions().httpsCallable('checkNameAvailability')
 
-  if (password != passwordVerify) {
-    showNotification("Passwords do not match", 3000);
-    $(".pageLogin .preloader").addClass('hidden');
-    return;
-  }
-
-  firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
-    // Account has been created here.
-    let usr = user.user;
-    usr.updateProfile({
-      displayName: name
-    }).then(function() {
-      // Update successful.
-      showNotification("Account created", 2000);
-      try{
-        firebase.analytics().logEvent("accountCreated", usr.uid);
-      }catch(e){
-        console.log("Analytics unavailable");
-      }
+  namecheck({name:nname}).then(d => {
+    if(d.data === 0){
+      showNotification("Name unavailable", 3000);
       $(".pageLogin .preloader").addClass('hidden');
-      changePage('account');
-    }).catch(function(error) {
-      // An error happened.
-      usr.delete().then(function() {
-        // User deleted.
-        showNotification("Name invalid", 2000);
-         $(".pageLogin .preloader").addClass('hidden');
+      return;
+    }else if(d.data === 1){
+      if (password != passwordVerify) {
+        showNotification("Passwords do not match", 3000);
+        $(".pageLogin .preloader").addClass('hidden');
+        return;
+      }
+      firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
+        // Account has been created here.
+        let usr = user.user;
+        usr.updateProfile({
+          displayName: name
+        }).then(function() {
+          // Update successful.
+          showNotification("Account created", 2000);
+          try{
+            firebase.analytics().logEvent("accountCreated", usr.uid);
+          }catch(e){
+            console.log("Analytics unavailable");
+          }
+          $(".pageLogin .preloader").addClass('hidden');
+          changePage('account');
+        }).catch(function(error) {
+          // An error happened.
+          usr.delete().then(function() {
+            // User deleted.
+            showNotification("Name invalid", 2000);
+            $(".pageLogin .preloader").addClass('hidden');
+          }).catch(function(error) {
+            // An error happened.
+            $(".pageLogin .preloader").addClass('hidden');
+          });
+        });
       }).catch(function(error) {
-        // An error happened.
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        showNotification(errorMessage, 5000);
         $(".pageLogin .preloader").addClass('hidden');
       });
-    });
-  }).catch(function(error) {
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    showNotification(errorMessage, 5000);
-    $(".pageLogin .preloader").addClass('hidden');
-  });
+
+    }
+  })
+
 
 
 }
@@ -127,6 +132,8 @@ firebase.auth().onAuthStateChanged(function(user) {
     showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass('hidden');
     updateAccountLoginButton();
+    verifyUsername();
+    $("#menu .button.account .text").text(displayName);
   }
 });
 
