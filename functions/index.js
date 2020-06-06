@@ -49,7 +49,7 @@ function getAllUsers(){
 }
 
 function isUsernameValid(name){
-    if(name == null || name == undefined) return false;
+    if(name === null || name === undefined || name === "") return false;
     if(/miodec/.test(name)) return false;
     if(name.length > 12) return false;
     return /^[0-9a-zA-Z_.-]+$/.test(name);
@@ -62,7 +62,7 @@ exports.checkNameAvailability = functions.https.onCall((request,response) => {
             let available = 1;
             data.forEach(name =>{
                 try{
-                    if(name.toLowerCase() == request.name.toLowerCase()) available = 0;
+                    if(name.toLowerCase() === request.name.toLowerCase()) available = 0;
                 }catch(e){
                     //
                 }
@@ -84,7 +84,7 @@ exports.changeName = functions.https.onCall((request,response) => {
             let available = 1;
             data.forEach(name =>{
                 try{
-                    if(name.toLowerCase() == request.name.toLowerCase()) available = 0;
+                    if(name.toLowerCase() === request.name.toLowerCase()) available = 0;
                 }catch(e){
                     //
                 }
@@ -128,9 +128,9 @@ exports.checkIfNeedsToChangeName = functions.https.onCall((request,response) => 
 
                     //look for name names
                     users.forEach(user => {
-                        if (user.uid != requestUser.uid){
+                        if (user.uid !== requestUser.uid){
                             try{
-                                if(user.displayName.toLowerCase() == requestUser.displayName.toLowerCase()){
+                                if(user.displayName.toLowerCase() === requestUser.displayName.toLowerCase()){
                                     sameName.push(user);
                                 }
                             }catch(e){
@@ -139,7 +139,7 @@ exports.checkIfNeedsToChangeName = functions.https.onCall((request,response) => 
                         }
                     })
 
-                    if(sameName.length == 0){
+                    if(sameName.length === 0){
                         return 0
                     }else{
                         //check when the request user made the account compared to others
