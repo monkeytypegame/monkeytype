@@ -18,7 +18,8 @@ let config = {
     quickEnd: false,
     caretStyle: "default",
     flipTestColors: false,
-    layout:"default"
+    layout:"default",
+    highlightMode:false
 }
 
 //cookies
@@ -52,6 +53,7 @@ function loadConfigFromCookie() {
         setDifficulty(newConfig.difficulty,true);
         setBlindMode(newConfig.blindMode,true);
         setQuickEnd(newConfig.quickEnd,true);
+        setHighlightMode(newConfig.highlightMode, true);
         setFlipTestColors(newConfig.flipTestColors,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
@@ -68,6 +70,10 @@ function loadConfigFromCookie() {
     }
     if(config.layout == undefined){
         config.layout = "default";
+        saveConfigToCookie();
+    }
+    if (config.highlightMode == undefined){
+        config.highlightMode = false;
         saveConfigToCookie();
     }
 }
@@ -124,6 +130,23 @@ function setQuickEnd(qe, nosave){
     }
     config.quickEnd = qe;
     if(!nosave) saveConfigToCookie();
+}
+
+function toggleHighlightMode(){
+    hm = !config.highlightMode;
+    if(hm == undefined){
+        hm = false;
+    }
+    config.highlightMode = hm;
+    saveConfigToCookie();
+}
+
+function setHighlightMode(hm, nosave){
+    if(hm == undefined){
+        hm = false;
+    }
+    config.highlightMode = hm;
+    saveConfigToCookie();
 }
 
 

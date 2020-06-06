@@ -297,10 +297,39 @@ function updateActiveElement() {
   activeWordTop = $("#words .word.active").position().top;
 }
 
-function compareInput(wrdIndex,input,showError) {
+function highlightWord(wrdIndex, input, showError){
   $($('#words .word')[wrdIndex]).empty();
+  let currentWord = wordsList[wrdIndex];
+  let ret = "";
+  for (let i = 0; i < currentWord.length; i++) {
+    ret += '<letter class="correct">' + currentWord[i] + "</letter>";
+  }
+  $($('#words .word')[wrdIndex]).html(ret);
+  if ((currentWord == input || (config.quickEnd && currentWord.length == input.length)) && wrdIndex == wordsList.length - 1) {
+    inputHistory.push(input);
+    currentInput = "";
+    if(!resultVisible) showResult();
+  }
+}
+
+function compareInput(wrdIndex,input,showError) {
   let ret = "";
   let currentWord = wordsList[wrdIndex];
+  if (config.highlightMode){
+    for (let i = 0; i < input.length; i++) {
+      if (currentWord[i] != input[i]){
+        if(config.difficulty == "master"){
+          if(!resultVisible) showResult(true);
+          restartCount++;
+        }
+        if (showError)
+          highlightBadWord(wrdIndex, showError);
+      }
+    }
+    return;
+  }
+  $($('#words .word')[wrdIndex]).empty();
+  
   for (let i = 0; i < input.length; i++) {
     if (currentWord[i] == input[i]) {
       ret += '<letter class="correct">' + currentWord[i] + "</letter>";
@@ -854,7 +883,8 @@ function restartTest() {
       }, 250);
       wpmOverTimeChart.options.annotation.annotations[0].value = "-20";
       wpmOverTimeChart.update();
-
+      if (config.highlightMode)
+        highlightWord(currentWordIndex, currentInput, config.showError);
 
       // let oldHeight = $("#words").height();
       // let newHeight = $("#words")
@@ -1251,7 +1281,8 @@ $("#wordsInput").keypress((event) => {
 });
 
 $("#wordsInput").on("focus", (event) => {
-  showCaret();
+  if (!config.highlightMode)
+    showCaret();
 });
 
 $("#wordsInput").on("focusout", (event) => {
@@ -1399,6 +1430,8 @@ $(document).keydown((event) => {
       if (currentInput == "") return;
       event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
+      if (config.highlightMode)
+        highlightWord(currentWordIndex+1, currentInput, config.showError);
       if (config.mode == "time") {
         let currentTop = $($("#words .word")[currentWordIndex]).position().top;
         let nextTop = $($("#words .word")[currentWordIndex + 1]).position().top;

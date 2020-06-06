@@ -72,6 +72,16 @@ let commands = {
             }
         },
         {
+            id: "toggleHighlightMode",
+            display: "Toggle word highlight mode",
+            exec: () => {
+                hideCaret();
+                highlightWord(currentWordIndex,currentInput,config.showError);
+                restartTest();
+                toggleHighlightMode();
+            }
+        },
+        {
             id: "toggleFlipTestColors",
             display: "Toggle flip test colors",
             exec: () => {

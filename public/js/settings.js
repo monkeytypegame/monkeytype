@@ -25,6 +25,7 @@ function updateSettingsPage(){
     setSettingsButton('blindMode', config.blindMode);
     setSettingsButton('quickEnd', config.quickEnd);
     setSettingsButton('flipTestColors', config.flipTestColors);
+    setSettingsButton('highlightMode', config.highlightMode);
 
 
     setActiveThemeButton();
@@ -254,6 +255,18 @@ $(".pageSettings .section.quickEnd .buttons .button.off").click(e => {
     showNotification('Quick end off', 1000);
     setSettingsButton('quickEnd', config.quickEnd);
 })
+
+$(".pageSettings .section.highlightMode .buttons .button.on").click(e => {
+    setHighlightMode(true);
+    showNotification('Quick end on', 1000);
+    setSettingsButton('highlightMode', config.highlightMode);
+})
+$(".pageSettings .section.highlightMode .buttons .button.off").click(e => {
+    setHighlightMode(false);
+    showNotification('Quick end off', 1000);
+    setSettingsButton('highlightMode', config.highlightMode);
+})
+
 
 //flip test
 $(".pageSettings .section.flipTestColors .buttons .button.on").click(e => {
