@@ -1603,14 +1603,19 @@ let wpmOverTimeChart = new Chart(ctx, {
         var index = context.dataIndex;
         var value = context.dataset.data[index];
         return value.y <= 0 ? 0 : 3
-      }
+      },
+      pointHoverRadius: function(context) {
+        var index = context.dataIndex;
+        var value = context.dataset.data[index];
+        return value.y <= 0 ? 0 : 5
+      },
     }],
   },
   options: {
     tooltips: {
       titleFontFamily: "Roboto Mono",
       bodyFontFamily: "Roboto Mono",
-      mode: 'x',
+      mode: 'index',
       intersect: false
     },
     legend: {
@@ -1621,15 +1626,17 @@ let wpmOverTimeChart = new Chart(ctx, {
     },
     responsive: true,
     maintainAspectRatio: false,
-    hover: {
-      mode: 'x',
-      intersect: false
-    },
+    // hover: {
+    //   mode: 'x',
+    //   intersect: false
+    // },
     scales: {
 
       xAxes: [{
         ticks: {
-          fontFamily: "Roboto Mono"
+          fontFamily: "Roboto Mono",
+          autoSkip: true,
+          autoSkipPadding: 20
         },
         display: true,
         scaleLabel: {
@@ -1650,7 +1657,8 @@ let wpmOverTimeChart = new Chart(ctx, {
           fontFamily: 'Roboto Mono',
           beginAtZero: true,
           min: 0,
-          autoSkipPadding: 5
+          autoSkip: true,
+          autoSkipPadding: 20
         },
         gridLines: {
           display:false
@@ -1667,7 +1675,9 @@ let wpmOverTimeChart = new Chart(ctx, {
         ticks: {
           fontFamily: 'Roboto Mono',
           beginAtZero: true,
-          min: 0
+          min: 0,
+          autoSkip: true,
+          autoSkipPadding: 20
         },
         gridLines: {
           display:false
@@ -1685,7 +1695,9 @@ let wpmOverTimeChart = new Chart(ctx, {
         ticks: {
           precision:0,
           fontFamily: 'Roboto Mono',
-          beginAtZero: true
+          beginAtZero: true,
+          autoSkip: true,
+          autoSkipPadding: 20
         },
         gridLines: {
           display:true
