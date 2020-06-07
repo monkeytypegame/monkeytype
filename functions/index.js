@@ -1,7 +1,13 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-var serviceAccount = require("./serviceAccountKey_live.json");
+let key = "./serviceAccountKey.json";
+
+if(process.env.GCLOUD_PROJECT == "monkey-type"){
+    key = "./serviceAccountKey_live.json"
+}
+
+var serviceAccount = require(key);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -171,6 +177,14 @@ exports.checkIfNeedsToChangeName = functions.https.onCall((request,response) => 
     }
 
 })
+
+function checkIfPB(uid,obj){
+    return admin.firestore().collection(`users/${uid}/pbs`).get().then(data => {
+        data.docs.forEach(doc => {
+            doc.data()
+        })
+    })
+}
 
 exports.testCompleted = functions.https.onCall((request,response) => {
     try{
