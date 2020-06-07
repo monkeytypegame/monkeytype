@@ -29,6 +29,8 @@ let accuracyStats = {
 
 let customText = "The quick brown fox jumps over the lazy dog";
 
+const testCompleted = firebase.functions().httpsCallable('testCompleted');
+
 function showNotification(text, time) {
   let noti = $(".notification");
   noti.text(text);
@@ -667,14 +669,21 @@ function showResult(difficultyFailed = false) {
             wpmOverTimeChart.options.annotation.annotations[0].value = data;
             wpmOverTimeChart.update();
           }
+          
           completedEvent.uid = firebase.auth().currentUser.uid;
-          try{
-            firebase.analytics().logEvent('testCompleted', completedEvent);
-          }catch(e){
-            console.log("Analytics unavailable");
-          }
-          db_testCompleted(completedEvent);
-          dbSnapshot.unshift(completedEvent);
+          testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
+            if(e.data !== 1){
+              showNotification('Could not save result',3000);
+            }else if(e.data === 1){
+              dbSnapshot.unshift(completedEvent);
+              try{
+                firebase.analytics().logEvent('testCompleted', completedEvent);
+              }catch(e){
+                console.log("Analytics unavailable");
+              }
+            }
+          })
+
         });
         $("#result .loginTip").addClass('hidden');
       } else {

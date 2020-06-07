@@ -171,3 +171,35 @@ exports.checkIfNeedsToChangeName = functions.https.onCall((request,response) => 
     }
 
 })
+
+exports.testCompleted = functions.https.onCall((request,response) => {
+    if(request.uid === undefined || request.obj === undefined) return -1;
+    try{
+
+        let obj = request.obj;
+
+        let err = false;
+        Object.keys(obj).forEach(key => {
+            let val = obj[key];
+            if(val === undefined || !/^[0-9a-zA-Z._]+$/.test(val)) err = true;
+        })
+        if (err){
+            console.error(`error saving result for ${request.uid} - bad input`);
+            return -1;
+        }
+
+        if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100){
+            return -1;
+        }
+
+        return admin.firestore().collection(`users/${request.uid}/results`).add(obj).then(e => {
+            return 1;
+        }).catch(e => {
+            console.error(`error saving result for ${request.uid} - ${e}`);
+            return -1;
+        });
+    }catch(e){
+        console.error(`error saving result for ${request.uid} - ${e}`);
+        return -1;
+    }
+})

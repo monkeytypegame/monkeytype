@@ -2,22 +2,6 @@ const db = firebase.firestore();
 
 let dbSnapshot = null;
 
-function db_testCompleted(obj) {
-
-    if (obj.wpm == 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) return false;
-
-    let uid = "";
-    let user = firebase.auth().currentUser;
-    if (user) {
-        uid = user.uid;
-    }
-    try{
-    db.collection(`users/${uid}/results`).add(obj);
-    // db.collection(`results`).add(obj);
-    }catch(e){
-        showNotification("Error saving result! Please contact Miodec on Discord.",5000);
-    }
-}
 
 async function db_getUserResults() {
     let user = firebase.auth().currentUser;
