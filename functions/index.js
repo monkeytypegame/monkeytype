@@ -173,11 +173,11 @@ exports.checkIfNeedsToChangeName = functions.https.onCall((request,response) => 
 })
 
 exports.testCompleted = functions.https.onCall((request,response) => {
-    if(request.uid === undefined || request.obj === undefined){
-        console.error(`error saving result for ${request.uid} - missing input`);
-        return -1;
-    }
     try{
+        if(request.uid === undefined || request.obj === undefined){
+            console.error(`error saving result for ${request.uid} - missing input`);
+            return -1;
+        }
 
         let obj = request.obj;
 
