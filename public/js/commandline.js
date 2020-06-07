@@ -165,48 +165,9 @@ let commands = {
             exec: () => {
                 window.open("https://discord.gg/yENzqcB")
             }
-        },
-        {
-            id: "sendDevMessage",
-            display: "Send a message ( bug report / feature request / feedback )...",
-            subgroup: true,
-            exec: () => {
-                currentCommands.push(commandsSendDevMessage);
-                showCommandLine();
-            }
         }
     ]
 };
-
-let commandsSendDevMessage = {
-    title: "Send a message...",
-    list: [
-        {
-            id: "sendBugReport",
-            display: "Bug report",
-            input: true,
-            exec: (txt) => {
-                db_addEmailToQueue('bug', txt);
-            }
-        },
-        {
-            id: "sendFeatureRequest",
-            display: "Feature request",
-            input: true,
-            exec: (txt) => {
-                db_addEmailToQueue('feature', txt);
-            }
-        },
-        {
-            id: "sendFeedback",
-            display: "Other feedback",
-            input: true,
-            exec: (txt) => {
-                db_addEmailToQueue('feedback', txt);
-            }
-        }
-    ]
-}
 
 let commandsDifficulty = {
     title: "Change difficulty...",

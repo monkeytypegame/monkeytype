@@ -71,36 +71,3 @@ async function db_getUserHighestWpm(mode, mode2, punctuation, language, difficul
     return retval;
 
 }
-
-function db_addEmailToQueue(type, body) {
-
-    let from = 'Annonymous';
-    let subject = '';
-    if (type == 'bug') {
-        subject = 'New Bug Report';
-    } else if (type == 'feature') {
-        subject = 'New Feature Request';
-    } else if (type == 'feedback') {
-        subject = 'New Feedback';
-    } else {
-        showNotification('Error: Unsupported type',3000);
-        return;
-    }
-  
-    if (firebase.auth().currentUser != null) {
-      from = firebase.auth().currentUser.email + ' (' + firebase.auth().currentUser.uid + ')';
-    }
-  
-    db.collection('mail').add({
-        to: "bartnikjack@gmail.com",
-        message: {
-            subject: subject,
-            html: body.replace(/\r\n|\r|\n/g,"<br>") + "<br><br>From: " + from,
-        }
-    }).then(() => {
-        showNotification('Email sent',3000);
-    }).catch((e) => {
-        showNotification('Error while sending email: ' + e,5000);
-    });
-  
-  }
