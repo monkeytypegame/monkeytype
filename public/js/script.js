@@ -580,7 +580,7 @@ function hideCrown() {
 }
 
 function showCrown() {
-  $("#result .stats .wpm .crownWrapper").delay(275).animate({
+  $("#result .stats .wpm .crownWrapper").animate({
     opacity: 1
   }, 250,"easeOutCubic");
 }
@@ -660,31 +660,42 @@ function showResult(difficultyFailed = false) {
     }
     if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
       if (firebase.auth().currentUser != null) {
-        db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language, config.difficulty).then(data => {
-          // console.log(`highest wpm for this mode is ${data}, current is ${stats.wpm}`);
-          if (data < stats.wpm) {
-            hideCrown();
-            showCrown();
-          }else{
-            wpmOverTimeChart.options.annotation.annotations[0].value = data;
-            wpmOverTimeChart.update();
-          }
-          
-          completedEvent.uid = firebase.auth().currentUser.uid;
-          testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
-            if(e.data !== 1){
-              showNotification('Could not save result',3000);
-            }else if(e.data === 1){
-              dbSnapshot.unshift(completedEvent);
-              try{
-                firebase.analytics().logEvent('testCompleted', completedEvent);
-              }catch(e){
-                console.log("Analytics unavailable");
-              }
+        completedEvent.uid = firebase.auth().currentUser.uid;
+        // db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language, config.difficulty).then(data => {
+        //   if(data < stats.wpm){
+        //     hideCrown();
+        //     showCrown();
+        //   }else{
+        //     wpmOverTimeChart.options.annotation.annotations[0].value = data;
+        //     wpmOverTimeChart.update();
+        //   }
+        // })
+        testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
+          showNotification('done');
+          if(e.data === -1){
+            showNotification('Could not save result',3000);
+          }else if(e.data === 1 || e.data === 2){
+            dbSnapshot.unshift(completedEvent);
+            try{
+              firebase.analytics().logEvent('testCompleted', completedEvent);
+            }catch(e){
+              console.log("Analytics unavailable");
             }
-          })
 
-        });
+            
+
+            if(e.data === 2){
+              //new pb
+              showNotification('pb',1000);
+              hideCrown();
+              showCrown();
+            }else{
+              showNotification('nooooo pb',1000);
+            }
+
+          }
+        })
+
         $("#result .loginTip").addClass('hidden');
       } else {
         try{
