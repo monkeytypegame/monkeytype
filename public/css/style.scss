@@ -46,6 +46,7 @@ html { overflow-y: scroll; }
 ::-webkit-scrollbar-thumb {
   background: var(--sub-color);
   transition: .25s;
+  border-radius: 2px !important;
 }
 
 /* Handle on hover */
