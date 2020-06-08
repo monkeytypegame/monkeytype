@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 
 let key = "./serviceAccountKey.json";
 
-if(process.env.GCLOUD_PROJECT == "monkey-type"){
+if(process.env.GCLOUD_PROJECT === "monkey-type"){
     key = "./serviceAccountKey_live.json"
 }
 
@@ -222,9 +222,9 @@ function checkIfPB(uid,obj){
         let found = false;
         try{
             pbs[obj.mode][obj.mode2].forEach(pb => {
-                if( pb.punctuation == obj.punctuation &&
-                    pb.difficulty == obj.difficulty &&
-                    pb.language == obj.language){
+                if( pb.punctuation === obj.punctuation &&
+                    pb.difficulty === obj.difficulty &&
+                    pb.language === obj.language){
                         //entry like this already exists, compare wpm
                         found = true;
                         if(pb.wpm < obj.wpm){
