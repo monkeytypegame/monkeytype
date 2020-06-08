@@ -219,7 +219,7 @@
         </div>
         <input id="wordsInput" class="" tabindex="0" autocomplete="off"></input>
         <div id="wordsTitle">input history</div>
-        <div id="words" class=""></div>
+        <div id="words" class="extraColor"></div>
         <div id="liveWpm">123</div>
         <div class="buttons">
           <div id="restartTestButton" class="" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-redo-alt"></i></div>
@@ -354,6 +354,16 @@
           <h1>flip test colors</h1>
           <div class="text">By default, typed text is brighter than the future text. When enabled, the colors will be flipped
             and the future test will be brighter than the already typed text.
+          </div>
+          <div class="buttons">
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
+            <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+          </div>
+        </div>
+        <div class="section extraTestColor">
+          <h1>extra test color</h1>
+          <div class="text">
+            When enabled, the test words will be using the main color, instead of the text color.
           </div>
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">on</div>

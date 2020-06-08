@@ -805,6 +805,23 @@ key {
   }
 }
 
+#words.extraColor{
+  .word{
+    & letter.correct{
+      color: var(--main-color);
+    }
+  }
+}
+
+#words.flipped.extraColor{
+  .word{
+    color: var(--main-color);
+    & letter.correct{
+      color: var(--sub-color);
+    }
+  }
+}
+
 .pageTest #resultExtraButtons{
   opacity: 0;
   display: grid;

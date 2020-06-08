@@ -26,6 +26,8 @@ function updateSettingsPage(){
     setSettingsButton('quickEnd', config.quickEnd);
     setSettingsButton('flipTestColors', config.flipTestColors);
     setSettingsButton('discordDot', config.showDiscordDot);
+    setSettingsButton('extraTestColor', config.extraTestColor);
+
 
     setActiveThemeButton();
     setActiveLanguageButton();
@@ -275,4 +277,16 @@ $(".pageSettings .section.flipTestColors .buttons .button.off").click(e => {
     setFlipTestColors(false);
     showNotification('Flip test colors off', 1000);
     setSettingsButton('flipTestColors', config.flipTestColors);
+})
+
+//extra color
+$(".pageSettings .section.extraTestColor .buttons .button.on").click(e => {
+    setExtraTestColor(true);
+    showNotification('Extra test color on', 1000);
+    setSettingsButton('extraTestColor', config.extraTestColor);
+})
+$(".pageSettings .section.extraTestColor .buttons .button.off").click(e => {
+    setExtraTestColor(false);
+    showNotification('Extra test color off', 1000);
+    setSettingsButton('extraTestColor', config.extraTestColor);
 })

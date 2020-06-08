@@ -1235,6 +1235,14 @@ function flipTestColors(tf){
   }
 }
 
+function applyExtraTestColor(tc){
+  if(tc){
+    $("#words").addClass('extraColor');
+  }else{
+    $("#words").removeClass('extraColor');
+  }
+}
+
 
 $(document).on("click", "#top .logo", (e) => {
   changePage('test');

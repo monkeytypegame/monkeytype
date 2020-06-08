@@ -57,6 +57,7 @@ function loadConfigFromCookie() {
         setQuickEnd(newConfig.quickEnd,true);
         setFlipTestColors(newConfig.flipTestColors,true);
         setDiscordDot(newConfig.hideDiscordDot,true);
+        setExtraTestColor(newConfig.extraTestColor,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
         }
@@ -166,6 +167,22 @@ function setFlipTestColors(flip,nosave){
 function toggleFlipTestColors(){
     config.flipTestColors = !config.flipTestColors;
     flipTestColors(config.flipTestColors);
+    saveConfigToCookie();
+}
+
+//extra color
+function setExtraTestColor(extra,nosave){
+    if(extra == undefined){
+        extra = false;
+    }
+    config.extraTestColor = extra;
+    applyExtraTestColor(extra);
+    if(!nosave) saveConfigToCookie();
+}
+
+function toggleExtraTestColor(){
+    config.extraTestColor = !config.extraTestColor;
+    applyExtraTestColor(config.extraTestColor);
     saveConfigToCookie();
 }
 

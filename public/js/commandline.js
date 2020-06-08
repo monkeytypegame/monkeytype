@@ -79,6 +79,13 @@ let commands = {
             }
         },
         {
+            id: "toggleExtraTestColor",
+            display: "Toggle extra test color",
+            exec: () => {
+                toggleExtraTestColor();
+            }
+        },
+        {
             id: "changeDifficulty",
             display: "Change difficulty...",
             subgroup: true,
