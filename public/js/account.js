@@ -40,7 +40,7 @@ function signIn() {
   let password = $(".pageLogin .login input")[1].value;
 
   firebase.auth().signInWithEmailAndPassword(email, password).then(e => {
-    changePage('account');
+    changePage('test');
   }).catch(function(error) {
     showNotification(error.message, 5000);
     $(".pageLogin .preloader").addClass('hidden');
