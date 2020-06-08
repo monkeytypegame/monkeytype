@@ -123,10 +123,10 @@ firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
     updateAccountLoginButton();
-    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
+    accountIconLoading(true);
     db_getUserSnapshot().then(e => {
       console.log('DB snapshot ready');
-      $("#top #menu .account .icon").html('<i class="fas fa-fw fa-user"></i>');
+      accountIconLoading(false);
     });
     var displayName = user.displayName;
     var email = user.email;

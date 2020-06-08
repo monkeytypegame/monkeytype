@@ -680,9 +680,9 @@ function showResult(difficultyFailed = false) {
             localPb = true;
           }
         })
-
+        accountIconLoading(true);
         testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
-          // showNotification('done');
+          accountIconLoading(false);
           if(e.data === -1){
             showNotification('Could not save result',3000);
           }else if(e.data === 1 || e.data === 2){
@@ -1170,6 +1170,16 @@ function updateAccountLoginButton() {
     // $("#menu .button.login").removeClass('hidden');
     // $("#menu .button.account").addClass('hidden');
   }
+}
+
+function accountIconLoading(truefalse) {
+
+  if(truefalse){
+    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
+  }else{
+    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-user"></i>');
+  }
+
 }
 
 function toggleResultWordsDisplay(){
