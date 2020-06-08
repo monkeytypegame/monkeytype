@@ -130,7 +130,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     var isAnonymous = user.isAnonymous;
     var uid = user.uid;
     var providerData = user.providerData;
-    showNotification('Signed in', 1000);
+    // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass('hidden');
     updateAccountLoginButton();
     verifyUsername();
