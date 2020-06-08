@@ -56,7 +56,9 @@
     animation-timing-function: linear;
 }
 
-#top.focus .button.discord::after{
+#top.focus .button.discord::after,
+#top .button.discord.dotHidden::after
+{
     animation-name: none !important;
 }
 
