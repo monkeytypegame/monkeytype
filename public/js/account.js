@@ -122,7 +122,12 @@ function signOut() {
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
-    db_getUserSnapshot();
+    updateAccountLoginButton();
+    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
+    db_getUserSnapshot().then(e => {
+      console.log('DB snapshot ready');
+      $("#top #menu .account .icon").html('<i class="fas fa-fw fa-user"></i>');
+    });
     var displayName = user.displayName;
     var email = user.email;
     var emailVerified = user.emailVerified;
@@ -132,7 +137,6 @@ firebase.auth().onAuthStateChanged(function(user) {
     var providerData = user.providerData;
     // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass('hidden');
-    updateAccountLoginButton();
     verifyUsername();
     $("#menu .button.account .text").text(displayName);
   }
