@@ -964,20 +964,30 @@ key {
     gap: .5rem;
     width: 100%;
     .button{
-      border-radius: var(--roundness);
-      background: var(--sub-color);
-      color: var(--bg-color);
-      padding: .5rem;
-      font-size: 1rem;
-      line-height: 1rem;
-      text-align: center;
+      color: var(--text-color);
       cursor: pointer;
       transition: .25s;
-      &:hover{
-        background: var(--main-color);
-      }
-      .fas{
+      padding: .2rem .5rem;
+      border-radius: var(--roundness);
+
+      background: rgba(0,0,0,.1);
+      text-align: center;
+      -webkit-user-select: none;
+      // display: grid;
+      align-content: center;
+      height: min-content;
+      height: -moz-min-content;
+      i{
         margin-right: .5rem;
+      }
+      &.active{
+        background: var(--main-color);
+        color: var(--bg-color);
+      }
+      &:hover,&:focus{
+        color: var(--bg-color);
+        background: var(--main-color);
+        outline: none;
       }
     }
   }
