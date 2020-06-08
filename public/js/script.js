@@ -669,18 +669,17 @@ function showResult(difficultyFailed = false) {
     if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
-        // db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language, config.difficulty).then(data => {
-        //   if(data < stats.wpm){
-        //     hideCrown();
-        //     showCrown();
-        //   }else{
-        //     wpmOverTimeChart.options.annotation.annotations[0].value = data;
-        //     wpmOverTimeChart.update();
-        //   }
-        // })
 
         //check local pb
-
+        let localPb = false;
+        db_getLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(d => {
+          if(d < stats.wpm){
+            //new pb based on local
+            hideCrown();
+            showCrown();
+            localPb = true;
+          }
+        })
 
         testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
           // showNotification('done');
@@ -693,20 +692,16 @@ function showResult(difficultyFailed = false) {
             }catch(e){
               console.log("Analytics unavailable");
             }
-
-            
-
             if(e.data === 2){
               //new pb
-              // showNotification('pb',1000);
-              hideCrown();
-              showCrown();
-
-              //save to local pb
-
-
+              if(!localPb){
+                  showNotification('Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.',15000);
+              }
+              db_saveLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty,stats.wpm);
             }else{
-              // showNotification('nooooo pb',1000);
+              if(localPb){
+                showNotification('Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.',15000);
+              }
             }
 
           }

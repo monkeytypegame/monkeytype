@@ -35,7 +35,11 @@ async function db_getUserSnapshot() {
     .get()
     .then(data => {
         // console.log('getting data from db!');
-        snap.personalBests = data.data().personalBests;
+        try{
+            snap.personalBests = data.data().personalBests;
+        }catch(e){
+            //
+        }
     })
     dbSnapshot = snap;
     return dbSnapshot;
@@ -65,4 +69,79 @@ async function db_getUserHighestWpm(mode, mode2, punctuation, language, difficul
     }
     return retval;
 
+}
+
+async function db_getLocalPB(mode, mode2, punctuation, language, difficulty){
+    
+    function cont() {   
+        let ret = 0;
+        try{
+            dbSnapshot.personalBests[mode][mode2].forEach(pb => {
+                if( pb.punctuation == punctuation &&
+                    pb.difficulty == difficulty &&
+                    pb.language == language){
+                        ret = pb.wpm;
+                    }
+            })
+            return ret;
+        }catch(e){
+            return ret;
+        }
+        
+    }
+
+    let retval;
+    if (dbSnapshot == null) {
+        // await db_getUserResults().then(data => {
+        //     retval = cont();
+        // });
+    } else {
+        retval = cont();
+    }
+    return retval;
+
+}
+
+async function db_saveLocalPB(mode, mode2, punctuation, language, difficulty, wpm){
+    
+    function cont() {   
+        try{
+            let found = false;
+            dbSnapshot.personalBests[mode][mode2].forEach(pb => {
+                if( pb.punctuation == punctuation &&
+                    pb.difficulty == difficulty &&
+                    pb.language == language){
+                        found = true;
+                        pb.wpm = wpm;
+                    }
+            })
+            if(!found){
+                //nothing found
+                dbSnapshot.personalBests[mode][mode2].push({
+                    language: language,
+                    difficulty: difficulty,
+                    punctuation: punctuation,
+                    wpm: wpm
+                })
+            }
+        }catch(e){
+            //that mode or mode2 is not found
+            dbSnapshot.personalBests[mode] = {};
+            dbSnapshot.personalBests[mode][mode2] = [{
+                language: language,
+                difficulty: difficulty,
+                punctuation: punctuation,
+                wpm: wpm
+            }]; 
+        }
+    }
+
+    let retval;
+    if (dbSnapshot == null) {
+        // await db_getUserResults().then(data => {
+        //     retval = cont();
+        // });
+    } else {
+        cont();
+    }
 }
