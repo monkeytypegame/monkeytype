@@ -675,7 +675,7 @@ function showResult(difficultyFailed = false) {
           if(e.data === -1){
             showNotification('Could not save result',3000);
           }else if(e.data === 1 || e.data === 2){
-            dbSnapshot.unshift(completedEvent);
+            dbSnapshot.results.unshift(completedEvent);
             try{
               firebase.analytics().logEvent('testCompleted', completedEvent);
             }catch(e){

@@ -470,7 +470,7 @@ function refreshAccountPage() {
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    dbSnapshot.forEach(result => {
+    dbSnapshot.results.forEach(result => {
 
 
       let tt = 0;
@@ -683,7 +683,7 @@ function refreshAccountPage() {
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
 
-  if (dbSnapshot == null) {
+  if (dbSnapshot.length == 0) {
     // console.log('no db snap');
     // db_getUserResults().then(data => {
     //   if(!data) return;

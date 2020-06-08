@@ -6,7 +6,10 @@ let dbSnapshot = [];
 async function db_getUserSnapshot() {
     let user = firebase.auth().currentUser;
     if (user == null) return false;
-    let ret = [];
+    let snap = {
+        results: [],
+        personalBests: {}
+    };
     // await db.collection('results')
     //     .orderBy('timestamp', 'desc')
     //     .where('uid', '==', user.uid)
@@ -18,16 +21,24 @@ async function db_getUserSnapshot() {
     //         })
     //     })
     await db.collection(`users/${user.uid}/results/`)
-        .orderBy('timestamp', 'desc')
-        .get()
-        .then(data => {
-            // console.log('getting data from db!');
-            data.docs.forEach(doc => {
-                ret.push(doc.data());
-            })
+    .orderBy('timestamp', 'desc')
+    .get()
+    .then(data => {
+        // console.log('getting data from db!');
+        data.docs.forEach(doc => {
+            let result = doc.data();
+            result.id = doc.id;
+            snap.results.push(result);
         })
-    dbSnapshot = ret;
-    return ret;
+    })
+    await db.collection('users').doc(user.uid)
+    .get()
+    .then(data => {
+        // console.log('getting data from db!');
+        snap.personalBests = data.data().personalBests;
+    })
+    dbSnapshot = snap;
+    return dbSnapshot;
 }
 
 async function db_getUserHighestWpm(mode, mode2, punctuation, language, difficulty) {
