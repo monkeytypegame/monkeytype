@@ -122,6 +122,7 @@ function signOut() {
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
+    db_getUserSnapshot();
     var displayName = user.displayName;
     var email = user.email;
     var emailVerified = user.emailVerified;
@@ -684,11 +685,11 @@ function refreshAccountPage() {
 
   if (dbSnapshot == null) {
     // console.log('no db snap');
-    db_getUserResults().then(data => {
-      if(!data) return;
-      dbSnapshot = data;
-      cont();
-    })
+    // db_getUserResults().then(data => {
+    //   if(!data) return;
+    //   dbSnapshot = data;
+    //   cont();
+    // })
   } else {
     // console.log('using db snap');
     cont();

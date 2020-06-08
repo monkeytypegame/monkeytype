@@ -1,9 +1,9 @@
 const db = firebase.firestore();
 
-let dbSnapshot = null;
+let dbSnapshot = [];
 
 
-async function db_getUserResults() {
+async function db_getUserSnapshot() {
     let user = firebase.auth().currentUser;
     if (user == null) return false;
     let ret = [];
@@ -46,9 +46,9 @@ async function db_getUserHighestWpm(mode, mode2, punctuation, language, difficul
 
     let retval;
     if (dbSnapshot == null) {
-        await db_getUserResults().then(data => {
-            retval = cont();
-        });
+        // await db_getUserResults().then(data => {
+        //     retval = cont();
+        // });
     } else {
         retval = cont();
     }
