@@ -32,6 +32,27 @@ body {
 
 html { overflow-y: scroll; }
 
+/* width */
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--sub-color);
+  transition: .25s;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--main-color);
+}
+
 a {
   color: var(--sub-color);
   transition: 0.25s;
