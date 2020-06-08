@@ -1,6 +1,6 @@
 const db = firebase.firestore();
 
-let dbSnapshot = [];
+let dbSnapshot = null;
 
 
 async function db_getUserSnapshot() {

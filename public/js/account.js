@@ -689,7 +689,7 @@ function refreshAccountPage() {
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
 
-  if (dbSnapshot.length == 0) {
+  if (dbSnapshot === null) {
     // console.log('no db snap');
     // db_getUserResults().then(data => {
     //   if(!data) return;
