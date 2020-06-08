@@ -179,10 +179,93 @@ exports.checkIfNeedsToChangeName = functions.https.onCall((request,response) => 
 })
 
 function checkIfPB(uid,obj){
-    return admin.firestore().collection(`users/${uid}/pbs`).get().then(data => {
-        data.docs.forEach(doc => {
-            doc.data()
-        })
+    return admin.firestore().collection(`users`).doc(uid).get().then(data => {
+        let pbs = null;
+        try{
+            pbs = data.data().personalBests;
+        }catch(e){
+            return admin.firestore().collection('users').doc(uid).update({
+                personalBests: {
+                    [obj.mode]: {
+                        [obj.mode2]: [{
+                            language: obj.language,
+                            difficulty: obj.difficulty,
+                            punctuation: obj.punctuation,
+                            wpm: obj.wpm
+                        }]
+                    }
+                }
+            }).then(e => {
+                return true;
+            }).catch(e => {
+                return admin.firestore().collection('users').doc(uid).set({
+                    personalBests: {
+                        [obj.mode]: {
+                            [obj.mode2]: [{
+                                language: obj.language,
+                                difficulty: obj.difficulty,
+                                punctuation: obj.punctuation,
+                                wpm: obj.wpm
+                            }]
+                        }
+                    }
+                }).then(e => {
+                    return true;
+                })
+            })
+                
+            
+        }
+        // //check mode, mode2, punctuation, language and difficulty
+
+        let toUpdate = false;
+        let found = false;
+        try{
+            pbs[obj.mode][obj.mode2].forEach(pb => {
+                if( pb.punctuation == obj.punctuation &&
+                    pb.difficulty == obj.difficulty &&
+                    pb.language == obj.language){
+                        //entry like this already exists, compare wpm
+                        found = true;
+                        if(pb.wpm < obj.wpm){
+                            //new pb
+                            pb.wpm = obj.wpm;
+                            toUpdate = true;
+                        }else{
+                            //no pb
+                            return false;
+                        }
+                    }
+            })
+            //checked all pbs, nothing found - meaning this is a new pb
+            if(!found){
+                pbs[obj.mode][obj.mode2].push({
+                    language: obj.language,
+                    difficulty: obj.difficulty,
+                    punctuation: obj.punctuation,
+                    wpm: obj.wpm
+                })
+                toUpdate = true;
+            }
+        }catch(e){
+            // console.log(e);
+            pbs[obj.mode] = {};
+            pbs[obj.mode][obj.mode2] = [{
+                language: obj.language,
+                difficulty: obj.difficulty,
+                punctuation: obj.punctuation,
+                wpm: obj.wpm
+            }]; 
+            toUpdate = true;
+        }
+
+        if(toUpdate){
+            return admin.firestore().collection('users').doc(uid).update({personalBests: pbs}).then(e => {
+                return true;
+            });
+        }else{
+            return false;
+        }
     })
 }
 
@@ -210,7 +293,14 @@ exports.testCompleted = functions.https.onCall((request,response) => {
         }
 
         return admin.firestore().collection(`users/${request.uid}/results`).add(obj).then(e => {
-            return 1;
+            // return 1;
+            return checkIfPB(request.uid,request.obj).then(e => {
+                if(e){
+                    return 2;
+                }else{
+                    return 1;
+                }
+            });
         }).catch(e => {
             console.error(`error saving result for ${request.uid} - ${e}`);
             return -1;
