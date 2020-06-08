@@ -1193,7 +1193,8 @@ function accountIconLoading(truefalse) {
 
 function toggleResultWordsDisplay(){
   if(resultVisible){
-    if($("#words").hasClass('hidden')){
+    if($("#words").stop(true,true).hasClass('hidden')){
+      console.log('showing');
       //show 
       $("#wordsTitle").css('opacity',1).removeClass('hidden').slideDown(250);
 
@@ -1209,6 +1210,7 @@ function toggleResultWordsDisplay(){
       }, 250);
     }else{
       //hide
+      console.log('hiding');
 
       $("#wordsTitle").slideUp(250);
 
