@@ -9,6 +9,7 @@ let testStart, testEnd;
 let wpmHistory = [];
 let rawHistory = [];
 let restartCount = 0;
+let incompleteTestSeconds = 0;
 let currentTestLine = 0;
 let pageTransition = false;
 let keypressPerSecond = [];
@@ -657,6 +658,7 @@ function showResult(difficultyFailed = false) {
     };
     if(config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)){
       restartCount = 0;
+      incompleteTestSeconds = 0;
     }
     if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
       if (firebase.auth().currentUser != null) {
@@ -670,8 +672,12 @@ function showResult(difficultyFailed = false) {
         //     wpmOverTimeChart.update();
         //   }
         // })
+
+        //check local pb
+
+
         testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
-          showNotification('done');
+          // showNotification('done');
           if(e.data === -1){
             showNotification('Could not save result',3000);
           }else if(e.data === 1 || e.data === 2){
@@ -686,11 +692,15 @@ function showResult(difficultyFailed = false) {
 
             if(e.data === 2){
               //new pb
-              showNotification('pb',1000);
+              // showNotification('pb',1000);
               hideCrown();
               showCrown();
+
+              //save to local pb
+
+
             }else{
-              showNotification('nooooo pb',1000);
+              // showNotification('nooooo pb',1000);
             }
 
           }
@@ -992,6 +1002,7 @@ function changePage(page) {
     showTestConfig();
     hideSignOutButton();
     restartCount = 0;
+    incompleteTestSeconds = 0;
     restartTest();
   } else if (page == "about") {
     pageTransition = true;
@@ -1296,9 +1307,6 @@ $(document.body).on("click", "#restartTestButton", (event) => {
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
   if (event.keyCode == 32 || event.keyCode == 13) {
-    if (testActive) {
-      restartCount++;
-    }
     toggleResultWordsDisplay();
   }
 });
