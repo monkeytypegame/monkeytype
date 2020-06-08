@@ -484,7 +484,9 @@ function refreshAccountPage() {
       }else{
         tt = parseFloat(result.testDuration);
       }
-      if(result.restartCount != null){
+      if(result.incompleteTestSeconds != undefined){
+        tt += result.incompleteTestSeconds;
+      }else if(result.restartCount != undefined && result.restartCount > 0){
         tt += (tt/4) * result.restartCount;
       }
       totalSeconds += tt;

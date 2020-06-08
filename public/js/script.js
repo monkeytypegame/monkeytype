@@ -353,6 +353,9 @@ function compareInput(wrdIndex,input,showError) {
     } else {
       if(config.difficulty == "master"){
         if(!resultVisible) showResult(true);
+        let testNow = Date.now();
+        let testSeconds = roundTo2((testNow - testStart) / 1000);
+        incompleteTestSeconds += testSeconds;
         restartCount++;
       }
       if(!showError){
@@ -651,12 +654,15 @@ function showResult(difficultyFailed = false) {
       timestamp: Date.now(),
       language: config.language,
       restartCount: restartCount,
+      incompleteTestSeconds: incompleteTestSeconds,
       difficulty: config.difficulty,
       testDuration: testtime,
       blindMode: config.blindMode,
       theme: config.theme
     };
     if(config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)){
+      // console.log(incompleteTestSeconds);
+      // console.log(restartCount);
       restartCount = 0;
       incompleteTestSeconds = 0;
     }
@@ -1295,6 +1301,9 @@ $(window).on('popstate', (e) => {
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 32 || event.keyCode == 13) {
     if (testActive) {
+      let testNow = Date.now();
+      let testSeconds = roundTo2((testNow - testStart) / 1000);
+      incompleteTestSeconds += testSeconds;
       restartCount++;
     }
     restartTest();
@@ -1448,6 +1457,9 @@ $(document).keydown((event) => {
     if (config.quickTab && $(".pageTest").hasClass("active")) {
       event.preventDefault();
       if (testActive) {
+        let testNow = Date.now();
+        let testSeconds = roundTo2((testNow - testStart) / 1000);
+        incompleteTestSeconds += testSeconds;
         restartCount++;
       }
       restartTest();
@@ -1539,6 +1551,9 @@ $(document).keydown((event) => {
           return;
         }else if(config.difficulty == "expert" || config.difficulty == "master"){
           showResult(true);
+          let testNow = Date.now();
+          let testSeconds = roundTo2((testNow - testStart) / 1000);
+          incompleteTestSeconds += testSeconds;
           restartCount++;
           return;
         }
@@ -1664,7 +1679,7 @@ let wpmOverTimeChart = new Chart(ctx, {
         ticks: {
           fontFamily: "Roboto Mono",
           autoSkip: true,
-          autoSkipPadding: 20
+          autoSkipPadding: 40
         },
         display: true,
         scaleLabel: {
@@ -1686,7 +1701,7 @@ let wpmOverTimeChart = new Chart(ctx, {
           beginAtZero: true,
           min: 0,
           autoSkip: true,
-          autoSkipPadding: 20
+          autoSkipPadding: 40
         },
         gridLines: {
           display:false
@@ -1705,7 +1720,7 @@ let wpmOverTimeChart = new Chart(ctx, {
           beginAtZero: true,
           min: 0,
           autoSkip: true,
-          autoSkipPadding: 20
+          autoSkipPadding: 40
         },
         gridLines: {
           display:false
@@ -1725,7 +1740,7 @@ let wpmOverTimeChart = new Chart(ctx, {
           fontFamily: 'Roboto Mono',
           beginAtZero: true,
           autoSkip: true,
-          autoSkipPadding: 20
+          autoSkipPadding: 40
         },
         gridLines: {
           display:true
