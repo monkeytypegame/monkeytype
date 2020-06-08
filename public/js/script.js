@@ -678,16 +678,15 @@ function showResult(difficultyFailed = false) {
             if(d < stats.wpm && stats.wpm < d2){
               dontShowCrown = true;
             }
-          })
-          if(d < stats.wpm){
-            //new pb based on local
-            if(!dontShowCrown){
-              hideCrown();
-              showCrown();
+            if(d < stats.wpm){
+              //new pb based on local
+              if(!dontShowCrown){
+                hideCrown();
+                showCrown();
+              }
+              localPb = true;
             }
-            localPb = true;
-          }
-          
+          })
         })
         
         accountIconLoading(true);
