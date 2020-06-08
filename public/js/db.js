@@ -49,7 +49,7 @@ async function db_getUserHighestWpm(mode, mode2, punctuation, language, difficul
 
     function cont() {   
         let topWpm = 0;
-        dbSnapshot.forEach(result => {
+        dbSnapshot.results.forEach(result => {
             if (result.mode == mode && result.mode2 == mode2 && result.punctuation == punctuation && result.language == language && result.difficulty == difficulty) {
                 if (result.wpm > topWpm) {
                     topWpm = result.wpm;

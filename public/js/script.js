@@ -672,14 +672,24 @@ function showResult(difficultyFailed = false) {
 
         //check local pb
         let localPb = false;
+        let dontShowCrown = false;
         db_getLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(d => {
+          db_getUserHighestWpm(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(d2 => {
+            if(d < stats.wpm && stats.wpm < d2){
+              dontShowCrown = true;
+            }
+          })
           if(d < stats.wpm){
             //new pb based on local
-            hideCrown();
-            showCrown();
+            if(!dontShowCrown){
+              hideCrown();
+              showCrown();
+            }
             localPb = true;
           }
+          
         })
+        
         accountIconLoading(true);
         testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
           accountIconLoading(false);
