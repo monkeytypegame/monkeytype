@@ -7,6 +7,8 @@
   --text-color: #ebe6ea;
   --error-color: #921341;
   --error-extra-color: #640b2c; 
+  --extra-error-color: #921341;
+  --extra-error-extra-color: #640b2c; 
 }
 
 /* .word.error{

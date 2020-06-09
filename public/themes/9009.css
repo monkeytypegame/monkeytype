@@ -5,7 +5,9 @@
   --sub-color: #99947f;
   --text-color: #080909;
   --error-color: #c87e74;
-  --extra-error-color: #a56961; 
+  --extra-error-color: #a56961;
+  --extra-error-color: #c87e74;
+  --extra-error-extra-color: #a56961; 
 }
 
 .word letter.incorrect{

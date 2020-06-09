@@ -3,9 +3,11 @@
     --main-color: #a5a096;
     --caret-color: #a5a096;
     --sub-color: #5d6263;
-    --text-color: #e7e3db;
+    --text-color: #f7f5f1;
     --error-color: #dd452e;
     --error-extra-color: #9e3423;
+    --extra-error-color: #dd452e;
+    --extra-error-extra-color: #9e3423;
 }
 
 #menu .button:nth-child(1){

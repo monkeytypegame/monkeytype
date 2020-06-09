@@ -810,6 +810,12 @@ key {
     & letter.correct{
       color: var(--main-color);
     }
+    & letter.incorrect{
+      color: var(--extra-error-color);
+    }
+    & letter.incorrect.extra{
+      color: var(--extra-error-extra-color);
+    }
   }
 }
 
@@ -819,7 +825,19 @@ key {
     & letter.correct{
       color: var(--sub-color);
     }
+    & letter.incorrect{
+      color: var(--extra-error-color);
+    }
+    & letter.incorrect.extra{
+      color: var(--extra-error-extra-color);
+    }
   }
+}
+
+#words.flipped.extraColor .word.error,
+#words.extraColor .word.error
+{
+  border-bottom: 2px solid var(--extra-error-color);
 }
 
 .pageTest #resultExtraButtons{

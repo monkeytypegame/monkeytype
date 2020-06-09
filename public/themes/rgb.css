@@ -5,7 +5,9 @@
     --sub-color: #444;
     --text-color: #eee;
     --error-color: #eee;
-    --error-extra-color: rgb(179, 179, 179);
+    --error-extra-color: #b3b3b3;
+    --extra-error-color: #eee;
+    --extra-error-extra-color: #b3b3b3;
 }
 
 @keyframes rgb{
