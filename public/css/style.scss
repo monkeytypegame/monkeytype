@@ -14,7 +14,7 @@ input{
   border: none;
   border-radius: var(--roundness);
   background: rgba(0,0,0,.1);
-  color: var(--main-color);
+  color: var(--text-color);
   padding: .5rem;
   font-size: 1rem;
   line-height: 1rem;
@@ -120,6 +120,7 @@ a:hover {
         }
         .body{
           grid-area: body;
+          color: var(--text-color);
         }
         &:last-child{
           margin-bottom: 2rem;
@@ -985,14 +986,63 @@ key {
 
 .pageLogin{
   display: flex;
-  grid-auto-flow: column;
-  gap: 1rem;
+  grid-auto-flow: column;  gap: 1rem;
   justify-content: space-around;
   align-items: center;
   .side{
     display: grid;
     gap: .5rem;
     justify-content: center;
+    &.login{
+      grid-template-areas: "title forgotButton"
+                              "form form";
+      .title{
+        grid-area: title;
+      }
+      #forgotPasswordButton{
+        grid-area: forgotButton;
+        font-size: .5rem;
+        line-height: .5rem;
+        height: fit-content;
+        align-self: center;
+        justify-self: right;
+        padding: .25rem 0;
+        color: var(--sub-color);
+        cursor: pointer;
+        transition: .25s;
+        &:hover{
+          color: var(--main-color);
+        }
+      }
+      form{
+        grid-area: form;
+        #rememberMe{
+          color: var(--sub-color);
+          -moz-user-select: none;
+          user-select: none;
+          cursor: pointer;
+          input{
+            margin: 0 !important;
+            cursor: pointer;
+            width: 0;
+            height: 0;
+            & ~ .customCheckbox{
+              width: 12px;
+              height: 12px;
+              background: rgba(0,0,0,.1);
+              border-radius: 2px;
+              box-shadow: 0 0 0 4px rgba(0,0,0,.1);
+              display: inline-block;
+              margin: 0 .5rem 0 .25rem;
+              transition: .25s;
+            }
+            &:checked ~ .customCheckbox{
+              background: var(--main-color);
+            }
+          }
+        }
+      }
+    }
   }
   form{
     display: grid;

@@ -26,6 +26,20 @@ $(".pageAccount .loadMoreButton").click(e => {
   loadMoreLines();
 })
 
+$(".pageLogin #forgotPasswordButton").click(e => {
+  let email = prompt("Email address");
+  if(email){
+    firebase.auth().sendPasswordResetEmail(email).then(function() {
+      // Email sent.
+      showNotification("Email sent",2000);
+    }).catch(function(error) {
+      // An error happened.
+      showNotification(error.message,5000);
+    });
+  }
+})
+
+
 function showSignOutButton() {
   $(".signOut").removeClass('hidden').css("opacity",1);
 }
@@ -39,12 +53,29 @@ function signIn() {
   let email = $(".pageLogin .login input")[0].value;
   let password = $(".pageLogin .login input")[1].value;
 
-  firebase.auth().signInWithEmailAndPassword(email, password).then(e => {
-    changePage('test');
-  }).catch(function(error) {
-    showNotification(error.message, 5000);
-    $(".pageLogin .preloader").addClass('hidden');
-  });
+  if($(".pageLogin .login #rememberMe input").prop('checked')){
+    //remember me
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(function() {
+      return firebase.auth().signInWithEmailAndPassword(email, password).then(e => {
+        changePage('test');
+      }).catch(function(error) {
+        showNotification(error.message, 5000);
+        $(".pageLogin .preloader").addClass('hidden');
+      });
+    })
+  }else{
+    //dont remember
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function() {
+      return firebase.auth().signInWithEmailAndPassword(email, password).then(e => {
+        changePage('test');
+      }).catch(function(error) {
+        showNotification(error.message, 5000);
+        $(".pageLogin .preloader").addClass('hidden');
+      });
+    })
+  }
+
+  
 }
 
 function signUp() {
