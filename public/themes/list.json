@@ -173,5 +173,15 @@
         "name": "monokai",
         "bgColor": "#272822",
         "textColor": "#E6DB74"
+    },
+    {
+        "name": "camping",
+        "bgColor": "#faf1e4",
+        "textColor": "#618c56"
+    },
+    {
+        "name": "voc",
+        "bgColor": "#190618",
+        "textColor": "#e0caac"
     }
 ]
