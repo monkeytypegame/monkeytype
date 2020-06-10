@@ -1404,8 +1404,30 @@ key {
     &.themes, &.languages, &.layouts{
       grid-template-columns: 1fr;
       grid-template-areas: "title"
+                            "tabs"
                             "buttons";
       gap: .5rem;
+      .tabs {
+        grid-area: tabs;
+        display: flex;
+        grid-template-columns: 1fr 1fr 9fr;
+        .tab {
+          outline: 0;
+          cursor: pointer;
+          padding: 0;
+          font-size: 1rem;
+          color: var(--sub-color);
+          text-align: left;
+          border: 0;
+          background: 0;
+          &:first-child{
+            margin-right: .5rem;
+          }
+          &.active {
+            color: var(--main-color);
+          }
+        }
+      }
       .buttons{
         margin-left: 0;
         grid-auto-flow: dense;
