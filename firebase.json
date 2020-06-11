@@ -9,7 +9,8 @@
     "redirects": [
       {
         "source": "/soon",
-        "destination": "/"
+        "destination": "/",
+        "type": 301
       }
     ],
     "rewrites": [
