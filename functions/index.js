@@ -336,6 +336,7 @@ exports.addTag = functions.https.onCall((request,response) => {
                 return 1;
             }).catch(e => {
                 console.error(`error while creating tag for user ${request.uid}: ${e.message}`);
+                return 0;
             })
         }
 
