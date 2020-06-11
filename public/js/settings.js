@@ -440,4 +440,24 @@ $(document).on("click",".pageSettings .section.tags .tagsList .tag .removeButton
     let tagid = $(e.currentTarget).parent('.tag').attr('id');
     let name = $(e.currentTarget).siblings('.title').text();
     showEditTags('remove',tagid,name);
+    
+//theme tabs & custom theme
+$(".tab").click(e => {
+    $('.tab').removeClass("active")
+    var $target = $(event.currentTarget)
+        $target.addClass("active")
+    
+        if($target.attr("tab") == "preset") {
+            $('[tabContent="custom"]').removeClass("reveal")
+            setTimeout(() => {
+                $('[tabContent="preset"]').addClass("reveal")
+            }, 250);
+        } else {
+            $('[tabContent="preset"]').removeClass("reveal")
+            setTimeout(() => {
+                $('[tabContent="custom"]').addClass("reveal")
+            }, 250);
+        }
+        console.log($target.attr('tab'))
+    
 })

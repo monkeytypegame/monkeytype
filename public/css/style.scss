@@ -1495,6 +1495,18 @@ key {
     }
   }
 }
+.tabContainer{
+  position: relative;
+  .tabContent{
+    overflow: hidden;
+    height: auto;
+    max-height: 0px;
+    transition: max-height .5s ease-in-out;
+    &.reveal{
+      max-height: 100vh;
+    }
+  }
+}
 
 .buttons div.theme:hover{
   transform: scale(1.1);
