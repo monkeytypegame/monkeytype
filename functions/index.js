@@ -348,3 +348,47 @@ exports.addTag = functions.https.onCall((request,response) => {
         return {status:-999};
     }
 })
+
+exports.editTag = functions.https.onCall((request,response) => {
+    try{
+
+        if(!isTagValid(request.name)){
+            return {status:-1};
+        }else{
+            return admin.firestore().collection(`users/${request.uid}/tags`).doc(request.tagid).update({
+                name: request.name
+            }).then(e => {
+                console.log(`user ${request.uid} updated a tag: ${request.name}`);
+                return {
+                    status:1
+                };
+            }).catch(e => {
+                console.error(`error while updating tag for user ${request.uid}: ${e.message}`);
+                return {status:-999};
+            })
+        }
+
+    }catch(e){
+        console.error(`error updating tag for ${request.uid} - ${e}`);
+        return {status:-999};
+    }
+})
+
+exports.removeTag = functions.https.onCall((request,response) => {
+    try{
+
+            return admin.firestore().collection(`users/${request.uid}/tags`).doc(request.tagid).delete().then(e => {
+                console.log(`user ${request.uid} deleted a tag`);
+                return {
+                    status:1
+                };
+            }).catch(e => {
+                console.error(`error deleting tag for user ${request.uid}: ${e.message}`);
+                return {status:-999};
+            })
+
+    }catch(e){
+        console.error(`error deleting tag for ${request.uid} - ${e}`);
+        return {status:-999};
+    }
+})

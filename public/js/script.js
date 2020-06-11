@@ -33,6 +33,8 @@ let customText = "The quick brown fox jumps over the lazy dog";
 
 const testCompleted = firebase.functions().httpsCallable('testCompleted');
 const addTag = firebase.functions().httpsCallable('addTag');
+const editTag = firebase.functions().httpsCallable('editTag');
+const removeTag = firebase.functions().httpsCallable('removeTag');
 
 
 function showNotification(text, time) {
@@ -1264,28 +1266,43 @@ function applyExtraTestColor(tc){
   }
 }
 
-function showEditTags(action){
+function showEditTags(action,id,name){
   if(action === "add"){
     $("#tagsWrapper #tagsEdit").attr('action','add');
     $("#tagsWrapper #tagsEdit .title").html('Add new tag');
     $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-plus"></i>`);
+    $("#tagsWrapper #tagsEdit input").val('');
+    $("#tagsWrapper #tagsEdit input").removeClass('hidden');
+  }else if(action === "edit"){
+    $("#tagsWrapper #tagsEdit").attr('action','edit');
+    $("#tagsWrapper #tagsEdit").attr('tagid',id);
+    $("#tagsWrapper #tagsEdit .title").html('Edit tag name');
+    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-pen"></i>`);
+    $("#tagsWrapper #tagsEdit input").val(name);
+    $("#tagsWrapper #tagsEdit input").removeClass('hidden');
+  }else if(action === "remove"){
+    $("#tagsWrapper #tagsEdit").attr('action','remove');
+    $("#tagsWrapper #tagsEdit").attr('tagid',id);
+    $("#tagsWrapper #tagsEdit .title").html('Remove tag '+name);
+    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-check"></i>`);
+    $("#tagsWrapper #tagsEdit input").addClass('hidden');
   }
+  
   if ($("#tagsWrapper").hasClass("hidden")) {
     $("#tagsWrapper")
     .stop(true, true)
     .css("opacity", 0)
     .removeClass("hidden")
-    .animate(
-        {
-            opacity: 1
-        },
-        100
-        );
+    .animate({opacity: 1},100,e=>{
+          $("#tagsWrapper #tagsEdit input").focus();
+        });
     }
 }
 
 function hideEditTags(){
   if (!$("#tagsWrapper").hasClass("hidden")) {
+    $("#tagsWrapper #tagsEdit").attr('action','');
+    $("#tagsWrapper #tagsEdit").attr('tagid','');
     $("#tagsWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -1307,21 +1324,57 @@ $("#tagsWrapper").click(e => {
 $("#tagsWrapper #tagsEdit .button").click(e => {
   let action = $("#tagsWrapper #tagsEdit").attr('action');
   let inputVal = $("#tagsWrapper #tagsEdit input").val();
+  let tagid = $("#tagsWrapper #tagsEdit").attr('tagid');
   hideEditTags();
-  addTag({uid:firebase.auth().currentUser.uid,name:inputVal}).then(e => {
-    let status = e.data.status;
-    if(status === 1){
-      showNotification('Tag added',2000);
-      dbSnapshot.tags.push({
-        name: inputVal,
-        id: e.data.id
-      })
-    }else if(status === -1){
-      showNotification('Invalid tag name',3000);
-    }else if(status < -1){
-      showNotification('Unknown error',3000);
-    }
-  })
+  if(action === "add"){
+    addTag({uid:firebase.auth().currentUser.uid,name:inputVal}).then(e => {
+      let status = e.data.status;
+      if(status === 1){
+        showNotification('Tag added',2000);
+        dbSnapshot.tags.push({
+          name: inputVal,
+          id: e.data.id
+        })
+        updateSettingsPage();
+      }else if(status === -1){
+        showNotification('Invalid tag name',3000);
+      }else if(status < -1){
+        showNotification('Unknown error',3000);
+      }
+    })
+  }else if(action === "edit"){
+    editTag({uid:firebase.auth().currentUser.uid,name:inputVal,tagid:tagid}).then(e => {
+      let status = e.data.status;
+      if(status === 1){
+        showNotification('Tag updated',2000);
+        dbSnapshot.tags.forEach(tag => {
+          if(tag.id === tagid){
+            tag.name = inputVal;
+          }
+        })
+        updateSettingsPage();
+      }else if(status === -1){
+        showNotification('Invalid tag name',3000);
+      }else if(status < -1){
+        showNotification('Unknown error',3000);
+      }
+    })
+  }else if(action === "remove"){
+    removeTag({uid:firebase.auth().currentUser.uid,tagid:tagid}).then(e => {
+      let status = e.data.status;
+      if(status === 1){
+        showNotification('Tag removed',2000);
+        dbSnapshot.tags.forEach((tag,index) => {
+          if(tag.id === tagid){
+            dbSnapshot.tags.splice(index, 1);
+          }
+        })
+        updateSettingsPage();
+      }else if(status < -1){
+        showNotification('Unknown error',3000);
+      }
+    })
+  }
 })
 
 

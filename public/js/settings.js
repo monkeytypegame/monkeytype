@@ -338,4 +338,12 @@ $(document).on("click",".pageSettings .section.tags .addTagButton",e => {
 
 $(document).on("click",".pageSettings .section.tags .tagsList .tag .editButton",e => {
     let tagid = $(e.currentTarget).parent('.tag').attr('id');
+    let name = $(e.currentTarget).siblings('.title').text();
+    showEditTags('edit',tagid,name);
+})
+
+$(document).on("click",".pageSettings .section.tags .tagsList .tag .removeButton",e => {
+    let tagid = $(e.currentTarget).parent('.tag').attr('id');
+    let name = $(e.currentTarget).siblings('.title').text();
+    showEditTags('remove',tagid,name);
 })
