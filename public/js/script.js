@@ -659,7 +659,8 @@ function showResult(difficultyFailed = false) {
       difficulty: config.difficulty,
       testDuration: testtime,
       blindMode: config.blindMode,
-      theme: config.theme
+      theme: config.theme,
+      tags: activeTags
     };
     if(config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)){
       // console.log(incompleteTestSeconds);
@@ -787,6 +788,23 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .info").removeClass('hidden');
     otherText = otherText.substring(4);
     $("#result .stats .info .bottom").html(otherText); 
+  }
+
+  let tagsText = "";
+  activeTags.forEach(tagid => {
+    dbSnapshot.tags.forEach(snaptag => {
+      if(tagid === snaptag.id){
+        tagsText += "<br>"+snaptag.name;
+      }
+    })
+  })
+
+  if(tagsText == ""){
+    $("#result .stats .tags").addClass('hidden');
+  }else{
+    $("#result .stats .tags").removeClass('hidden');
+    tagsText = tagsText.substring(4);
+    $("#result .stats .tags .bottom").html(tagsText); 
   }
 
   let labels = [];
