@@ -316,3 +316,31 @@ exports.testCompleted = functions.https.onCall((request,response) => {
         return -1;
     }
 })
+
+function isTagValid(name){
+    if(name === null || name === undefined || name === "") return false;
+    if(name.length > 16) return false;
+    return /^[0-9a-zA-Z_.-]+$/.test(name);
+}
+
+exports.addTag = functions.https.onCall((request,response) => {
+    try{
+
+        if(!isTagValid(request.name)){
+            return -1;
+        }else{
+            return admin.firestore().collection(`users/${request.uid}/tags`).add({
+                name: request.name
+            }).then(e => {
+                console.log(`user ${request.uid} created a tag: ${request.name}`);
+                return 1;
+            }).catch(e => {
+                console.error(`error while creating tag for user ${request.uid}: ${e}`);
+            })
+        }
+
+    }catch(e){
+        console.error(`error adding tag for ${request.uid} - ${e}`);
+        return -999;
+    }
+})
