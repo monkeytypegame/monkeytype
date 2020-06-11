@@ -686,7 +686,8 @@ key {
                          "wpm acc"
                          "wpm key" 
                          "raw time"
-                         "testType info";
+                         "testType info"
+                         "tags info";
     .group{
       .top{
         color: var(--sub-color);
@@ -715,6 +716,19 @@ key {
     .info{
       align-self: baseline;
       grid-area: info;
+      color: var(--sub-color);
+      .top{
+        font-size: 1rem;
+        line-height: 1.25rem;
+      }
+      .bottom{
+        font-size: 1rem;
+        line-height: 1rem;
+      }
+    }
+    .tags{
+      align-self: baseline;
+      grid-area: tags;
       color: var(--sub-color);
       .top{
         font-size: 1rem;
@@ -1129,6 +1143,7 @@ key {
     grid-template-areas: "title title"
                           "text buttons";
     grid-template-columns: 2fr 1fr;
+    column-gap: 2rem;
     align-items: center;
     h1{
       font-size: 1rem;
@@ -1142,16 +1157,75 @@ key {
       grid-area: text;
     }
     .text{
+      align-self: normal;
       color: var(--text-color);
     }
     .buttons{
-      margin-left: 2rem;
       display: grid;
       grid-auto-flow: column;
       grid-auto-columns: 1fr;
       gap: .5rem;
       grid-area: buttons;
       .button{
+        color: var(--text-color);
+        cursor: pointer;
+        transition: .25s;
+        padding: .2rem .5rem;
+        border-radius: var(--roundness);
+
+        background: rgba(0,0,0,.1);
+        text-align: center;
+        -webkit-user-select: none;
+        display: grid;
+        align-content: center;
+        height: min-content;
+        height: -moz-min-content;
+        &.active{
+          background: var(--main-color);
+          color: var(--bg-color);
+        }
+        &:hover,&:focus{
+          color: var(--bg-color);
+          background: var(--main-color);
+          outline: none;
+        }
+      }
+    }
+    &.tags{
+      .tagsList{
+        display: grid;
+        gap: .5rem;
+        .tag{
+          display: grid;
+          display: grid;
+          grid-template-columns: auto 1fr auto auto;
+          color: var(--text-color);
+          .title{
+            align-self: center;
+          }
+          .editButton, .removeButton, .active{
+            display: grid;
+            grid-auto-flow: column;
+            align-content: center;
+            transition: 0.25s;
+            padding: 0 0.5rem;
+            border-radius: var(--roundness);
+            color: var(--sub-color);
+            &:focus{
+              background: var(--sub-color);
+              color: var(--main-color);
+              border: none;
+              outline: none;
+            }
+            &:hover{
+              cursor: pointer;
+              color: var(--main-color);
+            }
+          }
+        }
+      }
+      .addTagButton{
+        margin-top: .5rem;
         color: var(--text-color);
         cursor: pointer;
         transition: .25s;

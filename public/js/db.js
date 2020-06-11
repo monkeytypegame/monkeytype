@@ -8,7 +8,8 @@ async function db_getUserSnapshot() {
     if (user == null) return false;
     let snap = {
         results: [],
-        personalBests: {}
+        personalBests: {},
+        tags: []
     };
     // await db.collection('results')
     //     .orderBy('timestamp', 'desc')
@@ -29,6 +30,16 @@ async function db_getUserSnapshot() {
             let result = doc.data();
             result.id = doc.id;
             snap.results.push(result);
+        })
+    })
+    await db.collection(`users/${user.uid}/tags/`)
+    .get()
+    .then(data => {
+        // console.log('getting data from db!');
+        data.docs.forEach(doc => {
+            let tag = doc.data();
+            tag.id = doc.id;
+            snap.tags.push(tag);
         })
     })
     await db.collection('users').doc(user.uid)

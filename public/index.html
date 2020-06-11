@@ -205,6 +205,10 @@
               <div class="top">test type</div>
               <div class="bottom">-</div>
             </div>
+            <div class="group tags">
+              <div class="top">tags</div>
+              <div class="bottom">blah<br>blah</div>
+            </div>
             <div class="group info">
               <div class="top">other</div>
               <div class="bottom">-</div>
@@ -271,7 +275,6 @@
       <div class="page pageSettings hidden">
         <div class="tip">tip: You can also change all these settings quickly using the command line (<key>esc</key>)</div>
 
-
         <div class="sectionGroupTitle">behaviour</div>
         <div class="section difficulty">
           <h1>test difficulty</h1>
@@ -316,6 +319,24 @@
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+          </div>
+        </div>
+        <div class="section tags">
+          <h1>tags</h1>
+          <div class="text">With tags, you can compare how fast you're typing in different situations. You can set tags after the test on the result screen.
+            It will remain active until you deactivate it.</div>
+          <div>
+            <div class="tagsList">
+              <div class="tag" id="0">
+                <div class="active">
+                  <i class="fas fa-check-square"></i>
+                </div>
+                <div class="title">staggered</div>
+                <div class="editButton"><i class="fas fa-pen"></i></div>
+                <div class="removeButton"><i class="fas fa-trash"></i></div>
+              </div>
+            </div>
+            <div class="addTagButton"><i class="fas fa-plus"></i></div>
           </div>
         </div>
         <div class="section layouts">
