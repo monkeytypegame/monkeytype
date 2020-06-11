@@ -22,7 +22,7 @@ function updateSettingsPage(){
             
             <div class="tag" id="${tag.id}">
                 <div class="active" active="false">
-                    <i class="fas fa-check-square"></i>
+                    <i class="fas fa-square"></i>
                 </div>
                 <div class="title">${tag.name}</div>
                 <div class="editButton"><i class="fas fa-pen"></i></div>
@@ -106,6 +106,13 @@ function setSettingsButton(buttonSection,tf) {
     }
 }
 
+function updateActiveTags(){
+    activeTags = [];
+    $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
+        if($(tag).children('.active').attr('active') === 'true') activeTags.push($(tag).attr('id'));
+    })
+    console.log(activeTags);
+}
 
 //smooth caret
 $(".pageSettings .section.smoothCaret .buttons .button.on").click(e => {
@@ -310,4 +317,18 @@ $(".pageSettings .section.extraTestColor .buttons .button.off").click(e => {
     setExtraTestColor(false);
     showNotification('Extra test color off', 1000);
     setSettingsButton('extraTestColor', config.extraTestColor);
+})
+
+//tags
+$(document).on("click",".pageSettings .section.tags .tagsList .tag .active",e => {
+    let target = e.currentTarget;
+    let tagid = $(target).parent('.tag').attr('id');
+    if($(target).attr('active') === 'true'){
+        $(target).attr('active','false');
+        $(target).html('<i class="fas fa-square"></i>')
+    }else{
+        $(target).attr('active','true');
+        $(target).html('<i class="fas fa-check-square"></i>')
+    }
+    updateActiveTags();
 })

@@ -22,6 +22,7 @@ let activeWordTopBeforeJump = 0;
 let activeWordTop = 0;
 let activeWordJumped = false;
 let sameWordset = false;
+let activeTags = [];
 
 let accuracyStats = {
   correct: 0,
