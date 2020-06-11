@@ -111,7 +111,6 @@ function updateActiveTags(){
     $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
         if($(tag).children('.active').attr('active') === 'true') activeTags.push($(tag).attr('id'));
     })
-    console.log(activeTags);
 }
 
 //smooth caret
