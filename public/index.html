@@ -421,20 +421,33 @@
           </div>
         </div>
         <div class="section themes">
+          <h1>theme</h1>
           <div class='tabs'>
             <button class="tab">preset</button>
             <button class="tab">custom</button>
-            <div class="activeIndicator"></div>
           </div>
-          <h1>theme</h1>
-          <div class="buttons">
+          <div js-id="presetThemes" class="buttons">
           </div>
-          <div class="customTheme">
-            <p>enter the values for your own custom theme here</p>
-            <input class="colorSelector" type="color">
+          <div js-id="customThemes" class="section customTheme">
+            <h1>enter the values for your own custom theme here</h1>
+            <label class="text">background</label>
+            <input class="input colorPicker" type="color" value="#ff0000">
+            <label class="text">main</label>
+            <input class="input colorPicker" type="color" value="#00ff00">
+            <label class="text">caret</label>
+            <input class="input colorPicker" type="color" value="#ff00ff">
+            <label class="text">sub</label>
+            <input class="input colorPicker" type="color" value="#0000ff">
+            <label class="text">text</label>
+            <input class="input colorPicker" type="color" value="#f0f000">
+            <label class="text">error</label>
+            <input class="input colorPicker" type="color" value="#f000f0">
+            <label class="text">extra error</label>
+            <input class="input colorPicker" type="color" value="#00f0f0">
 
           </div>
         </div>
+        
 
 
         <div class="sectionSpacer"></div>

@@ -9,6 +9,20 @@
 }
 
 
+input[type="color"] {
+	-webkit-appearance: none;
+	border: none;
+	width: 32px;
+  height: 32px;
+  border-radius: var(--roundness);
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: none;
+}
+
 input{
   outline: none;
   border: none;
@@ -19,6 +33,17 @@ input{
   font-size: 1rem;
   line-height: 1rem;
   font-family: "Roboto Mono";
+  &.colorPicker {
+    text-align: center;
+    cursor: pointer;
+    will-change: padding;
+    transition: .1s ease-in-out padding;
+    width: 2rem;
+    height: 2rem;
+    &:hover {
+      padding: .3rem;
+    }
+  }
 }
 
 body {
@@ -1293,6 +1318,14 @@ key {
     grid-template-columns: 2fr 1fr;
     column-gap: 2rem;
     align-items: center;
+    &.customTheme {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      justify-items: stretch;
+      gap: .5rem;
+      & h1 {
+        grid-column: 1 / span 4;
+      }
+    }
     h1{
       font-size: 1rem;
       line-height: 1rem;
@@ -1411,7 +1444,10 @@ key {
         grid-area: tabs;
         display: flex;
         grid-template-columns: 1fr 1fr 9fr;
+        grid-area: tabs;
         .tab {
+          will-change: color;
+          transition: .2s ease-in-out color;
           outline: 0;
           cursor: pointer;
           padding: 0;
@@ -1423,7 +1459,7 @@ key {
           &:first-child{
             margin-right: .5rem;
           }
-          &.active {
+          &.active, &:hover {
             color: var(--main-color);
           }
         }
@@ -1638,4 +1674,3 @@ key {
 .hidden {
   display: none !important;
 }
-
