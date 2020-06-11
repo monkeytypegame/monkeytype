@@ -331,3 +331,11 @@ $(document).on("click",".pageSettings .section.tags .tagsList .tag .active",e =>
     }
     updateActiveTags();
 })
+
+$(document).on("click",".pageSettings .section.tags .addTagButton",e => {
+    showEditTags('add');
+})
+
+$(document).on("click",".pageSettings .section.tags .tagsList .tag .editButton",e => {
+    let tagid = $(e.currentTarget).parent('.tag').attr('id');
+})

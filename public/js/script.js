@@ -32,6 +32,8 @@ let accuracyStats = {
 let customText = "The quick brown fox jumps over the lazy dog";
 
 const testCompleted = firebase.functions().httpsCallable('testCompleted');
+const addTag = firebase.functions().httpsCallable('addTag');
+
 
 function showNotification(text, time) {
   let noti = $(".notification");
@@ -1261,6 +1263,66 @@ function applyExtraTestColor(tc){
     $("#words").removeClass('extraColor');
   }
 }
+
+function showEditTags(action){
+  if(action === "add"){
+    $("#tagsWrapper #tagsEdit").attr('action','add');
+    $("#tagsWrapper #tagsEdit .title").html('Add new tag');
+    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-plus"></i>`);
+  }
+  if ($("#tagsWrapper").hasClass("hidden")) {
+    $("#tagsWrapper")
+    .stop(true, true)
+    .css("opacity", 0)
+    .removeClass("hidden")
+    .animate(
+        {
+            opacity: 1
+        },
+        100
+        );
+    }
+}
+
+function hideEditTags(){
+  if (!$("#tagsWrapper").hasClass("hidden")) {
+    $("#tagsWrapper")
+    .stop(true, true)
+    .css("opacity", 1)
+    .animate(
+        {
+            opacity: 0
+        },100,e => {
+          $("#tagsWrapper").addClass('hidden');
+        });
+    }
+}
+
+$("#tagsWrapper").click(e => {
+  if($(e.target).attr('id') === "tagsWrapper"){
+    hideEditTags();
+  }
+})
+
+$("#tagsWrapper #tagsEdit .button").click(e => {
+  let action = $("#tagsWrapper #tagsEdit").attr('action');
+  let inputVal = $("#tagsWrapper #tagsEdit input").val();
+  hideEditTags();
+  addTag({uid:firebase.auth().currentUser.uid,name:inputVal}).then(e => {
+    let status = e.data.status;
+    if(status === 1){
+      showNotification('Tag added',2000);
+      dbSnapshot.tags.push({
+        name: inputVal,
+        id: e.data.id
+      })
+    }else if(status === -1){
+      showNotification('Invalid tag name',3000);
+    }else if(status < -1){
+      showNotification('Unknown error',3000);
+    }
+  })
+})
 
 
 $(document).on("click", "#top .logo", (e) => {
