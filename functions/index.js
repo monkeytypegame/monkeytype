@@ -281,7 +281,13 @@ exports.testCompleted = functions.https.onCall((request,response) => {
         let err = false;
         Object.keys(obj).forEach(key => {
             let val = obj[key];
-            if(val === undefined || !/^[0-9a-zA-Z._]+$/.test(val)) err = true;
+            if(Array.isArray(val)){
+                val.forEach(valarr => {
+                    if(!/^[0-9a-zA-Z._]+$/.test(valarr)) err = true;
+                })
+            }else{
+                if(val === undefined || !/^[0-9a-zA-Z._]+$/.test(val)) err = true;
+            }
         })
         if (err){
             console.error(`error saving result for ${request.uid} - bad input`);
