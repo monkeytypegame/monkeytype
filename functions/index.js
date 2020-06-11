@@ -102,7 +102,7 @@ exports.changeName = functions.https.onCall((request,response) => {
                     console.log(`${request.uid} changed their name to ${request.name} - done`);
                     return 1;
                 }).catch(e => {
-                    console.error(`${request.uid} tried to change their name to ${request.name} - ${e}`);
+                    console.error(`${request.uid} tried to change their name to ${request.name} - ${e.message}`);
                     return -1;
                 })
             }else{
@@ -308,7 +308,7 @@ exports.testCompleted = functions.https.onCall((request,response) => {
                 }
             });
         }).catch(e => {
-            console.error(`error saving result for ${request.uid} - ${e}`);
+            console.error(`error saving result for ${request.uid} - ${e.message}`);
             return -1;
         });
     }catch(e){
@@ -335,7 +335,7 @@ exports.addTag = functions.https.onCall((request,response) => {
                 console.log(`user ${request.uid} created a tag: ${request.name}`);
                 return 1;
             }).catch(e => {
-                console.error(`error while creating tag for user ${request.uid}: ${e}`);
+                console.error(`error while creating tag for user ${request.uid}: ${e.message}`);
             })
         }
 
