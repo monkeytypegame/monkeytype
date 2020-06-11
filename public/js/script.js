@@ -1328,7 +1328,7 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
   hideEditTags();
   if(action === "add"){
     addTag({uid:firebase.auth().currentUser.uid,name:inputVal}).then(e => {
-      let status = e.data.status;
+      let status = e.data.resultCode;
       if(status === 1){
         showNotification('Tag added',2000);
         dbSnapshot.tags.push({
@@ -1345,7 +1345,7 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
     })
   }else if(action === "edit"){
     editTag({uid:firebase.auth().currentUser.uid,name:inputVal,tagid:tagid}).then(e => {
-      let status = e.data.status;
+      let status = e.data.resultCode;
       if(status === 1){
         showNotification('Tag updated',2000);
         dbSnapshot.tags.forEach(tag => {
@@ -1363,7 +1363,7 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
     })
   }else if(action === "remove"){
     removeTag({uid:firebase.auth().currentUser.uid,tagid:tagid}).then(e => {
-      let status = e.data.status;
+      let status = e.data.resultCode;
       if(status === 1){
         showNotification('Tag removed',2000);
         dbSnapshot.tags.forEach((tag,index) => {
