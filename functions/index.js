@@ -327,21 +327,24 @@ exports.addTag = functions.https.onCall((request,response) => {
     try{
 
         if(!isTagValid(request.name)){
-            return -1;
+            return {status:-1};
         }else{
             return admin.firestore().collection(`users/${request.uid}/tags`).add({
                 name: request.name
             }).then(e => {
                 console.log(`user ${request.uid} created a tag: ${request.name}`);
-                return 1;
+                return {
+                    status:1,
+                    id: e.id
+                };
             }).catch(e => {
                 console.error(`error while creating tag for user ${request.uid}: ${e.message}`);
-                return 0;
+                return {status:-999};
             })
         }
 
     }catch(e){
         console.error(`error adding tag for ${request.uid} - ${e}`);
-        return -999;
+        return {status:-999};
     }
 })
