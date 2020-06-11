@@ -158,6 +158,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     db_getUserSnapshot().then(e => {
       console.log('DB snapshot ready');
       accountIconLoading(false);
+      updateFilterTags();
     });
     var displayName = user.displayName;
     var email = user.email;
@@ -310,6 +311,7 @@ Object.keys(words).forEach(language => {
 let activeFilters = ["all"];
 
 
+
 $(document).ready(e =>{
   activeFilters = config.resultFilters;
   // console.log(activeFilters);
@@ -322,6 +324,27 @@ $(document).ready(e =>{
   }
 })
 
+function updateFilterTags(){
+  $(".pageAccount .content .filterButtons .buttons.tags").empty();
+  if(dbSnapshot.tags.length > 0){
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass('hidden');
+    if(config.resultFilters.includes("tag_all")){
+      $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button active" filter="tag_all">all</div>`); 
+    }else{
+      $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button" filter="tag_all">all</div>`); 
+    }
+    dbSnapshot.tags.forEach(tag => {
+      if(config.resultFilters.includes("tag_"+tag.name)){
+        $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button active" filter="tag_${tag.id}">${tag.name}</div>`); 
+      }else{
+        $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button" filter="tag_${tag.id}">${tag.name}</div>`); 
+      }
+    })
+  }else{
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass('hidden');
+  }
+  updateActiveFilters();
+}
 
 function toggleFilterButton(filter){
   const element = $(`.pageAccount .content .filterButtons .button[filter=${filter}]`);
@@ -556,6 +579,19 @@ function refreshAccountPage() {
         puncfilter = "punc_on";
       }
       if(!activeFilters.includes(puncfilter)) return;
+
+      try{
+        if(!activeFilters.includes("tag_all") && dbSnapshot.tags.length > 0){
+          let found = false;
+          result.tags.forEach(tag => {
+            if(activeFilters.includes("tag_"+tag)) found = true;
+          })
+          if(!found) return;
+        }
+      }catch(e){
+        if(!activeFilters.includes("tag_all") && dbSnapshot.tags.length > 0) return;
+      }
+
 
       filteredResults.push(result);
 

@@ -18,18 +18,34 @@ function updateSettingsPage(){
     if(firebase.auth().currentUser !== null && dbSnapshot !== null){
         let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
         dbSnapshot.tags.forEach(tag => {
-            tagsEl.append(`
+            if(activeTags.includes(tag.id)){
+                tagsEl.append(`
             
-            <div class="tag" id="${tag.id}">
-                <div class="active" active="false">
-                    <i class="fas fa-square"></i>
+                <div class="tag" id="${tag.id}">
+                    <div class="active" active="true">
+                        <i class="fas fa-check-square"></i>
+                    </div>
+                    <div class="title">${tag.name}</div>
+                    <div class="editButton"><i class="fas fa-pen"></i></div>
+                    <div class="removeButton"><i class="fas fa-trash"></i></div>
                 </div>
-                <div class="title">${tag.name}</div>
-                <div class="editButton"><i class="fas fa-pen"></i></div>
-                <div class="removeButton"><i class="fas fa-trash"></i></div>
-            </div>
             
             `);
+            }else{
+                tagsEl.append(`
+            
+                <div class="tag" id="${tag.id}">
+                    <div class="active" active="false">
+                        <i class="fas fa-square"></i>
+                    </div>
+                    <div class="title">${tag.name}</div>
+                    <div class="editButton"><i class="fas fa-pen"></i></div>
+                    <div class="removeButton"><i class="fas fa-trash"></i></div>
+                </div>
+            
+            `);
+            }
+            
         });
         $(".pageSettings .section.tags").removeClass('hidden');
     }else{

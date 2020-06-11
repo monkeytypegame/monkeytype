@@ -1336,6 +1336,7 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
           id: e.data.id
         })
         updateSettingsPage();
+        updateFilterTags();
       }else if(status === -1){
         showNotification('Invalid tag name',3000);
       }else if(status < -1){
@@ -1353,6 +1354,7 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
           }
         })
         updateSettingsPage();
+        updateFilterTags();
       }else if(status === -1){
         showNotification('Invalid tag name',3000);
       }else if(status < -1){
@@ -1370,6 +1372,7 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
           }
         })
         updateSettingsPage();
+        updateFilterTags();
       }else if(status < -1){
         showNotification('Unknown error',3000);
       }
