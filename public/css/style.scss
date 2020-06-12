@@ -75,6 +75,31 @@ a:hover {
   top: -5rem;
 }
 
+#backgroundLoader{
+  height: 3px;
+  position: fixed;
+  width: 100%;
+  background: var(--main-color);
+  animation-name: loader;
+  animation-iteration-count: infinite;
+  animation-duration: 2s;
+  animation-timing-function: cubic-bezier(0.38, 0.16, 0.57, 0.82);
+}
+
+@keyframes loader{
+  0%{
+    width: 0;
+    left: 0;
+  }
+  50%{
+    width:100%;
+    left: 0;
+  }
+  100%{
+    width: 0;
+    left: 100%;
+  }
+}
 
 #tagsWrapper{
   width: 100%;

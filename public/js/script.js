@@ -1315,6 +1315,14 @@ function hideEditTags(){
     }
 }
 
+function showBackgroundLoader(){
+  $("#backgroundLoader").stop(true,true).fadeIn(125);
+}
+
+function hideBackgroundLoader(){
+  $("#backgroundLoader").stop(true,true).fadeOut(125);
+}
+
 $("#tagsWrapper").click(e => {
   if($(e.target).attr('id') === "tagsWrapper"){
     hideEditTags();
@@ -1327,7 +1335,9 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
   let tagid = $("#tagsWrapper #tagsEdit").attr('tagid');
   hideEditTags();
   if(action === "add"){
+    showBackgroundLoader();
     addTag({uid:firebase.auth().currentUser.uid,name:inputVal}).then(e => {
+      hideBackgroundLoader();
       let status = e.data.resultCode;
       if(status === 1){
         showNotification('Tag added',2000);
@@ -1344,7 +1354,9 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
       }
     })
   }else if(action === "edit"){
+    showBackgroundLoader();
     editTag({uid:firebase.auth().currentUser.uid,name:inputVal,tagid:tagid}).then(e => {
+      hideBackgroundLoader();
       let status = e.data.resultCode;
       if(status === 1){
         showNotification('Tag updated',2000);
@@ -1362,7 +1374,9 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
       }
     })
   }else if(action === "remove"){
+    showBackgroundLoader();
     removeTag({uid:firebase.auth().currentUser.uid,tagid:tagid}).then(e => {
+      hideBackgroundLoader();
       let status = e.data.resultCode;
       if(status === 1){
         showNotification('Tag removed',2000);
