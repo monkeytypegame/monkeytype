@@ -156,11 +156,13 @@ function setFocus(foc) {
     $("#top").addClass("focus");
     $("#bottom").addClass("focus");
     $("body").css("cursor", "none");
+    $("#tagNotice").addClass("focus");
   } else {
     startCaretAnimation();
     $("#top").removeClass("focus");
     $("#bottom").removeClass("focus");
     $("body").css("cursor", "default");
+    $("#tagNotice").removeClass("focus");
   }
 }
 
@@ -623,10 +625,12 @@ function showResult(difficultyFailed = false) {
   $("#result .stats .time .bottom").text(testtime+'s');
 
   setTimeout(function() {
-    $("#resultExtraButtons").removeClass('hidden').css('opacity',1);
+    $("#resultExtraButtons").removeClass('hidden').css('opacity',0).animate({
+      opacity: 1
+    },125);
   }, 125);
   
-
+  $("#tagNotice").css('opacity',0);
 
   let mode2 = "";
   if (config.mode == "time") {
@@ -953,6 +957,7 @@ function restartTest(withSameWordset = false) {
       showWords();
     }
     $("#result").addClass('hidden');
+    $("#tagNotice").css('opacity',1);
     $("#words").css('opacity', 0).removeClass('hidden').stop(true, true).animate({
       opacity: 1
     }, 125, () => {

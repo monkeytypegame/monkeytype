@@ -124,9 +124,14 @@ function setSettingsButton(buttonSection,tf) {
 
 function updateActiveTags(){
     activeTags = [];
+    tagsString = "";
     $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
-        if($(tag).children('.active').attr('active') === 'true') activeTags.push($(tag).attr('id'));
+        if($(tag).children('.active').attr('active') === 'true'){
+            activeTags.push($(tag).attr('id'));
+            tagsString += $(tag).children('.title').text() + ', ';
+        }
     })
+    $(".pageTest #tagNotice").html(`<i class="fas fa-tag"></i>${tagsString.substring(0, tagsString.length - 2)}`);
 }
 
 //smooth caret
