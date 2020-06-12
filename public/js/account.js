@@ -102,7 +102,7 @@ function signUp() {
         // Account has been created here.
         let usr = user.user;
         usr.updateProfile({
-          displayName: name
+          displayName: nname
         }).then(function() {
           // Update successful.
           showNotification("Account created", 2000);

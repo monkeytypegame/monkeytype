@@ -125,23 +125,23 @@ function verifyUsername(){
     Sorry for this inconvenience.
     `);
     let newName = prompt('Please provide a new username - you can use lowercase and uppercase characters, numbers and one of these special characters ( . _ - ). The new name cannot be longer than 12 characters.',firebase.auth().currentUser.displayName);
-    
-    cn = firebase.functions().httpsCallable('changeName');
-    cn({uid:firebase.auth().currentUser.uid,name:newName}).then(d => {
-      if(d.data === 1){
-        //all good
-        alert('Thanks! All good.');
-        location.reload();
-        $('.nameChangeMessage').slideUp();
-      }else if(d.data === 0){
-        //invalid or unavailable
-        alert('Name invalid or taken. Try again.');
-      }else if(d.data === -1){
-        //error
-        alert('Unknown error. Contact Miodec on Discord.');
-      }
-    });
-    
+    if(newName){
+      cn = firebase.functions().httpsCallable('changeName');
+      cn({uid:firebase.auth().currentUser.uid,name:newName}).then(d => {
+        if(d.data === 1){
+          //all good
+          alert('Thanks! All good.');
+          location.reload();
+          $('.nameChangeMessage').slideUp();
+        }else if(d.data === 0){
+          //invalid or unavailable
+          alert('Name invalid or taken. Try again.');
+        }else if(d.data === -1){
+          //error
+          alert('Unknown error. Contact Miodec on Discord.');
+        }
+      });
+    }
   })
 }
 
