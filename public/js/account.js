@@ -328,10 +328,10 @@ function updateFilterTags(){
   $(".pageAccount .content .filterButtons .buttons.tags").empty();
   if(dbSnapshot.tags.length > 0){
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass('hidden');
-    if(config.resultFilters.includes("tag_all")){
-      $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button active" filter="tag_all">all</div>`); 
+    if(config.resultFilters.includes("tag_notag")){
+      $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button active" filter="tag_notag">no tag</div>`); 
     }else{
-      $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button" filter="tag_all">all</div>`); 
+      $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button" filter="tag_notag">no tag</div>`); 
     }
     dbSnapshot.tags.forEach(tag => {
       if(config.resultFilters.includes("tag_"+tag.name)){
@@ -580,16 +580,17 @@ function refreshAccountPage() {
       }
       if(!activeFilters.includes(puncfilter)) return;
 
-      try{
-        if(!activeFilters.includes("tag_all") && dbSnapshot.tags.length > 0){
+      if(dbSnapshot.tags.length > 0){
+        if(result.tags !== undefined && result.tags.length > 0){
+        
           let found = false;
           result.tags.forEach(tag => {
             if(activeFilters.includes("tag_"+tag)) found = true;
           })
           if(!found) return;
+        }else{
+          if(!activeFilters.includes("tag_notag")) return;
         }
-      }catch(e){
-        if(!activeFilters.includes("tag_all") && dbSnapshot.tags.length > 0) return;
       }
 
 
