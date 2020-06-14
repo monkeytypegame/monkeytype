@@ -759,8 +759,7 @@ key {
                          "wpm acc"
                          "wpm key" 
                          "raw time"
-                         "testType info"
-                         "tags info";
+                         "testType infoAndTags";
     .group{
       .top{
         color: var(--sub-color);
@@ -786,22 +785,11 @@ key {
         line-height: 1rem;
       }
     }
-    .info{
+    .infoAndTags{
+      display: grid;
+      gap: .5rem;
       align-self: baseline;
-      grid-area: info;
-      color: var(--sub-color);
-      .top{
-        font-size: 1rem;
-        line-height: 1.25rem;
-      }
-      .bottom{
-        font-size: 1rem;
-        line-height: 1rem;
-      }
-    }
-    .tags{
-      align-self: baseline;
-      grid-area: tags;
+      grid-area: infoAndTags;
       color: var(--sub-color);
       .top{
         font-size: 1rem;
@@ -965,7 +953,9 @@ key {
       color: var(--sub-color);
       text-align: center;
       margin-bottom: 1.25rem;
-      transition: .25s;
+      height: 1rem;
+      line-height: 1rem;
+      transition: .125s;
       justify-content: center;
       .fas{
         margin-right: .5rem;

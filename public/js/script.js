@@ -632,7 +632,11 @@ function showResult(difficultyFailed = false) {
     },125);
   }, 125);
   
-  $("#testModesNotice").css('opacity',0);
+  $("#testModesNotice").css({
+    'opacity': 0,
+    // 'height': 0,
+    // 'margin-bottom': 0
+  });
 
   let mode2 = "";
   if (config.mode == "time") {
@@ -959,7 +963,11 @@ function restartTest(withSameWordset = false) {
       showWords();
     }
     $("#result").addClass('hidden');
-    $("#testModesNotice").css('opacity',1);
+    $("#testModesNotice").css({
+      'opacity': 1,
+      // 'height': 'auto',
+      // 'margin-bottom': '1.25rem'
+    });
     $("#words").css('opacity', 0).removeClass('hidden').stop(true, true).animate({
       opacity: 1
     }, 125, () => {
