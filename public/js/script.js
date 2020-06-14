@@ -156,13 +156,13 @@ function setFocus(foc) {
     $("#top").addClass("focus");
     $("#bottom").addClass("focus");
     $("body").css("cursor", "none");
-    $("#tagNotice").addClass("focus");
+    $("#middle").addClass("focus");
   } else {
     startCaretAnimation();
     $("#top").removeClass("focus");
     $("#bottom").removeClass("focus");
     $("body").css("cursor", "default");
-    $("#tagNotice").removeClass("focus");
+    $("#middle").removeClass("focus");
   }
 }
 
@@ -360,10 +360,12 @@ function compareInput(wrdIndex,input,showError) {
     } else {
       if(config.difficulty == "master"){
         if(!resultVisible) showResult(true);
-        let testNow = Date.now();
-        let testSeconds = roundTo2((testNow - testStart) / 1000);
-        incompleteTestSeconds += testSeconds;
-        restartCount++;
+        if(!afkDetected){
+          let testNow = Date.now();
+          let testSeconds = roundTo2((testNow - testStart) / 1000);
+          incompleteTestSeconds += testSeconds;
+          restartCount++;
+        }
       }
       if(!showError){
         if (currentWord[i] == undefined) {
@@ -630,7 +632,7 @@ function showResult(difficultyFailed = false) {
     },125);
   }, 125);
   
-  $("#tagNotice").css('opacity',0);
+  $("#testModesNotice").css('opacity',0);
 
   let mode2 = "";
   if (config.mode == "time") {
@@ -957,7 +959,7 @@ function restartTest(withSameWordset = false) {
       showWords();
     }
     $("#result").addClass('hidden');
-    $("#tagNotice").css('opacity',1);
+    $("#testModesNotice").css('opacity',1);
     $("#words").css('opacity', 0).removeClass('hidden').stop(true, true).animate({
       opacity: 1
     }, 125, () => {
@@ -1328,6 +1330,35 @@ function hideBackgroundLoader(){
   $("#backgroundLoader").stop(true,true).fadeOut(125);
 }
 
+function updateTestModesNotice(){
+
+  $(".pageTest #testModesNotice").empty();
+
+  if(config.difficulty === "expert"){
+    $(".pageTest #testModesNotice").append(`<div><i class="fas fa-star-half-alt"></i>expert</div>`);
+  }else if(config.difficulty === "master"){
+    $(".pageTest #testModesNotice").append(`<div><i class="fas fa-star"></i>master</div>`);
+  }
+
+  
+  if(config.blindMode){
+    $(".pageTest #testModesNotice").append(`<div><i class="fas fa-eye-slash"></i>blind</div>`);
+  }
+
+  tagsString = "";
+  $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
+      if($(tag).children('.active').attr('active') === 'true'){
+          tagsString += $(tag).children('.title').text() + ', ';
+      }
+  })
+
+  if(tagsString !== ""){
+    $(".pageTest #testModesNotice").append(`<div><i class="fas fa-tag"></i>${tagsString.substring(0, tagsString.length - 2)}</div>`);
+  }
+
+}
+
+
 $("#tagsWrapper").click(e => {
   if($(e.target).attr('id') === "tagsWrapper"){
     hideEditTags();
@@ -1478,7 +1509,7 @@ $(window).on('popstate', (e) => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 32 || event.keyCode == 13) {
-    if (testActive) {
+    if (testActive && !afkDetected) {
       let testNow = Date.now();
       let testSeconds = roundTo2((testNow - testStart) / 1000);
       incompleteTestSeconds += testSeconds;
@@ -1590,7 +1621,12 @@ $(document).keypress(function(event) {
       currentKeypressCount = 0;
       errorsPerSecond.push(currentErrorCount);
       currentErrorCount = 0;
-      if(keypressPerSecond[time-1] == 0 && keypressPerSecond[time-2] == 0 && keypressPerSecond[time-3] == 0 && keypressPerSecond[time-4] == 0 && !afkDetected){
+      if(keypressPerSecond[time-1] == 0 &&
+        keypressPerSecond[time-2] == 0 &&
+        keypressPerSecond[time-3] == 0 &&
+        keypressPerSecond[time-4] == 0 &&
+        keypressPerSecond[time-5] == 0 &&
+        keypressPerSecond[time-6] == 0 && !afkDetected){
         showNotification("AFK detected",3000);
         afkDetected = true;
       }
@@ -1634,7 +1670,7 @@ $(document).keydown((event) => {
   if (event["keyCode"] == 9) {
     if (config.quickTab && $(".pageTest").hasClass("active")) {
       event.preventDefault();
-      if (testActive) {
+      if (testActive && !afkDetected) {
         let testNow = Date.now();
         let testSeconds = roundTo2((testNow - testStart) / 1000);
         incompleteTestSeconds += testSeconds;
@@ -1729,10 +1765,12 @@ $(document).keydown((event) => {
           return;
         }else if(config.difficulty == "expert" || config.difficulty == "master"){
           showResult(true);
-          let testNow = Date.now();
-          let testSeconds = roundTo2((testNow - testStart) / 1000);
-          incompleteTestSeconds += testSeconds;
-          restartCount++;
+          if(!afkDetected){
+            let testNow = Date.now();
+            let testSeconds = roundTo2((testNow - testStart) / 1000);
+            incompleteTestSeconds += testSeconds;
+            restartCount++;
+          }
           return;
         }
         updateActiveElement();

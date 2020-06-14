@@ -955,18 +955,28 @@ key {
   }
 }
 
-.pageTest #tagNotice{
-  color: var(--sub-color);
-  text-align: center;
-  margin-bottom: 1rem;
-  transition: .25s;
-  .fas{
-    margin-right: .5rem;
-  }
-}
 
-.pageTest #tagNotice.focus{
-  opacity: 0 !important;
+#middle{
+  .pageTest{
+    #testModesNotice{
+      display: grid;
+      grid-auto-flow: column;
+      gap: 1rem;
+      color: var(--sub-color);
+      text-align: center;
+      margin-bottom: 1.25rem;
+      transition: .25s;
+      justify-content: center;
+      .fas{
+        margin-right: .5rem;
+      }
+    }
+  }
+  &.focus .pageTest{
+    #testModesNotice{
+      opacity: 0 !important;
+    }
+  }
 }
 
 #showWordHistoryButton{

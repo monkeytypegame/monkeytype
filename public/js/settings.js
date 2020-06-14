@@ -131,11 +131,7 @@ function updateActiveTags(){
             tagsString += $(tag).children('.title').text() + ', ';
         }
     })
-    if(tagsString !== ""){
-        $(".pageTest #tagNotice").html(`<i class="fas fa-tag"></i>${tagsString.substring(0, tagsString.length - 2)}`);
-    }else{
-        $(".pageTest #tagNotice").empty();
-    }
+    updateTestModesNotice();
 }
 
 //smooth caret

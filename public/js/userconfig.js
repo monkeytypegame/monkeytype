@@ -86,6 +86,7 @@ function setDifficulty(diff, nosave){
     }
     config.difficulty = diff;
     restartTest();
+    updateTestModesNotice();
     if(!nosave) saveConfigToCookie();
 }
 
@@ -124,6 +125,7 @@ function toggleBlindMode(){
         blind = false;
     }
     config.blindMode = blind;
+    updateTestModesNotice();
     saveConfigToCookie();
 }
 
@@ -132,6 +134,7 @@ function setBlindMode(blind, nosave){
         blind = false;
     }
     config.blindMode = blind;
+    updateTestModesNotice();
     if(!nosave) saveConfigToCookie();
 }
 
