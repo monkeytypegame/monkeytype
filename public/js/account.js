@@ -580,12 +580,17 @@ function refreshAccountPage() {
       }
       if(!activeFilters.includes(puncfilter)) return;
 
+      //check if the user has any tags defined
       if(dbSnapshot.tags.length > 0){
+        //check if that result has any tags
         if(result.tags !== undefined && result.tags.length > 0){
         
           let found = false;
           result.tags.forEach(tag => {
+            //check if any of the tags inside the result are active
             if(activeFilters.includes("tag_"+tag)) found = true;
+            //check if a tag doesnt exist and tag_notag is active
+            if(!dbSnapshot.tags.map(t => t.id).includes(tag) && activeFilters.includes("tag_notag")) found = true;
           })
           if(!found) return;
         }else{
