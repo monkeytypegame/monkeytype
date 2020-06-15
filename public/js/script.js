@@ -1445,6 +1445,7 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
         })
         updateSettingsPage();
         updateFilterTags();
+        updateActiveTags();
       }else if(status < -1){
         showNotification('Unknown error',3000);
       }
