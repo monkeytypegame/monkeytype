@@ -316,6 +316,15 @@ $(document).on("click",".pageSettings .section.caretStyle .button", (e) => {
     setActiveCaretStyleButton();
 })
 
+//timer style
+$(document).on("click",".pageSettings .section.timerStyle .button", (e) => {
+    let timerStyle = $(e.currentTarget).attr('timer');
+    setTimerStyle(timerStyle);
+    showNotification('Timer style updated', 1000);
+    setActiveTimerStyleButton();
+})
+
+
 //blind mode
 $(".pageSettings .section.blindMode .buttons .button.on").click(e => {
     setBlindMode(true);
