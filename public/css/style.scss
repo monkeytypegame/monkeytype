@@ -345,14 +345,14 @@ a:hover {
 #timer {
   position: fixed;
   top: 0;
-  right: 0;
-  width: 0vw;
+  left: 0;
+  width: 100vw;
   /*   height: 0.5rem; */
   height: 0.5rem;
   background: var(--sub-color);
   /*   background: #0f0f0f; */
   /*   background: red; */
-  transition: 1s linear;
+  // transition: 1s linear; 
   z-index: -1;
 }
 

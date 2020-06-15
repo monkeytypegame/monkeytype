@@ -413,18 +413,28 @@ function highlightBadWord(index,showError) {
 
 function showTimer() {
   if (!config.showTimerBar) return;
-  $("#timerWrapper").css("opacity", 1);
+  $("#timerWrapper").animate({
+    "opacity": 1
+  },125);
 }
 
 function hideTimer() {
-  $("#timerWrapper").css("opacity", 0);
+  $("#timerWrapper").animate({
+    "opacity": 0
+  },125);
+}
+
+function restartTimer() {
+  $("#timer").stop(true, true).animate({
+    "width": "100vw"
+  },0);
 }
 
 function updateTimerBar() {
-  let percent = ((time + 1) / config.time) * 100;
-  $("#timer")
-    .stop(true, true)
-    .css("width", percent + "vw");
+  let percent = 100 - (((time + 1) / config.time) * 100);
+  $("#timer").stop(true, true).animate({
+    "width": percent + "vw"
+  },1000,"linear");
 }
 
 
@@ -932,6 +942,8 @@ function restartTest(withSameWordset = false) {
   errorsPerSecond = [];
   currentErrorCount = 0;
   currentTestLine = 0;
+  hideTimer();
+  // restartTimer();
   let el = null;
   if(resultVisible){
     //results are being displayed
@@ -957,7 +969,10 @@ function restartTest(withSameWordset = false) {
     });
   }
   resultVisible = false;
-
+  
+  
+      // .css("transition", "1s linear");
+      
   el.stop(true, true).animate({
     opacity: 0
   }, 125, () => {
@@ -989,16 +1004,6 @@ function restartTest(withSameWordset = false) {
       clearIntervals();
       $("#restartTestButton").css('opacity', 1);
       if ($("#commandLineWrapper").hasClass('hidden')) focusWords();
-      hideTimer();
-      setTimeout(function() {
-        $("#timer")
-          .css("transition", "none")
-          .css("width", "0vw")
-          .stop(true, true)
-          .animate({ top: 0 }, 0, () => {
-            $("#timer").css("transition", "1s linear");
-          });
-      }, 250);
       wpmOverTimeChart.options.annotation.annotations[0].value = "-20";
       wpmOverTimeChart.update();
 
@@ -1628,6 +1633,7 @@ $(document).keypress(function(event) {
     testActive = true;
     testStart = Date.now();
     if (config.mode == "time") {
+      restartTimer();
       showTimer();
     }
     updateTimerBar();
