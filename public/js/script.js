@@ -71,14 +71,18 @@ function copyResultToClipboard() {
     y: sourceY - 25
   }).then(function(canvas) {
     // document.body.appendChild(canvas);
-    canvas.toBlob(function(blob) {
-      let data = [new ClipboardItem({ [blob.type]: blob })];
-      navigator.clipboard.write(data).then(f => {
-          showNotification('Copied to clipboard',1000);
-        }).catch(f => {
-          showNotification('Error saving image to clipboard',2000);
-        })
-    });
+    try{
+      canvas.toBlob(function(blob) {
+        let data = [new ClipboardItem({ [blob.type]: blob })];
+        navigator.clipboard.write(data).then(f => {
+            showNotification('Copied to clipboard',1000);
+          }).catch(f => {
+            showNotification('Error saving image to clipboard',2000);
+          })
+      });
+    }catch(e){
+      showNotification('Error creating image',2000);
+    }
   });
 }
 
