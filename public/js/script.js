@@ -55,36 +55,46 @@ function showNotification(text, time) {
 }
 
 function copyResultToClipboard() {
-  let src = $('#middle');
-  var sourceX = src.position().left;/*X position from div#target*/
-  var sourceY = src.position().top;/*Y position from div#target*/
-  var sourceWidth = src.width();/*clientWidth/offsetWidth from div#target*/
-  var sourceHeight = src.height();/*clientHeight/offsetHeight from div#target*/
+  if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1){
+    showNotification('Sorry, this feature is not supported in Firefox',4000);
+  }else{
+    let src = $('#middle');
+    var sourceX = src.position().left;/*X position from div#target*/
+    var sourceY = src.position().top;/*Y position from div#target*/
+    var sourceWidth = src.width();/*clientWidth/offsetWidth from div#target*/
+    var sourceHeight = src.height();/*clientHeight/offsetHeight from div#target*/
 
-  let bgColor = getComputedStyle(document.body).getPropertyValue('--bg-color').replace(' ', '');
-
-  html2canvas(document.body,{
-    backgroundColor: bgColor,
-    height: sourceHeight + 50,
-    width: sourceWidth + 50,
-    x: sourceX - 25,
-    y: sourceY - 25
-  }).then(function(canvas) {
-    // document.body.appendChild(canvas);
+    let bgColor = getComputedStyle(document.body).getPropertyValue('--bg-color').replace(' ', '');
     try{
-      canvas.toBlob(function(blob) {
-        let data = [new ClipboardItem({ [blob.type]: blob })];
-        navigator.clipboard.write(data).then(f => {
-            showNotification('Copied to clipboard',1000);
-          }).catch(f => {
-            showNotification('Error saving image to clipboard',2000);
-          })
+      html2canvas(document.body,{
+        backgroundColor: bgColor,
+        height: sourceHeight + 50,
+        width: sourceWidth + 50,
+        x: sourceX - 25,
+        y: sourceY - 25
+      }).then(function(canvas) {
+        // document.body.appendChild(canvas);
+        canvas.toBlob(function(blob) {
+          navigator.clipboard.write([
+            new ClipboardItem(
+              Object.defineProperty({}, blob.type, {
+                value: blob,
+                enumerable: true
+              })
+            )
+          ]).then(f => {
+              showNotification('Copied to clipboard',1000);
+            }).catch(f => {
+              showNotification('Error saving image to clipboard',2000);
+            })
+        });
       });
     }catch(e){
       showNotification('Error creating image',2000);
     }
-  });
+  }
 }
+
 
 function getReleasesFromGitHub() {
   $.getJSON("https://api.github.com/repos/Miodec/monkey-type/releases", data => {
