@@ -1038,7 +1038,7 @@ function focusWords() {
 }
 
 function changeCustomText() {
-  customText = prompt("Custom text");
+  customText = prompt("Custom text").trim();
   customText = customText.replace(/[\n\r\t ]/gm, ' ');
   customText = customText.replace(/ +/gm, ' ');
   // initWords();
