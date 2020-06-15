@@ -236,6 +236,7 @@
         </div>
         <input id="wordsInput" class="" tabindex="0" autocomplete="off"></input>
         <div id="wordsTitle">input history</div>
+        <div id="timerNumber">60</div>
         <div id="words" class="extraColor"></div>
         <div id="liveWpm">123</div>
         <div class="buttons">
@@ -392,6 +393,14 @@
             <div class="button" caret="underline" tabindex="0" onclick="this.blur();">_</div>
           </div>
         </div>
+        <div class="section timerStyle" section="">
+          <h1>timer style</h1>
+          <div class="text">Change the style of the timer during a timed test.</div>
+          <div class="buttons">
+            <div class="button" timer="bar" tabindex="0" onclick="this.blur();">bar</div>
+            <div class="button" timer="text" tabindex="0" onclick="this.blur();">text</div>
+          </div>
+        </div>
         <div class="section flipTestColors">
           <h1>flip test colors</h1>
           <div class="text">By default, typed text is brighter than the future text. When enabled, the colors will be flipped
@@ -440,8 +449,8 @@
           </div>
         </div>
         <div class="section timerBar">
-          <h1>timer bar</h1>
-          <div class="text">Displays a live timer bar at the top of the screen when in timed mode.</div>
+          <h1>timer</h1>
+          <div class="text">Displays a live timer for timed tests.</div>
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">show</div>
             <div class="button off" tabindex="0" onclick="this.blur();">hide</div>

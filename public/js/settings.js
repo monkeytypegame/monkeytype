@@ -72,6 +72,8 @@ function updateSettingsPage(){
     setActiveFontSizeButton();
     setActiveDifficultyButton();
     setActiveCaretStyleButton();
+    setActiveTimerStyleButton();
+
 
     if (config.showKeyTips) {
         $(".pageSettings .tip").removeClass('hidden');
@@ -110,6 +112,11 @@ function setActiveLanguageButton() {
 function setActiveCaretStyleButton() {
     $(`.pageSettings .section.caretStyle .buttons .button`).removeClass('active');
     $(`.pageSettings .section.caretStyle .buttons .button[caret=`+config.caretStyle+`]`).addClass('active');
+}
+
+function setActiveTimerStyleButton() {
+    $(`.pageSettings .section.timerStyle .buttons .button`).removeClass('active');
+    $(`.pageSettings .section.timerStyle .buttons .button[timer=`+config.timerStyle+`]`).addClass('active');
 }
 
 function setSettingsButton(buttonSection,tf) {

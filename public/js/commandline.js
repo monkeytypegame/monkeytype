@@ -37,7 +37,7 @@ let commands = {
         },
         {
             id: "toggleTimerBar",
-            display: "Toggle timer bar display",
+            display: "Toggle timer display",
             exec: () => {
                 config.showTimerBar = !config.showTimerBar;
                 saveConfigToCookie();
@@ -107,6 +107,15 @@ let commands = {
             subgroup: true,
             exec: () => {
                 currentCommands.push(commandsCaretStyle);
+                showCommandLine();
+            }
+        },
+        {
+            id: "changeTimerStyle",
+            display: "Change timer...",
+            subgroup: true,
+            exec: () => {
+                currentCommands.push(commandsTimerStyle);
                 showCommandLine();
             }
         },
@@ -242,6 +251,28 @@ let commandsCaretStyle = {
                 setCaretStyle('underline');
             }
         }
+    ]
+}
+
+
+let commandsTimerStyle = {
+    title: "Change timer...",
+    list: [
+        {
+            id: "setTimerStyleBar",
+            display: "bar",
+            exec: () => {
+                setTimerStyle('bar');
+            }
+        },
+        {
+            id: "setTimerStyleText",
+            display: "text",
+            exec: () => {
+                setTimerStyle('text');
+            }
+        },
+
     ]
 }
 

@@ -356,26 +356,29 @@ a:hover {
   z-index: -1;
 }
 
-#liveWpm {
+#liveWpm, #timerNumber {
   position: relative;
-  // font-size: 1.7rem;
-  // line-height: 1.7rem;
-  // color: var(--sub-color);
   font-size: 10rem;
   color: black;
   opacity: 0;
   width: 100%;
   left: 0;
   text-align: center;
-  // text-align: right;
   z-index: -1;
-  // margin-top: .6rem;
-  // grid-column: 3/4;
-  // grid-row: 1/2;
-  // opacity: 0;
   height: 0;
   transition: 0.25s;
+  line-height: 0;
 }
+
+#timerNumber{
+  bottom: 4rem;
+  transition: none;
+}
+
+#liveWpm{
+  top: 4rem;
+}
+
 
 #centerContent {
   max-width: 1000px;

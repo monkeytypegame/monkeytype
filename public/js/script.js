@@ -413,28 +413,47 @@ function highlightBadWord(index,showError) {
 
 function showTimer() {
   if (!config.showTimerBar) return;
-  $("#timerWrapper").animate({
-    "opacity": 1
-  },125);
+  if(config.timerStyle === "bar"){
+    $("#timerWrapper").animate({
+      "opacity": 1
+    },250);
+  }else if(config.timerStyle === "text"){
+    $("#timerNumber").animate({
+      "opacity": .25
+    },250);
+  }
 }
 
 function hideTimer() {
-  $("#timerWrapper").animate({
-    "opacity": 0
-  },125);
+  if(config.timerStyle === "bar"){
+    $("#timerWrapper").animate({
+      "opacity": 0
+    },125);
+  }else if(config.timerStyle === "text"){
+    $("#timerNumber").animate({
+      "opacity": 0
+    },125);
+  }
 }
 
 function restartTimer() {
-  $("#timer").stop(true, true).animate({
-    "width": "100vw"
-  },0);
+  if(config.timerStyle === "bar"){
+    $("#timer").stop(true, true).animate({
+      "width": "100vw"
+    },0);
+  }
 }
 
-function updateTimerBar() {
-  let percent = 100 - (((time + 1) / config.time) * 100);
-  $("#timer").stop(true, true).animate({
-    "width": percent + "vw"
-  },1000,"linear");
+function updateTimer() {
+  if(config.timerStyle === "bar"){
+    let percent = 100 - (((time + 1) / config.time) * 100);
+    $("#timer").stop(true, true).animate({
+      "width": percent + "vw"
+    },1000,"linear");
+  }else if(config.timerStyle === "text"){
+    $("#timerNumber").html(config.time - time);
+  }
+  
 }
 
 
@@ -625,6 +644,7 @@ function showResult(difficultyFailed = false) {
   setFocus(false);
   hideCaret();
   hideLiveWpm();
+  hideTimer();
   testInvalid = false;
   let stats = calculateStats();
   if(stats === undefined){
@@ -1636,11 +1656,11 @@ $(document).keypress(function(event) {
       restartTimer();
       showTimer();
     }
-    updateTimerBar();
+    updateTimer();
     clearIntervals();
     timers.push(setInterval(function() {
       time++;
-      updateTimerBar();
+      updateTimer();
       let wpm = liveWPM();
       updateLiveWpm(wpm);
       showLiveWpm();

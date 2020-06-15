@@ -20,7 +20,8 @@ let defaultConfig = {
     flipTestColors: false,
     layout:"default",
     showDiscordDot: true,
-    maxConfidence: false
+    maxConfidence: false,
+    timerStyle: "bar"
 }
 
 let config = defaultConfig;
@@ -60,6 +61,7 @@ function loadConfigFromCookie() {
         setDiscordDot(newConfig.hideDiscordDot,true);
         setExtraTestColor(newConfig.extraTestColor,true);
         setMaxConfidence(newConfig.maxConfidence,true);
+        setTimerStyle(newConfig.timerStyle,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
         }
@@ -210,6 +212,15 @@ function setCaretStyle(caretStyle, nosave) {
     } else if (caretStyle == 'underline') {
         $("#caret").addClass('underline');
     }
+    if(!nosave) saveConfigToCookie();
+}
+
+
+function setTimerStyle(style, nosave) {
+    if (style == null || style == undefined) {
+        style = 'bar';
+    }
+    config.timerStyle = style;
     if(!nosave) saveConfigToCookie();
 }
 
