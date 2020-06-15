@@ -660,6 +660,12 @@ function showResult(difficultyFailed = false) {
   
   let pbVal = 0;
 
+  if (firebase.auth().currentUser != null) {
+    $("#result .loginTip").addClass('hidden');
+  }else{
+    $("#result .loginTip").removeClass('hidden');
+  }
+
   if(difficultyFailed){
     showNotification("Test failed",2000);
   }else if(afkDetected){
@@ -742,14 +748,12 @@ function showResult(difficultyFailed = false) {
           }
         })
 
-        $("#result .loginTip").addClass('hidden');
       } else {
         try{
           firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
         }catch(e){
           console.log("Analytics unavailable");
         }
-        $("#result .loginTip").removeClass('hidden');
 
         // showNotification("Sign in to save your result",3000);
       }
