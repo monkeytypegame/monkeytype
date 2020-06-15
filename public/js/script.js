@@ -1413,6 +1413,16 @@ $("#tagsWrapper").click(e => {
 })
 
 $("#tagsWrapper #tagsEdit .button").click(e => {
+  tagsEdit();
+})
+
+$("#tagsWrapper #tagsEdit input").keypress(e => {
+  if (e.keyCode == 13) {
+    tagsEdit();
+  }
+})
+
+function tagsEdit(){
   let action = $("#tagsWrapper #tagsEdit").attr('action');
   let inputVal = $("#tagsWrapper #tagsEdit input").val();
   let tagid = $("#tagsWrapper #tagsEdit").attr('tagid');
@@ -1476,8 +1486,7 @@ $("#tagsWrapper #tagsEdit .button").click(e => {
       }
     })
   }
-})
-
+}
 
 $(document).on("click", "#top .logo", (e) => {
   changePage('test');
