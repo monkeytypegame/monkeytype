@@ -64,7 +64,7 @@ function updateSettingsPage(){
     setSettingsButton('flipTestColors', config.flipTestColors);
     setSettingsButton('discordDot', config.showDiscordDot);
     setSettingsButton('extraTestColor', config.extraTestColor);
-
+    setSettingsButton('maxConfidence', config.maxConfidence);
 
     setActiveThemeButton();
     setActiveLanguageButton();
@@ -192,12 +192,30 @@ $(".pageSettings .section.freedomMode .buttons .button.on").click(e => {
     saveConfigToCookie();
     showNotification('Freedom mode on', 1000);
     setSettingsButton('freedomMode', config.freedomMode);
+    setSettingsButton('maxConfidence', config.maxConfidence);
 })
 $(".pageSettings .section.freedomMode .buttons .button.off").click(e => {
     setFreedomMode(false);
     saveConfigToCookie();
     showNotification('Freedom mode off', 1000);
     setSettingsButton('freedomMode', config.freedomMode);
+    setSettingsButton('maxConfidence', config.maxConfidence);
+})
+
+//max confidence
+$(".pageSettings .section.maxConfidence .buttons .button.on").click(e => {
+    setMaxConfidence(true);
+    saveConfigToCookie();
+    showNotification('Max confidence on', 1000);
+    setSettingsButton('freedomMode', config.freedomMode);
+    setSettingsButton('maxConfidence', config.maxConfidence);
+})
+$(".pageSettings .section.maxConfidence .buttons .button.off").click(e => {
+    setMaxConfidence(false);
+    saveConfigToCookie();
+    showNotification('Max confidence off', 1000);
+    setSettingsButton('freedomMode', config.freedomMode);
+    setSettingsButton('maxConfidence', config.maxConfidence);
 })
 
 //keytips

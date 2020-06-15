@@ -1714,6 +1714,7 @@ $(document).keydown((event) => {
         ) {
           return;
         } else {
+          if(config.maxConfidence) return;
           if (event["ctrlKey"] || event["altKey"]) {
             currentInput = "";
             inputHistory.pop();

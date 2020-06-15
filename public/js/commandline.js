@@ -58,6 +58,13 @@ let commands = {
             }
         },
         {
+            id: "toggleMaxConfidence",
+            display: "Toggle max confidence",
+            exec: () => {
+                toggleMaxConfidence();
+            }
+        },
+        {
             id: "toggleBlindMode",
             display: "Toggle blind mode",
             exec: () => {

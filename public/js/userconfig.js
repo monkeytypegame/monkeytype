@@ -19,7 +19,8 @@ let defaultConfig = {
     caretStyle: "default",
     flipTestColors: false,
     layout:"default",
-    showDiscordDot: true
+    showDiscordDot: true,
+    maxConfidence: false
 }
 
 let config = defaultConfig;
@@ -58,6 +59,7 @@ function loadConfigFromCookie() {
         setFlipTestColors(newConfig.flipTestColors,true);
         setDiscordDot(newConfig.hideDiscordDot,true);
         setExtraTestColor(newConfig.extraTestColor,true);
+        setMaxConfidence(newConfig.maxConfidence,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
             newConfig.resultFilters = ["all"];
         }
@@ -331,12 +333,44 @@ function togglePunctuation() {
 //freedom
 function setFreedomMode(freedom, nosave) {
     config.freedomMode = freedom;
+    if(config.freedomMode && config.maxConfidence){
+        config.maxConfidence = false;
+    }
     if(!nosave) saveConfigToCookie();
 }
 
 function toggleFreedomMode() {
     config.freedomMode = !config.freedomMode;
+    if(config.freedomMode && config.maxConfidence){
+        config.maxConfidence = false;
+    }
     saveConfigToCookie();
+}
+
+//max confidence
+function toggleMaxConfidence(){
+    // console.log(config.maxConfidence)
+    mc = !config.maxConfidence;
+    if(mc == undefined){
+        mc = false;
+    }
+    config.maxConfidence = mc;
+    if(config.freedomMode && config.maxConfidence){
+        config.freedomMode = false;
+    }
+    // console.log(config.maxConfidence);
+    saveConfigToCookie();
+}
+
+function setMaxConfidence(mc, nosave){
+    if(mc == undefined){
+        mc = false;
+    }
+    config.maxConfidence = mc;
+    if(config.freedomMode && config.maxConfidence){
+        config.freedomMode = false;
+    }
+    if(!nosave) saveConfigToCookie();
 }
 
 function previewTheme(name) {
