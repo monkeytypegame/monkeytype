@@ -458,6 +458,11 @@ $(".tab").click(e => {
                 $('[tabContent="custom"]').addClass("reveal")
             }, 250);
         }
-        console.log($target.attr('tab'))
-    
+})
+
+$('.colorPicker').change(e => {
+    var $colorVar = $(event.currentTarget).attr('colorVar')
+    var $pickedColor = $(event.currentTarget).val();
+
+    document.documentElement.style.setProperty($colorVar, $pickedColor)
 })
