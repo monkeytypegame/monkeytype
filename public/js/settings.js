@@ -444,7 +444,7 @@ $(document).on("click",".pageSettings .section.tags .tagsList .tag .removeButton
 //theme tabs & custom theme
 $(".tab").click(e => {
     $('.tab').removeClass("active")
-    var $target = $(event.currentTarget)
+    var $target = $(e.currentTarget)
         $target.addClass("active")
     
         if($target.attr("tab") == "preset") {
@@ -461,8 +461,8 @@ $(".tab").click(e => {
 })
 
 $('.colorPicker').change(e => {
-    var $colorVar = $(event.currentTarget).attr('colorVar')
-    var $pickedColor = $(event.currentTarget).val();
+    var $colorVar = $(e.currentTarget).attr('colorVar')
+    var $pickedColor = $(e.currentTarget).val();
 
     document.documentElement.style.setProperty($colorVar, $pickedColor)
 })
