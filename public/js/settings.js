@@ -440,7 +440,8 @@ $(document).on("click",".pageSettings .section.tags .tagsList .tag .removeButton
     let tagid = $(e.currentTarget).parent('.tag').attr('id');
     let name = $(e.currentTarget).siblings('.title').text();
     showEditTags('remove',tagid,name);
-    
+})
+
 //theme tabs & custom theme
 $(".tab").click(e => {
     $('.tab').removeClass("active")
