@@ -443,6 +443,20 @@ $(document).on("click",".pageSettings .section.tags .tagsList .tag .removeButton
 })
 
 //theme tabs & custom theme
+const colorVars = ['--bg-color', '--main-color','--caret-color', '--sub-color', '--text-color', '--error-color', '--error-extra-color']
+
+function presetColor() {
+    colorVars.forEach(e => {
+        document.documentElement.style.setProperty(e, '')
+    });
+}
+
+function customColor() {
+    colorVars.forEach(e => {
+        document.documentElement.style.setProperty(e, 'inherit')
+    });
+}
+
 $(".tab").click(e => {
     $('.tab').removeClass("active")
     var $target = $(e.currentTarget)
@@ -450,11 +464,13 @@ $(".tab").click(e => {
     
         if($target.attr("tab") == "preset") {
             $('[tabContent="custom"]').removeClass("reveal")
+            presetColor()
             setTimeout(() => {
                 $('[tabContent="preset"]').addClass("reveal")
             }, 250);
         } else {
             $('[tabContent="preset"]').removeClass("reveal")
+            customColor();
             setTimeout(() => {
                 $('[tabContent="custom"]').addClass("reveal")
             }, 250);
