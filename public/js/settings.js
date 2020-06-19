@@ -477,7 +477,7 @@ $(".tab").click(e => {
         }
 })
 
-$('.colorPicker').change(e => {
+$('.colorPicker').on('input', e => {
     var $colorVar = $(e.currentTarget).attr('colorVar')
     var $pickedColor = $(e.currentTarget).val();
 
