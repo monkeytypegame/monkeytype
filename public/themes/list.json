@@ -183,5 +183,10 @@
         "name": "voc",
         "bgColor": "#190618",
         "textColor": "#e0caac"
+    },
+    {
+        "name": "vaporwave",
+        "bgColor": "#a4a7ea",
+        "textColor": "#e368da"
     }
 ]
