@@ -438,20 +438,34 @@ function hideTimer() {
 
 function restartTimer() {
   if(config.timerStyle === "bar"){
-    $("#timer").stop(true, true).animate({
-      "width": "100vw"
-    },0);
+    if(config.mode === "time"){
+      $("#timer").stop(true, true).animate({
+        "width": "100vw"
+      },0);
+    }else if(config.mode === "words" || config.mode === "custom"){
+      $("#timer").stop(true, true).animate({
+        "width": "0vw"
+      },0);
+    }
   }
 }
 
 function updateTimer() {
-  if(config.timerStyle === "bar"){
-    let percent = 100 - (((time + 1) / config.time) * 100);
-    $("#timer").stop(true, true).animate({
-      "width": percent + "vw"
-    },1000,"linear");
-  }else if(config.timerStyle === "text"){
-    $("#timerNumber").html(config.time - time);
+
+  if(config.mode === "time"){
+    if(config.timerStyle === "bar"){
+      let percent = 100 - (((time + 1) / config.time) * 100);
+      $("#timer").stop(true, true).animate({
+        "width": percent + "vw"
+      },1000,"linear");
+    }else if(config.timerStyle === "text"){
+      $("#timerNumber").html(config.time - time);
+    }
+  }else if((config.mode === "words"|| config.mode === "custom") && config.timerStyle === "bar"){
+    let percent = Math.floor(((currentWordIndex+1) / wordsList.length) * 100);
+      $("#timer").stop(true, true).animate({
+        "width": percent + "vw"
+      },250);
   }
   
 }
@@ -1662,16 +1676,18 @@ $(document).keypress(function(event) {
     }
     testActive = true;
     testStart = Date.now();
-    if (config.mode == "time") {
+    // if (config.mode == "time") {
       restartTimer();
       showTimer();
-    }
+    // }
     updateActiveElement();
     updateTimer();
     clearIntervals();
     timers.push(setInterval(function() {
       time++;
-      updateTimer();
+      if (config.mode === "time") {
+        updateTimer();
+      }
       let wpm = liveWPM();
       updateLiveWpm(wpm);
       showLiveWpm();
@@ -1838,6 +1854,9 @@ $(document).keydown((event) => {
         }
         updateActiveElement();
         updateCaretPosition();
+      }
+      if (config.mode === "words" || config.mode === "custom") {
+        updateTimer();
       }
       if (config.mode == "time") {
         addWord();
