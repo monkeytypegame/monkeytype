@@ -1782,8 +1782,8 @@ $(document).keydown((event) => {
       event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
       if (config.mode == "time") {
-        let currentTop = $($("#words .word")[currentWordIndex]).position().top;
-        let nextTop = $($("#words .word")[currentWordIndex + 1]).position().top;
+        let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
+        let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
         if (nextTop > currentTop || activeWordJumped) {
           //last word of the line
           if(currentTestLine > 0){
@@ -1795,8 +1795,10 @@ $(document).keydown((event) => {
             activeWordJumped = false;
 
             let toHide = [];
+            let wordElements = $("#words .word");
             for (let i = 0; i < currentWordIndex + 1; i++) {
-              let forWordTop = $($("#words .word")[i]).position().top;
+              if($(wordElements[i]).hasClass('hidden')) continue;
+              let forWordTop = Math.floor($(wordElements[i]).position().top);
               if(forWordTop < hideBound){
                 // $($("#words .word")[i]).addClass("hidden");
                 toHide.push($($("#words .word")[i]));
