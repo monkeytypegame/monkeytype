@@ -62,13 +62,17 @@ function isUsernameValid(name){
 }
 
 exports.checkNameAvailability = functions.https.onCall((request,response) => {
+    // 1 - available
+    // -1 - unavailable (taken)
+    // -2 - not valid name
+    // -999 - unknown error
     try{
-        if(!isUsernameValid(request.name)) return 0;
+        if(!isUsernameValid(request.name)) return -2;
         return getAllNames().then(data => {
             let available = 1;
             data.forEach(name =>{
                 try{
-                    if(name.toLowerCase() === request.name.toLowerCase()) available = 0;
+                    if(name.toLowerCase() === request.name.toLowerCase()) available = -1;
                 }catch(e){
                     //
                 }
@@ -76,7 +80,7 @@ exports.checkNameAvailability = functions.https.onCall((request,response) => {
             return available;
         });
     }catch(e){
-        return -1;
+        return -999;
     }
 })
 

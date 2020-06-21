@@ -88,8 +88,12 @@ function signUp() {
   const namecheck = firebase.functions().httpsCallable('checkNameAvailability')
 
   namecheck({name:nname}).then(d => {
-    if(d.data === 0){
+    if(d.data === -1){
       showNotification("Name unavailable", 3000);
+      $(".pageLogin .preloader").addClass('hidden');
+      return;
+    }else if(d.data === -2){
+      showNotification("Name cannot contain special characters or contain more than 12 characters. Can include _ . and -", 8000);
       $(".pageLogin .preloader").addClass('hidden');
       return;
     }else if(d.data === 1){
