@@ -1,3 +1,5 @@
+const { config } = require("process");
+
 let wordsList = [];
 let currentWordIndex = 0;
 let inputHistory = [];
@@ -417,7 +419,7 @@ function showTimer() {
     $("#timerWrapper").animate({
       "opacity": 1
     },250);
-  }else if(config.timerStyle === "text"){
+  }else if(config.timerStyle === "text" && config.mode === "time"){
     $("#timerNumber").animate({
       "opacity": .25
     },250);
