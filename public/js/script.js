@@ -962,6 +962,7 @@ function restartTest(withSameWordset = false) {
   errorsPerSecond = [];
   currentErrorCount = 0;
   currentTestLine = 0;
+  activeWordJumped = false;
   hideTimer();
   // restartTimer();
   let el = null;
@@ -1665,6 +1666,7 @@ $(document).keypress(function(event) {
       restartTimer();
       showTimer();
     }
+    updateActiveElement();
     updateTimer();
     clearIntervals();
     timers.push(setInterval(function() {
