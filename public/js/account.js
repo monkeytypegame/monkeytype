@@ -602,10 +602,36 @@ function refreshAccountPage() {
         }
       }
 
+      let timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
+
+      let datehide = true;
+
+      if(
+        (activeFilters.includes("date_all")) ||
+        (activeFilters.includes("date_day") && timeSinceTest <= 86400) ||
+        (activeFilters.includes("date_week") && timeSinceTest <= 604800) ||
+        (activeFilters.includes("date_month") && timeSinceTest <= 18144000)
+        ){
+        datehide = false;
+      }
+
+
+      if(datehide) return;
+
+      // if(
+      //   (!activeFilters.includes("date_all")) &&
+      //   (activeFilters.includes("date_day") && timeSinceTest > 86400) &&
+      //   (activeFilters.includes("date_week") && timeSinceTest > 604800) &&
+      //   (activeFilters.includes("date_month") && timeSinceTest > 18144000)
+      //   ){
+      //   return;
+      // }
+
 
       filteredResults.push(result);
 
       //filters done
+      //=======================================
 
       tt = 0;
       if(result.timeDuration == null){
