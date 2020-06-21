@@ -1,5 +1,3 @@
-const { config } = require("process");
-
 let wordsList = [];
 let currentWordIndex = 0;
 let inputHistory = [];
