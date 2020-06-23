@@ -1932,6 +1932,12 @@ $(document).ready(() => {
     $("#restartTestButton").addClass('hidden');
   }
   $("#centerContent").css("opacity", "0").removeClass("hidden").stop(true, true).animate({ opacity: 1 }, 250);
+  if(window.location.pathname === '/account'){
+    history.replaceState('/',null,'/');
+  }else if(window.location.pathname !== '/'){
+    let page = window.location.pathname.replace('/','');
+    changePage(page);
+  }
 });
 
 let ctx = $("#wpmChart");
