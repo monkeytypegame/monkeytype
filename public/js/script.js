@@ -874,12 +874,12 @@ function showResult(difficultyFailed = false) {
   }
 
   let tagsText = "";
-  activeTags.forEach(tagid => {
-    dbSnapshot.tags.forEach(snaptag => {
-      if(tagid === snaptag.id){
-        tagsText += "<br>"+snaptag.name;
+  dbSnapshot.tags.forEach(tag => {
+    // dbSnapshot.tags.forEach(snaptag => {
+      if(tag.active === true){
+        tagsText += "<br>"+tag.name;
       }
-    })
+    // })
   })
 
   if(tagsText == ""){

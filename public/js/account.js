@@ -163,6 +163,7 @@ firebase.auth().onAuthStateChanged(function(user) {
       console.log('DB snapshot ready');
       accountIconLoading(false);
       updateFilterTags();
+      updateCommandsTagsList();
     });
     var displayName = user.displayName;
     var email = user.email;

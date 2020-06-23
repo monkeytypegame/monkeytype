@@ -274,6 +274,9 @@ a:hover {
         font-size: 0.75rem;
         line-height: 0.75rem;
         color: var(--sub-color);
+        .fas{
+          margin-right: .5rem;
+        }
         &:last-child{
           border-radius: 0 0 var(--roundness) var(--roundness);
         }
