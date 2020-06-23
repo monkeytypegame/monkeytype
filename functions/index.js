@@ -396,3 +396,31 @@ exports.removeTag = functions.https.onCall((request,response) => {
         return {resultCode:-999};
     }
 })
+
+exports.updateResultTags = functions.https.onCall((request,response) => {
+    try{
+        let validTags = true;
+        request.tags.forEach(tag => {
+            if(!/^[0-9a-zA-Z]+$/.test(tag)) validTags = false;
+        })
+        if(validTags){
+            return admin.firestore().collection(`users/${request.uid}/results`).doc(request.resultid).update({
+                tags: request.tags
+            }).then(e => {
+                console.log(`user ${request.uid} updated tags for result ${request.resultid}`);
+                return {
+                    resultCode:1
+                };
+            }).catch(e => {
+                console.error(`error while updating tags for result by user ${request.uid}: ${e.message}`);
+                return {resultCode:-999};
+            })
+        }else{
+            console.error(`invalid tags for user ${request.uid}: ${request.tags}`);
+            return {resultCode:-1};
+        }
+    }catch(e){
+        console.error(`error updating tags by ${request.uid} - ${e}`);
+        return {resultCode:-999};
+    }
+})
