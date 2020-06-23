@@ -164,6 +164,7 @@ firebase.auth().onAuthStateChanged(function(user) {
       accountIconLoading(false);
       updateFilterTags();
       updateCommandsTagsList();
+      loadActiveTagsFromCookie();
     });
     var displayName = user.displayName;
     var email = user.email;

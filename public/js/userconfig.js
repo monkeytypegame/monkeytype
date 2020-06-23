@@ -38,6 +38,28 @@ function saveConfigToCookie() {
     restartCount = 0;
 }
 
+function saveActiveTagsToCookie(){
+
+    let tags = [];
+
+    try{
+        dbSnapshot.tags.forEach(tag => {
+            if(tag.active === true){
+                tags.push(tag.id);
+            }
+        })
+        let d = new Date();
+        d.setFullYear(d.getFullYear() + 1);
+        $.cookie("activeTags", null);
+        $.cookie("activeTags", JSON.stringify(tags), {
+            expires: d,
+            path: '/'
+        });
+    }catch(e){
+
+    }
+}
+
 function loadConfigFromCookie() {
     let newConfig = $.cookie('config');
     if (newConfig && newConfig != null && newConfig != "null") {
@@ -73,6 +95,15 @@ function loadConfigFromCookie() {
         }
     })
     saveConfigToCookie();
+}
+
+function loadActiveTagsFromCookie(){
+    let newTags = $.cookie('activeTags');
+    newTags = JSON.parse(newTags);
+    newTags.forEach(ntag => {
+        toggleTag(ntag, true);
+    })
+    saveActiveTagsToCookie();
 }
 
 function showTestConfig() {

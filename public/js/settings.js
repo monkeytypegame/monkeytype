@@ -165,7 +165,7 @@ function showActiveTags(){
 
 }
 
-function toggleTag(tagid){
+function toggleTag(tagid, nosave = false){
     dbSnapshot.tags.forEach(tag => {
         if(tag.id === tagid){
             if(tag.active === undefined){
@@ -176,6 +176,7 @@ function toggleTag(tagid){
         }
     })
     updateTestModesNotice();
+    if(!nosave) saveActiveTagsToCookie();
 }
 
 //smooth caret

@@ -1405,6 +1405,9 @@ function hideBackgroundLoader(){
 
 function updateTestModesNotice(){
 
+  let anim = false;
+  if($(".pageTest #testModesNotice").text() === "") anim = true;
+
   $(".pageTest #testModesNotice").empty();
 
   if(config.difficulty === "expert"){
@@ -1436,6 +1439,14 @@ function updateTestModesNotice(){
     }
   }catch(e){
 
+  }
+
+  if(anim){
+    $(".pageTest #testModesNotice").css('transition','none').css('opacity',0).animate({
+      opacity: 1
+    },125, (e) => {
+      $(".pageTest #testModesNotice").css('transition','.125s');
+    });
   }
 
 }
