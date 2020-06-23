@@ -84,7 +84,7 @@ function addFitter(datasetMeta, ctx, dataset, xScale, yScale) {
     }
 
     ctx.lineWidth = lineWidth;
-    if (lineStyle === "dotted") { ctx.setLineDash([4, 6]); }
+    if (lineStyle === "dotted") { ctx.setLineDash([6, 6]); }
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
