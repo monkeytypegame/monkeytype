@@ -193,5 +193,10 @@
         "name": "pulse",
         "bgColor": "#181818",
         "textColor": "#17b8bd"
+    },
+    {
+        "name": "terminal",
+        "bgColor": "#000000",
+        "textColor": "#15ff00"
     }
 ]
