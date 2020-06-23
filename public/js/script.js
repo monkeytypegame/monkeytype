@@ -22,7 +22,6 @@ let activeWordTopBeforeJump = 0;
 let activeWordTop = 0;
 let activeWordJumped = false;
 let sameWordset = false;
-let activeTags = [];
 
 let accuracyStats = {
   correct: 0,
@@ -717,6 +716,18 @@ function showResult(difficultyFailed = false) {
   }else if(sameWordset){
     showNotification("Test invalid - repeated",2000);
   }else{
+
+    let activeTags = [];
+    try{
+      dbSnapshot.tags.forEach(tag => {
+        if(tag.active === true){
+          activeTags.push(tag.id);
+        }
+      })
+    }catch(e){
+      
+    }
+
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
@@ -1408,14 +1419,23 @@ function updateTestModesNotice(){
   }
 
   tagsString = "";
-  $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
-      if($(tag).children('.active').attr('active') === 'true'){
-          tagsString += $(tag).children('.title').text() + ', ';
+  // $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
+  //     if($(tag).children('.active').attr('active') === 'true'){
+  //         tagsString += $(tag).children('.title').text() + ', ';
+  //     }
+  // })
+  try{
+    dbSnapshot.tags.forEach(tag => {
+      if(tag.active === true){
+        tagsString += tag.name + ', ';
       }
-  })
+    })
 
-  if(tagsString !== ""){
-    $(".pageTest #testModesNotice").append(`<div><i class="fas fa-tag"></i>${tagsString.substring(0, tagsString.length - 2)}</div>`);
+    if(tagsString !== ""){
+      $(".pageTest #testModesNotice").append(`<div><i class="fas fa-tag"></i>${tagsString.substring(0, tagsString.length - 2)}</div>`);
+    }
+  }catch(e){
+
   }
 
 }
