@@ -631,8 +631,8 @@ function calculateStats() {
   let wpmraw = roundTo2(((chars.allCorrectChars + chars.spaces + chars.incorrectChars + chars.extraChars) * (60/testSeconds))/5);
   let acc = roundTo2((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
   return {
-    wpm: wpm,
-    wpmRaw: wpmraw,
+    wpm: isNaN(wpm) ? 0 : wpm,
+    wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
     acc: acc,
     correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars,
