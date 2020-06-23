@@ -874,13 +874,15 @@ function showResult(difficultyFailed = false) {
   }
 
   let tagsText = "";
-  dbSnapshot.tags.forEach(tag => {
-    // dbSnapshot.tags.forEach(snaptag => {
-      if(tag.active === true){
-        tagsText += "<br>"+tag.name;
-      }
-    // })
-  })
+  try{
+    dbSnapshot.tags.forEach(tag => {
+        if(tag.active === true){
+          tagsText += "<br>"+tag.name;
+        }
+    })
+  }catch(e){
+    
+  }
 
   if(tagsText == ""){
     $("#result .stats .tags").addClass('hidden');
