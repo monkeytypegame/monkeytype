@@ -9,3 +9,7 @@
     --extra-error-color: #da3333;
     --extra-error-extra-color: #791717;
 }
+
+#liveWpm, #timerNumber{
+    color: white;
+}
