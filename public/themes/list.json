@@ -188,5 +188,10 @@
         "name": "vaporwave",
         "bgColor": "#a4a7ea",
         "textColor": "#e368da"
+    },
+    {
+        "name": "pulse",
+        "bgColor": "#181818",
+        "textColor": "#17b8bd"
     }
 ]
