@@ -199,7 +199,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
         trendlineLinear: {
           style: "rgba(255,105,180, .8)",
           lineStyle: "dotted",
-          width: 2
+          width: 4
         }
       },
     ],
