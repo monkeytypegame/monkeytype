@@ -474,12 +474,12 @@ function loadMoreLines(){
     result = filteredResults[i];
     if(result == undefined) continue;
     let withpunc = '';
-    if (result.punctuation) {
-      withpunc = '<br>punctuation';
-    }
-    if (result.blindMode) {
-      withpunc = '<br>blind';
-    }
+    // if (result.punctuation) {
+    //   withpunc = '<br>punctuation';
+    // }
+    // if (result.blindMode) {
+    //   withpunc = '<br>blind';
+    // }
     let diff = result.difficulty;
     if (diff == undefined){
       diff = 'normal';
