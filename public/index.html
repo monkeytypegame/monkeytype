@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monkey Type</title>
   <link rel="stylesheet" href="css/fa.css">
+  <link rel="stylesheet" href="css/balloon.css">
   <link rel="stylesheet" href="css/style.css?v=18">
   <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme">
   <link id="favicon" rel="shortcut icon" href="fav.png">
@@ -40,6 +41,15 @@
       <div class="button"><i class="fas fa-plus"></i></div>
     </div>
   </div>
+  <div id="resultEditTagsPanelWrapper" class="hidden">
+    <div id="resultEditTagsPanel" resultid="">
+      <div class="buttons">
+        <div class="button tag">asdf</div>
+        <div class="button active tag">asdf</div>
+      </div>
+      <div class="button confirmButton"><i class="fas fa-check"></i></div>
+    </div>
+  </div>
   <div id="versionHistoryWrapper" class="hidden">
     <div id="versionHistory">
       <div class="tip">Click anywhere to dismiss</div>
@@ -72,26 +82,6 @@
   </div>
   <div id="timerWrapper">
     <div id="timer"></div>
-  </div>
-  <div id="resultScreenshot" class="">
-    <div class="stats">
-      <div class="group">
-        <div class="top">wpm</div>
-        <div class="bottom">100</div>
-      </div>
-      <div class="group">
-        <div class="top">key</div>
-        <div class="bottom">100/2</div>
-      </div>
-      <div class="group">
-        <div class="top">acc</div>
-        <div class="bottom">100%</div>
-      </div>
-    </div>
-    <div class="logo">
-      <!--     <div class="top">monkey-see</div> -->
-      <div class="bottom">monkey-type.com</div>
-    </div>
   </div>
   <div id="centerContent" class="hidden">
     <div id="top">
@@ -671,8 +661,8 @@
                   <td>incorrect<br>chars</td>
                   <td>mode</td>
                   <!-- <td>punctuation</td> -->
-                  <td>difficulty</td>
-                  <td>language</td>
+                  <td>info</td>
+                  <td>tags</td>
                   <td>date</td>
                 </tr>
               </thead>

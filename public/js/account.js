@@ -165,6 +165,12 @@ firebase.auth().onAuthStateChanged(function(user) {
       updateFilterTags();
       updateCommandsTagsList();
       loadActiveTagsFromCookie();
+      updateResultEditTagsPanelButtons();
+      config.resultFilters.forEach(filter => {
+        if(filter.substring(0,4) === "tag_" && filter !== "tag_notag"){
+          toggleFilterButton(filter);
+        }
+      })
     });
     var displayName = user.displayName;
     var email = user.email;
@@ -483,6 +489,53 @@ function loadMoreLines(){
     if (raw == undefined){
       raw = '-';
     }
+
+
+    let icons = `<span aria-label="${result.language.replace('_',' ')}" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i></span>`;
+
+    if(diff === 'normal'){
+      icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="far fa-fw fa-star"></i></span>`;
+    }else if(diff === "expert"){
+      icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star-half-alt"></i></span>`;
+    }else if(diff === "master"){
+      icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i></span>`;
+    }
+
+    if(result.punctuation){
+      icons += `<span aria-label="punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-quote-right"></i></span>`;
+    }
+
+    if(result.blindMode){
+      icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
+    }
+
+    let tagNames = "";
+
+    if(result.tags !== undefined && result.tags.length > 0){
+      result.tags.forEach(tag => {
+        dbSnapshot.tags.forEach(snaptag => {
+          if(tag === snaptag.id){
+            tagNames += snaptag.name + ", ";
+          }
+        })
+      })
+      tagNames = tagNames.substring(0, tagNames.length - 2);
+    }
+
+    // if(tagNames !== ""){
+    //   icons += `<span aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
+    // }
+
+    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
+
+    if(tagNames !== ""){
+      if(result.tags !== undefined && result.tags.length > 1){
+        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
+      }else{
+        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
+      }
+    }
+
     
     $(".pageAccount .history table tbody").append(`
     <tr>
@@ -492,8 +545,8 @@ function loadMoreLines(){
     <td>${result.correctChars}</td>
     <td>${result.incorrectChars}</td>
     <td>${result.mode} ${result.mode2}${withpunc}</td>
-    <td>${diff}</td>
-    <td>${result.language.replace('_','<br>')}</td>
+    <td class="infoIcons">${icons}</td>
+    <td>${tagIcons}</td>
     <td>${moment(result.timestamp).format('DD MMM YYYY<br>HH:mm')}</td>
     </tr>`);
   }
@@ -806,3 +859,102 @@ function refreshAccountPage() {
     cont();
   }
 }
+
+
+function showResultEditTagsPanel(){
+  if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
+    $("#resultEditTagsPanelWrapper")
+    .stop(true, true)
+    .css("opacity", 0)
+    .removeClass("hidden")
+    .animate({opacity: 1},125);
+  }
+}
+
+function hideResultEditTagsPanel(){
+  if (!$("#resultEditTagsPanelWrapper").hasClass("hidden")) {
+    $("#resultEditTagsPanelWrapper")
+    .stop(true, true)
+    .css("opacity", 1)
+    .animate(
+        {
+            opacity: 0
+        },100,e => {
+          $("#resultEditTagsPanelWrapper").addClass('hidden');
+        });
+    }
+}
+
+$(document).on('click','.pageAccount .group.history #resultEditTags',f => {
+  let resultid = $(f.target).parents('span').attr('resultid');
+  let tags = $(f.target).parents('span').attr('tags');
+  $("#resultEditTagsPanel").attr('resultid',resultid);
+  $("#resultEditTagsPanel").attr('tags',tags);
+  updateActiveResultEditTagsPanelButtons(JSON.parse(tags));
+  showResultEditTagsPanel();
+})
+
+$(document).on('click','#resultEditTagsPanelWrapper .button.tag',f => {
+  $(f.target).toggleClass('active');
+})
+
+$("#resultEditTagsPanelWrapper").click(e => {
+  if($(e.target).attr('id') === "resultEditTagsPanelWrapper"){
+    hideResultEditTagsPanel();
+  }
+})
+
+function updateResultEditTagsPanelButtons(){
+  $("#resultEditTagsPanel .buttons").empty();
+  dbSnapshot.tags.forEach(tag => {
+    $("#resultEditTagsPanel .buttons").append(`<div class="button tag" tagid="${tag.id}">${tag.name}</div>`);
+  })
+}
+
+function updateActiveResultEditTagsPanelButtons(active){
+  if(active === []) return;
+  $.each($("#resultEditTagsPanel .buttons .button"), (index,obj) => {
+    let tagid = $(obj).attr('tagid');
+    if(active.includes(tagid)){
+      $(obj).addClass('active');
+    }else{
+      $(obj).removeClass('active');
+    }
+    // active.forEach(activetagid => {
+    //   if(activetagid === tagid){
+    //     $(obj).addClass('active');
+    //   }else{
+    //     $(obj).removeClass('active');
+    //   }
+    // })
+  });
+}
+
+$("#resultEditTagsPanel .confirmButton").click(f => {
+  let resultid = $("#resultEditTagsPanel").attr('resultid');
+  let oldtags = JSON.parse($("#resultEditTagsPanel").attr('tags'));
+
+  let newtags = [];
+  $.each($("#resultEditTagsPanel .buttons .button"), (index,obj) => {
+    let tagid = $(obj).attr('tagid');
+    if($(obj).hasClass('active')){
+      newtags.push(tagid);
+    }
+  });
+  showBackgroundLoader();
+  hideResultEditTagsPanel();
+  updateResultTags({uid:firebase.auth().currentUser.uid,tags:newtags,resultid:resultid}).then(r=>{
+    hideBackgroundLoader();
+    if(r.data.resultCode === 1){
+      showNotification('Tags updated',1000);
+      dbSnapshot.results.forEach(result => {
+        if(result.id === resultid){
+          result.tags = newtags;
+        }
+      })
+      refreshAccountPage();
+    }else{
+      showNotification('Error updating tags',3000);
+    }
+  });
+})

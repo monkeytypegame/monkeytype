@@ -34,7 +34,7 @@ const testCompleted = firebase.functions().httpsCallable('testCompleted');
 const addTag = firebase.functions().httpsCallable('addTag');
 const editTag = firebase.functions().httpsCallable('editTag');
 const removeTag = firebase.functions().httpsCallable('removeTag');
-
+const updateResultTags = firebase.functions().httpsCallable('updateResultTags');
 
 function showNotification(text, time) {
   let noti = $(".notification");
