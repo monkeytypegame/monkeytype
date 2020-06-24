@@ -198,5 +198,10 @@
         "name": "matrix",
         "bgColor": "#000000",
         "textColor": "#15ff00"
+    },
+    {
+        "name": "olive",
+        "bgColor": "#e9e5cc",
+        "textColor": "#92946f"
     }
 ]
