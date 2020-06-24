@@ -1877,6 +1877,7 @@ $(document).keydown((event) => {
         currentWordIndex++;
         updateActiveElement();
         updateCaretPosition();
+        currentKeypressCount++;
       } else {
         inputHistory.push(currentInput);
         highlightBadWord(currentWordIndex,!config.blindMode)
@@ -1897,6 +1898,7 @@ $(document).keydown((event) => {
         }
         updateActiveElement();
         updateCaretPosition();
+        currentKeypressCount++;
       }
       if (config.mode === "words" || config.mode === "custom") {
         updateTimer();
