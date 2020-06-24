@@ -675,7 +675,7 @@ function showResult(difficultyFailed = false) {
   let testtime = roundedToFixed(stats.time,1);
   $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
   $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
-  $("#result .stats .acc .bottom").text(Math.round(stats.acc) + "%");
+  $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
   $("#result .stats .key .bottom").text(stats.correctChars + stats.spaces + "/" + stats.incorrectChars);
   $("#result .stats .time .bottom").text(testtime+'s');
 
@@ -911,10 +911,14 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.data.labels = labels;
 
+  console.log(keypressPerSecond);
+
+  let rawWpmPerSecond = keypressPerSecond.map(f => Math.round((f/5)*60));
+
   wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
   wpmOverTimeChart.data.datasets[1].borderColor = subColor;
-  wpmOverTimeChart.data.datasets[1].data = rawHistory;
+  wpmOverTimeChart.data.datasets[1].data = rawWpmPerSecond;
 
   wpmOverTimeChart.options.annotation.annotations[0].borderColor = subColor;
   wpmOverTimeChart.options.annotation.annotations[0].label.backgroundColor = subColor;
@@ -922,12 +926,15 @@ function showResult(difficultyFailed = false) {
   
 
 
-  let maxVal = 0;
-  rawHistory.forEach(raw =>{
-    if(raw >= maxVal){
-      maxVal = raw;
-    }
-  })
+  // let maxVal = 0;
+  // rawWpmPerSecond.forEach(raw =>{
+  //   if(raw >= maxVal){
+  //     maxVal = raw;
+  //   }
+  // })
+
+  let maxVal = Math.max(...[Math.max(...rawWpmPerSecond),Math.max(...wpmHistory)]);
+
   wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxVal;
   wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxVal;
 
