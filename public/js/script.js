@@ -1833,7 +1833,7 @@ $(document).keydown((event) => {
         }
         compareInput(currentWordIndex,currentInput,!config.blindMode);
       }
-      currentKeypressCount++;
+      // currentKeypressCount++;
       updateCaretPosition();
     }
     //space
