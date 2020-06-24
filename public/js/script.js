@@ -700,8 +700,7 @@ function showResult(difficultyFailed = false) {
     // $("#result .stats .time").removeClass('hidden');
     // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
   }
-  
-  let pbVal = 0;
+
 
   if (firebase.auth().currentUser != null) {
     $("#result .loginTip").addClass('hidden');
@@ -773,6 +772,9 @@ function showResult(difficultyFailed = false) {
               }
               localPb = true;
             }
+            wpmOverTimeChart.options.annotation.annotations[0].value = d2;
+            wpmOverTimeChart.options.annotation.annotations[0].label.content = "PB: "+ d2;
+            wpmOverTimeChart.update();
           })
         })
         
@@ -791,7 +793,7 @@ function showResult(difficultyFailed = false) {
             if(e.data === 2){
               //new pb
               if(!localPb){
-                  showNotification('Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.',15000);
+                  showNotification('Local PB data is out of sync! Resyncing.',5000);
               }
               db_saveLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty,stats.wpm);
             }else{
@@ -910,8 +912,6 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.options.scales.yAxes[2].scaleLabel.fontColor = subColor;
 
   wpmOverTimeChart.data.labels = labels;
-
-  console.log(keypressPerSecond);
 
   let rawWpmPerSecond = keypressPerSecond.map(f => Math.round((f/5)*60));
 
@@ -1059,7 +1059,7 @@ function restartTest(withSameWordset = false) {
       clearIntervals();
       $("#restartTestButton").css('opacity', 1);
       if ($("#commandLineWrapper").hasClass('hidden')) focusWords();
-      wpmOverTimeChart.options.annotation.annotations[0].value = "-20";
+      wpmOverTimeChart.options.annotation.annotations[0].value = "-30";
       wpmOverTimeChart.update();
 
 
@@ -2103,7 +2103,7 @@ let wpmOverTimeChart = new Chart(ctx, {
         type: 'line',
         mode: 'horizontal',
         scaleID: 'wpm',
-        value: '-20',
+        value: '-30',
         borderColor: 'red',
         borderWidth: 1,
         borderDash: [2,2],
@@ -2139,7 +2139,7 @@ let wpmOverTimeChart = new Chart(ctx, {
           // Text to display in label - default is null. Provide an array to display values on a new line
           content: "PB",
 
-        },
+        }
       }]
     }
   }
