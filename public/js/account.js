@@ -886,12 +886,14 @@ function hideResultEditTagsPanel(){
 }
 
 $(document).on('click','.pageAccount .group.history #resultEditTags',f => {
-  let resultid = $(f.target).parents('span').attr('resultid');
-  let tags = $(f.target).parents('span').attr('tags');
-  $("#resultEditTagsPanel").attr('resultid',resultid);
-  $("#resultEditTagsPanel").attr('tags',tags);
-  updateActiveResultEditTagsPanelButtons(JSON.parse(tags));
-  showResultEditTagsPanel();
+  if(dbSnapshot.tags.length > 0){
+    let resultid = $(f.target).parents('span').attr('resultid');
+    let tags = $(f.target).parents('span').attr('tags');
+    $("#resultEditTagsPanel").attr('resultid',resultid);
+    $("#resultEditTagsPanel").attr('tags',tags);
+    updateActiveResultEditTagsPanelButtons(JSON.parse(tags));
+    showResultEditTagsPanel();
+  }
 })
 
 $(document).on('click','#resultEditTagsPanelWrapper .button.tag',f => {

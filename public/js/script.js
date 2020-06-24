@@ -1481,6 +1481,7 @@ function tagsEdit(){
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if(status === 1){
+        updateResultEditTagsPanelButtons();
         showNotification('Tag added',2000);
         dbSnapshot.tags.push({
           name: inputVal,
@@ -1500,6 +1501,7 @@ function tagsEdit(){
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if(status === 1){
+        updateResultEditTagsPanelButtons();
         showNotification('Tag updated',2000);
         dbSnapshot.tags.forEach(tag => {
           if(tag.id === tagid){
@@ -1520,6 +1522,7 @@ function tagsEdit(){
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if(status === 1){
+        updateResultEditTagsPanelButtons();
         showNotification('Tag removed',2000);
         dbSnapshot.tags.forEach((tag,index) => {
           if(tag.id === tagid){
