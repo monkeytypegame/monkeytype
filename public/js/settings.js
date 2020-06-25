@@ -67,12 +67,14 @@ function updateSettingsPage(){
     setSettingsButton('maxConfidence', config.maxConfidence);
 
     setActiveThemeButton();
+    setActiveThemeTab();
     setActiveLanguageButton();
     setActiveLayoutButton();
     setActiveFontSizeButton();
     setActiveDifficultyButton();
     setActiveCaretStyleButton();
     setActiveTimerStyleButton();
+
 
 
     if (config.showKeyTips) {
@@ -87,6 +89,10 @@ function updateSettingsPage(){
 function setActiveThemeButton() {
     $(`.pageSettings .section.themes .theme`).removeClass('active');
     $(`.pageSettings .section.themes .theme[theme=${config.theme}]`).addClass('active');
+}
+
+function setActiveThemeTab() {
+    config.customTheme === true ? $("[tab='custom']").click() : $("[tab='preset']").click()
 }
 
 function setActiveLayoutButton(){
@@ -445,32 +451,20 @@ $(document).on("click",".pageSettings .section.tags .tagsList .tag .removeButton
 //theme tabs & custom theme
 const colorVars = ['--bg-color', '--main-color','--caret-color', '--sub-color', '--text-color', '--error-color', '--error-extra-color']
 
-function presetColor() {
-    colorVars.forEach(e => {
-        document.documentElement.style.setProperty(e, '')
-    });
-}
-
-function customColor() {
-    colorVars.forEach(e => {
-        document.documentElement.style.setProperty(e, 'inherit')
-    });
-}
-
 $(".tab").click(e => {
     $('.tab').removeClass("active")
     var $target = $(e.currentTarget)
         $target.addClass("active")
     
         if($target.attr("tab") == "preset") {
+            setCustomTheme(false)
             $('[tabContent="custom"]').removeClass("reveal")
-            presetColor()
             setTimeout(() => {
                 $('[tabContent="preset"]').addClass("reveal")
             }, 250);
         } else {
+            setCustomTheme(true)
             $('[tabContent="preset"]').removeClass("reveal")
-            customColor();
             setTimeout(() => {
                 $('[tabContent="custom"]').addClass("reveal")
             }, 250);
@@ -478,8 +472,15 @@ $(".tab").click(e => {
 })
 
 $('.colorPicker').on('input', e => {
-    var $colorVar = $(e.currentTarget).attr('colorVar')
-    var $pickedColor = $(e.currentTarget).val();
+    let $colorVar = $(e.currentTarget).attr('colorVar')
+    let $pickedColor = $(e.currentTarget).val();
 
     document.documentElement.style.setProperty($colorVar, $pickedColor)
+    
+    config.customThemeColors[colorVars.indexOf($colorVar)] = $pickedColor
 })
+
+$('.colorPicker').on('change', e => {
+    setCustomTheme(true)
+})
+

@@ -589,7 +589,11 @@ $(document).ready(e => {
                 }else{
                     hideCommandLine();
                 }
-                setTheme(config.theme);
+                if (config.customTheme = true) {
+                    setCustomTheme();
+                 }else{
+                     setTheme(config.theme)
+                 }
             }
         }
     })
