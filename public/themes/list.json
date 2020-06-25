@@ -51,8 +51,8 @@
     },
     {
         "name": "rgb",
-        "bgColor": "#111",
-        "textColor": "#eee"
+        "bgColor": "linear-gradient(to left, indigo, blue, green, yellow, orange, red);",
+        "textColor": "#fff"
     },
     {
         "name": "oblivion",
