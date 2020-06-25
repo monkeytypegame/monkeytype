@@ -481,6 +481,6 @@ $('.colorPicker').on('input', e => {
 })
 
 $('.colorPicker').on('change', e => {
-    setCustomTheme(true)
+    setCustomTheme(true) // Save a color once picked
 })
 

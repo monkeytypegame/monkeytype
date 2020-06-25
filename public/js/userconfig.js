@@ -38,7 +38,6 @@ function saveConfigToCookie() {
         path: '/'
      });
     restartCount = 0;
-    console.log("config saved")
 }
 
 function saveActiveTagsToCookie(){
