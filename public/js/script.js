@@ -36,6 +36,28 @@ const editTag = firebase.functions().httpsCallable('editTag');
 const removeTag = firebase.functions().httpsCallable('removeTag');
 const updateResultTags = firebase.functions().httpsCallable('updateResultTags');
 
+  function smooth(arr, windowSize, getter = (value) => value, setter) {
+    const get = getter
+    const result = []
+  
+    for (let i = 0; i < arr.length; i += 1) {
+      const leftOffeset = i - windowSize
+      const from = leftOffeset >= 0 ? leftOffeset : 0
+      const to = i + windowSize + 1
+  
+      let count = 0
+      let sum = 0
+      for (let j = from; j < to && j < arr.length; j += 1) {
+        sum += get(arr[j])
+        count += 1
+      }
+  
+      result[i] = setter ? setter(arr[i], sum / count) : sum / count
+    }
+  
+    return result
+  }
+
 function showNotification(text, time) {
   let noti = $(".notification");
   noti.text(text);
@@ -914,6 +936,9 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.data.labels = labels;
 
   let rawWpmPerSecond = keypressPerSecond.map(f => Math.round((f/5)*60));
+
+  rawWpmPerSecond = smooth(rawWpmPerSecond,1);
+  
 
   wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
