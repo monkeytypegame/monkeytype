@@ -63,7 +63,7 @@ function updateSettingsPage(){
     setSettingsButton('quickEnd', config.quickEnd);
     setSettingsButton('flipTestColors', config.flipTestColors);
     setSettingsButton('discordDot', config.showDiscordDot);
-    setSettingsButton('extraTestColor', config.extraTestColor);
+    setSettingsButton('colorfulMode', config.colorfulMode);
     setSettingsButton('maxConfidence', config.maxConfidence);
 
     setActiveThemeButton();
@@ -400,15 +400,15 @@ $(".pageSettings .section.flipTestColors .buttons .button.off").click(e => {
 })
 
 //extra color
-$(".pageSettings .section.extraTestColor .buttons .button.on").click(e => {
-    setExtraTestColor(true);
-    showNotification('Extra test color on', 1000);
-    setSettingsButton('extraTestColor', config.extraTestColor);
+$(".pageSettings .section.colorfulMode .buttons .button.on").click(e => {
+    setColorfulMode(true);
+    showNotification('Colorful mode on', 1000);
+    setSettingsButton('colorfulMode', config.colorfulMode);
 })
-$(".pageSettings .section.extraTestColor .buttons .button.off").click(e => {
-    setExtraTestColor(false);
-    showNotification('Extra test color off', 1000);
-    setSettingsButton('extraTestColor', config.extraTestColor);
+$(".pageSettings .section.colorfulMode .buttons .button.off").click(e => {
+    setColorfulMode(false);
+    showNotification('Colorful mode off', 1000);
+    setSettingsButton('colorfulMode', config.colorfulMode);
 })
 
 //tags

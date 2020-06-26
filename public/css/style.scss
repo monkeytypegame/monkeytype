@@ -942,39 +942,39 @@ key {
   }
 }
 
-#words.extraColor{
+#words.colorfulMode{
   .word{
     & letter.correct{
       color: var(--main-color);
     }
     & letter.incorrect{
-      color: var(--extra-error-color);
+      color: var(--colorful-error-color);
     }
     & letter.incorrect.extra{
-      color: var(--extra-error-extra-color);
+      color: var(--colorful-error-extra-color);
     }
   }
 }
 
-#words.flipped.extraColor{
+#words.flipped.colorfulMode{
   .word{
     color: var(--main-color);
     & letter.correct{
       color: var(--sub-color);
     }
     & letter.incorrect{
-      color: var(--extra-error-color);
+      color: var(--colorful-error-color);
     }
     & letter.incorrect.extra{
-      color: var(--extra-error-extra-color);
+      color: var(--colorful-error-extra-color);
     }
   }
 }
 
-#words.flipped.extraColor .word.error,
-#words.extraColor .word.error
+#words.flipped.colorfulMode .word.error,
+#words.colorfulMode .word.error
 {
-  border-bottom: 2px solid var(--extra-error-color);
+  border-bottom: 2px solid var(--colorful-error-color);
 }
 
 .pageTest #resultExtraButtons{

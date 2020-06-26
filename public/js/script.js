@@ -1372,11 +1372,11 @@ function flipTestColors(tf){
   }
 }
 
-function applyExtraTestColor(tc){
+function applyColorfulMode(tc){
   if(tc){
-    $("#words").addClass('extraColor');
+    $("#words").addClass('colorfulMode');
   }else{
-    $("#words").removeClass('extraColor');
+    $("#words").removeClass('colorfulMode');
   }
 }
 

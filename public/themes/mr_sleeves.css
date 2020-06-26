@@ -6,8 +6,8 @@
     --text-color: #1d1d1d;
     --error-color: #bf6464;
     --error-extra-color: #793e44;
-    --extra-error-color: #8fadc9;
-    --extra-error-extra-color: #667c91;
+    --colorful-error-color: #8fadc9;
+    --colorful-error-extra-color: #667c91;
 }
 
 #top .logo .bottom{

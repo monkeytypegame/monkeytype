@@ -21,7 +21,8 @@ let defaultConfig = {
     layout:"default",
     showDiscordDot: true,
     maxConfidence: false,
-    timerStyle: "bar"
+    timerStyle: "bar",
+    colorfulMode: true
 }
 
 let config = defaultConfig;
@@ -81,7 +82,7 @@ function loadConfigFromCookie() {
         setQuickEnd(newConfig.quickEnd,true);
         setFlipTestColors(newConfig.flipTestColors,true);
         setDiscordDot(newConfig.hideDiscordDot,true);
-        setExtraTestColor(newConfig.extraTestColor,true);
+        setColorfulMode(newConfig.colorfulMode,true);
         setMaxConfidence(newConfig.maxConfidence,true);
         setTimerStyle(newConfig.timerStyle,true);
         if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
@@ -209,18 +210,18 @@ function toggleFlipTestColors(){
 }
 
 //extra color
-function setExtraTestColor(extra,nosave){
+function setColorfulMode(extra,nosave){
     if(extra == undefined){
         extra = false;
     }
-    config.extraTestColor = extra;
-    applyExtraTestColor(extra);
+    config.colorfulMode = extra;
+    applyColorfulMode(extra);
     if(!nosave) saveConfigToCookie();
 }
 
-function toggleExtraTestColor(){
-    config.extraTestColor = !config.extraTestColor;
-    applyExtraTestColor(config.extraTestColor);
+function toggleColorfulMode(){
+    config.colorfulMode = !config.colorfulMode;
+    applyColorfulMode(config.colorfulMode);
     saveConfigToCookie();
 }
 

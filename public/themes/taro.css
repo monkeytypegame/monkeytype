@@ -7,8 +7,8 @@
   --text-color: #130f1a;
   --error-color: #ffe23e;
   --error-extra-color: #fff1c3; 
-  --extra-error-color: #ffe23e;
-  --extra-error-extra-color: #fff1c3; 
+  --colorful-error-color: #ffe23e;
+  --colorful-error-extra-color: #fff1c3; 
 }
 
 .word.error{

@@ -97,10 +97,10 @@ let commands = {
             }
         },
         {
-            id: "toggleExtraTestColor",
+            id: "toggleColorfulMode",
             display: "Toggle extra test color",
             exec: () => {
-                toggleExtraTestColor();
+                toggleColorfulMode();
             }
         },
         {
