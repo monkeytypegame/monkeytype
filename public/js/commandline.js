@@ -642,6 +642,13 @@ $("#commandLineWrapper #commandLine .suggestions").click(e =>{
     triggerCommand($(e.target).attr('command'));
 })
 
+
+$('#commandLineWrapper').click(e => {
+    if($(e.target).attr('id') === "commandLineWrapper"){
+        hideCommandLine();
+    }
+})
+
 $(document).keydown((e) => {
     if(!$("#commandLineWrapper").hasClass("hidden")){
         $("#commandLine input").focus();
