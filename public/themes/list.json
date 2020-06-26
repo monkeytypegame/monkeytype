@@ -203,5 +203,10 @@
         "name": "olive",
         "bgColor": "#e9e5cc",
         "textColor": "#92946f"
+    },
+    {
+        "name": "strawberry",
+        "bgColor": "#e53c58",
+        "textColor": "#fcfcf8"
     }
 ]
