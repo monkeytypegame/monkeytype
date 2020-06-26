@@ -1441,6 +1441,7 @@ key {
                             "buttons";
       gap: .5rem;
       .tabs {
+        font-family: "Roboto Mono";
         grid-area: tabs;
         display: flex;
         grid-template-columns: 1fr 1fr 9fr;
