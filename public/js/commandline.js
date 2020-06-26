@@ -14,6 +14,17 @@ let commands = {
             }
         },
         {
+            visible: false,
+            id: "changeTags",
+            display: "Change tags...",
+            subgroup: true,
+            exec: () => {
+                updateCommandsTagsList();
+                currentCommands.push(commandsTags);
+                showCommandLine();
+            }
+        },
+        {
             id: "toggleSmoothCaret",
             display: "Toggle smooth caret",
             exec: () => {
@@ -426,6 +437,51 @@ let commandsFontSize = {
     ]
 };
 
+let commandsTags = {
+    title: "Change tags...",
+    list: [
+
+    ]
+};
+
+function updateCommandsTagsList(){
+    if(dbSnapshot.tags.length > 0){
+        commandsTags.list = [];
+        dbSnapshot.tags.forEach(tag => {
+
+            let dis = tag.name;
+
+            if(tag.active === true){
+                dis = '<i class="fas fa-check-square"></i>' + dis;
+            }else{
+                dis = '<i class="fas fa-square"></i>' + dis;
+            }
+
+
+            commandsTags.list.push({
+                id: "toggleTag" + tag.id,
+                display: dis,
+                sticky: true,
+                exec: () => {
+                    toggleTag(tag.id);
+                    updateTestModesNotice();
+                    let txt = tag.name;
+
+
+                    
+                    if(tag.active === true){
+                        txt = '<i class="fas fa-check-square"></i>' + txt;
+                    }else{
+                        txt = '<i class="fas fa-square"></i>' + txt;
+                    }
+                    $(`#commandLine .suggestions .entry[command='toggleTag${tag.id}']`).html(txt);
+                }
+            })
+        })
+        commands.list[1].visible = true;
+    }
+}
+
 let themesList;
 
 $.getJSON("themes/list.json", function(data) {
@@ -644,6 +700,7 @@ function triggerCommand(command){
     let subgroup = false;
     let input = false;
     let list = currentCommands[currentCommands.length-1];
+    let sticky = false;
     $.each(list.list, (i, obj) => {
         if (obj.id == command) {
             if (obj.input) {
@@ -654,10 +711,13 @@ function triggerCommand(command){
                 if (obj.subgroup !== null && obj.subgroup !== undefined) {
                     subgroup = obj.subgroup;
                 }
+                if(obj.sticky === true){
+                    sticky = true;
+                }
             }
         }
     });
-    if (!subgroup && !input) {
+    if (!subgroup && !input && !sticky) {
         try{
             firebase.analytics().logEvent('usedCommandLine', {
                 command: command
@@ -721,7 +781,7 @@ function hideCommandLine() {
             let list = currentCommands[currentCommands.length-1];
             if (inputVal[0] == "") {
                 $.each(list.list, (index, obj) => {
-                    obj.found = true;
+                    if(obj.visible !== false) obj.found = true;
                 });
             } else {
                 $.each(list.list, (index, obj) => {
@@ -737,7 +797,7 @@ function hideCommandLine() {
                         }
                     });
                     if (foundcount > 0) {
-                        obj.found = true;
+                        if(obj.visible !== false) obj.found = true;
                     } else {
                         obj.found = false;
                     }

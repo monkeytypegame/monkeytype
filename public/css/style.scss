@@ -148,6 +148,60 @@ a:hover {
 }
 
 
+#resultEditTagsPanelWrapper{
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 0;
+  #resultEditTagsPanel{
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    overflow-y: scroll;
+    width: 500px;
+    .buttons{
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    .button{
+      display: block;
+      color: var(--text-color);
+      cursor: pointer;
+      transition: .25s;
+      padding: .2rem .5rem;
+      border-radius: var(--roundness);
+
+      background: rgba(0,0,0,.1);
+      text-align: center;
+      -webkit-user-select: none;
+      display: grid;
+      align-content: center;
+      height: min-content;
+      height: -moz-min-content;
+      &.active{
+        background: var(--main-color);
+        color: var(--bg-color);
+      }
+      &:hover,&:focus{
+        color: var(--bg-color);
+        background: var(--main-color);
+        outline: none;
+      }
+    }
+  }
+}
+
+
 #versionHistoryWrapper{
   width: 100%;
   height: 100%;
@@ -274,6 +328,9 @@ a:hover {
         font-size: 0.75rem;
         line-height: 0.75rem;
         color: var(--sub-color);
+        .fas{
+          margin-right: .5rem;
+        }
         &:last-child{
           border-radius: 0 0 var(--roundness) var(--roundness);
         }
@@ -575,6 +632,7 @@ a:hover {
   margin-left: -0.15rem;
   color: var(--main-color);
   transition: .25s;
+  cursor: pointer;
 }
 
 
@@ -1489,6 +1547,17 @@ key {
     tbody tr:nth-child(odd) td{
       background: rgba(0, 0, 0, 0.1); 
     }
+    td.infoIcons span{
+      margin: 0 .1rem;
+    }
+  }
+  #resultEditTags{
+    transition: .25s;
+  }
+  #resultEditTags:hover{
+    cursor: pointer;
+    color: var(--main-color);
+    opacity: 1 !important;
   }
 }
 

@@ -18,7 +18,7 @@ function updateSettingsPage(){
     if(firebase.auth().currentUser !== null && dbSnapshot !== null){
         let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
         dbSnapshot.tags.forEach(tag => {
-            if(activeTags.includes(tag.id)){
+            if(tag.active === true){
                 tagsEl.append(`
             
                 <div class="tag" id="${tag.id}">
@@ -129,16 +129,54 @@ function setSettingsButton(buttonSection,tf) {
     }
 }
 
-function updateActiveTags(){
-    activeTags = [];
-    tagsString = "";
-    $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
-        if($(tag).children('.active').attr('active') === 'true'){
-            activeTags.push($(tag).attr('id'));
-            tagsString += $(tag).children('.title').text() + ', ';
+function showActiveTags(){
+    // activeTags = [];
+    // tagsString = "";
+    // $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
+    //     if($(tag).children('.active').attr('active') === 'true'){
+    //         activeTags.push($(tag).attr('id'));
+    //         tagsString += $(tag).children('.title').text() + ', ';
+    //     }
+    // })
+    // updateTestModesNotice();
+
+
+    // if($(target).attr('active') === 'true'){
+    //     $(target).attr('active','false');
+    //     $(target).html('<i class="fas fa-square"></i>')
+    // }else{
+    //     $(target).attr('active','true');
+    //     $(target).html('<i class="fas fa-check-square"></i>')
+    // }
+
+
+    // $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
+    //     let tagid = $(tag).attr('')
+    // })
+
+    dbSnapshot.tags.forEach(tag => {
+        if(tag.active === true){
+            $(`.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`).html('<i class="fas fa-check-square"></i>');
+        }else{
+            $(`.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`).html('<i class="fas fa-square"></i>');
+        }
+    })
+
+
+}
+
+function toggleTag(tagid, nosave = false){
+    dbSnapshot.tags.forEach(tag => {
+        if(tag.id === tagid){
+            if(tag.active === undefined){
+                tag.active = true;
+            }else{
+                tag.active = !tag.active;
+            }
         }
     })
     updateTestModesNotice();
+    if(!nosave) saveActiveTagsToCookie();
 }
 
 //smooth caret
@@ -377,14 +415,15 @@ $(".pageSettings .section.extraTestColor .buttons .button.off").click(e => {
 $(document).on("click",".pageSettings .section.tags .tagsList .tag .active",e => {
     let target = e.currentTarget;
     let tagid = $(target).parent('.tag').attr('id');
-    if($(target).attr('active') === 'true'){
-        $(target).attr('active','false');
-        $(target).html('<i class="fas fa-square"></i>')
-    }else{
-        $(target).attr('active','true');
-        $(target).html('<i class="fas fa-check-square"></i>')
-    }
-    updateActiveTags();
+    // if($(target).attr('active') === 'true'){
+    //     $(target).attr('active','false');
+    //     $(target).html('<i class="fas fa-square"></i>')
+    // }else{
+    //     $(target).attr('active','true');
+    //     $(target).html('<i class="fas fa-check-square"></i>')
+    // }
+    toggleTag(tagid);
+    showActiveTags();
 })
 
 $(document).on("click",".pageSettings .section.tags .addTagButton",e => {

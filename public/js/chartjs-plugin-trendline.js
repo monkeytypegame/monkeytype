@@ -9,7 +9,7 @@
  * Mod by: vesal: accept also xy-data so works with scatter
  */
 var pluginTrendlineLinear = {
-    afterDraw: function(chartInstance) {
+    afterDatasetsDraw: function(chartInstance) {
         var yScale;
         var xScale;
         for (var axis in chartInstance.scales) {
@@ -84,7 +84,7 @@ function addFitter(datasetMeta, ctx, dataset, xScale, yScale) {
     }
 
     ctx.lineWidth = lineWidth;
-    if (lineStyle === "dotted") { ctx.setLineDash([2, 3]); }
+    if (lineStyle === "dotted") { ctx.setLineDash([6, 6]); }
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
