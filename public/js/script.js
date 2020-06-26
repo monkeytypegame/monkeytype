@@ -36,6 +36,28 @@ const editTag = firebase.functions().httpsCallable('editTag');
 const removeTag = firebase.functions().httpsCallable('removeTag');
 const updateResultTags = firebase.functions().httpsCallable('updateResultTags');
 
+  function smooth(arr, windowSize, getter = (value) => value, setter) {
+    const get = getter
+    const result = []
+  
+    for (let i = 0; i < arr.length; i += 1) {
+      const leftOffeset = i - windowSize
+      const from = leftOffeset >= 0 ? leftOffeset : 0
+      const to = i + windowSize + 1
+  
+      let count = 0
+      let sum = 0
+      for (let j = from; j < to && j < arr.length; j += 1) {
+        sum += get(arr[j])
+        count += 1
+      }
+  
+      result[i] = setter ? setter(arr[i], sum / count) : sum / count
+    }
+  
+    return result
+  }
+
 function showNotification(text, time) {
   let noti = $(".notification");
   noti.text(text);
@@ -675,7 +697,7 @@ function showResult(difficultyFailed = false) {
   let testtime = roundedToFixed(stats.time,1);
   $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
   $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
-  $("#result .stats .acc .bottom").text(Math.round(stats.acc) + "%");
+  $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
   $("#result .stats .key .bottom").text(stats.correctChars + stats.spaces + "/" + stats.incorrectChars);
   $("#result .stats .time .bottom").text(testtime+'s');
 
@@ -700,8 +722,7 @@ function showResult(difficultyFailed = false) {
     // $("#result .stats .time").removeClass('hidden');
     // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
   }
-  
-  let pbVal = 0;
+
 
   if (firebase.auth().currentUser != null) {
     $("#result .loginTip").addClass('hidden');
@@ -773,6 +794,9 @@ function showResult(difficultyFailed = false) {
               }
               localPb = true;
             }
+            wpmOverTimeChart.options.annotation.annotations[0].value = d2;
+            wpmOverTimeChart.options.annotation.annotations[0].label.content = "PB: "+ d2;
+            wpmOverTimeChart.update();
           })
         })
         
@@ -791,7 +815,7 @@ function showResult(difficultyFailed = false) {
             if(e.data === 2){
               //new pb
               if(!localPb){
-                  showNotification('Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.',15000);
+                  showNotification('Local PB data is out of sync! Resyncing.',5000);
               }
               db_saveLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty,stats.wpm);
             }else{
@@ -911,10 +935,15 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.data.labels = labels;
 
+  let rawWpmPerSecond = keypressPerSecond.map(f => Math.round((f/5)*60));
+
+  rawWpmPerSecond = smooth(rawWpmPerSecond,1);
+  
+
   wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
   wpmOverTimeChart.data.datasets[1].borderColor = subColor;
-  wpmOverTimeChart.data.datasets[1].data = rawHistory;
+  wpmOverTimeChart.data.datasets[1].data = rawWpmPerSecond;
 
   wpmOverTimeChart.options.annotation.annotations[0].borderColor = subColor;
   wpmOverTimeChart.options.annotation.annotations[0].label.backgroundColor = subColor;
@@ -922,12 +951,15 @@ function showResult(difficultyFailed = false) {
   
 
 
-  let maxVal = 0;
-  rawHistory.forEach(raw =>{
-    if(raw >= maxVal){
-      maxVal = raw;
-    }
-  })
+  // let maxVal = 0;
+  // rawWpmPerSecond.forEach(raw =>{
+  //   if(raw >= maxVal){
+  //     maxVal = raw;
+  //   }
+  // })
+
+  let maxVal = Math.max(...[Math.max(...rawWpmPerSecond),Math.max(...wpmHistory)]);
+
   wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxVal;
   wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxVal;
 
@@ -1052,7 +1084,7 @@ function restartTest(withSameWordset = false) {
       clearIntervals();
       $("#restartTestButton").css('opacity', 1);
       if ($("#commandLineWrapper").hasClass('hidden')) focusWords();
-      wpmOverTimeChart.options.annotation.annotations[0].value = "-20";
+      wpmOverTimeChart.options.annotation.annotations[0].value = "-30";
       wpmOverTimeChart.update();
 
 
@@ -1486,6 +1518,7 @@ function tagsEdit(){
           name: inputVal,
           id: e.data.id
         })
+        updateResultEditTagsPanelButtons();
         updateSettingsPage();
         updateFilterTags();
       }else if(status === -1){
@@ -1506,6 +1539,7 @@ function tagsEdit(){
             tag.name = inputVal;
           }
         })
+        updateResultEditTagsPanelButtons();
         updateSettingsPage();
         updateFilterTags();
       }else if(status === -1){
@@ -1526,6 +1560,7 @@ function tagsEdit(){
             dbSnapshot.tags.splice(index, 1);
           }
         })
+        updateResultEditTagsPanelButtons();
         updateSettingsPage();
         updateFilterTags();
         updateActiveTags();
@@ -1823,7 +1858,7 @@ $(document).keydown((event) => {
         }
         compareInput(currentWordIndex,currentInput,!config.blindMode);
       }
-      currentKeypressCount++;
+      // currentKeypressCount++;
       updateCaretPosition();
     }
     //space
@@ -1867,6 +1902,7 @@ $(document).keydown((event) => {
         currentWordIndex++;
         updateActiveElement();
         updateCaretPosition();
+        currentKeypressCount++;
       } else {
         inputHistory.push(currentInput);
         highlightBadWord(currentWordIndex,!config.blindMode)
@@ -1887,6 +1923,7 @@ $(document).keydown((event) => {
         }
         updateActiveElement();
         updateCaretPosition();
+        currentKeypressCount++;
       }
       if (config.mode === "words" || config.mode === "custom") {
         updateTimer();
@@ -2091,7 +2128,7 @@ let wpmOverTimeChart = new Chart(ctx, {
         type: 'line',
         mode: 'horizontal',
         scaleID: 'wpm',
-        value: '-20',
+        value: '-30',
         borderColor: 'red',
         borderWidth: 1,
         borderDash: [2,2],
@@ -2127,7 +2164,7 @@ let wpmOverTimeChart = new Chart(ctx, {
           // Text to display in label - default is null. Provide an array to display values on a new line
           content: "PB",
 
-        },
+        }
       }]
     }
   }
