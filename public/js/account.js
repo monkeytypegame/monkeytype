@@ -171,6 +171,7 @@ firebase.auth().onAuthStateChanged(function(user) {
           toggleFilterButton(filter);
         }
       })
+      refreshTagsSettingsSection();
     });
     var displayName = user.displayName;
     var email = user.email;
