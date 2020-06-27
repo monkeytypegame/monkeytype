@@ -714,13 +714,15 @@ function showResult(difficultyFailed = false) {
   });
 
   let mode2 = "";
-  if (config.mode == "time") {
+  if (config.mode === "time") {
     mode2 = config.time;
     // $("#result .stats .time").addClass('hidden');
-  } else if (config.mode == "words") {
+  } else if (config.mode === "words") {
     mode2 = config.words;
     // $("#result .stats .time").removeClass('hidden');
     // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
+  } else if (config.mode === "custom"){
+    mode2 = "custom";
   }
 
 
@@ -794,9 +796,11 @@ function showResult(difficultyFailed = false) {
               }
               localPb = true;
             }
-            wpmOverTimeChart.options.annotation.annotations[0].value = d2;
-            wpmOverTimeChart.options.annotation.annotations[0].label.content = "PB: "+ d2;
-            wpmOverTimeChart.update();
+            if(d2 > 0){
+              wpmOverTimeChart.options.annotation.annotations[0].value = d2;
+              wpmOverTimeChart.options.annotation.annotations[0].label.content = "PB: "+ d2;
+              wpmOverTimeChart.update();
+            }
           })
         })
         
