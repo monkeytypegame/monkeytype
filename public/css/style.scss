@@ -11,10 +11,12 @@
 
 input[type="color"] {
 	-webkit-appearance: none;
-	border: none;
-	width: 32px;
+  padding: 0;
+  width: 100%;
   height: 32px;
+  overflow: hidden;
   border-radius: var(--roundness);
+  border: 1px solid black;
 }
 input[type="color"]::-webkit-color-swatch-wrapper {
 	padding: 0;
@@ -33,16 +35,25 @@ input{
   font-size: 1rem;
   line-height: 1rem;
   font-family: "Roboto Mono";
-  &.colorPicker {
+}
+
+.colorPicker {
+  text-align: center;
+  will-change: transform;
+  transition: transform .2s ease-in-out;
+  overflow: hidden;
+  border-radius: var(--roundness);
+  & label {
+    position: absolute;
+    width: 100%;
     text-align: center;
+    padding: auto;
     cursor: pointer;
-    will-change: padding;
-    transition: .1s ease-in-out padding;
-    width: 2rem;
-    height: 2rem;
-    &:hover {
-      padding: .3rem;
-    }
+  }
+  & [for="--bg-color"],
+  & #--bg-color {
+    color: var(--main-color);
+    border-color: var(--main-color);
   }
 }
 
@@ -1314,15 +1325,15 @@ key {
     display: grid;
     // gap: .5rem;
     grid-template-areas: "title title"
-                          "text buttons";
+                         "text buttons";
     grid-template-columns: 2fr 1fr;
     column-gap: 2rem;
     align-items: center;
     &.customTheme {
       grid-template-columns: 1fr 1fr 1fr 1fr;
       justify-items: stretch;
-      gap: .5rem;
-      & h1 {
+      gap: .5rem 2rem;
+      & h5 {
         grid-column: 1 / span 4;
       }
     }

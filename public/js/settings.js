@@ -449,7 +449,7 @@ $(document).on("click",".pageSettings .section.tags .tagsList .tag .removeButton
 })
 
 //theme tabs & custom theme
-const colorVars = ['--bg-color', '--main-color','--caret-color', '--sub-color', '--text-color', '--error-color', '--error-extra-color']
+const colorVars = ['--bg-color', '--main-color','--caret-color', '--sub-color', '--text-color', '--error-color', '--error-extra-color', '--colorful-error-color', '--colorful-error-extra-color']
 
 $(".tab").click(e => {
     $('.tab').removeClass("active")
@@ -461,22 +461,23 @@ $(".tab").click(e => {
             $('[tabContent="custom"]').removeClass("reveal")
             setTimeout(() => {
                 $('[tabContent="preset"]').addClass("reveal")
-            }, 250);
+            }, 150);
         } else {
             setCustomTheme(true)
             $('[tabContent="preset"]').removeClass("reveal")
             setTimeout(() => {
                 $('[tabContent="custom"]').addClass("reveal")
-            }, 250);
+            }, 150);
         }
 })
 
-$('.colorPicker').on('input', e => {
-    let $colorVar = $(e.currentTarget).attr('colorVar')
+$("[type='color']").on('input', e => {
+    let $colorVar = $(e.currentTarget).attr('id')
     let $pickedColor = $(e.currentTarget).val();
 
     document.documentElement.style.setProperty($colorVar, $pickedColor)
-    
+    $("[for="+$colorVar+"]").text($pickedColor)
+
     config.customThemeColors[colorVars.indexOf($colorVar)] = $pickedColor
 })
 
