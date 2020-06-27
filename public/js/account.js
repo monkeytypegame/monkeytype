@@ -179,10 +179,10 @@ firebase.auth().onAuthStateChanged(function(user) {
         saveConfigToCookie();
       }else{
         let configsDifferent = false;
-        Object.keys(cookieConfig).forEach(key => {
+        Object.keys(config).forEach(key => {
           if(!configsDifferent){
             if(key !== 'resultFilters')
-            if(cookieConfig[key] !== dbSnapshot.config[key]) configsDifferent = true;
+            if(config[key] != dbSnapshot.config[key]) configsDifferent = true;
           }
         })
         if(configsDifferent){
