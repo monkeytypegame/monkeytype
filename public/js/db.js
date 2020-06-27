@@ -48,6 +48,7 @@ async function db_getUserSnapshot() {
         // console.log('getting data from db!');
         try{
             snap.personalBests = data.data().personalBests;
+            snap.config = data.data().config;
         }catch(e){
             //
         }

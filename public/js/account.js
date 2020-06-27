@@ -172,6 +172,26 @@ firebase.auth().onAuthStateChanged(function(user) {
         }
       })
       refreshTagsSettingsSection();
+      if(cookieConfig === null){
+        applyConfig(dbSnapshot.config);
+        // showNotification('Applying db config',3000);
+        updateSettingsPage();
+        saveConfigToCookie();
+      }else{
+        let configsDifferent = false;
+        Object.keys(cookieConfig).forEach(key => {
+          if(!configsDifferent){
+            if(key !== 'resultFilters')
+            if(cookieConfig[key] !== dbSnapshot.config[key]) configsDifferent = true;
+          }
+        })
+        if(configsDifferent){
+          applyConfig(dbSnapshot.config);
+          // showNotification('Applying db config',3000);
+          updateSettingsPage();
+          saveConfigToCookie();
+        }
+      }
     });
     var displayName = user.displayName;
     var email = user.email;

@@ -124,7 +124,7 @@ exports.changeName = functions.https.onCall((request,response) => {
 exports.checkIfNeedsToChangeName = functions.https.onCall((request,response) => {
     try{
         return admin.auth().getUser(request.uid).then(requestUser => {
-            
+
             if(!isUsernameValid(requestUser.displayName)){
                 //invalid name, needs to change
                 console.log(`user ${requestUser.uid} ${requestUser.displayName} needs to change name`);
@@ -424,3 +424,67 @@ exports.updateResultTags = functions.https.onCall((request,response) => {
         return {resultCode:-999};
     }
 })
+
+function isConfigKeyValid(name){
+    if(name === null || name === undefined || name === "") return false;
+    if(name.length > 20) return false;
+    return /^[0-9a-zA-Z_.-]+$/.test(name);
+}
+
+exports.saveConfig = functions.https.onCall((request,response) => {
+    try{
+        if(request.uid === undefined || request.obj === undefined){
+            console.error(`error saving config for ${request.uid} - missing input`);
+            return -1;
+        }
+
+        let obj = request.obj;
+
+        let err = false;
+        Object.keys(obj).forEach(key => {
+            let val = obj[key];
+            if(Array.isArray(val)){
+                val.forEach(valarr => {
+                    if(!isConfigKeyValid(valarr)) err = true;
+                })
+            }else{
+                if(!isConfigKeyValid(val)) err = true;
+            }
+        })
+        if (err){
+            console.error(`error saving config for ${request.uid} - bad input`);
+            return -1;
+        }
+
+        return admin.firestore().collection(`users`).doc(request.uid).set({
+            config: obj
+        }, {merge: true}).then(e => {
+            return 1;
+        }).catch(e => {
+            console.error(`error saving config to DB for ${request.uid} - ${e.message}`);
+            return -1;
+        });
+    }catch(e){
+        console.error(`error saving config for ${request.uid} - ${e}`);
+        return {resultCode:-999};
+    }
+})
+
+// exports.getConfig = functions.https.onCall((request,response) => {
+//     try{
+//         if(request.uid === undefined){
+//             console.error(`error getting config for ${request.uid} - missing input`);
+//             return -1;
+//         }
+
+//         return admin.firestore().collection(`users`).doc(request.uid).get().then(e => {
+//             return e.data().config;
+//         }).catch(e => {
+//             console.error(`error getting config from DB for ${request.uid} - ${e.message}`);
+//             return -1;
+//         });
+//     }catch(e){
+//         console.error(`error getting config for ${request.uid} - ${e}`);
+//         return {resultCode:-999};
+//     }
+// })
