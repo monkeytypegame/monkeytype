@@ -15,6 +15,41 @@ function updateSettingsPage(){
         layoutEl.append(`<div class="layout button" layout='${layout}'>${layout.replace('_', ' ')}</div>`);
     });
 
+    refreshTagsSettingsSection();
+    
+
+    setSettingsButton('smoothCaret', config.smoothCaret);
+    setSettingsButton('quickTab', config.quickTab);
+    setSettingsButton('liveWpm', config.showLiveWpm);
+    setSettingsButton('timerBar', config.showTimerBar)
+    setSettingsButton('keyTips', config.showKeyTips);
+    setSettingsButton('freedomMode', config.freedomMode);
+    setSettingsButton('blindMode', config.blindMode);
+    setSettingsButton('quickEnd', config.quickEnd);
+    setSettingsButton('flipTestColors', config.flipTestColors);
+    setSettingsButton('discordDot', config.showDiscordDot);
+    setSettingsButton('colorfulMode', config.colorfulMode);
+    setSettingsButton('maxConfidence', config.maxConfidence);
+
+    setActiveThemeButton();
+    setActiveLanguageButton();
+    setActiveLayoutButton();
+    setActiveFontSizeButton();
+    setActiveDifficultyButton();
+    setActiveCaretStyleButton();
+    setActiveTimerStyleButton();
+
+
+    if (config.showKeyTips) {
+        $(".pageSettings .tip").removeClass('hidden');
+    } else {
+        $(".pageSettings .tip").addClass('hidden');
+    }
+
+
+}
+
+function refreshTagsSettingsSection(){
     if(firebase.auth().currentUser !== null && dbSnapshot !== null){
         let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
         dbSnapshot.tags.forEach(tag => {
@@ -51,37 +86,6 @@ function updateSettingsPage(){
     }else{
         $(".pageSettings .section.tags").addClass('hidden');
     }
-    
-
-    setSettingsButton('smoothCaret', config.smoothCaret);
-    setSettingsButton('quickTab', config.quickTab);
-    setSettingsButton('liveWpm', config.showLiveWpm);
-    setSettingsButton('timerBar', config.showTimerBar)
-    setSettingsButton('keyTips', config.showKeyTips);
-    setSettingsButton('freedomMode', config.freedomMode);
-    setSettingsButton('blindMode', config.blindMode);
-    setSettingsButton('quickEnd', config.quickEnd);
-    setSettingsButton('flipTestColors', config.flipTestColors);
-    setSettingsButton('discordDot', config.showDiscordDot);
-    setSettingsButton('colorfulMode', config.colorfulMode);
-    setSettingsButton('maxConfidence', config.maxConfidence);
-
-    setActiveThemeButton();
-    setActiveLanguageButton();
-    setActiveLayoutButton();
-    setActiveFontSizeButton();
-    setActiveDifficultyButton();
-    setActiveCaretStyleButton();
-    setActiveTimerStyleButton();
-
-
-    if (config.showKeyTips) {
-        $(".pageSettings .tip").removeClass('hidden');
-    } else {
-        $(".pageSettings .tip").addClass('hidden');
-    }
-
-
 }
 
 function setActiveThemeButton() {
@@ -182,24 +186,24 @@ function toggleTag(tagid, nosave = false){
 //smooth caret
 $(".pageSettings .section.smoothCaret .buttons .button.on").click(e => {
     setSmoothCaret(true);
-    showNotification('Smooth caret on', 1000);
+    // showNotification('Smooth caret on', 1000);
     setSettingsButton('smoothCaret', config.smoothCaret);
 })
 $(".pageSettings .section.smoothCaret .buttons .button.off").click(e => {
     setSmoothCaret(false);
-    showNotification('Smooth caret off', 1000);
+    // showNotification('Smooth caret off', 1000);
     setSettingsButton('smoothCaret', config.smoothCaret);
 })
 
 //quick tab
 $(".pageSettings .section.quickTab .buttons .button.on").click(e => {
     setQuickTabMode(true);
-    showNotification('Quick tab on', 1000);
+    // showNotification('Quick tab on', 1000);
     setSettingsButton('quickTab', config.quickTab);
 })
 $(".pageSettings .section.quickTab .buttons .button.off").click(e => {
     setQuickTabMode(false);
-    showNotification('Quick tab off', 1000);
+    // showNotification('Quick tab off', 1000);
     setSettingsButton('quickTab', config.quickTab);
 })
 
@@ -207,13 +211,13 @@ $(".pageSettings .section.quickTab .buttons .button.off").click(e => {
 $(".pageSettings .section.liveWpm .buttons .button.on").click(e => {
     config.showLiveWpm = true;
     saveConfigToCookie();
-    showNotification('Live WPM on', 1000);
+    // showNotification('Live WPM on', 1000);
     setSettingsButton('liveWpm', config.showLiveWpm);
 })
 $(".pageSettings .section.liveWpm .buttons .button.off").click(e => {
     config.showLiveWpm = false;
     saveConfigToCookie();
-    showNotification('Live WPM off', 1000);
+    // showNotification('Live WPM off', 1000);
     setSettingsButton('liveWpm', config.showLiveWpm);
 })
 
@@ -221,13 +225,13 @@ $(".pageSettings .section.liveWpm .buttons .button.off").click(e => {
 $(".pageSettings .section.timerBar .buttons .button.on").click(e => {
     config.showTimerBar = true;
     saveConfigToCookie();
-    showNotification('Timer bar on', 1000);
+    // showNotification('Timer bar on', 1000);
     setSettingsButton('timerBar', config.showTimerBar);
 })
 $(".pageSettings .section.timerBar .buttons .button.off").click(e => {
     config.showTimerBar = false;
     saveConfigToCookie();
-    showNotification('Timer bar off', 1000);
+    // showNotification('Timer bar off', 1000);
     setSettingsButton('timerBar', config.showTimerBar);
 })
 
@@ -235,14 +239,14 @@ $(".pageSettings .section.timerBar .buttons .button.off").click(e => {
 $(".pageSettings .section.freedomMode .buttons .button.on").click(e => {
     setFreedomMode(true);
     saveConfigToCookie();
-    showNotification('Freedom mode on', 1000);
+    // showNotification('Freedom mode on', 1000);
     setSettingsButton('freedomMode', config.freedomMode);
     setSettingsButton('maxConfidence', config.maxConfidence);
 })
 $(".pageSettings .section.freedomMode .buttons .button.off").click(e => {
     setFreedomMode(false);
     saveConfigToCookie();
-    showNotification('Freedom mode off', 1000);
+    // showNotification('Freedom mode off', 1000);
     setSettingsButton('freedomMode', config.freedomMode);
     setSettingsButton('maxConfidence', config.maxConfidence);
 })
@@ -251,14 +255,14 @@ $(".pageSettings .section.freedomMode .buttons .button.off").click(e => {
 $(".pageSettings .section.maxConfidence .buttons .button.on").click(e => {
     setMaxConfidence(true);
     saveConfigToCookie();
-    showNotification('Max confidence on', 1000);
+    // showNotification('Max confidence on', 1000);
     setSettingsButton('freedomMode', config.freedomMode);
     setSettingsButton('maxConfidence', config.maxConfidence);
 })
 $(".pageSettings .section.maxConfidence .buttons .button.off").click(e => {
     setMaxConfidence(false);
     saveConfigToCookie();
-    showNotification('Max confidence off', 1000);
+    // showNotification('Max confidence off', 1000);
     setSettingsButton('freedomMode', config.freedomMode);
     setSettingsButton('maxConfidence', config.maxConfidence);
 })
@@ -266,7 +270,7 @@ $(".pageSettings .section.maxConfidence .buttons .button.off").click(e => {
 //keytips
 $(".pageSettings .section.keyTips .buttons .button.on").click(e => {
     setKeyTips(true);
-    showNotification('Key tips on', 1000);
+    // showNotification('Key tips on', 1000);
     setSettingsButton('keyTips', config.showKeyTips);
     if (config.showKeyTips) {
         $(".pageSettings .tip").removeClass('hidden');
@@ -276,7 +280,7 @@ $(".pageSettings .section.keyTips .buttons .button.on").click(e => {
 })
 $(".pageSettings .section.keyTips .buttons .button.off").click(e => {
     setKeyTips(false);
-    showNotification('Key tips off', 1000);
+    // showNotification('Key tips off', 1000);
     setSettingsButton('keyTips', config.showKeyTips);
     if (config.showKeyTips) {
         $(".pageSettings .tip").removeClass('hidden');
@@ -315,7 +319,7 @@ $(document).on("click",".pageSettings .section.themes .theme", (e) => {
 $(document).on("click",".pageSettings .section.languages .language", (e) => {
     let language = $(e.currentTarget).attr('language');
     changeLanguage(language);
-    showNotification('Language changed', 1000);
+    // showNotification('Language changed', 1000);
     restartTest();
     setActiveLanguageButton();
 })
@@ -325,7 +329,7 @@ $(document).on("click",".pageSettings .section.layouts .layout", (e) => {
     console.log("clicked")
     let layout = $(e.currentTarget).attr('layout');
     changeLayout(layout);
-    showNotification('Layout changed', 1000);
+    // showNotification('Layout changed', 1000);
     restartTest();
     setActiveLayoutButton();
 })
@@ -334,7 +338,7 @@ $(document).on("click",".pageSettings .section.layouts .layout", (e) => {
 $(document).on("click",".pageSettings .section.fontSize .button", (e) => {
     let fontSize = $(e.currentTarget).attr('fontsize');
     changeFontSize(fontSize);
-    showNotification('Font size changed', 1000);
+    // showNotification('Font size changed', 1000);
     setActiveFontSizeButton();
 })
 
@@ -342,7 +346,7 @@ $(document).on("click",".pageSettings .section.fontSize .button", (e) => {
 $(document).on("click",".pageSettings .section.difficulty .button", (e) => {
     let difficulty = $(e.currentTarget).attr('difficulty');
     setDifficulty(difficulty);
-    showNotification('Difficulty changed', 1000);
+    // showNotification('Difficulty changed', 1000);
     setActiveDifficultyButton();
 })
 
@@ -350,7 +354,7 @@ $(document).on("click",".pageSettings .section.difficulty .button", (e) => {
 $(document).on("click",".pageSettings .section.caretStyle .button", (e) => {
     let caretStyle = $(e.currentTarget).attr('caret');
     setCaretStyle(caretStyle);
-    showNotification('Caret style updated', 1000);
+    // showNotification('Caret style updated', 1000);
     setActiveCaretStyleButton();
 })
 
@@ -358,7 +362,7 @@ $(document).on("click",".pageSettings .section.caretStyle .button", (e) => {
 $(document).on("click",".pageSettings .section.timerStyle .button", (e) => {
     let timerStyle = $(e.currentTarget).attr('timer');
     setTimerStyle(timerStyle);
-    showNotification('Timer style updated', 1000);
+    // showNotification('Timer style updated', 1000);
     setActiveTimerStyleButton();
 })
 
@@ -366,48 +370,48 @@ $(document).on("click",".pageSettings .section.timerStyle .button", (e) => {
 //blind mode
 $(".pageSettings .section.blindMode .buttons .button.on").click(e => {
     setBlindMode(true);
-    showNotification('Blind mode on', 1000);
+    // showNotification('Blind mode on', 1000);
     setSettingsButton('blindMode', config.blindMode);
 })
 $(".pageSettings .section.blindMode .buttons .button.off").click(e => {
     setBlindMode(false);
-    showNotification('Blind mode off', 1000);
+    // showNotification('Blind mode off', 1000);
     setSettingsButton('blindMode', config.blindMode);
 })
 
 //blind mode
 $(".pageSettings .section.quickEnd .buttons .button.on").click(e => {
     setQuickEnd(true);
-    showNotification('Quick end on', 1000);
+    // showNotification('Quick end on', 1000);
     setSettingsButton('quickEnd', config.quickEnd);
 })
 $(".pageSettings .section.quickEnd .buttons .button.off").click(e => {
     setQuickEnd(false);
-    showNotification('Quick end off', 1000);
+    // showNotification('Quick end off', 1000);
     setSettingsButton('quickEnd', config.quickEnd);
 })
 
 //flip test
 $(".pageSettings .section.flipTestColors .buttons .button.on").click(e => {
     setFlipTestColors(true);
-    showNotification('Flip test colors on', 1000);
+    // showNotification('Flip test colors on', 1000);
     setSettingsButton('flipTestColors', config.flipTestColors);
 })
 $(".pageSettings .section.flipTestColors .buttons .button.off").click(e => {
     setFlipTestColors(false);
-    showNotification('Flip test colors off', 1000);
+    // showNotification('Flip test colors off', 1000);
     setSettingsButton('flipTestColors', config.flipTestColors);
 })
 
 //extra color
 $(".pageSettings .section.colorfulMode .buttons .button.on").click(e => {
     setColorfulMode(true);
-    showNotification('Colorful mode on', 1000);
+    // showNotification('Colorful mode on', 1000);
     setSettingsButton('colorfulMode', config.colorfulMode);
 })
 $(".pageSettings .section.colorfulMode .buttons .button.off").click(e => {
     setColorfulMode(false);
-    showNotification('Colorful mode off', 1000);
+    // showNotification('Colorful mode off', 1000);
     setSettingsButton('colorfulMode', config.colorfulMode);
 })
 
