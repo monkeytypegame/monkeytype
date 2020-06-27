@@ -124,7 +124,7 @@ exports.changeName = functions.https.onCall((request,response) => {
 exports.checkIfNeedsToChangeName = functions.https.onCall((request,response) => {
     try{
         return admin.auth().getUser(request.uid).then(requestUser => {
-
+            
             if(!isUsernameValid(requestUser.displayName)){
                 //invalid name, needs to change
                 console.log(`user ${requestUser.uid} ${requestUser.displayName} needs to change name`);
@@ -303,7 +303,7 @@ exports.testCompleted = functions.https.onCall((request,response) => {
         }
 
         return admin.firestore().collection(`users/${request.uid}/results`).add(obj).then(e => {
-            // return 1;
+
             return checkIfPB(request.uid,request.obj).then(e => {
                 if(e){
                     return 2;
@@ -312,7 +312,7 @@ exports.testCompleted = functions.https.onCall((request,response) => {
                 }
             });
         }).catch(e => {
-            console.error(`error saving result for ${request.uid} - ${e.message}`);
+            console.error(`error saving result when checking for PB for ${request.uid} - ${e.message}`);
             return -1;
         });
     }catch(e){
