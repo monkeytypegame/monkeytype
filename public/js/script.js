@@ -251,7 +251,7 @@ function initWords() {
 }
 
 function emulateLayout(event){
-  if (config.layout == "default")
+  if (config.layout == "default" || event.key === " ")
     return event;
   const qwertyMasterLayout = {"Backquote":"`~","Digit1":"1!","Digit2":"2@","Digit3":"3#","Digit4":"4$","Digit5":"5%","Digit6":"6^","Digit7":"7&","Digit8":"8*","Digit9":"9(","Digit0":"0)","Minus":"-_","Equal":"=+","KeyQ":"qQ","KeyW":"wW","KeyE":"eE","KeyR":"rR","KeyT":"tT","KeyY":"yY","KeyU":"uU","KeyI":"iI","KeyO":"oO","KeyP":"pP","BracketLeft":"[{","BracketRight":"]}","KeyA":"aA","KeyS":"sS","KeyD":"dD","KeyF":"fF","KeyG":"gG","KeyH":"hH","KeyJ":"jJ","KeyK":"kK","KeyL":"lL","Semicolon":";:","Quote":"'\"","Backslash":"\\|","KeyZ":"zZ","KeyX":"xX","KeyC":"cC","KeyV":"vV","KeyB":"bB","KeyN":"nN","KeyM":"mM","Comma":",<","Period":".>","Slash":"/?","Space":"  "}
   let layoutMap = layouts[config.layout];
