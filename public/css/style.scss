@@ -334,13 +334,17 @@ a:hover {
         &:last-child{
           border-radius: 0 0 var(--roundness) var(--roundness);
         }
-        &.active {
+        &.activeMouse {
+          color: var(--bg-color);
+          background: var(--main-color);
+        }
+        &.activeKeyboard {
           color: var(--bg-color);
           background: var(--main-color);
         }
         &:hover{
-          color: var(--bg-color);
-          background: var(--main-color);
+          color: var(--text-color);
+          background: var(--sub-color);
           cursor: pointer;
         }
       }

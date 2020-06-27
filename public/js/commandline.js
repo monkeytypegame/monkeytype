@@ -595,6 +595,7 @@ $(document).ready(e => {
     })
 })
 
+
 $("#commandInput textarea").keydown((e) => {
     if (e.keyCode == 13 && e.shiftKey) {
         //enter
@@ -655,7 +656,7 @@ $(document).keydown((e) => {
         if (e.keyCode == 13) {
             //enter
             e.preventDefault();
-            let command = $(".suggestions .entry.active").attr("command");
+            let command = $(".suggestions .entry.activeKeyboard").attr("command");
             triggerCommand(command);
             return;
         }
@@ -665,25 +666,25 @@ $(document).keydown((e) => {
             let activenum = -1;
             let hoverId;
             $.each(entries, (index, obj) => {
-                if ($(obj).hasClass("active")) activenum = index;
+                if ($(obj).hasClass("activeKeyboard")) activenum = index;
             });
             if (e.keyCode == 38) {
-                entries.removeClass("active");
+                entries.removeClass("activeKeyboard");
                 if (activenum == 0) {
-                    $(entries[entries.length - 1]).addClass("active");
+                    $(entries[entries.length - 1]).addClass("activeKeyboard");
                     hoverId = $(entries[entries.length - 1]).attr('command');
                 } else {
-                    $(entries[--activenum]).addClass("active");
+                    $(entries[--activenum]).addClass("activeKeyboard");
                     hoverId = $(entries[activenum]).attr('command');
                 }
             }
             if (e.keyCode == 40) {
-                entries.removeClass("active");
+                entries.removeClass("activeKeyboard");
                 if (activenum + 1 == entries.length) {
-                    $(entries[0]).addClass("active");
+                    $(entries[0]).addClass("activeKeyboard");
                     hoverId = $(entries[0]).attr('command');
                 } else {
-                    $(entries[++activenum]).addClass("active");
+                    $(entries[++activenum]).addClass("activeKeyboard");
                     hoverId = $(entries[activenum]).attr('command');
                 }
             }
@@ -833,7 +834,7 @@ function hideCommandLine() {
                 }
                 let entries = $("#commandLine .suggestions .entry");
                 if (entries.length > 0) {
-                    $(entries[0]).addClass("active");
+                    $(entries[0]).addClass("activeKeyboard");
                     try{
                         $.each(list.list, (index, obj) => {
                             if (obj.found) {
