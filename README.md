@@ -1,5 +1,5 @@
 # about
-Monkey-type is a minimalistic typing test, featuring many test modes, an account system to save your typing speed history and user configurable features like themes, a smooth caret and more.
+Monkey-type is a minimalistic, customisable typing test, featuring many test modes, an account system to save your typing speed history and user configurable features like themes, a smooth caret and more.
 
 # features
 - minimalistic design with no ads
@@ -12,6 +12,7 @@ Monkey-type is a minimalistic typing test, featuring many test modes, an account
 - smooth caret
 - account system
 - command line
+- and much more
 
 # keybinds
 You can use `tab` and `enter` (or just `tab` if you have quick tab mode enabled) to restart the typing test. Open the command line by pressing `esc` - there you can access all the functionality you need without touching your mouse. 
