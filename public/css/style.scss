@@ -1611,7 +1611,28 @@ key {
   }
 }
 
-
+.devIndicator{
+  position: fixed;
+  font-size: 3rem;
+  color: var(--sub-color);
+  opacity: .25;
+  &.tl{
+    top: 2rem;
+    left: 2rem;
+  }
+  &.tr{
+    top: 2rem;
+    right: 2rem;
+  }
+  &.bl{
+    bottom: 2rem;
+    left: 2rem;
+  }
+  &.br{
+    bottom: 2rem;
+    right: 2rem;
+  }
+}
 
 * {
   box-sizing: border-box;
