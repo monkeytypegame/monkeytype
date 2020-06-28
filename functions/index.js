@@ -452,7 +452,7 @@ exports.saveConfig = functions.https.onCall((request,response) => {
             }
         })
         if (err){
-            console.error(`error saving config for ${request.uid} - bad input`);
+            console.error(`error saving config for ${request.uid} - bad input - ${JSON.stringify(request.obj)}`);
             return -1;
         }
 
