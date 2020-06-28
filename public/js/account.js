@@ -181,8 +181,13 @@ firebase.auth().onAuthStateChanged(function(user) {
         let configsDifferent = false;
         Object.keys(config).forEach(key => {
           if(!configsDifferent){
-            if(key !== 'resultFilters')
-            if(config[key] != dbSnapshot.config[key]) configsDifferent = true;
+            try{
+              if(key !== 'resultFilters'){
+                if(config[key] != dbSnapshot.config[key]) configsDifferent = true;
+              }
+            }catch(e){
+              configsDifferent = true;
+            }
           }
         })
         if(configsDifferent){
