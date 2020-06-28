@@ -208,5 +208,10 @@
         "name": "strawberry",
         "bgColor": "#e53c58",
         "textColor": "#fcfcf8"
+    },
+    {
+        "name": "night_runner",
+        "bgColor": "#5c4a9c",
+        "textColor": "#feff04"
     }
 ]
