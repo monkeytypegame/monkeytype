@@ -78,6 +78,8 @@ function signIn() {
   
 }
 
+let dontCheckUserName = false;
+
 function signUp() {
   $(".pageLogin .preloader").removeClass('hidden');
   let nname = $(".pageLogin .register input")[0].value;
@@ -104,12 +106,14 @@ function signUp() {
       }
       firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
         // Account has been created here.
+        dontCheckUserName = true;
         let usr = user.user;
         usr.updateProfile({
           displayName: nname
         }).then(function() {
           // Update successful.
           showNotification("Account created", 2000);
+          $("#menu .button.account .text").text(nname);
           try{
             firebase.analytics().logEvent("accountCreated", usr.uid);
           }catch(e){
@@ -207,7 +211,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     var providerData = user.providerData;
     // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass('hidden');
-    verifyUsername();
+    if(!dontCheckUserName) verifyUsername();
     $("#menu .button.account .text").text(displayName);
   }
 });

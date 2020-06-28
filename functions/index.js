@@ -187,6 +187,9 @@ function checkIfPB(uid,obj){
         let pbs = null;
         try{
             pbs = data.data().personalBests;
+            if(pbs === undefined){
+                throw new Error("pb is undefined");
+            }
         }catch(e){
             return admin.firestore().collection('users').doc(uid).update({
                 personalBests: {

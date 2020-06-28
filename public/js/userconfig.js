@@ -402,6 +402,9 @@ function togglePunctuation() {
 
 //freedom
 function setFreedomMode(freedom, nosave) {
+    if(freedom === null){
+        freedom = false;
+    }
     config.freedomMode = freedom;
     if(config.freedomMode && config.maxConfidence){
         config.maxConfidence = false;
