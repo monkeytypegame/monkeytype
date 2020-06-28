@@ -294,7 +294,7 @@ exports.testCompleted = functions.https.onCall((request,response) => {
             }
         })
         if (err){
-            console.error(`error saving result for ${request.uid} - bad input`);
+            console.error(`error saving result for ${request.uid} - bad input - ${JSON.stringify(request.obj)}`);
             return -1;
         }
 
