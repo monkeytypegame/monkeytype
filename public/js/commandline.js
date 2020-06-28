@@ -532,6 +532,7 @@ let commandsLanguages = {
 if (Object.keys(words).length > 0) {
     commandsLanguages.list = [];
     Object.keys(words).forEach(language => {
+        if(language === "english_10k") return;
         commandsLanguages.list.push({
             id: "changeLanguage" + capitalizeFirstLetter(language),
             display: language.replace('_', ' '),
@@ -541,6 +542,17 @@ if (Object.keys(words).length > 0) {
                 saveConfigToCookie();
             }
         })
+        if(language === "english_expanded"){
+            commandsLanguages.list.push({
+                id: "changeLanguageEnglish10k",
+                display: "english 10k",
+                exec: () => {
+                    changeLanguage("english_10k");
+                    restartTest();
+                    saveConfigToCookie();
+                }
+            })
+        }
     })
 }
 

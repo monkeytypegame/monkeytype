@@ -220,6 +220,18 @@ function initWords() {
   currentInput = "";
 
   let language = words[config.language];
+  
+  if(language === undefined && config.language === "english_10k"){
+    showBackgroundLoader();
+    $.ajax({
+      url: "js/english_10k.json",
+      async: false
+    }).then(data => {
+      hideBackgroundLoader();
+      words['english_10k'] = data;
+      language = words[config.language];
+    })
+  }
 
   if (language == undefined || language == []) {
     config.language = "english";
@@ -326,7 +338,14 @@ function punctuateWord(previousWord, currentWord, index, maxindex){
 }
 
 function addWord() {
-  let language = words[config.language];
+  let language = "english";
+  if(config.language === "english_10k"){
+    $.getJSON("js/english_10k", data => {
+      language = data;
+    })
+  }else{
+    language = words[config.language];
+  }
   let randomWord = language[Math.floor(Math.random() * language.length)];
   previousWord = wordsList[wordsList.length - 1];
   previousWordStripped = previousWord.replace(/[.?!":\-,]/g,'').toLowerCase();
@@ -1167,7 +1186,7 @@ function changePage(page) {
     });
     hideTestConfig();
     hideSignOutButton();
-  } else if (page == "settings") {
+} else if (page == "settings") {
     pageTransition = true;
     swapElements(activePage, $(".page.pageSettings"), 250, ()=>{
       pageTransition = false;

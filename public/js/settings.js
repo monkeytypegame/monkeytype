@@ -7,7 +7,11 @@ function updateSettingsPage(){
 
     let langEl = $(".pageSettings .section.languages .buttons").empty();
     Object.keys(words).forEach(language => {
+        if(language === "english_10k") return;
         langEl.append(`<div class="language" language='${language}'>${language.replace('_', ' ')}</div>`);
+        if(language === "english_expanded"){
+            langEl.append(`<div class="language" language='english_10k'>english 10k</div>`);
+        }  
     })
 
     let layoutEl = $(".pageSettings .section.layouts .buttons").empty();
