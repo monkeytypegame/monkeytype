@@ -51,7 +51,7 @@
     },
     {
         "name": "rgb",
-        "bgColor": "linear-gradient(to left, indigo, blue, green, yellow, orange, red);",
+        "bgColor": "linear-gradient(to left, #0043ff, #1bdbdb, #27c214, #e0e019, #e01313)",
         "textColor": "#fff"
     },
     {
