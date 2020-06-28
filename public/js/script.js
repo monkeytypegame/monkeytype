@@ -225,11 +225,12 @@ function initWords() {
     showBackgroundLoader();
     $.ajax({
       url: "js/english_10k.json",
-      async: false
-    }).then(data => {
-      hideBackgroundLoader();
+      async: false,
+      success: function (data) {
+        hideBackgroundLoader();
       words['english_10k'] = data;
       language = words[config.language];
+      }
     })
   }
 
