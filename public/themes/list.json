@@ -213,5 +213,11 @@
         "name": "night_runner",
         "bgColor": "#5c4a9c",
         "textColor": "#feff04"
+    },
+    {
+        "name": "cyberspace",
+        "bgColor": "#181c18",
+        "textColor": "#00ce7c"
     }
+    
 ]
