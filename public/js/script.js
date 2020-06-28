@@ -232,7 +232,8 @@ function initWords() {
     for (let i = 0; i < wordsBound; i++) {
       randomWord = language[Math.floor(Math.random() * language.length)];
       previousWord = wordsList[i - 1];
-      while (randomWord == previousWord || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
+      previousWord2 = wordsList[i - 2];
+      while (randomWord == previousWord || randomWord == previousWord2 || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
         randomWord = language[Math.floor(Math.random() * language.length)];
       }
       if (config.punctuation && config.mode != "custom"){
