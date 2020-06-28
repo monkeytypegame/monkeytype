@@ -228,8 +228,8 @@ function initWords() {
       async: false,
       success: function (data) {
         hideBackgroundLoader();
-      words['english_10k'] = data;
-      language = words[config.language];
+        words['english_10k'] = data;
+        language = words[config.language];
       }
     })
   }
@@ -339,14 +339,7 @@ function punctuateWord(previousWord, currentWord, index, maxindex){
 }
 
 function addWord() {
-  let language = "english";
-  if(config.language === "english_10k"){
-    $.getJSON("js/english_10k", data => {
-      language = data;
-    })
-  }else{
-    language = words[config.language];
-  }
+  let language = words[config.language];
   let randomWord = language[Math.floor(Math.random() * language.length)];
   previousWord = wordsList[wordsList.length - 1];
   previousWordStripped = previousWord.replace(/[.?!":\-,]/g,'').toLowerCase();
