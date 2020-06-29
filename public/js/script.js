@@ -1832,15 +1832,19 @@ $(document).keydown((event) => {
   //tab
 
   if (event["keyCode"] == 9) {
-    if (config.quickTab && $(".pageTest").hasClass("active")) {
+    if (config.quickTab) {
       event.preventDefault();
-      if (testActive && !afkDetected) {
-        let testNow = Date.now();
-        let testSeconds = roundTo2((testNow - testStart) / 1000);
-        incompleteTestSeconds += testSeconds;
-        restartCount++;
+      if($(".pageTest").hasClass("active")){
+        if (testActive && !afkDetected) {
+          let testNow = Date.now();
+          let testSeconds = roundTo2((testNow - testStart) / 1000);
+          incompleteTestSeconds += testSeconds;
+          restartCount++;
+        }
+        restartTest();
+      }else{
+        changePage('test');
       }
-      restartTest();
     }
   }
 
