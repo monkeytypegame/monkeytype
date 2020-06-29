@@ -14,6 +14,33 @@ let commands = {
             }
         },
         {
+            id: "changeMode",
+            display: "Change mode...",
+            subgroup: true,
+            exec: () => {
+                currentCommands.push(commandsMode);
+                showCommandLine();
+            }
+        },
+        {
+            id: "changeTimeConfig",
+            display: "Change time config...",
+            subgroup: true,
+            exec: () => {
+                currentCommands.push(commandsTimeConfig);
+                showCommandLine();
+            }
+        },
+        {
+            id: "changeWordCount",
+            display: "Change word count...",
+            subgroup: true,
+            exec: () => {
+                currentCommands.push(commandsWordCount);
+                showCommandLine();
+            }
+        },
+        {
             visible: false,
             id: "changeTags",
             display: "Change tags...",
@@ -98,7 +125,7 @@ let commands = {
         },
         {
             id: "toggleColorfulMode",
-            display: "Toggle extra test color",
+            display: "Toggle colorful mode",
             exec: () => {
                 toggleColorfulMode();
             }
@@ -114,7 +141,7 @@ let commands = {
         },
         {
             id: "changeCaretStyle",
-            display: "Change caret...",
+            display: "Change caret style...",
             subgroup: true,
             exec: () => {
                 currentCommands.push(commandsCaretStyle);
@@ -123,7 +150,7 @@ let commands = {
         },
         {
             id: "changeTimerStyle",
-            display: "Change timer...",
+            display: "Change timer style...",
             subgroup: true,
             exec: () => {
                 currentCommands.push(commandsTimerStyle);
@@ -163,33 +190,6 @@ let commands = {
             subgroup: true,
             exec: () => {
                 currentCommands.push(commandsFontSize);
-                showCommandLine();
-            }
-        },
-        {
-            id: "changeMode",
-            display: "Change mode...",
-            subgroup: true,
-            exec: () => {
-                currentCommands.push(commandsMode);
-                showCommandLine();
-            }
-        },
-        {
-            id: "changeTimeConfig",
-            display: "Change time config...",
-            subgroup: true,
-            exec: () => {
-                currentCommands.push(commandsTimeConfig);
-                showCommandLine();
-            }
-        },
-        {
-            id: "changeWordCount",
-            display: "Change word count...",
-            subgroup: true,
-            exec: () => {
-                currentCommands.push(commandsWordCount);
                 showCommandLine();
             }
         },
@@ -700,6 +700,9 @@ $(document).keydown((e) => {
                     hoverId = $(entries[activenum]).attr('command');
                 }
             }
+            let scroll = Math.abs($('.suggestions').offset().top - $('.entry.activeKeyboard').offset().top - $('.suggestions').scrollTop()) - ($('.suggestions').outerHeight() / 2) + ($($('.entry')[0]).outerHeight());
+            $('.suggestions').scrollTop(scroll);
+            console.log(`scrolling to ${scroll}`);
             try {
                 let list = currentCommands[currentCommands.length-1];
                 $.each(list.list, (index, obj) => {

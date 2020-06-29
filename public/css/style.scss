@@ -322,6 +322,9 @@ a:hover {
       line-height: 0.75rem;
     }
     .suggestions {
+      display: block;
+      overflow-y: scroll;
+      max-height: calc(100vh - 10rem - 3rem);
       display: grid;
       .entry {
         padding: 0.5rem 1rem;
