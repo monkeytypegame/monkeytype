@@ -28,7 +28,7 @@ let accuracyStats = {
   incorrect: 0
 }
 
-let customText = "The quick brown fox jumps over the lazy dog";
+let customText = "The quick brown fox jumps over the lazy dog".split(' ');
 
 const testCompleted = firebase.functions().httpsCallable('testCompleted');
 const addTag = firebase.functions().httpsCallable('addTag');
@@ -256,9 +256,9 @@ function initWords() {
     }
 
   } else if (config.mode == "custom") {
-    let w = customText.split(" ");
-    for (let i = 0; i < w.length; i++) {
-      wordsList.push(w[i]);
+    // let w = customText.split(" ");
+    for (let i = 0; i < customText.length; i++) {
+      wordsList.push(customText[i]);
     }
   }
   showWords();
@@ -1135,6 +1135,12 @@ function changeCustomText() {
   customText = prompt("Custom text").trim();
   customText = customText.replace(/[\n\r\t ]/gm, ' ');
   customText = customText.replace(/ +/gm, ' ');
+  customText = customText.split(' ');
+  if(customText.length > 10000){
+    showNotification('Custom text cannot be longer than 10000 words.',4000);
+    changeMode('time');
+    customText = "The quick brown fox jumped over the lazy dog".split(' ');
+  }
   // initWords();
 }
 
