@@ -556,13 +556,20 @@ function loadMoreLines(){
     //   icons += `<span aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
     // }
 
-    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
+    let restags;
+    if(result.tags === undefined){
+      restags = [];
+    }else{
+      restags = JSON.stringify(result.tags)
+    }
+
+    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
 
     if(tagNames !== ""){
       if(result.tags !== undefined && result.tags.length > 1){
-        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
+        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
       }else{
-        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
+        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
       }
     }
 
