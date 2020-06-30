@@ -558,7 +558,7 @@ function loadMoreLines(){
 
     let restags;
     if(result.tags === undefined){
-      restags = [];
+      restags = '[]';
     }else{
       restags = JSON.stringify(result.tags)
     }
