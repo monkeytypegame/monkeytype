@@ -748,125 +748,6 @@ function showResult(difficultyFailed = false) {
     $("#result .loginTip").removeClass('hidden');
   }
 
-  if(difficultyFailed){
-    showNotification("Test failed",2000);
-  }else if(afkDetected){
-    showNotification("Test invalid - AFK detected",2000);
-  }else if(sameWordset){
-    showNotification("Test invalid - repeated",2000);
-  }else{
-
-    let activeTags = [];
-    try{
-      dbSnapshot.tags.forEach(tag => {
-        if(tag.active === true){
-          activeTags.push(tag.id);
-        }
-      })
-    }catch(e){
-      
-    }
-
-    let completedEvent = {
-      wpm: stats.wpm,
-      rawWpm: stats.wpmRaw,
-      correctChars: stats.correctChars + stats.spaces,
-      incorrectChars: stats.incorrectChars,
-      acc: stats.acc,
-      mode: config.mode,
-      mode2: mode2,
-      punctuation: config.punctuation,
-      timestamp: Date.now(),
-      language: config.language,
-      restartCount: restartCount,
-      incompleteTestSeconds: incompleteTestSeconds,
-      difficulty: config.difficulty,
-      testDuration: testtime,
-      blindMode: config.blindMode,
-      theme: config.theme,
-      tags: activeTags
-    };
-    if(config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)){
-      // console.log(incompleteTestSeconds);
-      // console.log(restartCount);
-      restartCount = 0;
-      incompleteTestSeconds = 0;
-    }
-    if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
-      if (firebase.auth().currentUser != null) {
-        completedEvent.uid = firebase.auth().currentUser.uid;
-
-        //check local pb
-        let localPb = false;
-        let dontShowCrown = false;
-        db_getLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(d => {
-          db_getUserHighestWpm(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(d2 => {
-            if(d < stats.wpm && stats.wpm < d2){
-              dontShowCrown = true;
-            }
-            if(d < stats.wpm){
-              //new pb based on local
-              if(!dontShowCrown){
-                hideCrown();
-                showCrown();
-              }
-              localPb = true;
-            }
-            if(d2 > 0){
-              wpmOverTimeChart.options.annotation.annotations[0].value = d2;
-              wpmOverTimeChart.options.annotation.annotations[0].label.content = "PB: "+ d2;
-              wpmOverTimeChart.update();
-            }
-          })
-        })
-        
-        accountIconLoading(true);
-        testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
-          accountIconLoading(false);
-          if(e.data === -1){
-            showNotification('Could not save result',3000);
-          }else if(e.data === 1 || e.data === 2){
-            dbSnapshot.results.unshift(completedEvent);
-            try{
-              firebase.analytics().logEvent('testCompleted', completedEvent);
-            }catch(e){
-              console.log("Analytics unavailable");
-            }
-            if(e.data === 2){
-              //new pb
-              if(!localPb){
-                  showNotification('Local PB data is out of sync! Resyncing.',5000);
-              }
-              db_saveLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty,stats.wpm);
-            }else{
-              if(localPb){
-                showNotification('Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.',15000);
-              }
-            }
-
-          }
-        })
-
-      } else {
-        try{
-          firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
-        }catch(e){
-          console.log("Analytics unavailable");
-        }
-
-        // showNotification("Sign in to save your result",3000);
-      }
-    } else {
-      showNotification("Test invalid", 3000);
-      testInvalid = true;
-      try{
-        firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
-      }catch(e){
-        console.log("Analytics unavailable");
-      }
-    }
-  }
-
 
   let testType = "";
 
@@ -968,36 +849,144 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.options.annotation.annotations[0].borderColor = subColor;
   wpmOverTimeChart.options.annotation.annotations[0].label.backgroundColor = subColor;
   wpmOverTimeChart.options.annotation.annotations[0].label.fontColor = bgColor;
-  
 
-
-  // let maxVal = 0;
-  // rawWpmPerSecond.forEach(raw =>{
-  //   if(raw >= maxVal){
-  //     maxVal = raw;
-  //   }
-  // })
-
-  let maxVal = Math.max(...[Math.max(...rawWpmPerSecond),Math.max(...wpmHistory)]);
-
-  wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxVal;
-  wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxVal;
-
+  let maxChartVal = Math.max(...[Math.max(...rawWpmPerSecond),Math.max(...wpmHistory)]);
 
   let errorsNoZero = [];
 
   for(let i = 0; i < errorsPerSecond.length; i++){
-    // if(errorsPerSecond[i] != 0){
       errorsNoZero.push({
         x: i+1,
         y: errorsPerSecond[i]
       });
-    // }
   }
 
   wpmOverTimeChart.data.datasets[2].data = errorsNoZero;
 
+  if(difficultyFailed){
+    showNotification("Test failed",2000);
+  }else if(afkDetected){
+    showNotification("Test invalid - AFK detected",2000);
+  }else if(sameWordset){
+    showNotification("Test invalid - repeated",2000);
+  }else{
 
+    let activeTags = [];
+    try{
+      dbSnapshot.tags.forEach(tag => {
+        if(tag.active === true){
+          activeTags.push(tag.id);
+        }
+      })
+    }catch(e){
+      
+    }
+
+    let completedEvent = {
+      wpm: stats.wpm,
+      rawWpm: stats.wpmRaw,
+      correctChars: stats.correctChars + stats.spaces,
+      incorrectChars: stats.incorrectChars,
+      acc: stats.acc,
+      mode: config.mode,
+      mode2: mode2,
+      punctuation: config.punctuation,
+      timestamp: Date.now(),
+      language: config.language,
+      restartCount: restartCount,
+      incompleteTestSeconds: incompleteTestSeconds,
+      difficulty: config.difficulty,
+      testDuration: testtime,
+      blindMode: config.blindMode,
+      theme: config.theme,
+      tags: activeTags
+    };
+    if(config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)){
+      // console.log(incompleteTestSeconds);
+      // console.log(restartCount);
+      restartCount = 0;
+      incompleteTestSeconds = 0;
+    }
+    if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
+      if (firebase.auth().currentUser != null) {
+        completedEvent.uid = firebase.auth().currentUser.uid;
+
+        //check local pb
+        accountIconLoading(true);
+        let localPb = false;
+        let dontShowCrown = false;
+        db_getLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(lpb => {
+          db_getUserHighestWpm(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(highestwpm => {
+            if(lpb < stats.wpm && stats.wpm < highestwpm){
+              dontShowCrown = true;
+            }
+            if(lpb < stats.wpm){
+              //new pb based on local
+              if(!dontShowCrown){
+                hideCrown();
+                showCrown();
+              }
+              localPb = true;
+            }
+            if(highestwpm > 0){
+              wpmOverTimeChart.options.annotation.annotations[0].value = highestwpm;
+              wpmOverTimeChart.options.annotation.annotations[0].label.content = "PB: "+ highestwpm;
+              if(maxChartVal >= highestwpm - 15 && maxChartVal <= highestwpm + 15){
+                maxChartVal = highestwpm + 15;
+              }
+              wpmOverTimeChart.options.scales.yAxes[0].ticks.max = Math.round(maxChartVal);
+              wpmOverTimeChart.options.scales.yAxes[1].ticks.max = Math.round(maxChartVal);
+              wpmOverTimeChart.update({ duration: 0 });
+            }
+            testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
+              accountIconLoading(false);
+              if(e.data === -1){
+                showNotification('Could not save result',3000);
+              }else if(e.data === 1 || e.data === 2){
+                dbSnapshot.results.unshift(completedEvent);
+                try{
+                  firebase.analytics().logEvent('testCompleted', completedEvent);
+                }catch(e){
+                  console.log("Analytics unavailable");
+                }
+                if(e.data === 2){
+                  //new pb
+                  if(!localPb){
+                      showNotification('Local PB data is out of sync! Resyncing.',5000);
+                  }
+                  db_saveLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty,stats.wpm);
+                }else{
+                  if(localPb){
+                    showNotification('Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.',15000);
+                  }
+                }
+    
+              }
+            })
+          })
+        })
+      } else {
+        try{
+          firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
+        }catch(e){
+          console.log("Analytics unavailable");
+        }
+
+        // showNotification("Sign in to save your result",3000);
+      }
+    } else {
+      showNotification("Test invalid", 3000);
+      testInvalid = true;
+      try{
+        firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
+      }catch(e){
+        console.log("Analytics unavailable");
+      }
+    }
+  }
+
+  wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxChartVal;
+  wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxChartVal;
 
   wpmOverTimeChart.update({ duration: 0 });
   swapElements($("#words"),$("#result"),250, () => {
@@ -1752,7 +1741,7 @@ $(document).keypress(function(event) {
   if (event["keyCode"] == 27) return;
   if (event["keyCode"] == 93) return;
   //start the test
-  if (currentInput == "" && inputHistory.length == 0) {
+  if (currentInput == "" && inputHistory.length == 0 && !testActive) {
     try{
       if (firebase.auth().currentUser != null) {
         firebase.analytics().logEvent('testStarted');
