@@ -478,7 +478,7 @@ function updateCommandsTagsList(){
                 }
             })
         })
-        commands.list[1].visible = true;
+        commands.list[4].visible = true;
     }
 }
 
