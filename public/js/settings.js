@@ -68,6 +68,7 @@ function updateSettingsPage(){
 
     setActiveThemeButton();
     setActiveThemeTab();
+    setCustomThemeInputs();
     setActiveLanguageButton();
     setActiveLayoutButton();
     setActiveFontSizeButton();
@@ -93,6 +94,14 @@ function setActiveThemeButton() {
 
 function setActiveThemeTab() {
     config.customTheme === true ? $("[tab='custom']").click() : $("[tab='preset']").click()
+}
+
+function setCustomThemeInputs() {
+    $("[type=color]").each((n, index) => {
+        let currentColor = config.customThemeColors[colorVars.indexOf($(index).attr("id"))]
+        $(index).val(currentColor)
+        $(index).prev().text(currentColor)
+    })
 }
 
 function setActiveLayoutButton(){
@@ -449,7 +458,7 @@ $(document).on("click",".pageSettings .section.tags .tagsList .tag .removeButton
 })
 
 //theme tabs & custom theme
-const colorVars = ['--bg-color', '--main-color','--caret-color', '--sub-color', '--text-color', '--error-color', '--error-extra-color', '--colorful-error-color', '--colorful-error-extra-color']
+const colorVars = ['--bg-color', '--main-color','--caret-color', '--sub-color', '--text-color', '--error-color', '--error-extra-color', '--extra-error-color', '--extra-error-extra-color']
 
 $(".tab").click(e => {
     $('.tab').removeClass("active")

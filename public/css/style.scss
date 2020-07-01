@@ -8,23 +8,6 @@
   opacity: 1; /* Firefox */
 }
 
-
-input[type="color"] {
-	-webkit-appearance: none;
-  padding: 0;
-  width: 100%;
-  height: 32px;
-  overflow: hidden;
-  border-radius: var(--roundness);
-  border: 1px solid black;
-}
-input[type="color"]::-webkit-color-swatch-wrapper {
-	padding: 0;
-}
-input[type="color"]::-webkit-color-swatch {
-	border: none;
-}
-
 input{
   outline: none;
   border: none;
@@ -37,6 +20,21 @@ input{
   font-family: "Roboto Mono";
 }
 
+input[type="color"] {
+	-webkit-appearance: none;
+  padding: 0;
+  width: 100%;
+  height: 32px;
+  overflow: hidden;
+  border-radius: var(--roundness);
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: none;
+}
+
 .colorPicker {
   text-align: center;
   will-change: transform;
@@ -46,14 +44,19 @@ input{
   & label {
     position: absolute;
     width: 100%;
-    text-align: center;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: auto;
+    color: var(--bg-color);
     cursor: pointer;
   }
-  & [for="--bg-color"],
-  & #--bg-color {
+  & [for="--bg-color"] {
     color: var(--main-color);
-    border-color: var(--main-color);
+  }
+  & #--bg-color {
+    border: 1px solid var(--main-color);
   }
 }
 
@@ -1333,7 +1336,8 @@ key {
       grid-template-columns: 1fr 1fr 1fr 1fr;
       justify-items: stretch;
       gap: .5rem 2rem;
-      & h5 {
+      & p {
+        grid-area: unset;
         grid-column: 1 / span 4;
       }
     }
