@@ -1136,7 +1136,7 @@ function changeCustomText() {
   customText = customText.replace(/[\n\r\t ]/gm, ' ');
   customText = customText.replace(/ +/gm, ' ');
   customText = customText.split(' ');
-  if(customText.length > 10000){
+  if(customText.length >= 10000){
     showNotification('Custom text cannot be longer than 10000 words.',4000);
     changeMode('time');
     customText = "The quick brown fox jumped over the lazy dog".split(' ');
@@ -1594,7 +1594,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   wrd = $(e.currentTarget).attr('wordCount');
   if(wrd == "custom"){
     let newWrd = prompt('Custom word amount');
-    if(newWrd !== null && !isNaN(newWrd) && newWrd > 0 && newWrd < 10000){
+    if(newWrd !== null && !isNaN(newWrd) && newWrd > 0 && newWrd <= 10000){
       changeWordCount(newWrd);
       if(newWrd > 2000){
         showNotification("Very long tests can cause performance issues or crash the website on some machines!",5000);
