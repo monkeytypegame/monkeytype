@@ -1594,8 +1594,11 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   wrd = $(e.currentTarget).attr('wordCount');
   if(wrd == "custom"){
     let newWrd = prompt('Custom word amount');
-    if(newWrd !== null && !isNaN(newWrd) && newWrd > 0){
+    if(newWrd !== null && !isNaN(newWrd) && newWrd > 0 && newWrd < 10000){
       changeWordCount(newWrd);
+      if(newWrd > 2000){
+        showNotification("Very long tests can cause performance issues or crash the website on some machines!",5000);
+      }
     }
   }else{
     changeWordCount(wrd);
@@ -1607,8 +1610,11 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
   time = $(e.currentTarget).attr('timeConfig');
   if(time == "custom"){
     let newTime = prompt('Custom time in seconds');
-    if(newTime !== null && !isNaN(newTime) && newTime > 0){
+    if(newTime !== null && !isNaN(newTime) && newTime > 0 && newTime < 3600){
       changeTimeConfig(newTime);
+      if(newTime >= 1800){
+        showNotification("Very long tests can cause performance issues or crash the website on some machines!",5000);
+      }
     }
   }else{
     changeTimeConfig(time);
