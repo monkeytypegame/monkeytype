@@ -345,49 +345,6 @@ a:hover {
   }
 }
 
-#resultScreenshot {
-  display: none;
-  position: absolute;
-  width: min-content;
-  width: -moz-min-content;
-  white-space: nowrap;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  background: var(--bg-color);
-  .logo {
-    .top {
-      color: var(--sub-color);
-      font-size: 0.42rem;
-      line-height: 0.42rem;
-      margin-bottom: -0.3rem;
-      margin-left: 0.05rem;
-      margin: 0.5rem;
-    }
-    .bottom {
-      font-size: 0.75rem;
-      line-height: 0.75rem;
-      padding: 0 0.5rem 0.5rem 0.5rem;
-    }
-  }
-  .stats {
-    display: grid;
-    grid-auto-flow: column;
-    justify-content: space-between;
-    .group {
-      padding: 0.5rem;
-      .top {
-        color: var(--sub-color);
-        line-height: 1rem;
-        // margin-bottom: -.25rem;
-      }
-      .bottom {
-        font-size: 1.5rem;
-        line-height: 1.5rem;
-      }
-    }
-  }
-}
-
 #timerWrapper {
   opacity: 0;
   transition: 0.25s;
