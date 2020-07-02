@@ -105,9 +105,10 @@ function setActiveThemeTab() {
 
 function setCustomThemeInputs() {
     $("[type=color]").each((n, index) => {
-        let currentColor = config.customThemeColors[colorVars.indexOf($(index).attr("id"))]
-        $(index).val(currentColor)
-        $(index).prev().text(currentColor)
+        let currentColor = config.customThemeColors[colorVars.indexOf($(index).attr("id"))];
+        $(index).val(currentColor);
+        $(index).attr('value',currentColor);
+        $(index).prev().text(currentColor);
     })
 }
 
@@ -471,35 +472,42 @@ $(".tab").click(e => {
     $('.tab').removeClass("active")
     var $target = $(e.currentTarget)
         $target.addClass("active")
-    
+        setCustomThemeInputs();
         if($target.attr("tab") == "preset") {
-            setCustomTheme(false)
+            setCustomTheme(false);
+            applyCustomThemeColors();
             $('[tabContent="custom"]').removeClass("reveal")
             $('[tabContent="preset"]').addClass("reveal")
-
-            // setTimeout(() => {
-            // }, 0);
         } else {
-            setCustomTheme(true)
+            setCustomTheme(true);
+            applyCustomThemeColors();
             $('[tabContent="preset"]').removeClass("reveal")
             $('[tabContent="custom"]').addClass("reveal")
-
-            // setTimeout(() => {
-            // }, 0);
         }
 })
 
 $("[type='color']").on('input', e => {
-    let $colorVar = $(e.currentTarget).attr('id')
+
+    setCustomTheme(true, true);
+    let $colorVar = $(e.currentTarget).attr('id');
     let $pickedColor = $(e.currentTarget).val();
 
-    document.documentElement.style.setProperty($colorVar, $pickedColor)
-    $("[for="+$colorVar+"]").text($pickedColor)
+    document.documentElement.style.setProperty($colorVar, $pickedColor);
+    $("#"+$colorVar).attr('value',$pickedColor);
+    $("[for="+$colorVar+"]").text($pickedColor);
 
-    config.customThemeColors[colorVars.indexOf($colorVar)] = $pickedColor
+    // config.customThemeColors[colorVars.indexOf($colorVar)] = $pickedColor
 })
 
 $('.colorPicker').on('change', e => {
-    setCustomTheme(true) // Save a color once picked
+     // Save a color once picked
 })
 
+$('.pageSettings .saveCustomThemeButton').click(e => {
+    let save = [];
+    $.each($(".pageSettings .section.customTheme [type='color']"),(index, element) => {
+        save.push($(element).attr('value'));
+    })
+    setCustomThemeColors(save);
+    showNotification('Custom theme colors saved',1000);
+})

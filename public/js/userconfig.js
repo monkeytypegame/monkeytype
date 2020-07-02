@@ -477,11 +477,16 @@ function setTheme(name,nosave) {
 
 function setCustomTheme(boolean, nosave) {
     config.customTheme = boolean;
-    setCustomThemeColors(config.customThemeColors, nosave);
+    // setCustomThemeColors(config.customThemeColors, nosave);
     if(!nosave) saveConfigToCookie();
 }
 
-function setCustomThemeColors(array, nosave) {
+function setCustomThemeColors(colors, nosave){
+    config.customThemeColors = colors;
+    if(!nosave) saveConfigToCookie();
+}
+
+function applyCustomThemeColors() {
     array = config.customThemeColors;
 
     if(config.customTheme === true) {
@@ -497,8 +502,6 @@ function setCustomThemeColors(array, nosave) {
     setTimeout(() => {
         updateFavicon(32,14);
       }, 500);
-      
-    if(!nosave) saveConfigToCookie();
 }
 
 function updateFavicon(size, curveSize) {
