@@ -33,6 +33,7 @@ let config = defaultConfig;
 
 //cookies
 function saveConfigToCookie() {
+    // showNotification('saving to cookie',1000);
     let d = new Date();
     d.setFullYear(d.getFullYear() + 1);
     $.cookie("config", null);
@@ -45,13 +46,16 @@ function saveConfigToCookie() {
 }
 
 function saveConfigToDB(){
+
     if(firebase.auth().currentUser !== null){
-        // showNotification('saving config to db',1000);
+    // showNotification('saving to db',1000);
         accountIconLoading(true);
         saveConfig({uid:firebase.auth().currentUser.uid,obj:config}).then(d => {
             accountIconLoading(false);
             if(d.data === 1){
                 // showNotification('config saved to db',1000);
+            }else{
+                showNotification('Error saving config to DB!',4000);
             }
         })
     }
@@ -473,7 +477,7 @@ function setTheme(name,nosave) {
 
 function setCustomTheme(boolean, nosave) {
     config.customTheme = boolean;
-    setCustomThemeColors(config.customThemeColors);
+    setCustomThemeColors(config.customThemeColors, nosave);
     if(!nosave) saveConfigToCookie();
 }
 
