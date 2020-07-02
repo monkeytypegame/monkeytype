@@ -51,7 +51,7 @@
     },
     {
         "name": "rgb",
-        "bgColor": "linear-gradient(to left, indigo, blue, green, yellow, orange, red);",
+        "bgColor": "linear-gradient(to left, #0043ff, #1bdbdb, #27c214, #e0e019, #e01313)",
         "textColor": "#fff"
     },
     {
@@ -203,5 +203,26 @@
         "name": "olive",
         "bgColor": "#e9e5cc",
         "textColor": "#92946f"
+    },
+    {
+        "name": "strawberry",
+        "bgColor": "#e53c58",
+        "textColor": "#fcfcf8"
+    },
+    {
+        "name": "night_runner",
+        "bgColor": "#5c4a9c",
+        "textColor": "#feff04"
+    },
+    {
+        "name": "cyberspace",
+        "bgColor": "#181c18",
+        "textColor": "#00ce7c"
+    },
+    {
+        "name": "joker",
+        "bgColor": "#1a0e25",
+        "textColor": "#99de1e"
     }
+    
 ]

@@ -6,6 +6,6 @@
   --text-color: #eaf1f3;
   --error-color: #f6c9b4;
   --error-extra-color: #f59a71;
-  --extra-error-color: #f6c9b4;
-  --extra-error-extra-color: #f59a71;
+  --colorful-error-color: #f6c9b4;
+  --colorful-error-extra-color: #f59a71;
 }

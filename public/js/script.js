@@ -28,13 +28,15 @@ let accuracyStats = {
   incorrect: 0
 }
 
-let customText = "The quick brown fox jumps over the lazy dog";
+let customText = "The quick brown fox jumps over the lazy dog".split(' ');
 
 const testCompleted = firebase.functions().httpsCallable('testCompleted');
 const addTag = firebase.functions().httpsCallable('addTag');
 const editTag = firebase.functions().httpsCallable('editTag');
 const removeTag = firebase.functions().httpsCallable('removeTag');
 const updateResultTags = firebase.functions().httpsCallable('updateResultTags');
+const saveConfig = firebase.functions().httpsCallable('saveConfig');
+
 
   function smooth(arr, windowSize, getter = (value) => value, setter) {
     const get = getter
@@ -218,6 +220,19 @@ function initWords() {
   currentInput = "";
 
   let language = words[config.language];
+  
+  if(language === undefined && config.language === "english_10k"){
+    showBackgroundLoader();
+    $.ajax({
+      url: "js/english_10k.json",
+      async: false,
+      success: function (data) {
+        hideBackgroundLoader();
+        words['english_10k'] = data;
+        language = words[config.language];
+      }
+    })
+  }
 
   if (language == undefined || language == []) {
     config.language = "english";
@@ -230,7 +245,8 @@ function initWords() {
     for (let i = 0; i < wordsBound; i++) {
       randomWord = language[Math.floor(Math.random() * language.length)];
       previousWord = wordsList[i - 1];
-      while (randomWord == previousWord || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
+      previousWord2 = wordsList[i - 2];
+      while (randomWord == previousWord || randomWord == previousWord2 || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
         randomWord = language[Math.floor(Math.random() * language.length)];
       }
       if (config.punctuation && config.mode != "custom"){
@@ -240,16 +256,16 @@ function initWords() {
     }
 
   } else if (config.mode == "custom") {
-    let w = customText.split(" ");
-    for (let i = 0; i < w.length; i++) {
-      wordsList.push(w[i]);
+    // let w = customText.split(" ");
+    for (let i = 0; i < customText.length; i++) {
+      wordsList.push(customText[i]);
     }
   }
   showWords();
 }
 
 function emulateLayout(event){
-  if (config.layout == "default")
+  if (config.layout == "default" || event.key === " ")
     return event;
   const qwertyMasterLayout = {"Backquote":"`~","Digit1":"1!","Digit2":"2@","Digit3":"3#","Digit4":"4$","Digit5":"5%","Digit6":"6^","Digit7":"7&","Digit8":"8*","Digit9":"9(","Digit0":"0)","Minus":"-_","Equal":"=+","KeyQ":"qQ","KeyW":"wW","KeyE":"eE","KeyR":"rR","KeyT":"tT","KeyY":"yY","KeyU":"uU","KeyI":"iI","KeyO":"oO","KeyP":"pP","BracketLeft":"[{","BracketRight":"]}","KeyA":"aA","KeyS":"sS","KeyD":"dD","KeyF":"fF","KeyG":"gG","KeyH":"hH","KeyJ":"jJ","KeyK":"kK","KeyL":"lL","Semicolon":";:","Quote":"'\"","Backslash":"\\|","KeyZ":"zZ","KeyX":"xX","KeyC":"cC","KeyV":"vV","KeyB":"bB","KeyN":"nN","KeyM":"mM","Comma":",<","Period":".>","Slash":"/?","Space":"  "}
   let layoutMap = layouts[config.layout];
@@ -714,13 +730,15 @@ function showResult(difficultyFailed = false) {
   });
 
   let mode2 = "";
-  if (config.mode == "time") {
+  if (config.mode === "time") {
     mode2 = config.time;
     // $("#result .stats .time").addClass('hidden');
-  } else if (config.mode == "words") {
+  } else if (config.mode === "words") {
     mode2 = config.words;
     // $("#result .stats .time").removeClass('hidden');
     // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
+  } else if (config.mode === "custom"){
+    mode2 = "custom";
   }
 
 
@@ -728,123 +746,6 @@ function showResult(difficultyFailed = false) {
     $("#result .loginTip").addClass('hidden');
   }else{
     $("#result .loginTip").removeClass('hidden');
-  }
-
-  if(difficultyFailed){
-    showNotification("Test failed",2000);
-  }else if(afkDetected){
-    showNotification("Test invalid - AFK detected",2000);
-  }else if(sameWordset){
-    showNotification("Test invalid - repeated",2000);
-  }else{
-
-    let activeTags = [];
-    try{
-      dbSnapshot.tags.forEach(tag => {
-        if(tag.active === true){
-          activeTags.push(tag.id);
-        }
-      })
-    }catch(e){
-      
-    }
-
-    let completedEvent = {
-      wpm: stats.wpm,
-      rawWpm: stats.wpmRaw,
-      correctChars: stats.correctChars + stats.spaces,
-      incorrectChars: stats.incorrectChars,
-      acc: stats.acc,
-      mode: config.mode,
-      mode2: mode2,
-      punctuation: config.punctuation,
-      timestamp: Date.now(),
-      language: config.language,
-      restartCount: restartCount,
-      incompleteTestSeconds: incompleteTestSeconds,
-      difficulty: config.difficulty,
-      testDuration: testtime,
-      blindMode: config.blindMode,
-      theme: config.theme,
-      tags: activeTags
-    };
-    if(config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)){
-      // console.log(incompleteTestSeconds);
-      // console.log(restartCount);
-      restartCount = 0;
-      incompleteTestSeconds = 0;
-    }
-    if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
-      if (firebase.auth().currentUser != null) {
-        completedEvent.uid = firebase.auth().currentUser.uid;
-
-        //check local pb
-        let localPb = false;
-        let dontShowCrown = false;
-        db_getLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(d => {
-          db_getUserHighestWpm(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(d2 => {
-            if(d < stats.wpm && stats.wpm < d2){
-              dontShowCrown = true;
-            }
-            if(d < stats.wpm){
-              //new pb based on local
-              if(!dontShowCrown){
-                hideCrown();
-                showCrown();
-              }
-              localPb = true;
-            }
-            wpmOverTimeChart.options.annotation.annotations[0].value = d2;
-            wpmOverTimeChart.options.annotation.annotations[0].label.content = "PB: "+ d2;
-            wpmOverTimeChart.update();
-          })
-        })
-        
-        accountIconLoading(true);
-        testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
-          accountIconLoading(false);
-          if(e.data === -1){
-            showNotification('Could not save result',3000);
-          }else if(e.data === 1 || e.data === 2){
-            dbSnapshot.results.unshift(completedEvent);
-            try{
-              firebase.analytics().logEvent('testCompleted', completedEvent);
-            }catch(e){
-              console.log("Analytics unavailable");
-            }
-            if(e.data === 2){
-              //new pb
-              if(!localPb){
-                  showNotification('Local PB data is out of sync! Resyncing.',5000);
-              }
-              db_saveLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty,stats.wpm);
-            }else{
-              if(localPb){
-                showNotification('Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.',15000);
-              }
-            }
-
-          }
-        })
-
-      } else {
-        try{
-          firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
-        }catch(e){
-          console.log("Analytics unavailable");
-        }
-
-        // showNotification("Sign in to save your result",3000);
-      }
-    } else {
-      showNotification("Test invalid", 3000);
-      testInvalid = true;
-      try{
-        firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
-      }catch(e){
-        console.log("Analytics unavailable");
-      }
-    }
   }
 
 
@@ -948,36 +849,144 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.options.annotation.annotations[0].borderColor = subColor;
   wpmOverTimeChart.options.annotation.annotations[0].label.backgroundColor = subColor;
   wpmOverTimeChart.options.annotation.annotations[0].label.fontColor = bgColor;
-  
 
-
-  // let maxVal = 0;
-  // rawWpmPerSecond.forEach(raw =>{
-  //   if(raw >= maxVal){
-  //     maxVal = raw;
-  //   }
-  // })
-
-  let maxVal = Math.max(...[Math.max(...rawWpmPerSecond),Math.max(...wpmHistory)]);
-
-  wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxVal;
-  wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxVal;
-
+  let maxChartVal = Math.max(...[Math.max(...rawWpmPerSecond),Math.max(...wpmHistory)]);
 
   let errorsNoZero = [];
 
   for(let i = 0; i < errorsPerSecond.length; i++){
-    // if(errorsPerSecond[i] != 0){
       errorsNoZero.push({
         x: i+1,
         y: errorsPerSecond[i]
       });
-    // }
   }
 
   wpmOverTimeChart.data.datasets[2].data = errorsNoZero;
 
+  if(difficultyFailed){
+    showNotification("Test failed",2000);
+  }else if(afkDetected){
+    showNotification("Test invalid - AFK detected",2000);
+  }else if(sameWordset){
+    showNotification("Test invalid - repeated",2000);
+  }else{
 
+    let activeTags = [];
+    try{
+      dbSnapshot.tags.forEach(tag => {
+        if(tag.active === true){
+          activeTags.push(tag.id);
+        }
+      })
+    }catch(e){
+      
+    }
+
+    let completedEvent = {
+      wpm: stats.wpm,
+      rawWpm: stats.wpmRaw,
+      correctChars: stats.correctChars + stats.spaces,
+      incorrectChars: stats.incorrectChars,
+      acc: stats.acc,
+      mode: config.mode,
+      mode2: mode2,
+      punctuation: config.punctuation,
+      timestamp: Date.now(),
+      language: config.language,
+      restartCount: restartCount,
+      incompleteTestSeconds: incompleteTestSeconds,
+      difficulty: config.difficulty,
+      testDuration: testtime,
+      blindMode: config.blindMode,
+      theme: config.theme,
+      tags: activeTags
+    };
+    if(config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)){
+      // console.log(incompleteTestSeconds);
+      // console.log(restartCount);
+      restartCount = 0;
+      incompleteTestSeconds = 0;
+    }
+    if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
+      if (firebase.auth().currentUser != null) {
+        completedEvent.uid = firebase.auth().currentUser.uid;
+
+        //check local pb
+        accountIconLoading(true);
+        let localPb = false;
+        let dontShowCrown = false;
+        db_getLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(lpb => {
+          db_getUserHighestWpm(config.mode,mode2,config.punctuation,config.language,config.difficulty).then(highestwpm => {
+            if(lpb < stats.wpm && stats.wpm < highestwpm){
+              dontShowCrown = true;
+            }
+            if(lpb < stats.wpm){
+              //new pb based on local
+              if(!dontShowCrown){
+                hideCrown();
+                showCrown();
+              }
+              localPb = true;
+            }
+            if(highestwpm > 0){
+              wpmOverTimeChart.options.annotation.annotations[0].value = highestwpm;
+              wpmOverTimeChart.options.annotation.annotations[0].label.content = "PB: "+ highestwpm;
+              if(maxChartVal >= highestwpm - 15 && maxChartVal <= highestwpm + 15){
+                maxChartVal = highestwpm + 15;
+              }
+              wpmOverTimeChart.options.scales.yAxes[0].ticks.max = Math.round(maxChartVal);
+              wpmOverTimeChart.options.scales.yAxes[1].ticks.max = Math.round(maxChartVal);
+              wpmOverTimeChart.update({ duration: 0 });
+            }
+            testCompleted({uid:firebase.auth().currentUser.uid,obj:completedEvent}).then(e => {
+              accountIconLoading(false);
+              if(e.data === -1){
+                showNotification('Could not save result',3000);
+              }else if(e.data === 1 || e.data === 2){
+                dbSnapshot.results.unshift(completedEvent);
+                try{
+                  firebase.analytics().logEvent('testCompleted', completedEvent);
+                }catch(e){
+                  console.log("Analytics unavailable");
+                }
+                if(e.data === 2){
+                  //new pb
+                  if(!localPb){
+                      showNotification('Local PB data is out of sync! Resyncing.',5000);
+                  }
+                  db_saveLocalPB(config.mode,mode2,config.punctuation,config.language,config.difficulty,stats.wpm);
+                }else{
+                  if(localPb){
+                    showNotification('Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.',15000);
+                  }
+                }
+    
+              }
+            })
+          })
+        })
+      } else {
+        try{
+          firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
+        }catch(e){
+          console.log("Analytics unavailable");
+        }
+
+        // showNotification("Sign in to save your result",3000);
+      }
+    } else {
+      showNotification("Test invalid", 3000);
+      testInvalid = true;
+      try{
+        firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
+      }catch(e){
+        console.log("Analytics unavailable");
+      }
+    }
+  }
+
+  wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxChartVal;
+  wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxChartVal;
 
   wpmOverTimeChart.update({ duration: 0 });
   swapElements($("#words"),$("#result"),250, () => {
@@ -1126,6 +1135,12 @@ function changeCustomText() {
   customText = prompt("Custom text").trim();
   customText = customText.replace(/[\n\r\t ]/gm, ' ');
   customText = customText.replace(/ +/gm, ' ');
+  customText = customText.split(' ');
+  if(customText.length > 10000){
+    showNotification('Custom text cannot be longer than 10000 words.',4000);
+    changeMode('time');
+    customText = "The quick brown fox jumped over the lazy dog".split(' ');
+  }
   // initWords();
 }
 
@@ -1160,7 +1175,7 @@ function changePage(page) {
     });
     hideTestConfig();
     hideSignOutButton();
-  } else if (page == "settings") {
+} else if (page == "settings") {
     pageTransition = true;
     swapElements(activePage, $(".page.pageSettings"), 250, ()=>{
       pageTransition = false;
@@ -1372,11 +1387,11 @@ function flipTestColors(tf){
   }
 }
 
-function applyExtraTestColor(tc){
+function applyColorfulMode(tc){
   if(tc){
-    $("#words").addClass('extraColor');
+    $("#words").addClass('colorfulMode');
   }else{
-    $("#words").removeClass('extraColor');
+    $("#words").removeClass('colorfulMode');
   }
 }
 
@@ -1732,7 +1747,7 @@ $(document).keypress(function(event) {
   if (event["keyCode"] == 27) return;
   if (event["keyCode"] == 93) return;
   //start the test
-  if (currentInput == "" && inputHistory.length == 0) {
+  if (currentInput == "" && inputHistory.length == 0 && !testActive) {
     try{
       if (firebase.auth().currentUser != null) {
         firebase.analytics().logEvent('testStarted');
@@ -1812,15 +1827,19 @@ $(document).keydown((event) => {
   //tab
 
   if (event["keyCode"] == 9) {
-    if (config.quickTab && $(".pageTest").hasClass("active")) {
+    if (config.quickTab) {
       event.preventDefault();
-      if (testActive && !afkDetected) {
-        let testNow = Date.now();
-        let testSeconds = roundTo2((testNow - testStart) / 1000);
-        incompleteTestSeconds += testSeconds;
-        restartCount++;
+      if($(".pageTest").hasClass("active")){
+        if (testActive && !afkDetected) {
+          let testNow = Date.now();
+          let testSeconds = roundTo2((testNow - testStart) / 1000);
+          incompleteTestSeconds += testSeconds;
+          restartCount++;
+        }
+        restartTest();
+      }else{
+        changePage('test');
       }
-      restartTest();
     }
   }
 
@@ -1940,7 +1959,15 @@ getReleasesFromGitHub();
 
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
-  $("head title").text("Monkey Dev")
+  $("head title").text("Monkey Dev");
+  $('body').append(`
+<div class="devIndicator tr">
+  DEV
+</div>
+<div class="devIndicator bl">
+  DEV
+</div>
+`);
 }
 
 if (window.location.hostname === "localhost") {
@@ -1950,6 +1977,12 @@ if (window.location.hostname === "localhost") {
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   firebase.functions().useFunctionsEmulator("http://localhost:5001");
+  $('body').append(`<div class="devIndicator tl">
+  local
+</div>
+<div class="devIndicator br">
+  local
+</div>`);
 }
 
 $(document).on('mouseenter','#words .word',e =>{

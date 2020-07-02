@@ -6,8 +6,8 @@
     --text-color: #eee;
     --error-color: #eee;
     --error-extra-color: #b3b3b3;
-    --extra-error-color: #eee;
-    --extra-error-extra-color: #b3b3b3;
+    --colorful-error-color: #eee;
+    --colorful-error-extra-color: #b3b3b3;
 }
 
 @keyframes rgb{

@@ -6,8 +6,8 @@
     --text-color: #eee;
     --error-color: #fff;
     --error-extra-color: #d8d8d8;
-    --extra-error-color: #fff;
-    --extra-error-extra-color: #d8d8d8; 
+    --colorful-error-color: #fff;
+    --colorful-error-extra-color: #d8d8d8; 
 }
 
 @keyframes shadow {

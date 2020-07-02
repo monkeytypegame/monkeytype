@@ -361,6 +361,9 @@ a:hover {
       line-height: 0.75rem;
     }
     .suggestions {
+      display: block;
+      overflow-y: scroll;
+      max-height: calc(100vh - 10rem - 3rem);
       display: grid;
       .entry {
         padding: 0.5rem 1rem;
@@ -373,13 +376,17 @@ a:hover {
         &:last-child{
           border-radius: 0 0 var(--roundness) var(--roundness);
         }
-        &.active {
+        &.activeMouse {
+          color: var(--bg-color);
+          background: var(--main-color);
+        }
+        &.activeKeyboard {
           color: var(--bg-color);
           background: var(--main-color);
         }
         &:hover{
-          color: var(--bg-color);
-          background: var(--main-color);
+          color: var(--text-color);
+          background: var(--sub-color);
           cursor: pointer;
         }
       }
@@ -981,39 +988,39 @@ key {
   }
 }
 
-#words.extraColor{
+#words.colorfulMode{
   .word{
     & letter.correct{
       color: var(--main-color);
     }
     & letter.incorrect{
-      color: var(--extra-error-color);
+      color: var(--colorful-error-color);
     }
     & letter.incorrect.extra{
-      color: var(--extra-error-extra-color);
+      color: var(--colorful-error-extra-color);
     }
   }
 }
 
-#words.flipped.extraColor{
+#words.flipped.colorfulMode{
   .word{
     color: var(--main-color);
     & letter.correct{
       color: var(--sub-color);
     }
     & letter.incorrect{
-      color: var(--extra-error-color);
+      color: var(--colorful-error-color);
     }
     & letter.incorrect.extra{
-      color: var(--extra-error-extra-color);
+      color: var(--colorful-error-extra-color);
     }
   }
 }
 
-#words.flipped.extraColor .word.error,
-#words.extraColor .word.error
+#words.flipped.colorfulMode .word.error,
+#words.colorfulMode .word.error
 {
-  border-bottom: 2px solid var(--extra-error-color);
+  border-bottom: 2px solid var(--colorful-error-color);
 }
 
 .pageTest #resultExtraButtons{
@@ -1698,7 +1705,28 @@ key {
   }
 }
 
-
+.devIndicator{
+  position: fixed;
+  font-size: 3rem;
+  color: var(--sub-color);
+  opacity: .25;
+  &.tl{
+    top: 2rem;
+    left: 2rem;
+  }
+  &.tr{
+    top: 2rem;
+    right: 2rem;
+  }
+  &.bl{
+    bottom: 2rem;
+    left: 2rem;
+  }
+  &.br{
+    bottom: 2rem;
+    right: 2rem;
+  }
+}
 
 * {
   box-sizing: border-box;

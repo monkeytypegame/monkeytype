@@ -6,8 +6,8 @@
     --text-color: #f7f5f1;
     --error-color: #dd452e;
     --error-extra-color: #9e3423;
-    --extra-error-color: #dd452e;
-    --extra-error-extra-color: #9e3423;
+    --colorful-error-color: #dd452e;
+    --colorful-error-extra-color: #9e3423;
 }
 
 #menu .button:nth-child(1){

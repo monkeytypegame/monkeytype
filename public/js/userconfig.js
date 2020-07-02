@@ -23,8 +23,11 @@ let defaultConfig = {
     layout:"default",
     showDiscordDot: true,
     maxConfidence: false,
-    timerStyle: "bar"
+    timerStyle: "bar",
+    colorfulMode: true
 }
+
+let cookieConfig = null;
 
 let config = defaultConfig;
 
@@ -38,6 +41,20 @@ function saveConfigToCookie() {
         path: '/'
      });
     restartCount = 0;
+    saveConfigToDB();
+}
+
+function saveConfigToDB(){
+    if(firebase.auth().currentUser !== null){
+        // showNotification('saving config to db',1000);
+        accountIconLoading(true);
+        saveConfig({uid:firebase.auth().currentUser.uid,obj:config}).then(d => {
+            accountIconLoading(false);
+            if(d.data === 1){
+                // showNotification('config saved to db',1000);
+            }
+        })
+    }
 }
 
 function saveActiveTagsToCookie(){
@@ -64,50 +81,62 @@ function saveActiveTagsToCookie(){
 
 function loadConfigFromCookie() {
     let newConfig = $.cookie('config');
-    if (newConfig && newConfig != null && newConfig != "null") {
+    if(newConfig !== undefined){
         newConfig = JSON.parse(newConfig);
-        setTheme(newConfig.theme,true);
+
+        applyConfig(newConfig);
+        cookieConfig = newConfig;
+        saveConfigToCookie();
+    }
+}
+
+
+function applyConfig(configObj){
+    if (configObj && configObj != null && configObj != "null") {
+        setTheme(configObj.theme,true);
         setCustomTheme(newConfig.customTheme,true);
         setCustomThemeColors(newConfig.customThemeColors,true);
-        setQuickTabMode(newConfig.quickTab,true);
-        setPunctuation(newConfig.punctuation,true);
-        setKeyTips(newConfig.showKeyTips,true);
-        changeTimeConfig(newConfig.time,true);
-        changeWordCount(newConfig.words,true);
-        changeMode(newConfig.mode,true);
-        changeLanguage(newConfig.language,true);
-        changeLayout(newConfig.layout, true);
-        changeFontSize(newConfig.fontSize,true);
-        setFreedomMode(newConfig.freedomMode,true);
-        setCaretStyle(newConfig.caretStyle,true);
-        setDifficulty(newConfig.difficulty,true);
-        setBlindMode(newConfig.blindMode,true);
-        setQuickEnd(newConfig.quickEnd,true);
-        setFlipTestColors(newConfig.flipTestColors,true);
-        setDiscordDot(newConfig.hideDiscordDot,true);
-        setExtraTestColor(newConfig.extraTestColor,true);
-        setMaxConfidence(newConfig.maxConfidence,true);
-        setTimerStyle(newConfig.timerStyle,true);
-        if(newConfig.resultFilters == null || newConfig.resultFilters == undefined){
-            newConfig.resultFilters = ["all"];
+        setQuickTabMode(configObj.quickTab,true);
+        setPunctuation(configObj.punctuation,true);
+        setKeyTips(configObj.showKeyTips,true);
+        changeTimeConfig(configObj.time,true);
+        changeWordCount(configObj.words,true);
+        changeMode(configObj.mode,true);
+        changeLanguage(configObj.language,true);
+        changeLayout(configObj.layout, true);
+        changeFontSize(configObj.fontSize,true);
+        setFreedomMode(configObj.freedomMode,true);
+        setCaretStyle(configObj.caretStyle,true);
+        setDifficulty(configObj.difficulty,true);
+        setBlindMode(configObj.blindMode,true);
+        setQuickEnd(configObj.quickEnd,true);
+        setFlipTestColors(configObj.flipTestColors,true);
+        setDiscordDot(configObj.hideDiscordDot,true);
+        setColorfulMode(configObj.colorfulMode,true);
+        setMaxConfidence(configObj.maxConfidence,true);
+        setTimerStyle(configObj.timerStyle,true);
+        if(configObj.resultFilters == null || configObj.resultFilters == undefined){
+            configObj.resultFilters = ["all"];
         }
-        config = newConfig;
+        config = configObj;
     }
     Object.keys(defaultConfig).forEach(configKey => {
         if(config[configKey] == undefined){
             config[configKey] = defaultConfig[configKey];
         }
     })
-    saveConfigToCookie();
 }
+
 
 function loadActiveTagsFromCookie(){
     let newTags = $.cookie('activeTags');
-    newTags = JSON.parse(newTags);
-    newTags.forEach(ntag => {
-        toggleTag(ntag, true);
-    })
-    saveActiveTagsToCookie();
+    if(newTags !== undefined){
+        newTags = JSON.parse(newTags);
+        newTags.forEach(ntag => {
+            toggleTag(ntag, true);
+        })
+        saveActiveTagsToCookie();
+    }   
 }
 
 function showTestConfig() {
@@ -213,18 +242,18 @@ function toggleFlipTestColors(){
 }
 
 //extra color
-function setExtraTestColor(extra,nosave){
+function setColorfulMode(extra,nosave){
     if(extra == undefined){
         extra = false;
     }
-    config.extraTestColor = extra;
-    applyExtraTestColor(extra);
+    config.colorfulMode = extra;
+    applyColorfulMode(extra);
     if(!nosave) saveConfigToCookie();
 }
 
-function toggleExtraTestColor(){
-    config.extraTestColor = !config.extraTestColor;
-    applyExtraTestColor(config.extraTestColor);
+function toggleColorfulMode(){
+    config.colorfulMode = !config.colorfulMode;
+    applyColorfulMode(config.colorfulMode);
     saveConfigToCookie();
 }
 
@@ -378,6 +407,9 @@ function togglePunctuation() {
 
 //freedom
 function setFreedomMode(freedom, nosave) {
+    if(freedom === null){
+        freedom = false;
+    }
     config.freedomMode = freedom;
     if(config.freedomMode && config.maxConfidence){
         config.maxConfidence = false;

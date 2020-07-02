@@ -190,7 +190,7 @@
               <div class="bottom">-</div>
             </div>
             <div class="group key">
-              <div class="top">key</div>
+              <div class="top">char</div>
               <div class="bottom">-</div>
             </div>
             <div class="group time">
@@ -198,7 +198,7 @@
               <div class="bottom">-</div>
             </div>
             <div class="group raw">
-              <div class="top">raw wpm</div>
+              <div class="top">raw</div>
               <div class="bottom">-</div>
             </div>
             <div class="group testType">
@@ -226,14 +226,14 @@
         <input id="wordsInput" class="" tabindex="0" autocomplete="off"></input>
         <div id="wordsTitle">input history</div>
         <div id="timerNumber">60</div>
-        <div id="words" class="extraColor"></div>
+        <div id="words" class=""></div>
         <div id="liveWpm">123</div>
         <div class="buttons">
-          <div id="restartTestButton" class="" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-redo-alt"></i></div>
+          <div id="restartTestButton" aria-label="Restart test" data-balloon-pos="up" class="" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-redo-alt"></i></div>
           <div id="resultExtraButtons" class="hidden">
-            <div id="restartTestButtonWithSameWordset" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-sync-alt"></i></div>
-            <div id="showWordHistoryButton" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-align-left"></i></div>
-            <div id="copyResultToClipboardButton" tabindex="0" onclick="this.blur();"><i class="far fa-fw fa-image"></i></div>
+            <div id="restartTestButtonWithSameWordset" aria-label="Repeat test" data-balloon-pos="up" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-sync-alt"></i></div>
+            <div id="showWordHistoryButton" aria-label="Show words history" data-balloon-pos="up" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-align-left"></i></div>
+            <div id="copyResultToClipboardButton" aria-label="Save screenshot" data-balloon-pos="up" tabindex="0" onclick="this.blur();"><i class="far fa-fw fa-image"></i></div>
           </div>
         </div>
       </div>
@@ -292,7 +292,7 @@
         </div>
         <div class="section quickTab">
           <h1>quick tab mode</h1>
-          <div class="text">Press <key>tab</key> to quickly restart the test. This function disables tab navigation on some parts of the website.</div>
+          <div class="text">Press <key>tab</key> to quickly restart the test, or to quickly jump to the test page. This function disables tab navigation on the website.</div>
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
@@ -400,10 +400,10 @@
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
           </div>
         </div>
-        <div class="section extraTestColor">
-          <h1>extra test color</h1>
+        <div class="section colorfulMode">
+          <h1>colorful mode</h1>
           <div class="text">
-            When enabled, the test words will use the main color, instead of the text color.
+            When enabled, the test words will use the main color, instead of the text color, making the website more colorful.
           </div>
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">on</div>
@@ -630,7 +630,7 @@
             </div>
           </div>
           <div class="group noDataError hidden">
-            No data found.
+            No data found. Check your filters.
           </div>
           <div class="group chart">
             <!-- <div class="chartPreloader">
@@ -755,6 +755,7 @@
     </div>
 
   </div>
+  
 </body>
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="/__/firebase/7.14.3/firebase-app.js"></script>
@@ -775,17 +776,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script> -->
 <script src="js/chart.js"></script>
-<script src="js/chartjs-plugin-trendline.js?v=20"></script>
+<script src="js/chartjs-plugin-trendline.js?v=22"></script>
 <script src="js/chartjs-plugin-annotation.js"></script>
 <script src="js/html2canvas.js"></script>
-<script src="js/words.js?v=20"></script>
-<script src="js/layouts.js?v=20"></script>
-<script src="js/db.js?v=20"></script>
-<script src="js/userconfig.js?v=20"></script>
-<script src="js/commandline.js?v=20"></script>
-<script src="js/settings.js?v=20"></script>
-<script src="js/account.js?v=20"></script>
-<script src="js/script.js?v=20"></script>
+<script src="js/words.js?v=22"></script>
+<script src="js/layouts.js?v=22"></script>
+<script src="js/db.js?v=22"></script>
+<script src="js/userconfig.js?v=22"></script>
+<script src="js/commandline.js?v=22"></script>
+<script src="js/settings.js?v=22"></script>
+<script src="js/account.js?v=22"></script>
+<script src="js/script.js?v=22"></script>
 
 
 </html>

@@ -14,6 +14,33 @@ let commands = {
             }
         },
         {
+            id: "changeMode",
+            display: "Change mode...",
+            subgroup: true,
+            exec: () => {
+                currentCommands.push(commandsMode);
+                showCommandLine();
+            }
+        },
+        {
+            id: "changeTimeConfig",
+            display: "Change time config...",
+            subgroup: true,
+            exec: () => {
+                currentCommands.push(commandsTimeConfig);
+                showCommandLine();
+            }
+        },
+        {
+            id: "changeWordCount",
+            display: "Change word count...",
+            subgroup: true,
+            exec: () => {
+                currentCommands.push(commandsWordCount);
+                showCommandLine();
+            }
+        },
+        {
             visible: false,
             id: "changeTags",
             display: "Change tags...",
@@ -97,10 +124,10 @@ let commands = {
             }
         },
         {
-            id: "toggleExtraTestColor",
-            display: "Toggle extra test color",
+            id: "toggleColorfulMode",
+            display: "Toggle colorful mode",
             exec: () => {
-                toggleExtraTestColor();
+                toggleColorfulMode();
             }
         },
         {
@@ -114,7 +141,7 @@ let commands = {
         },
         {
             id: "changeCaretStyle",
-            display: "Change caret...",
+            display: "Change caret style...",
             subgroup: true,
             exec: () => {
                 currentCommands.push(commandsCaretStyle);
@@ -123,7 +150,7 @@ let commands = {
         },
         {
             id: "changeTimerStyle",
-            display: "Change timer...",
+            display: "Change timer style...",
             subgroup: true,
             exec: () => {
                 currentCommands.push(commandsTimerStyle);
@@ -163,33 +190,6 @@ let commands = {
             subgroup: true,
             exec: () => {
                 currentCommands.push(commandsFontSize);
-                showCommandLine();
-            }
-        },
-        {
-            id: "changeMode",
-            display: "Change mode...",
-            subgroup: true,
-            exec: () => {
-                currentCommands.push(commandsMode);
-                showCommandLine();
-            }
-        },
-        {
-            id: "changeTimeConfig",
-            display: "Change time config...",
-            subgroup: true,
-            exec: () => {
-                currentCommands.push(commandsTimeConfig);
-                showCommandLine();
-            }
-        },
-        {
-            id: "changeWordCount",
-            display: "Change word count...",
-            subgroup: true,
-            exec: () => {
-                currentCommands.push(commandsWordCount);
                 showCommandLine();
             }
         },
@@ -478,7 +478,7 @@ function updateCommandsTagsList(){
                 }
             })
         })
-        commands.list[1].visible = true;
+        commands.list[4].visible = true;
     }
 }
 
@@ -532,6 +532,7 @@ let commandsLanguages = {
 if (Object.keys(words).length > 0) {
     commandsLanguages.list = [];
     Object.keys(words).forEach(language => {
+        if(language === "english_10k") return;
         commandsLanguages.list.push({
             id: "changeLanguage" + capitalizeFirstLetter(language),
             display: language.replace('_', ' '),
@@ -541,6 +542,17 @@ if (Object.keys(words).length > 0) {
                 saveConfigToCookie();
             }
         })
+        if(language === "english_expanded"){
+            commandsLanguages.list.push({
+                id: "changeLanguageEnglish10k",
+                display: "english 10k",
+                exec: () => {
+                    changeLanguage("english_10k");
+                    restartTest();
+                    saveConfigToCookie();
+                }
+            })
+        }
     })
 }
 
@@ -599,6 +611,7 @@ $(document).ready(e => {
     })
 })
 
+
 $("#commandInput textarea").keydown((e) => {
     if (e.keyCode == 13 && e.shiftKey) {
         //enter
@@ -646,13 +659,20 @@ $("#commandLineWrapper #commandLine .suggestions").click(e =>{
     triggerCommand($(e.target).attr('command'));
 })
 
+
+$('#commandLineWrapper').click(e => {
+    if($(e.target).attr('id') === "commandLineWrapper"){
+        hideCommandLine();
+    }
+})
+
 $(document).keydown((e) => {
     if(!$("#commandLineWrapper").hasClass("hidden")){
         $("#commandLine input").focus();
         if (e.keyCode == 13) {
             //enter
             e.preventDefault();
-            let command = $(".suggestions .entry.active").attr("command");
+            let command = $(".suggestions .entry.activeKeyboard").attr("command");
             triggerCommand(command);
             return;
         }
@@ -662,28 +682,31 @@ $(document).keydown((e) => {
             let activenum = -1;
             let hoverId;
             $.each(entries, (index, obj) => {
-                if ($(obj).hasClass("active")) activenum = index;
+                if ($(obj).hasClass("activeKeyboard")) activenum = index;
             });
             if (e.keyCode == 38) {
-                entries.removeClass("active");
+                entries.removeClass("activeKeyboard");
                 if (activenum == 0) {
-                    $(entries[entries.length - 1]).addClass("active");
+                    $(entries[entries.length - 1]).addClass("activeKeyboard");
                     hoverId = $(entries[entries.length - 1]).attr('command');
                 } else {
-                    $(entries[--activenum]).addClass("active");
+                    $(entries[--activenum]).addClass("activeKeyboard");
                     hoverId = $(entries[activenum]).attr('command');
                 }
             }
             if (e.keyCode == 40) {
-                entries.removeClass("active");
+                entries.removeClass("activeKeyboard");
                 if (activenum + 1 == entries.length) {
-                    $(entries[0]).addClass("active");
+                    $(entries[0]).addClass("activeKeyboard");
                     hoverId = $(entries[0]).attr('command');
                 } else {
-                    $(entries[++activenum]).addClass("active");
+                    $(entries[++activenum]).addClass("activeKeyboard");
                     hoverId = $(entries[activenum]).attr('command');
                 }
             }
+            let scroll = Math.abs($('.suggestions').offset().top - $('.entry.activeKeyboard').offset().top - $('.suggestions').scrollTop()) - ($('.suggestions').outerHeight() / 2) + ($($('.entry')[0]).outerHeight());
+            $('.suggestions').scrollTop(scroll);
+            console.log(`scrolling to ${scroll}`);
             try {
                 let list = currentCommands[currentCommands.length-1];
                 $.each(list.list, (index, obj) => {
@@ -830,7 +853,7 @@ function hideCommandLine() {
                 }
                 let entries = $("#commandLine .suggestions .entry");
                 if (entries.length > 0) {
-                    $(entries[0]).addClass("active");
+                    $(entries[0]).addClass("activeKeyboard");
                     try{
                         $.each(list.list, (index, obj) => {
                             if (obj.found) {

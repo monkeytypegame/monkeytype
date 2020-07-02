@@ -187,6 +187,9 @@ function checkIfPB(uid,obj){
         let pbs = null;
         try{
             pbs = data.data().personalBests;
+            if(pbs === undefined){
+                throw new Error("pb is undefined");
+            }
         }catch(e){
             return admin.firestore().collection('users').doc(uid).update({
                 personalBests: {
@@ -294,7 +297,7 @@ exports.testCompleted = functions.https.onCall((request,response) => {
             }
         })
         if (err){
-            console.error(`error saving result for ${request.uid} - bad input`);
+            console.error(`error saving result for ${request.uid} - bad input - ${JSON.stringify(request.obj)}`);
             return -1;
         }
 
@@ -303,7 +306,7 @@ exports.testCompleted = functions.https.onCall((request,response) => {
         }
 
         return admin.firestore().collection(`users/${request.uid}/results`).add(obj).then(e => {
-            // return 1;
+
             return checkIfPB(request.uid,request.obj).then(e => {
                 if(e){
                     return 2;
@@ -312,7 +315,7 @@ exports.testCompleted = functions.https.onCall((request,response) => {
                 }
             });
         }).catch(e => {
-            console.error(`error saving result for ${request.uid} - ${e.message}`);
+            console.error(`error saving result when checking for PB for ${request.uid} - ${e.message}`);
             return -1;
         });
     }catch(e){
@@ -424,3 +427,67 @@ exports.updateResultTags = functions.https.onCall((request,response) => {
         return {resultCode:-999};
     }
 })
+
+function isConfigKeyValid(name){
+    if(name === null || name === undefined || name === "") return false;
+    if(name.length > 20) return false;
+    return /^[0-9a-zA-Z_.-]+$/.test(name);
+}
+
+exports.saveConfig = functions.https.onCall((request,response) => {
+    try{
+        if(request.uid === undefined || request.obj === undefined){
+            console.error(`error saving config for ${request.uid} - missing input`);
+            return -1;
+        }
+
+        let obj = request.obj;
+
+        let err = false;
+        Object.keys(obj).forEach(key => {
+            let val = obj[key];
+            if(Array.isArray(val)){
+                val.forEach(valarr => {
+                    if(!isConfigKeyValid(valarr)) err = true;
+                })
+            }else{
+                if(!isConfigKeyValid(val)) err = true;
+            }
+        })
+        if (err){
+            console.error(`error saving config for ${request.uid} - bad input - ${JSON.stringify(request.obj)}`);
+            return -1;
+        }
+
+        return admin.firestore().collection(`users`).doc(request.uid).set({
+            config: obj
+        }, {merge: true}).then(e => {
+            return 1;
+        }).catch(e => {
+            console.error(`error saving config to DB for ${request.uid} - ${e.message}`);
+            return -1;
+        });
+    }catch(e){
+        console.error(`error saving config for ${request.uid} - ${e}`);
+        return {resultCode:-999};
+    }
+})
+
+// exports.getConfig = functions.https.onCall((request,response) => {
+//     try{
+//         if(request.uid === undefined){
+//             console.error(`error getting config for ${request.uid} - missing input`);
+//             return -1;
+//         }
+
+//         return admin.firestore().collection(`users`).doc(request.uid).get().then(e => {
+//             return e.data().config;
+//         }).catch(e => {
+//             console.error(`error getting config from DB for ${request.uid} - ${e.message}`);
+//             return -1;
+//         });
+//     }catch(e){
+//         console.error(`error getting config for ${request.uid} - ${e}`);
+//         return {resultCode:-999};
+//     }
+// })

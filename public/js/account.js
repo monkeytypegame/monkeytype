@@ -78,6 +78,8 @@ function signIn() {
   
 }
 
+let dontCheckUserName = false;
+
 function signUp() {
   $(".pageLogin .preloader").removeClass('hidden');
   let nname = $(".pageLogin .register input")[0].value;
@@ -104,12 +106,14 @@ function signUp() {
       }
       firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
         // Account has been created here.
+        dontCheckUserName = true;
         let usr = user.user;
         usr.updateProfile({
           displayName: nname
         }).then(function() {
           // Update successful.
           showNotification("Account created", 2000);
+          $("#menu .button.account .text").text(nname);
           try{
             firebase.analytics().logEvent("accountCreated", usr.uid);
           }catch(e){
@@ -171,6 +175,32 @@ firebase.auth().onAuthStateChanged(function(user) {
           toggleFilterButton(filter);
         }
       })
+      refreshTagsSettingsSection();
+      if(cookieConfig === null){
+        applyConfig(dbSnapshot.config);
+        // showNotification('Applying db config',3000);
+        updateSettingsPage();
+        saveConfigToCookie();
+      }else{
+        let configsDifferent = false;
+        Object.keys(config).forEach(key => {
+          if(!configsDifferent){
+            try{
+              if(key !== 'resultFilters'){
+                if(config[key] != dbSnapshot.config[key]) configsDifferent = true;
+              }
+            }catch(e){
+              configsDifferent = true;
+            }
+          }
+        })
+        if(configsDifferent){
+          applyConfig(dbSnapshot.config);
+          // showNotification('Applying db config',3000);
+          updateSettingsPage();
+          saveConfigToCookie();
+        }
+      }
     });
     var displayName = user.displayName;
     var email = user.email;
@@ -181,7 +211,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     var providerData = user.providerData;
     // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass('hidden');
-    verifyUsername();
+    if(!dontCheckUserName) verifyUsername();
     $("#menu .button.account .text").text(displayName);
   }
 });
@@ -526,13 +556,20 @@ function loadMoreLines(){
     //   icons += `<span aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
     // }
 
-    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
+    let restags;
+    if(result.tags === undefined){
+      restags = '[]';
+    }else{
+      restags = JSON.stringify(result.tags)
+    }
+
+    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
 
     if(tagNames !== ""){
       if(result.tags !== undefined && result.tags.length > 1){
-        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
+        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
       }else{
-        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
+        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
       }
     }
 
