@@ -1,6 +1,6 @@
 let defaultConfig = {
     theme: 'serika_dark',
-    customTheme: 'false',
+    customTheme: false,
     customThemeColors: ['#323437','#e2b714','#e2b714','#646669','#d1d0c5','#ca4754','#7e2a33','#ca4754','#7e2a33'],
     showKeyTips: true,
     showLiveWpm: false,
@@ -471,9 +471,10 @@ function setTheme(name,nosave) {
     if(!nosave) saveConfigToCookie();
 }
 
-function setCustomTheme(boolean) {
+function setCustomTheme(boolean, nosave) {
     config.customTheme = boolean;
     setCustomThemeColors(config.customThemeColors);
+    if(!nosave) saveConfigToCookie();
 }
 
 function setCustomThemeColors(array, nosave) {
