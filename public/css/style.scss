@@ -1529,7 +1529,7 @@ key {
     overflow: hidden;
     height: auto;
     max-height: 0px;
-    transition: max-height .5s ease-in-out;
+    // transition: max-height .5s ease-in-out;
     &.reveal{
       max-height: 100vh;
     }
