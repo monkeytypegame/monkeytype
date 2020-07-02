@@ -53,10 +53,10 @@ input[type="color"]::-webkit-color-swatch {
     cursor: pointer;
   }
   & [for="--bg-color"] {
-    color: var(--main-color);
+    color: var(--text-color);
   }
   & #--bg-color {
-    border: 1px solid var(--main-color);
+    border: 1px solid var(--text-color);
   }
 }
 
