@@ -42,6 +42,8 @@ function updateSettingsPage(){
     setActiveDifficultyButton();
     setActiveCaretStyleButton();
     setActiveTimerStyleButton();
+    setActiveThemeTab();	
+    setCustomThemeInputs();
 
 
     if (config.showKeyTips) {
