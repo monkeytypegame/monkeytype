@@ -223,6 +223,11 @@
         "name": "joker",
         "bgColor": "#1a0e25",
         "textColor": "#99de1e"
+    },
+    {
+        "name": "dualshot",
+        "bgColor": "#737373",
+        "textColor": "#212222"
     }
     
 ]
