@@ -475,15 +475,17 @@ $(".tab").click(e => {
         if($target.attr("tab") == "preset") {
             setCustomTheme(false)
             $('[tabContent="custom"]').removeClass("reveal")
-            setTimeout(() => {
-                $('[tabContent="preset"]').addClass("reveal")
-            }, 150);
+            $('[tabContent="preset"]').addClass("reveal")
+
+            // setTimeout(() => {
+            // }, 0);
         } else {
             setCustomTheme(true)
             $('[tabContent="preset"]').removeClass("reveal")
-            setTimeout(() => {
-                $('[tabContent="custom"]').addClass("reveal")
-            }, 150);
+            $('[tabContent="custom"]').addClass("reveal")
+
+            // setTimeout(() => {
+            // }, 0);
         }
 })
 

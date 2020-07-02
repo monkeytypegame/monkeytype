@@ -14,24 +14,24 @@
     color: #8fadc9;
 }
 
-#top .config .group .buttons .button.active{
+#top .config .group .buttons .text-button.active{
     color: #daa99b;
 } 
 
 
-/* #menu .button:nth-child(1){
+/* #menu .icon-button:nth-child(1){
     color: #daa99b;
 }
 
-#menu .button:nth-child(2){
+#menu .icon-button:nth-child(2){
     color: #daa99b;
 }
 
-#menu .button:nth-child(3){
+#menu .icon-button:nth-child(3){
     color: #8fadc9;
 }
 
-#menu .button:nth-child(4),
-#menu .button:nth-child(5){
+#menu .icon-button:nth-child(4),
+#menu .icon-button:nth-child(5){
     color: #8fadc9;
 } */

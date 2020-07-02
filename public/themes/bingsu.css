@@ -15,6 +15,6 @@
   border-bottom: double 4px var(--error-color);
 } */
 
-#menu .button:nth-child(1){
+#menu .icon-button:nth-child(1){
   color: var(--caret-color);
 }

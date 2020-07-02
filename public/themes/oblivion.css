@@ -10,23 +10,23 @@
     --colorful-error-extra-color: #9e3423;
 }
 
-#menu .button:nth-child(1){
+#menu .icon-button:nth-child(1){
     color: #9a90b4;
 }
 
-#menu .button:nth-child(2){
+#menu .icon-button:nth-child(2){
     color: #8db14b;
 }
 
-#menu .button:nth-child(3){
+#menu .icon-button:nth-child(3){
     color: #fca321;
 }
 
-#menu .button:nth-child(4){
+#menu .icon-button:nth-child(4){
     color: #2984a5;
 }
 
-#menu .button:nth-child(5),
-#menu .button:nth-child(6){
+#menu .icon-button:nth-child(5),
+#menu .icon-button:nth-child(6){
     color: #dd452e;
 }

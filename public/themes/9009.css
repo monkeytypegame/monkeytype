@@ -27,14 +27,14 @@ key{
   background-color: var(--main-color);
 }
 
-#menu .button{
+#menu .icon-button{
   color: var(--main-color);
 }
 
-#menu .button:nth-child(1){
+#menu .icon-button:nth-child(1){
   color: var(--error-color);
 }
 
-#menu .button:nth-child(4){
+#menu .icon-button:nth-child(4){
   color: var(--caret-color);
 }

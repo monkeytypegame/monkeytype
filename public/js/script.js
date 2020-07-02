@@ -1217,8 +1217,8 @@ function changePage(page) {
 
 function changeMode(mode,nosave) {
   config.mode = mode;
-  $("#top .config .mode .button").removeClass("active");
-  $("#top .config .mode .button[mode='" + mode + "']").addClass("active");
+  $("#top .config .mode .text-button").removeClass("active");
+  $("#top .config .mode .text-button[mode='" + mode + "']").addClass("active");
   if (config.mode == "time") {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").removeClass("hidden");
@@ -1323,13 +1323,13 @@ function clearIntervals() {
 
 function updateAccountLoginButton() {
   if (firebase.auth().currentUser != null) {
-    swapElements($("#menu .button.login"), $("#menu .button.account"), 250);
-    // $("#menu .button.account").removeClass('hidden');
-    // $("#menu .button.login").addClass('hidden');
+    swapElements($("#menu .icon-button.login"), $("#menu .icon-button.account"), 250);
+    // $("#menu .icon-button.account").removeClass('hidden');
+    // $("#menu .icon-button.login").addClass('hidden');
   } else {
-    swapElements($("#menu .button.account"), $("#menu .button.login"), 250);
-    // $("#menu .button.login").removeClass('hidden');
-    // $("#menu .button.account").addClass('hidden');
+    swapElements($("#menu .icon-button.account"), $("#menu .icon-button.login"), 250);
+    // $("#menu .icon-button.login").removeClass('hidden');
+    // $("#menu .icon-button.account").addClass('hidden');
   }
 }
 
@@ -1590,7 +1590,7 @@ $(document).on("click", "#top .logo", (e) => {
   changePage('test');
 });
 
-$(document).on("click", "#top .config .wordCount .button", (e) => {
+$(document).on("click", "#top .config .wordCount .text-button", (e) => {
   wrd = $(e.currentTarget).attr('wordCount');
   if(wrd == "custom"){
     let newWrd = prompt('Custom word amount');
@@ -1603,7 +1603,7 @@ $(document).on("click", "#top .config .wordCount .button", (e) => {
   restartTest();
 });
 
-$(document).on("click", "#top .config .time .button", (e) => {
+$(document).on("click", "#top .config .time .text-button", (e) => {
   time = $(e.currentTarget).attr('timeConfig');
   if(time == "custom"){
     let newTime = prompt('Custom time in seconds');
@@ -1616,13 +1616,13 @@ $(document).on("click", "#top .config .time .button", (e) => {
   restartTest();
 });
 
-$(document).on("click", "#top .config .customText .button", (e) => {
+$(document).on("click", "#top .config .customText .text-button", (e) => {
   changeCustomText();
   restartTest();
 
 });
 
-$(document).on("click", "#top .config .punctuationMode .button", (e) => {
+$(document).on("click", "#top .config .punctuationMode .text-button", (e) => {
   togglePunctuation();
   restartTest();
 });
@@ -1631,14 +1631,14 @@ $("#words").click((e) => {
   focusWords();
 });
 
-$(document).on("click", "#top .config .mode .button", (e) => {
+$(document).on("click", "#top .config .mode .text-button", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   mode = e.currentTarget.innerHTML;
   changeMode(mode);
   restartTest();
 });
 
-$(document).on("click", "#top #menu .button", (e) => {
+$(document).on("click", "#top #menu .icon-button", (e) => {
   if($(e.currentTarget).hasClass('discord')) return;
   href = $(e.currentTarget).attr('href');
   changePage(href.replace('/', ''));

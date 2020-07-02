@@ -314,11 +314,11 @@ function changeTimeConfig(time, nosave) {
     time = parseInt(time);
     changeMode("time",nosave);
     config.time = time;
-    $("#top .config .time .button").removeClass("active");
+    $("#top .config .time .text-button").removeClass("active");
     if(![15,30,60,120].includes(time)){
         time = "custom";
     }
-    $("#top .config .time .button[timeConfig='" + time + "']").addClass("active");
+    $("#top .config .time .text-button[timeConfig='" + time + "']").addClass("active");
     if(!nosave) saveConfigToCookie();
 }
 
@@ -326,11 +326,11 @@ function changeWordCount(wordCount, nosave) {
     wordCount = parseInt(wordCount);
     changeMode("words", nosave);
     config.words = wordCount;
-    $("#top .config .wordCount .button").removeClass("active");
+    $("#top .config .wordCount .text-button").removeClass("active");
     if(![10,25,50,100,200].includes(wordCount)){
         wordCount = "custom";
     }
-    $("#top .config .wordCount .button[wordCount='" + wordCount + "']").addClass(
+    $("#top .config .wordCount .text-button[wordCount='" + wordCount + "']").addClass(
         "active"
     );
     if(!nosave) saveConfigToCookie();
@@ -388,18 +388,18 @@ function toggleQuickTabMode() {
 function setPunctuation(punc, nosave) {
     config.punctuation = punc;
     if (!config.punctuation) {
-        $("#top .config .punctuationMode .button").removeClass("active");
+        $("#top .config .punctuationMode .text-button").removeClass("active");
     } else {
-        $("#top .config .punctuationMode .button").addClass("active");
+        $("#top .config .punctuationMode .text-button").addClass("active");
     }
     if(!nosave) saveConfigToCookie();
 }
 
 function togglePunctuation() {
     if (config.punctuation) {
-        $("#top .config .punctuationMode .button").removeClass("active");
+        $("#top .config .punctuationMode .text-button").removeClass("active");
     } else {
-        $("#top .config .punctuationMode .button").addClass("active");
+        $("#top .config .punctuationMode .text-button").addClass("active");
     }
     config.punctuation = !config.punctuation;
     saveConfigToCookie();

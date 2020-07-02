@@ -113,7 +113,7 @@ function signUp() {
         }).then(function() {
           // Update successful.
           showNotification("Account created", 2000);
-          $("#menu .button.account .text").text(nname);
+          $("#menu .icon-button.account .text").text(nname);
           try{
             firebase.analytics().logEvent("accountCreated", usr.uid);
           }catch(e){
@@ -212,7 +212,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass('hidden');
     if(!dontCheckUserName) verifyUsername();
-    $("#menu .button.account .text").text(displayName);
+    $("#menu .icon-button.account .text").text(displayName);
   }
 });
 
