@@ -430,7 +430,7 @@ exports.updateResultTags = functions.https.onCall((request,response) => {
 
 function isConfigKeyValid(name){
     if(name === null || name === undefined || name === "") return false;
-    if(name.length > 20) return false;
+    if(name.length > 30) return false;
     return /^[0-9a-zA-Z_.\-\#]+$/.test(name);
 }
 
@@ -448,10 +448,16 @@ exports.saveConfig = functions.https.onCall((request,response) => {
             let val = obj[key];
             if(Array.isArray(val)){
                 val.forEach(valarr => {
-                    if(!isConfigKeyValid(valarr)) err = true;
+                    if(!isConfigKeyValid(valarr)){
+                        err = true;
+                        console.error(`${key}: ${valarr} failed regex check`);
+                    }
                 })
             }else{
-                if(!isConfigKeyValid(val)) err = true;
+                if(!isConfigKeyValid(val)){
+                    err = true;
+                    console.error(`${key}: ${val} failed regex check`);
+                }
             }
         })
         if (err){
