@@ -56,7 +56,7 @@ input[type="color"]::-webkit-color-swatch {
     color: var(--text-color);
   }
   & #--bg-color {
-    border: 1px solid var(--text-color);
+    border: 1px solid var(--sub-color);
   }
 }
 
