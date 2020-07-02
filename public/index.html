@@ -422,9 +422,71 @@
         </div>
         <div class="section themes">
           <h1>theme</h1>
-          <div class="buttons">
+          <div class='tabs'>
+            <button tab="preset" class="tab">preset</button>
+            <button tab="custom" class="tab">custom</button>
           </div>
-        </div>
+          <div class="tabContainer">
+            <div tabContent="custom" class="tabContent section customTheme">
+              <label class="text">background</label>
+                <span class="colorPicker">
+                  <label for="--bg-color">#e2b714</label>
+                  <input type="color" value="" id="--bg-color">
+                </span>
+              <label class="text">main</label>
+                <span class="colorPicker">
+                  <label for="--main-color">#e2b714</label>
+                  <input type="color" value="" id="--main-color">
+                </span>
+              <label class="text">caret</label>
+                <span class="colorPicker">
+                  <label for="--caret-color">#e2b714</label>
+                  <input type="color" value="" id="--caret-color">
+                </span>
+              <label class="text">sub</label>
+                <span class="colorPicker">
+                  <label for="--sub-color">#e2b714</label>
+                  <input type="color" value="" id="--sub-color">
+                </span>
+              <label class="text">text</label>
+                <span class="colorPicker">
+                  <label for="--text-color">#e2b714</label>
+                  <input type="color" value="" id="--text-color">
+                </span>
+                
+              <span class="spacer"></span>
+
+              <label class="text">error</label>
+                <span class="colorPicker">
+                  <label for="--error-color">#e2b714</label>
+                  <input type="color" value="" id="--error-color">
+                </span>
+              <label class="text">extra error</label>
+                <span class="colorPicker">
+                  <label for="--error-extra-color">#e2b714</label>
+                  <input type="color" value="" id="--error-extra-color">
+                </span>
+
+                <p>colorful mode</p>
+
+              <label class="text">error</label>
+                <span class="colorPicker">
+                  <!-- Change variable names here -->
+                  <label for="--extra-error-color">#e2b714</label>
+                  <input type="color" value="" id="--extra-error-color">
+                </span>
+              <label class="text">extra error</label>
+                <span class="colorPicker">
+                  <!-- Change variable names here -->
+                  <label for="--extra-error-extra-color">#e2b714</label>
+                  <input type="color" value="" id="--extra-error-extra-color">
+                </span>
+            </div>
+            <div tabContent="preset" class="tabContent buttons">
+            </div>
+          </div>
+      </div>
+        
 
 
         <div class="sectionSpacer"></div>

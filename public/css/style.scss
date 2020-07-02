@@ -8,7 +8,6 @@
   opacity: 1; /* Firefox */
 }
 
-
 input{
   outline: none;
   border: none;
@@ -19,6 +18,46 @@ input{
   font-size: 1rem;
   line-height: 1rem;
   font-family: "Roboto Mono";
+}
+
+input[type="color"] {
+	-webkit-appearance: none;
+  padding: 0;
+  width: 100%;
+  height: 32px;
+  overflow: hidden;
+  border-radius: var(--roundness);
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: none;
+}
+
+.colorPicker {
+  text-align: center;
+  will-change: transform;
+  transition: transform .2s ease-in-out;
+  overflow: hidden;
+  border-radius: var(--roundness);
+  & label {
+    position: absolute;
+    width: 100%;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: auto;
+    color: var(--bg-color);
+    cursor: pointer;
+  }
+  & [for="--bg-color"] {
+    color: var(--text-color);
+  }
+  & #--bg-color {
+    border: 1px solid var(--sub-color);
+  }
 }
 
 body {
@@ -1296,10 +1335,22 @@ key {
     display: grid;
     // gap: .5rem;
     grid-template-areas: "title title"
-                          "text buttons";
+                         "text buttons";
     grid-template-columns: 2fr 1fr;
     column-gap: 2rem;
     align-items: center;
+    &.customTheme {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      justify-items: stretch;
+      gap: .5rem 2rem;
+      & p {
+        grid-area: unset;
+        grid-column: 1 / span 4;
+      }
+      & .spacer {
+        grid-column: 3 / 5;
+      }
+    }
     h1{
       font-size: 1rem;
       line-height: 1rem;
@@ -1310,6 +1361,8 @@ key {
     }
     p{
       grid-area: text;
+      color: var(--sub-color);
+      margin: 0;
     }
     .text{
       align-self: normal;
@@ -1411,8 +1464,34 @@ key {
     &.themes, &.languages, &.layouts{
       grid-template-columns: 1fr;
       grid-template-areas: "title"
+                            "tabs"
                             "buttons";
       gap: .5rem;
+      .tabs {
+        grid-area: tabs;
+        display: flex;
+        grid-template-columns: 1fr 1fr 9fr;
+        grid-area: tabs;
+        .tab {
+          will-change: color;
+          transition: .2s ease-in-out color;
+          outline: 0;
+          cursor: pointer;
+          padding: 0;
+          font-size: 1rem;
+          color: var(--sub-color);
+          text-align: left;
+          border: 0;
+          background: 0;
+          font-family: "Roboto Mono";
+          &:first-child{
+            margin-right: .5rem;
+          }
+          &.active, &:hover {
+            color: var(--main-color);
+          }
+        }
+      }
       .buttons{
         margin-left: 0;
         grid-auto-flow: dense;
@@ -1441,6 +1520,18 @@ key {
           }
         }
       }
+    }
+  }
+}
+.tabContainer{
+  position: relative;
+  .tabContent{
+    overflow: hidden;
+    height: auto;
+    max-height: 0px;
+    transition: max-height .5s ease-in-out;
+    &.reveal{
+      max-height: 100vh;
     }
   }
 }
@@ -1644,4 +1735,3 @@ key {
 .hidden {
   display: none !important;
 }
-

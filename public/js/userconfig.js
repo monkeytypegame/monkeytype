@@ -1,5 +1,7 @@
 let defaultConfig = {
     theme: 'serika_dark',
+    customTheme: 'false',
+    customThemeColors: ['#ffffff','#000000','#276891','#A1A1A1','#00000','#ff6161','#A62626','#ff6161','#A62626'],
     showKeyTips: true,
     showLiveWpm: false,
     showTimerBar: true,
@@ -81,6 +83,7 @@ function loadConfigFromCookie() {
     let newConfig = $.cookie('config');
     if(newConfig !== undefined){
         newConfig = JSON.parse(newConfig);
+
         applyConfig(newConfig);
         cookieConfig = newConfig;
         saveConfigToCookie();
@@ -91,6 +94,8 @@ function loadConfigFromCookie() {
 function applyConfig(configObj){
     if (configObj && configObj != null && configObj != "null") {
         setTheme(configObj.theme,true);
+        setCustomTheme(newConfig.customTheme,true);
+        setCustomThemeColors(newConfig.customThemeColors,true);
         setQuickTabMode(configObj.quickTab,true);
         setPunctuation(configObj.punctuation,true);
         setKeyTips(configObj.showKeyTips,true);
@@ -463,6 +468,31 @@ function setTheme(name,nosave) {
     }catch(e){
         console.log("Analytics unavailable");
     }
+    if(!nosave) saveConfigToCookie();
+}
+
+function setCustomTheme(boolean) {
+    config.customTheme = boolean;
+    setCustomThemeColors(config.customThemeColors);
+}
+
+function setCustomThemeColors(array, nosave) {
+    array = config.customThemeColors;
+
+    if(config.customTheme === true) {
+        colorVars.forEach((e, index) => {
+            document.documentElement.style.setProperty(e, array[index])
+        });
+    } else {
+        colorVars.forEach(e => {
+            document.documentElement.style.setProperty(e, '')
+        })
+    }
+
+    setTimeout(() => {
+        updateFavicon(32,14);
+      }, 500);
+      
     if(!nosave) saveConfigToCookie();
 }
 

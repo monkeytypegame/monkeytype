@@ -97,6 +97,18 @@ function setActiveThemeButton() {
     $(`.pageSettings .section.themes .theme[theme=${config.theme}]`).addClass('active');
 }
 
+function setActiveThemeTab() {
+    config.customTheme === true ? $("[tab='custom']").click() : $("[tab='preset']").click()
+}
+
+function setCustomThemeInputs() {
+    $("[type=color]").each((n, index) => {
+        let currentColor = config.customThemeColors[colorVars.indexOf($(index).attr("id"))]
+        $(index).val(currentColor)
+        $(index).prev().text(currentColor)
+    })
+}
+
 function setActiveLayoutButton(){
     $(`.pageSettings .section.layouts .layout`).removeClass('active');
     $(`.pageSettings .section.layouts .layout[layout=${config.layout}]`).addClass('active');
@@ -449,3 +461,41 @@ $(document).on("click",".pageSettings .section.tags .tagsList .tag .removeButton
     let name = $(e.currentTarget).siblings('.title').text();
     showEditTags('remove',tagid,name);
 })
+
+//theme tabs & custom theme
+const colorVars = ['--bg-color', '--main-color','--caret-color', '--sub-color', '--text-color', '--error-color', '--error-extra-color', '--extra-error-color', '--extra-error-extra-color']
+
+$(".tab").click(e => {
+    $('.tab').removeClass("active")
+    var $target = $(e.currentTarget)
+        $target.addClass("active")
+    
+        if($target.attr("tab") == "preset") {
+            setCustomTheme(false)
+            $('[tabContent="custom"]').removeClass("reveal")
+            setTimeout(() => {
+                $('[tabContent="preset"]').addClass("reveal")
+            }, 150);
+        } else {
+            setCustomTheme(true)
+            $('[tabContent="preset"]').removeClass("reveal")
+            setTimeout(() => {
+                $('[tabContent="custom"]').addClass("reveal")
+            }, 150);
+        }
+})
+
+$("[type='color']").on('input', e => {
+    let $colorVar = $(e.currentTarget).attr('id')
+    let $pickedColor = $(e.currentTarget).val();
+
+    document.documentElement.style.setProperty($colorVar, $pickedColor)
+    $("[for="+$colorVar+"]").text($pickedColor)
+
+    config.customThemeColors[colorVars.indexOf($colorVar)] = $pickedColor
+})
+
+$('.colorPicker').on('change', e => {
+    setCustomTheme(true) // Save a color once picked
+})
+
