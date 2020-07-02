@@ -58,7 +58,7 @@ function isUsernameValid(name){
     if(name === null || name === undefined || name === "") return false;
     if(/miodec/.test(name)) return false;
     if(name.length > 12) return false;
-    return /^[0-9a-zA-Z_.\-]+$/.test(name);
+    return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
 exports.checkNameAvailability = functions.https.onCall((request,response) => {
@@ -327,7 +327,7 @@ exports.testCompleted = functions.https.onCall((request,response) => {
 function isTagValid(name){
     if(name === null || name === undefined || name === "") return false;
     if(name.length > 16) return false;
-    return /^[0-9a-zA-Z_.\-]+$/.test(name);
+    return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
 exports.addTag = functions.https.onCall((request,response) => {
@@ -431,7 +431,7 @@ exports.updateResultTags = functions.https.onCall((request,response) => {
 function isConfigKeyValid(name){
     if(name === null || name === undefined || name === "") return false;
     if(name.length > 30) return false;
-    return /^[0-9a-zA-Z_.\-\#]+$/.test(name);
+    return /^[0-9a-zA-Z_.\-#]+$/.test(name);
 }
 
 exports.saveConfig = functions.https.onCall((request,response) => {
