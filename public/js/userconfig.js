@@ -1,7 +1,7 @@
 let defaultConfig = {
     theme: 'serika_dark',
     customTheme: 'false',
-    customThemeColors: ['#ffffff','#000000','#276891','#A1A1A1','#00000','#ff6161','#A62626','#ff6161','#A62626'],
+    customThemeColors: ['#323437','#e2b714','#e2b714','#646669','#d1d0c5','#ca4754','#7e2a33','#ca4754','#7e2a33'],
     showKeyTips: true,
     showLiveWpm: false,
     showTimerBar: true,
@@ -94,8 +94,8 @@ function loadConfigFromCookie() {
 function applyConfig(configObj){
     if (configObj && configObj != null && configObj != "null") {
         setTheme(configObj.theme,true);
-        setCustomTheme(newConfig.customTheme,true);
-        setCustomThemeColors(newConfig.customThemeColors,true);
+        setCustomTheme(configObj.customTheme,true);
+        setCustomThemeColors(configObj.customThemeColors,true);
         setQuickTabMode(configObj.quickTab,true);
         setPunctuation(configObj.punctuation,true);
         setKeyTips(configObj.showKeyTips,true);
