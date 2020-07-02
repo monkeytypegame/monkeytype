@@ -482,7 +482,10 @@ function setCustomTheme(boolean, nosave) {
 }
 
 function setCustomThemeColors(colors, nosave){
-    if(colors !== undefined) config.customThemeColors = colors;
+    if(colors !== undefined){
+        config.customThemeColors = colors;
+        applyCustomThemeColors();
+    }
     if(!nosave) saveConfigToCookie();
 }
 
