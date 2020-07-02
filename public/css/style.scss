@@ -24,7 +24,8 @@ input[type="color"] {
 	-webkit-appearance: none;
   padding: 0;
   width: 100%;
-  height: 32px;
+  // height: 32px;
+  height: 1.8rem;
   overflow: hidden;
   border-radius: var(--roundness);
 }
@@ -44,7 +45,8 @@ input[type="color"]::-webkit-color-swatch {
   & label {
     position: absolute;
     width: 100%;
-    height: 32px;
+    // height: 32px;
+    line-height: 1.8rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1172,30 +1174,6 @@ key {
       grid-auto-columns: 1fr;
       gap: .5rem;
       grid-area: buttons;
-      .button{
-        color: var(--text-color);
-        cursor: pointer;
-        transition: .25s;
-        padding: .2rem .5rem;
-        border-radius: var(--roundness);
-
-        background: rgba(0,0,0,.1);
-        text-align: center;
-        -webkit-user-select: none;
-        display: grid;
-        align-content: center;
-        height: min-content;
-        height: -moz-min-content;
-        &.active{
-          background: var(--main-color);
-          color: var(--bg-color);
-        }
-        &:hover,&:focus{
-          color: var(--bg-color);
-          background: var(--main-color);
-          outline: none;
-        }
-      }
     }
     &.tags{
       .tagsList{
@@ -1296,27 +1274,6 @@ key {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: .5rem;
-        .theme, .language, .layout{
-          color: var(--text-color);
-          cursor: pointer;
-          transition: .25s;
-          padding: .2rem .5rem;
-          border-radius: var(--roundness);
-
-          background: rgba(0,0,0,.1);
-          text-align: center;
-          -webkit-user-select: none;
-          display: grid;
-          align-content: center;
-          &.active{
-            background: var(--main-color);
-            color: var(--bg-color);
-          }
-          &:hover,&:focus{
-            color: var(--bg-color);
-            background: var(--main-color);
-          }
-        }
       }
     }
   }
@@ -1330,6 +1287,9 @@ key {
     // transition: max-height .5s ease-in-out;
     &.reveal{
       max-height: 100vh;
+    }
+    .text{
+      align-self: center;
     }
   }
 }
@@ -1538,7 +1498,7 @@ key {
   color: var(--text-color);
   cursor: pointer;
   transition: .25s;
-  padding: .2rem .5rem;
+  padding: .4rem;
   border-radius: var(--roundness);
 
   background: rgba(0,0,0,.1);
@@ -1548,6 +1508,7 @@ key {
   align-content: center;
   height: min-content;
   height: -moz-min-content;
+  line-height: 1rem;
   .fas,.far{
     margin-right: .5rem;
   }

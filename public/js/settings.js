@@ -2,15 +2,15 @@ function updateSettingsPage(){
 
     let themesEl = $(".pageSettings .section.themes .buttons").empty();
     themesList.forEach(theme => {
-        themesEl.append(`<div class="theme" theme='${theme.name}' style="color:${theme.textColor};background:${theme.bgColor}">${theme.name.replace('_', ' ')}</div>`); 
+        themesEl.append(`<div class="theme button" theme='${theme.name}' style="color:${theme.textColor};background:${theme.bgColor}">${theme.name.replace('_', ' ')}</div>`); 
     })
 
     let langEl = $(".pageSettings .section.languages .buttons").empty();
     Object.keys(words).forEach(language => {
         if(language === "english_10k") return;
-        langEl.append(`<div class="language" language='${language}'>${language.replace('_', ' ')}</div>`);
+        langEl.append(`<div class="language button" language='${language}'>${language.replace('_', ' ')}</div>`);
         if(language === "english_expanded"){
-            langEl.append(`<div class="language" language='english_10k'>english 10k</div>`);
+            langEl.append(`<div class="language button" language='english_10k'>english 10k</div>`);
         }  
     })
 
