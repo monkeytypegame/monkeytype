@@ -14,7 +14,8 @@
   <meta name="name" content="Monkey Type">
   <meta name="image" content="https://monkey-type.com/mtsocial_large.png">
   <meta name="description" content="A super customisable, minimalistic typing test.">
-  <meta name="keywords" content="typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website">
+  <meta name="keywords"
+    content="typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website">
   <meta name="author" content="Miodec">
   <meta property="og:title" content="Monkey Type">
   <meta property="og:url" content="https://monkey-type.com/">
@@ -28,9 +29,11 @@
 
 
 </head>
+
 <body>
   <div id="backgroundLoader" style="display:none"></div>
-  <div class="nameChangeMessage" style="background-color: var(--main-color);padding: 0.5rem;text-align: center;color: var(--bg-color);display:none;">
+  <div class="nameChangeMessage"
+    style="background-color: var(--main-color);padding: 0.5rem;text-align: center;color: var(--bg-color);display:none;">
     Important information about your account. Please click this message.
   </div>
   <div class="notification">Signed in</div>
@@ -99,11 +102,12 @@
             <i class="fas fa-fw fa-info"></i>
           </div>
         </div>
-          <a class="icon-button discord" tabindex="2" href="https://discord.gg/yENzqcB" onclick="this.blur();" target="_blank" style="text-decoration: none;">
-            <div class="icon">
-              <i class="fab fa-discord"></i>
-            </div>
-          </a>
+        <a class="icon-button discord" tabindex="2" href="https://discord.gg/yENzqcB" onclick="this.blur();"
+          target="_blank" style="text-decoration: none;">
+          <div class="icon">
+            <i class="fab fa-discord"></i>
+          </div>
+        </a>
         <div class="icon-button" tabindex="2" href="/settings" onclick="this.blur();">
           <div class="icon">
             <i class="fas fa-fw fa-cog"></i>
@@ -135,6 +139,7 @@
           <div class="buttons">
             <div class="text-button active" mode="time" tabindex="2">time</div>
             <div class="text-button" mode="words" tabindex="2">words</div>
+            <div class="text-button" mode="quote" tabindex="2">quote</div>
             <div class="text-button" mode="custom" tabindex="2">custom</div>
           </div>
         </div>
@@ -167,22 +172,26 @@
         </div>
 
       </div>
-      <div class="signOut hidden" style="grid-column: 3/4;grid-row: 1/2;" tabindex="0"><i class="fas fa-sign-out-alt"></i>sign out</div>
+      <div class="signOut hidden" style="grid-column: 3/4;grid-row: 1/2;" tabindex="0"><i
+          class="fas fa-sign-out-alt"></i>sign out</div>
 
     </div>
     <div id="middle">
 
       <div class="page pageTest active">
         <div id="testModesNotice">
-          
+
         </div>
         <div id="caret" class="default"></div>
         <div id="result" class="hidden">
           <div class="stats">
             <!-- <div class="info">words 10<br>punctuation</div> -->
-            
+
             <div class="group wpm">
-              <div class="top">wpm<div class="crownWrapper"><div class="crown"><i class="fas fa-crown"></i></div></div></div>
+              <div class="top">wpm<div class="crownWrapper">
+                  <div class="crown"><i class="fas fa-crown"></i></div>
+                </div>
+              </div>
               <div class="bottom">-</div>
             </div>
             <div class="group acc">
@@ -203,6 +212,10 @@
             </div>
             <div class="group testType">
               <div class="top">test type</div>
+              <div class="bottom">-</div>
+            </div>
+            <div class="group source hidden">
+              <div class="top">source</div>
               <div class="bottom">-</div>
             </div>
             <div class="group infoAndTags">
@@ -229,11 +242,15 @@
         <div id="words" class=""></div>
         <div id="liveWpm">123</div>
         <div class="buttons">
-          <div id="restartTestButton" aria-label="Restart test" data-balloon-pos="up" class="" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-redo-alt"></i></div>
+          <div id="restartTestButton" aria-label="Restart test" data-balloon-pos="up" class="" tabindex="0"
+            onclick="this.blur();"><i class="fas fa-fw fa-redo-alt"></i></div>
           <div id="resultExtraButtons" class="hidden">
-            <div id="restartTestButtonWithSameWordset" aria-label="Repeat test" data-balloon-pos="up" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-sync-alt"></i></div>
-            <div id="showWordHistoryButton" aria-label="Show words history" data-balloon-pos="up" tabindex="0" onclick="this.blur();"><i class="fas fa-fw fa-align-left"></i></div>
-            <div id="copyResultToClipboardButton" aria-label="Save screenshot" data-balloon-pos="up" tabindex="0" onclick="this.blur();"><i class="far fa-fw fa-image"></i></div>
+            <div id="restartTestButtonWithSameWordset" aria-label="Repeat test" data-balloon-pos="up" tabindex="0"
+              onclick="this.blur();"><i class="fas fa-fw fa-sync-alt"></i></div>
+            <div id="showWordHistoryButton" aria-label="Show words history" data-balloon-pos="up" tabindex="0"
+              onclick="this.blur();"><i class="fas fa-fw fa-align-left"></i></div>
+            <div id="copyResultToClipboardButton" aria-label="Save screenshot" data-balloon-pos="up" tabindex="0"
+              onclick="this.blur();"><i class="far fa-fw fa-image"></i></div>
           </div>
         </div>
       </div>
@@ -246,12 +263,15 @@
         <div class="section">
           <h1>word set</h1>
           <p>By default, the website uses the most common 200 words in the english language to generate its tests.
-            You can change to an expanded set (1000 most common words) in the options, or change the language entirely.</p>
+            You can change to an expanded set (1000 most common words) in the options, or change the language entirely.
+          </p>
         </div>
         <div class="section">
           <h1>keybinds</h1>
-          <p>You can use <key>tab</key> and <key>enter</key> (or just <key>tab</key> if you have quick tab mode enabled) to restart the typing test.
-            Open the command line by pressing <key>esc</key> - there you can access all the functionality you need without touching your mouse. </p>
+          <p>You can use <key>tab</key> and <key>enter</key> (or just <key>tab</key> if you have quick tab mode enabled)
+            to restart the typing test.
+            Open the command line by pressing <key>esc</key> - there you can access all the functionality you need
+            without touching your mouse. </p>
         </div>
         <div class="section">
           <h1>stats</h1>
@@ -262,26 +282,34 @@
         </div>
         <div class="section">
           <h1>bug report or feature request</h1>
-          <p>If you encounter a bug, or have a feature request - join the <a href="https://discord.gg/yENzqcB" target="_blank">Discord server</a>, send me a message on Reddit or create an issue on <a href="https://github.com/Miodec/monkey-type" target="_blank">GitHub</a>.</p>
+          <p>If you encounter a bug, or have a feature request - join the <a href="https://discord.gg/yENzqcB"
+              target="_blank">Discord server</a>, send me a message on Reddit or create an issue on <a
+              href="https://github.com/Miodec/monkey-type" target="_blank">GitHub</a>.</p>
         </div>
         <div class="section">
           <h1>credits</h1>
           <p><a href="https://www.reddit.com/user/montydrei" target="_blank">montydrei</a> - name suggestion</p>
-          <p><a href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/" target="_blank">everyone</a> who provided
+          <p><a
+              href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/"
+              target="_blank">everyone</a> who provided
             valuable feedback on the original reddit post for the prototype of this website</p>
         </div>
         <div class="section">
           <h1>support</h1>
-          <p>If you wish to support this project, help pay for hosting and fuel my caffeine addiction, you can find the support link in the <a href="https://github.com/Miodec/monkey-type/blob/master/README.md" target="_blank">GitHub's readme</a>.</p>
+          <p>If you wish to support this project, help pay for hosting and fuel my caffeine addiction, you can find the
+            support link in the <a href="https://github.com/Miodec/monkey-type/blob/master/README.md"
+              target="_blank">GitHub's readme</a>.</p>
         </div>
       </div>
       <div class="page pageSettings hidden">
-        <div class="tip">tip: You can also change all these settings quickly using the command line (<key>esc</key>)</div>
+        <div class="tip">tip: You can also change all these settings quickly using the command line (<key>esc</key>)
+        </div>
 
         <div class="sectionGroupTitle">behaviour</div>
         <div class="section difficulty">
           <h1>test difficulty</h1>
-          <div class="text">Normal is the classic type test experience. Expert fails the test if you submit (press space) an incorrect word.
+          <div class="text">Normal is the classic type test experience. Expert fails the test if you submit (press
+            space) an incorrect word.
             Master fails if you press a single incorrect key (meaning you have to achieve 100% accuracy).
           </div>
           <div class="buttons">
@@ -292,7 +320,8 @@
         </div>
         <div class="section quickTab">
           <h1>quick tab mode</h1>
-          <div class="text">Press <key>tab</key> to quickly restart the test, or to quickly jump to the test page. This function disables tab navigation on the website.</div>
+          <div class="text">Press <key>tab</key> to quickly restart the test, or to quickly jump to the test page. This
+            function disables tab navigation on the website.</div>
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
@@ -316,7 +345,8 @@
         </div>
         <div class="section blindMode">
           <h1>blind mode</h1>
-          <div class="text">No errors or incorrect words are highlighted. Helps you to focus on raw speed. If enabled, quick end is recommended.</div>
+          <div class="text">No errors or incorrect words are highlighted. Helps you to focus on raw speed. If enabled,
+            quick end is recommended.</div>
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">⠀</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
@@ -324,8 +354,9 @@
         </div>
         <div class="section quickEnd">
           <h1>quick end</h1>
-          <div class="text">This only applies to the words mode - when enabled, the test will end as soon as the last word has been typed, even if it's incorrect.
-            When disabled, you need to manually confirm the last incorrect entry with a space. 
+          <div class="text">This only applies to the words mode - when enabled, the test will end as soon as the last
+            word has been typed, even if it's incorrect.
+            When disabled, you need to manually confirm the last incorrect entry with a space.
           </div>
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">on</div>
@@ -334,7 +365,8 @@
         </div>
         <div class="section tags">
           <h1>tags</h1>
-          <div class="text">With tags, you can compare how fast you're typing in different situations. You can see your active tags above the test words.
+          <div class="text">With tags, you can compare how fast you're typing in different situations. You can see your
+            active tags above the test words.
             They will remain active until you deactivate them, or refresh the page.</div>
           <div>
             <div class="tagsList">
@@ -392,7 +424,8 @@
         </div>
         <div class="section flipTestColors">
           <h1>flip test colors</h1>
-          <div class="text">By default, typed text is brighter than the future text. When enabled, the colors will be flipped
+          <div class="text">By default, typed text is brighter than the future text. When enabled, the colors will be
+            flipped
             and the future text will be brighter than the already typed text.
           </div>
           <div class="buttons">
@@ -403,7 +436,8 @@
         <div class="section colorfulMode">
           <h1>colorful mode</h1>
           <div class="text">
-            When enabled, the test words will use the main color, instead of the text color, making the website more colorful.
+            When enabled, the test words will use the main color, instead of the text color, making the website more
+            colorful.
           </div>
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">on</div>
@@ -429,65 +463,65 @@
           <div class="tabContainer">
             <div tabContent="custom" class="tabContent section customTheme">
               <label class="text">background</label>
-                <span class="colorPicker">
-                  <label for="--bg-color">#e2b714</label>
-                  <input type="color" value="" id="--bg-color">
-                </span>
+              <span class="colorPicker">
+                <label for="--bg-color">#e2b714</label>
+                <input type="color" value="" id="--bg-color">
+              </span>
               <label class="text">main</label>
-                <span class="colorPicker">
-                  <label for="--main-color">#e2b714</label>
-                  <input type="color" value="" id="--main-color">
-                </span>
+              <span class="colorPicker">
+                <label for="--main-color">#e2b714</label>
+                <input type="color" value="" id="--main-color">
+              </span>
               <label class="text">caret</label>
-                <span class="colorPicker">
-                  <label for="--caret-color">#e2b714</label>
-                  <input type="color" value="" id="--caret-color">
-                </span>
+              <span class="colorPicker">
+                <label for="--caret-color">#e2b714</label>
+                <input type="color" value="" id="--caret-color">
+              </span>
               <label class="text">sub</label>
-                <span class="colorPicker">
-                  <label for="--sub-color">#e2b714</label>
-                  <input type="color" value="" id="--sub-color">
-                </span>
+              <span class="colorPicker">
+                <label for="--sub-color">#e2b714</label>
+                <input type="color" value="" id="--sub-color">
+              </span>
               <label class="text">text</label>
-                <span class="colorPicker">
-                  <label for="--text-color">#e2b714</label>
-                  <input type="color" value="" id="--text-color">
-                </span>
-                
+              <span class="colorPicker">
+                <label for="--text-color">#e2b714</label>
+                <input type="color" value="" id="--text-color">
+              </span>
+
               <span class="spacer"></span>
 
               <label class="text">error</label>
-                <span class="colorPicker">
-                  <label for="--error-color">#e2b714</label>
-                  <input type="color" value="" id="--error-color">
-                </span>
+              <span class="colorPicker">
+                <label for="--error-color">#e2b714</label>
+                <input type="color" value="" id="--error-color">
+              </span>
               <label class="text">extra error</label>
-                <span class="colorPicker">
-                  <label for="--error-extra-color">#e2b714</label>
-                  <input type="color" value="" id="--error-extra-color">
-                </span>
+              <span class="colorPicker">
+                <label for="--error-extra-color">#e2b714</label>
+                <input type="color" value="" id="--error-extra-color">
+              </span>
 
-                <p>colorful mode</p>
+              <p>colorful mode</p>
 
               <label class="text">error</label>
-                <span class="colorPicker">
-                  <!-- Change variable names here -->
-                  <label for="--extra-error-color">#e2b714</label>
-                  <input type="color" value="" id="--extra-error-color">
-                </span>
+              <span class="colorPicker">
+                <!-- Change variable names here -->
+                <label for="--extra-error-color">#e2b714</label>
+                <input type="color" value="" id="--extra-error-color">
+              </span>
               <label class="text">extra error</label>
-                <span class="colorPicker">
-                  <!-- Change variable names here -->
-                  <label for="--extra-error-extra-color">#e2b714</label>
-                  <input type="color" value="" id="--extra-error-extra-color">
-                </span>
-                <div class="button saveCustomThemeButton" style="grid-column: 4;">Save</div>
+              <span class="colorPicker">
+                <!-- Change variable names here -->
+                <label for="--extra-error-extra-color">#e2b714</label>
+                <input type="color" value="" id="--extra-error-extra-color">
+              </span>
+              <div class="button saveCustomThemeButton" style="grid-column: 4;">Save</div>
             </div>
             <div tabContent="preset" class="tabContent buttons">
             </div>
           </div>
-      </div>
-        
+        </div>
+
 
 
         <div class="sectionSpacer"></div>
@@ -546,7 +580,9 @@
             <input type="text" placeholder="email">
             <input type="password" placeholder="password">
             <div>
-              <label id="rememberMe"><input type="checkbox" checked><div class="customCheckbox"></div>Remember me</label>
+              <label id="rememberMe"><input type="checkbox" checked>
+                <div class="customCheckbox"></div>Remember me
+              </label>
             </div>
             <div class="button"><i class="fas fa-sign-in-alt"></i>Sign In</div>
           </form>
@@ -707,9 +743,9 @@
               <div class="title">favourite test</div>
               <div class="val">words 10</div>
             </div> -->
-            
-            
-            
+
+
+
           </div>
           <div class="group history">
             <!-- <div class="title">result history</div> -->
@@ -750,13 +786,13 @@
         <a tabindex="0" href="https://www.reddit.com/message/compose?to=Miodec" target="_blank">Miodec</a>
       </div>
       <div>
-        Contribute to this project on <a href="https://github.com/Miodec/monkey-type" target="_blank">GitHub</a> 
+        Contribute to this project on <a href="https://github.com/Miodec/monkey-type" target="_blank">GitHub</a>
       </div>
       <div class="version">version</div>
     </div>
 
   </div>
-  
+
 </body>
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="/__/firebase/7.14.3/firebase-app.js"></script>

@@ -746,6 +746,18 @@ key {
         line-height: 1rem;
       }
     }
+    .source{
+      align-self: baseline;
+      color: var(--sub-color);
+      .top{
+        font-size: 1rem;
+        line-height: 1.25rem;
+      }
+      .bottom{
+        font-size: 1rem;
+        line-height: 1rem;
+      }
+    }
     .infoAndTags{
       display: grid;
       gap: .5rem;
