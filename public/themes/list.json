@@ -218,6 +218,11 @@
         "name": "cyberspace",
         "bgColor": "#181c18",
         "textColor": "#00ce7c"
+    },
+    {
+        "name": "joker",
+        "bgColor": "#1a0e25",
+        "textColor": "#99de1e"
     }
     
 ]
