@@ -476,13 +476,13 @@ function setTheme(name,nosave) {
 }
 
 function setCustomTheme(boolean, nosave) {
-    config.customTheme = boolean;
+    if(boolean !== undefined) config.customTheme = boolean;
     // setCustomThemeColors(config.customThemeColors, nosave);
     if(!nosave) saveConfigToCookie();
 }
 
 function setCustomThemeColors(colors, nosave){
-    config.customThemeColors = colors;
+    if(colors !== undefined) config.customThemeColors = colors;
     if(!nosave) saveConfigToCookie();
 }
 
