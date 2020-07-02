@@ -1610,7 +1610,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
   time = $(e.currentTarget).attr('timeConfig');
   if(time == "custom"){
     let newTime = prompt('Custom time in seconds');
-    if(newTime !== null && !isNaN(newTime) && newTime > 0 && newTime < 3600){
+    if(newTime !== null && !isNaN(newTime) && newTime > 0 && newTime <= 3600){
       changeTimeConfig(newTime);
       if(newTime >= 1800){
         showNotification("Very long tests can cause performance issues or crash the website on some machines!",5000);
