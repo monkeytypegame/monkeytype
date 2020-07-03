@@ -35,7 +35,7 @@ let defaultConfig = {
   maxConfidence: false,
   timerStyle: "bar",
   colorfulMode: true,
-  randomTheme: true,
+  randomTheme: false,
 };
 
 let cookieConfig = null;
