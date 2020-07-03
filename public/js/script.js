@@ -1077,9 +1077,10 @@ function showResult(difficultyFailed = false) {
               obj: completedEvent,
             }).then((e) => {
               accountIconLoading(false);
-              if (e.data === -1) {
+              console.log(e.data);
+              if (e.data.resultCode === -1) {
                 showNotification("Could not save result", 3000);
-              } else if (e.data === 1 || e.data === 2) {
+              } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                 dbSnapshot.results.unshift(completedEvent);
                 try {
                   firebase
@@ -1088,7 +1089,7 @@ function showResult(difficultyFailed = false) {
                 } catch (e) {
                   console.log("Analytics unavailable");
                 }
-                if (e.data === 2) {
+                if (e.data.resultCode === 2) {
                   //new pb
                   if (!localPb) {
                     showNotification(
