@@ -1090,16 +1090,16 @@ function showResult(difficultyFailed = false) {
                 } catch (e) {
                   console.log("Analytics unavailable");
                 }
+
+                //global
+                let globalLbString = "";
                 if (e.data.globalLeaderboard === null) {
-                  $("#result .stats .leaderboards .bottom").html("not found");
+                  globalLbString = "global: not found";
                 } else if (e.data.globalLeaderboard === -1) {
-                  $("#result .stats .leaderboards .bottom").html(
-                    "global: not qualified"
-                  );
+                  globalLbString = "global: not qualified";
                 } else if (e.data.globalLeaderboard === -2) {
-                  $("#result .stats .leaderboards .bottom").html(
-                    "global: already on the leaderboard with a better result"
-                  );
+                  globalLbString =
+                    "global: already on the leaderboard with a better result";
                 } else if (e.data.globalLeaderboard >= 0) {
                   let pos = e.data.globalLeaderboard + 1;
                   let numend = "th";
@@ -1110,10 +1110,34 @@ function showResult(difficultyFailed = false) {
                   } else if (pos === 3) {
                     numend = "rd";
                   }
-                  $("#result .stats .leaderboards .bottom").html(
-                    `global: ${pos}${numend} place`
-                  );
+                  globalLbString = `global: ${pos}${numend} place`;
                 }
+
+                //daily
+                let dailyLbString = "";
+                if (e.data.dailyLeaderboard === null) {
+                  dailyLbString = "daily: not found";
+                } else if (e.data.dailyLeaderboard === -1) {
+                  dailyLbString = "daily: not qualified";
+                } else if (e.data.dailyLeaderboard === -2) {
+                  dailyLbString =
+                    "daily: already on the leaderboard with a better result";
+                } else if (e.data.dailyLeaderboard >= 0) {
+                  let pos = e.data.dailyLeaderboard + 1;
+                  let numend = "th";
+                  if (pos === 1) {
+                    numend = "st";
+                  } else if (pos === 2) {
+                    numend = "nd";
+                  } else if (pos === 3) {
+                    numend = "rd";
+                  }
+                  dailyLbString = `daily: ${pos}${numend} place`;
+                }
+
+                $("#result .stats .leaderboards .bottom").html(
+                  globalLbString + "<br>" + dailyLbString
+                );
                 if (e.data.resultCode === 2) {
                   //new pb
                   if (!localPb) {

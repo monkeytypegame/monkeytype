@@ -70,6 +70,57 @@ function updateLeaderboards() {
   }
 
   showBackgroundLoader();
+  Promise.all([
+    firebase.functions().httpsCallable("getLeaderboard")({
+      mode: currentLeaderboard.mode,
+      mode2: mode2,
+      type: "daily",
+    }),
+    firebase.functions().httpsCallable("getLeaderboard")({
+      mode: currentLeaderboard.mode,
+      mode2: mode2,
+      type: "global",
+    }),
+  ]).then((lbdata) => {
+    hideBackgroundLoader();
+    let dailyData = lbdata[0].data;
+    let globalData = lbdata[1].data;
+
+    $("#leaderboardsWrapper table.daily tbody").empty();
+    if (dailyData.board !== undefined) {
+      dailyData.board.forEach((entry, index) => {
+        $("#leaderboardsWrapper table.daily tbody").append(`
+          <tr>
+          <td>${index + 1}</td>
+          <td>${entry.name}</td>
+          <td>${entry.wpm}</td>
+          <td>${entry.raw}</td>
+          <td>${entry.acc}%</td>
+          <td>${entry.mode} ${entry.mode2}</td>
+          <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
+        </tr>
+        `);
+      });
+    }
+
+    $("#leaderboardsWrapper table.global tbody").empty();
+    if (globalData.board !== undefined) {
+      globalData.board.forEach((entry, index) => {
+        $("#leaderboardsWrapper table.global tbody").append(`
+          <tr>
+          <td>${index + 1}</td>
+          <td>${entry.name}</td>
+          <td>${entry.wpm}</td>
+          <td>${entry.raw}</td>
+          <td>${entry.acc}%</td>
+          <td>${entry.mode} ${entry.mode2}</td>
+          <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
+        </tr>
+        `);
+      });
+    }
+  });
+
   firebase
     .functions()
     .httpsCallable("getLeaderboard")({
@@ -79,7 +130,6 @@ function updateLeaderboards() {
     })
     .then((data) => {
       // console.log(data);
-      hideBackgroundLoader();
       $("#leaderboardsWrapper table.global tbody").empty();
       if (data.data.board !== undefined) {
         data.data.board.forEach((entry, index) => {
