@@ -900,6 +900,8 @@ function showResult(difficultyFailed = false) {
     // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
   } else if (config.mode === "custom") {
     mode2 = "custom";
+  } else if (config.mode === "quote") {
+    mode2 = randomQuote.id;
   }
 
   let labels = [];
@@ -988,7 +990,6 @@ function showResult(difficultyFailed = false) {
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTags,
-      quoteId: config.mode == "quote" ? randomQuote.id : null,
     };
     if (
       config.difficulty == "normal" ||
