@@ -908,6 +908,36 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
     });
 });
 
+exports.scheduledFunctionCrontab = functions.pubsub
+  .schedule("59 23 * * *")
+  .timeZone("Europe/London") // Users can choose timezone - default is America/Los_Angeles
+  .onRun((context) => {
+    console.log("moving daily leaderboards to history");
+    admin
+      .firestore()
+      .collection("leaderboards")
+      .where("type", "==", "daily")
+      .get()
+      .then((res) => {
+        res.docs.forEach((doc) => {
+          let lbdata = doc.data();
+          t = new Date();
+          admin
+            .firestore()
+            .collection("leaderboards_history")
+            .doc(`${t.getDate()}_${t.getMonth()}_${t.getFullYear()}`)
+            .set(lbdata);
+          admin.firestore().collection("leaderboards").doc(doc.id).set(
+            {
+              board: [],
+            },
+            { merge: true }
+          );
+        });
+      });
+    return null;
+  });
+
 // exports.getConfig = functions.https.onCall((request,response) => {
 //     try{
 //         if(request.uid === undefined){
