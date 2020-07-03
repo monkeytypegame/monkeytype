@@ -1979,8 +1979,12 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
 
 $(document).on("click", "#top #menu .icon-button", (e) => {
   if ($(e.currentTarget).hasClass("discord")) return;
-  href = $(e.currentTarget).attr("href");
-  changePage(href.replace("/", ""));
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    showLeaderboards();
+  } else {
+    href = $(e.currentTarget).attr("href");
+    changePage(href.replace("/", ""));
+  }
 });
 
 $(window).on("popstate", (e) => {
