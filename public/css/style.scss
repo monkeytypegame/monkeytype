@@ -720,6 +720,7 @@ key {
                          "wpm acc"
                          "wpm key" 
                          "raw time"
+                         "source source"
                          "testType infoAndTags";
     .group{
       .top{
@@ -748,7 +749,9 @@ key {
     }
     .source{
       align-self: baseline;
+      grid-area: source;
       color: var(--sub-color);
+      max-width: 15rem;
       .top{
         font-size: 1rem;
         line-height: 1.25rem;
