@@ -922,7 +922,7 @@ function showResult(difficultyFailed = false) {
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTags,
-      source: config.mode == "quote" ? randomQuote.source : "N/A"
+      quoteId: config.mode == "quote" ? randomQuote.id : null
     };
     if (config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)) {
       // console.log(incompleteTestSeconds);
