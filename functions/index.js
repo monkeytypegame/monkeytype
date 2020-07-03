@@ -823,54 +823,65 @@ class Leaderboard {
 }
 
 async function checkLeaderboards(resultObj, type) {
-  return admin
-    .firestore()
-    .collection("leaderboards")
-    .where("mode", "==", String(resultObj.mode))
-    .where("mode2", "==", String(resultObj.mode2))
-    .where("type", "==", type)
-    .get()
-    .then((data) => {
-      if (data.docs.length === 0) return null;
-      let boardInfo = data.docs[0].data();
-      let boardData = boardInfo.board;
+  try {
+    return admin
+      .firestore()
+      .collection("leaderboards")
+      .where("mode", "==", String(resultObj.mode))
+      .where("mode2", "==", String(resultObj.mode2))
+      .where("type", "==", type)
+      .get()
+      .then((data) => {
+        if (data.docs.length === 0) return null;
+        let boardInfo = data.docs[0].data();
+        let boardData = boardInfo.board;
 
-      // console.log(`info ${JSON.stringify(boardInfo)}`);
-      // console.log(`data ${JSON.stringify(boardData)}`);
+        // console.log(`info ${JSON.stringify(boardInfo)}`);
+        // console.log(`data ${JSON.stringify(boardData)}`);
 
-      let lb = new Leaderboard(
-        boardInfo.size,
-        resultObj.mode,
-        resultObj.mode2,
-        boardInfo.type,
-        boardData
-      );
-
-      // console.log("board created");
-      // lb.logBoard();
-
-      let insertResult = lb.insert(resultObj);
-
-      // console.log("board after inseft");
-      // lb.logBoard();
-
-      if (insertResult >= 0) {
-        //update the database here
-        // console.log("board changed");
-        admin.firestore().collection("leaderboards").doc(data.docs[0].id).set(
-          {
-            size: lb.size,
-            type: lb.type,
-            board: lb.board,
-          },
-          { merge: true }
+        let lb = new Leaderboard(
+          boardInfo.size,
+          resultObj.mode,
+          resultObj.mode2,
+          boardInfo.type,
+          boardData
         );
-      } else {
-        // console.log("board is the same");
-      }
 
-      return insertResult;
-    });
+        // console.log("board created");
+        // lb.logBoard();
+
+        let insertResult = lb.insert(resultObj);
+
+        // console.log("board after inseft");
+        // lb.logBoard();
+
+        if (insertResult >= 0) {
+          //update the database here
+          console.log(
+            `leaderboard changed ${mode} ${mode2} ${type} - ${JSON.stringify(
+              lb.board
+            )}`
+          );
+          admin.firestore().collection("leaderboards").doc(data.docs[0].id).set(
+            {
+              size: lb.size,
+              type: lb.type,
+              board: lb.board,
+            },
+            { merge: true }
+          );
+        } else {
+          // console.log("board is the same");
+        }
+
+        return insertResult;
+      });
+  } catch (e) {
+    console.error(
+      `error while checking leaderboards - ${e} - ${type} ${resultObj}`
+    );
+    return null;
+  }
 }
 
 exports.getLeaderboard = functions.https.onCall((request, response) => {
@@ -912,30 +923,34 @@ exports.scheduledFunctionCrontab = functions.pubsub
   .schedule("59 23 * * *")
   .timeZone("Europe/London") // Users can choose timezone - default is America/Los_Angeles
   .onRun((context) => {
-    console.log("moving daily leaderboards to history");
-    admin
-      .firestore()
-      .collection("leaderboards")
-      .where("type", "==", "daily")
-      .get()
-      .then((res) => {
-        res.docs.forEach((doc) => {
-          let lbdata = doc.data();
-          t = new Date();
-          admin
-            .firestore()
-            .collection("leaderboards_history")
-            .doc(`${t.getDate()}_${t.getMonth()}_${t.getFullYear()}`)
-            .set(lbdata);
-          admin.firestore().collection("leaderboards").doc(doc.id).set(
-            {
-              board: [],
-            },
-            { merge: true }
-          );
+    try {
+      console.log("moving daily leaderboards to history");
+      admin
+        .firestore()
+        .collection("leaderboards")
+        .where("type", "==", "daily")
+        .get()
+        .then((res) => {
+          res.docs.forEach((doc) => {
+            let lbdata = doc.data();
+            t = new Date();
+            admin
+              .firestore()
+              .collection("leaderboards_history")
+              .doc(`${t.getDate()}_${t.getMonth()}_${t.getFullYear()}`)
+              .set(lbdata);
+            admin.firestore().collection("leaderboards").doc(doc.id).set(
+              {
+                board: [],
+              },
+              { merge: true }
+            );
+          });
         });
-      });
-    return null;
+      return null;
+    } catch (e) {
+      console.error(`error while moving daily leaderboards to history - ${e}`);
+    }
   });
 
 // exports.getConfig = functions.https.onCall((request,response) => {
