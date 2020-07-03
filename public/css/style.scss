@@ -177,7 +177,7 @@ a:hover {
     padding: 2rem;
     display: grid;
     gap: 1rem;
-    grid-template-rows: auto auto 1fr;
+    grid-template-rows: auto auto;
     grid-template-areas: "title buttons"
       "tables tables";
     grid-template-columns: 1fr 1fr;
