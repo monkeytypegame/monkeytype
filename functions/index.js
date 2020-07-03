@@ -868,11 +868,11 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
     .where("type", "==", String(request.type))
     .get()
     .then(async (data) => {
-      console.log("got data");
+      // console.log("got data");
       if (data.docs.length === 0) return null;
       let lbdata = data.docs[0].data();
       if (lbdata.board !== undefined) {
-        console.log("replacing users");
+        // console.log("replacing users");
 
         for (let i = 0; i < lbdata.board.length; i++) {
           await admin
@@ -885,7 +885,7 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
               lbdata.board[i].uid = null;
             });
         }
-        console.log("done");
+        // console.log("done");
 
         return lbdata;
       } else {
