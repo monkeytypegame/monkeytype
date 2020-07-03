@@ -38,5 +38,6 @@ If you wish to support further development and feeling extra awesome, you can do
 3. Git clone the project and make sure to rename `.firebaserc_example` to `.firebaserc` and changed the project name inside to your firebase project name.
 4. Make sure you use a SCSS compiler. For VSCode I recommend `Easy Sass` or `Live Sass Compiler` extension.
 5. Run `firebase serve --only hosting` to start a local server on post 5000. Use ctrl+c to stop it.
+6. Make sure to install `Prettier`. Its a code formatter, and it will make sure that we avoid any whitespace or formatting issues when merging code.
 
 That should be it. If you run into any problems, let me know.
