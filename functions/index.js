@@ -405,7 +405,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       .collection(`users/${request.uid}/results`)
       .add(obj)
       .then((e) => {
-        Promise.all([
+        return Promise.all([
           checkLeaderboards(request.obj, "global"),
           checkLeaderboards(request.obj, "daily"),
           checkIfPB(request.uid, request.obj),
@@ -413,7 +413,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           let globallb = values[0];
           let dailylb = values[1];
           let ispb = values[2];
-          console.log(values);
+          // console.log(values);
 
           let returnobj = {
             resultCode: null,
@@ -433,6 +433,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
             );
             returnobj.resultCode = 1;
           }
+          // console.log(returnobj);
           return returnobj;
         });
 
@@ -728,7 +729,7 @@ class Leaderboard {
         if (entry.uid === uid) {
           if (found) {
             //remove duplicate
-            console.log("removing at " + index);
+            // console.log("removing at " + index);
             this.board.splice(index, 1);
             if (index > insertedAt) {
               //removed old result
@@ -742,7 +743,7 @@ class Leaderboard {
         }
       });
     }
-    console.log(ret);
+    // console.log(ret);
     return ret;
   }
   insert(a) {
@@ -827,7 +828,7 @@ async function checkLeaderboards(resultObj, type) {
     .collection("leaderboards")
     .where("mode", "==", String(resultObj.mode))
     .where("mode2", "==", String(resultObj.mode2))
-    .where("type", "==", "global")
+    .where("type", "==", type)
     .get()
     .then((data) => {
       if (data.docs.length === 0) return null;
