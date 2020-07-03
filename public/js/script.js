@@ -1078,7 +1078,7 @@ function showResult(difficultyFailed = false) {
               obj: completedEvent,
             }).then((e) => {
               accountIconLoading(false);
-              console.log(e.data);
+              // console.log(e.data);
               if (e.data.resultCode === -1) {
                 showNotification("Could not save result", 3000);
               } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
@@ -1094,7 +1094,11 @@ function showResult(difficultyFailed = false) {
                   $("#result .stats .leaderboards .bottom").html("not found");
                 } else if (e.data.globalLeaderboard === -1) {
                   $("#result .stats .leaderboards .bottom").html(
-                    "not qualified"
+                    "global: not qualified"
+                  );
+                } else if (e.data.globalLeaderboard === -2) {
+                  $("#result .stats .leaderboards .bottom").html(
+                    "global: already on the leaderboard with a better result"
                   );
                 } else if (e.data.globalLeaderboard >= 0) {
                   let pos = e.data.globalLeaderboard + 1;
@@ -1107,7 +1111,7 @@ function showResult(difficultyFailed = false) {
                     numend = "rd";
                   }
                   $("#result .stats .leaderboards .bottom").html(
-                    `global: ${e.data.globalLeaderboard}${numend} place`
+                    `global: ${pos}${numend} place`
                   );
                 }
                 if (e.data.resultCode === 2) {

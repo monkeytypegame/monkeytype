@@ -78,22 +78,24 @@ function updateLeaderboards() {
       type: "global",
     })
     .then((data) => {
-      console.log(data);
+      // console.log(data);
       hideBackgroundLoader();
       $("#leaderboardsWrapper table.global tbody").empty();
-      data.data.board.forEach((entry, index) => {
-        $("#leaderboardsWrapper table.global tbody").append(`
-        <tr>
-        <td>${index + 1}</td>
-        <td>${entry.name}</td>
-        <td>${entry.wpm}</td>
-        <td>${entry.raw}</td>
-        <td>${entry.acc}</td>
-        <td>${entry.mode} ${entry.mode2}</td>
-        <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
-      </tr>
-      `);
-      });
+      if (data.data.board !== undefined) {
+        data.data.board.forEach((entry, index) => {
+          $("#leaderboardsWrapper table.global tbody").append(`
+          <tr>
+          <td>${index + 1}</td>
+          <td>${entry.name}</td>
+          <td>${entry.wpm}</td>
+          <td>${entry.raw}</td>
+          <td>${entry.acc}</td>
+          <td>${entry.mode} ${entry.mode2}</td>
+          <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
+        </tr>
+        `);
+        });
+      }
     });
 }
 

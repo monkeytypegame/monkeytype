@@ -405,30 +405,61 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       .collection(`users/${request.uid}/results`)
       .add(obj)
       .then((e) => {
-        return checkLeaderboards(request.obj, "global").then((globallb) => {
-          return checkIfPB(request.uid, request.obj).then((e) => {
-            let returnobj = {
-              resultCode: null,
-              globalLeaderboard: globallb,
-            };
-            if (e) {
-              console.log(
-                `saved result for ${request.uid} (new PB) - ${JSON.stringify(
-                  request.obj
-                )}`
-              );
-              returnobj.resultCode = 2;
-            } else {
-              console.log(
-                `saved result for ${request.uid} - ${JSON.stringify(
-                  request.obj
-                )}`
-              );
-              returnobj.resultCode = 1;
-            }
-            return returnobj;
-          });
+        Promise.all([
+          checkLeaderboards(request.obj, "global"),
+          checkLeaderboards(request.obj, "daily"),
+          checkIfPB(request.uid, request.obj),
+        ]).then((values) => {
+          let globallb = values[0];
+          let dailylb = values[1];
+          let ispb = values[2];
+          console.log(values);
+
+          let returnobj = {
+            resultCode: null,
+            globalLeaderboard: globallb,
+            dailyLeaderboard: dailylb,
+          };
+          if (ispb) {
+            console.log(
+              `saved result for ${request.uid} (new PB) - ${JSON.stringify(
+                request.obj
+              )}`
+            );
+            returnobj.resultCode = 2;
+          } else {
+            console.log(
+              `saved result for ${request.uid} - ${JSON.stringify(request.obj)}`
+            );
+            returnobj.resultCode = 1;
+          }
+          return returnobj;
         });
+
+        // return checkLeaderboards(request.obj, "global").then((globallb) => {
+        //   return checkIfPB(request.uid, request.obj).then((e) => {
+        //     let returnobj = {
+        //       resultCode: null,
+        //       globalLeaderboard: globallb,
+        //     };
+        //     if (e) {
+        //       console.log(
+        //         `saved result for ${request.uid} (new PB) - ${JSON.stringify(
+        //           request.obj
+        //         )}`
+        //       );
+        //       returnobj.resultCode = 2;
+        //     } else {
+        //       console.log(
+        //         `saved result for ${request.uid} - ${JSON.stringify(
+        //           request.obj
+        //         )}`
+        //       );
+        //       returnobj.resultCode = 1;
+        //     }
+        //     return returnobj;
+        //   });
+        // });
       })
       .catch((e) => {
         console.error(
@@ -688,6 +719,32 @@ class Leaderboard {
   logBoard() {
     console.log(this.board);
   }
+  removeDuplicates(insertedAt, uid) {
+    //return true if a better result is found
+    let found = false;
+    let ret;
+    if (this.board !== undefined) {
+      this.board.forEach((entry, index) => {
+        if (entry.uid === uid) {
+          if (found) {
+            //remove duplicate
+            console.log("removing at " + index);
+            this.board.splice(index, 1);
+            if (index > insertedAt) {
+              //removed old result
+              ret = false;
+            } else {
+              ret = true;
+            }
+          } else {
+            found = true;
+          }
+        }
+      });
+    }
+    console.log(ret);
+    return ret;
+  }
   insert(a) {
     let insertedAt = -1;
     if (a.mode === this.mode && a.mode2 === this.mode2) {
@@ -748,6 +805,14 @@ class Leaderboard {
         });
         insertedAt = this.board.length - 1;
       }
+      // console.log("before duplicate remove");
+      // console.log(this.board);
+      if (insertedAt >= 0) {
+        if (this.removeDuplicates(insertedAt, a.uid)) {
+          insertedAt = -2;
+        }
+      }
+      // console.log(this.board);
       this.clipBoard();
       return insertedAt;
     } else {
