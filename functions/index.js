@@ -672,7 +672,7 @@ class Leaderboard {
               this.board.splice(index, 0, {
                 uid: a.uid,
                 wpm: parseFloat(a.wpm),
-                raw: parseFloat(a.raw),
+                raw: parseFloat(a.rawWpm),
                 acc: parseFloat(a.acc),
                 mode: a.mode,
                 mode2: a.mode2,
@@ -685,7 +685,7 @@ class Leaderboard {
               this.board.splice(index, 0, {
                 uid: a.uid,
                 wpm: parseFloat(a.wpm),
-                raw: parseFloat(a.raw),
+                raw: parseFloat(a.rawWpm),
                 acc: parseFloat(a.acc),
                 mode: a.mode,
                 mode2: a.mode2,
@@ -699,7 +699,7 @@ class Leaderboard {
             this.board.splice(index, 0, {
               uid: a.uid,
               wpm: parseFloat(a.wpm),
-              raw: parseFloat(a.raw),
+              raw: parseFloat(a.rawWpm),
               acc: parseFloat(a.acc),
               mode: a.mode,
               mode2: a.mode2,
@@ -713,7 +713,7 @@ class Leaderboard {
         this.board.push({
           uid: a.uid,
           wpm: parseFloat(a.wpm),
-          raw: parseFloat(a.raw),
+          raw: parseFloat(a.rawWpm),
           acc: parseFloat(a.acc),
           mode: a.mode,
           mode2: a.mode2,
@@ -741,36 +741,38 @@ async function checkLeaderboards(resultObj) {
       let boardInfo = data.docs[0].data();
       let boardData = boardInfo.board;
 
-      console.log(`info ${JSON.stringify(boardInfo)}`);
-      console.log(`data ${JSON.stringify(boardData)}`);
+      // console.log(`info ${JSON.stringify(boardInfo)}`);
+      // console.log(`data ${JSON.stringify(boardData)}`);
 
       let lb = new Leaderboard(
-        20,
+        boardInfo.size,
         resultObj.mode,
         resultObj.mode2,
         boardInfo.type,
         boardData
       );
 
-      console.log("board created");
+      // console.log("board created");
       lb.logBoard();
 
       let insertResult = lb.insert(resultObj);
 
-      console.log("board after inseft");
+      // console.log("board after inseft");
       lb.logBoard();
 
       if (insertResult >= 0) {
         //update the database here
-        console.log("board changed");
+        // console.log("board changed");
         admin.firestore().collection("leaderboards").doc(data.docs[0].id).set(
           {
+            size: lb.size,
+            type: lb.type,
             board: lb.board,
           },
           { merge: true }
         );
       } else {
-        console.log("board is the same");
+        // console.log("board is the same");
       }
 
       return insertResult;
@@ -783,19 +785,25 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
     .collection("leaderboards")
     .where("mode", "==", String(request.mode))
     .where("mode2", "==", String(request.mode2))
+    .where("type", "==", String(request.type))
     .get()
     .then(async (data) => {
+      if (data.docs.length === 0) return null;
       let lbdata = data.docs[0].data();
-      for (let i = 0; i < lbdata.board.length; i++) {
-        await admin
-          .auth()
-          .getUser(lbdata.board[i].uid)
-          .then((userrecord) => {
-            lbdata.board[i].name = userrecord.displayName;
-            lbdata.board[i].uid = null;
-          });
+      if (lbdata.board !== undefined) {
+        for (let i = 0; i < lbdata.board.length; i++) {
+          await admin
+            .auth()
+            .getUser(lbdata.board[i].uid)
+            .then((userrecord) => {
+              lbdata.board[i].name = userrecord.displayName;
+              lbdata.board[i].uid = null;
+            });
+        }
+        return lbdata;
+      } else {
+        return [];
       }
-      return lbdata;
     });
 });
 
