@@ -753,12 +753,12 @@ async function checkLeaderboards(resultObj) {
       );
 
       // console.log("board created");
-      lb.logBoard();
+      // lb.logBoard();
 
       let insertResult = lb.insert(resultObj);
 
       // console.log("board after inseft");
-      lb.logBoard();
+      // lb.logBoard();
 
       if (insertResult >= 0) {
         //update the database here
