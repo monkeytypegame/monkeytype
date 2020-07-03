@@ -380,8 +380,16 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       .then((e) => {
         return checkIfPB(request.uid, request.obj).then((e) => {
           if (e) {
+            console.log(
+              `saved result for ${request.uid} (new PB) - ${JSON.stringify(
+                request.obj
+              )}`
+            );
             return 2;
           } else {
+            console.log(
+              `saved result for ${request.uid} - ${JSON.stringify(request.obj)}`
+            );
             return 1;
           }
         });
