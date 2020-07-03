@@ -135,6 +135,7 @@ a:hover {
   animation-iteration-count: infinite;
   animation-duration: 2s;
   animation-timing-function: cubic-bezier(0.38, 0.16, 0.57, 0.82);
+  z-index: 9999;
 }
 
 @keyframes loader {
