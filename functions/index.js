@@ -438,7 +438,6 @@ exports.testCompleted = functions.https.onCall((request, response) => {
         });
       })
       .catch((e) => {
-        throw e;
         console.error(
           `error saving result when checking for PB for ${request.uid} - ${e.message}`
         );
