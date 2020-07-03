@@ -625,6 +625,7 @@ class Leaderboard {
           this.board.push({
             uid: entry.uid,
             wpm: parseFloat(entry.wpm),
+            raw: parseFloat(entry.raw),
             acc: parseFloat(entry.acc),
             mode: entry.mode,
             mode2: entry.mode2,
@@ -671,6 +672,7 @@ class Leaderboard {
               this.board.splice(index, 0, {
                 uid: a.uid,
                 wpm: parseFloat(a.wpm),
+                raw: parseFloat(a.raw),
                 acc: parseFloat(a.acc),
                 mode: a.mode,
                 mode2: a.mode2,
@@ -683,6 +685,7 @@ class Leaderboard {
               this.board.splice(index, 0, {
                 uid: a.uid,
                 wpm: parseFloat(a.wpm),
+                raw: parseFloat(a.raw),
                 acc: parseFloat(a.acc),
                 mode: a.mode,
                 mode2: a.mode2,
@@ -696,6 +699,7 @@ class Leaderboard {
             this.board.splice(index, 0, {
               uid: a.uid,
               wpm: parseFloat(a.wpm),
+              raw: parseFloat(a.raw),
               acc: parseFloat(a.acc),
               mode: a.mode,
               mode2: a.mode2,
@@ -709,6 +713,7 @@ class Leaderboard {
         this.board.push({
           uid: a.uid,
           wpm: parseFloat(a.wpm),
+          raw: parseFloat(a.raw),
           acc: parseFloat(a.acc),
           mode: a.mode,
           mode2: a.mode2,
