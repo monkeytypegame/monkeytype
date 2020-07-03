@@ -131,6 +131,13 @@ let commands = {
       },
     },
     {
+      id: "toggleRandomTheme",
+      display: "Toggle random theme",
+      exec: () => {
+        toggleRandomTheme();
+      },
+    },
+    {
       id: "changeDifficulty",
       display: "Change difficulty...",
       subgroup: true,

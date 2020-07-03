@@ -35,6 +35,7 @@ let defaultConfig = {
   maxConfidence: false,
   timerStyle: "bar",
   colorfulMode: true,
+  randomTheme: true,
 };
 
 let cookieConfig = null;
@@ -485,6 +486,24 @@ function setTheme(name, nosave) {
     console.log("Analytics unavailable");
   }
   if (!nosave) saveConfigToCookie();
+}
+
+function randomiseTheme() {
+  let randomtheme = themesList[Math.floor(Math.random() * themesList.length)];
+  setTheme(randomtheme.name, true);
+}
+
+function setRandomTheme(bool, nosave) {
+  if (bool == undefined) {
+    bool = false;
+  }
+  config.randomTheme = bool;
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleRandomTheme() {
+  config.randomTheme = !config.randomTheme;
+  saveConfigToCookie();
 }
 
 function setCustomTheme(boolean, nosave) {

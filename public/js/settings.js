@@ -48,6 +48,7 @@ function updateSettingsPage() {
   setSettingsButton("discordDot", config.showDiscordDot);
   setSettingsButton("colorfulMode", config.colorfulMode);
   setSettingsButton("maxConfidence", config.maxConfidence);
+  setSettingsButton("randomTheme", config.randomTheme);
 
   setActiveThemeButton();
   setActiveLanguageButton();
@@ -474,6 +475,18 @@ $(".pageSettings .section.colorfulMode .buttons .button.off").click((e) => {
   setColorfulMode(false);
   // showNotification('Colorful mode off', 1000);
   setSettingsButton("colorfulMode", config.colorfulMode);
+});
+
+//extra color
+$(".pageSettings .section.randomTheme .buttons .button.on").click((e) => {
+  setRandomTheme(true);
+  // showNotification('Colorful mode on', 1000);
+  setSettingsButton("randomTheme", config.randomTheme);
+});
+$(".pageSettings .section.randomTheme .buttons .button.off").click((e) => {
+  setRandomTheme(false);
+  // showNotification('Colorful mode off', 1000);
+  setSettingsButton("randomTheme", config.randomTheme);
 });
 
 //tags

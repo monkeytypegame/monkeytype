@@ -1253,6 +1253,7 @@ function restartTest(withSameWordset = false) {
   }
 
   if (resultVisible) {
+    if (config.randomTheme) randomiseTheme();
     $("#words").stop(true, true).animate(
       {
         opacity: 0,
