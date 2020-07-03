@@ -833,10 +833,9 @@ async function checkLeaderboards(resultObj, type) {
         if (insertResult >= 0) {
           //update the database here
           console.log(
-            `leaderboard changed 
-            ${resultObj.mode} 
-            ${resultObj.mode2} 
-            ${type} - ${JSON.stringify(lb.board)}`
+            `leaderboard changed ${resultObj.mode} ${
+              resultObj.mode2
+            } ${type} - ${JSON.stringify(lb.board)}`
           );
           admin.firestore().collection("leaderboards").doc(data.docs[0].id).set(
             {
