@@ -707,10 +707,10 @@ function updateCaretPosition() {
 
   if (config.smoothCaret) {
     duration = 100;
-    if (Math.round(caret[0].offsetTop) != Math.round(newTop)) {
-      caret.css("top", newTop);
-      duration = 10;
-    }
+    // if (Math.round(caret[0].offsetTop) != Math.round(newTop)) {
+    //   caret.css("top", newTop);
+    //   duration = 10;
+    // }
   }
 
   caret.stop(true, true).animate(
