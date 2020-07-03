@@ -436,33 +436,9 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           // console.log(returnobj);
           return returnobj;
         });
-
-        // return checkLeaderboards(request.obj, "global").then((globallb) => {
-        //   return checkIfPB(request.uid, request.obj).then((e) => {
-        //     let returnobj = {
-        //       resultCode: null,
-        //       globalLeaderboard: globallb,
-        //     };
-        //     if (e) {
-        //       console.log(
-        //         `saved result for ${request.uid} (new PB) - ${JSON.stringify(
-        //           request.obj
-        //         )}`
-        //       );
-        //       returnobj.resultCode = 2;
-        //     } else {
-        //       console.log(
-        //         `saved result for ${request.uid} - ${JSON.stringify(
-        //           request.obj
-        //         )}`
-        //       );
-        //       returnobj.resultCode = 1;
-        //     }
-        //     return returnobj;
-        //   });
-        // });
       })
       .catch((e) => {
+        throw e;
         console.error(
           `error saving result when checking for PB for ${request.uid} - ${e.message}`
         );
@@ -858,9 +834,10 @@ async function checkLeaderboards(resultObj, type) {
         if (insertResult >= 0) {
           //update the database here
           console.log(
-            `leaderboard changed ${mode} ${mode2} ${type} - ${JSON.stringify(
-              lb.board
-            )}`
+            `leaderboard changed 
+            ${resultObj.mode} 
+            ${resultObj.mode2} 
+            ${type} - ${JSON.stringify(lb.board)}`
           );
           admin.firestore().collection("leaderboards").doc(data.docs[0].id).set(
             {
