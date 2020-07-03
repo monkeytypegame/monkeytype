@@ -1090,14 +1090,14 @@ function showResult(difficultyFailed = false) {
                 } catch (e) {
                   console.log("Analytics unavailable");
                 }
-                if (e.data.leaderboard === null) {
+                if (e.data.globalLeaderboard === null) {
                   $("#result .stats .leaderboards .bottom").html("not found");
-                } else if (e.data.leaderboard === -1) {
+                } else if (e.data.globalLeaderboard === -1) {
                   $("#result .stats .leaderboards .bottom").html(
                     "not qualified"
                   );
-                } else if (e.data.leaderboard >= 0) {
-                  let pos = e.data.leaderboard + 1;
+                } else if (e.data.globalLeaderboard >= 0) {
+                  let pos = e.data.globalLeaderboard + 1;
                   let numend = "th";
                   if (pos === 1) {
                     numend = "st";
@@ -1107,7 +1107,7 @@ function showResult(difficultyFailed = false) {
                     numend = "rd";
                   }
                   $("#result .stats .leaderboards .bottom").html(
-                    `${e.data.leaderboard}${numend} place`
+                    `global: ${e.data.globalLeaderboard}${numend} place`
                   );
                 }
                 if (e.data.resultCode === 2) {
