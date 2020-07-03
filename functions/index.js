@@ -344,7 +344,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
   try {
     if (request.uid === undefined || request.obj === undefined) {
       console.error(`error saving result for ${request.uid} - missing input`);
-      return { resultCode: -1 };
+      return -1;
     }
 
     let obj = request.obj;
@@ -366,11 +366,11 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           request.obj
         )}`
       );
-      return { resultCode: -1 };
+      return -1;
     }
 
     if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
-      return { resultCode: -1 };
+      return -1;
     }
 
     return admin
@@ -378,40 +378,31 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       .collection(`users/${request.uid}/results`)
       .add(obj)
       .then((e) => {
-        return checkLeaderboards(request.obj).then((lb) => {
-          return checkIfPB(request.uid, request.obj).then((e) => {
-            let returnobj = {
-              resultCode: null,
-              leaderboard: lb,
-            };
-            if (e) {
-              console.log(
-                `saved result for ${request.uid} (new PB) - ${JSON.stringify(
-                  request.obj
-                )}`
-              );
-              returnobj.resultCode = 2;
-            } else {
-              console.log(
-                `saved result for ${request.uid} - ${JSON.stringify(
-                  request.obj
-                )}`
-              );
-              returnobj.resultCode = 1;
-            }
-            return returnobj;
-          });
+        return checkIfPB(request.uid, request.obj).then((e) => {
+          if (e) {
+            console.log(
+              `saved result for ${request.uid} (new PB) - ${JSON.stringify(
+                request.obj
+              )}`
+            );
+            return 2;
+          } else {
+            console.log(
+              `saved result for ${request.uid} - ${JSON.stringify(request.obj)}`
+            );
+            return 1;
+          }
         });
       })
       .catch((e) => {
         console.error(
           `error saving result when checking for PB for ${request.uid} - ${e.message}`
         );
-        return { resultCode: -1 };
+        return -1;
       });
   } catch (e) {
     console.error(`error saving result for ${request.uid} - ${e}`);
-    return { resultCode: -1 };
+    return -1;
   }
 });
 
@@ -610,188 +601,6 @@ exports.saveConfig = functions.https.onCall((request, response) => {
     console.error(`error saving config for ${request.uid} - ${e}`);
     return { resultCode: -999 };
   }
-});
-
-class Leaderboard {
-  constructor(size, mode, mode2, type, starting) {
-    this.size = size;
-    this.board = [];
-    this.mode = mode;
-    this.mode2 = mode2;
-    this.type = type;
-    if (starting !== undefined && starting !== null) {
-      starting.forEach((entry) => {
-        if (entry.mode === this.mode && entry.mode2 === this.mode2) {
-          this.board.push({
-            uid: entry.uid,
-            wpm: parseFloat(entry.wpm),
-            acc: parseFloat(entry.acc),
-            mode: entry.mode,
-            mode2: entry.mode2,
-            timestamp: entry.timestamp,
-          });
-        }
-      });
-    }
-    this.sortBoard();
-    this.clipBoard();
-  }
-  sortBoard() {
-    this.board.sort((a, b) => {
-      if (a.wpm === b.wpm) {
-        if (a.acc === b.acc) {
-          return a.timestamp - b.timestamp;
-        } else {
-          return b.acc - a.acc;
-        }
-      } else {
-        return b.wpm - a.wpm;
-      }
-    });
-  }
-  clipBoard() {
-    let boardLength = this.board.length;
-    if (boardLength > this.size) {
-      while (this.board.length !== this.size) {
-        this.board.pop();
-      }
-    }
-  }
-  logBoard() {
-    console.log(this.board);
-  }
-  insert(a) {
-    let insertedAt = -1;
-    if (a.mode === this.mode && a.mode2 === this.mode2) {
-      this.board.forEach((b, index) => {
-        if (insertedAt !== -1) return;
-        if (a.wpm === b.wpm) {
-          if (a.acc === b.acc) {
-            if (a.timestamp < b.timestamp) {
-              this.board.splice(index, 0, {
-                uid: a.uid,
-                wpm: parseFloat(a.wpm),
-                acc: parseFloat(a.acc),
-                mode: a.mode,
-                mode2: a.mode2,
-                timestamp: a.timestamp,
-              });
-              insertedAt = index;
-            }
-          } else {
-            if (a.acc > b.acc) {
-              this.board.splice(index, 0, {
-                uid: a.uid,
-                wpm: parseFloat(a.wpm),
-                acc: parseFloat(a.acc),
-                mode: a.mode,
-                mode2: a.mode2,
-                timestamp: a.timestamp,
-              });
-              insertedAt = index;
-            }
-          }
-        } else {
-          if (a.wpm > b.wpm) {
-            this.board.splice(index, 0, {
-              uid: a.uid,
-              wpm: parseFloat(a.wpm),
-              acc: parseFloat(a.acc),
-              mode: a.mode,
-              mode2: a.mode2,
-              timestamp: a.timestamp,
-            });
-            insertedAt = index;
-          }
-        }
-      });
-      if (this.board.length < this.size && insertedAt === -1) {
-        this.board.push({
-          uid: a.uid,
-          wpm: parseFloat(a.wpm),
-          acc: parseFloat(a.acc),
-          mode: a.mode,
-          mode2: a.mode2,
-          timestamp: a.timestamp,
-        });
-        insertedAt = this.board.length - 1;
-      }
-      this.clipBoard();
-      return insertedAt;
-    } else {
-      return -999;
-    }
-  }
-}
-
-async function checkLeaderboards(resultObj) {
-  return admin
-    .firestore()
-    .collection("leaderboards")
-    .where("mode", "==", String(resultObj.mode))
-    .where("mode2", "==", String(resultObj.mode2))
-    .get()
-    .then((data) => {
-      if (data.docs.length === 0) return null;
-      let boardInfo = data.docs[0].data();
-      let boardData = boardInfo.board;
-
-      console.log(`info ${JSON.stringify(boardInfo)}`);
-      console.log(`data ${JSON.stringify(boardData)}`);
-
-      let lb = new Leaderboard(
-        20,
-        resultObj.mode,
-        resultObj.mode2,
-        boardInfo.type,
-        boardData
-      );
-
-      console.log("board created");
-      lb.logBoard();
-
-      let insertResult = lb.insert(resultObj);
-
-      console.log("board after inseft");
-      lb.logBoard();
-
-      if (insertResult >= 0) {
-        //update the database here
-        console.log("board changed");
-        admin.firestore().collection("leaderboards").doc(data.docs[0].id).set(
-          {
-            board: lb.board,
-          },
-          { merge: true }
-        );
-      } else {
-        console.log("board is the same");
-      }
-
-      return insertResult;
-    });
-}
-
-exports.getLeaderboard = functions.https.onCall((request, response) => {
-  return admin
-    .firestore()
-    .collection("leaderboards")
-    .where("mode", "==", String(request.mode))
-    .where("mode2", "==", String(request.mode2))
-    .get()
-    .then(async (data) => {
-      let lbdata = data.docs[0].data();
-      for (let i = 0; i < lbdata.board.length; i++) {
-        await admin
-          .auth()
-          .getUser(lbdata.board[i].uid)
-          .then((userrecord) => {
-            lbdata.board[i].name = userrecord.displayName;
-            lbdata.board[i].uid = null;
-          });
-      }
-      return lbdata;
-    });
 });
 
 // exports.getConfig = functions.https.onCall((request,response) => {
