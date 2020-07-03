@@ -215,10 +215,18 @@ firebase.auth().onAuthStateChanged(function (user) {
           if (!configsDifferent) {
             try {
               if (key !== "resultFilters") {
-                if (config[key] != dbSnapshot.config[key])
-                  configsDifferent = true;
+                if (Array.isArray(config[key])) {
+                  config[key].forEach((arrval, index) => {
+                    if (arrval != dbSnapshot.config[key][index])
+                      configsDifferent = true;
+                  });
+                } else {
+                  if (config[key] != dbSnapshot.config[key])
+                    configsDifferent = true;
+                }
               }
             } catch (e) {
+              console.log(e);
               configsDifferent = true;
             }
           }
