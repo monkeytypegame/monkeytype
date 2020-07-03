@@ -1072,6 +1072,7 @@ function showResult(difficultyFailed = false) {
               );
               wpmOverTimeChart.update({ duration: 0 });
             }
+            $("#result .stats .leaderboards .bottom").html("checking...");
             testCompleted({
               uid: firebase.auth().currentUser.uid,
               obj: completedEvent,
@@ -1088,6 +1089,26 @@ function showResult(difficultyFailed = false) {
                     .logEvent("testCompleted", completedEvent);
                 } catch (e) {
                   console.log("Analytics unavailable");
+                }
+                if (e.data.leaderboard === null) {
+                  $("#result .stats .leaderboards .bottom").html("not found");
+                } else if (e.data.leaderboard === -1) {
+                  $("#result .stats .leaderboards .bottom").html(
+                    "not qualified"
+                  );
+                } else if (e.data.leaderboard >= 0) {
+                  let pos = e.data.leaderboard + 1;
+                  let numend = "th";
+                  if (pos === 1) {
+                    numend = "st";
+                  } else if (pos === 2) {
+                    numend = "nd";
+                  } else if (pos === 3) {
+                    numend = "rd";
+                  }
+                  $("#result .stats .leaderboards .bottom").html(
+                    `${e.data.leaderboard}${numend} place`
+                  );
                 }
                 if (e.data.resultCode === 2) {
                   //new pb

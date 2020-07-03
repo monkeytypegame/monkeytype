@@ -170,6 +170,8 @@ a:hover {
 
   #leaderboards {
     width: 75vw;
+    max-height: calc(100vh - 5rem);
+    overflow-y: scroll;
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -885,7 +887,8 @@ key {
       "wpm key"
       "raw time"
       "source source"
-      "testType infoAndTags";
+      "testType infoAndTags"
+      "leaderboards leaderboards";
 
     .group {
       .top {
@@ -904,6 +907,22 @@ key {
     .testType {
       align-self: baseline;
       grid-area: testType;
+      color: var(--sub-color);
+
+      .top {
+        font-size: 1rem;
+        line-height: 1.25rem;
+      }
+
+      .bottom {
+        font-size: 1rem;
+        line-height: 1rem;
+      }
+    }
+
+    .leaderboards {
+      align-self: baseline;
+      grid-area: leaderboards;
       color: var(--sub-color);
 
       .top {
