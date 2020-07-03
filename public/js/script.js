@@ -413,7 +413,8 @@ function updateActiveElement() {
   $($("#words .word")[currentWordIndex])
     .addClass("active")
     .removeClass("error");
-  activeWordTop = $("#words .word.active").position().top;
+  // activeWordTop = $("#words .word.active").position().top;
+  activeWordTop = document.querySelector("#words .word.active").offsetTop;
 }
 
 function compareInput(wrdIndex, input, showError) {
@@ -558,39 +559,29 @@ function updateCaretPosition() {
   if (currentLetterIndex == -1) {
     currentLetterIndex = 0;
   }
-  let currentLetter = $($("#words .word.active letter")[currentLetterIndex]);
-  if (currentLetter.length == 0) return;
-  let currentLetterPos = currentLetter.position();
-  let letterHeight = currentLetter.height();
+  let currentLetter = $("#words .word.active letter")[currentLetterIndex];
+  if($(currentLetter).length == 0) return;
+  // let currentLetterPos = currentLetter.position();
+  let currentLetterPosLeft = currentLetter.offsetLeft;
+  let currentLetterPosTop = currentLetter.offsetTop;
+  let letterHeight = $(currentLetter).height();
 
   let newTop = 0;
   let newLeft = 0;
 
-  newTop = currentLetterPos.top - letterHeight / 4;
+  newTop = currentLetterPosTop - letterHeight / 4;
   if (inputLen == 0) {
-    // caret.css({
-    //   top: currentLetterPos.top - letterHeight / 4,
-    //   left: currentLetterPos.left - caret.width() / 2
-    // });
-
-    newLeft = currentLetterPos.left - caret.width() / 2;
+    newLeft = currentLetterPosLeft - caret.width() / 2;
   } else {
-    // caret.css({
-    //   top: currentLetterPos.top - letterHeight / 4,
-    //   left: currentLetterPos.left + currentLetter.width() - caret.width() / 2
-    // });
-    newLeft = currentLetterPos.left + currentLetter.width() - caret.width() / 2;
+    newLeft = currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2;
   }
 
   let duration = 0;
 
-  // if (config.smoothCaret && Math.round(caret.position().top) == Math.round(newTop)) {
-  //   duration = 100;
-  // }
 
   if (config.smoothCaret) {
     duration = 100;
-    if (Math.round(caret.position().top) != Math.round(newTop)) {
+    if (Math.round(caret[0].offsetTop) != Math.round(newTop)) {
       caret.css("top", newTop);
       duration = 10;
     }
@@ -1848,9 +1839,10 @@ $(document).keypress(function (event) {
   $("#words .word.active").attr('input', currentInput);
   setFocus(true);
   activeWordTopBeforeJump = activeWordTop;
-  compareInput(currentWordIndex, currentInput, !config.blindMode);
-  let newActiveTop = $("#words .word.active").position().top;
-  if (activeWordTopBeforeJump != newActiveTop) {
+  compareInput(currentWordIndex,currentInput,!config.blindMode);
+  // let newActiveTop = $("#words .word.active").position().top;
+  let newActiveTop = document.querySelector("#words .word.active").offsetTop;
+  if(activeWordTopBeforeJump != newActiveTop){
     activeWordJumped = true;
   }
   updateCaretPosition();
@@ -1923,8 +1915,10 @@ $(document).keydown((event) => {
       event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
       if (config.mode == "time") {
-        let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
-        let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
+        // let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
+        // let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
+        let currentTop = Math.floor(document.querySelectorAll("#words .word")[currentWordIndex].offsetTop);
+        let nextTop = Math.floor(document.querySelectorAll("#words .word")[currentWordIndex + 1].offsetTop);
         if (nextTop > currentTop || activeWordJumped) {
           //last word of the line
           if (currentTestLine > 0) {
@@ -1938,9 +1932,10 @@ $(document).keydown((event) => {
             let toHide = [];
             let wordElements = $("#words .word");
             for (let i = 0; i < currentWordIndex + 1; i++) {
-              if ($(wordElements[i]).hasClass('hidden')) continue;
-              let forWordTop = Math.floor($(wordElements[i]).position().top);
-              if (forWordTop < hideBound) {
+              if($(wordElements[i]).hasClass('hidden')) continue;
+              // let forWordTop = Math.floor($(wordElements[i]).position().top);
+              let forWordTop = Math.floor(wordElements[i].offsetTop);
+              if(forWordTop < hideBound){
                 // $($("#words .word")[i]).addClass("hidden");
                 toHide.push($($("#words .word")[i]));
               }
