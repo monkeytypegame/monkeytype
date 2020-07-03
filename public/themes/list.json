@@ -1,5 +1,4 @@
-[
-    {
+[{
         "name": "light",
         "bgColor": "#fff",
         "textColor": "#111"
@@ -226,8 +225,8 @@
     },
     {
         "name": "dualshot",
-        "bgColor": "#737373",
+        "bgColor": "#2d2e30",
         "textColor": "#212222"
     }
-    
+
 ]
