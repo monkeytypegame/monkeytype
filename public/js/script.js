@@ -635,7 +635,22 @@ function updateTimer() {
           "linear"
         );
     } else if (config.timerStyle === "text") {
-      $("#timerNumber").html(config.time - time);
+      var displayTime = new Date(null);
+      displayTime.setSeconds(config.time - time);
+      displayTime = displayTime.toISOString().substr(11, 8);
+      while (
+        displayTime.substr(0, 2) == "00" ||
+        displayTime[0] == ":" ||
+        (displayTime.length == 2 && displayTime[0] == "0")
+      ) {
+        if (displayTime.substr(0, 2) == "00") {
+          displayTime = displayTime.substr(3);
+        } else {
+          displayTime = displayTime.substr(1);
+        }
+      }
+      $("#timerNumber").html(displayTime);
+      // $("#timerNumber").html(config.time - time);
     }
   } else if (
     (config.mode === "words" ||
