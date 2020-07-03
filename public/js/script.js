@@ -1191,7 +1191,10 @@ function showResult(difficultyFailed = false) {
   }
 
   if (config.mode === "quote") {
+    $("#result .stats .source").removeClass("hidden");
     $("#result .stats .source .bottom").html(randomQuote.source);
+  } else {
+    $("#result .stats .source").addClass("hidden");
   }
 
   wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxChartVal;
