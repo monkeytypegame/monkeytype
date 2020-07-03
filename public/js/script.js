@@ -752,84 +752,6 @@ function showResult(difficultyFailed = false) {
     mode2 = "custom";
   }
 
-
-  if (firebase.auth().currentUser != null) {
-    $("#result .loginTip").addClass('hidden');
-  } else {
-    $("#result .loginTip").removeClass('hidden');
-  }
-
-
-  let testType = "";
-
-
-  testType += config.mode;
-  if (config.mode == "time") {
-    testType += " " + config.time
-  } else if (config.mode == "words") {
-    testType += " " + config.words
-  }
-  if (config.mode != "custom") {
-    testType += "<br>" + config.language.replace('_', ' ');
-  }
-  if (config.punctuation) {
-    testType += "<br>punctuation"
-  }
-  if (config.blindMode) {
-    testType += "<br>blind"
-  }
-  if (config.difficulty == "expert") {
-    testType += "<br>expert";
-  } else if (config.difficulty == "master") {
-    testType += "<br>master";
-  }
-
-  $("#result .stats .testType .bottom").html(testType);
-
-
-  let otherText = "";
-  if (difficultyFailed) {
-    otherText += "<br>failed"
-  }
-  if (afkDetected) {
-    otherText += "<br>afk detected"
-  }
-  if (testInvalid) {
-    otherText += "<br>invalid"
-  }
-  if (sameWordset) {
-    otherText += "<br>repeated"
-  }
-
-  if (otherText == "") {
-    $("#result .stats .info").addClass('hidden');
-  } else {
-    $("#result .stats .info").removeClass('hidden');
-    otherText = otherText.substring(4);
-    $("#result .stats .info .bottom").html(otherText);
-  }
-
-  let tagsText = "";
-  try {
-    dbSnapshot.tags.forEach(tag => {
-      if (tag.active === true) {
-        tagsText += "<br>" + tag.name;
-      }
-    })
-  } catch (e) {
-
-  }
-
-  if (tagsText == "") {
-    $("#result .stats .tags").addClass('hidden');
-  } else {
-    $("#result .stats .tags").removeClass('hidden');
-    tagsText = tagsText.substring(4);
-    $("#result .stats .tags .bottom").html(tagsText);
-  }
-
-  $("#result .stats .source .bottom").html(randomQuote.source);
-
   let labels = [];
   for (let i = 1; i <= wpmHistory.length; i++) {
     labels.push(i.toString());
@@ -998,6 +920,87 @@ function showResult(difficultyFailed = false) {
       }
     }
   }
+
+
+  if (firebase.auth().currentUser != null) {
+    $("#result .loginTip").addClass('hidden');
+  } else {
+    $("#result .loginTip").removeClass('hidden');
+  }
+
+
+  let testType = "";
+
+
+  testType += config.mode;
+  if (config.mode == "time") {
+    testType += " " + config.time
+  } else if (config.mode == "words") {
+    testType += " " + config.words
+  }
+  if (config.mode != "custom") {
+    testType += "<br>" + config.language.replace('_', ' ');
+  }
+  if (config.punctuation) {
+    testType += "<br>punctuation"
+  }
+  if (config.blindMode) {
+    testType += "<br>blind"
+  }
+  if (config.difficulty == "expert") {
+    testType += "<br>expert";
+  } else if (config.difficulty == "master") {
+    testType += "<br>master";
+  }
+
+  $("#result .stats .testType .bottom").html(testType);
+
+
+  let otherText = "";
+  if (difficultyFailed) {
+    otherText += "<br>failed"
+  }
+  if (afkDetected) {
+    otherText += "<br>afk detected"
+  }
+  if (testInvalid) {
+    otherText += "<br>invalid"
+  }
+  if (sameWordset) {
+    otherText += "<br>repeated"
+  }
+
+  if (otherText == "") {
+    $("#result .stats .info").addClass('hidden');
+  } else {
+    $("#result .stats .info").removeClass('hidden');
+    otherText = otherText.substring(4);
+    $("#result .stats .info .bottom").html(otherText);
+  }
+
+  let tagsText = "";
+  try {
+    dbSnapshot.tags.forEach(tag => {
+      if (tag.active === true) {
+        tagsText += "<br>" + tag.name;
+      }
+    })
+  } catch (e) {
+
+  }
+
+  if (tagsText == "") {
+    $("#result .stats .tags").addClass('hidden');
+  } else {
+    $("#result .stats .tags").removeClass('hidden');
+    tagsText = tagsText.substring(4);
+    $("#result .stats .tags .bottom").html(tagsText);
+  }
+
+  if(config.mode === "quote"){
+    $("#result .stats .source .bottom").html(randomQuote.source);
+  }
+
 
   wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxChartVal;
   wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxChartVal;
