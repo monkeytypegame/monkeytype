@@ -174,55 +174,27 @@ exports.checkIfNeedsToChangeName = functions.https.onCall(
                 } else {
                   //valid name, but need to change if not duplicate
 
-                  return getAllUsers().then((users) => {
-                    let sameName = [];
+                  return getAllUsers()
+                    .then((users) => {
+                      let sameName = [];
 
-                    //look for name names
-                    users.forEach((user) => {
-                      if (user.uid !== requestUser.uid) {
-                        try {
-                          if (
-                            user.displayName.toLowerCase() ===
-                            requestUser.displayName.toLowerCase()
-                          ) {
-                            sameName.push(user);
+                      //look for name names
+                      users.forEach((user) => {
+                        if (user.uid !== requestUser.uid) {
+                          try {
+                            if (
+                              user.displayName.toLowerCase() ===
+                              requestUser.displayName.toLowerCase()
+                            ) {
+                              sameName.push(user);
+                            }
+                          } catch (e) {
+                            //
                           }
-                        } catch (e) {
-                          //
-                        }
-                      }
-                    });
-
-                    if (sameName.length === 0) {
-                      admin
-                        .firestore()
-                        .collection("users")
-                        .doc(request.uid)
-                        .update({ name: requestUser.displayName })
-                        .then(() => {
-                          return 0;
-                        });
-                    } else {
-                      //check when the request user made the account compared to others
-                      let earliestTimestamp = 999999999999999;
-                      sameName.forEach((sn) => {
-                        let ts =
-                          new Date(sn.metadata.creationTime).getTime() / 1000;
-                        if (ts <= earliestTimestamp) {
-                          earliestTimestamp = ts;
                         }
                       });
 
-                      if (
-                        new Date(requestUser.metadata.creationTime).getTime() /
-                          1000 >
-                        earliestTimestamp
-                      ) {
-                        console.log(
-                          `user ${requestUser.uid} ${requestUser.displayName} needs to change name`
-                        );
-                        return 2;
-                      } else {
+                      if (sameName.length === 0) {
                         admin
                           .firestore()
                           .collection("users")
@@ -231,13 +203,48 @@ exports.checkIfNeedsToChangeName = functions.https.onCall(
                           .then(() => {
                             return 0;
                           });
+                      } else {
+                        //check when the request user made the account compared to others
+                        let earliestTimestamp = 999999999999999;
+                        sameName.forEach((sn) => {
+                          let ts =
+                            new Date(sn.metadata.creationTime).getTime() / 1000;
+                          if (ts <= earliestTimestamp) {
+                            earliestTimestamp = ts;
+                          }
+                        });
+
+                        if (
+                          new Date(
+                            requestUser.metadata.creationTime
+                          ).getTime() /
+                            1000 >
+                          earliestTimestamp
+                        ) {
+                          console.log(
+                            `user ${requestUser.uid} ${requestUser.displayName} needs to change name`
+                          );
+                          return 2;
+                        } else {
+                          admin
+                            .firestore()
+                            .collection("users")
+                            .doc(request.uid)
+                            .update({ name: requestUser.displayName })
+                            .then(() => {
+                              return 0;
+                            });
+                        }
                       }
-                    }
-                  });
+                    })
+                    .catch((e) => {
+                      console.error(`error getting all users - ${e}`);
+                    });
                 }
               });
           } else {
             console.log("name is good");
+            return 0;
           }
         });
     } catch (e) {
@@ -841,7 +848,10 @@ async function checkLeaderboards(resultObj, type) {
               });
           } else {
             //continue
-            return cont(ret.id, ret.docs[0].data());
+            return cont(
+              `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`,
+              ret.docs[0].data()
+            );
           }
         });
 
