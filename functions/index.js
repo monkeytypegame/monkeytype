@@ -705,28 +705,29 @@ class Leaderboard {
   removeDuplicates(insertedAt, uid) {
     //return true if a better result is found
     let found = false;
-    let ret;
+    // let ret;
+    let foundAt = null;
     if (this.board !== undefined) {
       this.board.forEach((entry, index) => {
         if (entry.uid === uid) {
           if (found) {
-            //remove duplicate
-            // console.log("removing at " + index);
             this.board.splice(index, 1);
-            if (index > insertedAt) {
-              //removed old result
-              ret = false;
-            } else {
-              ret = true;
-            }
+            // if (index > insertedAt) {
+            //   //removed old result
+            //   ret = false;
+            // } else {
+            //   ret = true;
+            // }
           } else {
             found = true;
+            foundAt = index;
           }
         }
       });
     }
     // console.log(ret);
-    return ret;
+    // return ret;
+    return foundAt;
   }
   insert(a) {
     let insertedAt = -1;
@@ -790,16 +791,28 @@ class Leaderboard {
       }
       // console.log("before duplicate remove");
       // console.log(this.board);
+      let newBest = false;
       if (insertedAt >= 0) {
-        if (this.removeDuplicates(insertedAt, a.uid)) {
-          insertedAt = -2;
+        // if (this.removeDuplicates(insertedAt, a.uid)) {
+        //   insertedAt = -2;
+        // }
+        let foundAt = this.removeDuplicates(insertedAt, a.uid);
+
+        if (foundAt > insertedAt) {
+          //new better result
+          newBest = true;
         }
       }
       // console.log(this.board);
       this.clipBoard();
-      return insertedAt;
+      return {
+        insertedAt: insertedAt,
+        newBest: newBest,
+      };
     } else {
-      return -999;
+      return {
+        insertedAt: -999,
+      };
     }
   }
 }
@@ -878,7 +891,7 @@ async function checkLeaderboards(resultObj, type) {
         // console.log("board after inseft");
         // lb.logBoard();
 
-        if (insertResult >= 0) {
+        if (insertResult.insertedAt >= 0) {
           //update the database here
           console.log(
             `leaderboard changed ${resultObj.mode} ${
@@ -930,11 +943,19 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
             .doc(lbdata.board[i].uid)
             .get()
             .then((doc) => {
+              console.log(lbdata.board[i].uid);
+              console.log(request.uid);
+              if (
+                lbdata.board[i].uid !== null &&
+                lbdata.board[i].uid === request.uid
+              ) {
+                lbdata.board[i].currentUser = true;
+              }
               lbdata.board[i].name = doc.data().name;
               lbdata.board[i].uid = null;
             });
         }
-        // console.log("done");
+        // console.log(lbdata);
 
         return lbdata;
       } else {
