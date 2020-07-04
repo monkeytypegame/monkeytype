@@ -7,14 +7,14 @@
   --text-color: #ebe6ea;
   --error-color: #921341;
   --error-extra-color: #640b2c; 
-  --extra-error-color: #921341;
-  --extra-error-extra-color: #640b2c; 
+  --colorful-error-color: #921341;
+  --colorful-error-extra-color: #640b2c; 
 }
 
 /* .word.error{
   border-bottom: double 4px var(--error-color);
 } */
 
-#menu .button:nth-child(1){
+#menu .icon-button:nth-child(1){
   color: var(--caret-color);
 }

@@ -6,8 +6,8 @@
     --text-color: #eee;
     --error-color: #fff;
     --error-extra-color: #d8d8d8;
-    --extra-error-color: #fff;
-    --extra-error-extra-color: #d8d8d8; 
+    --colorful-error-color: #fff;
+    --colorful-error-extra-color: #d8d8d8; 
 }
 
 @keyframes shadow {
@@ -29,10 +29,10 @@
     color: white;
 }
 
-#top .config .group .buttons .button.active,
+#top .config .group .buttons .text-button.active,
 #result .stats .group,
-#menu .button:hover,
-#top .config .group .buttons .button:hover,
+#menu .icon-button:hover,
+#top .config .group .buttons .text-button:hover,
 a:hover {
     animation-name: shadow-repeat;
     animation-duration: 3s;

@@ -6,22 +6,22 @@
     --text-color: #fff;
     --error-color: #da3333;
     --error-extra-color: #791717;
-    --extra-error-color: #da3333;
-    --extra-error-extra-color: #791717;
+    --colorful-error-color: #da3333;
+    --colorful-error-extra-color: #791717;
 }
 
 #menu{
     gap: .5rem;
 }
 
-#top.focus #menu .button,
+#top.focus #menu .icon-button,
 #top.focus #menu:before,
 #top.focus #menu:after
 {
     background: var(--sub-color);
 }
 
-#menu .button{
+#menu .icon-button{
     border-radius: 10rem !important;
     color: #121520;
 }
@@ -35,23 +35,23 @@
     border-radius: 10rem;
 } */
 
-#menu .button:nth-child(1){
+#menu .icon-button:nth-child(1){
     background: #f94348;
 }
 
-#menu .button:nth-child(2){
+#menu .icon-button:nth-child(2){
     background: #9261ff;
 }
 
-#menu .button:nth-child(3){
+#menu .icon-button:nth-child(3){
     background: #3cc5f8;
 }
 
-#menu .button:nth-child(4){
+#menu .icon-button:nth-child(4){
     background: #4acb8a;
 }
 
-#menu .button:nth-child(5), #menu .button:nth-child(6){
+#menu .icon-button:nth-child(5), #menu .icon-button:nth-child(6){
     background: #ffd543;
 }
 
@@ -64,6 +64,6 @@
     border-radius: 10rem;
 }
 
-#top.focus #menu .button.discord::after{
+#top.focus #menu .icon-button.discord::after{
     border-color: transparent;
   }

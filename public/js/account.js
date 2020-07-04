@@ -1,176 +1,243 @@
-$(".pageLogin .register input").keyup(e => {
+$(".pageLogin .register input").keyup((e) => {
   if (e.key == "Enter") {
     signUp();
   }
-})
+});
 
-$(".pageLogin .register .button").click(e => {
-    signUp();
-})
+$(".pageLogin .register .button").click((e) => {
+  signUp();
+});
 
-$(".pageLogin .login input").keyup(e => {
+$(".pageLogin .login input").keyup((e) => {
   if (e.key == "Enter") {
     signIn();
   }
-})
+});
 
-$(".pageLogin .login .button").click(e => {
+$(".pageLogin .login .button").click((e) => {
   signIn();
-})
+});
 
-$(".signOut").click(e => {
+$(".signOut").click((e) => {
   signOut();
-})
+});
 
-$(".pageAccount .loadMoreButton").click(e => {
+$(".pageAccount .loadMoreButton").click((e) => {
   loadMoreLines();
-})
+});
 
-$(".pageLogin #forgotPasswordButton").click(e => {
+$(".pageLogin #forgotPasswordButton").click((e) => {
   let email = prompt("Email address");
-  if(email){
-    firebase.auth().sendPasswordResetEmail(email).then(function() {
-      // Email sent.
-      showNotification("Email sent",2000);
-    }).catch(function(error) {
-      // An error happened.
-      showNotification(error.message,5000);
-    });
+  if (email) {
+    firebase
+      .auth()
+      .sendPasswordResetEmail(email)
+      .then(function () {
+        // Email sent.
+        showNotification("Email sent", 2000);
+      })
+      .catch(function (error) {
+        // An error happened.
+        showNotification(error.message, 5000);
+      });
   }
-})
-
+});
 
 function showSignOutButton() {
-  $(".signOut").removeClass('hidden').css("opacity",1);
+  $(".signOut").removeClass("hidden").css("opacity", 1);
 }
 
 function hideSignOutButton() {
-  $(".signOut").css("opacity",0).addClass('hidden');
+  $(".signOut").css("opacity", 0).addClass("hidden");
 }
 
 function signIn() {
-  $(".pageLogin .preloader").removeClass('hidden');
+  $(".pageLogin .preloader").removeClass("hidden");
   let email = $(".pageLogin .login input")[0].value;
   let password = $(".pageLogin .login input")[1].value;
 
-  if($(".pageLogin .login #rememberMe input").prop('checked')){
+  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
     //remember me
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(function() {
-      return firebase.auth().signInWithEmailAndPassword(email, password).then(e => {
-        changePage('test');
-      }).catch(function(error) {
-        showNotification(error.message, 5000);
-        $(".pageLogin .preloader").addClass('hidden');
+    firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(function () {
+        return firebase
+          .auth()
+          .signInWithEmailAndPassword(email, password)
+          .then((e) => {
+            changePage("test");
+          })
+          .catch(function (error) {
+            showNotification(error.message, 5000);
+            $(".pageLogin .preloader").addClass("hidden");
+          });
       });
-    })
-  }else{
+  } else {
     //dont remember
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function() {
-      return firebase.auth().signInWithEmailAndPassword(email, password).then(e => {
-        changePage('test');
-      }).catch(function(error) {
-        showNotification(error.message, 5000);
-        $(".pageLogin .preloader").addClass('hidden');
+    firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      .then(function () {
+        return firebase
+          .auth()
+          .signInWithEmailAndPassword(email, password)
+          .then((e) => {
+            changePage("test");
+          })
+          .catch(function (error) {
+            showNotification(error.message, 5000);
+            $(".pageLogin .preloader").addClass("hidden");
+          });
       });
-    })
   }
-
-  
 }
 
+let dontCheckUserName = false;
+
 function signUp() {
-  $(".pageLogin .preloader").removeClass('hidden');
+  $(".pageLogin .preloader").removeClass("hidden");
   let nname = $(".pageLogin .register input")[0].value;
   let email = $(".pageLogin .register input")[1].value;
   let password = $(".pageLogin .register input")[2].value;
   let passwordVerify = $(".pageLogin .register input")[3].value;
 
-  const namecheck = firebase.functions().httpsCallable('checkNameAvailability')
+  const namecheck = firebase.functions().httpsCallable("checkNameAvailability");
 
-  namecheck({name:nname}).then(d => {
-    if(d.data === -1){
+  namecheck({ name: nname }).then((d) => {
+    if (d.data === -1) {
       showNotification("Name unavailable", 3000);
-      $(".pageLogin .preloader").addClass('hidden');
+      $(".pageLogin .preloader").addClass("hidden");
       return;
-    }else if(d.data === -2){
-      showNotification("Name cannot contain special characters or contain more than 12 characters. Can include _ . and -", 8000);
-      $(".pageLogin .preloader").addClass('hidden');
+    } else if (d.data === -2) {
+      showNotification(
+        "Name cannot contain special characters or contain more than 12 characters. Can include _ . and -",
+        8000
+      );
+      $(".pageLogin .preloader").addClass("hidden");
       return;
-    }else if(d.data === 1){
+    } else if (d.data === 1) {
       if (password != passwordVerify) {
         showNotification("Passwords do not match", 3000);
-        $(".pageLogin .preloader").addClass('hidden');
+        $(".pageLogin .preloader").addClass("hidden");
         return;
       }
-      firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
-        // Account has been created here.
-        let usr = user.user;
-        usr.updateProfile({
-          displayName: nname
-        }).then(function() {
-          // Update successful.
-          showNotification("Account created", 2000);
-          try{
-            firebase.analytics().logEvent("accountCreated", usr.uid);
-          }catch(e){
-            console.log("Analytics unavailable");
-          }
-          $(".pageLogin .preloader").addClass('hidden');
-          changePage('account');
-        }).catch(function(error) {
-          // An error happened.
-          usr.delete().then(function() {
-            // User deleted.
-            showNotification("Name invalid", 2000);
-            $(".pageLogin .preloader").addClass('hidden');
-          }).catch(function(error) {
-            // An error happened.
-            $(".pageLogin .preloader").addClass('hidden');
-          });
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then((user) => {
+          // Account has been created here.
+          dontCheckUserName = true;
+          let usr = user.user;
+          usr
+            .updateProfile({
+              displayName: nname,
+            })
+            .then(function () {
+              // Update successful.
+              showNotification("Account created", 2000);
+              $("#menu .icon-button.account .text").text(nname);
+              try {
+                firebase.analytics().logEvent("accountCreated", usr.uid);
+              } catch (e) {
+                console.log("Analytics unavailable");
+              }
+              $(".pageLogin .preloader").addClass("hidden");
+              changePage("account");
+            })
+            .catch(function (error) {
+              // An error happened.
+              usr
+                .delete()
+                .then(function () {
+                  // User deleted.
+                  showNotification("Name invalid", 2000);
+                  $(".pageLogin .preloader").addClass("hidden");
+                })
+                .catch(function (error) {
+                  // An error happened.
+                  $(".pageLogin .preloader").addClass("hidden");
+                });
+            });
+        })
+        .catch(function (error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          showNotification(errorMessage, 5000);
+          $(".pageLogin .preloader").addClass("hidden");
         });
-      }).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        showNotification(errorMessage, 5000);
-        $(".pageLogin .preloader").addClass('hidden');
-      });
-
     }
-  })
-
-
-
-}
-
-function signOut() {
-  firebase.auth().signOut().then(function() {
-    showNotification("Signed out", 2000);
-    updateAccountLoginButton();
-    changePage('login');
-    dbSnapshot = null;
-  }).catch(function(error) {
-    showNotification(error.message, 5000);
   });
 }
 
-firebase.auth().onAuthStateChanged(function(user) {
+function signOut() {
+  firebase
+    .auth()
+    .signOut()
+    .then(function () {
+      showNotification("Signed out", 2000);
+      updateAccountLoginButton();
+      changePage("login");
+      dbSnapshot = null;
+    })
+    .catch(function (error) {
+      showNotification(error.message, 5000);
+    });
+}
+
+firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     // User is signed in.
     updateAccountLoginButton();
     accountIconLoading(true);
-    db_getUserSnapshot().then(e => {
-      console.log('DB snapshot ready');
+    db_getUserSnapshot().then((e) => {
+      console.log("DB snapshot ready");
       accountIconLoading(false);
       updateFilterTags();
       updateCommandsTagsList();
       loadActiveTagsFromCookie();
       updateResultEditTagsPanelButtons();
-      config.resultFilters.forEach(filter => {
-        if(filter.substring(0,4) === "tag_" && filter !== "tag_notag"){
+      config.resultFilters.forEach((filter) => {
+        if (filter.substring(0, 4) === "tag_" && filter !== "tag_notag") {
           toggleFilterButton(filter);
         }
-      })
+      });
+      refreshTagsSettingsSection();
+      if (cookieConfig === null) {
+        applyConfig(dbSnapshot.config);
+        // showNotification('Applying db config',3000);
+        updateSettingsPage();
+        saveConfigToCookie();
+      } else {
+        let configsDifferent = false;
+        Object.keys(config).forEach((key) => {
+          if (!configsDifferent) {
+            try {
+              if (key !== "resultFilters") {
+                if (Array.isArray(config[key])) {
+                  config[key].forEach((arrval, index) => {
+                    if (arrval != dbSnapshot.config[key][index])
+                      configsDifferent = true;
+                  });
+                } else {
+                  if (config[key] != dbSnapshot.config[key])
+                    configsDifferent = true;
+                }
+              }
+            } catch (e) {
+              console.log(e);
+              configsDifferent = true;
+            }
+          }
+        });
+        if (configsDifferent) {
+          applyConfig(dbSnapshot.config);
+          // showNotification('Applying db config',3000);
+          updateSettingsPage();
+          saveConfigToCookie();
+        }
+      }
     });
     var displayName = user.displayName;
     var email = user.email;
@@ -180,22 +247,22 @@ firebase.auth().onAuthStateChanged(function(user) {
     var uid = user.uid;
     var providerData = user.providerData;
     // showNotification('Signed in', 1000);
-    $(".pageLogin .preloader").addClass('hidden');
-    verifyUsername();
-    $("#menu .button.account .text").text(displayName);
+    $(".pageLogin .preloader").addClass("hidden");
+    if (!dontCheckUserName) verifyUsername();
+    $("#menu .icon-button.account .text").text(displayName);
   }
 });
 
 var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
   animationSteps: 60,
-  type: 'line',
+  type: "line",
   data: {
     datasets: [
       {
         label: "wpm",
         fill: false,
         data: [],
-        borderColor: '#f44336',
+        borderColor: "#f44336",
         borderWidth: 2,
         // trendlineLinear: {
         //   style: "rgba(244,67,54,.25)",
@@ -205,8 +272,8 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
         trendlineLinear: {
           style: "rgba(255,105,180, .8)",
           lineStyle: "dotted",
-          width: 4
-        }
+          width: 4,
+        },
       },
     ],
   },
@@ -217,64 +284,67 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
       titleFontFamily: "Roboto Mono",
       bodyFontFamily: "Roboto Mono",
       intersect: false,
-      custom: function(tooltip) {
+      custom: function (tooltip) {
         if (!tooltip) return;
         // disable displaying the color box;
         tooltip.displayColors = false;
-      }, 
-      callbacks : { // HERE YOU CUSTOMIZE THE LABELS
-        title: function(){
+      },
+      callbacks: {
+        // HERE YOU CUSTOMIZE THE LABELS
+        title: function () {
           return;
         },
-        beforeLabel : function(tooltipItem, data) {
-          let resultData = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-          let label = `${data.datasets[tooltipItem.datasetIndex].label}: ${tooltipItem.yLabel}`
-          + '\n' +
-          `acc: ${resultData.acc}`
-          + '\n\n' +
-          `mode: ${resultData.mode} `;
-        
-          if(resultData.mode == "time"){
+        beforeLabel: function (tooltipItem, data) {
+          let resultData =
+            data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+          let label =
+            `${data.datasets[tooltipItem.datasetIndex].label}: ${
+              tooltipItem.yLabel
+            }` +
+            "\n" +
+            `acc: ${resultData.acc}` +
+            "\n\n" +
+            `mode: ${resultData.mode} `;
+
+          if (resultData.mode == "time") {
             label += resultData.mode2;
-          }else if(resultData.mode == "words"){
+          } else if (resultData.mode == "words") {
             label += resultData.mode2;
           }
 
           let diff = resultData.difficulty;
-          if(diff == undefined){
-            diff = "normal"
+          if (diff == undefined) {
+            diff = "normal";
           }
-          label += '\n' +
-          `difficulty: ${diff}`
+          label += "\n" + `difficulty: ${diff}`;
 
-          
+          label +=
+            "\n" +
+            `punctuation: ${resultData.punctuation}` +
+            "\n" +
+            `language: ${resultData.language}` +
+            "\n\n" +
+            `date: ${moment(resultData.timestamp).format("DD MMM YYYY HH:mm")}`;
 
-          label += '\n' +
-          `punctuation: ${resultData.punctuation}`
-          + '\n' +
-          `language: ${resultData.language}`
-          + '\n\n' +
-          `date: ${moment(resultData.timestamp).format('DD MMM YYYY HH:mm')}`;
-        
           return label;
         },
-        label : function(tooltipItem, data) {
-            return;
-        },
-        afterLabel : function(tooltipItem, data) {
+        label: function (tooltipItem, data) {
           return;
         },
-      }
+        afterLabel: function (tooltipItem, data) {
+          return;
+        },
+      },
     },
     animation: {
-      duration: 250
+      duration: 250,
     },
     legend: {
       display: false,
       labels: {
         fontFamily: "Roboto Mono",
-        fontColor: "#ffffff"
-      }
+        fontColor: "#ffffff",
+      },
     },
     responsive: true,
     // maintainAspectRatio: false,
@@ -283,125 +353,150 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
     //   intersect: false,
     // },
     hover: {
-      mode: 'nearest',
-      intersect: true
+      mode: "nearest",
+      intersect: true,
     },
     scales: {
-      xAxes: [{
-        ticks: {
-          fontFamily: "Roboto Mono"
-        },
-        type: 'time',
-        bounds: 'ticks',
-        distribution: 'series',
-        display: false,
-        scaleLabel: {
-          display: true,
-          labelString: 'Date'
-        },
-      }],
-      yAxes: [{
-        ticks: {
-          fontFamily: "Roboto Mono",
-          beginAtZero: true
-        },
-        display: true,
-        scaleLabel: {
+      xAxes: [
+        {
+          ticks: {
+            fontFamily: "Roboto Mono",
+          },
+          type: "time",
+          bounds: "ticks",
+          distribution: "series",
           display: false,
-          labelString: 'Words per Minute'
-        }
-      }]
+          scaleLabel: {
+            display: true,
+            labelString: "Date",
+          },
+        },
+      ],
+      yAxes: [
+        {
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+          },
+          display: true,
+          scaleLabel: {
+            display: false,
+            labelString: "Words per Minute",
+          },
+        },
+      ],
     },
-  }
+  },
 });
 
-Object.keys(words).forEach(language => {
-  $(".pageAccount .content .filterButtons .buttons.languages")
-  .append(`<div class="button" filter="${language}">${language.replace('_',' ')}</div>`); 
-})
+Object.keys(words).forEach((language) => {
+  $(".pageAccount .content .filterButtons .buttons.languages").append(
+    `<div class="button" filter="${language}">${language.replace(
+      "_",
+      " "
+    )}</div>`
+  );
+});
 
 let activeFilters = ["all"];
 
-
-
-$(document).ready(e =>{
+$(document).ready((e) => {
   activeFilters = config.resultFilters;
   // console.log(activeFilters);
-  if(activeFilters.includes("all")){
-    toggleFilterButton("all")
-  }else{
-    activeFilters.forEach(filter => {
+  if (activeFilters.includes("all")) {
+    toggleFilterButton("all");
+  } else {
+    activeFilters.forEach((filter) => {
       toggleFilterButton(filter);
-    })
+    });
   }
-})
+});
 
-function updateFilterTags(){
+function updateFilterTags() {
   $(".pageAccount .content .filterButtons .buttons.tags").empty();
-  if(dbSnapshot.tags.length > 0){
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass('hidden');
-    if(config.resultFilters.includes("tag_notag")){
-      $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button active" filter="tag_notag">no tag</div>`); 
-    }else{
-      $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button" filter="tag_notag">no tag</div>`); 
+  if (dbSnapshot.tags.length > 0) {
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
+      "hidden"
+    );
+    if (config.resultFilters.includes("tag_notag")) {
+      $(".pageAccount .content .filterButtons .buttons.tags").append(
+        `<div class="button active" filter="tag_notag">no tag</div>`
+      );
+    } else {
+      $(".pageAccount .content .filterButtons .buttons.tags").append(
+        `<div class="button" filter="tag_notag">no tag</div>`
+      );
     }
-    dbSnapshot.tags.forEach(tag => {
-      if(config.resultFilters.includes("tag_"+tag.name)){
-        $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button active" filter="tag_${tag.id}">${tag.name}</div>`); 
-      }else{
-        $(".pageAccount .content .filterButtons .buttons.tags").append(`<div class="button" filter="tag_${tag.id}">${tag.name}</div>`); 
+    dbSnapshot.tags.forEach((tag) => {
+      if (config.resultFilters.includes("tag_" + tag.name)) {
+        $(".pageAccount .content .filterButtons .buttons.tags").append(
+          `<div class="button active" filter="tag_${tag.id}">${tag.name}</div>`
+        );
+      } else {
+        $(".pageAccount .content .filterButtons .buttons.tags").append(
+          `<div class="button" filter="tag_${tag.id}">${tag.name}</div>`
+        );
       }
-    })
-  }else{
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass('hidden');
+    });
+  } else {
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
+      "hidden"
+    );
   }
   updateActiveFilters();
 }
 
-function toggleFilterButton(filter){
-  const element = $(`.pageAccount .content .filterButtons .button[filter=${filter}]`);
-  if(element.hasClass('active')){
+function toggleFilterButton(filter) {
+  const element = $(
+    `.pageAccount .content .filterButtons .button[filter=${filter}]`
+  );
+  if (element.hasClass("active")) {
     //disable that filter
-    
-    if(filter == 'all' || filter == 'none'){
+
+    if (filter == "all" || filter == "none") {
       return;
-    }else if(filter == "mode_words"){
+    } else if (filter == "mode_words") {
       // $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
       //   let f = $(obj).attr('filter')
       //   disableFilterButton(f)
       // })
-    }else if(filter == "mode_time"){
+    } else if (filter == "mode_time") {
       // $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
       //   let f = $(obj).attr('filter')
       //   disableFilterButton(f)
       // })
-    }else if(filter == "punc_off"){
+    } else if (filter == "punc_off") {
       enableFilterButton("punc_on");
-    }else if(filter == "punc_on"){
+    } else if (filter == "punc_on") {
       enableFilterButton("punc_off");
     }
     disableFilterButton(filter);
-    disableFilterButton('all'); 
-    
-  }else{
+    disableFilterButton("all");
+  } else {
     //enable that filter
-    disableFilterButton('none');
-    
-    if(filter == 'all'){
-      $.each($(`.pageAccount .content .filterButtons .button`),(index,obj)=>{
-        let f = $(obj).attr('filter');
-        if(f != 'none'){
-          enableFilterButton(f);
+    disableFilterButton("none");
+
+    if (filter == "all") {
+      $.each(
+        $(`.pageAccount .content .filterButtons .button`),
+        (index, obj) => {
+          let f = $(obj).attr("filter");
+          if (f != "none") {
+            enableFilterButton(f);
+          }
         }
-      })
-    }else if(filter == 'none'){
-      disableFilterButton('all');
-      $.each($(`.pageAccount .content .filterButtons .button`),(index,obj)=>{
-        let f = $(obj).attr('filter');
-        if(f != 'none'){
-          disableFilterButton(f);
+      );
+    } else if (filter == "none") {
+      disableFilterButton("all");
+      $.each(
+        $(`.pageAccount .content .filterButtons .button`),
+        (index, obj) => {
+          let f = $(obj).attr("filter");
+          if (f != "none") {
+            disableFilterButton(f);
+          }
         }
-      })
+      );
     }
     // else if(filter == "mode_words"){
     //   $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
@@ -424,56 +519,64 @@ function toggleFilterButton(filter){
   updateActiveFilters();
 }
 
-function disableFilterButton(filter){
-  const element = $(`.pageAccount .content .filterButtons .button[filter=${filter}]`);
-  element.removeClass('active');
+function disableFilterButton(filter) {
+  const element = $(
+    `.pageAccount .content .filterButtons .button[filter=${filter}]`
+  );
+  element.removeClass("active");
 }
 
-function enableFilterButton(filter){
-  const element = $(`.pageAccount .content .filterButtons .button[filter=${filter}]`);
-  element.addClass('active');
+function enableFilterButton(filter) {
+  const element = $(
+    `.pageAccount .content .filterButtons .button[filter=${filter}]`
+  );
+  element.addClass("active");
 }
 
-function updateActiveFilters(){
+function updateActiveFilters() {
   activeFilters = [];
-  $.each($(".pageAccount .filterButtons .button"),(i,obj)=>{
-    if($(obj).hasClass('active')){
-      activeFilters.push($(obj).attr('filter'));
+  $.each($(".pageAccount .filterButtons .button"), (i, obj) => {
+    if ($(obj).hasClass("active")) {
+      activeFilters.push($(obj).attr("filter"));
     }
-  })
+  });
   refreshAccountPage();
 }
 
-
-function showChartPreloader(){
-  $(".pageAccount .group.chart .preloader").stop(true,true).animate({
-    opacity: 1
-  },125);
+function showChartPreloader() {
+  $(".pageAccount .group.chart .preloader").stop(true, true).animate(
+    {
+      opacity: 1,
+    },
+    125
+  );
 }
 
-function hideChartPreloader(){
-  $(".pageAccount .group.chart .preloader").stop(true,true).animate({
-    opacity: 0
-  },125);
+function hideChartPreloader() {
+  $(".pageAccount .group.chart .preloader").stop(true, true).animate(
+    {
+      opacity: 0,
+    },
+    125
+  );
 }
 
-
-$('.pageAccount .filterButtons').click('.button',e =>{
-  const filter = $(e.target).attr('filter');
+$(".pageAccount .filterButtons").click(".button", (e) => {
+  const filter = $(e.target).attr("filter");
   toggleFilterButton(filter);
   config.resultFilters = activeFilters;
   saveConfigToCookie();
-})
+});
 
 let filteredResults = [];
 let visibleTableLines = 0;
 
-function loadMoreLines(){
-  if(filteredResults == [] || filteredResults.length == 0) return;
-  for(let i = visibleTableLines; i < visibleTableLines+10; i++){
+function loadMoreLines() {
+  if (filteredResults == [] || filteredResults.length == 0) return;
+  for (let i = visibleTableLines; i < visibleTableLines + 10; i++) {
     result = filteredResults[i];
-    if(result == undefined) continue;
-    let withpunc = '';
+    if (result == undefined) continue;
+    let withpunc = "";
     // if (result.punctuation) {
     //   withpunc = '<br>punctuation';
     // }
@@ -481,44 +584,46 @@ function loadMoreLines(){
     //   withpunc = '<br>blind';
     // }
     let diff = result.difficulty;
-    if (diff == undefined){
-      diff = 'normal';
+    if (diff == undefined) {
+      diff = "normal";
     }
 
     let raw = result.rawWpm;
-    if (raw == undefined){
-      raw = '-';
+    if (raw == undefined) {
+      raw = "-";
     }
 
+    let icons = `<span aria-label="${result.language.replace(
+      "_",
+      " "
+    )}" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i></span>`;
 
-    let icons = `<span aria-label="${result.language.replace('_',' ')}" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i></span>`;
-
-    if(diff === 'normal'){
+    if (diff === "normal") {
       icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="far fa-fw fa-star"></i></span>`;
-    }else if(diff === "expert"){
+    } else if (diff === "expert") {
       icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star-half-alt"></i></span>`;
-    }else if(diff === "master"){
+    } else if (diff === "master") {
       icons += `<span aria-label="${result.difficulty}" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i></span>`;
     }
 
-    if(result.punctuation){
+    if (result.punctuation) {
       icons += `<span aria-label="punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-quote-right"></i></span>`;
     }
 
-    if(result.blindMode){
+    if (result.blindMode) {
       icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
     }
 
     let tagNames = "";
 
-    if(result.tags !== undefined && result.tags.length > 0){
-      result.tags.forEach(tag => {
-        dbSnapshot.tags.forEach(snaptag => {
-          if(tag === snaptag.id){
+    if (result.tags !== undefined && result.tags.length > 0) {
+      result.tags.forEach((tag) => {
+        dbSnapshot.tags.forEach((snaptag) => {
+          if (tag === snaptag.id) {
             tagNames += snaptag.name + ", ";
           }
-        })
-      })
+        });
+      });
       tagNames = tagNames.substring(0, tagNames.length - 2);
     }
 
@@ -526,17 +631,23 @@ function loadMoreLines(){
     //   icons += `<span aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
     // }
 
-    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
+    let restags;
+    if (result.tags === undefined) {
+      restags = "[]";
+    } else {
+      restags = JSON.stringify(result.tags);
+    }
 
-    if(tagNames !== ""){
-      if(result.tags !== undefined && result.tags.length > 1){
-        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
-      }else{
-        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${JSON.stringify(result.tags)}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
+    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
+
+    if (tagNames !== "") {
+      if (result.tags !== undefined && result.tags.length > 1) {
+        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
+      } else {
+        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
       }
     }
 
-    
     $(".pageAccount .history table tbody").append(`
     <tr>
     <td>${Math.round(result.wpm)}</td>
@@ -547,21 +658,19 @@ function loadMoreLines(){
     <td>${result.mode} ${result.mode2}${withpunc}</td>
     <td class="infoIcons">${icons}</td>
     <td>${tagIcons}</td>
-    <td>${moment(result.timestamp).format('DD MMM YYYY<br>HH:mm')}</td>
+    <td>${moment(result.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
     </tr>`);
   }
-  visibleTableLines+=10;
+  visibleTableLines += 10;
 }
 
 function refreshAccountPage() {
-
-  function cont(){
-    
+  function cont() {
     let chartData = [];
     visibleTableLines = 0;
-    
+
     let topWpm = 0;
-    let topMode = '';
+    let topMode = "";
     let testRestarts = 0;
     let totalWpm = 0;
     let testCount = 0;
@@ -577,83 +686,83 @@ function refreshAccountPage() {
       count: 0,
       last10Total: 0,
       last10Count: 0,
-      max: 0
-    }
+      max: 0,
+    };
 
     let totalSeconds = 0;
     let totalSecondsFiltered = 0;
-    
+
     let tableEl = "";
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    dbSnapshot.results.forEach(result => {
-
-
+    dbSnapshot.results.forEach((result) => {
       let tt = 0;
-      if(result.testDuration == undefined){
+      if (result.testDuration == undefined) {
         //test finished before testDuration field was introduced - estimate
-        if(result.mode == "time"){
+        if (result.mode == "time") {
           tt = parseFloat(result.mode2);
-        }else if(result.mode == "words"){
-          tt = (parseFloat(result.mode2)/parseFloat(result.wpm)) * 60;
+        } else if (result.mode == "words") {
+          tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
         }
-      }else{
+      } else {
         tt = parseFloat(result.testDuration);
       }
-      if(result.incompleteTestSeconds != undefined){
+      if (result.incompleteTestSeconds != undefined) {
         tt += result.incompleteTestSeconds;
-      }else if(result.restartCount != undefined && result.restartCount > 0){
-        tt += (tt/4) * result.restartCount;
+      } else if (result.restartCount != undefined && result.restartCount > 0) {
+        tt += (tt / 4) * result.restartCount;
       }
       totalSeconds += tt;
-
 
       // console.log(result);
       //apply filters
       let resdiff = result.difficulty;
-      if(resdiff == undefined){
+      if (resdiff == undefined) {
         resdiff = "normal";
       }
-      if(!activeFilters.includes("difficulty_"+resdiff)) return;
-      if(!activeFilters.includes("mode_"+result.mode)) return;
-      if(result.mode == "time"){
+      if (!activeFilters.includes("difficulty_" + resdiff)) return;
+      if (!activeFilters.includes("mode_" + result.mode)) return;
+      if (result.mode == "time") {
         let timefilter = "time_custom";
-        if([15,30,60,120].includes(parseInt(result.mode2))){
-          timefilter = "time_"+result.mode2;
+        if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
+          timefilter = "time_" + result.mode2;
         }
-        if(!activeFilters.includes(timefilter)) return;
-      }else if(result.mode == "words"){
+        if (!activeFilters.includes(timefilter)) return;
+      } else if (result.mode == "words") {
         let wordfilter = "words_custom";
-        if([10,25,50,100,200].includes(parseInt(result.mode2))){
-          wordfilter = "words_"+result.mode2;
+        if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
+          wordfilter = "words_" + result.mode2;
         }
-        if(!activeFilters.includes(wordfilter)) return;
+        if (!activeFilters.includes(wordfilter)) return;
       }
 
-      if(!activeFilters.includes(result.language)) return;
+      if (!activeFilters.includes(result.language)) return;
 
       let puncfilter = "punc_off";
-      if(result.punctuation){
+      if (result.punctuation) {
         puncfilter = "punc_on";
       }
-      if(!activeFilters.includes(puncfilter)) return;
+      if (!activeFilters.includes(puncfilter)) return;
 
       //check if the user has any tags defined
-      if(dbSnapshot.tags.length > 0){
+      if (dbSnapshot.tags.length > 0) {
         //check if that result has any tags
-        if(result.tags !== undefined && result.tags.length > 0){
-        
+        if (result.tags !== undefined && result.tags.length > 0) {
           let found = false;
-          result.tags.forEach(tag => {
+          result.tags.forEach((tag) => {
             //check if any of the tags inside the result are active
-            if(activeFilters.includes("tag_"+tag)) found = true;
+            if (activeFilters.includes("tag_" + tag)) found = true;
             //check if a tag doesnt exist and tag_notag is active
-            if(!dbSnapshot.tags.map(t => t.id).includes(tag) && activeFilters.includes("tag_notag")) found = true;
-          })
-          if(!found) return;
-        }else{
-          if(!activeFilters.includes("tag_notag")) return;
+            if (
+              !dbSnapshot.tags.map((t) => t.id).includes(tag) &&
+              activeFilters.includes("tag_notag")
+            )
+              found = true;
+          });
+          if (!found) return;
+        } else {
+          if (!activeFilters.includes("tag_notag")) return;
         }
       }
 
@@ -661,17 +770,16 @@ function refreshAccountPage() {
 
       let datehide = true;
 
-      if(
-        (activeFilters.includes("date_all")) ||
+      if (
+        activeFilters.includes("date_all") ||
         (activeFilters.includes("date_day") && timeSinceTest <= 86400) ||
         (activeFilters.includes("date_week") && timeSinceTest <= 604800) ||
         (activeFilters.includes("date_month") && timeSinceTest <= 18144000)
-        ){
+      ) {
         datehide = false;
       }
 
-
-      if(datehide) return;
+      if (datehide) return;
 
       // if(
       //   (!activeFilters.includes("date_all")) &&
@@ -682,58 +790,51 @@ function refreshAccountPage() {
       //   return;
       // }
 
-
       filteredResults.push(result);
 
       //filters done
       //=======================================
 
       tt = 0;
-      if(result.timeDuration == null){
+      if (result.timeDuration == null) {
         //test finished before timeduration field was introduced - estimate
-        if(result.mode == "time"){
+        if (result.mode == "time") {
           tt = parseFloat(result.mode2);
-        }else if(result.mode == "words"){
-          tt = (parseFloat(result.mode2)/parseFloat(result.wpm)) * 60;
+        } else if (result.mode == "words") {
+          tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
         }
-      }else{
+      } else {
         tt = parseFloat(result.timeDuration);
       }
-      if(result.restartCount != null){
-        tt += (tt/4) * result.restartCount;
+      if (result.restartCount != null) {
+        tt += (tt / 4) * result.restartCount;
       }
       totalSecondsFiltered += tt;
 
-
-
-      if(last10 < 10){
+      if (last10 < 10) {
         last10++;
         wpmLast10total += result.wpm;
         totalAcc10 += result.acc;
       }
       testCount++;
 
-
-      if(result.rawWpm != null){
-        if(rawWpm.last10Count < 10){
+      if (result.rawWpm != null) {
+        if (rawWpm.last10Count < 10) {
           rawWpm.last10Count++;
           rawWpm.last10Total += result.rawWpm;
         }
         rawWpm.total += result.rawWpm;
         rawWpm.count++;
-        if(result.rawWpm > rawWpm.max){
+        if (result.rawWpm > rawWpm.max) {
           rawWpm.max = result.rawWpm;
         }
       }
-
 
       totalAcc += result.acc;
 
       if (result.restartCount != undefined) {
         testRestarts += result.restartCount;
       }
-      
-
 
       chartData.push({
         x: result.timestamp,
@@ -744,7 +845,7 @@ function refreshAccountPage() {
         punctuation: result.punctuation,
         language: result.language,
         timestamp: result.timestamp,
-        difficulty: result.difficulty
+        difficulty: result.difficulty,
       });
 
       if (result.wpm > topWpm) {
@@ -754,13 +855,17 @@ function refreshAccountPage() {
       }
 
       totalWpm += result.wpm;
-    })
+    });
     loadMoreLines();
     ////////
 
-    let mainColor = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ', '');
-    let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ','');
-  
+    let mainColor = getComputedStyle(document.body)
+      .getPropertyValue("--main-color")
+      .replace(" ", "");
+    let subColor = getComputedStyle(document.body)
+      .getPropertyValue("--sub-color")
+      .replace(" ", "");
+
     resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
     resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor = subColor;
     resultHistoryChart.data.datasets[0].borderColor = mainColor;
@@ -769,46 +874,61 @@ function refreshAccountPage() {
 
     resultHistoryChart.data.datasets[0].data = chartData;
 
-    if(chartData == [] || chartData.length == 0){
-      $(".pageAccount .group.noDataError").removeClass('hidden');
-      $(".pageAccount .group.chart").addClass('hidden');
-      $(".pageAccount .group.history").addClass('hidden');
-      $(".pageAccount .triplegroup.stats").addClass('hidden');
-    }else{
-      $(".pageAccount .group.noDataError").addClass('hidden');
-      $(".pageAccount .group.chart").removeClass('hidden');
-      $(".pageAccount .group.history").removeClass('hidden');
-      $(".pageAccount .triplegroup.stats").removeClass('hidden');
+    if (chartData == [] || chartData.length == 0) {
+      $(".pageAccount .group.noDataError").removeClass("hidden");
+      $(".pageAccount .group.chart").addClass("hidden");
+      $(".pageAccount .group.history").addClass("hidden");
+      $(".pageAccount .triplegroup.stats").addClass("hidden");
+    } else {
+      $(".pageAccount .group.noDataError").addClass("hidden");
+      $(".pageAccount .group.chart").removeClass("hidden");
+      $(".pageAccount .group.history").removeClass("hidden");
+      $(".pageAccount .triplegroup.stats").removeClass("hidden");
     }
 
-    $(".pageAccount .timeTotal .val").text(moment.utc(moment.duration(totalSeconds, "seconds").asMilliseconds()).format("HH:mm:ss"));
-    $(".pageAccount .timeTotalFiltered .val").text(moment.utc(moment.duration(totalSecondsFiltered, "seconds").asMilliseconds()).format("HH:mm:ss"));
-
+    $(".pageAccount .timeTotal .val").text(
+      moment
+        .utc(moment.duration(totalSeconds, "seconds").asMilliseconds())
+        .format("HH:mm:ss")
+    );
+    $(".pageAccount .timeTotalFiltered .val").text(
+      moment
+        .utc(moment.duration(totalSecondsFiltered, "seconds").asMilliseconds())
+        .format("HH:mm:ss")
+    );
 
     $(".pageAccount .highestWpm .val").text(topWpm);
-    $(".pageAccount .averageWpm .val").text(Math.round(totalWpm/testCount));
-    $(".pageAccount .averageWpm10 .val").text(Math.round(wpmLast10total/last10));
+    $(".pageAccount .averageWpm .val").text(Math.round(totalWpm / testCount));
+    $(".pageAccount .averageWpm10 .val").text(
+      Math.round(wpmLast10total / last10)
+    );
 
     $(".pageAccount .highestRaw .val").text(rawWpm.max);
-    $(".pageAccount .averageRaw .val").text(Math.round(rawWpm.total/rawWpm.count));
-    $(".pageAccount .averageRaw10 .val").text(Math.round(rawWpm.last10Total/rawWpm.last10Count));
+    $(".pageAccount .averageRaw .val").text(
+      Math.round(rawWpm.total / rawWpm.count)
+    );
+    $(".pageAccount .averageRaw10 .val").text(
+      Math.round(rawWpm.last10Total / rawWpm.last10Count)
+    );
 
     $(".pageAccount .highestWpm .mode").html(topMode);
     $(".pageAccount .testsTaken .val").text(testCount);
 
-    $(".pageAccount .avgAcc .val").text(Math.round(totalAcc/testCount)+"%");
-    $(".pageAccount .avgAcc10 .val").text(Math.round(totalAcc10/last10)+"%");
-
-    $(".pageAccount .testsStarted .val").text(
-      `${testCount + testRestarts}`
+    $(".pageAccount .avgAcc .val").text(Math.round(totalAcc / testCount) + "%");
+    $(".pageAccount .avgAcc10 .val").text(
+      Math.round(totalAcc10 / last10) + "%"
     );
 
+    $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
+
     $(".pageAccount .testsCompleted .val").text(
-      `${testCount}(${Math.floor((testCount / (testCount + testRestarts) * 100))}%)`
+      `${testCount}(${Math.floor(
+        (testCount / (testCount + testRestarts)) * 100
+      )}%)`
     );
 
     $(".pageAccount .avgRestart .val").text(
-      ((testRestarts) / testCount).toFixed(1)
+      (testRestarts / testCount).toFixed(1)
     );
 
     // if(testCount == 0){
@@ -830,20 +950,20 @@ function refreshAccountPage() {
     //   }
     // })
     // if (favModeName == 'words10' && testModes.words10.length == 0) {
-    //   //new user  
+    //   //new user
     //   $(".pageAccount .favouriteTest .val").text(`-`);
     // } else {
     //   $(".pageAccount .favouriteTest .val").text(`${favModeName} (${Math.floor((favMode.length/testCount) * 100)}%)`);
     // }
 
-    if(resultHistoryChart.data.datasets[0].length > 0){
+    if (resultHistoryChart.data.datasets[0].length > 0) {
       resultHistoryChart.options.plugins.trendlineLinear = true;
-    }else{
+    } else {
       resultHistoryChart.options.plugins.trendlineLinear = false;
     }
-    
-    resultHistoryChart.update({duration: 0});
-    
+
+    resultHistoryChart.update({ duration: 0 });
+
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
 
@@ -860,67 +980,71 @@ function refreshAccountPage() {
   }
 }
 
-
-function showResultEditTagsPanel(){
+function showResultEditTagsPanel() {
   if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
     $("#resultEditTagsPanelWrapper")
-    .stop(true, true)
-    .css("opacity", 0)
-    .removeClass("hidden")
-    .animate({opacity: 1},125);
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 125);
   }
 }
 
-function hideResultEditTagsPanel(){
+function hideResultEditTagsPanel() {
   if (!$("#resultEditTagsPanelWrapper").hasClass("hidden")) {
     $("#resultEditTagsPanelWrapper")
-    .stop(true, true)
-    .css("opacity", 1)
-    .animate(
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
         {
-            opacity: 0
-        },100,e => {
-          $("#resultEditTagsPanelWrapper").addClass('hidden');
-        });
-    }
+          opacity: 0,
+        },
+        100,
+        (e) => {
+          $("#resultEditTagsPanelWrapper").addClass("hidden");
+        }
+      );
+  }
 }
 
-$(document).on('click','.pageAccount .group.history #resultEditTags',f => {
-  if(dbSnapshot.tags.length > 0){
-    let resultid = $(f.target).parents('span').attr('resultid');
-    let tags = $(f.target).parents('span').attr('tags');
-    $("#resultEditTagsPanel").attr('resultid',resultid);
-    $("#resultEditTagsPanel").attr('tags',tags);
+$(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
+  if (dbSnapshot.tags.length > 0) {
+    let resultid = $(f.target).parents("span").attr("resultid");
+    let tags = $(f.target).parents("span").attr("tags");
+    $("#resultEditTagsPanel").attr("resultid", resultid);
+    $("#resultEditTagsPanel").attr("tags", tags);
     updateActiveResultEditTagsPanelButtons(JSON.parse(tags));
     showResultEditTagsPanel();
   }
-})
+});
 
-$(document).on('click','#resultEditTagsPanelWrapper .button.tag',f => {
-  $(f.target).toggleClass('active');
-})
+$(document).on("click", "#resultEditTagsPanelWrapper .button.tag", (f) => {
+  $(f.target).toggleClass("active");
+});
 
-$("#resultEditTagsPanelWrapper").click(e => {
-  if($(e.target).attr('id') === "resultEditTagsPanelWrapper"){
+$("#resultEditTagsPanelWrapper").click((e) => {
+  if ($(e.target).attr("id") === "resultEditTagsPanelWrapper") {
     hideResultEditTagsPanel();
   }
-})
+});
 
-function updateResultEditTagsPanelButtons(){
+function updateResultEditTagsPanelButtons() {
   $("#resultEditTagsPanel .buttons").empty();
-  dbSnapshot.tags.forEach(tag => {
-    $("#resultEditTagsPanel .buttons").append(`<div class="button tag" tagid="${tag.id}">${tag.name}</div>`);
-  })
+  dbSnapshot.tags.forEach((tag) => {
+    $("#resultEditTagsPanel .buttons").append(
+      `<div class="button tag" tagid="${tag.id}">${tag.name}</div>`
+    );
+  });
 }
 
-function updateActiveResultEditTagsPanelButtons(active){
-  if(active === []) return;
-  $.each($("#resultEditTagsPanel .buttons .button"), (index,obj) => {
-    let tagid = $(obj).attr('tagid');
-    if(active.includes(tagid)){
-      $(obj).addClass('active');
-    }else{
-      $(obj).removeClass('active');
+function updateActiveResultEditTagsPanelButtons(active) {
+  if (active === []) return;
+  $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
+    let tagid = $(obj).attr("tagid");
+    if (active.includes(tagid)) {
+      $(obj).addClass("active");
+    } else {
+      $(obj).removeClass("active");
     }
     // active.forEach(activetagid => {
     //   if(activetagid === tagid){
@@ -932,31 +1056,35 @@ function updateActiveResultEditTagsPanelButtons(active){
   });
 }
 
-$("#resultEditTagsPanel .confirmButton").click(f => {
-  let resultid = $("#resultEditTagsPanel").attr('resultid');
-  let oldtags = JSON.parse($("#resultEditTagsPanel").attr('tags'));
+$("#resultEditTagsPanel .confirmButton").click((f) => {
+  let resultid = $("#resultEditTagsPanel").attr("resultid");
+  let oldtags = JSON.parse($("#resultEditTagsPanel").attr("tags"));
 
   let newtags = [];
-  $.each($("#resultEditTagsPanel .buttons .button"), (index,obj) => {
-    let tagid = $(obj).attr('tagid');
-    if($(obj).hasClass('active')){
+  $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
+    let tagid = $(obj).attr("tagid");
+    if ($(obj).hasClass("active")) {
       newtags.push(tagid);
     }
   });
   showBackgroundLoader();
   hideResultEditTagsPanel();
-  updateResultTags({uid:firebase.auth().currentUser.uid,tags:newtags,resultid:resultid}).then(r=>{
+  updateResultTags({
+    uid: firebase.auth().currentUser.uid,
+    tags: newtags,
+    resultid: resultid,
+  }).then((r) => {
     hideBackgroundLoader();
-    if(r.data.resultCode === 1){
-      showNotification('Tags updated',1000);
-      dbSnapshot.results.forEach(result => {
-        if(result.id === resultid){
+    if (r.data.resultCode === 1) {
+      showNotification("Tags updated", 1000);
+      dbSnapshot.results.forEach((result) => {
+        if (result.id === resultid) {
           result.tags = newtags;
         }
-      })
+      });
       refreshAccountPage();
-    }else{
-      showNotification('Error updating tags',3000);
+    } else {
+      showNotification("Error updating tags", 3000);
     }
   });
-})
+});

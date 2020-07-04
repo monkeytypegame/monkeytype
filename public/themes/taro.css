@@ -7,20 +7,20 @@
   --text-color: #130f1a;
   --error-color: #ffe23e;
   --error-extra-color: #fff1c3; 
-  --extra-error-color: #ffe23e;
-  --extra-error-extra-color: #fff1c3; 
+  --colorful-error-color: #ffe23e;
+  --colorful-error-extra-color: #fff1c3; 
 }
 
 .word.error{
   border-bottom: dotted 2px var(--text-color);
 }
 
-#menu .button:nth-child(1){
+#menu .icon-button:nth-child(1){
   background: var(--caret-color);
   border-radius: 50%;
 }
 
-#menu .button:nth-child(2){
+#menu .icon-button:nth-child(2){
   background: var(--error-color);
   border-radius: 50%;
 }
