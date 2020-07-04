@@ -879,7 +879,7 @@ key {
 
   .stats {
     display: grid;
-    gap: .5rem;
+    column-gap: .5rem;
     justify-content: center;
     align-items: center;
     grid-template-areas:
@@ -892,6 +892,8 @@ key {
 
 
     .group {
+      margin-bottom: .5rem;
+
       .top {
         color: var(--sub-color);
         font-size: 1rem;
