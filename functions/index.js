@@ -799,7 +799,7 @@ class Leaderboard {
         // }
         foundAt = this.removeDuplicates(insertedAt, a.uid);
 
-        if (foundAt > insertedAt) {
+        if (foundAt >= insertedAt) {
           //new better result
           newBest = true;
         }
