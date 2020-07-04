@@ -135,6 +135,11 @@ function signUp() {
             })
             .then(function () {
               // Update successful.
+              firebase
+                .firestore()
+                .collection("users")
+                .doc(usr.uid)
+                .set({ name: nname }, { merge: true });
               showNotification("Account created", 2000);
               $("#menu .icon-button.account .text").text(nname);
               try {
@@ -147,11 +152,12 @@ function signUp() {
             })
             .catch(function (error) {
               // An error happened.
+              console.error(error);
               usr
                 .delete()
                 .then(function () {
                   // User deleted.
-                  showNotification("Name invalid", 2000);
+                  showNotification("An error occured", 2000);
                   $(".pageLogin .preloader").addClass("hidden");
                 })
                 .catch(function (error) {
@@ -209,7 +215,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         // showNotification('Applying db config',3000);
         updateSettingsPage();
         saveConfigToCookie();
-      } else {
+      } else if (dbSnapshot.config !== undefined) {
         let configsDifferent = false;
         Object.keys(config).forEach((key) => {
           if (!configsDifferent) {
