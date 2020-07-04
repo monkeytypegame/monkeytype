@@ -10,6 +10,15 @@
   /* Firefox */
 }
 
+html {
+  @extend .ffscroll;
+}
+
+.ffscroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sub-color) transparent;
+}
+
 input {
   outline: none;
   border: none;
@@ -85,7 +94,7 @@ html {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 7px;
 }
 
 /* Track */
@@ -203,6 +212,7 @@ a:hover {
       .globalTableWrapper,
       .dailyTableWrapper {
         height: calc(100vh - 22rem);
+        @extend .ffscroll;
         overflow-y: scroll;
       }
 
@@ -330,6 +340,7 @@ a:hover {
     padding: 2rem;
     display: grid;
     gap: 1rem;
+    @extend .ffscroll;
     overflow-y: scroll;
 
     .tip {
@@ -446,6 +457,7 @@ a:hover {
 
     .suggestions {
       display: block;
+      @extend .ffscroll;
       overflow-y: scroll;
       max-height: calc(100vh - 10rem - 3rem);
       display: grid;
