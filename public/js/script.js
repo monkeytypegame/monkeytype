@@ -1094,15 +1094,12 @@ function showResult(difficultyFailed = false) {
 
                 //global
                 let globalLbString = "";
-                if (e.data.globalLeaderboard === null) {
+                if (e.data.globalLeaderboard.insertedAt === null) {
                   globalLbString = "global: not found";
-                } else if (e.data.globalLeaderboard === -1) {
+                } else if (e.data.globalLeaderboard.insertedAt === -1) {
                   globalLbString = "global: not qualified";
-                } else if (e.data.globalLeaderboard === -2) {
-                  globalLbString =
-                    "global: already on the leaderboard with a better result";
-                } else if (e.data.globalLeaderboard >= 0) {
-                  let pos = e.data.globalLeaderboard + 1;
+                } else if (e.data.globalLeaderboard.insertedAt >= 0) {
+                  let pos = e.data.globalLeaderboard.insertedAt + 1;
                   let numend = "th";
                   if (pos === 1) {
                     numend = "st";
@@ -1111,20 +1108,21 @@ function showResult(difficultyFailed = false) {
                   } else if (pos === 3) {
                     numend = "rd";
                   }
-                  globalLbString = `global: ${pos}${numend} place`;
+                  if (e.data.globalLeaderboard.newBest) {
+                    globalLbString = `global: ${pos}${numend} place`;
+                  } else {
+                    globalLbString = `global: already ${pos}${numend}`;
+                  }
                 }
 
                 //daily
                 let dailyLbString = "";
-                if (e.data.dailyLeaderboard === null) {
+                if (e.data.dailyLeaderboard.insertedAt === null) {
                   dailyLbString = "daily: not found";
-                } else if (e.data.dailyLeaderboard === -1) {
+                } else if (e.data.dailyLeaderboard.insertedAt === -1) {
                   dailyLbString = "daily: not qualified";
-                } else if (e.data.dailyLeaderboard === -2) {
-                  dailyLbString =
-                    "daily: already on the leaderboard with a better result";
-                } else if (e.data.dailyLeaderboard >= 0) {
-                  let pos = e.data.dailyLeaderboard + 1;
+                } else if (e.data.dailyLeaderboard.insertedAt >= 0) {
+                  let pos = e.data.dailyLeaderboard.insertedAt + 1;
                   let numend = "th";
                   if (pos === 1) {
                     numend = "st";
@@ -1133,7 +1131,11 @@ function showResult(difficultyFailed = false) {
                   } else if (pos === 3) {
                     numend = "rd";
                   }
-                  dailyLbString = `daily: ${pos}${numend} place`;
+                  if (e.data.dailyLeaderboard.newBest) {
+                    dailyLbString = `daily: ${pos}${numend} place`;
+                  } else {
+                    dailyLbString = `daily: already ${pos}${numend}`;
+                  }
                 }
                 if (
                   e.data.dailyLeaderboard === null &&
@@ -1198,6 +1200,7 @@ function showResult(difficultyFailed = false) {
   if (firebase.auth().currentUser != null) {
     $("#result .loginTip").addClass("hidden");
   } else {
+    $("#result .stats .leaderboards").addClass("hidden");
     $("#result .loginTip").removeClass("hidden");
   }
 
