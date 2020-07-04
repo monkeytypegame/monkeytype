@@ -1072,6 +1072,7 @@ function showResult(difficultyFailed = false) {
               );
               wpmOverTimeChart.update({ duration: 0 });
             }
+            $("#result .stats .leaderboards").removeClass("hidden");
             $("#result .stats .leaderboards .bottom").html("checking...");
             testCompleted({
               uid: firebase.auth().currentUser.uid,
@@ -1134,10 +1135,18 @@ function showResult(difficultyFailed = false) {
                   }
                   dailyLbString = `daily: ${pos}${numend} place`;
                 }
+                if (
+                  e.data.dailyLeaderboard === null &&
+                  e.data.globalLeaderboard === null
+                ) {
+                  $("#result .stats .leaderboards").addClass("hidden");
+                } else {
+                  $("#result .stats .leaderboards").removeClass("hidden");
+                  $("#result .stats .leaderboards .bottom").html(
+                    globalLbString + "<br>" + dailyLbString
+                  );
+                }
 
-                $("#result .stats .leaderboards .bottom").html(
-                  globalLbString + "<br>" + dailyLbString
-                );
                 if (e.data.resultCode === 2) {
                   //new pb
                   if (!localPb) {
