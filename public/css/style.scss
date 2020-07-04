@@ -213,6 +213,11 @@ a:hover {
 
         td {
           padding: .25rem .5rem;
+
+          &.me {
+            color: var(--main-color);
+            font-weight: 900;
+          }
         }
 
         thead {

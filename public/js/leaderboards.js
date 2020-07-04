@@ -69,17 +69,24 @@ function updateLeaderboards() {
     mode2 = currentLeaderboard.time;
   }
 
+  let uid = null;
+  if (firebase.auth().currentUser !== null) {
+    uid = firebase.auth().currentUser.uid;
+  }
+
   showBackgroundLoader();
   Promise.all([
     firebase.functions().httpsCallable("getLeaderboard")({
       mode: currentLeaderboard.mode,
       mode2: mode2,
       type: "daily",
+      uid: uid,
     }),
     firebase.functions().httpsCallable("getLeaderboard")({
       mode: currentLeaderboard.mode,
       mode2: mode2,
       type: "global",
+      uid: uid,
     }),
   ]).then((lbdata) => {
     hideBackgroundLoader();
@@ -89,10 +96,12 @@ function updateLeaderboards() {
     $("#leaderboardsWrapper table.daily tbody").empty();
     if (dailyData.board !== undefined) {
       dailyData.board.forEach((entry, index) => {
+        let meClassString = "";
+        if (entry.currentUser) meClassString = ' class="me"';
         $("#leaderboardsWrapper table.daily tbody").append(`
           <tr>
           <td>${index + 1}</td>
-          <td>${entry.name}</td>
+          <td ${meClassString}>${entry.name}</td>
           <td>${entry.wpm}</td>
           <td>${entry.raw}</td>
           <td>${entry.acc}%</td>
@@ -123,10 +132,12 @@ function updateLeaderboards() {
     $("#leaderboardsWrapper table.global tbody").empty();
     if (globalData.board !== undefined) {
       globalData.board.forEach((entry, index) => {
+        let meClassString = "";
+        if (entry.currentUser) meClassString = ' class="me"';
         $("#leaderboardsWrapper table.global tbody").append(`
           <tr>
           <td>${index + 1}</td>
-          <td>${entry.name}</td>
+          <td ${meClassString}>${entry.name}</td>
           <td>${entry.wpm}</td>
           <td>${entry.raw}</td>
           <td>${entry.acc}%</td>
