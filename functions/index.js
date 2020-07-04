@@ -928,7 +928,15 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
 
         return lbdata;
       } else {
-        return [];
+        if (
+          lbdata.board === undefined ||
+          lbdata.board === [] ||
+          lbdata.board.length === 0
+        ) {
+          return lbdata;
+        } else {
+          return [];
+        }
       }
     });
 });
