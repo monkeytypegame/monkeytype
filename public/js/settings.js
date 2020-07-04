@@ -541,8 +541,8 @@ const colorVars = [
   "--text-color",
   "--error-color",
   "--error-extra-color",
-  "--extra-error-color",
-  "--extra-error-extra-color",
+  "--colorful-error-color",
+  "--colorful-error-extra-color",
 ];
 
 $(".tab").click((e) => {
