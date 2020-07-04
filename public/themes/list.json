@@ -208,5 +208,15 @@
         "name": "strawberry",
         "bgColor": "#e53c58",
         "textColor": "#fcfcf8"
+    },
+    {
+        "name": "terra",
+        "bgColor": "#89c559",
+        "textColor": "#0c100e"
+    },
+    {
+        "name": "red dragon",
+        "bgColor": "#1a0b0c",
+        "textColor": "#ff3a32"
     }
 ]
