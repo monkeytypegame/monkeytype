@@ -792,11 +792,12 @@ class Leaderboard {
       // console.log("before duplicate remove");
       // console.log(this.board);
       let newBest = false;
+      let foundAt = null;
       if (insertedAt >= 0) {
         // if (this.removeDuplicates(insertedAt, a.uid)) {
         //   insertedAt = -2;
         // }
-        let foundAt = this.removeDuplicates(insertedAt, a.uid);
+        foundAt = this.removeDuplicates(insertedAt, a.uid);
 
         if (foundAt > insertedAt) {
           //new better result
@@ -808,6 +809,7 @@ class Leaderboard {
       return {
         insertedAt: insertedAt,
         newBest: newBest,
+        foundAt: foundAt,
       };
     } else {
       return {
