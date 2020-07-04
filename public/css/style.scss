@@ -170,14 +170,13 @@ a:hover {
 
   #leaderboards {
     width: 75vw;
-    max-height: calc(100vh - 5rem);
-    overflow-y: scroll;
+    height: calc(100vh - 10rem);
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
     display: grid;
-    gap: 1rem;
-    grid-template-rows: auto auto;
+    gap: 2rem;
+    grid-template-rows: 3rem auto;
     grid-template-areas: "title buttons"
       "tables tables";
     grid-template-columns: 1fr 1fr;
@@ -191,6 +190,7 @@ a:hover {
     .title {
       font-size: 2rem;
       line-height: 2rem;
+      margin-bottom: .5rem;
     }
 
     .tables {
@@ -198,6 +198,13 @@ a:hover {
       display: grid;
       gap: 1rem;
       grid-template-columns: 1fr 1fr;
+      margin-bottom: 2rem;
+
+      .globalTableWrapper,
+      .dailyTableWrapper {
+        height: calc(100vh - 22rem);
+        overflow-y: scroll;
+      }
 
       table {
         width: 100%;
