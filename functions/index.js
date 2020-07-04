@@ -799,16 +799,54 @@ class Leaderboard {
 
 async function checkLeaderboards(resultObj, type) {
   try {
-    return admin
-      .firestore()
-      .collection("leaderboards")
-      .where("mode", "==", String(resultObj.mode))
-      .where("mode2", "==", String(resultObj.mode2))
-      .where("type", "==", type)
-      .get()
-      .then((data) => {
-        if (data.docs.length === 0) return null;
-        let boardInfo = data.docs[0].data();
+    if (
+      (resultObj.mode === "words" &&
+        ["10", "100"].includes(String(resultObj.mode2))) ||
+      (resultObj.mode === "time" &&
+        ["15", "60"].includes(String(resultObj.mode2)))
+    ) {
+      return admin
+        .firestore()
+        .collection("leaderboards")
+        .where("mode", "==", String(resultObj.mode))
+        .where("mode2", "==", String(resultObj.mode2))
+        .where("type", "==", type)
+        .get()
+        .then((ret) => {
+          if (ret.docs.length === 0) {
+            //no lb found, create
+            console.log(
+              `no ${resultObj.mode} ${resultObj.mode2} ${type} leaderboard found - creating`
+            );
+            let toAdd = {
+              size: 20,
+              mode: String(resultObj.mode),
+              mode2: String(resultObj.mode2),
+              type: type,
+            };
+            return admin
+              .firestore()
+              .collection("leaderboards")
+              .doc(
+                `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`
+              )
+              .set(toAdd)
+              .then((ret) => {
+                return cont(
+                  `${String(resultObj.mode)}_${String(
+                    resultObj.mode2
+                  )}_${type}`,
+                  toAdd
+                );
+              });
+          } else {
+            //continue
+            return cont(ret.id, ret.docs[0].data());
+          }
+        });
+
+      function cont(docid, documentData) {
+        let boardInfo = documentData;
         let boardData = boardInfo.board;
 
         // console.log(`info ${JSON.stringify(boardInfo)}`);
@@ -837,7 +875,7 @@ async function checkLeaderboards(resultObj, type) {
               resultObj.mode2
             } ${type} - ${JSON.stringify(lb.board)}`
           );
-          admin.firestore().collection("leaderboards").doc(data.docs[0].id).set(
+          admin.firestore().collection("leaderboards").doc(docid).set(
             {
               size: lb.size,
               type: lb.type,
@@ -850,7 +888,8 @@ async function checkLeaderboards(resultObj, type) {
         }
 
         return insertResult;
-      });
+      }
+    }
   } catch (e) {
     console.error(
       `error while checking leaderboards - ${e} - ${type} ${resultObj}`
