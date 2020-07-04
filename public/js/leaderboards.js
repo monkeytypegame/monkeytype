@@ -101,9 +101,12 @@ function updateLeaderboards() {
         </tr>
         `);
       });
-      if (dailyData.board.length !== dailyData.size) {
-        for (let i = dailyData.board.length; i < dailyData.size; i++) {
-          $("#leaderboardsWrapper table.daily tbody").append(`
+    }
+    let lenDaily = 0;
+    if (dailyData.board !== undefined) lenDaily = dailyData.board.length;
+    if (dailyData.length === 0 || lenDaily !== dailyData.size) {
+      for (let i = lenDaily; i < dailyData.size; i++) {
+        $("#leaderboardsWrapper table.daily tbody").append(`
           <tr>
                 <td>${i + 1}</td>
                 <td>-</td>
@@ -114,7 +117,6 @@ function updateLeaderboards() {
                 <td>-<br>-</td>
               </tr>
         `);
-        }
       }
     }
 
@@ -133,20 +135,22 @@ function updateLeaderboards() {
         </tr>
         `);
       });
-      if (globalData.board.length !== globalData.size) {
-        for (let i = globalData.board.length; i < globalData.size; i++) {
-          $("#leaderboardsWrapper table.global tbody").append(`
-          <tr>
-                <td>${i + 1}</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-<br>-</td>
-              </tr>
-        `);
-        }
+    }
+    let lenGlobal = 0;
+    if (globalData.board !== undefined) lenGlobal = globalData.board.length;
+    if (globalData.length === 0 || lenGlobal !== globalData.size) {
+      for (let i = lenGlobal; i < globalData.size; i++) {
+        $("#leaderboardsWrapper table.global tbody").append(`
+        <tr>
+              <td>${i + 1}</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-<br>-</td>
+            </tr>
+      `);
       }
     }
   });
