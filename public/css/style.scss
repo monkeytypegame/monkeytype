@@ -178,7 +178,7 @@ a:hover {
   padding: 5rem 0;
 
   #leaderboards {
-    width: 75vw;
+    width: 85vw;
     height: calc(100vh - 10rem);
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -208,6 +208,7 @@ a:hover {
       gap: 1rem;
       grid-template-columns: 1fr 1fr;
       margin-bottom: 2rem;
+      font-size: .8rem;
 
       .globalTableWrapper,
       .dailyTableWrapper {
