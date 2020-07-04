@@ -101,6 +101,21 @@ function updateLeaderboards() {
         </tr>
         `);
       });
+      if (dailyData.board.length !== dailyData.size) {
+        for (let i = dailyData.board.length; i < dailyData.size; i++) {
+          $("#leaderboardsWrapper table.daily tbody").append(`
+          <tr>
+                <td>${i + 1}</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-<br>-</td>
+              </tr>
+        `);
+        }
+      }
     }
 
     $("#leaderboardsWrapper table.global tbody").empty();
@@ -118,35 +133,23 @@ function updateLeaderboards() {
         </tr>
         `);
       });
-    }
-  });
-
-  firebase
-    .functions()
-    .httpsCallable("getLeaderboard")({
-      mode: currentLeaderboard.mode,
-      mode2: mode2,
-      type: "global",
-    })
-    .then((data) => {
-      // console.log(data);
-      $("#leaderboardsWrapper table.global tbody").empty();
-      if (data.data.board !== undefined) {
-        data.data.board.forEach((entry, index) => {
+      if (globalData.board.length !== globalData.size) {
+        for (let i = globalData.board.length; i < globalData.size; i++) {
           $("#leaderboardsWrapper table.global tbody").append(`
           <tr>
-          <td>${index + 1}</td>
-          <td>${entry.name}</td>
-          <td>${entry.wpm}</td>
-          <td>${entry.raw}</td>
-          <td>${entry.acc}</td>
-          <td>${entry.mode} ${entry.mode2}</td>
-          <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
-        </tr>
+                <td>${i + 1}</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-<br>-</td>
+              </tr>
         `);
-        });
+        }
       }
-    });
+    }
+  });
 }
 
 $("#leaderboardsWrapper").click((e) => {
