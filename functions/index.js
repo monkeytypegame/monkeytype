@@ -976,7 +976,7 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
 });
 
 exports.scheduledFunctionCrontab = functions.pubsub
-  .schedule("59 23 * * *")
+  .schedule("00 00 * * *")
   .timeZone("Europe/London") // Users can choose timezone - default is America/Los_Angeles
   .onRun((context) => {
     try {
