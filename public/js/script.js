@@ -567,14 +567,14 @@ function highlightBadWord(index, showError) {
 function showTimer() {
   if (!config.showTimerBar) return;
   if (config.timerStyle === "bar") {
-    $("#timerWrapper").animate(
+    $("#timerWrapper").removeClass("hidden").animate(
       {
         opacity: 1,
       },
       250
     );
   } else if (config.timerStyle === "text" && config.mode === "time") {
-    $("#timerNumber").animate(
+    $("#timerNumber").removeClass("hidden").animate(
       {
         opacity: 0.25,
       },
