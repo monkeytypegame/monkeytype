@@ -95,7 +95,7 @@ function updateLeaderboards() {
       let globalData = lbdata[1].data;
 
       //daily
-      let diffAsDate = new Date(dailyData.resetTime - Date.now());
+      let diffAsDate = new Date(dailyData.resetTime - Date.now() + 3600000);
 
       let diffHours = diffAsDate.getUTCHours();
       let diffMinutes = diffAsDate.getUTCMinutes();
@@ -110,7 +110,7 @@ function updateLeaderboards() {
       } else if (diffMinutes > 0) {
         resetString = `resets in ${diffMinutes} ${
           diffMinutes == 1 ? "minute" : "minutes"
-        } ${diffSeconds == 1 ? "second" : "seconds"}`;
+        } ${diffSeconds} ${diffSeconds == 1 ? "second" : "seconds"}`;
       } else if (diffSeconds > 0) {
         resetString = `resets in ${diffSeconds} ${
           diffSeconds == 1 ? "second" : "seconds"
