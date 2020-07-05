@@ -227,6 +227,16 @@
         "name": "dualshot",
         "bgColor": "#2d2e30",
         "textColor": "#212222"
+    },
+    {
+        "name": "solarized_dark",
+        "bgColor": "#002b36",
+        "textColor": "#859900"
+    },
+    {
+        "name": "solarized_light",
+        "bgColor": "#fdf6e3",
+        "textColor": "#859900"
     }
 
 ]
