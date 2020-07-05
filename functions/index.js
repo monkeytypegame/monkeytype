@@ -960,7 +960,7 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
         }
         // console.log(lbdata);
         if (request.type === "daily") {
-          let resetTime = new Date();
+          let resetTime = new Date(Date.now());
           resetTime.setHours(0, 0, 0, 0);
           resetTime.setDate(resetTime.getUTCDate() + 1);
           resetTime = resetTime.valueOf();

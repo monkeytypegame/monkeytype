@@ -97,19 +97,20 @@ function updateLeaderboards() {
       //daily
       let diffAsDate = new Date(dailyData.resetTime - Date.now());
 
-      let diffHours = diffAsDate.getHours();
-      let diffMinutes = diffAsDate.getMinutes();
-      let diffSeconds = diffAsDate.getSeconds();
+      let diffHours = diffAsDate.getUTCHours();
+      let diffMinutes = diffAsDate.getUTCMinutes();
+      let diffSeconds = diffAsDate.getUTCSeconds();
 
       let resetString = "";
       if (diffHours > 0) {
         resetString = `resets in ${diffHours} ${
           diffHours == 1 ? "hour" : "hours"
-        }`;
+        } ${diffMinutes} ${diffMinutes == 1 ? "minute" : "minutes"}
+        `;
       } else if (diffMinutes > 0) {
         resetString = `resets in ${diffMinutes} ${
           diffMinutes == 1 ? "minute" : "minutes"
-        }`;
+        } ${diffSeconds == 1 ? "second" : "seconds"}`;
       } else if (diffSeconds > 0) {
         resetString = `resets in ${diffSeconds} ${
           diffSeconds == 1 ? "second" : "seconds"
