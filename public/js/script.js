@@ -303,7 +303,7 @@ function initWords() {
     }
   } else if (config.mode == "quote") {
     randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    let w = randomQuote.text.split(" ");
+    let w = randomQuote.text.split(" ").replace("  ", " ");
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
     }
