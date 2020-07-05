@@ -822,10 +822,11 @@ class Leaderboard {
 async function checkLeaderboards(resultObj, type) {
   try {
     if (
-      (resultObj.mode === "words" &&
+      ((resultObj.mode === "words" &&
         ["10", "100"].includes(String(resultObj.mode2))) ||
-      (resultObj.mode === "time" &&
-        ["15", "60"].includes(String(resultObj.mode2)))
+        (resultObj.mode === "time" &&
+          ["15", "60"].includes(String(resultObj.mode2)))) &&
+      resultObj.language === "english"
     ) {
       return admin
         .firestore()
