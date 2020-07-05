@@ -993,7 +993,11 @@ exports.scheduledFunctionCrontab = functions.pubsub
             admin
               .firestore()
               .collection("leaderboards_history")
-              .doc(`${t.getDate()}_${t.getMonth()}_${t.getFullYear()}`)
+              .doc(
+                `${t.getDate()}_${t.getMonth()}_${t.getFullYear()}_${
+                  lbdata.mode
+                }_${lbdata.mode2}`
+              )
               .set(lbdata);
             admin.firestore().collection("leaderboards").doc(doc.id).set(
               {
