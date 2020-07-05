@@ -1,241 +1,251 @@
 [{
-    "name": "light",
-    "bgColor": "#fff",
-    "textColor": "#111"
-},
-{
-    "name": "dark",
-    "bgColor": "#111",
-    "textColor": "#eee"
-},
-{
-    "name": "8008",
-    "bgColor": "#3c4756",
-    "textColor": "#f44c7f"
-},
-{
-    "name": "carbon",
-    "bgColor": "#575d5e",
-    "textColor": "#ed6b21"
-},
-{
-    "name": "dots",
-    "bgColor": "#121520",
-    "textColor": "#7f88ab"
-},
-{
-    "name": "nautilus",
-    "bgColor": "#20304a",
-    "textColor": "#eab622"
-},
-{
-    "name": "serika",
-    "bgColor": "#e2b714",
-    "textColor": "#323437"
-},
-{
-    "name": "serika_dark",
-    "bgColor": "#323437",
-    "textColor": "#e2b714"
-},
-{
-    "name": "bushido",
-    "bgColor": "#414755",
-    "textColor": "#ec4c56"
-},
-{
-    "name": "red_samurai",
-    "bgColor": "#84202c",
-    "textColor": "#c79e6e"
-},
-{
-    "name": "rgb",
-    "bgColor": "linear-gradient(to left, #0043ff, #1bdbdb, #27c214, #e0e019, #e01313)",
-    "textColor": "#fff"
-},
-{
-    "name": "oblivion",
-    "bgColor": "#313231",
-    "textColor": "#a5a096"
-},
-{
-    "name": "laser",
-    "bgColor": "#221b44",
-    "textColor": "#b82356"
-},
-{
-    "name": "retro",
-    "bgColor": "#b3b0a8",
-    "textColor": "#1d181a"
-},
-{
-    "name": "dracula",
-    "bgColor": "#282a36",
-    "textColor": "#bd93f9"
-},
-{
-    "name": "nord",
-    "bgColor": "#242933",
-    "textColor": "#617b94"
-},
-{
-    "name": "mr_sleeves",
-    "bgColor": "linear-gradient(to right, #daa99b, #daa99b 20%, #bdc6ca 20%, #bdc6ca 80%, #8fadc9 80%);",
-    "textColor": "#000"
-},
-{
-    "name": "olivia",
-    "bgColor": "#1c1b1d",
-    "textColor": "#deaf9d"
-},
-{
-    "name": "bliss",
-    "bgColor": "#262727",
-    "textColor": "#665957"
-},
-{
-    "name": "mizu",
-    "bgColor": "#afcbdd",
-    "textColor": "#1a2633"
-},
-{
-    "name": "metaverse",
-    "bgColor": "#232323",
-    "textColor": "#d82934"
-},
-{
-    "name": "shadow",
-    "bgColor": "#000",
-    "textColor": "#444"
-},
-{
-    "name": "mint",
-    "bgColor": "#05385b",
-    "textColor": "#5cdb95"
-},
-{
-    "name": "miami",
-    "bgColor": "#f35588",
-    "textColor": "#05dfd7"
-},
-{
-    "name": "miami_nights",
-    "bgColor": "#18181a",
-    "textColor": "#e4609b"
-},
-{
-    "name": "modern_dolch",
-    "bgColor": "#585b5f",
-    "textColor": "#65d2cd"
-},
-{
-    "name": "botanical",
-    "bgColor": "#7b9c98",
-    "textColor": "#abc6c4"
-},
-{
-    "name": "9009",
-    "bgColor": "#99947f",
-    "textColor": "#080909"
-},
-{
-    "name": "bingsu",
-    "bgColor": "#524149",
-    "textColor": "#ede8ec"
-},
-{
-    "name": "terminal",
-    "bgColor": "#1b1c1d",
-    "textColor": "#79a617"
-},
-{
-    "name": "taro",
-    "bgColor": "#b3baff",
-    "textColor": "#130f1a"
-},
-{
-    "name": "striker",
-    "bgColor": "#124883",
-    "textColor": "#d6dbd9"
-},
-{
-    "name": "gruvbox_dark",
-    "bgColor": "#282828",
-    "textColor": "#ebdbb2"
-},
-{
-    "name": "gruvbox_light",
-    "bgColor": "#fbf1c7",
-    "textColor": "#458588"
-},
-{
-    "name": "monokai",
-    "bgColor": "#272822",
-    "textColor": "#E6DB74"
-},
-{
-    "name": "camping",
-    "bgColor": "#faf1e4",
-    "textColor": "#618c56"
-},
-{
-    "name": "voc",
-    "bgColor": "#190618",
-    "textColor": "#e0caac"
-},
-{
-    "name": "vaporwave",
-    "bgColor": "#a4a7ea",
-    "textColor": "#e368da"
-},
-{
-    "name": "pulse",
-    "bgColor": "#181818",
-    "textColor": "#17b8bd"
-},
-{
-    "name": "matrix",
-    "bgColor": "#000000",
-    "textColor": "#15ff00"
-},
-{
-    "name": "olive",
-    "bgColor": "#e9e5cc",
-    "textColor": "#92946f"
-},
-{
-    "name": "strawberry",
-    "bgColor": "#e53c58",
-    "textColor": "#fcfcf8"
-},
-{
-    "name": "night_runner",
-    "bgColor": "#5c4a9c",
-    "textColor": "#feff04"
-},
-{
-    "name": "cyberspace",
-    "bgColor": "#181c18",
-    "textColor": "#00ce7c"
-},
-{
-    "name": "joker",
-    "bgColor": "#1a0e25",
-    "textColor": "#99de1e"
-},
-{
-    "name": "dualshot",
-    "bgColor": "#2d2e30",
-    "textColor": "#212222"
-},
-{
-    "name": "terra",
-    "bgColor": "#89c559",
-    "textColor": "#0c100e"
-},
-{
-    "name": "red dragon",
-    "bgColor": "#1a0b0c",
-    "textColor": "#ff3a32"
-}
+        "name": "light",
+        "bgColor": "#fff",
+        "textColor": "#111"
+    },
+    {
+        "name": "dark",
+        "bgColor": "#111",
+        "textColor": "#eee"
+    },
+    {
+        "name": "8008",
+        "bgColor": "#3c4756",
+        "textColor": "#f44c7f"
+    },
+    {
+        "name": "carbon",
+        "bgColor": "#575d5e",
+        "textColor": "#ed6b21"
+    },
+    {
+        "name": "dots",
+        "bgColor": "#121520",
+        "textColor": "#7f88ab"
+    },
+    {
+        "name": "nautilus",
+        "bgColor": "#20304a",
+        "textColor": "#eab622"
+    },
+    {
+        "name": "serika",
+        "bgColor": "#e2b714",
+        "textColor": "#323437"
+    },
+    {
+        "name": "serika_dark",
+        "bgColor": "#323437",
+        "textColor": "#e2b714"
+    },
+    {
+        "name": "bushido",
+        "bgColor": "#414755",
+        "textColor": "#ec4c56"
+    },
+    {
+        "name": "red_samurai",
+        "bgColor": "#84202c",
+        "textColor": "#c79e6e"
+    },
+    {
+        "name": "rgb",
+        "bgColor": "linear-gradient(to left, #0043ff, #1bdbdb, #27c214, #e0e019, #e01313)",
+        "textColor": "#fff"
+    },
+    {
+        "name": "oblivion",
+        "bgColor": "#313231",
+        "textColor": "#a5a096"
+    },
+    {
+        "name": "laser",
+        "bgColor": "#221b44",
+        "textColor": "#b82356"
+    },
+    {
+        "name": "retro",
+        "bgColor": "#b3b0a8",
+        "textColor": "#1d181a"
+    },
+    {
+        "name": "dracula",
+        "bgColor": "#282a36",
+        "textColor": "#bd93f9"
+    },
+    {
+        "name": "nord",
+        "bgColor": "#242933",
+        "textColor": "#617b94"
+    },
+    {
+        "name": "mr_sleeves",
+        "bgColor": "linear-gradient(to right, #daa99b, #daa99b 20%, #bdc6ca 20%, #bdc6ca 80%, #8fadc9 80%);",
+        "textColor": "#000"
+    },
+    {
+        "name": "olivia",
+        "bgColor": "#1c1b1d",
+        "textColor": "#deaf9d"
+    },
+    {
+        "name": "bliss",
+        "bgColor": "#262727",
+        "textColor": "#665957"
+    },
+    {
+        "name": "mizu",
+        "bgColor": "#afcbdd",
+        "textColor": "#1a2633"
+    },
+    {
+        "name": "metaverse",
+        "bgColor": "#232323",
+        "textColor": "#d82934"
+    },
+    {
+        "name": "shadow",
+        "bgColor": "#000",
+        "textColor": "#444"
+    },
+    {
+        "name": "mint",
+        "bgColor": "#05385b",
+        "textColor": "#5cdb95"
+    },
+    {
+        "name": "miami",
+        "bgColor": "#f35588",
+        "textColor": "#05dfd7"
+    },
+    {
+        "name": "miami_nights",
+        "bgColor": "#18181a",
+        "textColor": "#e4609b"
+    },
+    {
+        "name": "modern_dolch",
+        "bgColor": "#585b5f",
+        "textColor": "#65d2cd"
+    },
+    {
+        "name": "botanical",
+        "bgColor": "#7b9c98",
+        "textColor": "#abc6c4"
+    },
+    {
+        "name": "9009",
+        "bgColor": "#99947f",
+        "textColor": "#080909"
+    },
+    {
+        "name": "bingsu",
+        "bgColor": "#524149",
+        "textColor": "#ede8ec"
+    },
+    {
+        "name": "terminal",
+        "bgColor": "#1b1c1d",
+        "textColor": "#79a617"
+    },
+    {
+        "name": "taro",
+        "bgColor": "#b3baff",
+        "textColor": "#130f1a"
+    },
+    {
+        "name": "striker",
+        "bgColor": "#124883",
+        "textColor": "#d6dbd9"
+    },
+    {
+        "name": "gruvbox_dark",
+        "bgColor": "#282828",
+        "textColor": "#ebdbb2"
+    },
+    {
+        "name": "gruvbox_light",
+        "bgColor": "#fbf1c7",
+        "textColor": "#458588"
+    },
+    {
+        "name": "monokai",
+        "bgColor": "#272822",
+        "textColor": "#E6DB74"
+    },
+    {
+        "name": "camping",
+        "bgColor": "#faf1e4",
+        "textColor": "#618c56"
+    },
+    {
+        "name": "voc",
+        "bgColor": "#190618",
+        "textColor": "#e0caac"
+    },
+    {
+        "name": "vaporwave",
+        "bgColor": "#a4a7ea",
+        "textColor": "#e368da"
+    },
+    {
+        "name": "pulse",
+        "bgColor": "#181818",
+        "textColor": "#17b8bd"
+    },
+    {
+        "name": "matrix",
+        "bgColor": "#000000",
+        "textColor": "#15ff00"
+    },
+    {
+        "name": "olive",
+        "bgColor": "#e9e5cc",
+        "textColor": "#92946f"
+    },
+    {
+        "name": "strawberry",
+        "bgColor": "#e53c58",
+        "textColor": "#fcfcf8"
+    },
+    {
+        "name": "night_runner",
+        "bgColor": "#5c4a9c",
+        "textColor": "#feff04"
+    },
+    {
+        "name": "cyberspace",
+        "bgColor": "#181c18",
+        "textColor": "#00ce7c"
+    },
+    {
+        "name": "joker",
+        "bgColor": "#1a0e25",
+        "textColor": "#99de1e"
+    },
+    {
+        "name": "dualshot",
+        "bgColor": "#2d2e30",
+        "textColor": "#212222"
+    },
+    {
+        "name": "solarized_dark",
+        "bgColor": "#002b36",
+        "textColor": "#859900"
+    },
+    {
+        "name": "solarized_light",
+        "bgColor": "#fdf6e3",
+        "textColor": "#859900"
+    },
+    {
+        "name": "terra",
+        "bgColor": "#89c559",
+        "textColor": "#0c100e"
+    },
+    {
+        "name": "red dragon",
+        "bgColor": "#1a0b0c",
+        "textColor": "#ff3a32"
+    }
 ]
