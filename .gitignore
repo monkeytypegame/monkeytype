@@ -74,3 +74,5 @@ public/css/style.css.map
 functions/serviceAccountKey.json
 functions/serviceAccountKey_live.json
 .firebaserc
+.firebaserc_copy
+functions/serviceAccountKey_copy.json
