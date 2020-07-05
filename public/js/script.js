@@ -567,14 +567,14 @@ function highlightBadWord(index, showError) {
 function showTimer() {
   if (!config.showTimerBar) return;
   if (config.timerStyle === "bar") {
-    $("#timerWrapper").removeClass("hidden").animate(
+    $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
         opacity: 1,
       },
       250
     );
   } else if (config.timerStyle === "text" && config.mode === "time") {
-    $("#timerNumber").removeClass("hidden").animate(
+    $("#timerNumber").stop(true, true).removeClass("hidden").animate(
       {
         opacity: 0.25,
       },
@@ -585,14 +585,14 @@ function showTimer() {
 
 function hideTimer() {
   if (config.timerStyle === "bar") {
-    $("#timerWrapper").animate(
+    $("#timerWrapper").stop(true, true).animate(
       {
         opacity: 0,
       },
       125
     );
   } else if (config.timerStyle === "text") {
-    $("#timerNumber").animate(
+    $("#timerNumber").stop(true, true).animate(
       {
         opacity: 0,
       },
