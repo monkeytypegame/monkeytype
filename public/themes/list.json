@@ -237,6 +237,15 @@
         "name": "solarized_light",
         "bgColor": "#fdf6e3",
         "textColor": "#859900"
+    },
+    {
+        "name": "terra",
+        "bgColor": "#89c559",
+        "textColor": "#0c100e"
+    },
+    {
+        "name": "red dragon",
+        "bgColor": "#1a0b0c",
+        "textColor": "#ff3a32"
     }
-
 ]
