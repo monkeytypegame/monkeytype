@@ -29,6 +29,17 @@ let accuracyStats = {
   incorrect: 0,
 };
 
+let keypressStats = {
+  spacing: {
+    current: -1,
+    array: [],
+  },
+  duration: {
+    current: -1,
+    array: [],
+  },
+};
+
 let customText = "The quick brown fox jumps over the lazy dog".split(" ");
 let randomQuote = null;
 
@@ -969,6 +980,29 @@ function showResult(difficultyFailed = false) {
     });
   }
 
+  function stdDev(array) {
+    const n = array.length;
+    const mean = array.reduce((a, b) => a + b) / n;
+    return Math.sqrt(
+      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+    );
+  }
+
+  console.log(
+    `avg time between keys ${
+      keypressStats.spacing.array.reduce(
+        (previous, current) => (current += previous)
+      ) / keypressStats.spacing.array.length
+    } std(${stdDev(keypressStats.spacing.array)})`
+  );
+  console.log(
+    `avg key down time ${
+      keypressStats.duration.array.reduce(
+        (previous, current) => (current += previous)
+      ) / keypressStats.duration.array.length
+    } std(${stdDev(keypressStats.duration.array)})`
+  );
+
   wpmOverTimeChart.data.datasets[2].data = errorsNoZero;
 
   if (difficultyFailed) {
@@ -1094,7 +1128,7 @@ function showResult(difficultyFailed = false) {
 
                 //global
                 let globalLbString = "";
-                if (e.data.globalLeaderboard.insertedAt === null) {
+                if (e.data.globalLeaderboard === null) {
                   globalLbString = "global: not found";
                 } else if (e.data.globalLeaderboard.insertedAt === -1) {
                   globalLbString = "global: not qualified";
@@ -1126,7 +1160,7 @@ function showResult(difficultyFailed = false) {
 
                 //daily
                 let dailyLbString = "";
-                if (e.data.dailyLeaderboard.insertedAt === null) {
+                if (e.data.dailyLeaderboard === null) {
                   dailyLbString = "daily: not found";
                 } else if (e.data.dailyLeaderboard.insertedAt === -1) {
                   dailyLbString = "daily: not qualified";
@@ -1337,6 +1371,16 @@ function restartTest(withSameWordset = false) {
   currentErrorCount = 0;
   currentTestLine = 0;
   activeWordJumped = false;
+  keypressStats = {
+    spacing: {
+      current: -1,
+      array: [],
+    },
+    duration: {
+      current: -1,
+      array: [],
+    },
+  };
   hideTimer();
   // restartTimer();
   let el = null;
@@ -2191,6 +2235,16 @@ $(document).keypress(function (event) {
     updateActiveElement();
     updateTimer();
     clearIntervals();
+    keypressStats = {
+      spacing: {
+        current: -1,
+        array: [],
+      },
+      duration: {
+        current: -1,
+        array: [],
+      },
+    };
     timers.push(
       setInterval(function () {
         time++;
@@ -2242,6 +2296,7 @@ $(document).keypress(function (event) {
   } else {
     accuracyStats.correct++;
   }
+
   currentKeypressCount++;
   currentInput += event["key"];
   $("#words .word.active").attr("input", currentInput);
@@ -2256,10 +2311,29 @@ $(document).keypress(function (event) {
   updateCaretPosition();
 });
 
+$(document).keydown((event) => {
+  keypressStats.duration.current = performance.now();
+});
+
+$(document).keyup((event) => {
+  let now = performance.now();
+  let diff = Math.abs(keypressStats.duration.current - now);
+  if (keypressStats.duration.current !== -1) {
+    keypressStats.duration.array.push(diff);
+  }
+  keypressStats.duration.current = now;
+});
+
 //handle keyboard events
 $(document).keydown((event) => {
-  //tab
+  let now = performance.now();
+  let diff = Math.abs(keypressStats.spacing.current - now);
+  if (keypressStats.spacing.current !== -1) {
+    keypressStats.spacing.array.push(diff);
+  }
+  keypressStats.spacing.current = now;
 
+  //tab
   if (event["keyCode"] == 9) {
     if (config.quickTab) {
       event.preventDefault();
