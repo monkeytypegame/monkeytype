@@ -984,7 +984,6 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
 
 exports.scheduledFunctionCrontab = functions.pubsub
   .schedule("00 00 * * *")
-  .timeZone("Europe/London") // Users can choose timezone - default is America/Los_Angeles
   .onRun((context) => {
     try {
       console.log("moving daily leaderboards to history");
