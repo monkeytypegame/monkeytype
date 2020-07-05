@@ -95,7 +95,7 @@ function updateLeaderboards() {
       let globalData = lbdata[1].data;
 
       //daily
-      let diffAsDate = new Date(dailyData.resetTime - Date.now() + 3600000);
+      let diffAsDate = new Date(dailyData.resetTime - Date.now());
 
       let diffHours = diffAsDate.getUTCHours();
       let diffMinutes = diffAsDate.getUTCMinutes();
