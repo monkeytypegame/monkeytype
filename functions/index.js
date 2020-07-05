@@ -962,7 +962,7 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
         if (request.type === "daily") {
           let resetTime = new Date();
           resetTime.setHours(0, 0, 0, 0);
-          resetTime.setDate(resetTime.getDate() + 1);
+          resetTime.setDate(resetTime.getUTCDate() + 1);
           resetTime = resetTime.valueOf();
           lbdata.resetTime = resetTime;
         }
@@ -1000,7 +1000,7 @@ exports.scheduledFunctionCrontab = functions.pubsub
               .firestore()
               .collection("leaderboards_history")
               .doc(
-                `${t.getDate()}_${t.getMonth()}_${t.getFullYear()}_${
+                `${t.getUTCDate()}_${t.getUTCMonth()}_${t.getUTCFullYear()}_${
                   lbdata.mode
                 }_${lbdata.mode2}`
               )
