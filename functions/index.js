@@ -959,6 +959,13 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
             });
         }
         // console.log(lbdata);
+        if (request.type === "daily") {
+          let resetTime = new Date();
+          resetTime.setHours(0, 0, 0, 0);
+          resetTime.setDate(resetTime.getDate() + 1);
+          resetTime = resetTime.valueOf();
+          lbdata.resetTime = resetTime;
+        }
 
         return lbdata;
       } else {

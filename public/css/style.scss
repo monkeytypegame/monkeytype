@@ -210,11 +210,27 @@ a:hover {
       margin-bottom: 2rem;
       font-size: .8rem;
 
+      .titleAndTable {
+        display: grid;
+
+        .title {
+          grid-area: 1/1;
+        }
+
+        .subtitle {
+          grid-area: 1/1;
+          align-self: center;
+          justify-self: right;
+          color: var(--sub-color);
+        }
+      }
+
       .globalTableWrapper,
       .dailyTableWrapper {
         height: calc(100vh - 22rem);
         @extend .ffscroll;
         overflow-y: scroll;
+        overflow-x: hidden;
       }
 
       table {

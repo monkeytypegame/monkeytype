@@ -88,17 +88,42 @@ function updateLeaderboards() {
       type: "global",
       uid: uid,
     }),
-  ]).then((lbdata) => {
-    hideBackgroundLoader();
-    let dailyData = lbdata[0].data;
-    let globalData = lbdata[1].data;
+  ])
+    .then((lbdata) => {
+      hideBackgroundLoader();
+      let dailyData = lbdata[0].data;
+      let globalData = lbdata[1].data;
 
-    $("#leaderboardsWrapper table.daily tbody").empty();
-    if (dailyData.board !== undefined) {
-      dailyData.board.forEach((entry, index) => {
-        let meClassString = "";
-        if (entry.currentUser) meClassString = ' class="me"';
-        $("#leaderboardsWrapper table.daily tbody").append(`
+      //daily
+      let diffAsDate = new Date(dailyData.resetTime - Date.now());
+
+      let diffHours = diffAsDate.getHours();
+      let diffMinutes = diffAsDate.getMinutes();
+      let diffSeconds = diffAsDate.getSeconds();
+
+      let resetString = "";
+      if (diffHours > 0) {
+        resetString = `resets in ${diffHours} ${
+          diffHours == 1 ? "hour" : "hours"
+        }`;
+      } else if (diffMinutes > 0) {
+        resetString = `resets in ${diffMinutes} ${
+          diffMinutes == 1 ? "minute" : "minutes"
+        }`;
+      } else if (diffSeconds > 0) {
+        resetString = `resets in ${diffSeconds} ${
+          diffSeconds == 1 ? "second" : "seconds"
+        }`;
+      }
+
+      $("#leaderboardsWrapper .subtitle").text(resetString);
+
+      $("#leaderboardsWrapper table.daily tbody").empty();
+      if (dailyData.board !== undefined) {
+        dailyData.board.forEach((entry, index) => {
+          let meClassString = "";
+          if (entry.currentUser) meClassString = ' class="me"';
+          $("#leaderboardsWrapper table.daily tbody").append(`
           <tr>
           <td>${index + 1}</td>
           <td ${meClassString}>${entry.name}</td>
@@ -109,13 +134,13 @@ function updateLeaderboards() {
           <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
         </tr>
         `);
-      });
-    }
-    let lenDaily = 0;
-    if (dailyData.board !== undefined) lenDaily = dailyData.board.length;
-    if (dailyData.length === 0 || lenDaily !== dailyData.size) {
-      for (let i = lenDaily; i < dailyData.size; i++) {
-        $("#leaderboardsWrapper table.daily tbody").append(`
+        });
+      }
+      let lenDaily = 0;
+      if (dailyData.board !== undefined) lenDaily = dailyData.board.length;
+      if (dailyData.length === 0 || lenDaily !== dailyData.size) {
+        for (let i = lenDaily; i < dailyData.size; i++) {
+          $("#leaderboardsWrapper table.daily tbody").append(`
           <tr>
                 <td>${i + 1}</td>
                 <td>-</td>
@@ -126,15 +151,16 @@ function updateLeaderboards() {
                 <td>-<br>-</td>
               </tr>
         `);
+        }
       }
-    }
 
-    $("#leaderboardsWrapper table.global tbody").empty();
-    if (globalData.board !== undefined) {
-      globalData.board.forEach((entry, index) => {
-        let meClassString = "";
-        if (entry.currentUser) meClassString = ' class="me"';
-        $("#leaderboardsWrapper table.global tbody").append(`
+      //global
+      $("#leaderboardsWrapper table.global tbody").empty();
+      if (globalData.board !== undefined) {
+        globalData.board.forEach((entry, index) => {
+          let meClassString = "";
+          if (entry.currentUser) meClassString = ' class="me"';
+          $("#leaderboardsWrapper table.global tbody").append(`
           <tr>
           <td>${index + 1}</td>
           <td ${meClassString}>${entry.name}</td>
@@ -145,13 +171,13 @@ function updateLeaderboards() {
           <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
         </tr>
         `);
-      });
-    }
-    let lenGlobal = 0;
-    if (globalData.board !== undefined) lenGlobal = globalData.board.length;
-    if (globalData.length === 0 || lenGlobal !== globalData.size) {
-      for (let i = lenGlobal; i < globalData.size; i++) {
-        $("#leaderboardsWrapper table.global tbody").append(`
+        });
+      }
+      let lenGlobal = 0;
+      if (globalData.board !== undefined) lenGlobal = globalData.board.length;
+      if (globalData.length === 0 || lenGlobal !== globalData.size) {
+        for (let i = lenGlobal; i < globalData.size; i++) {
+          $("#leaderboardsWrapper table.global tbody").append(`
         <tr>
               <td>${i + 1}</td>
               <td>-</td>
@@ -162,9 +188,12 @@ function updateLeaderboards() {
               <td>-<br>-</td>
             </tr>
       `);
+        }
       }
-    }
-  });
+    })
+    .catch((e) => {
+      showNotification("Something went wrong", 3000);
+    });
 }
 
 $("#leaderboardsWrapper").click((e) => {
