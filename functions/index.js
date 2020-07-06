@@ -451,7 +451,9 @@ exports.testCompleted = functions.https.onCall((request, response) => {
             console.error(
               `possible bot detected by user ${request.uid} ${
                 docdata.name
-              } - ${JSON.stringify(keySpacing)} ${JSON.stringify(keyDuration)}`
+              } - spacing ${JSON.stringify(
+                keySpacing
+              )} duration ${JSON.stringify(keyDuration)}`
             );
             return { resultCode: -2 };
           }
