@@ -916,6 +916,9 @@ function showResult(difficultyFailed = false) {
     // 'margin-bottom': 0
   });
 
+  $("#result .stats .leaderboards .bottom").text("");
+  $("#result .stats .leaderboards").addClass("hidden");
+
   let mode2 = "";
   if (config.mode === "time") {
     mode2 = config.time;
@@ -1039,6 +1042,8 @@ function showResult(difficultyFailed = false) {
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTags,
+      keySpacing: keypressStats.spacing.array,
+      keyDuration: keypressStats.duration.array,
     };
     if (
       config.difficulty == "normal" ||
@@ -1113,9 +1118,16 @@ function showResult(difficultyFailed = false) {
               obj: completedEvent,
             }).then((e) => {
               accountIconLoading(false);
-              // console.log(e.data);
+              console.log(e.data);
               if (e.data.resultCode === -1) {
                 showNotification("Could not save result", 3000);
+              } else if (e.data.resultCode === -2) {
+                showNotification(
+                  "Possible bot detected. Result not saved.",
+                  4000
+                );
+              } else if (e.data.resultCode === -999) {
+                showNotification("Internal error. Result not saved.", 4000);
               } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                 dbSnapshot.results.unshift(completedEvent);
                 try {
@@ -1191,14 +1203,19 @@ function showResult(difficultyFailed = false) {
                 }
                 if (
                   e.data.dailyLeaderboard === null &&
-                  e.data.globalLeaderboard === null
+                  e.data.globalLeaderboard === null &&
+                  e.data.lbBanned === false
                 ) {
                   $("#result .stats .leaderboards").addClass("hidden");
                 } else {
                   $("#result .stats .leaderboards").removeClass("hidden");
-                  $("#result .stats .leaderboards .bottom").html(
-                    globalLbString + "<br>" + dailyLbString
-                  );
+                  if (e.data.lbBanned) {
+                    $("#result .stats .leaderboards .bottom").html("banned");
+                  } else {
+                    $("#result .stats .leaderboards .bottom").html(
+                      globalLbString + "<br>" + dailyLbString
+                    );
+                  }
                 }
 
                 if (e.data.resultCode === 2) {

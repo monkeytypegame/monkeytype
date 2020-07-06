@@ -374,11 +374,19 @@ function checkIfPB(uid, obj) {
     });
 }
 
+function stdDev(array) {
+  const n = array.length;
+  const mean = array.reduce((a, b) => a + b) / n;
+  return Math.sqrt(
+    array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+  );
+}
+
 exports.testCompleted = functions.https.onCall((request, response) => {
   try {
     if (request.uid === undefined || request.obj === undefined) {
       console.error(`error saving result for ${request.uid} - missing input`);
-      return { resultCode: -1 };
+      return { resultCode: -999 };
     }
 
     let obj = request.obj;
@@ -407,52 +415,105 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       return { resultCode: -1 };
     }
 
+    let keySpacing = {
+      average:
+        obj.keySpacing.reduce((previous, current) => (current += previous)) /
+        obj.keySpacing.length,
+      sd: stdDev(obj.keySpacing),
+    };
+
+    let keyDuration = {
+      average:
+        obj.keyDuration.reduce((previous, current) => (current += previous)) /
+        obj.keyDuration.length,
+      sd: stdDev(obj.keyDuration),
+    };
+
     return admin
       .firestore()
-      .collection(`users/${request.uid}/results`)
-      .add(obj)
-      .then((e) => {
-        return Promise.all([
-          checkLeaderboards(request.obj, "global"),
-          checkLeaderboards(request.obj, "daily"),
-          checkIfPB(request.uid, request.obj),
-        ]).then((values) => {
-          let globallb = values[0];
-          let dailylb = values[1];
-          let ispb = values[2];
-          // console.log(values);
+      .collection("users")
+      .doc(request.uid)
+      .get()
+      .then((doc) => {
+        let docdata = doc.data();
+        let banned = docdata.banned === undefined ? false : docdata.banned;
+        let verified =
+          docdata.verified === undefined ? false : docdata.verified;
 
-          let returnobj = {
-            resultCode: null,
-            globalLeaderboard: globallb,
-            dailyLeaderboard: dailylb,
-          };
-          if (ispb) {
-            console.log(
-              `saved result for ${request.uid} (new PB) - ${JSON.stringify(
-                request.obj
-              )}`
+        //check keyspacing and duration here
+        if (!verified) {
+          if (
+            keySpacing.sd < 15 ||
+            keyDuration.sd < 15 ||
+            keyDuration.average < 15
+          ) {
+            console.error(
+              `possible bot detected by user ${request.uid} ${
+                docdata.name
+              } - ${JSON.stringify(keySpacing)} ${JSON.stringify(keyDuration)}`
             );
-            returnobj.resultCode = 2;
-          } else {
-            console.log(
-              `saved result for ${request.uid} - ${JSON.stringify(request.obj)}`
-            );
-            returnobj.resultCode = 1;
+            return { resultCode: -2 };
           }
-          // console.log(returnobj);
-          return returnobj;
-        });
+        }
+
+        return admin
+          .firestore()
+          .collection(`users/${request.uid}/results`)
+          .add(obj)
+          .then((e) => {
+            return Promise.all([
+              checkLeaderboards(request.obj, "global", banned),
+              checkLeaderboards(request.obj, "daily", banned),
+              checkIfPB(request.uid, request.obj),
+            ]).then((values) => {
+              let globallb = values[0].insertedAt;
+              let dailylb = values[1].insertedAt;
+              let ispb = values[2];
+              // console.log(values);
+
+              let returnobj = {
+                resultCode: null,
+                globalLeaderboard: globallb,
+                dailyLeaderboard: dailylb,
+                lbBanned: banned,
+              };
+              request.obj.keySpacing = "removed";
+              request.obj.keyDuration = "removed";
+              if (ispb) {
+                console.log(
+                  `saved result for ${request.uid} (new PB) - ${JSON.stringify(
+                    request.obj
+                  )}`
+                );
+                returnobj.resultCode = 2;
+              } else {
+                console.log(
+                  `saved result for ${request.uid} - ${JSON.stringify(
+                    request.obj
+                  )}`
+                );
+                returnobj.resultCode = 1;
+              }
+              // console.log(returnobj);
+              return returnobj;
+            });
+          })
+          .catch((e) => {
+            console.error(
+              `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
+            );
+            return { resultCode: -999 };
+          });
       })
       .catch((e) => {
         console.error(
-          `error saving result when checking for PB for ${request.uid} - ${e.message}`
+          `error saving result when getting user data for ${request.uid} - ${e.message}`
         );
-        return { resultCode: -1 };
+        return { resultCode: -999 };
       });
   } catch (e) {
     console.error(`error saving result for ${request.uid} - ${e}`);
-    return { resultCode: -1 };
+    return { resultCode: -999 };
   }
 });
 
@@ -819,8 +880,13 @@ class Leaderboard {
   }
 }
 
-async function checkLeaderboards(resultObj, type) {
+async function checkLeaderboards(resultObj, type, banned) {
   try {
+    if (banned)
+      return {
+        insertedAt: null,
+        banned: true,
+      };
     if (
       ((resultObj.mode === "words" &&
         ["10", "100"].includes(String(resultObj.mode2))) ||
@@ -913,7 +979,9 @@ async function checkLeaderboards(resultObj, type) {
           // console.log("board is the same");
         }
 
-        return insertResult;
+        return {
+          insertedAt: insertResult,
+        };
       }
     }
   } catch (e) {
@@ -946,8 +1014,6 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
             .doc(lbdata.board[i].uid)
             .get()
             .then((doc) => {
-              console.log(lbdata.board[i].uid);
-              console.log(request.uid);
               if (
                 lbdata.board[i].uid !== null &&
                 lbdata.board[i].uid === request.uid
