@@ -983,6 +983,10 @@ async function checkLeaderboards(resultObj, type, banned) {
           insertedAt: insertResult,
         };
       }
+    } else {
+      return {
+        insertedAt: null,
+      };
     }
   } catch (e) {
     console.error(
