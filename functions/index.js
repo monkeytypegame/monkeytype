@@ -984,6 +984,7 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
 
 exports.scheduledFunctionCrontab = functions.pubsub
   .schedule("00 00 * * *")
+  .timeZone("Africa/Abidjan")
   .onRun((context) => {
     try {
       console.log("moving daily leaderboards to history");
