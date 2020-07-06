@@ -126,7 +126,9 @@ function updateLeaderboards() {
           if (entry.currentUser) meClassString = ' class="me"';
           $("#leaderboardsWrapper table.daily tbody").append(`
           <tr>
-          <td>${index + 1}</td>
+          <td>${
+            index === 0 ? '<i class="fas fa-fw fa-crown"></i>' : index + 1
+          }</td>
           <td ${meClassString}>${entry.name}</td>
           <td>${entry.wpm}</td>
           <td>${entry.raw}</td>
@@ -163,7 +165,9 @@ function updateLeaderboards() {
           if (entry.currentUser) meClassString = ' class="me"';
           $("#leaderboardsWrapper table.global tbody").append(`
           <tr>
-          <td>${index + 1}</td>
+          <td>${
+            index === 0 ? '<i class="fas fa-fw fa-crown"></i>' : index + 1
+          }</td>
           <td ${meClassString}>${entry.name}</td>
           <td>${entry.wpm}</td>
           <td>${entry.raw}</td>

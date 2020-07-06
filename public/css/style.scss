@@ -238,6 +238,10 @@ a:hover {
         border-spacing: 0;
         border-collapse: collapse;
 
+        tr td:first-child {
+          text-align: center;
+        }
+
         td {
           padding: .25rem .5rem;
 
