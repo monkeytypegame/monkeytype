@@ -73,7 +73,7 @@ function getAllUsers() {
 
 function isUsernameValid(name) {
   if (name === null || name === undefined || name === "") return false;
-  if (/miodec/.test(name)) return false;
+  if (/miodec/.test(name.toLowerCase())) return false;
   if (name.length > 12) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
@@ -436,6 +436,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       .get()
       .then((doc) => {
         let docdata = doc.data();
+        let name = docdata.name === undefined ? false : docdata.name;
         let banned = docdata.banned === undefined ? false : docdata.banned;
         let verified =
           docdata.verified === undefined ? false : docdata.verified;
@@ -462,8 +463,8 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           .add(obj)
           .then((e) => {
             return Promise.all([
-              checkLeaderboards(request.obj, "global", banned),
-              checkLeaderboards(request.obj, "daily", banned),
+              checkLeaderboards(request.obj, "global", banned, name),
+              checkLeaderboards(request.obj, "daily", banned, name),
               checkIfPB(request.uid, request.obj),
             ]).then((values) => {
               let globallb = values[0].insertedAt;
@@ -476,6 +477,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                 globalLeaderboard: globallb,
                 dailyLeaderboard: dailylb,
                 lbBanned: banned,
+                name: name,
               };
               request.obj.keySpacing = "removed";
               request.obj.keyDuration = "removed";
@@ -880,8 +882,13 @@ class Leaderboard {
   }
 }
 
-async function checkLeaderboards(resultObj, type, banned) {
+async function checkLeaderboards(resultObj, type, banned, name) {
   try {
+    if (!name)
+      return {
+        insertedAt: null,
+        noName: true,
+      };
     if (banned)
       return {
         insertedAt: null,

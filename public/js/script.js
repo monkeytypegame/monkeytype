@@ -1204,13 +1204,18 @@ function showResult(difficultyFailed = false) {
                 if (
                   e.data.dailyLeaderboard === null &&
                   e.data.globalLeaderboard === null &&
-                  e.data.lbBanned === false
+                  e.data.lbBanned === false &&
+                  e.data.name !== false
                 ) {
                   $("#result .stats .leaderboards").addClass("hidden");
                 } else {
                   $("#result .stats .leaderboards").removeClass("hidden");
                   if (e.data.lbBanned) {
                     $("#result .stats .leaderboards .bottom").html("banned");
+                  } else if (e.data.name === false) {
+                    $("#result .stats .leaderboards .bottom").html(
+                      "update your name to access leaderboards"
+                    );
                   } else {
                     $("#result .stats .leaderboards .bottom").html(
                       globalLbString + "<br>" + dailyLbString
