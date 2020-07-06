@@ -247,5 +247,10 @@
         "name": "red_dragon",
         "bgColor": "#1a0b0c",
         "textColor": "#ff3a32"
+    },
+    {
+        "name": "hammerhead",
+        "bgColor": "#030613",
+        "textColor": "#4fcdb9"
     }
 ]
