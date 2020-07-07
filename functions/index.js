@@ -381,11 +381,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                     });
                   } catch (e) {
                     besttime60 = 0;
-                    console.log("caught");
                   }
-
-                  console.log(besttime60);
-                  console.log(obj.wpm);
 
                   if (obj.wpm > besttime60) {
                     console.log(
