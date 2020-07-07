@@ -76,3 +76,4 @@ functions/serviceAccountKey_live.json
 .firebaserc
 .firebaserc_copy
 functions/serviceAccountKey_copy.json
+functions/serviceAccountKey_live_copy.json
