@@ -580,12 +580,105 @@ exports.saveConfig = functions.https.onCall((request, response) => {
   }
 });
 
-exports.generateDiscordCode = functions.https.onCall((request, response) => {
-  db.collection("users")
-    .get()
-    .then((res) => {
-      console.log(res.docs[0].data());
-    });
+function generate(n) {
+  var add = 1,
+    max = 12 - add;
+
+  if (n > max) {
+    return generate(max) + generate(n - max);
+  }
+
+  max = Math.pow(10, n + add);
+  var min = max / 10; // Math.pow(10, n) basically
+  var number = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  return ("" + number).substring(add);
+}
+
+exports.generatePairingCode = functions.https.onCall((request, response) => {
+  try {
+    if (request === null) {
+      console.error(
+        `error while trying to generate discord pairing code - no input`
+      );
+      return {
+        status: -999,
+      };
+    }
+
+    return db
+      .collection("users")
+      .doc(request.uid)
+      .get()
+      .then((userDoc) => {
+        userDocData = userDoc.data();
+        if (userDocData.discordPairingCode !== undefined) {
+          console.log(
+            `user ${request.uid} already has code ${userDocData.discordPairingCode}`
+          );
+          return {
+            status: 2,
+            pairingCode: userDocData.discordPairingCode,
+          };
+        } else {
+          return db
+            .collection("users")
+            .get()
+            .then((res) => {
+              let existingCodes = [];
+
+              res.docs.forEach((doc) => {
+                let docData = doc.data();
+                if (docData.discordPairingCode !== undefined) {
+                  existingCodes.push(docData.discordPairingCode);
+                }
+              });
+
+              console.log(`existing codes ${JSON.stringify(existingCodes)}`);
+
+              let randomCode = generate(9);
+
+              while (existingCodes.includes(randomCode)) {
+                randomCode = generate(9);
+              }
+
+              return db
+                .collection("users")
+                .doc(request.uid)
+                .update(
+                  {
+                    discordPairingCode: randomCode,
+                  },
+                  { merge: true }
+                )
+                .then((res) => {
+                  console.log(
+                    `generated ${randomCode} for user ${request.uid}`
+                  );
+                  return {
+                    status: 1,
+                    pairingCode: randomCode,
+                  };
+                })
+                .catch((e) => {
+                  console.error(
+                    `error while trying to set discord pairing code ${randomCode} for user ${request.uid} - ${e}`
+                  );
+                  return {
+                    status: -999,
+                  };
+                });
+            });
+        }
+      });
+  } catch (e) {
+    console.error(
+      `error while trying to generate discord pairing code for user ${request.uid} - ${e}`
+    );
+    return {
+      status: -999,
+    };
+  }
 });
 
 // exports.getConfig = functions.https.onCall((request,response) => {
