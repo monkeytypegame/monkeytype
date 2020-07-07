@@ -376,10 +376,16 @@ exports.testCompleted = functions.https.onCall((request, response) => {
 
                   let besttime60 = 0;
                   try {
-                    dbSnapshot.personalBests.time[60].forEach((result) => {
+                    userdata.personalBests.time[60].forEach((result) => {
                       if (result.wpm > besttime60) besttime60 = result.wpm;
                     });
-                  } catch (e) {}
+                  } catch (e) {
+                    besttime60 = 0;
+                    console.log("caught");
+                  }
+
+                  console.log(besttime60);
+                  console.log(obj.wpm);
 
                   if (obj.wpm > besttime60) {
                     console.log(
@@ -387,6 +393,13 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                     );
                     updateDiscordRole(userdata.discordId, obj.wpm);
                   }
+                  return;
+                })
+                .catch((e) => {
+                  console.error(
+                    `error saving result when getting user info ${request.uid} - ${e.message}`
+                  );
+                  return -1;
                 });
             }
             return 2;
