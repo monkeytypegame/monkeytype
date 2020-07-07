@@ -38,6 +38,9 @@ const editTag = firebase.functions().httpsCallable("editTag");
 const removeTag = firebase.functions().httpsCallable("removeTag");
 const updateResultTags = firebase.functions().httpsCallable("updateResultTags");
 const saveConfig = firebase.functions().httpsCallable("saveConfig");
+const generatePairingCode = firebase
+  .functions()
+  .httpsCallable("generatePairingCode");
 
 function smooth(arr, windowSize, getter = (value) => value, setter) {
   const get = getter;
@@ -1005,6 +1008,7 @@ function showResult(difficultyFailed = false) {
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTags,
+      discordId: dbSnapshot.discordId,
     };
     if (
       config.difficulty == "normal" ||

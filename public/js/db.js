@@ -47,13 +47,16 @@ async function db_getUserSnapshot() {
     .collection("users")
     .doc(user.uid)
     .get()
-    .then((data) => {
+    .then((res) => {
       // console.log('getting data from db!');
+      let data = res.data();
       try {
-        if (data.data().personalBests !== undefined) {
-          snap.personalBests = data.data().personalBests;
+        if (data.personalBests !== undefined) {
+          snap.personalBests = data.personalBests;
         }
-        snap.config = data.data().config;
+        snap.discordId = data.discordId;
+        snap.pairingCode = data.discordPairingCode;
+        snap.config = data.config;
       } catch (e) {
         //
       }

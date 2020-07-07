@@ -60,6 +60,8 @@ function updateSettingsPage() {
   setActiveThemeTab();
   setCustomThemeInputs();
 
+  updateDiscordSettingsSection();
+
   if (config.showKeyTips) {
     $(".pageSettings .tip").removeClass("hidden");
   } else {
@@ -244,6 +246,61 @@ function toggleTag(tagid, nosave = false) {
   });
   updateTestModesNotice();
   if (!nosave) saveActiveTagsToCookie();
+}
+
+function updateDiscordSettingsSection() {
+  //no code and no discord
+  if (firebase.auth().currentUser == null) {
+    $(".pageSettings .section.discordIntegration").addClass("hidden");
+  } else {
+    $(".pageSettings .section.discordIntegration").removeClass("hidden");
+
+    if (
+      dbSnapshot.pairingCode === undefined &&
+      dbSnapshot.discordId === undefined
+    ) {
+      //show button
+      $(".pageSettings .section.discordIntegration .howto").addClass("hidden");
+      $(".pageSettings .section.discordIntegration .buttons").removeClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
+      $(".pageSettings .section.discordIntegration .code").addClass("hidden");
+    } else if (
+      dbSnapshot.pairingCode !== undefined &&
+      dbSnapshot.discordId === undefined
+    ) {
+      //show code
+      $(".pageSettings .section.discordIntegration .code .bottom").text(
+        dbSnapshot.pairingCode
+      );
+      $(".pageSettings .section.discordIntegration .howtocode").text(
+        dbSnapshot.pairingCode
+      );
+      $(".pageSettings .section.discordIntegration .howto").removeClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .buttons").addClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
+      $(".pageSettings .section.discordIntegration .code").removeClass(
+        "hidden"
+      );
+    } else if (
+      dbSnapshot.pairingCode !== undefined &&
+      dbSnapshot.discordId !== undefined
+    ) {
+      $(".pageSettings .section.discordIntegration .howto").addClass("hidden");
+      $(".pageSettings .section.discordIntegration .buttons").addClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .info").removeClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .code").addClass("hidden");
+    }
+  }
 }
 
 //smooth caret
@@ -487,6 +544,26 @@ $(".pageSettings .section.randomTheme .buttons .button.off").click((e) => {
   setRandomTheme(false);
   // showNotification('Colorful mode off', 1000);
   setSettingsButton("randomTheme", config.randomTheme);
+});
+
+//discord
+$(
+  ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
+).click((e) => {
+  showBackgroundLoader();
+  generatePairingCode({ uid: firebase.auth().currentUser.uid }).then((ret) => {
+    hideBackgroundLoader();
+    if (ret.data.status === 1 || ret.data.status === 2) {
+      dbSnapshot.pairingCode = ret.data.pairingCode;
+      $(".pageSettings .section.discordIntegration .code .bottom").text(
+        ret.data.pairingCode
+      );
+      $(".pageSettings .section.discordIntegration .howtocode").text(
+        ret.data.pairingCode
+      );
+      updateDiscordSettingsSection();
+    }
+  });
 });
 
 //tags

@@ -1333,6 +1333,33 @@ key {
       grid-area: buttons;
     }
 
+    &.discordIntegration {
+      .code {
+        justify-content: center;
+        display: grid;
+
+        .top {
+          font-size: 1rem;
+          line-height: 1rem;
+          color: var(--sub-color);
+        }
+
+        .bottom {
+          font-size: 2rem;
+          line-height: 2rem;
+        }
+      }
+
+      .info {
+        text-align: center;
+      }
+
+      .howto {
+        margin-top: 1rem;
+        color: var(--text-color);
+      }
+    }
+
     &.tags {
       .tagsList {
         display: grid;

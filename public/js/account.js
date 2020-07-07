@@ -204,6 +204,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         }
       });
       refreshTagsSettingsSection();
+      updateDiscordSettingsSection();
       if (cookieConfig === null) {
         applyConfig(dbSnapshot.config);
         // showNotification('Applying db config',3000);
