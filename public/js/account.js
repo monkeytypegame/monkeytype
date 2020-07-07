@@ -651,9 +651,9 @@ function loadMoreLines() {
 
     $(".pageAccount .history table tbody").append(`
     <tr>
-    <td>${Math.round(result.wpm)}</td>
-    <td>${Math.round(raw)}</td>
-    <td>${Math.round(result.acc)}%</td>
+    <td>${result.wpm}</td>
+    <td>${raw}</td>
+    <td>${result.acc}%</td>
     <td>${result.correctChars}</td>
     <td>${result.incorrectChars}</td>
     <td>${result.mode} ${result.mode2}${withpunc}</td>
