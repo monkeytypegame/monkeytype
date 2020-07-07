@@ -7,20 +7,13 @@ if (process.env.GCLOUD_PROJECT === "monkey-type") {
   key = "./serviceAccountKey_live.json";
 }
 
-const db = admin.firestore();
-
 var serviceAccount = require(key);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
+const db = admin.firestore();
 
 exports.moveResults = functions
   .runWith({ timeoutSeconds: 540, memory: "2GB" })
