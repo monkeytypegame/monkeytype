@@ -253,6 +253,7 @@ function updateDiscordSettingsSection() {
   if (firebase.auth().currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
+    if (dbSnapshot == null) return;
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
     if (
