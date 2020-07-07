@@ -382,7 +382,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                     besttime60 = 0;
                   }
 
-                  if (obj.wpm > besttime60) {
+                  if (obj.wpm >= besttime60) {
                     console.log(
                       `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
                     );
