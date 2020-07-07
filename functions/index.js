@@ -13,6 +13,8 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
+const db = admin.firestore();
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
@@ -23,8 +25,7 @@ admin.initializeApp({
 exports.moveResults = functions
   .runWith({ timeoutSeconds: 540, memory: "2GB" })
   .https.onCall((request, response) => {
-    return admin
-      .firestore()
+    return db
       .collection("results")
       .orderBy("timestamp", "desc")
       .limit(2000)
@@ -33,15 +34,8 @@ exports.moveResults = functions
         data.docs.forEach((doc) => {
           let result = doc.data();
           if (result.moved === undefined || result.moved === false) {
-            admin
-              .firestore()
-              .collection(`results`)
-              .doc(doc.id)
-              .update({ moved: true });
-            admin
-              .firestore()
-              .collection(`users/${result.uid}/results`)
-              .add(result);
+            db.collection(`results`).doc(doc.id).update({ moved: true });
+            db.collection(`users/${result.uid}/results`).add(result);
             console.log(`moving doc ${doc.id}`);
           }
         });
@@ -154,8 +148,7 @@ exports.changeName = functions.https.onCall((request, response) => {
 exports.checkIfNeedsToChangeName = functions.https.onCall(
   (request, response) => {
     try {
-      return admin
-        .firestore()
+      return db
         .collection("users")
         .doc(request.uid)
         .get()
@@ -195,9 +188,7 @@ exports.checkIfNeedsToChangeName = functions.https.onCall(
                       });
 
                       if (sameName.length === 0) {
-                        admin
-                          .firestore()
-                          .collection("users")
+                        db.collection("users")
                           .doc(request.uid)
                           .update({ name: requestUser.displayName })
                           .then(() => {
@@ -226,9 +217,7 @@ exports.checkIfNeedsToChangeName = functions.https.onCall(
                           );
                           return 2;
                         } else {
-                          admin
-                            .firestore()
-                            .collection("users")
+                          db.collection("users")
                             .doc(request.uid)
                             .update({ name: requestUser.displayName })
                             .then(() => {
@@ -254,8 +243,7 @@ exports.checkIfNeedsToChangeName = functions.https.onCall(
 );
 
 function checkIfPB(uid, obj) {
-  return admin
-    .firestore()
+  return db
     .collection(`users`)
     .doc(uid)
     .get()
@@ -267,8 +255,7 @@ function checkIfPB(uid, obj) {
           throw new Error("pb is undefined");
         }
       } catch (e) {
-        return admin
-          .firestore()
+        return db
           .collection("users")
           .doc(uid)
           .update({
@@ -289,8 +276,7 @@ function checkIfPB(uid, obj) {
             return true;
           })
           .catch((e) => {
-            return admin
-              .firestore()
+            return db
               .collection("users")
               .doc(uid)
               .set({
@@ -360,8 +346,7 @@ function checkIfPB(uid, obj) {
       }
 
       if (toUpdate) {
-        return admin
-          .firestore()
+        return db
           .collection("users")
           .doc(uid)
           .update({ personalBests: pbs })
@@ -429,8 +414,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       sd: stdDev(obj.keyDuration),
     };
 
-    return admin
-      .firestore()
+    return db
       .collection("users")
       .doc(request.uid)
       .get()
@@ -440,6 +424,8 @@ exports.testCompleted = functions.https.onCall((request, response) => {
         let banned = docdata.banned === undefined ? false : docdata.banned;
         let verified =
           docdata.verified === undefined ? false : docdata.verified;
+
+        request.obj.name = name;
 
         //check keyspacing and duration here
         if (!verified) {
@@ -459,8 +445,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           }
         }
 
-        return admin
-          .firestore()
+        return db
           .collection(`users/${request.uid}/results`)
           .add(obj)
           .then((e) => {
@@ -532,8 +517,7 @@ exports.addTag = functions.https.onCall((request, response) => {
     if (!isTagValid(request.name)) {
       return { resultCode: -1 };
     } else {
-      return admin
-        .firestore()
+      return db
         .collection(`users/${request.uid}/tags`)
         .add({
           name: request.name,
@@ -563,8 +547,7 @@ exports.editTag = functions.https.onCall((request, response) => {
     if (!isTagValid(request.name)) {
       return { resultCode: -1 };
     } else {
-      return admin
-        .firestore()
+      return db
         .collection(`users/${request.uid}/tags`)
         .doc(request.tagid)
         .update({
@@ -591,8 +574,7 @@ exports.editTag = functions.https.onCall((request, response) => {
 
 exports.removeTag = functions.https.onCall((request, response) => {
   try {
-    return admin
-      .firestore()
+    return db
       .collection(`users/${request.uid}/tags`)
       .doc(request.tagid)
       .delete()
@@ -621,8 +603,7 @@ exports.updateResultTags = functions.https.onCall((request, response) => {
       if (!/^[0-9a-zA-Z]+$/.test(tag)) validTags = false;
     });
     if (validTags) {
-      return admin
-        .firestore()
+      return db
         .collection(`users/${request.uid}/results`)
         .doc(request.resultid)
         .update({
@@ -693,8 +674,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
       return -1;
     }
 
-    return admin
-      .firestore()
+    return db
       .collection(`users`)
       .doc(request.uid)
       .set(
@@ -804,6 +784,7 @@ class Leaderboard {
             if (a.timestamp < b.timestamp) {
               this.board.splice(index, 0, {
                 uid: a.uid,
+                name: a.name,
                 wpm: parseFloat(a.wpm),
                 raw: parseFloat(a.rawWpm),
                 acc: parseFloat(a.acc),
@@ -817,6 +798,7 @@ class Leaderboard {
             if (a.acc > b.acc) {
               this.board.splice(index, 0, {
                 uid: a.uid,
+                name: a.name,
                 wpm: parseFloat(a.wpm),
                 raw: parseFloat(a.rawWpm),
                 acc: parseFloat(a.acc),
@@ -831,6 +813,7 @@ class Leaderboard {
           if (a.wpm > b.wpm) {
             this.board.splice(index, 0, {
               uid: a.uid,
+              name: a.name,
               wpm: parseFloat(a.wpm),
               raw: parseFloat(a.rawWpm),
               acc: parseFloat(a.acc),
@@ -845,6 +828,7 @@ class Leaderboard {
       if (this.board.length < this.size && insertedAt === -1) {
         this.board.push({
           uid: a.uid,
+          name: a.name,
           wpm: parseFloat(a.wpm),
           raw: parseFloat(a.rawWpm),
           acc: parseFloat(a.acc),
@@ -897,14 +881,11 @@ async function checkLeaderboards(resultObj, type, banned, name) {
         banned: true,
       };
     if (
-      ((resultObj.mode === "words" &&
-        ["10", "100"].includes(String(resultObj.mode2))) ||
-        (resultObj.mode === "time" &&
-          ["15", "60"].includes(String(resultObj.mode2)))) &&
+      resultObj.mode === "time" &&
+      ["15", "60"].includes(String(resultObj.mode2)) &&
       resultObj.language === "english"
     ) {
-      return admin
-        .firestore()
+      return db
         .collection("leaderboards")
         .where("mode", "==", String(resultObj.mode))
         .where("mode2", "==", String(resultObj.mode2))
@@ -922,8 +903,7 @@ async function checkLeaderboards(resultObj, type, banned, name) {
               mode2: String(resultObj.mode2),
               type: type,
             };
-            return admin
-              .firestore()
+            return db
               .collection("leaderboards")
               .doc(
                 `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`
@@ -976,7 +956,7 @@ async function checkLeaderboards(resultObj, type, banned, name) {
               resultObj.mode2
             } ${type} - ${JSON.stringify(lb.board)}`
           );
-          admin.firestore().collection("leaderboards").doc(docid).set(
+          db.collection("leaderboards").doc(docid).set(
             {
               size: lb.size,
               type: lb.type,
@@ -1006,8 +986,7 @@ async function checkLeaderboards(resultObj, type, banned, name) {
 }
 
 exports.getLeaderboard = functions.https.onCall((request, response) => {
-  return admin
-    .firestore()
+  return db
     .collection("leaderboards")
     .where("mode", "==", String(request.mode))
     .where("mode2", "==", String(request.mode2))
@@ -1020,23 +999,30 @@ exports.getLeaderboard = functions.https.onCall((request, response) => {
       if (lbdata.board !== undefined) {
         // console.log("replacing users");
 
-        for (let i = 0; i < lbdata.board.length; i++) {
-          await admin
-            .firestore()
-            .collection("users")
-            .doc(lbdata.board[i].uid)
-            .get()
-            .then((doc) => {
-              if (
-                lbdata.board[i].uid !== null &&
-                lbdata.board[i].uid === request.uid
-              ) {
-                lbdata.board[i].currentUser = true;
-              }
-              lbdata.board[i].name = doc.data().name;
-              lbdata.board[i].uid = null;
-            });
-        }
+        // for (let i = 0; i < lbdata.board.length; i++) {
+        //   await db
+        //     .collection("users")
+        //     .doc(lbdata.board[i].uid)
+        //     .get()
+        //     .then((doc) => {
+        //       if (
+        //         lbdata.board[i].uid !== null &&
+        //         lbdata.board[i].uid === request.uid
+        //       ) {
+        //         lbdata.board[i].currentUser = true;
+        //       }
+        //       lbdata.board[i].name = doc.data().name;
+        //       lbdata.board[i].uid = null;
+        //     });
+        // }
+
+        lbdata.board.forEach((boardentry) => {
+          if (boardentry.uid !== null && boardentry.uid === request.uid) {
+            boardentry.currentUser = true;
+          }
+          boardentry.uid = null;
+        });
+
         // console.log(lbdata);
         if (request.type === "daily") {
           let resetTime = new Date(Date.now());
@@ -1067,25 +1053,21 @@ exports.scheduledFunctionCrontab = functions.pubsub
   .onRun((context) => {
     try {
       console.log("moving daily leaderboards to history");
-      admin
-        .firestore()
-        .collection("leaderboards")
+      db.collection("leaderboards")
         .where("type", "==", "daily")
         .get()
         .then((res) => {
           res.docs.forEach((doc) => {
             let lbdata = doc.data();
             t = new Date();
-            admin
-              .firestore()
-              .collection("leaderboards_history")
+            db.collection("leaderboards_history")
               .doc(
                 `${t.getUTCDate()}_${t.getUTCMonth()}_${t.getUTCFullYear()}_${
                   lbdata.mode
                 }_${lbdata.mode2}`
               )
               .set(lbdata);
-            admin.firestore().collection("leaderboards").doc(doc.id).set(
+            db.collection("leaderboards").doc(doc.id).set(
               {
                 board: [],
               },
@@ -1098,22 +1080,3 @@ exports.scheduledFunctionCrontab = functions.pubsub
       console.error(`error while moving daily leaderboards to history - ${e}`);
     }
   });
-
-// exports.getConfig = functions.https.onCall((request,response) => {
-//     try{
-//         if(request.uid === undefined){
-//             console.error(`error getting config for ${request.uid} - missing input`);
-//             return -1;
-//         }
-
-//         return admin.firestore().collection(`users`).doc(request.uid).get().then(e => {
-//             return e.data().config;
-//         }).catch(e => {
-//             console.error(`error getting config from DB for ${request.uid} - ${e.message}`);
-//             return -1;
-//         });
-//     }catch(e){
-//         console.error(`error getting config for ${request.uid} - ${e}`);
-//         return {resultCode:-999};
-//     }
-// })
