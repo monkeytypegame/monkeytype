@@ -22,6 +22,9 @@ You can use `tab` and `enter` (or just `tab` if you have quick tab mode enabled)
 - acc - percentage of correctly pressed keys
 - key - correct characters / incorrect characters. Calculated after the test has ended
 
+# discord bot
+Recently, a Discord bot was added to autoassign roles. You can find the code for it over at https://github.com/Miodec/monkey-bot
+
 # bug report or feature request
 If you encounter a bug, or have a feature request - send me a message on Reddit, create an issue on GitHub or send me a message using the command line `esc`.
 
