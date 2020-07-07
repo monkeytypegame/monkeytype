@@ -367,16 +367,27 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                 request.obj
               )}`
             );
-            if (
-              obj.mode === "time" &&
-              String(obj.mode2) === "60" &&
-              obj.discordId !== null &&
-              obj.discordId !== undefined
-            ) {
-              console.log(
-                `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
-              );
-              updateDiscordRole(obj.discordId, obj.wpm);
+            if (obj.mode === "time" && String(obj.mode2) === "60") {
+              db.collection("users")
+                .doc(request.uid)
+                .get()
+                .then((ret) => {
+                  let userdata = ret.data();
+
+                  let besttime60 = 0;
+                  try {
+                    dbSnapshot.personalBests.time[60].forEach((result) => {
+                      if (result.wpm > besttime60) besttime60 = result.wpm;
+                    });
+                  } catch (e) {}
+
+                  if (obj.wpm > besttime60) {
+                    console.log(
+                      `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                    );
+                    updateDiscordRole(userdata.discordId, obj.wpm);
+                  }
+                });
             }
             return 2;
           } else {

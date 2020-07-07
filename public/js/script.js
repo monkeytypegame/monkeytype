@@ -1008,7 +1008,6 @@ function showResult(difficultyFailed = false) {
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTags,
-      discordId: dbSnapshot !== null ? dbSnapshot.discordId : null,
     };
     if (
       config.difficulty == "normal" ||
