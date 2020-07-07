@@ -372,7 +372,12 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                     request.obj
                   )}`
                 );
-                if (obj.mode === "time" && String(obj.mode2) === "60") {
+                if (
+                  obj.mode === "time" &&
+                  String(obj.mode2) === "60" &&
+                  userdata.discordId !== null &&
+                  userdata.discordId !== undefined
+                ) {
                   let besttime60 = 0;
                   try {
                     userdata.personalBests.time[60].forEach((result) => {
