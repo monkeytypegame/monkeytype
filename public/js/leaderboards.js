@@ -1,8 +1,4 @@
-let currentLeaderboard = {
-  mode: "words",
-  words: "10",
-  time: "15",
-};
+let currentLeaderboard = "time_15";
 
 function showLeaderboards() {
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
@@ -39,35 +35,41 @@ function hideLeaderboards() {
 }
 
 function updateLeaderboards() {
-  $("#leaderboardsWrapper .leaderboardMode .button").removeClass("active");
+  $("#leaderboardsWrapper .buttons .button").removeClass("active");
   $(
-    `#leaderboardsWrapper .leaderboardMode .button[mode=${currentLeaderboard.mode}]`
+    `#leaderboardsWrapper .buttons .button[board=${currentLeaderboard}]`
   ).addClass("active");
 
-  $("#leaderboardsWrapper .leaderboardWords .button").removeClass("active");
-  $(
-    `#leaderboardsWrapper .leaderboardWords .button[words=${currentLeaderboard.words}]`
-  ).addClass("active");
+  // $(
+  //   `#leaderboardsWrapper .leaderboardMode .button[mode=${currentLeaderboard.mode}]`
+  // ).addClass("active");
 
-  $("#leaderboardsWrapper .leaderboardTime .button").removeClass("active");
-  $(
-    `#leaderboardsWrapper .leaderboardTime .button[time=${currentLeaderboard.time}]`
-  ).addClass("active");
+  // $("#leaderboardsWrapper .leaderboardWords .button").removeClass("active");
+  // $(
+  //   `#leaderboardsWrapper .leaderboardWords .button[words=${currentLeaderboard.words}]`
+  // ).addClass("active");
 
-  if (currentLeaderboard.mode === "time") {
-    $("#leaderboardsWrapper .leaderboardWords").addClass("hidden");
-    $("#leaderboardsWrapper .leaderboardTime").removeClass("hidden");
-  } else if (currentLeaderboard.mode === "words") {
-    $("#leaderboardsWrapper .leaderboardWords").removeClass("hidden");
-    $("#leaderboardsWrapper .leaderboardTime").addClass("hidden");
-  }
+  // $("#leaderboardsWrapper .leaderboardTime .button").removeClass("active");
+  // $(
+  //   `#leaderboardsWrapper .leaderboardTime .button[time=${currentLeaderboard.time}]`
+  // ).addClass("active");
 
-  let mode2;
-  if (currentLeaderboard.mode === "words") {
-    mode2 = currentLeaderboard.words;
-  } else if (currentLeaderboard.mode === "time") {
-    mode2 = currentLeaderboard.time;
-  }
+  let boardinfo = currentLeaderboard.split("_");
+
+  // if (boardinfo[0] === "time") {
+  //   $("#leaderboardsWrapper .leaderboardWords").addClass("hidden");
+  //   $("#leaderboardsWrapper .leaderboardTime").removeClass("hidden");
+  // } else if (currentLeaderboard.mode === "words") {
+  //   $("#leaderboardsWrapper .leaderboardWords").removeClass("hidden");
+  //   $("#leaderboardsWrapper .leaderboardTime").addClass("hidden");
+  // }
+
+  // let mode2;
+  // if (currentLeaderboard.mode === "words") {
+  //   mode2 = currentLeaderboard.words;
+  // } else if (currentLeaderboard.mode === "time") {
+  //   mode2 = currentLeaderboard.time;
+  // }
 
   let uid = null;
   if (firebase.auth().currentUser !== null) {
@@ -77,14 +79,14 @@ function updateLeaderboards() {
   showBackgroundLoader();
   Promise.all([
     firebase.functions().httpsCallable("getLeaderboard")({
-      mode: currentLeaderboard.mode,
-      mode2: mode2,
+      mode: boardinfo[0],
+      mode2: boardinfo[1],
       type: "daily",
       uid: uid,
     }),
     firebase.functions().httpsCallable("getLeaderboard")({
-      mode: currentLeaderboard.mode,
-      mode2: mode2,
+      mode: boardinfo[0],
+      mode2: boardinfo[1],
       type: "global",
       uid: uid,
     }),
@@ -207,17 +209,17 @@ $("#leaderboardsWrapper").click((e) => {
   }
 });
 
-$("#leaderboardsWrapper .leaderboardMode .button").click((e) => {
-  currentLeaderboard.mode = $(e.target).attr("mode");
+$("#leaderboardsWrapper .buttons .button").click((e) => {
+  currentLeaderboard = $(e.target).attr("board");
   updateLeaderboards();
 });
 
-$("#leaderboardsWrapper .leaderboardWords .button").click((e) => {
-  currentLeaderboard.words = $(e.target).attr("words");
-  updateLeaderboards();
-});
+// $("#leaderboardsWrapper .leaderboardWords .button").click((e) => {
+//   currentLeaderboard.words = $(e.target).attr("words");
+//   updateLeaderboards();
+// });
 
-$("#leaderboardsWrapper .leaderboardTime .button").click((e) => {
-  currentLeaderboard.time = $(e.target).attr("time");
-  updateLeaderboards();
-});
+// $("#leaderboardsWrapper .leaderboardTime .button").click((e) => {
+//   currentLeaderboard.time = $(e.target).attr("time");
+//   updateLeaderboards();
+// });
