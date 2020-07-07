@@ -367,6 +367,12 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                 request.obj
               )}`
             );
+            if (obj.mode === "time" && String(obj.mode2) === "60") {
+              console.log(
+                `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+              );
+              updateDiscordRole(obj.discordId, obj.wpm);
+            }
             return 2;
           } else {
             console.log(
@@ -387,6 +393,15 @@ exports.testCompleted = functions.https.onCall((request, response) => {
     return -1;
   }
 });
+
+function updateDiscordRole(discordId, wpm) {
+  db.collection("bot-commands").add({
+    command: "updateRole",
+    arguments: [discordId, wpm],
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
+}
 
 function isTagValid(name) {
   if (name === null || name === undefined || name === "") return false;
