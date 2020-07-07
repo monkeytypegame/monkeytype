@@ -7,6 +7,8 @@ if (process.env.GCLOUD_PROJECT === "monkey-type") {
   key = "./serviceAccountKey_live.json";
 }
 
+const db = admin.firestore();
+
 var serviceAccount = require(key);
 
 admin.initializeApp({
@@ -23,8 +25,7 @@ admin.initializeApp({
 exports.moveResults = functions
   .runWith({ timeoutSeconds: 540, memory: "2GB" })
   .https.onCall((request, response) => {
-    return admin
-      .firestore()
+    return db
       .collection("results")
       .orderBy("timestamp", "desc")
       .limit(2000)
@@ -33,15 +34,8 @@ exports.moveResults = functions
         data.docs.forEach((doc) => {
           let result = doc.data();
           if (result.moved === undefined || result.moved === false) {
-            admin
-              .firestore()
-              .collection(`results`)
-              .doc(doc.id)
-              .update({ moved: true });
-            admin
-              .firestore()
-              .collection(`users/${result.uid}/results`)
-              .add(result);
+            db.collection(`results`).doc(doc.id).update({ moved: true });
+            db.collection(`users/${result.uid}/results`).add(result);
             console.log(`moving doc ${doc.id}`);
           }
         });
@@ -220,8 +214,7 @@ exports.checkIfNeedsToChangeName = functions.https.onCall(
 );
 
 function checkIfPB(uid, obj) {
-  return admin
-    .firestore()
+  return db
     .collection(`users`)
     .doc(uid)
     .get()
@@ -233,8 +226,7 @@ function checkIfPB(uid, obj) {
           throw new Error("pb is undefined");
         }
       } catch (e) {
-        return admin
-          .firestore()
+        return db
           .collection("users")
           .doc(uid)
           .update({
@@ -255,8 +247,7 @@ function checkIfPB(uid, obj) {
             return true;
           })
           .catch((e) => {
-            return admin
-              .firestore()
+            return db
               .collection("users")
               .doc(uid)
               .set({
@@ -326,8 +317,7 @@ function checkIfPB(uid, obj) {
       }
 
       if (toUpdate) {
-        return admin
-          .firestore()
+        return db
           .collection("users")
           .doc(uid)
           .update({ personalBests: pbs })
@@ -373,8 +363,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       return -1;
     }
 
-    return admin
-      .firestore()
+    return db
       .collection(`users/${request.uid}/results`)
       .add(obj)
       .then((e) => {
@@ -417,8 +406,7 @@ exports.addTag = functions.https.onCall((request, response) => {
     if (!isTagValid(request.name)) {
       return { resultCode: -1 };
     } else {
-      return admin
-        .firestore()
+      return db
         .collection(`users/${request.uid}/tags`)
         .add({
           name: request.name,
@@ -448,8 +436,7 @@ exports.editTag = functions.https.onCall((request, response) => {
     if (!isTagValid(request.name)) {
       return { resultCode: -1 };
     } else {
-      return admin
-        .firestore()
+      return db
         .collection(`users/${request.uid}/tags`)
         .doc(request.tagid)
         .update({
@@ -476,8 +463,7 @@ exports.editTag = functions.https.onCall((request, response) => {
 
 exports.removeTag = functions.https.onCall((request, response) => {
   try {
-    return admin
-      .firestore()
+    return db
       .collection(`users/${request.uid}/tags`)
       .doc(request.tagid)
       .delete()
@@ -506,8 +492,7 @@ exports.updateResultTags = functions.https.onCall((request, response) => {
       if (!/^[0-9a-zA-Z]+$/.test(tag)) validTags = false;
     });
     if (validTags) {
-      return admin
-        .firestore()
+      return db
         .collection(`users/${request.uid}/results`)
         .doc(request.resultid)
         .update({
@@ -578,8 +563,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
       return -1;
     }
 
-    return admin
-      .firestore()
+    return db
       .collection(`users`)
       .doc(request.uid)
       .set(
@@ -601,6 +585,14 @@ exports.saveConfig = functions.https.onCall((request, response) => {
     console.error(`error saving config for ${request.uid} - ${e}`);
     return { resultCode: -999 };
   }
+});
+
+exports.generateDiscordCode = functions.https.onCall((request, response) => {
+  db.collection("users")
+    .get()
+    .then((res) => {
+      console.log(res.docs[0].data());
+    });
 });
 
 // exports.getConfig = functions.https.onCall((request,response) => {
