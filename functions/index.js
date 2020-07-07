@@ -367,7 +367,12 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                 request.obj
               )}`
             );
-            if (obj.mode === "time" && String(obj.mode2) === "60") {
+            if (
+              obj.mode === "time" &&
+              String(obj.mode2) === "60" &&
+              obj.discordId !== null &&
+              obj.discordId !== undefined
+            ) {
               console.log(
                 `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
               );
