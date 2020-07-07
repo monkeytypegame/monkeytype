@@ -356,24 +356,23 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       return -1;
     }
 
-    return db
-      .collection(`users/${request.uid}/results`)
-      .add(obj)
-      .then((e) => {
-        return checkIfPB(request.uid, request.obj).then((e) => {
-          if (e) {
-            console.log(
-              `saved result for ${request.uid} (new PB) - ${JSON.stringify(
-                request.obj
-              )}`
-            );
-            if (obj.mode === "time" && String(obj.mode2) === "60") {
-              db.collection("users")
-                .doc(request.uid)
-                .get()
-                .then((ret) => {
-                  let userdata = ret.data();
-
+    db.collection("users")
+      .doc(request.uid)
+      .get()
+      .then((ret) => {
+        let userdata = ret.data();
+        return db
+          .collection(`users/${request.uid}/results`)
+          .add(obj)
+          .then((e) => {
+            return checkIfPB(request.uid, request.obj).then((e) => {
+              if (e) {
+                console.log(
+                  `saved result for ${request.uid} (new PB) - ${JSON.stringify(
+                    request.obj
+                  )}`
+                );
+                if (obj.mode === "time" && String(obj.mode2) === "60") {
                   let besttime60 = 0;
                   try {
                     userdata.personalBests.time[60].forEach((result) => {
@@ -390,26 +389,28 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                     updateDiscordRole(userdata.discordId, obj.wpm);
                   }
                   return;
-                })
-                .catch((e) => {
-                  console.error(
-                    `error saving result when getting user info ${request.uid} - ${e.message}`
-                  );
-                  return -1;
-                });
-            }
-            return 2;
-          } else {
-            console.log(
-              `saved result for ${request.uid} - ${JSON.stringify(request.obj)}`
+                }
+                return 2;
+              } else {
+                console.log(
+                  `saved result for ${request.uid} - ${JSON.stringify(
+                    request.obj
+                  )}`
+                );
+                return 1;
+              }
+            });
+          })
+          .catch((e) => {
+            console.error(
+              `error saving result when checking for PB for ${request.uid} - ${e.message}`
             );
-            return 1;
-          }
-        });
+            return -1;
+          });
       })
       .catch((e) => {
         console.error(
-          `error saving result when checking for PB for ${request.uid} - ${e.message}`
+          `error saving result when getting user info ${request.uid} - ${e.message}`
         );
         return -1;
       });
