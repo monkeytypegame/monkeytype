@@ -142,6 +142,9 @@ async function db_saveLocalPB(
   function cont() {
     try {
       let found = false;
+      if (dbSnapshot.personalBests[mode][mode2] === undefined) {
+        dbSnapshot.personalBests[mode][mode2] = [];
+      }
       dbSnapshot.personalBests[mode][mode2].forEach((pb) => {
         if (
           pb.punctuation == punctuation &&

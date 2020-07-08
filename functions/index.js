@@ -267,6 +267,9 @@ function checkIfPB(uid, obj) {
       let toUpdate = false;
       let found = false;
       try {
+        if (pbs[obj.mode][obj.mode2] === undefined) {
+          pbs[obj.mode][obj.mode2] = [];
+        }
         pbs[obj.mode][obj.mode2].forEach((pb) => {
           if (
             pb.punctuation === obj.punctuation &&
@@ -356,7 +359,8 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       return -1;
     }
 
-    db.collection("users")
+    return db
+      .collection("users")
       .doc(request.uid)
       .get()
       .then((ret) => {
