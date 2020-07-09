@@ -1028,9 +1028,9 @@ exports.generatePairingCode = functions.https.onCall((request, response) => {
 });
 
 async function checkLeaderboards(resultObj, type, banned, name) {
-  return {
-    insertedAt: null,
-  };
+  // return {
+  //   insertedAt: null,
+  // };
   try {
     if (!name)
       return {
