@@ -399,24 +399,25 @@ exports.testCompleted = functions.https.onCall((request, response) => {
     let keySpacing = null;
     let keyDuration = null;
 
-    try{
+    try {
       keySpacing = {
         average:
           obj.keySpacing.reduce((previous, current) => (current += previous)) /
           obj.keySpacing.length,
         sd: stdDev(obj.keySpacing),
       };
-  
+
       keyDuration = {
         average:
           obj.keyDuration.reduce((previous, current) => (current += previous)) /
           obj.keyDuration.length,
         sd: stdDev(obj.keyDuration),
       };
-    }catch(){
-      console.error(`cant verify key spacing or duration! - ${obj.keySpacing} ${obj.keyDuration}`);
+    } catch (e) {
+      console.error(
+        `cant verify key spacing or duration! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
+      );
     }
-    
 
     return db
       .collection("users")
@@ -433,7 +434,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
 
         //check keyspacing and duration here
         if (!verified) {
-          if(keySpacing !== null && keyDuration !== null){
+          if (keySpacing !== null && keyDuration !== null) {
             if (
               keySpacing.sd < 15 ||
               keyDuration.sd < 15 ||
