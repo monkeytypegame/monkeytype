@@ -396,6 +396,10 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                       `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
                     );
                     updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
+                  } else {
+                    console.log(
+                      `not updating role for user ${request.uid} higher pb found ${besttime60} than ${obj.wpm}`
+                    );
                   }
                   return;
                 }
