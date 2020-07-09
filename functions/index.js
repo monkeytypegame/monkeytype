@@ -396,19 +396,27 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       return -1;
     }
 
-    let keySpacing = {
-      average:
-        obj.keySpacing.reduce((previous, current) => (current += previous)) /
-        obj.keySpacing.length,
-      sd: stdDev(obj.keySpacing),
-    };
+    let keySpacing = null;
+    let keyDuration = null;
 
-    let keyDuration = {
-      average:
-        obj.keyDuration.reduce((previous, current) => (current += previous)) /
-        obj.keyDuration.length,
-      sd: stdDev(obj.keyDuration),
-    };
+    try{
+      keySpacing = {
+        average:
+          obj.keySpacing.reduce((previous, current) => (current += previous)) /
+          obj.keySpacing.length,
+        sd: stdDev(obj.keySpacing),
+      };
+  
+      keyDuration = {
+        average:
+          obj.keyDuration.reduce((previous, current) => (current += previous)) /
+          obj.keyDuration.length,
+        sd: stdDev(obj.keyDuration),
+      };
+    }catch(){
+      console.error(`cant verify key spacing or duration! - ${obj.keySpacing} ${obj.keyDuration}`);
+    }
+    
 
     return db
       .collection("users")
@@ -425,19 +433,21 @@ exports.testCompleted = functions.https.onCall((request, response) => {
 
         //check keyspacing and duration here
         if (!verified) {
-          if (
-            keySpacing.sd < 15 ||
-            keyDuration.sd < 15 ||
-            keyDuration.average < 15
-          ) {
-            console.error(
-              `possible bot detected by user ${
-                request.uid
-              } ${name} - spacing ${JSON.stringify(
-                keySpacing
-              )} duration ${JSON.stringify(keyDuration)}`
-            );
-            return { resultCode: -2 };
+          if(keySpacing !== null && keyDuration !== null){
+            if (
+              keySpacing.sd < 15 ||
+              keyDuration.sd < 15 ||
+              keyDuration.average < 15
+            ) {
+              console.error(
+                `possible bot detected by user ${
+                  request.uid
+                } ${name} - spacing ${JSON.stringify(
+                  keySpacing
+                )} duration ${JSON.stringify(keyDuration)}`
+              );
+              return { resultCode: -2 };
+            }
           }
         }
 
@@ -534,7 +544,11 @@ exports.testCompleted = functions.https.onCall((request, response) => {
         return { resultCode: -999 };
       });
   } catch (e) {
-    console.error(`error saving result for ${request.uid} - ${e}`);
+    console.error(
+      `error saving result for ${request.uid} - ${JSON.stringify(
+        request.obj
+      )} - ${e}`
+    );
     return { resultCode: -999 };
   }
 });
@@ -767,6 +781,7 @@ class Leaderboard {
         if (entry.mode === this.mode && entry.mode2 === this.mode2) {
           this.board.push({
             uid: entry.uid,
+            name: entry.name,
             wpm: parseFloat(entry.wpm),
             raw: parseFloat(entry.raw),
             acc: parseFloat(entry.acc),
@@ -1012,6 +1027,9 @@ exports.generatePairingCode = functions.https.onCall((request, response) => {
 });
 
 async function checkLeaderboards(resultObj, type, banned, name) {
+  return {
+    insertedAt: null,
+  };
   try {
     if (!name)
       return {
@@ -1124,7 +1142,9 @@ async function checkLeaderboards(resultObj, type, banned, name) {
     console.error(
       `error while checking leaderboards - ${e} - ${type} ${resultObj}`
     );
-    return null;
+    return {
+      insertedAt: null,
+    };
   }
 }
 
