@@ -433,12 +433,9 @@ exports.testCompleted = functions.https.onCall((request, response) => {
         request.obj.name = name;
 
         //check keyspacing and duration here
-        if(obj.mode === "time"){
+        if (obj.mode === "time") {
           if (!verified) {
-            if (
-              keySpacing !== null &&
-              keyDuration !== null &&
-            ) {
+            if (keySpacing !== null && keyDuration !== null) {
               if (
                 keySpacing.sd < 15 ||
                 keyDuration.sd < 15 ||
