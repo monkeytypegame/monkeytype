@@ -986,29 +986,6 @@ function showResult(difficultyFailed = false) {
     });
   }
 
-  function stdDev(array) {
-    const n = array.length;
-    const mean = array.reduce((a, b) => a + b) / n;
-    return Math.sqrt(
-      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
-    );
-  }
-
-  console.log(
-    `avg time between keys ${
-      keypressStats.spacing.array.reduce(
-        (previous, current) => (current += previous)
-      ) / keypressStats.spacing.array.length
-    } std(${stdDev(keypressStats.spacing.array)})`
-  );
-  console.log(
-    `avg key down time ${
-      keypressStats.duration.array.reduce(
-        (previous, current) => (current += previous)
-      ) / keypressStats.duration.array.length
-    } std(${stdDev(keypressStats.duration.array)})`
-  );
-
   wpmOverTimeChart.data.datasets[2].data = errorsNoZero;
 
   if (difficultyFailed) {
