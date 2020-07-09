@@ -441,7 +441,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
               keyDuration.average < 15
             ) {
               console.error(
-                `possible bot detected by user (${obj.wpm} ${obj.raw} ${
+                `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
                   obj.acc
                 }) ${request.uid} ${name} - spacing ${JSON.stringify(
                   keySpacing
