@@ -455,6 +455,31 @@ exports.testCompleted = functions.https.onCall((request, response) => {
               let ispb = values[2];
               // console.log(values);
 
+              let usr =
+                userdata.discordId !== undefined
+                  ? userdata.discordId
+                  : userdata.name;
+
+              if (
+                globallb !== null &&
+                [1, 2, 3].includes(globallb.insertedAt + 1) &&
+                globallb.newBest
+              ) {
+                let lbstring = `${obj.mode} ${obj.mode2} global`;
+                console.log(
+                  `sending command to the bot to announce lb update ${
+                    userdata.discordId
+                  } ${globallb + 1} ${lbstring} ${obj.wpm}`
+                );
+
+                announceLbUpdate(
+                  usr,
+                  globallb.insertedAt + 1,
+                  lbstring,
+                  obj.wpm
+                );
+              }
+
               let returnobj = {
                 resultCode: null,
                 globalLeaderboard: globallb,
@@ -1201,7 +1226,7 @@ exports.scheduledFunctionCrontab = functions.pubsub
 
 async function announceLbUpdate(discordId, pos, lb, wpm) {
   db.collection("bot-commands").add({
-    command: "updateRole",
+    command: "sayLbUpdate",
     arguments: [discordId, pos, lb, wpm],
     executed: false,
     requestTimestamp: Date.now(),
