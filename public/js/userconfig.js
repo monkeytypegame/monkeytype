@@ -45,6 +45,7 @@ let config = defaultConfig;
 //cookies
 function saveConfigToCookie() {
   // showNotification('saving to cookie',1000);
+  if (config.freedomMode === null) config.freedomMode = false;
   let d = new Date();
   d.setFullYear(d.getFullYear() + 1);
   $.cookie("config", null);
@@ -424,7 +425,7 @@ function togglePunctuation() {
 
 //freedom
 function setFreedomMode(freedom, nosave) {
-  if (freedom === null) {
+  if (freedom == null) {
     freedom = false;
   }
   config.freedomMode = freedom;
