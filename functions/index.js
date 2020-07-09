@@ -395,7 +395,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                     console.log(
                       `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
                     );
-                    updateDiscordRole(userdata.discordId, obj.wpm);
+                    updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
                   }
                   return;
                 }
