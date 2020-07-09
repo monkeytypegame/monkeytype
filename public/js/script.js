@@ -1098,7 +1098,7 @@ function showResult(difficultyFailed = false) {
               obj: completedEvent,
             }).then((e) => {
               accountIconLoading(false);
-              console.log(e.data);
+              console.log(JSON.stringify(e.data));
               if (e.data.resultCode === -1) {
                 showNotification("Could not save result", 3000);
               } else if (e.data.resultCode === -2) {
@@ -1235,6 +1235,8 @@ function showResult(difficultyFailed = false) {
                     );
                   }
                 }
+              } else {
+                showNotification("Unexpected response from the server.", 4000);
               }
             });
           });
