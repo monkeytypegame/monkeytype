@@ -779,11 +779,14 @@ class Leaderboard {
     this.size = size;
     this.board = [];
     this.mode = mode;
-    this.mode2 = mode2;
+    this.mode2 = parseInt(mode2);
     this.type = type;
     if (starting !== undefined && starting !== null) {
       starting.forEach((entry) => {
-        if (entry.mode === this.mode && entry.mode2 === this.mode2) {
+        if (
+          entry.mode == this.mode &&
+          parseInt(entry.mode2) === parseInt(this.mode2)
+        ) {
           this.board.push({
             uid: entry.uid,
             name: entry.name,
@@ -791,7 +794,7 @@ class Leaderboard {
             raw: parseFloat(entry.raw),
             acc: parseFloat(entry.acc),
             mode: entry.mode,
-            mode2: entry.mode2,
+            mode2: parseInt(entry.mode2),
             timestamp: entry.timestamp,
           });
         }
@@ -853,7 +856,7 @@ class Leaderboard {
   }
   insert(a) {
     let insertedAt = -1;
-    if (a.mode === this.mode && a.mode2 === this.mode2) {
+    if (a.mode == this.mode && parseInt(a.mode2) === parseInt(this.mode2)) {
       this.board.forEach((b, index) => {
         if (insertedAt !== -1) return;
         if (a.wpm === b.wpm) {
@@ -866,7 +869,7 @@ class Leaderboard {
                 raw: parseFloat(a.rawWpm),
                 acc: parseFloat(a.acc),
                 mode: a.mode,
-                mode2: a.mode2,
+                mode2: parseInt(a.mode2),
                 timestamp: a.timestamp,
               });
               insertedAt = index;
@@ -880,7 +883,7 @@ class Leaderboard {
                 raw: parseFloat(a.rawWpm),
                 acc: parseFloat(a.acc),
                 mode: a.mode,
-                mode2: a.mode2,
+                mode2: parseInt(a.mode2),
                 timestamp: a.timestamp,
               });
               insertedAt = index;
@@ -895,7 +898,7 @@ class Leaderboard {
               raw: parseFloat(a.rawWpm),
               acc: parseFloat(a.acc),
               mode: a.mode,
-              mode2: a.mode2,
+              mode2: parseInt(a.mode2),
               timestamp: a.timestamp,
             });
             insertedAt = index;
@@ -910,7 +913,7 @@ class Leaderboard {
           raw: parseFloat(a.rawWpm),
           acc: parseFloat(a.acc),
           mode: a.mode,
-          mode2: a.mode2,
+          mode2: parseInt(a.mode2),
           timestamp: a.timestamp,
         });
         insertedAt = this.board.length - 1;
