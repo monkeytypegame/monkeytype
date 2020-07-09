@@ -10,6 +10,15 @@
   /* Firefox */
 }
 
+html {
+  @extend .ffscroll;
+}
+
+.ffscroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sub-color) transparent;
+}
+
 input {
   outline: none;
   border: none;
@@ -85,7 +94,7 @@ html {
 
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 7px;
 }
 
 /* Track */
@@ -135,6 +144,7 @@ a:hover {
   animation-iteration-count: infinite;
   animation-duration: 2s;
   animation-timing-function: cubic-bezier(0.38, 0.16, 0.57, 0.82);
+  z-index: 9999;
 }
 
 @keyframes loader {
@@ -153,6 +163,127 @@ a:hover {
     left: 100%;
   }
 }
+
+#leaderboardsWrapper {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 0;
+
+  #leaderboards {
+    width: 85vw;
+    height: calc(100vh - 10rem);
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 2rem;
+    grid-template-rows: 3rem auto;
+    grid-template-areas: "title buttons"
+      "tables tables";
+    grid-template-columns: 1fr 1fr;
+
+    .mainTitle {
+      font-size: 3rem;
+      line-height: 3rem;
+      grid-area: title;
+    }
+
+    .title {
+      font-size: 2rem;
+      line-height: 2rem;
+      margin-bottom: .5rem;
+    }
+
+    .tables {
+      grid-area: tables;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 2rem;
+      font-size: .8rem;
+
+      .titleAndTable {
+        display: grid;
+
+        .title {
+          grid-area: 1/1;
+        }
+
+        .subtitle {
+          grid-area: 1/1;
+          align-self: center;
+          justify-self: right;
+          color: var(--sub-color);
+        }
+      }
+
+      .globalTableWrapper,
+      .dailyTableWrapper {
+        height: calc(100vh - 22rem);
+        @extend .ffscroll;
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-spacing: 0;
+        border-collapse: collapse;
+
+        tr td:first-child {
+          text-align: center;
+        }
+
+        td {
+          padding: .25rem .5rem;
+
+          &.me {
+            color: var(--main-color);
+            font-weight: 900;
+          }
+        }
+
+        thead {
+          color: var(--sub-color);
+          font-size: .75rem;
+        }
+
+        tbody {
+          color: var(--text-color);
+
+          tr:nth-child(odd) td {
+            background: rgba(0, 0, 0, .1);
+          }
+        }
+      }
+    }
+
+    .buttons {
+      grid-area: buttons;
+      display: -ms-grid;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr 1fr;
+      align-self: center;
+
+      .buttonGroup {
+        display: grid;
+        grid-auto-flow: column;
+        gap: 1rem;
+        grid-area: 1/2;
+      }
+    }
+  }
+}
+
 
 #tagsWrapper {
   width: 100%;
@@ -230,6 +361,7 @@ a:hover {
     padding: 2rem;
     display: grid;
     gap: 1rem;
+    @extend .ffscroll;
     overflow-y: scroll;
 
     .tip {
@@ -346,6 +478,7 @@ a:hover {
 
     .suggestions {
       display: block;
+      @extend .ffscroll;
       overflow-y: scroll;
       max-height: calc(100vh - 10rem - 3rem);
       display: grid;
@@ -791,7 +924,7 @@ key {
 
   .stats {
     display: grid;
-    gap: .5rem;
+    column-gap: .5rem;
     justify-content: center;
     align-items: center;
     grid-template-areas:
@@ -799,9 +932,13 @@ key {
       "wpm key"
       "raw time"
       "source source"
+      "leaderboards leaderboards"
       "testType infoAndTags";
 
+
     .group {
+      margin-bottom: .5rem;
+
       .top {
         color: var(--sub-color);
         font-size: 1rem;
@@ -818,6 +955,22 @@ key {
     .testType {
       align-self: baseline;
       grid-area: testType;
+      color: var(--sub-color);
+
+      .top {
+        font-size: 1rem;
+        line-height: 1.25rem;
+      }
+
+      .bottom {
+        font-size: 1rem;
+        line-height: 1rem;
+      }
+    }
+
+    .leaderboards {
+      align-self: baseline;
+      grid-area: leaderboards;
       color: var(--sub-color);
 
       .top {

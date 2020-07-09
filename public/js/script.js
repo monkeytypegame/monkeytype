@@ -29,6 +29,17 @@ let accuracyStats = {
   incorrect: 0,
 };
 
+let keypressStats = {
+  spacing: {
+    current: -1,
+    array: [],
+  },
+  duration: {
+    current: -1,
+    array: [],
+  },
+};
+
 let customText = "The quick brown fox jumps over the lazy dog".split(" ");
 let randomQuote = null;
 
@@ -908,6 +919,9 @@ function showResult(difficultyFailed = false) {
     // 'margin-bottom': 0
   });
 
+  $("#result .stats .leaderboards .bottom").text("");
+  $("#result .stats .leaderboards").addClass("hidden");
+
   let mode2 = "";
   if (config.mode === "time") {
     mode2 = config.time;
@@ -972,6 +986,29 @@ function showResult(difficultyFailed = false) {
     });
   }
 
+  function stdDev(array) {
+    const n = array.length;
+    const mean = array.reduce((a, b) => a + b) / n;
+    return Math.sqrt(
+      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+    );
+  }
+
+  console.log(
+    `avg time between keys ${
+      keypressStats.spacing.array.reduce(
+        (previous, current) => (current += previous)
+      ) / keypressStats.spacing.array.length
+    } std(${stdDev(keypressStats.spacing.array)})`
+  );
+  console.log(
+    `avg key down time ${
+      keypressStats.duration.array.reduce(
+        (previous, current) => (current += previous)
+      ) / keypressStats.duration.array.length
+    } std(${stdDev(keypressStats.duration.array)})`
+  );
+
   wpmOverTimeChart.data.datasets[2].data = errorsNoZero;
 
   if (difficultyFailed) {
@@ -1008,6 +1045,8 @@ function showResult(difficultyFailed = false) {
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTags,
+      keySpacing: keypressStats.spacing.array,
+      keyDuration: keypressStats.duration.array,
     };
     if (
       config.difficulty == "normal" ||
@@ -1075,14 +1114,24 @@ function showResult(difficultyFailed = false) {
               );
               wpmOverTimeChart.update({ duration: 0 });
             }
+            $("#result .stats .leaderboards").removeClass("hidden");
+            $("#result .stats .leaderboards .bottom").html("checking...");
             testCompleted({
               uid: firebase.auth().currentUser.uid,
               obj: completedEvent,
             }).then((e) => {
               accountIconLoading(false);
-              if (e.data === -1) {
+              console.log(e.data);
+              if (e.data.resultCode === -1) {
                 showNotification("Could not save result", 3000);
-              } else if (e.data === 1 || e.data === 2) {
+              } else if (e.data.resultCode === -2) {
+                showNotification(
+                  "Possible bot detected. Result not saved.",
+                  4000
+                );
+              } else if (e.data.resultCode === -999) {
+                showNotification("Internal error. Result not saved.", 4000);
+              } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                 dbSnapshot.results.unshift(completedEvent);
                 try {
                   firebase
@@ -1091,7 +1140,93 @@ function showResult(difficultyFailed = false) {
                 } catch (e) {
                   console.log("Analytics unavailable");
                 }
-                if (e.data === 2) {
+
+                //global
+                let globalLbString = "";
+                if (e.data.globalLeaderboard === null) {
+                  globalLbString = "global: not found";
+                } else if (e.data.globalLeaderboard.insertedAt === -1) {
+                  globalLbString = "global: not qualified";
+                } else if (e.data.globalLeaderboard.insertedAt >= 0) {
+                  if (e.data.globalLeaderboard.newBest) {
+                    let pos = e.data.globalLeaderboard.insertedAt + 1;
+                    let numend = "th";
+                    if (pos === 1) {
+                      numend = "st";
+                    } else if (pos === 2) {
+                      numend = "nd";
+                    } else if (pos === 3) {
+                      numend = "rd";
+                    }
+                    globalLbString = `global: ${pos}${numend} place`;
+                  } else {
+                    let pos = e.data.globalLeaderboard.foundAt + 1;
+                    let numend = "th";
+                    if (pos === 1) {
+                      numend = "st";
+                    } else if (pos === 2) {
+                      numend = "nd";
+                    } else if (pos === 3) {
+                      numend = "rd";
+                    }
+                    globalLbString = `global: already ${pos}${numend}`;
+                  }
+                }
+
+                //daily
+                let dailyLbString = "";
+                if (e.data.dailyLeaderboard === null) {
+                  dailyLbString = "daily: not found";
+                } else if (e.data.dailyLeaderboard.insertedAt === -1) {
+                  dailyLbString = "daily: not qualified";
+                } else if (e.data.dailyLeaderboard.insertedAt >= 0) {
+                  if (e.data.dailyLeaderboard.newBest) {
+                    let pos = e.data.dailyLeaderboard.insertedAt + 1;
+                    let numend = "th";
+                    if (pos === 1) {
+                      numend = "st";
+                    } else if (pos === 2) {
+                      numend = "nd";
+                    } else if (pos === 3) {
+                      numend = "rd";
+                    }
+                    dailyLbString = `daily: ${pos}${numend} place`;
+                  } else {
+                    let pos = e.data.dailyLeaderboard.foundAt + 1;
+                    let numend = "th";
+                    if (pos === 1) {
+                      numend = "st";
+                    } else if (pos === 2) {
+                      numend = "nd";
+                    } else if (pos === 3) {
+                      numend = "rd";
+                    }
+                    dailyLbString = `daily: already ${pos}${numend}`;
+                  }
+                }
+                if (
+                  e.data.dailyLeaderboard === null &&
+                  e.data.globalLeaderboard === null &&
+                  e.data.lbBanned === false &&
+                  e.data.name !== false
+                ) {
+                  $("#result .stats .leaderboards").addClass("hidden");
+                } else {
+                  $("#result .stats .leaderboards").removeClass("hidden");
+                  if (e.data.lbBanned) {
+                    $("#result .stats .leaderboards .bottom").html("banned");
+                  } else if (e.data.name === false) {
+                    $("#result .stats .leaderboards .bottom").html(
+                      "update your name to access leaderboards"
+                    );
+                  } else {
+                    $("#result .stats .leaderboards .bottom").html(
+                      globalLbString + "<br>" + dailyLbString
+                    );
+                  }
+                }
+
+                if (e.data.resultCode === 2) {
                   //new pb
                   if (!localPb) {
                     showNotification(
@@ -1142,6 +1277,7 @@ function showResult(difficultyFailed = false) {
   if (firebase.auth().currentUser != null) {
     $("#result .loginTip").addClass("hidden");
   } else {
+    $("#result .stats .leaderboards").addClass("hidden");
     $("#result .loginTip").removeClass("hidden");
   }
 
@@ -1260,6 +1396,16 @@ function restartTest(withSameWordset = false) {
   currentErrorCount = 0;
   currentTestLine = 0;
   activeWordJumped = false;
+  keypressStats = {
+    spacing: {
+      current: -1,
+      array: [],
+    },
+    duration: {
+      current: -1,
+      array: [],
+    },
+  };
   hideTimer();
   // restartTimer();
   let el = null;
@@ -1981,8 +2127,12 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
 
 $(document).on("click", "#top #menu .icon-button", (e) => {
   if ($(e.currentTarget).hasClass("discord")) return;
-  href = $(e.currentTarget).attr("href");
-  changePage(href.replace("/", ""));
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    showLeaderboards();
+  } else {
+    href = $(e.currentTarget).attr("href");
+    changePage(href.replace("/", ""));
+  }
 });
 
 $(window).on("popstate", (e) => {
@@ -2110,6 +2260,16 @@ $(document).keypress(function (event) {
     updateActiveElement();
     updateTimer();
     clearIntervals();
+    keypressStats = {
+      spacing: {
+        current: -1,
+        array: [],
+      },
+      duration: {
+        current: -1,
+        array: [],
+      },
+    };
     timers.push(
       setInterval(function () {
         time++;
@@ -2161,6 +2321,7 @@ $(document).keypress(function (event) {
   } else {
     accuracyStats.correct++;
   }
+
   currentKeypressCount++;
   currentInput += event["key"];
   $("#words .word.active").attr("input", currentInput);
@@ -2175,10 +2336,29 @@ $(document).keypress(function (event) {
   updateCaretPosition();
 });
 
+$(document).keydown((event) => {
+  keypressStats.duration.current = performance.now();
+});
+
+$(document).keyup((event) => {
+  let now = performance.now();
+  let diff = Math.abs(keypressStats.duration.current - now);
+  if (keypressStats.duration.current !== -1) {
+    keypressStats.duration.array.push(diff);
+  }
+  keypressStats.duration.current = now;
+});
+
 //handle keyboard events
 $(document).keydown((event) => {
-  //tab
+  let now = performance.now();
+  let diff = Math.abs(keypressStats.spacing.current - now);
+  if (keypressStats.spacing.current !== -1) {
+    keypressStats.spacing.array.push(diff);
+  }
+  keypressStats.spacing.current = now;
 
+  //tab
   if (event["keyCode"] == 9) {
     if (config.quickTab) {
       event.preventDefault();

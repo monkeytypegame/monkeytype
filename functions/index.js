@@ -60,7 +60,7 @@ function getAllUsers() {
 
 function isUsernameValid(name) {
   if (name === null || name === undefined || name === "") return false;
-  if (/miodec/.test(name)) return false;
+  if (/miodec/.test(name.toLowerCase())) return false;
   if (name.length > 12) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
@@ -141,63 +141,92 @@ exports.changeName = functions.https.onCall((request, response) => {
 exports.checkIfNeedsToChangeName = functions.https.onCall(
   (request, response) => {
     try {
-      return admin
-        .auth()
-        .getUser(request.uid)
-        .then((requestUser) => {
-          if (!isUsernameValid(requestUser.displayName)) {
-            //invalid name, needs to change
-            console.log(
-              `user ${requestUser.uid} ${requestUser.displayName} needs to change name`
-            );
-            return 1;
-          } else {
-            //valid name, but need to change if not duplicate
-
-            return getAllUsers().then((users) => {
-              let sameName = [];
-
-              //look for name names
-              users.forEach((user) => {
-                if (user.uid !== requestUser.uid) {
-                  try {
-                    if (
-                      user.displayName.toLowerCase() ===
-                      requestUser.displayName.toLowerCase()
-                    ) {
-                      sameName.push(user);
-                    }
-                  } catch (e) {
-                    //
-                  }
-                }
-              });
-
-              if (sameName.length === 0) {
-                return 0;
-              } else {
-                //check when the request user made the account compared to others
-                let earliestTimestamp = 999999999999999;
-                sameName.forEach((sn) => {
-                  let ts = new Date(sn.metadata.creationTime).getTime() / 1000;
-                  if (ts <= earliestTimestamp) {
-                    earliestTimestamp = ts;
-                  }
-                });
-
-                if (
-                  new Date(requestUser.metadata.creationTime).getTime() / 1000 >
-                  earliestTimestamp
-                ) {
+      return db
+        .collection("users")
+        .doc(request.uid)
+        .get()
+        .then((doc) => {
+          if (doc.data().name === undefined) {
+            return admin
+              .auth()
+              .getUser(request.uid)
+              .then((requestUser) => {
+                if (!isUsernameValid(requestUser.displayName)) {
+                  //invalid name, needs to change
                   console.log(
                     `user ${requestUser.uid} ${requestUser.displayName} needs to change name`
                   );
-                  return 2;
+                  return 1;
                 } else {
-                  return 0;
+                  //valid name, but need to change if not duplicate
+
+                  return getAllUsers()
+                    .then((users) => {
+                      let sameName = [];
+
+                      //look for name names
+                      users.forEach((user) => {
+                        if (user.uid !== requestUser.uid) {
+                          try {
+                            if (
+                              user.displayName.toLowerCase() ===
+                              requestUser.displayName.toLowerCase()
+                            ) {
+                              sameName.push(user);
+                            }
+                          } catch (e) {
+                            //
+                          }
+                        }
+                      });
+
+                      if (sameName.length === 0) {
+                        db.collection("users")
+                          .doc(request.uid)
+                          .update({ name: requestUser.displayName })
+                          .then(() => {
+                            return 0;
+                          });
+                      } else {
+                        //check when the request user made the account compared to others
+                        let earliestTimestamp = 999999999999999;
+                        sameName.forEach((sn) => {
+                          let ts =
+                            new Date(sn.metadata.creationTime).getTime() / 1000;
+                          if (ts <= earliestTimestamp) {
+                            earliestTimestamp = ts;
+                          }
+                        });
+
+                        if (
+                          new Date(
+                            requestUser.metadata.creationTime
+                          ).getTime() /
+                            1000 >
+                          earliestTimestamp
+                        ) {
+                          console.log(
+                            `user ${requestUser.uid} ${requestUser.displayName} needs to change name`
+                          );
+                          return 2;
+                        } else {
+                          db.collection("users")
+                            .doc(request.uid)
+                            .update({ name: requestUser.displayName })
+                            .then(() => {
+                              return 0;
+                            });
+                        }
+                      }
+                    })
+                    .catch((e) => {
+                      console.error(`error getting all users - ${e}`);
+                    });
                 }
-              }
-            });
+              });
+          } else {
+            console.log("name is good");
+            return 0;
           }
         });
     } catch (e) {
@@ -326,11 +355,19 @@ function checkIfPB(uid, obj) {
     });
 }
 
+function stdDev(array) {
+  const n = array.length;
+  const mean = array.reduce((a, b) => a + b) / n;
+  return Math.sqrt(
+    array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+  );
+}
+
 exports.testCompleted = functions.https.onCall((request, response) => {
   try {
     if (request.uid === undefined || request.obj === undefined) {
       console.error(`error saving result for ${request.uid} - missing input`);
-      return -1;
+      return { resultCode: -999 };
     }
 
     let obj = request.obj;
@@ -359,18 +396,75 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       return -1;
     }
 
+    let keySpacing = {
+      average:
+        obj.keySpacing.reduce((previous, current) => (current += previous)) /
+        obj.keySpacing.length,
+      sd: stdDev(obj.keySpacing),
+    };
+
+    let keyDuration = {
+      average:
+        obj.keyDuration.reduce((previous, current) => (current += previous)) /
+        obj.keyDuration.length,
+      sd: stdDev(obj.keyDuration),
+    };
+
     return db
       .collection("users")
       .doc(request.uid)
       .get()
       .then((ret) => {
         let userdata = ret.data();
+        let name = userdata.name === undefined ? false : userdata.name;
+        let banned = userdata.banned === undefined ? false : userdata.banned;
+        let verified =
+          userdata.verified === undefined ? false : userdata.verified;
+
+        request.obj.name = name;
+
+        //check keyspacing and duration here
+        if (!verified) {
+          if (
+            keySpacing.sd < 15 ||
+            keyDuration.sd < 15 ||
+            keyDuration.average < 15
+          ) {
+            console.error(
+              `possible bot detected by user ${
+                request.uid
+              } ${name} - spacing ${JSON.stringify(
+                keySpacing
+              )} duration ${JSON.stringify(keyDuration)}`
+            );
+            return { resultCode: -2 };
+          }
+        }
+
         return db
           .collection(`users/${request.uid}/results`)
           .add(obj)
           .then((e) => {
-            return checkIfPB(request.uid, request.obj).then((e) => {
-              if (e) {
+            return Promise.all([
+              checkLeaderboards(request.obj, "global", banned, name),
+              checkLeaderboards(request.obj, "daily", banned, name),
+              checkIfPB(request.uid, request.obj),
+            ]).then((values) => {
+              let globallb = values[0].insertedAt;
+              let dailylb = values[1].insertedAt;
+              let ispb = values[2];
+              // console.log(values);
+
+              let returnobj = {
+                resultCode: null,
+                globalLeaderboard: globallb,
+                dailyLeaderboard: dailylb,
+                lbBanned: banned,
+                name: name,
+              };
+              request.obj.keySpacing = "removed";
+              request.obj.keyDuration = "removed";
+              if (ispb) {
                 console.log(
                   `saved result for ${request.uid} (new PB) - ${JSON.stringify(
                     request.obj
@@ -388,33 +482,35 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                   updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
                   return;
                 }
-                return 2;
+                returnobj.resultCode = 2;
               } else {
                 console.log(
                   `saved result for ${request.uid} - ${JSON.stringify(
                     request.obj
                   )}`
                 );
-                return 1;
+                returnobj.resultCode = 1;
               }
+              // console.log(returnobj);
+              return returnobj;
             });
           })
           .catch((e) => {
             console.error(
-              `error saving result when checking for PB for ${request.uid} - ${e.message}`
+              `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
             );
-            return -1;
+            return { resultCode: -999 };
           });
       })
       .catch((e) => {
         console.error(
-          `error saving result when getting user info ${request.uid} - ${e.message}`
+          `error saving result when getting user data for ${request.uid} - ${e.message}`
         );
-        return -1;
+        return { resultCode: -999 };
       });
   } catch (e) {
     console.error(`error saving result for ${request.uid} - ${e}`);
-    return -1;
+    return { resultCode: -999 };
   }
 });
 
@@ -634,6 +730,176 @@ function generate(n) {
   return ("" + number).substring(add);
 }
 
+class Leaderboard {
+  constructor(size, mode, mode2, type, starting) {
+    this.size = size;
+    this.board = [];
+    this.mode = mode;
+    this.mode2 = mode2;
+    this.type = type;
+    if (starting !== undefined && starting !== null) {
+      starting.forEach((entry) => {
+        if (entry.mode === this.mode && entry.mode2 === this.mode2) {
+          this.board.push({
+            uid: entry.uid,
+            wpm: parseFloat(entry.wpm),
+            raw: parseFloat(entry.raw),
+            acc: parseFloat(entry.acc),
+            mode: entry.mode,
+            mode2: entry.mode2,
+            timestamp: entry.timestamp,
+          });
+        }
+      });
+    }
+    this.sortBoard();
+    this.clipBoard();
+  }
+  sortBoard() {
+    this.board.sort((a, b) => {
+      if (a.wpm === b.wpm) {
+        if (a.acc === b.acc) {
+          return a.timestamp - b.timestamp;
+        } else {
+          return b.acc - a.acc;
+        }
+      } else {
+        return b.wpm - a.wpm;
+      }
+    });
+  }
+  clipBoard() {
+    let boardLength = this.board.length;
+    if (boardLength > this.size) {
+      while (this.board.length !== this.size) {
+        this.board.pop();
+      }
+    }
+  }
+  logBoard() {
+    console.log(this.board);
+  }
+  removeDuplicates(insertedAt, uid) {
+    //return true if a better result is found
+    let found = false;
+    // let ret;
+    let foundAt = null;
+    if (this.board !== undefined) {
+      this.board.forEach((entry, index) => {
+        if (entry.uid === uid) {
+          if (found) {
+            this.board.splice(index, 1);
+            // if (index > insertedAt) {
+            //   //removed old result
+            //   ret = false;
+            // } else {
+            //   ret = true;
+            // }
+          } else {
+            found = true;
+            foundAt = index;
+          }
+        }
+      });
+    }
+    // console.log(ret);
+    // return ret;
+    return foundAt;
+  }
+  insert(a) {
+    let insertedAt = -1;
+    if (a.mode === this.mode && a.mode2 === this.mode2) {
+      this.board.forEach((b, index) => {
+        if (insertedAt !== -1) return;
+        if (a.wpm === b.wpm) {
+          if (a.acc === b.acc) {
+            if (a.timestamp < b.timestamp) {
+              this.board.splice(index, 0, {
+                uid: a.uid,
+                name: a.name,
+                wpm: parseFloat(a.wpm),
+                raw: parseFloat(a.rawWpm),
+                acc: parseFloat(a.acc),
+                mode: a.mode,
+                mode2: a.mode2,
+                timestamp: a.timestamp,
+              });
+              insertedAt = index;
+            }
+          } else {
+            if (a.acc > b.acc) {
+              this.board.splice(index, 0, {
+                uid: a.uid,
+                name: a.name,
+                wpm: parseFloat(a.wpm),
+                raw: parseFloat(a.rawWpm),
+                acc: parseFloat(a.acc),
+                mode: a.mode,
+                mode2: a.mode2,
+                timestamp: a.timestamp,
+              });
+              insertedAt = index;
+            }
+          }
+        } else {
+          if (a.wpm > b.wpm) {
+            this.board.splice(index, 0, {
+              uid: a.uid,
+              name: a.name,
+              wpm: parseFloat(a.wpm),
+              raw: parseFloat(a.rawWpm),
+              acc: parseFloat(a.acc),
+              mode: a.mode,
+              mode2: a.mode2,
+              timestamp: a.timestamp,
+            });
+            insertedAt = index;
+          }
+        }
+      });
+      if (this.board.length < this.size && insertedAt === -1) {
+        this.board.push({
+          uid: a.uid,
+          name: a.name,
+          wpm: parseFloat(a.wpm),
+          raw: parseFloat(a.rawWpm),
+          acc: parseFloat(a.acc),
+          mode: a.mode,
+          mode2: a.mode2,
+          timestamp: a.timestamp,
+        });
+        insertedAt = this.board.length - 1;
+      }
+      // console.log("before duplicate remove");
+      // console.log(this.board);
+      let newBest = false;
+      let foundAt = null;
+      if (insertedAt >= 0) {
+        // if (this.removeDuplicates(insertedAt, a.uid)) {
+        //   insertedAt = -2;
+        // }
+        foundAt = this.removeDuplicates(insertedAt, a.uid);
+
+        if (foundAt >= insertedAt) {
+          //new better result
+          newBest = true;
+        }
+      }
+      // console.log(this.board);
+      this.clipBoard();
+      return {
+        insertedAt: insertedAt,
+        newBest: newBest,
+        foundAt: foundAt,
+      };
+    } else {
+      return {
+        insertedAt: -999,
+      };
+    }
+  }
+}
+
 exports.generatePairingCode = functions.https.onCall((request, response) => {
   try {
     if (request === null) {
@@ -720,21 +986,224 @@ exports.generatePairingCode = functions.https.onCall((request, response) => {
   }
 });
 
-// exports.getConfig = functions.https.onCall((request,response) => {
-//     try{
-//         if(request.uid === undefined){
-//             console.error(`error getting config for ${request.uid} - missing input`);
-//             return -1;
-//         }
+async function checkLeaderboards(resultObj, type, banned, name) {
+  try {
+    if (!name)
+      return {
+        insertedAt: null,
+        noName: true,
+      };
+    if (banned)
+      return {
+        insertedAt: null,
+        banned: true,
+      };
+    if (
+      resultObj.mode === "time" &&
+      ["15", "60"].includes(String(resultObj.mode2)) &&
+      resultObj.language === "english"
+    ) {
+      return db
+        .collection("leaderboards")
+        .where("mode", "==", String(resultObj.mode))
+        .where("mode2", "==", String(resultObj.mode2))
+        .where("type", "==", type)
+        .get()
+        .then((ret) => {
+          if (ret.docs.length === 0) {
+            //no lb found, create
+            console.log(
+              `no ${resultObj.mode} ${resultObj.mode2} ${type} leaderboard found - creating`
+            );
+            let toAdd = {
+              size: 20,
+              mode: String(resultObj.mode),
+              mode2: String(resultObj.mode2),
+              type: type,
+            };
+            return db
+              .collection("leaderboards")
+              .doc(
+                `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`
+              )
+              .set(toAdd)
+              .then((ret) => {
+                return cont(
+                  `${String(resultObj.mode)}_${String(
+                    resultObj.mode2
+                  )}_${type}`,
+                  toAdd
+                );
+              });
+          } else {
+            //continue
+            return cont(
+              `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`,
+              ret.docs[0].data()
+            );
+          }
+        });
 
-//         return admin.firestore().collection(`users`).doc(request.uid).get().then(e => {
-//             return e.data().config;
-//         }).catch(e => {
-//             console.error(`error getting config from DB for ${request.uid} - ${e.message}`);
-//             return -1;
-//         });
-//     }catch(e){
-//         console.error(`error getting config for ${request.uid} - ${e}`);
-//         return {resultCode:-999};
-//     }
-// })
+      function cont(docid, documentData) {
+        let boardInfo = documentData;
+        let boardData = boardInfo.board;
+
+        // console.log(`info ${JSON.stringify(boardInfo)}`);
+        // console.log(`data ${JSON.stringify(boardData)}`);
+
+        let lb = new Leaderboard(
+          boardInfo.size,
+          resultObj.mode,
+          resultObj.mode2,
+          boardInfo.type,
+          boardData
+        );
+
+        // console.log("board created");
+        // lb.logBoard();
+
+        let insertResult = lb.insert(resultObj);
+
+        // console.log("board after inseft");
+        // lb.logBoard();
+
+        if (insertResult.insertedAt >= 0) {
+          //update the database here
+          console.log(
+            `leaderboard changed ${resultObj.mode} ${
+              resultObj.mode2
+            } ${type} - ${JSON.stringify(lb.board)}`
+          );
+          db.collection("leaderboards").doc(docid).set(
+            {
+              size: lb.size,
+              type: lb.type,
+              board: lb.board,
+            },
+            { merge: true }
+          );
+        } else {
+          // console.log("board is the same");
+        }
+
+        return {
+          insertedAt: insertResult,
+        };
+      }
+    } else {
+      return {
+        insertedAt: null,
+      };
+    }
+  } catch (e) {
+    console.error(
+      `error while checking leaderboards - ${e} - ${type} ${resultObj}`
+    );
+    return null;
+  }
+}
+
+exports.getLeaderboard = functions.https.onCall((request, response) => {
+  return db
+    .collection("leaderboards")
+    .where("mode", "==", String(request.mode))
+    .where("mode2", "==", String(request.mode2))
+    .where("type", "==", String(request.type))
+    .get()
+    .then(async (data) => {
+      // console.log("got data");
+      if (data.docs.length === 0) return null;
+      let lbdata = data.docs[0].data();
+      if (lbdata.board !== undefined) {
+        // console.log("replacing users");
+
+        // for (let i = 0; i < lbdata.board.length; i++) {
+        //   await db
+        //     .collection("users")
+        //     .doc(lbdata.board[i].uid)
+        //     .get()
+        //     .then((doc) => {
+        //       if (
+        //         lbdata.board[i].uid !== null &&
+        //         lbdata.board[i].uid === request.uid
+        //       ) {
+        //         lbdata.board[i].currentUser = true;
+        //       }
+        //       lbdata.board[i].name = doc.data().name;
+        //       lbdata.board[i].uid = null;
+        //     });
+        // }
+
+        lbdata.board.forEach((boardentry) => {
+          if (boardentry.uid !== null && boardentry.uid === request.uid) {
+            boardentry.currentUser = true;
+          }
+          boardentry.uid = null;
+        });
+
+        // console.log(lbdata);
+        if (request.type === "daily") {
+          let resetTime = new Date(Date.now());
+          resetTime.setHours(0, 0, 0, 0);
+          resetTime.setDate(resetTime.getUTCDate() + 1);
+          resetTime = resetTime.valueOf();
+          lbdata.resetTime = resetTime;
+        }
+
+        return lbdata;
+      } else {
+        if (
+          lbdata.board === undefined ||
+          lbdata.board === [] ||
+          lbdata.board.length === 0
+        ) {
+          return lbdata;
+        } else {
+          return [];
+        }
+      }
+    });
+});
+
+exports.scheduledFunctionCrontab = functions.pubsub
+  .schedule("00 00 * * *")
+  .timeZone("Africa/Abidjan")
+  .onRun((context) => {
+    try {
+      console.log("moving daily leaderboards to history");
+      db.collection("leaderboards")
+        .where("type", "==", "daily")
+        .get()
+        .then((res) => {
+          res.docs.forEach((doc) => {
+            let lbdata = doc.data();
+            t = new Date();
+            db.collection("leaderboards_history")
+              .doc(
+                `${t.getUTCDate()}_${t.getUTCMonth()}_${t.getUTCFullYear()}_${
+                  lbdata.mode
+                }_${lbdata.mode2}`
+              )
+              .set(lbdata);
+            db.collection("leaderboards").doc(doc.id).set(
+              {
+                board: [],
+              },
+              { merge: true }
+            );
+          });
+        });
+      return null;
+    } catch (e) {
+      console.error(`error while moving daily leaderboards to history - ${e}`);
+    }
+  });
+
+async function announceLbUpdate(discordId, pos, lb, wpm) {
+  db.collection("bot-commands").add({
+    command: "updateRole",
+    arguments: [discordId, pos, lb, wpm],
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
+}
