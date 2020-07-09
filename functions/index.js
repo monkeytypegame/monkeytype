@@ -382,25 +382,10 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                   userdata.discordId !== null &&
                   userdata.discordId !== undefined
                 ) {
-                  let besttime60 = 0;
-                  try {
-                    userdata.personalBests.time[60].forEach((result) => {
-                      if (result.wpm > besttime60) besttime60 = result.wpm;
-                    });
-                  } catch (e) {
-                    besttime60 = 0;
-                  }
-
-                  if (obj.wpm >= besttime60) {
-                    console.log(
-                      `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
-                    );
-                    updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
-                  } else {
-                    console.log(
-                      `not updating role for user ${request.uid} higher pb found ${besttime60} than ${obj.wpm}`
-                    );
-                  }
+                  console.log(
+                    `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                  );
+                  updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
                   return;
                 }
                 return 2;
