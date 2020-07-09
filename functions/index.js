@@ -1107,7 +1107,9 @@ async function checkLeaderboards(resultObj, type, banned, name) {
 
         // console.log("board created");
         // lb.logBoard();
-
+        console.log(
+          `inserting result by user ${resultObj.uid} ${resultObj.wpm} ${resultObj.rawWpm} ${resultObj.acc} into leaderboard ${resultObj.mode} ${resultObj.mode2} ${type}`
+        );
         let insertResult = lb.insert(resultObj);
 
         // console.log("board after inseft");
