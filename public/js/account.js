@@ -397,6 +397,11 @@ Object.keys(words).forEach((language) => {
       " "
     )}</div>`
   );
+  if (language === "english_expanded") {
+    $(".pageAccount .content .filterButtons .buttons.languages").append(
+      `<div class="button" filter="english_10k">english 10k</div>`
+    );
+  }
 });
 
 let activeFilters = ["all"];
