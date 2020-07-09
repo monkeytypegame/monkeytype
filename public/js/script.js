@@ -1106,8 +1106,16 @@ function showResult(difficultyFailed = false) {
                   "Possible bot detected. Result not saved.",
                   4000
                 );
+              } else if (e.data.resultCode === -3) {
+                showNotification(
+                  "Could not verify. Result not saved. Refresh or contact Miodec on Discord.",
+                  4000
+                );
               } else if (e.data.resultCode === -999) {
-                showNotification("Internal error. Result not saved.", 4000);
+                showNotification(
+                  "Internal error. Result not saved. Refresh or contact Miodec on Discord.",
+                  6000
+                );
               } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                 dbSnapshot.results.unshift(completedEvent);
                 try {

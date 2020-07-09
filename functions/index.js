@@ -449,6 +449,8 @@ exports.testCompleted = functions.https.onCall((request, response) => {
               );
               return { resultCode: -2 };
             }
+          } else {
+            return { resultCode: -3 };
           }
         }
 
