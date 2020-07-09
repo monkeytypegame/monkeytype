@@ -389,11 +389,11 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           request.obj
         )}`
       );
-      return -1;
+      return { resultCode: -1 };
     }
 
     if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
-      return -1;
+      return { resultCode: -1 };
     }
 
     let keySpacing = null;
