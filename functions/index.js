@@ -1080,3 +1080,12 @@ exports.scheduledFunctionCrontab = functions.pubsub
       console.error(`error while moving daily leaderboards to history - ${e}`);
     }
   });
+
+async function announceLbUpdate(discordId, pos, lb, wpm) {
+  db.collection("bot-commands").add({
+    command: "updateRole",
+    arguments: [discordId, pos, lb, wpm],
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
+}
