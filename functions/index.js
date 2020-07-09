@@ -433,28 +433,29 @@ exports.testCompleted = functions.https.onCall((request, response) => {
         request.obj.name = name;
 
         //check keyspacing and duration here
-        if (!verified) {
-          if (
-            keySpacing !== null &&
-            keyDuration !== null &&
-            obj.mode === "time"
-          ) {
+        if(obj.mode === "time"){
+          if (!verified) {
             if (
-              keySpacing.sd < 15 ||
-              keyDuration.sd < 15 ||
-              keyDuration.average < 15
+              keySpacing !== null &&
+              keyDuration !== null &&
             ) {
-              console.error(
-                `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
-                  obj.acc
-                }) ${request.uid} ${name} - spacing ${JSON.stringify(
-                  keySpacing
-                )} duration ${JSON.stringify(keyDuration)}`
-              );
-              return { resultCode: -2 };
+              if (
+                keySpacing.sd < 15 ||
+                keyDuration.sd < 15 ||
+                keyDuration.average < 15
+              ) {
+                console.error(
+                  `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
+                    obj.acc
+                  }) ${request.uid} ${name} - spacing ${JSON.stringify(
+                    keySpacing
+                  )} duration ${JSON.stringify(keyDuration)}`
+                );
+                return { resultCode: -2 };
+              }
+            } else {
+              return { resultCode: -3 };
             }
-          } else {
-            return { resultCode: -3 };
           }
         }
 
