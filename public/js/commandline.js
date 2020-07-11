@@ -165,6 +165,15 @@ let commands = {
       },
     },
     {
+      id: "changeTimerColor",
+      display: "Change timer color...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsTimerColor);
+        showCommandLine();
+      },
+    },
+    {
       id: "changeTheme",
       display: "Change theme...",
       subgroup: true,
@@ -286,6 +295,40 @@ let commandsTimerStyle = {
       display: "text",
       exec: () => {
         setTimerStyle("text");
+      },
+    },
+  ],
+};
+
+let commandsTimerColor = {
+  title: "Change timer color...",
+  list: [
+    {
+      id: "setTimerColorBlack",
+      display: "black",
+      exec: () => {
+        setTimerColor("bar");
+      },
+    },
+    {
+      id: "setTimerColorSub",
+      display: "sub",
+      exec: () => {
+        setTimerColor("sub");
+      },
+    },
+    {
+      id: "setTimerColorText",
+      display: "text",
+      exec: () => {
+        setTimerColor("text");
+      },
+    },
+    {
+      id: "setTimerColorMain",
+      display: "main",
+      exec: () => {
+        setTimerColor("main");
       },
     },
   ],
