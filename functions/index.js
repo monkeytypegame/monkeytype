@@ -146,7 +146,11 @@ exports.checkIfNeedsToChangeName = functions.https.onCall(
         .doc(request.uid)
         .get()
         .then((doc) => {
-          if (doc.data().name === undefined) {
+          if (
+            doc.data().name === undefined ||
+            doc.data().name === null ||
+            doc.data().name === ""
+          ) {
             return admin
               .auth()
               .getUser(request.uid)
