@@ -218,6 +218,12 @@ function verifyUsername() {
   });
 }
 
+function getuid() {
+  console.error("Only share this uid with Miodec and nobody else!");
+  console.log(firebase.auth().currentUser.uid);
+  console.error("Only share this uid with Miodec and nobody else!");
+}
+
 function getLastChar(word) {
   return word.charAt(word.length - 1);
 }
