@@ -1232,6 +1232,7 @@ exports.scheduledFunctionCrontab = functions.pubsub
         .then((res) => {
           res.docs.forEach((doc) => {
             let lbdata = doc.data();
+            announceDailyLbResult(lbdata);
             t = new Date();
             db.collection("leaderboards_history")
               .doc(
@@ -1258,6 +1259,15 @@ async function announceLbUpdate(discordId, pos, lb, wpm) {
   db.collection("bot-commands").add({
     command: "sayLbUpdate",
     arguments: [discordId, pos, lb, wpm],
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
+}
+
+async function announceDailyLbResult(lbdata) {
+  db.collection("bot-commands").add({
+    command: "announceDailyLbResult",
+    arguments: [lbdata],
     executed: false,
     requestTimestamp: Date.now(),
   });
