@@ -532,7 +532,7 @@ a:hover {
   width: 100vw;
   /*   height: 0.5rem; */
   height: 0.5rem;
-  background: var(--sub-color);
+  background: black;
   /*   background: #0f0f0f; */
   /*   background: red; */
   // transition: 1s linear; 
@@ -555,12 +555,39 @@ a:hover {
 }
 
 #timerNumber {
-  bottom: 4rem;
+  bottom: 6rem;
   transition: none;
 }
 
+#liveWpm.timerMain,
+#timerNumber.timerMain {
+  color: var(--main-color);
+}
+
+#timer.timerMain {
+  background: var(--main-color);
+}
+
+#liveWpm.timerSub,
+#timerNumber.timerSub {
+  color: var(--sub-color);
+}
+
+#timer.timerSub {
+  background: var(--sub-color);
+}
+
+#liveWpm.timerText,
+#timerNumber.timerText {
+  color: var(--text-color);
+}
+
+#timer.timerText {
+  background: var(--text-color);
+}
+
 #liveWpm {
-  top: 4rem;
+  top: 6rem;
 }
 
 

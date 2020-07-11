@@ -587,16 +587,32 @@ function highlightBadWord(index, showError) {
 function showTimer() {
   if (!config.showTimerBar) return;
   if (config.timerStyle === "bar") {
+    let op = 0.25;
+    if (
+      $("#timerNumber").hasClass("timerSub") ||
+      $("#timerNumber").hasClass("timerText") ||
+      $("#timerNumber").hasClass("timerMain")
+    ) {
+      op = 1;
+    }
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
-        opacity: 1,
+        opacity: op,
       },
       250
     );
   } else if (config.timerStyle === "text" && config.mode === "time") {
+    let op = 0.25;
+    if (
+      $("#timerNumber").hasClass("timerSub") ||
+      $("#timerNumber").hasClass("timerText") ||
+      $("#timerNumber").hasClass("timerMain")
+    ) {
+      op = 1;
+    }
     $("#timerNumber").stop(true, true).removeClass("hidden").animate(
       {
-        opacity: 0.25,
+        opacity: op,
       },
       250
     );
@@ -618,6 +634,34 @@ function hideTimer() {
       },
       125
     );
+  }
+}
+
+function changeTimerColor(color) {
+  $("#timer").removeClass("timerSub");
+  $("#timer").removeClass("timerText");
+  $("#timer").removeClass("timerMain");
+
+  $("#timerNumber").removeClass("timerSub");
+  $("#timerNumber").removeClass("timerText");
+  $("#timerNumber").removeClass("timerMain");
+
+  $("#liveWpm").removeClass("timerSub");
+  $("#liveWpm").removeClass("timerText");
+  $("#liveWpm").removeClass("timerMain");
+
+  if (color === "main") {
+    $("#timer").addClass("timerMain");
+    $("#timerNumber").addClass("timerMain");
+    $("#liveWpm").addClass("timerMain");
+  } else if (color === "sub") {
+    $("#timer").addClass("timerSub");
+    $("#timerNumber").addClass("timerSub");
+    $("#liveWpm").addClass("timerSub");
+  } else if (color === "text") {
+    $("#timer").addClass("timerText");
+    $("#timerNumber").addClass("timerText");
+    $("#liveWpm").addClass("timerText");
   }
 }
 
@@ -1104,7 +1148,7 @@ function showResult(difficultyFailed = false) {
               obj: completedEvent,
             }).then((e) => {
               accountIconLoading(false);
-              console.log(JSON.stringify(e.data));
+              // console.log(JSON.stringify(e.data));
               if (e.data.resultCode === -1) {
                 showNotification("Could not save result", 3000);
               } else if (e.data.resultCode === -2) {
@@ -1673,7 +1717,15 @@ function updateLiveWpm(wpm) {
 function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
-  $("#liveWpm").css("opacity", 0.25);
+  let op = 0.25;
+  if (
+    $("#liveWpm").hasClass("timerSub") ||
+    $("#liveWpm").hasClass("timerText") ||
+    $("#liveWpm").hasClass("timerMain")
+  ) {
+    op = 1;
+  }
+  $("#liveWpm").css("opacity", op);
 }
 
 function hideLiveWpm() {
