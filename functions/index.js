@@ -525,7 +525,6 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                       `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
                     );
                     updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
-                    return;
                   }
                   returnobj.resultCode = 2;
                 } else {
@@ -536,9 +535,6 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                   );
                   returnobj.resultCode = 1;
                 }
-                console.error(
-                  `user ${request.uid} + ${JSON.stringify(returnobj)}`
-                );
                 return returnobj;
               })
               .catch((e) => {
