@@ -1149,6 +1149,10 @@ function showResult(difficultyFailed = false) {
             }).then((e) => {
               accountIconLoading(false);
               // console.log(JSON.stringify(e.data));
+              if (e.data == null) {
+                showNotification("Unexpected response from the server.", 4000);
+                return;
+              }
               if (e.data.resultCode === -1) {
                 showNotification("Could not save result", 3000);
               } else if (e.data.resultCode === -2) {
@@ -1162,8 +1166,10 @@ function showResult(difficultyFailed = false) {
                   4000
                 );
               } else if (e.data.resultCode === -999) {
+                console.error("internal error: " + e.data.message);
                 showNotification(
-                  "Internal error. Result not saved. Refresh or contact Miodec on Discord.",
+                  "Internal error. Result might not be saved. " +
+                    e.data.message,
                   6000
                 );
               } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
@@ -1285,8 +1291,6 @@ function showResult(difficultyFailed = false) {
                     );
                   }
                 }
-              } else {
-                showNotification("Unexpected response from the server.", 4000);
               }
             });
           });
@@ -2123,6 +2127,11 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
           5000
         );
       }
+    } else {
+      showNotification(
+        "Custom word amount can only be set between 1 and 10000",
+        3000
+      );
     }
   } else {
     changeWordCount(wrd);
@@ -2142,6 +2151,8 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
           5000
         );
       }
+    } else {
+      showNotification("Custom time can only be set between 1 and 3600", 3000);
     }
   } else {
     changeTimeConfig(time);
