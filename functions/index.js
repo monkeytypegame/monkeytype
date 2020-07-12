@@ -536,7 +536,9 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                   );
                   returnobj.resultCode = 1;
                 }
-                // console.log(returnobj);
+                console.error(
+                  `user ${request.uid} + ${JSON.stringify(returnobj)}`
+                );
                 return returnobj;
               })
               .catch((e) => {
