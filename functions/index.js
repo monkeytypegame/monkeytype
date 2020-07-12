@@ -13,18 +13,12 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
+const db = admin.firestore();
 
 exports.moveResults = functions
   .runWith({ timeoutSeconds: 540, memory: "2GB" })
   .https.onCall((request, response) => {
-    return admin
-      .firestore()
+    return db
       .collection("results")
       .orderBy("timestamp", "desc")
       .limit(2000)
@@ -33,15 +27,8 @@ exports.moveResults = functions
         data.docs.forEach((doc) => {
           let result = doc.data();
           if (result.moved === undefined || result.moved === false) {
-            admin
-              .firestore()
-              .collection(`results`)
-              .doc(doc.id)
-              .update({ moved: true });
-            admin
-              .firestore()
-              .collection(`users/${result.uid}/results`)
-              .add(result);
+            db.collection(`results`).doc(doc.id).update({ moved: true });
+            db.collection(`users/${result.uid}/results`).add(result);
             console.log(`moving doc ${doc.id}`);
           }
         });
@@ -73,7 +60,7 @@ function getAllUsers() {
 
 function isUsernameValid(name) {
   if (name === null || name === undefined || name === "") return false;
-  if (/miodec/.test(name)) return false;
+  if (/miodec/.test(name.toLowerCase())) return false;
   if (name.length > 12) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
@@ -154,63 +141,96 @@ exports.changeName = functions.https.onCall((request, response) => {
 exports.checkIfNeedsToChangeName = functions.https.onCall(
   (request, response) => {
     try {
-      return admin
-        .auth()
-        .getUser(request.uid)
-        .then((requestUser) => {
-          if (!isUsernameValid(requestUser.displayName)) {
-            //invalid name, needs to change
-            console.log(
-              `user ${requestUser.uid} ${requestUser.displayName} needs to change name`
-            );
-            return 1;
-          } else {
-            //valid name, but need to change if not duplicate
-
-            return getAllUsers().then((users) => {
-              let sameName = [];
-
-              //look for name names
-              users.forEach((user) => {
-                if (user.uid !== requestUser.uid) {
-                  try {
-                    if (
-                      user.displayName.toLowerCase() ===
-                      requestUser.displayName.toLowerCase()
-                    ) {
-                      sameName.push(user);
-                    }
-                  } catch (e) {
-                    //
-                  }
-                }
-              });
-
-              if (sameName.length === 0) {
-                return 0;
-              } else {
-                //check when the request user made the account compared to others
-                let earliestTimestamp = 999999999999999;
-                sameName.forEach((sn) => {
-                  let ts = new Date(sn.metadata.creationTime).getTime() / 1000;
-                  if (ts <= earliestTimestamp) {
-                    earliestTimestamp = ts;
-                  }
-                });
-
-                if (
-                  new Date(requestUser.metadata.creationTime).getTime() / 1000 >
-                  earliestTimestamp
-                ) {
+      return db
+        .collection("users")
+        .doc(request.uid)
+        .get()
+        .then((doc) => {
+          if (
+            doc.data().name === undefined ||
+            doc.data().name === null ||
+            doc.data().name === ""
+          ) {
+            return admin
+              .auth()
+              .getUser(request.uid)
+              .then((requestUser) => {
+                if (!isUsernameValid(requestUser.displayName)) {
+                  //invalid name, needs to change
                   console.log(
                     `user ${requestUser.uid} ${requestUser.displayName} needs to change name`
                   );
-                  return 2;
+                  return 1;
                 } else {
-                  return 0;
+                  //valid name, but need to change if not duplicate
+
+                  return getAllUsers()
+                    .then((users) => {
+                      let sameName = [];
+
+                      //look for name names
+                      users.forEach((user) => {
+                        if (user.uid !== requestUser.uid) {
+                          try {
+                            if (
+                              user.displayName.toLowerCase() ===
+                              requestUser.displayName.toLowerCase()
+                            ) {
+                              sameName.push(user);
+                            }
+                          } catch (e) {
+                            //
+                          }
+                        }
+                      });
+
+                      if (sameName.length === 0) {
+                        db.collection("users")
+                          .doc(request.uid)
+                          .update({ name: requestUser.displayName })
+                          .then(() => {
+                            return 0;
+                          });
+                      } else {
+                        //check when the request user made the account compared to others
+                        let earliestTimestamp = 999999999999999;
+                        sameName.forEach((sn) => {
+                          let ts =
+                            new Date(sn.metadata.creationTime).getTime() / 1000;
+                          if (ts <= earliestTimestamp) {
+                            earliestTimestamp = ts;
+                          }
+                        });
+
+                        if (
+                          new Date(
+                            requestUser.metadata.creationTime
+                          ).getTime() /
+                            1000 >
+                          earliestTimestamp
+                        ) {
+                          console.log(
+                            `user ${requestUser.uid} ${requestUser.displayName} needs to change name`
+                          );
+                          return 2;
+                        } else {
+                          db.collection("users")
+                            .doc(request.uid)
+                            .update({ name: requestUser.displayName })
+                            .then(() => {
+                              return 0;
+                            });
+                        }
+                      }
+                    })
+                    .catch((e) => {
+                      console.error(`error getting all users - ${e}`);
+                    });
                 }
-              }
-            });
+              });
+          } else {
+            console.log("name is good");
+            return 0;
           }
         });
     } catch (e) {
@@ -220,8 +240,7 @@ exports.checkIfNeedsToChangeName = functions.https.onCall(
 );
 
 function checkIfPB(uid, obj) {
-  return admin
-    .firestore()
+  return db
     .collection(`users`)
     .doc(uid)
     .get()
@@ -233,8 +252,7 @@ function checkIfPB(uid, obj) {
           throw new Error("pb is undefined");
         }
       } catch (e) {
-        return admin
-          .firestore()
+        return db
           .collection("users")
           .doc(uid)
           .update({
@@ -255,8 +273,7 @@ function checkIfPB(uid, obj) {
             return true;
           })
           .catch((e) => {
-            return admin
-              .firestore()
+            return db
               .collection("users")
               .doc(uid)
               .set({
@@ -283,6 +300,9 @@ function checkIfPB(uid, obj) {
       let toUpdate = false;
       let found = false;
       try {
+        if (pbs[obj.mode][obj.mode2] === undefined) {
+          pbs[obj.mode][obj.mode2] = [];
+        }
         pbs[obj.mode][obj.mode2].forEach((pb) => {
           if (
             pb.punctuation === obj.punctuation &&
@@ -326,8 +346,7 @@ function checkIfPB(uid, obj) {
       }
 
       if (toUpdate) {
-        return admin
-          .firestore()
+        return db
           .collection("users")
           .doc(uid)
           .update({ personalBests: pbs })
@@ -340,11 +359,19 @@ function checkIfPB(uid, obj) {
     });
 }
 
+function stdDev(array) {
+  const n = array.length;
+  const mean = array.reduce((a, b) => a + b) / n;
+  return Math.sqrt(
+    array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+  );
+}
+
 exports.testCompleted = functions.https.onCall((request, response) => {
   try {
     if (request.uid === undefined || request.obj === undefined) {
       console.error(`error saving result for ${request.uid} - missing input`);
-      return -1;
+      return { resultCode: -999 };
     }
 
     let obj = request.obj;
@@ -366,45 +393,183 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           request.obj
         )}`
       );
-      return -1;
+      return { resultCode: -1 };
     }
 
     if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
-      return -1;
+      return { resultCode: -1 };
     }
 
-    return admin
-      .firestore()
-      .collection(`users/${request.uid}/results`)
-      .add(obj)
-      .then((e) => {
-        return checkIfPB(request.uid, request.obj).then((e) => {
-          if (e) {
-            console.log(
-              `saved result for ${request.uid} (new PB) - ${JSON.stringify(
-                request.obj
-              )}`
-            );
-            return 2;
-          } else {
-            console.log(
-              `saved result for ${request.uid} - ${JSON.stringify(request.obj)}`
-            );
-            return 1;
+    let keySpacing = null;
+    let keyDuration = null;
+
+    try {
+      keySpacing = {
+        average:
+          obj.keySpacing.reduce((previous, current) => (current += previous)) /
+          obj.keySpacing.length,
+        sd: stdDev(obj.keySpacing),
+      };
+
+      keyDuration = {
+        average:
+          obj.keyDuration.reduce((previous, current) => (current += previous)) /
+          obj.keyDuration.length,
+        sd: stdDev(obj.keyDuration),
+      };
+    } catch (e) {
+      console.error(
+        `cant verify key spacing or duration! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
+      );
+    }
+
+    return db
+      .collection("users")
+      .doc(request.uid)
+      .get()
+      .then((ret) => {
+        let userdata = ret.data();
+        let name = userdata.name === undefined ? false : userdata.name;
+        let banned = userdata.banned === undefined ? false : userdata.banned;
+        let verified =
+          userdata.verified === undefined ? false : userdata.verified;
+
+        request.obj.name = name;
+
+        //check keyspacing and duration here
+        if (obj.mode === "time") {
+          if (!verified) {
+            if (keySpacing !== null && keyDuration !== null) {
+              if (
+                keySpacing.sd < 15 ||
+                keyDuration.sd < 15 ||
+                keyDuration.average < 15
+              ) {
+                console.error(
+                  `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
+                    obj.acc
+                  }) ${request.uid} ${name} - spacing ${JSON.stringify(
+                    keySpacing
+                  )} duration ${JSON.stringify(keyDuration)}`
+                );
+                return { resultCode: -2 };
+              }
+            } else {
+              return { resultCode: -3 };
+            }
           }
-        });
+        }
+
+        return db
+          .collection(`users/${request.uid}/results`)
+          .add(obj)
+          .then((e) => {
+            return Promise.all([
+              checkLeaderboards(request.obj, "global", banned, name),
+              checkLeaderboards(request.obj, "daily", banned, name),
+              checkIfPB(request.uid, request.obj),
+            ]).then((values) => {
+              let globallb = values[0].insertedAt;
+              let dailylb = values[1].insertedAt;
+              let ispb = values[2];
+              // console.log(values);
+
+              let usr =
+                userdata.discordId !== undefined
+                  ? userdata.discordId
+                  : userdata.name;
+
+              if (
+                globallb !== null &&
+                [1, 2, 3].includes(globallb.insertedAt + 1) &&
+                globallb.newBest
+              ) {
+                let lbstring = `${obj.mode} ${obj.mode2} global`;
+                console.log(
+                  `sending command to the bot to announce lb update ${
+                    userdata.discordId
+                  } ${globallb + 1} ${lbstring} ${obj.wpm}`
+                );
+
+                announceLbUpdate(
+                  usr,
+                  globallb.insertedAt + 1,
+                  lbstring,
+                  obj.wpm
+                );
+              }
+
+              let returnobj = {
+                resultCode: null,
+                globalLeaderboard: globallb,
+                dailyLeaderboard: dailylb,
+                lbBanned: banned,
+                name: name,
+              };
+              request.obj.keySpacing = "removed";
+              request.obj.keyDuration = "removed";
+              if (ispb) {
+                console.log(
+                  `saved result for ${request.uid} (new PB) - ${JSON.stringify(
+                    request.obj
+                  )}`
+                );
+                if (
+                  obj.mode === "time" &&
+                  String(obj.mode2) === "60" &&
+                  userdata.discordId !== null &&
+                  userdata.discordId !== undefined
+                ) {
+                  console.log(
+                    `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                  );
+                  updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
+                  return;
+                }
+                returnobj.resultCode = 2;
+              } else {
+                console.log(
+                  `saved result for ${request.uid} - ${JSON.stringify(
+                    request.obj
+                  )}`
+                );
+                returnobj.resultCode = 1;
+              }
+              // console.log(returnobj);
+              return returnobj;
+            });
+          })
+          .catch((e) => {
+            console.error(
+              `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
+            );
+            return { resultCode: -999 };
+          });
       })
       .catch((e) => {
         console.error(
-          `error saving result when checking for PB for ${request.uid} - ${e.message}`
+          `error saving result when getting user data for ${request.uid} - ${e.message}`
         );
-        return -1;
+        return { resultCode: -999 };
       });
   } catch (e) {
-    console.error(`error saving result for ${request.uid} - ${e}`);
-    return -1;
+    console.error(
+      `error saving result for ${request.uid} - ${JSON.stringify(
+        request.obj
+      )} - ${e}`
+    );
+    return { resultCode: -999 };
   }
 });
+
+function updateDiscordRole(discordId, wpm) {
+  db.collection("bot-commands").add({
+    command: "updateRole",
+    arguments: [discordId, wpm],
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
+}
 
 function isTagValid(name) {
   if (name === null || name === undefined || name === "") return false;
@@ -417,8 +582,7 @@ exports.addTag = functions.https.onCall((request, response) => {
     if (!isTagValid(request.name)) {
       return { resultCode: -1 };
     } else {
-      return admin
-        .firestore()
+      return db
         .collection(`users/${request.uid}/tags`)
         .add({
           name: request.name,
@@ -448,8 +612,7 @@ exports.editTag = functions.https.onCall((request, response) => {
     if (!isTagValid(request.name)) {
       return { resultCode: -1 };
     } else {
-      return admin
-        .firestore()
+      return db
         .collection(`users/${request.uid}/tags`)
         .doc(request.tagid)
         .update({
@@ -476,8 +639,7 @@ exports.editTag = functions.https.onCall((request, response) => {
 
 exports.removeTag = functions.https.onCall((request, response) => {
   try {
-    return admin
-      .firestore()
+    return db
       .collection(`users/${request.uid}/tags`)
       .doc(request.tagid)
       .delete()
@@ -506,8 +668,7 @@ exports.updateResultTags = functions.https.onCall((request, response) => {
       if (!/^[0-9a-zA-Z]+$/.test(tag)) validTags = false;
     });
     if (validTags) {
-      return admin
-        .firestore()
+      return db
         .collection(`users/${request.uid}/results`)
         .doc(request.resultid)
         .update({
@@ -578,8 +739,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
       return -1;
     }
 
-    return admin
-      .firestore()
+    return db
       .collection(`users`)
       .doc(request.uid)
       .set(
@@ -603,21 +763,516 @@ exports.saveConfig = functions.https.onCall((request, response) => {
   }
 });
 
-// exports.getConfig = functions.https.onCall((request,response) => {
-//     try{
-//         if(request.uid === undefined){
-//             console.error(`error getting config for ${request.uid} - missing input`);
-//             return -1;
-//         }
+function generate(n) {
+  var add = 1,
+    max = 12 - add;
 
-//         return admin.firestore().collection(`users`).doc(request.uid).get().then(e => {
-//             return e.data().config;
-//         }).catch(e => {
-//             console.error(`error getting config from DB for ${request.uid} - ${e.message}`);
-//             return -1;
-//         });
-//     }catch(e){
-//         console.error(`error getting config for ${request.uid} - ${e}`);
-//         return {resultCode:-999};
-//     }
-// })
+  if (n > max) {
+    return generate(max) + generate(n - max);
+  }
+
+  max = Math.pow(10, n + add);
+  var min = max / 10; // Math.pow(10, n) basically
+  var number = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  return ("" + number).substring(add);
+}
+
+class Leaderboard {
+  constructor(size, mode, mode2, type, starting) {
+    this.size = size;
+    this.board = [];
+    this.mode = mode;
+    this.mode2 = parseInt(mode2);
+    this.type = type;
+    if (starting !== undefined && starting !== null) {
+      starting.forEach((entry) => {
+        if (
+          entry.mode == this.mode &&
+          parseInt(entry.mode2) === parseInt(this.mode2)
+        ) {
+          this.board.push({
+            uid: entry.uid,
+            name: entry.name,
+            wpm: parseFloat(entry.wpm),
+            raw: parseFloat(entry.raw),
+            acc: parseFloat(entry.acc),
+            mode: entry.mode,
+            mode2: parseInt(entry.mode2),
+            timestamp: entry.timestamp,
+          });
+        }
+      });
+    }
+    this.sortBoard();
+    this.clipBoard();
+  }
+  sortBoard() {
+    this.board.sort((a, b) => {
+      if (a.wpm === b.wpm) {
+        if (a.acc === b.acc) {
+          return a.timestamp - b.timestamp;
+        } else {
+          return b.acc - a.acc;
+        }
+      } else {
+        return b.wpm - a.wpm;
+      }
+    });
+  }
+  clipBoard() {
+    let boardLength = this.board.length;
+    if (boardLength > this.size) {
+      while (this.board.length !== this.size) {
+        this.board.pop();
+      }
+    }
+  }
+  logBoard() {
+    console.log(this.board);
+  }
+  removeDuplicates(insertedAt, uid) {
+    //return true if a better result is found
+    let found = false;
+    // let ret;
+    let foundAt = null;
+    if (this.board !== undefined) {
+      this.board.forEach((entry, index) => {
+        if (entry.uid === uid) {
+          if (found) {
+            this.board.splice(index, 1);
+            // if (index > insertedAt) {
+            //   //removed old result
+            //   ret = false;
+            // } else {
+            //   ret = true;
+            // }
+          } else {
+            found = true;
+            foundAt = index;
+          }
+        }
+      });
+    }
+    // console.log(ret);
+    // return ret;
+    return foundAt;
+  }
+  insert(a) {
+    let insertedAt = -1;
+    if (a.mode == this.mode && parseInt(a.mode2) === parseInt(this.mode2)) {
+      this.board.forEach((b, index) => {
+        if (insertedAt !== -1) return;
+        if (a.wpm === b.wpm) {
+          if (a.acc === b.acc) {
+            if (a.timestamp < b.timestamp) {
+              this.board.splice(index, 0, {
+                uid: a.uid,
+                name: a.name,
+                wpm: parseFloat(a.wpm),
+                raw: parseFloat(a.rawWpm),
+                acc: parseFloat(a.acc),
+                mode: a.mode,
+                mode2: parseInt(a.mode2),
+                timestamp: a.timestamp,
+              });
+              insertedAt = index;
+            }
+          } else {
+            if (a.acc > b.acc) {
+              this.board.splice(index, 0, {
+                uid: a.uid,
+                name: a.name,
+                wpm: parseFloat(a.wpm),
+                raw: parseFloat(a.rawWpm),
+                acc: parseFloat(a.acc),
+                mode: a.mode,
+                mode2: parseInt(a.mode2),
+                timestamp: a.timestamp,
+              });
+              insertedAt = index;
+            }
+          }
+        } else {
+          if (a.wpm > b.wpm) {
+            this.board.splice(index, 0, {
+              uid: a.uid,
+              name: a.name,
+              wpm: parseFloat(a.wpm),
+              raw: parseFloat(a.rawWpm),
+              acc: parseFloat(a.acc),
+              mode: a.mode,
+              mode2: parseInt(a.mode2),
+              timestamp: a.timestamp,
+            });
+            insertedAt = index;
+          }
+        }
+      });
+      if (this.board.length < this.size && insertedAt === -1) {
+        this.board.push({
+          uid: a.uid,
+          name: a.name,
+          wpm: parseFloat(a.wpm),
+          raw: parseFloat(a.rawWpm),
+          acc: parseFloat(a.acc),
+          mode: a.mode,
+          mode2: parseInt(a.mode2),
+          timestamp: a.timestamp,
+        });
+        insertedAt = this.board.length - 1;
+      }
+      // console.log("before duplicate remove");
+      // console.log(this.board);
+      let newBest = false;
+      let foundAt = null;
+      if (insertedAt >= 0) {
+        // if (this.removeDuplicates(insertedAt, a.uid)) {
+        //   insertedAt = -2;
+        // }
+        foundAt = this.removeDuplicates(insertedAt, a.uid);
+
+        if (foundAt >= insertedAt) {
+          //new better result
+          newBest = true;
+        }
+      }
+      // console.log(this.board);
+      this.clipBoard();
+      return {
+        insertedAt: insertedAt,
+        newBest: newBest,
+        foundAt: foundAt,
+      };
+    } else {
+      return {
+        insertedAt: -999,
+      };
+    }
+  }
+}
+
+exports.generatePairingCode = functions.https.onCall((request, response) => {
+  try {
+    if (request === null) {
+      console.error(
+        `error while trying to generate discord pairing code - no input`
+      );
+      return {
+        status: -999,
+      };
+    }
+
+    return db
+      .collection("users")
+      .doc(request.uid)
+      .get()
+      .then((userDoc) => {
+        userDocData = userDoc.data();
+        if (userDocData.discordPairingCode !== undefined) {
+          console.log(
+            `user ${request.uid} already has code ${userDocData.discordPairingCode}`
+          );
+          return {
+            status: 2,
+            pairingCode: userDocData.discordPairingCode,
+          };
+        } else {
+          return db
+            .collection("users")
+            .get()
+            .then((res) => {
+              let existingCodes = [];
+
+              res.docs.forEach((doc) => {
+                let docData = doc.data();
+                if (docData.discordPairingCode !== undefined) {
+                  existingCodes.push(docData.discordPairingCode);
+                }
+              });
+
+              console.log(`existing codes ${JSON.stringify(existingCodes)}`);
+
+              let randomCode = generate(9);
+
+              while (existingCodes.includes(randomCode)) {
+                randomCode = generate(9);
+              }
+
+              return db
+                .collection("users")
+                .doc(request.uid)
+                .update(
+                  {
+                    discordPairingCode: randomCode,
+                  },
+                  { merge: true }
+                )
+                .then((res) => {
+                  console.log(
+                    `generated ${randomCode} for user ${request.uid}`
+                  );
+                  return {
+                    status: 1,
+                    pairingCode: randomCode,
+                  };
+                })
+                .catch((e) => {
+                  console.error(
+                    `error while trying to set discord pairing code ${randomCode} for user ${request.uid} - ${e}`
+                  );
+                  return {
+                    status: -999,
+                  };
+                });
+            });
+        }
+      });
+  } catch (e) {
+    console.error(
+      `error while trying to generate discord pairing code for user ${request.uid} - ${e}`
+    );
+    return {
+      status: -999,
+    };
+  }
+});
+
+async function checkLeaderboards(resultObj, type, banned, name) {
+  // return {
+  //   insertedAt: null,
+  // };
+  try {
+    if (!name)
+      return {
+        insertedAt: null,
+        noName: true,
+      };
+    if (banned)
+      return {
+        insertedAt: null,
+        banned: true,
+      };
+    if (
+      resultObj.mode === "time" &&
+      ["15", "60"].includes(String(resultObj.mode2)) &&
+      resultObj.language === "english"
+    ) {
+      return db
+        .collection("leaderboards")
+        .where("mode", "==", String(resultObj.mode))
+        .where("mode2", "==", String(resultObj.mode2))
+        .where("type", "==", type)
+        .get()
+        .then((ret) => {
+          if (ret.docs.length === 0) {
+            //no lb found, create
+            console.log(
+              `no ${resultObj.mode} ${resultObj.mode2} ${type} leaderboard found - creating`
+            );
+            let toAdd = {
+              size: 20,
+              mode: String(resultObj.mode),
+              mode2: String(resultObj.mode2),
+              type: type,
+            };
+            return db
+              .collection("leaderboards")
+              .doc(
+                `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`
+              )
+              .set(toAdd)
+              .then((ret) => {
+                return cont(
+                  `${String(resultObj.mode)}_${String(
+                    resultObj.mode2
+                  )}_${type}`,
+                  toAdd
+                );
+              });
+          } else {
+            //continue
+            return cont(
+              `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`,
+              ret.docs[0].data()
+            );
+          }
+        });
+
+      function cont(docid, documentData) {
+        let boardInfo = documentData;
+        let boardData = boardInfo.board;
+
+        // console.log(`info ${JSON.stringify(boardInfo)}`);
+        // console.log(`data ${JSON.stringify(boardData)}`);
+
+        let lb = new Leaderboard(
+          boardInfo.size,
+          resultObj.mode,
+          resultObj.mode2,
+          boardInfo.type,
+          boardData
+        );
+
+        // console.log("board created");
+        // lb.logBoard();
+        console.log(
+          `inserting result by user ${resultObj.uid} ${resultObj.wpm} ${resultObj.rawWpm} ${resultObj.acc} into leaderboard ${resultObj.mode} ${resultObj.mode2} ${type}`
+        );
+        let insertResult = lb.insert(resultObj);
+
+        // console.log("board after inseft");
+        // lb.logBoard();
+
+        if (insertResult.insertedAt >= 0) {
+          //update the database here
+          console.log(
+            `leaderboard changed ${resultObj.mode} ${
+              resultObj.mode2
+            } ${type} - ${JSON.stringify(lb.board)}`
+          );
+          db.collection("leaderboards").doc(docid).set(
+            {
+              size: lb.size,
+              type: lb.type,
+              board: lb.board,
+            },
+            { merge: true }
+          );
+        } else {
+          // console.log("board is the same");
+        }
+
+        return {
+          insertedAt: insertResult,
+        };
+      }
+    } else {
+      return {
+        insertedAt: null,
+      };
+    }
+  } catch (e) {
+    console.error(
+      `error while checking leaderboards - ${e} - ${type} ${resultObj}`
+    );
+    return {
+      insertedAt: null,
+    };
+  }
+}
+
+exports.getLeaderboard = functions.https.onCall((request, response) => {
+  return db
+    .collection("leaderboards")
+    .where("mode", "==", String(request.mode))
+    .where("mode2", "==", String(request.mode2))
+    .where("type", "==", String(request.type))
+    .get()
+    .then(async (data) => {
+      // console.log("got data");
+      if (data.docs.length === 0) return null;
+      let lbdata = data.docs[0].data();
+      if (lbdata.board !== undefined) {
+        // console.log("replacing users");
+
+        // for (let i = 0; i < lbdata.board.length; i++) {
+        //   await db
+        //     .collection("users")
+        //     .doc(lbdata.board[i].uid)
+        //     .get()
+        //     .then((doc) => {
+        //       if (
+        //         lbdata.board[i].uid !== null &&
+        //         lbdata.board[i].uid === request.uid
+        //       ) {
+        //         lbdata.board[i].currentUser = true;
+        //       }
+        //       lbdata.board[i].name = doc.data().name;
+        //       lbdata.board[i].uid = null;
+        //     });
+        // }
+
+        lbdata.board.forEach((boardentry) => {
+          if (boardentry.uid !== null && boardentry.uid === request.uid) {
+            boardentry.currentUser = true;
+          }
+          boardentry.uid = null;
+        });
+
+        // console.log(lbdata);
+        if (request.type === "daily") {
+          let resetTime = new Date(Date.now());
+          resetTime.setHours(0, 0, 0, 0);
+          resetTime.setDate(resetTime.getUTCDate() + 1);
+          resetTime = resetTime.valueOf();
+          lbdata.resetTime = resetTime;
+        }
+
+        return lbdata;
+      } else {
+        if (
+          lbdata.board === undefined ||
+          lbdata.board === [] ||
+          lbdata.board.length === 0
+        ) {
+          return lbdata;
+        } else {
+          return [];
+        }
+      }
+    });
+});
+
+exports.scheduledFunctionCrontab = functions.pubsub
+  .schedule("00 00 * * *")
+  .timeZone("Africa/Abidjan")
+  .onRun((context) => {
+    try {
+      console.log("moving daily leaderboards to history");
+      db.collection("leaderboards")
+        .where("type", "==", "daily")
+        .get()
+        .then((res) => {
+          res.docs.forEach((doc) => {
+            let lbdata = doc.data();
+            announceDailyLbResult(lbdata);
+            t = new Date();
+            db.collection("leaderboards_history")
+              .doc(
+                `${t.getUTCDate()}_${t.getUTCMonth()}_${t.getUTCFullYear()}_${
+                  lbdata.mode
+                }_${lbdata.mode2}`
+              )
+              .set(lbdata);
+            db.collection("leaderboards").doc(doc.id).set(
+              {
+                board: [],
+              },
+              { merge: true }
+            );
+          });
+        });
+      return null;
+    } catch (e) {
+      console.error(`error while moving daily leaderboards to history - ${e}`);
+    }
+  });
+
+async function announceLbUpdate(discordId, pos, lb, wpm) {
+  db.collection("bot-commands").add({
+    command: "sayLbUpdate",
+    arguments: [discordId, pos, lb, wpm],
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
+}
+
+async function announceDailyLbResult(lbdata) {
+  db.collection("bot-commands").add({
+    command: "announceDailyLbResult",
+    arguments: [lbdata],
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
+}

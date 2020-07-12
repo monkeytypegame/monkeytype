@@ -29,6 +29,17 @@ let accuracyStats = {
   incorrect: 0,
 };
 
+let keypressStats = {
+  spacing: {
+    current: -1,
+    array: [],
+  },
+  duration: {
+    current: -1,
+    array: [],
+  },
+};
+
 let customText = "The quick brown fox jumps over the lazy dog".split(" ");
 let randomQuote = null;
 
@@ -38,6 +49,9 @@ const editTag = firebase.functions().httpsCallable("editTag");
 const removeTag = firebase.functions().httpsCallable("removeTag");
 const updateResultTags = firebase.functions().httpsCallable("updateResultTags");
 const saveConfig = firebase.functions().httpsCallable("saveConfig");
+const generatePairingCode = firebase
+  .functions()
+  .httpsCallable("generatePairingCode");
 
 function smooth(arr, windowSize, getter = (value) => value, setter) {
   const get = getter;
@@ -202,6 +216,12 @@ function verifyUsername() {
       });
     }
   });
+}
+
+function getuid() {
+  console.error("Only share this uid with Miodec and nobody else!");
+  console.log(firebase.auth().currentUser.uid);
+  console.error("Only share this uid with Miodec and nobody else!");
 }
 
 function getLastChar(word) {
@@ -567,16 +587,32 @@ function highlightBadWord(index, showError) {
 function showTimer() {
   if (!config.showTimerBar) return;
   if (config.timerStyle === "bar") {
-    $("#timerWrapper").animate(
+    let op = 0.25;
+    if (
+      $("#timerNumber").hasClass("timerSub") ||
+      $("#timerNumber").hasClass("timerText") ||
+      $("#timerNumber").hasClass("timerMain")
+    ) {
+      op = 1;
+    }
+    $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
-        opacity: 1,
+        opacity: op,
       },
       250
     );
   } else if (config.timerStyle === "text" && config.mode === "time") {
-    $("#timerNumber").animate(
+    let op = 0.25;
+    if (
+      $("#timerNumber").hasClass("timerSub") ||
+      $("#timerNumber").hasClass("timerText") ||
+      $("#timerNumber").hasClass("timerMain")
+    ) {
+      op = 1;
+    }
+    $("#timerNumber").stop(true, true).removeClass("hidden").animate(
       {
-        opacity: 0.25,
+        opacity: op,
       },
       250
     );
@@ -585,19 +621,47 @@ function showTimer() {
 
 function hideTimer() {
   if (config.timerStyle === "bar") {
-    $("#timerWrapper").animate(
+    $("#timerWrapper").stop(true, true).animate(
       {
         opacity: 0,
       },
       125
     );
   } else if (config.timerStyle === "text") {
-    $("#timerNumber").animate(
+    $("#timerNumber").stop(true, true).animate(
       {
         opacity: 0,
       },
       125
     );
+  }
+}
+
+function changeTimerColor(color) {
+  $("#timer").removeClass("timerSub");
+  $("#timer").removeClass("timerText");
+  $("#timer").removeClass("timerMain");
+
+  $("#timerNumber").removeClass("timerSub");
+  $("#timerNumber").removeClass("timerText");
+  $("#timerNumber").removeClass("timerMain");
+
+  $("#liveWpm").removeClass("timerSub");
+  $("#liveWpm").removeClass("timerText");
+  $("#liveWpm").removeClass("timerMain");
+
+  if (color === "main") {
+    $("#timer").addClass("timerMain");
+    $("#timerNumber").addClass("timerMain");
+    $("#liveWpm").addClass("timerMain");
+  } else if (color === "sub") {
+    $("#timer").addClass("timerSub");
+    $("#timerNumber").addClass("timerSub");
+    $("#liveWpm").addClass("timerSub");
+  } else if (color === "text") {
+    $("#timer").addClass("timerText");
+    $("#timerNumber").addClass("timerText");
+    $("#liveWpm").addClass("timerText");
   }
 }
 
@@ -905,6 +969,9 @@ function showResult(difficultyFailed = false) {
     // 'margin-bottom': 0
   });
 
+  $("#result .stats .leaderboards .bottom").text("");
+  $("#result .stats .leaderboards").addClass("hidden");
+
   let mode2 = "";
   if (config.mode === "time") {
     mode2 = config.time;
@@ -1005,6 +1072,8 @@ function showResult(difficultyFailed = false) {
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTags,
+      keySpacing: keypressStats.spacing.array,
+      keyDuration: keypressStats.duration.array,
     };
     if (
       config.difficulty == "normal" ||
@@ -1072,14 +1141,32 @@ function showResult(difficultyFailed = false) {
               );
               wpmOverTimeChart.update({ duration: 0 });
             }
+            $("#result .stats .leaderboards").removeClass("hidden");
+            $("#result .stats .leaderboards .bottom").html("checking...");
             testCompleted({
               uid: firebase.auth().currentUser.uid,
               obj: completedEvent,
             }).then((e) => {
               accountIconLoading(false);
-              if (e.data === -1) {
+              // console.log(JSON.stringify(e.data));
+              if (e.data.resultCode === -1) {
                 showNotification("Could not save result", 3000);
-              } else if (e.data === 1 || e.data === 2) {
+              } else if (e.data.resultCode === -2) {
+                showNotification(
+                  "Possible bot detected. Result not saved.",
+                  4000
+                );
+              } else if (e.data.resultCode === -3) {
+                showNotification(
+                  "Could not verify. Result not saved. Refresh or contact Miodec on Discord.",
+                  4000
+                );
+              } else if (e.data.resultCode === -999) {
+                showNotification(
+                  "Internal error. Result not saved. Refresh or contact Miodec on Discord.",
+                  6000
+                );
+              } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                 dbSnapshot.results.unshift(completedEvent);
                 try {
                   firebase
@@ -1088,7 +1175,93 @@ function showResult(difficultyFailed = false) {
                 } catch (e) {
                   console.log("Analytics unavailable");
                 }
-                if (e.data === 2) {
+
+                //global
+                let globalLbString = "";
+                if (e.data.globalLeaderboard === null) {
+                  globalLbString = "global: not found";
+                } else if (e.data.globalLeaderboard.insertedAt === -1) {
+                  globalLbString = "global: not qualified";
+                } else if (e.data.globalLeaderboard.insertedAt >= 0) {
+                  if (e.data.globalLeaderboard.newBest) {
+                    let pos = e.data.globalLeaderboard.insertedAt + 1;
+                    let numend = "th";
+                    if (pos === 1) {
+                      numend = "st";
+                    } else if (pos === 2) {
+                      numend = "nd";
+                    } else if (pos === 3) {
+                      numend = "rd";
+                    }
+                    globalLbString = `global: ${pos}${numend} place`;
+                  } else {
+                    let pos = e.data.globalLeaderboard.foundAt + 1;
+                    let numend = "th";
+                    if (pos === 1) {
+                      numend = "st";
+                    } else if (pos === 2) {
+                      numend = "nd";
+                    } else if (pos === 3) {
+                      numend = "rd";
+                    }
+                    globalLbString = `global: already ${pos}${numend}`;
+                  }
+                }
+
+                //daily
+                let dailyLbString = "";
+                if (e.data.dailyLeaderboard === null) {
+                  dailyLbString = "daily: not found";
+                } else if (e.data.dailyLeaderboard.insertedAt === -1) {
+                  dailyLbString = "daily: not qualified";
+                } else if (e.data.dailyLeaderboard.insertedAt >= 0) {
+                  if (e.data.dailyLeaderboard.newBest) {
+                    let pos = e.data.dailyLeaderboard.insertedAt + 1;
+                    let numend = "th";
+                    if (pos === 1) {
+                      numend = "st";
+                    } else if (pos === 2) {
+                      numend = "nd";
+                    } else if (pos === 3) {
+                      numend = "rd";
+                    }
+                    dailyLbString = `daily: ${pos}${numend} place`;
+                  } else {
+                    let pos = e.data.dailyLeaderboard.foundAt + 1;
+                    let numend = "th";
+                    if (pos === 1) {
+                      numend = "st";
+                    } else if (pos === 2) {
+                      numend = "nd";
+                    } else if (pos === 3) {
+                      numend = "rd";
+                    }
+                    dailyLbString = `daily: already ${pos}${numend}`;
+                  }
+                }
+                if (
+                  e.data.dailyLeaderboard === null &&
+                  e.data.globalLeaderboard === null &&
+                  e.data.lbBanned === false &&
+                  e.data.name !== false
+                ) {
+                  $("#result .stats .leaderboards").addClass("hidden");
+                } else {
+                  $("#result .stats .leaderboards").removeClass("hidden");
+                  if (e.data.lbBanned) {
+                    $("#result .stats .leaderboards .bottom").html("banned");
+                  } else if (e.data.name === false) {
+                    $("#result .stats .leaderboards .bottom").html(
+                      "update your name to access leaderboards"
+                    );
+                  } else {
+                    $("#result .stats .leaderboards .bottom").html(
+                      globalLbString + "<br>" + dailyLbString
+                    );
+                  }
+                }
+
+                if (e.data.resultCode === 2) {
                   //new pb
                   if (!localPb) {
                     showNotification(
@@ -1112,6 +1285,8 @@ function showResult(difficultyFailed = false) {
                     );
                   }
                 }
+              } else {
+                showNotification("Unexpected response from the server.", 4000);
               }
             });
           });
@@ -1139,6 +1314,7 @@ function showResult(difficultyFailed = false) {
   if (firebase.auth().currentUser != null) {
     $("#result .loginTip").addClass("hidden");
   } else {
+    $("#result .stats .leaderboards").addClass("hidden");
     $("#result .loginTip").removeClass("hidden");
   }
 
@@ -1257,6 +1433,16 @@ function restartTest(withSameWordset = false) {
   currentErrorCount = 0;
   currentTestLine = 0;
   activeWordJumped = false;
+  keypressStats = {
+    spacing: {
+      current: -1,
+      array: [],
+    },
+    duration: {
+      current: -1,
+      array: [],
+    },
+  };
   hideTimer();
   // restartTimer();
   let el = null;
@@ -1531,7 +1717,15 @@ function updateLiveWpm(wpm) {
 function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
-  $("#liveWpm").css("opacity", 0.25);
+  let op = 0.25;
+  if (
+    $("#liveWpm").hasClass("timerSub") ||
+    $("#liveWpm").hasClass("timerText") ||
+    $("#liveWpm").hasClass("timerMain")
+  ) {
+    op = 1;
+  }
+  $("#liveWpm").css("opacity", op);
 }
 
 function hideLiveWpm() {
@@ -1978,8 +2172,12 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
 
 $(document).on("click", "#top #menu .icon-button", (e) => {
   if ($(e.currentTarget).hasClass("discord")) return;
-  href = $(e.currentTarget).attr("href");
-  changePage(href.replace("/", ""));
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    showLeaderboards();
+  } else {
+    href = $(e.currentTarget).attr("href");
+    changePage(href.replace("/", ""));
+  }
 });
 
 $(window).on("popstate", (e) => {
@@ -2107,6 +2305,16 @@ $(document).keypress(function (event) {
     updateActiveElement();
     updateTimer();
     clearIntervals();
+    keypressStats = {
+      spacing: {
+        current: -1,
+        array: [],
+      },
+      duration: {
+        current: -1,
+        array: [],
+      },
+    };
     timers.push(
       setInterval(function () {
         time++;
@@ -2158,6 +2366,7 @@ $(document).keypress(function (event) {
   } else {
     accuracyStats.correct++;
   }
+
   currentKeypressCount++;
   currentInput += event["key"];
   $("#words .word.active").attr("input", currentInput);
@@ -2172,10 +2381,29 @@ $(document).keypress(function (event) {
   updateCaretPosition();
 });
 
+$(document).keydown((event) => {
+  keypressStats.duration.current = performance.now();
+});
+
+$(document).keyup((event) => {
+  let now = performance.now();
+  let diff = Math.abs(keypressStats.duration.current - now);
+  if (keypressStats.duration.current !== -1) {
+    keypressStats.duration.array.push(diff);
+  }
+  keypressStats.duration.current = now;
+});
+
 //handle keyboard events
 $(document).keydown((event) => {
-  //tab
+  let now = performance.now();
+  let diff = Math.abs(keypressStats.spacing.current - now);
+  if (keypressStats.spacing.current !== -1) {
+    keypressStats.spacing.array.push(diff);
+  }
+  keypressStats.spacing.current = now;
 
+  //tab
   if (event["keyCode"] == 9) {
     if (config.quickTab) {
       event.preventDefault();

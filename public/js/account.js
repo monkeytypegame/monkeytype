@@ -135,6 +135,11 @@ function signUp() {
             })
             .then(function () {
               // Update successful.
+              firebase
+                .firestore()
+                .collection("users")
+                .doc(usr.uid)
+                .set({ name: nname }, { merge: true });
               showNotification("Account created", 2000);
               $("#menu .icon-button.account .text").text(nname);
               try {
@@ -147,11 +152,12 @@ function signUp() {
             })
             .catch(function (error) {
               // An error happened.
+              console.error(error);
               usr
                 .delete()
                 .then(function () {
                   // User deleted.
-                  showNotification("Name invalid", 2000);
+                  showNotification("An error occured", 2000);
                   $(".pageLogin .preloader").addClass("hidden");
                 })
                 .catch(function (error) {
@@ -204,12 +210,13 @@ firebase.auth().onAuthStateChanged(function (user) {
         }
       });
       refreshTagsSettingsSection();
+      updateDiscordSettingsSection();
       if (cookieConfig === null) {
         applyConfig(dbSnapshot.config);
         // showNotification('Applying db config',3000);
         updateSettingsPage();
         saveConfigToCookie();
-      } else {
+      } else if (dbSnapshot.config !== undefined) {
         let configsDifferent = false;
         Object.keys(config).forEach((key) => {
           if (!configsDifferent) {
@@ -396,6 +403,11 @@ Object.keys(words).forEach((language) => {
       " "
     )}</div>`
   );
+  if (language === "english_expanded") {
+    $(".pageAccount .content .filterButtons .buttons.languages").append(
+      `<div class="button" filter="english_10k">english 10k</div>`
+    );
+  }
 });
 
 let activeFilters = ["all"];
@@ -650,9 +662,9 @@ function loadMoreLines() {
 
     $(".pageAccount .history table tbody").append(`
     <tr>
-    <td>${Math.round(result.wpm)}</td>
-    <td>${Math.round(raw)}</td>
-    <td>${Math.round(result.acc)}%</td>
+    <td>${result.wpm}</td>
+    <td>${raw}</td>
+    <td>${result.acc}%</td>
     <td>${result.correctChars}</td>
     <td>${result.incorrectChars}</td>
     <td>${result.mode} ${result.mode2}${withpunc}</td>

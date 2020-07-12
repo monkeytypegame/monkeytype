@@ -57,8 +57,11 @@ function updateSettingsPage() {
   setActiveDifficultyButton();
   setActiveCaretStyleButton();
   setActiveTimerStyleButton();
+  setActiveTimerColorButton();
   setActiveThemeTab();
   setCustomThemeInputs();
+
+  updateDiscordSettingsSection();
 
   if (config.showKeyTips) {
     $(".pageSettings .tip").removeClass("hidden");
@@ -178,6 +181,15 @@ function setActiveTimerStyleButton() {
   ).addClass("active");
 }
 
+function setActiveTimerColorButton() {
+  $(`.pageSettings .section.timerColor .buttons .button`).removeClass("active");
+  $(
+    `.pageSettings .section.timerColor .buttons .button[color=` +
+      config.timerColor +
+      `]`
+  ).addClass("active");
+}
+
 function setSettingsButton(buttonSection, tf) {
   if (tf) {
     $(
@@ -244,6 +256,62 @@ function toggleTag(tagid, nosave = false) {
   });
   updateTestModesNotice();
   if (!nosave) saveActiveTagsToCookie();
+}
+
+function updateDiscordSettingsSection() {
+  //no code and no discord
+  if (firebase.auth().currentUser == null) {
+    $(".pageSettings .section.discordIntegration").addClass("hidden");
+  } else {
+    if (dbSnapshot == null) return;
+    $(".pageSettings .section.discordIntegration").removeClass("hidden");
+
+    if (
+      dbSnapshot.pairingCode === undefined &&
+      dbSnapshot.discordId === undefined
+    ) {
+      //show button
+      $(".pageSettings .section.discordIntegration .howto").addClass("hidden");
+      $(".pageSettings .section.discordIntegration .buttons").removeClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
+      $(".pageSettings .section.discordIntegration .code").addClass("hidden");
+    } else if (
+      dbSnapshot.pairingCode !== undefined &&
+      dbSnapshot.discordId === undefined
+    ) {
+      //show code
+      $(".pageSettings .section.discordIntegration .code .bottom").text(
+        dbSnapshot.pairingCode
+      );
+      $(".pageSettings .section.discordIntegration .howtocode").text(
+        dbSnapshot.pairingCode
+      );
+      $(".pageSettings .section.discordIntegration .howto").removeClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .buttons").addClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
+      $(".pageSettings .section.discordIntegration .code").removeClass(
+        "hidden"
+      );
+    } else if (
+      dbSnapshot.pairingCode !== undefined &&
+      dbSnapshot.discordId !== undefined
+    ) {
+      $(".pageSettings .section.discordIntegration .howto").addClass("hidden");
+      $(".pageSettings .section.discordIntegration .buttons").addClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .info").removeClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .code").addClass("hidden");
+    }
+  }
 }
 
 //smooth caret
@@ -429,6 +497,14 @@ $(document).on("click", ".pageSettings .section.timerStyle .button", (e) => {
   setActiveTimerStyleButton();
 });
 
+//timer color
+$(document).on("click", ".pageSettings .section.timerColor .button", (e) => {
+  let color = $(e.currentTarget).attr("color");
+  setTimerColor(color);
+  // showNotification('Timer style updated', 1000);
+  setActiveTimerColorButton();
+});
+
 //blind mode
 $(".pageSettings .section.blindMode .buttons .button.on").click((e) => {
   setBlindMode(true);
@@ -487,6 +563,26 @@ $(".pageSettings .section.randomTheme .buttons .button.off").click((e) => {
   setRandomTheme(false);
   // showNotification('Colorful mode off', 1000);
   setSettingsButton("randomTheme", config.randomTheme);
+});
+
+//discord
+$(
+  ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
+).click((e) => {
+  showBackgroundLoader();
+  generatePairingCode({ uid: firebase.auth().currentUser.uid }).then((ret) => {
+    hideBackgroundLoader();
+    if (ret.data.status === 1 || ret.data.status === 2) {
+      dbSnapshot.pairingCode = ret.data.pairingCode;
+      $(".pageSettings .section.discordIntegration .code .bottom").text(
+        ret.data.pairingCode
+      );
+      $(".pageSettings .section.discordIntegration .howtocode").text(
+        ret.data.pairingCode
+      );
+      updateDiscordSettingsSection();
+    }
+  });
 });
 
 //tags

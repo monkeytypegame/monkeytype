@@ -225,7 +225,7 @@
     },
     {
         "name": "dualshot",
-        "bgColor": "#2d2e30",
+        "bgColor": "#737373",
         "textColor": "#212222"
     },
     {
@@ -244,8 +244,13 @@
         "textColor": "#0c100e"
     },
     {
-        "name": "red dragon",
+        "name": "red_dragon",
         "bgColor": "#1a0b0c",
         "textColor": "#ff3a32"
+    },
+    {
+        "name": "hammerhead",
+        "bgColor": "#030613",
+        "textColor": "#4fcdb9"
     }
 ]
