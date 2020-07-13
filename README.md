@@ -14,23 +14,16 @@ Monkey-type is a minimalistic, customisable typing test, featuring many test mod
 - command line
 - and much more
 
-# keybinds
-You can use `tab` and `enter` (or just `tab` if you have quick tab mode enabled) to restart the typing test. Open the command line by pressing `esc` - there you can access all the functionality you need without touching your mouse. 
-
-# stats
-- wpm - total amount of characters in the correctly typed words, divided by 5
-- acc - percentage of correctly pressed keys
-- key - correct characters / incorrect characters. Calculated after the test has ended
-
 # discord bot
 Recently, a Discord bot was added to autoassign roles. You can find the code for it over at https://github.com/Miodec/monkey-bot
 
 # bug report or feature request
-If you encounter a bug, or have a feature request - send me a message on Reddit, create an issue on GitHub or send me a message using the command line `esc`.
+If you encounter a bug, or have a feature request - send me a message on Reddit, create an issue or join the [Discord server](https://discord.com/invite/yENzqcB).
 
 # credits 
-montydrei for the name suggestion
-everyone who provided valuable feedback on the original reddit post for the prototype of this website
+Montydrei for the name suggestion
+Everyone who provided valuable feedback on the original reddit post for the prototype of this website
+Contributors that have helped with implementing various features, adding themes and more.
 
 # support
 If you wish to support further development and feeling extra awesome, you can do so [here](https://www.paypal.me/jackbartnik).
