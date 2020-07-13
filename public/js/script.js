@@ -621,32 +621,32 @@ function highlightBadWord(index, showError) {
 function showTimer() {
   if (!config.showTimerBar) return;
   if (config.timerStyle === "bar") {
-    let op = 0.25;
-    if (
-      $("#timerNumber").hasClass("timerSub") ||
-      $("#timerNumber").hasClass("timerText") ||
-      $("#timerNumber").hasClass("timerMain")
-    ) {
-      op = 1;
-    }
+    // let op = 0.25;
+    // if (
+    //   $("#timerNumber").hasClass("timerSub") ||
+    //   $("#timerNumber").hasClass("timerText") ||
+    //   $("#timerNumber").hasClass("timerMain")
+    // ) {
+    //   op = 1;
+    // }
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
-        opacity: op,
+        opacity: config.timerOpacity,
       },
       250
     );
   } else if (config.timerStyle === "text" && config.mode === "time") {
-    let op = 0.25;
-    if (
-      $("#timerNumber").hasClass("timerSub") ||
-      $("#timerNumber").hasClass("timerText") ||
-      $("#timerNumber").hasClass("timerMain")
-    ) {
-      op = 1;
-    }
+    // let op = 0.25;
+    // if (
+    //   $("#timerNumber").hasClass("timerSub") ||
+    //   $("#timerNumber").hasClass("timerText") ||
+    //   $("#timerNumber").hasClass("timerMain")
+    // ) {
+    //   op = 1;
+    // }
     $("#timerNumber").stop(true, true).removeClass("hidden").animate(
       {
-        opacity: op,
+        opacity: config.timerOpacity,
       },
       250
     );
@@ -1489,6 +1489,7 @@ function restartTest(withSameWordset = false) {
     },
   };
   hideTimer();
+  $("#timerNumber").css("opacity", 0);
   // restartTimer();
   let el = null;
   if (resultVisible) {
@@ -1498,7 +1499,6 @@ function restartTest(withSameWordset = false) {
     //words are being displayed
     el = $("#words");
   }
-
   if (resultVisible) {
     if (config.randomTheme) randomiseTheme();
     $("#words").stop(true, true).animate(
@@ -1784,15 +1784,10 @@ function updateLiveWpm(wpm) {
 function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
-  let op = 0.25;
-  if (
-    $("#liveWpm").hasClass("timerSub") ||
-    $("#liveWpm").hasClass("timerText") ||
-    $("#liveWpm").hasClass("timerMain")
-  ) {
-    op = 1;
+  $("#liveWpm").css("opacity", config.timerOpacity);
+  if (config.timerStyle === "text") {
+    $("#timerNumber").css("opacity", config.timerOpacity);
   }
-  $("#liveWpm").css("opacity", op);
 }
 
 function hideLiveWpm() {

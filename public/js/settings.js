@@ -58,6 +58,7 @@ function updateSettingsPage() {
   setActiveCaretStyleButton();
   setActiveTimerStyleButton();
   setActiveTimerColorButton();
+  setActiveTimerOpacityButton();
   setActiveThemeTab();
   setCustomThemeInputs();
 
@@ -187,6 +188,15 @@ function setActiveTimerColorButton() {
     `.pageSettings .section.timerColor .buttons .button[color=` +
       config.timerColor +
       `]`
+  ).addClass("active");
+}
+
+function setActiveTimerOpacityButton() {
+  $(`.pageSettings .section.timerOpacity .buttons .button`).removeClass("active");
+  $(
+    `.pageSettings .section.timerOpacity .buttons .button[opacity="` +
+      config.timerOpacity +
+      `"]`
   ).addClass("active");
 }
 
@@ -503,6 +513,14 @@ $(document).on("click", ".pageSettings .section.timerColor .button", (e) => {
   setTimerColor(color);
   // showNotification('Timer style updated', 1000);
   setActiveTimerColorButton();
+});
+
+//timer opacity
+$(document).on("click", ".pageSettings .section.timerOpacity .button", (e) => {
+  let opacity = $(e.currentTarget).attr("opacity");
+  setTimerOpacity(opacity);
+  // showNotification('Timer style updated', 1000);
+  setActiveTimerOpacityButton();
 });
 
 //blind mode
