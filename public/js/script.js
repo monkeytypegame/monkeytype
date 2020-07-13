@@ -163,8 +163,8 @@ function getReleasesFromGitHub() {
           <div class="release">
             <div class="title">${release.name}</div>
             <div class="date">${moment(release.published_at).format(
-              "DD MMM YYYY"
-            )}</div>
+            "DD MMM YYYY"
+          )}</div>
             <div class="body">${release.body.replace(/\r\n/g, "<br>")}</div>
           </div>
         `);
@@ -667,9 +667,12 @@ function changeTimerColor(color) {
 }
 
 function changeTimerOpacity(opacity) {
- if(opacity){
-    $("#timerNumber").css("opacity", opacity);
+  if (opacity) {
     $("#liveWpm").css("opacity", opacity);
+    if (config.timerStyle == "text") {
+      $("#timerNumber").css("opacity", opacity);
+      return
+    }
   }
 }
 
@@ -899,12 +902,12 @@ function calculateStats() {
       chars.incorrectChars +
       chars.extraChars) *
       (60 / testSeconds)) /
-      5
+    5
   );
   let acc = roundTo2(
     (accuracyStats.correct /
       (accuracyStats.correct + accuracyStats.incorrect)) *
-      100
+    100
   );
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
@@ -1060,7 +1063,7 @@ function showResult(difficultyFailed = false) {
           activeTags.push(tag.id);
         }
       });
-    } catch (e) {}
+    } catch (e) { }
 
     let completedEvent = {
       wpm: stats.wpm,
@@ -1380,7 +1383,7 @@ function showResult(difficultyFailed = false) {
         tagsText += "<br>" + tag.name;
       }
     });
-  } catch (e) {}
+  } catch (e) { }
 
   if (tagsText == "") {
     $("#result .stats .tags").addClass("hidden");
@@ -1725,15 +1728,8 @@ function updateLiveWpm(wpm) {
 function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
-  let op = 0.25;
-  if (
-    $("#liveWpm").hasClass("timerSub") ||
-    $("#liveWpm").hasClass("timerText") ||
-    $("#liveWpm").hasClass("timerMain")
-  ) {
-    op = 1;
-  }
-  $("#liveWpm").css("opacity", op);
+  $("#liveWpm").css("opacity", config.timerOpacity);
+  $("#timerNumber").css("opacity", config.timerOpacity);
 }
 
 function hideLiveWpm() {
@@ -2004,7 +2000,7 @@ function updateTestModesNotice() {
         )}</div>`
       );
     }
-  } catch (e) {}
+  } catch (e) { }
 
   if (anim) {
     $(".pageTest #testModesNotice")

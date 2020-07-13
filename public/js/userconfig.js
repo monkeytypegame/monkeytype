@@ -37,7 +37,7 @@ let defaultConfig = {
   colorfulMode: true,
   randomTheme: false,
   timerColor: "black",
-  timerOpacity: .25,
+  timerOpacity: "0.25",
 };
 
 let cookieConfig = null;
@@ -320,8 +320,8 @@ function setTimerOpacity(opacity, nosave) {
   if (opacity == null || opacity == undefined) {
     opacity = .25;
   }
-  config.timerOpacity = opacity;
   changeTimerOpacity(opacity);
+  config.timerOpacity = opacity;
   if (!nosave) saveConfigToCookie();
 }
 

@@ -194,9 +194,9 @@ function setActiveTimerColorButton() {
 function setActiveTimerOpacityButton() {
   $(`.pageSettings .section.timerOpacity .buttons .button`).removeClass("active");
   $(
-    `.pageSettings .section.timerOpacity .buttons .button[opacity=` +
+    `.pageSettings .section.timerOpacity .buttons .button[opacity="` +
       config.timerOpacity +
-      `]`
+      `"]`
   ).addClass("active");
 }
 

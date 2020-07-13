@@ -1,32 +1,33 @@
 :root {
-    --bg-color: #2E1A47;
-    --main-color: #f7f2ea;
-    --caret-color: #f7f2ea;
-    --sub-color: #c18fff;
-    --text-color: #f7f2ea;
-    --error-color: #F8BED6;
-    --error-extra-color: #F04E98;
-    --colorful-error-color: #F8BED6;
-    --colorful-error-extra-color: #F04E98;
-  }
-  
-  
-  #menu .icon-button:nth-child(1){
-    color: #F04E98;
-  }
-  
-  #menu .icon-button:nth-child(2){
-    color: #F8BED6;
-  }
-  
-  #menu .icon-button:nth-child(3){
-    color: #F6EB61;
-  }
-  
-  #menu .icon-button:nth-child(4){
-    color: #A4DBE8;
-  }
-  
-  #menu .icon-button:nth-child(5), #menu .icon-button:nth-child(6){
-    color: #a266ed;
-  }
+  --bg-color: #2E1A47;
+  --main-color: #f7f2ea;
+  --caret-color: #f7f2ea;
+  --sub-color: #c18fff;
+  --text-color: #f7f2ea;
+  --error-color: #F8BED6;
+  --error-extra-color: #F04E98;
+  --colorful-error-color: #F8BED6;
+  --colorful-error-extra-color: #F04E98;
+}
+
+
+#menu .icon-button:nth-child(1) {
+  color: #F04E98;
+}
+
+#menu .icon-button:nth-child(2) {
+  color: #F8BED6;
+}
+
+#menu .icon-button:nth-child(3) {
+  color: #F6EB61;
+}
+
+#menu .icon-button:nth-child(4) {
+  color: #A4DBE8;
+}
+
+#menu .icon-button:nth-child(5),
+#menu .icon-button:nth-child(6) {
+  color: #a266ed;
+}
