@@ -561,6 +561,7 @@ function compareInput(wrdIndex, input, showError) {
       }
     }
   }
+
   if (input.length < currentWord.length) {
     for (let i = input.length; i < currentWord.length; i++) {
       ret += "<letter>" + currentWord[i] + "</letter>";
@@ -662,6 +663,13 @@ function changeTimerColor(color) {
     $("#timer").addClass("timerText");
     $("#timerNumber").addClass("timerText");
     $("#liveWpm").addClass("timerText");
+  }
+}
+
+function changeTimerOpacity(opacity) {
+ if(opacity){
+    $("#timerNumber").css("opacity", opacity);
+    $("#liveWpm").css("opacity", opacity);
   }
 }
 

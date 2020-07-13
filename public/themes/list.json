@@ -252,5 +252,30 @@
         "name": "hammerhead",
         "bgColor": "#030613",
         "textColor": "#4fcdb9"
+    },
+    {
+        "name": "future funk",
+        "bgColor": "#2E1A47",
+        "textColor": "f7f2ea"
+    },
+    {
+        "name": "milkshake",
+        "bgColor": "#ffffff",
+        "textColor": "#212b43"
+    },
+    {
+        "name": "aether",
+        "bgColor": "#101820",
+        "textColor": "#cf6bdd"
+    },
+    {
+        "name": "froyo",
+        "bgColor": "#e1dacb",
+        "textColor": "#b29c5e"
+    },
+    {
+        "name": "retrocast",
+        "bgColor": "#07737a",
+        "textColor": "#88dbdf"
     }
 ]

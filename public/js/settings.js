@@ -190,6 +190,15 @@ function setActiveTimerColorButton() {
   ).addClass("active");
 }
 
+function setActiveTimerOpacityButton() {
+  $(`.pageSettings .section.timerOpacity .buttons .button`).removeClass("active");
+  $(
+    `.pageSettings .section.timerOpacity .buttons .button[color=` +
+      config.timerOpacity +
+      `]`
+  ).addClass("active");
+}
+
 function setSettingsButton(buttonSection, tf) {
   if (tf) {
     $(
@@ -503,6 +512,14 @@ $(document).on("click", ".pageSettings .section.timerColor .button", (e) => {
   setTimerColor(color);
   // showNotification('Timer style updated', 1000);
   setActiveTimerColorButton();
+});
+
+//timer opacity
+$(document).on("click", ".pageSettings .section.timerOpacity .button", (e) => {
+  let color = $(e.currentTarget).attr("opacity");
+  setTimerOpacity(color);
+  // showNotification('Timer style updated', 1000);
+  setActiveTimerOpacityButton();
 });
 
 //blind mode

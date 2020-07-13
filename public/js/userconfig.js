@@ -37,6 +37,7 @@ let defaultConfig = {
   colorfulMode: true,
   randomTheme: false,
   timerColor: "black",
+  timerOpacity: .25,
 };
 
 let cookieConfig = null;
@@ -130,6 +131,7 @@ function applyConfig(configObj) {
     setMaxConfidence(configObj.maxConfidence, true);
     setTimerStyle(configObj.timerStyle, true);
     setTimerColor(configObj.timerColor, true);
+    setTimerOpacity(configObj.timerOpacity, true);
     if (
       configObj.resultFilters == null ||
       configObj.resultFilters == undefined
@@ -312,6 +314,14 @@ function setTimerColor(color, nosave) {
   }
   config.timerColor = color;
   changeTimerColor(color);
+  if (!nosave) saveConfigToCookie();
+}
+function setTimerOpacity(opacity, nosave) {
+  if (opacity == null || opacity == undefined) {
+    opacity = .25;
+  }
+  config.timerOpacity = opacity;
+  changeTimerOpacity(opacity);
   if (!nosave) saveConfigToCookie();
 }
 
