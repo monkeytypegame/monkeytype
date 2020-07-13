@@ -157,7 +157,7 @@ let commands = {
     },
     {
       id: "changeTimerStyle",
-      display: "Change timer style...",
+      display: "Change timer/progress style...",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsTimerStyle);
@@ -166,7 +166,7 @@ let commands = {
     },
     {
       id: "changeTimerColor",
-      display: "Change timer color...",
+      display: "Change timer/progress color...",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsTimerColor);
@@ -175,7 +175,7 @@ let commands = {
     },
     {
       id: "changeTimerOpacity",
-      display: "Change timer opacity...",
+      display: "Change timer/progress opacity...",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsTimerOpacity);
@@ -290,7 +290,7 @@ let commandsCaretStyle = {
 };
 
 let commandsTimerStyle = {
-  title: "Change timer...",
+  title: "Change timer/progress style...",
   list: [
     {
       id: "setTimerStyleBar",
@@ -310,7 +310,7 @@ let commandsTimerStyle = {
 };
 
 let commandsTimerColor = {
-  title: "Change timer color...",
+  title: "Change timer/progress color...",
   list: [
     {
       id: "setTimerColorBlack",
@@ -350,21 +350,21 @@ let commandsTimerOpacity = {
       id: "setTimerOpacity.25",
       display: ".25",
       exec: () => {
-        setTimerOpacity(.25);
+        setTimerOpacity(0.25);
       },
     },
     {
       id: "setTimerOpacity.5",
       display: ".5",
       exec: () => {
-        setTimerOpacity(.5);
+        setTimerOpacity(0.5);
       },
     },
     {
       id: "setTimerOpacity.75",
       display: ".75",
       exec: () => {
-        setTimerOpacity(.75);
+        setTimerOpacity(0.75);
       },
     },
     {
