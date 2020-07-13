@@ -58,6 +58,7 @@ function updateSettingsPage() {
   setActiveCaretStyleButton();
   setActiveTimerStyleButton();
   setActiveTimerColorButton();
+  setActiveTimerOpacityButton();
   setActiveThemeTab();
   setCustomThemeInputs();
 
@@ -193,7 +194,7 @@ function setActiveTimerColorButton() {
 function setActiveTimerOpacityButton() {
   $(`.pageSettings .section.timerOpacity .buttons .button`).removeClass("active");
   $(
-    `.pageSettings .section.timerOpacity .buttons .button[color=` +
+    `.pageSettings .section.timerOpacity .buttons .button[opacity=` +
       config.timerOpacity +
       `]`
   ).addClass("active");
@@ -516,8 +517,8 @@ $(document).on("click", ".pageSettings .section.timerColor .button", (e) => {
 
 //timer opacity
 $(document).on("click", ".pageSettings .section.timerOpacity .button", (e) => {
-  let color = $(e.currentTarget).attr("opacity");
-  setTimerOpacity(color);
+  let opacity = $(e.currentTarget).attr("opacity");
+  setTimerOpacity(opacity);
   // showNotification('Timer style updated', 1000);
   setActiveTimerOpacityButton();
 });
