@@ -1252,22 +1252,22 @@ function showResult(difficultyFailed = false) {
                   if (e.data.globalLeaderboard.newBest) {
                     let pos = e.data.globalLeaderboard.insertedAt + 1;
                     let numend = "th";
-                    if (pos === 1) {
+                    if (pos % 10 === 1) {
                       numend = "st";
-                    } else if (pos === 2) {
+                    } else if (pos % 10 === 2) {
                       numend = "nd";
-                    } else if (pos === 3) {
+                    } else if (pos % 10 === 3) {
                       numend = "rd";
                     }
                     globalLbString = `global: ${pos}${numend} place`;
                   } else {
                     let pos = e.data.globalLeaderboard.foundAt + 1;
                     let numend = "th";
-                    if (pos === 1) {
+                    if (pos % 10 === 1) {
                       numend = "st";
-                    } else if (pos === 2) {
+                    } else if (pos % 10 === 2) {
                       numend = "nd";
-                    } else if (pos === 3) {
+                    } else if (pos % 10 === 3) {
                       numend = "rd";
                     }
                     globalLbString = `global: already ${pos}${numend}`;
