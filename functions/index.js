@@ -482,7 +482,8 @@ exports.testCompleted = functions.https.onCall((request, response) => {
 
                 if (
                   globallb !== null &&
-                  [1, 2, 3].includes(globallb.insertedAt + 1) &&
+                  globallb.insertedAt >= 0 &&
+                  globallb.insertedAt <= 9 &&
                   globallb.newBest
                 ) {
                   let lbstring = `${obj.mode} ${obj.mode2} global`;
