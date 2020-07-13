@@ -423,6 +423,9 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       );
     }
 
+    obj.keySpacing = "removed";
+    obj.keyDuration = "removed";
+
     return db
       .collection("users")
       .doc(request.uid)
@@ -508,8 +511,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                   lbBanned: banned,
                   name: name,
                 };
-                request.obj.keySpacing = "removed";
-                request.obj.keyDuration = "removed";
+
                 if (ispb) {
                   console.log(
                     `saved result for ${
