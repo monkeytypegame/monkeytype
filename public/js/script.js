@@ -1455,6 +1455,7 @@ function restartTest(withSameWordset = false) {
     },
   };
   hideTimer();
+  $("#timerNumber").css("opacity", 0);
   // restartTimer();
   let el = null;
   if (resultVisible) {
@@ -1464,7 +1465,6 @@ function restartTest(withSameWordset = false) {
     //words are being displayed
     el = $("#words");
   }
-
   if (resultVisible) {
     if (config.randomTheme) randomiseTheme();
     $("#words").stop(true, true).animate(
@@ -1729,7 +1729,9 @@ function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
   $("#liveWpm").css("opacity", config.timerOpacity);
-  $("#timerNumber").css("opacity", config.timerOpacity);
+  if(config.timerStyle === "text"){
+    $("#timerNumber").css("opacity", config.timerOpacity);    
+  }
 }
 
 function hideLiveWpm() {
