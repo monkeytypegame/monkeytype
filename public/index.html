@@ -37,6 +37,12 @@
     Important information about your account. Please click this message.
   </div>
   <div class="notification">Signed in</div>
+  <div id="customThemeShareWrapper" class="hidden">
+    <div id="customThemeShare" action="">
+      <input type="text">
+      <div class="button">ok</div>
+    </div>
+  </div>
   <div id="tagsWrapper" class="hidden">
     <div id="tagsEdit" action="" tagid="">
       <div class="title"></div>
@@ -999,7 +1005,10 @@
                 <label for="--colorful-error-extra-color">#e2b714</label>
                 <input type="color" value="" id="--colorful-error-extra-color">
               </span>
-              <div class="button saveCustomThemeButton" style="grid-column: 4;">Save</div>
+              <div style="grid-column: 3/5;display:grid;gap:1rem;grid-auto-flow: column;">
+                <div class="button" id="shareCustomThemeButton">share</div>
+                <div class="button saveCustomThemeButton">save</div>
+              </div>
             </div>
             <div tabContent="preset" class="tabContent buttons">
             </div>
