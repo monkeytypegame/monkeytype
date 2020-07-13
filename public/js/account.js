@@ -808,17 +808,19 @@ function refreshAccountPage() {
       //=======================================
 
       tt = 0;
-      if (result.timeDuration == null) {
-        //test finished before timeduration field was introduced - estimate
+      if (result.testDuration == undefined) {
+        //test finished before testDuration field was introduced - estimate
         if (result.mode == "time") {
           tt = parseFloat(result.mode2);
         } else if (result.mode == "words") {
           tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
         }
       } else {
-        tt = parseFloat(result.timeDuration);
+        tt = parseFloat(result.testDuration);
       }
-      if (result.restartCount != null) {
+      if (result.incompleteTestSeconds != undefined) {
+        tt += result.incompleteTestSeconds;
+      } else if (result.restartCount != undefined && result.restartCount > 0) {
         tt += (tt / 4) * result.restartCount;
       }
       totalSecondsFiltered += tt;
