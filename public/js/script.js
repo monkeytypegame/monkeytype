@@ -760,20 +760,30 @@ function updateTimer() {
       // $("#timerNumber").html(config.time - time);
     }
   } else if (
-    (config.mode === "words" ||
-      config.mode === "custom" ||
-      config.mode === "quote") &&
-    config.timerStyle === "bar"
+    config.mode === "words" ||
+    config.mode === "custom" ||
+    config.mode === "quote"
   ) {
-    let percent = Math.floor(((currentWordIndex + 1) / wordsList.length) * 100);
-    $("#timer")
-      .stop(true, true)
-      .animate(
-        {
-          width: percent + "vw",
-        },
-        250
+    if (config.timerStyle === "bar") {
+      let percent = Math.floor(
+        ((currentWordIndex + 1) / wordsList.length) * 100
       );
+      $("#timer")
+        .stop(true, true)
+        .animate(
+          {
+            width: percent + "vw",
+          },
+          250
+        );
+    } else if (config.timerStyle === "text") {
+      let outof = wordsList.length;
+      if (config.mode === "words") {
+        outof = config.words;
+      }
+      $("#timerNumber").html(`${inputHistory.length}/${outof}`);
+      // $("#timerNumber").html(config.time - time);
+    }
   }
 }
 
