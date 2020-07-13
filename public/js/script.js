@@ -163,8 +163,8 @@ function getReleasesFromGitHub() {
           <div class="release">
             <div class="title">${release.name}</div>
             <div class="date">${moment(release.published_at).format(
-            "DD MMM YYYY"
-          )}</div>
+              "DD MMM YYYY"
+            )}</div>
             <div class="body">${release.body.replace(/\r\n/g, "<br>")}</div>
           </div>
         `);
@@ -588,32 +588,32 @@ function highlightBadWord(index, showError) {
 function showTimer() {
   if (!config.showTimerBar) return;
   if (config.timerStyle === "bar") {
-    let op = 0.25;
-    if (
-      $("#timerNumber").hasClass("timerSub") ||
-      $("#timerNumber").hasClass("timerText") ||
-      $("#timerNumber").hasClass("timerMain")
-    ) {
-      op = 1;
-    }
+    // let op = 0.25;
+    // if (
+    //   $("#timerNumber").hasClass("timerSub") ||
+    //   $("#timerNumber").hasClass("timerText") ||
+    //   $("#timerNumber").hasClass("timerMain")
+    // ) {
+    //   op = 1;
+    // }
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
-        opacity: op,
+        opacity: config.timerOpacity,
       },
       250
     );
   } else if (config.timerStyle === "text" && config.mode === "time") {
-    let op = 0.25;
-    if (
-      $("#timerNumber").hasClass("timerSub") ||
-      $("#timerNumber").hasClass("timerText") ||
-      $("#timerNumber").hasClass("timerMain")
-    ) {
-      op = 1;
-    }
+    // let op = 0.25;
+    // if (
+    //   $("#timerNumber").hasClass("timerSub") ||
+    //   $("#timerNumber").hasClass("timerText") ||
+    //   $("#timerNumber").hasClass("timerMain")
+    // ) {
+    //   op = 1;
+    // }
     $("#timerNumber").stop(true, true).removeClass("hidden").animate(
       {
-        opacity: op,
+        opacity: config.timerOpacity,
       },
       250
     );
@@ -663,16 +663,6 @@ function changeTimerColor(color) {
     $("#timer").addClass("timerText");
     $("#timerNumber").addClass("timerText");
     $("#liveWpm").addClass("timerText");
-  }
-}
-
-function changeTimerOpacity(opacity) {
-  if (opacity) {
-    $("#liveWpm").css("opacity", opacity);
-    if (config.timerStyle == "text") {
-      $("#timerNumber").css("opacity", opacity);
-      return
-    }
   }
 }
 
@@ -902,12 +892,12 @@ function calculateStats() {
       chars.incorrectChars +
       chars.extraChars) *
       (60 / testSeconds)) /
-    5
+      5
   );
   let acc = roundTo2(
     (accuracyStats.correct /
       (accuracyStats.correct + accuracyStats.incorrect)) *
-    100
+      100
   );
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
@@ -1063,7 +1053,7 @@ function showResult(difficultyFailed = false) {
           activeTags.push(tag.id);
         }
       });
-    } catch (e) { }
+    } catch (e) {}
 
     let completedEvent = {
       wpm: stats.wpm,
@@ -1383,7 +1373,7 @@ function showResult(difficultyFailed = false) {
         tagsText += "<br>" + tag.name;
       }
     });
-  } catch (e) { }
+  } catch (e) {}
 
   if (tagsText == "") {
     $("#result .stats .tags").addClass("hidden");
@@ -1729,8 +1719,8 @@ function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
   $("#liveWpm").css("opacity", config.timerOpacity);
-  if(config.timerStyle === "text"){
-    $("#timerNumber").css("opacity", config.timerOpacity);    
+  if (config.timerStyle === "text") {
+    $("#timerNumber").css("opacity", config.timerOpacity);
   }
 }
 
@@ -2002,7 +1992,7 @@ function updateTestModesNotice() {
         )}</div>`
       );
     }
-  } catch (e) { }
+  } catch (e) {}
 
   if (anim) {
     $(".pageTest #testModesNotice")

@@ -318,9 +318,8 @@ function setTimerColor(color, nosave) {
 }
 function setTimerOpacity(opacity, nosave) {
   if (opacity == null || opacity == undefined) {
-    opacity = .25;
+    opacity = 0.25;
   }
-  changeTimerOpacity(opacity);
   config.timerOpacity = opacity;
   if (!nosave) saveConfigToCookie();
 }
