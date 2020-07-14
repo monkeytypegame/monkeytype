@@ -444,8 +444,8 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           if (!verified) {
             if (keySpacing !== null && keyDuration !== null) {
               if (
-                keySpacing.sd < 15 ||
-                keyDuration.sd < 15 ||
+                keySpacing.sd < 12 ||
+                keyDuration.sd < 12 ||
                 keyDuration.average < 15
               ) {
                 console.error(
