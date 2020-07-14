@@ -608,10 +608,13 @@ $(".pageAccount #currentConfigFilter").click((e) => {
   toggleFilterButton(`difficulty_${config.difficulty}`);
   config.resultFilters.push(`mode_${config.mode}`);
   toggleFilterButton(`mode_${config.mode}`);
-  config.resultFilters.push(`words_${config.words}`);
-  toggleFilterButton(`words_${config.words}`);
-  config.resultFilters.push(`time_${config.time}`);
-  toggleFilterButton(`time_${config.time}`);
+  if (config.mode === "time") {
+    config.resultFilters.push(`time_${config.time}`);
+    toggleFilterButton(`time_${config.time}`);
+  } else if (config.mode === "words") {
+    config.resultFilters.push(`words_${config.words}`);
+    toggleFilterButton(`words_${config.words}`);
+  }
   let puncfilter = config.punctuation ? "punc_on" : "punc_off";
   config.resultFilters.push(puncfilter);
   toggleFilterButton(puncfilter);
