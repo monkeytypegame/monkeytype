@@ -284,6 +284,11 @@
         "textColor": "#88dbdf"
     },
     {
+        "name": "luna",
+        "bgColor": "#221C35",
+        "textColor": "#88dbdf"
+    },
+    }
         "name": "graen",
         "bgColor": "#303c36",
         "textColor": "#a59682"
