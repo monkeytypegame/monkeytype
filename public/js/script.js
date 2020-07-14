@@ -23,6 +23,7 @@ let activeWordTop = 0;
 let activeWordJumped = false;
 let sameWordset = false;
 let quotes = [];
+let focusState = false;
 
 let accuracyStats = {
   correct: 0,
@@ -229,14 +230,15 @@ function getLastChar(word) {
 }
 
 function setFocus(foc) {
-  if (foc) {
-    // focus = true;
+  if (foc && !focusState) {
+    focusState = true;
     stopCaretAnimation();
     $("#top").addClass("focus");
     $("#bottom").addClass("focus");
     $("body").css("cursor", "none");
     $("#middle").addClass("focus");
-  } else {
+  } else if (!foc && focusState) {
+    focusState = false;
     startCaretAnimation();
     $("#top").removeClass("focus");
     $("#bottom").removeClass("focus");
@@ -298,7 +300,11 @@ function initWords() {
   }
 
   if (config.mode == "time" || config.mode == "words") {
-    let wordsBound = config.mode == "time" ? 60 : config.words;
+    // let wordsBound = config.mode == "time" ? 60 : config.words;
+    let wordsBound = 60;
+    if (config.mode === "words" && config.words < wordsBound) {
+      wordsBound = config.words;
+    }
     for (let i = 0; i < wordsBound; i++) {
       randomWord = language[Math.floor(Math.random() * language.length)];
       previousWord = wordsList[i - 1];
@@ -460,6 +466,11 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
 }
 
 function addWord() {
+  if (
+    wordsList.length - inputHistory.length > 60 ||
+    (config.mode === "words" && wordsList.length >= config.words)
+  )
+    return;
   let language = words[config.language];
   let randomWord = language[Math.floor(Math.random() * language.length)];
   previousWord = wordsList[wordsList.length - 1];
@@ -486,52 +497,76 @@ function addWord() {
 
 function showWords() {
   $("#words").empty();
-  if (
-    config.mode == "words" ||
-    config.mode == "custom" ||
-    config.mode == "quote"
-  ) {
-    $("#words").css("height", "auto");
-    for (let i = 0; i < wordsList.length; i++) {
-      let w = "<div class='word'>";
-      for (let c = 0; c < wordsList[i].length; c++) {
-        w += "<letter>" + wordsList[i].charAt(c) + "</letter>";
-      }
-      w += "</div>";
-      $("#words").append(w);
+  // if (
+  //   config.mode == "words" ||
+  //   config.mode == "custom" ||
+  //   config.mode == "quote"
+  // ) {
+  //   $("#words").css("height", "auto");
+  //   for (let i = 0; i < wordsList.length; i++) {
+  //     let w = "<div class='word'>";
+  //     for (let c = 0; c < wordsList[i].length; c++) {
+  //       w += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+  //     }
+  //     w += "</div>";
+  //     $("#words").append(w);
+  //   }
+  // } else if (config.mode == "time") {
+  for (let i = 0; i < wordsList.length; i++) {
+    let w = "<div class='word'>";
+    for (let c = 0; c < wordsList[i].length; c++) {
+      w += "<letter>" + wordsList[i].charAt(c) + "</letter>";
     }
-  } else if (config.mode == "time") {
-    for (let i = 0; i < wordsList.length; i++) {
-      let w = "<div class='word'>";
-      for (let c = 0; c < wordsList[i].length; c++) {
-        w += "<letter>" + wordsList[i].charAt(c) + "</letter>";
-      }
-      w += "</div>";
-      $("#words").append(w);
-    }
-    $("#words").removeClass("hidden");
-    const wordHeight = $($(".word")[0]).outerHeight(true);
-    $("#words")
-      .css("height", wordHeight * 3 + "px")
-      .css("overflow", "hidden");
+    w += "</div>";
+    $("#words").append(w);
   }
+  $("#words").removeClass("hidden");
+  const wordHeight = $($(".word")[0]).outerHeight(true);
+  $("#words")
+    .css("height", wordHeight * 3 + "px")
+    .css("overflow", "hidden");
+  // }
   updateActiveElement();
   updateCaretPosition();
 }
 
 function updateActiveElement() {
-  $("#words .word").removeClass("active");
-  $($("#words .word")[currentWordIndex])
-    .addClass("active")
-    .removeClass("error");
-  // activeWordTop = $("#words .word.active").position().top;
-  activeWordTop = document.querySelector("#words .word.active").offsetTop;
+  let active = document.querySelector("#words .active");
+  if (active !== null) {
+    active.classList.remove("active");
+  }
+  // $("#words .word").removeClass("active");
+  // $($("#words .word")[currentWordIndex]).addClass("active").removeClass("error");
+
+  // document.querySelectorAll("#words .word")[currentWordIndex].classList.add("active");
+  try {
+    let activeWord = document.querySelectorAll("#words .word")[
+      currentWordIndex
+    ];
+    activeWord.classList.add("active");
+    activeWord.classList.remove("error");
+
+    // activeWordTop = $("#words .word.active").position().top;
+    activeWordTop = document.querySelector("#words .active").offsetTop;
+  } catch (e) {}
 }
 
 function compareInput(wrdIndex, input, showError) {
-  $($("#words .word")[wrdIndex]).empty();
+  // let wrdAtIndex = $("#words .word")[wrdIndex];
+  let wordAtIndex;
+  let currentWord;
+  if (wrdIndex === null) {
+    wordAtIndex = document.querySelector("#words .word.active");
+    currentWord = wordsList[currentWordIndex];
+  } else {
+    wordAtIndex = document.querySelectorAll("#words .word")[wrdIndex];
+    wordsList[wrdIndex];
+  }
+  // while (wordAtIndex.firstChild) {
+  //   wordAtIndex.removeChild(wordAtIndex.firstChild);
+  // }
   let ret = "";
-  let currentWord = wordsList[wrdIndex];
+
   for (let i = 0; i < input.length; i++) {
     if (currentWord[i] == input[i]) {
       ret += '<letter class="correct">' + currentWord[i] + "</letter>";
@@ -567,11 +602,18 @@ function compareInput(wrdIndex, input, showError) {
       ret += "<letter>" + currentWord[i] + "</letter>";
     }
   }
-  $($("#words .word")[wrdIndex]).html(ret);
+
+  wordAtIndex.innerHTML = ret;
+
+  let lastindex = currentWordIndex;
+  if (wrdIndex !== null) {
+    lastindex = wrdIndex;
+  }
+
   if (
     (currentWord == input ||
       (config.quickEnd && currentWord.length == input.length)) &&
-    wrdIndex == wordsList.length - 1
+    lastindex == wordsList.length - 1
   ) {
     inputHistory.push(input);
     currentInput = "";
@@ -718,20 +760,30 @@ function updateTimer() {
       // $("#timerNumber").html(config.time - time);
     }
   } else if (
-    (config.mode === "words" ||
-      config.mode === "custom" ||
-      config.mode === "quote") &&
-    config.timerStyle === "bar"
+    config.mode === "words" ||
+    config.mode === "custom" ||
+    config.mode === "quote"
   ) {
-    let percent = Math.floor(((currentWordIndex + 1) / wordsList.length) * 100);
-    $("#timer")
-      .stop(true, true)
-      .animate(
-        {
-          width: percent + "vw",
-        },
-        250
+    if (config.timerStyle === "bar") {
+      let percent = Math.floor(
+        ((currentWordIndex + 1) / wordsList.length) * 100
       );
+      $("#timer")
+        .stop(true, true)
+        .animate(
+          {
+            width: percent + "vw",
+          },
+          250
+        );
+    } else if (config.timerStyle === "text") {
+      let outof = wordsList.length;
+      if (config.mode === "words") {
+        outof = config.words;
+      }
+      $("#timerNumber").html(`${inputHistory.length}/${outof}`);
+      // $("#timerNumber").html(config.time - time);
+    }
   }
 }
 
@@ -757,61 +809,68 @@ function startCaretAnimation() {
 }
 
 function updateCaretPosition() {
+  // return;
   if ($("#words").hasClass("hidden")) return;
+
   let caret = $("#caret");
-  let activeWord = $("#words .word.active");
+  // let activeWord = $("#words .word.active");
+
   let inputLen = currentInput.length;
   let currentLetterIndex = inputLen - 1;
   if (currentLetterIndex == -1) {
     currentLetterIndex = 0;
   }
-  let currentLetter = $("#words .word.active letter")[currentLetterIndex];
-  if ($(currentLetter).length == 0) return;
-  // let currentLetterPos = currentLetter.position();
-  let currentLetterPosLeft = currentLetter.offsetLeft;
-  let currentLetterPosTop = currentLetter.offsetTop;
-  let letterHeight = $(currentLetter).height();
+  // let currentLetter = $("#words .word.active letter")[currentLetterIndex];
+  try {
+    let currentLetter = document
+      .querySelector("#words .active")
+      .querySelectorAll("letter")[currentLetterIndex];
 
-  let newTop = 0;
-  let newLeft = 0;
+    if ($(currentLetter).length == 0) return;
+    let currentLetterPosLeft = currentLetter.offsetLeft;
+    let currentLetterPosTop = currentLetter.offsetTop;
+    let letterHeight = $(currentLetter).height();
+    let newTop = 0;
+    let newLeft = 0;
 
-  newTop = currentLetterPosTop - letterHeight / 4;
-  if (inputLen == 0) {
-    newLeft = currentLetterPosLeft - caret.width() / 2;
-  } else {
-    newLeft =
-      currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2;
-  }
+    newTop = currentLetterPosTop - letterHeight / 4;
+    if (inputLen == 0) {
+      newLeft = currentLetterPosLeft - caret.width() / 2;
+    } else {
+      newLeft =
+        currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2;
+    }
 
-  let duration = 0;
+    let duration = 0;
 
-  if (config.smoothCaret) {
-    duration = 100;
-    // if (Math.round(caret[0].offsetTop) != Math.round(newTop)) {
-    //   caret.css("top", newTop);
-    //   duration = 10;
+    if (config.smoothCaret) {
+      duration = 100;
+      // if (Math.round(caret[0].offsetTop) != Math.round(newTop)) {
+      //   caret.css("top", newTop);
+      //   duration = 10;
+      // }
+    }
+
+    caret.stop(true, true).animate(
+      {
+        top: newTop,
+        left: newLeft,
+      },
+      duration
+    );
+
+    // let browserHeight = window.innerHeight;
+    // let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
+    // let contentHeight = document.body.scrollHeight;
+
+    // if (newTop >= middlePos && contentHeight > browserHeight) {
+    //   window.scrollTo({
+    //     left: 0,
+    //     top: newTop - middlePos,
+    //     behavior: "smooth",
+    //   });
     // }
-  }
-
-  caret.stop(true, true).animate(
-    {
-      top: newTop,
-      left: newLeft,
-    },
-    duration
-  );
-
-  let browserHeight = window.innerHeight;
-  let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
-  let contentHeight = document.body.scrollHeight;
-
-  if (newTop >= middlePos && contentHeight > browserHeight) {
-    window.scrollTo({
-      left: 0,
-      top: newTop - middlePos,
-      behavior: "smooth",
-    });
-  }
+  } catch (e) {}
 }
 
 function countChars() {
@@ -1150,6 +1209,10 @@ function showResult(difficultyFailed = false) {
             }).then((e) => {
               accountIconLoading(false);
               // console.log(JSON.stringify(e.data));
+              if (e.data == null) {
+                showNotification("Unexpected response from the server.", 4000);
+                return;
+              }
               if (e.data.resultCode === -1) {
                 showNotification("Could not save result", 3000);
               } else if (e.data.resultCode === -2) {
@@ -1163,8 +1226,10 @@ function showResult(difficultyFailed = false) {
                   4000
                 );
               } else if (e.data.resultCode === -999) {
+                console.error("internal error: " + e.data.message);
                 showNotification(
-                  "Internal error. Result not saved. Refresh or contact Miodec on Discord.",
+                  "Internal error. Result might not be saved. " +
+                    e.data.message,
                   6000
                 );
               } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
@@ -1187,22 +1252,22 @@ function showResult(difficultyFailed = false) {
                   if (e.data.globalLeaderboard.newBest) {
                     let pos = e.data.globalLeaderboard.insertedAt + 1;
                     let numend = "th";
-                    if (pos === 1) {
+                    if (pos % 10 === 1) {
                       numend = "st";
-                    } else if (pos === 2) {
+                    } else if (pos % 10 === 2) {
                       numend = "nd";
-                    } else if (pos === 3) {
+                    } else if (pos % 10 === 3) {
                       numend = "rd";
                     }
                     globalLbString = `global: ${pos}${numend} place`;
                   } else {
                     let pos = e.data.globalLeaderboard.foundAt + 1;
                     let numend = "th";
-                    if (pos === 1) {
+                    if (pos % 10 === 1) {
                       numend = "st";
-                    } else if (pos === 2) {
+                    } else if (pos % 10 === 2) {
                       numend = "nd";
-                    } else if (pos === 3) {
+                    } else if (pos % 10 === 3) {
                       numend = "rd";
                     }
                     globalLbString = `global: already ${pos}${numend}`;
@@ -1286,8 +1351,6 @@ function showResult(difficultyFailed = false) {
                     );
                   }
                 }
-              } else {
-                showNotification("Unexpected response from the server.", 4000);
               }
             });
           });
@@ -1682,7 +1745,34 @@ function changeMode(mode, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function liveWPM() {
+// function liveWPM() {
+//   let correctWordChars = 0;
+//   for (let i = 0; i < inputHistory.length; i++) {
+//     if (inputHistory[i] == wordsList[i]) {
+//       //the word is correct
+//       //+1 for space
+//       correctWordChars += wordsList[i].length + 1;
+//     }
+//   }
+//   let testNow = Date.now();
+//   let testSeconds = (testNow - testStart) / 1000;
+//   wpm = (correctWordChars * (60 / testSeconds)) / 5;
+//   return Math.round(wpm);
+// }
+
+// function liveRaw() {
+//   let chars = 0;
+//   for (let i = 0; i < inputHistory.length; i++) {
+//     chars += inputHistory[i].length + 1;
+//   }
+//   let testNow = Date.now();
+//   let testSeconds = (testNow - testStart) / 1000;
+//   raw = (chars * (60 / testSeconds)) / 5;
+//   return Math.round(raw);
+// }
+
+function liveWpmAndRaw() {
+  let chars = 0;
   let correctWordChars = 0;
   for (let i = 0; i < inputHistory.length; i++) {
     if (inputHistory[i] == wordsList[i]) {
@@ -1690,29 +1780,24 @@ function liveWPM() {
       //+1 for space
       correctWordChars += wordsList[i].length + 1;
     }
-  }
-  let testNow = Date.now();
-  let testSeconds = (testNow - testStart) / 1000;
-  wpm = (correctWordChars * (60 / testSeconds)) / 5;
-  return Math.round(wpm);
-}
-
-function liveRaw() {
-  let chars = 0;
-  for (let i = 0; i < inputHistory.length; i++) {
     chars += inputHistory[i].length + 1;
   }
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
-  raw = (chars * (60 / testSeconds)) / 5;
-  return Math.round(raw);
+  let wpm = Math.round((correctWordChars * (60 / testSeconds)) / 5);
+  let raw = Math.round((chars * (60 / testSeconds)) / 5);
+  return {
+    wpm: wpm,
+    raw: raw,
+  };
 }
 
 function updateLiveWpm(wpm) {
   if (!config.showLiveWpm) return;
   if (wpm == 0 || !testActive) hideLiveWpm();
   // let wpmstring = wpm < 100 ? `&nbsp;${wpm}` : `${wpm}`;
-  $("#liveWpm").html(wpm);
+  document.querySelector("#liveWpm").innerHTML = wpm;
+  // $("#liveWpm").html(wpm);
 }
 
 function showLiveWpm() {
@@ -2119,6 +2204,11 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
           5000
         );
       }
+    } else {
+      showNotification(
+        "Custom word amount can only be set between 1 and 10000",
+        3000
+      );
     }
   } else {
     changeWordCount(wrd);
@@ -2138,6 +2228,8 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
           5000
         );
       }
+    } else {
+      showNotification("Custom time can only be set between 1 and 3600", 3000);
     }
   } else {
     changeTimeConfig(time);
@@ -2297,6 +2389,8 @@ $(document).keypress(function (event) {
     // if (config.mode == "time") {
     restartTimer();
     showTimer();
+    $("#liveWpm").text("0");
+    showLiveWpm();
     // }
     updateActiveElement();
     updateTimer();
@@ -2317,11 +2411,18 @@ $(document).keypress(function (event) {
         if (config.mode === "time") {
           updateTimer();
         }
-        let wpm = liveWPM();
-        updateLiveWpm(wpm);
-        showLiveWpm();
-        wpmHistory.push(wpm);
-        rawHistory.push(liveRaw());
+        // console.time("livewpm");
+        // let wpm = liveWPM();
+        // updateLiveWpm(wpm);
+        // showLiveWpm();
+        // wpmHistory.push(wpm);
+        // rawHistory.push(liveRaw());
+        let wpmAndRaw = liveWpmAndRaw();
+        updateLiveWpm(wpmAndRaw.wpm);
+        wpmHistory.push(wpmAndRaw.wpm);
+        rawHistory.push(wpmAndRaw.raw);
+
+        // console.timeEnd("livewpm");
         keypressPerSecond.push(currentKeypressCount);
         currentKeypressCount = 0;
         errorsPerSecond.push(currentErrorCount);
@@ -2362,18 +2463,19 @@ $(document).keypress(function (event) {
   } else {
     accuracyStats.correct++;
   }
-
   currentKeypressCount++;
   currentInput += event["key"];
-  $("#words .word.active").attr("input", currentInput);
   setFocus(true);
   activeWordTopBeforeJump = activeWordTop;
-  compareInput(currentWordIndex, currentInput, !config.blindMode);
+  compareInput(null, currentInput, !config.blindMode);
   // let newActiveTop = $("#words .word.active").position().top;
+
+  // console.time("offcheck1");
   let newActiveTop = document.querySelector("#words .word.active").offsetTop;
   if (activeWordTopBeforeJump != newActiveTop) {
     activeWordJumped = true;
   }
+  // console.timeEnd("offcheck2");
   updateCaretPosition();
 });
 
@@ -2441,7 +2543,7 @@ $(document).keydown((event) => {
           }
           currentWordIndex--;
           updateActiveElement();
-          compareInput(currentWordIndex, currentInput, !config.blindMode);
+          compareInput(null, currentInput, !config.blindMode);
         }
       } else {
         // if ($($(".word")[currentWordIndex - 1]).hasClass("hidden")) {
@@ -2452,7 +2554,7 @@ $(document).keydown((event) => {
         } else {
           currentInput = currentInput.substring(0, currentInput.length - 1);
         }
-        compareInput(currentWordIndex, currentInput, !config.blindMode);
+        compareInput(null, currentInput, !config.blindMode);
       }
       // currentKeypressCount++;
       updateCaretPosition();
@@ -2463,42 +2565,45 @@ $(document).keydown((event) => {
       if (currentInput == "") return;
       event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
-      if (config.mode == "time") {
-        // let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
-        // let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
-        let currentTop = Math.floor(
-          document.querySelectorAll("#words .word")[currentWordIndex].offsetTop
-        );
-        let nextTop = Math.floor(
-          document.querySelectorAll("#words .word")[currentWordIndex + 1]
-            .offsetTop
-        );
-        if (nextTop > currentTop || activeWordJumped) {
-          //last word of the line
-          if (currentTestLine > 0) {
-            let hideBound = currentTop;
-            if (activeWordJumped) {
-              hideBound = activeWordTopBeforeJump;
-            }
-            activeWordJumped = false;
-
-            let toHide = [];
-            let wordElements = $("#words .word");
-            for (let i = 0; i < currentWordIndex + 1; i++) {
-              if ($(wordElements[i]).hasClass("hidden")) continue;
-              // let forWordTop = Math.floor($(wordElements[i]).position().top);
-              let forWordTop = Math.floor(wordElements[i].offsetTop);
-              if (forWordTop < hideBound) {
-                // $($("#words .word")[i]).addClass("hidden");
-                toHide.push($($("#words .word")[i]));
-              }
-            }
-            toHide.forEach((el) => el.addClass("hidden"));
+      // if (config.mode == "time") {
+      // let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
+      // let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
+      let currentTop = Math.floor(
+        document.querySelectorAll("#words .word")[currentWordIndex].offsetTop
+      );
+      let nextTop = Math.floor(
+        document.querySelectorAll("#words .word")[currentWordIndex + 1]
+          .offsetTop
+      );
+      if (nextTop > currentTop || activeWordJumped) {
+        //last word of the line
+        if (currentTestLine > 0) {
+          let hideBound = currentTop;
+          if (activeWordJumped) {
+            hideBound = activeWordTopBeforeJump;
           }
-          currentTestLine++;
+          activeWordJumped = false;
+
+          let toHide = [];
+          let wordElements = $("#words .word");
+          for (let i = 0; i < currentWordIndex + 1; i++) {
+            if ($(wordElements[i]).hasClass("hidden")) continue;
+            // let forWordTop = Math.floor($(wordElements[i]).position().top);
+            let forWordTop = Math.floor(wordElements[i].offsetTop);
+            if (forWordTop < hideBound) {
+              // $($("#words .word")[i]).addClass("hidden");
+              toHide.push($($("#words .word")[i]));
+            }
+          }
+          toHide.forEach((el) => el.addClass("hidden"));
         }
+        currentTestLine++;
       }
+      // }
       if (config.blindMode) $("#words .word.active letter").addClass("correct");
+      document
+        .querySelector("#words .word.active")
+        .setAttribute("input", currentInput);
       if (currentWord == currentInput) {
         inputHistory.push(currentInput);
         currentInput = "";
@@ -2538,7 +2643,7 @@ $(document).keydown((event) => {
       ) {
         updateTimer();
       }
-      if (config.mode == "time") {
+      if (config.mode == "time" || config.mode == "words") {
         addWord();
       }
     }

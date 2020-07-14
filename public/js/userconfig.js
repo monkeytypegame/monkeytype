@@ -42,7 +42,9 @@ let defaultConfig = {
 
 let cookieConfig = null;
 
-let config = defaultConfig;
+let config = {
+  ...defaultConfig,
+};
 
 //cookies
 function saveConfigToCookie() {

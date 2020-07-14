@@ -398,14 +398,14 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
 
 Object.keys(words).forEach((language) => {
   $(".pageAccount .content .filterButtons .buttons.languages").append(
-    `<div class="button" filter="${language}">${language.replace(
+    `<div class="button" filter="lang_${language}">${language.replace(
       "_",
       " "
     )}</div>`
   );
   if (language === "english_expanded") {
     $(".pageAccount .content .filterButtons .buttons.languages").append(
-      `<div class="button" filter="english_10k">english 10k</div>`
+      `<div class="button" filter="lang_english_10k">english 10k</div>`
     );
   }
 });
@@ -580,6 +580,61 @@ $(".pageAccount .filterButtons").click(".button", (e) => {
   saveConfigToCookie();
 });
 
+$(".pageAccount #currentConfigFilter").click((e) => {
+  let disableGroups = [
+    "globalFilters",
+    "difficultyFilters",
+    "modeFilters",
+    "punctuationFilter",
+    "wordsFilter",
+    "timeFilter",
+    "languages",
+    "tags",
+  ];
+  disableGroups.forEach((group) => {
+    $.each(
+      $(`.pageAccount .filterButtons .buttons.${group} .button`),
+      (index, button) => {
+        let fl = $(button).attr("filter");
+        disableFilterButton(fl);
+        config.resultFilters = config.resultFilters.filter((f) => f !== fl);
+      }
+    );
+  });
+  updateActiveFilters();
+
+  //rewrite this monstrosity soon pls
+  config.resultFilters.push(`difficulty_${config.difficulty}`);
+  toggleFilterButton(`difficulty_${config.difficulty}`);
+  config.resultFilters.push(`mode_${config.mode}`);
+  toggleFilterButton(`mode_${config.mode}`);
+  config.resultFilters.push(`words_${config.words}`);
+  toggleFilterButton(`words_${config.words}`);
+  config.resultFilters.push(`time_${config.time}`);
+  toggleFilterButton(`time_${config.time}`);
+  let puncfilter = config.punctuation ? "punc_on" : "punc_off";
+  config.resultFilters.push(puncfilter);
+  toggleFilterButton(puncfilter);
+  config.resultFilters.push(`lang_${config.language}`);
+  toggleFilterButton(`lang_${config.language}`);
+
+  let activeTags = [];
+  try {
+    dbSnapshot.tags.forEach((tag) => {
+      if (tag.active === true) {
+        activeTags.push(tag.id);
+      }
+    });
+  } catch (e) {}
+
+  activeTags.forEach((tag) => {
+    config.resultFilters.push(`tag_${tag}`);
+    toggleFilterButton(`tag_${tag}`);
+  });
+
+  saveConfigToCookie();
+});
+
 let filteredResults = [];
 let visibleTableLines = 0;
 
@@ -749,7 +804,7 @@ function refreshAccountPage() {
         if (!activeFilters.includes(wordfilter)) return;
       }
 
-      if (!activeFilters.includes(result.language)) return;
+      if (!activeFilters.includes("lang_" + result.language)) return;
 
       let puncfilter = "punc_off";
       if (result.punctuation) {
@@ -808,17 +863,19 @@ function refreshAccountPage() {
       //=======================================
 
       tt = 0;
-      if (result.timeDuration == null) {
-        //test finished before timeduration field was introduced - estimate
+      if (result.testDuration == undefined) {
+        //test finished before testDuration field was introduced - estimate
         if (result.mode == "time") {
           tt = parseFloat(result.mode2);
         } else if (result.mode == "words") {
           tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
         }
       } else {
-        tt = parseFloat(result.timeDuration);
+        tt = parseFloat(result.testDuration);
       }
-      if (result.restartCount != null) {
+      if (result.incompleteTestSeconds != undefined) {
+        tt += result.incompleteTestSeconds;
+      } else if (result.restartCount != undefined && result.restartCount > 0) {
         tt += (tt / 4) * result.restartCount;
       }
       totalSecondsFiltered += tt;

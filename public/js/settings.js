@@ -71,6 +71,73 @@ function updateSettingsPage() {
   }
 }
 
+function showCustomThemeShare() {
+  if ($("#customThemeShareWrapper").hasClass("hidden")) {
+    let save = [];
+    $.each(
+      $(".pageSettings .section.customTheme [type='color']"),
+      (index, element) => {
+        save.push($(element).attr("value"));
+      }
+    );
+    $("#customThemeShareWrapper input").val(JSON.stringify(save));
+    $("#customThemeShareWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100, (e) => {
+        $("#customThemeShare input").focus();
+        $("#customThemeShare input").select();
+        $("#customThemeShare input").focus();
+      });
+  }
+}
+
+function hideCustomThemeShare() {
+  if (!$("#customThemeShareWrapper").hasClass("hidden")) {
+    try {
+      config.customThemeColors = JSON.parse(
+        $("#customThemeShareWrapper input").val()
+      );
+    } catch (e) {
+      showNotification(
+        "Something went wrong. Reverting to default custom colors.",
+        3000
+      );
+      config.customThemeColors = defaultConfig.customThemeColors;
+    }
+    setCustomThemeInputs();
+    applyCustomThemeColors();
+    $("#customThemeShareWrapper input").val("");
+    $("#customThemeShareWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        100,
+        (e) => {
+          $("#customThemeShareWrapper").addClass("hidden");
+        }
+      );
+  }
+}
+
+$("#customThemeShareWrapper").click((e) => {
+  if ($(e.target).attr("id") === "customThemeShareWrapper") {
+    hideCustomThemeShare();
+  }
+});
+
+$("#customThemeShare .button").click((e) => {
+  hideCustomThemeShare();
+});
+
+$("#shareCustomThemeButton").click((e) => {
+  showCustomThemeShare();
+});
+
 function refreshTagsSettingsSection() {
   if (firebase.auth().currentUser !== null && dbSnapshot !== null) {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
@@ -192,7 +259,9 @@ function setActiveTimerColorButton() {
 }
 
 function setActiveTimerOpacityButton() {
-  $(`.pageSettings .section.timerOpacity .buttons .button`).removeClass("active");
+  $(`.pageSettings .section.timerOpacity .buttons .button`).removeClass(
+    "active"
+  );
   $(
     `.pageSettings .section.timerOpacity .buttons .button[opacity="` +
       config.timerOpacity +

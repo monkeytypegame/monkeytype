@@ -423,6 +423,9 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       );
     }
 
+    obj.keySpacing = "removed";
+    obj.keyDuration = "removed";
+
     return db
       .collection("users")
       .doc(request.uid)
@@ -468,89 +471,94 @@ exports.testCompleted = functions.https.onCall((request, response) => {
               checkLeaderboards(request.obj, "global", banned, name),
               checkLeaderboards(request.obj, "daily", banned, name),
               checkIfPB(request.uid, request.obj),
-            ]).then((values) => {
-              let globallb = values[0].insertedAt;
-              let dailylb = values[1].insertedAt;
-              let ispb = values[2];
-              // console.log(values);
+            ])
+              .then((values) => {
+                let globallb = values[0].insertedAt;
+                let dailylb = values[1].insertedAt;
+                let ispb = values[2];
+                // console.log(values);
 
-              let usr =
-                userdata.discordId !== undefined
-                  ? userdata.discordId
-                  : userdata.name;
-
-              if (
-                globallb !== null &&
-                [1, 2, 3].includes(globallb.insertedAt + 1) &&
-                globallb.newBest
-              ) {
-                let lbstring = `${obj.mode} ${obj.mode2} global`;
-                console.log(
-                  `sending command to the bot to announce lb update ${
-                    userdata.discordId
-                  } ${globallb + 1} ${lbstring} ${obj.wpm}`
-                );
-
-                announceLbUpdate(
-                  usr,
-                  globallb.insertedAt + 1,
-                  lbstring,
-                  obj.wpm
-                );
-              }
-
-              let returnobj = {
-                resultCode: null,
-                globalLeaderboard: globallb,
-                dailyLeaderboard: dailylb,
-                lbBanned: banned,
-                name: name,
-              };
-              request.obj.keySpacing = "removed";
-              request.obj.keyDuration = "removed";
-              if (ispb) {
-                console.log(
-                  `saved result for ${request.uid} (new PB) - ${JSON.stringify(
-                    request.obj
-                  )}`
-                );
-                if (
-                  obj.mode === "time" &&
-                  String(obj.mode2) === "60" &&
-                  userdata.discordId !== null &&
+                let usr =
                   userdata.discordId !== undefined
+                    ? userdata.discordId
+                    : userdata.name;
+
+                if (
+                  globallb !== null &&
+                  globallb.insertedAt >= 0 &&
+                  globallb.insertedAt <= 9 &&
+                  globallb.newBest
                 ) {
+                  let lbstring = `${obj.mode} ${obj.mode2} global`;
                   console.log(
-                    `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                    `sending command to the bot to announce lb update ${
+                      userdata.discordId
+                    } ${globallb + 1} ${lbstring} ${obj.wpm}`
                   );
-                  updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
-                  return;
+
+                  announceLbUpdate(
+                    usr,
+                    globallb.insertedAt + 1,
+                    lbstring,
+                    obj.wpm
+                  );
                 }
-                returnobj.resultCode = 2;
-              } else {
-                console.log(
-                  `saved result for ${request.uid} - ${JSON.stringify(
-                    request.obj
-                  )}`
+
+                let returnobj = {
+                  resultCode: null,
+                  globalLeaderboard: globallb,
+                  dailyLeaderboard: dailylb,
+                  lbBanned: banned,
+                  name: name,
+                };
+
+                if (ispb) {
+                  console.log(
+                    `saved result for ${
+                      request.uid
+                    } (new PB) - ${JSON.stringify(request.obj)}`
+                  );
+                  if (
+                    obj.mode === "time" &&
+                    String(obj.mode2) === "60" &&
+                    userdata.discordId !== null &&
+                    userdata.discordId !== undefined
+                  ) {
+                    console.log(
+                      `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                    );
+                    updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
+                  }
+                  returnobj.resultCode = 2;
+                } else {
+                  console.log(
+                    `saved result for ${request.uid} - ${JSON.stringify(
+                      request.obj
+                    )}`
+                  );
+                  returnobj.resultCode = 1;
+                }
+                return returnobj;
+              })
+              .catch((e) => {
+                console.error(
+                  `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
                 );
-                returnobj.resultCode = 1;
-              }
-              // console.log(returnobj);
-              return returnobj;
-            });
+                return { resultCode: -999, message: e.message };
+              });
           })
           .catch((e) => {
             console.error(
-              `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
+              `error saving result when adding result to the db for ${request.uid} - ${e.message}`
             );
-            return { resultCode: -999 };
+            return { resultCode: -999, message: e.message };
           });
       })
       .catch((e) => {
         console.error(
           `error saving result when getting user data for ${request.uid} - ${e.message}`
         );
-        return { resultCode: -999 };
+        return { resultCode: -999, message: e.message };
       });
   } catch (e) {
     console.error(
@@ -558,7 +566,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
         request.obj
       )} - ${e}`
     );
-    return { resultCode: -999 };
+    return { resultCode: -999, message: e.message };
   }
 });
 
