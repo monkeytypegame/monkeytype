@@ -2571,10 +2571,16 @@ $(document).keydown((event) => {
       let currentTop = Math.floor(
         document.querySelectorAll("#words .word")[currentWordIndex].offsetTop
       );
-      let nextTop = Math.floor(
-        document.querySelectorAll("#words .word")[currentWordIndex + 1]
-          .offsetTop
-      );
+      let nextTop;
+      try {
+        nextTop = Math.floor(
+          document.querySelectorAll("#words .word")[currentWordIndex + 1]
+            .offsetTop
+        );
+      } catch (e) {
+        nextTop = 0;
+      }
+
       if (nextTop > currentTop || activeWordJumped) {
         //last word of the line
         if (currentTestLine > 0) {
