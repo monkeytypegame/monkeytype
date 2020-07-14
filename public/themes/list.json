@@ -287,5 +287,10 @@
         "name": "graen",
         "bgColor": "#4D5E56",
         "textColor": "#C0B096"
+    },
+    {
+        "name": "bento",
+        "bgColor": "#335C71",
+        "textColor": "#FC7374"
     }
 ]
