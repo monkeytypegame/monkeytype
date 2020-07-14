@@ -39,6 +39,7 @@ let defaultConfig = {
   timerColor: "black",
   timerOpacity: "0.25",
   stopOnError: false,
+  showAllLines: false,
 };
 
 let cookieConfig = null;
@@ -246,6 +247,26 @@ function setStopOnError(soe, nosave) {
     soe = false;
   }
   config.stopOnError = soe;
+  if (!nosave) saveConfigToCookie();
+}
+
+//show all lines
+function toggleShowAllLines() {
+  sal = !config.showAllLines;
+  if (sal == undefined) {
+    sal = false;
+  }
+  config.showAllLines = sal;
+  restartTest();
+  saveConfigToCookie();
+}
+
+function setShowAllLines(sal, nosave) {
+  if (sal == undefined) {
+    sal = false;
+  }
+  config.showAllLines = sal;
+  restartTest();
   if (!nosave) saveConfigToCookie();
 }
 

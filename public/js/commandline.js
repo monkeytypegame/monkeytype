@@ -131,6 +131,13 @@ let commands = {
       },
     },
     {
+      id: "toggleShowAllLines",
+      display: "Toggle show all lines",
+      exec: () => {
+        toggleShowAllLines();
+      },
+    },
+    {
       id: "toggleColorfulMode",
       display: "Toggle colorful mode",
       exec: () => {

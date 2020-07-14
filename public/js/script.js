@@ -302,8 +302,12 @@ function initWords() {
   if (config.mode == "time" || config.mode == "words") {
     // let wordsBound = config.mode == "time" ? 60 : config.words;
     let wordsBound = 60;
-    if (config.mode === "words" && config.words < wordsBound) {
+    if (config.showAllLines) {
       wordsBound = config.words;
+    } else {
+      if (config.mode === "words" && config.words < wordsBound) {
+        wordsBound = config.words;
+      }
     }
     for (let i = 0; i < wordsBound; i++) {
       randomWord = language[Math.floor(Math.random() * language.length)];
@@ -467,8 +471,9 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
 
 function addWord() {
   if (
-    wordsList.length - inputHistory.length > 60 ||
-    (config.mode === "words" && wordsList.length >= config.words)
+    !config.showAllLines &&
+    (wordsList.length - inputHistory.length > 60 ||
+      (config.mode === "words" && wordsList.length >= config.words))
   )
     return;
   let language = words[config.language];
@@ -497,21 +502,7 @@ function addWord() {
 
 function showWords() {
   $("#words").empty();
-  // if (
-  //   config.mode == "words" ||
-  //   config.mode == "custom" ||
-  //   config.mode == "quote"
-  // ) {
-  //   $("#words").css("height", "auto");
-  //   for (let i = 0; i < wordsList.length; i++) {
-  //     let w = "<div class='word'>";
-  //     for (let c = 0; c < wordsList[i].length; c++) {
-  //       w += "<letter>" + wordsList[i].charAt(c) + "</letter>";
-  //     }
-  //     w += "</div>";
-  //     $("#words").append(w);
-  //   }
-  // } else if (config.mode == "time") {
+
   for (let i = 0; i < wordsList.length; i++) {
     let w = "<div class='word'>";
     for (let c = 0; c < wordsList[i].length; c++) {
@@ -520,12 +511,17 @@ function showWords() {
     w += "</div>";
     $("#words").append(w);
   }
+
   $("#words").removeClass("hidden");
-  const wordHeight = $($(".word")[0]).outerHeight(true);
-  $("#words")
-    .css("height", wordHeight * 3 + "px")
-    .css("overflow", "hidden");
-  // }
+  if (config.showAllLines) {
+    $("#words").css("height", "auto");
+  } else {
+    const wordHeight = $($(".word")[0]).outerHeight(true);
+    $("#words")
+      .css("height", wordHeight * 3 + "px")
+      .css("overflow", "hidden");
+  }
+
   updateActiveElement();
   updateCaretPosition();
 }
@@ -859,17 +855,19 @@ function updateCaretPosition() {
       duration
     );
 
-    // let browserHeight = window.innerHeight;
-    // let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
-    // let contentHeight = document.body.scrollHeight;
+    if (config.showAllLines) {
+      let browserHeight = window.innerHeight;
+      let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
+      let contentHeight = document.body.scrollHeight;
 
-    // if (newTop >= middlePos && contentHeight > browserHeight) {
-    //   window.scrollTo({
-    //     left: 0,
-    //     top: newTop - middlePos,
-    //     behavior: "smooth",
-    //   });
-    // }
+      if (newTop >= middlePos && contentHeight > browserHeight) {
+        window.scrollTo({
+          left: 0,
+          top: newTop - middlePos,
+          behavior: "smooth",
+        });
+      }
+    }
   } catch (e) {}
 }
 
@@ -2576,44 +2574,46 @@ $(document).keydown((event) => {
       event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
       // if (config.mode == "time") {
-      // let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
-      // let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
-      let currentTop = Math.floor(
-        document.querySelectorAll("#words .word")[currentWordIndex].offsetTop
-      );
-      let nextTop;
-      try {
-        nextTop = Math.floor(
-          document.querySelectorAll("#words .word")[currentWordIndex + 1]
-            .offsetTop
+      if (!config.showAllLines) {
+        // let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
+        // let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
+        let currentTop = Math.floor(
+          document.querySelectorAll("#words .word")[currentWordIndex].offsetTop
         );
-      } catch (e) {
-        nextTop = 0;
-      }
-
-      if (nextTop > currentTop || activeWordJumped) {
-        //last word of the line
-        if (currentTestLine > 0) {
-          let hideBound = currentTop;
-          if (activeWordJumped) {
-            hideBound = activeWordTopBeforeJump;
-          }
-          activeWordJumped = false;
-
-          let toHide = [];
-          let wordElements = $("#words .word");
-          for (let i = 0; i < currentWordIndex + 1; i++) {
-            if ($(wordElements[i]).hasClass("hidden")) continue;
-            // let forWordTop = Math.floor($(wordElements[i]).position().top);
-            let forWordTop = Math.floor(wordElements[i].offsetTop);
-            if (forWordTop < hideBound) {
-              // $($("#words .word")[i]).addClass("hidden");
-              toHide.push($($("#words .word")[i]));
-            }
-          }
-          toHide.forEach((el) => el.addClass("hidden"));
+        let nextTop;
+        try {
+          nextTop = Math.floor(
+            document.querySelectorAll("#words .word")[currentWordIndex + 1]
+              .offsetTop
+          );
+        } catch (e) {
+          nextTop = 0;
         }
-        currentTestLine++;
+
+        if (nextTop > currentTop || activeWordJumped) {
+          //last word of the line
+          if (currentTestLine > 0) {
+            let hideBound = currentTop;
+            if (activeWordJumped) {
+              hideBound = activeWordTopBeforeJump;
+            }
+            activeWordJumped = false;
+
+            let toHide = [];
+            let wordElements = $("#words .word");
+            for (let i = 0; i < currentWordIndex + 1; i++) {
+              if ($(wordElements[i]).hasClass("hidden")) continue;
+              // let forWordTop = Math.floor($(wordElements[i]).position().top);
+              let forWordTop = Math.floor(wordElements[i].offsetTop);
+              if (forWordTop < hideBound) {
+                // $($("#words .word")[i]).addClass("hidden");
+                toHide.push($($("#words .word")[i]));
+              }
+            }
+            toHide.forEach((el) => el.addClass("hidden"));
+          }
+          currentTestLine++;
+        }
       }
       // }
       if (config.blindMode) $("#words .word.active letter").addClass("correct");
@@ -2659,8 +2659,14 @@ $(document).keydown((event) => {
       ) {
         updateTimer();
       }
-      if (config.mode == "time" || config.mode == "words") {
-        addWord();
+      if (config.showAllLines) {
+        if (config.mode == "time") {
+          addWord();
+        }
+      } else {
+        if (config.mode == "time" || config.mode == "words") {
+          addWord();
+        }
       }
     }
   }

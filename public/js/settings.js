@@ -50,6 +50,7 @@ function updateSettingsPage() {
   setSettingsButton("maxConfidence", config.maxConfidence);
   setSettingsButton("randomTheme", config.randomTheme);
   setSettingsButton("stopOnError", config.stopOnError);
+  setSettingsButton("showAllLines", config.showAllLines);
 
   setActiveThemeButton();
   setActiveLanguageButton();
@@ -661,6 +662,16 @@ $(".pageSettings .section.stopOnError .buttons .button.on").click((e) => {
 $(".pageSettings .section.stopOnError .buttons .button.off").click((e) => {
   setStopOnError(false);
   setSettingsButton("stopOnError", config.stopOnError);
+});
+
+//showAllLines
+$(".pageSettings .section.showAllLines .buttons .button.on").click((e) => {
+  setShowAllLines(true);
+  setSettingsButton("showAllLines", config.showAllLines);
+});
+$(".pageSettings .section.showAllLines .buttons .button.off").click((e) => {
+  setShowAllLines(false);
+  setSettingsButton("showAllLines", config.showAllLines);
 });
 
 //discord
