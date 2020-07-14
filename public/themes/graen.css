@@ -1,0 +1,20 @@
+:root {
+  --bg-color: #4D5E56;
+  --main-color: #C0B096;
+  --caret-color: #FAFAFA;
+  --sub-color: #131615;
+  --text-color: #C0B096;
+  --error-color: #971B2F;
+  --error-extra-color: #e3002b;
+  --colorful-error-color: #971B2F;
+  --colorful-error-extra-color: #e3002b;
+}
+
+#menu .icon-button:nth-child(1),
+#menu .icon-button:nth-child(2),
+#menu .icon-button:nth-child(3),
+#menu .icon-button:nth-child(4),
+#menu .icon-button:nth-child(5),
+#menu .icon-button:nth-child(6) {
+  color: #751524;
+}
