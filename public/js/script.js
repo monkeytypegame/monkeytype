@@ -1794,7 +1794,11 @@ function liveWpmAndRaw() {
 
 function updateLiveWpm(wpm) {
   if (!config.showLiveWpm) return;
-  if (wpm == 0 || !testActive) hideLiveWpm();
+  if (!testActive) {
+    hideLiveWpm();
+  } else {
+    showLiveWpm();
+  }
   // let wpmstring = wpm < 100 ? `&nbsp;${wpm}` : `${wpm}`;
   document.querySelector("#liveWpm").innerHTML = wpm;
   // $("#liveWpm").html(wpm);
@@ -1810,6 +1814,7 @@ function showLiveWpm() {
 }
 
 function hideLiveWpm() {
+  console.log("hiding");
   $("#liveWpm").css("opacity", 0);
 }
 
