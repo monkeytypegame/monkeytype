@@ -627,10 +627,15 @@ $(".pageAccount #currentConfigFilter").click((e) => {
     });
   } catch (e) {}
 
-  activeTags.forEach((tag) => {
-    config.resultFilters.push(`tag_${tag}`);
-    toggleFilterButton(`tag_${tag}`);
-  });
+  if (activeTags.length > 0) {
+    activeTags.forEach((tag) => {
+      config.resultFilters.push(`tag_${tag}`);
+      toggleFilterButton(`tag_${tag}`);
+    });
+  } else {
+    config.resultFilters.push(`tag_notag`);
+    toggleFilterButton(`tag_notag`);
+  }
 
   saveConfigToCookie();
 });
