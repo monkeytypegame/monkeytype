@@ -282,5 +282,10 @@
         "name": "retrocast",
         "bgColor": "#07737a",
         "textColor": "#88dbdf"
+    },
+    {
+        "name": "graen",
+        "bgColor": "#4D5E56",
+        "textColor": "#C0B096"
     }
 ]
