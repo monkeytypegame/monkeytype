@@ -457,6 +457,21 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                 );
                 return { resultCode: -2 };
               }
+              if (
+                (keySpacing.sd > 15 && keySpacing.sd <= 25) ||
+                (keyDuration.sd > 10 && keyDuration.sd <= 15) ||
+                (keyDuration.average > 15 && keyDuration.average <= 20)
+              ) {
+                console.error(
+                  `very close to bot threshold by user (${obj.wpm} ${
+                    obj.rawWpm
+                  } ${obj.acc}) ${
+                    request.uid
+                  } ${name} - spacing ${JSON.stringify(
+                    keySpacing
+                  )} duration ${JSON.stringify(keyDuration)}`
+                );
+              }
             } else {
               return { resultCode: -3 };
             }
