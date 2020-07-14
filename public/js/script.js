@@ -1814,7 +1814,6 @@ function showLiveWpm() {
 }
 
 function hideLiveWpm() {
-  console.log("hiding");
   $("#liveWpm").css("opacity", 0);
 }
 
@@ -2457,6 +2456,7 @@ $(document).keypress(function (event) {
   } else {
     if (!testActive) return;
   }
+  let thisCharCorrect;
   if (
     wordsList[currentWordIndex].substring(
       currentInput.length,
@@ -2465,10 +2465,15 @@ $(document).keypress(function (event) {
   ) {
     accuracyStats.incorrect++;
     currentErrorCount++;
+    thisCharCorrect = false;
   } else {
     accuracyStats.correct++;
+    thisCharCorrect = true;
   }
   currentKeypressCount++;
+
+  if (config.stopOnError && !thisCharCorrect) return;
+
   currentInput += event["key"];
   setFocus(true);
   activeWordTopBeforeJump = activeWordTop;
@@ -2622,7 +2627,7 @@ $(document).keydown((event) => {
         updateActiveElement();
         updateCaretPosition();
         currentKeypressCount++;
-      } else {
+      } else if (!config.stopOnError) {
         inputHistory.push(currentInput);
         highlightBadWord(currentWordIndex, !config.blindMode);
         currentInput = "";

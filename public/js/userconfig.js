@@ -38,6 +38,7 @@ let defaultConfig = {
   randomTheme: false,
   timerColor: "black",
   timerOpacity: "0.25",
+  stopOnError: false,
 };
 
 let cookieConfig = null;
@@ -227,6 +228,24 @@ function setBlindMode(blind, nosave) {
   }
   config.blindMode = blind;
   updateTestModesNotice();
+  if (!nosave) saveConfigToCookie();
+}
+
+//stoponerror
+function toggleStopOnError() {
+  soe = !config.stopOnError;
+  if (soe == undefined) {
+    soe = false;
+  }
+  config.stopOnError = soe;
+  saveConfigToCookie();
+}
+
+function setStopOnError(soe, nosave) {
+  if (soe == undefined) {
+    soe = false;
+  }
+  config.stopOnError = soe;
   if (!nosave) saveConfigToCookie();
 }
 

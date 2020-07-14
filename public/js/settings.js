@@ -49,6 +49,7 @@ function updateSettingsPage() {
   setSettingsButton("colorfulMode", config.colorfulMode);
   setSettingsButton("maxConfidence", config.maxConfidence);
   setSettingsButton("randomTheme", config.randomTheme);
+  setSettingsButton("stopOnError", config.stopOnError);
 
   setActiveThemeButton();
   setActiveLanguageButton();
@@ -650,6 +651,16 @@ $(".pageSettings .section.randomTheme .buttons .button.off").click((e) => {
   setRandomTheme(false);
   // showNotification('Colorful mode off', 1000);
   setSettingsButton("randomTheme", config.randomTheme);
+});
+
+//stop on error
+$(".pageSettings .section.stopOnError .buttons .button.on").click((e) => {
+  setStopOnError(true);
+  setSettingsButton("stopOnError", config.stopOnError);
+});
+$(".pageSettings .section.stopOnError .buttons .button.off").click((e) => {
+  setStopOnError(false);
+  setSettingsButton("stopOnError", config.stopOnError);
 });
 
 //discord

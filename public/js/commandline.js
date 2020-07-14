@@ -110,6 +110,13 @@ let commands = {
       },
     },
     {
+      id: "toggleStopOnError",
+      display: "Toggle stop on error",
+      exec: () => {
+        toggleStopOnError();
+      },
+    },
+    {
       id: "toggleQuickEnd",
       display: "Toggle quick end",
       exec: () => {
