@@ -1,13 +1,13 @@
 :root {
-  --bg-color: #4D5E56;
-  --main-color: #C0B096;
-  --caret-color: #FAFAFA;
-  --sub-color: #131615;
-  --text-color: #C0B096;
-  --error-color: #971B2F;
-  --error-extra-color: #e3002b;
-  --colorful-error-color: #971B2F;
-  --colorful-error-extra-color: #e3002b;
+  --bg-color: #303c36;
+  --main-color: #a59682;
+  --caret-color: #601420;
+  --sub-color: #181d1a;
+  --text-color: #a59682;
+  --error-color: #601420;
+  --error-extra-color: #5f0715;
+  --colorful-error-color: #601420;
+  --colorful-error-extra-color: #5f0715;
 }
 
 #menu .icon-button:nth-child(1),
@@ -16,5 +16,5 @@
 #menu .icon-button:nth-child(4),
 #menu .icon-button:nth-child(5),
 #menu .icon-button:nth-child(6) {
-  color: #751524;
+  color: #601420;
 }
