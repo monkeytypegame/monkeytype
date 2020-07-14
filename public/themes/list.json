@@ -282,5 +282,10 @@
         "name": "retrocast",
         "bgColor": "#07737a",
         "textColor": "#88dbdf"
+    },
+    {
+        "name": "luna",
+        "bgColor": "#221C35",
+        "textColor": "#88dbdf"
     }
 ]
