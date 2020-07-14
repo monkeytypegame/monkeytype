@@ -560,7 +560,7 @@ function compareInput(wrdIndex, input, showError) {
     currentWord = wordsList[currentWordIndex];
   } else {
     wordAtIndex = document.querySelectorAll("#words .word")[wrdIndex];
-    wordsList[wrdIndex];
+    currentWord = wordsList[wrdIndex];
   }
   // while (wordAtIndex.firstChild) {
   //   wordAtIndex.removeChild(wordAtIndex.firstChild);
