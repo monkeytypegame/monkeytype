@@ -190,9 +190,9 @@ function verifyUsername() {
 
   $(".nameChangeMessage").click((e) => {
     alert(`Im currently preparing the system to be ready for leaderboards and other awesome features - it looks like you need to change your display name.
-    
+
     It either contains special characters, or your display name is the same as someone elses and your account was made later.
-    
+
     Sorry for this inconvenience.
     `);
     let newName = prompt(
@@ -1911,9 +1911,13 @@ function accountIconLoading(truefalse) {
 
 function toggleResultWordsDisplay() {
   if (resultVisible) {
+
     if ($("#words").stop(true, true).hasClass("hidden")) {
+
       //show
       $("#wordsTitle").css("opacity", 1).removeClass("hidden").slideDown(250);
+
+      $("#words .hidden").removeClass("hidden");
 
       let newHeight = $("#words")
         .removeClass("hidden")
