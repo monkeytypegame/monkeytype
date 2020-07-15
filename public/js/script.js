@@ -2375,6 +2375,7 @@ $(document).keypress(function (event) {
   if (event["keyCode"] == 32) return;
   if (event["keyCode"] == 27) return;
   if (event["keyCode"] == 93) return;
+  if (event.key == "ContextMenu") return;
   //start the test
   if (currentInput == "" && inputHistory.length == 0 && !testActive) {
     try {
