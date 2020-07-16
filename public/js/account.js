@@ -737,6 +737,11 @@ function loadMoreLines() {
     </tr>`);
   }
   visibleTableLines += 10;
+  if (visibleTableLines >= filteredResults.length) {
+    $(".pageAccount .loadMoreButton").addClass("hidden");
+  } else {
+    $(".pageAccount .loadMoreButton").removeClass("hidden");
+  }
 }
 
 function refreshAccountPage() {
