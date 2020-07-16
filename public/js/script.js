@@ -1505,7 +1505,6 @@ function restartTest(withSameWordset = false) {
       array: [],
     },
   };
-  hideTimer();
   $("#timerNumber").css("opacity", 0);
   // restartTimer();
   let el = null;
@@ -1518,6 +1517,7 @@ function restartTest(withSameWordset = false) {
   }
   if (resultVisible) {
     if (config.randomTheme) randomiseTheme();
+    showNotification(config.theme.replace("_", " "), 1500);
     $("#words").stop(true, true).animate(
       {
         opacity: 0,
