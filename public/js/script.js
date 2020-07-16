@@ -2569,7 +2569,7 @@ $(document).keydown((event) => {
       updateCaretPosition();
     }
     //space
-    if (event["keyCode"] == 32) {
+    if (event["keyCode"] == 32 || event.key === " ") {
       if (!testActive) return;
       if (currentInput == "") return;
       event.preventDefault();
