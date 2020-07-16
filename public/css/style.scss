@@ -1540,6 +1540,7 @@ key {
 
     &.discordIntegration {
       .code {
+        grid-area: buttons;
         justify-content: center;
         display: grid;
 
@@ -1556,6 +1557,7 @@ key {
       }
 
       .info {
+        grid-area: buttons;
         text-align: center;
       }
 
@@ -2046,7 +2048,9 @@ key {
       "buttons buttons";
 
     .buttons,
-    .tagsListAndButton {
+    .tagsListAndButton,
+    .info,
+    .code {
       margin-top: 1rem;
     }
   }
