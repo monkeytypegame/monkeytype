@@ -587,10 +587,12 @@ function applyCustomThemeColors() {
   array = config.customThemeColors;
 
   if (config.customTheme === true) {
+    previewTheme("serika_dark");
     colorVars.forEach((e, index) => {
       document.documentElement.style.setProperty(e, array[index]);
     });
   } else {
+    previewTheme(config.theme);
     colorVars.forEach((e) => {
       document.documentElement.style.setProperty(e, "");
     });
