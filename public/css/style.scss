@@ -1568,6 +1568,10 @@ key {
     }
 
     &.tags {
+      .tagsListAndButton {
+        grid-area: buttons;
+      }
+
       .tagsList {
         display: grid;
         gap: .5rem;
