@@ -441,7 +441,7 @@ a:hover {
   padding: 5rem 0;
 
   #commandInput {
-    width: 50vw;
+    width: 700px;
     background: var(--bg-color);
     border-radius: var(--roundness);
 
@@ -469,7 +469,7 @@ a:hover {
   }
 
   #commandLine {
-    width: 50vw;
+    width: 700px;
     background: var(--bg-color);
     border-radius: var(--roundness);
 
@@ -613,10 +613,9 @@ a:hover {
   top: 6rem;
 }
 
-
 #centerContent {
   max-width: 1000px;
-  min-width: 600px;
+  min-width: 500px;
   margin: 0 auto;
   display: grid;
   grid-auto-flow: row;
@@ -781,6 +780,8 @@ a:hover {
 }
 
 #top {
+  grid-template-areas:
+    "logo menu config";
   line-height: 2.3rem;
   font-size: 2.3rem;
   /* text-align: center; */
@@ -814,6 +815,8 @@ a:hover {
   }
 
   .config {
+    grid-area: config;
+    justify-self: right;
     display: grid;
     grid-auto-flow: row;
     grid-gap: 0.2rem;
@@ -821,8 +824,6 @@ a:hover {
     width: -moz-min-content;
     transition: 0.25s;
     /*   margin-bottom: 0.1rem; */
-    grid-column: 3/4;
-    grid-row: 1/2;
     justify-items: self-end;
 
     .group {
@@ -1910,6 +1911,7 @@ key {
   font-size: 3rem;
   color: var(--sub-color);
   opacity: .25;
+  z-index: -1;
 
   &.tl {
     top: 2rem;
@@ -2005,5 +2007,52 @@ key {
     color: var(--main-color);
     border: none;
     outline: none;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+
+  #centerContent {
+    #top {
+      grid-template-areas: "logo config"
+        "menu config";
+    }
+
+    #menu {
+      gap: .5rem;
+      font-size: .8rem;
+      line-height: .8rem;
+
+      .icon-button {
+        padding: .25rem;
+      }
+    }
+  }
+
+  #commandLine,
+  #commandLineInput {
+    width: 500px !important;
+  }
+
+}
+
+
+@media only screen and (max-width: 650px) {
+  .pageSettings .section {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title title"
+      "text text"
+      "buttons buttons";
+
+    .buttons,
+    .tagsListAndButton {
+      margin-top: 1rem;
+    }
+  }
+
+  #commandLine,
+  #commandLineInput {
+    width: 400px !important;
   }
 }
