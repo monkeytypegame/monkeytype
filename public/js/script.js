@@ -302,7 +302,7 @@ function initWords() {
   if (config.mode == "time" || config.mode == "words") {
     // let wordsBound = config.mode == "time" ? 60 : config.words;
     let wordsBound = 60;
-    if (config.showAllLines) {
+    if (config.showAllLines && config.mode != "time") {
       wordsBound = config.words;
     } else {
       if (config.mode === "words" && config.words < wordsBound) {
@@ -513,7 +513,7 @@ function showWords() {
   }
 
   $("#words").removeClass("hidden");
-  if (config.showAllLines) {
+  if (config.showAllLines && config.mode != "time") {
     $("#words").css("height", "auto");
   } else {
     const wordHeight = $($(".word")[0]).outerHeight(true);
@@ -2575,7 +2575,7 @@ $(document).keydown((event) => {
       event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
       // if (config.mode == "time") {
-      if (!config.showAllLines) {
+      if (!config.showAllLines || config.mode == "time") {
         // let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
         // let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
         let currentTop = Math.floor(
