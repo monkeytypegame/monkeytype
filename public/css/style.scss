@@ -254,6 +254,13 @@ a:hover {
         thead {
           color: var(--sub-color);
           font-size: .75rem;
+
+          td {
+            background: var(--bg-color);
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+          }
         }
 
         tbody {
@@ -261,6 +268,17 @@ a:hover {
 
           tr:nth-child(odd) td {
             background: rgba(0, 0, 0, .1);
+          }
+        }
+
+        tfoot {
+          td {
+            position: -webkit-sticky;
+            position: sticky;
+            bottom: 0;
+            background: var(--bg-color);
+            color: var(--main-color);
+            z-index: 4;
           }
         }
       }
