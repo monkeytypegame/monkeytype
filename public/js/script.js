@@ -1005,8 +1005,11 @@ function showResult(difficultyFailed = false) {
   clearIntervals();
   let testtime = roundedToFixed(stats.time, 1);
   $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
+  $("#result .stats .wpm .bottom").attr("aria-label", stats.wpm);
   $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
+  $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
   $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
+  $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
   $("#result .stats .key .bottom").text(
     stats.correctChars + stats.spaces + "/" + stats.incorrectChars
   );
