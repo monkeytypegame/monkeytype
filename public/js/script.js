@@ -1788,18 +1788,22 @@ function changeMode(mode, nosave) {
 function liveWpmAndRaw() {
   let chars = 0;
   let correctWordChars = 0;
+  let spaces = 0;
   for (let i = 0; i < inputHistory.length; i++) {
     if (inputHistory[i] == wordsList[i]) {
       //the word is correct
       //+1 for space
-      correctWordChars += wordsList[i].length + 1;
+      correctWordChars += wordsList[i].length;
     }
-    chars += inputHistory[i].length + 1;
+    if (i < inputHistory.length - 1) {
+      spaces++;
+    }
+    chars += inputHistory[i].length;
   }
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
-  let wpm = Math.round((correctWordChars * (60 / testSeconds)) / 5);
-  let raw = Math.round((chars * (60 / testSeconds)) / 5);
+  let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
+  let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
   return {
     wpm: wpm,
     raw: raw,
