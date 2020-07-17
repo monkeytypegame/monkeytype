@@ -1254,22 +1254,30 @@ function showResult(difficultyFailed = false) {
                   if (e.data.globalLeaderboard.newBest) {
                     let pos = e.data.globalLeaderboard.insertedAt + 1;
                     let numend = "th";
-                    if (pos % 10 === 1) {
+                    let t = pos % 10;
+                    let h = pos % 100;
+                    if (t == 1 && h != 11) {
                       numend = "st";
-                    } else if (pos % 10 === 2) {
+                    }
+                    if (t == 2 && h != 12) {
                       numend = "nd";
-                    } else if (pos % 10 === 3) {
+                    }
+                    if (t == 3 && h != 13) {
                       numend = "rd";
                     }
                     globalLbString = `global: ${pos}${numend} place`;
                   } else {
                     let pos = e.data.globalLeaderboard.foundAt + 1;
                     let numend = "th";
-                    if (pos % 10 === 1) {
+                    let t = pos % 10;
+                    let h = pos % 100;
+                    if (t == 1 && h != 11) {
                       numend = "st";
-                    } else if (pos % 10 === 2) {
+                    }
+                    if (t == 2 && h != 12) {
                       numend = "nd";
-                    } else if (pos % 10 === 3) {
+                    }
+                    if (t == 3 && h != 13) {
                       numend = "rd";
                     }
                     globalLbString = `global: already ${pos}${numend}`;
