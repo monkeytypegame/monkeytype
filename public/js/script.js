@@ -1235,6 +1235,7 @@ function showResult(difficultyFailed = false) {
                   6000
                 );
               } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
+                completedEvent.id = e.data.createdId;
                 dbSnapshot.results.unshift(completedEvent);
                 try {
                   firebase

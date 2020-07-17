@@ -482,6 +482,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           .collection(`users/${request.uid}/results`)
           .add(obj)
           .then((e) => {
+            let createdDocId = e.id;
             return Promise.all([
               checkLeaderboards(request.obj, "global", banned, name),
               checkLeaderboards(request.obj, "daily", banned, name),
@@ -525,6 +526,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                   dailyLeaderboard: dailylb,
                   lbBanned: banned,
                   name: name,
+                  createdId: createdDocId,
                 };
 
                 if (ispb) {
