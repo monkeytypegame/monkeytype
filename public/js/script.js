@@ -1519,8 +1519,10 @@ function restartTest(withSameWordset = false) {
     el = $("#words");
   }
   if (resultVisible) {
-    if (config.randomTheme) randomiseTheme();
-    showNotification(config.theme.replace("_", " "), 1500);
+    if (config.randomTheme) {
+      randomiseTheme();
+      showNotification(config.theme.replace("_", " "), 1500);
+    }
     $("#words").stop(true, true).animate(
       {
         opacity: 0,
