@@ -552,7 +552,10 @@ function setTheme(name, nosave) {
 }
 
 function randomiseTheme() {
-  let randomtheme = themesList[Math.floor(Math.random() * themesList.length)];
+  var randomList = themesList.filter(function (theme) {
+    return theme.name != "nausea";
+  });
+  let randomtheme = randomList[Math.floor(Math.random() * randomList.length)];
   setTheme(randomtheme.name, true);
 }
 
