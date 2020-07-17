@@ -121,6 +121,18 @@ function updateLeaderboards() {
 
       $("#leaderboardsWrapper .subtitle").text(resetString);
 
+      $("#leaderboardsWrapper table.daily tfoot").html(`
+      <tr>
+        <td>-</td>
+        <td>You</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-<br>-</td>
+      </tr>
+      `);
+      //daily
       $("#leaderboardsWrapper table.daily tbody").empty();
       if (dailyData.board !== undefined) {
         dailyData.board.forEach((entry, index) => {
@@ -172,6 +184,17 @@ function updateLeaderboards() {
         }
       }
 
+      $("#leaderboardsWrapper table.global tfoot").html(`
+      <tr>
+        <td>-</td>
+        <td>You</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-<br>-</td>
+      </tr>
+      `);
       //global
       $("#leaderboardsWrapper table.global tbody").empty();
       if (globalData.board !== undefined) {
