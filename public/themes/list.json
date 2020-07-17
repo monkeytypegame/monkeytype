@@ -297,5 +297,10 @@
         "name": "bento",
         "bgColor": "#335C71",
         "textColor": "#FC7374"
+    },
+    {
+        "name": "watermelon",
+        "bgColor": "#1F4437",
+        "textColor": "#B74B53"
     }
 ]
