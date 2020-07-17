@@ -1748,6 +1748,7 @@ function changeMode(mode, nosave) {
     $("#top .config .customText").removeClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
   } else if (config.mode == "quote") {
+    setPunctuation(false);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
