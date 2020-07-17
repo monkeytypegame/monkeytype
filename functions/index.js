@@ -419,7 +419,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       };
     } catch (e) {
       console.error(
-        `cant verify key spacing or duration! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
+        `cant verify key spacing or duration for user ${request.uid}! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
       );
     }
 
