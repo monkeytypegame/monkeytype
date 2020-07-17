@@ -682,7 +682,7 @@ function loadMoreLines() {
     }
 
     if (result.punctuation) {
-      icons += `<span aria-label="punctuation" data-balloon-pos="up"><i class="fas fa-fw fa-quote-right"></i></span>`;
+      icons += `<span aria-label="punctuation" data-balloon-pos="up" style="font-weight:900">!?</span>`;
     }
 
     if (result.blindMode) {

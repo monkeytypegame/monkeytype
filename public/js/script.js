@@ -624,7 +624,7 @@ function highlightBadWord(index, showError) {
 }
 
 function showTimer() {
-  if (!config.showTimerBar) return;
+  let op = config.showTimerBar ? config.timerOpacity : 0;
   if (config.timerStyle === "bar") {
     // let op = 0.25;
     // if (
@@ -636,7 +636,7 @@ function showTimer() {
     // }
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
-        opacity: config.timerOpacity,
+        opacity: op,
       },
       250
     );
@@ -651,7 +651,7 @@ function showTimer() {
     // }
     $("#timerNumber").stop(true, true).removeClass("hidden").animate(
       {
-        opacity: config.timerOpacity,
+        opacity: op,
       },
       250
     );
@@ -725,6 +725,7 @@ function restartTimer() {
 }
 
 function updateTimer() {
+  if (!config.showTimerBar) return;
   if (config.mode === "time") {
     if (config.timerStyle === "bar") {
       let percent = 100 - ((time + 1) / config.time) * 100;
@@ -1811,9 +1812,9 @@ function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
   $("#liveWpm").css("opacity", config.timerOpacity);
-  if (config.timerStyle === "text") {
-    $("#timerNumber").css("opacity", config.timerOpacity);
-  }
+  // if (config.timerStyle === "text") {
+  //   $("#timerNumber").css("opacity", config.timerOpacity);
+  // }
 }
 
 function hideLiveWpm() {
