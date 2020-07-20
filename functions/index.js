@@ -904,7 +904,7 @@ class Leaderboard {
                 mode: a.mode,
                 mode2: parseInt(a.mode2),
                 timestamp: a.timestamp,
-                hidden: a.hidden,
+                hidden: a.hidden === undefined ? false : a.hidden,
               });
               insertedAt = index;
             }
@@ -919,7 +919,7 @@ class Leaderboard {
                 mode: a.mode,
                 mode2: parseInt(a.mode2),
                 timestamp: a.timestamp,
-                hidden: a.hidden,
+                hidden: a.hidden === undefined ? false : a.hidden,
               });
               insertedAt = index;
             }
@@ -935,7 +935,7 @@ class Leaderboard {
               mode: a.mode,
               mode2: parseInt(a.mode2),
               timestamp: a.timestamp,
-              hidden: a.hidden,
+              hidden: a.hidden === undefined ? false : a.hidden,
             });
             insertedAt = index;
           }
@@ -1161,6 +1161,7 @@ async function checkLeaderboards(resultObj, type, banned, name, verified) {
 
         // console.log("board after inseft");
         // lb.logBoard();
+        // console.log(lb);
 
         if (insertResult.insertedAt >= 0) {
           //update the database here
