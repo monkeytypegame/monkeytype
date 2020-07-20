@@ -134,14 +134,16 @@ function updateLeaderboards() {
       `);
       //daily
       $("#leaderboardsWrapper table.daily tbody").empty();
+      let dindex = 0;
       if (dailyData.board !== undefined) {
-        dailyData.board.forEach((entry, index) => {
+        dailyData.board.forEach((entry) => {
+          if (entry.hidden) return;
           let meClassString = "";
           if (entry.currentUser) {
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.daily tfoot").html(`
             <tr>
-            <td>${index + 1}</td>
+            <td>${dindex + 1}</td>
             <td>You</td>
             <td>${entry.wpm}</td>
             <td>${entry.raw}</td>
@@ -154,7 +156,7 @@ function updateLeaderboards() {
           $("#leaderboardsWrapper table.daily tbody").append(`
           <tr>
           <td>${
-            index === 0 ? '<i class="fas fa-fw fa-crown"></i>' : index + 1
+            dindex === 0 ? '<i class="fas fa-fw fa-crown"></i>' : dindex + 1
           }</td>
           <td ${meClassString}>${entry.name}</td>
           <td>${entry.wpm}</td>
@@ -164,6 +166,7 @@ function updateLeaderboards() {
           <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
         </tr>
         `);
+          dindex++;
         });
       }
       let lenDaily = 0;
@@ -197,8 +200,10 @@ function updateLeaderboards() {
       `);
       //global
       $("#leaderboardsWrapper table.global tbody").empty();
+      let index = 0;
       if (globalData.board !== undefined) {
-        globalData.board.forEach((entry, index) => {
+        globalData.board.forEach((entry) => {
+          if (entry.hidden) return;
           let meClassString = "";
           if (entry.currentUser) {
             meClassString = ' class="me"';
@@ -227,6 +232,7 @@ function updateLeaderboards() {
           <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
         </tr>
         `);
+          index++;
         });
       }
       let lenGlobal = 0;
