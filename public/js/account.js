@@ -689,6 +689,10 @@ function loadMoreLines() {
       icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
     }
 
+    if (result.theme === "nausea") {
+      icons += `<span aria-label="nausea theme" data-balloon-pos="up"><i class="fas fa-skull-crossbones"></i></span>`;
+    }
+
     let tagNames = "";
 
     if (result.tags !== undefined && result.tags.length > 0) {
@@ -713,7 +717,7 @@ function loadMoreLines() {
       restags = JSON.stringify(result.tags);
     }
 
-    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
+    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="no tags" data-balloon-pos="up" style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
 
     if (tagNames !== "") {
       if (result.tags !== undefined && result.tags.length > 1) {
