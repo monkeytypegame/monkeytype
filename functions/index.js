@@ -423,11 +423,14 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       );
     }
 
-    obj.keySpacing = "removed";
-    obj.keyDuration = "removed";
+    obj.keySpacingStats = keySpacing;
+    obj.keyDurationStats = keyDuration;
 
-    obj.keySpacing = keySpacing;
-    obj.keyDuration = keyDuration;
+    if (obj.mode == "time" && (obj.mode2 == 15 || obj.mode2 == 60)) {
+    } else {
+      obj.keySpacing = "removed";
+      obj.keyDuration = "removed";
+    }
 
     return db
       .collection("users")
