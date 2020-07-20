@@ -951,7 +951,7 @@ class Leaderboard {
           mode: a.mode,
           mode2: parseInt(a.mode2),
           timestamp: a.timestamp,
-          hidden: a.hidden,
+          hidden: a.hidden === undefined ? false : a.hidden,
         });
         insertedAt = this.board.length - 1;
       }
