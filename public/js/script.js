@@ -1209,6 +1209,7 @@ function showResult(difficultyFailed = false) {
               uid: firebase.auth().currentUser.uid,
               obj: completedEvent,
             }).then((e) => {
+              // console.log(e.data);
               accountIconLoading(false);
               // console.log(JSON.stringify(e.data));
               if (e.data == null) {
@@ -1320,7 +1321,8 @@ function showResult(difficultyFailed = false) {
                   e.data.dailyLeaderboard === null &&
                   e.data.globalLeaderboard === null &&
                   e.data.lbBanned === false &&
-                  e.data.name !== false
+                  e.data.name !== false &&
+                  e.data.needsToVerify === false
                 ) {
                   $("#result .stats .leaderboards").addClass("hidden");
                 } else {
@@ -1330,6 +1332,10 @@ function showResult(difficultyFailed = false) {
                   } else if (e.data.name === false) {
                     $("#result .stats .leaderboards .bottom").html(
                       "update your name to access leaderboards"
+                    );
+                  } else if (e.data.needsToVerify === true) {
+                    $("#result .stats .leaderboards .bottom").html(
+                      "verification needed to access leaderboards"
                     );
                   } else {
                     $("#result .stats .leaderboards .bottom").html(
@@ -2308,7 +2314,7 @@ $(window).on("popstate", (e) => {
 });
 
 $(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.keyCode == 32 || event.keyCode == 13) {
+  if (event.keyCode == 13) {
     if (testActive && !afkDetected) {
       let testNow = Date.now();
       let testSeconds = roundTo2((testNow - testStart) / 1000);
@@ -2324,7 +2330,7 @@ $(document.body).on("click", "#restartTestButton", (event) => {
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
-  if (event.keyCode == 32 || event.keyCode == 13) {
+  if (event.keyCode == 13) {
     toggleResultWordsDisplay();
   }
 });
@@ -2338,7 +2344,7 @@ $(document.body).on("click", "#restartTestButtonWithSameWordset", (event) => {
 });
 
 $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
-  if (event.keyCode == 32 || event.keyCode == 13) {
+  if (event.keyCode == 13) {
     restartTest(true);
   }
 });
