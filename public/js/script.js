@@ -1508,6 +1508,7 @@ function restartTest(withSameWordset = false) {
   hideCaret();
   testActive = false;
   hideLiveWpm();
+  hideTimer();
   keypressPerSecond = [];
   currentKeypressCount = 0;
   errorsPerSecond = [];
