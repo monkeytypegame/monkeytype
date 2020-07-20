@@ -426,6 +426,9 @@ exports.testCompleted = functions.https.onCall((request, response) => {
     obj.keySpacing = "removed";
     obj.keyDuration = "removed";
 
+    obj.keySpacing = keySpacing;
+    obj.keyDuration = keyDuration;
+
     return db
       .collection("users")
       .doc(request.uid)
@@ -434,14 +437,12 @@ exports.testCompleted = functions.https.onCall((request, response) => {
         let userdata = ret.data();
         let name = userdata.name === undefined ? false : userdata.name;
         let banned = userdata.banned === undefined ? false : userdata.banned;
-        let verified =
-          userdata.verified === undefined ? false : userdata.verified;
-
+        let verified = userdata.verified;
         request.obj.name = name;
 
         //check keyspacing and duration here
         if (obj.mode === "time") {
-          if (!verified) {
+          if (verified === false || verified === undefined) {
             if (keySpacing !== null && keyDuration !== null) {
               if (
                 keySpacing.sd <= 15 ||
@@ -484,8 +485,8 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           .then((e) => {
             let createdDocId = e.id;
             return Promise.all([
-              checkLeaderboards(request.obj, "global", banned, name),
-              checkLeaderboards(request.obj, "daily", banned, name),
+              checkLeaderboards(request.obj, "global", banned, name, verified),
+              checkLeaderboards(request.obj, "daily", banned, name, verified),
               checkIfPB(request.uid, request.obj),
             ])
               .then((values) => {
@@ -527,6 +528,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                   lbBanned: banned,
                   name: name,
                   createdId: createdDocId,
+                  needsToVerify: values[0].needsToVerify,
                 };
 
                 if (ispb) {
@@ -816,6 +818,7 @@ class Leaderboard {
           entry.mode == this.mode &&
           parseInt(entry.mode2) === parseInt(this.mode2)
         ) {
+          let hid = entry.hidden === undefined ? false : entry.hidden;
           this.board.push({
             uid: entry.uid,
             name: entry.name,
@@ -825,6 +828,7 @@ class Leaderboard {
             mode: entry.mode,
             mode2: parseInt(entry.mode2),
             timestamp: entry.timestamp,
+            hidden: hid,
           });
         }
       });
@@ -900,6 +904,7 @@ class Leaderboard {
                 mode: a.mode,
                 mode2: parseInt(a.mode2),
                 timestamp: a.timestamp,
+                hidden: a.hidden,
               });
               insertedAt = index;
             }
@@ -914,6 +919,7 @@ class Leaderboard {
                 mode: a.mode,
                 mode2: parseInt(a.mode2),
                 timestamp: a.timestamp,
+                hidden: a.hidden,
               });
               insertedAt = index;
             }
@@ -929,6 +935,7 @@ class Leaderboard {
               mode: a.mode,
               mode2: parseInt(a.mode2),
               timestamp: a.timestamp,
+              hidden: a.hidden,
             });
             insertedAt = index;
           }
@@ -944,6 +951,7 @@ class Leaderboard {
           mode: a.mode,
           mode2: parseInt(a.mode2),
           timestamp: a.timestamp,
+          hidden: a.hidden,
         });
         insertedAt = this.board.length - 1;
       }
@@ -1063,7 +1071,7 @@ exports.generatePairingCode = functions.https.onCall((request, response) => {
   }
 });
 
-async function checkLeaderboards(resultObj, type, banned, name) {
+async function checkLeaderboards(resultObj, type, banned, name, verified) {
   // return {
   //   insertedAt: null,
   // };
@@ -1077,6 +1085,11 @@ async function checkLeaderboards(resultObj, type, banned, name) {
       return {
         insertedAt: null,
         banned: true,
+      };
+    if (verified === false)
+      return {
+        insertedAt: null,
+        needsToVerify: true,
       };
     if (
       resultObj.mode === "time" &&
