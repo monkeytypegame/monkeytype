@@ -194,11 +194,10 @@ function signOut() {
 }
 
 function sendVerificationEmail() {
-  firebase
-    .auth()
-    .currentUser.sendEmailVerification()
+  let cu = firebase.auth().currentUser;
+  cu.sendEmailVerification()
     .then((e) => {
-      showNotification("Email sent", 3000);
+      showNotification("Email sent to " + cu.email, 4000);
     })
     .catch((e) => {
       showNotification("Error: " + e.message, 3000);
@@ -209,6 +208,11 @@ function sendVerificationEmail() {
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     // User is signed in.
+    if (user.emailVerified === false) {
+      $(".pageAccount .content").prepend(
+        `<p style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
+      );
+    }
     updateAccountLoginButton();
     accountIconLoading(true);
     db_getUserSnapshot().then((e) => {
