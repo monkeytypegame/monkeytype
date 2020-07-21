@@ -332,8 +332,8 @@ function initWords() {
       wordsList.push(customText[i]);
     }
   } else if (config.mode == "quote") {
-    randomQuote = quotes[Math.floor(Math.random() * quotes.length)].trim();
-    let w = randomQuote.text.split(" ");
+    randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    let w = randomQuote.text.trim().split(" ");
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
     }
