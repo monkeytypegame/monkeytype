@@ -332,7 +332,7 @@ function initWords() {
       wordsList.push(customText[i]);
     }
   } else if (config.mode == "quote") {
-    randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    randomQuote = quotes[Math.floor(Math.random() * quotes.length)].trim();
     let w = randomQuote.text.split(" ");
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
