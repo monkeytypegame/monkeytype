@@ -140,6 +140,7 @@ function signUp() {
                 .collection("users")
                 .doc(usr.uid)
                 .set({ name: nname }, { merge: true });
+              usr.sendEmailVerification();
               showNotification("Account created", 2000);
               $("#menu .icon-button.account .text").text(nname);
               try {
@@ -189,6 +190,19 @@ function signOut() {
     })
     .catch(function (error) {
       showNotification(error.message, 5000);
+    });
+}
+
+function sendVerificationEmail() {
+  firebase
+    .auth()
+    .currentUser.sendEmailVerification()
+    .then((e) => {
+      showNotification("Email sent", 3000);
+    })
+    .catch((e) => {
+      showNotification("Error: " + e.message, 3000);
+      console.error(e.message);
     });
 }
 
