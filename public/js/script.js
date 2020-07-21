@@ -1317,31 +1317,35 @@ function showResult(difficultyFailed = false) {
                     dailyLbString = `daily: already ${pos}${numend}`;
                   }
                 }
+
+                $("#result .stats .leaderboards .bottom").html(
+                  globalLbString + "<br>" + dailyLbString
+                );
+
                 if (
                   e.data.dailyLeaderboard === null &&
-                  e.data.globalLeaderboard === null &&
-                  e.data.lbBanned === false &&
-                  e.data.name !== false &&
-                  e.data.needsToVerify === false
+                  e.data.globalLeaderboard === null
                 ) {
                   $("#result .stats .leaderboards").addClass("hidden");
-                } else {
+                }
+                if (e.data.needsToVerifyEmail === true) {
                   $("#result .stats .leaderboards").removeClass("hidden");
-                  if (e.data.lbBanned) {
-                    $("#result .stats .leaderboards .bottom").html("banned");
-                  } else if (e.data.name === false) {
-                    $("#result .stats .leaderboards .bottom").html(
-                      "update your name to access leaderboards"
-                    );
-                  } else if (e.data.needsToVerify === true) {
-                    $("#result .stats .leaderboards .bottom").html(
-                      "verification needed to access leaderboards"
-                    );
-                  } else {
-                    $("#result .stats .leaderboards .bottom").html(
-                      globalLbString + "<br>" + dailyLbString
-                    );
-                  }
+                  $("#result .stats .leaderboards .bottom").html(
+                    `please verify your email to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`
+                  );
+                } else if (e.data.lbBanned) {
+                  $("#result .stats .leaderboards").removeClass("hidden");
+                  $("#result .stats .leaderboards .bottom").html("banned");
+                } else if (e.data.name === false) {
+                  $("#result .stats .leaderboards").removeClass("hidden");
+                  $("#result .stats .leaderboards .bottom").html(
+                    "update your name to access leaderboards"
+                  );
+                } else if (e.data.needsToVerify === true) {
+                  $("#result .stats .leaderboards").removeClass("hidden");
+                  $("#result .stats .leaderboards .bottom").html(
+                    "verification needed to access leaderboards"
+                  );
                 }
 
                 if (e.data.resultCode === 2) {
