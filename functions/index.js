@@ -367,7 +367,7 @@ function stdDev(array) {
   );
 }
 
-exports.testCompleted = functions.https.onCall((request, response) => {
+exports.testCompleted = functions.https.onCall(async (request, response) => {
   try {
     if (request.uid === undefined || request.obj === undefined) {
       console.error(`error saving result for ${request.uid} - missing input`);
@@ -432,6 +432,13 @@ exports.testCompleted = functions.https.onCall((request, response) => {
       obj.keyDuration = "removed";
     }
 
+    emailVerified = await admin
+      .auth()
+      .getUser(request.uid)
+      .then((user) => {
+        return user.emailVerified;
+      });
+
     return db
       .collection("users")
       .doc(request.uid)
@@ -488,8 +495,22 @@ exports.testCompleted = functions.https.onCall((request, response) => {
           .then((e) => {
             let createdDocId = e.id;
             return Promise.all([
-              checkLeaderboards(request.obj, "global", banned, name, verified),
-              checkLeaderboards(request.obj, "daily", banned, name, verified),
+              checkLeaderboards(
+                request.obj,
+                "global",
+                banned,
+                name,
+                verified,
+                emailVerified
+              ),
+              checkLeaderboards(
+                request.obj,
+                "daily",
+                banned,
+                name,
+                verified,
+                emailVerified
+              ),
               checkIfPB(request.uid, request.obj),
             ])
               .then((values) => {
@@ -532,6 +553,7 @@ exports.testCompleted = functions.https.onCall((request, response) => {
                   name: name,
                   createdId: createdDocId,
                   needsToVerify: values[0].needsToVerify,
+                  needsToVerifyEmail: values[0].needsToVerifyEmail,
                 };
 
                 if (ispb) {
@@ -1074,11 +1096,23 @@ exports.generatePairingCode = functions.https.onCall((request, response) => {
   }
 });
 
-async function checkLeaderboards(resultObj, type, banned, name, verified) {
+async function checkLeaderboards(
+  resultObj,
+  type,
+  banned,
+  name,
+  verified,
+  emailVerified
+) {
   // return {
   //   insertedAt: null,
   // };
   try {
+    if (emailVerified === false)
+      return {
+        insertedAt: null,
+        needsToVerifyEmail: true,
+      };
     if (!name)
       return {
         insertedAt: null,
@@ -1094,6 +1128,7 @@ async function checkLeaderboards(resultObj, type, banned, name, verified) {
         insertedAt: null,
         needsToVerify: true,
       };
+
     if (
       resultObj.mode === "time" &&
       ["15", "60"].includes(String(resultObj.mode2)) &&
