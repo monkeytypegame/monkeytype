@@ -302,5 +302,10 @@
         "name": "watermelon",
         "bgColor": "#1F4437",
         "textColor": "#B74B53"
+    },
+    {
+        "name": "menthol",
+        "bgColor": "#00c18c",
+        "textColor": "#ffffff"
     }
 ]
