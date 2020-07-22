@@ -949,6 +949,11 @@ function calculateStats() {
   let wpm = roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
+  console.log(
+    `pre-spacegate ${roundTo2(
+      ((chars.correctWordChars + chars.spaces) * (60 / testSeconds)) / 5
+    )} (current ${wpm})`
+  );
   let wpmraw = roundTo2(
     ((chars.allCorrectChars +
       chars.spaces +
