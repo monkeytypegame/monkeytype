@@ -603,7 +603,7 @@ $.getJSON("themes/list.json", function (data) {
   data.forEach((theme) => {
     commandsThemes.list.push({
       id: "changeTheme" + capitalizeFirstLetter(theme.name),
-      display: theme.name.replace("_", " "),
+      display: theme.name.replace(/_/g, " "),
       hover: () => {
         previewTheme(theme.name);
       },
@@ -640,7 +640,7 @@ if (Object.keys(words).length > 0) {
     if (language === "english_10k") return;
     commandsLanguages.list.push({
       id: "changeLanguage" + capitalizeFirstLetter(language),
-      display: language.replace("_", " "),
+      display: language.replace(/_/g, " "),
       exec: () => {
         changeLanguage(language);
         restartTest();
@@ -676,7 +676,7 @@ if (Object.keys(layouts).length > 0) {
   Object.keys(layouts).forEach((layout) => {
     commandsLayouts.list.push({
       id: "changeLayout" + capitalizeFirstLetter(layout),
-      display: layout.replace("_", " "),
+      display: layout.replace(/_/g, " "),
       exec: () => {
         changeLayout(layout);
         restartTest();

@@ -1424,7 +1424,7 @@ function showResult(difficultyFailed = false) {
     testType += " " + config.words;
   }
   if (config.mode != "custom") {
-    testType += "<br>" + config.language.replace("_", " ");
+    testType += "<br>" + config.language.replace(/_/g, " ");
   }
   if (config.punctuation) {
     testType += "<br>punctuation";
@@ -1554,7 +1554,7 @@ function restartTest(withSameWordset = false) {
   if (resultVisible) {
     if (config.randomTheme) {
       randomiseTheme();
-      showNotification(config.theme.replace("_", " "), 1500);
+      showNotification(config.theme.replace(/_/g, " "), 1500);
     }
     $("#words").stop(true, true).animate(
       {

@@ -4,7 +4,7 @@ function updateSettingsPage() {
     themesEl.append(
       `<div class="theme button" theme='${theme.name}' style="color:${
         theme.textColor
-      };background:${theme.bgColor}">${theme.name.replace("_", " ")}</div>`
+      };background:${theme.bgColor}">${theme.name.replace(/_/g, " ")}</div>`
     );
   });
 
