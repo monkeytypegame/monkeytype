@@ -29,3 +29,7 @@
 #middle {
   animation: woah 5s infinite linear;
 }
+
+body {
+  overflow: hidden;
+}
