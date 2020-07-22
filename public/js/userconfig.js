@@ -553,7 +553,7 @@ function setTheme(name, nosave) {
 
 function randomiseTheme() {
   var randomList = themesList.filter(function (theme) {
-    return theme.name != "nausea";
+    return theme.name != "nausea" && theme.name != "round_round_baby";
   });
   let randomtheme = randomList[Math.floor(Math.random() * randomList.length)];
   setTheme(randomtheme.name, true);
