@@ -23,161 +23,206 @@ let activeWordTop = 0;
 let activeWordJumped = false;
 let sameWordset = false;
 let quotes = [];
+let focusState = false;
 
 let accuracyStats = {
   correct: 0,
-  incorrect: 0
-}
+  incorrect: 0,
+};
 
-let customText = "The quick brown fox jumps over the lazy dog".split(' ');
+let keypressStats = {
+  spacing: {
+    current: -1,
+    array: [],
+  },
+  duration: {
+    current: -1,
+    array: [],
+  },
+};
+
+let customText = "The quick brown fox jumps over the lazy dog".split(" ");
 let randomQuote = null;
 
-const testCompleted = firebase.functions().httpsCallable('testCompleted');
-const addTag = firebase.functions().httpsCallable('addTag');
-const editTag = firebase.functions().httpsCallable('editTag');
-const removeTag = firebase.functions().httpsCallable('removeTag');
-const updateResultTags = firebase.functions().httpsCallable('updateResultTags');
-const saveConfig = firebase.functions().httpsCallable('saveConfig');
-
+const testCompleted = firebase.functions().httpsCallable("testCompleted");
+const addTag = firebase.functions().httpsCallable("addTag");
+const editTag = firebase.functions().httpsCallable("editTag");
+const removeTag = firebase.functions().httpsCallable("removeTag");
+const updateResultTags = firebase.functions().httpsCallable("updateResultTags");
+const saveConfig = firebase.functions().httpsCallable("saveConfig");
+const generatePairingCode = firebase
+  .functions()
+  .httpsCallable("generatePairingCode");
 
 function smooth(arr, windowSize, getter = (value) => value, setter) {
-  const get = getter
-  const result = []
+  const get = getter;
+  const result = [];
 
   for (let i = 0; i < arr.length; i += 1) {
-    const leftOffeset = i - windowSize
-    const from = leftOffeset >= 0 ? leftOffeset : 0
-    const to = i + windowSize + 1
+    const leftOffeset = i - windowSize;
+    const from = leftOffeset >= 0 ? leftOffeset : 0;
+    const to = i + windowSize + 1;
 
-    let count = 0
-    let sum = 0
+    let count = 0;
+    let sum = 0;
     for (let j = from; j < to && j < arr.length; j += 1) {
-      sum += get(arr[j])
-      count += 1
+      sum += get(arr[j]);
+      count += 1;
     }
 
-    result[i] = setter ? setter(arr[i], sum / count) : sum / count
+    result[i] = setter ? setter(arr[i], sum / count) : sum / count;
   }
 
-  return result
+  return result;
 }
 
 function showNotification(text, time) {
   let noti = $(".notification");
   noti.text(text);
-  noti.css('top', `-${noti.outerHeight()}px`);
-  noti.stop(true, true).animate({
-    top: "1rem"
-  }, 250, 'swing', () => {
-    noti.stop(true, true).animate({
-      opacity: 1
-    }, time, () => {
-      noti.stop(true, true).animate({
-        top: `-${noti.outerHeight()}px`
-      }, 250, 'swing');
-    })
-  });
+  noti.css("top", `-${noti.outerHeight()}px`);
+  noti.stop(true, true).animate(
+    {
+      top: "1rem",
+    },
+    250,
+    "swing",
+    () => {
+      noti.stop(true, true).animate(
+        {
+          opacity: 1,
+        },
+        time,
+        () => {
+          noti.stop(true, true).animate(
+            {
+              top: `-${noti.outerHeight()}px`,
+            },
+            250,
+            "swing"
+          );
+        }
+      );
+    }
+  );
 }
 
 function copyResultToClipboard() {
-  if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-    showNotification('Sorry, this feature is not supported in Firefox', 4000);
+  if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
+    showNotification("Sorry, this feature is not supported in Firefox", 4000);
   } else {
-    let src = $('#middle');
-    var sourceX = src.position().left;/*X position from div#target*/
-    var sourceY = src.position().top;/*Y position from div#target*/
-    var sourceWidth = src.width();/*clientWidth/offsetWidth from div#target*/
-    var sourceHeight = src.height();/*clientHeight/offsetHeight from div#target*/
+    let src = $("#middle");
+    var sourceX = src.position().left; /*X position from div#target*/
+    var sourceY = src.position().top; /*Y position from div#target*/
+    var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
+    var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
 
-    let bgColor = getComputedStyle(document.body).getPropertyValue('--bg-color').replace(' ', '');
+    let bgColor = getComputedStyle(document.body)
+      .getPropertyValue("--bg-color")
+      .replace(" ", "");
     try {
       html2canvas(document.body, {
         backgroundColor: bgColor,
         height: sourceHeight + 50,
         width: sourceWidth + 50,
         x: sourceX - 25,
-        y: sourceY - 25
+        y: sourceY - 25,
       }).then(function (canvas) {
         // document.body.appendChild(canvas);
         canvas.toBlob(function (blob) {
-          navigator.clipboard.write([
-            new ClipboardItem(
-              Object.defineProperty({}, blob.type, {
-                value: blob,
-                enumerable: true
-              })
-            )
-          ]).then(f => {
-            showNotification('Copied to clipboard', 1000);
-          }).catch(f => {
-            showNotification('Error saving image to clipboard', 2000);
-          })
+          navigator.clipboard
+            .write([
+              new ClipboardItem(
+                Object.defineProperty({}, blob.type, {
+                  value: blob,
+                  enumerable: true,
+                })
+              ),
+            ])
+            .then((f) => {
+              showNotification("Copied to clipboard", 1000);
+            })
+            .catch((f) => {
+              showNotification("Error saving image to clipboard", 2000);
+            });
         });
       });
     } catch (e) {
-      showNotification('Error creating image', 2000);
+      showNotification("Error creating image", 2000);
     }
   }
 }
 
-
 function getReleasesFromGitHub() {
-  $.getJSON("https://api.github.com/repos/Miodec/monkey-type/releases", data => {
-    $('#bottom .version').text(data[0].name).css('opacity', 1);
-    $("#versionHistory .releases").empty();
-    data.forEach(release => {
-      if (!release.draft && !release.prerelease) {
-        $("#versionHistory .releases").append(`
+  $.getJSON(
+    "https://api.github.com/repos/Miodec/monkey-type/releases",
+    (data) => {
+      $("#bottom .version").text(data[0].name).css("opacity", 1);
+      $("#versionHistory .releases").empty();
+      data.forEach((release) => {
+        if (!release.draft && !release.prerelease) {
+          $("#versionHistory .releases").append(`
           <div class="release">
             <div class="title">${release.name}</div>
-            <div class="date">${moment(release.published_at).format('DD MMM YYYY')}</div>
-            <div class="body">${release.body.replace(/\r\n/g, '<br>')}</div>
+            <div class="date">${moment(release.published_at).format(
+              "DD MMM YYYY"
+            )}</div>
+            <div class="body">${release.body.replace(/\r\n/g, "<br>")}</div>
           </div>
         `);
-      }
-    })
-  })
+        }
+      });
+    }
+  );
 }
 
 function verifyUsername() {
   //   test = firebase.functions().httpsCallable('moveResults')
   // test2 = firebase.functions().httpsCallable('getNames')
   // test3 = firebase.functions().httpsCallable('checkNameAvailability')
-  const check = firebase.functions().httpsCallable('checkIfNeedsToChangeName')
-  check({ uid: firebase.auth().currentUser.uid }).then(data => {
+  const check = firebase.functions().httpsCallable("checkIfNeedsToChangeName");
+  check({ uid: firebase.auth().currentUser.uid }).then((data) => {
     if (data.data === 1) {
-      $('.nameChangeMessage').slideDown();
+      $(".nameChangeMessage").slideDown();
     } else if (data.data === 2) {
-      $('.nameChangeMessage').slideDown();
+      $(".nameChangeMessage").slideDown();
     }
-  })
+  });
 
-  $('.nameChangeMessage').click(e => {
+  $(".nameChangeMessage").click((e) => {
     alert(`Im currently preparing the system to be ready for leaderboards and other awesome features - it looks like you need to change your display name.
     
     It either contains special characters, or your display name is the same as someone elses and your account was made later.
     
     Sorry for this inconvenience.
     `);
-    let newName = prompt('Please provide a new username - you can use lowercase and uppercase characters, numbers and one of these special characters ( . _ - ). The new name cannot be longer than 12 characters.', firebase.auth().currentUser.displayName);
+    let newName = prompt(
+      "Please provide a new username - you can use lowercase and uppercase characters, numbers and one of these special characters ( . _ - ). The new name cannot be longer than 12 characters.",
+      firebase.auth().currentUser.displayName
+    );
     if (newName) {
-      cn = firebase.functions().httpsCallable('changeName');
-      cn({ uid: firebase.auth().currentUser.uid, name: newName }).then(d => {
+      cn = firebase.functions().httpsCallable("changeName");
+      cn({ uid: firebase.auth().currentUser.uid, name: newName }).then((d) => {
         if (d.data === 1) {
           //all good
-          alert('Thanks! All good.');
+          alert("Thanks! All good.");
           location.reload();
-          $('.nameChangeMessage').slideUp();
+          $(".nameChangeMessage").slideUp();
         } else if (d.data === 0) {
           //invalid or unavailable
-          alert('Name invalid or taken. Try again.');
+          alert("Name invalid or taken. Try again.");
         } else if (d.data === -1) {
           //error
-          alert('Unknown error. Contact Miodec on Discord.');
+          alert("Unknown error. Contact Miodec on Discord.");
         }
       });
     }
-  })
+  });
+}
+
+function getuid() {
+  console.error("Only share this uid with Miodec and nobody else!");
+  console.log(firebase.auth().currentUser.uid);
+  console.error("Only share this uid with Miodec and nobody else!");
 }
 
 function getLastChar(word) {
@@ -185,14 +230,15 @@ function getLastChar(word) {
 }
 
 function setFocus(foc) {
-  if (foc) {
-    // focus = true;
+  if (foc && !focusState) {
+    focusState = true;
     stopCaretAnimation();
     $("#top").addClass("focus");
     $("#bottom").addClass("focus");
     $("body").css("cursor", "none");
     $("#middle").addClass("focus");
-  } else {
+  } else if (!foc && focusState) {
+    focusState = false;
     startCaretAnimation();
     $("#top").removeClass("focus");
     $("#bottom").removeClass("focus");
@@ -216,8 +262,8 @@ function initWords() {
   currentWordIndex = 0;
   accuracyStats = {
     correct: 0,
-    incorrect: 0
-  }
+    incorrect: 0,
+  };
   inputHistory = [];
   currentInput = "";
 
@@ -230,10 +276,10 @@ function initWords() {
       async: false,
       success: function (data) {
         hideBackgroundLoader();
-        words['english_10k'] = data;
+        words["english_10k"] = data;
         language = words[config.language];
-      }
-    })
+      },
+    });
   }
 
   if (config.mode === "quote") {
@@ -244,8 +290,8 @@ function initWords() {
       success: function (data) {
         hideBackgroundLoader();
         quotes = data;
-      }
-    })
+      },
+    });
   }
 
   if (language == undefined || language == []) {
@@ -254,13 +300,25 @@ function initWords() {
   }
 
   if (config.mode == "time" || config.mode == "words") {
-
-    let wordsBound = config.mode == "time" ? 60 : config.words;
+    // let wordsBound = config.mode == "time" ? 60 : config.words;
+    let wordsBound = 60;
+    if (config.showAllLines && config.mode != "time") {
+      wordsBound = config.words;
+    } else {
+      if (config.mode === "words" && config.words < wordsBound) {
+        wordsBound = config.words;
+      }
+    }
     for (let i = 0; i < wordsBound; i++) {
       randomWord = language[Math.floor(Math.random() * language.length)];
       previousWord = wordsList[i - 1];
       previousWord2 = wordsList[i - 2];
-      while (randomWord == previousWord || randomWord == previousWord2 || (!config.punctuation && randomWord == "I") || randomWord.indexOf(' ') > -1) {
+      while (
+        randomWord == previousWord ||
+        randomWord == previousWord2 ||
+        (!config.punctuation && randomWord == "I") ||
+        randomWord.indexOf(" ") > -1
+      ) {
         randomWord = language[Math.floor(Math.random() * language.length)];
       }
       if (config.punctuation && config.mode != "custom") {
@@ -268,7 +326,6 @@ function initWords() {
       }
       wordsList.push(randomWord);
     }
-
   } else if (config.mode == "custom") {
     // let w = customText.split(" ");
     for (let i = 0; i < customText.length; i++) {
@@ -276,7 +333,7 @@ function initWords() {
     }
   } else if (config.mode == "quote") {
     randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    let w = randomQuote.text.split(" ");
+    let w = randomQuote.text.trim().split(" ");
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
     }
@@ -285,9 +342,57 @@ function initWords() {
 }
 
 function emulateLayout(event) {
-  if (config.layout == "default" || event.key === " ")
-    return event;
-  const qwertyMasterLayout = { "Backquote": "`~", "Digit1": "1!", "Digit2": "2@", "Digit3": "3#", "Digit4": "4$", "Digit5": "5%", "Digit6": "6^", "Digit7": "7&", "Digit8": "8*", "Digit9": "9(", "Digit0": "0)", "Minus": "-_", "Equal": "=+", "KeyQ": "qQ", "KeyW": "wW", "KeyE": "eE", "KeyR": "rR", "KeyT": "tT", "KeyY": "yY", "KeyU": "uU", "KeyI": "iI", "KeyO": "oO", "KeyP": "pP", "BracketLeft": "[{", "BracketRight": "]}", "KeyA": "aA", "KeyS": "sS", "KeyD": "dD", "KeyF": "fF", "KeyG": "gG", "KeyH": "hH", "KeyJ": "jJ", "KeyK": "kK", "KeyL": "lL", "Semicolon": ";:", "Quote": "'\"", "Backslash": "\\|", "KeyZ": "zZ", "KeyX": "xX", "KeyC": "cC", "KeyV": "vV", "KeyB": "bB", "KeyN": "nN", "KeyM": "mM", "Comma": ",<", "Period": ".>", "Slash": "/?", "Space": "  " }
+  if (config.layout == "default" || event.key === " ") return event;
+  const qwertyMasterLayout = {
+    Backquote: "`~",
+    Digit1: "1!",
+    Digit2: "2@",
+    Digit3: "3#",
+    Digit4: "4$",
+    Digit5: "5%",
+    Digit6: "6^",
+    Digit7: "7&",
+    Digit8: "8*",
+    Digit9: "9(",
+    Digit0: "0)",
+    Minus: "-_",
+    Equal: "=+",
+    KeyQ: "qQ",
+    KeyW: "wW",
+    KeyE: "eE",
+    KeyR: "rR",
+    KeyT: "tT",
+    KeyY: "yY",
+    KeyU: "uU",
+    KeyI: "iI",
+    KeyO: "oO",
+    KeyP: "pP",
+    BracketLeft: "[{",
+    BracketRight: "]}",
+    KeyA: "aA",
+    KeyS: "sS",
+    KeyD: "dD",
+    KeyF: "fF",
+    KeyG: "gG",
+    KeyH: "hH",
+    KeyJ: "jJ",
+    KeyK: "kK",
+    KeyL: "lL",
+    Semicolon: ";:",
+    Quote: "'\"",
+    Backslash: "\\|",
+    KeyZ: "zZ",
+    KeyX: "xX",
+    KeyC: "cC",
+    KeyV: "vV",
+    KeyB: "bB",
+    KeyN: "nN",
+    KeyM: "mM",
+    Comma: ",<",
+    Period: ".>",
+    Slash: "/?",
+    Space: "  ",
+  };
   let layoutMap = layouts[config.layout];
   let qwertyMap = layouts["qwerty"];
 
@@ -314,26 +419,36 @@ function emulateLayout(event) {
 }
 
 function punctuateWord(previousWord, currentWord, index, maxindex) {
-
   let word = currentWord;
 
-  if (index == 0 || getLastChar(previousWord) == "." || getLastChar(previousWord) == "?" || getLastChar(previousWord) == "!") {
+  if (
+    index == 0 ||
+    getLastChar(previousWord) == "." ||
+    getLastChar(previousWord) == "?" ||
+    getLastChar(previousWord) == "!"
+  ) {
     //always capitalise the first word or if there was a dot
     word = capitalizeFirstLetter(word);
   } else if (
     //10% chance to end a sentence
-    (Math.random() < 0.1 && getLastChar(previousWord) != "." && index != maxindex - 2) || index == maxindex - 1) {
+    (Math.random() < 0.1 &&
+      getLastChar(previousWord) != "." &&
+      index != maxindex - 2) ||
+    index == maxindex - 1
+  ) {
     let rand = Math.random();
     if (rand <= 0.8) {
       word += ".";
-    } else if (rand > .8 && rand < .9) {
+    } else if (rand > 0.8 && rand < 0.9) {
       word += "?";
     } else {
       word += "!";
     }
-  } else if (Math.random() < 0.01 &&
+  } else if (
+    Math.random() < 0.01 &&
     getLastChar(previousWord) != "," &&
-    getLastChar(previousWord) != ".") {
+    getLastChar(previousWord) != "."
+  ) {
     //1% chance to add quotes
     word = `"${word}"`;
   } else if (Math.random() < 0.01) {
@@ -347,27 +462,33 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
   ) {
     //1% chance to add a dash
     word = "-";
-  } else if (
-    Math.random() < 0.2 &&
-    getLastChar(previousWord) != ","
-  ) {
+  } else if (Math.random() < 0.2 && getLastChar(previousWord) != ",") {
     //2% chance to add a comma
     word += ",";
   }
   return word;
-
 }
 
 function addWord() {
+  if (
+    !config.showAllLines &&
+    (wordsList.length - inputHistory.length > 60 ||
+      (config.mode === "words" && wordsList.length >= config.words))
+  )
+    return;
   let language = words[config.language];
   let randomWord = language[Math.floor(Math.random() * language.length)];
   previousWord = wordsList[wordsList.length - 1];
-  previousWordStripped = previousWord.replace(/[.?!":\-,]/g, '').toLowerCase();
-  while (previousWordStripped == randomWord || randomWord.indexOf(' ') > -1 || (!config.punctuation && randomWord == "I")) {
+  previousWordStripped = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
+  while (
+    previousWordStripped == randomWord ||
+    randomWord.indexOf(" ") > -1 ||
+    (!config.punctuation && randomWord == "I")
+  ) {
     randomWord = language[Math.floor(Math.random() * language.length)];
   }
   if (config.punctuation && config.mode != "custom") {
-    randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0)
+    randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0);
   }
   wordsList.push(randomWord);
 
@@ -381,46 +502,67 @@ function addWord() {
 
 function showWords() {
   $("#words").empty();
-  if (config.mode == "words" || config.mode == "custom" || config.mode == "quote") {
-    $("#words").css("height", "auto");
-    for (let i = 0; i < wordsList.length; i++) {
-      let w = "<div class='word'>";
-      for (let c = 0; c < wordsList[i].length; c++) {
-        w += "<letter>" + wordsList[i].charAt(c) + "</letter>";
-      }
-      w += "</div>";
-      $("#words").append(w);
+
+  for (let i = 0; i < wordsList.length; i++) {
+    let w = "<div class='word'>";
+    for (let c = 0; c < wordsList[i].length; c++) {
+      w += "<letter>" + wordsList[i].charAt(c) + "</letter>";
     }
-  } else if (config.mode == "time") {
-    for (let i = 0; i < wordsList.length; i++) {
-      let w = "<div class='word'>";
-      for (let c = 0; c < wordsList[i].length; c++) {
-        w += "<letter>" + wordsList[i].charAt(c) + "</letter>";
-      }
-      w += "</div>";
-      $("#words").append(w);
-    }
-    $("#words").removeClass('hidden');
-    const wordHeight = $($(".word")[0]).outerHeight(true);
-    $("#words").css("height", wordHeight * 3 + 'px').css("overflow", "hidden");
+    w += "</div>";
+    $("#words").append(w);
   }
+
+  $("#words").removeClass("hidden");
+  if (config.showAllLines && config.mode != "time") {
+    $("#words").css("height", "auto");
+  } else {
+    const wordHeight = $($(".word")[0]).outerHeight(true);
+    $("#words")
+      .css("height", wordHeight * 3 + "px")
+      .css("overflow", "hidden");
+  }
+
   updateActiveElement();
   updateCaretPosition();
 }
 
 function updateActiveElement() {
-  $("#words .word").removeClass("active");
-  $($("#words .word")[currentWordIndex])
-    .addClass("active")
-    .removeClass("error");
-  // activeWordTop = $("#words .word.active").position().top;
-  activeWordTop = document.querySelector("#words .word.active").offsetTop;
+  let active = document.querySelector("#words .active");
+  if (active !== null) {
+    active.classList.remove("active");
+  }
+  // $("#words .word").removeClass("active");
+  // $($("#words .word")[currentWordIndex]).addClass("active").removeClass("error");
+
+  // document.querySelectorAll("#words .word")[currentWordIndex].classList.add("active");
+  try {
+    let activeWord = document.querySelectorAll("#words .word")[
+      currentWordIndex
+    ];
+    activeWord.classList.add("active");
+    activeWord.classList.remove("error");
+
+    // activeWordTop = $("#words .word.active").position().top;
+    activeWordTop = document.querySelector("#words .active").offsetTop;
+  } catch (e) {}
 }
 
 function compareInput(wrdIndex, input, showError) {
-  $($('#words .word')[wrdIndex]).empty();
+  // let wrdAtIndex = $("#words .word")[wrdIndex];
+  let wordAtIndex;
+  let currentWord;
+  if (wrdIndex === null) {
+    wordAtIndex = document.querySelector("#words .word.active");
+    currentWord = wordsList[currentWordIndex];
+  } else {
+    wordAtIndex = document.querySelectorAll("#words .word")[wrdIndex];
+    currentWord = wordsList[wrdIndex];
+  }
+  // while (wordAtIndex.firstChild) {
+  //   wordAtIndex.removeChild(wordAtIndex.firstChild);
+  // }
   let ret = "";
-  let currentWord = wordsList[wrdIndex];
+
   for (let i = 0; i < input.length; i++) {
     if (currentWord[i] == input[i]) {
       ret += '<letter class="correct">' + currentWord[i] + "</letter>";
@@ -450,13 +592,25 @@ function compareInput(wrdIndex, input, showError) {
       }
     }
   }
+
   if (input.length < currentWord.length) {
     for (let i = input.length; i < currentWord.length; i++) {
       ret += "<letter>" + currentWord[i] + "</letter>";
     }
   }
-  $($('#words .word')[wrdIndex]).html(ret);
-  if ((currentWord == input || (config.quickEnd && currentWord.length == input.length)) && wrdIndex == wordsList.length - 1) {
+
+  wordAtIndex.innerHTML = ret;
+
+  let lastindex = currentWordIndex;
+  if (wrdIndex !== null) {
+    lastindex = wrdIndex;
+  }
+
+  if (
+    (currentWord == input ||
+      (config.quickEnd && currentWord.length == input.length)) &&
+    lastindex == wordsList.length - 1
+  ) {
     inputHistory.push(input);
     currentInput = "";
     if (!resultVisible) showResult();
@@ -470,71 +624,172 @@ function highlightBadWord(index, showError) {
 }
 
 function showTimer() {
-  if (!config.showTimerBar) return;
+  let op = config.showTimerBar ? config.timerOpacity : 0;
   if (config.timerStyle === "bar") {
-    $("#timerWrapper").animate({
-      "opacity": 1
-    }, 250);
+    // let op = 0.25;
+    // if (
+    //   $("#timerNumber").hasClass("timerSub") ||
+    //   $("#timerNumber").hasClass("timerText") ||
+    //   $("#timerNumber").hasClass("timerMain")
+    // ) {
+    //   op = 1;
+    // }
+    $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
+      {
+        opacity: op,
+      },
+      250
+    );
   } else if (config.timerStyle === "text" && config.mode === "time") {
-    $("#timerNumber").animate({
-      "opacity": .25
-    }, 250);
+    // let op = 0.25;
+    // if (
+    //   $("#timerNumber").hasClass("timerSub") ||
+    //   $("#timerNumber").hasClass("timerText") ||
+    //   $("#timerNumber").hasClass("timerMain")
+    // ) {
+    //   op = 1;
+    // }
+    $("#timerNumber").stop(true, true).removeClass("hidden").animate(
+      {
+        opacity: op,
+      },
+      250
+    );
   }
 }
 
 function hideTimer() {
   if (config.timerStyle === "bar") {
-    $("#timerWrapper").animate({
-      "opacity": 0
-    }, 125);
+    $("#timerWrapper").stop(true, true).animate(
+      {
+        opacity: 0,
+      },
+      125
+    );
   } else if (config.timerStyle === "text") {
-    $("#timerNumber").animate({
-      "opacity": 0
-    }, 125);
+    $("#timerNumber").stop(true, true).animate(
+      {
+        opacity: 0,
+      },
+      125
+    );
+  }
+}
+
+function changeTimerColor(color) {
+  $("#timer").removeClass("timerSub");
+  $("#timer").removeClass("timerText");
+  $("#timer").removeClass("timerMain");
+
+  $("#timerNumber").removeClass("timerSub");
+  $("#timerNumber").removeClass("timerText");
+  $("#timerNumber").removeClass("timerMain");
+
+  $("#liveWpm").removeClass("timerSub");
+  $("#liveWpm").removeClass("timerText");
+  $("#liveWpm").removeClass("timerMain");
+
+  if (color === "main") {
+    $("#timer").addClass("timerMain");
+    $("#timerNumber").addClass("timerMain");
+    $("#liveWpm").addClass("timerMain");
+  } else if (color === "sub") {
+    $("#timer").addClass("timerSub");
+    $("#timerNumber").addClass("timerSub");
+    $("#liveWpm").addClass("timerSub");
+  } else if (color === "text") {
+    $("#timer").addClass("timerText");
+    $("#timerNumber").addClass("timerText");
+    $("#liveWpm").addClass("timerText");
   }
 }
 
 function restartTimer() {
   if (config.timerStyle === "bar") {
     if (config.mode === "time") {
-      $("#timer").stop(true, true).animate({
-        "width": "100vw"
-      }, 0);
+      $("#timer").stop(true, true).animate(
+        {
+          width: "100vw",
+        },
+        0
+      );
     } else if (config.mode === "words" || config.mode === "custom") {
-      $("#timer").stop(true, true).animate({
-        "width": "0vw"
-      }, 0);
+      $("#timer").stop(true, true).animate(
+        {
+          width: "0vw",
+        },
+        0
+      );
     }
   }
 }
 
 function updateTimer() {
-
+  if (!config.showTimerBar) return;
   if (config.mode === "time") {
     if (config.timerStyle === "bar") {
-      let percent = 100 - (((time + 1) / config.time) * 100);
-      $("#timer").stop(true, true).animate({
-        "width": percent + "vw"
-      }, 1000, "linear");
+      let percent = 100 - ((time + 1) / config.time) * 100;
+      $("#timer")
+        .stop(true, true)
+        .animate(
+          {
+            width: percent + "vw",
+          },
+          1000,
+          "linear"
+        );
     } else if (config.timerStyle === "text") {
-      $("#timerNumber").html(config.time - time);
+      var displayTime = new Date(null);
+      displayTime.setSeconds(config.time - time);
+      displayTime = displayTime.toISOString().substr(11, 8);
+      while (
+        displayTime.substr(0, 2) == "00" ||
+        displayTime[0] == ":" ||
+        (displayTime.length == 2 && displayTime[0] == "0")
+      ) {
+        if (displayTime.substr(0, 2) == "00") {
+          displayTime = displayTime.substr(3);
+        } else {
+          displayTime = displayTime.substr(1);
+        }
+      }
+      $("#timerNumber").html(displayTime);
+      // $("#timerNumber").html(config.time - time);
     }
-  } else if ((config.mode === "words" || config.mode === "custom" || config.mode === "quote") && config.timerStyle === "bar") {
-    let percent = Math.floor(((currentWordIndex + 1) / wordsList.length) * 100);
-    $("#timer").stop(true, true).animate({
-      "width": percent + "vw"
-    }, 250);
+  } else if (
+    config.mode === "words" ||
+    config.mode === "custom" ||
+    config.mode === "quote"
+  ) {
+    if (config.timerStyle === "bar") {
+      let percent = Math.floor(
+        ((currentWordIndex + 1) / wordsList.length) * 100
+      );
+      $("#timer")
+        .stop(true, true)
+        .animate(
+          {
+            width: percent + "vw",
+          },
+          250
+        );
+    } else if (config.timerStyle === "text") {
+      let outof = wordsList.length;
+      if (config.mode === "words") {
+        outof = config.words;
+      }
+      $("#timerNumber").html(`${inputHistory.length}/${outof}`);
+      // $("#timerNumber").html(config.time - time);
+    }
   }
-
 }
-
 
 function hideCaret() {
   $("#caret").addClass("hidden");
 }
 
 function showCaret() {
-  if ($("#result").hasClass('hidden')) {
+  if ($("#result").hasClass("hidden")) {
     updateCaretPosition();
     $("#caret").removeClass("hidden");
     startCaretAnimation();
@@ -551,59 +806,70 @@ function startCaretAnimation() {
 }
 
 function updateCaretPosition() {
-  if ($("#words").hasClass('hidden')) return;
+  // return;
+  if ($("#words").hasClass("hidden")) return;
+
   let caret = $("#caret");
-  let activeWord = $("#words .word.active");
+  // let activeWord = $("#words .word.active");
+
   let inputLen = currentInput.length;
   let currentLetterIndex = inputLen - 1;
   if (currentLetterIndex == -1) {
     currentLetterIndex = 0;
   }
-  let currentLetter = $("#words .word.active letter")[currentLetterIndex];
-  if($(currentLetter).length == 0) return;
-  // let currentLetterPos = currentLetter.position();
-  let currentLetterPosLeft = currentLetter.offsetLeft;
-  let currentLetterPosTop = currentLetter.offsetTop;
-  let letterHeight = $(currentLetter).height();
+  // let currentLetter = $("#words .word.active letter")[currentLetterIndex];
+  try {
+    let currentLetter = document
+      .querySelector("#words .active")
+      .querySelectorAll("letter")[currentLetterIndex];
 
-  let newTop = 0;
-  let newLeft = 0;
+    if ($(currentLetter).length == 0) return;
+    let currentLetterPosLeft = currentLetter.offsetLeft;
+    let currentLetterPosTop = currentLetter.offsetTop;
+    let letterHeight = $(currentLetter).height();
+    let newTop = 0;
+    let newLeft = 0;
 
-  newTop = currentLetterPosTop - letterHeight / 4;
-  if (inputLen == 0) {
-    newLeft = currentLetterPosLeft - caret.width() / 2;
-  } else {
-    newLeft = currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2;
-  }
-
-  let duration = 0;
-
-
-  if (config.smoothCaret) {
-    duration = 100;
-    if (Math.round(caret[0].offsetTop) != Math.round(newTop)) {
-      caret.css("top", newTop);
-      duration = 10;
+    newTop = currentLetterPosTop - letterHeight / 4;
+    if (inputLen == 0) {
+      newLeft = currentLetterPosLeft - caret.width() / 2;
+    } else {
+      newLeft =
+        currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2;
     }
-  }
 
-  caret.stop(true, true).animate({
-    top: newTop,
-    left: newLeft
-  }, duration)
+    let duration = 0;
 
-  let browserHeight = window.innerHeight;
-  let middlePos = (browserHeight / 2) - $("#caret").outerHeight() / 2;
-  let contentHeight = document.body.scrollHeight;
+    if (config.smoothCaret) {
+      duration = 100;
+      // if (Math.round(caret[0].offsetTop) != Math.round(newTop)) {
+      //   caret.css("top", newTop);
+      //   duration = 10;
+      // }
+    }
 
-  if (newTop >= middlePos && contentHeight > browserHeight) {
-    window.scrollTo({
-      left: 0,
-      top: newTop - middlePos,
-      behavior: 'smooth'
-    })
-  }
+    caret.stop(true, true).animate(
+      {
+        top: newTop,
+        left: newLeft,
+      },
+      duration
+    );
 
+    if (config.showAllLines) {
+      let browserHeight = window.innerHeight;
+      let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
+      let contentHeight = document.body.scrollHeight;
+
+      if (newTop >= middlePos && contentHeight > browserHeight) {
+        window.scrollTo({
+          left: 0,
+          top: newTop - middlePos,
+          behavior: "smooth",
+        });
+      }
+    }
+  } catch (e) {}
 }
 
 function countChars() {
@@ -613,11 +879,15 @@ function countChars() {
   let extraChars = 0;
   let missedChars = 0;
   let spaces = 0;
+  let correctspaces = 0;
   for (let i = 0; i < inputHistory.length; i++) {
     if (inputHistory[i] == wordsList[i]) {
       //the word is correct
       correctWordChars += wordsList[i].length;
       correctChars += wordsList[i].length;
+      if (i < inputHistory.length - 1) {
+        correctspaces++;
+      }
     } else if (inputHistory[i].length >= wordsList[i].length) {
       //too many chars
       for (let c = 0; c < inputHistory[i].length; c++) {
@@ -659,12 +929,13 @@ function countChars() {
     allCorrectChars: correctChars,
     incorrectChars: incorrectChars,
     extraChars: extraChars,
-    missedChars: missedChars
-  }
+    missedChars: missedChars,
+    correctSpaces: correctspaces,
+  };
 }
 
 function roundTo2(num) {
-  return Math.round((num + Number.EPSILON) * 100) / 100
+  return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
 function calculateStats() {
@@ -675,9 +946,22 @@ function calculateStats() {
 
   let testNow = Date.now();
   let testSeconds = roundTo2((testNow - testStart) / 1000);
-  let wpm = roundTo2(((chars.correctWordChars + chars.spaces) * (60 / testSeconds)) / 5);
-  let wpmraw = roundTo2(((chars.allCorrectChars + chars.spaces + chars.incorrectChars + chars.extraChars) * (60 / testSeconds)) / 5);
-  let acc = roundTo2((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
+  let wpm = roundTo2(
+    ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
+  );
+  let wpmraw = roundTo2(
+    ((chars.allCorrectChars +
+      chars.spaces +
+      chars.incorrectChars +
+      chars.extraChars) *
+      (60 / testSeconds)) /
+      5
+  );
+  let acc = roundTo2(
+    (accuracyStats.correct /
+      (accuracyStats.correct + accuracyStats.incorrect)) *
+      100
+  );
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
@@ -685,18 +969,23 @@ function calculateStats() {
     correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars,
     time: testSeconds,
-    spaces: chars.spaces
+    spaces: chars.spaces,
+    correctSpaces: chars.correctSpaces,
   };
 }
 
 function hideCrown() {
-  $("#result .stats .wpm .crownWrapper").css('opacity', 0);
+  $("#result .stats .wpm .crownWrapper").css("opacity", 0);
 }
 
 function showCrown() {
-  $("#result .stats .wpm .crownWrapper").animate({
-    opacity: 1
-  }, 250, "easeOutCubic");
+  $("#result .stats .wpm .crownWrapper").animate(
+    {
+      opacity: 1,
+    },
+    250,
+    "easeOutCubic"
+  );
 }
 
 function showResult(difficultyFailed = false) {
@@ -717,28 +1006,40 @@ function showResult(difficultyFailed = false) {
       correctChars: 0,
       incorrectChars: 0,
       time: 0,
-      spaces: 0
-    }
+      spaces: 0,
+      correctSpaces: 0,
+    };
   }
   clearIntervals();
   let testtime = roundedToFixed(stats.time, 1);
   $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
+  $("#result .stats .wpm .bottom").attr("aria-label", stats.wpm);
   $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
+  $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
   $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
-  $("#result .stats .key .bottom").text(stats.correctChars + stats.spaces + "/" + stats.incorrectChars);
-  $("#result .stats .time .bottom").text(testtime + 's');
+  $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
+  $("#result .stats .key .bottom").text(
+    stats.correctChars + stats.correctSpaces + "/" + stats.incorrectChars
+  );
+  $("#result .stats .time .bottom").text(testtime + "s");
 
   setTimeout(function () {
-    $("#resultExtraButtons").removeClass('hidden').css('opacity', 0).animate({
-      opacity: 1
-    }, 125);
+    $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
   }, 125);
 
   $("#testModesNotice").css({
-    'opacity': 0,
+    opacity: 0,
     // 'height': 0,
     // 'margin-bottom': 0
   });
+
+  $("#result .stats .leaderboards .bottom").text("");
+  $("#result .stats .leaderboards").addClass("hidden");
 
   let mode2 = "";
   if (config.mode === "time") {
@@ -750,95 +1051,24 @@ function showResult(difficultyFailed = false) {
     // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
   } else if (config.mode === "custom") {
     mode2 = "custom";
+  } else if (config.mode === "quote") {
+    mode2 = randomQuote.id;
   }
-
-
-  if (firebase.auth().currentUser != null) {
-    $("#result .loginTip").addClass('hidden');
-  } else {
-    $("#result .loginTip").removeClass('hidden');
-  }
-
-
-  let testType = "";
-
-
-  testType += config.mode;
-  if (config.mode == "time") {
-    testType += " " + config.time
-  } else if (config.mode == "words") {
-    testType += " " + config.words
-  }
-  if (config.mode != "custom") {
-    testType += "<br>" + config.language.replace('_', ' ');
-  }
-  if (config.punctuation) {
-    testType += "<br>punctuation"
-  }
-  if (config.blindMode) {
-    testType += "<br>blind"
-  }
-  if (config.difficulty == "expert") {
-    testType += "<br>expert";
-  } else if (config.difficulty == "master") {
-    testType += "<br>master";
-  }
-
-  $("#result .stats .testType .bottom").html(testType);
-
-
-  let otherText = "";
-  if (difficultyFailed) {
-    otherText += "<br>failed"
-  }
-  if (afkDetected) {
-    otherText += "<br>afk detected"
-  }
-  if (testInvalid) {
-    otherText += "<br>invalid"
-  }
-  if (sameWordset) {
-    otherText += "<br>repeated"
-  }
-
-  if (otherText == "") {
-    $("#result .stats .info").addClass('hidden');
-  } else {
-    $("#result .stats .info").removeClass('hidden');
-    otherText = otherText.substring(4);
-    $("#result .stats .info .bottom").html(otherText);
-  }
-
-  let tagsText = "";
-  try {
-    dbSnapshot.tags.forEach(tag => {
-      if (tag.active === true) {
-        tagsText += "<br>" + tag.name;
-      }
-    })
-  } catch (e) {
-
-  }
-
-  if (tagsText == "") {
-    $("#result .stats .tags").addClass('hidden');
-  } else {
-    $("#result .stats .tags").removeClass('hidden');
-    tagsText = tagsText.substring(4);
-    $("#result .stats .tags .bottom").html(tagsText);
-  }
-
-  $("#result .stats .source .bottom").html(randomQuote.source);
 
   let labels = [];
   for (let i = 1; i <= wpmHistory.length; i++) {
     labels.push(i.toString());
   }
 
-  let mainColor = getComputedStyle(document.body).getPropertyValue('--main-color').replace(' ', '');
-  let subColor = getComputedStyle(document.body).getPropertyValue('--sub-color').replace(' ', '');
-  let bgColor = getComputedStyle(document.body).getPropertyValue('--bg-color').replace(' ', '');
-
+  let mainColor = getComputedStyle(document.body)
+    .getPropertyValue("--main-color")
+    .replace(" ", "");
+  let subColor = getComputedStyle(document.body)
+    .getPropertyValue("--sub-color")
+    .replace(" ", "");
+  let bgColor = getComputedStyle(document.body)
+    .getPropertyValue("--bg-color")
+    .replace(" ", "");
 
   wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
   wpmOverTimeChart.options.scales.xAxes[0].scaleLabel.fontColor = subColor;
@@ -849,10 +1079,9 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.data.labels = labels;
 
-  let rawWpmPerSecond = keypressPerSecond.map(f => Math.round((f / 5) * 60));
+  let rawWpmPerSecond = keypressPerSecond.map((f) => Math.round((f / 5) * 60));
 
   rawWpmPerSecond = smooth(rawWpmPerSecond, 1);
-
 
   wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
@@ -863,14 +1092,16 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.options.annotation.annotations[0].label.backgroundColor = subColor;
   wpmOverTimeChart.options.annotation.annotations[0].label.fontColor = bgColor;
 
-  let maxChartVal = Math.max(...[Math.max(...rawWpmPerSecond), Math.max(...wpmHistory)]);
+  let maxChartVal = Math.max(
+    ...[Math.max(...rawWpmPerSecond), Math.max(...wpmHistory)]
+  );
 
   let errorsNoZero = [];
 
   for (let i = 0; i < errorsPerSecond.length; i++) {
     errorsNoZero.push({
       x: i + 1,
-      y: errorsPerSecond[i]
+      y: errorsPerSecond[i],
     });
   }
 
@@ -883,22 +1114,19 @@ function showResult(difficultyFailed = false) {
   } else if (sameWordset) {
     showNotification("Test invalid - repeated", 2000);
   } else {
-
     let activeTags = [];
     try {
-      dbSnapshot.tags.forEach(tag => {
+      dbSnapshot.tags.forEach((tag) => {
         if (tag.active === true) {
           activeTags.push(tag.id);
         }
-      })
-    } catch (e) {
-
-    }
+      });
+    } catch (e) {}
 
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
-      correctChars: stats.correctChars + stats.spaces,
+      correctChars: stats.correctChars + stats.correctSpaces,
       incorrectChars: stats.incorrectChars,
       acc: stats.acc,
       mode: config.mode,
@@ -913,15 +1141,25 @@ function showResult(difficultyFailed = false) {
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTags,
-      quoteId: config.mode == "quote" ? randomQuote.id : null
+      keySpacing: keypressStats.spacing.array,
+      keyDuration: keypressStats.duration.array,
     };
-    if (config.difficulty == "normal" || ((config.difficulty == "master" || config.difficulty == "expert") && !difficultyFailed)) {
+    if (
+      config.difficulty == "normal" ||
+      ((config.difficulty == "master" || config.difficulty == "expert") &&
+        !difficultyFailed)
+    ) {
       // console.log(incompleteTestSeconds);
       // console.log(restartCount);
       restartCount = 0;
       incompleteTestSeconds = 0;
     }
-    if (stats.wpm > 0 && stats.wpm < 350 && stats.acc > 50 && stats.acc <= 100) {
+    if (
+      stats.wpm > 0 &&
+      stats.wpm < 350 &&
+      stats.acc > 50 &&
+      stats.acc <= 100
+    ) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
 
@@ -929,8 +1167,20 @@ function showResult(difficultyFailed = false) {
         accountIconLoading(true);
         let localPb = false;
         let dontShowCrown = false;
-        db_getLocalPB(config.mode, mode2, config.punctuation, config.language, config.difficulty).then(lpb => {
-          db_getUserHighestWpm(config.mode, mode2, config.punctuation, config.language, config.difficulty).then(highestwpm => {
+        db_getLocalPB(
+          config.mode,
+          mode2,
+          config.punctuation,
+          config.language,
+          config.difficulty
+        ).then((lpb) => {
+          db_getUserHighestWpm(
+            config.mode,
+            mode2,
+            config.punctuation,
+            config.language,
+            config.difficulty
+          ).then((highestwpm) => {
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
               dontShowCrown = true;
             }
@@ -944,44 +1194,198 @@ function showResult(difficultyFailed = false) {
             }
             if (highestwpm > 0) {
               wpmOverTimeChart.options.annotation.annotations[0].value = highestwpm;
-              wpmOverTimeChart.options.annotation.annotations[0].label.content = "PB: " + highestwpm;
-              if (maxChartVal >= highestwpm - 15 && maxChartVal <= highestwpm + 15) {
+              wpmOverTimeChart.options.annotation.annotations[0].label.content =
+                "PB: " + highestwpm;
+              if (
+                maxChartVal >= highestwpm - 15 &&
+                maxChartVal <= highestwpm + 15
+              ) {
                 maxChartVal = highestwpm + 15;
               }
-              wpmOverTimeChart.options.scales.yAxes[0].ticks.max = Math.round(maxChartVal);
-              wpmOverTimeChart.options.scales.yAxes[1].ticks.max = Math.round(maxChartVal);
+              wpmOverTimeChart.options.scales.yAxes[0].ticks.max = Math.round(
+                maxChartVal
+              );
+              wpmOverTimeChart.options.scales.yAxes[1].ticks.max = Math.round(
+                maxChartVal
+              );
               wpmOverTimeChart.update({ duration: 0 });
             }
-            testCompleted({ uid: firebase.auth().currentUser.uid, obj: completedEvent }).then(e => {
+            $("#result .stats .leaderboards").removeClass("hidden");
+            $("#result .stats .leaderboards .bottom").html("checking...");
+            testCompleted({
+              uid: firebase.auth().currentUser.uid,
+              obj: completedEvent,
+            }).then((e) => {
+              // console.log(e.data);
               accountIconLoading(false);
-              if (e.data === -1) {
-                showNotification('Could not save result', 3000);
-              } else if (e.data === 1 || e.data === 2) {
+              // console.log(JSON.stringify(e.data));
+              if (e.data == null) {
+                showNotification("Unexpected response from the server.", 4000);
+                return;
+              }
+              if (e.data.resultCode === -1) {
+                showNotification("Could not save result", 3000);
+              } else if (e.data.resultCode === -2) {
+                showNotification(
+                  "Possible bot detected. Result not saved.",
+                  4000
+                );
+              } else if (e.data.resultCode === -3) {
+                showNotification(
+                  "Could not verify. Result not saved. Refresh or contact Miodec on Discord.",
+                  4000
+                );
+              } else if (e.data.resultCode === -999) {
+                console.error("internal error: " + e.data.message);
+                showNotification(
+                  "Internal error. Result might not be saved. " +
+                    e.data.message,
+                  6000
+                );
+              } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
+                completedEvent.id = e.data.createdId;
                 dbSnapshot.results.unshift(completedEvent);
                 try {
-                  firebase.analytics().logEvent('testCompleted', completedEvent);
+                  firebase
+                    .analytics()
+                    .logEvent("testCompleted", completedEvent);
                 } catch (e) {
                   console.log("Analytics unavailable");
                 }
-                if (e.data === 2) {
-                  //new pb
-                  if (!localPb) {
-                    showNotification('Local PB data is out of sync! Resyncing.', 5000);
-                  }
-                  db_saveLocalPB(config.mode, mode2, config.punctuation, config.language, config.difficulty, stats.wpm);
-                } else {
-                  if (localPb) {
-                    showNotification('Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.', 15000);
+
+                //global
+                let globalLbString = "";
+                if (e.data.globalLeaderboard === null) {
+                  globalLbString = "global: not found";
+                } else if (e.data.globalLeaderboard.insertedAt === -1) {
+                  globalLbString = "global: not qualified";
+                } else if (e.data.globalLeaderboard.insertedAt >= 0) {
+                  if (e.data.globalLeaderboard.newBest) {
+                    let pos = e.data.globalLeaderboard.insertedAt + 1;
+                    let numend = "th";
+                    let t = pos % 10;
+                    let h = pos % 100;
+                    if (t == 1 && h != 11) {
+                      numend = "st";
+                    }
+                    if (t == 2 && h != 12) {
+                      numend = "nd";
+                    }
+                    if (t == 3 && h != 13) {
+                      numend = "rd";
+                    }
+                    globalLbString = `global: ${pos}${numend} place`;
+                  } else {
+                    let pos = e.data.globalLeaderboard.foundAt + 1;
+                    let numend = "th";
+                    let t = pos % 10;
+                    let h = pos % 100;
+                    if (t == 1 && h != 11) {
+                      numend = "st";
+                    }
+                    if (t == 2 && h != 12) {
+                      numend = "nd";
+                    }
+                    if (t == 3 && h != 13) {
+                      numend = "rd";
+                    }
+                    globalLbString = `global: already ${pos}${numend}`;
                   }
                 }
 
+                //daily
+                let dailyLbString = "";
+                if (e.data.dailyLeaderboard === null) {
+                  dailyLbString = "daily: not found";
+                } else if (e.data.dailyLeaderboard.insertedAt === -1) {
+                  dailyLbString = "daily: not qualified";
+                } else if (e.data.dailyLeaderboard.insertedAt >= 0) {
+                  if (e.data.dailyLeaderboard.newBest) {
+                    let pos = e.data.dailyLeaderboard.insertedAt + 1;
+                    let numend = "th";
+                    if (pos === 1) {
+                      numend = "st";
+                    } else if (pos === 2) {
+                      numend = "nd";
+                    } else if (pos === 3) {
+                      numend = "rd";
+                    }
+                    dailyLbString = `daily: ${pos}${numend} place`;
+                  } else {
+                    let pos = e.data.dailyLeaderboard.foundAt + 1;
+                    let numend = "th";
+                    if (pos === 1) {
+                      numend = "st";
+                    } else if (pos === 2) {
+                      numend = "nd";
+                    } else if (pos === 3) {
+                      numend = "rd";
+                    }
+                    dailyLbString = `daily: already ${pos}${numend}`;
+                  }
+                }
+
+                $("#result .stats .leaderboards .bottom").html(
+                  globalLbString + "<br>" + dailyLbString
+                );
+
+                if (
+                  e.data.dailyLeaderboard === null &&
+                  e.data.globalLeaderboard === null
+                ) {
+                  $("#result .stats .leaderboards").addClass("hidden");
+                }
+                if (e.data.needsToVerifyEmail === true) {
+                  $("#result .stats .leaderboards").removeClass("hidden");
+                  $("#result .stats .leaderboards .bottom").html(
+                    `please verify your email to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`
+                  );
+                } else if (e.data.lbBanned) {
+                  $("#result .stats .leaderboards").removeClass("hidden");
+                  $("#result .stats .leaderboards .bottom").html("banned");
+                } else if (e.data.name === false) {
+                  $("#result .stats .leaderboards").removeClass("hidden");
+                  $("#result .stats .leaderboards .bottom").html(
+                    "update your name to access leaderboards"
+                  );
+                } else if (e.data.needsToVerify === true) {
+                  $("#result .stats .leaderboards").removeClass("hidden");
+                  $("#result .stats .leaderboards .bottom").html(
+                    "verification needed to access leaderboards"
+                  );
+                }
+
+                if (e.data.resultCode === 2) {
+                  //new pb
+                  if (!localPb) {
+                    showNotification(
+                      "Local PB data is out of sync! Resyncing.",
+                      5000
+                    );
+                  }
+                  db_saveLocalPB(
+                    config.mode,
+                    mode2,
+                    config.punctuation,
+                    config.language,
+                    config.difficulty,
+                    stats.wpm
+                  );
+                } else {
+                  if (localPb) {
+                    showNotification(
+                      "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
+                      15000
+                    );
+                  }
+                }
               }
-            })
-          })
-        })
+            });
+          });
+        });
       } else {
         try {
-          firebase.analytics().logEvent('testCompletedNoLogin', completedEvent);
+          firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
         } catch (e) {
           console.log("Analytics unavailable");
         }
@@ -992,11 +1396,89 @@ function showResult(difficultyFailed = false) {
       showNotification("Test invalid", 3000);
       testInvalid = true;
       try {
-        firebase.analytics().logEvent('testCompletedInvalid', completedEvent);
+        firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
       } catch (e) {
         console.log("Analytics unavailable");
       }
     }
+  }
+
+  if (firebase.auth().currentUser != null) {
+    $("#result .loginTip").addClass("hidden");
+  } else {
+    $("#result .stats .leaderboards").addClass("hidden");
+    $("#result .loginTip").removeClass("hidden");
+  }
+
+  let testType = "";
+
+  testType += config.mode;
+  if (config.mode == "time") {
+    testType += " " + config.time;
+  } else if (config.mode == "words") {
+    testType += " " + config.words;
+  }
+  if (config.mode != "custom") {
+    testType += "<br>" + config.language.replace("_", " ");
+  }
+  if (config.punctuation) {
+    testType += "<br>punctuation";
+  }
+  if (config.blindMode) {
+    testType += "<br>blind";
+  }
+  if (config.difficulty == "expert") {
+    testType += "<br>expert";
+  } else if (config.difficulty == "master") {
+    testType += "<br>master";
+  }
+
+  $("#result .stats .testType .bottom").html(testType);
+
+  let otherText = "";
+  if (difficultyFailed) {
+    otherText += "<br>failed";
+  }
+  if (afkDetected) {
+    otherText += "<br>afk detected";
+  }
+  if (testInvalid) {
+    otherText += "<br>invalid";
+  }
+  if (sameWordset) {
+    otherText += "<br>repeated";
+  }
+
+  if (otherText == "") {
+    $("#result .stats .info").addClass("hidden");
+  } else {
+    $("#result .stats .info").removeClass("hidden");
+    otherText = otherText.substring(4);
+    $("#result .stats .info .bottom").html(otherText);
+  }
+
+  let tagsText = "";
+  try {
+    dbSnapshot.tags.forEach((tag) => {
+      if (tag.active === true) {
+        tagsText += "<br>" + tag.name;
+      }
+    });
+  } catch (e) {}
+
+  if (tagsText == "") {
+    $("#result .stats .tags").addClass("hidden");
+  } else {
+    $("#result .stats .tags").removeClass("hidden");
+    tagsText = tagsText.substring(4);
+    $("#result .stats .tags .bottom").html(tagsText);
+  }
+
+  if (config.mode === "quote") {
+    $("#result .stats .source").removeClass("hidden");
+    $("#result .stats .source .bottom").html(randomQuote.source);
+  } else {
+    $("#result .stats .source").addClass("hidden");
   }
 
   wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxChartVal;
@@ -1004,26 +1486,24 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.update({ duration: 0 });
   swapElements($("#words"), $("#result"), 250, () => {
-
     if (config.blindMode) {
-      $.each($('#words .word'), (i, word) => {
+      $.each($("#words .word"), (i, word) => {
         let input = inputHistory[i];
         if (input == undefined) input = currentInput;
         compareInput(i, input, true);
         if (inputHistory[i] != wordsList[i]) {
           highlightBadWord(i, true);
         }
-      })
+      });
     }
 
-
     let remove = false;
-    $.each($('#words .word'), (i, obj) => {
+    $.each($("#words .word"), (i, obj) => {
       if (remove) {
         $(obj).remove();
       } else {
-        $(obj).removeClass('hidden');
-        if ($(obj).hasClass('active')) remove = true;
+        $(obj).removeClass("hidden");
+        if ($(obj).hasClass("active")) remove = true;
       }
     });
   });
@@ -1039,13 +1519,24 @@ function restartTest(withSameWordset = false) {
   hideCaret();
   testActive = false;
   hideLiveWpm();
+  hideTimer();
   keypressPerSecond = [];
   currentKeypressCount = 0;
   errorsPerSecond = [];
   currentErrorCount = 0;
   currentTestLine = 0;
   activeWordJumped = false;
-  hideTimer();
+  keypressStats = {
+    spacing: {
+      current: -1,
+      array: [],
+    },
+    duration: {
+      current: -1,
+      array: [],
+    },
+  };
+  $("#timerNumber").css("opacity", 0);
   // restartTimer();
   let el = null;
   if (resultVisible) {
@@ -1055,109 +1546,135 @@ function restartTest(withSameWordset = false) {
     //words are being displayed
     el = $("#words");
   }
-
   if (resultVisible) {
-    $("#words").stop(true, true).animate({
-      opacity: 0
-    }, 125);
-    $("#wordsTitle").stop(true, true).animate({
-      opacity: 0
-    }, 125, () => {
-      $("#wordsTitle").slideUp(0);
-    });
-    $("#resultExtraButtons").stop(true, true).animate({
-      opacity: 0
-    }, 125, () => {
-      $("#resultExtraButtons").addClass('hidden');
-    });
+    if (config.randomTheme) {
+      randomiseTheme();
+      showNotification(config.theme.replace("_", " "), 1500);
+    }
+    $("#words").stop(true, true).animate(
+      {
+        opacity: 0,
+      },
+      125
+    );
+    $("#wordsTitle")
+      .stop(true, true)
+      .animate(
+        {
+          opacity: 0,
+        },
+        125,
+        () => {
+          $("#wordsTitle").slideUp(0);
+        }
+      );
+    $("#resultExtraButtons")
+      .stop(true, true)
+      .animate(
+        {
+          opacity: 0,
+        },
+        125,
+        () => {
+          $("#resultExtraButtons").addClass("hidden");
+        }
+      );
   }
   resultVisible = false;
 
-
   // .css("transition", "1s linear");
 
-  el.stop(true, true).animate({
-    opacity: 0
-  }, 125, () => {
-    if (!withSameWordset) {
-      sameWordset = false;
-      initWords();
-    } else {
-      sameWordset = true;
-      testActive = false;
-      currentWordIndex = 0;
-      accuracyStats = {
-        correct: 0,
-        incorrect: 0
+  el.stop(true, true).animate(
+    {
+      opacity: 0,
+    },
+    125,
+    () => {
+      if (!withSameWordset) {
+        sameWordset = false;
+        initWords();
+      } else {
+        sameWordset = true;
+        testActive = false;
+        currentWordIndex = 0;
+        accuracyStats = {
+          correct: 0,
+          incorrect: 0,
+        };
+        inputHistory = [];
+        currentInput = "";
+        showWords();
       }
-      inputHistory = [];
-      currentInput = "";
-      showWords();
+      $("#result").addClass("hidden");
+      $("#testModesNotice").css({
+        opacity: 1,
+        // 'height': 'auto',
+        // 'margin-bottom': '1.25rem'
+      });
+      $("#words")
+        .css("opacity", 0)
+        .removeClass("hidden")
+        .stop(true, true)
+        .animate(
+          {
+            opacity: 1,
+          },
+          125,
+          () => {
+            hideCrown();
+            clearIntervals();
+            $("#restartTestButton").css("opacity", 1);
+            if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
+            wpmOverTimeChart.options.annotation.annotations[0].value = "-30";
+            wpmOverTimeChart.update();
+
+            // let oldHeight = $("#words").height();
+            // let newHeight = $("#words")
+            //   .css("height", "fit-content")
+            //   .css("height", "-moz-fit-content")
+            //   .height();
+            // if (testMode == "words" || testMode == "custom") {
+            //   $("#words")
+            //     .stop(true, true)
+            //     .css("height", oldHeight)
+            //     .animate({ height: newHeight }, 250, () => {
+            //       $("#words")
+            //         .css("height", "fit-content")
+            //         .css("height", "-moz-fit-content");
+            //       $("#wordsInput").focus();
+            //       updateCaretPosition();
+            //     });
+            // } else if (testMode == "time") {
+            //   $("#words")
+            //     .stop(true, true)
+            //     .css("height", oldHeight)
+            //     .animate({ height: 78 }, 250, () => {
+            //       $("#wordsInput").focus();
+            //       updateCaretPosition();
+            //     });
+            // }
+          }
+        );
     }
-    $("#result").addClass('hidden');
-    $("#testModesNotice").css({
-      'opacity': 1,
-      // 'height': 'auto',
-      // 'margin-bottom': '1.25rem'
-    });
-    $("#words").css('opacity', 0).removeClass('hidden').stop(true, true).animate({
-      opacity: 1
-    }, 125, () => {
-      hideCrown();
-      clearIntervals();
-      $("#restartTestButton").css('opacity', 1);
-      if ($("#commandLineWrapper").hasClass('hidden')) focusWords();
-      wpmOverTimeChart.options.annotation.annotations[0].value = "-30";
-      wpmOverTimeChart.update();
-
-
-      // let oldHeight = $("#words").height();
-      // let newHeight = $("#words")
-      //   .css("height", "fit-content")
-      //   .css("height", "-moz-fit-content")
-      //   .height();
-      // if (testMode == "words" || testMode == "custom") {
-      //   $("#words")
-      //     .stop(true, true)
-      //     .css("height", oldHeight)
-      //     .animate({ height: newHeight }, 250, () => {
-      //       $("#words")
-      //         .css("height", "fit-content")
-      //         .css("height", "-moz-fit-content");
-      //       $("#wordsInput").focus();  
-      //       updateCaretPosition();
-      //     });
-      // } else if (testMode == "time") {
-      //   $("#words")
-      //     .stop(true, true)
-      //     .css("height", oldHeight)
-      //     .animate({ height: 78 }, 250, () => {
-      //       $("#wordsInput").focus();  
-      //       updateCaretPosition();
-      //     });
-      // }
-
-    });
-  })
+  );
 }
 
 function focusWords() {
-  if (!$("#words").hasClass('hidden')) $("#wordsInput").focus();
+  if (!$("#words").hasClass("hidden")) $("#wordsInput").focus();
 }
 
 function changeCustomText() {
   customText = prompt("Custom text").trim();
-  customText = customText.replace(/[\n\r\t ]/gm, ' ');
-  customText = customText.replace(/ +/gm, ' ');
-  customText = customText.split(' ');
+  customText = customText.replace(/[\n\r\t ]/gm, " ");
+  customText = customText.replace(/ +/gm, " ");
+  customText = customText.split(" ");
   if (customText.length >= 10000) {
-    showNotification('Custom text cannot be longer than 10000 words.', 4000);
-    changeMode('time');
-    customText = "The quick brown fox jumped over the lazy dog".split(' ');
+    showNotification("Custom text cannot be longer than 10000 words.", 4000);
+    changeMode("time");
+    customText = "The quick brown fox jumped over the lazy dog".split(" ");
   }
   // initWords();
 }
-
 
 function changePage(page) {
   if (pageTransition) {
@@ -1165,15 +1682,15 @@ function changePage(page) {
   }
   restartTest();
   let activePage = $(".page.active");
-  $(".page").removeClass('active');
+  $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
     pageTransition = true;
     swapElements(activePage, $(".page.pageTest"), 250, () => {
       pageTransition = false;
       focusWords();
-      $(".page.pageTest").addClass('active');
-      history.pushState('/', null, '/');
+      $(".page.pageTest").addClass("active");
+      history.pushState("/", null, "/");
     });
     showTestConfig();
     hideSignOutButton();
@@ -1184,8 +1701,8 @@ function changePage(page) {
     pageTransition = true;
     swapElements(activePage, $(".page.pageAbout"), 250, () => {
       pageTransition = false;
-      history.pushState('about', null, 'about');
-      $(".page.pageAbout").addClass('active');
+      history.pushState("about", null, "about");
+      $(".page.pageAbout").addClass("active");
     });
     hideTestConfig();
     hideSignOutButton();
@@ -1193,8 +1710,8 @@ function changePage(page) {
     pageTransition = true;
     swapElements(activePage, $(".page.pageSettings"), 250, () => {
       pageTransition = false;
-      history.pushState('settings', null, 'settings');
-      $(".page.pageSettings").addClass('active');
+      history.pushState("settings", null, "settings");
+      $(".page.pageSettings").addClass("active");
     });
     updateSettingsPage();
     hideTestConfig();
@@ -1206,8 +1723,8 @@ function changePage(page) {
       pageTransition = true;
       swapElements(activePage, $(".page.pageAccount"), 250, () => {
         pageTransition = false;
-        history.pushState('account', null, 'account');
-        $(".page.pageAccount").addClass('active');
+        history.pushState("account", null, "account");
+        $(".page.pageAccount").addClass("active");
       });
       refreshAccountPage();
       hideTestConfig();
@@ -1215,13 +1732,13 @@ function changePage(page) {
     }
   } else if (page == "login") {
     if (firebase.auth().currentUser != null) {
-      changePage('account');
+      changePage("account");
     } else {
       pageTransition = true;
       swapElements(activePage, $(".page.pageLogin"), 250, () => {
         pageTransition = false;
-        history.pushState('login', null, 'login');
-        $(".page.pageLogin").addClass('active');
+        history.pushState("login", null, "login");
+        $(".page.pageLogin").addClass("active");
       });
       hideTestConfig();
       hideSignOutButton();
@@ -1249,6 +1766,7 @@ function changeMode(mode, nosave) {
     $("#top .config .customText").removeClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
   } else if (config.mode == "quote") {
+    setPunctuation(false);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
@@ -1259,183 +1777,263 @@ function changeMode(mode, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function liveWPM() {
+// function liveWPM() {
+//   let correctWordChars = 0;
+//   for (let i = 0; i < inputHistory.length; i++) {
+//     if (inputHistory[i] == wordsList[i]) {
+//       //the word is correct
+//       //+1 for space
+//       correctWordChars += wordsList[i].length + 1;
+//     }
+//   }
+//   let testNow = Date.now();
+//   let testSeconds = (testNow - testStart) / 1000;
+//   wpm = (correctWordChars * (60 / testSeconds)) / 5;
+//   return Math.round(wpm);
+// }
+
+// function liveRaw() {
+//   let chars = 0;
+//   for (let i = 0; i < inputHistory.length; i++) {
+//     chars += inputHistory[i].length + 1;
+//   }
+//   let testNow = Date.now();
+//   let testSeconds = (testNow - testStart) / 1000;
+//   raw = (chars * (60 / testSeconds)) / 5;
+//   return Math.round(raw);
+// }
+
+function liveWpmAndRaw() {
+  let chars = 0;
   let correctWordChars = 0;
+  let spaces = 0;
   for (let i = 0; i < inputHistory.length; i++) {
     if (inputHistory[i] == wordsList[i]) {
       //the word is correct
       //+1 for space
-      correctWordChars += wordsList[i].length + 1;
+      correctWordChars += wordsList[i].length;
+      if (i < inputHistory.length - 1) {
+        spaces++;
+      }
     }
+    chars += inputHistory[i].length;
   }
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
-  wpm = (correctWordChars * (60 / testSeconds)) / 5;
-  return Math.round(wpm);
-}
-
-function liveRaw() {
-  let chars = 0;
-  for (let i = 0; i < inputHistory.length; i++) {
-    chars += inputHistory[i].length + 1;
-  }
-  let testNow = Date.now();
-  let testSeconds = (testNow - testStart) / 1000;
-  raw = (chars * (60 / testSeconds)) / 5;
-  return Math.round(raw);
+  let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
+  let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
+  return {
+    wpm: wpm,
+    raw: raw,
+  };
 }
 
 function updateLiveWpm(wpm) {
   if (!config.showLiveWpm) return;
-  if (wpm == 0 || !testActive) hideLiveWpm();
+  if (!testActive) {
+    hideLiveWpm();
+  } else {
+    showLiveWpm();
+  }
   // let wpmstring = wpm < 100 ? `&nbsp;${wpm}` : `${wpm}`;
-  $("#liveWpm").html(wpm);
+  document.querySelector("#liveWpm").innerHTML = wpm;
+  // $("#liveWpm").html(wpm);
 }
 
 function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
-  $("#liveWpm").css('opacity', 0.25);
+  $("#liveWpm").css("opacity", config.timerOpacity);
+  // if (config.timerStyle === "text") {
+  //   $("#timerNumber").css("opacity", config.timerOpacity);
+  // }
 }
 
 function hideLiveWpm() {
-  $("#liveWpm").css('opacity', 0);
+  $("#liveWpm").css("opacity", 0);
 }
 
-function swapElements(el1, el2, totalDuration, callback = function () { return; }) {
+function swapElements(
+  el1,
+  el2,
+  totalDuration,
+  callback = function () {
+    return;
+  }
+) {
   if (
-    (el1.hasClass('hidden') && !el2.hasClass('hidden')) ||
-    (!el1.hasClass('hidden') && el2.hasClass('hidden'))
+    (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
+    (!el1.hasClass("hidden") && el2.hasClass("hidden"))
   ) {
     //one of them is hidden and the other is visible
     if (el1.hasClass("hidden")) {
       callback();
       return false;
     }
-    $(el1).removeClass('hidden').css('opacity', 1).animate({
-      opacity: 0
-    }, totalDuration / 2, () => {
-      $(el1).addClass('hidden');
-      $(el2).removeClass('hidden').css('opacity', 0).animate({
-        opacity: 1
-      }, totalDuration / 2, () => {
-        callback();
-      });
-    });
-
-  } else if (el1.hasClass('hidden') && el2.hasClass('hidden')) {
+    $(el1)
+      .removeClass("hidden")
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        totalDuration / 2,
+        () => {
+          $(el1).addClass("hidden");
+          $(el2)
+            .removeClass("hidden")
+            .css("opacity", 0)
+            .animate(
+              {
+                opacity: 1,
+              },
+              totalDuration / 2,
+              () => {
+                callback();
+              }
+            );
+        }
+      );
+  } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
     //both are hidden, only fade in the second
-    $(el2).removeClass('hidden').css('opacity', 0).animate({
-      opacity: 1
-    }, totalDuration, () => {
-      callback();
-    });
+    $(el2)
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: 1,
+        },
+        totalDuration,
+        () => {
+          callback();
+        }
+      );
   } else {
     callback();
   }
-
 }
 
 function clearIntervals() {
-  timers.forEach(timer => {
+  timers.forEach((timer) => {
     clearInterval(timer);
-  })
+  });
 }
 
 function updateAccountLoginButton() {
   if (firebase.auth().currentUser != null) {
-    swapElements($("#menu .icon-button.login"), $("#menu .icon-button.account"), 250);
+    swapElements(
+      $("#menu .icon-button.login"),
+      $("#menu .icon-button.account"),
+      250
+    );
     // $("#menu .icon-button.account").removeClass('hidden');
     // $("#menu .icon-button.login").addClass('hidden');
   } else {
-    swapElements($("#menu .icon-button.account"), $("#menu .icon-button.login"), 250);
+    swapElements(
+      $("#menu .icon-button.account"),
+      $("#menu .icon-button.login"),
+      250
+    );
     // $("#menu .icon-button.login").removeClass('hidden');
     // $("#menu .icon-button.account").addClass('hidden');
   }
 }
 
 function accountIconLoading(truefalse) {
-
   if (truefalse) {
-    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-spin fa-circle-notch"></i>');
+    $("#top #menu .account .icon").html(
+      '<i class="fas fa-fw fa-spin fa-circle-notch"></i>'
+    );
   } else {
     $("#top #menu .account .icon").html('<i class="fas fa-fw fa-user"></i>');
   }
-
 }
 
 function toggleResultWordsDisplay() {
   if (resultVisible) {
-    if ($("#words").stop(true, true).hasClass('hidden')) {
-      //show 
-      $("#wordsTitle").css('opacity', 1).removeClass('hidden').slideDown(250);
+    if ($("#words").stop(true, true).hasClass("hidden")) {
+      //show
+      $("#wordsTitle").css("opacity", 1).removeClass("hidden").slideDown(250);
 
+      let newHeight = $("#words")
+        .removeClass("hidden")
+        .css("height", "auto")
+        .outerHeight();
 
-      let newHeight = $("#words").removeClass('hidden').css('height', 'auto').outerHeight();
-
-      $("#words").css({
-        height: 0,
-        opacity: 0
-      }).animate({
-        height: newHeight,
-        opacity: 1
-      }, 250);
+      $("#words")
+        .css({
+          height: 0,
+          opacity: 0,
+        })
+        .animate(
+          {
+            height: newHeight,
+            opacity: 1,
+          },
+          250
+        );
     } else {
       //hide
 
       $("#wordsTitle").slideUp(250);
 
       let oldHeight = $("#words").outerHeight();
-      $("#words").removeClass('hidden');
-      $("#words").css({
-        opacity: 1,
-        height: oldHeight
-      }).animate({
-        height: 0,
-        opacity: 0
-      }, 250, () => {
-        $("#words").addClass('hidden');
-      });
+      $("#words").removeClass("hidden");
+      $("#words")
+        .css({
+          opacity: 1,
+          height: oldHeight,
+        })
+        .animate(
+          {
+            height: 0,
+            opacity: 0,
+          },
+          250,
+          () => {
+            $("#words").addClass("hidden");
+          }
+        );
     }
   }
 }
 
 function flipTestColors(tf) {
   if (tf) {
-    $("#words").addClass('flipped');
+    $("#words").addClass("flipped");
   } else {
-    $("#words").removeClass('flipped');
+    $("#words").removeClass("flipped");
   }
 }
 
 function applyColorfulMode(tc) {
   if (tc) {
-    $("#words").addClass('colorfulMode');
+    $("#words").addClass("colorfulMode");
   } else {
-    $("#words").removeClass('colorfulMode');
+    $("#words").removeClass("colorfulMode");
   }
 }
 
 function showEditTags(action, id, name) {
   if (action === "add") {
-    $("#tagsWrapper #tagsEdit").attr('action', 'add');
-    $("#tagsWrapper #tagsEdit .title").html('Add new tag');
+    $("#tagsWrapper #tagsEdit").attr("action", "add");
+    $("#tagsWrapper #tagsEdit .title").html("Add new tag");
     $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-plus"></i>`);
-    $("#tagsWrapper #tagsEdit input").val('');
-    $("#tagsWrapper #tagsEdit input").removeClass('hidden');
+    $("#tagsWrapper #tagsEdit input").val("");
+    $("#tagsWrapper #tagsEdit input").removeClass("hidden");
   } else if (action === "edit") {
-    $("#tagsWrapper #tagsEdit").attr('action', 'edit');
-    $("#tagsWrapper #tagsEdit").attr('tagid', id);
-    $("#tagsWrapper #tagsEdit .title").html('Edit tag name');
+    $("#tagsWrapper #tagsEdit").attr("action", "edit");
+    $("#tagsWrapper #tagsEdit").attr("tagid", id);
+    $("#tagsWrapper #tagsEdit .title").html("Edit tag name");
     $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-pen"></i>`);
     $("#tagsWrapper #tagsEdit input").val(name);
-    $("#tagsWrapper #tagsEdit input").removeClass('hidden');
+    $("#tagsWrapper #tagsEdit input").removeClass("hidden");
   } else if (action === "remove") {
-    $("#tagsWrapper #tagsEdit").attr('action', 'remove');
-    $("#tagsWrapper #tagsEdit").attr('tagid', id);
-    $("#tagsWrapper #tagsEdit .title").html('Remove tag ' + name);
+    $("#tagsWrapper #tagsEdit").attr("action", "remove");
+    $("#tagsWrapper #tagsEdit").attr("tagid", id);
+    $("#tagsWrapper #tagsEdit .title").html("Remove tag " + name);
     $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-check"></i>`);
-    $("#tagsWrapper #tagsEdit input").addClass('hidden');
+    $("#tagsWrapper #tagsEdit input").addClass("hidden");
   }
 
   if ($("#tagsWrapper").hasClass("hidden")) {
@@ -1443,7 +2041,7 @@ function showEditTags(action, id, name) {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, e => {
+      .animate({ opacity: 1 }, 100, (e) => {
         $("#tagsWrapper #tagsEdit input").focus();
       });
   }
@@ -1451,17 +2049,20 @@ function showEditTags(action, id, name) {
 
 function hideEditTags() {
   if (!$("#tagsWrapper").hasClass("hidden")) {
-    $("#tagsWrapper #tagsEdit").attr('action', '');
-    $("#tagsWrapper #tagsEdit").attr('tagid', '');
+    $("#tagsWrapper #tagsEdit").attr("action", "");
+    $("#tagsWrapper #tagsEdit").attr("tagid", "");
     $("#tagsWrapper")
       .stop(true, true)
       .css("opacity", 1)
       .animate(
         {
-          opacity: 0
-        }, 100, e => {
-          $("#tagsWrapper").addClass('hidden');
-        });
+          opacity: 0,
+        },
+        100,
+        (e) => {
+          $("#tagsWrapper").addClass("hidden");
+        }
+      );
   }
 }
 
@@ -1474,21 +2075,25 @@ function hideBackgroundLoader() {
 }
 
 function updateTestModesNotice() {
-
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
 
   $(".pageTest #testModesNotice").empty();
 
   if (config.difficulty === "expert") {
-    $(".pageTest #testModesNotice").append(`<div><i class="fas fa-star-half-alt"></i>expert</div>`);
+    $(".pageTest #testModesNotice").append(
+      `<div><i class="fas fa-star-half-alt"></i>expert</div>`
+    );
   } else if (config.difficulty === "master") {
-    $(".pageTest #testModesNotice").append(`<div><i class="fas fa-star"></i>master</div>`);
+    $(".pageTest #testModesNotice").append(
+      `<div><i class="fas fa-star"></i>master</div>`
+    );
   }
 
-
   if (config.blindMode) {
-    $(".pageTest #testModesNotice").append(`<div><i class="fas fa-eye-slash"></i>blind</div>`);
+    $(".pageTest #testModesNotice").append(
+      `<div><i class="fas fa-eye-slash"></i>blind</div>`
+    );
   }
 
   tagsString = "";
@@ -1498,128 +2103,152 @@ function updateTestModesNotice() {
   //     }
   // })
   try {
-    dbSnapshot.tags.forEach(tag => {
+    dbSnapshot.tags.forEach((tag) => {
       if (tag.active === true) {
-        tagsString += tag.name + ', ';
+        tagsString += tag.name + ", ";
       }
-    })
+    });
 
     if (tagsString !== "") {
-      $(".pageTest #testModesNotice").append(`<div><i class="fas fa-tag"></i>${tagsString.substring(0, tagsString.length - 2)}</div>`);
+      $(".pageTest #testModesNotice").append(
+        `<div><i class="fas fa-tag"></i>${tagsString.substring(
+          0,
+          tagsString.length - 2
+        )}</div>`
+      );
     }
-  } catch (e) {
-
-  }
+  } catch (e) {}
 
   if (anim) {
-    $(".pageTest #testModesNotice").css('transition', 'none').css('opacity', 0).animate({
-      opacity: 1
-    }, 125, (e) => {
-      $(".pageTest #testModesNotice").css('transition', '.125s');
-    });
+    $(".pageTest #testModesNotice")
+      .css("transition", "none")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: 1,
+        },
+        125,
+        (e) => {
+          $(".pageTest #testModesNotice").css("transition", ".125s");
+        }
+      );
   }
-
 }
 
-
-$("#tagsWrapper").click(e => {
-  if ($(e.target).attr('id') === "tagsWrapper") {
+$("#tagsWrapper").click((e) => {
+  if ($(e.target).attr("id") === "tagsWrapper") {
     hideEditTags();
   }
-})
+});
 
-$("#tagsWrapper #tagsEdit .button").click(e => {
+$("#tagsWrapper #tagsEdit .button").click((e) => {
   tagsEdit();
-})
+});
 
-$("#tagsWrapper #tagsEdit input").keypress(e => {
+$("#tagsWrapper #tagsEdit input").keypress((e) => {
   if (e.keyCode == 13) {
     tagsEdit();
   }
-})
+});
 
 function tagsEdit() {
-  let action = $("#tagsWrapper #tagsEdit").attr('action');
+  let action = $("#tagsWrapper #tagsEdit").attr("action");
   let inputVal = $("#tagsWrapper #tagsEdit input").val();
-  let tagid = $("#tagsWrapper #tagsEdit").attr('tagid');
+  let tagid = $("#tagsWrapper #tagsEdit").attr("tagid");
   hideEditTags();
   if (action === "add") {
     showBackgroundLoader();
-    addTag({ uid: firebase.auth().currentUser.uid, name: inputVal }).then(e => {
-      hideBackgroundLoader();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        showNotification('Tag added', 2000);
-        dbSnapshot.tags.push({
-          name: inputVal,
-          id: e.data.id
-        })
-        updateResultEditTagsPanelButtons();
-        updateSettingsPage();
-        updateFilterTags();
-      } else if (status === -1) {
-        showNotification('Invalid tag name', 3000);
-      } else if (status < -1) {
-        showNotification('Unknown error', 3000);
+    addTag({ uid: firebase.auth().currentUser.uid, name: inputVal }).then(
+      (e) => {
+        hideBackgroundLoader();
+        let status = e.data.resultCode;
+        if (status === 1) {
+          showNotification("Tag added", 2000);
+          dbSnapshot.tags.push({
+            name: inputVal,
+            id: e.data.id,
+          });
+          updateResultEditTagsPanelButtons();
+          updateSettingsPage();
+          updateFilterTags();
+        } else if (status === -1) {
+          showNotification("Invalid tag name", 3000);
+        } else if (status < -1) {
+          showNotification("Unknown error", 3000);
+        }
       }
-    })
+    );
   } else if (action === "edit") {
     showBackgroundLoader();
-    editTag({ uid: firebase.auth().currentUser.uid, name: inputVal, tagid: tagid }).then(e => {
+    editTag({
+      uid: firebase.auth().currentUser.uid,
+      name: inputVal,
+      tagid: tagid,
+    }).then((e) => {
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if (status === 1) {
-        showNotification('Tag updated', 2000);
-        dbSnapshot.tags.forEach(tag => {
+        showNotification("Tag updated", 2000);
+        dbSnapshot.tags.forEach((tag) => {
           if (tag.id === tagid) {
             tag.name = inputVal;
           }
-        })
+        });
         updateResultEditTagsPanelButtons();
         updateSettingsPage();
         updateFilterTags();
       } else if (status === -1) {
-        showNotification('Invalid tag name', 3000);
+        showNotification("Invalid tag name", 3000);
       } else if (status < -1) {
-        showNotification('Unknown error', 3000);
+        showNotification("Unknown error", 3000);
       }
-    })
+    });
   } else if (action === "remove") {
     showBackgroundLoader();
-    removeTag({ uid: firebase.auth().currentUser.uid, tagid: tagid }).then(e => {
-      hideBackgroundLoader();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        showNotification('Tag removed', 2000);
-        dbSnapshot.tags.forEach((tag, index) => {
-          if (tag.id === tagid) {
-            dbSnapshot.tags.splice(index, 1);
-          }
-        })
-        updateResultEditTagsPanelButtons();
-        updateSettingsPage();
-        updateFilterTags();
-        updateActiveTags();
-      } else if (status < -1) {
-        showNotification('Unknown error', 3000);
+    removeTag({ uid: firebase.auth().currentUser.uid, tagid: tagid }).then(
+      (e) => {
+        hideBackgroundLoader();
+        let status = e.data.resultCode;
+        if (status === 1) {
+          showNotification("Tag removed", 2000);
+          dbSnapshot.tags.forEach((tag, index) => {
+            if (tag.id === tagid) {
+              dbSnapshot.tags.splice(index, 1);
+            }
+          });
+          updateResultEditTagsPanelButtons();
+          updateSettingsPage();
+          updateFilterTags();
+          updateActiveTags();
+        } else if (status < -1) {
+          showNotification("Unknown error", 3000);
+        }
       }
-    })
+    );
   }
 }
 
 $(document).on("click", "#top .logo", (e) => {
-  changePage('test');
+  changePage("test");
 });
 
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
-  wrd = $(e.currentTarget).attr('wordCount');
+  wrd = $(e.currentTarget).attr("wordCount");
   if (wrd == "custom") {
-    let newWrd = prompt('Custom word amount');
+    let newWrd = prompt("Custom word amount");
     if (newWrd !== null && !isNaN(newWrd) && newWrd > 0 && newWrd <= 10000) {
       changeWordCount(newWrd);
       if (newWrd > 2000) {
-        showNotification("Very long tests can cause performance issues or crash the website on some machines!", 5000);
+        showNotification(
+          "Very long tests can cause performance issues or crash the website on some machines!",
+          5000
+        );
       }
+    } else {
+      showNotification(
+        "Custom word amount can only be set between 1 and 10000",
+        3000
+      );
     }
   } else {
     changeWordCount(wrd);
@@ -1628,14 +2257,19 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
 });
 
 $(document).on("click", "#top .config .time .text-button", (e) => {
-  time = $(e.currentTarget).attr('timeConfig');
+  time = $(e.currentTarget).attr("timeConfig");
   if (time == "custom") {
-    let newTime = prompt('Custom time in seconds');
+    let newTime = prompt("Custom time in seconds");
     if (newTime !== null && !isNaN(newTime) && newTime > 0 && newTime <= 3600) {
       changeTimeConfig(newTime);
       if (newTime >= 1800) {
-        showNotification("Very long tests can cause performance issues or crash the website on some machines!", 5000);
+        showNotification(
+          "Very long tests can cause performance issues or crash the website on some machines!",
+          5000
+        );
       }
+    } else {
+      showNotification("Custom time can only be set between 1 and 3600", 3000);
     }
   } else {
     changeTimeConfig(time);
@@ -1646,7 +2280,6 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 $(document).on("click", "#top .config .customText .text-button", (e) => {
   changeCustomText();
   restartTest();
-
 });
 
 $(document).on("click", "#top .config .punctuationMode .text-button", (e) => {
@@ -1666,16 +2299,20 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
 });
 
 $(document).on("click", "#top #menu .icon-button", (e) => {
-  if ($(e.currentTarget).hasClass('discord')) return;
-  href = $(e.currentTarget).attr('href');
-  changePage(href.replace('/', ''));
-})
+  if ($(e.currentTarget).hasClass("discord")) return;
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    showLeaderboards();
+  } else {
+    href = $(e.currentTarget).attr("href");
+    changePage(href.replace("/", ""));
+  }
+});
 
-$(window).on('popstate', (e) => {
+$(window).on("popstate", (e) => {
   let state = e.originalEvent.state;
   if (state == "" || state == "/") {
     // show test
-    changePage('test')
+    changePage("test");
   } else if (state == "about") {
     // show about
     changePage("about");
@@ -1683,14 +2320,13 @@ $(window).on('popstate', (e) => {
     if (firebase.auth().currentUser) {
       changePage("account");
     } else {
-      changePage('login');
+      changePage("login");
     }
   }
-
 });
 
 $(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.keyCode == 32 || event.keyCode == 13) {
+  if (event.keyCode == 13) {
     if (testActive && !afkDetected) {
       let testNow = Date.now();
       let testSeconds = roundTo2((testNow - testStart) / 1000);
@@ -1706,7 +2342,7 @@ $(document.body).on("click", "#restartTestButton", (event) => {
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
-  if (event.keyCode == 32 || event.keyCode == 13) {
+  if (event.keyCode == 13) {
     toggleResultWordsDisplay();
   }
 });
@@ -1715,32 +2351,33 @@ $(document.body).on("click", "#showWordHistoryButton", (event) => {
   toggleResultWordsDisplay();
 });
 
-
-
 $(document.body).on("click", "#restartTestButtonWithSameWordset", (event) => {
   restartTest(true);
 });
 
 $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
-  if (event.keyCode == 32 || event.keyCode == 13) {
+  if (event.keyCode == 13) {
     restartTest(true);
   }
 });
-
-
 
 $(document.body).on("click", "#copyResultToClipboardButton", (event) => {
   copyResultToClipboard();
 });
 
 $(document.body).on("click", ".version", (event) => {
-  $("#versionHistoryWrapper").css('opacity', 0).removeClass('hidden').animate({ opacity: 1 }, 125);
+  $("#versionHistoryWrapper")
+    .css("opacity", 0)
+    .removeClass("hidden")
+    .animate({ opacity: 1 }, 125);
 });
 
 $(document.body).on("click", "#versionHistoryWrapper", (event) => {
-  $("#versionHistoryWrapper").css('opacity', 1).animate({ opacity: 0 }, 125, () => {
-    $("#versionHistoryWrapper").addClass('hidden');
-  });
+  $("#versionHistoryWrapper")
+    .css("opacity", 1)
+    .animate({ opacity: 0 }, 125, () => {
+      $("#versionHistoryWrapper").addClass("hidden");
+    });
 });
 
 $("#wordsInput").keypress((event) => {
@@ -1760,7 +2397,10 @@ $(window).resize(() => {
 });
 
 $(document).mousemove(function (event) {
-  if ($("#top").hasClass("focus") && (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)) {
+  if (
+    $("#top").hasClass("focus") &&
+    (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)
+  ) {
     setFocus(false);
   }
 });
@@ -1772,14 +2412,14 @@ $(document).keypress(function (event) {
   if (event["keyCode"] == 13) return;
   if (event["keyCode"] == 32) return;
   if (event["keyCode"] == 27) return;
-  if (event["keyCode"] == 93) return;
+  if (event.key == "ContextMenu") return;
   //start the test
   if (currentInput == "" && inputHistory.length == 0 && !testActive) {
     try {
       if (firebase.auth().currentUser != null) {
-        firebase.analytics().logEvent('testStarted');
+        firebase.analytics().logEvent("testStarted");
       } else {
-        firebase.analytics().logEvent('testStartedNoLogin');
+        firebase.analytics().logEvent("testStartedNoLogin");
       }
     } catch (e) {
       console.log("Analytics unavailable");
@@ -1789,71 +2429,125 @@ $(document).keypress(function (event) {
     // if (config.mode == "time") {
     restartTimer();
     showTimer();
+    $("#liveWpm").text("0");
+    showLiveWpm();
     // }
     updateActiveElement();
     updateTimer();
     clearIntervals();
-    timers.push(setInterval(function () {
-      time++;
-      if (config.mode === "time") {
-        updateTimer();
-      }
-      let wpm = liveWPM();
-      updateLiveWpm(wpm);
-      showLiveWpm();
-      wpmHistory.push(wpm);
-      rawHistory.push(liveRaw());
-      keypressPerSecond.push(currentKeypressCount);
-      currentKeypressCount = 0;
-      errorsPerSecond.push(currentErrorCount);
-      currentErrorCount = 0;
-      if (keypressPerSecond[time - 1] == 0 &&
-        keypressPerSecond[time - 2] == 0 &&
-        keypressPerSecond[time - 3] == 0 &&
-        keypressPerSecond[time - 4] == 0 &&
-        keypressPerSecond[time - 5] == 0 &&
-        keypressPerSecond[time - 6] == 0 && !afkDetected) {
-        showNotification("AFK detected", 3000);
-        afkDetected = true;
-      }
-      if (config.mode == "time") {
-        if (time >= config.time) {
-          clearIntervals();
-          hideCaret();
-          testActive = false;
-          showResult();
+    keypressStats = {
+      spacing: {
+        current: -1,
+        array: [],
+      },
+      duration: {
+        current: -1,
+        array: [],
+      },
+    };
+    timers.push(
+      setInterval(function () {
+        time++;
+        if (config.mode === "time") {
+          updateTimer();
         }
-      }
-    }, 1000));
+        // console.time("livewpm");
+        // let wpm = liveWPM();
+        // updateLiveWpm(wpm);
+        // showLiveWpm();
+        // wpmHistory.push(wpm);
+        // rawHistory.push(liveRaw());
+        let wpmAndRaw = liveWpmAndRaw();
+        updateLiveWpm(wpmAndRaw.wpm);
+        wpmHistory.push(wpmAndRaw.wpm);
+        rawHistory.push(wpmAndRaw.raw);
+
+        // console.timeEnd("livewpm");
+        keypressPerSecond.push(currentKeypressCount);
+        currentKeypressCount = 0;
+        errorsPerSecond.push(currentErrorCount);
+        currentErrorCount = 0;
+        if (
+          keypressPerSecond[time - 1] == 0 &&
+          keypressPerSecond[time - 2] == 0 &&
+          keypressPerSecond[time - 3] == 0 &&
+          keypressPerSecond[time - 4] == 0 &&
+          keypressPerSecond[time - 5] == 0 &&
+          keypressPerSecond[time - 6] == 0 &&
+          !afkDetected
+        ) {
+          showNotification("AFK detected", 3000);
+          afkDetected = true;
+        }
+        if (config.mode == "time") {
+          if (time >= config.time) {
+            clearIntervals();
+            hideCaret();
+            testActive = false;
+            showResult();
+          }
+        }
+      }, 1000)
+    );
   } else {
     if (!testActive) return;
   }
-  if (wordsList[currentWordIndex].substring(currentInput.length, currentInput.length + 1) != event["key"]) {
+  let thisCharCorrect;
+  if (
+    wordsList[currentWordIndex].substring(
+      currentInput.length,
+      currentInput.length + 1
+    ) != event["key"]
+  ) {
     accuracyStats.incorrect++;
     currentErrorCount++;
+    thisCharCorrect = false;
   } else {
     accuracyStats.correct++;
+    thisCharCorrect = true;
   }
   currentKeypressCount++;
+
+  if (config.stopOnError && !thisCharCorrect) return;
+
   currentInput += event["key"];
-  $("#words .word.active").attr('input', currentInput);
   setFocus(true);
   activeWordTopBeforeJump = activeWordTop;
-  compareInput(currentWordIndex,currentInput,!config.blindMode);
+  compareInput(null, currentInput, !config.blindMode);
   // let newActiveTop = $("#words .word.active").position().top;
+
+  // console.time("offcheck1");
   let newActiveTop = document.querySelector("#words .word.active").offsetTop;
-  if(activeWordTopBeforeJump != newActiveTop){
+  if (activeWordTopBeforeJump != newActiveTop) {
     activeWordJumped = true;
   }
+  // console.timeEnd("offcheck2");
   updateCaretPosition();
+});
+
+$(document).keydown((event) => {
+  keypressStats.duration.current = performance.now();
+});
+
+$(document).keyup((event) => {
+  let now = performance.now();
+  let diff = Math.abs(keypressStats.duration.current - now);
+  if (keypressStats.duration.current !== -1) {
+    keypressStats.duration.array.push(diff);
+  }
+  keypressStats.duration.current = now;
 });
 
 //handle keyboard events
 $(document).keydown((event) => {
-
+  let now = performance.now();
+  let diff = Math.abs(keypressStats.spacing.current - now);
+  if (keypressStats.spacing.current !== -1) {
+    keypressStats.spacing.array.push(diff);
+  }
+  keypressStats.spacing.current = now;
 
   //tab
-
   if (event["keyCode"] == 9) {
     if (config.quickTab) {
       event.preventDefault();
@@ -1866,7 +2560,7 @@ $(document).keydown((event) => {
         }
         restartTest();
       } else {
-        changePage('test');
+        changePage("test");
       }
     }
   }
@@ -1879,7 +2573,10 @@ $(document).keydown((event) => {
       if (!testActive) return;
       if (currentInput == "" && inputHistory.length > 0) {
         if (
-          (inputHistory[currentWordIndex - 1] == wordsList[currentWordIndex - 1] && !config.freedomMode) || $($(".word")[currentWordIndex - 1]).hasClass("hidden")
+          (inputHistory[currentWordIndex - 1] ==
+            wordsList[currentWordIndex - 1] &&
+            !config.freedomMode) ||
+          $($(".word")[currentWordIndex - 1]).hasClass("hidden")
         ) {
           return;
         } else {
@@ -1892,7 +2589,7 @@ $(document).keydown((event) => {
           }
           currentWordIndex--;
           updateActiveElement();
-          compareInput(currentWordIndex, currentInput, !config.blindMode);
+          compareInput(null, currentInput, !config.blindMode);
         }
       } else {
         // if ($($(".word")[currentWordIndex - 1]).hasClass("hidden")) {
@@ -1903,26 +2600,37 @@ $(document).keydown((event) => {
         } else {
           currentInput = currentInput.substring(0, currentInput.length - 1);
         }
-        compareInput(currentWordIndex, currentInput, !config.blindMode);
+        compareInput(null, currentInput, !config.blindMode);
       }
       // currentKeypressCount++;
       updateCaretPosition();
     }
     //space
-    if (event["keyCode"] == 32) {
+    if (event["keyCode"] == 32 || event.key === " ") {
       if (!testActive) return;
       if (currentInput == "") return;
       event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
-      if (config.mode == "time") {
+      // if (config.mode == "time") {
+      if (!config.showAllLines || config.mode == "time") {
         // let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
         // let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
-        let currentTop = Math.floor(document.querySelectorAll("#words .word")[currentWordIndex].offsetTop);
-        let nextTop = Math.floor(document.querySelectorAll("#words .word")[currentWordIndex + 1].offsetTop);
+        let currentTop = Math.floor(
+          document.querySelectorAll("#words .word")[currentWordIndex].offsetTop
+        );
+        let nextTop;
+        try {
+          nextTop = Math.floor(
+            document.querySelectorAll("#words .word")[currentWordIndex + 1]
+              .offsetTop
+          );
+        } catch (e) {
+          nextTop = 0;
+        }
+
         if (nextTop > currentTop || activeWordJumped) {
           //last word of the line
           if (currentTestLine > 0) {
-
             let hideBound = currentTop;
             if (activeWordJumped) {
               hideBound = activeWordTopBeforeJump;
@@ -1932,20 +2640,24 @@ $(document).keydown((event) => {
             let toHide = [];
             let wordElements = $("#words .word");
             for (let i = 0; i < currentWordIndex + 1; i++) {
-              if($(wordElements[i]).hasClass('hidden')) continue;
+              if ($(wordElements[i]).hasClass("hidden")) continue;
               // let forWordTop = Math.floor($(wordElements[i]).position().top);
               let forWordTop = Math.floor(wordElements[i].offsetTop);
-              if(forWordTop < hideBound){
+              if (forWordTop < hideBound) {
                 // $($("#words .word")[i]).addClass("hidden");
                 toHide.push($($("#words .word")[i]));
               }
             }
-            toHide.forEach(el => el.addClass('hidden'));
+            toHide.forEach((el) => el.addClass("hidden"));
           }
           currentTestLine++;
         }
       }
-      if (config.blindMode) $("#words .word.active letter").addClass('correct');
+      // }
+      if (config.blindMode) $("#words .word.active letter").addClass("correct");
+      document
+        .querySelector("#words .word.active")
+        .setAttribute("input", currentInput);
       if (currentWord == currentInput) {
         inputHistory.push(currentInput);
         currentInput = "";
@@ -1953,15 +2665,18 @@ $(document).keydown((event) => {
         updateActiveElement();
         updateCaretPosition();
         currentKeypressCount++;
-      } else {
+      } else if (!config.stopOnError) {
         inputHistory.push(currentInput);
-        highlightBadWord(currentWordIndex, !config.blindMode)
+        highlightBadWord(currentWordIndex, !config.blindMode);
         currentInput = "";
         currentWordIndex++;
         if (currentWordIndex == wordsList.length) {
           showResult();
           return;
-        } else if (config.difficulty == "expert" || config.difficulty == "master") {
+        } else if (
+          config.difficulty == "expert" ||
+          config.difficulty == "master"
+        ) {
           showResult(true);
           if (!afkDetected) {
             let testNow = Date.now();
@@ -1975,11 +2690,21 @@ $(document).keydown((event) => {
         updateCaretPosition();
         currentKeypressCount++;
       }
-      if (config.mode === "words" || config.mode === "custom" || config.mode === "quote") {
+      if (
+        config.mode === "words" ||
+        config.mode === "custom" ||
+        config.mode === "quote"
+      ) {
         updateTimer();
       }
-      if (config.mode == "time") {
-        addWord();
+      if (config.showAllLines) {
+        if (config.mode == "time") {
+          addWord();
+        }
+      } else {
+        if (config.mode == "time" || config.mode == "words") {
+          addWord();
+        }
       }
     }
   }
@@ -1991,7 +2716,7 @@ getReleasesFromGitHub();
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
   $("head title").text("Monkey Dev");
-  $('body').append(`
+  $("body").append(`
 <div class="devIndicator tr">
   DEV
 </div>
@@ -2008,7 +2733,7 @@ if (window.location.hostname === "localhost") {
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   firebase.functions().useFunctionsEmulator("http://localhost:5001");
-  $('body').append(`<div class="devIndicator tl">
+  $("body").append(`<div class="devIndicator tl">
   local
 </div>
 <div class="devIndicator br">
@@ -2016,94 +2741,101 @@ if (window.location.hostname === "localhost") {
 </div>`);
 }
 
-$(document).on('mouseenter', '#words .word', e => {
+$(document).on("mouseenter", "#words .word", (e) => {
   if (resultVisible) {
-    let input = $(e.currentTarget).attr('input');
-    if (input != undefined) $(e.currentTarget).append(`<div class="wordInputAfter">${input}</div>`);
+    let input = $(e.currentTarget).attr("input");
+    if (input != undefined)
+      $(e.currentTarget).append(`<div class="wordInputAfter">${input}</div>`);
   }
-})
+});
 
-$(document).on('mouseleave', '#words .word', e => {
-  $('.wordInputAfter').remove();
-})
+$(document).on("mouseleave", "#words .word", (e) => {
+  $(".wordInputAfter").remove();
+});
 
 $(document).ready(() => {
   updateFavicon(32, 14);
-  $('body').css('transition', '.25s');
+  $("body").css("transition", ".25s");
   restartTest();
   if (config.quickTab) {
-    $("#restartTestButton").addClass('hidden');
+    $("#restartTestButton").addClass("hidden");
   }
-  $("#centerContent").css("opacity", "0").removeClass("hidden").stop(true, true).animate({ opacity: 1 }, 250);
-  if (window.location.pathname === '/account') {
-    history.replaceState('/', null, '/');
-  } else if (window.location.pathname !== '/') {
-    let page = window.location.pathname.replace('/', '');
+  $("#centerContent")
+    .css("opacity", "0")
+    .removeClass("hidden")
+    .stop(true, true)
+    .animate({ opacity: 1 }, 250);
+  if (window.location.pathname === "/account") {
+    history.replaceState("/", null, "/");
+  } else if (window.location.pathname !== "/") {
+    let page = window.location.pathname.replace("/", "");
     changePage(page);
   }
 });
 
 let ctx = $("#wpmChart");
 let wpmOverTimeChart = new Chart(ctx, {
-  type: 'line',
+  type: "line",
   data: {
     labels: [],
-    datasets: [{
-      label: "wpm",
-      data: [],
-      // backgroundColor: 'rgba(255, 255, 255, 0.25)',
-      borderColor: 'rgba(125, 125, 125, 1)',
-      borderWidth: 2,
-      yAxisID: "wpm",
-      order: 2,
-      radius: 2
-    },
-    {
-      label: "raw",
-      data: [],
-      // backgroundColor: 'rgba(255, 255, 255, 0.25)',
-      borderColor: 'rgba(125, 125, 125, 1)',
-      borderWidth: 2,
-      yAxisID: "raw",
-      order: 3,
-      radius: 2
-    },
-    {
-      label: "errors",
-      data: [],
-      // backgroundColor: 'rgba(255, 255, 255, 0.25)',
-      borderColor: 'rgba(255, 125, 125, 1)',
-      borderWidth: 2,
-      order: 1,
-      yAxisID: "error",
-      // barPercentage: 0.1,
-      maxBarThickness: 10,
-      type: "scatter",
-      pointStyle: "crossRot",
-      radius: function (context) {
-        var index = context.dataIndex;
-        var value = context.dataset.data[index];
-        return value.y <= 0 ? 0 : 3
+    datasets: [
+      {
+        label: "wpm",
+        data: [],
+        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 2,
+        yAxisID: "wpm",
+        order: 2,
+        radius: 2,
       },
-      pointHoverRadius: function (context) {
-        var index = context.dataIndex;
-        var value = context.dataset.data[index];
-        return value.y <= 0 ? 0 : 5
+      {
+        label: "raw",
+        data: [],
+        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 2,
+        yAxisID: "raw",
+        order: 3,
+        radius: 2,
       },
-    }],
+      {
+        label: "errors",
+        data: [],
+        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
+        borderColor: "rgba(255, 125, 125, 1)",
+        borderWidth: 2,
+        order: 1,
+        yAxisID: "error",
+        // barPercentage: 0.1,
+        maxBarThickness: 10,
+        type: "scatter",
+        pointStyle: "crossRot",
+        radius: function (context) {
+          var index = context.dataIndex;
+          var value = context.dataset.data[index];
+          return value.y <= 0 ? 0 : 3;
+        },
+        pointHoverRadius: function (context) {
+          var index = context.dataIndex;
+          var value = context.dataset.data[index];
+          return value.y <= 0 ? 0 : 5;
+        },
+      },
+    ],
   },
   options: {
     tooltips: {
       titleFontFamily: "Roboto Mono",
       bodyFontFamily: "Roboto Mono",
-      mode: 'index',
-      intersect: false
+      mode: "index",
+      intersect: false,
     },
     legend: {
       display: false,
       labels: {
-        defaultFontFamily: "Roboto Mono"
-      }
+        defaultFontFamily: "Roboto Mono",
+      },
     },
     responsive: true,
     maintainAspectRatio: false,
@@ -2112,124 +2844,127 @@ let wpmOverTimeChart = new Chart(ctx, {
     //   intersect: false
     // },
     scales: {
-
-      xAxes: [{
-        ticks: {
-          fontFamily: "Roboto Mono",
-          autoSkip: true,
-          autoSkipPadding: 40
-        },
-        display: true,
-        scaleLabel: {
+      xAxes: [
+        {
+          ticks: {
+            fontFamily: "Roboto Mono",
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
           display: true,
-          labelString: 'Seconds',
-          fontFamily: "Roboto Mono"
-        }
-      }],
-      yAxes: [{
-        id: "wpm",
-        display: true,
-        scaleLabel: {
+          scaleLabel: {
+            display: true,
+            labelString: "Seconds",
+            fontFamily: "Roboto Mono",
+          },
+        },
+      ],
+      yAxes: [
+        {
+          id: "wpm",
           display: true,
-          labelString: 'Words per Minute',
-          fontFamily: 'Roboto Mono'
+          scaleLabel: {
+            display: true,
+            labelString: "Words per Minute",
+            fontFamily: "Roboto Mono",
+          },
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            min: 0,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          gridLines: {
+            display: false,
+          },
         },
-        ticks: {
-          fontFamily: 'Roboto Mono',
-          beginAtZero: true,
-          min: 0,
-          autoSkip: true,
-          autoSkipPadding: 40
+        {
+          id: "raw",
+          display: false,
+          scaleLabel: {
+            display: true,
+            labelString: "Raw Words per Minute",
+            fontFamily: "Roboto Mono",
+          },
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            min: 0,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          gridLines: {
+            display: false,
+          },
         },
-        gridLines: {
-          display: false
-        }
-      },
-      {
-        id: "raw",
-        display: false,
-        scaleLabel: {
+        {
+          id: "error",
           display: true,
-          labelString: 'Raw Words per Minute',
-          fontFamily: 'Roboto Mono'
+          position: "right",
+          scaleLabel: {
+            display: true,
+            labelString: "Errors",
+            fontFamily: "Roboto Mono",
+          },
+          ticks: {
+            precision: 0,
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          gridLines: {
+            display: true,
+          },
         },
-        ticks: {
-          fontFamily: 'Roboto Mono',
-          beginAtZero: true,
-          min: 0,
-          autoSkip: true,
-          autoSkipPadding: 40
-        },
-        gridLines: {
-          display: false
-        }
-      },
-      {
-        id: "error",
-        display: true,
-        position: 'right',
-        scaleLabel: {
-          display: true,
-          labelString: 'Errors',
-          fontFamily: 'Roboto Mono'
-        },
-        ticks: {
-          precision: 0,
-          fontFamily: 'Roboto Mono',
-          beginAtZero: true,
-          autoSkip: true,
-          autoSkipPadding: 40
-        },
-        gridLines: {
-          display: true
-        }
-      }
-      ]
+      ],
     },
     annotation: {
-      annotations: [{
-        enabled: false,
-        type: 'line',
-        mode: 'horizontal',
-        scaleID: 'wpm',
-        value: '-30',
-        borderColor: 'red',
-        borderWidth: 1,
-        borderDash: [2, 2],
-        label: {
-          // Background color of label, default below
-          backgroundColor: 'blue',
-          fontFamily: "Roboto Mono",
+      annotations: [
+        {
+          enabled: false,
+          type: "line",
+          mode: "horizontal",
+          scaleID: "wpm",
+          value: "-30",
+          borderColor: "red",
+          borderWidth: 1,
+          borderDash: [2, 2],
+          label: {
+            // Background color of label, default below
+            backgroundColor: "blue",
+            fontFamily: "Roboto Mono",
 
-          // Font size of text, inherits from global
-          fontSize: 11,
+            // Font size of text, inherits from global
+            fontSize: 11,
 
-          // Font style of text, default below
-          fontStyle: "normal",
+            // Font style of text, default below
+            fontStyle: "normal",
 
-          // Font color of text, default below
-          fontColor: "#fff",
+            // Font color of text, default below
+            fontColor: "#fff",
 
-          // Padding of label to add left/right, default below
-          xPadding: 6,
+            // Padding of label to add left/right, default below
+            xPadding: 6,
 
-          // Padding of label to add top/bottom, default below
-          yPadding: 6,
+            // Padding of label to add top/bottom, default below
+            yPadding: 6,
 
-          // Radius of label rectangle, default below
-          cornerRadius: 3,
+            // Radius of label rectangle, default below
+            cornerRadius: 3,
 
-          // Anchor position of label on line, can be one of: top, bottom, left, right, center. Default below.
-          position: "center",
+            // Anchor position of label on line, can be one of: top, bottom, left, right, center. Default below.
+            position: "center",
 
-          // Whether the label is enabled and should be displayed
-          enabled: true,
+            // Whether the label is enabled and should be displayed
+            enabled: true,
 
-          // Text to display in label - default is null. Provide an array to display values on a new line
-          content: "PB",
-
-        }
-      }]
-    }
-  }
+            // Text to display in label - default is null. Provide an array to display values on a new line
+            content: "PB",
+          },
+        },
+      ],
+    },
+  },
 });

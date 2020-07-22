@@ -7,7 +7,7 @@
   <title>Monkey Type</title>
   <link rel="stylesheet" href="css/fa.css">
   <link rel="stylesheet" href="css/balloon.css">
-  <link rel="stylesheet" href="css/style.css?v=23">
+  <link rel="stylesheet" href="css/style.css?v=40">
   <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme">
   <link id="favicon" rel="shortcut icon" href="fav.png">
   <link rel="shortcut icon" href="fav.png">
@@ -37,6 +37,12 @@
     Important information about your account. Please click this message.
   </div>
   <div class="notification">Signed in</div>
+  <div id="customThemeShareWrapper" class="hidden">
+    <div id="customThemeShare" action="">
+      <input type="text">
+      <div class="button">ok</div>
+    </div>
+  </div>
   <div id="tagsWrapper" class="hidden">
     <div id="tagsEdit" action="" tagid="">
       <div class="title"></div>
@@ -50,6 +56,450 @@
 
       </div>
       <div class="button confirmButton"><i class="fas fa-check"></i></div>
+    </div>
+  </div>
+  <div id="leaderboardsWrapper" class="hidden">
+    <div id="leaderboards">
+      <div class="mainTitle">
+        Leaderboards
+      </div>
+      <div class="buttons">
+        <div class="buttonGroup">
+          <div class="button active" board="time_15">time 15</div>
+          <div class="button" board="time_60">time 60</div>
+        </div>
+      </div>
+      <div class="tables">
+        <div class="titleAndTable">
+          <div class="title">
+            Global
+          </div>
+          <div class="globalTableWrapper">
+            <table class="global">
+              <thead>
+                <tr>
+                  <td>#</td>
+                  <td>name</td>
+                  <td>wpm</td>
+                  <td>raw</td>
+                  <td>acc</td>
+                  <td>test</td>
+                  <td>date</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>-</td>
+                  <td>You</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="titleAndTable">
+          <div class="title">
+            Daily
+          </div>
+          <div class="subtitle">
+            -
+          </div>
+          <div class="dailyTableWrapper">
+            <table class="daily">
+              <thead>
+                <tr>
+                  <td>#</td>
+                  <td>name</td>
+                  <td>wpm</td>
+                  <td>raw</td>
+                  <td>acc</td>
+                  <td>test</td>
+                  <td>date</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+                <tr>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>-</td>
+                  <td>You</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-<br>-</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div id="versionHistoryWrapper" class="hidden">
@@ -97,6 +547,11 @@
             <i class="fas fa-fw fa-keyboard"></i>
           </div>
         </div>
+        <div class="icon-button leaderboards" tabindex="2" onclick="this.blur();">
+          <div class="icon">
+            <i class="fas fa-fw fa-crown"></i>
+          </div>
+        </div>
         <div class="icon-button" tabindex="2" href="/about" onclick="this.blur();">
           <div class="icon">
             <i class="fas fa-fw fa-info"></i>
@@ -121,13 +576,13 @@
         </div>
         <div class="icon-button login" tabindex="2" href="/login" onclick="this.blur();">
           <div class="icon">
-            <i class="fas fa-fw fa-sign-in-alt"></i>
+            <i class="far fa-fw fa-user"></i>
           </div>
         </div>
       </div>
 
 
-      <div class="config" style="grid-column: 3/4;grid-row: 1/2;">
+      <div class="config">
         <div class="group punctuationMode">
           <!--           <div class="title">time</div> -->
           <div class="buttons">
@@ -192,11 +647,11 @@
                   <div class="crown"><i class="fas fa-crown"></i></div>
                 </div>
               </div>
-              <div class="bottom">-</div>
+              <div class="bottom" aria-label="" data-balloon-pos="up">-</div>
             </div>
             <div class="group acc">
               <div class="top">acc</div>
-              <div class="bottom">-</div>
+              <div class="bottom" aria-label="" data-balloon-pos="up">-</div>
             </div>
             <div class="group key">
               <div class="top">char</div>
@@ -208,7 +663,7 @@
             </div>
             <div class="group raw">
               <div class="top">raw</div>
-              <div class="bottom">-</div>
+              <div class="bottom" aria-label="" data-balloon-pos="up">-</div>
             </div>
             <div class="group testType">
               <div class="top">test type</div>
@@ -228,6 +683,10 @@
                 <div class="bottom">-</div>
               </div>
             </div>
+            <div class="group leaderboards">
+              <div class="top">leaderboards</div>
+              <div class="bottom">-</div>
+            </div>
           </div>
           <div class="chart">
             <!-- <div class="title">wpm over time</div> -->
@@ -242,14 +701,14 @@
         <div id="words" class=""></div>
         <div id="liveWpm">123</div>
         <div class="buttons">
-          <div id="restartTestButton" aria-label="Restart test" data-balloon-pos="up" class="" tabindex="0"
+          <div id="restartTestButton" aria-label="Restart test" data-balloon-pos="down" class="" tabindex="0"
             onclick="this.blur();"><i class="fas fa-fw fa-redo-alt"></i></div>
           <div id="resultExtraButtons" class="hidden">
-            <div id="restartTestButtonWithSameWordset" aria-label="Repeat test" data-balloon-pos="up" tabindex="0"
+            <div id="restartTestButtonWithSameWordset" aria-label="Repeat test" data-balloon-pos="down" tabindex="0"
               onclick="this.blur();"><i class="fas fa-fw fa-sync-alt"></i></div>
-            <div id="showWordHistoryButton" aria-label="Show words history" data-balloon-pos="up" tabindex="0"
+            <div id="showWordHistoryButton" aria-label="Show words history" data-balloon-pos="down" tabindex="0"
               onclick="this.blur();"><i class="fas fa-fw fa-align-left"></i></div>
-            <div id="copyResultToClipboardButton" aria-label="Save screenshot" data-balloon-pos="up" tabindex="0"
+            <div id="copyResultToClipboardButton" aria-label="Save screenshot" data-balloon-pos="down" tabindex="0"
               onclick="this.blur();"><i class="far fa-fw fa-image"></i></div>
           </div>
         </div>
@@ -278,7 +737,7 @@
           <p>wpm - total amount of characters in the correctly typed words, divided by 5</p>
           <p>raw wpm - calculated just like wpm, but also includes incorrect words</p>
           <p>acc - percentage of correctly pressed keys</p>
-          <p>key - correct characters / incorrect characters. Calculated after the test has ended</p>
+          <p>char - correct characters / incorrect characters. Calculated after the test has ended</p>
         </div>
         <div class="section">
           <h1>bug report or feature request</h1>
@@ -291,14 +750,15 @@
           <p><a href="https://www.reddit.com/user/montydrei" target="_blank">montydrei</a> - name suggestion</p>
           <p><a
               href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/"
-              target="_blank">everyone</a> who provided
+              target="_blank">Everyone</a> who provided
             valuable feedback on the original reddit post for the prototype of this website</p>
+          <p><a href="https://github.com/Miodec/monkey-type/graphs/contributors">Contributors</a> on GitHub that
+            have helped with implementing various features, adding themes and more.</p>
         </div>
         <div class="section">
           <h1>support</h1>
-          <p>If you wish to support this project, help pay for hosting and fuel my caffeine addiction, you can find the
-            support link in the <a href="https://github.com/Miodec/monkey-type/blob/master/README.md"
-              target="_blank">GitHub's readme</a>.</p>
+          <p>If you wish to support this project, help pay for hosting and fuel my caffeine addiction, you can donate <a
+              href="https://www.paypal.me/jackbartnik" target="_blank">here</a>.</p>
         </div>
       </div>
       <div class="page pageSettings hidden">
@@ -343,6 +803,15 @@
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
           </div>
         </div>
+        <div class="section stopOnError">
+          <h1>stop on error</h1>
+          <div class="text">When enabled, incorrect input will not be registered and words need to be 100% correct to be
+            able to move on to the next.</div>
+          <div class="buttons">
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
+            <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+          </div>
+        </div>
         <div class="section blindMode">
           <h1>blind mode</h1>
           <div class="text">No errors or incorrect words are highlighted. Helps you to focus on raw speed. If enabled,
@@ -368,7 +837,7 @@
           <div class="text">With tags, you can compare how fast you're typing in different situations. You can see your
             active tags above the test words.
             They will remain active until you deactivate them, or refresh the page.</div>
-          <div>
+          <div class="tagsListAndButton">
             <div class="tagsList">
               <div class="tag" id="0">
                 <div class="active">
@@ -380,6 +849,27 @@
               </div>
             </div>
             <div class="addTagButton"><i class="fas fa-plus"></i></div>
+          </div>
+        </div>
+        <div class="section discordIntegration">
+          <h1>discord integration</h1>
+          <div class="text">When you connect your monkey-type account to your Discord account, you will be automatically
+            assigned a new role every time you achieve a new personal best in a 60 second test. <div
+              class="howto hidden">To
+              pair your accounts, direct message 'George' (our bot) on Discord with the message '!verify <span
+                class="howtocode">-</span>'.</div>
+          </div>
+          <div class="buttons">
+            <div class="button generateCodeButton">Generate pairing code</div>
+          </div>
+          <div class="info hidden">
+            <div><i class="fas fa-check"></i> Your accounts are paired!</div>
+          </div>
+          <div class="code hidden">
+            <div style="width: min-content;white-space: nowrap;">
+              <div class="top">code</div>
+              <div class="bottom">-</div>
+            </div>
           </div>
         </div>
         <div class="section layouts">
@@ -415,11 +905,42 @@
           </div>
         </div>
         <div class="section timerStyle" section="">
-          <h1>timer style</h1>
-          <div class="text">Change the style of the timer during a timed test.</div>
+          <h1>timer/progress style</h1>
+          <div class="text">Change the style of the timer/progress during a timed test.</div>
           <div class="buttons">
             <div class="button" timer="bar" tabindex="0" onclick="this.blur();">bar</div>
             <div class="button" timer="text" tabindex="0" onclick="this.blur();">text</div>
+          </div>
+        </div>
+        <div class="section timerColor" section="">
+          <h1>timer/progress color</h1>
+          <div class="text">Change the color of the timer/progress number/bar and live wpm number.</div>
+          <div class="buttons">
+            <div class="button" color="black" tabindex="0" onclick="this.blur();">black</div>
+            <div class="button" color="sub" tabindex="0" onclick="this.blur();">sub</div>
+            <div class="button" color="text" tabindex="0" onclick="this.blur();">text</div>
+            <div class="button" color="main" tabindex="0" onclick="this.blur();">main</div>
+          </div>
+        </div>
+        <div class="section timerOpacity" section="">
+          <h1>timer/progress opacity</h1>
+          <div class="text">Change the opacity of the timer/progress number/bar and live wpm number.</div>
+          <div class="buttons">
+            <div class="button" opacity="0.25" tabindex="0" onclick="this.blur();">0.25</div>
+            <div class="button" opacity="0.5" tabindex="0" onclick="this.blur();">0.5</div>
+            <div class="button" opacity="0.75" tabindex="0" onclick="this.blur();">0.75</div>
+            <div class="button" opacity="1" tabindex="0" onclick="this.blur();">1</div>
+          </div>
+        </div>
+        <div class="section showAllLines">
+          <h1>show all lines</h1>
+          <div class="text">When enabled, the website will show all lines for word,custom and quote mode tests -
+            otherwise the lines will be limited to 3, and will automatically scroll. Using this could cause the timer
+            text and live wpm to not be visible.
+          </div>
+          <div class="buttons">
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
+            <div class="button off" tabindex="0" onclick="this.blur();">off</div>
           </div>
         </div>
         <div class="section flipTestColors">
@@ -452,6 +973,17 @@
             <div class="button" fontsize="125" tabindex="0" onclick="this.blur();">1.25</div>
             <div class="button" fontsize="15" tabindex="0" onclick="this.blur();">1.5</div>
             <div class="button" fontsize="2" tabindex="0" onclick="this.blur();">2</div>
+          </div>
+        </div>
+        <div class="section randomTheme">
+          <h1>randomise theme</h1>
+          <div class="text">
+            After completing a test, the theme will be set to a random one. The random themes are not saved to your
+            config.
+          </div>
+          <div class="buttons">
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
+            <div class="button off" tabindex="0" onclick="this.blur();">off</div>
           </div>
         </div>
         <div class="section themes">
@@ -506,16 +1038,19 @@
               <label class="text">error</label>
               <span class="colorPicker">
                 <!-- Change variable names here -->
-                <label for="--extra-error-color">#e2b714</label>
-                <input type="color" value="" id="--extra-error-color">
+                <label for="--colorful-error-color">#e2b714</label>
+                <input type="color" value="" id="--colorful-error-color">
               </span>
               <label class="text">extra error</label>
               <span class="colorPicker">
                 <!-- Change variable names here -->
-                <label for="--extra-error-extra-color">#e2b714</label>
-                <input type="color" value="" id="--extra-error-extra-color">
+                <label for="--colorful-error-extra-color">#e2b714</label>
+                <input type="color" value="" id="--colorful-error-extra-color">
               </span>
-              <div class="button saveCustomThemeButton" style="grid-column: 4;">Save</div>
+              <div style="grid-column: 3/5;display:grid;gap:1rem;grid-auto-flow: column;">
+                <div class="button" id="shareCustomThemeButton">share</div>
+                <div class="button saveCustomThemeButton">save</div>
+              </div>
             </div>
             <div tabContent="preset" class="tabContent buttons">
             </div>
@@ -593,6 +1128,7 @@
         <div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>
         <div class="content hidden">
           <div class="group filterButtons">
+            <div class="button" id="currentConfigFilter" style="grid-column:1/3;">set filters to current settings</div>
             <div class="buttonsAndTitle">
               <div class="title">filters</div>
               <div class="buttons globalFilters">
@@ -613,6 +1149,7 @@
               <div class="buttons modeFilters">
                 <div class="button" filter="mode_words">words</div>
                 <div class="button" filter="mode_time">time</div>
+                <div class="button" filter="mode_quote">quote</div>
                 <div class="button" filter="mode_custom">custom</div>
               </div>
             </div>
@@ -786,7 +1323,10 @@
         <a tabindex="0" href="https://www.reddit.com/message/compose?to=Miodec" target="_blank">Miodec</a>
       </div>
       <div>
-        Contribute to this project on <a href="https://github.com/Miodec/monkey-type" target="_blank">GitHub</a>
+        Contribute on <a href="https://github.com/Miodec/monkey-type" target="_blank">GitHub</a>
+      </div>
+      <div>
+        Support by <a href="https://www.paypal.me/jackbartnik" target="_blank">donating</a>
       </div>
       <div class="version">version</div>
     </div>
@@ -813,17 +1353,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script> -->
 <script src="js/chart.js"></script>
-<script src="js/chartjs-plugin-trendline.js?v=23"></script>
+<script src="js/chartjs-plugin-trendline.js?v=41"></script>
 <script src="js/chartjs-plugin-annotation.js"></script>
 <script src="js/html2canvas.js"></script>
-<script src="js/words.js?v=23"></script>
-<script src="js/layouts.js?v=23"></script>
-<script src="js/db.js?v=23"></script>
-<script src="js/userconfig.js?v=23"></script>
-<script src="js/commandline.js?v=23"></script>
-<script src="js/settings.js?v=23"></script>
-<script src="js/account.js?v=23"></script>
-<script src="js/script.js?v=23"></script>
-
+<script src="js/words.js?v=41"></script>
+<script src="js/layouts.js?v=41"></script>
+<script src="js/db.js?v=41"></script>
+<script src="js/userconfig.js?v=41"></script>
+<script src="js/commandline.js?v=41"></script>
+<script src="js/leaderboards.js?v=41"></script>
+<script src="js/settings.js?v=41"></script>
+<script src="js/account.js?v=41"></script>
+<script src="js/script.js?v=41"></script>
 
 </html>

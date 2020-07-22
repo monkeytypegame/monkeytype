@@ -1,5 +1,4 @@
-[
-    {
+[{
         "name": "light",
         "bgColor": "#fff",
         "textColor": "#111"
@@ -36,6 +35,11 @@
     },
     {
         "name": "serika_dark",
+        "bgColor": "#323437",
+        "textColor": "#e2b714"
+    },
+    {
+        "name": "nausea",
         "bgColor": "#323437",
         "textColor": "#e2b714"
     },
@@ -228,6 +232,75 @@
         "name": "dualshot",
         "bgColor": "#737373",
         "textColor": "#212222"
+    },
+    {
+        "name": "solarized_dark",
+        "bgColor": "#002b36",
+        "textColor": "#859900"
+    },
+    {
+        "name": "solarized_light",
+        "bgColor": "#fdf6e3",
+        "textColor": "#859900"
+    },
+    {
+        "name": "terra",
+        "bgColor": "#89c559",
+        "textColor": "#0c100e"
+    },
+    {
+        "name": "red_dragon",
+        "bgColor": "#1a0b0c",
+        "textColor": "#ff3a32"
+    },
+    {
+        "name": "hammerhead",
+        "bgColor": "#030613",
+        "textColor": "#4fcdb9"
+    },
+    {
+        "name": "future_funk",
+        "bgColor": "#2E1A47",
+        "textColor": "#f7f2ea"
+    },
+    {
+        "name": "milkshake",
+        "bgColor": "#ffffff",
+        "textColor": "#212b43"
+    },
+    {
+        "name": "aether",
+        "bgColor": "#101820",
+        "textColor": "#cf6bdd"
+    },
+    {
+        "name": "froyo",
+        "bgColor": "#e1dacb",
+        "textColor": "#b29c5e"
+    },
+    {
+        "name": "retrocast",
+        "bgColor": "#07737a",
+        "textColor": "#88dbdf"
+    },
+    {
+        "name": "luna",
+        "bgColor": "#221C35",
+        "textColor": "#88dbdf"
+    },
+    {
+        "name": "graen",
+        "bgColor": "#303c36",
+        "textColor": "#a59682"
+    },
+    {
+        "name": "bento",
+        "bgColor": "#335C71",
+        "textColor": "#FC7374"
+    },
+    {
+        "name": "watermelon",
+        "bgColor": "#1F4437",
+        "textColor": "#B74B53"
     }
-    
 ]
