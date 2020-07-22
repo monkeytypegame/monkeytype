@@ -1105,9 +1105,11 @@ async function checkLeaderboards(
   verified,
   emailVerified
 ) {
+  //lb disable
   // return {
   //   insertedAt: null,
   // };
+  //
   try {
     if (emailVerified === false)
       return {
