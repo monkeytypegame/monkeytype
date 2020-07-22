@@ -879,11 +879,15 @@ function countChars() {
   let extraChars = 0;
   let missedChars = 0;
   let spaces = 0;
+  let correctspaces = 0;
   for (let i = 0; i < inputHistory.length; i++) {
     if (inputHistory[i] == wordsList[i]) {
       //the word is correct
       correctWordChars += wordsList[i].length;
       correctChars += wordsList[i].length;
+      if (i < inputHistory.length - 1) {
+        correctspaces++;
+      }
     } else if (inputHistory[i].length >= wordsList[i].length) {
       //too many chars
       for (let c = 0; c < inputHistory[i].length; c++) {
@@ -926,6 +930,7 @@ function countChars() {
     incorrectChars: incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
+    correctSpaces: correctspaces,
   };
 }
 
@@ -942,7 +947,7 @@ function calculateStats() {
   let testNow = Date.now();
   let testSeconds = roundTo2((testNow - testStart) / 1000);
   let wpm = roundTo2(
-    ((chars.correctWordChars + chars.spaces) * (60 / testSeconds)) / 5
+    ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
   let wpmraw = roundTo2(
     ((chars.allCorrectChars +
@@ -965,6 +970,7 @@ function calculateStats() {
     incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars,
     time: testSeconds,
     spaces: chars.spaces,
+    correctSpaces: chars.correctSpaces,
   };
 }
 
@@ -1001,6 +1007,7 @@ function showResult(difficultyFailed = false) {
       incorrectChars: 0,
       time: 0,
       spaces: 0,
+      correctSpaces: 0,
     };
   }
   clearIntervals();
@@ -1012,7 +1019,7 @@ function showResult(difficultyFailed = false) {
   $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
   $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
   $("#result .stats .key .bottom").text(
-    stats.correctChars + stats.spaces + "/" + stats.incorrectChars
+    stats.correctChars + stats.correctSpaces + "/" + stats.incorrectChars
   );
   $("#result .stats .time .bottom").text(testtime + "s");
 
@@ -1119,7 +1126,7 @@ function showResult(difficultyFailed = false) {
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
-      correctChars: stats.correctChars + stats.spaces,
+      correctChars: stats.correctChars + stats.correctSpaces,
       incorrectChars: stats.incorrectChars,
       acc: stats.acc,
       mode: config.mode,
