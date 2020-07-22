@@ -1812,9 +1812,9 @@ function liveWpmAndRaw() {
       //the word is correct
       //+1 for space
       correctWordChars += wordsList[i].length;
-    }
-    if (i < inputHistory.length - 1) {
-      spaces++;
+      if (i < inputHistory.length - 1) {
+        spaces++;
+      }
     }
     chars += inputHistory[i].length;
   }
