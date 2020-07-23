@@ -646,7 +646,7 @@ function showTimer() {
       },
       250
     );
-  } else if (config.timerStyle === "text" && config.mode === "time") {
+  } else if (config.timerStyle === "text") {
     // let op = 0.25;
     // if (
     //   $("#timerNumber").hasClass("timerSub") ||
