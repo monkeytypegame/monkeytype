@@ -816,7 +816,7 @@ $(document).keydown((e) => {
         $(".suggestions").outerHeight() / 2 +
         $($(".entry")[0]).outerHeight();
       $(".suggestions").scrollTop(scroll);
-      console.log(`scrolling to ${scroll}`);
+      // console.log(`scrolling to ${scroll}`);
       try {
         let list = currentCommands[currentCommands.length - 1];
         $.each(list.list, (index, obj) => {
