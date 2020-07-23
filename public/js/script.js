@@ -2233,6 +2233,18 @@ function tagsEdit() {
   }
 }
 
+function showCapsWarning() {
+  if ($("#capsWarning").hasClass("hidden")) {
+    $("#capsWarning").removeClass("hidden");
+  }
+}
+
+function hideCapsWarning() {
+  if (!$("#capsWarning").hasClass("hidden")) {
+    $("#capsWarning").addClass("hidden");
+  }
+}
+
 $(document).on("click", "#top .logo", (e) => {
   changePage("test");
 });
@@ -2532,6 +2544,15 @@ $(document).keypress(function (event) {
 
 $(document).keydown((event) => {
   keypressStats.duration.current = performance.now();
+  if ($("#wordsInput").is(":focus")) {
+    try {
+      if (event.originalEvent.getModifierState("CapsLock")) {
+        showCapsWarning();
+      } else {
+        hideCapsWarning();
+      }
+    } catch (e) {}
+  }
 });
 
 $(document).keyup((event) => {

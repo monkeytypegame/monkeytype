@@ -1142,6 +1142,26 @@ key {
   }
 }
 
+#capsWarning {
+  background: var(--main-color);
+  color: var(--bg-color);
+  display: table;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  padding: 1rem;
+  border-radius: var(--roundness);
+  /* margin-top: 1rem; */
+  transition: .25s;
+  z-index: 999;
+  pointer-events: none;
+
+  i {
+    margin-right: .5rem;
+  }
+}
+
 
 #wordsInput {
   height: 0;
