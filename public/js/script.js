@@ -569,7 +569,13 @@ function compareInput(wrdIndex, input, showError) {
       // $(letterElems[i]).removeClass('incorrect').addClass('correct');
     } else {
       if (config.difficulty == "master") {
-        if (!resultVisible) showResult(true);
+        if (!resultVisible) {
+          inputHistory.push(currentInput);
+          document
+            .querySelector("#words .word.active")
+            .setAttribute("input", currentInput);
+          showResult(true);
+        }
         if (!afkDetected) {
           let testNow = Date.now();
           let testSeconds = roundTo2((testNow - testStart) / 1000);
