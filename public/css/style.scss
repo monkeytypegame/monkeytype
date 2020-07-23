@@ -1740,12 +1740,13 @@ key {
   .tabContent {
     overflow: hidden;
     height: auto;
-    max-height: 0px;
+    // max-height: 0px;
+    // max-height: 100vh;
 
     // transition: max-height .5s ease-in-out;
-    &.reveal {
-      max-height: 100vh;
-    }
+    // &.reveal {
+    //   max-height: 100vh;
+    // }
 
     .text {
       align-self: center;

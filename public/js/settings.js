@@ -758,13 +758,24 @@ $(".tab").click((e) => {
   if ($target.attr("tab") == "preset") {
     setCustomTheme(false);
     applyCustomThemeColors();
-    $('[tabContent="custom"]').removeClass("reveal");
-    $('[tabContent="preset"]').addClass("reveal");
+    // $('[tabContent="custom"]').removeClass("reveal");
+    // $('[tabContent="preset"]').addClass("reveal");
+    swapElements(
+      $('.pageSettings [tabContent="custom"]'),
+      $('.pageSettings [tabContent="preset"]'),
+      250
+    );
   } else {
     setCustomTheme(true);
     applyCustomThemeColors();
-    $('[tabContent="preset"]').removeClass("reveal");
-    $('[tabContent="custom"]').addClass("reveal");
+    swapElements(
+      $('.pageSettings [tabContent="preset"]'),
+      $('.pageSettings [tabContent="custom"]'),
+      250
+    );
+
+    // $('[tabContent="preset"]').removeClass("reveal");
+    // $('[tabContent="custom"]').addClass("reveal");
   }
 });
 
