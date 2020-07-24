@@ -1,5 +1,6 @@
 let wordsList = [];
 let currentWordIndex = 0;
+let currentWordElementIndex = 0;
 let inputHistory = [];
 let currentInput = "";
 let time = 0;
@@ -260,6 +261,7 @@ function initWords() {
   testActive = false;
   wordsList = [];
   currentWordIndex = 0;
+  currentWordElementIndex = 0;
   accuracyStats = {
     correct: 0,
     incorrect: 0,
@@ -537,7 +539,7 @@ function updateActiveElement() {
   // document.querySelectorAll("#words .word")[currentWordIndex].classList.add("active");
   try {
     let activeWord = document.querySelectorAll("#words .word")[
-      currentWordIndex
+      currentWordElementIndex
     ];
     activeWord.classList.add("active");
     activeWord.classList.remove("error");
@@ -547,17 +549,13 @@ function updateActiveElement() {
   } catch (e) {}
 }
 
-function compareInput(wrdIndex, input, showError) {
+function compareInput(showError) {
   // let wrdAtIndex = $("#words .word")[wrdIndex];
+  let input = currentInput;
   let wordAtIndex;
   let currentWord;
-  if (wrdIndex === null) {
-    wordAtIndex = document.querySelector("#words .word.active");
-    currentWord = wordsList[currentWordIndex];
-  } else {
-    wordAtIndex = document.querySelectorAll("#words .word")[wrdIndex];
-    currentWord = wordsList[wrdIndex];
-  }
+  wordAtIndex = document.querySelector("#words .word.active");
+  currentWord = wordsList[currentWordIndex];
   // while (wordAtIndex.firstChild) {
   //   wordAtIndex.removeChild(wordAtIndex.firstChild);
   // }
@@ -608,9 +606,6 @@ function compareInput(wrdIndex, input, showError) {
   wordAtIndex.innerHTML = ret;
 
   let lastindex = currentWordIndex;
-  if (wrdIndex !== null) {
-    lastindex = wrdIndex;
-  }
 
   if (
     (currentWord == input ||
@@ -1497,26 +1492,26 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.update({ duration: 0 });
   swapElements($("#words"), $("#result"), 250, () => {
-    if (config.blindMode) {
-      $.each($("#words .word"), (i, word) => {
-        let input = inputHistory[i];
-        if (input == undefined) input = currentInput;
-        compareInput(i, input, true);
-        if (inputHistory[i] != wordsList[i]) {
-          highlightBadWord(i, true);
-        }
-      });
-    }
-
-    let remove = false;
-    $.each($("#words .word"), (i, obj) => {
-      if (remove) {
-        $(obj).remove();
-      } else {
-        $(obj).removeClass("hidden");
-        if ($(obj).hasClass("active")) remove = true;
-      }
-    });
+    $("#words").empty();
+    // if (config.blindMode) {
+    //   $.each($("#words .word"), (i, word) => {
+    //     let input = inputHistory[i];
+    //     if (input == undefined) input = currentInput;
+    //     compareInput(i, input, true);
+    //     if (inputHistory[i] != wordsList[i]) {
+    //       highlightBadWord(i, true);
+    //     }
+    //   });
+    // }
+    // let remove = false;
+    // $.each($("#words .word"), (i, obj) => {
+    //   if (remove) {
+    //     $(obj).remove();
+    //   } else {
+    //     $(obj).removeClass("hidden");
+    //     if ($(obj).hasClass("active")) remove = true;
+    //   }
+    // });
   });
 }
 
@@ -1531,6 +1526,7 @@ function restartTest(withSameWordset = false) {
   testActive = false;
   hideLiveWpm();
   hideTimer();
+  $("#showWordHistoryButton").removeClass("loaded");
   keypressPerSecond = [];
   currentKeypressCount = 0;
   errorsPerSecond = [];
@@ -1608,6 +1604,7 @@ function restartTest(withSameWordset = false) {
         sameWordset = true;
         testActive = false;
         currentWordIndex = 0;
+        currentWordElementIndex = 0;
         accuracyStats = {
           correct: 0,
           incorrect: 0,
@@ -1966,6 +1963,13 @@ function toggleResultWordsDisplay() {
       //show
       $("#wordsTitle").css("opacity", 1).removeClass("hidden").slideDown(250);
 
+      if (!$("#showWordHistoryButton").hasClass("loaded")) {
+        $("#words").html(
+          `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
+        );
+        loadWordsHistory();
+      }
+
       let newHeight = $("#words")
         .removeClass("hidden")
         .css("height", "auto")
@@ -2007,6 +2011,43 @@ function toggleResultWordsDisplay() {
         );
     }
   }
+}
+
+async function loadWordsHistory() {
+  $("#words").empty();
+  inputHistory.forEach((input, index) => {
+    let wordEl = `<div class='word' input='${input}'>`;
+    if (input !== wordsList[index]) {
+      wordEl = `<div class='word error' input='${input}'>`;
+    }
+
+    let loop;
+    if (input.length > wordsList[index].length) {
+      //input is longer - extra characters possible (loop over input)
+      loop = input.length;
+    } else {
+      //input is shorter or equal (loop over word list)
+      loop = wordsList[index].length;
+    }
+
+    for (let c = 0; c < loop; c++) {
+      // input.forEach((inputLetter, inputLetterIndex) => {
+      if (wordsList[index][c] !== undefined) {
+        if (input[c] === wordsList[index][c]) {
+          wordEl +=
+            '<letter class="correct">' + wordsList[index][c] + "</letter>";
+        } else {
+          wordEl +=
+            '<letter class="incorrect">' + wordsList[index][c] + "</letter>";
+        }
+      } else {
+        wordEl += '<letter class="incorrect extra">' + input[c] + "</letter>";
+      }
+    }
+    wordEl += "</div>";
+    $("#words").append(wordEl);
+  });
+  $("#showWordHistoryButton").addClass("loaded");
 }
 
 function flipTestColors(tf) {
@@ -2507,6 +2548,7 @@ $(document).keypress(function (event) {
             clearIntervals();
             hideCaret();
             testActive = false;
+            inputHistory.push(currentInput);
             showResult();
           }
         }
@@ -2536,7 +2578,7 @@ $(document).keypress(function (event) {
   currentInput += event["key"];
   setFocus(true);
   activeWordTopBeforeJump = activeWordTop;
-  compareInput(null, currentInput, !config.blindMode);
+  compareInput(!config.blindMode);
   // let newActiveTop = $("#words .word.active").position().top;
 
   // console.time("offcheck1");
@@ -2620,8 +2662,9 @@ $(document).keydown((event) => {
             currentInput = inputHistory.pop();
           }
           currentWordIndex--;
+          currentWordElementIndex--;
           updateActiveElement();
-          compareInput(null, currentInput, !config.blindMode);
+          compareInput(!config.blindMode);
         }
       } else {
         // if ($($(".word")[currentWordIndex - 1]).hasClass("hidden")) {
@@ -2632,7 +2675,7 @@ $(document).keydown((event) => {
         } else {
           currentInput = currentInput.substring(0, currentInput.length - 1);
         }
-        compareInput(null, currentInput, !config.blindMode);
+        compareInput(!config.blindMode);
       }
       // currentKeypressCount++;
       updateCaretPosition();
@@ -2648,13 +2691,15 @@ $(document).keydown((event) => {
         // let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
         // let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
         let currentTop = Math.floor(
-          document.querySelectorAll("#words .word")[currentWordIndex].offsetTop
+          document.querySelectorAll("#words .word")[currentWordElementIndex]
+            .offsetTop
         );
         let nextTop;
         try {
           nextTop = Math.floor(
-            document.querySelectorAll("#words .word")[currentWordIndex + 1]
-              .offsetTop
+            document.querySelectorAll("#words .word")[
+              currentWordElementIndex + 1
+            ].offsetTop
           );
         } catch (e) {
           nextTop = 0;
@@ -2671,7 +2716,7 @@ $(document).keydown((event) => {
 
             let toHide = [];
             let wordElements = $("#words .word");
-            for (let i = 0; i < currentWordIndex + 1; i++) {
+            for (let i = 0; i < currentWordElementIndex + 1; i++) {
               if ($(wordElements[i]).hasClass("hidden")) continue;
               // let forWordTop = Math.floor($(wordElements[i]).position().top);
               let forWordTop = Math.floor(wordElements[i].offsetTop);
@@ -2680,28 +2725,31 @@ $(document).keydown((event) => {
                 toHide.push($($("#words .word")[i]));
               }
             }
-            toHide.forEach((el) => el.addClass("hidden"));
+            toHide.forEach((el) => el.remove());
+            currentWordElementIndex -= toHide.length;
           }
           currentTestLine++;
         }
       }
       // }
       if (config.blindMode) $("#words .word.active letter").addClass("correct");
-      document
-        .querySelector("#words .word.active")
-        .setAttribute("input", currentInput);
+      // document
+      //   .querySelector("#words .word.active")
+      //   .setAttribute("input", currentInput);
       if (currentWord == currentInput) {
         inputHistory.push(currentInput);
         currentInput = "";
         currentWordIndex++;
+        currentWordElementIndex++;
         updateActiveElement();
         updateCaretPosition();
         currentKeypressCount++;
       } else if (!config.stopOnError) {
         inputHistory.push(currentInput);
-        highlightBadWord(currentWordIndex, !config.blindMode);
+        highlightBadWord(currentWordElementIndex, !config.blindMode);
         currentInput = "";
         currentWordIndex++;
+        currentWordElementIndex++;
         if (currentWordIndex == wordsList.length) {
           showResult();
           return;
