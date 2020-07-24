@@ -532,10 +532,25 @@ function setMaxConfidence(mc, nosave) {
 }
 
 function previewTheme(name) {
+  if (
+    (testActive || resultVisible) &&
+    (config.theme === "nausea" || config.theme === "round_round_baby")
+  )
+    return;
+  if (resultVisible && (name === "nausea" || name === "round_round_baby"))
+    return;
   $("#currentTheme").attr("href", `themes/${name}.css`);
 }
 
 function setTheme(name, nosave) {
+  if (
+    (testActive || resultVisible) &&
+    (config.theme === "nausea" || config.theme === "round_round_baby")
+  ) {
+    return;
+  }
+  if (resultVisible && (name === "nausea" || name === "round_round_baby"))
+    return;
   config.theme = name;
   $("#currentTheme").attr("href", `themes/${name}.css`);
   setTimeout(() => {
