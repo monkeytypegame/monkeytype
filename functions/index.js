@@ -569,10 +569,15 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
                     userdata.discordId !== null &&
                     userdata.discordId !== undefined
                   ) {
-                    console.log(
-                      `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
-                    );
-                    updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
+                    if (verified !== false) {
+                      console.log(
+                        `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                      );
+                      updateDiscordRole(
+                        userdata.discordId,
+                        Math.round(obj.wpm)
+                      );
+                    }
                   }
                   returnobj.resultCode = 2;
                 } else {
