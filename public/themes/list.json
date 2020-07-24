@@ -312,5 +312,20 @@
         "name": "menthol",
         "bgColor": "#00c18c",
         "textColor": "#ffffff"
+    },
+    {
+        "name": "ishtar",
+        "bgColor": "#fae1c3",
+        "textColor": "#bb1e10"
+    },
+    {
+        "name": "mashu",
+        "bgColor": "#2b2b2c",
+        "textColor": "#76689a"
+    },
+    {
+        "name": "deku",
+        "bgColor": "#058B8C",
+        "textColor": "#F7F2EA"
     }
 ]
