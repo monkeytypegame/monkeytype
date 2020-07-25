@@ -899,6 +899,10 @@ function countChars() {
   let spaces = 0;
   let correctspaces = 0;
   for (let i = 0; i < inputHistory.length; i++) {
+    if (inputHistory[i] === currentInput) {
+      //last word that was not finished
+      continue;
+    }
     if (inputHistory[i] == wordsList[i]) {
       //the word is correct
       correctWordChars += wordsList[i].length;
@@ -2054,8 +2058,12 @@ async function loadWordsHistory() {
           wordEl +=
             '<letter class="correct">' + wordsList[index][c] + "</letter>";
         } else {
-          wordEl +=
-            '<letter class="incorrect">' + wordsList[index][c] + "</letter>";
+          if (input === currentInput) {
+            wordEl += "<letter>" + wordsList[index][c] + "</letter>";
+          } else {
+            wordEl +=
+              '<letter class="incorrect">' + wordsList[index][c] + "</letter>";
+          }
         }
       } else {
         wordEl += '<letter class="incorrect extra">' + input[c] + "</letter>";
@@ -2837,10 +2845,7 @@ $(document).keydown((event) => {
         currentKeypressCount++;
       } else {
         if (config.stopOnError) {
-          if (
-            config.difficulty == "expert" ||
-            config.difficulty == "master"
-          ) {
+          if (config.difficulty == "expert" || config.difficulty == "master") {
             showResult(true);
             if (!afkDetected) {
               let testNow = Date.now();
