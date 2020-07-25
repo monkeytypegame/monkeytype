@@ -2651,7 +2651,20 @@ $(document).keypress(function (event) {
   }
   currentKeypressCount++;
 
-  if (config.stopOnError && !thisCharCorrect) return;
+  if (config.stopOnError && !thisCharCorrect) {
+    if (config.difficulty == "master") {
+      showResult(true);
+      if (!afkDetected) {
+        let testNow = Date.now();
+        let testSeconds = roundTo2((testNow - testStart) / 1000);
+        incompleteTestSeconds += testSeconds;
+        restartCount++;
+      }
+      return;
+    } else {
+      return;
+    }
+  }
 
   currentInput += event["key"];
   setFocus(true);
@@ -2822,7 +2835,23 @@ $(document).keydown((event) => {
         updateActiveElement();
         updateCaretPosition();
         currentKeypressCount++;
-      } else if (!config.stopOnError) {
+      } else {
+        if (config.stopOnError) {
+          if (
+            config.difficulty == "expert" ||
+            config.difficulty == "master"
+          ) {
+            showResult(true);
+            if (!afkDetected) {
+              let testNow = Date.now();
+              let testSeconds = roundTo2((testNow - testStart) / 1000);
+              incompleteTestSeconds += testSeconds;
+              restartCount++;
+            }
+            return;
+          }
+          return;
+        }
         inputHistory.push(currentInput);
         highlightBadWord(currentWordElementIndex, !config.blindMode);
         currentInput = "";
