@@ -43,6 +43,8 @@ let keypressStats = {
 };
 
 let customText = "The quick brown fox jumps over the lazy dog".split(" ");
+let customTextIsRandom = false;
+let customTextWordCount = 1;
 let randomQuote = null;
 
 const testCompleted = firebase.functions().httpsCallable("testCompleted");
@@ -301,7 +303,11 @@ function initWords() {
     language = words[config.language];
   }
 
-  if (config.mode == "time" || config.mode == "words") {
+  if (
+    config.mode == "time" ||
+    config.mode == "words" ||
+    (config.mode == "custom" && customTextIsRandom)
+  ) {
     // let wordsBound = config.mode == "time" ? 60 : config.words;
     let wordsBound = 60;
     if (config.showAllLines && config.mode != "time") {
@@ -311,8 +317,15 @@ function initWords() {
         wordsBound = config.words;
       }
     }
+    if (config.mode == "custom") {
+      wordsBound = customTextWordCount;
+    }
+    let wordset = language;
+    if (config.mode == "custom") {
+      wordset = customText;
+    }
     for (let i = 0; i < wordsBound; i++) {
-      randomWord = language[Math.floor(Math.random() * language.length)];
+      randomWord = wordset[Math.floor(Math.random() * wordset.length)];
       previousWord = wordsList[i - 1];
       previousWord2 = wordsList[i - 2];
       while (
@@ -321,7 +334,7 @@ function initWords() {
         (!config.punctuation && randomWord == "I") ||
         randomWord.indexOf(" ") > -1
       ) {
-        randomWord = language[Math.floor(Math.random() * language.length)];
+        randomWord = wordset[Math.floor(Math.random() * wordset.length)];
       }
       if (config.punctuation && config.mode != "custom") {
         randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
@@ -2292,6 +2305,66 @@ function hideCapsWarning() {
   }
 }
 
+function showCustomTextPopup() {
+  if ($("#customTextPopupWrapper").hasClass("hidden")) {
+    $("#customTextPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100, (e) => {
+        $("#customTextPopup textarea").val(customText.join(" "));
+        $("#customTextPopup .wordcount input").val(customTextWordCount);
+        $("#customTextPopup textarea").focus();
+      });
+  }
+}
+
+function hideCustomTextPopup() {
+  if (!$("#customTextPopupWrapper").hasClass("hidden")) {
+    $("#customTextPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        100,
+        (e) => {
+          $("#customTextPopupWrapper").addClass("hidden");
+        }
+      );
+  }
+}
+
+$("#customTextPopupWrapper").click((e) => {
+  if ($(e.target).attr("id") === "customTextPopupWrapper") {
+    hideCustomTextPopup();
+  }
+});
+
+$("#customTextPopup .button").click((e) => {
+  let text = $("#customTextPopup textarea").val();
+  text = text.trim();
+  text = text.replace(/[\n\r\t ]/gm, " ");
+  text = text.replace(/ +/gm, " ");
+  text = text.split(" ");
+  if (text.length >= 10000) {
+    showNotification("Custom text cannot be longer than 10000 words.", 4000);
+    changeMode("time");
+    text = "The quick brown fox jumped over the lazy dog".split(" ");
+  } else {
+    customText = text;
+    customTextIsRandom = $("#customTextPopup .check input").prop("checked");
+    if (customTextIsRandom && customText.length < 3) {
+      showNotification("Random custom text requires at least 3 words", 4000);
+      customTextIsRandom = false;
+    }
+    customTextWordCount = $("#customTextPopup .wordcount input").val();
+    restartTest();
+  }
+  hideCustomTextPopup();
+});
+
 $(document).on("click", "#top .logo", (e) => {
   changePage("test");
 });
@@ -2342,8 +2415,9 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 });
 
 $(document).on("click", "#top .config .customText .text-button", (e) => {
-  changeCustomText();
-  restartTest();
+  // changeCustomText();
+  // restartTest();
+  showCustomTextPopup();
 });
 
 $(document).on("click", "#top .config .punctuationMode .text-button", (e) => {
