@@ -328,13 +328,17 @@ function initWords() {
       randomWord = wordset[Math.floor(Math.random() * wordset.length)];
       previousWord = wordsList[i - 1];
       previousWord2 = wordsList[i - 2];
-      while (
-        randomWord == previousWord ||
-        randomWord == previousWord2 ||
-        (!config.punctuation && randomWord == "I") ||
-        randomWord.indexOf(" ") > -1
-      ) {
+      if (config.mode == "custom" && wordset.length < 3) {
         randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+      } else {
+        while (
+          randomWord == previousWord ||
+          randomWord == previousWord2 ||
+          (!config.punctuation && randomWord == "I") ||
+          randomWord.indexOf(" ") > -1
+        ) {
+          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+        }
       }
       if (config.punctuation && config.mode != "custom") {
         randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
@@ -2355,10 +2359,10 @@ $("#customTextPopup .button").click((e) => {
   } else {
     customText = text;
     customTextIsRandom = $("#customTextPopup .check input").prop("checked");
-    if (customTextIsRandom && customText.length < 3) {
-      showNotification("Random custom text requires at least 3 words", 4000);
-      customTextIsRandom = false;
-    }
+    // if (customTextIsRandom && customText.length < 3) {
+    //   showNotification("Random custom text requires at least 3 words", 4000);
+    //   customTextIsRandom = false;
+    // }
     customTextWordCount = $("#customTextPopup .wordcount input").val();
     restartTest();
   }
