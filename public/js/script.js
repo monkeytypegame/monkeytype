@@ -2037,6 +2037,7 @@ function toggleResultWordsDisplay() {
 async function loadWordsHistory() {
   $("#words").empty();
   inputHistory.forEach((input, index) => {
+    if (input === "") return;
     let wordEl = `<div class='word' input='${input}'>`;
     if (input !== wordsList[index]) {
       wordEl = `<div class='word error' input='${input}'>`;
@@ -2058,7 +2059,7 @@ async function loadWordsHistory() {
           wordEl +=
             '<letter class="correct">' + wordsList[index][c] + "</letter>";
         } else {
-          if (input === currentInput) {
+          if (input[c] === currentInput || input[c] === undefined) {
             wordEl += "<letter>" + wordsList[index][c] + "</letter>";
           } else {
             wordEl +=
