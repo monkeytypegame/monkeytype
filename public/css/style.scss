@@ -2,6 +2,7 @@
 
 :root {
   --roundness: .25rem;
+  --font: "Rubik";
 }
 
 ::placeholder {
@@ -28,7 +29,7 @@ input {
   padding: .5rem;
   font-size: 1rem;
   line-height: 1rem;
-  font-family: "Roboto Mono";
+  font-family: var(--font);
 }
 
 input[type="color"] {
@@ -83,7 +84,7 @@ body {
   padding: 0;
   min-height: 100vh;
   background: var(--bg-color);
-  font-family: "Roboto Mono";
+  font-family: var(--font);
   color: var(--main-color);
   // overflow-x: hidden;
 }
@@ -354,7 +355,7 @@ a:hover {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: "Roboto Mono";
+      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
@@ -543,7 +544,7 @@ a:hover {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: "Roboto Mono";
+      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
@@ -571,7 +572,7 @@ a:hover {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: "Roboto Mono";
+      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
     }
@@ -1783,7 +1784,7 @@ key {
           text-align: left;
           border: 0;
           background: 0;
-          font-family: "Roboto Mono";
+          font-family: var(--font);
 
           &:first-child {
             margin-right: .5rem;
