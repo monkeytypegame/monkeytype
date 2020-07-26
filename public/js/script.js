@@ -2173,6 +2173,29 @@ function updateTestModesNotice() {
     );
   }
 
+  if (config.confidenceMode === "on") {
+    $(".pageTest #testModesNotice").append(
+      `<div><i class="fas fa-backspace"></i>confidence</div>`
+    );
+  }
+  if (config.confidenceMode === "max") {
+    $(".pageTest #testModesNotice").append(
+      `<div><i class="fas fa-backspace"></i>max confidence</div>`
+    );
+  }
+
+  if (config.stopOnError) {
+    $(".pageTest #testModesNotice").append(
+      `<div><i class="fas fa-hand-paper"></i>stop on error</div>`
+    );
+  }
+
+  if (config.layout !== "default") {
+    $(".pageTest #testModesNotice").append(
+      `<div><i class="fas fa-keyboard"></i>${config.layout}</div>`
+    );
+  }
+
   tagsString = "";
   // $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
   //     if($(tag).children('.active').attr('active') === 'true'){
@@ -2753,7 +2776,8 @@ $(document).keydown((event) => {
         ) {
           return;
         } else {
-          if (config.maxConfidence) return;
+          if (config.confidenceMode === "on" || config.confidenceMode === "max")
+            return;
           if (event["ctrlKey"] || event["altKey"]) {
             currentInput = "";
             inputHistory.pop();
@@ -2766,9 +2790,7 @@ $(document).keydown((event) => {
           compareInput(!config.blindMode);
         }
       } else {
-        // if ($($(".word")[currentWordIndex - 1]).hasClass("hidden")) {
-        //   return;
-        // }
+        if (config.confidenceMode === "max") return;
         if (event["ctrlKey"]) {
           currentInput = "";
         } else {

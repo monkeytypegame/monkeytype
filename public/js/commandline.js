@@ -52,6 +52,15 @@ let commands = {
       },
     },
     {
+      id: "changeConfidenceMode",
+      display: "Change confidence mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsConfidenceMode);
+        showCommandLine();
+      },
+    },
+    {
       id: "toggleSmoothCaret",
       display: "Toggle smooth caret",
       exec: () => {
@@ -93,13 +102,6 @@ let commands = {
       display: "Toggle freedom mode",
       exec: () => {
         toggleFreedomMode();
-      },
-    },
-    {
-      id: "toggleMaxConfidence",
-      display: "Toggle max confidence",
-      exec: () => {
-        toggleMaxConfidence();
       },
     },
     {
@@ -506,6 +508,33 @@ let commandsTimeConfig = {
       exec: () => {
         changeTimeConfig("120");
         restartTest();
+      },
+    },
+  ],
+};
+
+let commandsConfidenceMode = {
+  title: "Change confidence mode...",
+  list: [
+    {
+      id: "changeConfidenceModeOff",
+      display: "off",
+      exec: () => {
+        setConfidenceMode("off");
+      },
+    },
+    {
+      id: "changeConfidenceModeOn",
+      display: "on",
+      exec: () => {
+        setConfidenceMode("on");
+      },
+    },
+    {
+      id: "changeConfidenceModeMax",
+      display: "max",
+      exec: () => {
+        setConfidenceMode("max");
       },
     },
   ],
