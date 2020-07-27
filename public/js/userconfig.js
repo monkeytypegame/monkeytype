@@ -609,6 +609,31 @@ function applyCustomThemeColors() {
   }, 500);
 }
 
+function togglePresetCustomTheme() {
+  if (config.customTheme) {
+    setCustomTheme(false);
+    applyCustomThemeColors();
+    // $('[tabContent="custom"]').removeClass("reveal");
+    // $('[tabContent="preset"]').addClass("reveal");
+    swapElements(
+      $('.pageSettings [tabContent="custom"]'),
+      $('.pageSettings [tabContent="preset"]'),
+      250
+    );
+  } else {
+    setCustomTheme(true);
+    applyCustomThemeColors();
+    swapElements(
+      $('.pageSettings [tabContent="preset"]'),
+      $('.pageSettings [tabContent="custom"]'),
+      250
+    );
+
+    // $('[tabContent="preset"]').removeClass("reveal");
+    // $('[tabContent="custom"]').addClass("reveal");
+  }
+}
+
 function updateFavicon(size, curveSize) {
   let maincolor, bgcolor;
 

@@ -154,6 +154,13 @@ let commands = {
       },
     },
     {
+      id: "togglePresetCustomTheme",
+      display: "Toggle preset/custom theme",
+      exec: () => {
+        togglePresetCustomTheme();
+      },
+    },
+    {
       id: "changeDifficulty",
       display: "Change difficulty...",
       subgroup: true,
