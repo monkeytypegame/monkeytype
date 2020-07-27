@@ -310,15 +310,19 @@ function initWords() {
   ) {
     // let wordsBound = config.mode == "time" ? 60 : config.words;
     let wordsBound = 60;
-    if (config.showAllLines && config.mode != "time") {
-      wordsBound = config.words;
+    if (config.showAllLines) {
+      if (config.mode === "custom") {
+        wordsBound = customTextWordCount;
+      } else if (config.mode != "time") {
+        wordsBound = config.words;
+      }
     } else {
       if (config.mode === "words" && config.words < wordsBound) {
         wordsBound = config.words;
       }
-    }
-    if (config.mode == "custom") {
-      wordsBound = customTextWordCount;
+      if (config.mode == "custom" && customTextWordCount < wordsBound) {
+        wordsBound = customTextWordCount;
+      }
     }
     let wordset = language;
     if (config.mode == "custom") {
@@ -795,6 +799,13 @@ function updateTimer() {
       let outof = wordsList.length;
       if (config.mode === "words") {
         outof = config.words;
+      }
+      if (config.mode === "custom") {
+        if (customTextIsRandom) {
+          outof = customTextWordCount;
+        } else {
+          outof = customText.length;
+        }
       }
       $("#timerNumber").html(`${inputHistory.length}/${outof}`);
       // $("#timerNumber").html(config.time - time);
