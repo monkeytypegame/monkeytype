@@ -784,9 +784,18 @@ function updateTimer() {
     config.mode === "quote"
   ) {
     if (config.timerStyle === "bar") {
-      let percent = Math.floor(
-        ((currentWordIndex + 1) / wordsList.length) * 100
-      );
+      let outof = wordsList.length;
+      if (config.mode === "words") {
+        outof = config.words;
+      }
+      if (config.mode === "custom") {
+        if (customTextIsRandom) {
+          outof = customTextWordCount;
+        } else {
+          outof = customText.length;
+        }
+      }
+      let percent = Math.floor(((currentWordIndex + 1) / outof) * 100);
       $("#timer")
         .stop(true, true)
         .animate(
