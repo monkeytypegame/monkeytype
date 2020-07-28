@@ -438,6 +438,7 @@ function emulateLayout(event) {
   event.charCode = newKey.charCodeAt(0);
   event.which = newKey.charCodeAt(0);
   event.key = newKey;
+  event.code = "Key" + newKey.toUpperCase();
   return event;
 }
 
@@ -912,12 +913,48 @@ function flashPressedKeymapKey(key, correct) {
       .replace(" ", "");
   }
 
-  if (key === "Space") {
-    key = "KeySpace";
+  switch (key) {
+    case "\\":
+    case "|":
+      key = "#KeyBackslash";
+      break;
+    case "}":
+    case "]":
+      key = "#KeyRightBracket";
+      break;
+    case "{":
+    case "[":
+      key = "#KeyLeftBracket";
+      break;
+    case '"':
+    case "'":
+      key = "#KeyQuote";
+      break;
+    case ":":
+    case ";":
+      key = "#KeySemicolon";
+      break;
+    case "<":
+    case ",":
+      key = "#KeyComma";
+      break;
+    case ">":
+    case ".":
+      key = "#KeyPeriod";
+      break;
+    case "?":
+    case "/":
+      key = "#KeySlash";
+      break;
+    case "" || "Space":
+      key = "#KeySpace";
+      break;
+    default:
+      key = `#Key${key.toUpperCase()}`;
   }
 
   if (correct) {
-    $(`#${key}`)
+    $(key)
       .stop(true, true)
       .css({
         color: bgColor,
@@ -934,7 +971,7 @@ function flashPressedKeymapKey(key, correct) {
         "easeOutExpo"
       );
   } else {
-    $(`#${key}`)
+    $(key)
       .stop(true, true)
       .css({
         color: bgColor,
@@ -2901,7 +2938,7 @@ $(document).keypress(function (event) {
   // console.timeEnd("offcheck2");
 
   if (config.keymapMode === "react") {
-    flashPressedKeymapKey(event.code, thisCharCorrect);
+    flashPressedKeymapKey(event.key, thisCharCorrect);
   } else if (config.keymapMode === "next") {
     updateHighlightedKeymapKey();
   }
