@@ -2,6 +2,7 @@
 
 :root {
   --roundness: 0.25rem;
+  --font: "Roboto Mono";
 }
 
 ::placeholder {
@@ -28,7 +29,7 @@ input {
   padding: 0.5rem;
   font-size: 1rem;
   line-height: 1rem;
-  font-family: "Roboto Mono";
+  font-family: var(--font);
 }
 
 input[type="color"] {
@@ -83,7 +84,7 @@ body {
   padding: 0;
   min-height: 100vh;
   background: var(--bg-color);
-  font-family: "Roboto Mono";
+  font-family: var(--font);
   color: var(--main-color);
   // overflow-x: hidden;
 }
@@ -326,6 +327,79 @@ a:hover {
   }
 }
 
+#customTextPopupWrapper {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 0;
+
+  #customTextPopup {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    width: 60vw;
+
+    textarea {
+      background: var(--bg-color);
+      padding: 1rem;
+      color: var(--main-color);
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      font-family: var(--font);
+      width: 100%;
+      border-radius: var(--roundness);
+      resize: vertical;
+      height: 200px;
+      color: var(--text-color);
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: center;
+      justify-items: center;
+    }
+
+    .check {
+      input {
+        margin: 0 !important;
+        cursor: pointer;
+        width: 0;
+        height: 0;
+        display: none;
+
+        &~.customTextRandomCheckbox {
+          width: 12px;
+          height: 12px;
+          background: rgba(0, 0, 0, .1);
+          border-radius: 2px;
+          box-shadow: 0 0 0 4px rgba(0, 0, 0, .1);
+          display: inline-block;
+          margin: 0 .5rem 0 .25rem;
+          transition: .25s;
+        }
+
+        &:checked~.customTextRandomCheckbox {
+          background: var(--main-color);
+        }
+      }
+    }
+
+  }
+}
+
+
 #customThemeShareWrapper {
   width: 100%;
   height: 100%;
@@ -470,7 +544,7 @@ a:hover {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: "Roboto Mono";
+      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
       resize: vertical;
@@ -498,7 +572,7 @@ a:hover {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: "Roboto Mono";
+      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
     }
@@ -1140,6 +1214,26 @@ key {
   }
 }
 
+#capsWarning {
+  background: var(--main-color);
+  color: var(--bg-color);
+  display: table;
+  position: absolute;
+  left: 50%;
+  top: 66vh;
+  transform: translateX(-50%) translateY(-50%);
+  padding: 1rem;
+  border-radius: var(--roundness);
+  /* margin-top: 1rem; */
+  transition: .25s;
+  z-index: 999;
+  pointer-events: none;
+
+  i {
+    margin-right: .5rem;
+  }
+}
+
 #wordsInput {
   height: 0;
   padding: 0;
@@ -1688,7 +1782,7 @@ key {
           text-align: left;
           border: 0;
           background: 0;
-          font-family: "Roboto Mono";
+          font-family: var(--font);
 
           &:first-child {
             margin-right: 0.5rem;
@@ -1718,12 +1812,13 @@ key {
   .tabContent {
     overflow: hidden;
     height: auto;
-    max-height: 0px;
+    // max-height: 0px;
+    // max-height: 100vh;
 
     // transition: max-height .5s ease-in-out;
-    &.reveal {
-      max-height: 100vh;
-    }
+    // &.reveal {
+    //   max-height: 100vh;
+    // }
 
     .text {
       align-self: center;

@@ -32,7 +32,7 @@ let defaultConfig = {
   flipTestColors: false,
   layout: "default",
   showDiscordDot: true,
-  maxConfidence: false,
+  confidenceMode: "off",
   timerStyle: "bar",
   colorfulMode: true,
   randomTheme: false,
@@ -134,7 +134,7 @@ function applyConfig(configObj) {
     setFlipTestColors(configObj.flipTestColors, true);
     setDiscordDot(configObj.hideDiscordDot, true);
     setColorfulMode(configObj.colorfulMode, true);
-    setMaxConfidence(configObj.maxConfidence, true);
+    setConfidenceMode(configObj.confidenceMode, true);
     setTimerStyle(configObj.timerStyle, true);
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
@@ -243,6 +243,7 @@ function toggleStopOnError() {
     soe = false;
   }
   config.stopOnError = soe;
+  updateTestModesNotice();
   saveConfigToCookie();
 }
 
@@ -251,6 +252,7 @@ function setStopOnError(soe, nosave) {
     soe = false;
   }
   config.stopOnError = soe;
+  updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -495,51 +497,52 @@ function setFreedomMode(freedom, nosave) {
     freedom = false;
   }
   config.freedomMode = freedom;
-  if (config.freedomMode && config.maxConfidence) {
-    config.maxConfidence = false;
+  if (config.freedomMode && config.confidenceMode !== "off") {
+    config.confidenceMode = "off";
   }
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleFreedomMode() {
   config.freedomMode = !config.freedomMode;
-  if (config.freedomMode && config.maxConfidence) {
-    config.maxConfidence = false;
+  if (config.freedomMode && config.confidenceMode !== "off") {
+    config.confidenceMode = false;
   }
   saveConfigToCookie();
 }
 
-//max confidence
-function toggleMaxConfidence() {
-  // console.log(config.maxConfidence)
-  mc = !config.maxConfidence;
-  if (mc == undefined) {
-    mc = false;
+function setConfidenceMode(cm, nosave) {
+  if (cm == undefined) {
+    cm = "off";
   }
-  config.maxConfidence = mc;
-  if (config.freedomMode && config.maxConfidence) {
+  config.confidenceMode = cm;
+  if (config.freedomMode && config.confidenceMode !== "off") {
     config.freedomMode = false;
   }
-  // console.log(config.maxConfidence);
-  saveConfigToCookie();
-}
-
-function setMaxConfidence(mc, nosave) {
-  if (mc == undefined) {
-    mc = false;
-  }
-  config.maxConfidence = mc;
-  if (config.freedomMode && config.maxConfidence) {
-    config.freedomMode = false;
-  }
+  updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }
 
 function previewTheme(name) {
+  if (
+    (testActive || resultVisible) &&
+    (config.theme === "nausea" || config.theme === "round_round_baby")
+  )
+    return;
+  if (resultVisible && (name === "nausea" || name === "round_round_baby"))
+    return;
   $("#currentTheme").attr("href", `themes/${name}.css`);
 }
 
 function setTheme(name, nosave) {
+  if (
+    (testActive || resultVisible) &&
+    (config.theme === "nausea" || config.theme === "round_round_baby")
+  ) {
+    return;
+  }
+  if (resultVisible && (name === "nausea" || name === "round_round_baby"))
+    return;
   config.theme = name;
   $(".keymap-key").attr("style", "");
   $("#currentTheme").attr("href", `themes/${name}.css`);
@@ -558,7 +561,7 @@ function setTheme(name, nosave) {
 
 function randomiseTheme() {
   var randomList = themesList.filter(function (theme) {
-    return theme.name != "nausea";
+    return theme.name != "nausea" && theme.name != "round_round_baby";
   });
   let randomtheme = randomList[Math.floor(Math.random() * randomList.length)];
   setTheme(randomtheme.name, true);
@@ -671,6 +674,7 @@ function changeLayout(layout, nosave) {
     layout = "qwerty";
   }
   config.layout = layout;
+  updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }
 

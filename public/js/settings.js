@@ -4,7 +4,7 @@ function updateSettingsPage() {
     themesEl.append(
       `<div class="theme button" theme='${theme.name}' style="color:${
         theme.textColor
-      };background:${theme.bgColor}">${theme.name.replace("_", " ")}</div>`
+      };background:${theme.bgColor}">${theme.name.replace(/_/g, " ")}</div>`
     );
   });
 
@@ -60,7 +60,6 @@ function updateSettingsPage() {
   setSettingsButton("flipTestColors", config.flipTestColors);
   setSettingsButton("discordDot", config.showDiscordDot);
   setSettingsButton("colorfulMode", config.colorfulMode);
-  setSettingsButton("maxConfidence", config.maxConfidence);
   setSettingsButton("randomTheme", config.randomTheme);
   setSettingsButton("stopOnError", config.stopOnError);
   setSettingsButton("showAllLines", config.showAllLines);
@@ -76,6 +75,7 @@ function updateSettingsPage() {
   setActiveTimerOpacityButton();
   setActiveThemeTab();
   setCustomThemeInputs();
+  setActiveConfidenceModeButton();
 
   setActiveKeymapModeButton();
   setActiveKeymapLayoutButton();
@@ -430,6 +430,20 @@ function updateDiscordSettingsSection() {
   }
 }
 
+function setActiveConfidenceModeButton() {
+  let cm = config.confidenceMode;
+  $(".pageSettings .section.confidenceMode .buttons .button").removeClass(
+    "active"
+  );
+  $(
+    `.pageSettings .section.confidenceMode .buttons .button[confidenceMode='${cm}']`
+  ).addClass("active");
+  if (cm !== "off") {
+    config.freedomMode = false;
+    setSettingsButton("freedomMode", config.freedomMode);
+  }
+}
+
 //smooth caret
 $(".pageSettings .section.smoothCaret .buttons .button.on").click((e) => {
   setSmoothCaret(true);
@@ -506,31 +520,42 @@ $(".pageSettings .section.freedomMode .buttons .button.on").click((e) => {
   saveConfigToCookie();
   // showNotification('Freedom mode on', 1000);
   setSettingsButton("freedomMode", config.freedomMode);
-  setSettingsButton("maxConfidence", config.maxConfidence);
+  config.confidenceMode = "off";
+  setActiveConfidenceModeButton();
 });
 $(".pageSettings .section.freedomMode .buttons .button.off").click((e) => {
   setFreedomMode(false);
   saveConfigToCookie();
   // showNotification('Freedom mode off', 1000);
   setSettingsButton("freedomMode", config.freedomMode);
-  setSettingsButton("maxConfidence", config.maxConfidence);
 });
 
-//max confidence
-$(".pageSettings .section.maxConfidence .buttons .button.on").click((e) => {
-  setMaxConfidence(true);
-  saveConfigToCookie();
-  // showNotification('Max confidence on', 1000);
-  setSettingsButton("freedomMode", config.freedomMode);
-  setSettingsButton("maxConfidence", config.maxConfidence);
-});
-$(".pageSettings .section.maxConfidence .buttons .button.off").click((e) => {
-  setMaxConfidence(false);
-  saveConfigToCookie();
-  // showNotification('Max confidence off', 1000);
-  setSettingsButton("freedomMode", config.freedomMode);
-  setSettingsButton("maxConfidence", config.maxConfidence);
-});
+// //max confidence
+// $(".pageSettings .section.maxConfidence .buttons .button.on").click((e) => {
+//   setMaxConfidence(true);
+//   saveConfigToCookie();
+//   // showNotification('Max confidence on', 1000);
+//   setSettingsButton("freedomMode", config.freedomMode);
+//   setSettingsButton("maxConfidence", config.maxConfidence);
+// });
+// $(".pageSettings .section.maxConfidence .buttons .button.off").click((e) => {
+//   setMaxConfidence(false);
+//   saveConfigToCookie();
+//   // showNotification('Max confidence off', 1000);
+//   setSettingsButton("freedomMode", config.freedomMode);
+//   setSettingsButton("maxConfidence", config.maxConfidence);
+// });
+
+//confidence
+$(document).on(
+  "click",
+  ".pageSettings .section.confidenceMode .button",
+  (e) => {
+    let confidence = $(e.currentTarget).attr("confidenceMode");
+    setConfidenceMode(confidence);
+    setActiveConfidenceModeButton();
+  }
+);
 
 //keytips
 $(".pageSettings .section.keyTips .buttons .button.on").click((e) => {
@@ -811,13 +836,24 @@ $(".tab").click((e) => {
   if ($target.attr("tab") == "preset") {
     setCustomTheme(false);
     applyCustomThemeColors();
-    $('[tabContent="custom"]').removeClass("reveal");
-    $('[tabContent="preset"]').addClass("reveal");
+    // $('[tabContent="custom"]').removeClass("reveal");
+    // $('[tabContent="preset"]').addClass("reveal");
+    swapElements(
+      $('.pageSettings [tabContent="custom"]'),
+      $('.pageSettings [tabContent="preset"]'),
+      250
+    );
   } else {
     setCustomTheme(true);
     applyCustomThemeColors();
-    $('[tabContent="preset"]').removeClass("reveal");
-    $('[tabContent="custom"]').addClass("reveal");
+    swapElements(
+      $('.pageSettings [tabContent="preset"]'),
+      $('.pageSettings [tabContent="custom"]'),
+      250
+    );
+
+    // $('[tabContent="preset"]').removeClass("reveal");
+    // $('[tabContent="custom"]').addClass("reveal");
   }
 });
 

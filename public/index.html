@@ -7,7 +7,7 @@
   <title>Monkey Type</title>
   <link rel="stylesheet" href="css/fa.css">
   <link rel="stylesheet" href="css/balloon.css">
-  <link rel="stylesheet" href="css/style.css?v=40">
+  <link rel="stylesheet" href="css/style.css?v=45">
   <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme">
   <link id="favicon" rel="shortcut icon" href="fav.png">
   <link rel="shortcut icon" href="fav.png">
@@ -40,6 +40,20 @@
   <div id="customThemeShareWrapper" class="hidden">
     <div id="customThemeShare" action="">
       <input type="text">
+      <div class="button">ok</div>
+    </div>
+  </div>
+  <div id="customTextPopupWrapper" class="hidden">
+    <div id="customTextPopup" action="">
+      <textarea class="textarea" placeholder="Custom text"></textarea>
+      <div class="inputs">
+        <label class="check"><input type="checkbox">
+          <div class="customTextRandomCheckbox"></div>Random
+        </label>
+        <label class="wordcount"><input type="number" value="1" min="1" max="10000">
+          Word count
+        </label>
+      </div>
       <div class="button">ok</div>
     </div>
   </div>
@@ -535,6 +549,9 @@
   <div id="timerWrapper">
     <div id="timer"></div>
   </div>
+  <div id="capsWarning" class="hidden">
+    <i class="fas fa-lock"></i>Caps Lock
+  </div>
   <div id="centerContent" class="hidden">
     <div id="top">
       <div class="logo">
@@ -980,12 +997,14 @@
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
           </div>
         </div>
-        <div class="section maxConfidence">
-          <h1>max confidence</h1>
-          <div class="text">When enabled, you will not be able to go back to previous words to fix mistakes.</div>
+        <div class="section confidenceMode">
+          <h1>confidence mode</h1>
+          <div class="text">When enabled, you will not be able to go back to previous words to fix mistakes. When turned
+            up to the max, you won't be able to backspace at all.</div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
-            <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button" confidenceMode="on" tabindex="0" onclick="this.blur();">on</div>
+            <div class="button" confidenceMode="off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button" confidenceMode="max" tabindex="0" onclick="this.blur();">max</div>
           </div>
         </div>
         <div class="section stopOnError">
@@ -1194,44 +1213,44 @@
             <button tab="custom" class="tab">custom</button>
           </div>
           <div class="tabContainer">
-            <div tabContent="custom" class="tabContent section customTheme">
+            <div tabContent="custom" class="tabContent section customTheme hidden">
               <label class="text">background</label>
               <span class="colorPicker">
-                <label for="--bg-color">#e2b714</label>
-                <input type="color" value="" id="--bg-color">
+                <label for="--bg-color">#000000</label>
+                <input type="color" value="#000000" id="--bg-color">
               </span>
               <label class="text">main</label>
               <span class="colorPicker">
-                <label for="--main-color">#e2b714</label>
-                <input type="color" value="" id="--main-color">
+                <label for="--main-color">#000000</label>
+                <input type="color" value="#000000" id="--main-color">
               </span>
               <label class="text">caret</label>
               <span class="colorPicker">
-                <label for="--caret-color">#e2b714</label>
-                <input type="color" value="" id="--caret-color">
+                <label for="--caret-color">#000000</label>
+                <input type="color" value="#000000" id="--caret-color">
               </span>
               <label class="text">sub</label>
               <span class="colorPicker">
-                <label for="--sub-color">#e2b714</label>
-                <input type="color" value="" id="--sub-color">
+                <label for="--sub-color">#000000</label>
+                <input type="color" value="#000000" id="--sub-color">
               </span>
               <label class="text">text</label>
               <span class="colorPicker">
-                <label for="--text-color">#e2b714</label>
-                <input type="color" value="" id="--text-color">
+                <label for="--text-color">#000000</label>
+                <input type="color" value="#000000" id="--text-color">
               </span>
 
               <span class="spacer"></span>
 
               <label class="text">error</label>
               <span class="colorPicker">
-                <label for="--error-color">#e2b714</label>
-                <input type="color" value="" id="--error-color">
+                <label for="--error-color">#000000</label>
+                <input type="color" value="#000000" id="--error-color">
               </span>
               <label class="text">extra error</label>
               <span class="colorPicker">
-                <label for="--error-extra-color">#e2b714</label>
-                <input type="color" value="" id="--error-extra-color">
+                <label for="--error-extra-color">#000000</label>
+                <input type="color" value="#000000" id="--error-extra-color">
               </span>
 
               <p>colorful mode</p>
@@ -1239,14 +1258,14 @@
               <label class="text">error</label>
               <span class="colorPicker">
                 <!-- Change variable names here -->
-                <label for="--colorful-error-color">#e2b714</label>
-                <input type="color" value="" id="--colorful-error-color">
+                <label for="--colorful-error-color">#000000</label>
+                <input type="color" value="#000000" id="--colorful-error-color">
               </span>
               <label class="text">extra error</label>
               <span class="colorPicker">
                 <!-- Change variable names here -->
-                <label for="--colorful-error-extra-color">#e2b714</label>
-                <input type="color" value="" id="--colorful-error-extra-color">
+                <label for="--colorful-error-extra-color">#000000</label>
+                <input type="color" value="#000000" id="--colorful-error-extra-color">
               </span>
               <div style="grid-column: 3/5;display:grid;gap:1rem;grid-auto-flow: column;">
                 <div class="button" id="shareCustomThemeButton">share</div>
@@ -1516,7 +1535,7 @@
 
     <div id="bottom">
       <div class="keyTips">
-        <key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
+        <key>tab</key> and <key>enter</key> - restart test<br>
         <key>esc</key> - command line
       </div>
       <div>
@@ -1555,17 +1574,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script> -->
 <script src="js/chart.js"></script>
-<script src="js/chartjs-plugin-trendline.js?v=41"></script>
+<script src="js/chartjs-plugin-trendline.js?v=45"></script>
 <script src="js/chartjs-plugin-annotation.js"></script>
 <script src="js/html2canvas.js"></script>
-<script src="js/words.js?v=41"></script>
-<script src="js/layouts.js?v=41"></script>
-<script src="js/db.js?v=41"></script>
-<script src="js/userconfig.js?v=41"></script>
-<script src="js/commandline.js?v=41"></script>
-<script src="js/leaderboards.js?v=41"></script>
-<script src="js/settings.js?v=41"></script>
-<script src="js/account.js?v=41"></script>
-<script src="js/script.js?v=41"></script>
+<script src="js/words.js?v=45"></script>
+<script src="js/layouts.js?v=45"></script>
+<script src="js/db.js?v=45"></script>
+<script src="js/userconfig.js?v=45"></script>
+<script src="js/commandline.js?v=45"></script>
+<script src="js/leaderboards.js?v=45"></script>
+<script src="js/settings.js?v=45"></script>
+<script src="js/account.js?v=45"></script>
+<script src="js/script.js?v=45"></script>
 
 </html>

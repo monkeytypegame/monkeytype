@@ -52,6 +52,15 @@ let commands = {
       },
     },
     {
+      id: "changeConfidenceMode",
+      display: "Change confidence mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsConfidenceMode);
+        showCommandLine();
+      },
+    },
+    {
       id: "toggleSmoothCaret",
       display: "Toggle smooth caret",
       exec: () => {
@@ -93,13 +102,6 @@ let commands = {
       display: "Toggle freedom mode",
       exec: () => {
         toggleFreedomMode();
-      },
-    },
-    {
-      id: "toggleMaxConfidence",
-      display: "Toggle max confidence",
-      exec: () => {
-        toggleMaxConfidence();
       },
     },
     {
@@ -556,6 +558,33 @@ let commandsTimeConfig = {
   ],
 };
 
+let commandsConfidenceMode = {
+  title: "Change confidence mode...",
+  list: [
+    {
+      id: "changeConfidenceModeOff",
+      display: "off",
+      exec: () => {
+        setConfidenceMode("off");
+      },
+    },
+    {
+      id: "changeConfidenceModeOn",
+      display: "on",
+      exec: () => {
+        setConfidenceMode("on");
+      },
+    },
+    {
+      id: "changeConfidenceModeMax",
+      display: "max",
+      exec: () => {
+        setConfidenceMode("max");
+      },
+    },
+  ],
+};
+
 let commandsFontSize = {
   title: "Change font size...",
   list: [
@@ -648,7 +677,7 @@ $.getJSON("themes/list.json", function (data) {
   data.forEach((theme) => {
     commandsThemes.list.push({
       id: "changeTheme" + capitalizeFirstLetter(theme.name),
-      display: theme.name.replace("_", " "),
+      display: theme.name.replace(/_/g, " "),
       hover: () => {
         previewTheme(theme.name);
       },
@@ -685,7 +714,7 @@ if (Object.keys(words).length > 0) {
     if (language === "english_10k") return;
     commandsLanguages.list.push({
       id: "changeLanguage" + capitalizeFirstLetter(language),
-      display: language.replace("_", " "),
+      display: language.replace(/_/g, " "),
       exec: () => {
         changeLanguage(language);
         restartTest();
@@ -721,7 +750,7 @@ if (Object.keys(layouts).length > 0) {
   Object.keys(layouts).forEach((layout) => {
     commandsLayouts.list.push({
       id: "changeLayout" + capitalizeFirstLetter(layout),
-      display: layout.replace("_", " "),
+      display: layout.replace(/_/g, " "),
       exec: () => {
         changeLayout(layout);
         restartTest();
@@ -888,7 +917,7 @@ $(document).keydown((e) => {
         $(".suggestions").outerHeight() / 2 +
         $($(".entry")[0]).outerHeight();
       $(".suggestions").scrollTop(scroll);
-      console.log(`scrolling to ${scroll}`);
+      // console.log(`scrolling to ${scroll}`);
       try {
         let list = currentCommands[currentCommands.length - 1];
         $.each(list.list, (index, obj) => {

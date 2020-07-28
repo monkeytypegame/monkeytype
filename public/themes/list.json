@@ -44,6 +44,11 @@
         "textColor": "#e2b714"
     },
     {
+        "name": "round_round_baby",
+        "bgColor": "#323437",
+        "textColor": "#e2b714"
+    },
+    {
         "name": "bushido",
         "bgColor": "#414755",
         "textColor": "#ec4c56"
@@ -302,5 +307,25 @@
         "name": "watermelon",
         "bgColor": "#1F4437",
         "textColor": "#B74B53"
+    },
+    {
+        "name": "menthol",
+        "bgColor": "#00c18c",
+        "textColor": "#ffffff"
+    },
+    {
+        "name": "ishtar",
+        "bgColor": "#fae1c3",
+        "textColor": "#bb1e10"
+    },
+    {
+        "name": "mashu",
+        "bgColor": "#2b2b2c",
+        "textColor": "#76689a"
+    },
+    {
+        "name": "deku",
+        "bgColor": "#058B8C",
+        "textColor": "#F7F2EA"
     }
 ]

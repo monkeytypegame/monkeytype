@@ -111,7 +111,7 @@ function signUp() {
       return;
     } else if (d.data === -2) {
       showNotification(
-        "Name cannot contain special characters or contain more than 12 characters. Can include _ . and -",
+        "Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
         8000
       );
       $(".pageLogin .preloader").addClass("hidden");

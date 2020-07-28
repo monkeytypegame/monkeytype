@@ -62,7 +62,7 @@ function isUsernameValid(name) {
   if (name === null || name === undefined || name === "") return false;
   if (/miodec/.test(name.toLowerCase())) return false;
   if (/bitly/.test(name.toLowerCase())) return false;
-  if (name.length > 12) return false;
+  if (name.length > 14) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
@@ -569,10 +569,15 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
                     userdata.discordId !== null &&
                     userdata.discordId !== undefined
                   ) {
-                    console.log(
-                      `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
-                    );
-                    updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
+                    if (verified !== false) {
+                      console.log(
+                        `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                      );
+                      updateDiscordRole(
+                        userdata.discordId,
+                        Math.round(obj.wpm)
+                      );
+                    }
                   }
                   returnobj.resultCode = 2;
                 } else {
@@ -1105,9 +1110,11 @@ async function checkLeaderboards(
   verified,
   emailVerified
 ) {
+  //lb disable
   // return {
   //   insertedAt: null,
   // };
+  //
   try {
     if (emailVerified === false)
       return {
