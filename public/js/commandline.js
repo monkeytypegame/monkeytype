@@ -74,29 +74,6 @@ let commands = {
       },
     },
     {
-      id: "toggleKeymap",
-      display: "Toggle keymap display",
-      exec: () => {
-        config.keymap = !config.keymap;
-        console.log(`keymap ${config.keymap}`);
-        if (config.keymap) {
-          showKeymap();
-        } else {
-          hideKeymap();
-        }
-        saveConfigToCookie();
-      },
-    },
-    {
-      id: "changeKeymapLayout",
-      display: "Change keymap layout...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsKeymapLayouts);
-        showCommandLine();
-      },
-    },
-    {
       id: "toggleTimerBar",
       display: "Toggle timer display",
       exec: () => {
@@ -247,6 +224,24 @@ let commands = {
       },
     },
     {
+      id: "toggleKeymap",
+      display: "Change keymap mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsKeymapMode);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeKeymapLayout",
+      display: "Change keymap layout...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsKeymapLayouts);
+        showCommandLine();
+      },
+    },
+    {
       id: "changeFontSize",
       display: "Change font size...",
       subgroup: true,
@@ -260,6 +255,33 @@ let commands = {
       display: "Join the Discord server",
       exec: () => {
         window.open("https://discord.gg/yENzqcB");
+      },
+    },
+  ],
+};
+
+let commandsKeymapMode = {
+  title: "Change keymap mode...",
+  list: [
+    {
+      id: "setKeymapModeOff",
+      display: "off",
+      exec: () => {
+        changeKeymapMode("off");
+      },
+    },
+    {
+      id: "setKeymapModeNext",
+      display: "next",
+      exec: () => {
+        changeKeymapMode("next");
+      },
+    },
+    {
+      id: "setKeymapModeReact",
+      display: "react",
+      exec: () => {
+        changeKeymapMode("react");
       },
     },
   ],

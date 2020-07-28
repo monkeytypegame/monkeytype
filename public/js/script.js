@@ -522,22 +522,26 @@ function showWords() {
       .css("overflow", "hidden");
   }
 
-  if ($(".active-key") != undefined) {
-    $(".active-key").removeClass("active-key");
-  }
+  // if ($(".active-key") != undefined) {
+  //   $(".active-key").removeClass("active-key");
+  // }
 
   var currentKey = wordsList[currentWordIndex]
     .substring(currentInput.length, currentInput.length + 1)
     .toString()
     .toUpperCase();
 
-  var highlightKey = `#Key${currentKey}`;
+  // var highlightKey = `#Key${currentKey}`;
 
-  $(highlightKey).addClass("active-key");
+  // $(highlightKey).addClass("active-key");
+
+  if (config.keymapMode === "next") {
+    updateHighlightedKeymapKey();
+  }
 
   updateActiveElement();
   updateCaretPosition();
-  if (config.keymap) {
+  if (config.keymap !== "off") {
     changeKeymapLayout(config.keymapLayout);
   }
 }
@@ -560,7 +564,7 @@ function updateActiveElement() {
 
     // activeWordTop = $("#words .word.active").position().top;
     activeWordTop = document.querySelector("#words .active").offsetTop;
-    updateHighlightedKey();
+    // updateHighlightedKeymapKey();
   } catch (e) {}
 }
 
@@ -830,7 +834,89 @@ function showKeymap() {
   $(".keymap").removeClass("hidden");
 }
 
-function updateHighlightedKey() {
+function flashPressedKeymapKey(key, correct) {
+  // return;
+  // $(`#${key}`).css("animation", "none").removeClass("flash").addClass("flash");
+  // setTimeout((f) => {
+  //   $(`#${key}`).removeClass("flash");
+  // }, 1000);
+
+  //  from {
+  //   color: var(--bg-color);
+  //   background-color: var(--main-color);
+  //   border-color: var(--main-color);
+  // }
+
+  // to {
+  //   color: var(--sub-color);
+  //   background-color: var(--bg-color);
+  //   border-color: var(--sub-color);
+  // }
+
+  //move this outside!!!!!!!!!!!!!!!!!!!!
+  let mainColor = getComputedStyle(document.body)
+    .getPropertyValue("--main-color")
+    .replace(" ", "");
+  let subColor = getComputedStyle(document.body)
+    .getPropertyValue("--sub-color")
+    .replace(" ", "");
+  let bgColor = getComputedStyle(document.body)
+    .getPropertyValue("--bg-color")
+    .replace(" ", "");
+  let errorColor;
+  if (config.colorfulMode) {
+    errorColor = getComputedStyle(document.body)
+      .getPropertyValue("--colorful-error-color")
+      .replace(" ", "");
+  } else {
+    errorColor = getComputedStyle(document.body)
+      .getPropertyValue("--error-color")
+      .replace(" ", "");
+  }
+
+  if (key === "Space") {
+    key = "KeySpace";
+  }
+
+  if (correct) {
+    $(`#${key}`)
+      .stop(true, true)
+      .css({
+        color: bgColor,
+        backgroundColor: mainColor,
+        borderColor: mainColor,
+      })
+      .animate(
+        {
+          color: subColor,
+          backgroundColor: bgColor,
+          borderColor: subColor,
+        },
+        500,
+        "easeOutExpo"
+      );
+  } else {
+    $(`#${key}`)
+      .stop(true, true)
+      .css({
+        color: bgColor,
+        backgroundColor: errorColor,
+        borderColor: errorColor,
+      })
+      .animate(
+        {
+          color: subColor,
+          backgroundColor: bgColor,
+          borderColor: subColor,
+        },
+        500,
+        "easeOutExpo"
+      );
+  }
+}
+
+function updateHighlightedKeymapKey() {
+  // return;
   if ($(".active-key") != undefined) {
     $(".active-key").removeClass("active-key");
   }
@@ -1599,7 +1685,6 @@ function restartTest(withSameWordset = false) {
   testActive = false;
   hideLiveWpm();
   hideTimer();
-  hideKeymap();
   keypressPerSecond = [];
   currentKeypressCount = 0;
   errorsPerSecond = [];
@@ -1685,7 +1770,7 @@ function restartTest(withSameWordset = false) {
         currentInput = "";
         showWords();
       }
-      if (config.keymap) {
+      if (config.keymapMode !== "off") {
         showKeymap();
       }
       $("#result").addClass("hidden");
@@ -2607,7 +2692,11 @@ $(document).keypress(function (event) {
   }
   // console.timeEnd("offcheck2");
 
-  updateHighlightedKey();
+  if (config.keymapMode === "react") {
+    flashPressedKeymapKey(event.code, thisCharCorrect);
+  } else if (config.keymapMode === "next") {
+    updateHighlightedKeymapKey();
+  }
   updateCaretPosition();
 });
 
@@ -2689,7 +2778,11 @@ $(document).keydown((event) => {
         compareInput(null, currentInput, !config.blindMode);
       }
       // currentKeypressCount++;
-      updateHighlightedKey();
+      if (config.keymapMode === "react") {
+        flashPressedKeymapKey(event.code, true);
+      } else if (config.keymapMode === "next") {
+        updateHighlightedKeymapKey();
+      }
       updateCaretPosition();
     }
     //space
@@ -2749,7 +2842,6 @@ $(document).keydown((event) => {
         inputHistory.push(currentInput);
         currentInput = "";
         currentWordIndex++;
-        updateHighlightedKey();
         updateActiveElement();
         updateCaretPosition();
         currentKeypressCount++;
@@ -2777,6 +2869,11 @@ $(document).keydown((event) => {
         updateActiveElement();
         updateCaretPosition();
         currentKeypressCount++;
+      }
+      if (config.keymapMode === "react") {
+        flashPressedKeymapKey(event.code, true);
+      } else if (config.keymapMode === "next") {
+        updateHighlightedKeymapKey();
       }
       if (
         config.mode === "words" ||

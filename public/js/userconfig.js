@@ -40,7 +40,7 @@ let defaultConfig = {
   timerOpacity: "0.25",
   stopOnError: false,
   showAllLines: false,
-  keymap: false,
+  keymapMode: "off",
   keymapLayout: "qwerty",
 };
 
@@ -138,6 +138,8 @@ function applyConfig(configObj) {
     setTimerStyle(configObj.timerStyle, true);
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
+    changeKeymapMode(configObj.keymapMode, true);
+    changeKeymapLayout(configObj.keymapLayout, true);
     if (
       configObj.resultFilters == null ||
       configObj.resultFilters == undefined
@@ -539,6 +541,7 @@ function previewTheme(name) {
 
 function setTheme(name, nosave) {
   config.theme = name;
+  $(".keymap-key").attr("style", "");
   $("#currentTheme").attr("href", `themes/${name}.css`);
   setTimeout(() => {
     updateFavicon(32, 14);
@@ -668,6 +671,28 @@ function changeLayout(layout, nosave) {
     layout = "qwerty";
   }
   config.layout = layout;
+  if (!nosave) saveConfigToCookie();
+}
+
+function changeKeymapMode(mode, nosave) {
+  if (mode == null || mode == undefined) {
+    mode = "off";
+  }
+  if (mode === "off") {
+    hideKeymap();
+  } else {
+    showKeymap();
+  }
+  if (mode === "react") {
+    $(".active-key").removeClass("active-key");
+  }
+  if (mode === "next") {
+    $(".keymap-key").attr("style", "");
+  }
+  if (config.showLiveWpm) {
+    config.showLiveWpm = false;
+  }
+  config.keymapMode = mode;
   if (!nosave) saveConfigToCookie();
 }
 

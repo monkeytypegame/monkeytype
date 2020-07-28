@@ -669,7 +669,8 @@ a:hover {
   }
 
   &.outline {
-    @extend #caret, .block;
+    @extend #caret,
+    .block;
     background: transparent;
     border: 1px solid var(--caret-color);
   }
@@ -707,6 +708,7 @@ a:hover {
 }
 
 @keyframes caretFlash {
+
   0%,
   100% {
     opacity: 0;
@@ -1325,9 +1327,9 @@ key {
   border-bottom: 2px solid var(--error-color);
   text-shadow: 1px 0px 0px var(--bg-color),
     // 2px 0px 0px var(--bg-color),
-      -1px 0px 0px var(--bg-color),
+    -1px 0px 0px var(--bg-color),
     // -2px 0px 0px var(--bg-color),
-      0px 1px 0px var(--bg-color),
+    0px 1px 0px var(--bg-color),
     1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
@@ -1417,7 +1419,7 @@ key {
             height: 0;
             display: none;
 
-            & ~ .customCheckbox {
+            &~.customCheckbox {
               width: 12px;
               height: 12px;
               background: rgba(0, 0, 0, 0.1);
@@ -1428,7 +1430,7 @@ key {
               transition: 0.25s;
             }
 
-            &:checked ~ .customCheckbox {
+            &:checked~.customCheckbox {
               background: var(--main-color);
             }
           }
@@ -1660,7 +1662,8 @@ key {
 
     &.themes,
     &.languages,
-    &.layouts {
+    &.layouts,
+    &.keymapLayout {
       grid-template-columns: 1fr;
       grid-template-areas:
         "title"
@@ -2079,22 +2082,70 @@ key {
   justify-content: center;
   white-space: nowrap;
   height: 140px;
+  gap: .25rem;
 }
 
 .row {
   height: 2rem;
+  gap: .25rem;
 }
 
 .keymap-key {
   display: flex;
   background-color: var(--bg-color);
   color: var(--sub-color);
-  border-radius: 0.25rem;
-  border: 0.1rem solid var(--sub-color);
+  border-radius: var(--roundness);
+  border: 0.05rem solid;
+  border-color: var(--sub-color);
   text-align: center;
   justify-content: center;
   align-items: center;
-  margin: 0.1rem;
+  width: 2rem;
+  height: 2rem;
+
+  .bump {
+    width: .75rem;
+    height: .05rem;
+    background: var(--sub-color);
+    position: absolute;
+    border-radius: var(--roundness);
+    margin-top: 1.5rem;
+  }
+
+  &.active-key {
+    color: var(--bg-color);
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+
+    .bump {
+      background: var(--bg-color);
+    }
+  }
+
+  &#KeySpace {
+    width: 100%;
+  }
+
+  &.flash {
+    animation-name: flashKey;
+    animation-duration: 1s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes flashKey {
+  from {
+    color: var(--bg-color);
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+  }
+
+  to {
+    color: var(--sub-color);
+    background-color: var(--bg-color);
+    border-color: var(--sub-color);
+  }
 }
 
 .hidden-key {
@@ -2114,22 +2165,15 @@ key {
 
 .r3 {
   display: grid;
-  grid-template-columns: 1.75fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.75fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
 }
 
 .r4 {
   display: grid;
-  grid-template-columns: 2.25fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.75fr;
+  grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.5fr;
 }
 
 .r5 {
   display: grid;
-  grid-template-columns: 1.25fr 1.25fr 1.25fr 6.25fr 1.25fr 1.25fr 1.25fr 1.25fr;
-}
-
-.active-key {
-  color: var(--bg-color);
-  background-color: var(--main-color);
-  border-radius: 0.25rem;
-  border: 0.1rem solid var(--main-color);
+  grid-template-columns: 4fr 7.5fr 4fr;
 }
