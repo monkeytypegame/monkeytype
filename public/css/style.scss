@@ -1451,11 +1451,21 @@ key {
 }
 
 .pageTest {
+  position: relative;
+
   .buttons {
     display: grid;
     grid-auto-flow: column;
     gap: 1rem;
     justify-content: center;
+  }
+
+  .ssWatermark {
+    font-size: 1.25rem;
+    color: var(--sub-color);
+    position: absolute;
+    bottom: 0;
+    right: 0;
   }
 }
 

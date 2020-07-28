@@ -113,6 +113,8 @@ function copyResultToClipboard() {
   if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
     showNotification("Sorry, this feature is not supported in Firefox", 4000);
   } else {
+    $(".pageTest .ssWatermark").removeClass("hidden");
+    $(".pageTest .buttons").addClass("hidden");
     let src = $("#middle");
     var sourceX = src.position().left; /*X position from div#target*/
     var sourceY = src.position().top; /*Y position from div#target*/
@@ -143,14 +145,20 @@ function copyResultToClipboard() {
             ])
             .then((f) => {
               showNotification("Copied to clipboard", 1000);
+              $(".pageTest .ssWatermark").addClass("hidden");
+              $(".pageTest .buttons").removeClass("hidden");
             })
             .catch((f) => {
               showNotification("Error saving image to clipboard", 2000);
+              $(".pageTest .ssWatermark").addClass("hidden");
+              $(".pageTest .buttons").removeClass("hidden");
             });
         });
       });
     } catch (e) {
       showNotification("Error creating image", 2000);
+      $(".pageTest .ssWatermark").addClass("hidden");
+      $(".pageTest .buttons").removeClass("hidden");
     }
   }
 }
@@ -1281,11 +1289,7 @@ function showResult(difficultyFailed = false) {
     );
   }, 125);
 
-  $("#testModesNotice").css({
-    opacity: 0,
-    // 'height': 0,
-    // 'margin-bottom': 0
-  });
+  $("#testModesNotice").addClass("hidden");
 
   $("#result .stats .leaderboards .bottom").text("");
   $("#result .stats .leaderboards").addClass("hidden");
@@ -1860,7 +1864,7 @@ function restartTest(withSameWordset = false) {
         showKeymap();
       }
       $("#result").addClass("hidden");
-      $("#testModesNotice").css({
+      $("#testModesNotice").removeClass("hidden").css({
         opacity: 1,
         // 'height': 'auto',
         // 'margin-bottom': '1.25rem'
