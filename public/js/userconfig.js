@@ -722,6 +722,7 @@ function changeKeymapMode(mode, nosave) {
     config.showLiveWpm = false;
   }
   config.keymapMode = mode;
+  restartTest();
   if (!nosave) saveConfigToCookie();
 }
 
