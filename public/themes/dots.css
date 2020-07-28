@@ -54,7 +54,8 @@
     background: #ffd543;
 }
 
-#menu .icon-button:nth-child(6) {
+#menu .icon-button:nth-child(6),
+#menu .icon-button:nth-child(7) {
     background: #ff9349;
 }
 
