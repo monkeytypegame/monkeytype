@@ -875,7 +875,7 @@
             <div class="keymap-key hidden-key">
               <span class="letter"></span>
             </div>
-            <div class="keymap-key" id="KeySpace" style="width: 100%;">
+            <div class="keymap-key" id="KeySpace">
               <span class="letter"></span>
             </div>
             <div class="keymap-key hidden-key">
@@ -1058,7 +1058,7 @@
           </div>
         </div>
         <div class="section layouts">
-          <h1>layout</h1>
+          <h1>layout override</h1>
           <div class="buttons">
           </div>
         </div>
@@ -1126,6 +1126,22 @@
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+          </div>
+        </div>
+        <div class="section keymapMode">
+          <h1>keymap</h1>
+          <div class="text">Displays your current layout while taking a test. React shows what you pressed and Next
+            shows what you need to press next.</div>
+          <div class="buttons">
+            <div class="button" keymapMode="react" tabindex="0" onclick="this.blur();">react</div>
+            <div class="button" keymapMode="next" tabindex="0" onclick="this.blur();">next</div>
+            <div class="button" keymapMode="off" tabindex="0" onclick="this.blur();">off</div>
+
+          </div>
+        </div>
+        <div class="section keymapLayout">
+          <h1>keymap layout</h1>
+          <div class="buttons">
           </div>
         </div>
         <div class="section flipTestColors">
@@ -1260,19 +1276,6 @@
           <div class="buttons">
             <div class="button on" tabindex="0" onclick="this.blur();">show</div>
             <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
-          </div>
-        </div>
-        <div class="section keymap-toggle">
-          <h1>keymap</h1>
-          <div class="text">Displays your current layout while taking a test.</div>
-          <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
-            <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
-          </div>
-        </div>
-        <div class="section keymap-layouts hidden">
-          <h1>keymap layout</h1>
-          <div class="buttons">
           </div>
         </div>
         <div class="section keyTips">
