@@ -40,6 +40,8 @@ let defaultConfig = {
   timerOpacity: "0.25",
   stopOnError: false,
   showAllLines: false,
+  keymapMode: "off",
+  keymapLayout: "qwerty",
 };
 
 let cookieConfig = null;
@@ -136,6 +138,8 @@ function applyConfig(configObj) {
     setTimerStyle(configObj.timerStyle, true);
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
+    changeKeymapMode(configObj.keymapMode, true);
+    changeKeymapLayout(configObj.keymapLayout, true);
     if (
       configObj.resultFilters == null ||
       configObj.resultFilters == undefined
@@ -540,6 +544,7 @@ function setTheme(name, nosave) {
   if (resultVisible && (name === "nausea" || name === "round_round_baby"))
     return;
   config.theme = name;
+  $(".keymap-key").attr("style", "");
   $("#currentTheme").attr("href", `themes/${name}.css`);
   setTimeout(() => {
     updateFavicon(32, 14);
@@ -671,6 +676,100 @@ function changeLayout(layout, nosave) {
   config.layout = layout;
   updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
+}
+
+function changeKeymapMode(mode, nosave) {
+  if (mode == null || mode == undefined) {
+    mode = "off";
+  }
+  if (mode === "off") {
+    hideKeymap();
+  } else {
+    showKeymap();
+  }
+  if (mode === "react") {
+    $(".active-key").removeClass("active-key");
+  }
+  if (mode === "next") {
+    $(".keymap-key").attr("style", "");
+  }
+  if (config.showLiveWpm) {
+    config.showLiveWpm = false;
+  }
+  config.keymapMode = mode;
+  if (!nosave) saveConfigToCookie();
+}
+
+function changeKeymapLayout(layout, nosave) {
+  if (layout == null || layout == undefined) {
+    layout = "qwerty";
+  }
+  config.keymapLayout = layout;
+  if (!nosave) saveConfigToCookie();
+  // layouts[layout].forEach((x) => {
+  //   console.log(x);
+  // });
+
+  var toReplace = layouts[layout].slice(13, 47);
+  var _ = toReplace.splice(12, 1);
+  var count = 0;
+
+  $(".letter")
+    .map(function () {
+      if (
+        !this.parentElement.classList.contains("hidden-key") &&
+        !this.classList.contains("hidden-key")
+      ) {
+        if (count < toReplace.length) {
+          var key = toReplace[count].charAt(0);
+          this.innerHTML = key;
+
+          switch (key) {
+            case "\\":
+            case "|":
+              this.parentElement.id = "KeyBackslash";
+              break;
+            case "}":
+            case "]":
+              this.parentElement.id = "KeyRightBracket";
+              break;
+            case "{":
+            case "[":
+              this.parentElement.id = "KeyLeftBracket";
+              break;
+            case '"':
+            case "'":
+              this.parentElement.id = "KeyQuote";
+              break;
+            case ":":
+            case ";":
+              this.parentElement.id = "KeySemicolon";
+              break;
+            case "<":
+            case ",":
+              this.parentElement.id = "KeyComma";
+              break;
+            case ">":
+            case ".":
+              this.parentElement.id = "KeyPeriod";
+              break;
+            case "?":
+            case "/":
+              this.parentElement.id = "KeySlash";
+              break;
+            case "":
+              this.parentElement.id = "KeySpace";
+              break;
+            default:
+              this.parentElement.id = `Key${key.toUpperCase()}`;
+          }
+        }
+        count++;
+      }
+    })
+    .get();
+
+  // console.log(all.join());
 }
 
 function changeFontSize(fontSize, nosave) {

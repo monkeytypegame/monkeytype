@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap");
 
 :root {
-  --roundness: .25rem;
+  --roundness: 0.25rem;
   --font: "Roboto Mono";
 }
 
@@ -24,9 +24,9 @@ input {
   outline: none;
   border: none;
   border-radius: var(--roundness);
-  background: rgba(0, 0, 0, .1);
+  background: rgba(0, 0, 0, 0.1);
   color: var(--text-color);
-  padding: .5rem;
+  padding: 0.5rem;
   font-size: 1rem;
   line-height: 1rem;
   font-family: var(--font);
@@ -53,7 +53,7 @@ input[type="color"]::-webkit-color-swatch {
 .colorPicker {
   text-align: center;
   will-change: transform;
-  transition: transform .2s ease-in-out;
+  transition: transform 0.2s ease-in-out;
   overflow: hidden;
   border-radius: var(--roundness);
 
@@ -106,7 +106,7 @@ html {
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: var(--sub-color);
-  transition: .25s;
+  transition: 0.25s;
   border-radius: 2px !important;
 }
 
@@ -128,7 +128,7 @@ a:hover {
   position: fixed;
   background: var(--main-color);
   color: var(--bg-color);
-  padding: .5rem 1rem;
+  padding: 0.5rem 1rem;
   border-radius: var(--roundness);
   left: 50%;
   z-index: 9999;
@@ -187,7 +187,8 @@ a:hover {
     display: grid;
     gap: 2rem;
     grid-template-rows: 3rem auto;
-    grid-template-areas: "title buttons"
+    grid-template-areas:
+      "title buttons"
       "tables tables";
     grid-template-columns: 1fr 1fr;
 
@@ -200,7 +201,7 @@ a:hover {
     .title {
       font-size: 2rem;
       line-height: 2rem;
-      margin-bottom: .5rem;
+      margin-bottom: 0.5rem;
     }
 
     .tables {
@@ -209,7 +210,7 @@ a:hover {
       gap: 1rem;
       grid-template-columns: 1fr 1fr;
       margin-bottom: 2rem;
-      font-size: .8rem;
+      font-size: 0.8rem;
 
       .titleAndTable {
         display: grid;
@@ -244,7 +245,7 @@ a:hover {
         }
 
         td {
-          padding: .25rem .5rem;
+          padding: 0.25rem 0.5rem;
 
           &.me {
             color: var(--main-color);
@@ -254,7 +255,7 @@ a:hover {
 
         thead {
           color: var(--sub-color);
-          font-size: .75rem;
+          font-size: 0.75rem;
 
           td {
             background: var(--bg-color);
@@ -268,7 +269,7 @@ a:hover {
           color: var(--text-color);
 
           tr:nth-child(odd) td {
-            background: rgba(0, 0, 0, .1);
+            background: rgba(0, 0, 0, 0.1);
           }
         }
 
@@ -302,7 +303,6 @@ a:hover {
     }
   }
 }
-
 
 #tagsWrapper {
   width: 100%;
@@ -454,7 +454,6 @@ a:hover {
   }
 }
 
-
 #versionHistoryWrapper {
   width: 100%;
   height: 100%;
@@ -490,7 +489,8 @@ a:hover {
 
       .release {
         display: grid;
-        grid-template-areas: "title date"
+        grid-template-areas:
+          "title date"
           "body body";
 
         .title {
@@ -605,7 +605,7 @@ a:hover {
         color: var(--sub-color);
 
         .fas {
-          margin-right: .5rem;
+          margin-right: 0.5rem;
         }
 
         &:last-child {
@@ -650,7 +650,7 @@ a:hover {
   background: black;
   /*   background: #0f0f0f; */
   /*   background: red; */
-  // transition: 1s linear; 
+  // transition: 1s linear;
   z-index: -1;
 }
 
@@ -736,7 +736,7 @@ a:hover {
   }
 
   &.block {
-    width: .7em;
+    width: 0.7em;
     margin-left: 0.25em;
     border-radius: 0;
     z-index: -1;
@@ -799,7 +799,7 @@ a:hover {
   color: var(--sub-color);
   display: grid;
   grid-auto-flow: column;
-  gap: .5rem;
+  gap: 0.5rem;
   // margin-bottom: -0.4rem;
   width: fit-content;
   width: -moz-fit-content;
@@ -810,15 +810,15 @@ a:hover {
       position: relative;
 
       &::after {
-        transition: .25s;
-        width: .5rem;
-        height: .5rem;
+        transition: 0.25s;
+        width: 0.5rem;
+        height: 0.5rem;
         content: "";
         position: absolute;
         background: var(--main-color);
         border-radius: 1rem;
-        top: .25rem;
-        right: .25rem;
+        top: 0.25rem;
+        right: 0.25rem;
         border: 2px solid var(--bg-color);
       }
 
@@ -840,10 +840,10 @@ a:hover {
     }
 
     .text {
-      font-size: .65rem;
-      line-height: .65rem;
+      font-size: 0.65rem;
+      line-height: 0.65rem;
       align-self: center;
-      margin-left: .25rem;
+      margin-left: 0.25rem;
     }
 
     &:hover {
@@ -872,8 +872,7 @@ a:hover {
 }
 
 #top {
-  grid-template-areas:
-    "logo menu config";
+  grid-template-areas: "logo menu config";
   line-height: 2.3rem;
   font-size: 2.3rem;
   /* text-align: center; */
@@ -901,7 +900,7 @@ a:hover {
     .bottom {
       margin-left: -0.15rem;
       color: var(--main-color);
-      transition: .25s;
+      transition: 0.25s;
       cursor: pointer;
     }
   }
@@ -1001,12 +1000,12 @@ key {
   color: var(--bg-color);
   background-color: var(--sub-color);
   /* font-weight: bold; */
-  padding: .1rem .3rem;
+  padding: 0.1rem 0.3rem;
   margin: 3px 0;
   border-radius: 0.1rem;
   display: inline-block;
-  font-size: .7rem;
-  line-height: .7rem;
+  font-size: 0.7rem;
+  line-height: 0.7rem;
 }
 
 #bottom {
@@ -1023,7 +1022,7 @@ key {
 
   .version {
     opacity: 0;
-    transition: .25s;
+    transition: 0.25s;
 
     &:hover {
       cursor: pointer;
@@ -1067,7 +1066,7 @@ key {
 
   .stats {
     display: grid;
-    column-gap: .5rem;
+    column-gap: 0.5rem;
     justify-content: center;
     align-items: center;
     grid-template-areas:
@@ -1078,9 +1077,8 @@ key {
       "leaderboards leaderboards"
       "testType infoAndTags";
 
-
     .group {
-      margin-bottom: .5rem;
+      margin-bottom: 0.5rem;
 
       .top {
         color: var(--sub-color);
@@ -1146,7 +1144,7 @@ key {
 
     .infoAndTags {
       display: grid;
-      gap: .5rem;
+      gap: 0.5rem;
       align-self: baseline;
       grid-area: infoAndTags;
       color: var(--sub-color);
@@ -1169,21 +1167,21 @@ key {
         font-size: 3rem;
         line-height: 3rem;
         display: flex;
-        margin-top: -.5rem;
+        margin-top: -0.5rem;
 
         .crownWrapper {
           width: 1.7rem;
           overflow: hidden;
           height: 1.7rem;
-          margin-left: .5rem;
-          margin-top: .98rem;
+          margin-left: 0.5rem;
+          margin-top: 0.98rem;
 
           .crown {
-            font-size: .7rem;
+            font-size: 0.7rem;
             line-height: 1.7rem;
             background: var(--main-color);
             color: var(--bg-color);
-            border-radius: .6rem;
+            border-radius: 0.6rem;
             text-align: center;
             align-self: center;
             width: 1.7rem;
@@ -1236,7 +1234,6 @@ key {
   }
 }
 
-
 #wordsInput {
   height: 0;
   padding: 0;
@@ -1248,7 +1245,7 @@ key {
 
 #wordsTitle {
   color: var(--sub-color);
-  margin-left: .25rem;
+  margin-left: 0.25rem;
   margin-top: 1rem;
   display: none;
 }
@@ -1306,7 +1303,6 @@ key {
   }
 }
 
-
 #words.flipped.colorfulMode .word.error,
 #words.colorfulMode .word.error {
   border-bottom: 2px solid var(--colorful-error-color);
@@ -1344,7 +1340,6 @@ key {
   }
 }
 
-
 #middle {
   .pageTest {
     #testModesNotice {
@@ -1356,11 +1351,11 @@ key {
       margin-bottom: 1.25rem;
       height: 1rem;
       line-height: 1rem;
-      transition: .125s;
+      transition: 0.125s;
       justify-content: center;
 
       .fas {
-        margin-right: .5rem;
+        margin-right: 0.5rem;
       }
     }
   }
@@ -1377,7 +1372,7 @@ key {
 }
 
 .word {
-  margin: .25rem;
+  margin: 0.25rem;
   color: var(--sub-color);
   display: flex;
   // transition: 0.25s;
@@ -1392,13 +1387,13 @@ key {
     background: var(--sub-color);
     color: var(--bg-color);
     /* background: red; */
-    padding: .5rem;
+    padding: 0.5rem;
     /* left: .5rem; */
-    margin-left: -.5rem;
-    margin-top: -.5rem;
+    margin-left: -0.5rem;
+    margin-top: -0.5rem;
     border-radius: var(--roundness);
     // box-shadow: 0 0 10px rgba(0,0,0,.25);
-    transition: .25s;
+    transition: 0.25s;
     text-shadow: none;
   }
 }
@@ -1406,19 +1401,19 @@ key {
 #words.size125 .word {
   line-height: 1.25rem;
   font-size: 1.25rem;
-  margin: .31rem;
+  margin: 0.31rem;
 }
 
 #words.size15 .word {
   line-height: 1.5rem;
   font-size: 1.5rem;
-  margin: .37rem;
+  margin: 0.37rem;
 }
 
 #words.size2 .word {
   line-height: 2rem;
   font-size: 2rem;
-  margin: .5rem;
+  margin: 0.5rem;
 }
 
 .word.error {
@@ -1429,8 +1424,7 @@ key {
     -1px 0px 0px var(--bg-color),
     // -2px 0px 0px var(--bg-color),
     0px 1px 0px var(--bg-color),
-    1px 1px 0px var(--bg-color),
-    -1px 1px 0px var(--bg-color);
+    1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
 // .word letter {
@@ -1474,11 +1468,12 @@ key {
 
   .side {
     display: grid;
-    gap: .5rem;
+    gap: 0.5rem;
     justify-content: center;
 
     &.login {
-      grid-template-areas: "title forgotButton"
+      grid-template-areas:
+        "title forgotButton"
         "form form";
 
       .title {
@@ -1487,15 +1482,15 @@ key {
 
       #forgotPasswordButton {
         grid-area: forgotButton;
-        font-size: .5rem;
-        line-height: .5rem;
+        font-size: 0.5rem;
+        line-height: 0.5rem;
         height: fit-content;
         align-self: center;
         justify-self: right;
-        padding: .25rem 0;
+        padding: 0.25rem 0;
         color: var(--sub-color);
         cursor: pointer;
-        transition: .25s;
+        transition: 0.25s;
 
         &:hover {
           color: var(--main-color);
@@ -1521,12 +1516,12 @@ key {
             &~.customCheckbox {
               width: 12px;
               height: 12px;
-              background: rgba(0, 0, 0, .1);
+              background: rgba(0, 0, 0, 0.1);
               border-radius: 2px;
-              box-shadow: 0 0 0 4px rgba(0, 0, 0, .1);
+              box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
               display: inline-block;
-              margin: 0 .5rem 0 .25rem;
-              transition: .25s;
+              margin: 0 0.5rem 0 0.25rem;
+              transition: 0.25s;
             }
 
             &:checked~.customCheckbox {
@@ -1540,7 +1535,7 @@ key {
 
   form {
     display: grid;
-    gap: .5rem;
+    gap: 0.5rem;
     width: 100%;
   }
 
@@ -1551,7 +1546,7 @@ key {
     font-size: 2rem;
     transform: translate(-50%, -50%);
     color: var(--main-color);
-    transition: .25s;
+    transition: 0.25s;
   }
 }
 
@@ -1561,7 +1556,7 @@ key {
 
   .section {
     display: grid;
-    gap: .5rem;
+    gap: 0.5rem;
 
     h1 {
       font-size: 1rem;
@@ -1601,7 +1596,8 @@ key {
   .section {
     display: grid;
     // gap: .5rem;
-    grid-template-areas: "title title"
+    grid-template-areas:
+      "title title"
       "text buttons";
     grid-template-columns: 2fr 1fr;
     column-gap: 2rem;
@@ -1610,7 +1606,7 @@ key {
     &.customTheme {
       grid-template-columns: 1fr 1fr 1fr 1fr;
       justify-items: stretch;
-      gap: .5rem 2rem;
+      gap: 0.5rem 2rem;
 
       & p {
         grid-area: unset;
@@ -1646,7 +1642,7 @@ key {
       display: grid;
       grid-auto-flow: column;
       grid-auto-columns: 1fr;
-      gap: .5rem;
+      gap: 0.5rem;
       grid-area: buttons;
     }
 
@@ -1686,7 +1682,7 @@ key {
 
       .tagsList {
         display: grid;
-        gap: .5rem;
+        gap: 0.5rem;
 
         .tag {
           display: grid;
@@ -1725,14 +1721,14 @@ key {
       }
 
       .addTagButton {
-        margin-top: .5rem;
+        margin-top: 0.5rem;
         color: var(--text-color);
         cursor: pointer;
-        transition: .25s;
-        padding: .2rem .5rem;
+        transition: 0.25s;
+        padding: 0.2rem 0.5rem;
         border-radius: var(--roundness);
 
-        background: rgba(0, 0, 0, .1);
+        background: rgba(0, 0, 0, 0.1);
         text-align: center;
         -webkit-user-select: none;
         display: grid;
@@ -1760,12 +1756,14 @@ key {
 
     &.themes,
     &.languages,
-    &.layouts {
+    &.layouts,
+    &.keymapLayout {
       grid-template-columns: 1fr;
-      grid-template-areas: "title"
+      grid-template-areas:
+        "title"
         "tabs"
         "buttons";
-      gap: .5rem;
+      gap: 0.5rem;
 
       .tabs {
         grid-area: tabs;
@@ -1775,7 +1773,7 @@ key {
 
         .tab {
           will-change: color;
-          transition: .2s ease-in-out color;
+          transition: 0.2s ease-in-out color;
           outline: 0;
           cursor: pointer;
           padding: 0;
@@ -1787,7 +1785,7 @@ key {
           font-family: var(--font);
 
           &:first-child {
-            margin-right: .5rem;
+            margin-right: 0.5rem;
           }
 
           &.active,
@@ -1802,7 +1800,7 @@ key {
         grid-auto-flow: dense;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
-        gap: .5rem;
+        gap: 0.5rem;
       }
     }
   }
@@ -1839,10 +1837,10 @@ key {
   // background: var(--sub-color);
   color: var(--sub-color);
   width: fit-content;
-  padding: .5rem;
+  padding: 0.5rem;
   border-radius: var(--roundness);
   cursor: pointer;
-  transition: .25s;
+  transition: 0.25s;
   float: right;
 
   &:hover {
@@ -1850,7 +1848,7 @@ key {
   }
 
   .fas {
-    margin-right: .5rem;
+    margin-right: 0.5rem;
   }
 }
 
@@ -1889,14 +1887,14 @@ key {
 
     &.history {
       .loadMoreButton {
-        background: rgba(0, 0, 0, .1);
+        background: rgba(0, 0, 0, 0.1);
         color: var(--text-color);
         text-align: center;
-        padding: .5rem;
+        padding: 0.5rem;
         border-radius: var(--roundness);
         cursor: pointer;
-        -webkit-transition: .25s;
-        transition: .25s;
+        -webkit-transition: 0.25s;
+        transition: 0.25s;
         -webkit-user-select: none;
         display: -ms-grid;
         display: grid;
@@ -1944,12 +1942,12 @@ key {
     color: var(--text-color);
 
     td {
-      padding: .5rem .25rem;
+      padding: 0.5rem 0.25rem;
     }
 
     thead {
       color: var(--sub-color);
-      font-size: .75rem;
+      font-size: 0.75rem;
     }
 
     tbody tr:nth-child(odd) td {
@@ -1957,12 +1955,12 @@ key {
     }
 
     td.infoIcons span {
-      margin: 0 .1rem;
+      margin: 0 0.1rem;
     }
   }
 
   #resultEditTags {
-    transition: .25s;
+    transition: 0.25s;
   }
 
   #resultEditTags:hover {
@@ -1982,7 +1980,7 @@ key {
       height: fit-content;
       height: -moz-fit-content;
       display: grid;
-      gap: .25rem;
+      gap: 0.25rem;
       color: var(--sub-color);
       line-height: 1rem;
       font-size: 1rem;
@@ -1994,13 +1992,13 @@ key {
       gap: 1rem;
 
       .button {
-        background: rgba(0, 0, 0, .1);
+        background: rgba(0, 0, 0, 0.1);
         color: var(--text-color);
         text-align: center;
-        padding: .5rem;
+        padding: 0.5rem;
         border-radius: var(--roundness);
         cursor: pointer;
-        transition: .25s;
+        transition: 0.25s;
         -webkit-user-select: none;
         display: grid;
         align-content: center;
@@ -2029,7 +2027,7 @@ key {
   position: fixed;
   font-size: 3rem;
   color: var(--sub-color);
-  opacity: .25;
+  opacity: 0.25;
   z-index: -1;
 
   &.tl {
@@ -2064,11 +2062,11 @@ key {
 .button {
   color: var(--text-color);
   cursor: pointer;
-  transition: .25s;
-  padding: .4rem;
+  transition: 0.25s;
+  padding: 0.4rem;
   border-radius: var(--roundness);
 
-  background: rgba(0, 0, 0, .1);
+  background: rgba(0, 0, 0, 0.1);
   text-align: center;
   -webkit-user-select: none;
   // display: grid;
@@ -2079,7 +2077,7 @@ key {
 
   .fas,
   .far {
-    margin-right: .5rem;
+    margin-right: 0.5rem;
   }
 
   &.active {
@@ -2130,20 +2128,20 @@ key {
 }
 
 @media only screen and (max-width: 800px) {
-
   #centerContent {
     #top {
-      grid-template-areas: "logo config"
+      grid-template-areas:
+        "logo config"
         "menu config";
     }
 
     #menu {
-      gap: .5rem;
-      font-size: .8rem;
-      line-height: .8rem;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      line-height: 0.8rem;
 
       .icon-button {
-        padding: .25rem;
+        padding: 0.25rem;
       }
     }
   }
@@ -2152,9 +2150,7 @@ key {
   #commandLineInput {
     width: 500px !important;
   }
-
 }
-
 
 @media only screen and (max-width: 650px) {
   .pageSettings .section {
@@ -2173,4 +2169,106 @@ key {
   #commandLineInput {
     width: 400px !important;
   }
+}
+
+.keymap {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  justify-content: center;
+  white-space: nowrap;
+  height: 140px;
+  gap: .25rem;
+}
+
+.row {
+  height: 2rem;
+  gap: .25rem;
+}
+
+.keymap-key {
+  display: flex;
+  background-color: var(--bg-color);
+  color: var(--sub-color);
+  border-radius: var(--roundness);
+  border: 0.05rem solid;
+  border-color: var(--sub-color);
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
+
+  .bump {
+    width: .75rem;
+    height: .05rem;
+    background: var(--sub-color);
+    position: absolute;
+    border-radius: var(--roundness);
+    margin-top: 1.5rem;
+  }
+
+  &.active-key {
+    color: var(--bg-color);
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+
+    .bump {
+      background: var(--bg-color);
+    }
+  }
+
+  &#KeySpace {
+    width: 100%;
+  }
+
+  &.flash {
+    animation-name: flashKey;
+    animation-duration: 1s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes flashKey {
+  from {
+    color: var(--bg-color);
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+  }
+
+  to {
+    color: var(--sub-color);
+    background-color: var(--bg-color);
+    border-color: var(--sub-color);
+  }
+}
+
+.hidden-key {
+  opacity: 0;
+}
+
+.r1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+  opacity: 0;
+}
+
+.r2 {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+}
+
+.r3 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+}
+
+.r4 {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.5fr;
+}
+
+.r5 {
+  display: grid;
+  grid-template-columns: 4fr 7.5fr 4fr;
 }

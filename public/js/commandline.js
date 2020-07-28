@@ -226,6 +226,24 @@ let commands = {
       },
     },
     {
+      id: "toggleKeymap",
+      display: "Change keymap mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsKeymapMode);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeKeymapLayout",
+      display: "Change keymap layout...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsKeymapLayouts);
+        showCommandLine();
+      },
+    },
+    {
       id: "changeFontSize",
       display: "Change font size...",
       subgroup: true,
@@ -239,6 +257,33 @@ let commands = {
       display: "Join the Discord server",
       exec: () => {
         window.open("https://discord.gg/yENzqcB");
+      },
+    },
+  ],
+};
+
+let commandsKeymapMode = {
+  title: "Change keymap mode...",
+  list: [
+    {
+      id: "setKeymapModeOff",
+      display: "off",
+      exec: () => {
+        changeKeymapMode("off");
+      },
+    },
+    {
+      id: "setKeymapModeNext",
+      display: "next",
+      exec: () => {
+        changeKeymapMode("next");
+      },
+    },
+    {
+      id: "setKeymapModeReact",
+      display: "react",
+      exec: () => {
+        changeKeymapMode("react");
       },
     },
   ],
@@ -712,6 +757,33 @@ if (Object.keys(layouts).length > 0) {
         saveConfigToCookie();
       },
     });
+  });
+}
+
+let commandsKeymapLayouts = {
+  title: "Change keymap layout...",
+  list: [
+    {
+      id: "couldnotload",
+      display: "Could not load the layouts list :(",
+    },
+  ],
+};
+
+if (Object.keys(layouts).length > 0) {
+  commandsKeymapLayouts.list = [];
+  Object.keys(layouts).forEach((layout) => {
+    if (layout.toString() != "default") {
+      commandsKeymapLayouts.list.push({
+        id: "changeLayout" + capitalizeFirstLetter(layout),
+        display: layout.replace("_", " "),
+        exec: () => {
+          changeKeymapLayout(layout);
+          restartTest();
+          saveConfigToCookie();
+        },
+      });
+    }
   });
 }
 
