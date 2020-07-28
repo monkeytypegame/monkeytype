@@ -34,12 +34,25 @@ function updateSettingsPage() {
     );
   });
 
+  let keymapEl = $(".pageSettings .section.keymapLayout .buttons").empty();
+  Object.keys(layouts).forEach((layout) => {
+    if (layout.toString() != "default") {
+      keymapEl.append(
+        `<div class="layout button" layout='${layout}'>${layout.replace(
+          "_",
+          " "
+        )}</div>`
+      );
+    }
+  });
+
   refreshTagsSettingsSection();
 
   setSettingsButton("smoothCaret", config.smoothCaret);
   setSettingsButton("quickTab", config.quickTab);
   setSettingsButton("liveWpm", config.showLiveWpm);
   setSettingsButton("timerBar", config.showTimerBar);
+  setSettingsButton("keymap-toggle", config.keymap);
   setSettingsButton("keyTips", config.showKeyTips);
   setSettingsButton("freedomMode", config.freedomMode);
   setSettingsButton("blindMode", config.blindMode);
@@ -51,9 +64,9 @@ function updateSettingsPage() {
   setSettingsButton("stopOnError", config.stopOnError);
   setSettingsButton("showAllLines", config.showAllLines);
 
+  setActiveLayoutButton();
   setActiveThemeButton();
   setActiveLanguageButton();
-  setActiveLayoutButton();
   setActiveFontSizeButton();
   setActiveDifficultyButton();
   setActiveCaretStyleButton();
@@ -63,6 +76,9 @@ function updateSettingsPage() {
   setActiveThemeTab();
   setCustomThemeInputs();
   setActiveConfidenceModeButton();
+
+  setActiveKeymapModeButton();
+  setActiveKeymapLayoutButton();
 
   updateDiscordSettingsSection();
 
@@ -199,6 +215,25 @@ function setCustomThemeInputs() {
     $(index).attr("value", currentColor);
     $(index).prev().text(currentColor);
   });
+}
+
+function setActiveKeymapModeButton() {
+  $(`.pageSettings .section.keymapMode .button`).removeClass("active");
+  $(
+    `.pageSettings .section.keymapMode .button[keymapMode="${config.keymapMode}"]`
+  ).addClass("active");
+  if (config.keymapMode === "off") {
+    $(".pageSettings .section.keymapLayout").addClass("hidden");
+  } else {
+    $(".pageSettings .section.keymapLayout").removeClass("hidden");
+  }
+}
+
+function setActiveKeymapLayoutButton() {
+  $(`.pageSettings .section.keymapLayout .layout`).removeClass("active");
+  $(
+    `.pageSettings .section.keymapLayout .layout[layout=${config.keymapLayout}]`
+  ).addClass("active");
 }
 
 function setActiveLayoutButton() {
@@ -459,6 +494,24 @@ $(".pageSettings .section.timerBar .buttons .button.off").click((e) => {
   saveConfigToCookie();
   // showNotification('Timer bar off', 1000);
   setSettingsButton("timerBar", config.showTimerBar);
+});
+
+//keymap
+$(document).on("click", ".pageSettings .section.keymapMode .button", (e) => {
+  let mode = $(e.currentTarget).attr("keymapMode");
+  changeKeymapMode(mode);
+  restartTest();
+  setActiveKeymapModeButton();
+  setSettingsButton("liveWpm", config.showLiveWpm);
+});
+
+//keymap layouts
+$(document).on("click", ".pageSettings .section.keymapLayout .layout", (e) => {
+  let layout = $(e.currentTarget).attr("layout");
+  changeKeymapLayout(layout);
+  // showNotification('Keymap Layout changed', 1000);
+  restartTest();
+  setActiveKeymapLayoutButton();
 });
 
 //freedom mode
