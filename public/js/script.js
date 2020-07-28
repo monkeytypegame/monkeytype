@@ -522,8 +522,24 @@ function showWords() {
       .css("overflow", "hidden");
   }
 
+  if ($(".active-key") != undefined) {
+    $(".active-key").removeClass("active-key");
+  }
+
+  var currentKey = wordsList[currentWordIndex]
+    .substring(currentInput.length, currentInput.length + 1)
+    .toString()
+    .toUpperCase();
+
+  var highlightKey = `#Key${currentKey}`;
+
+  $(highlightKey).addClass("active-key");
+
   updateActiveElement();
   updateCaretPosition();
+  if (config.keymap) {
+    changeKeymapLayout(config.keymapLayout);
+  }
 }
 
 function updateActiveElement() {
@@ -544,6 +560,7 @@ function updateActiveElement() {
 
     // activeWordTop = $("#words .word.active").position().top;
     activeWordTop = document.querySelector("#words .active").offsetTop;
+    updateHighlightedKey();
   } catch (e) {}
 }
 
@@ -805,6 +822,67 @@ function startCaretAnimation() {
   $("#caret").css("animation-name", "caretFlash");
 }
 
+function hideKeymap() {
+  $(".keymap").addClass("hidden");
+}
+
+function showKeymap() {
+  $(".keymap").removeClass("hidden");
+}
+
+function updateHighlightedKey() {
+  if ($(".active-key") != undefined) {
+    $(".active-key").removeClass("active-key");
+  }
+
+  var currentKey = wordsList[currentWordIndex]
+    .substring(currentInput.length, currentInput.length + 1)
+    .toString()
+    .toUpperCase();
+
+  switch (currentKey) {
+    case "\\":
+    case "|":
+      var highlightKey = "#KeyBackslash";
+      break;
+    case "}":
+    case "]":
+      var highlightKey = "#KeyRightBracket";
+      break;
+    case "{":
+    case "[":
+      var highlightKey = "#KeyLeftBracket";
+      break;
+    case '"':
+    case "'":
+      var highlightKey = "#KeyQuote";
+      break;
+    case ":":
+    case ";":
+      var highlightKey = "#KeySemicolon";
+      break;
+    case "<":
+    case ",":
+      var highlightKey = "#KeyComma";
+      break;
+    case ">":
+    case ".":
+      var highlightKey = "#KeyPeriod";
+      break;
+    case "?":
+    case "/":
+      var highlightKey = "#KeySlash";
+      break;
+    case "":
+      var highlightKey = "#KeySpace";
+      break;
+    default:
+      var highlightKey = `#Key${currentKey}`;
+  }
+
+  $(highlightKey).addClass("active-key");
+}
+
 function updateCaretPosition() {
   // return;
   if ($("#words").hasClass("hidden")) return;
@@ -996,6 +1074,7 @@ function showResult(difficultyFailed = false) {
   hideCaret();
   hideLiveWpm();
   hideTimer();
+  hideKeymap();
   testInvalid = false;
   let stats = calculateStats();
   if (stats === undefined) {
@@ -1520,6 +1599,7 @@ function restartTest(withSameWordset = false) {
   testActive = false;
   hideLiveWpm();
   hideTimer();
+  hideKeymap();
   keypressPerSecond = [];
   currentKeypressCount = 0;
   errorsPerSecond = [];
@@ -1605,6 +1685,9 @@ function restartTest(withSameWordset = false) {
         currentInput = "";
         showWords();
       }
+      if (config.keymap) {
+        showKeymap();
+      }
       $("#result").addClass("hidden");
       $("#testModesNotice").css({
         opacity: 1,
@@ -1657,6 +1740,7 @@ function restartTest(withSameWordset = false) {
         );
     }
   );
+  // $(".active-key").classList.remove("active-key");
 }
 
 function focusWords() {
@@ -2522,6 +2606,8 @@ $(document).keypress(function (event) {
     activeWordJumped = true;
   }
   // console.timeEnd("offcheck2");
+
+  updateHighlightedKey();
   updateCaretPosition();
 });
 
@@ -2603,6 +2689,7 @@ $(document).keydown((event) => {
         compareInput(null, currentInput, !config.blindMode);
       }
       // currentKeypressCount++;
+      updateHighlightedKey();
       updateCaretPosition();
     }
     //space
@@ -2662,6 +2749,7 @@ $(document).keydown((event) => {
         inputHistory.push(currentInput);
         currentInput = "";
         currentWordIndex++;
+        updateHighlightedKey();
         updateActiveElement();
         updateCaretPosition();
         currentKeypressCount++;

@@ -40,6 +40,8 @@ let defaultConfig = {
   timerOpacity: "0.25",
   stopOnError: false,
   showAllLines: false,
+  keymap: false,
+  keymapLayout: "qwerty",
 };
 
 let cookieConfig = null;
@@ -667,6 +669,78 @@ function changeLayout(layout, nosave) {
   }
   config.layout = layout;
   if (!nosave) saveConfigToCookie();
+}
+
+function changeKeymapLayout(layout, nosave) {
+  if (layout == null || layout == undefined) {
+    layout = "qwerty";
+  }
+  config.keymapLayout = layout;
+  if (!nosave) saveConfigToCookie();
+  // layouts[layout].forEach((x) => {
+  //   console.log(x);
+  // });
+
+  var toReplace = layouts[layout].slice(13, 47);
+  var _ = toReplace.splice(12, 1);
+  var count = 0;
+
+  $(".letter")
+    .map(function () {
+      if (
+        !this.parentElement.classList.contains("hidden-key") &&
+        !this.classList.contains("hidden-key")
+      ) {
+        if (count < toReplace.length) {
+          var key = toReplace[count].charAt(0);
+          this.innerHTML = key;
+
+          switch (key) {
+            case "\\":
+            case "|":
+              this.parentElement.id = "KeyBackslash";
+              break;
+            case "}":
+            case "]":
+              this.parentElement.id = "KeyRightBracket";
+              break;
+            case "{":
+            case "[":
+              this.parentElement.id = "KeyLeftBracket";
+              break;
+            case '"':
+            case "'":
+              this.parentElement.id = "KeyQuote";
+              break;
+            case ":":
+            case ";":
+              this.parentElement.id = "KeySemicolon";
+              break;
+            case "<":
+            case ",":
+              this.parentElement.id = "KeyComma";
+              break;
+            case ">":
+            case ".":
+              this.parentElement.id = "KeyPeriod";
+              break;
+            case "?":
+            case "/":
+              this.parentElement.id = "KeySlash";
+              break;
+            case "":
+              this.parentElement.id = "KeySpace";
+              break;
+            default:
+              this.parentElement.id = `Key${key.toUpperCase()}`;
+          }
+        }
+        count++;
+      }
+    })
+    .get();
+
+  // console.log(all.join());
 }
 
 function changeFontSize(fontSize, nosave) {

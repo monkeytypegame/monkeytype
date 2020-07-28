@@ -34,12 +34,25 @@ function updateSettingsPage() {
     );
   });
 
+  let keymapEl = $(".pageSettings .section.keymap-layouts .buttons").empty();
+  Object.keys(layouts).forEach((layout) => {
+    if (layout.toString() != "default") {
+      keymapEl.append(
+        `<div class="layout button" layout='${layout}'>${layout.replace(
+          "_",
+          " "
+        )}</div>`
+      );
+    }
+  });
+
   refreshTagsSettingsSection();
 
   setSettingsButton("smoothCaret", config.smoothCaret);
   setSettingsButton("quickTab", config.quickTab);
   setSettingsButton("liveWpm", config.showLiveWpm);
   setSettingsButton("timerBar", config.showTimerBar);
+  setSettingsButton("keymap-toggle", config.keymap);
   setSettingsButton("keyTips", config.showKeyTips);
   setSettingsButton("freedomMode", config.freedomMode);
   setSettingsButton("blindMode", config.blindMode);
@@ -55,6 +68,7 @@ function updateSettingsPage() {
   setActiveThemeButton();
   setActiveLanguageButton();
   setActiveLayoutButton();
+  setActiveKeymapLayoutButton();
   setActiveFontSizeButton();
   setActiveDifficultyButton();
   setActiveCaretStyleButton();
@@ -206,6 +220,13 @@ function setActiveLayoutButton() {
   $(`.pageSettings .section.layouts .layout[layout=${config.layout}]`).addClass(
     "active"
   );
+}
+
+function setActiveKeymapLayoutButton() {
+  $(`.pageSettings .section.keymap-layouts .layout`).removeClass("active");
+  $(
+    `.pageSettings .section.keymap-layouts .layout[layout=${config.keymapLayout}]`
+  ).addClass("active");
 }
 
 function setActiveFontSizeButton() {
@@ -446,6 +467,37 @@ $(".pageSettings .section.timerBar .buttons .button.off").click((e) => {
   // showNotification('Timer bar off', 1000);
   setSettingsButton("timerBar", config.showTimerBar);
 });
+
+//keymap
+$(".pageSettings .section.keymap-toggle .buttons .button.on").click((e) => {
+  config.keymap = true;
+  saveConfigToCookie();
+  // showNotification('Keymap on', 1000);
+  setSettingsButton("keymap-toggle", config.keymap);
+  $(".keymap-layouts").removeClass("hidden");
+});
+$(".pageSettings .section.keymap-toggle .buttons .button.off").click((e) => {
+  config.keymap = false;
+  saveConfigToCookie();
+  // showNotification('Keymap off', 1000);
+  setSettingsButton("keymap-toggle", config.keymap);
+  $(".keymap-layouts").addClass("hidden");
+});
+
+if (config.keymap) $(".keymap-layouts").removeClass("hidden");
+
+//keymap layouts
+$(document).on(
+  "click",
+  ".pageSettings .section.keymap-layouts .layout",
+  (e) => {
+    let layout = $(e.currentTarget).attr("layout");
+    changeKeymapLayout(layout);
+    // showNotification('Keymap Layout changed', 1000);
+    restartTest();
+    setActiveKeymapLayoutButton();
+  }
+);
 
 //freedom mode
 $(".pageSettings .section.freedomMode .buttons .button.on").click((e) => {

@@ -74,6 +74,29 @@ let commands = {
       },
     },
     {
+      id: "toggleKeymap",
+      display: "Toggle keymap display",
+      exec: () => {
+        config.keymap = !config.keymap;
+        console.log(`keymap ${config.keymap}`);
+        if (config.keymap) {
+          showKeymap();
+        } else {
+          hideKeymap();
+        }
+        saveConfigToCookie();
+      },
+    },
+    {
+      id: "changeKeymapLayout",
+      display: "Change keymap layout...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsKeymapLayouts);
+        showCommandLine();
+      },
+    },
+    {
       id: "toggleTimerBar",
       display: "Toggle timer display",
       exec: () => {
@@ -683,6 +706,33 @@ if (Object.keys(layouts).length > 0) {
         saveConfigToCookie();
       },
     });
+  });
+}
+
+let commandsKeymapLayouts = {
+  title: "Change keymap layout...",
+  list: [
+    {
+      id: "couldnotload",
+      display: "Could not load the layouts list :(",
+    },
+  ],
+};
+
+if (Object.keys(layouts).length > 0) {
+  commandsKeymapLayouts.list = [];
+  Object.keys(layouts).forEach((layout) => {
+    if (layout.toString() != "default") {
+      commandsKeymapLayouts.list.push({
+        id: "changeLayout" + capitalizeFirstLetter(layout),
+        display: layout.replace("_", " "),
+        exec: () => {
+          changeKeymapLayout(layout);
+          restartTest();
+          saveConfigToCookie();
+        },
+      });
+    }
   });
 }
 
