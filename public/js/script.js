@@ -26,6 +26,18 @@ let sameWordset = false;
 let quotes = [];
 let focusState = false;
 
+let themeColors = {
+  bg: "#323437",
+  main: "#e2b714",
+  caret: "#e2b714",
+  sub: "#646669",
+  text: "#d1d0c5",
+  error: "#ca4754",
+  errorExtra: "#7e2a33",
+  colorfulError: "#ca4754",
+  colorfulErrorExtra: "#7e2a33",
+};
+
 let accuracyStats = {
   correct: 0,
   incorrect: 0,
@@ -101,6 +113,26 @@ function mean(array) {
   }
 }
 
+function refreshThemeColorObject() {
+  let st = getComputedStyle(document.body);
+
+  themeColors.bg = st.getPropertyValue("--bg-color").replace(" ", "");
+  themeColors.main = st.getPropertyValue("--main-color").replace(" ", "");
+  themeColors.caret = st.getPropertyValue("--caret-color").replace(" ", "");
+  themeColors.sub = st.getPropertyValue("--sub-color").replace(" ", "");
+  themeColors.text = st.getPropertyValue("--text-color").replace(" ", "");
+  themeColors.error = st.getPropertyValue("--error-color").replace(" ", "");
+  themeColors.errorExtra = st
+    .getPropertyValue("--error-extra-color")
+    .replace(" ", "");
+  themeColors.colorfulError = st
+    .getPropertyValue("--colorful-error-color")
+    .replace(" ", "");
+  themeColors.colorfulErrorExtra = st
+    .getPropertyValue("--colorful-error-extra-color")
+    .replace(" ", "");
+}
+
 function showNotification(text, time) {
   let noti = $(".notification");
   noti.text(text);
@@ -143,12 +175,9 @@ function copyResultToClipboard() {
     var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
     var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
 
-    let bgColor = getComputedStyle(document.body)
-      .getPropertyValue("--bg-color")
-      .replace(" ", "");
     try {
       html2canvas(document.body, {
-        backgroundColor: bgColor,
+        backgroundColor: themeColors.bg,
         height: sourceHeight + 50,
         width: sourceWidth + 50,
         x: sourceX - 25,
@@ -928,25 +957,11 @@ function flashPressedKeymapKey(key, correct) {
   //   border-color: var(--sub-color);
   // }
 
-  //move this outside!!!!!!!!!!!!!!!!!!!!
-  let mainColor = getComputedStyle(document.body)
-    .getPropertyValue("--main-color")
-    .replace(" ", "");
-  let subColor = getComputedStyle(document.body)
-    .getPropertyValue("--sub-color")
-    .replace(" ", "");
-  let bgColor = getComputedStyle(document.body)
-    .getPropertyValue("--bg-color")
-    .replace(" ", "");
   let errorColor;
   if (config.colorfulMode) {
-    errorColor = getComputedStyle(document.body)
-      .getPropertyValue("--colorful-error-color")
-      .replace(" ", "");
+    errorColor = themeColors.colorfulError;
   } else {
-    errorColor = getComputedStyle(document.body)
-      .getPropertyValue("--error-color")
-      .replace(" ", "");
+    errorColor = themeColors.error;
   }
 
   switch (key) {
@@ -993,15 +1008,15 @@ function flashPressedKeymapKey(key, correct) {
     $(key)
       .stop(true, true)
       .css({
-        color: bgColor,
-        backgroundColor: mainColor,
-        borderColor: mainColor,
+        color: themeColors.bg,
+        backgroundColor: themeColors.main,
+        borderColor: themeColors.main,
       })
       .animate(
         {
-          color: subColor,
-          backgroundColor: bgColor,
-          borderColor: subColor,
+          color: themeColors.sub,
+          backgroundColor: themeColors.bg,
+          borderColor: themeColors.sub,
         },
         500,
         "easeOutExpo"
@@ -1010,15 +1025,15 @@ function flashPressedKeymapKey(key, correct) {
     $(key)
       .stop(true, true)
       .css({
-        color: bgColor,
-        backgroundColor: errorColor,
-        borderColor: errorColor,
+        color: themeColors.bg,
+        backgroundColor: themeColors.error,
+        borderColor: themeColors.error,
       })
       .animate(
         {
-          color: subColor,
-          backgroundColor: bgColor,
-          borderColor: subColor,
+          color: themeColors.sub,
+          backgroundColor: themeColors.bg,
+          borderColor: themeColors.sub,
         },
         500,
         "easeOutExpo"
@@ -1341,22 +1356,18 @@ function showResult(difficultyFailed = false) {
     labels.push(i.toString());
   }
 
-  let mainColor = getComputedStyle(document.body)
-    .getPropertyValue("--main-color")
-    .replace(" ", "");
-  let subColor = getComputedStyle(document.body)
-    .getPropertyValue("--sub-color")
-    .replace(" ", "");
-  let bgColor = getComputedStyle(document.body)
-    .getPropertyValue("--bg-color")
-    .replace(" ", "");
-
-  wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
-  wpmOverTimeChart.options.scales.xAxes[0].scaleLabel.fontColor = subColor;
-  wpmOverTimeChart.options.scales.yAxes[0].ticks.minor.fontColor = subColor;
-  wpmOverTimeChart.options.scales.yAxes[2].ticks.minor.fontColor = subColor;
-  wpmOverTimeChart.options.scales.yAxes[0].scaleLabel.fontColor = subColor;
-  wpmOverTimeChart.options.scales.yAxes[2].scaleLabel.fontColor = subColor;
+  wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor =
+    themeColors.sub;
+  wpmOverTimeChart.options.scales.xAxes[0].scaleLabel.fontColor =
+    themeColors.sub;
+  wpmOverTimeChart.options.scales.yAxes[0].ticks.minor.fontColor =
+    themeColors.sub;
+  wpmOverTimeChart.options.scales.yAxes[2].ticks.minor.fontColor =
+    themeColors.sub;
+  wpmOverTimeChart.options.scales.yAxes[0].scaleLabel.fontColor =
+    themeColors.sub;
+  wpmOverTimeChart.options.scales.yAxes[2].scaleLabel.fontColor =
+    themeColors.sub;
 
   wpmOverTimeChart.data.labels = labels;
 
@@ -1385,14 +1396,17 @@ function showResult(difficultyFailed = false) {
     consistency + "%"
   );
 
-  wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
+  wpmOverTimeChart.data.datasets[0].borderColor = themeColors.main;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
-  wpmOverTimeChart.data.datasets[1].borderColor = subColor;
+  wpmOverTimeChart.data.datasets[1].borderColor = themeColors.sub;
   wpmOverTimeChart.data.datasets[1].data = rawWpmPerSecond;
 
-  wpmOverTimeChart.options.annotation.annotations[0].borderColor = subColor;
-  wpmOverTimeChart.options.annotation.annotations[0].label.backgroundColor = subColor;
-  wpmOverTimeChart.options.annotation.annotations[0].label.fontColor = bgColor;
+  wpmOverTimeChart.options.annotation.annotations[0].borderColor =
+    themeColors.sub;
+  wpmOverTimeChart.options.annotation.annotations[0].label.backgroundColor =
+    themeColors.sub;
+  wpmOverTimeChart.options.annotation.annotations[0].label.fontColor =
+    themeColors.bg;
 
   let maxChartVal = Math.max(
     ...[Math.max(...rawWpmPerSecond), Math.max(...wpmHistory)]
