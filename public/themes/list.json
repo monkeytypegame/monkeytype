@@ -49,6 +49,11 @@
         "textColor": "#e2b714"
     },
     {
+        "name": "simon_says",
+        "bgColor": "#323437",
+        "textColor": "#e2b714"
+    },
+    {
         "name": "bushido",
         "bgColor": "#414755",
         "textColor": "#ec4c56"
