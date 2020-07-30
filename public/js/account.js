@@ -761,6 +761,14 @@ function loadMoreLines() {
       }
     }
 
+    let consistency = result.consistency;
+
+    if (consistency === undefined) {
+      consistency = "-";
+    } else {
+      consistency += "%";
+    }
+
     $(".pageAccount .history table tbody").append(`
     <tr>
     <td>${result.wpm}</td>
@@ -768,6 +776,7 @@ function loadMoreLines() {
     <td>${result.acc}%</td>
     <td>${result.correctChars}</td>
     <td>${result.incorrectChars}</td>
+    <td>${consistency}</td>
     <td>${result.mode} ${result.mode2}${withpunc}</td>
     <td class="infoIcons">${icons}</td>
     <td>${tagIcons}</td>
@@ -810,7 +819,9 @@ function refreshAccountPage() {
     let totalSeconds = 0;
     let totalSecondsFiltered = 0;
 
-    let tableEl = "";
+    let totalCons = 0;
+    let totalCons10 = 0;
+    let consCount = 0;
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
@@ -935,8 +946,16 @@ function refreshAccountPage() {
         last10++;
         wpmLast10total += result.wpm;
         totalAcc10 += result.acc;
+        result.consistency !== undefined
+          ? (totalCons10 += result.consistency)
+          : 0;
       }
       testCount++;
+
+      if (result.consistency !== undefined) {
+        consCount++;
+        totalCons += result.consistency;
+      }
 
       if (result.rawWpm != null) {
         if (rawWpm.last10Count < 10) {
@@ -1037,6 +1056,21 @@ function refreshAccountPage() {
     $(".pageAccount .avgAcc10 .val").text(
       Math.round(totalAcc10 / last10) + "%"
     );
+
+    console.log(totalCons10);
+    console.log(last10);
+
+    if (totalCons == 0 || totalCons == undefined) {
+      $(".pageAccount .avgCons .val").text("-");
+      $(".pageAccount .avgCons10 .val").text("-");
+    } else {
+      $(".pageAccount .avgCons .val").text(
+        Math.round(totalCons / consCount) + "%"
+      );
+      $(".pageAccount .avgCons10 .val").text(
+        Math.round(totalCons10 / Math.min(last10, consCount)) + "%"
+      );
+    }
 
     $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
 
