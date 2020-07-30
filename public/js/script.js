@@ -1356,6 +1356,10 @@ function showResult(difficultyFailed = false) {
     labels.push(i.toString());
   }
 
+  if (themeColors.main == "") {
+    refreshThemeColorObject();
+  }
+
   wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor =
     themeColors.sub;
   wpmOverTimeChart.options.scales.xAxes[0].scaleLabel.fontColor =
