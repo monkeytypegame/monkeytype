@@ -1057,8 +1057,8 @@ function refreshAccountPage() {
       Math.round(totalAcc10 / last10) + "%"
     );
 
-    console.log(totalCons10);
-    console.log(last10);
+    // console.log(totalCons10);
+    // console.log(last10);
 
     if (totalCons == 0 || totalCons == undefined) {
       $(".pageAccount .avgCons .val").text("-");
