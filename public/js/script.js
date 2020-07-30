@@ -1375,6 +1375,10 @@ function showResult(difficultyFailed = false) {
 
   let consistency = roundTo2(kogasa(stddev / avg));
 
+  if (isNaN(consistency)) {
+    consistency = 0;
+  }
+
   $("#result .stats .consistency .bottom").text(Math.round(consistency) + "%");
   $("#result .stats .consistency .bottom").attr(
     "aria-label",
