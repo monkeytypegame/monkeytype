@@ -1375,12 +1375,14 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.data.labels = labels;
 
-  let rawWpmPerSecond = keypressPerSecond.map((f) => Math.round((f / 5) * 60));
+  let rawWpmPerSecondRaw = keypressPerSecond.map((f) =>
+    Math.round((f / 5) * 60)
+  );
 
-  rawWpmPerSecond = smooth(rawWpmPerSecond, 1);
+  let rawWpmPerSecond = smooth(rawWpmPerSecondRaw, 1);
 
-  let stddev = stdDev(rawWpmPerSecond);
-  let avg = mean(rawWpmPerSecond);
+  let stddev = stdDev(rawWpmPerSecondRaw);
+  let avg = mean(rawWpmPerSecondRaw);
 
   function kogasa(cov) {
     return (
