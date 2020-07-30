@@ -1038,7 +1038,7 @@ key {
 #result {
   display: grid;
   // height: 200px;
-  column-gap: 1rem;
+  gap: 1rem;
   // grid-template-columns: auto 1fr;
   // justify-content: center;
   align-items: center;
@@ -1098,7 +1098,7 @@ key {
       grid-auto-flow: column;
       grid-template-areas: none;
       align-items: flex-start;
-      justify-content: flex-start;
+      justify-content: space-between;
       column-gap: 2rem;
       grid-area: morestats;
 
@@ -1127,16 +1127,29 @@ key {
     }
 
 
-    .infoAndTags {
-      display: grid;
-      gap: 0.5rem;
-      align-self: baseline;
-      // grid-area: infoAndTags;
-      color: var(--sub-color);
+    // .infoAndTags {
+    //   display: grid;
+    //   gap: 0.5rem;
+    //   align-self: baseline;
+    //   // grid-area: infoAndTags;
+    //   color: var(--sub-color);
 
+    //   .top {
+    //     font-size: 1rem;
+    //     line-height: 1rem;
+    //   }
+
+    //   .bottom {
+    //     font-size: 1rem;
+    //     line-height: 1rem;
+    //   }
+    // }
+
+    .info,
+    .tags {
       .top {
         font-size: 1rem;
-        line-height: 1.25rem;
+        line-height: 1rem;
       }
 
       .bottom {
