@@ -511,7 +511,12 @@ function toggleFilterButton(filter) {
         $(`.pageAccount .content .filterButtons .button`),
         (index, obj) => {
           let f = $(obj).attr("filter");
-          if (f != "none") {
+          if (
+            f != "none" &&
+            f != "date_month" &&
+            f != "date_week" &&
+            f != "date_day"
+          ) {
             enableFilterButton(f);
           }
         }
@@ -527,6 +532,17 @@ function toggleFilterButton(filter) {
           }
         }
       );
+    } else if (
+      filter == "date_all" ||
+      filter == "date_month" ||
+      filter == "date_week" ||
+      filter == "date_day"
+    ) {
+      disableFilterButton("date_all");
+      disableFilterButton("date_month");
+      disableFilterButton("date_week");
+      disableFilterButton("date_day");
+      enableFilterButton(filter);
     }
     // else if(filter == "mode_words"){
     //   $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
@@ -963,18 +979,17 @@ function refreshAccountPage() {
     loadMoreLines();
     ////////
 
-    let mainColor = getComputedStyle(document.body)
-      .getPropertyValue("--main-color")
-      .replace(" ", "");
-    let subColor = getComputedStyle(document.body)
-      .getPropertyValue("--sub-color")
-      .replace(" ", "");
+    if (themeColors.main == "") {
+      refreshThemeColorObject();
+    }
 
-    resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor = subColor;
-    resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor = subColor;
-    resultHistoryChart.data.datasets[0].borderColor = mainColor;
-    resultHistoryChart.options.legend.labels.fontColor = subColor;
-    resultHistoryChart.data.datasets[0].trendlineLinear.style = subColor;
+    resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor =
+      themeColors.sub;
+    resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor =
+      themeColors.sub;
+    resultHistoryChart.data.datasets[0].borderColor = themeColors.main;
+    resultHistoryChart.options.legend.labels.fontColor = themeColors.sub;
+    resultHistoryChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
 
     resultHistoryChart.data.datasets[0].data = chartData;
 
