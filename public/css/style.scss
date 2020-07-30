@@ -2183,11 +2183,12 @@ key {
 
 .keymap {
   display: grid;
-  grid-template-rows: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
   justify-content: center;
   white-space: nowrap;
-  height: 140px;
+  // height: 140px;
   gap: .25rem;
+  margin-top: 1rem;
 }
 
 .row {
