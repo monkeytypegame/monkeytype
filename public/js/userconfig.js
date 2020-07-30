@@ -532,7 +532,9 @@ function previewTheme(name) {
   if (resultVisible && (name === "nausea" || name === "round_round_baby"))
     return;
   $("#currentTheme").attr("href", `themes/${name}.css`);
-  refreshThemeColorObject();
+  setTimeout(() => {
+    refreshThemeColorObject();
+  }, 500);
 }
 
 function setTheme(name, nosave) {
@@ -557,7 +559,9 @@ function setTheme(name, nosave) {
   } catch (e) {
     console.log("Analytics unavailable");
   }
-  refreshThemeColorObject();
+  setTimeout(() => {
+    refreshThemeColorObject();
+  }, 500);
   if (!nosave) saveConfigToCookie();
 }
 
