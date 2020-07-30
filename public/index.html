@@ -1012,16 +1012,16 @@
           <div class="text">Press <key>tab</key> to quickly restart the test, or to quickly jump to the test page. This
             function disables tab navigation on the website.</div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
           </div>
         </div>
         <div class="section freedomMode">
           <h1>freedom mode</h1>
           <div class="text">Allows you to delete any word, even if it was typed correctly.</div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
           </div>
         </div>
         <div class="section confidenceMode">
@@ -1029,8 +1029,9 @@
           <div class="text">When enabled, you will not be able to go back to previous words to fix mistakes. When turned
             up to the max, you won't be able to backspace at all.</div>
           <div class="buttons">
-            <div class="button" confidenceMode="on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button" confidenceMode="off" tabindex="0" onclick="this.blur();">off</div>
+
+            <div class="button" confidenceMode="on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button" confidenceMode="max" tabindex="0" onclick="this.blur();">max</div>
           </div>
         </div>
@@ -1039,8 +1040,8 @@
           <div class="text">When enabled, incorrect input will not be registered and words need to be 100% correct to be
             able to move on to the next.</div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
           </div>
         </div>
         <div class="section blindMode">
@@ -1048,8 +1049,8 @@
           <div class="text">No errors or incorrect words are highlighted. Helps you to focus on raw speed. If enabled,
             quick end is recommended.</div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">⠀</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">⠀</div>
           </div>
         </div>
         <div class="section quickEnd">
@@ -1059,8 +1060,8 @@
             When disabled, you need to manually confirm the last incorrect entry with a space.
           </div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
           </div>
         </div>
         <div class="section tags">
@@ -1121,8 +1122,8 @@
           <h1>smooth caret</h1>
           <div class="text">The caret will move smoothly between letters and words.</div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
           </div>
         </div>
         <div class="section caretStyle" section="">
@@ -1170,8 +1171,8 @@
             text and live wpm to not be visible.
           </div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
           </div>
         </div>
         <div class="section keymapMode">
@@ -1179,10 +1180,9 @@
           <div class="text">Displays your current layout while taking a test. React shows what you pressed and Next
             shows what you need to press next.</div>
           <div class="buttons">
+            <div class="button" keymapMode="off" tabindex="0" onclick="this.blur();">off</div>
             <div class="button" keymapMode="react" tabindex="0" onclick="this.blur();">react</div>
             <div class="button" keymapMode="next" tabindex="0" onclick="this.blur();">next</div>
-            <div class="button" keymapMode="off" tabindex="0" onclick="this.blur();">off</div>
-
           </div>
         </div>
         <div class="section keymapLayout">
@@ -1197,8 +1197,8 @@
             and the future text will be brighter than the already typed text.
           </div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
           </div>
         </div>
         <div class="section colorfulMode">
@@ -1208,8 +1208,8 @@
             colorful.
           </div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
           </div>
         </div>
         <div class="section fontSize">
@@ -1229,8 +1229,8 @@
             config.
           </div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">on</div>
           </div>
         </div>
         <div class="section themes">
@@ -1312,32 +1312,32 @@
           <h1>live wpm</h1>
           <div class="text">Displays a live WPM speed during the test. Updates once every second.</div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
             <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
           </div>
         </div>
         <div class="section timerBar">
           <h1>timer/progress</h1>
           <div class="text">Displays a live timer for timed tests and progress for words/custom tests.</div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
             <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
           </div>
         </div>
         <div class="section keyTips">
           <h1>key tips</h1>
           <div class="text">Shows the keybind tips at the bottom of the page.</div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
             <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
           </div>
         </div>
         <div class="section discordDot">
           <h1>discord dot</h1>
           <div class="text">Shows the notification dot on the Discord icon.</div>
           <div class="buttons">
-            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
             <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
+            <div class="button on" tabindex="0" onclick="this.blur();">show</div>
           </div>
         </div>
 
