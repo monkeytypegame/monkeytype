@@ -1507,7 +1507,8 @@ key {
   .ssWatermark {
     font-size: 1.25rem;
     color: var(--sub-color);
-    position: absolute;
+    // position: absolute;
+    float: right;
     bottom: 0;
     right: 0;
   }
