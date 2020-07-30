@@ -798,7 +798,7 @@ const words = {
     "happy",
     "hope",
     "flower",
-    "clothe",
+    "clothes",
     "strange",
     "gone",
     "jump",
@@ -4548,5 +4548,5 @@ const words = {
     "mennesker",
     "gjorde",
     "mine",
-  ]
+  ],
 };
