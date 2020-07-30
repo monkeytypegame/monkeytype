@@ -79,6 +79,28 @@ function smooth(arr, windowSize, getter = (value) => value, setter) {
   return result;
 }
 
+function stdDev(array) {
+  try {
+    const n = array.length;
+    const mean = array.reduce((a, b) => a + b) / n;
+    return Math.sqrt(
+      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+    );
+  } catch (e) {
+    return 0;
+  }
+}
+
+function mean(array) {
+  try {
+    return (
+      array.reduce((previous, current) => (current += previous)) / array.length
+    );
+  } catch (e) {
+    return 0;
+  }
+}
+
 function showNotification(text, time) {
   let noti = $(".notification");
   noti.text(text);
@@ -665,7 +687,13 @@ function compareInput(showError) {
   ) {
     inputHistory.push(input);
     currentInput = "";
-    if (!resultVisible) showResult();
+    //last character typed, show result
+    if (!resultVisible) {
+      if (keypressPerSecond.length === 0) {
+        keypressPerSecond.push(currentKeypressCount);
+      }
+      showResult();
+    }
   }
   // liveWPM()
 }
@@ -1336,6 +1364,23 @@ function showResult(difficultyFailed = false) {
 
   rawWpmPerSecond = smooth(rawWpmPerSecond, 1);
 
+  let stddev = stdDev(rawWpmPerSecond);
+  let avg = mean(rawWpmPerSecond);
+
+  function kogasa(cov) {
+    return (
+      100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
+    );
+  }
+
+  let consistency = roundTo2(kogasa(stddev / avg));
+
+  $("#result .stats .consistency .bottom").text(Math.round(consistency) + "%");
+  $("#result .stats .consistency .bottom").attr(
+    "aria-label",
+    consistency + "%"
+  );
+
   wpmOverTimeChart.data.datasets[0].borderColor = mainColor;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
   wpmOverTimeChart.data.datasets[1].borderColor = subColor;
@@ -1348,6 +1393,13 @@ function showResult(difficultyFailed = false) {
   let maxChartVal = Math.max(
     ...[Math.max(...rawWpmPerSecond), Math.max(...wpmHistory)]
   );
+
+  let minChartVal = Math.min(
+    ...[Math.min(...rawWpmPerSecond), Math.min(...wpmHistory)]
+  );
+
+  // wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.round(minChartVal);
+  // wpmOverTimeChart.options.scales.yAxes[1].ticks.min = Math.round(minChartVal);
 
   let errorsNoZero = [];
 
@@ -1396,6 +1448,7 @@ function showResult(difficultyFailed = false) {
       tags: activeTags,
       keySpacing: keypressStats.spacing.array,
       keyDuration: keypressStats.duration.array,
+      consistency: consistency,
     };
     if (
       config.difficulty == "normal" ||
@@ -1727,6 +1780,15 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .tags .bottom").html(tagsText);
   }
 
+  if (
+    $("#result .stats .tags").hasClass("hidden") &&
+    $("#result .stats .info").hasClass("hidden")
+  ) {
+    $("#result .stats .infoAndTags").addClass("hidden");
+  } else {
+    $("#result .stats .infoAndTags").removeClass("hidden");
+  }
+
   if (config.mode === "quote") {
     $("#result .stats .source").removeClass("hidden");
     $("#result .stats .source .bottom").html(randomQuote.source);
@@ -1738,6 +1800,7 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxChartVal;
 
   wpmOverTimeChart.update({ duration: 0 });
+
   swapElements($("#words"), $("#result"), 250, () => {
     $("#words").empty();
     // if (config.blindMode) {
@@ -2885,6 +2948,7 @@ $(document).keypress(function (event) {
         }
         if (config.mode == "time") {
           if (time >= config.time) {
+            //times up
             clearIntervals();
             hideCaret();
             testActive = false;
@@ -2915,6 +2979,7 @@ $(document).keypress(function (event) {
 
   if (config.stopOnError && !thisCharCorrect) {
     if (config.difficulty == "master") {
+      //failed due to master diff when pressing a key
       showResult(true);
       if (!afkDetected) {
         let testNow = Date.now();
@@ -3110,6 +3175,7 @@ $(document).keydown((event) => {
       } else {
         if (config.stopOnError) {
           if (config.difficulty == "expert" || config.difficulty == "master") {
+            //failed due to diff when pressing space
             showResult(true);
             if (!afkDetected) {
               let testNow = Date.now();
@@ -3127,12 +3193,14 @@ $(document).keydown((event) => {
         currentWordIndex++;
         currentWordElementIndex++;
         if (currentWordIndex == wordsList.length) {
+          //submitted last word that is incorrect
           showResult();
           return;
         } else if (
           config.difficulty == "expert" ||
           config.difficulty == "master"
         ) {
+          //submitted last word incorrect and failed test
           showResult(true);
           if (!afkDetected) {
             let testNow = Date.now();
@@ -3314,7 +3382,7 @@ let wpmOverTimeChart = new Chart(ctx, {
           },
           display: true,
           scaleLabel: {
-            display: true,
+            display: false,
             labelString: "Seconds",
             fontFamily: "Roboto Mono",
           },
