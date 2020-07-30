@@ -2162,6 +2162,11 @@ key {
         "menu config";
     }
 
+    #result .morestats {
+      gap: 1rem;
+      grid-template-rows: 1fr 1fr;
+    }
+
     #menu {
       gap: 0.5rem;
       font-size: 0.8rem;
