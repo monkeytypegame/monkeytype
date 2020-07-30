@@ -2716,17 +2716,80 @@ $("#customTextPopup .button").click((e) => {
   hideCustomTextPopup();
 });
 
-$(document).on("click", "#top .logo", (e) => {
-  changePage("test");
+function showCustomMode2Popup(mode) {
+  if ($("#customMode2PopupWrapper").hasClass("hidden")) {
+    $("#customMode2PopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100, (e) => {
+        if (mode == "time") {
+          $("#customMode2Popup .text").text("Test length");
+          $("#customMode2Popup").attr("mode", "time");
+        } else if (mode == "words") {
+          $("#customMode2Popup .text").text("Word amount");
+          $("#customMode2Popup").attr("mode", "words");
+        }
+        $("#customMode2Popup input").focus().select();
+      });
+  }
+}
+
+function hideCustomMode2Popup() {
+  if (!$("#customMode2PopupWrapper").hasClass("hidden")) {
+    $("#customMode2PopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        100,
+        (e) => {
+          $("#customMode2PopupWrapper").addClass("hidden");
+        }
+      );
+  }
+}
+
+$("#customMode2PopupWrapper").click((e) => {
+  if ($(e.target).attr("id") === "customMode2PopupWrapper") {
+    hideCustomMode2Popup();
+  }
 });
 
-$(document).on("click", "#top .config .wordCount .text-button", (e) => {
-  wrd = $(e.currentTarget).attr("wordCount");
-  if (wrd == "custom") {
-    let newWrd = prompt("Custom word amount");
-    if (newWrd !== null && !isNaN(newWrd) && newWrd > 0 && newWrd <= 10000) {
-      changeWordCount(newWrd);
-      if (newWrd > 2000) {
+$("#customMode2Popup input").keypress((e) => {
+  if (event.keyCode == 13) {
+    applyMode2Popup();
+  }
+});
+
+$("#customMode2Popup .button").click((e) => {
+  applyMode2Popup();
+});
+
+function applyMode2Popup() {
+  let mode = $("#customMode2Popup").attr("mode");
+  let val = $("#customMode2Popup input").val();
+
+  if (mode == "time") {
+    if (val !== null && !isNaN(val) && val > 0) {
+      changeTimeConfig(val);
+      restartTest();
+      if (val >= 1800) {
+        showNotification(
+          "Very long tests can cause performance issues or crash the website on some machines!",
+          5000
+        );
+      }
+    } else {
+      showNotification("Custom time can only be set between 1 and 3600", 3000);
+    }
+  } else if (mode == "words") {
+    if (val !== null && !isNaN(val) && val > 0 && val <= 10000) {
+      changeWordCount(val);
+      restartTest();
+      if (val > 2000) {
         showNotification(
           "Very long tests can cause performance issues or crash the website on some machines!",
           5000
@@ -2738,31 +2801,60 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
         3000
       );
     }
+  }
+
+  hideCustomMode2Popup();
+}
+
+$(document).on("click", "#top .logo", (e) => {
+  changePage("test");
+});
+
+$(document).on("click", "#top .config .wordCount .text-button", (e) => {
+  wrd = $(e.currentTarget).attr("wordCount");
+  if (wrd == "custom") {
+    //   let newWrd = prompt("Custom word amount");
+    //   if (newWrd !== null && !isNaN(newWrd) && newWrd > 0 && newWrd <= 10000) {
+    //     changeWordCount(newWrd);
+    //     if (newWrd > 2000) {
+    //       showNotification(
+    //         "Very long tests can cause performance issues or crash the website on some machines!",
+    //         5000
+    //       );
+    //     }
+    //   } else {
+    //     showNotification(
+    //       "Custom word amount can only be set between 1 and 10000",
+    //       3000
+    //     );
+    //   }
+    showCustomMode2Popup("words");
   } else {
     changeWordCount(wrd);
+    restartTest();
   }
-  restartTest();
 });
 
 $(document).on("click", "#top .config .time .text-button", (e) => {
   time = $(e.currentTarget).attr("timeConfig");
   if (time == "custom") {
-    let newTime = prompt("Custom time in seconds");
-    if (newTime !== null && !isNaN(newTime) && newTime > 0 && newTime <= 3600) {
-      changeTimeConfig(newTime);
-      if (newTime >= 1800) {
-        showNotification(
-          "Very long tests can cause performance issues or crash the website on some machines!",
-          5000
-        );
-      }
-    } else {
-      showNotification("Custom time can only be set between 1 and 3600", 3000);
-    }
+    //   let newTime = prompt("Custom time in seconds");
+    //   if (newTime !== null && !isNaN(newTime) && newTime > 0 && newTime <= 3600) {
+    //     changeTimeConfig(newTime);
+    //     if (newTime >= 1800) {
+    //       showNotification(
+    //         "Very long tests can cause performance issues or crash the website on some machines!",
+    //         5000
+    //       );
+    //     }
+    //   } else {
+    //     showNotification("Custom time can only be set between 1 and 3600", 3000);
+    //   }
+    showCustomMode2Popup("time");
   } else {
     changeTimeConfig(time);
+    restartTest();
   }
-  restartTest();
 });
 
 $(document).on("click", "#top .config .customText .text-button", (e) => {
