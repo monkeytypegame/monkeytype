@@ -1812,7 +1812,8 @@ key {
     &.themes,
     &.languages,
     &.layouts,
-    &.keymapLayout {
+    &.keymapLayout,
+    &.funbox {
       grid-template-columns: 1fr;
       grid-template-areas:
         "title"

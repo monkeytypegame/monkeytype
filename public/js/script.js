@@ -25,6 +25,7 @@ let activeWordJumped = false;
 let sameWordset = false;
 let quotes = [];
 let focusState = false;
+let activeFunBox = "none";
 
 let themeColors = {
   bg: "#323437",
@@ -211,6 +212,44 @@ function copyResultToClipboard() {
       $(".pageTest .ssWatermark").addClass("hidden");
       $(".pageTest .buttons").removeClass("hidden");
     }
+  }
+}
+
+function activateFunbox(funbox, mode) {
+  if (mode === "style") {
+    if (funbox == undefined) {
+      $("#funBoxTheme").attr("href", ``);
+      activeFunBox = "none";
+    } else {
+      $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
+      activeFunBox = funbox;
+    }
+
+    if (funbox === "simon_says") {
+      config.keymapMode = "next";
+      setActiveKeymapModeButton();
+      restartTest();
+    }
+  } else if (mode === "script") {
+    if (funbox === "tts") {
+      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+      config.keymapMode = "off";
+      setActiveKeymapModeButton();
+      restartTest();
+    }
+    activeFunBox = funbox;
+  }
+}
+
+function toggleScriptFunbox(...params) {
+  if (activeFunBox === "tts") {
+    var msg = new SpeechSynthesisUtterance();
+    var voices = window.speechSynthesis.getVoices();
+    msg.voice = voices[4];
+    msg.volume = 1; // From 0 to 1
+    msg.rate = 1; // From 0.1 to 10
+    msg.text = params[0];
+    speechSynthesis.speak(msg);
   }
 }
 
@@ -649,6 +688,7 @@ function updateActiveElement() {
     activeWordTop = document.querySelector("#words .active").offsetTop;
     // updateHighlightedKeymapKey();
   } catch (e) {}
+  toggleScriptFunbox(wordsList[currentWordIndex]);
 }
 
 function compareInput(showError) {
@@ -3409,13 +3449,14 @@ $(document).ready(() => {
     .css("opacity", "0")
     .removeClass("hidden")
     .stop(true, true)
-    .animate({ opacity: 1 }, 250);
-  if (window.location.pathname === "/account") {
-    history.replaceState("/", null, "/");
-  } else if (window.location.pathname !== "/") {
-    let page = window.location.pathname.replace("/", "");
-    changePage(page);
-  }
+    .animate({ opacity: 1 }, 250, () => {
+      if (window.location.pathname === "/account") {
+        history.replaceState("/", null, "/");
+      } else if (window.location.pathname !== "/") {
+        let page = window.location.pathname.replace("/", "");
+        changePage(page);
+      }
+    });
 });
 
 let ctx = $("#wpmChart");
