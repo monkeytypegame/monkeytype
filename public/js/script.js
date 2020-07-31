@@ -230,9 +230,6 @@ function activateFunbox(funbox, mode) {
     }
 
     if (funbox === "simon_says") {
-      config.keymapMode = "next";
-      config.confidenceMode = "on";
-      setActiveConfidenceModeButton();
       setActiveKeymapModeButton();
       restartTest();
     }
@@ -240,8 +237,6 @@ function activateFunbox(funbox, mode) {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
       config.keymapMode = "off";
-      config.confidenceMode = "on";
-      setActiveConfidenceModeButton();
       setActiveKeymapModeButton();
       restartTest();
     }
