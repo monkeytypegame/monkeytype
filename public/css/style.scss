@@ -2259,6 +2259,7 @@ key {
   align-items: center;
   width: 2rem;
   height: 2rem;
+  position: relative;
 
   .bump {
     width: .75rem;
@@ -2266,7 +2267,8 @@ key {
     background: var(--sub-color);
     position: absolute;
     border-radius: var(--roundness);
-    margin-top: 1.5rem;
+    // margin-top: 1.5rem;
+    bottom: .15rem;
   }
 
   &.active-key {
