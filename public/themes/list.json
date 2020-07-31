@@ -317,5 +317,10 @@
         "name": "deku",
         "bgColor": "#058B8C",
         "textColor": "#F7F2EA"
+    },
+    {
+        "name": "honey",
+        "bgColor": "#f2aa00",
+        "textColor": "#fff546"
     }
 ]

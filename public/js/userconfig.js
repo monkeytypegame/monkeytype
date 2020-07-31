@@ -614,9 +614,8 @@ function applyCustomThemeColors() {
       document.documentElement.style.setProperty(e, "");
     });
   }
-  refreshThemeColorObject();
-
   setTimeout(() => {
+    refreshThemeColorObject();
     updateFavicon(32, 14);
   }, 500);
 }
