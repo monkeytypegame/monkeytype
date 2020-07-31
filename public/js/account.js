@@ -1027,19 +1027,26 @@ function refreshAccountPage() {
     // moment
     //   .utc(moment.duration(totalSeconds, "seconds").asMilliseconds())
     //   .format("HH:mm:ss")
+    let th = Math.floor(totalSeconds / 3600);
+    let tm = Math.floor((totalSeconds % 3600) / 60);
+    let ts = Math.floor((totalSeconds % 3600) % 60);
     $(".pageAccount .timeTotal .val").text(`
       
-      ${Math.floor(totalSeconds / 3600)}:${Math.floor(
-      (totalSeconds % 3600) / 60
-    )}:${Math.floor((totalSeconds % 3600) % 60)}
+      ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
+      ts < 10 ? "0" + ts : ts
+    }
     `);
     //moment
     // .utc(moment.duration(totalSecondsFiltered, "seconds").asMilliseconds())
     // .format("HH:mm:ss")
+    let tfh = Math.floor(totalSecondsFiltered / 3600);
+    let tfm = Math.floor((totalSecondsFiltered % 3600) / 60);
+    let tfs = Math.floor((totalSecondsFiltered % 3600) % 60);
     $(".pageAccount .timeTotalFiltered .val").text(`
-    ${Math.floor(totalSeconds / 3600)}:${Math.floor(
-      (totalSeconds % 3600) / 60
-    )}:${Math.floor((totalSeconds % 3600) % 60)}
+      
+    ${tfh < 10 ? "0" + tfh : tfh}:${tfm < 10 ? "0" + tfm : tfm}:${
+      tfs < 10 ? "0" + tfs : tfs
+    }
   `);
 
     $(".pageAccount .highestWpm .val").text(topWpm);
