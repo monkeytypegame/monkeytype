@@ -599,19 +599,32 @@ function addWord() {
   if (
     !config.showAllLines &&
     (wordsList.length - inputHistory.length > 60 ||
-      (config.mode === "words" && wordsList.length >= config.words))
+      (config.mode === "words" && wordsList.length >= config.words) ||
+      (config.mode === "custom" && wordsList.length >= customTextWordCount))
   )
     return;
   let language = words[config.language];
+  if (config.mode == "custom") {
+    language = customText;
+  }
   let randomWord = language[Math.floor(Math.random() * language.length)];
   previousWord = wordsList[wordsList.length - 1];
   previousWordStripped = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
-  while (
-    previousWordStripped == randomWord ||
-    randomWord.indexOf(" ") > -1 ||
-    (!config.punctuation && randomWord == "I")
-  ) {
+  previousWord2Stripped = wordsList[wordsList.length - 2]
+    .replace(/[.?!":\-,]/g, "")
+    .toLowerCase();
+
+  if (config.mode == "custom" && language.length < 3) {
     randomWord = language[Math.floor(Math.random() * language.length)];
+  } else {
+    while (
+      previousWordStripped == randomWord ||
+      previousWord2Stripped == randomWord ||
+      randomWord.indexOf(" ") > -1 ||
+      (!config.punctuation && randomWord == "I")
+    ) {
+      randomWord = language[Math.floor(Math.random() * language.length)];
+    }
   }
   if (config.punctuation && config.mode != "custom") {
     randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0);
@@ -3392,7 +3405,11 @@ $(document).keydown((event) => {
           addWord();
         }
       } else {
-        if (config.mode == "time" || config.mode == "words") {
+        if (
+          config.mode == "time" ||
+          config.mode == "words" ||
+          (config.mode == "custom" && customTextIsRandom)
+        ) {
           addWord();
         }
       }
