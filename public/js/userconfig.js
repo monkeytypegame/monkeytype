@@ -614,6 +614,7 @@ function applyCustomThemeColors() {
       document.documentElement.style.setProperty(e, "");
     });
   }
+  refreshThemeColorObject();
 
   setTimeout(() => {
     updateFavicon(32, 14);
@@ -639,10 +640,10 @@ function togglePresetCustomTheme() {
       $('.pageSettings [tabContent="custom"]'),
       250
     );
-
     // $('[tabContent="preset"]').removeClass("reveal");
     // $('[tabContent="custom"]').addClass("reveal");
   }
+  $(".keymap-key").attr("style", "");
 }
 
 function updateFavicon(size, curveSize) {
