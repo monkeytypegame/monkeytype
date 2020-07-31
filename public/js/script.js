@@ -216,6 +216,10 @@ function copyResultToClipboard() {
 }
 
 function activateFunbox(funbox, mode) {
+  if (funbox === "none") {
+    $("#funBoxTheme").attr("href", ``);
+    activeFunBox = "none";
+  }
   if (mode === "style") {
     if (funbox == undefined) {
       $("#funBoxTheme").attr("href", ``);
@@ -249,6 +253,7 @@ function toggleScriptFunbox(...params) {
     msg.volume = 1; // From 0 to 1
     msg.rate = 1; // From 0.1 to 10
     msg.text = params[0];
+    msg.lang = "en";
     speechSynthesis.speak(msg);
   }
 }
