@@ -1517,6 +1517,7 @@ function showResult(difficultyFailed = false) {
       keySpacing: keypressStats.spacing.array,
       keyDuration: keypressStats.duration.array,
       consistency: consistency,
+      funbox: activeFunBox,
     };
     if (
       config.difficulty == "normal" ||
