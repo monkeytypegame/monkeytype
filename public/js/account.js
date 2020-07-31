@@ -1024,16 +1024,23 @@ function refreshAccountPage() {
       $(".pageAccount .triplegroup.stats").removeClass("hidden");
     }
 
-    $(".pageAccount .timeTotal .val").text(
-      moment
-        .utc(moment.duration(totalSeconds, "seconds").asMilliseconds())
-        .format("HH:mm:ss")
-    );
-    $(".pageAccount .timeTotalFiltered .val").text(
-      moment
-        .utc(moment.duration(totalSecondsFiltered, "seconds").asMilliseconds())
-        .format("HH:mm:ss")
-    );
+    // moment
+    //   .utc(moment.duration(totalSeconds, "seconds").asMilliseconds())
+    //   .format("HH:mm:ss")
+    $(".pageAccount .timeTotal .val").text(`
+      
+      ${Math.floor(totalSeconds / 3600)}:${Math.floor(
+      (totalSeconds % 3600) / 60
+    )}:${Math.floor((totalSeconds % 3600) % 60)}
+    `);
+    //moment
+    // .utc(moment.duration(totalSecondsFiltered, "seconds").asMilliseconds())
+    // .format("HH:mm:ss")
+    $(".pageAccount .timeTotalFiltered .val").text(`
+    ${Math.floor(totalSeconds / 3600)}:${Math.floor(
+      (totalSeconds % 3600) / 60
+    )}:${Math.floor((totalSeconds % 3600) % 60)}
+  `);
 
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm / testCount));
