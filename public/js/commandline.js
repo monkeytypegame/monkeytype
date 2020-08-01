@@ -732,7 +732,7 @@ $.getJSON("js/fonts.json", function (data) {
   data.forEach((font) => {
     commandsFonts.list.push({
       id: "changeFont" + font.name.replace(/ /g, "_"),
-      display: font.name,
+      display: font.display !== undefined ? font.display : font.name,
       exec: () => {
         setFontFamily(font.name);
       },

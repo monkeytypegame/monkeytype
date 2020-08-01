@@ -60,9 +60,11 @@ function updateSettingsPage() {
   fontsList.forEach((font) => {
     fontsEl.append(
       `<div class="button" style="font-family:${
-        font.name
+        font.display !== undefined ? font.display : font.name
       }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
-      onclick="this.blur();">${font.name}</div>`
+      onclick="this.blur();">${
+        font.display !== undefined ? font.display : font.name
+      }</div>`
     );
   });
 
