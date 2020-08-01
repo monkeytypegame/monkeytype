@@ -1449,6 +1449,11 @@ function showResult(difficultyFailed = false) {
   }
 
   let consistency = roundTo2(kogasa(stddev / avg));
+  let keyConsistency = roundTo2(
+    kogasa(
+      stdDev(keypressStats.spacing.array) / mean(keypressStats.spacing.array)
+    )
+  );
 
   if (isNaN(consistency)) {
     consistency = 0;
@@ -1457,7 +1462,7 @@ function showResult(difficultyFailed = false) {
   $("#result .stats .consistency .bottom").text(Math.round(consistency) + "%");
   $("#result .stats .consistency .bottom").attr(
     "aria-label",
-    consistency + "%"
+    `${consistency}% (${keyConsistency}% key)`
   );
 
   wpmOverTimeChart.data.datasets[0].borderColor = themeColors.main;
