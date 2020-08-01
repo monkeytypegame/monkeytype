@@ -322,5 +322,10 @@
         "name": "honey",
         "bgColor": "#f2aa00",
         "textColor": "#fff546"
+    },
+    {
+        "name": "shoko",
+        "bgColor": "#ced7e0",
+        "textColor": "#81c4dd"
     }
 ]
