@@ -573,6 +573,7 @@ function setTheme(name, nosave) {
   }
   setTimeout(() => {
     refreshThemeColorObject();
+    $("#metaThemeColor").attr("content", themeColors.main);
   }, 500);
   if (!nosave) saveConfigToCookie();
 }
