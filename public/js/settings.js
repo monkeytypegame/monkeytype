@@ -49,11 +49,22 @@ function updateSettingsPage() {
   let funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
   funboxList.forEach((funbox) => {
-    funboxEl.append(
-      `<div class="funbox button" funbox='${funbox.name}' type="${
-        funbox.type
-      }">${funbox.name.replace(/_/g, " ")}</div>`
-    );
+    if (funbox.name === "mirror") {
+      funboxEl.append(
+        `<div class="funbox button" funbox='${funbox.name}' type="${
+          funbox.type
+        }" style="transform:scaleX(-1);">${funbox.name.replace(
+          /_/g,
+          " "
+        )}</div>`
+      );
+    } else {
+      funboxEl.append(
+        `<div class="funbox button" funbox='${funbox.name}' type="${
+          funbox.type
+        }">${funbox.name.replace(/_/g, " ")}</div>`
+      );
+    }
   });
 
   let fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
