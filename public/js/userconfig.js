@@ -141,6 +141,7 @@ function applyConfig(configObj) {
     setTimerOpacity(configObj.timerOpacity, true);
     changeKeymapMode(configObj.keymapMode, true);
     changeKeymapLayout(configObj.keymapLayout, true);
+    setFontFamily(configObj.fontFamily, true);
     if (
       configObj.resultFilters == null ||
       configObj.resultFilters == undefined
