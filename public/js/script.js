@@ -247,13 +247,14 @@ function activateFunbox(funbox, mode) {
 function toggleScriptFunbox(...params) {
   if (activeFunBox === "tts") {
     var msg = new SpeechSynthesisUtterance();
-    var voices = window.speechSynthesis.getVoices();
-    msg.voice = voices[0];
-    msg.volume = 1; // From 0 to 1
-    msg.rate = 1; // From 0.1 to 10
+    // var voices = window.speechSynthesis.getVoices();
+    // msg.voice = voices[0];
+    // msg.volume = 1; // From 0 to 1
+    // msg.rate = 1; // From 0.1 to 10
     msg.text = params[0];
-    msg.lang = "en";
-    speechSynthesis.speak(msg);
+    msg.lang = "en-US";
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(msg);
   }
 }
 
@@ -2101,7 +2102,7 @@ function changePage(page) {
     hideSignOutButton();
     restartCount = 0;
     incompleteTestSeconds = 0;
-    restartTest();
+    // restartTest();
   } else if (page == "about") {
     pageTransition = true;
     swapElements(activePage, $(".page.pageAbout"), 250, () => {
@@ -3074,7 +3075,7 @@ $(document).keypress(function (event) {
     $("#liveWpm").text("0");
     showLiveWpm();
     // }
-    updateActiveElement();
+    // updateActiveElement();
     updateTimer();
     clearIntervals();
     keypressStats = {
