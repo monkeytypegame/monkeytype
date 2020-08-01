@@ -734,7 +734,7 @@ $.getJSON("js/fonts.json", function (data) {
       id: "changeFont" + font.name.replace(/ /g, "_"),
       display: font.display !== undefined ? font.display : font.name,
       exec: () => {
-        setFontFamily(font.name);
+        setFontFamily(font.name.replace(/ /g, "_"));
       },
     });
   });
