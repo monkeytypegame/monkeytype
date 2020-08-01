@@ -56,6 +56,16 @@ function updateSettingsPage() {
     );
   });
 
+  let fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
+  fontsList.forEach((font) => {
+    fontsEl.append(
+      `<div class="button" style="font-family:${
+        font.name
+      }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
+      onclick="this.blur();">${font.name}</div>`
+    );
+  });
+
   refreshTagsSettingsSection();
 
   setSettingsButton("smoothCaret", config.smoothCaret);
