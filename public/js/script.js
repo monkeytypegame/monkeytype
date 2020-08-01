@@ -1536,6 +1536,7 @@ function showResult(difficultyFailed = false) {
       keySpacing: keypressStats.spacing.array,
       keyDuration: keypressStats.duration.array,
       consistency: consistency,
+      keyConsistency: keyConsistency,
       funbox: activeFunBox,
     };
     if (
