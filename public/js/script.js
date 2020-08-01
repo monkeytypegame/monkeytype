@@ -2734,10 +2734,6 @@ function hideCustomTextPopup() {
   }
 }
 
-function changeFont(font_id) {
-  document.documentElement.style.setProperty('--font', font_id);
-};
-
 $("#customTextPopupWrapper").click((e) => {
   if ($(e.target).attr("id") === "customTextPopupWrapper") {
     hideCustomTextPopup();

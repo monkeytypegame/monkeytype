@@ -42,6 +42,7 @@ let defaultConfig = {
   showAllLines: false,
   keymapMode: "off",
   keymapLayout: "qwerty",
+  fontFamily: "Roboto_Mono",
 };
 
 let cookieConfig = null;
@@ -489,6 +490,16 @@ function togglePunctuation() {
   }
   config.punctuation = !config.punctuation;
   saveConfigToCookie();
+}
+
+//font family
+function setFontFamily(font, nosave) {
+  if (font == undefined) {
+    font = "Roboto_Mono";
+  }
+  config.fontFamily = font;
+  document.documentElement.style.setProperty("--font", font.replace(/_/g, " "));
+  if (!nosave) saveConfigToCookie();
 }
 
 //freedom

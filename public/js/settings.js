@@ -87,7 +87,7 @@ function updateSettingsPage() {
   setActiveThemeTab();
   setCustomThemeInputs();
   setActiveConfidenceModeButton();
-
+  setActiveFontFamilyButton();
   setActiveKeymapModeButton();
   setActiveKeymapLayoutButton();
 
@@ -462,6 +462,14 @@ function setActiveConfidenceModeButton() {
   }
 }
 
+function setActiveFontFamilyButton() {
+  let font = config.fontFamily;
+  $(".pageSettings .section.fontFamily .buttons .button").removeClass("active");
+  $(
+    `.pageSettings .section.fontFamily .buttons .button[fontFamily='${font}']`
+  ).addClass("active");
+}
+
 //smooth caret
 $(".pageSettings .section.smoothCaret .buttons .button.on").click((e) => {
   setSmoothCaret(true);
@@ -796,6 +804,13 @@ $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   let type = $(e.currentTarget).attr("type");
   activateFunbox(funbox, type);
   setActiveFunboxButton();
+});
+
+//fontfamily
+$(document).on("click", ".pageSettings .section.fontFamily .button", (e) => {
+  let font = $(e.currentTarget).attr("fontFamily");
+  setFontFamily(font);
+  setActiveFontFamilyButton();
 });
 
 //tags
