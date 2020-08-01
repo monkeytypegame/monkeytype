@@ -2086,7 +2086,7 @@ function changePage(page) {
   if (pageTransition) {
     return;
   }
-  restartTest();
+  if (page !== "test" && page !== "") restartTest();
   let activePage = $(".page.active");
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
@@ -2102,7 +2102,7 @@ function changePage(page) {
     hideSignOutButton();
     restartCount = 0;
     incompleteTestSeconds = 0;
-    // restartTest();
+    restartTest();
   } else if (page == "about") {
     pageTransition = true;
     swapElements(activePage, $(".page.pageAbout"), 250, () => {
