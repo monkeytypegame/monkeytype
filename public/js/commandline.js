@@ -260,6 +260,15 @@ let commands = {
       },
     },
     {
+      id: "changeFontFamily",
+      display: "Change font family...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsFonts);
+        showCommandLine();
+      },
+    },
+    {
       id: "joinDiscord",
       display: "Join the Discord server",
       exec: () => {
@@ -706,6 +715,11 @@ $.getJSON("funbox/list.json", function (data) {
   });
 });
 
+let commandsFonts = {
+  title: "Change font...",
+  list: [],
+};
+
 let fontsList;
 
 $.getJSON("js/fonts.json", function (data) {
@@ -715,16 +729,20 @@ $.getJSON("js/fonts.json", function (data) {
     if (nameA > nameB) return 1;
     return 0;
   });
+  data.forEach((font) => {
+    commandsFonts.list.push({
+      id: "changeFont" + font.name.replace(/ /g, "_"),
+      display: font.name,
+      exec: () => {
+        setFontFamily(font.name);
+      },
+    });
+  });
 });
 
 let commandsThemes = {
   title: "Change theme...",
-  list: [
-    {
-      id: "couldnotload",
-      display: "Could not load the themes list :(",
-    },
-  ],
+  list: [],
 };
 
 let commandsLanguages = {
