@@ -56,6 +56,18 @@ function updateSettingsPage() {
     );
   });
 
+  let fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
+  fontsList.forEach((font) => {
+    fontsEl.append(
+      `<div class="button" style="font-family:${
+        font.display !== undefined ? font.display : font.name
+      }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
+      onclick="this.blur();">${
+        font.display !== undefined ? font.display : font.name
+      }</div>`
+    );
+  });
+
   refreshTagsSettingsSection();
 
   setSettingsButton("smoothCaret", config.smoothCaret);
@@ -87,7 +99,7 @@ function updateSettingsPage() {
   setActiveThemeTab();
   setCustomThemeInputs();
   setActiveConfidenceModeButton();
-
+  setActiveFontFamilyButton();
   setActiveKeymapModeButton();
   setActiveKeymapLayoutButton();
 
@@ -462,6 +474,14 @@ function setActiveConfidenceModeButton() {
   }
 }
 
+function setActiveFontFamilyButton() {
+  let font = config.fontFamily;
+  $(".pageSettings .section.fontFamily .buttons .button").removeClass("active");
+  $(
+    `.pageSettings .section.fontFamily .buttons .button[fontFamily='${font}']`
+  ).addClass("active");
+}
+
 //smooth caret
 $(".pageSettings .section.smoothCaret .buttons .button.on").click((e) => {
   setSmoothCaret(true);
@@ -796,6 +816,13 @@ $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   let type = $(e.currentTarget).attr("type");
   activateFunbox(funbox, type);
   setActiveFunboxButton();
+});
+
+//fontfamily
+$(document).on("click", ".pageSettings .section.fontFamily .button", (e) => {
+  let font = $(e.currentTarget).attr("fontFamily");
+  setFontFamily(font);
+  setActiveFontFamilyButton();
 });
 
 //tags
