@@ -1869,9 +1869,10 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxChartVal;
 
   wpmOverTimeChart.update({ duration: 0 });
-
+  wpmOverTimeChart.resize();
   swapElements($("#words"), $("#result"), 250, () => {
     $("#words").empty();
+    wpmOverTimeChart.resize();
     // if (config.blindMode) {
     //   $.each($("#words .word"), (i, word) => {
     //     let input = inputHistory[i];
