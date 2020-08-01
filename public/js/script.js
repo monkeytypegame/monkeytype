@@ -681,9 +681,9 @@ function showWords() {
 
   updateActiveElement();
   updateCaretPosition();
-  if (config.keymap !== "off") {
-    changeKeymapLayout(config.keymapLayout);
-  }
+  // if (config.keymap !== "off") {
+  //   changeKeymapLayout(config.keymapLayout);
+  // }
 }
 
 function updateActiveElement() {
