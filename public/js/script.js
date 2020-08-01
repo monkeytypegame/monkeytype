@@ -295,9 +295,9 @@ function verifyUsername() {
 
   $(".nameChangeMessage").click((e) => {
     alert(`Im currently preparing the system to be ready for leaderboards and other awesome features - it looks like you need to change your display name.
-    
+
     It either contains special characters, or your display name is the same as someone elses and your account was made later.
-    
+
     Sorry for this inconvenience.
     `);
     let newName = prompt(
@@ -2733,6 +2733,10 @@ function hideCustomTextPopup() {
       );
   }
 }
+
+function changeFont(font_id) {
+  document.documentElement.style.setProperty('--font', font_id);
+};
 
 $("#customTextPopupWrapper").click((e) => {
   if ($(e.target).attr("id") === "customTextPopupWrapper") {

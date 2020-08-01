@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=IBM+Plex+Mono&family=Inconsolata&family=Roboto+Mono&family=Source+Code+Pro&display=swap');
 
 :root {
   --roundness: 0.25rem;
@@ -1813,6 +1813,7 @@ key {
     &.languages,
     &.layouts,
     &.keymapLayout,
+    &.fontFamily,
     &.funbox {
       grid-template-columns: 1fr;
       grid-template-areas:
