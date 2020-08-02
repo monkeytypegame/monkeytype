@@ -3592,7 +3592,7 @@ let wpmOverTimeChart = new Chart(ctx, {
             autoSkipPadding: 40,
           },
           gridLines: {
-            display: false,
+            display: true,
           },
         },
         {
@@ -3631,7 +3631,7 @@ let wpmOverTimeChart = new Chart(ctx, {
             autoSkipPadding: 40,
           },
           gridLines: {
-            display: true,
+            display: false,
           },
         },
       ],
