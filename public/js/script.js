@@ -3263,7 +3263,7 @@ $(document).keydown((event) => {
 
   //tab
   if (event["keyCode"] == 9) {
-    if (config.quickTab) {
+    if (config.quickTab && !$(".pageLogin").hasClass("active")) {
       event.preventDefault();
       if ($(".pageTest").hasClass("active")) {
         if (
