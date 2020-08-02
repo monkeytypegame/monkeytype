@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=IBM+Plex+Mono&family=Inconsolata&family=Roboto+Mono&family=Source+Code+Pro&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code&family=IBM+Plex+Mono&family=Inconsolata&family=Roboto+Mono&family=Source+Code+Pro&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap");
 
 :root {
   --roundness: 0.25rem;
@@ -382,23 +382,22 @@ a:hover {
         height: 0;
         display: none;
 
-        &~.customTextRandomCheckbox {
+        & ~ .customTextRandomCheckbox {
           width: 12px;
           height: 12px;
-          background: rgba(0, 0, 0, .1);
+          background: rgba(0, 0, 0, 0.1);
           border-radius: 2px;
-          box-shadow: 0 0 0 4px rgba(0, 0, 0, .1);
+          box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
           display: inline-block;
-          margin: 0 .5rem 0 .25rem;
-          transition: .25s;
+          margin: 0 0.5rem 0 0.25rem;
+          transition: 0.25s;
         }
 
-        &:checked~.customTextRandomCheckbox {
+        &:checked ~ .customTextRandomCheckbox {
           background: var(--main-color);
         }
       }
     }
-
   }
 }
 
@@ -773,8 +772,7 @@ a:hover {
   }
 
   &.outline {
-    @extend #caret,
-    .block;
+    @extend #caret, .block;
     background: transparent;
     border: 1px solid var(--caret-color);
   }
@@ -812,7 +810,6 @@ a:hover {
 }
 
 @keyframes caretFlash {
-
   0%,
   100% {
     opacity: 0;
@@ -1073,7 +1070,8 @@ key {
   // justify-content: center;
   align-items: center;
   grid-template-columns: auto 1fr;
-  grid-template-areas: "stats chart"
+  grid-template-areas:
+    "stats chart"
     "morestats morestats"
     "login login";
 
@@ -1106,7 +1104,7 @@ key {
     grid-area: stats;
     display: grid;
     // column-gap: 0.5rem;
-    gap: .5rem;
+    gap: 0.5rem;
     justify-content: center;
     align-items: center;
     // grid-template-areas:
@@ -1120,7 +1118,8 @@ key {
     // grid-template-areas:
     //   "wpm acc key consistency testType leaderboards source"
     //   "wpm raw time nothing infoAndTags leaderboards source";
-    grid-template-areas: "wpm"
+    grid-template-areas:
+      "wpm"
       "acc";
 
     &.morestats {
@@ -1136,7 +1135,7 @@ key {
       //   "key time testType infoAndTags leaderboards source";
       .subgroup {
         display: grid;
-        gap: .5rem;
+        gap: 0.5rem;
       }
     }
 
@@ -1155,7 +1154,6 @@ key {
         line-height: 2rem;
       }
     }
-
 
     // .infoAndTags {
     //   display: grid;
@@ -1272,12 +1270,12 @@ key {
   padding: 1rem;
   border-radius: var(--roundness);
   /* margin-top: 1rem; */
-  transition: .25s;
+  transition: 0.25s;
   z-index: 999;
   pointer-events: none;
 
   i {
-    margin-right: .5rem;
+    margin-right: 0.5rem;
   }
 }
 
@@ -1468,9 +1466,9 @@ key {
   border-bottom: 2px solid var(--error-color);
   text-shadow: 1px 0px 0px var(--bg-color),
     // 2px 0px 0px var(--bg-color),
-    -1px 0px 0px var(--bg-color),
+      -1px 0px 0px var(--bg-color),
     // -2px 0px 0px var(--bg-color),
-    0px 1px 0px var(--bg-color),
+      0px 1px 0px var(--bg-color),
     1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
@@ -1571,7 +1569,7 @@ key {
             height: 0;
             display: none;
 
-            &~.customCheckbox {
+            & ~ .customCheckbox {
               width: 12px;
               height: 12px;
               background: rgba(0, 0, 0, 0.1);
@@ -1582,7 +1580,7 @@ key {
               transition: 0.25s;
             }
 
-            &:checked~.customCheckbox {
+            &:checked ~ .customCheckbox {
               background: var(--main-color);
             }
           }
@@ -2242,13 +2240,13 @@ key {
   justify-content: center;
   white-space: nowrap;
   // height: 140px;
-  gap: .25rem;
+  gap: 0.25rem;
   margin-top: 1rem;
 }
 
 .row {
   height: 2rem;
-  gap: .25rem;
+  gap: 0.25rem;
 }
 
 .keymap-key {
@@ -2266,13 +2264,13 @@ key {
   position: relative;
 
   .bump {
-    width: .75rem;
-    height: .05rem;
+    width: 0.75rem;
+    height: 0.05rem;
     background: var(--sub-color);
     position: absolute;
     border-radius: var(--roundness);
     // margin-top: 1.5rem;
-    bottom: .15rem;
+    bottom: 0.15rem;
   }
 
   &.active-key {
