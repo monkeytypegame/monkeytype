@@ -2976,13 +2976,26 @@ $(window).on("popstate", (e) => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 13) {
-    if (testActive && !afkDetected) {
-      let testNow = Date.now();
-      let testSeconds = roundTo2((testNow - testStart) / 1000);
-      incompleteTestSeconds += testSeconds;
-      restartCount++;
+    if (
+      (config.mode === "words" && config.words < 1000) ||
+      (config.mode === "time" && config.time < 3600) ||
+      (config.mode === "custom" &&
+        customTextIsRandom &&
+        customTextWordCount < 1000) ||
+      (config.mode === "custom" &&
+        !customTextIsRandom &&
+        customText.length < 1000)
+    ) {
+      if (testActive && !afkDetected) {
+        let testNow = Date.now();
+        let testSeconds = roundTo2((testNow - testStart) / 1000);
+        incompleteTestSeconds += testSeconds;
+        restartCount++;
+      }
+      restartTest();
+    } else {
+      showNotification("Quick restart disabled for long tests", 3000);
     }
-    restartTest();
   }
 });
 
@@ -3235,13 +3248,26 @@ $(document).keydown((event) => {
     if (config.quickTab) {
       event.preventDefault();
       if ($(".pageTest").hasClass("active")) {
-        if (testActive && !afkDetected) {
-          let testNow = Date.now();
-          let testSeconds = roundTo2((testNow - testStart) / 1000);
-          incompleteTestSeconds += testSeconds;
-          restartCount++;
+        if (
+          (config.mode === "words" && config.words < 1000) ||
+          (config.mode === "time" && config.time < 3600) ||
+          (config.mode === "custom" &&
+            customTextIsRandom &&
+            customTextWordCount < 1000) ||
+          (config.mode === "custom" &&
+            !customTextIsRandom &&
+            customText.length < 1000)
+        ) {
+          if (testActive && !afkDetected) {
+            let testNow = Date.now();
+            let testSeconds = roundTo2((testNow - testStart) / 1000);
+            incompleteTestSeconds += testSeconds;
+            restartCount++;
+          }
+          restartTest();
+        } else {
+          showNotification("Quick restart disabled for long tests", 3000);
         }
-        restartTest();
       } else {
         changePage("test");
       }
