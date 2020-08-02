@@ -1872,6 +1872,9 @@ function showResult(difficultyFailed = false) {
   if (config.blindMode) {
     testType += "<br>blind";
   }
+  if (activeFunBox !== "none") {
+    testType += "<br>" + activeFunBox;
+  }
   if (config.difficulty == "expert") {
     testType += "<br>expert";
   } else if (config.difficulty == "master") {
@@ -1881,6 +1884,9 @@ function showResult(difficultyFailed = false) {
   $("#result .stats .testType .bottom").html(testType);
 
   let otherText = "";
+  if (config.layout !== "default") {
+    otherText += "<br>" + config.layout;
+  }
   if (difficultyFailed) {
     otherText += "<br>failed";
   }
