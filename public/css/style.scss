@@ -375,6 +375,13 @@ a:hover {
     }
 
     .check {
+      span {
+        display: block;
+        font-size: .76rem;
+        color: var(--sub-color);
+        margin-left: 1.5rem;
+      }
+
       input {
         margin: 0 !important;
         cursor: pointer;
@@ -382,7 +389,7 @@ a:hover {
         height: 0;
         display: none;
 
-        & ~ .customTextRandomCheckbox {
+        &~.customTextRandomCheckbox {
           width: 12px;
           height: 12px;
           background: rgba(0, 0, 0, 0.1);
@@ -393,7 +400,7 @@ a:hover {
           transition: 0.25s;
         }
 
-        &:checked ~ .customTextRandomCheckbox {
+        &:checked~.customTextRandomCheckbox {
           background: var(--main-color);
         }
       }
@@ -772,7 +779,8 @@ a:hover {
   }
 
   &.outline {
-    @extend #caret, .block;
+    @extend #caret,
+    .block;
     background: transparent;
     border: 1px solid var(--caret-color);
   }
@@ -810,6 +818,7 @@ a:hover {
 }
 
 @keyframes caretFlash {
+
   0%,
   100% {
     opacity: 0;
@@ -1466,9 +1475,9 @@ key {
   border-bottom: 2px solid var(--error-color);
   text-shadow: 1px 0px 0px var(--bg-color),
     // 2px 0px 0px var(--bg-color),
-      -1px 0px 0px var(--bg-color),
+    -1px 0px 0px var(--bg-color),
     // -2px 0px 0px var(--bg-color),
-      0px 1px 0px var(--bg-color),
+    0px 1px 0px var(--bg-color),
     1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
@@ -1569,7 +1578,7 @@ key {
             height: 0;
             display: none;
 
-            & ~ .customCheckbox {
+            &~.customCheckbox {
               width: 12px;
               height: 12px;
               background: rgba(0, 0, 0, 0.1);
@@ -1580,7 +1589,7 @@ key {
               transition: 0.25s;
             }
 
-            &:checked ~ .customCheckbox {
+            &:checked~.customCheckbox {
               background: var(--main-color);
             }
           }

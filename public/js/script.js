@@ -2726,6 +2726,11 @@ function hideCapsWarning() {
 
 function showCustomTextPopup() {
   if ($("#customTextPopupWrapper").hasClass("hidden")) {
+    if ($("#customTextPopup .check input").prop("checked")) {
+      $("#customTextPopup .inputs .wordcount").removeClass("hidden");
+    } else {
+      $("#customTextPopup .inputs .wordcount").addClass("hidden");
+    }
     $("#customTextPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -2758,6 +2763,14 @@ function hideCustomTextPopup() {
 $("#customTextPopupWrapper").click((e) => {
   if ($(e.target).attr("id") === "customTextPopupWrapper") {
     hideCustomTextPopup();
+  }
+});
+
+$("#customTextPopup .inputs .check input").change((e) => {
+  if ($("#customTextPopup .check input").prop("checked")) {
+    $("#customTextPopup .inputs .wordcount").removeClass("hidden");
+  } else {
+    $("#customTextPopup .inputs .wordcount").addClass("hidden");
   }
 });
 
