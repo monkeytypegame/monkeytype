@@ -242,6 +242,7 @@ function activateFunbox(funbox, mode) {
     }
     activeFunBox = funbox;
   }
+  updateTestModesNotice();
 }
 
 function toggleScriptFunbox(...params) {
@@ -450,7 +451,19 @@ function initWords() {
       if (config.punctuation && config.mode != "custom") {
         randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
       }
-      wordsList.push(randomWord);
+      if (activeFunBox === "rAnDoMcAsE") {
+        let randomcaseword = "";
+        for (let i = 0; i < randomWord.length; i++) {
+          if (i % 2 != 0) {
+            randomcaseword += randomWord[i].toUpperCase();
+          } else {
+            randomcaseword += randomWord[i];
+          }
+        }
+        wordsList.push(randomcaseword);
+      } else {
+        wordsList.push(randomWord);
+      }
     }
   } else if (config.mode == "custom") {
     // let w = customText.split(" ");
@@ -2572,6 +2585,12 @@ function updateTestModesNotice() {
   if (config.blindMode) {
     $(".pageTest #testModesNotice").append(
       `<div><i class="fas fa-eye-slash"></i>blind</div>`
+    );
+  }
+
+  if (activeFunBox !== "none") {
+    $(".pageTest #testModesNotice").append(
+      `<div><i class="fas fa-gamepad"></i>${activeFunBox}</div>`
     );
   }
 
