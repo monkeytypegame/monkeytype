@@ -1196,9 +1196,12 @@ function updateCaretPosition() {
       // }
     }
 
+    let smoothlinescroll = $("#words .smoothScroller").height();
+    if (smoothlinescroll === undefined) smoothlinescroll = 0;
+
     caret.stop(true, true).animate(
       {
-        top: newTop,
+        top: newTop - smoothlinescroll,
         left: newLeft,
       },
       duration
@@ -3214,6 +3217,8 @@ $(document).keypress(function (event) {
   let newActiveTop = document.querySelector("#words .word.active").offsetTop;
   if (activeWordTopBeforeJump != newActiveTop) {
     activeWordJumped = true;
+  } else {
+    activeWordJumped = false;
   }
   // console.timeEnd("offcheck2");
 
@@ -3377,8 +3382,27 @@ $(document).keydown((event) => {
                 toHide.push($($("#words .word")[i]));
               }
             }
-            toHide.forEach((el) => el.remove());
             currentWordElementIndex -= toHide.length;
+            if (config.smoothLineScroll) {
+              let word = $(document.querySelector(".word"));
+              $("#words").prepend(
+                `<div class="smoothScroller" style="height:${word.outerHeight(
+                  true
+                )}px;width:100%"></div>`
+              );
+              $("#words .smoothScroller").animate(
+                {
+                  height: 0,
+                },
+                100,
+                () => {
+                  $(this).remove();
+                  activeWordTop = document.querySelector("#words .active")
+                    .offsetTop;
+                }
+              );
+            }
+            toHide.forEach((el) => el.remove());
           }
           currentTestLine++;
         }

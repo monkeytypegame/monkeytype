@@ -133,6 +133,13 @@ let commands = {
       },
     },
     {
+      id: "toggleSmoothLineScroll",
+      display: "Toggle smooth line scroll",
+      exec: () => {
+        toggleSmoothLineScroll();
+      },
+    },
+    {
       id: "toggleShowAllLines",
       display: "Toggle show all lines",
       exec: () => {
@@ -1031,6 +1038,7 @@ function hideCommandLine() {
 }
 
 function showCommandLine() {
+  setFocus(false);
   $("#commandLine").removeClass("hidden");
   $("#commandInput").addClass("hidden");
   if ($("#commandLineWrapper").hasClass("hidden")) {

@@ -43,6 +43,7 @@ let defaultConfig = {
   keymapMode: "off",
   keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
+  smoothLineScroll: false,
 };
 
 let cookieConfig = null;
@@ -432,6 +433,17 @@ function setSmoothCaret(mode, nosave) {
 
 function toggleSmoothCaret() {
   config.smoothCaret = !config.smoothCaret;
+  saveConfigToCookie();
+}
+
+//linescroll
+function setSmoothLineScroll(mode, nosave) {
+  config.smoothLineScroll = mode;
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleSmoothLineScroll() {
+  config.smoothLineScroll = !config.smoothLineScroll;
   saveConfigToCookie();
 }
 

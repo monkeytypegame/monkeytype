@@ -96,6 +96,7 @@ function updateSettingsPage() {
   setSettingsButton("randomTheme", config.randomTheme);
   setSettingsButton("stopOnError", config.stopOnError);
   setSettingsButton("showAllLines", config.showAllLines);
+  setSettingsButton("smoothLineScroll", config.smoothLineScroll);
 
   setActiveFunboxButton();
   setActiveLayoutButton();
@@ -503,6 +504,18 @@ $(".pageSettings .section.smoothCaret .buttons .button.off").click((e) => {
   setSmoothCaret(false);
   // showNotification('Smooth caret off', 1000);
   setSettingsButton("smoothCaret", config.smoothCaret);
+});
+
+//smooth line
+$(".pageSettings .section.smoothLineScroll .buttons .button.on").click((e) => {
+  setSmoothLineScroll(true);
+  // showNotification('Smooth caret on', 1000);
+  setSettingsButton("smoothLineScroll", config.smoothLineScroll);
+});
+$(".pageSettings .section.smoothLineScroll .buttons .button.off").click((e) => {
+  setSmoothLineScroll(false);
+  // showNotification('Smooth caret off', 1000);
+  setSettingsButton("smoothLineScroll", config.smoothLineScroll);
 });
 
 //quick tab
