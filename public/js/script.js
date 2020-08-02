@@ -3269,6 +3269,7 @@ $(document).keydown((event) => {
         if (
           (config.mode === "words" && config.words < 1000) ||
           (config.mode === "time" && config.time < 3600) ||
+          config.mode === "quote" ||
           (config.mode === "custom" &&
             customTextIsRandom &&
             customTextWordCount < 1000) ||
