@@ -17,5 +17,9 @@
   {
     "name": "tts",
     "type": "script"
+  },
+  {
+    "name": "choo_choo",
+    "type": "style"
   }
 ]

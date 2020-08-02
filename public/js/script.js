@@ -3123,6 +3123,9 @@ $(document).keypress(function (event) {
           keypressPerSecond[time - 4] == 0 &&
           keypressPerSecond[time - 5] == 0 &&
           keypressPerSecond[time - 6] == 0 &&
+          keypressPerSecond[time - 7] == 0 &&
+          keypressPerSecond[time - 8] == 0 &&
+          keypressPerSecond[time - 9] == 0 &&
           !afkDetected
         ) {
           showNotification("AFK detected", 3000);
