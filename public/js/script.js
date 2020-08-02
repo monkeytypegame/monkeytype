@@ -1379,6 +1379,15 @@ function showResult(difficultyFailed = false) {
   $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
   $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
   $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
+
+  let correctcharpercent = roundTo2(
+    ((stats.correctChars + stats.correctSpaces) /
+      (stats.correctChars + stats.correctSpaces + stats.incorrectChars)) *
+      100
+  );
+  $("#result .stats .key .bottom").text(testtime + "s");
+  $("#result .stats .key .bottom").attr("aria-label", `${correctcharpercent}%`);
+
   $("#result .stats .key .bottom").text(
     stats.correctChars + stats.correctSpaces + "/" + stats.incorrectChars
   );
