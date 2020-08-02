@@ -410,13 +410,15 @@ function initWords() {
   if (
     config.mode == "time" ||
     config.mode == "words" ||
-    (config.mode == "custom" && customTextIsRandom)
+    config.mode == "custom"
   ) {
     // let wordsBound = config.mode == "time" ? 60 : config.words;
     let wordsBound = 60;
     if (config.showAllLines) {
       if (config.mode === "custom") {
-        wordsBound = customTextWordCount;
+        if (customTextIsRandom) {
+          wordsBound = customTextWordCount;
+        }
       } else if (config.mode != "time") {
         wordsBound = config.words;
       }
@@ -424,8 +426,19 @@ function initWords() {
       if (config.mode === "words" && config.words < wordsBound) {
         wordsBound = config.words;
       }
-      if (config.mode == "custom" && customTextWordCount < wordsBound) {
+      if (
+        config.mode == "custom" &&
+        customTextIsRandom &&
+        customTextWordCount < wordsBound
+      ) {
         wordsBound = customTextWordCount;
+      }
+      if (
+        config.mode == "custom" &&
+        !customTextIsRandom &&
+        customText.length < wordsBound
+      ) {
+        wordsBound = customText.length;
       }
     }
     let wordset = language;
@@ -436,8 +449,10 @@ function initWords() {
       randomWord = wordset[Math.floor(Math.random() * wordset.length)];
       previousWord = wordsList[i - 1];
       previousWord2 = wordsList[i - 2];
-      if (config.mode == "custom" && wordset.length < 3) {
+      if (config.mode == "custom" && wordset.length < 3 && customTextIsRandom) {
         randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+      } else if (config.mode == "custom" && !customTextIsRandom) {
+        randomWord = customText[i];
       } else {
         while (
           randomWord == previousWord ||
@@ -464,11 +479,6 @@ function initWords() {
       } else {
         wordsList.push(randomWord);
       }
-    }
-  } else if (config.mode == "custom") {
-    // let w = customText.split(" ");
-    for (let i = 0; i < customText.length; i++) {
-      wordsList.push(customText[i]);
     }
   } else if (config.mode == "quote") {
     randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
@@ -614,7 +624,12 @@ function addWord() {
     !config.showAllLines &&
     (wordsList.length - inputHistory.length > 60 ||
       (config.mode === "words" && wordsList.length >= config.words) ||
-      (config.mode === "custom" && wordsList.length >= customTextWordCount))
+      (config.mode === "custom" &&
+        customTextIsRandom &&
+        wordsList.length >= customTextWordCount) ||
+      (config.mode === "custom" &&
+        !customTextIsRandom &&
+        wordsList.length >= customText.length))
   )
     return;
   let language = words[config.language];
@@ -628,8 +643,10 @@ function addWord() {
     .replace(/[.?!":\-,]/g, "")
     .toLowerCase();
 
-  if (config.mode == "custom" && language.length < 3) {
+  if (config.mode == "custom" && customTextIsRandom && language.length < 3) {
     randomWord = language[Math.floor(Math.random() * language.length)];
+  } else if (config.mode == "custom" && !customTextIsRandom) {
+    randomWord = customText[wordsList.length];
   } else {
     while (
       previousWordStripped == randomWord ||
@@ -3522,7 +3539,7 @@ $(document).keydown((event) => {
         if (
           config.mode == "time" ||
           config.mode == "words" ||
-          (config.mode == "custom" && customTextIsRandom)
+          config.mode == "custom"
         ) {
           addWord();
         }
