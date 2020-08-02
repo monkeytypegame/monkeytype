@@ -1382,7 +1382,11 @@ function showResult(difficultyFailed = false) {
   $("#result .stats .key .bottom").text(
     stats.correctChars + stats.correctSpaces + "/" + stats.incorrectChars
   );
+
+  let afkseconds = keypressPerSecond.filter((x) => x == 0).length;
+
   $("#result .stats .time .bottom").text(testtime + "s");
+  $("#result .stats .time .bottom").attr("aria-label", `${afkseconds}s afk`);
 
   setTimeout(function () {
     $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
