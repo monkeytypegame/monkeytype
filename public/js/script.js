@@ -1062,41 +1062,43 @@ function flashPressedKeymapKey(key, correct) {
       key = `#Key${key.toUpperCase()}`;
   }
 
-  if (correct) {
-    $(key)
-      .stop(true, true)
-      .css({
-        color: themeColors.bg,
-        backgroundColor: themeColors.main,
-        borderColor: themeColors.main,
-      })
-      .animate(
-        {
-          color: themeColors.sub,
-          backgroundColor: themeColors.bg,
-          borderColor: themeColors.sub,
-        },
-        500,
-        "easeOutExpo"
-      );
-  } else {
-    $(key)
-      .stop(true, true)
-      .css({
-        color: themeColors.bg,
-        backgroundColor: themeColors.error,
-        borderColor: themeColors.error,
-      })
-      .animate(
-        {
-          color: themeColors.sub,
-          backgroundColor: themeColors.bg,
-          borderColor: themeColors.sub,
-        },
-        500,
-        "easeOutExpo"
-      );
-  }
+  try {
+    if (correct) {
+      $(key)
+        .stop(true, true)
+        .css({
+          color: themeColors.bg,
+          backgroundColor: themeColors.main,
+          borderColor: themeColors.main,
+        })
+        .animate(
+          {
+            color: themeColors.sub,
+            backgroundColor: themeColors.bg,
+            borderColor: themeColors.sub,
+          },
+          500,
+          "easeOutExpo"
+        );
+    } else {
+      $(key)
+        .stop(true, true)
+        .css({
+          color: themeColors.bg,
+          backgroundColor: themeColors.error,
+          borderColor: themeColors.error,
+        })
+        .animate(
+          {
+            color: themeColors.sub,
+            backgroundColor: themeColors.bg,
+            borderColor: themeColors.sub,
+          },
+          500,
+          "easeOutExpo"
+        );
+    }
+  } catch (e) {}
 }
 
 function updateHighlightedKeymapKey() {

@@ -740,9 +740,10 @@ function changeKeymapMode(mode, nosave) {
     mode = "off";
   }
   if (mode === "off") {
-    hideKeymap();
+    // hideKeymap();
+    $("#liveWpm").removeClass("lower");
   } else {
-    showKeymap();
+    $("#liveWpm").addClass("lower");
   }
   if (mode === "react") {
     $(".active-key").removeClass("active-key");

@@ -739,6 +739,10 @@ a:hover {
 
 #liveWpm {
   top: 6rem;
+
+  &.lower {
+    top: 15rem;
+  }
 }
 
 #centerContent {
