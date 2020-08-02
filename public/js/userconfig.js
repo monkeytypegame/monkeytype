@@ -143,6 +143,7 @@ function applyConfig(configObj) {
     changeKeymapMode(configObj.keymapMode, true);
     changeKeymapLayout(configObj.keymapLayout, true);
     setFontFamily(configObj.fontFamily, true);
+    setSmoothLineScroll(configObj.smoothLineScroll, true);
     if (
       configObj.resultFilters == null ||
       configObj.resultFilters == undefined
