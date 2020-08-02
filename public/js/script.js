@@ -389,7 +389,7 @@ function initWords() {
     });
   }
 
-  if (config.mode === "quote") {
+  if (config.mode === "quote" && quotes.length == 0) {
     showBackgroundLoader();
     $.ajax({
       url: "js/english_quotes.json",
