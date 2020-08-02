@@ -418,6 +418,8 @@ function initWords() {
       if (config.mode === "custom") {
         if (customTextIsRandom) {
           wordsBound = customTextWordCount;
+        } else {
+          wordsBound = customText.length;
         }
       } else if (config.mode != "time") {
         wordsBound = config.words;
