@@ -1946,6 +1946,88 @@ function showResult(difficultyFailed = false) {
   });
 }
 
+function startTest() {
+  try {
+    if (firebase.auth().currentUser != null) {
+      firebase.analytics().logEvent("testStarted");
+    } else {
+      firebase.analytics().logEvent("testStartedNoLogin");
+    }
+  } catch (e) {
+    console.log("Analytics unavailable");
+  }
+  testActive = true;
+  testStart = Date.now();
+  // if (config.mode == "time") {
+  restartTimer();
+  showTimer();
+  $("#liveWpm").text("0");
+  showLiveWpm();
+  // }
+  // updateActiveElement();
+  updateTimer();
+  clearIntervals();
+  keypressStats = {
+    spacing: {
+      current: -1,
+      array: [],
+    },
+    duration: {
+      current: -1,
+      array: [],
+    },
+  };
+  timers.push(
+    setInterval(function () {
+      time++;
+      if (config.mode === "time") {
+        updateTimer();
+      }
+      // console.time("livewpm");
+      // let wpm = liveWPM();
+      // updateLiveWpm(wpm);
+      // showLiveWpm();
+      // wpmHistory.push(wpm);
+      // rawHistory.push(liveRaw());
+      let wpmAndRaw = liveWpmAndRaw();
+      updateLiveWpm(wpmAndRaw.wpm);
+      wpmHistory.push(wpmAndRaw.wpm);
+      rawHistory.push(wpmAndRaw.raw);
+
+      // console.timeEnd("livewpm");
+      keypressPerSecond.push(currentKeypressCount);
+      currentKeypressCount = 0;
+      errorsPerSecond.push(currentErrorCount);
+      currentErrorCount = 0;
+      if (
+        keypressPerSecond[time - 1] == 0 &&
+        keypressPerSecond[time - 2] == 0 &&
+        keypressPerSecond[time - 3] == 0 &&
+        keypressPerSecond[time - 4] == 0 &&
+        keypressPerSecond[time - 5] == 0 &&
+        keypressPerSecond[time - 6] == 0 &&
+        keypressPerSecond[time - 7] == 0 &&
+        keypressPerSecond[time - 8] == 0 &&
+        keypressPerSecond[time - 9] == 0 &&
+        !afkDetected
+      ) {
+        showNotification("AFK detected", 3000);
+        afkDetected = true;
+      }
+      if (config.mode == "time") {
+        if (time >= config.time) {
+          //times up
+          clearIntervals();
+          hideCaret();
+          testActive = false;
+          inputHistory.push(currentInput);
+          showResult();
+        }
+      }
+    }, 1000)
+  );
+}
+
 function restartTest(withSameWordset = false) {
   clearIntervals();
   time = 0;
@@ -3029,6 +3111,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
     if (
       (config.mode === "words" && config.words < 1000) ||
       (config.mode === "time" && config.time < 3600) ||
+      config.mode === "quote" ||
       (config.mode === "custom" &&
         customTextIsRandom &&
         customTextWordCount < 1000) ||
@@ -3127,85 +3210,7 @@ $(document).keypress(function (event) {
   if (event.key == "ContextMenu") return;
   //start the test
   if (currentInput == "" && inputHistory.length == 0 && !testActive) {
-    try {
-      if (firebase.auth().currentUser != null) {
-        firebase.analytics().logEvent("testStarted");
-      } else {
-        firebase.analytics().logEvent("testStartedNoLogin");
-      }
-    } catch (e) {
-      console.log("Analytics unavailable");
-    }
-    testActive = true;
-    testStart = Date.now();
-    // if (config.mode == "time") {
-    restartTimer();
-    showTimer();
-    $("#liveWpm").text("0");
-    showLiveWpm();
-    // }
-    // updateActiveElement();
-    updateTimer();
-    clearIntervals();
-    keypressStats = {
-      spacing: {
-        current: -1,
-        array: [],
-      },
-      duration: {
-        current: -1,
-        array: [],
-      },
-    };
-    timers.push(
-      setInterval(function () {
-        time++;
-        if (config.mode === "time") {
-          updateTimer();
-        }
-        // console.time("livewpm");
-        // let wpm = liveWPM();
-        // updateLiveWpm(wpm);
-        // showLiveWpm();
-        // wpmHistory.push(wpm);
-        // rawHistory.push(liveRaw());
-        let wpmAndRaw = liveWpmAndRaw();
-        updateLiveWpm(wpmAndRaw.wpm);
-        wpmHistory.push(wpmAndRaw.wpm);
-        rawHistory.push(wpmAndRaw.raw);
-
-        // console.timeEnd("livewpm");
-        keypressPerSecond.push(currentKeypressCount);
-        currentKeypressCount = 0;
-        errorsPerSecond.push(currentErrorCount);
-        currentErrorCount = 0;
-        if (
-          keypressPerSecond[time - 1] == 0 &&
-          keypressPerSecond[time - 2] == 0 &&
-          keypressPerSecond[time - 3] == 0 &&
-          keypressPerSecond[time - 4] == 0 &&
-          keypressPerSecond[time - 5] == 0 &&
-          keypressPerSecond[time - 6] == 0 &&
-          keypressPerSecond[time - 7] == 0 &&
-          keypressPerSecond[time - 8] == 0 &&
-          keypressPerSecond[time - 9] == 0 &&
-          !afkDetected
-        ) {
-          showNotification("AFK detected", 3000);
-          afkDetected = true;
-        }
-        if (config.mode == "time") {
-          if (time >= config.time) {
-            //times up
-            clearIntervals();
-            hideCaret();
-            testActive = false;
-            inputHistory.push(currentInput);
-            showResult();
-          }
-        }
-      }, 1000)
-    );
+    startTest();
   } else {
     if (!testActive) return;
   }
