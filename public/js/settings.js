@@ -961,3 +961,43 @@ $(".pageSettings .saveCustomThemeButton").click((e) => {
   setCustomThemeColors(save);
   showNotification("Custom theme colors saved", 1000);
 });
+
+$(".pageSettings .sectionGroupTitle").click((e) => {
+  let group = $(e.currentTarget).attr("group");
+  $(`.pageSettings .settingsGroup.${group}`)
+    .stop(true, true)
+    .slideToggle(250)
+    .toggleClass("slideup");
+  // $(`.pageSettings .sectionGroupTitle[group=${group}] .fas`).toggleClass(
+  //   "rotate"
+  // );
+  if ($(`.pageSettings .settingsGroup.${group}`).hasClass("slideup")) {
+    $(`.pageSettings .sectionGroupTitle[group=${group}] .fas`)
+      .stop(true, true)
+      .animate(
+        {
+          deg: -90,
+        },
+        {
+          duration: 250,
+          step: function (now) {
+            $(this).css({ transform: "rotate(" + now + "deg)" });
+          },
+        }
+      );
+  } else {
+    $(`.pageSettings .sectionGroupTitle[group=${group}] .fas`)
+      .stop(true, true)
+      .animate(
+        {
+          deg: 0,
+        },
+        {
+          duration: 250,
+          step: function (now) {
+            $(this).css({ transform: "rotate(" + now + "deg)" });
+          },
+        }
+      );
+  }
+});

@@ -1652,10 +1652,29 @@ key {
     font-size: 2rem;
     color: var(--sub-color);
     line-height: 2rem;
+    cursor: pointer;
+    transition: .25s;
+
+    &:hover {
+      color: var(--text-color);
+    }
+
+    .fas {
+      margin-left: .5rem;
+
+      &.rotate {
+        transform: rotate(-90deg);
+      }
+    }
   }
 
   .sectionSpacer {
     height: 1.5rem;
+  }
+
+  .settingsGroup {
+    display: grid;
+    gap: 2rem;
   }
 
   .section {
