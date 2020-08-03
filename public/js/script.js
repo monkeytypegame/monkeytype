@@ -2924,20 +2924,20 @@ $("#customTextPopup .button").click((e) => {
   text = text.replace(/[\n\r\t ]/gm, " ");
   text = text.replace(/ +/gm, " ");
   text = text.split(" ");
-  if (text.length >= 10000) {
-    showNotification("Custom text cannot be longer than 10000 words.", 4000);
-    changeMode("time");
-    text = "The quick brown fox jumped over the lazy dog".split(" ");
-  } else {
-    customText = text;
-    customTextIsRandom = $("#customTextPopup .check input").prop("checked");
-    // if (customTextIsRandom && customText.length < 3) {
-    //   showNotification("Random custom text requires at least 3 words", 4000);
-    //   customTextIsRandom = false;
-    // }
-    customTextWordCount = $("#customTextPopup .wordcount input").val();
-    restartTest();
-  }
+  // if (text.length >= 10000) {
+  //   showNotification("Custom text cannot be longer than 10000 words.", 4000);
+  //   changeMode("time");
+  //   text = "The quick brown fox jumped over the lazy dog".split(" ");
+  // } else {
+  customText = text;
+  customTextIsRandom = $("#customTextPopup .check input").prop("checked");
+  // if (customTextIsRandom && customText.length < 3) {
+  //   showNotification("Random custom text requires at least 3 words", 4000);
+  //   customTextIsRandom = false;
+  // }
+  customTextWordCount = $("#customTextPopup .wordcount input").val();
+  restartTest();
+  // }
   hideCustomTextPopup();
 });
 
