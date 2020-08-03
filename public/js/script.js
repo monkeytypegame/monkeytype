@@ -2036,7 +2036,7 @@ function startTest() {
         } else if (config.mode === "words") {
           index = Math.floor(inputHistory.length / (outof / 3));
         }
-        if (config.layout !== layouts[index]) {
+        if (config.layout !== layouts[index] && layouts[index] !== undefined) {
           showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
         }
         changeLayout(layouts[index]);
