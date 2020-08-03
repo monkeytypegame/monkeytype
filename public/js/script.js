@@ -240,14 +240,14 @@ function activateFunbox(funbox, mode) {
       setActiveKeymapModeButton();
       restartTest();
     } else if (funbox === "layoutfluid") {
-        config.keymapMode = "on";
-        changeKeymapMode("next");
-        setActiveKeymapModeButton();
-        changeLayout("qwerty");
-        setActiveLayoutButton();
-        changeKeymapLayout("qwerty");
-        setActiveKeymapLayoutButton();
-        restartTest();
+      config.keymapMode = "on";
+      changeKeymapMode("next");
+      setActiveKeymapModeButton();
+      changeLayout("qwerty");
+      setActiveLayoutButton();
+      changeKeymapLayout("qwerty");
+      setActiveKeymapLayoutButton();
+      restartTest();
     }
     activeFunBox = funbox;
   }
@@ -963,16 +963,6 @@ function updateTimer() {
       }
       $("#timerNumber").html(displayTime);
       // $("#timerNumber").html(config.time - time);
-
-      if (activeFunBox === "layoutfluid") {
-          const layouts = ["qwerty", "dvorak", "colemak"];
-          let index = Math.floor(time / (config.time / 3));
-          changeLayout(layouts[index]);
-          changeKeymapLayout(layouts[index]);
-          updateHighlightedKeymapKey();
-          setActiveLayoutButton();
-      }
-
     }
   } else if (
     config.mode === "words" ||
@@ -1014,16 +1004,6 @@ function updateTimer() {
       }
       $("#timerNumber").html(`${inputHistory.length}/${outof}`);
       // $("#timerNumber").html(config.time - time);
-
-      if (activeFunBox === "layoutfluid") {
-          const layouts = ["qwerty", "dvorak", "colemak"];
-          let index = Math.floor(inputHistory.length / (outof / 3));
-          changeLayout(layouts[index]);
-          changeKeymapLayout(layouts[index]);
-          updateHighlightedKeymapKey();
-          setActiveLayoutButton();
-      }
-
     }
   }
 }
@@ -2048,6 +2028,23 @@ function startTest() {
       wpmHistory.push(wpmAndRaw.wpm);
       rawHistory.push(wpmAndRaw.raw);
 
+      if (activeFunBox === "layoutfluid") {
+        const layouts = ["qwerty", "dvorak", "colemak"];
+        let index = 0;
+        if (config.mode === "time") {
+          index = Math.floor(time / (config.time / 3));
+        } else if (config.mode === "words") {
+          index = Math.floor(inputHistory.length / (outof / 3));
+        }
+        if (config.layout !== layouts[index]) {
+          showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+        }
+        changeLayout(layouts[index]);
+        changeKeymapLayout(layouts[index]);
+        updateHighlightedKeymapKey();
+        setActiveLayoutButton();
+      }
+
       // console.timeEnd("livewpm");
       keypressPerSecond.push(currentKeypressCount);
       currentKeypressCount = 0;
@@ -2184,7 +2181,7 @@ function restartTest(withSameWordset = false) {
         showKeymap();
       }
 
-      if(activeFunBox === "layoutfluid") {
+      if (activeFunBox === "layoutfluid") {
         changeLayout("qwerty");
         setActiveLayoutButton();
         changeKeymapLayout("qwerty");
