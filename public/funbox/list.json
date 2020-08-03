@@ -25,5 +25,9 @@
   {
     "name": "rAnDoMcAsE",
     "type": "script"
+  },
+  {
+    "name": "layoutfluid",
+    "type": "script"
   }
 ]

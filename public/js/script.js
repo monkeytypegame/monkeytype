@@ -239,6 +239,15 @@ function activateFunbox(funbox, mode) {
       config.keymapMode = "off";
       setActiveKeymapModeButton();
       restartTest();
+    } else if (funbox === "layoutfluid") {
+        config.keymapMode = "on";
+        changeKeymapMode("next");
+        setActiveKeymapModeButton();
+        changeLayout("qwerty");
+        setActiveLayoutButton();
+        changeKeymapLayout("qwerty");
+        setActiveKeymapLayoutButton();
+        restartTest();
     }
     activeFunBox = funbox;
   }
@@ -954,6 +963,16 @@ function updateTimer() {
       }
       $("#timerNumber").html(displayTime);
       // $("#timerNumber").html(config.time - time);
+
+      if (activeFunBox === "layoutfluid") {
+          const layouts = ["qwerty", "dvorak", "colemak"];
+          let index = Math.floor(time / (config.time / 3));
+          changeLayout(layouts[index]);
+          changeKeymapLayout(layouts[index]);
+          updateHighlightedKeymapKey();
+          setActiveLayoutButton();
+      }
+
     }
   } else if (
     config.mode === "words" ||
@@ -993,8 +1012,19 @@ function updateTimer() {
           outof = customText.length;
         }
       }
+
       $("#timerNumber").html(`${inputHistory.length}/${outof}`);
       // $("#timerNumber").html(config.time - time);
+
+      if (activeFunBox === "layoutfluid") {
+          const layouts = ["qwerty", "dvorak", "colemak"];
+          let index = Math.floor(inputHistory.length / (outof / 3));
+          changeLayout(layouts[index]);
+          changeKeymapLayout(layouts[index]);
+          updateHighlightedKeymapKey();
+          setActiveLayoutButton();
+      }
+
     }
   }
 }
@@ -2154,6 +2184,15 @@ function restartTest(withSameWordset = false) {
       if (config.keymapMode !== "off") {
         showKeymap();
       }
+
+      if(activeFunBox === "layoutfluid") {
+        changeLayout("qwerty");
+        setActiveLayoutButton();
+        changeKeymapLayout("qwerty");
+        setActiveKeymapLayoutButton();
+        updateHighlightedKeymapKey();
+      }
+
       $("#result").addClass("hidden");
       $("#testModesNotice").removeClass("hidden").css({
         opacity: 1,
@@ -3448,6 +3487,7 @@ $(document).keydown((event) => {
               }
             }
             currentWordElementIndex -= toHide.length;
+
             if (config.smoothLineScroll) {
               let word = $(document.querySelector(".word"));
               $("#words").prepend(
