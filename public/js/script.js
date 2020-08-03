@@ -239,6 +239,15 @@ function activateFunbox(funbox, mode) {
       config.keymapMode = "off";
       setActiveKeymapModeButton();
       restartTest();
+    } else if (funbox === "layoutfluid") {
+      config.keymapMode = "on";
+      changeKeymapMode("next");
+      setActiveKeymapModeButton();
+      changeLayout("qwerty");
+      setActiveLayoutButton();
+      changeKeymapLayout("qwerty");
+      setActiveKeymapLayoutButton();
+      restartTest();
     }
     activeFunBox = funbox;
   }
@@ -2019,6 +2028,23 @@ function startTest() {
       wpmHistory.push(wpmAndRaw.wpm);
       rawHistory.push(wpmAndRaw.raw);
 
+      if (activeFunBox === "layoutfluid") {
+        const layouts = ["qwerty", "dvorak", "colemak"];
+        let index = 0;
+        if (config.mode === "time") {
+          index = Math.floor(time / (config.time / 3));
+        } else if (config.mode === "words") {
+          index = Math.floor(inputHistory.length / (outof / 3));
+        }
+        if (config.layout !== layouts[index]) {
+          showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+        }
+        changeLayout(layouts[index]);
+        changeKeymapLayout(layouts[index]);
+        updateHighlightedKeymapKey();
+        setActiveLayoutButton();
+      }
+
       // console.timeEnd("livewpm");
       keypressPerSecond.push(currentKeypressCount);
       currentKeypressCount = 0;
@@ -2154,6 +2180,15 @@ function restartTest(withSameWordset = false) {
       if (config.keymapMode !== "off") {
         showKeymap();
       }
+
+      if (activeFunBox === "layoutfluid") {
+        changeLayout("qwerty");
+        setActiveLayoutButton();
+        changeKeymapLayout("qwerty");
+        setActiveKeymapLayoutButton();
+        updateHighlightedKeymapKey();
+      }
+
       $("#result").addClass("hidden");
       $("#testModesNotice").removeClass("hidden").css({
         opacity: 1,
