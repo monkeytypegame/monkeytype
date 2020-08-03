@@ -1012,7 +1012,6 @@ function updateTimer() {
           outof = customText.length;
         }
       }
-
       $("#timerNumber").html(`${inputHistory.length}/${outof}`);
       // $("#timerNumber").html(config.time - time);
 
@@ -3487,7 +3486,6 @@ $(document).keydown((event) => {
               }
             }
             currentWordElementIndex -= toHide.length;
-
             if (config.smoothLineScroll) {
               let word = $(document.querySelector(".word"));
               $("#words").prepend(
