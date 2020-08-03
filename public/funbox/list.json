@@ -25,5 +25,9 @@
   {
     "name": "rAnDoMcAsE",
     "type": "script"
+  },
+  {
+    "name": "earthquake",
+    "type": "style"
   }
 ]
