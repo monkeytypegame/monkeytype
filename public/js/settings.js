@@ -201,7 +201,7 @@ function updateSettingsPage() {
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       keymapEl.append(
-        `<div class="layout button" layout='${layout}'>${layout.replace(
+        `<div class="layout button" keymapLayout='${layout}'>${layout.replace(
           "_",
           " "
         )}</div>`
