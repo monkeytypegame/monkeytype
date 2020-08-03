@@ -832,7 +832,7 @@ function highlightBadWord(index, showError) {
 }
 
 function showTimer() {
-  let op = config.showTimerBar ? config.timerOpacity : 0;
+  let op = config.showTimerProgress ? config.timerOpacity : 0;
   if (config.timerStyle === "bar") {
     // let op = 0.25;
     // if (
@@ -933,7 +933,7 @@ function restartTimer() {
 }
 
 function updateTimer() {
-  if (!config.showTimerBar) return;
+  if (!config.showTimerProgress) return;
   if (config.mode === "time") {
     if (config.timerStyle === "bar") {
       let percent = 100 - ((time + 1) / config.time) * 100;

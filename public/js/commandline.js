@@ -78,7 +78,7 @@ let commands = {
       id: "toggleShowLiveWpm",
       display: "Toggle live wpm display",
       exec: () => {
-        config.showLiveWpm = !config.showLiveWpm;
+        toggleShowLiveWpm();
         saveConfigToCookie();
       },
     },
@@ -86,7 +86,7 @@ let commands = {
       id: "toggleTimerBar",
       display: "Toggle timer display",
       exec: () => {
-        config.showTimerBar = !config.showTimerBar;
+        toggleShowTimerProgress();
         saveConfigToCookie();
       },
     },
