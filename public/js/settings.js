@@ -161,14 +161,18 @@ settingsGroups.timerOpacity = new SettingsGroup(
 settingsGroups.timerColor = new SettingsGroup("timerColor", setTimerColor);
 settingsGroups.fontFamily = new SettingsGroup("fontFamily", setFontFamily);
 
-function updateSettingsPage() {
+fillSettingsPage();
+
+async function fillSettingsPage() {
   let themesEl = $(".pageSettings .section.themes .buttons").empty();
-  themesList.forEach((theme) => {
-    themesEl.append(
-      `<div class="theme button" theme='${theme.name}' style="color:${
-        theme.textColor
-      };background:${theme.bgColor}">${theme.name.replace(/_/g, " ")}</div>`
-    );
+  getThemesList().then((themes) => {
+    themes.forEach((theme) => {
+      themesEl.append(
+        `<div class="theme button" theme='${theme.name}' style="color:${
+          theme.textColor
+        };background:${theme.bgColor}">${theme.name.replace(/_/g, " ")}</div>`
+      );
+    });
   });
 
   let langEl = $(".pageSettings .section.language .buttons").empty();
@@ -211,37 +215,43 @@ function updateSettingsPage() {
 
   let funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
-  funboxList.forEach((funbox) => {
-    if (funbox.name === "mirror") {
-      funboxEl.append(
-        `<div class="funbox button" funbox='${funbox.name}' type="${
-          funbox.type
-        }" style="transform:scaleX(-1);">${funbox.name.replace(
-          /_/g,
-          " "
-        )}</div>`
-      );
-    } else {
-      funboxEl.append(
-        `<div class="funbox button" funbox='${funbox.name}' type="${
-          funbox.type
-        }">${funbox.name.replace(/_/g, " ")}</div>`
-      );
-    }
+  getFunboxList().then((funboxModes) => {
+    funboxModes.forEach((funbox) => {
+      if (funbox.name === "mirror") {
+        funboxEl.append(
+          `<div class="funbox button" funbox='${funbox.name}' type="${
+            funbox.type
+          }" style="transform:scaleX(-1);">${funbox.name.replace(
+            /_/g,
+            " "
+          )}</div>`
+        );
+      } else {
+        funboxEl.append(
+          `<div class="funbox button" funbox='${funbox.name}' type="${
+            funbox.type
+          }">${funbox.name.replace(/_/g, " ")}</div>`
+        );
+      }
+    });
   });
 
   let fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
-  fontsList.forEach((font) => {
-    fontsEl.append(
-      `<div class="button" style="font-family:${
-        font.display !== undefined ? font.display : font.name
-      }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
-      onclick="this.blur();">${
-        font.display !== undefined ? font.display : font.name
-      }</div>`
-    );
+  getFontsList().then((fonts) => {
+    fonts.forEach((font) => {
+      fontsEl.append(
+        `<div class="button" style="font-family:${
+          font.display !== undefined ? font.display : font.name
+        }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
+        onclick="this.blur();">${
+          font.display !== undefined ? font.display : font.name
+        }</div>`
+      );
+    });
   });
+}
 
+function updateSettingsPage() {
   Object.keys(settingsGroups).forEach((group) => {
     settingsGroups[group].updateButton();
   });

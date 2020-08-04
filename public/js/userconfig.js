@@ -52,7 +52,7 @@ let config = {
 };
 
 //cookies
-function saveConfigToCookie() {
+async function saveConfigToCookie() {
   // showNotification('saving to cookie',1000);
   if (config.freedomMode === null) config.freedomMode = false;
   let d = new Date();
@@ -66,7 +66,7 @@ function saveConfigToCookie() {
   saveConfigToDB();
 }
 
-function saveConfigToDB() {
+async function saveConfigToDB() {
   if (firebase.auth().currentUser !== null) {
     // showNotification('saving to db',1000);
     accountIconLoading(true);

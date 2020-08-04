@@ -230,19 +230,19 @@ function activateFunbox(funbox, mode) {
     }
 
     if (funbox === "simon_says") {
-      setActiveKeymapModeButton();
+      settingsGroups.keymapMode.updateButton();
       restartTest();
     }
   } else if (mode === "script") {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
       config.keymapMode = "off";
-      setActiveKeymapModeButton();
+      settingsGroups.keymapMode.updateButton();
       restartTest();
     } else if (funbox === "layoutfluid") {
       config.keymapMode = "on";
       changeKeymapMode("next");
-      setActiveKeymapModeButton();
+      settingsGroups.keymapMode.updateButton();
       changeLayout("qwerty");
       setActiveLayoutButton();
       changeKeymapLayout("qwerty");
