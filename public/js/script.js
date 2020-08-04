@@ -70,50 +70,6 @@ const generatePairingCode = firebase
   .functions()
   .httpsCallable("generatePairingCode");
 
-function smooth(arr, windowSize, getter = (value) => value, setter) {
-  const get = getter;
-  const result = [];
-
-  for (let i = 0; i < arr.length; i += 1) {
-    const leftOffeset = i - windowSize;
-    const from = leftOffeset >= 0 ? leftOffeset : 0;
-    const to = i + windowSize + 1;
-
-    let count = 0;
-    let sum = 0;
-    for (let j = from; j < to && j < arr.length; j += 1) {
-      sum += get(arr[j]);
-      count += 1;
-    }
-
-    result[i] = setter ? setter(arr[i], sum / count) : sum / count;
-  }
-
-  return result;
-}
-
-function stdDev(array) {
-  try {
-    const n = array.length;
-    const mean = array.reduce((a, b) => a + b) / n;
-    return Math.sqrt(
-      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
-function mean(array) {
-  try {
-    return (
-      array.reduce((previous, current) => (current += previous)) / array.length
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
 function refreshThemeColorObject() {
   let st = getComputedStyle(document.body);
 
@@ -132,36 +88,6 @@ function refreshThemeColorObject() {
   themeColors.colorfulErrorExtra = st
     .getPropertyValue("--colorful-error-extra-color")
     .replace(" ", "");
-}
-
-function showNotification(text, time) {
-  let noti = $(".notification");
-  noti.text(text);
-  noti.css("top", `-${noti.outerHeight()}px`);
-  noti.stop(true, true).animate(
-    {
-      top: "1rem",
-    },
-    250,
-    "swing",
-    () => {
-      noti.stop(true, true).animate(
-        {
-          opacity: 1,
-        },
-        time,
-        () => {
-          noti.stop(true, true).animate(
-            {
-              top: `-${noti.outerHeight()}px`,
-            },
-            250,
-            "swing"
-          );
-        }
-      );
-    }
-  );
 }
 
 function copyResultToClipboard() {
@@ -268,29 +194,6 @@ function toggleScriptFunbox(...params) {
   }
 }
 
-function getReleasesFromGitHub() {
-  $.getJSON(
-    "https://api.github.com/repos/Miodec/monkey-type/releases",
-    (data) => {
-      $("#bottom .version").text(data[0].name).css("opacity", 1);
-      $("#versionHistory .releases").empty();
-      data.forEach((release) => {
-        if (!release.draft && !release.prerelease) {
-          $("#versionHistory .releases").append(`
-          <div class="release">
-            <div class="title">${release.name}</div>
-            <div class="date">${moment(release.published_at).format(
-              "DD MMM YYYY"
-            )}</div>
-            <div class="body">${release.body.replace(/\r\n/g, "<br>")}</div>
-          </div>
-        `);
-        }
-      });
-    }
-  );
-}
-
 function verifyUsername() {
   //   test = firebase.functions().httpsCallable('moveResults')
   // test2 = firebase.functions().httpsCallable('getNames')
@@ -341,10 +244,6 @@ function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
 }
 
-function getLastChar(word) {
-  return word.charAt(word.length - 1);
-}
-
 function setFocus(foc) {
   if (foc && !focusState) {
     focusState = true;
@@ -361,15 +260,6 @@ function setFocus(foc) {
     $("body").css("cursor", "default");
     $("#middle").removeClass("focus");
   }
-}
-
-function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function roundedToFixed(float, digits) {
-  let rounded = Math.pow(10, digits);
-  return (Math.round(float * rounded) / rounded).toFixed(digits);
 }
 
 function initWords() {
@@ -703,18 +593,10 @@ function showWords() {
       .css("overflow", "hidden");
   }
 
-  // if ($(".active-key") != undefined) {
-  //   $(".active-key").removeClass("active-key");
-  // }
-
   var currentKey = wordsList[currentWordIndex]
     .substring(currentInput.length, currentInput.length + 1)
     .toString()
     .toUpperCase();
-
-  // var highlightKey = `#Key${currentKey}`;
-
-  // $(highlightKey).addClass("active-key");
 
   if (config.keymapMode === "next") {
     updateHighlightedKeymapKey();
@@ -722,9 +604,6 @@ function showWords() {
 
   updateActiveElement();
   updateCaretPosition();
-  // if (config.keymap !== "off") {
-  //   changeKeymapLayout(config.keymapLayout);
-  // }
 }
 
 function updateActiveElement() {
@@ -1415,7 +1294,7 @@ function showResult(difficultyFailed = false) {
     };
   }
   clearIntervals();
-  let testtime = roundedToFixed(stats.time, 1);
+  let testtime = stats.time;
   $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
   $("#result .stats .wpm .bottom").attr("aria-label", stats.wpm);
   $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
@@ -1437,8 +1316,11 @@ function showResult(difficultyFailed = false) {
 
   let afkseconds = keypressPerSecond.filter((x) => x == 0).length;
 
-  $("#result .stats .time .bottom").text(testtime + "s");
-  $("#result .stats .time .bottom").attr("aria-label", `${afkseconds}s afk`);
+  $("#result .stats .time .bottom").text(Math.round(testtime) + "s");
+  $("#result .stats .time .bottom").attr(
+    "aria-label",
+    `${roundTo2(testtime)}s (${afkseconds}s afk)`
+  );
 
   setTimeout(function () {
     $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
@@ -1457,11 +1339,8 @@ function showResult(difficultyFailed = false) {
   let mode2 = "";
   if (config.mode === "time") {
     mode2 = config.time;
-    // $("#result .stats .time").addClass('hidden');
   } else if (config.mode === "words") {
     mode2 = config.words;
-    // $("#result .stats .time").removeClass('hidden');
-    // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
   } else if (config.mode === "custom") {
     mode2 = "custom";
   } else if (config.mode === "quote") {
