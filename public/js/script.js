@@ -1918,14 +1918,10 @@ function startTest() {
       wpmHistory.push(wpmAndRaw.wpm);
       rawHistory.push(wpmAndRaw.raw);
 
-      if (activeFunBox === "layoutfluid") {
+      if (activeFunBox === "layoutfluid" && config.mode === "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];
         let index = 0;
-        if (config.mode === "time") {
-          index = Math.floor(time / (config.time / 3));
-        } else if (config.mode === "words") {
-          index = Math.floor(inputHistory.length / (outof / 3));
-        }
+        index = Math.floor(time / (config.time / 3));
         if (config.layout !== layouts[index] && layouts[index] !== undefined) {
           showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
         }
@@ -3404,7 +3400,19 @@ $(document).keydown((event) => {
           currentTestLine++;
         }
       }
-      // }
+      if (activeFunBox === "layoutfluid" && config.mode !== "time") {
+        const layouts = ["qwerty", "dvorak", "colemak"];
+        let index = 0;
+        let outof = wordsList.length;
+        index = Math.floor((inputHistory.length + 1) / (outof / 3));
+        if (config.layout !== layouts[index] && layouts[index] !== undefined) {
+          showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+        }
+        changeLayout(layouts[index]);
+        changeKeymapLayout(layouts[index]);
+        updateHighlightedKeymapKey();
+        settingsGroups.layout.updateButton();
+      }
       if (config.blindMode) $("#words .word.active letter").addClass("correct");
       // document
       //   .querySelector("#words .word.active")
