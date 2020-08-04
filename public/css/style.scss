@@ -2108,7 +2108,8 @@ key {
       }
 
       &.languages,
-      &.layouts {
+      &.layouts,
+      &.funbox {
         grid-template-columns: repeat(4, 1fr);
         grid-auto-flow: unset;
       }

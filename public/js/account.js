@@ -428,6 +428,20 @@ Object.keys(words).forEach((language) => {
   }
 });
 
+$(".pageAccount .content .filterButtons .buttons.funbox").append(
+  `<div class="button" filter="funbox_none">none</div>`
+);
+getFunboxList().then((funboxModes) => {
+  funboxModes.forEach((funbox) => {
+    $(".pageAccount .content .filterButtons .buttons.funbox").append(
+      `<div class="button" filter="funbox_${funbox.name}">${funbox.name.replace(
+        /_/g,
+        " "
+      )}</div>`
+    );
+  });
+});
+
 let activeFilters = ["all"];
 
 $(document).ready((e) => {
@@ -624,6 +638,7 @@ $(".pageAccount #currentConfigFilter").click((e) => {
     "timeFilter",
     "languages",
     "tags",
+    "funbox",
   ];
   disableGroups.forEach((group) => {
     $.each(
@@ -654,6 +669,9 @@ $(".pageAccount #currentConfigFilter").click((e) => {
   toggleFilterButton(puncfilter);
   config.resultFilters.push(`lang_${config.language}`);
   toggleFilterButton(`lang_${config.language}`);
+
+  config.resultFilters.push(`funbox_${activeFunBox}`);
+  toggleFilterButton(`funbox_${activeFunBox}`);
 
   let activeTags = [];
   try {
@@ -723,8 +741,11 @@ function loadMoreLines() {
       icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
     }
 
-    if (result.theme === "nausea") {
-      icons += `<span aria-label="nausea theme" data-balloon-pos="up"><i class="fas fa-skull-crossbones"></i></span>`;
+    if (result.funbox !== "none" && result.funbox !== undefined) {
+      icons += `<span aria-label="${result.funbox.replace(
+        /_/g,
+        " "
+      )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
     }
 
     let tagNames = "";
@@ -874,8 +895,14 @@ function refreshAccountPage() {
       }
       if (!activeFilters.includes(puncfilter)) return;
 
-      //check if the user has any tags defined
+      if (result.funbox === "none" || result.funbox === undefined) {
+        if (!activeFilters.includes("funbox_none")) return;
+      } else {
+        if (!activeFilters.includes("funbox_" + result.funbox)) return;
+      }
+
       if (dbSnapshot.tags.length > 0) {
+        //check if the user has any tags defined
         //check if that result has any tags
         if (result.tags !== undefined && result.tags.length > 0) {
           let found = false;
@@ -909,15 +936,6 @@ function refreshAccountPage() {
       }
 
       if (datehide) return;
-
-      // if(
-      //   (!activeFilters.includes("date_all")) &&
-      //   (activeFilters.includes("date_day") && timeSinceTest > 86400) &&
-      //   (activeFilters.includes("date_week") && timeSinceTest > 604800) &&
-      //   (activeFilters.includes("date_month") && timeSinceTest > 18144000)
-      //   ){
-      //   return;
-      // }
 
       filteredResults.push(result);
 

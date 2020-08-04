@@ -2625,7 +2625,10 @@ function updateTestModesNotice() {
 
   if (activeFunBox !== "none") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-gamepad"></i>${activeFunBox}</div>`
+      `<div><i class="fas fa-gamepad"></i>${activeFunBox.replace(
+        /_/g,
+        " "
+      )}</div>`
     );
   }
 
