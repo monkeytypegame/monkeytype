@@ -14,7 +14,7 @@ let defaultConfig = {
   ],
   showKeyTips: true,
   showLiveWpm: false,
-  showTimerBar: true,
+  showTimerProgress: true,
   smoothCaret: true,
   quickTab: false,
   punctuation: false,
@@ -31,7 +31,6 @@ let defaultConfig = {
   caretStyle: "default",
   flipTestColors: false,
   layout: "default",
-  showDiscordDot: true,
   confidenceMode: "off",
   timerStyle: "bar",
   colorfulMode: true,
@@ -44,6 +43,7 @@ let defaultConfig = {
   keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
+  alwaysShowDecimalPlaces: false,
 };
 
 let cookieConfig = null;
@@ -53,7 +53,7 @@ let config = {
 };
 
 //cookies
-function saveConfigToCookie() {
+async function saveConfigToCookie() {
   // showNotification('saving to cookie',1000);
   if (config.freedomMode === null) config.freedomMode = false;
   let d = new Date();
@@ -67,7 +67,7 @@ function saveConfigToCookie() {
   saveConfigToDB();
 }
 
-function saveConfigToDB() {
+async function saveConfigToDB() {
   if (firebase.auth().currentUser !== null) {
     // showNotification('saving to db',1000);
     accountIconLoading(true);
@@ -134,7 +134,6 @@ function applyConfig(configObj) {
     setBlindMode(configObj.blindMode, true);
     setQuickEnd(configObj.quickEnd, true);
     setFlipTestColors(configObj.flipTestColors, true);
-    setDiscordDot(configObj.hideDiscordDot, true);
     setColorfulMode(configObj.colorfulMode, true);
     setConfidenceMode(configObj.confidenceMode, true);
     setTimerStyle(configObj.timerStyle, true);
@@ -144,6 +143,9 @@ function applyConfig(configObj) {
     changeKeymapLayout(configObj.keymapLayout, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
+    setShowLiveWpm(configObj.showLiveWpm, true);
+    setShowTimerProgress(configObj.showTimerProgress, true);
+    setAlwaysShowDecimalPlaces(config.alwaysShowDecimalPlaces, true);
     if (
       configObj.resultFilters == null ||
       configObj.resultFilters == undefined
@@ -193,34 +195,6 @@ function setDifficulty(diff, nosave) {
 }
 
 //blind mode
-function toggleDiscordDot() {
-  dot = !config.showDiscordDot;
-  if (dot == undefined) {
-    dot = false;
-  }
-  config.showDiscordDot = dot;
-  if (!dot) {
-    $("#menu .discord").addClass("dotHidden");
-  } else {
-    $("#menu .discord").removeClass("dotHidden");
-  }
-  saveConfigToCookie();
-}
-
-function setDiscordDot(dot, nosave) {
-  if (dot == undefined) {
-    dot = false;
-  }
-  config.showDiscordDot = dot;
-  if (!dot) {
-    $("#menu .discord").addClass("dotHidden");
-  } else {
-    $("#menu .discord").removeClass("dotHidden");
-  }
-  if (!nosave) saveConfigToCookie();
-}
-
-//blind mode
 function toggleBlindMode() {
   blind = !config.blindMode;
   if (blind == undefined) {
@@ -257,6 +231,20 @@ function setStopOnError(soe, nosave) {
   }
   config.stopOnError = soe;
   updateTestModesNotice();
+  if (!nosave) saveConfigToCookie();
+}
+
+//alwaysshowdecimal
+function toggleAlwaysShowDecimalPlaces() {
+  config.alwaysShowDecimalPlaces = !config.alwaysShowDecimalPlaces;
+  saveConfigToCookie();
+}
+
+function setAlwaysShowDecimalPlaces(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.alwaysShowDecimalPlaces = val;
   if (!nosave) saveConfigToCookie();
 }
 
@@ -350,6 +338,38 @@ function setCaretStyle(caretStyle, nosave) {
     $("#caret").addClass("underline");
   }
   if (!nosave) saveConfigToCookie();
+}
+
+function setShowTimerProgress(timer, nosave) {
+  if (timer == null || timer == undefined) {
+    timer = false;
+  }
+  config.showTimerProgress = timer;
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleShowTimerProgress() {
+  config.showTimerProgress = !config.showTimerProgress;
+  saveConfigToCookie();
+}
+
+function setShowLiveWpm(live, nosave) {
+  if (live == null || live == undefined) {
+    live = false;
+  }
+  config.showLiveWpm = live;
+  if (config.keymapMode !== "off") {
+    config.keymapMode = "off";
+  }
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleShowLiveWpm() {
+  config.showLiveWpm = !config.showLiveWpm;
+  if (config.keymapMode !== "off") {
+    config.keymapMode = "off";
+  }
+  saveConfigToCookie();
 }
 
 function setTimerStyle(style, nosave) {

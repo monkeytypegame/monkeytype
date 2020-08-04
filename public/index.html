@@ -7,7 +7,7 @@
   <title>Monkey Type</title>
   <link rel="stylesheet" href="css/fa.css">
   <link rel="stylesheet" href="css/balloon.css">
-  <link rel="stylesheet" href="css/style.css?v=46">
+  <link rel="stylesheet" href="css/style.css?v=47">
   <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme">
   <link rel="stylesheet" href="" id="funBoxTheme">
   <link id="favicon" rel="shortcut icon" href="fav.png">
@@ -1123,12 +1123,12 @@
               </div>
             </div>
           </div>
-          <div class="section layouts">
+          <div class="section layout">
             <h1>layout override</h1>
             <div class="buttons">
             </div>
           </div>
-          <div class="section languages">
+          <div class="section language">
             <h1>language</h1>
             <div class="buttons">
             </div>
@@ -1158,38 +1158,48 @@
             <h1>caret style</h1>
             <div class="text">Change the style of the caret during the test.</div>
             <div class="buttons">
-              <div class="button" caret="default" tabindex="0" onclick="this.blur();">|</div>
-              <div class="button" caret="block" tabindex="0" onclick="this.blur();">▮</div>
-              <div class="button" caret="outline" tabindex="0" onclick="this.blur();">▯</div>
-              <div class="button" caret="underline" tabindex="0" onclick="this.blur();">_</div>
+              <div class="button" caretStyle="default" tabindex="0" onclick="this.blur();">|</div>
+              <div class="button" caretStyle="block" tabindex="0" onclick="this.blur();">▮</div>
+              <div class="button" caretStyle="outline" tabindex="0" onclick="this.blur();">▯</div>
+              <div class="button" caretStyle="underline" tabindex="0" onclick="this.blur();">_</div>
             </div>
           </div>
           <div class="section timerStyle" section="">
             <h1>timer/progress style</h1>
             <div class="text">Change the style of the timer/progress during a timed test.</div>
             <div class="buttons">
-              <div class="button" timer="bar" tabindex="0" onclick="this.blur();">bar</div>
-              <div class="button" timer="text" tabindex="0" onclick="this.blur();">text</div>
+              <div class="button" timerStyle="bar" tabindex="0" onclick="this.blur();">bar</div>
+              <div class="button" timerStyle="text" tabindex="0" onclick="this.blur();">text</div>
             </div>
           </div>
           <div class="section timerColor" section="">
             <h1>timer/progress color</h1>
             <div class="text">Change the color of the timer/progress number/bar and live wpm number.</div>
             <div class="buttons">
-              <div class="button" color="black" tabindex="0" onclick="this.blur();">black</div>
-              <div class="button" color="sub" tabindex="0" onclick="this.blur();">sub</div>
-              <div class="button" color="text" tabindex="0" onclick="this.blur();">text</div>
-              <div class="button" color="main" tabindex="0" onclick="this.blur();">main</div>
+              <div class="button" timerColor="black" tabindex="0" onclick="this.blur();">black</div>
+              <div class="button" timerColor="sub" tabindex="0" onclick="this.blur();">sub</div>
+              <div class="button" timerColor="text" tabindex="0" onclick="this.blur();">text</div>
+              <div class="button" timerColor="main" tabindex="0" onclick="this.blur();">main</div>
             </div>
           </div>
           <div class="section timerOpacity" section="">
             <h1>timer/progress opacity</h1>
             <div class="text">Change the opacity of the timer/progress number/bar and live wpm number.</div>
             <div class="buttons">
-              <div class="button" opacity="0.25" tabindex="0" onclick="this.blur();">0.25</div>
-              <div class="button" opacity="0.5" tabindex="0" onclick="this.blur();">0.5</div>
-              <div class="button" opacity="0.75" tabindex="0" onclick="this.blur();">0.75</div>
-              <div class="button" opacity="1" tabindex="0" onclick="this.blur();">1</div>
+              <div class="button" timerOpacity="0.25" tabindex="0" onclick="this.blur();">0.25</div>
+              <div class="button" timerOpacity="0.5" tabindex="0" onclick="this.blur();">0.5</div>
+              <div class="button" timerOpacity="0.75" tabindex="0" onclick="this.blur();">0.75</div>
+              <div class="button" timerOpacity="1" tabindex="0" onclick="this.blur();">1</div>
+            </div>
+          </div>
+          <div class="section alwaysShowDecimalPlaces">
+            <h1>always show decimal places</h1>
+            <div class="text">Always shows decimal places for values on the result page, without the need to hover over
+              the stats.
+            </div>
+            <div class="buttons">
+              <div class="button off" tabindex="0" onclick="this.blur();">off</div>
+              <div class="button on" tabindex="0" onclick="this.blur();">on</div>
             </div>
           </div>
           <div class="section smoothLineScroll">
@@ -1356,7 +1366,7 @@
           hide elements
           <i class="fas fa-chevron-down"></i></div>
         <div class="settingsGroup hideElements">
-          <div class="section liveWpm">
+          <div class="section showLiveWpm">
             <h1>live wpm</h1>
             <div class="text">Displays a live WPM speed during the test. Updates once every second.</div>
             <div class="buttons">
@@ -1364,7 +1374,7 @@
               <div class="button on" tabindex="0" onclick="this.blur();">show</div>
             </div>
           </div>
-          <div class="section timerBar">
+          <div class="section showTimerProgress">
             <h1>timer/progress</h1>
             <div class="text">Displays a live timer for timed tests and progress for words/custom tests.</div>
             <div class="buttons">
@@ -1372,17 +1382,9 @@
               <div class="button on" tabindex="0" onclick="this.blur();">show</div>
             </div>
           </div>
-          <div class="section keyTips">
+          <div class="section showKeyTips">
             <h1>key tips</h1>
             <div class="text">Shows the keybind tips at the bottom of the page.</div>
-            <div class="buttons">
-              <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
-              <div class="button on" tabindex="0" onclick="this.blur();">show</div>
-            </div>
-          </div>
-          <div class="section discordDot">
-            <h1>discord dot</h1>
-            <div class="text">Shows the notification dot on the Discord icon.</div>
             <div class="buttons">
               <div class="button off" tabindex="0" onclick="this.blur();">hide</div>
               <div class="button on" tabindex="0" onclick="this.blur();">show</div>
@@ -1658,18 +1660,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script> -->
-<script src="js/chart.js"></script>
-<script src="js/chartjs-plugin-trendline.js?v=46"></script>
+<script src="js/chart.min.js"></script>
+<script src="js/chartjs-plugin-trendline.js?v=47"></script>
 <script src="js/chartjs-plugin-annotation.js"></script>
-<script src="js/html2canvas.js"></script>
-<script src="js/words.js?v=46"></script>
-<script src="js/layouts.js?v=46"></script>
-<script src="js/db.js?v=46"></script>
-<script src="js/userconfig.js?v=46"></script>
-<script src="js/commandline.js?v=46"></script>
-<script src="js/leaderboards.js?v=46"></script>
-<script src="js/settings.js?v=46"></script>
-<script src="js/account.js?v=46"></script>
-<script src="js/script.js?v=46"></script>
+<script src="js/html2canvas.min.js"></script>
+<script src="js/misc.js?v=47"></script>
+<script src="js/words.js?v=47"></script>
+<script src="js/layouts.js?v=47"></script>
+<script src="js/db.js?v=47"></script>
+<script src="js/userconfig.js?v=47"></script>
+<script src="js/commandline.js?v=47"></script>
+<script src="js/leaderboards.js?v=47"></script>
+<script src="js/settings.js?v=47"></script>
+<script src="js/account.js?v=47"></script>
+<script src="js/script.js?v=47"></script>
 
 </html>

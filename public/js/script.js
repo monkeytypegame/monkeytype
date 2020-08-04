@@ -70,50 +70,6 @@ const generatePairingCode = firebase
   .functions()
   .httpsCallable("generatePairingCode");
 
-function smooth(arr, windowSize, getter = (value) => value, setter) {
-  const get = getter;
-  const result = [];
-
-  for (let i = 0; i < arr.length; i += 1) {
-    const leftOffeset = i - windowSize;
-    const from = leftOffeset >= 0 ? leftOffeset : 0;
-    const to = i + windowSize + 1;
-
-    let count = 0;
-    let sum = 0;
-    for (let j = from; j < to && j < arr.length; j += 1) {
-      sum += get(arr[j]);
-      count += 1;
-    }
-
-    result[i] = setter ? setter(arr[i], sum / count) : sum / count;
-  }
-
-  return result;
-}
-
-function stdDev(array) {
-  try {
-    const n = array.length;
-    const mean = array.reduce((a, b) => a + b) / n;
-    return Math.sqrt(
-      array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
-function mean(array) {
-  try {
-    return (
-      array.reduce((previous, current) => (current += previous)) / array.length
-    );
-  } catch (e) {
-    return 0;
-  }
-}
-
 function refreshThemeColorObject() {
   let st = getComputedStyle(document.body);
 
@@ -132,36 +88,6 @@ function refreshThemeColorObject() {
   themeColors.colorfulErrorExtra = st
     .getPropertyValue("--colorful-error-extra-color")
     .replace(" ", "");
-}
-
-function showNotification(text, time) {
-  let noti = $(".notification");
-  noti.text(text);
-  noti.css("top", `-${noti.outerHeight()}px`);
-  noti.stop(true, true).animate(
-    {
-      top: "1rem",
-    },
-    250,
-    "swing",
-    () => {
-      noti.stop(true, true).animate(
-        {
-          opacity: 1,
-        },
-        time,
-        () => {
-          noti.stop(true, true).animate(
-            {
-              top: `-${noti.outerHeight()}px`,
-            },
-            250,
-            "swing"
-          );
-        }
-      );
-    }
-  );
 }
 
 function copyResultToClipboard() {
@@ -230,14 +156,23 @@ function activateFunbox(funbox, mode) {
     }
 
     if (funbox === "simon_says") {
-      setActiveKeymapModeButton();
+      settingsGroups.keymapMode.updateButton();
       restartTest();
     }
   } else if (mode === "script") {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
       config.keymapMode = "off";
-      setActiveKeymapModeButton();
+      settingsGroups.keymapMode.updateButton();
+      restartTest();
+    } else if (funbox === "layoutfluid") {
+      config.keymapMode = "on";
+      changeKeymapMode("next");
+      settingsGroups.keymapMode.updateButton();
+      changeLayout("qwerty");
+      setActiveLayoutButton();
+      changeKeymapLayout("qwerty");
+      setActiveKeymapLayoutButton();
       restartTest();
     }
     activeFunBox = funbox;
@@ -257,29 +192,6 @@ function toggleScriptFunbox(...params) {
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(msg);
   }
-}
-
-function getReleasesFromGitHub() {
-  $.getJSON(
-    "https://api.github.com/repos/Miodec/monkey-type/releases",
-    (data) => {
-      $("#bottom .version").text(data[0].name).css("opacity", 1);
-      $("#versionHistory .releases").empty();
-      data.forEach((release) => {
-        if (!release.draft && !release.prerelease) {
-          $("#versionHistory .releases").append(`
-          <div class="release">
-            <div class="title">${release.name}</div>
-            <div class="date">${moment(release.published_at).format(
-              "DD MMM YYYY"
-            )}</div>
-            <div class="body">${release.body.replace(/\r\n/g, "<br>")}</div>
-          </div>
-        `);
-        }
-      });
-    }
-  );
 }
 
 function verifyUsername() {
@@ -332,10 +244,6 @@ function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
 }
 
-function getLastChar(word) {
-  return word.charAt(word.length - 1);
-}
-
 function setFocus(foc) {
   if (foc && !focusState) {
     focusState = true;
@@ -352,15 +260,6 @@ function setFocus(foc) {
     $("body").css("cursor", "default");
     $("#middle").removeClass("focus");
   }
-}
-
-function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function roundedToFixed(float, digits) {
-  let rounded = Math.pow(10, digits);
-  return (Math.round(float * rounded) / rounded).toFixed(digits);
 }
 
 function initWords() {
@@ -694,18 +593,10 @@ function showWords() {
       .css("overflow", "hidden");
   }
 
-  // if ($(".active-key") != undefined) {
-  //   $(".active-key").removeClass("active-key");
-  // }
-
   var currentKey = wordsList[currentWordIndex]
     .substring(currentInput.length, currentInput.length + 1)
     .toString()
     .toUpperCase();
-
-  // var highlightKey = `#Key${currentKey}`;
-
-  // $(highlightKey).addClass("active-key");
 
   if (config.keymapMode === "next") {
     updateHighlightedKeymapKey();
@@ -713,9 +604,6 @@ function showWords() {
 
   updateActiveElement();
   updateCaretPosition();
-  // if (config.keymap !== "off") {
-  //   changeKeymapLayout(config.keymapLayout);
-  // }
 }
 
 function updateActiveElement() {
@@ -823,7 +711,7 @@ function highlightBadWord(index, showError) {
 }
 
 function showTimer() {
-  let op = config.showTimerBar ? config.timerOpacity : 0;
+  let op = config.showTimerProgress ? config.timerOpacity : 0;
   if (config.timerStyle === "bar") {
     // let op = 0.25;
     // if (
@@ -924,7 +812,7 @@ function restartTimer() {
 }
 
 function updateTimer() {
-  if (!config.showTimerBar) return;
+  if (!config.showTimerProgress) return;
   if (config.mode === "time") {
     if (config.timerStyle === "bar") {
       let percent = 100 - ((time + 1) / config.time) * 100;
@@ -1406,13 +1294,28 @@ function showResult(difficultyFailed = false) {
     };
   }
   clearIntervals();
-  let testtime = roundedToFixed(stats.time, 1);
-  $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
-  $("#result .stats .wpm .bottom").attr("aria-label", stats.wpm);
-  $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
-  $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
-  $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
-  $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
+  let testtime = stats.time;
+  let afkseconds = keypressPerSecond.filter((x) => x == 0).length;
+
+  if (config.alwaysShowDecimalPlaces) {
+    $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm));
+    $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
+    $("#result .stats .acc .bottom").text(roundTo2(stats.acc) + "%");
+    $("#result .stats .time .bottom").text(roundTo2(testtime) + "s");
+    $("#result .stats .time .bottom").attr("aria-label", `${afkseconds}s afk`);
+  } else {
+    $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
+    $("#result .stats .wpm .bottom").attr("aria-label", stats.wpm);
+    $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
+    $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
+    $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
+    $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
+    $("#result .stats .time .bottom").text(Math.round(testtime) + "s");
+    $("#result .stats .time .bottom").attr(
+      "aria-label",
+      `${roundTo2(testtime)}s (${afkseconds}s afk)`
+    );
+  }
 
   let correctcharpercent = roundTo2(
     ((stats.correctChars + stats.correctSpaces) /
@@ -1425,11 +1328,6 @@ function showResult(difficultyFailed = false) {
   $("#result .stats .key .bottom").text(
     stats.correctChars + stats.correctSpaces + "/" + stats.incorrectChars
   );
-
-  let afkseconds = keypressPerSecond.filter((x) => x == 0).length;
-
-  $("#result .stats .time .bottom").text(testtime + "s");
-  $("#result .stats .time .bottom").attr("aria-label", `${afkseconds}s afk`);
 
   setTimeout(function () {
     $("#resultExtraButtons").removeClass("hidden").css("opacity", 0).animate(
@@ -1448,11 +1346,8 @@ function showResult(difficultyFailed = false) {
   let mode2 = "";
   if (config.mode === "time") {
     mode2 = config.time;
-    // $("#result .stats .time").addClass('hidden');
   } else if (config.mode === "words") {
     mode2 = config.words;
-    // $("#result .stats .time").removeClass('hidden');
-    // $("#result .stats .time .bottom").text(roundedToFixed(stats.time,1)+'s');
   } else if (config.mode === "custom") {
     mode2 = "custom";
   } else if (config.mode === "quote") {
@@ -1492,12 +1387,6 @@ function showResult(difficultyFailed = false) {
   let stddev = stdDev(rawWpmPerSecondRaw);
   let avg = mean(rawWpmPerSecondRaw);
 
-  function kogasa(cov) {
-    return (
-      100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
-    );
-  }
-
   let consistency = roundTo2(kogasa(stddev / avg));
   let keyConsistency = roundTo2(
     kogasa(
@@ -1509,11 +1398,21 @@ function showResult(difficultyFailed = false) {
     consistency = 0;
   }
 
-  $("#result .stats .consistency .bottom").text(Math.round(consistency) + "%");
-  $("#result .stats .consistency .bottom").attr(
-    "aria-label",
-    `${consistency}% (${keyConsistency}% key)`
-  );
+  if (config.alwaysShowDecimalPlaces) {
+    $("#result .stats .consistency .bottom").text(roundTo2(consistency) + "%");
+    $("#result .stats .consistency .bottom").attr(
+      "aria-label",
+      `${keyConsistency}% key`
+    );
+  } else {
+    $("#result .stats .consistency .bottom").text(
+      Math.round(consistency) + "%"
+    );
+    $("#result .stats .consistency .bottom").attr(
+      "aria-label",
+      `${consistency}% (${keyConsistency}% key)`
+    );
+  }
 
   wpmOverTimeChart.data.datasets[0].borderColor = themeColors.main;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
@@ -2019,6 +1918,23 @@ function startTest() {
       wpmHistory.push(wpmAndRaw.wpm);
       rawHistory.push(wpmAndRaw.raw);
 
+      if (activeFunBox === "layoutfluid") {
+        const layouts = ["qwerty", "dvorak", "colemak"];
+        let index = 0;
+        if (config.mode === "time") {
+          index = Math.floor(time / (config.time / 3));
+        } else if (config.mode === "words") {
+          index = Math.floor(inputHistory.length / (outof / 3));
+        }
+        if (config.layout !== layouts[index] && layouts[index] !== undefined) {
+          showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+        }
+        changeLayout(layouts[index]);
+        changeKeymapLayout(layouts[index]);
+        updateHighlightedKeymapKey();
+        setActiveLayoutButton();
+      }
+
       // console.timeEnd("livewpm");
       keypressPerSecond.push(currentKeypressCount);
       currentKeypressCount = 0;
@@ -2154,6 +2070,15 @@ function restartTest(withSameWordset = false) {
       if (config.keymapMode !== "off") {
         showKeymap();
       }
+
+      if (activeFunBox === "layoutfluid") {
+        changeLayout("qwerty");
+        setActiveLayoutButton();
+        changeKeymapLayout("qwerty");
+        setActiveKeymapLayoutButton();
+        updateHighlightedKeymapKey();
+      }
+
       $("#result").addClass("hidden");
       $("#testModesNotice").removeClass("hidden").css({
         opacity: 1,

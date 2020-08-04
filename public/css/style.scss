@@ -2,6 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Oxygen&display=swap');
 
 :root {
   --roundness: 0.25rem;
@@ -1843,8 +1844,8 @@ key {
     }
 
     &.themes,
-    &.languages,
-    &.layouts,
+    &.language,
+    &.layout,
     &.keymapLayout,
     &.fontFamily,
     &.funbox {

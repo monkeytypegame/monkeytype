@@ -78,7 +78,7 @@ let commands = {
       id: "toggleShowLiveWpm",
       display: "Toggle live wpm display",
       exec: () => {
-        config.showLiveWpm = !config.showLiveWpm;
+        toggleShowLiveWpm();
         saveConfigToCookie();
       },
     },
@@ -86,7 +86,7 @@ let commands = {
       id: "toggleTimerBar",
       display: "Toggle timer display",
       exec: () => {
-        config.showTimerBar = !config.showTimerBar;
+        toggleShowTimerProgress();
         saveConfigToCookie();
       },
     },
@@ -137,6 +137,13 @@ let commands = {
       display: "Toggle smooth line scroll",
       exec: () => {
         toggleSmoothLineScroll();
+      },
+    },
+    {
+      id: "toggleAlwaysShowDecimalPlaces",
+      display: "Toggle always show decimal places",
+      exec: () => {
+        toggleAlwaysShowDecimalPlaces();
       },
     },
     {
@@ -687,17 +694,8 @@ function updateCommandsTagsList() {
   }
 }
 
-let themesList;
-
-$.getJSON("themes/list.json", function (data) {
-  commandsThemes.list = [];
-  themesList = data.sort(function (a, b) {
-    (nameA = a.name.toLowerCase()), (nameB = b.name.toLowerCase());
-    if (nameA < nameB) return -1;
-    if (nameA > nameB) return 1;
-    return 0;
-  });
-  data.forEach((theme) => {
+getThemesList().then((themes) => {
+  themes.forEach((theme) => {
     commandsThemes.list.push({
       id: "changeTheme" + capitalizeFirstLetter(theme.name),
       display: theme.name.replace(/_/g, " "),
@@ -711,32 +709,13 @@ $.getJSON("themes/list.json", function (data) {
   });
 });
 
-let funboxList;
-
-$.getJSON("funbox/list.json", function (data) {
-  funboxList = data.sort(function (a, b) {
-    (nameA = a.name.toLowerCase()), (nameB = b.name.toLowerCase());
-    if (nameA < nameB) return -1;
-    if (nameA > nameB) return 1;
-    return 0;
-  });
-});
-
 let commandsFonts = {
   title: "Change font...",
   list: [],
 };
 
-let fontsList;
-
-$.getJSON("js/fonts.json", function (data) {
-  fontsList = data.sort(function (a, b) {
-    (nameA = a.name.toLowerCase()), (nameB = b.name.toLowerCase());
-    if (nameA < nameB) return -1;
-    if (nameA > nameB) return 1;
-    return 0;
-  });
-  data.forEach((font) => {
+getFontsList().then((fonts) => {
+  fonts.forEach((font) => {
     commandsFonts.list.push({
       id: "changeFont" + font.name.replace(/ /g, "_"),
       display: font.display !== undefined ? font.display : font.name,

@@ -25,5 +25,14 @@
   {
     "name": "rAnDoMcAsE",
     "type": "script"
+  },
+  {
+
+    "name": "layoutfluid",
+    "type": "script"
+  },
+  {
+    "name": "earthquake",
+    "type": "style"
   }
 ]
