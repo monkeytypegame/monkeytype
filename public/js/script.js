@@ -3422,6 +3422,7 @@ $(document).keydown((event) => {
       //   .querySelector("#words .word.active")
       //   .setAttribute("input", currentInput);
       if (currentWord == currentInput) {
+        accuracyStats.correct++;
         inputHistory.push(currentInput);
         currentInput = "";
         currentWordIndex++;
@@ -3430,6 +3431,7 @@ $(document).keydown((event) => {
         updateCaretPosition();
         currentKeypressCount++;
       } else {
+        accuracyStats.incorrect++;
         if (config.stopOnError) {
           if (config.difficulty == "expert" || config.difficulty == "master") {
             //failed due to diff when pressing space
