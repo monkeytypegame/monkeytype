@@ -15,7 +15,6 @@ let currentTestLine = 0;
 let pageTransition = false;
 let keypressPerSecond = [];
 let currentKeypressCount = 0;
-let afkDetected = false;
 let errorsPerSecond = [];
 let currentErrorCount = 0;
 let resultVisible = false;
@@ -654,12 +653,10 @@ function compareInput(showError) {
             .setAttribute("input", currentInput);
           showResult(true);
         }
-        if (!afkDetected) {
-          let testNow = Date.now();
-          let testSeconds = roundTo2((testNow - testStart) / 1000);
-          incompleteTestSeconds += testSeconds;
-          restartCount++;
-        }
+        let testNow = Date.now();
+        let testSeconds = roundTo2((testNow - testStart) / 1000);
+        incompleteTestSeconds += testSeconds;
+        restartCount++;
       }
       if (!showError) {
         if (currentWord[i] == undefined) {
@@ -1448,6 +1445,12 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.data.datasets[2].data = errorsNoZero;
 
+  let kps = keypressPerSecond.slice(Math.max(keypressPerSecond.length - 7, 0));
+
+  kps = kps.reduce((a, b) => a + b, 0);
+
+  let afkDetected = kps === 0 ? true : false;
+
   if (difficultyFailed) {
     showNotification("Test failed", 2000);
   } else if (afkDetected) {
@@ -1936,21 +1939,21 @@ function startTest() {
       currentKeypressCount = 0;
       errorsPerSecond.push(currentErrorCount);
       currentErrorCount = 0;
-      if (
-        keypressPerSecond[time - 1] == 0 &&
-        keypressPerSecond[time - 2] == 0 &&
-        keypressPerSecond[time - 3] == 0 &&
-        keypressPerSecond[time - 4] == 0 &&
-        keypressPerSecond[time - 5] == 0 &&
-        keypressPerSecond[time - 6] == 0 &&
-        keypressPerSecond[time - 7] == 0 &&
-        keypressPerSecond[time - 8] == 0 &&
-        keypressPerSecond[time - 9] == 0 &&
-        !afkDetected
-      ) {
-        showNotification("AFK detected", 3000);
-        afkDetected = true;
-      }
+      // if (
+      //   keypressPerSecond[time - 1] == 0 &&
+      //   keypressPerSecond[time - 2] == 0 &&
+      //   keypressPerSecond[time - 3] == 0 &&
+      //   keypressPerSecond[time - 4] == 0 &&
+      //   keypressPerSecond[time - 5] == 0 &&
+      //   keypressPerSecond[time - 6] == 0 &&
+      //   keypressPerSecond[time - 7] == 0 &&
+      //   keypressPerSecond[time - 8] == 0 &&
+      //   keypressPerSecond[time - 9] == 0 &&
+      //   !afkDetected
+      // ) {
+      //   showNotification("AFK detected", 3000);
+      //   afkDetected = true;
+      // }
       if (config.mode == "time") {
         if (time >= config.time) {
           //times up
@@ -1968,7 +1971,7 @@ function startTest() {
 function restartTest(withSameWordset = false) {
   clearIntervals();
   time = 0;
-  afkDetected = false;
+  // afkDetected = false;
   wpmHistory = [];
   rawHistory = [];
   setFocus(false);
@@ -3075,7 +3078,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
         !customTextIsRandom &&
         customText.length < 1000)
     ) {
-      if (testActive && !afkDetected) {
+      if (testActive) {
         let testNow = Date.now();
         let testSeconds = roundTo2((testNow - testStart) / 1000);
         incompleteTestSeconds += testSeconds;
@@ -3190,12 +3193,10 @@ $(document).keypress(function (event) {
     if (config.difficulty == "master") {
       //failed due to master diff when pressing a key
       showResult(true);
-      if (!afkDetected) {
-        let testNow = Date.now();
-        let testSeconds = roundTo2((testNow - testStart) / 1000);
-        incompleteTestSeconds += testSeconds;
-        restartCount++;
-      }
+      let testNow = Date.now();
+      let testSeconds = roundTo2((testNow - testStart) / 1000);
+      incompleteTestSeconds += testSeconds;
+      restartCount++;
       return;
     } else {
       return;
@@ -3272,7 +3273,7 @@ $(document).keydown((event) => {
             !customTextIsRandom &&
             customText.length < 1000)
         ) {
-          if (testActive && !afkDetected) {
+          if (testActive) {
             let testNow = Date.now();
             let testSeconds = roundTo2((testNow - testStart) / 1000);
             incompleteTestSeconds += testSeconds;
@@ -3433,12 +3434,12 @@ $(document).keydown((event) => {
           if (config.difficulty == "expert" || config.difficulty == "master") {
             //failed due to diff when pressing space
             showResult(true);
-            if (!afkDetected) {
-              let testNow = Date.now();
-              let testSeconds = roundTo2((testNow - testStart) / 1000);
-              incompleteTestSeconds += testSeconds;
-              restartCount++;
-            }
+            // if (!afkDetected) {
+            let testNow = Date.now();
+            let testSeconds = roundTo2((testNow - testStart) / 1000);
+            incompleteTestSeconds += testSeconds;
+            restartCount++;
+            // }
             return;
           }
           return;
@@ -3458,12 +3459,12 @@ $(document).keydown((event) => {
         ) {
           //submitted last word incorrect and failed test
           showResult(true);
-          if (!afkDetected) {
-            let testNow = Date.now();
-            let testSeconds = roundTo2((testNow - testStart) / 1000);
-            incompleteTestSeconds += testSeconds;
-            restartCount++;
-          }
+          // if (!afkDetected) {
+          let testNow = Date.now();
+          let testSeconds = roundTo2((testNow - testStart) / 1000);
+          incompleteTestSeconds += testSeconds;
+          restartCount++;
+          // }
           return;
         }
         updateActiveElement();
