@@ -1903,7 +1903,7 @@ key {
   position: relative;
 
   .tabContent {
-    overflow: hidden;
+    overflow: revert;
     height: auto;
     // max-height: 0px;
     // max-height: 100vh;
