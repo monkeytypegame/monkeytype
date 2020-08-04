@@ -170,9 +170,9 @@ function activateFunbox(funbox, mode) {
       changeKeymapMode("next");
       settingsGroups.keymapMode.updateButton();
       changeLayout("qwerty");
-      setActiveLayoutButton();
+      settingsGroups.layout.updateButton();
       changeKeymapLayout("qwerty");
-      setActiveKeymapLayoutButton();
+      settingsGroups.keymapLayout.updateButton();
       restartTest();
     }
     activeFunBox = funbox;
@@ -1932,7 +1932,7 @@ function startTest() {
         changeLayout(layouts[index]);
         changeKeymapLayout(layouts[index]);
         updateHighlightedKeymapKey();
-        setActiveLayoutButton();
+        settingsGroups.layout.updateButton();
       }
 
       // console.timeEnd("livewpm");
@@ -2075,9 +2075,9 @@ function restartTest(withSameWordset = false) {
 
       if (activeFunBox === "layoutfluid") {
         changeLayout("qwerty");
-        setActiveLayoutButton();
+        settingsGroups.layout.updateButton();
         changeKeymapLayout("qwerty");
-        setActiveKeymapLayoutButton();
+        settingsGroups.keymapLayout.updateButton();
         updateHighlightedKeymapKey();
       }
 
