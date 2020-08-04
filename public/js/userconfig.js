@@ -358,17 +358,17 @@ function setShowLiveWpm(live, nosave) {
     live = false;
   }
   config.showLiveWpm = live;
-  if (config.keymapMode !== "off") {
-    config.keymapMode = "off";
-  }
+  // if (config.keymapMode !== "off") {
+  //   config.keymapMode = "off";
+  // }
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleShowLiveWpm() {
   config.showLiveWpm = !config.showLiveWpm;
-  if (config.keymapMode !== "off") {
-    config.keymapMode = "off";
-  }
+  // if (config.keymapMode !== "off") {
+  //   config.keymapMode = "off";
+  // }
   saveConfigToCookie();
 }
 
@@ -758,12 +758,6 @@ function changeLayout(layout, nosave) {
 function changeKeymapMode(mode, nosave) {
   if (mode == null || mode == undefined) {
     mode = "off";
-  }
-  if (mode === "off") {
-    // hideKeymap();
-    $("#liveWpm").removeClass("lower");
-  } else {
-    $("#liveWpm").addClass("lower");
   }
   if (mode === "react") {
     $(".active-key").removeClass("active-key");

@@ -2069,6 +2069,8 @@ function restartTest(withSameWordset = false) {
       }
       if (config.keymapMode !== "off") {
         showKeymap();
+      } else {
+        hideKeymap();
       }
 
       if (activeFunBox === "layoutfluid") {
@@ -2319,6 +2321,11 @@ function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
   $("#liveWpm").css("opacity", config.timerOpacity);
+  if (config.keymapMode !== "off") {
+    $("#liveWpm").addClass("lower");
+  } else {
+    $("#liveWpm").removeClass("lower");
+  }
   // if (config.timerStyle === "text") {
   //   $("#timerNumber").css("opacity", config.timerOpacity);
   // }
