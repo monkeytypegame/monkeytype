@@ -160,6 +160,10 @@ settingsGroups.timerOpacity = new SettingsGroup(
 );
 settingsGroups.timerColor = new SettingsGroup("timerColor", setTimerColor);
 settingsGroups.fontFamily = new SettingsGroup("fontFamily", setFontFamily);
+settingsGroups.alwaysShowDecimalPlaces = new SettingsGroup(
+  "alwaysShowDecimalPlaces",
+  setAlwaysShowDecimalPlaces
+);
 
 fillSettingsPage();
 

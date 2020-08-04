@@ -1295,12 +1295,27 @@ function showResult(difficultyFailed = false) {
   }
   clearIntervals();
   let testtime = stats.time;
-  $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
-  $("#result .stats .wpm .bottom").attr("aria-label", stats.wpm);
-  $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
-  $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
-  $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
-  $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
+  let afkseconds = keypressPerSecond.filter((x) => x == 0).length;
+
+  if (config.alwaysShowDecimalPlaces) {
+    $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm));
+    $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
+    $("#result .stats .acc .bottom").text(roundTo2(stats.acc) + "%");
+    $("#result .stats .time .bottom").text(roundTo2(testtime) + "s");
+    $("#result .stats .time .bottom").attr("aria-label", `${afkseconds}s afk`);
+  } else {
+    $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
+    $("#result .stats .wpm .bottom").attr("aria-label", stats.wpm);
+    $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
+    $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
+    $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
+    $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
+    $("#result .stats .time .bottom").text(Math.round(testtime) + "s");
+    $("#result .stats .time .bottom").attr(
+      "aria-label",
+      `${roundTo2(testtime)}s (${afkseconds}s afk)`
+    );
+  }
 
   let correctcharpercent = roundTo2(
     ((stats.correctChars + stats.correctSpaces) /
@@ -1312,14 +1327,6 @@ function showResult(difficultyFailed = false) {
 
   $("#result .stats .key .bottom").text(
     stats.correctChars + stats.correctSpaces + "/" + stats.incorrectChars
-  );
-
-  let afkseconds = keypressPerSecond.filter((x) => x == 0).length;
-
-  $("#result .stats .time .bottom").text(Math.round(testtime) + "s");
-  $("#result .stats .time .bottom").attr(
-    "aria-label",
-    `${roundTo2(testtime)}s (${afkseconds}s afk)`
   );
 
   setTimeout(function () {
@@ -1380,12 +1387,6 @@ function showResult(difficultyFailed = false) {
   let stddev = stdDev(rawWpmPerSecondRaw);
   let avg = mean(rawWpmPerSecondRaw);
 
-  function kogasa(cov) {
-    return (
-      100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
-    );
-  }
-
   let consistency = roundTo2(kogasa(stddev / avg));
   let keyConsistency = roundTo2(
     kogasa(
@@ -1397,11 +1398,21 @@ function showResult(difficultyFailed = false) {
     consistency = 0;
   }
 
-  $("#result .stats .consistency .bottom").text(Math.round(consistency) + "%");
-  $("#result .stats .consistency .bottom").attr(
-    "aria-label",
-    `${consistency}% (${keyConsistency}% key)`
-  );
+  if (config.alwaysShowDecimalPlaces) {
+    $("#result .stats .consistency .bottom").text(roundTo2(consistency) + "%");
+    $("#result .stats .consistency .bottom").attr(
+      "aria-label",
+      `${keyConsistency}% key`
+    );
+  } else {
+    $("#result .stats .consistency .bottom").text(
+      Math.round(consistency) + "%"
+    );
+    $("#result .stats .consistency .bottom").attr(
+      "aria-label",
+      `${consistency}% (${keyConsistency}% key)`
+    );
+  }
 
   wpmOverTimeChart.data.datasets[0].borderColor = themeColors.main;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;

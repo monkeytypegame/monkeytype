@@ -43,6 +43,7 @@ let defaultConfig = {
   keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
+  alwaysShowDecimalPlaces: false,
 };
 
 let cookieConfig = null;
@@ -144,6 +145,7 @@ function applyConfig(configObj) {
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setShowLiveWpm(configObj.showLiveWpm, true);
     setShowTimerProgress(configObj.showTimerProgress, true);
+    setAlwaysShowDecimalPlaces(config.alwaysShowDecimalPlaces, true);
     if (
       configObj.resultFilters == null ||
       configObj.resultFilters == undefined
@@ -229,6 +231,20 @@ function setStopOnError(soe, nosave) {
   }
   config.stopOnError = soe;
   updateTestModesNotice();
+  if (!nosave) saveConfigToCookie();
+}
+
+//alwaysshowdecimal
+function toggleAlwaysShowDecimalPlaces() {
+  config.alwaysShowDecimalPlaces = !config.alwaysShowDecimalPlaces;
+  saveConfigToCookie();
+}
+
+function setAlwaysShowDecimalPlaces(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.alwaysShowDecimalPlaces = val;
   if (!nosave) saveConfigToCookie();
 }
 

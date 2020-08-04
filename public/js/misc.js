@@ -153,3 +153,9 @@ function getLastChar(word) {
 function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+function kogasa(cov) {
+  return (
+    100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))
+  );
+}

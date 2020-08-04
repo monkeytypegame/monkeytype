@@ -140,6 +140,13 @@ let commands = {
       },
     },
     {
+      id: "toggleAlwaysShowDecimalPlaces",
+      display: "Toggle always show decimal places",
+      exec: () => {
+        toggleAlwaysShowDecimalPlaces();
+      },
+    },
+    {
       id: "toggleShowAllLines",
       display: "Toggle show all lines",
       exec: () => {
