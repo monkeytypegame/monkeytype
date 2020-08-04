@@ -327,5 +327,10 @@
         "name": "shoko",
         "bgColor": "#ced7e0",
         "textColor": "#81c4dd"
+    },
+    {
+        "name": "norse",
+        "bgColor": "#2b2b2c",
+        "textColor": "#ccc2b1"
     }
 ]
