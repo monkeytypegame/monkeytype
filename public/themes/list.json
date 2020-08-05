@@ -332,5 +332,10 @@
         "name": "norse",
         "bgColor": "#2b2b2c",
         "textColor": "#ccc2b1"
+    },
+    {
+        "name": "matcha_moccha",
+        "bgColor": "#523525",
+        "textColor": "#7ec160"
     }
 ]
