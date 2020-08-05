@@ -1412,8 +1412,10 @@ function showResult(difficultyFailed = false) {
   }
 
   wpmOverTimeChart.data.datasets[0].borderColor = themeColors.main;
+  wpmOverTimeChart.data.datasets[0].pointBackgroundColor = themeColors.main;
   wpmOverTimeChart.data.datasets[0].data = wpmHistory;
   wpmOverTimeChart.data.datasets[1].borderColor = themeColors.sub;
+  wpmOverTimeChart.data.datasets[1].pointBackgroundColor = themeColors.sub;
   wpmOverTimeChart.data.datasets[1].data = rawWpmPerSecond;
 
   wpmOverTimeChart.options.annotation.annotations[0].borderColor =
@@ -3597,6 +3599,7 @@ let wpmOverTimeChart = new Chart(ctx, {
         data: [],
         // backgroundColor: 'rgba(255, 255, 255, 0.25)',
         borderColor: "rgba(255, 125, 125, 1)",
+        pointBackgroundColor: "rgba(255, 125, 125, 1)",
         borderWidth: 2,
         order: 1,
         yAxisID: "error",
