@@ -1845,23 +1845,40 @@ key {
       grid-template-columns: 1fr 1fr 1fr 1fr;
     }
 
+    &.themes {
+      .tabContainer {
+        position: relative;
+        grid-area: buttons;
+
+        .tabContent {
+          overflow: revert;
+          height: auto;
+
+          .text {
+            align-self: center;
+          }
+        }
+      }
+    }
+
     &.themes,
     &.language,
     &.layout,
     &.keymapLayout,
     &.fontFamily,
     &.funbox {
-      grid-template-columns: 1fr;
+      grid-template-columns: 2fr 1fr;
       grid-template-areas:
-        "title"
-        "tabs"
-        "buttons";
-      gap: 0.5rem;
+        "title tabs"
+        "buttons buttons";
+      column-gap: 2rem;
+      row-gap: .5rem;
 
       .tabs {
-        grid-area: tabs;
-        display: flex;
-        grid-template-columns: 1fr 1fr 9fr;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        gap: 0.5rem;
         grid-area: tabs;
 
         .tab {
@@ -1895,26 +1912,6 @@ key {
         grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 0.5rem;
       }
-    }
-  }
-}
-
-.tabContainer {
-  position: relative;
-
-  .tabContent {
-    overflow: revert;
-    height: auto;
-    // max-height: 0px;
-    // max-height: 100vh;
-
-    // transition: max-height .5s ease-in-out;
-    // &.reveal {
-    //   max-height: 100vh;
-    // }
-
-    .text {
-      align-self: center;
     }
   }
 }

@@ -1254,6 +1254,15 @@
 
             </div>
           </div>
+          <div class="sectionSpacer"></div>
+        </div>
+
+
+        <div class="sectionGroupTitle" group="theme">
+          theme
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="settingsGroup theme">
           <div class="section flipTestColors">
             <h1>flip test colors</h1>
             <div class="text">By default, typed text is brighter than the future text. When enabled, the colors will be
@@ -1289,10 +1298,14 @@
           </div>
           <div class="section themes">
             <h1>theme</h1>
-            <div class='tabs'>
+            <div class="tabs">
+              <div class="button" tab="preset" tabindex="0" onclick="this.blur();">preset</div>
+              <div class="button" tab="custom" tabindex="0" onclick="this.blur();">custom</div>
+            </div>
+            <!-- <div class='tabs'>
               <button tab="preset" class="tab">preset</button>
               <button tab="custom" class="tab">custom</button>
-            </div>
+            </div> -->
             <div class="tabContainer">
               <div tabContent="custom" class="tabContent section customTheme hidden">
                 <label class="text">background</label>
@@ -1360,11 +1373,10 @@
           <div class="sectionSpacer"></div>
         </div>
 
-
-
         <div class="sectionGroupTitle" group="hideElements">
           hide elements
-          <i class="fas fa-chevron-down"></i></div>
+          <i class="fas fa-chevron-down"></i>
+        </div>
         <div class="settingsGroup hideElements">
           <div class="section showLiveWpm">
             <h1>live wpm</h1>

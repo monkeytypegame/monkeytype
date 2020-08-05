@@ -389,12 +389,14 @@ function setActiveThemeButton() {
 
 function setActiveThemeTab() {
   config.customTheme === true
-    ? $("[tab='custom']").click()
-    : $("[tab='preset']").click();
+    ? $(".pageSettings .section.themes .tabs .button[tab='custom']").click()
+    : $(".pageSettings .section.themes .tabs .button[tab='preset']").click();
 }
 
 function setCustomThemeInputs() {
-  $("[type=color]").each((n, index) => {
+  $(
+    ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+  ).each((n, index) => {
     let currentColor =
       config.customThemeColors[colorVars.indexOf($(index).attr("id"))];
     $(index).val(currentColor);
@@ -570,8 +572,8 @@ const colorVars = [
   "--colorful-error-extra-color",
 ];
 
-$(".tab").click((e) => {
-  $(".tab").removeClass("active");
+$(".pageSettings .section.themes .tabs .button").click((e) => {
+  $(".pageSettings .section.themes .tabs .button").removeClass("active");
   var $target = $(e.currentTarget);
   $target.addClass("active");
   setCustomThemeInputs();
@@ -579,22 +581,24 @@ $(".tab").click((e) => {
     setCustomTheme(false);
     applyCustomThemeColors();
     swapElements(
-      $('.pageSettings [tabContent="custom"]'),
-      $('.pageSettings [tabContent="preset"]'),
+      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
       250
     );
   } else {
     setCustomTheme(true);
     applyCustomThemeColors();
     swapElements(
-      $('.pageSettings [tabContent="preset"]'),
-      $('.pageSettings [tabContent="custom"]'),
+      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
       250
     );
   }
 });
 
-$("[type='color']").on("input", (e) => {
+$(
+  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+).on("input", (e) => {
   setCustomTheme(true, true);
   let $colorVar = $(e.currentTarget).attr("id");
   let $pickedColor = $(e.currentTarget).val();
