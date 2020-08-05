@@ -169,7 +169,13 @@ fillSettingsPage();
 
 async function fillSettingsPage() {
   let themesEl = $(".pageSettings .section.themes .buttons").empty();
+
   getThemesList().then((themes) => {
+    themes = themes.sort((a, b) => {
+      let b1 = hexToHSL(a.bgColor);
+      let b2 = hexToHSL(b.bgColor);
+      return b2.lgt - b1.lgt;
+    });
     themes.forEach((theme) => {
       themesEl.append(
         `<div class="theme button" theme='${theme.name}' style="color:${
