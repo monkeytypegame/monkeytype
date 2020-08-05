@@ -605,6 +605,7 @@ function setTheme(name, nosave) {
     console.log("Analytics unavailable");
   }
   setTimeout(() => {
+    $(".keymap-key").attr("style", "");
     refreshThemeColorObject();
     $("#metaThemeColor").attr("content", themeColors.main);
   }, 500);
