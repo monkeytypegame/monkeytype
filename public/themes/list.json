@@ -80,7 +80,7 @@
     },
     {
         "name": "mr_sleeves",
-        "bgColor": "linear-gradient(to right, #daa99b, #daa99b 20%, #bdc6ca 20%, #bdc6ca 80%, #8fadc9 80%);",
+        "bgColor": "#bdc6ca",
         "textColor": "#000"
     },
     {
