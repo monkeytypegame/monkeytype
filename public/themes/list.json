@@ -337,5 +337,10 @@
         "name": "matcha_moccha",
         "bgColor": "#523525",
         "textColor": "#7ec160"
+    },
+    {
+        "name": "cafe",
+        "bgColor": "#CEB18D",
+        "textColor": "#14120F"
     }
 ]
