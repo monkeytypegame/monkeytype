@@ -2483,6 +2483,7 @@ function toggleResultWordsDisplay() {
         loadWordsHistory();
       }
 
+      $("#words").css("height", "auto");
       let newHeight = $("#wordsWrapper")
         .removeClass("hidden")
         .css("height", "auto")
