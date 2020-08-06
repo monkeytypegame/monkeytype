@@ -131,6 +131,10 @@ settingsGroups.confidenceMode = new SettingsGroup(
 );
 settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
 settingsGroups.quickEnd = new SettingsGroup("quickEnd", setQuickEnd);
+settingsGroups.alwaysShowWordsHistory = new SettingsGroup(
+  "alwaysShowWordsHistory",
+  setAlwaysShowWordsHistory
+);
 settingsGroups.flipTestColors = new SettingsGroup(
   "flipTestColors",
   setFlipTestColors

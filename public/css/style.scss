@@ -1326,6 +1326,11 @@ key {
       & letter.correct {
         color: var(--sub-color);
       }
+
+      & letter.corrected {
+        color: var(--sub-color);
+        border-bottom: 2px dotted var(--sub-color);
+      }
     }
   }
 
@@ -1333,6 +1338,11 @@ key {
     .word {
       & letter.correct {
         color: var(--main-color);
+      }
+
+      & letter.corrected {
+        color: var(--main-color);
+        border-bottom: 2px dotted var(--main-color);
       }
 
       & letter.incorrect {
@@ -1351,6 +1361,11 @@ key {
 
       & letter.correct {
         color: var(--sub-color);
+      }
+
+      & letter.corrected {
+        color: var(--sub-color);
+        border-bottom: 2px dotted var(--sub-color);
       }
 
       & letter.incorrect {
@@ -1497,6 +1512,11 @@ key {
 
 .word letter.correct {
   color: var(--text-color);
+}
+
+.word letter.corrected {
+  color: var(--text-color);
+  border-bottom: 2px dotted var(--text-color);
 }
 
 .word letter.incorrect {
@@ -2190,6 +2210,7 @@ key {
   cursor: pointer;
   margin-right: 0.25rem;
   cursor: pointer;
+  outline: none;
 
   &:hover,
   &:focus {

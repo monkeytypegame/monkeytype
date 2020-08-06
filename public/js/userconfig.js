@@ -44,6 +44,7 @@ let defaultConfig = {
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
+  alwaysShowWordsHistory: false,
 };
 
 let cookieConfig = null;
@@ -146,6 +147,7 @@ function applyConfig(configObj) {
     setShowLiveWpm(configObj.showLiveWpm, true);
     setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(config.alwaysShowDecimalPlaces, true);
+    setAlwaysShowWordsHistory(config.alwaysShowWordsHistory, true);
     if (
       configObj.resultFilters == null ||
       configObj.resultFilters == undefined
@@ -245,6 +247,15 @@ function setAlwaysShowDecimalPlaces(val, nosave) {
     val = false;
   }
   config.alwaysShowDecimalPlaces = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+//always show words history
+function setAlwaysShowWordsHistory(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.alwaysShowWordsHistory = val;
   if (!nosave) saveConfigToCookie();
 }
 

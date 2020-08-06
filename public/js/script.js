@@ -2,6 +2,8 @@ let wordsList = [];
 let currentWordIndex = 0;
 let currentWordElementIndex = 0;
 let inputHistory = [];
+let correctedHistory = [];
+let currentCorrected = "";
 let currentInput = "";
 let time = 0;
 let timers = [];
@@ -26,6 +28,7 @@ let sameWordset = false;
 let quotes = [];
 let focusState = false;
 let activeFunBox = "none";
+let manualRestart = false;
 
 let themeColors = {
   bg: "#323437",
@@ -272,6 +275,8 @@ function initWords() {
     incorrect: 0,
   };
   inputHistory = [];
+  correctedHistory = [];
+  currentCorrected = "";
   currentInput = "";
 
   let language = words[config.language];
@@ -696,6 +701,8 @@ function compareInput(showError) {
   ) {
     inputHistory.push(input);
     currentInput = "";
+    correctedHistory.push(currentCorrected);
+    currentCorrected = "";
     //last character typed, show result
     if (!resultVisible) {
       if (keypressPerSecond.length === 0) {
@@ -1858,6 +1865,9 @@ function showResult(difficultyFailed = false) {
   swapElements($("#wordsWrapper"), $("#result"), 250, () => {
     $("#words").empty();
     wpmOverTimeChart.resize();
+    if (config.alwaysShowWordsHistory) {
+      toggleResultWordsDisplay();
+    }
     // if (config.blindMode) {
     //   $.each($("#words .word"), (i, word) => {
     //     let input = inputHistory[i];
@@ -1976,6 +1986,28 @@ function startTest() {
 }
 
 function restartTest(withSameWordset = false) {
+  if (!manualRestart) {
+    if (
+      (config.mode === "words" && config.words < 1000) ||
+      (config.mode === "time" && config.time < 3600) ||
+      config.mode === "quote" ||
+      (config.mode === "custom" &&
+        customTextIsRandom &&
+        customTextWordCount < 1000) ||
+      (config.mode === "custom" &&
+        !customTextIsRandom &&
+        customText.length < 1000)
+    ) {
+    } else {
+      showNotification(
+        "Restart disabled for long tests. Use your mouse to confirm.",
+        4000
+      );
+      return;
+    }
+  }
+
+  manualRestart = false;
   clearIntervals();
   time = 0;
   // afkDetected = false;
@@ -2179,6 +2211,7 @@ function changePage(page) {
     hideSignOutButton();
     restartCount = 0;
     incompleteTestSeconds = 0;
+    manualRestart = true;
     restartTest();
   } else if (page == "about") {
     pageTransition = true;
@@ -2497,7 +2530,12 @@ async function loadWordsHistory() {
   $("#words").empty();
   inputHistory.forEach((input, index) => {
     if (input === "") return;
-    let wordEl = `<div class='word' input='${input}'>`;
+    let wordEl = "";
+    if (correctedHistory[index] !== "") {
+      wordEl = `<div class='word' input='${correctedHistory[index]}'>`;
+    } else {
+      wordEl = `<div class='word' input='${input}'>`;
+    }
     if (input !== wordsList[index]) {
       wordEl = `<div class='word error' input='${input}'>`;
     }
@@ -2513,10 +2551,21 @@ async function loadWordsHistory() {
 
     for (let c = 0; c < loop; c++) {
       // input.forEach((inputLetter, inputLetterIndex) => {
+      let correctedChar;
+      try {
+        correctedChar = correctedHistory[index][c];
+      } catch (e) {
+        correctedChar = undefined;
+      }
       if (wordsList[index][c] !== undefined) {
         if (input[c] === wordsList[index][c]) {
-          wordEl +=
-            '<letter class="correct">' + wordsList[index][c] + "</letter>";
+          if (correctedChar === input[c]) {
+            wordEl +=
+              '<letter class="correct">' + wordsList[index][c] + "</letter>";
+          } else {
+            wordEl +=
+              '<letter class="corrected">' + wordsList[index][c] + "</letter>";
+          }
         } else {
           if (input[c] === currentInput || input[c] === undefined) {
             wordEl += "<letter>" + wordsList[index][c] + "</letter>";
@@ -2877,6 +2926,7 @@ $("#customTextPopup .button").click((e) => {
   //   customTextIsRandom = false;
   // }
   customTextWordCount = $("#customTextPopup .wordcount input").val();
+  manualRestart = true;
   restartTest();
   // }
   hideCustomTextPopup();
@@ -2941,12 +2991,10 @@ function applyMode2Popup() {
   if (mode == "time") {
     if (val !== null && !isNaN(val) && val > 0) {
       changeTimeConfig(val);
+      manualRestart = true;
       restartTest();
       if (val >= 1800) {
-        showNotification(
-          "Very long tests can cause performance issues or crash the website on some machines!",
-          5000
-        );
+        showNotification("Stay safe and take breaks!", 3000);
       }
     } else {
       showNotification("Custom time can only be set between 1 and 3600", 3000);
@@ -2954,12 +3002,10 @@ function applyMode2Popup() {
   } else if (mode == "words") {
     if (val !== null && !isNaN(val) && val > 0 && val <= 10000) {
       changeWordCount(val);
+      manualRestart = true;
       restartTest();
       if (val > 2000) {
-        showNotification(
-          "Very long tests can cause performance issues or crash the website on some machines!",
-          5000
-        );
+        showNotification("Stay safe and take breaks!", 3000);
       }
     } else {
       showNotification(
@@ -2997,6 +3043,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
     showCustomMode2Popup("words");
   } else {
     changeWordCount(wrd);
+    manualRestart = true;
     restartTest();
   }
 });
@@ -3019,6 +3066,8 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
     showCustomMode2Popup("time");
   } else {
     changeTimeConfig(time);
+    manualRestart = true;
+
     restartTest();
   }
 });
@@ -3031,6 +3080,8 @@ $(document).on("click", "#top .config .customText .text-button", (e) => {
 
 $(document).on("click", "#top .config .punctuationMode .text-button", (e) => {
   togglePunctuation();
+  manualRestart = true;
+
   restartTest();
 });
 
@@ -3042,6 +3093,8 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   mode = e.currentTarget.innerHTML;
   changeMode(mode);
+  manualRestart = true;
+
   restartTest();
 });
 
@@ -3093,12 +3146,13 @@ $(document).on("keypress", "#restartTestButton", (event) => {
       }
       restartTest();
     } else {
-      showNotification("Quick restart disabled for long tests", 3000);
+      showNotification("Quick restart disabled for long tests", 2000);
     }
   }
 });
 
 $(document.body).on("click", "#restartTestButton", (event) => {
+  manualRestart = true;
   restartTest();
 });
 
@@ -3113,6 +3167,8 @@ $(document.body).on("click", "#showWordHistoryButton", (event) => {
 });
 
 $(document.body).on("click", "#restartTestButtonWithSameWordset", (event) => {
+  manualRestart = true;
+
   restartTest(true);
 });
 
@@ -3181,6 +3237,7 @@ $(document).keypress(function (event) {
     if (!testActive) return;
   }
   let thisCharCorrect;
+
   if (
     wordsList[currentWordIndex].substring(
       currentInput.length,
@@ -3193,6 +3250,19 @@ $(document).keypress(function (event) {
   } else {
     accuracyStats.correct++;
     thisCharCorrect = true;
+  }
+  if (currentCorrected === "") {
+    currentCorrected = currentInput + event["key"];
+  } else {
+    let cil = currentInput.length;
+    if (cil >= currentCorrected.length) {
+      currentCorrected += event["key"];
+    } else if (!thisCharCorrect) {
+      currentCorrected =
+        currentCorrected.substring(0, cil) +
+        event["key"] +
+        currentCorrected.substring(cil + 1);
+    }
   }
   currentKeypressCount++;
 
@@ -3219,9 +3289,6 @@ $(document).keypress(function (event) {
   // console.time("offcheck1");
   let newActiveTop = document.querySelector("#words .word.active").offsetTop;
   if (activeWordTopBeforeJump != newActiveTop && !lineTransition) {
-    console.log("word jumped");
-    console.log(activeWordTopBeforeJump);
-    console.log(newActiveTop);
     activeWordJumped = true;
   } else {
     activeWordJumped = false;
@@ -3291,7 +3358,7 @@ $(document).keydown((event) => {
           }
           restartTest();
         } else {
-          showNotification("Quick restart disabled for long tests", 3000);
+          showNotification("Quick restart disabled for long tests", 2000);
         }
       } else {
         changePage("test");
@@ -3319,8 +3386,10 @@ $(document).keydown((event) => {
           if (event["ctrlKey"] || event["altKey"]) {
             currentInput = "";
             inputHistory.pop();
+            correctedHistory.pop();
           } else {
             currentInput = inputHistory.pop();
+            currentCorrected = correctedHistory.pop();
           }
           currentWordIndex--;
           currentWordElementIndex--;
@@ -3495,6 +3564,17 @@ $(document).keydown((event) => {
           }
           return;
         }
+        let cil = currentInput.length;
+        if (cil < wordsList[currentWordIndex].length) {
+          if (cil >= currentCorrected.length) {
+            currentCorrected += "_";
+          } else if (!thisCharCorrect) {
+            currentCorrected =
+              currentCorrected.substring(0, cil) +
+              "_" +
+              currentCorrected.substring(cil + 1);
+          }
+        }
         inputHistory.push(currentInput);
         highlightBadWord(currentWordElementIndex, !config.blindMode);
         currentInput = "";
@@ -3522,6 +3602,8 @@ $(document).keydown((event) => {
         updateCaretPosition();
         currentKeypressCount++;
       }
+      correctedHistory.push(currentCorrected);
+      currentCorrected = "";
       if (config.keymapMode === "react") {
         flashPressedKeymapKey(event.code, true);
       } else if (config.keymapMode === "next") {
@@ -3597,6 +3679,7 @@ $(document).on("mouseleave", "#words .word", (e) => {
 $(document).ready(() => {
   updateFavicon(32, 14);
   $("body").css("transition", ".25s");
+  manualRestart = true;
   restartTest();
   if (config.quickTab) {
     $("#restartTestButton").addClass("hidden");
