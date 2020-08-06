@@ -13,6 +13,7 @@ let restartCount = 0;
 let incompleteTestSeconds = 0;
 let currentTestLine = 0;
 let pageTransition = false;
+let lineTransition = false;
 let keypressPerSecond = [];
 let currentKeypressCount = 0;
 let errorsPerSecond = [];
@@ -582,12 +583,16 @@ function showWords() {
     $("#words").append(w);
   }
 
-  $("#words").removeClass("hidden");
+  $("#wordsWrapper").removeClass("hidden");
   if (config.showAllLines && config.mode != "time") {
     $("#words").css("height", "auto");
+    $("#wordsWrapper").css("height", "auto");
   } else {
-    const wordHeight = $($(".word")[0]).outerHeight(true);
+    const wordHeight = $(document.querySelector(".word")).outerHeight(true);
     $("#words")
+      .css("height", wordHeight * 4 + "px")
+      .css("overflow", "hidden");
+    $("#wordsWrapper")
       .css("height", wordHeight * 3 + "px")
       .css("overflow", "hidden");
   }
@@ -1074,7 +1079,7 @@ function updateHighlightedKeymapKey() {
 
 function updateCaretPosition() {
   // return;
-  if ($("#words").hasClass("hidden")) return;
+  if ($("#wordsWrapper").hasClass("hidden")) return;
 
   let caret = $("#caret");
   // let activeWord = $("#words .word.active");
@@ -1850,7 +1855,7 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.update({ duration: 0 });
   wpmOverTimeChart.resize();
-  swapElements($("#words"), $("#result"), 250, () => {
+  swapElements($("#wordsWrapper"), $("#result"), 250, () => {
     $("#words").empty();
     wpmOverTimeChart.resize();
     // if (config.blindMode) {
@@ -2006,14 +2011,14 @@ function restartTest(withSameWordset = false) {
     el = $("#result");
   } else {
     //words are being displayed
-    el = $("#words");
+    el = $("#wordsWrapper");
   }
   if (resultVisible) {
     if (config.randomTheme) {
       randomiseTheme();
       showNotification(config.theme.replace(/_/g, " "), 1500);
     }
-    $("#words").stop(true, true).animate(
+    $("#wordsWrapper").stop(true, true).animate(
       {
         opacity: 0,
       },
@@ -2088,7 +2093,7 @@ function restartTest(withSameWordset = false) {
         // 'height': 'auto',
         // 'margin-bottom': '1.25rem'
       });
-      $("#words")
+      $("#wordsWrapper")
         .css("opacity", 0)
         .removeClass("hidden")
         .stop(true, true)
@@ -2138,7 +2143,7 @@ function restartTest(withSameWordset = false) {
 }
 
 function focusWords() {
-  if (!$("#words").hasClass("hidden")) $("#wordsInput").focus();
+  if (!$("#wordsWrapper").hasClass("hidden")) $("#wordsInput").focus();
 }
 
 function changeCustomText() {
@@ -2434,7 +2439,7 @@ function accountIconLoading(truefalse) {
 
 function toggleResultWordsDisplay() {
   if (resultVisible) {
-    if ($("#words").stop(true, true).hasClass("hidden")) {
+    if ($("#wordsWrapper").stop(true, true).hasClass("hidden")) {
       //show
       $("#wordsTitle").css("opacity", 1).removeClass("hidden").slideDown(250);
 
@@ -2445,12 +2450,12 @@ function toggleResultWordsDisplay() {
         loadWordsHistory();
       }
 
-      let newHeight = $("#words")
+      let newHeight = $("#wordsWrapper")
         .removeClass("hidden")
         .css("height", "auto")
         .outerHeight();
 
-      $("#words")
+      $("#wordsWrapper")
         .css({
           height: 0,
           opacity: 0,
@@ -2467,9 +2472,9 @@ function toggleResultWordsDisplay() {
 
       $("#wordsTitle").slideUp(250);
 
-      let oldHeight = $("#words").outerHeight();
-      $("#words").removeClass("hidden");
-      $("#words")
+      let oldHeight = $("#wordsWrapper").outerHeight();
+      $("#wordsWrapper").removeClass("hidden");
+      $("#wordsWrapper")
         .css({
           opacity: 1,
           height: oldHeight,
@@ -2481,7 +2486,7 @@ function toggleResultWordsDisplay() {
           },
           250,
           () => {
-            $("#words").addClass("hidden");
+            $("#wordsWrapper").addClass("hidden");
           }
         );
     }
@@ -3029,7 +3034,7 @@ $(document).on("click", "#top .config .punctuationMode .text-button", (e) => {
   restartTest();
 });
 
-$("#words").click((e) => {
+$("#wordsWrapper").click((e) => {
   focusWords();
 });
 
@@ -3213,7 +3218,10 @@ $(document).keypress(function (event) {
 
   // console.time("offcheck1");
   let newActiveTop = document.querySelector("#words .word.active").offsetTop;
-  if (activeWordTopBeforeJump != newActiveTop) {
+  if (activeWordTopBeforeJump != newActiveTop && !lineTransition) {
+    console.log("word jumped");
+    console.log(activeWordTopBeforeJump);
+    console.log(newActiveTop);
     activeWordJumped = true;
   } else {
     activeWordJumped = false;
@@ -3361,7 +3369,7 @@ $(document).keydown((event) => {
           nextTop = 0;
         }
 
-        if (nextTop > currentTop || activeWordJumped) {
+        if ((nextTop > currentTop || activeWordJumped) && !lineTransition) {
           //last word of the line
           if (currentTestLine > 0) {
             let hideBound = currentTop;
@@ -3381,27 +3389,66 @@ $(document).keydown((event) => {
                 toHide.push($($("#words .word")[i]));
               }
             }
-            currentWordElementIndex -= toHide.length;
+            const wordHeight = $(document.querySelector(".word")).outerHeight(
+              true
+            );
             if (config.smoothLineScroll) {
-              let word = $(document.querySelector(".word"));
+              lineTransition = true;
               $("#words").prepend(
-                `<div class="smoothScroller" style="height:${word.outerHeight(
-                  true
-                )}px;width:100%"></div>`
+                `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
               );
               $("#words .smoothScroller").animate(
                 {
                   height: 0,
                 },
-                100,
+                125,
                 () => {
-                  $(this).remove();
-                  activeWordTop = document.querySelector("#words .active")
-                    .offsetTop;
+                  $("#words .smoothScroller").remove();
                 }
               );
+              $("#words").animate(
+                {
+                  marginTop: `-${wordHeight}px`,
+                },
+                125,
+                () => {
+                  activeWordTop = document.querySelector("#words .active")
+                    .offsetTop;
+
+                  currentWordElementIndex -= toHide.length;
+                  lineTransition = false;
+                  toHide.forEach((el) => el.remove());
+                  $("#words").css("marginTop", "0");
+                }
+              );
+            } else {
+              toHide.forEach((el) => el.remove());
+              currentWordElementIndex -= toHide.length;
             }
-            toHide.forEach((el) => el.remove());
+
+            // if (config.smoothLineScroll) {
+            //   let word = $(document.querySelector(".word"));
+            //   $("#words").prepend(
+            //     `<div class="smoothScroller" style="height:${word.outerHeight(
+            //       true
+            //     )}px;width:100%"></div>`
+            //   );
+            //   lineTransition = true;
+            //   $("#words .smoothScroller").animate(
+            //     {
+            //       height: 0,
+            //     },
+            //     100,
+            //     () => {
+            //       $("#words .smoothScroller").remove();
+            //       lineTransition = false;
+            //       $(this).remove();
+            //       activeWordTop = document.querySelector("#words .active")
+            //         .offsetTop;
+            //     }
+            //   );
+            // }
+            // toHide.forEach((el) => el.remove());
           }
           currentTestLine++;
         }
