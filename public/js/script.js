@@ -3376,7 +3376,7 @@ $(document).keydown((event) => {
               if ($(wordElements[i]).hasClass("hidden")) continue;
               // let forWordTop = Math.floor($(wordElements[i]).position().top);
               let forWordTop = Math.floor(wordElements[i].offsetTop);
-              if (forWordTop < hideBound) {
+              if (forWordTop < hideBound - 10) {
                 // $($("#words .word")[i]).addClass("hidden");
                 toHide.push($($("#words .word")[i]));
               }
