@@ -2559,7 +2559,7 @@ async function loadWordsHistory() {
       }
       if (wordsList[index][c] !== undefined) {
         if (input[c] === wordsList[index][c]) {
-          if (correctedChar === input[c]) {
+          if (correctedChar === input[c] || correctedChar === undefined) {
             wordEl +=
               '<letter class="correct">' + wordsList[index][c] + "</letter>";
           } else {
