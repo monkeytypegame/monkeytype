@@ -3289,7 +3289,7 @@ $(document).keypress(function (event) {
 
   // console.time("offcheck1");
   let newActiveTop = document.querySelector("#words .word.active").offsetTop;
-  if (activeWordTopBeforeJump != newActiveTop && !lineTransition) {
+  if (activeWordTopBeforeJump < newActiveTop && !lineTransition) {
     activeWordJumped = true;
   } else {
     activeWordJumped = false;
