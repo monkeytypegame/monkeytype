@@ -3406,7 +3406,6 @@ $(document).keydown((event) => {
         }
         compareInput(!config.blindMode);
       }
-      // currentKeypressCount++;
       if (config.keymapMode === "react") {
         flashPressedKeymapKey(event.code, true);
       } else if (config.keymapMode === "next") {
@@ -3569,7 +3568,7 @@ $(document).keydown((event) => {
         if (cil < wordsList[currentWordIndex].length) {
           if (cil >= currentCorrected.length) {
             currentCorrected += "_";
-          } else if (!thisCharCorrect) {
+          } else {
             currentCorrected =
               currentCorrected.substring(0, cil) +
               "_" +
