@@ -1891,6 +1891,10 @@ function showResult(difficultyFailed = false) {
 }
 
 function startTest() {
+  if (!dbConfigLoaded) {
+    console.log('config changed before db loaded!');
+    configChangedBeforeDb = true;
+  }
   try {
     if (firebase.auth().currentUser != null) {
       firebase.analytics().logEvent("testStarted");

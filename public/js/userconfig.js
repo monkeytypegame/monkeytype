@@ -53,8 +53,15 @@ let config = {
   ...defaultConfig,
 };
 
+let dbConfigLoaded = false;
+let configChangedBeforeDb = false;
+
 //cookies
-async function saveConfigToCookie() {
+async function saveConfigToCookie(noDbCheck = false) {
+  if (!dbConfigLoaded && !noDbCheck) {
+    console.log('config changed before db loaded!');
+    configChangedBeforeDb = true;
+  }
   // showNotification('saving to cookie',1000);
   if (config.freedomMode === null) config.freedomMode = false;
   let d = new Date();
@@ -65,7 +72,7 @@ async function saveConfigToCookie() {
     path: "/",
   });
   restartCount = 0;
-  saveConfigToDB();
+  if(!noDbCheck) saveConfigToDB();
 }
 
 async function saveConfigToDB() {
@@ -76,7 +83,7 @@ async function saveConfigToDB() {
       (d) => {
         accountIconLoading(false);
         if (d.data === 1) {
-          // showNotification('config saved to db',1000);
+          showNotification('config saved to db',1000);
         } else {
           showNotification("Error saving config to DB!", 4000);
         }
@@ -111,7 +118,7 @@ function loadConfigFromCookie() {
 
     applyConfig(newConfig);
     cookieConfig = newConfig;
-    saveConfigToCookie();
+    saveConfigToCookie(true);
   }
 }
 

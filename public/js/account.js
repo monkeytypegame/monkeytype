@@ -229,39 +229,46 @@ firebase.auth().onAuthStateChanged(function (user) {
       });
       refreshTagsSettingsSection();
       updateDiscordSettingsSection();
-      if (cookieConfig === null) {
-        applyConfig(dbSnapshot.config);
-        // showNotification('Applying db config',3000);
-        updateSettingsPage();
-        saveConfigToCookie();
-      } else if (dbSnapshot.config !== undefined) {
-        let configsDifferent = false;
-        Object.keys(config).forEach((key) => {
-          if (!configsDifferent) {
-            try {
-              if (key !== "resultFilters") {
-                if (Array.isArray(config[key])) {
-                  config[key].forEach((arrval, index) => {
-                    if (arrval != dbSnapshot.config[key][index])
-                      configsDifferent = true;
-                  });
-                } else {
-                  if (config[key] != dbSnapshot.config[key])
-                    configsDifferent = true;
-                }
-              }
-            } catch (e) {
-              console.log(e);
-              configsDifferent = true;
-            }
-          }
-        });
-        if (configsDifferent) {
+      if (!configChangedBeforeDb) {
+        if (cookieConfig === null) {
+          dbConfigLoaded = true;
+          accountIconLoading(false);
           applyConfig(dbSnapshot.config);
-          // showNotification('Applying db config',3000);
+          showNotification('Applying db config',3000);
           updateSettingsPage();
-          saveConfigToCookie();
+          saveConfigToCookie(true);
+        } else if (dbSnapshot.config !== undefined) {
+          let configsDifferent = false;
+          Object.keys(config).forEach((key) => {
+            if (!configsDifferent) {
+              try {
+                if (key !== "resultFilters") {
+                  if (Array.isArray(config[key])) {
+                    config[key].forEach((arrval, index) => {
+                      if (arrval != dbSnapshot.config[key][index])
+                        configsDifferent = true;
+                    });
+                  } else {
+                    if (config[key] != dbSnapshot.config[key])
+                      configsDifferent = true;
+                  }
+                }
+              } catch (e) {
+                console.log(e);
+                configsDifferent = true;
+              }
+            }
+          });
+          if (configsDifferent) {
+            dbConfigLoaded = true;
+            accountIconLoading(false);
+            applyConfig(dbSnapshot.config);
+            updateSettingsPage();
+            saveConfigToCookie(true);
+          }
         }
+      } else {
+        accountIconLoading(false);
       }
     });
     var displayName = user.displayName;
