@@ -59,7 +59,7 @@ let configChangedBeforeDb = false;
 //cookies
 async function saveConfigToCookie(noDbCheck = false) {
   if (!dbConfigLoaded && !noDbCheck) {
-    console.log('config changed before db loaded!');
+    // console.log('config changed before db loaded!');
     configChangedBeforeDb = true;
   }
   // showNotification('saving to cookie',1000);
@@ -83,7 +83,7 @@ async function saveConfigToDB() {
       (d) => {
         accountIconLoading(false);
         if (d.data === 1) {
-          showNotification('config saved to db',1000);
+          // showNotification('config saved to db',1000);
         } else {
           showNotification("Error saving config to DB!", 4000);
         }
