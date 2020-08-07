@@ -3461,7 +3461,7 @@ $(document).keydown((event) => {
             const wordHeight = $(document.querySelector(".word")).outerHeight(
               true
             );
-            if (config.smoothLineScroll) {
+            if (config.smoothLineScroll && toHide.length > 0) {
               lineTransition = true;
               $("#words").prepend(
                 `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
