@@ -234,7 +234,7 @@ firebase.auth().onAuthStateChanged(function (user) {
           dbConfigLoaded = true;
           accountIconLoading(false);
           applyConfig(dbSnapshot.config);
-          showNotification('Applying db config',3000);
+          // showNotification('Applying db config',3000);
           updateSettingsPage();
           saveConfigToCookie(true);
         } else if (dbSnapshot.config !== undefined) {
