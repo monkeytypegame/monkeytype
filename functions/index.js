@@ -1358,9 +1358,41 @@ exports.scheduledFunctionCrontab = functions.pubsub
       db.collection("leaderboards")
         .where("type", "==", "daily")
         .get()
-        .then((res) => {
-          res.docs.forEach((doc) => {
+        .then(async (res) => {
+          for (let i = 0; i < res.docs.length; i++) {
+            let doc = res.docs[i];
+
             let lbdata = doc.data();
+
+            let winnerUid = lbdata.board[0].uid;
+            await db
+              .collection("users")
+              .doc(winnerUid)
+              .get()
+              .then(async (userDoc) => {
+                let userData = userDoc.data();
+                let lbwins = userData.dailyLbWins;
+
+                let lbname = lbdata.mode + lbdata.mode2;
+
+                if (lbwins === undefined) {
+                  //first win ever
+                  lbwins = {
+                    [lbname]: 1,
+                  };
+                } else {
+                  //object already exists
+                  if (lbwins[lbname] === undefined) {
+                    lbwins[lbname] = 1;
+                  } else {
+                    lbwins[lbname] = lbwins[lbname] + 1;
+                  }
+                }
+                await db.collection("users").doc(winnerUid).update({
+                  dailyLbWins: lbwins,
+                });
+              });
+
             announceDailyLbResult(lbdata);
             t = new Date();
             db.collection("leaderboards_history")
@@ -1376,7 +1408,7 @@ exports.scheduledFunctionCrontab = functions.pubsub
               },
               { merge: true }
             );
-          });
+          }
         });
       return null;
     } catch (e) {
