@@ -821,6 +821,8 @@ function loadMoreLines() {
 
 function refreshAccountPage() {
   function cont() {
+    refreshThemeColorObject();
+
     let chartData = [];
     visibleTableLines = 0;
 
@@ -1022,10 +1024,6 @@ function refreshAccountPage() {
     });
     loadMoreLines();
     ////////
-
-    if (themeColors.main == "") {
-      refreshThemeColorObject();
-    }
 
     resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor =
       themeColors.sub;

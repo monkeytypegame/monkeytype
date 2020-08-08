@@ -636,6 +636,9 @@ function randomiseTheme() {
   });
   let randomtheme = randomList[Math.floor(Math.random() * randomList.length)];
   setTheme(randomtheme.name, true);
+  setTimeout(() => {
+    refreshThemeColorObject();
+  }, 125);
 }
 
 function setRandomTheme(bool, nosave) {

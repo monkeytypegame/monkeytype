@@ -2050,7 +2050,7 @@ function restartTest(withSameWordset = false) {
     el = $("#wordsWrapper");
   }
   if (resultVisible) {
-    if (config.randomTheme) {
+    if (config.randomTheme && !pageTransition) {
       randomiseTheme();
       showNotification(config.theme.replace(/_/g, " "), 1500);
     }
@@ -2199,7 +2199,6 @@ function changePage(page) {
   if (pageTransition) {
     return;
   }
-  if (page !== "test" && page !== "") restartTest();
   let activePage = $(".page.active");
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
@@ -2219,6 +2218,7 @@ function changePage(page) {
     restartTest();
   } else if (page == "about") {
     pageTransition = true;
+    restartTest();
     swapElements(activePage, $(".page.pageAbout"), 250, () => {
       pageTransition = false;
       history.pushState("about", null, "about");
@@ -2228,6 +2228,7 @@ function changePage(page) {
     hideSignOutButton();
   } else if (page == "settings") {
     pageTransition = true;
+    restartTest();
     swapElements(activePage, $(".page.pageSettings"), 250, () => {
       pageTransition = false;
       history.pushState("settings", null, "settings");
@@ -2241,6 +2242,7 @@ function changePage(page) {
       changePage("login");
     } else {
       pageTransition = true;
+      restartTest();
       swapElements(activePage, $(".page.pageAccount"), 250, () => {
         pageTransition = false;
         history.pushState("account", null, "account");
@@ -2255,6 +2257,7 @@ function changePage(page) {
       changePage("account");
     } else {
       pageTransition = true;
+      restartTest();
       swapElements(activePage, $(".page.pageLogin"), 250, () => {
         pageTransition = false;
         history.pushState("login", null, "login");
