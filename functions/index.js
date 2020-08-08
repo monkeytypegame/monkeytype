@@ -380,7 +380,6 @@ function validateResult(result) {
     return false;
   }
   let wpm = roundTo2((result.correctChars * (60 / result.testDuration)) / 5);
-  let raw = roundTo2((result.allChars * (60 / result.testDuration)) / 5);
   if (
     wpm < result.wpm - result.wpm * 0.01 ||
     wpm > result.wpm + result.wpm * 0.01
@@ -390,15 +389,17 @@ function validateResult(result) {
     );
     return false;
   }
-
-  if (
-    raw < result.rawWpm - result.rawWpm * 0.01 ||
-    raw > result.rawWpm + result.rawWpm * 0.01
-  ) {
-    console.error(
-      `Could not validate result for ${result.uid}. ${raw} != ${result.rawWpm}`
-    );
-    return false;
+  if (result.allChars != undefined) {
+    let raw = roundTo2((result.allChars * (60 / result.testDuration)) / 5);
+    if (
+      raw < result.rawWpm - result.rawWpm * 0.01 ||
+      raw > result.rawWpm + result.rawWpm * 0.01
+    ) {
+      console.error(
+        `Could not validate result for ${result.uid}. ${raw} != ${result.rawWpm}`
+      );
+      return false;
+    }
   }
   return true;
 }
