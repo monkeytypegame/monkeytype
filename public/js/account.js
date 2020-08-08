@@ -910,26 +910,26 @@ function refreshAccountPage() {
         if (!activeFilters.includes("funbox_" + result.funbox)) return;
       }
 
-      if (dbSnapshot.tags.length > 0) {
-        //check if the user has any tags defined
-        //check if that result has any tags
-        if (result.tags !== undefined && result.tags.length > 0) {
-          let found = false;
-          result.tags.forEach((tag) => {
-            //check if any of the tags inside the result are active
-            if (activeFilters.includes("tag_" + tag)) found = true;
-            //check if a tag doesnt exist and tag_notag is active
-            if (
-              !dbSnapshot.tags.map((t) => t.id).includes(tag) &&
-              activeFilters.includes("tag_notag")
-            )
-              found = true;
-          });
-          if (!found) return;
-        } else {
-          if (!activeFilters.includes("tag_notag")) return;
-        }
+      let tagHide = true;
+
+      if (result.tags === undefined || result.tags.length === 0) {
+        //no tags, show when no tag is enabled
+        if (activeFilters.includes("tag_notag")) tagHide = false;
+      } else {
+        //tags exist
+        let validTags = dbSnapshot.tags.map((t) => t.id);
+        result.tags.forEach((tag) => {
+          //check if i even need to check tags anymore
+          if (!tagHide) return;
+          //check if tag is valid
+          if (validTags.includes(tag)) {
+            //tag valid, check if filter is on
+            if (activeFilters.includes("tag_" + tag)) tagHide = false;
+          }
+        });
       }
+
+      if (tagHide) return;
 
       let timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
 
