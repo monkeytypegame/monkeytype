@@ -20,47 +20,61 @@ async function db_getUserSnapshot() {
   //             ret.push(doc.data());
   //         })
   //     })
-  await db
-    .collection(`users/${user.uid}/results/`)
-    .orderBy("timestamp", "desc")
-    .get()
-    .then((data) => {
-      // console.log('getting data from db!');
-      data.docs.forEach((doc) => {
-        let result = doc.data();
-        result.id = doc.id;
-        snap.results.push(result);
+  try {
+    await db
+      .collection(`users/${user.uid}/results/`)
+      .orderBy("timestamp", "desc")
+      .get()
+      .then((data) => {
+        // console.log('getting data from db!');
+        data.docs.forEach((doc) => {
+          let result = doc.data();
+          result.id = doc.id;
+          snap.results.push(result);
+        });
+      })
+      .catch((e) => {
+        throw e;
       });
-    });
-  await db
-    .collection(`users/${user.uid}/tags/`)
-    .get()
-    .then((data) => {
-      // console.log('getting data from db!');
-      data.docs.forEach((doc) => {
-        let tag = doc.data();
-        tag.id = doc.id;
-        snap.tags.push(tag);
+    await db
+      .collection(`users/${user.uid}/tags/`)
+      .get()
+      .then((data) => {
+        // console.log('getting data from db!');
+        data.docs.forEach((doc) => {
+          let tag = doc.data();
+          tag.id = doc.id;
+          snap.tags.push(tag);
+        });
+      })
+      .catch((e) => {
+        throw e;
       });
-    });
-  await db
-    .collection("users")
-    .doc(user.uid)
-    .get()
-    .then((res) => {
-      // console.log('getting data from db!');
-      let data = res.data();
-      try {
-        if (data.personalBests !== undefined) {
-          snap.personalBests = data.personalBests;
+    await db
+      .collection("users")
+      .doc(user.uid)
+      .get()
+      .then((res) => {
+        // console.log('getting data from db!');
+        let data = res.data();
+        try {
+          if (data.personalBests !== undefined) {
+            snap.personalBests = data.personalBests;
+          }
+          snap.discordId = data.discordId;
+          snap.pairingCode = data.discordPairingCode;
+          snap.config = data.config;
+        } catch (e) {
+          //
         }
-        snap.discordId = data.discordId;
-        snap.pairingCode = data.discordPairingCode;
-        snap.config = data.config;
-      } catch (e) {
-        //
-      }
-    });
+      })
+      .catch((e) => {
+        throw e;
+      });
+  } catch (e) {
+    console.error(e);
+    showNotification("Error getting account data.", 3000);
+  }
   dbSnapshot = snap;
   return dbSnapshot;
 }
