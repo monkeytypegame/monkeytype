@@ -368,6 +368,41 @@ function stdDev(array) {
   );
 }
 
+function roundTo2(num) {
+  return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
+function validateResult(result) {
+  if (result.wpm > result.rawWpm) {
+    console.error(
+      `Could not validate result for ${result.uid}. ${result.wpm} > ${result.rawWpm}`
+    );
+    return false;
+  }
+  let wpm = roundTo2((result.correctChars * (60 / result.testDuration)) / 5);
+  let raw = roundTo2((result.allChars * (60 / result.testDuration)) / 5);
+  if (
+    wpm < result.wpm - result.wpm * 0.01 ||
+    wpm > result.wpm + result.wpm * 0.01
+  ) {
+    console.error(
+      `Could not validate result for ${result.uid}. ${wpm} != ${result.wpm}`
+    );
+    return false;
+  }
+
+  if (
+    raw < result.rawWpm - result.rawWpm * 0.01 ||
+    raw > result.rawWpm + result.rawWpm * 0.01
+  ) {
+    console.error(
+      `Could not validate result for ${result.uid}. ${raw} != ${result.rawWpm}`
+    );
+    return false;
+  }
+  return true;
+}
+
 exports.testCompleted = functions.https.onCall(async (request, response) => {
   try {
     if (request.uid === undefined || request.obj === undefined) {
@@ -399,6 +434,10 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
 
     if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
       return { resultCode: -1 };
+    }
+
+    if (!validateResult(obj)) {
+      return { resultCode: -4 };
     }
 
     let keySpacing = null;
@@ -452,7 +491,7 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
         request.obj.name = name;
 
         //check keyspacing and duration here
-        if (obj.mode === "time") {
+        if (obj.mode === "time" && obj.wpm > 130) {
           if (verified === false || verified === undefined) {
             if (keySpacing !== null && keyDuration !== null) {
               if (

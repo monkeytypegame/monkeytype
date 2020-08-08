@@ -206,3 +206,7 @@ function hexToHSL(H) {
     string: "hsl(" + h + "," + s + "%," + l + "%)",
   };
 }
+
+function roundTo2(num) {
+  return Math.round((num + Number.EPSILON) * 100) / 100;
+}

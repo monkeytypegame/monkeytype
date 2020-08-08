@@ -1220,10 +1220,6 @@ function countChars() {
   };
 }
 
-function roundTo2(num) {
-  return Math.round((num + Number.EPSILON) * 100) / 100;
-}
-
 function calculateStats() {
   if (config.mode == "words" && config.difficulty == "normal") {
     if (inputHistory.length != wordsList.length) return;
@@ -1259,6 +1255,11 @@ function calculateStats() {
     acc: acc,
     correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars,
+    allChars:
+      chars.allCorrectChars +
+      chars.spaces +
+      chars.incorrectChars +
+      chars.extraChars,
     time: testSeconds,
     spaces: chars.spaces,
     correctSpaces: chars.correctSpaces,
@@ -1486,6 +1487,7 @@ function showResult(difficultyFailed = false) {
       rawWpm: stats.wpmRaw,
       correctChars: stats.correctChars + stats.correctSpaces,
       incorrectChars: stats.incorrectChars,
+      allChars: stats.allChars,
       acc: stats.acc,
       mode: config.mode,
       mode2: mode2,
@@ -1596,6 +1598,8 @@ function showResult(difficultyFailed = false) {
                   "Could not verify. Result not saved. Refresh or contact Miodec on Discord.",
                   4000
                 );
+              } else if (e.data.resultCode === -4) {
+                showNotification("Result data invalid", 4000);
               } else if (e.data.resultCode === -999) {
                 console.error("internal error: " + e.data.message);
                 showNotification(
