@@ -1331,6 +1331,10 @@ key {
         color: var(--sub-color);
         border-bottom: 2px dotted var(--sub-color);
       }
+
+      & letter.extraCorrected {
+        border-right: 2px dotted var(--sub-color);
+      }
     }
   }
 
@@ -1343,6 +1347,10 @@ key {
       & letter.corrected {
         color: var(--main-color);
         border-bottom: 2px dotted var(--main-color);
+      }
+
+      & letter.extraCorrected {
+        border-right: 2px dotted var(--main-color);
       }
 
       & letter.incorrect {
@@ -1366,6 +1374,10 @@ key {
       & letter.corrected {
         color: var(--sub-color);
         border-bottom: 2px dotted var(--sub-color);
+      }
+
+      & letter.extraCorrected {
+        border-right: 2px dotted var(--sub-color);
       }
 
       & letter.incorrect {

@@ -1892,7 +1892,7 @@ function showResult(difficultyFailed = false) {
 
 function startTest() {
   if (!dbConfigLoaded) {
-    console.log('config changed before db loaded!');
+    console.log("config changed before db loaded!");
     configChangedBeforeDb = true;
   }
   try {
@@ -2562,21 +2562,28 @@ async function loadWordsHistory() {
       } catch (e) {
         correctedChar = undefined;
       }
+      let extraCorrected = "";
+      if (c + 1 === loop && correctedHistory[index].length > input.length) {
+        extraCorrected = "extraCorrected";
+      }
       if (wordsList[index][c] !== undefined) {
         if (input[c] === wordsList[index][c]) {
           if (correctedChar === input[c] || correctedChar === undefined) {
-            wordEl +=
-              '<letter class="correct">' + wordsList[index][c] + "</letter>";
+            wordEl += `<letter class="correct ${extraCorrected}">${wordsList[index][c]}</letter>`;
           } else {
             wordEl +=
-              '<letter class="corrected">' + wordsList[index][c] + "</letter>";
+              `<letter class="corrected ${extraCorrected}">` +
+              wordsList[index][c] +
+              "</letter>";
           }
         } else {
           if (input[c] === currentInput || input[c] === undefined) {
             wordEl += "<letter>" + wordsList[index][c] + "</letter>";
           } else {
             wordEl +=
-              '<letter class="incorrect">' + wordsList[index][c] + "</letter>";
+              `<letter class="incorrect ${extraCorrected}">` +
+              wordsList[index][c] +
+              "</letter>";
           }
         }
       } else {
