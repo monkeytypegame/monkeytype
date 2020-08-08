@@ -72,7 +72,7 @@ async function saveConfigToCookie(noDbCheck = false) {
     path: "/",
   });
   restartCount = 0;
-  if(!noDbCheck) saveConfigToDB();
+  if (!noDbCheck) saveConfigToDB();
 }
 
 async function saveConfigToDB() {
@@ -783,9 +783,6 @@ function changeKeymapMode(mode, nosave) {
   }
   if (mode === "next") {
     $(".keymap-key").attr("style", "");
-  }
-  if (config.showLiveWpm) {
-    config.showLiveWpm = false;
   }
   config.keymapMode = mode;
   restartTest();
