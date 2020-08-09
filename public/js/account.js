@@ -1156,6 +1156,17 @@ function refreshAccountPage() {
       resultHistoryChart.options.plugins.trendlineLinear = false;
     }
 
+    let wpmPoints = filteredResults.map((r) => r.wpm).reverse();
+
+    let trend = findLineByLeastSquares(wpmPoints);
+
+    let slope = calculateSlope(trend);
+    let plus = slope > 0 ? "+" : "";
+
+    $(".pageAccount .group.chart .below").text(
+      `Trend slope: ${plus + roundTo2(slope)}`
+    );
+
     resultHistoryChart.update({ duration: 0 });
 
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);

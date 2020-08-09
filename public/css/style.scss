@@ -2044,6 +2044,12 @@ key {
     &.chart {
       position: relative;
 
+      .below {
+        text-align: center;
+        color: var(--sub-color);
+        margin-top: 1rem;
+      }
+
       .chartPreloader {
         position: absolute;
         width: 100%;

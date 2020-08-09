@@ -210,3 +210,53 @@ function hexToHSL(H) {
 function roundTo2(num) {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }
+
+function findLineByLeastSquares(values_y) {
+  var sum_x = 0;
+  var sum_y = 0;
+  var sum_xy = 0;
+  var sum_xx = 0;
+  var count = 0;
+
+  /*
+   * We'll use those variables for faster read/write access.
+   */
+  var x = 0;
+  var y = 0;
+  var values_length = values_y.length;
+
+  /*
+   * Nothing to do.
+   */
+  if (values_length === 0) {
+    return [[], []];
+  }
+
+  /*
+   * Calculate the sum for each of the parts necessary.
+   */
+  for (var v = 0; v < values_length; v++) {
+    x = v + 1;
+    y = values_y[v];
+    sum_x += x;
+    sum_y += y;
+    sum_xx += x * x;
+    sum_xy += x * y;
+    count++;
+  }
+
+  /*
+   * Calculate m and b for the formular:
+   * y = x * m + b
+   */
+  var m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
+  var b = sum_y / count - (m * sum_x) / count;
+
+  var returnpoint1 = [1, 1 * m + b];
+  var returnpoint2 = [values_length, values_length * m + b];
+  return [returnpoint1, returnpoint2];
+}
+
+function calculateSlope([[x1, y1], [x2, y2]]) {
+  return (y1 - y2) / (x1 - x2);
+}
