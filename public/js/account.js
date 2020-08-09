@@ -216,19 +216,6 @@ firebase.auth().onAuthStateChanged(function (user) {
     updateAccountLoginButton();
     accountIconLoading(true);
     db_getUserSnapshot().then((e) => {
-      console.log("DB snapshot ready");
-      accountIconLoading(false);
-      updateFilterTags();
-      updateCommandsTagsList();
-      loadActiveTagsFromCookie();
-      updateResultEditTagsPanelButtons();
-      config.resultFilters.forEach((filter) => {
-        if (filter.substring(0, 4) === "tag_" && filter !== "tag_notag") {
-          toggleFilterButton(filter);
-        }
-      });
-      refreshTagsSettingsSection();
-      updateDiscordSettingsSection();
       if (!configChangedBeforeDb) {
         if (cookieConfig === null) {
           dbConfigLoaded = true;
@@ -270,6 +257,16 @@ firebase.auth().onAuthStateChanged(function (user) {
       } else {
         accountIconLoading(false);
       }
+      if (config.resultFilters === undefined || config.resultFilters === null) {
+        config.resultFilters = defaultAccountFilters;
+      }
+      accountIconLoading(false);
+      updateFilterTags();
+      updateCommandsTagsList();
+      loadActiveTagsFromCookie();
+      updateResultEditTagsPanelButtons();
+      refreshTagsSettingsSection();
+      updateDiscordSettingsSection();
     });
     var displayName = user.displayName;
     var email = user.email;
@@ -421,192 +418,314 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
   },
 });
 
+let defaultAccountFilters = {
+  difficulty: {
+    normal: true,
+    expert: true,
+    master: true,
+  },
+  mode: {
+    words: true,
+    time: true,
+    quote: true,
+    custom: true,
+  },
+  words: {
+    10: true,
+    25: true,
+    50: true,
+    100: true,
+    200: true,
+    custom: true,
+  },
+  time: {
+    15: true,
+    30: true,
+    60: true,
+    120: true,
+    custom: true,
+  },
+  punctuation: {
+    on: true,
+    off: true,
+  },
+  date: {
+    last_day: false,
+    last_week: false,
+    last_month: false,
+    all: true,
+  },
+  tags: {
+    none: true,
+  },
+  language: {},
+  funbox: {
+    none: true,
+  },
+};
+
 Object.keys(words).forEach((language) => {
-  $(".pageAccount .content .filterButtons .buttons.languages").append(
-    `<div class="button" filter="lang_${language}">${language.replace(
+  $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
+  ).append(
+    `<div class="button" filter="${language}">${language.replace(
       "_",
       " "
     )}</div>`
   );
+  defaultAccountFilters.language[language] = true;
   if (language === "english_expanded") {
-    $(".pageAccount .content .filterButtons .buttons.languages").append(
-      `<div class="button" filter="lang_english_10k">english 10k</div>`
-    );
+    $(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
+    ).append(`<div class="button" filter="english_10k">english 10k</div>`);
+    defaultAccountFilters.language["english_10k"] = true;
   }
 });
 
-$(".pageAccount .content .filterButtons .buttons.funbox").append(
-  `<div class="button" filter="funbox_none">none</div>`
-);
+$(
+  ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+).append(`<div class="button" filter="none">none</div>`);
 getFunboxList().then((funboxModes) => {
   funboxModes.forEach((funbox) => {
-    $(".pageAccount .content .filterButtons .buttons.funbox").append(
-      `<div class="button" filter="funbox_${funbox.name}">${funbox.name.replace(
+    $(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
+    ).append(
+      `<div class="button" filter="${funbox.name}">${funbox.name.replace(
         /_/g,
         " "
       )}</div>`
     );
+    defaultAccountFilters.funbox[funbox.name] = true;
   });
 });
 
-let activeFilters = ["all"];
-
-$(document).ready((e) => {
-  activeFilters = config.resultFilters;
-  // console.log(activeFilters);
-  if (activeFilters.includes("all")) {
-    toggleFilterButton("all");
-  } else {
-    activeFilters.forEach((filter) => {
-      toggleFilterButton(filter);
-    });
-  }
-});
-
 function updateFilterTags() {
-  $(".pageAccount .content .filterButtons .buttons.tags").empty();
+  $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+  ).empty();
   if (dbSnapshot.tags.length > 0) {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
-    if (config.resultFilters.includes("tag_notag")) {
-      $(".pageAccount .content .filterButtons .buttons.tags").append(
-        `<div class="button active" filter="tag_notag">no tag</div>`
-      );
-    } else {
-      $(".pageAccount .content .filterButtons .buttons.tags").append(
-        `<div class="button" filter="tag_notag">no tag</div>`
-      );
-    }
+    $(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+    ).append(`<div class="button" filter="none">no tag</div>`);
     dbSnapshot.tags.forEach((tag) => {
-      if (config.resultFilters.includes("tag_" + tag.name)) {
-        $(".pageAccount .content .filterButtons .buttons.tags").append(
-          `<div class="button active" filter="tag_${tag.id}">${tag.name}</div>`
-        );
-      } else {
-        $(".pageAccount .content .filterButtons .buttons.tags").append(
-          `<div class="button" filter="tag_${tag.id}">${tag.name}</div>`
-        );
-      }
+      defaultAccountFilters.tags[tag.id] = true;
+      $(
+        ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+      ).append(`<div class="button" filter="${tag.id}">${tag.name}</div>`);
     });
   } else {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
       "hidden"
     );
   }
-  updateActiveFilters();
+  showActiveFilters();
 }
 
-function toggleFilterButton(filter) {
-  const element = $(
-    `.pageAccount .content .filterButtons .button[filter=${filter}]`
-  );
-  if (element.hasClass("active")) {
-    //disable that filter
-
-    if (filter == "all" || filter == "none") {
-      return;
-    } else if (filter == "mode_words") {
-      // $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
-      //   let f = $(obj).attr('filter')
-      //   disableFilterButton(f)
-      // })
-    } else if (filter == "mode_time") {
-      // $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
-      //   let f = $(obj).attr('filter')
-      //   disableFilterButton(f)
-      // })
-    } else if (filter == "punc_off") {
-      enableFilterButton("punc_on");
-    } else if (filter == "punc_on") {
-      enableFilterButton("punc_off");
-    }
-    disableFilterButton(filter);
-    disableFilterButton("all");
-  } else {
-    //enable that filter
-    disableFilterButton("none");
-
-    if (filter == "all") {
-      $.each(
-        $(`.pageAccount .content .filterButtons .button`),
-        (index, obj) => {
-          let f = $(obj).attr("filter");
-          if (
-            f != "none" &&
-            f != "date_month" &&
-            f != "date_week" &&
-            f != "date_day"
-          ) {
-            enableFilterButton(f);
-          }
-        }
-      );
-    } else if (filter == "none") {
-      disableFilterButton("all");
-      $.each(
-        $(`.pageAccount .content .filterButtons .button`),
-        (index, obj) => {
-          let f = $(obj).attr("filter");
-          if (f != "none") {
-            disableFilterButton(f);
-          }
-        }
-      );
-    } else if (
-      filter == "date_all" ||
-      filter == "date_month" ||
-      filter == "date_week" ||
-      filter == "date_day"
-    ) {
-      disableFilterButton("date_all");
-      disableFilterButton("date_month");
-      disableFilterButton("date_week");
-      disableFilterButton("date_day");
-      enableFilterButton(filter);
-    }
-    // else if(filter == "mode_words"){
-    //   $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
-    //     let f = $(obj).attr('filter');
-    //     enableFilterButton(f);
-    //   })
-    // }else if(filter == "mode_time"){
-    //   $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
-    //     let f = $(obj).attr('filter');
-    //     enableFilterButton(f);
-    //   })
-    // }else if(['10','25','50','100','200'].includes(filter)){
-    //   enableFilterButton('words');
-    // }else if(['15','30','60','120'].includes(filter)){
-    //   enableFilterButton('time');
-    // }
-
-    enableFilterButton(filter);
+function toggleFilter(group, filter) {
+  if (group === "date") {
+    Object.keys(config.resultFilters.date).forEach((date) => {
+      setFilter("date", date, false);
+    });
   }
-  updateActiveFilters();
+  config.resultFilters[group][filter] = !config.resultFilters[group][filter];
 }
 
-function disableFilterButton(filter) {
-  const element = $(
-    `.pageAccount .content .filterButtons .button[filter=${filter}]`
-  );
-  element.removeClass("active");
+function setFilter(group, filter, set) {
+  config.resultFilters[group][filter] = set;
 }
 
-function enableFilterButton(filter) {
-  const element = $(
-    `.pageAccount .content .filterButtons .button[filter=${filter}]`
-  );
-  element.addClass("active");
-}
+// function toggleFilterButton(filter) {
+//   const element = $(
+//     `.pageAccount .content .filterButtons .button[filter=${filter}]`
+//   );
+//   if (element.hasClass("active")) {
+//     //disable that filter
 
-function updateActiveFilters() {
-  activeFilters = [];
-  $.each($(".pageAccount .filterButtons .button"), (i, obj) => {
-    if ($(obj).hasClass("active")) {
-      activeFilters.push($(obj).attr("filter"));
+//     if (filter == "all" || filter == "none") {
+//       return;
+//     } else if (filter == "mode_words") {
+//       // $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
+//       //   let f = $(obj).attr('filter')
+//       //   disableFilterButton(f)
+//       // })
+//     } else if (filter == "mode_time") {
+//       // $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
+//       //   let f = $(obj).attr('filter')
+//       //   disableFilterButton(f)
+//       // })
+//     } else if (filter == "punc_off") {
+//       enableFilterButton("punc_on");
+//     } else if (filter == "punc_on") {
+//       enableFilterButton("punc_off");
+//     }
+//     disableFilterButton(filter);
+//     disableFilterButton("all");
+//   } else {
+//     //enable that filter
+//     disableFilterButton("none");
+
+//     if (filter == "all") {
+//       $.each(
+//         $(`.pageAccount .content .filterButtons .button`),
+//         (index, obj) => {
+//           let f = $(obj).attr("filter");
+//           if (
+//             f != "none" &&
+//             f != "date_month" &&
+//             f != "date_week" &&
+//             f != "date_day"
+//           ) {
+//             enableFilterButton(f);
+//           }
+//         }
+//       );
+//     } else if (filter == "none") {
+//       disableFilterButton("all");
+//       $.each(
+//         $(`.pageAccount .content .filterButtons .button`),
+//         (index, obj) => {
+//           let f = $(obj).attr("filter");
+//           if (f != "none") {
+//             disableFilterButton(f);
+//           }
+//         }
+//       );
+//     } else if (
+//       filter == "date_all" ||
+//       filter == "date_month" ||
+//       filter == "date_week" ||
+//       filter == "date_day"
+//     ) {
+//       disableFilterButton("date_all");
+//       disableFilterButton("date_month");
+//       disableFilterButton("date_week");
+//       disableFilterButton("date_day");
+//       enableFilterButton(filter);
+//     }
+//     // else if(filter == "mode_words"){
+//     //   $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
+//     //     let f = $(obj).attr('filter');
+//     //     enableFilterButton(f);
+//     //   })
+//     // }else if(filter == "mode_time"){
+//     //   $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
+//     //     let f = $(obj).attr('filter');
+//     //     enableFilterButton(f);
+//     //   })
+//     // }else if(['10','25','50','100','200'].includes(filter)){
+//     //   enableFilterButton('words');
+//     // }else if(['15','30','60','120'].includes(filter)){
+//     //   enableFilterButton('time');
+//     // }
+
+//     enableFilterButton(filter);
+//   }
+//   showActiveFilters();
+// }
+
+// function disableFilterButton(filter) {
+//   const element = $(
+//     `.pageAccount .content .filterButtons .button[filter=${filter}]`
+//   );
+//   element.removeClass("active");
+// }
+
+// function enableFilterButton(filter) {
+//   const element = $(
+//     `.pageAccount .content .filterButtons .button[filter=${filter}]`
+//   );
+//   element.addClass("active");
+// }
+
+function showActiveFilters() {
+  // activeFilters = [];
+  // $.each($(".pageAccount .filterButtons .button"), (i, obj) => {
+  //   if ($(obj).hasClass("active")) {
+  //     activeFilters.push($(obj).attr("filter"));
+  //   }
+  // });
+
+  let aboveChartDisplay = {};
+
+  Object.keys(config.resultFilters).forEach((group) => {
+    aboveChartDisplay[group] = {
+      all: true,
+      array: [],
+    };
+    Object.keys(config.resultFilters[group]).forEach((filter) => {
+      if (config.resultFilters[group][filter]) {
+        aboveChartDisplay[group].array.push(filter);
+      } else {
+        aboveChartDisplay[group].all = false;
+      }
+      let buttonEl = $(
+        `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
+      );
+      if (config.resultFilters[group][filter]) {
+        buttonEl.addClass("active");
+      } else {
+        buttonEl.removeClass("active");
+      }
+    });
+  });
+
+  let chartString = "";
+  let allall = true;
+  let count = 0;
+  Object.keys(aboveChartDisplay).forEach((group) => {
+    count++;
+    if (group === "time" && !aboveChartDisplay.mode.array.includes("time"))
+      return;
+    if (group === "words" && !aboveChartDisplay.mode.array.includes("words"))
+      return;
+
+    if (aboveChartDisplay[group].array.length > 0) {
+      chartString += "<div class='group'>";
+      if (group == "difficulty") {
+        chartString += `<i class="fas fa-fw fa-star"></i>`;
+      } else if (group == "mode") {
+        chartString += `<i class="fas fa-fw fa-list"></i>`;
+      } else if (group == "punctuation") {
+        chartString += `<span class="punc" style="font-weight: 900;
+        width: 1.25rem;
+        text-align: center;
+        display: inline-block;
+        letter-spacing: -.1rem;">!?</span>`;
+      } else if (group == "words") {
+        chartString += `<i class="fas fa-fw fa-font"></i>`;
+      } else if (group == "time") {
+        chartString += `<i class="fas fa-fw fa-clock"></i>`;
+      } else if (group == "date") {
+        chartString += `<i class="fas fa-fw fa-calendar"></i>`;
+      } else if (group == "tags") {
+        chartString += `<i class="fas fa-fw fa-tags"></i>`;
+      } else if (group == "language") {
+        chartString += `<i class="fas fa-fw fa-globe-americas"></i>`;
+      } else if (group == "funbox") {
+        chartString += `<i class="fas fa-fw fa-gamepad"></i>`;
+      }
+
+      if (aboveChartDisplay[group].all) {
+        chartString += "all";
+      } else {
+        allall = false;
+        chartString += aboveChartDisplay[group].array
+          .join(", ")
+          .replace(/_/g, " ");
+      }
+      chartString += "</div>";
+      if (Object.keys(aboveChartDisplay).length !== count)
+        chartString += `<div class="spacer"></div>`;
     }
   });
+
+  if (allall) chartString = `<i class="fas fa-fw fa-filter"></i>all`;
+
+  $(".pageAccount .group.chart .above").html(chartString);
+
   refreshAccountPage();
 }
 
@@ -628,77 +747,134 @@ function hideChartPreloader() {
   );
 }
 
-$(".pageAccount .filterButtons").click(".button", (e) => {
-  const filter = $(e.target).attr("filter");
-  toggleFilterButton(filter);
-  config.resultFilters = activeFilters;
-  saveConfigToCookie();
-});
+$(".pageAccount .filterButtons .buttonsAndTitle .buttons").click(
+  ".button",
+  (e) => {
+    const filter = $(e.target).attr("filter");
+    const group = $(e.target).parents(".buttons").attr("group");
+    // toggleFilterButton(filter);
+    if ($(e.target).hasClass("allFilters")) {
+      Object.keys(config.resultFilters).forEach((group) => {
+        Object.keys(config.resultFilters[group]).forEach((filter) => {
+          config.resultFilters[group][filter] = true;
+        });
+      });
+    } else if ($(e.target).hasClass("noFilters")) {
+      Object.keys(config.resultFilters).forEach((group) => {
+        Object.keys(config.resultFilters[group]).forEach((filter) => {
+          config.resultFilters[group][filter] = false;
+        });
+      });
+    } else {
+      if (e.shiftKey) {
+        Object.keys(config.resultFilters[group]).forEach((filter) => {
+          config.resultFilters[group][filter] = false;
+        });
+        setFilter(group, filter, true);
+      } else {
+        toggleFilter(group, filter);
+      }
+    }
+    showActiveFilters();
+    saveConfigToCookie();
+  }
+);
 
 $(".pageAccount #currentConfigFilter").click((e) => {
-  let disableGroups = [
-    "globalFilters",
-    "difficultyFilters",
-    "modeFilters",
-    "punctuationFilter",
-    "wordsFilter",
-    "timeFilter",
-    "languages",
-    "tags",
-    "funbox",
-  ];
-  disableGroups.forEach((group) => {
-    $.each(
-      $(`.pageAccount .filterButtons .buttons.${group} .button`),
-      (index, button) => {
-        let fl = $(button).attr("filter");
-        disableFilterButton(fl);
-        config.resultFilters = config.resultFilters.filter((f) => f !== fl);
-      }
-    );
+  // let disableGroups = [
+  //   "globalFilters",
+  //   "difficultyFilters",
+  //   "modeFilters",
+  //   "punctuationFilter",
+  //   "wordsFilter",
+  //   "timeFilter",
+  //   "languages",
+  //   "tags",
+  //   "funbox",
+  // ];
+  // disableGroups.forEach((group) => {
+  //   $.each(
+  //     $(`.pageAccount .filterButtons .buttons.${group} .button`),
+  //     (index, button) => {
+  //       let fl = $(button).attr("filter");
+  //       disableFilterButton(fl);
+  //       config.resultFilters = config.resultFilters.filter((f) => f !== fl);
+  //     }
+  //   );
+  // });
+  // showActiveFilters();
+
+  Object.keys(config.resultFilters).forEach((group) => {
+    Object.keys(config.resultFilters[group]).forEach((filter) => {
+      config.resultFilters[group][filter] = false;
+    });
   });
-  updateActiveFilters();
 
   //rewrite this monstrosity soon pls
-  config.resultFilters.push(`difficulty_${config.difficulty}`);
-  toggleFilterButton(`difficulty_${config.difficulty}`);
-  config.resultFilters.push(`mode_${config.mode}`);
-  toggleFilterButton(`mode_${config.mode}`);
+  // config.resultFilters.push(`difficulty_${config.difficulty}`);
+  // toggleFilterButton(`difficulty_${config.difficulty}`);
+  // config.resultFilters.push(`mode_${config.mode}`);
+  // toggleFilterButton(`mode_${config.mode}`);
+  // if (config.mode === "time") {
+  //   config.resultFilters.push(`time_${config.time}`);
+  //   toggleFilterButton(`time_${config.time}`);
+  // } else if (config.mode === "words") {
+  //   config.resultFilters.push(`words_${config.words}`);
+  //   toggleFilterButton(`words_${config.words}`);
+  // }
+  // let puncfilter = config.punctuation ? "punc_on" : "punc_off";
+  // config.resultFilters.push(puncfilter);
+  // toggleFilterButton(puncfilter);
+  // config.resultFilters.push(`lang_${config.language}`);
+  // toggleFilterButton(`lang_${config.language}`);
+
+  // config.resultFilters.push(`funbox_${activeFunBox}`);
+  // toggleFilterButton(`funbox_${activeFunBox}`);
+
+  // let activeTags = [];
+  // try {
+  //   dbSnapshot.tags.forEach((tag) => {
+  //     if (tag.active === true) {
+  //       activeTags.push(tag.id);
+  //     }
+  //   });
+  // } catch (e) {}
+
+  // if (activeTags.length > 0) {
+  //   activeTags.forEach((tag) => {
+  //     config.resultFilters.push(`tag_${tag}`);
+  //     toggleFilterButton(`tag_${tag}`);
+  //   });
+  // } else {
+  //   config.resultFilters.push(`tag_notag`);
+  //   toggleFilterButton(`tag_notag`);
+  // }
+
+  config.resultFilters.difficulty[config.difficulty] = true;
+  config.resultFilters.mode[config.mode] = true;
   if (config.mode === "time") {
-    config.resultFilters.push(`time_${config.time}`);
-    toggleFilterButton(`time_${config.time}`);
+    config.resultFilters.time[config.time] = true;
   } else if (config.mode === "words") {
-    config.resultFilters.push(`words_${config.words}`);
-    toggleFilterButton(`words_${config.words}`);
+    config.resultFilters.words[config.words] = true;
   }
-  let puncfilter = config.punctuation ? "punc_on" : "punc_off";
-  config.resultFilters.push(puncfilter);
-  toggleFilterButton(puncfilter);
-  config.resultFilters.push(`lang_${config.language}`);
-  toggleFilterButton(`lang_${config.language}`);
-
-  config.resultFilters.push(`funbox_${activeFunBox}`);
-  toggleFilterButton(`funbox_${activeFunBox}`);
-
-  let activeTags = [];
-  try {
-    dbSnapshot.tags.forEach((tag) => {
-      if (tag.active === true) {
-        activeTags.push(tag.id);
-      }
-    });
-  } catch (e) {}
-
-  if (activeTags.length > 0) {
-    activeTags.forEach((tag) => {
-      config.resultFilters.push(`tag_${tag}`);
-      toggleFilterButton(`tag_${tag}`);
-    });
+  if (config.punctuation) {
+    config.resultFilters.punctuation.on = true;
   } else {
-    config.resultFilters.push(`tag_notag`);
-    toggleFilterButton(`tag_notag`);
+    config.resultFilters.punctuation.off = true;
   }
+  config.resultFilters.language[config.language] = true;
+  config.resultFilters.funbox[activeFunBox] = true;
+  config.resultFilters.tags.none = true;
+  dbSnapshot.tags.forEach((tag) => {
+    if (tag.active === true) {
+      config.resultFilters.tags.none = false;
+      config.resultFilters.tags[tag.id] = true;
+    }
+  });
 
+  config.resultFilters.date.all = true;
+
+  showActiveFilters();
   saveConfigToCookie();
 });
 
@@ -880,34 +1056,43 @@ function refreshAccountPage() {
       if (resdiff == undefined) {
         resdiff = "normal";
       }
-      if (!activeFilters.includes("difficulty_" + resdiff)) return;
-      if (!activeFilters.includes("mode_" + result.mode)) return;
+      // if (!activeFilters.includes("difficulty_" + resdiff)) return;
+      if (!config.resultFilters.difficulty[resdiff]) return;
+      // if (!activeFilters.includes("mode_" + result.mode)) return;
+      if (!config.resultFilters.mode[result.mode]) return;
+
       if (result.mode == "time") {
-        let timefilter = "time_custom";
+        let timefilter = "custom";
         if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
-          timefilter = "time_" + result.mode2;
+          timefilter = result.mode2;
         }
-        if (!activeFilters.includes(timefilter)) return;
+        // if (!activeFilters.includes(timefilter)) return;
+        if (!config.resultFilters.time[timefilter]) return;
       } else if (result.mode == "words") {
-        let wordfilter = "words_custom";
+        let wordfilter = "custom";
         if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
-          wordfilter = "words_" + result.mode2;
+          wordfilter = result.mode2;
         }
-        if (!activeFilters.includes(wordfilter)) return;
+        // if (!activeFilters.includes(wordfilter)) return;
+        if (!config.resultFilters.words[wordfilter]) return;
       }
 
-      if (!activeFilters.includes("lang_" + result.language)) return;
+      // if (!activeFilters.includes("lang_" + result.language)) return;
+      if (!config.resultFilters.language[result.language]) return;
 
-      let puncfilter = "punc_off";
+      let puncfilter = "off";
       if (result.punctuation) {
-        puncfilter = "punc_on";
+        puncfilter = "on";
       }
-      if (!activeFilters.includes(puncfilter)) return;
+      if (!config.resultFilters.punctuation[puncfilter]) return;
+      // if (!activeFilters.includes(puncfilter)) return;
 
       if (result.funbox === "none" || result.funbox === undefined) {
-        if (!activeFilters.includes("funbox_none")) return;
+        // if (!activeFilters.includes("funbox_none")) return;
+        if (!config.resultFilters.funbox.none) return;
       } else {
-        if (!activeFilters.includes("funbox_" + result.funbox)) return;
+        // if (!activeFilters.includes("funbox_" + result.funbox)) return;
+        if (!config.resultFilters.funbox[result.funbox]) return;
       }
 
       let tagHide = true;
@@ -915,7 +1100,8 @@ function refreshAccountPage() {
       if (result.tags === undefined || result.tags.length === 0) {
         //no tags, show when no tag is enabled
         if (dbSnapshot.tags.length > 0) {
-          if (activeFilters.includes("tag_notag")) tagHide = false;
+          // if (activeFilters.includes("tag_notag")) tagHide = false;
+          if (config.resultFilters.tags.none) tagHide = false;
         } else {
           tagHide = false;
         }
@@ -928,7 +1114,8 @@ function refreshAccountPage() {
           //check if tag is valid
           if (validTags.includes(tag)) {
             //tag valid, check if filter is on
-            if (activeFilters.includes("tag_" + tag)) tagHide = false;
+            // if (activeFilters.includes("tag_" + tag)) tagHide = false;
+            if (config.resultFilters.tags[tag]) tagHide = false;
           }
         });
       }
@@ -939,11 +1126,20 @@ function refreshAccountPage() {
 
       let datehide = true;
 
+      // if (
+      //   activeFilters.includes("date_all") ||
+      //   (activeFilters.includes("date_day") && timeSinceTest <= 86400) ||
+      //   (activeFilters.includes("date_week") && timeSinceTest <= 604800) ||
+      //   (activeFilters.includes("date_month") && timeSinceTest <= 18144000)
+      // ) {
+      //   datehide = false;
+      // }
+
       if (
-        activeFilters.includes("date_all") ||
-        (activeFilters.includes("date_day") && timeSinceTest <= 86400) ||
-        (activeFilters.includes("date_week") && timeSinceTest <= 604800) ||
-        (activeFilters.includes("date_month") && timeSinceTest <= 18144000)
+        config.resultFilters.date.all ||
+        (config.resultFilters.date.last_day && timeSinceTest <= 86400) ||
+        (config.resultFilters.date.last_week && timeSinceTest <= 604800) ||
+        (config.resultFilters.date.last_month && timeSinceTest <= 18144000)
       ) {
         datehide = false;
       }

@@ -813,6 +813,13 @@ exports.saveConfig = functions.https.onCall((request, response) => {
 
     let err = false;
     Object.keys(obj).forEach((key) => {
+      if (err) return;
+      if (!isConfigKeyValid(key)) {
+        err = true;
+        console.error(`${key} failed regex check`);
+      }
+      if (err) return;
+      if (key === "resultFilters") return;
       let val = obj[key];
       if (Array.isArray(val)) {
         val.forEach((valarr) => {

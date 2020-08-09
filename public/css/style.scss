@@ -2044,6 +2044,28 @@ key {
     &.chart {
       position: relative;
 
+      .above {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1rem;
+        color: var(--sub-color);
+        flex-wrap: wrap;
+
+        .group {
+          display: flex;
+          align-items: center;
+        }
+
+        .fas,
+        .punc {
+          margin-right: .25rem;
+        }
+
+        .spacer {
+          width: 1rem;
+        }
+      }
+
       .below {
         text-align: center;
         color: var(--sub-color);
@@ -2112,6 +2134,16 @@ key {
       color: var(--sub-color);
       line-height: 1rem;
       font-size: 1rem;
+
+      &.testDate .buttons,
+      &.languages .buttons,
+      &.layouts .buttons,
+      &.funbox .buttons,
+      &.tags .buttons {
+        grid-template-columns: repeat(4, 1fr);
+        grid-auto-flow: unset;
+      }
+
     }
 
     .buttons {
@@ -2140,13 +2172,6 @@ key {
           color: var(--bg-color);
           background: var(--main-color);
         }
-      }
-
-      &.languages,
-      &.layouts,
-      &.funbox {
-        grid-template-columns: repeat(4, 1fr);
-        grid-auto-flow: unset;
       }
     }
   }

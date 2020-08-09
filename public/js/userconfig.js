@@ -24,7 +24,7 @@ let defaultConfig = {
   language: "english",
   fontSize: 1,
   freedomMode: false,
-  resultFilters: ["all"],
+  resultFilters: null,
   difficulty: "normal",
   blindMode: false,
   quickEnd: false,
@@ -115,7 +115,6 @@ function loadConfigFromCookie() {
   let newConfig = $.cookie("config");
   if (newConfig !== undefined) {
     newConfig = JSON.parse(newConfig);
-
     applyConfig(newConfig);
     cookieConfig = newConfig;
     saveConfigToCookie(true);
@@ -155,12 +154,12 @@ function applyConfig(configObj) {
     setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(config.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(config.alwaysShowWordsHistory, true);
-    if (
-      configObj.resultFilters == null ||
-      configObj.resultFilters == undefined
-    ) {
-      configObj.resultFilters = ["all"];
-    }
+    // if (
+    //   configObj.resultFilters !== null &&
+    //   configObj.resultFilters !== undefined
+    // ) {
+    //   accountFilters = configObj.resultFilters;
+    // }
     config = configObj;
   }
   Object.keys(defaultConfig).forEach((configKey) => {
