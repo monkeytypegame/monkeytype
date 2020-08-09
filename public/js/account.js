@@ -716,9 +716,18 @@ function showActiveFilters() {
         chartString += "all";
       } else {
         allall = false;
-        chartString += aboveChartDisplay[group].array
-          .join(", ")
-          .replace(/_/g, " ");
+        if (group === "tags") {
+          chartString += aboveChartDisplay.tags.array
+            .map((id) => {
+              if (id == "none") return id;
+              return dbSnapshot.tags.filter((t) => t.id == id)[0].name;
+            })
+            .join(", ");
+        } else {
+          chartString += aboveChartDisplay[group].array
+            .join(", ")
+            .replace(/_/g, " ");
+        }
       }
       chartString += "</div>";
       if (Object.keys(aboveChartDisplay).length !== count)
