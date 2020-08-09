@@ -1736,7 +1736,7 @@ function showResult(difficultyFailed = false) {
                     config.difficulty,
                     stats.wpm
                   );
-                } else {
+                } else if (e.data.resultCode === 1) {
                   if (localPb) {
                     showNotification(
                       "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
