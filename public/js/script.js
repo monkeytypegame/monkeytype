@@ -2913,7 +2913,7 @@ function hideCustomTextPopup() {
   }
 }
 
-$("#customTextPopupWrapper").click((e) => {
+$("#customTextPopupWrapper").mousedown((e) => {
   if ($(e.target).attr("id") === "customTextPopupWrapper") {
     hideCustomTextPopup();
   }
