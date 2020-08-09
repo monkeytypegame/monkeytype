@@ -257,7 +257,11 @@ firebase.auth().onAuthStateChanged(function (user) {
       } else {
         accountIconLoading(false);
       }
-      if (config.resultFilters === undefined || config.resultFilters === null) {
+      if (
+        config.resultFilters === undefined ||
+        config.resultFilters === null ||
+        config.resultFilters.difficulty === undefined
+      ) {
         config.resultFilters = defaultAccountFilters;
       }
       accountIconLoading(false);
@@ -687,7 +691,7 @@ function showActiveFilters() {
       if (group == "difficulty") {
         chartString += `<i class="fas fa-fw fa-star"></i>`;
       } else if (group == "mode") {
-        chartString += `<i class="fas fa-fw fa-list"></i>`;
+        chartString += `<i class="fas fa-fw fa-bars"></i>`;
       } else if (group == "punctuation") {
         chartString += `<span class="punc" style="font-weight: 900;
         width: 1.25rem;
@@ -756,9 +760,14 @@ $(".pageAccount .filterButtons .buttonsAndTitle .buttons").click(
     if ($(e.target).hasClass("allFilters")) {
       Object.keys(config.resultFilters).forEach((group) => {
         Object.keys(config.resultFilters[group]).forEach((filter) => {
-          config.resultFilters[group][filter] = true;
+          if (group === "date") {
+            config.resultFilters[group][filter] = false;
+          } else {
+            config.resultFilters[group][filter] = true;
+          }
         });
       });
+      config.resultFilters.date.all = true;
     } else if ($(e.target).hasClass("noFilters")) {
       Object.keys(config.resultFilters).forEach((group) => {
         Object.keys(config.resultFilters[group]).forEach((filter) => {
