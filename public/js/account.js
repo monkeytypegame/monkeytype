@@ -914,7 +914,11 @@ function refreshAccountPage() {
 
       if (result.tags === undefined || result.tags.length === 0) {
         //no tags, show when no tag is enabled
-        if (activeFilters.includes("tag_notag")) tagHide = false;
+        if (dbSnapshot.tags.length > 0) {
+          if (activeFilters.includes("tag_notag")) tagHide = false;
+        } else {
+          tagHide = false;
+        }
       } else {
         //tags exist
         let validTags = dbSnapshot.tags.map((t) => t.id);
