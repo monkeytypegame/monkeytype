@@ -1598,11 +1598,14 @@ function showResult(difficultyFailed = false) {
                 );
               } else if (e.data.resultCode === -3) {
                 showNotification(
-                  "Could not verify. Result not saved. Refresh or contact Miodec on Discord.",
+                  "Could not verify keypress stats. Result not saved.",
                   4000
                 );
               } else if (e.data.resultCode === -4) {
-                showNotification("Result data invalid", 4000);
+                showNotification(
+                  "Result data does not make sense. Result not saved.",
+                  4000
+                );
               } else if (e.data.resultCode === -999) {
                 console.error("internal error: " + e.data.message);
                 showNotification(
