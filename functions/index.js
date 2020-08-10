@@ -401,6 +401,32 @@ function validateResult(result) {
       return false;
     }
   }
+  if (result.mode === "time" && (result.mode2 === 15 || result.mode2 === 60)) {
+    let keyPressTimeSum =
+      result.keySpacing.reduce((total, val) => {
+        return total + val;
+      }) / 1000;
+    if (
+      keyPressTimeSum < result.testDuration - 8 ||
+      keyPressTimeSum > result.testDuration + 1
+    ) {
+      console.error(
+        `Could not validate key spacing sum for ${result.uid}. ${keyPressTimeSum} !~ ${result.testDuration}`
+      );
+      return false;
+    }
+
+    if (
+      result.testDuration < result.mode2 - 1 ||
+      result.testDuration > result.mode2 + 1
+    ) {
+      console.error(
+        `Could not validate test duration for ${result.uid}. ${result.testDuration} !~ ${result.mode2}`
+      );
+      return false;
+    }
+  }
+
   return true;
 }
 
