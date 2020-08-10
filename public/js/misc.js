@@ -260,3 +260,12 @@ function findLineByLeastSquares(values_y) {
 function calculateSlope([[x1, y1], [x2, y2]]) {
   return (y1 - y2) / (x1 - x2);
 }
+
+function getGibberish() {
+  let randLen = Math.floor(Math.random() * 7) + 1;
+  let ret = "";
+  for (let i = 0; i < randLen; i++) {
+    ret += String.fromCharCode(97 + Math.floor(Math.random() * 26));
+  }
+  return ret;
+}

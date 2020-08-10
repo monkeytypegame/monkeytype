@@ -38,5 +38,9 @@
   {
     "name": "space_balls",
     "type": "style"
+  },
+  {
+    "name": "gibberish",
+    "type": "script"
   }
 ]

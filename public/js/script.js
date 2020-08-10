@@ -382,6 +382,9 @@ function initWords() {
           }
         }
         wordsList.push(randomcaseword);
+      } else if (activeFunBox === "gibberish") {
+        setPunctuation(false);
+        wordsList.push(getGibberish());
       } else {
         wordsList.push(randomWord);
       }
