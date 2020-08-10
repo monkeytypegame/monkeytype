@@ -40,6 +40,7 @@ let defaultConfig = {
   stopOnError: false,
   showAllLines: false,
   keymapMode: "off",
+  keymapMatrix: false,
   keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
@@ -147,6 +148,7 @@ function applyConfig(configObj) {
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
     changeKeymapMode(configObj.keymapMode, true);
+    changeKeymapMatrix(configObj.keymapMatrix, true);
     changeKeymapLayout(configObj.keymapLayout, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
@@ -788,6 +790,17 @@ function changeKeymapMode(mode, nosave) {
   }
   config.keymapMode = mode;
   restartTest();
+  if (!nosave) saveConfigToCookie();
+}
+
+function changeKeymapMatrix(boolean, nosave) {
+  if (boolean !== undefined) config.keymapMatrix = boolean;
+  if (boolean === false) {
+    $(".r1, .r2, .r3, .r4").removeClass("matrix");
+  }
+  if (boolean === true) {
+    $(".r1, .r2, .r3, .r4").addClass("matrix");
+  }
   if (!nosave) saveConfigToCookie();
 }
 
