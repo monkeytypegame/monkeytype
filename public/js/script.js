@@ -661,6 +661,7 @@ function compareInput(showError) {
       if (config.difficulty == "master") {
         if (!resultVisible) {
           inputHistory.push(currentInput);
+          correctedHistory.push(currentCorrected);
           document
             .querySelector("#words .word.active")
             .setAttribute("input", currentInput);
@@ -1992,6 +1993,7 @@ function startTest() {
           hideCaret();
           testActive = false;
           inputHistory.push(currentInput);
+          correctedHistory.push(currentCorrected);
           showResult();
         }
       }
