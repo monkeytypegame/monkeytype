@@ -145,15 +145,19 @@ function copyResultToClipboard() {
 }
 
 function activateFunbox(funbox, mode) {
-  if (funbox === "none" || funbox !== "earthquake") {
-    $("#funBoxTheme").attr("href", ``);
+  if (testActive || resultVisible) {
+    showNotification(
+      "You can only change the funbox before starting a test.",
+      4000
+    );
+    return false;
+  }
+  $("#funBoxTheme").attr("href", ``);
+  if (funbox === "none") {
     activeFunBox = "none";
   }
   if (mode === "style") {
-    if (funbox == undefined) {
-      $("#funBoxTheme").attr("href", ``);
-      activeFunBox = "none";
-    } else {
+    if (funbox != undefined) {
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
       activeFunBox = funbox;
     }
@@ -181,6 +185,7 @@ function activateFunbox(funbox, mode) {
     activeFunBox = funbox;
   }
   updateTestModesNotice();
+  return true;
 }
 
 function toggleScriptFunbox(...params) {
@@ -369,9 +374,7 @@ function initWords() {
           randomWord = wordset[Math.floor(Math.random() * wordset.length)];
         }
       }
-      if (config.punctuation && config.mode != "custom") {
-        randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
-      }
+
       if (activeFunBox === "rAnDoMcAsE") {
         let randomcaseword = "";
         for (let i = 0; i < randomWord.length; i++) {
@@ -381,13 +384,19 @@ function initWords() {
             randomcaseword += randomWord[i];
           }
         }
-        wordsList.push(randomcaseword);
+        randomWord = randomcaseword;
       } else if (activeFunBox === "gibberish") {
+        randomWord = getGibberish();
+      } else if (activeFunBox === "58008") {
         setPunctuation(false);
-        wordsList.push(getGibberish());
-      } else {
-        wordsList.push(randomWord);
+        randomWord = getNumbers();
       }
+
+      if (config.punctuation && config.mode != "custom") {
+        randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
+      }
+
+      wordsList.push(randomWord);
     }
   } else if (config.mode == "quote") {
     randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
@@ -571,6 +580,9 @@ function addWord() {
   }
   if (activeFunBox === "gibberish") {
     randomWord = getGibberish();
+  }
+  if (activeFunBox === "58008") {
+    randomWord = getNumbers();
   }
   wordsList.push(randomWord);
 
@@ -842,20 +854,21 @@ function updateTimer() {
           "linear"
         );
     } else if (config.timerStyle === "text") {
-      var displayTime = new Date(null);
-      displayTime.setSeconds(config.time - time);
-      displayTime = displayTime.toISOString().substr(11, 8);
-      while (
-        displayTime.substr(0, 2) == "00" ||
-        displayTime[0] == ":" ||
-        (displayTime.length == 2 && displayTime[0] == "0")
-      ) {
-        if (displayTime.substr(0, 2) == "00") {
-          displayTime = displayTime.substr(3);
-        } else {
-          displayTime = displayTime.substr(1);
-        }
-      }
+      // var displayTime = new Date(null);
+      // displayTime.setSeconds(config.time - time);
+      // displayTime = displayTime.toISOString().substr(11, 8);
+      // while (
+      //   displayTime.substr(0, 2) == "00" ||
+      //   displayTime[0] == ":" ||
+      //   (displayTime.length == 2 && displayTime[0] == "0")
+      // ) {
+      //   if (displayTime.substr(0, 2) == "00") {
+      //     displayTime = displayTime.substr(3);
+      //   } else {
+      //     displayTime = displayTime.substr(1);
+      //   }
+      // }
+      let displayTime = secondsToString(config.time - time);
       $("#timerNumber").html(displayTime);
       // $("#timerNumber").html(config.time - time);
     }
@@ -1319,6 +1332,9 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
     $("#result .stats .acc .bottom").text(roundTo2(stats.acc) + "%");
     $("#result .stats .time .bottom").text(roundTo2(testtime) + "s");
+    $("#result .stats .wpm .bottom").removeAttr("aria-label");
+    $("#result .stats .raw .bottom").removeAttr("aria-label");
+    $("#result .stats .acc .bottom").removeAttr("aria-label");
     $("#result .stats .time .bottom").attr("aria-label", `${afkseconds}s afk`);
   } else {
     $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
@@ -1960,6 +1976,26 @@ function startTest() {
         const layouts = ["qwerty", "dvorak", "colemak"];
         let index = 0;
         index = Math.floor(time / (config.time / 3));
+
+        if (
+          time == Math.floor(config.time / 3) - 3 ||
+          time == (config.time / 3) * 2 - 3
+        ) {
+          showNotification("3", 1000);
+        }
+        if (
+          time == Math.floor(config.time / 3) - 2 ||
+          time == Math.floor(config.time / 3) * 2 - 2
+        ) {
+          showNotification("2", 1000);
+        }
+        if (
+          time == Math.floor(config.time / 3) - 1 ||
+          time == Math.floor(config.time / 3) * 2 - 1
+        ) {
+          showNotification("1", 1000);
+        }
+
         if (config.layout !== layouts[index] && layouts[index] !== undefined) {
           showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
         }
@@ -2065,7 +2101,7 @@ function restartTest(withSameWordset = false) {
     el = $("#wordsWrapper");
   }
   if (resultVisible) {
-    if (config.randomTheme && !pageTransition) {
+    if (config.randomTheme && !pageTransition && !config.customTheme) {
       randomiseTheme();
       showNotification(config.theme.replace(/_/g, " "), 1500);
     }
@@ -3027,10 +3063,10 @@ function applyMode2Popup() {
         showNotification("Stay safe and take breaks!", 3000);
       }
     } else {
-      showNotification("Custom time can only be set between 1 and 3600", 3000);
+      showNotification("Custom time must be larger than 1", 3000);
     }
   } else if (mode == "words") {
-    if (val !== null && !isNaN(val) && val > 0 && val <= 10000) {
+    if (val !== null && !isNaN(val) && val > 0) {
       changeWordCount(val);
       manualRestart = true;
       restartTest();
@@ -3038,10 +3074,7 @@ function applyMode2Popup() {
         showNotification("Stay safe and take breaks!", 3000);
       }
     } else {
-      showNotification(
-        "Custom word amount can only be set between 1 and 10000",
-        3000
-      );
+      showNotification("Custom word amount must be larger than 1", 3000);
     }
   }
 
