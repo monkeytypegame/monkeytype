@@ -269,3 +269,13 @@ function getGibberish() {
   }
   return ret;
 }
+
+function getNumbers() {
+  let randLen = Math.floor(Math.random() * 7) + 1;
+  let ret = "";
+  for (let i = 0; i < randLen; i++) {
+    randomNum = Math.floor(Math.random() * 9) + 1;
+    ret += randomNum.toString()
+  }
+  return ret;
+}
