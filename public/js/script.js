@@ -570,10 +570,9 @@ function addWord() {
     randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0);
   }
   if (activeFunBox === "gibberish") {
-    wordsList.push(getGibberish());
-  } else {
-    wordsList.push(randomWord);
+    randomWord = getGibberish();
   }
+  wordsList.push(randomWord);
 
   let w = "<div class='word'>";
   for (let c = 0; c < randomWord.length; c++) {
