@@ -40,7 +40,7 @@ let defaultConfig = {
   stopOnError: false,
   showAllLines: false,
   keymapMode: "off",
-  keymapMatrix: false,
+  keymapStyle: "off",
   keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
@@ -148,7 +148,7 @@ function applyConfig(configObj) {
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
     changeKeymapMode(configObj.keymapMode, true);
-    changeKeymapMatrix(configObj.keymapMatrix, true);
+    changeKeymapStyle(configObj.keymapStyle, true);
     changeKeymapLayout(configObj.keymapLayout, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
@@ -793,14 +793,22 @@ function changeKeymapMode(mode, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function changeKeymapMatrix(boolean, nosave) {
-  if (boolean !== undefined) config.keymapMatrix = boolean;
-  if (boolean === false) {
+function changeKeymapStyle(style, nosave) {
+  if (style === "off") {
     $(".r1, .r2, .r3, .r4").removeClass("matrix");
+    $(".r5").removeClass("matrixSpace");
+    $("#KeyLeftBracket").removeClass("hide-key");
+    $("#KeyRightBracket").removeClass("hide-key");
+    $("#KeyQuote").removeClass("hide-key");
   }
-  if (boolean === true) {
+  if (style === "matrix") {
     $(".r1, .r2, .r3, .r4").addClass("matrix");
+    $(".r5").addClass("matrixSpace");
+    $("#KeyLeftBracket").addClass("hide-key");
+    $("#KeyRightBracket").addClass("hide-key");
+    $("#KeyQuote").addClass("hide-key");
   }
+  config.keymapStyle = style;
   if (!nosave) saveConfigToCookie();
 }
 

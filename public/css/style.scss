@@ -2403,7 +2403,7 @@ key {
   }
 }
 
-.hidden-key {
+.hidden-key, .hide-key {
   opacity: 0;
 }
 
@@ -2436,4 +2436,9 @@ key {
 .matrix {
   display: flex;
   justify-content: left;
+  margin-left: 4.51rem;
+}
+
+.matrixSpace {
+  grid-template-columns: 6.75fr 1.90fr 6.75fr;
 }

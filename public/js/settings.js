@@ -93,17 +93,17 @@ settingsGroups.keymapMode = new SettingsGroup(
   },
   () => {
     if (config.keymapMode === "off") {
+      $(".pageSettings .section.keymapStyle").addClass("hidden");
       $(".pageSettings .section.keymapLayout").addClass("hidden");
-      $(".pageSettings .section.keymapMatrix").addClass("hidden");
     } else {
+      $(".pageSettings .section.keymapStyle").removeClass("hidden");
       $(".pageSettings .section.keymapLayout").removeClass("hidden");
-      $(".pageSettings .section.keymapMatrix").removeClass("hidden");
     }
   }
 );
 settingsGroups.keymapMatrix = new SettingsGroup(
-  "keymapMatrix",
-  changeKeymapMatrix
+  "keymapStyle",
+  changeKeymapStyle
 );
 settingsGroups.keymapLayout = new SettingsGroup(
   "keymapLayout",
