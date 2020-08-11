@@ -3161,7 +3161,7 @@ $("#wordsWrapper").click((e) => {
 
 $(document).on("click", "#top .config .mode .text-button", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
-  mode = e.currentTarget.innerHTML;
+  mode = $(e.currentTarget).attr("mode");
   changeMode(mode);
   manualRestart = true;
 
