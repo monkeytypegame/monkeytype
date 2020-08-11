@@ -1317,6 +1317,9 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
     $("#result .stats .acc .bottom").text(roundTo2(stats.acc) + "%");
     $("#result .stats .time .bottom").text(roundTo2(testtime) + "s");
+    $("#result .stats .wpm .bottom").removeAttr("aria-label");
+    $("#result .stats .raw .bottom").removeAttr("aria-label");
+    $("#result .stats .acc .bottom").removeAttr("aria-label");
     $("#result .stats .time .bottom").attr("aria-label", `${afkseconds}s afk`);
   } else {
     $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
