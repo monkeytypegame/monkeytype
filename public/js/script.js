@@ -1961,6 +1961,26 @@ function startTest() {
         const layouts = ["qwerty", "dvorak", "colemak"];
         let index = 0;
         index = Math.floor(time / (config.time / 3));
+
+        if (
+          time == Math.floor(config.time / 3) - 3 ||
+          time == (config.time / 3) * 2 - 3
+        ) {
+          showNotification("3", 1000);
+        }
+        if (
+          time == Math.floor(config.time / 3) - 2 ||
+          time == Math.floor(config.time / 3) * 2 - 2
+        ) {
+          showNotification("2", 1000);
+        }
+        if (
+          time == Math.floor(config.time / 3) - 1 ||
+          time == Math.floor(config.time / 3) * 2 - 1
+        ) {
+          showNotification("1", 1000);
+        }
+
         if (config.layout !== layouts[index] && layouts[index] !== undefined) {
           showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
         }
