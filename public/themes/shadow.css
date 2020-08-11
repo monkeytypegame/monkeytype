@@ -1,32 +1,33 @@
 :root {
-    --bg-color: #000;
-    --main-color: #eee;
-    --caret-color: #eee;
-    --sub-color: #444;
-    --text-color: #eee;
-    --error-color: #fff;
-    --error-extra-color: #d8d8d8;
-    --colorful-error-color: #fff;
-    --colorful-error-extra-color: #d8d8d8; 
+  --bg-color: #000;
+  --main-color: #eee;
+  --caret-color: #eee;
+  --sub-color: #444;
+  --text-color: #eee;
+  --error-color: #fff;
+  --error-extra-color: #d8d8d8;
+  --colorful-error-color: #fff;
+  --colorful-error-extra-color: #d8d8d8;
 }
 
 @keyframes shadow {
-    to {
-        color: #000;
-    }
+  to {
+    color: #000;
+  }
 }
 
 @keyframes shadow-repeat {
-    50% {
-        color: #000;
-    }
-    100% {
-        color: #eee;
-    }
+  50% {
+    color: #000;
+  }
+  100% {
+    color: #eee;
+  }
 }
 
-#liveWpm, #timerNumber{
-    color: white;
+#liveWpm,
+#timerNumber {
+  color: white;
 }
 
 #top .config .group .buttons .text-button.active,
@@ -34,17 +35,18 @@
 #menu .icon-button:hover,
 #top .config .group .buttons .text-button:hover,
 a:hover {
-    animation-name: shadow-repeat;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-    animation-fill-mode: forwards;
-    animation-timing-function: linear;
+  animation-name: shadow-repeat;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
 }
 
-#logo, .word letter.correct{
-    animation-name: shadow;
-    animation-duration: 5s;
-    animation-iteration-count: 1;
-    animation-fill-mode: forwards;
-    animation-timing-function: linear;
+#logo,
+.word letter.correct {
+  animation-name: shadow;
+  animation-duration: 5s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
 }

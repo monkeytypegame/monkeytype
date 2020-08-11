@@ -2,7 +2,7 @@
   --bg-color: #000000;
   --main-color: #ffffff;
   --caret-color: #ffffff;
-  --sub-color: rgba(255, 255, 255, .1);
+  --sub-color: rgba(255, 255, 255, 0.1);
   --text-color: #ffffff;
   --error-color: #da3333;
   --error-extra-color: #791717;
@@ -15,7 +15,6 @@ body {
   background-size: cover;
   background-position: center;
 }
-
 
 #middle {
   transform: rotateX(35deg);

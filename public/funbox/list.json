@@ -1,4 +1,5 @@
-[{
+[
+  {
     "name": "nausea",
     "type": "style"
   },
@@ -27,7 +28,6 @@
     "type": "script"
   },
   {
-
     "name": "layoutfluid",
     "type": "script"
   },

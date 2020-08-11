@@ -10,27 +10,26 @@
   --colorful-error-extra-color: #732e51;
 }
 
-
-#menu .icon-button:nth-child(1){
+#menu .icon-button:nth-child(1) {
   color: #ec75c4;
 }
 
-#menu .icon-button:nth-child(2){
+#menu .icon-button:nth-child(2) {
   color: #8be9fd;
 }
 
-#menu .icon-button:nth-child(3){
+#menu .icon-button:nth-child(3) {
   color: #50fa7b;
 }
 
-#menu .icon-button:nth-child(4){
+#menu .icon-button:nth-child(4) {
   color: #f1fa8c;
 }
 
-#menu .icon-button:nth-child(5){
+#menu .icon-button:nth-child(5) {
   color: #ffb86c;
 }
 
-#menu .icon-button:nth-child(6){
+#menu .icon-button:nth-child(6) {
   color: #ffb86c;
 }

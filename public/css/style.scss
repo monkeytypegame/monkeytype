@@ -2,8 +2,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Oxygen&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Oxygen&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
 
 :root {
   --roundness: 0.25rem;
@@ -379,7 +379,7 @@ a:hover {
     .check {
       span {
         display: block;
-        font-size: .76rem;
+        font-size: 0.76rem;
         color: var(--sub-color);
         margin-left: 1.5rem;
       }
@@ -391,7 +391,7 @@ a:hover {
         height: 0;
         display: none;
 
-        &~.customTextRandomCheckbox {
+        & ~ .customTextRandomCheckbox {
           width: 12px;
           height: 12px;
           background: rgba(0, 0, 0, 0.1);
@@ -402,7 +402,7 @@ a:hover {
           transition: 0.25s;
         }
 
-        &:checked~.customTextRandomCheckbox {
+        &:checked ~ .customTextRandomCheckbox {
           background: var(--main-color);
         }
       }
@@ -785,8 +785,7 @@ a:hover {
   }
 
   &.outline {
-    @extend #caret,
-    .block;
+    @extend #caret, .block;
     background: transparent;
     border: 1px solid var(--caret-color);
   }
@@ -824,7 +823,6 @@ a:hover {
 }
 
 @keyframes caretFlash {
-
   0%,
   100% {
     opacity: 0;
@@ -1509,9 +1507,9 @@ key {
   border-bottom: 2px solid var(--error-color);
   text-shadow: 1px 0px 0px var(--bg-color),
     // 2px 0px 0px var(--bg-color),
-    -1px 0px 0px var(--bg-color),
+      -1px 0px 0px var(--bg-color),
     // -2px 0px 0px var(--bg-color),
-    0px 1px 0px var(--bg-color),
+      0px 1px 0px var(--bg-color),
     1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
@@ -1617,7 +1615,7 @@ key {
             height: 0;
             display: none;
 
-            &~.customCheckbox {
+            & ~ .customCheckbox {
               width: 12px;
               height: 12px;
               background: rgba(0, 0, 0, 0.1);
@@ -1628,7 +1626,7 @@ key {
               transition: 0.25s;
             }
 
-            &:checked~.customCheckbox {
+            &:checked ~ .customCheckbox {
               background: var(--main-color);
             }
           }
@@ -1692,14 +1690,14 @@ key {
     color: var(--sub-color);
     line-height: 2rem;
     cursor: pointer;
-    transition: .25s;
+    transition: 0.25s;
 
     &:hover {
       color: var(--text-color);
     }
 
     .fas {
-      margin-left: .5rem;
+      margin-left: 0.5rem;
 
       &.rotate {
         transform: rotate(-90deg);
@@ -1904,7 +1902,7 @@ key {
         "title tabs"
         "buttons buttons";
       column-gap: 2rem;
-      row-gap: .5rem;
+      row-gap: 0.5rem;
 
       .tabs {
         display: grid;
@@ -2058,7 +2056,7 @@ key {
 
         .fas,
         .punc {
-          margin-right: .25rem;
+          margin-right: 0.25rem;
         }
 
         .spacer {
@@ -2143,7 +2141,6 @@ key {
         grid-template-columns: repeat(4, 1fr);
         grid-auto-flow: unset;
       }
-
     }
 
     .buttons {
