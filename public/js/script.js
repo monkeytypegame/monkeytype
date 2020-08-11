@@ -145,7 +145,7 @@ function copyResultToClipboard() {
 }
 
 function activateFunbox(funbox, mode) {
-  if (funbox === "none") {
+  if (funbox === "none" || funbox !== "earthquake") {
     $("#funBoxTheme").attr("href", ``);
     activeFunBox = "none";
   }
