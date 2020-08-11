@@ -569,6 +569,9 @@ function addWord() {
   if (config.punctuation && config.mode != "custom") {
     randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0);
   }
+  if (activeFunBox === "gibberish") {
+    randomWord = getGibberish();
+  }
   wordsList.push(randomWord);
 
   let w = "<div class='word'>";
@@ -661,6 +664,7 @@ function compareInput(showError) {
       if (config.difficulty == "master") {
         if (!resultVisible) {
           inputHistory.push(currentInput);
+          correctedHistory.push(currentCorrected);
           document
             .querySelector("#words .word.active")
             .setAttribute("input", currentInput);
@@ -1992,6 +1996,7 @@ function startTest() {
           hideCaret();
           testActive = false;
           inputHistory.push(currentInput);
+          correctedHistory.push(currentCorrected);
           showResult();
         }
       }
