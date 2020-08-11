@@ -1001,6 +1001,8 @@
             <div class="keymap-key inactive hidden-key" id="Key6">
               <span class="letter">6</span>
             </div>
+              <div class="keymap-split-spacer"></div>
+
             <div class="keymap-key inactive hidden-key" id="Key7">
               <span class="letter">7</span>
             </div>
@@ -1042,9 +1044,11 @@
               <div class="keymap-key" id="KeyT">
                 <span class="letter">t</span>
               </div>
+              <div class="keymap-matrix-split-spacer"></div>
               <div class="keymap-key" id="KeyY">
                 <span class="letter">y</span>
               </div>
+              <div class="keymap-stagger-split-spacer"></div>
               <div class="keymap-key" id="KeyU">
                 <span class="letter">u</span>
               </div>
@@ -1087,6 +1091,7 @@
               <div class="keymap-key" id="KeyG">
                 <span class="letter">g</span>
               </div>
+              <div class="keymap-split-spacer"></div>
               <div class="keymap-key" id="KeyH">
                 <span class="letter">h</span>
               </div>
@@ -1129,6 +1134,7 @@
               <div class="keymap-key" id="KeyB">
                 <span class="letter">b</span>
               </div>
+              <div class="keymap-split-spacer"></div>
               <div class="keymap-key" id="KeyN">
                 <span class="letter">n</span>
               </div>
@@ -1152,7 +1158,11 @@
               <div class="keymap-key hidden-key">
                 <span class="letter"></span>
               </div>
-              <div class="keymap-key" id="KeySpace">
+              <div class="keymap-key key-split-space" id="KeySpace">
+                <span class="letter"></span>
+              </div>
+              <div class="keymap-split-spacer"></div>
+              <div class="keymap-key key-split-space" id="KeySpace2">
                 <span class="letter"></span>
               </div>
               <div class="keymap-key hidden-key">
@@ -1814,7 +1824,7 @@
             </div>
             <div class="section keymapStyle">
               <h1>keymap style</h1>
-              <div class="text">Displays the keymap in a different style.</div>
+              <!-- <div class="text">Displays the keymap in a different style.</div> -->
               <div class="buttons">
                 <div
                   class="button"
@@ -1831,6 +1841,22 @@
                   onclick="this.blur();"
                 >
                   matrix
+                </div>
+                <div
+                  class="button"
+                  keymapStyle="split"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  split
+                </div>
+                <div
+                  class="button"
+                  keymapStyle="split_matrix"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  split matrix
                 </div>
               </div>
             </div>

@@ -1011,6 +1011,10 @@ function flashPressedKeymapKey(key, correct) {
       key = `#Key${key.toUpperCase()}`;
   }
 
+  if (key == "#KeySpace") {
+    key = ".key-split-space";
+  }
+
   try {
     if (correct) {
       $(key)
@@ -1102,6 +1106,9 @@ function updateHighlightedKeymapKey() {
   }
 
   $(highlightKey).addClass("active-key");
+  if (highlightKey === "#KeySpace") {
+    $("#KeySpace2").addClass("active-key");
+  }
 }
 
 function updateCaretPosition() {

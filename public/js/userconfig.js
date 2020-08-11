@@ -794,20 +794,43 @@ function changeKeymapMode(mode, nosave) {
 }
 
 function changeKeymapStyle(style, nosave) {
-  if (style === "staggered") {
-    $(".r1, .r2, .r3, .r4").removeClass("matrix");
-    $(".r5").removeClass("matrixSpace");
-    $("#KeyLeftBracket").removeClass("hide-key");
-    $("#KeyRightBracket").removeClass("hide-key");
-    $("#KeyQuote").removeClass("hide-key");
-  }
+  $(".keymap").removeClass("matrix");
+  $(".keymap").removeClass("split");
+  $(".keymap").removeClass("split_matrix");
+
   if (style === "matrix") {
-    $(".r1, .r2, .r3, .r4").addClass("matrix");
-    $(".r5").addClass("matrixSpace");
-    $("#KeyLeftBracket").addClass("hide-key");
-    $("#KeyRightBracket").addClass("hide-key");
-    $("#KeyQuote").addClass("hide-key");
+    $(".keymap").addClass("matrix");
+  } else if (style === "split") {
+    $(".keymap").addClass("split");
+  } else if (style === "split_matrix") {
+    $(".keymap").addClass("split_matrix");
   }
+  // if (style === "staggered") {
+  //   $(".keymap .keymap-split-spacer").addClass("hidden");
+  //   $(".keymap .r1, .r2, .r3, .r4").removeClass("matrix");
+  //   $(".keymap .r5").removeClass("matrixSpace");
+  //   $(".keymap #KeyLeftBracket").removeClass("hide-key");
+  //   $(".keymap #KeyRightBracket").removeClass("hide-key");
+  //   $(".keymap #KeyQuote").removeClass("hide-key");
+  // }
+  // if (style === "split") {
+  //   $(".keymap .keymap-split-spacer").removeClass("hidden");
+  //   $(".keymap .r1, .keymap .r2, .keymap .r3, .keymap .r4").removeClass(
+  //     "matrix"
+  //   );
+  //   $(".keymap .r5").removeClass("splitSpace");
+  //   $(".keymap #KeyLeftBracket").removeClass("hide-key");
+  //   $(".keymap #KeyRightBracket").removeClass("hide-key");
+  //   $(".keymap #KeyQuote").removeClass("hide-key");
+  // }
+  // if (style === "matrix") {
+  //   $(".keymap .keymap-split-spacer").addClass("hidden");
+  //   $(".keymap .r1, .keymap .r2, .keymap .r3, .keymap .r4").addClass("matrix");
+  //   $(".keymap .r5").addClass("matrixSpace");
+  //   $(".keymap #KeyLeftBracket").addClass("hide-key");
+  //   $(".keymap #KeyRightBracket").addClass("hide-key");
+  //   $(".keymap #KeyQuote").addClass("hide-key");
+  // }
   config.keymapStyle = style;
   if (!nosave) saveConfigToCookie();
 }

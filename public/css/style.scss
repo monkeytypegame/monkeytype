@@ -1904,7 +1904,8 @@ key {
     &.layout,
     &.keymapLayout,
     &.fontFamily,
-    &.funbox {
+    &.funbox,
+    &.keymapStyle {
       grid-template-columns: 2fr 1fr;
       grid-template-areas:
         "title tabs"
@@ -2385,8 +2386,13 @@ key {
     }
   }
 
-  &#KeySpace {
+  &#KeySpace,
+  &#KeySpace2 {
     width: 100%;
+  }
+
+  &#KeySpace2 {
+    opacity: 0;
   }
 
   &.flash {
@@ -2416,6 +2422,14 @@ key {
   opacity: 0;
 }
 
+.keymap {
+  .keymap-split-spacer,
+  .keymap-stagger-split-spacer,
+  .keymap-matrix-split-spacer {
+    display: none;
+  }
+}
+
 .r1 {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
@@ -2439,16 +2453,118 @@ key {
 
 .r5 {
   display: grid;
-  grid-template-columns: 4fr 7.5fr 4fr;
+  grid-template-columns: 4fr 5.5fr 4fr;
+  // &.matrixSpace {
+  //   // grid-template-columns: 6.75fr 1.9fr 6.75fr;
+  //   grid-template-columns: 6.9fr 4.6fr 6.9fr; // wider spacebar
+  // }
+  // &.splitSpace {
+  //   // grid-template-columns: 6.75fr 1.9fr 6.75fr;
+  //   grid-template-columns: 4fr 7.5fr 4fr;
+  // }
 }
 
-.matrix {
-  display: flex;
-  justify-content: left;
-  margin-left: 4.51rem;
-}
+// .matrix {
+//   display: flex;
+//   justify-content: left;
+//   margin-left: 4.51rem;
+// }
 
-.matrixSpace {
-  grid-template-columns: 6.75fr 1.9fr 6.75fr;
-  //grid-template-columns: 6.90fr 4.60fr 6.90fr; // wider spacebar
+.keymap {
+  &.matrix {
+    .r1,
+    .r2,
+    .r3,
+    .r4 {
+      display: flex;
+      justify-content: left;
+      margin-left: 4.51rem;
+    }
+    .r5 {
+      grid-template-columns: 6.9fr 4.6fr 6.9fr;
+    }
+
+    #KeyLeftBracket {
+      opacity: 0;
+    }
+    #KeyRightBracket {
+      opacity: 0;
+    }
+    #KeyQuote {
+      opacity: 0;
+    }
+  }
+  &.split {
+    .keymap-split-spacer {
+      display: block;
+    }
+    .keymap-stagger-split-spacer {
+      display: block;
+    }
+    .r1 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+      opacity: 0;
+    }
+
+    .r2 {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+    }
+
+    .r3 {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+    }
+
+    .r4 {
+      display: grid;
+      grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.5fr;
+    }
+    .r5 {
+      grid-template-columns: 5fr 3.5fr 1fr 3.5fr 5fr;
+    }
+    #KeySpace2 {
+      opacity: 1;
+    }
+  }
+  &.split_matrix {
+    .keymap-split-spacer {
+      display: block;
+      width: 2rem;
+      height: 2rem;
+    }
+    .keymap-stagger-split-spacer {
+      display: none;
+    }
+    .keymap-matrix-split-spacer {
+      display: block;
+      width: 2rem;
+      height: 2rem;
+    }
+    .r1,
+    .r2,
+    .r3,
+    .r4 {
+      display: flex;
+      justify-content: left;
+      margin-left: 4.51rem;
+    }
+    .r5 {
+      grid-template-columns: 6fr 2fr 1fr 2fr 6fr;
+    }
+
+    #KeyLeftBracket {
+      opacity: 0;
+    }
+    #KeyRightBracket {
+      opacity: 0;
+    }
+    #KeyQuote {
+      opacity: 0;
+    }
+    #KeySpace2 {
+      opacity: 1;
+    }
+  }
 }
