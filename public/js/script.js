@@ -385,6 +385,9 @@ function initWords() {
       } else if (activeFunBox === "gibberish") {
         setPunctuation(false);
         wordsList.push(getGibberish());
+      } else if (activeFunBox === "58008") {
+        setPunctuation(false);
+        wordsList.push(getNumbers());
       } else {
         wordsList.push(randomWord);
       }
@@ -571,6 +574,9 @@ function addWord() {
   }
   if (activeFunBox === "gibberish") {
     randomWord = getGibberish();
+  }
+  if (activeFunBox === "58008") {
+    randomWord = getNumbers();
   }
   wordsList.push(randomWord);
 
