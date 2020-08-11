@@ -40,6 +40,7 @@ let defaultConfig = {
   stopOnError: false,
   showAllLines: false,
   keymapMode: "off",
+  keymapStyle: "staggered",
   keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
@@ -147,6 +148,7 @@ function applyConfig(configObj) {
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
     changeKeymapMode(configObj.keymapMode, true);
+    changeKeymapStyle(configObj.keymapStyle, true);
     changeKeymapLayout(configObj.keymapLayout, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
@@ -788,6 +790,25 @@ function changeKeymapMode(mode, nosave) {
   }
   config.keymapMode = mode;
   restartTest();
+  if (!nosave) saveConfigToCookie();
+}
+
+function changeKeymapStyle(style, nosave) {
+  if (style === "staggered") {
+    $(".r1, .r2, .r3, .r4").removeClass("matrix");
+    $(".r5").removeClass("matrixSpace");
+    $("#KeyLeftBracket").removeClass("hide-key");
+    $("#KeyRightBracket").removeClass("hide-key");
+    $("#KeyQuote").removeClass("hide-key");
+  }
+  if (style === "matrix") {
+    $(".r1, .r2, .r3, .r4").addClass("matrix");
+    $(".r5").addClass("matrixSpace");
+    $("#KeyLeftBracket").addClass("hide-key");
+    $("#KeyRightBracket").addClass("hide-key");
+    $("#KeyQuote").addClass("hide-key");
+  }
+  config.keymapStyle = style;
   if (!nosave) saveConfigToCookie();
 }
 
