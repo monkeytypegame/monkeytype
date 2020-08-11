@@ -3024,10 +3024,10 @@ function applyMode2Popup() {
         showNotification("Stay safe and take breaks!", 3000);
       }
     } else {
-      showNotification("Custom time can only be set between 1 and 3600", 3000);
+      showNotification("Custom time must be larger than 1", 3000);
     }
   } else if (mode == "words") {
-    if (val !== null && !isNaN(val) && val > 0 && val <= 10000) {
+    if (val !== null && !isNaN(val) && val > 0) {
       changeWordCount(val);
       manualRestart = true;
       restartTest();
@@ -3035,10 +3035,7 @@ function applyMode2Popup() {
         showNotification("Stay safe and take breaks!", 3000);
       }
     } else {
-      showNotification(
-        "Custom word amount can only be set between 1 and 10000",
-        3000
-      );
+      showNotification("Custom word amount must be larger than 1", 3000);
     }
   }
 
