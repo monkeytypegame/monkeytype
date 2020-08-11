@@ -569,7 +569,11 @@ function addWord() {
   if (config.punctuation && config.mode != "custom") {
     randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0);
   }
-  wordsList.push(randomWord);
+  if (activeFunBox === "gibberish") {
+    wordsList.push(getGibberish());
+  } else {
+    wordsList.push(randomWord);
+  }
 
   let w = "<div class='word'>";
   for (let c = 0; c < randomWord.length; c++) {
