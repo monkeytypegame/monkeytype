@@ -42,5 +42,9 @@
   {
     "name": "gibberish",
     "type": "script"
+  },
+  {
+    "name": "58008",
+    "type": "script"
   }
 ]
