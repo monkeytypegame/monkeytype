@@ -269,3 +269,21 @@ function getGibberish() {
   }
   return ret;
 }
+
+function secondsToString(sec) {
+  hours = Math.floor(sec / 3600);
+  minutes = Math.floor((sec % 3600) / 60);
+  seconds = (sec % 3600) % 60;
+  let hoursString;
+  let minutesString;
+  let secondsString;
+  hours < 10 ? (hoursString = "0" + hours) : (hoursString = hours);
+  minutes < 10 ? (minutesString = "0" + minutes) : (minutesString = minutes);
+  seconds < 10 ? (secondsString = "0" + seconds) : (secondsString = seconds);
+
+  let ret = "";
+  if (hours > 0) ret += hoursString + ":";
+  if (minutes > 0) ret += minutesString + ":";
+  ret += secondsString;
+  return ret;
+}
