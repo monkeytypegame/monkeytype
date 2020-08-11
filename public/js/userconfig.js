@@ -40,7 +40,7 @@ let defaultConfig = {
   stopOnError: false,
   showAllLines: false,
   keymapMode: "off",
-  keymapStyle: "off",
+  keymapStyle: "staggered",
   keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
@@ -794,7 +794,7 @@ function changeKeymapMode(mode, nosave) {
 }
 
 function changeKeymapStyle(style, nosave) {
-  if (style === "off") {
+  if (style === "staggered") {
     $(".r1, .r2, .r3, .r4").removeClass("matrix");
     $(".r5").removeClass("matrixSpace");
     $("#KeyLeftBracket").removeClass("hide-key");
@@ -806,7 +806,7 @@ function changeKeymapStyle(style, nosave) {
     $(".r5").addClass("matrixSpace");
     $("#KeyLeftBracket").addClass("hide-key");
     $("#KeyRightBracket").addClass("hide-key");
-    $("#KeyQuote").addClass("hide-key"); 
+    $("#KeyQuote").addClass("hide-key");
   }
   config.keymapStyle = style;
   if (!nosave) saveConfigToCookie();
