@@ -7,34 +7,34 @@
   --error-color: #c87e74;
   --colorful-error-color: #a56961;
   --colorful-error-color: #c87e74;
-  --colorful-error-extra-color: #a56961; 
+  --colorful-error-extra-color: #a56961;
 }
 
-.word letter.incorrect{
+.word letter.incorrect {
   color: var(--error-color);
 }
 
-.word letter.incorrect.extra{
+.word letter.incorrect.extra {
   color: var(--colorful-error-color);
 }
 
-.word.error{
+.word.error {
   border-bottom: solid 2px var(--error-color);
 }
 
-key{
+key {
   color: var(--sub-color);
   background-color: var(--main-color);
 }
 
-#menu .icon-button{
+#menu .icon-button {
   color: var(--main-color);
 }
 
-#menu .icon-button:nth-child(1){
+#menu .icon-button:nth-child(1) {
   color: var(--error-color);
 }
 
-#menu .icon-button:nth-child(4){
+#menu .icon-button:nth-child(4) {
   color: var(--caret-color);
 }

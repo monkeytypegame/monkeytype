@@ -2403,7 +2403,8 @@ key {
   }
 }
 
-.hidden-key, .hide-key {
+.hidden-key,
+.hide-key {
   opacity: 0;
 }
 
@@ -2440,5 +2441,6 @@ key {
 }
 
 .matrixSpace {
-  grid-template-columns: 6.75fr 1.90fr 6.75fr;
+  grid-template-columns: 6.75fr 1.9fr 6.75fr;
+  //grid-template-columns: 6.90fr 4.60fr 6.90fr; // wider spacebar
 }
