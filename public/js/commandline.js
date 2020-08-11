@@ -265,6 +265,15 @@ let commands = {
       },
     },
     {
+      id: "changeKeymapStyle",
+      display: "Change keymap style...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsKeymapStyle);
+        showCommandLine();
+      },
+    },
+    {
       id: "changeKeymapLayout",
       display: "Change keymap layout...",
       subgroup: true,
@@ -384,6 +393,40 @@ let commandsCaretStyle = {
       display: "underline",
       exec: () => {
         setCaretStyle("underline");
+      },
+    },
+  ],
+};
+
+let commandsKeymapStyle = {
+  title: "Change keymap style...",
+  list: [
+    {
+      id: "setKeymapStyleStaggered",
+      display: "staggered",
+      exec: () => {
+        changeKeymapStyle("staggered");
+      },
+    },
+    {
+      id: "setKeymapStyleMatrix",
+      display: "matrix",
+      exec: () => {
+        changeKeymapStyle("matrix");
+      },
+    },
+    {
+      id: "setKeymapStyleSplit",
+      display: "split",
+      exec: () => {
+        changeKeymapStyle("split");
+      },
+    },
+    {
+      id: "setKeymapStyleSplitMatrix",
+      display: "split matrix",
+      exec: () => {
+        changeKeymapStyle("split_matrix");
       },
     },
   ],
