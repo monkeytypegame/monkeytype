@@ -238,6 +238,15 @@ let commands = {
       },
     },
     {
+      id: "changeFunbox",
+      display: "Change funbox...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsFunbox);
+        showCommandLine();
+      },
+    },
+    {
       id: "changeLayout",
       display: "Change layout...",
       subgroup: true,
@@ -721,6 +730,35 @@ getFontsList().then((fonts) => {
       display: font.display !== undefined ? font.display : font.name,
       exec: () => {
         setFontFamily(font.name.replace(/ /g, "_"));
+      },
+    });
+  });
+});
+
+let commandsFunbox = {
+  title: "Change funbox...",
+  list: [
+    {
+      id: "changeFunboxNone",
+      display: "none",
+      exec: () => {
+        if (activateFunbox("none", null)) {
+          restartTest();
+        }
+      },
+    },
+  ],
+};
+
+getFunboxList().then((funboxes) => {
+  funboxes.forEach((funbox) => {
+    commandsFunbox.list.push({
+      id: "changeFunbox" + funbox.name,
+      display: funbox.name.replace(/_/g, " "),
+      exec: () => {
+        if (activateFunbox(funbox.name, funbox.type)) {
+          restartTest();
+        }
       },
     });
   });

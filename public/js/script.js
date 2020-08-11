@@ -145,6 +145,13 @@ function copyResultToClipboard() {
 }
 
 function activateFunbox(funbox, mode) {
+  if (testActive || resultVisible) {
+    showNotification(
+      "You can only change the funbox before starting a test.",
+      4000
+    );
+    return false;
+  }
   $("#funBoxTheme").attr("href", ``);
   if (funbox === "none") {
     activeFunBox = "none";
@@ -178,6 +185,7 @@ function activateFunbox(funbox, mode) {
     activeFunBox = funbox;
   }
   updateTestModesNotice();
+  return true;
 }
 
 function toggleScriptFunbox(...params) {
