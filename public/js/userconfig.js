@@ -806,7 +806,7 @@ function changeKeymapStyle(style, nosave) {
     $(".r5").addClass("matrixSpace");
     $("#KeyLeftBracket").addClass("hide-key");
     $("#KeyRightBracket").addClass("hide-key");
-    $("#KeyQuote").addClass("hide-key");
+    $("#KeyQuote").addClass("hide-key"); 
   }
   config.keymapStyle = style;
   if (!nosave) saveConfigToCookie();
