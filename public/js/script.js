@@ -145,15 +145,12 @@ function copyResultToClipboard() {
 }
 
 function activateFunbox(funbox, mode) {
+  $("#funBoxTheme").attr("href", ``);
   if (funbox === "none") {
-    $("#funBoxTheme").attr("href", ``);
     activeFunBox = "none";
   }
   if (mode === "style") {
-    if (funbox == undefined) {
-      $("#funBoxTheme").attr("href", ``);
-      activeFunBox = "none";
-    } else {
+    if (funbox != undefined) {
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
       activeFunBox = funbox;
     }
@@ -2071,7 +2068,7 @@ function restartTest(withSameWordset = false) {
     el = $("#wordsWrapper");
   }
   if (resultVisible) {
-    if (config.randomTheme && !pageTransition) {
+    if (config.randomTheme && !pageTransition && !config.customTheme) {
       randomiseTheme();
       showNotification(config.theme.replace(/_/g, " "), 1500);
     }
