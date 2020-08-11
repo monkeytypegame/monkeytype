@@ -385,7 +385,7 @@ function validateResult(result) {
     wpm > result.wpm + result.wpm * 0.01
   ) {
     console.error(
-      `Could not validate result for ${result.uid}. ${wpm} != ${result.wpm}`
+      `Could not validate result for ${result.uid}. wpm ${wpm} != ${result.wpm}`
     );
     return false;
   }
@@ -396,7 +396,7 @@ function validateResult(result) {
       raw > result.rawWpm + result.rawWpm * 0.01
     ) {
       console.error(
-        `Could not validate result for ${result.uid}. ${raw} != ${result.rawWpm}`
+        `Could not validate result for ${result.uid}. raw ${raw} != ${result.rawWpm}`
       );
       return false;
     }
