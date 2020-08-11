@@ -374,9 +374,7 @@ function initWords() {
           randomWord = wordset[Math.floor(Math.random() * wordset.length)];
         }
       }
-      if (config.punctuation && config.mode != "custom") {
-        randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
-      }
+
       if (activeFunBox === "rAnDoMcAsE") {
         let randomcaseword = "";
         for (let i = 0; i < randomWord.length; i++) {
@@ -386,16 +384,19 @@ function initWords() {
             randomcaseword += randomWord[i];
           }
         }
-        wordsList.push(randomcaseword);
+        randomWord = randomcaseword;
       } else if (activeFunBox === "gibberish") {
-        setPunctuation(false);
-        wordsList.push(getGibberish());
+        randomWord = getGibberish();
       } else if (activeFunBox === "58008") {
         setPunctuation(false);
-        wordsList.push(getNumbers());
-      } else {
-        wordsList.push(randomWord);
+        randomWord = getNumbers();
       }
+
+      if (config.punctuation && config.mode != "custom") {
+        randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
+      }
+
+      wordsList.push(randomWord);
     }
   } else if (config.mode == "quote") {
     randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
