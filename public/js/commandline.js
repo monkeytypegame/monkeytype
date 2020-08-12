@@ -320,8 +320,21 @@ let commands = {
               id: "bailOutForSure",
               display: "Yes, I am sure",
               exec: () => {
-                bailout = true;
-                showResult();
+                if (
+                  (config.mode === "custom" &&
+                    customTextIsRandom &&
+                    customTextWordCount >= 5000) ||
+                  (config.mode === "words" && config.words >= 5000) ||
+                  (config.mode === "time" && config.time >= 3600)
+                ) {
+                  bailout = true;
+                  showResult();
+                } else {
+                  showNotification(
+                    "You can only bailout out of test longer than 3600 seconds / 5000 words.",
+                    5000
+                  );
+                }
               },
             },
           ],
