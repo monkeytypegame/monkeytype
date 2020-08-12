@@ -1260,8 +1260,8 @@ function calculateStats() {
   // }
   let chars = countChars();
 
-  let testNow = Date.now();
-  let testSeconds = roundTo2((testNow - testStart) / 1000);
+  // let testNow = Date.now();
+  let testSeconds = roundTo2((testEnd - testStart) / 1000);
   let wpm = roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
