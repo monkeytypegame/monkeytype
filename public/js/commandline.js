@@ -301,6 +301,25 @@ let commands = {
       },
     },
     {
+      id: "bailOut",
+      display: "Bail out...",
+      exec: () => {
+        currentCommands = {
+          title: "Are you sure...",
+          list: [
+            {
+              id: "bailOutForSure",
+              display: "Yes, im sure",
+              exec: () => {
+                bailout = true;
+                showResult();
+              },
+            },
+          ],
+        };
+      },
+    },
+    {
       id: "joinDiscord",
       display: "Join the Discord server",
       exec: () => {

@@ -29,6 +29,7 @@ let quotes = [];
 let focusState = false;
 let activeFunBox = "none";
 let manualRestart = false;
+let bailout = false;
 
 let themeColors = {
   bg: "#323437",
@@ -1852,6 +1853,9 @@ function showResult(difficultyFailed = false) {
   if (sameWordset) {
     otherText += "<br>repeated";
   }
+  if (bailout) {
+    otherText += "<br>bailed out";
+  }
 
   if (otherText == "") {
     $("#result .stats .info").addClass("hidden");
@@ -2080,6 +2084,7 @@ function restartTest(withSameWordset = false) {
   testActive = false;
   hideLiveWpm();
   hideTimer();
+  bailout = false;
   $("#showWordHistoryButton").removeClass("loaded");
   keypressPerSecond = [];
   currentKeypressCount = 0;
