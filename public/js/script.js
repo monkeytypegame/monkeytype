@@ -1497,6 +1497,8 @@ function showResult(difficultyFailed = false) {
 
   let afkDetected = kps === 0 ? true : false;
 
+  if (bailout) afkDetected = false;
+
   if (difficultyFailed) {
     showNotification("Test failed", 2000);
   } else if (afkDetected) {
@@ -1537,6 +1539,7 @@ function showResult(difficultyFailed = false) {
       consistency: consistency,
       keyConsistency: keyConsistency,
       funbox: activeFunBox,
+      bailedOut: bailout,
     };
     if (
       config.difficulty == "normal" ||

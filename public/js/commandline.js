@@ -303,20 +303,30 @@ let commands = {
     {
       id: "bailOut",
       display: "Bail out...",
+      subgroup: true,
+      visible: false,
       exec: () => {
-        currentCommands = {
+        currentCommands.push({
           title: "Are you sure...",
           list: [
             {
+              id: "bailOutNo",
+              display: "Nevermind",
+              exec: () => {
+                hideCommandLine();
+              },
+            },
+            {
               id: "bailOutForSure",
-              display: "Yes, im sure",
+              display: "Yes, I am sure",
               exec: () => {
                 bailout = true;
                 showResult();
               },
             },
           ],
-        };
+        });
+        showCommandLine();
       },
     },
     {
@@ -1169,7 +1179,7 @@ function updateSuggestedCommands() {
         }
       });
       if (foundcount > 0) {
-        if (obj.visible !== false) obj.found = true;
+        obj.found = true;
       } else {
         obj.found = false;
       }
