@@ -299,3 +299,28 @@ function getNumbers() {
   }
   return ret;
 }
+
+function getSpecials() {
+  let randLen = Math.floor(Math.random() * 7) + 1;
+  let ret = "";
+  let specials = [
+    "!",
+    "@",
+    "#",
+    "$",
+    "%",
+    "^",
+    "&",
+    "*",
+    "(",
+    ")",
+    "-",
+    "_",
+    "=",
+    "+",
+  ];
+  for (let i = 0; i < randLen; i++) {
+    ret += specials[Math.floor(Math.random() * specials.length)];
+  }
+  return ret;
+}

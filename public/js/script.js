@@ -391,6 +391,9 @@ function initWords() {
       } else if (activeFunBox === "58008") {
         setPunctuation(false);
         randomWord = getNumbers();
+      } else if (activeFunBox === "specials") {
+        setPunctuation(false);
+        randomWord = getSpecials();
       }
 
       if (config.punctuation && config.mode != "custom") {
@@ -584,6 +587,9 @@ function addWord() {
   }
   if (activeFunBox === "58008") {
     randomWord = getNumbers();
+  }
+  if (activeFunBox === "specials") {
+    randomWord = getSpecials();
   }
   wordsList.push(randomWord);
 

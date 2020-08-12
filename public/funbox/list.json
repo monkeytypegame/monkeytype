@@ -46,5 +46,9 @@
   {
     "name": "58008",
     "type": "script"
+  },
+  {
+    "name": "specials",
+    "type": "script"
   }
 ]

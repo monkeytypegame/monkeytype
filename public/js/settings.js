@@ -391,7 +391,7 @@ function refreshTagsSettingsSection() {
 
 function setActiveFunboxButton() {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
-  $(`.pageSettings .section.funbox .button[funbox=${activeFunBox}]`).addClass(
+  $(`.pageSettings .section.funbox .button[funbox='${activeFunBox}']`).addClass(
     "active"
   );
 }
