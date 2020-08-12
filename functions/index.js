@@ -464,7 +464,16 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
     }
 
     if (!validateResult(obj)) {
-      return { resultCode: -4 };
+      if (
+        obj.bailedOut &&
+        ((obj.mode === "time" && obj.mode2 >= 3600) ||
+          (obj.mode === "words" && obj.mode2 >= 5000) ||
+          obj.mode === "custom")
+      ) {
+        //dont give an error
+      } else {
+        return { resultCode: -4 };
+      }
     }
 
     let keySpacing = null;
