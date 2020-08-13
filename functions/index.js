@@ -841,17 +841,21 @@ exports.saveConfig = functions.https.onCall((request, response) => {
   try {
     if (request.uid === undefined || request.obj === undefined) {
       console.error(`error saving config for ${request.uid} - missing input`);
-      return -1;
+      return {
+        returnCode: -1,
+        message: "Missing input",
+      };
     }
 
     let obj = request.obj;
-
+    let errorMessage = "";
     let err = false;
     Object.keys(obj).forEach((key) => {
       if (err) return;
       if (!isConfigKeyValid(key)) {
         err = true;
         console.error(`${key} failed regex check`);
+        errorMessage = `${key} failed regex check`;
       }
       if (err) return;
       if (key === "resultFilters") return;
@@ -861,12 +865,14 @@ exports.saveConfig = functions.https.onCall((request, response) => {
           if (!isConfigKeyValid(valarr)) {
             err = true;
             console.error(`${key}: ${valarr} failed regex check`);
+            errorMessage = `${key}: ${valarr} failed regex check`;
           }
         });
       } else {
         if (!isConfigKeyValid(val)) {
           err = true;
           console.error(`${key}: ${val} failed regex check`);
+          errorMessage = `${key}: ${val} failed regex check`;
         }
       }
     });
@@ -876,7 +882,10 @@ exports.saveConfig = functions.https.onCall((request, response) => {
           request.obj
         )}`
       );
-      return -1;
+      return {
+        returnCode: -1,
+        message: "Bad input. " + errorMessage,
+      };
     }
 
     return db
@@ -895,11 +904,17 @@ exports.saveConfig = functions.https.onCall((request, response) => {
         console.error(
           `error saving config to DB for ${request.uid} - ${e.message}`
         );
-        return -1;
+        return {
+          returnCode: -1,
+          message: e.message,
+        };
       });
   } catch (e) {
     console.error(`error saving config for ${request.uid} - ${e}`);
-    return { resultCode: -999 };
+    return {
+      resultCode: -999,
+      message: e,
+    };
   }
 });
 
