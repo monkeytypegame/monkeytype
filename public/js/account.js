@@ -1013,6 +1013,8 @@ function loadMoreLines() {
   }
 }
 
+let totalSecondsFiltered = 0;
+
 function refreshAccountPage() {
   function cont() {
     refreshThemeColorObject();
@@ -1041,7 +1043,7 @@ function refreshAccountPage() {
     };
 
     let totalSeconds = 0;
-    let totalSecondsFiltered = 0;
+    totalSecondsFiltered = 0;
 
     let totalCons = 0;
     let totalCons10 = 0;
@@ -1374,11 +1376,17 @@ function refreshAccountPage() {
 
     let trend = findLineByLeastSquares(wpmPoints);
 
-    let slope = calculateSlope(trend);
-    let plus = slope > 0 ? "+" : "";
+    let wpmChange = trend[1][1] - trend[0][1];
+
+    let wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
+
+    // let slope = calculateSlope(trend);
+    let plus = wpmChangePerHour > 0 ? "+" : "";
 
     $(".pageAccount .group.chart .below").text(
-      `Trend slope: ${plus + roundTo2(slope)}`
+      `Speed change per hour spent typing: ${
+        plus + roundTo2(wpmChangePerHour)
+      } wpm.`
     );
 
     resultHistoryChart.update({ duration: 0 });
