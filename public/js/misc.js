@@ -318,6 +318,15 @@ function getSpecials() {
     "_",
     "=",
     "+",
+    "{",
+    "}",
+    "[",
+    "]",
+    "'",
+    '"',
+    "/",
+    "\\",
+    "|",
   ];
   for (let i = 0; i < randLen; i++) {
     ret += specials[Math.floor(Math.random() * specials.length)];
