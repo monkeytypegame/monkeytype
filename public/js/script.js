@@ -59,6 +59,8 @@ let keypressStats = {
   },
 };
 
+let errorSound = new Audio("../sound/error.wav");
+
 let customText = "The quick brown fox jumps over the lazy dog".split(" ");
 let customTextIsRandom = false;
 let customTextWordCount = 1;
@@ -3055,6 +3057,12 @@ function hideCustomMode2Popup() {
   }
 }
 
+function playErrorSound() {
+  if (!config.playSoundOnError) return;
+  errorSound.currentTime = 0;
+  errorSound.play();
+}
+
 $("#customMode2PopupWrapper").click((e) => {
   if ($(e.target).attr("id") === "customMode2PopupWrapper") {
     hideCustomMode2Popup();
@@ -3331,6 +3339,7 @@ $(document).keypress(function (event) {
     accuracyStats.incorrect++;
     currentErrorCount++;
     thisCharCorrect = false;
+    playErrorSound();
   } else {
     accuracyStats.correct++;
     thisCharCorrect = true;
@@ -3632,6 +3641,7 @@ $(document).keydown((event) => {
         updateCaretPosition();
         currentKeypressCount++;
       } else {
+        playErrorSound();
         accuracyStats.incorrect++;
         if (config.stopOnError) {
           if (config.difficulty == "expert" || config.difficulty == "master") {

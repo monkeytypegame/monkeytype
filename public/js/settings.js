@@ -151,6 +151,10 @@ settingsGroups.colorfulMode = new SettingsGroup(
 );
 settingsGroups.randomTheme = new SettingsGroup("randomTheme", setRandomTheme);
 settingsGroups.stopOnError = new SettingsGroup("stopOnError", setStopOnError);
+settingsGroups.stopOnError = new SettingsGroup(
+  "playSoundOnError",
+  setPlaySoundOnError
+);
 settingsGroups.showAllLines = new SettingsGroup(
   "showAllLines",
   setShowAllLines

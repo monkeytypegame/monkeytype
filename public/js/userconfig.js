@@ -46,6 +46,7 @@ let defaultConfig = {
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
+  playSoundOnError: false,
 };
 
 let cookieConfig = null;
@@ -82,6 +83,7 @@ async function saveConfigToDB() {
     accountIconLoading(true);
     saveConfig({ uid: firebase.auth().currentUser.uid, obj: config }).then(
       (d) => {
+        console.log(d.data);
         accountIconLoading(false);
         if (d.data.returnCode === 1) {
           // showNotification('config saved to db',1000);
@@ -159,6 +161,7 @@ function applyConfig(configObj) {
     setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(config.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(config.alwaysShowWordsHistory, true);
+    setPlaySoundOnError(config.playSoundOnError, true);
     // if (
     //   configObj.resultFilters !== null &&
     //   configObj.resultFilters !== undefined
@@ -191,6 +194,14 @@ function showTestConfig() {
 
 function hideTestConfig() {
   $("#top .config").css("opacity", 0).addClass("hidden");
+}
+
+function setPlaySoundOnError(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.playSoundOnError = val;
+  if (!nosave) saveConfigToCookie();
 }
 
 //difficulty

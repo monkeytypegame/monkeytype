@@ -898,7 +898,10 @@ exports.saveConfig = functions.https.onCall((request, response) => {
         { merge: true }
       )
       .then((e) => {
-        return 1;
+        return {
+          returnCode: 1,
+          message: "Saved",
+        };
       })
       .catch((e) => {
         console.error(
