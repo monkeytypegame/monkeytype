@@ -686,6 +686,7 @@ function applyCustomThemeColors() {
   setTimeout(() => {
     refreshThemeColorObject();
     updateFavicon(32, 14);
+    $(".keymap-key").attr("style", "");
   }, 500);
 }
 
