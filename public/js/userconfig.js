@@ -204,6 +204,13 @@ function setPlaySoundOnError(val, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
+function togglePlaySoundOnError() {
+  config.playSoundOnError = !config.playSoundOnError;
+  if (config.playSoundOnError == undefined) {
+    config.playSoundOnError = false;
+  }
+}
+
 //difficulty
 function setDifficulty(diff, nosave) {
   if (

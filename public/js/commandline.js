@@ -126,6 +126,13 @@ let commands = {
       },
     },
     {
+      id: "togglePlaySoundOnError",
+      display: "Toggle play sound on error",
+      exec: () => {
+        togglePlaySoundOnError();
+      },
+    },
+    {
       id: "toggleFlipTestColors",
       display: "Toggle flip test colors",
       exec: () => {
