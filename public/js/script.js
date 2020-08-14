@@ -1834,7 +1834,11 @@ function showResult(difficultyFailed = false) {
   } else if (config.mode == "words") {
     testType += " " + config.words;
   }
-  if (config.mode != "custom") {
+  if (
+    config.mode != "custom" &&
+    activeFunBox !== "gibberish" &&
+    activeFunBox !== "58008"
+  ) {
     testType += "<br>" + config.language.replace(/_/g, " ");
   }
   if (config.punctuation) {
