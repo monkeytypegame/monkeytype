@@ -3792,6 +3792,10 @@ $(document).on("mouseleave", "#words .word", (e) => {
   $(".wordInputAfter").remove();
 });
 
+$("#wpmChart").on("mouseleave", (e) => {
+  $(".wordInputAfter").remove();
+});
+
 $(document).ready(() => {
   updateFavicon(32, 14);
   $("body").css("transition", ".25s");
