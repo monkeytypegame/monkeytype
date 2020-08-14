@@ -2444,8 +2444,7 @@ function liveWpmAndRaw() {
 }
 
 function updateLiveWpm(wpm) {
-  if (!config.showLiveWpm) return;
-  if (!testActive) {
+  if (!testActive || !config.showLiveWpm) {
     hideLiveWpm();
   } else {
     showLiveWpm();
