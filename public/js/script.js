@@ -3383,6 +3383,8 @@ $(document).keypress(function (event) {
   if (config.stopOnError && !thisCharCorrect) {
     if (config.difficulty == "master") {
       //failed due to master diff when pressing a key
+      inputHistory.push(currentInput);
+      correctedHistory.push(currentCorrected);
       showResult(true);
       let testNow = Date.now();
       let testSeconds = roundTo2((testNow - testStart) / 1000);
@@ -3668,6 +3670,8 @@ $(document).keydown((event) => {
         if (config.stopOnError) {
           if (config.difficulty == "expert" || config.difficulty == "master") {
             //failed due to diff when pressing space
+            inputHistory.push(currentInput);
+            correctedHistory.push(currentCorrected);
             showResult(true);
             // if (!afkDetected) {
             let testNow = Date.now();
@@ -3704,6 +3708,8 @@ $(document).keydown((event) => {
           config.difficulty == "master"
         ) {
           //submitted last word incorrect and failed test
+          inputHistory.push(currentInput);
+          correctedHistory.push(currentCorrected);
           showResult(true);
           // if (!afkDetected) {
           let testNow = Date.now();
