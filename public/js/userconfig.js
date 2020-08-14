@@ -83,7 +83,7 @@ async function saveConfigToDB() {
     accountIconLoading(true);
     saveConfig({ uid: firebase.auth().currentUser.uid, obj: config }).then(
       (d) => {
-        console.log(d.data);
+        // console.log(d.data);
         accountIconLoading(false);
         if (d.data.returnCode === 1) {
           // showNotification('config saved to db',1000);
