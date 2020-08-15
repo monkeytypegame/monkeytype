@@ -587,18 +587,29 @@ function addWord() {
       randomWord = language[Math.floor(Math.random() * language.length)];
     }
   }
+
+  if (activeFunBox === "rAnDoMcAsE") {
+    let randomcaseword = "";
+    for (let i = 0; i < randomWord.length; i++) {
+      if (i % 2 != 0) {
+        randomcaseword += randomWord[i].toUpperCase();
+      } else {
+        randomcaseword += randomWord[i];
+      }
+    }
+    randomWord = randomcaseword;
+  } else if (activeFunBox === "gibberish") {
+    randomWord = getGibberish();
+  } else if (activeFunBox === "58008") {
+    randomWord = getNumbers();
+  } else if (activeFunBox === "specials") {
+    randomWord = getSpecials();
+  }
+
   if (config.punctuation && config.mode != "custom") {
     randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0);
   }
-  if (activeFunBox === "gibberish") {
-    randomWord = getGibberish();
-  }
-  if (activeFunBox === "58008") {
-    randomWord = getNumbers();
-  }
-  if (activeFunBox === "specials") {
-    randomWord = getSpecials();
-  }
+
   wordsList.push(randomWord);
 
   let w = "<div class='word'>";
