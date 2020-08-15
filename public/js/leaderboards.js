@@ -123,7 +123,9 @@ function updateLeaderboards() {
 
       $("#leaderboardsWrapper table.daily tfoot").html(`
       <tr>
-        <td colspan="7">Not qualified</td>
+        <td><br><br></td>
+        <td colspan="5" style="text-align:center;">Not qualified</>
+        <td><br><br></td>
       </tr>
       `);
       //daily
@@ -183,7 +185,9 @@ function updateLeaderboards() {
 
       $("#leaderboardsWrapper table.global tfoot").html(`
       <tr>
-        <td colspan="7">Not qualified</td>
+      <td><br><br></td>
+      <td colspan="5" style="text-align:center;">Not qualified</>
+      <td><br><br></td>
       </tr>
       `);
       //global

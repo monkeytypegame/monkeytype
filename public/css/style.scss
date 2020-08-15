@@ -271,6 +271,7 @@ a:hover {
           font-size: 0.75rem;
 
           td {
+            padding: 0.5rem;
             background: var(--bg-color);
             position: -webkit-sticky;
             position: sticky;
@@ -288,11 +289,12 @@ a:hover {
 
         tfoot {
           td {
+            padding: 0.5rem;
             position: -webkit-sticky;
             position: sticky;
             bottom: 0;
             background: var(--bg-color);
-            color: var(--main-color);
+            color: var(--sub-color);
             z-index: 4;
           }
         }
