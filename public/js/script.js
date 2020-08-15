@@ -1798,7 +1798,9 @@ function showResult(difficultyFailed = false) {
                     config.punctuation,
                     config.language,
                     config.difficulty,
-                    stats.wpm
+                    stats.wpm,
+                    stats.acc,
+                    stats.wpmRaw
                   );
                 } else if (e.data.resultCode === 1) {
                   if (localPb) {

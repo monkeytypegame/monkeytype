@@ -265,6 +265,8 @@ function checkIfPB(uid, obj) {
                     difficulty: obj.difficulty,
                     punctuation: obj.punctuation,
                     wpm: obj.wpm,
+                    acc: obj.acc,
+                    raw: obj.rawWpm,
                   },
                 ],
               },
@@ -286,6 +288,8 @@ function checkIfPB(uid, obj) {
                         difficulty: obj.difficulty,
                         punctuation: obj.punctuation,
                         wpm: obj.wpm,
+                        acc: obj.acc,
+                        raw: obj.rawWpm,
                       },
                     ],
                   },
@@ -315,6 +319,8 @@ function checkIfPB(uid, obj) {
             if (pb.wpm < obj.wpm) {
               //new pb
               pb.wpm = obj.wpm;
+              pb.acc = obj.acc;
+              pb.raw = obj.rawWpm;
               toUpdate = true;
             } else {
               //no pb
@@ -329,6 +335,8 @@ function checkIfPB(uid, obj) {
             difficulty: obj.difficulty,
             punctuation: obj.punctuation,
             wpm: obj.wpm,
+            acc: obj.acc,
+            raw: obj.rawWpm,
           });
           toUpdate = true;
         }
@@ -341,6 +349,8 @@ function checkIfPB(uid, obj) {
             difficulty: obj.difficulty,
             punctuation: obj.punctuation,
             wpm: obj.wpm,
+            acc: obj.acc,
+            raw: obj.rawWpm,
           },
         ];
         toUpdate = true;

@@ -151,7 +151,9 @@ async function db_saveLocalPB(
   punctuation,
   language,
   difficulty,
-  wpm
+  wpm,
+  acc,
+  raw
 ) {
   function cont() {
     try {
@@ -167,6 +169,8 @@ async function db_saveLocalPB(
         ) {
           found = true;
           pb.wpm = wpm;
+          pb.acc = acc;
+          pb.raw = raw;
         }
       });
       if (!found) {
@@ -176,6 +180,8 @@ async function db_saveLocalPB(
           difficulty: difficulty,
           punctuation: punctuation,
           wpm: wpm,
+          acc: acc,
+          raw: raw,
         });
       }
     } catch (e) {
@@ -187,6 +193,8 @@ async function db_saveLocalPB(
           difficulty: difficulty,
           punctuation: punctuation,
           wpm: wpm,
+          acc: acc,
+          raw: raw,
         },
       ];
     }
