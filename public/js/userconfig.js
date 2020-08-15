@@ -37,7 +37,7 @@ let defaultConfig = {
   randomTheme: false,
   timerColor: "black",
   timerOpacity: "0.25",
-  stopOnError: false,
+  stopOnError: "off",
   showAllLines: false,
   keymapMode: "off",
   keymapStyle: "staggered",
@@ -162,6 +162,7 @@ function applyConfig(configObj) {
     setAlwaysShowDecimalPlaces(config.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(config.alwaysShowWordsHistory, true);
     setPlaySoundOnError(config.playSoundOnError, true);
+    setStopOnError(config.stopOnError, true);
     // if (
     //   configObj.resultFilters !== null &&
     //   configObj.resultFilters !== undefined
@@ -175,6 +176,7 @@ function applyConfig(configObj) {
       config[configKey] = defaultConfig[configKey];
     }
   });
+  updateTestModesNotice();
 }
 
 function loadActiveTagsFromCookie() {
@@ -246,21 +248,24 @@ function setBlindMode(blind, nosave) {
 }
 
 //stoponerror
-function toggleStopOnError() {
-  soe = !config.stopOnError;
-  if (soe == undefined) {
-    soe = false;
-  }
-  config.stopOnError = soe;
-  updateTestModesNotice();
-  saveConfigToCookie();
-}
+// function toggleStopOnError() {
+//   soe = !config.stopOnError;
+//   if (soe == undefined) {
+//     soe = false;
+//   }
+//   config.stopOnError = soe;
+//   updateTestModesNotice();
+//   saveConfigToCookie();
+// }
 
 function setStopOnError(soe, nosave) {
   if (soe == undefined) {
-    soe = false;
+    soe = "off";
   }
   config.stopOnError = soe;
+  if (config.stopOnError !== "off") {
+    config.confidenceMode = "off";
+  }
   updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }
@@ -601,9 +606,11 @@ function setConfidenceMode(cm, nosave) {
     cm = "off";
   }
   config.confidenceMode = cm;
-  if (config.freedomMode && config.confidenceMode !== "off") {
+  if (config.confidenceMode !== "off") {
     config.freedomMode = false;
+    config.stopOnError = "off";
   }
+
   updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }

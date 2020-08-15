@@ -2826,9 +2826,9 @@ function updateTestModesNotice() {
     );
   }
 
-  if (config.stopOnError) {
+  if (config.stopOnError != "off") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-hand-paper"></i>stop on error</div>`
+      `<div><i class="fas fa-hand-paper"></i>stop on ${config.stopOnError}</div>`
     );
   }
 
@@ -3397,7 +3397,7 @@ $(document).keypress(function (event) {
   currentKeypress.count++;
   currentKeypress.words.push(currentWordIndex);
 
-  if (config.stopOnError && !thisCharCorrect) {
+  if (config.stopOnError == "letter" && !thisCharCorrect) {
     if (config.difficulty == "master") {
       //failed due to master diff when pressing a key
       inputHistory.push(currentInput);
@@ -3688,7 +3688,18 @@ $(document).keydown((event) => {
       } else {
         playErrorSound();
         accuracyStats.incorrect++;
-        if (config.stopOnError) {
+        let cil = currentInput.length;
+        if (cil < wordsList[currentWordIndex].length) {
+          if (cil >= currentCorrected.length) {
+            currentCorrected += "_";
+          } else {
+            currentCorrected =
+              currentCorrected.substring(0, cil) +
+              "_" +
+              currentCorrected.substring(cil + 1);
+          }
+        }
+        if (config.stopOnError != "off") {
           if (config.difficulty == "expert" || config.difficulty == "master") {
             //failed due to diff when pressing space
             inputHistory.push(currentInput);
@@ -3703,17 +3714,6 @@ $(document).keydown((event) => {
             return;
           }
           return;
-        }
-        let cil = currentInput.length;
-        if (cil < wordsList[currentWordIndex].length) {
-          if (cil >= currentCorrected.length) {
-            currentCorrected += "_";
-          } else {
-            currentCorrected =
-              currentCorrected.substring(0, cil) +
-              "_" +
-              currentCorrected.substring(cil + 1);
-          }
         }
         inputHistory.push(currentInput);
         highlightBadWord(currentWordElementIndex, !config.blindMode);

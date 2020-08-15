@@ -61,6 +61,15 @@ let commands = {
       },
     },
     {
+      id: "changeStopOnError",
+      display: "Change stop on error...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsStopOnError);
+        showCommandLine();
+      },
+    },
+    {
       id: "toggleSmoothCaret",
       display: "Toggle smooth caret",
       exec: () => {
@@ -109,13 +118,6 @@ let commands = {
       display: "Toggle blind mode",
       exec: () => {
         toggleBlindMode();
-      },
-    },
-    {
-      id: "toggleStopOnError",
-      display: "Toggle stop on error",
-      exec: () => {
-        toggleStopOnError();
       },
     },
     {
@@ -714,6 +716,33 @@ let commandsConfidenceMode = {
       display: "max",
       exec: () => {
         setConfidenceMode("max");
+      },
+    },
+  ],
+};
+
+let commandsStopOnError = {
+  title: "Change stop on error...",
+  list: [
+    {
+      id: "changeStopOnErrorOff",
+      display: "off",
+      exec: () => {
+        setStopOnError("off");
+      },
+    },
+    {
+      id: "changeStopOnErrorLetter",
+      display: "letter",
+      exec: () => {
+        setStopOnError("letter");
+      },
+    },
+    {
+      id: "changeStopOnErrorWord",
+      display: "word",
+      exec: () => {
+        setStopOnError("word");
       },
     },
   ],

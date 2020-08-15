@@ -1450,15 +1450,34 @@
             <div class="section stopOnError">
               <h1>stop on error</h1>
               <div class="text">
-                When enabled, incorrect input will not be registered and words
-                need to be 100% correct to be able to move on to the next.
+                Letter mode will stop input when pressing any incorrect letters.
+                Word mode will not allow you to continue to the next word until
+                you correct all mistakes.
               </div>
               <div class="buttons">
-                <div class="button off" tabindex="0" onclick="this.blur();">
+                <div
+                  class="button"
+                  stopOnError="off"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
                   off
                 </div>
-                <div class="button on" tabindex="0" onclick="this.blur();">
-                  on
+                <div
+                  class="button"
+                  stopOnError="word"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  word
+                </div>
+                <div
+                  class="button"
+                  stopOnError="letter"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  letter
                 </div>
               </div>
             </div>

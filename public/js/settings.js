@@ -133,6 +133,7 @@ settingsGroups.confidenceMode = new SettingsGroup(
   setConfidenceMode,
   () => {
     settingsGroups.freedomMode.updateButton();
+    settingsGroups.stopOnError.updateButton();
   }
 );
 settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
@@ -150,8 +151,14 @@ settingsGroups.colorfulMode = new SettingsGroup(
   setColorfulMode
 );
 settingsGroups.randomTheme = new SettingsGroup("randomTheme", setRandomTheme);
-settingsGroups.stopOnError = new SettingsGroup("stopOnError", setStopOnError);
 settingsGroups.stopOnError = new SettingsGroup(
+  "stopOnError",
+  setStopOnError,
+  () => {
+    settingsGroups.confidenceMode.updateButton();
+  }
+);
+settingsGroups.playSoundOnError = new SettingsGroup(
   "playSoundOnError",
   setPlaySoundOnError
 );
