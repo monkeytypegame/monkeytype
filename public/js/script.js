@@ -965,10 +965,12 @@ function startCaretAnimation() {
 
 function hideKeymap() {
   $(".keymap").addClass("hidden");
+  $("#liveWpm").removeClass("lower");
 }
 
 function showKeymap() {
   $(".keymap").removeClass("hidden");
+  $("#liveWpm").addClass("lower");
 }
 
 function flashPressedKeymapKey(key, correct) {
@@ -2477,11 +2479,7 @@ function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
   $("#liveWpm").css("opacity", config.timerOpacity);
-  if (config.keymapMode !== "off") {
-    $("#liveWpm").addClass("lower");
-  } else {
-    $("#liveWpm").removeClass("lower");
-  }
+
   // if (config.timerStyle === "text") {
   //   $("#timerNumber").css("opacity", config.timerOpacity);
   // }
