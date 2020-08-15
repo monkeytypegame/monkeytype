@@ -3491,7 +3491,11 @@ $(document).keydown((event) => {
     if (event["keyCode"] == 8) {
       event.preventDefault();
       if (!testActive) return;
-      if (currentInput == "" && inputHistory.length > 0) {
+      if (
+        currentInput == "" &&
+        inputHistory.length > 0 &&
+        currentWordElementIndex > 0
+      ) {
         if (
           (inputHistory[currentWordIndex - 1] ==
             wordsList[currentWordIndex - 1] &&
