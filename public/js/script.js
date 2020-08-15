@@ -1516,9 +1516,11 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.data.datasets[2].data = errorsNoZero;
 
-  let kps = keypressPerSecond.slice(Math.max(keypressPerSecond.length - 7, 0));
+  let kps = keypressPerSecond.slice(Math.max(keypressPerSecond.length - 5, 0));
 
-  kps = kps.reduce((a, b) => a.count + b.count, 0);
+  kps = kps.map((a) => a.count);
+
+  kps = kps.reduce((a, b) => a + b, 0);
 
   let afkDetected = kps === 0 ? true : false;
 
