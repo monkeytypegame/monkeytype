@@ -259,7 +259,7 @@ function setBlindMode(blind, nosave) {
 // }
 
 function setStopOnError(soe, nosave) {
-  if (soe == undefined) {
+  if (soe == undefined || soe === true || soe === false) {
     soe = "off";
   }
   config.stopOnError = soe;
