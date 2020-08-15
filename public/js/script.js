@@ -172,6 +172,7 @@ function activateFunbox(funbox, mode) {
     }
 
     if (funbox === "simon_says") {
+      changeKeymapMode("next");
       settingsGroups.keymapMode.updateButton();
       restartTest();
     }
