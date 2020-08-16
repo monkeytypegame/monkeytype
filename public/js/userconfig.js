@@ -169,7 +169,7 @@ function applyConfig(configObj) {
     // ) {
     //   accountFilters = configObj.resultFilters;
     // }
-    config = configObj;
+    // config = configObj;
   }
   Object.keys(defaultConfig).forEach((configKey) => {
     if (config[configKey] == undefined) {
