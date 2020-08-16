@@ -1159,7 +1159,7 @@ function refreshAccountPage() {
         config.resultFilters.date.all ||
         (config.resultFilters.date.last_day && timeSinceTest <= 86400) ||
         (config.resultFilters.date.last_week && timeSinceTest <= 604800) ||
-        (config.resultFilters.date.last_month && timeSinceTest <= 18144000)
+        (config.resultFilters.date.last_month && timeSinceTest <= 2592000)
       ) {
         datehide = false;
       }
