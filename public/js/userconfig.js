@@ -159,10 +159,10 @@ function applyConfig(configObj) {
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setShowLiveWpm(configObj.showLiveWpm, true);
     setShowTimerProgress(configObj.showTimerProgress, true);
-    setAlwaysShowDecimalPlaces(config.alwaysShowDecimalPlaces, true);
-    setAlwaysShowWordsHistory(config.alwaysShowWordsHistory, true);
-    setPlaySoundOnError(config.playSoundOnError, true);
-    setStopOnError(config.stopOnError, true);
+    setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
+    setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
+    setPlaySoundOnError(configObj.playSoundOnError, true);
+    setStopOnError(configObj.stopOnError, true);
     // if (
     //   configObj.resultFilters !== null &&
     //   configObj.resultFilters !== undefined
