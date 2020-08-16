@@ -3176,8 +3176,8 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
 });
 
 $(document).on("click", "#top .config .time .text-button", (e) => {
-  time = $(e.currentTarget).attr("timeConfig");
-  if (time == "custom") {
+  let mode = $(e.currentTarget).attr("timeConfig");
+  if (mode == "custom") {
     //   let newTime = prompt("Custom time in seconds");
     //   if (newTime !== null && !isNaN(newTime) && newTime > 0 && newTime <= 3600) {
     //     changeTimeConfig(newTime);
@@ -3192,7 +3192,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
     //   }
     showCustomMode2Popup("time");
   } else {
-    changeTimeConfig(time);
+    changeTimeConfig(mode);
     manualRestart = true;
 
     restartTest();
