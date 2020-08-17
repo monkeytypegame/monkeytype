@@ -527,19 +527,24 @@ $(
   ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
 ).click((e) => {
   showBackgroundLoader();
-  generatePairingCode({ uid: firebase.auth().currentUser.uid }).then((ret) => {
-    hideBackgroundLoader();
-    if (ret.data.status === 1 || ret.data.status === 2) {
-      dbSnapshot.pairingCode = ret.data.pairingCode;
-      $(".pageSettings .section.discordIntegration .code .bottom").text(
-        ret.data.pairingCode
-      );
-      $(".pageSettings .section.discordIntegration .howtocode").text(
-        ret.data.pairingCode
-      );
-      updateDiscordSettingsSection();
-    }
-  });
+  generatePairingCode({ uid: firebase.auth().currentUser.uid })
+    .then((ret) => {
+      hideBackgroundLoader();
+      if (ret.data.status === 1 || ret.data.status === 2) {
+        dbSnapshot.pairingCode = ret.data.pairingCode;
+        $(".pageSettings .section.discordIntegration .code .bottom").text(
+          ret.data.pairingCode
+        );
+        $(".pageSettings .section.discordIntegration .howtocode").text(
+          ret.data.pairingCode
+        );
+        updateDiscordSettingsSection();
+      }
+    })
+    .catch((e) => {
+      hideBackgroundLoader();
+      showNotification("Something went wrong. Error: " + e.message);
+    });
 });
 
 //funbox
