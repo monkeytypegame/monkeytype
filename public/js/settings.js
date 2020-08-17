@@ -543,7 +543,7 @@ $(
     })
     .catch((e) => {
       hideBackgroundLoader();
-      showNotification("Something went wrong. Error: " + e.message);
+      showNotification("Something went wrong. Error: " + e.message, 4000);
     });
 });
 
