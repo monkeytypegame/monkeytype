@@ -1165,7 +1165,7 @@ exports.generatePairingCode = functions.https.onCall((request, response) => {
                 }
               });
 
-              console.log(`existing codes ${JSON.stringify(existingCodes)}`);
+              // console.log(`existing codes ${JSON.stringify(existingCodes)}`);
 
               let randomCode = generate(9);
 
