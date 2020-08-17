@@ -1790,10 +1790,10 @@ function showResult(difficultyFailed = false) {
                 if (e.data.resultCode === 2) {
                   //new pb
                   if (!localPb) {
-                    showNotification(
-                      "Local PB data is out of sync! Resyncing.",
-                      5000
-                    );
+                    // showNotification(
+                    //   "Local PB data is out of sync! Resyncing.",
+                    //   5000
+                    // );
                   }
                   db_saveLocalPB(
                     config.mode,
