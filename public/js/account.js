@@ -1016,13 +1016,6 @@ function loadMoreLines() {
   }
 }
 
-function showResultLoadProgress(num, outOf) {
-  let percent = (num / outOf) * 100;
-  $(".pageAccount .preloader .loadingBar .bar").css({ width: percent + "%" });
-  console.log(percent);
-  console.log(`${num}/${outOf}`);
-}
-
 let totalSecondsFiltered = 0;
 
 function refreshAccountPage() {

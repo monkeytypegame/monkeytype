@@ -94,7 +94,6 @@ async function db_getUserResults() {
           dbSnapshot.results = [];
           let len = data.docs.length;
           data.docs.forEach((doc, index) => {
-            showResultLoadProgress(index + 1, len);
             let result = doc.data();
             result.id = doc.id;
             dbSnapshot.results.push(result);
