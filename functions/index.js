@@ -139,6 +139,12 @@ exports.changeName = functions.https.onCall((request, response) => {
   }
 });
 
+exports.handler = (req, res) => {
+  res
+    .set({ "Access-Control-Allow-Origin": "https://monkey-type.com/" })
+    .sendStatus(200);
+};
+
 exports.checkIfNeedsToChangeName = functions.https.onCall(
   (request, response) => {
     try {
@@ -1128,8 +1134,8 @@ class Leaderboard {
 
 exports.generatePairingCode = functions
   .runWith({
-    timeoutSeconds: 60,
-    memory: "1GB",
+    timeoutSeconds: 100,
+    memory: "2GB",
   })
   .https.onCall((request, response) => {
     try {
