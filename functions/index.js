@@ -547,9 +547,10 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
           if (verified === false || verified === undefined) {
             if (keySpacing !== null && keyDuration !== null) {
               if (
-                keySpacing.sd <= 15 ||
-                keyDuration.sd <= 10 ||
-                keyDuration.average < 15
+                (keySpacing.sd <= 15 ||
+                  keyDuration.sd <= 10 ||
+                  keyDuration.average < 15) &&
+                obj.consistency < 70
               ) {
                 console.error(
                   `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
