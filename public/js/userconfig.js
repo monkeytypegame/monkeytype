@@ -156,6 +156,7 @@ function applyConfig(configObj) {
     changeKeymapStyle(configObj.keymapStyle, true);
     changeKeymapLayout(configObj.keymapLayout, true);
     setFontFamily(configObj.fontFamily, true);
+    setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setShowLiveWpm(configObj.showLiveWpm, true);
     setShowTimerProgress(configObj.showTimerProgress, true);
