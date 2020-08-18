@@ -48,6 +48,10 @@
     "type": "script"
   },
   {
+    "name": "ascii",
+    "type": "script"
+  },
+  {
     "name": "specials",
     "type": "script"
   }

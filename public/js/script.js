@@ -403,6 +403,9 @@ function initWords() {
       } else if (activeFunBox === "specials") {
         setPunctuation(false);
         randomWord = getSpecials();
+      } else if (activeFunBox === "ascii") {
+        setPunctuation(false);
+        randomWord = getASCII();
       }
 
       if (config.punctuation && config.mode != "custom") {
@@ -605,6 +608,8 @@ function addWord() {
     randomWord = getNumbers();
   } else if (activeFunBox === "specials") {
     randomWord = getSpecials();
+  } else if (activeFunBox === "ascii") {
+    randomWord = getASCII();
   }
 
   if (config.punctuation && config.mode != "custom") {
@@ -2398,7 +2403,11 @@ function changeMode(mode, nosave) {
     $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("hidden");
   } else if (config.mode == "custom") {
-    if (activeFunBox === "58008" || activeFunBox === "gibberish") {
+    if (
+      activeFunBox === "58008" ||
+      activeFunBox === "gibberish" ||
+      activeFunBox === "ascii"
+    ) {
       activeFunBox = "none";
       updateTestModesNotice();
     }

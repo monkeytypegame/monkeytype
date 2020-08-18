@@ -333,3 +333,12 @@ function getSpecials() {
   }
   return ret;
 }
+
+function getASCII() {
+  let randLen = Math.floor(Math.random() * 10) + 1;
+  let ret = "";
+  for (let i = 0; i < randLen; i++) {
+    ret += String.fromCharCode(33 + Math.floor(Math.random() * 94));
+  }
+  return ret;
+}
