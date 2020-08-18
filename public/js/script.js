@@ -1681,7 +1681,8 @@ function showResult(difficultyFailed = false) {
                 );
               } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                 completedEvent.id = e.data.createdId;
-                dbSnapshot.results.unshift(completedEvent);
+                if (dbSnapshot.results !== undefined)
+                  dbSnapshot.results.unshift(completedEvent);
                 try {
                   firebase
                     .analytics()

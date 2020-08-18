@@ -137,10 +137,11 @@ async function db_getUserHighestWpm(
   }
 
   let retval;
-  if (dbSnapshot == null) {
+  if (dbSnapshot == null || dbSnapshot.results === undefined) {
     // await db_getUserResults().then(data => {
     //     retval = cont();
     // });
+    retval = 0;
   } else {
     retval = cont();
   }
