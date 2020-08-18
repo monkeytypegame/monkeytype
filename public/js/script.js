@@ -2398,6 +2398,10 @@ function changeMode(mode, nosave) {
     $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("hidden");
   } else if (config.mode == "custom") {
+    if (activeFunBox === "58008" || activeFunBox === "gibberish") {
+      activeFunBox = "none";
+      updateTestModesNotice();
+    }
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").removeClass("hidden");
