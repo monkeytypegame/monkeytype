@@ -742,7 +742,7 @@ function showActiveFilters() {
 
   $(".pageAccount .group.chart .above").html(chartString);
 
-  // refreshAccountPage();
+  refreshAccountPage();
 }
 
 function showChartPreloader() {
@@ -1020,8 +1020,6 @@ let totalSecondsFiltered = 0;
 
 function refreshAccountPage() {
   function cont() {
-    showActiveFilters();
-
     refreshThemeColorObject();
 
     let chartData = [];
@@ -1402,7 +1400,8 @@ function refreshAccountPage() {
   if (dbSnapshot.results === undefined) {
     db_getUserResults().then((d) => {
       if (d) {
-        cont();
+        // cont();
+        showActiveFilters();
       } else {
         console.log("something went wrong");
       }
