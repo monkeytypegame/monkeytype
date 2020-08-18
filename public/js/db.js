@@ -6,7 +6,7 @@ async function db_getUserSnapshot() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
   let snap = {
-    results: [],
+    results: undefined,
     personalBests: {},
     tags: [],
   };
@@ -21,21 +21,21 @@ async function db_getUserSnapshot() {
   //         })
   //     })
   try {
-    await db
-      .collection(`users/${user.uid}/results/`)
-      .orderBy("timestamp", "desc")
-      .get()
-      .then((data) => {
-        // console.log('getting data from db!');
-        data.docs.forEach((doc) => {
-          let result = doc.data();
-          result.id = doc.id;
-          snap.results.push(result);
-        });
-      })
-      .catch((e) => {
-        throw e;
-      });
+    // await db
+    //   .collection(`users/${user.uid}/results/`)
+    //   .orderBy("timestamp", "desc")
+    //   .get()
+    //   .then((data) => {
+    //     // console.log('getting data from db!');
+    //     data.docs.forEach((doc) => {
+    //       let result = doc.data();
+    //       result.id = doc.id;
+    //       snap.results.push(result);
+    //     });
+    //   })
+    //   .catch((e) => {
+    //     throw e;
+    //   });
     await db
       .collection(`users/${user.uid}/tags/`)
       .get()
@@ -77,6 +77,38 @@ async function db_getUserSnapshot() {
   }
   dbSnapshot = snap;
   return dbSnapshot;
+}
+
+async function db_getUserResults() {
+  let user = firebase.auth().currentUser;
+  if (user == null) return false;
+  if (dbSnapshot.results !== undefined) {
+    return true;
+  } else {
+    try {
+      return await db
+        .collection(`users/${user.uid}/results/`)
+        .orderBy("timestamp", "desc")
+        .get()
+        .then((data) => {
+          dbSnapshot.results = [];
+          let len = data.docs.length;
+          data.docs.forEach((doc, index) => {
+            showResultLoadProgress(index + 1, len);
+            let result = doc.data();
+            result.id = doc.id;
+            dbSnapshot.results.push(result);
+          });
+          return true;
+        })
+        .catch((e) => {
+          throw e;
+        });
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
 }
 
 async function db_getUserHighestWpm(

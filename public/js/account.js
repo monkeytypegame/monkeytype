@@ -264,6 +264,9 @@ firebase.auth().onAuthStateChanged(function (user) {
       ) {
         config.resultFilters = defaultAccountFilters;
       }
+      if ($(".pageLogin").hasClass("active")) {
+        changePage("account");
+      }
       accountIconLoading(false);
       updateFilterTags();
       updateCommandsTagsList();
@@ -525,7 +528,7 @@ function updateFilterTags() {
       "hidden"
     );
   }
-  showActiveFilters();
+  // showActiveFilters();
 }
 
 function toggleFilter(group, filter) {
@@ -739,7 +742,7 @@ function showActiveFilters() {
 
   $(".pageAccount .group.chart .above").html(chartString);
 
-  refreshAccountPage();
+  // refreshAccountPage();
 }
 
 function showChartPreloader() {
@@ -1013,10 +1016,19 @@ function loadMoreLines() {
   }
 }
 
+function showResultLoadProgress(num, outOf) {
+  let percent = (num / outOf) * 100;
+  $(".pageAccount .preloader .loadingBar .bar").css({ width: percent + "%" });
+  console.log(percent);
+  console.log(`${num}/${outOf}`);
+}
+
 let totalSecondsFiltered = 0;
 
 function refreshAccountPage() {
   function cont() {
+    showActiveFilters();
+
     refreshThemeColorObject();
 
     let chartData = [];
@@ -1394,15 +1406,16 @@ function refreshAccountPage() {
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
 
-  if (dbSnapshot === null) {
-    // console.log('no db snap');
-    // db_getUserResults().then(data => {
-    //   if(!data) return;
-    //   dbSnapshot = data;
-    //   cont();
-    // })
+  if (dbSnapshot.results === undefined) {
+    db_getUserResults().then((d) => {
+      if (d) {
+        cont();
+      } else {
+        console.log("something went wrong");
+      }
+    });
   } else {
-    // console.log('using db snap');
+    console.log("using db snap");
     cont();
   }
 }
