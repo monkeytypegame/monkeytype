@@ -650,10 +650,13 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
                 };
 
                 if (ispb) {
+                  let logobj = request.obj;
+                  logobj.keySpacing = "removed";
+                  logobj.keyDuration = "removed";
                   console.log(
                     `saved result for ${
                       request.uid
-                    } (new PB) - ${JSON.stringify(request.obj)}`
+                    } (new PB) - ${JSON.stringify(lobobj)}`
                   );
                   if (
                     obj.mode === "time" &&
@@ -673,9 +676,12 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
                   }
                   returnobj.resultCode = 2;
                 } else {
+                  let logobj = request.obj;
+                  logobj.keySpacing = "removed";
+                  logobj.keyDuration = "removed";
                   console.log(
                     `saved result for ${request.uid} - ${JSON.stringify(
-                      request.obj
+                      logobj
                     )}`
                   );
                   returnobj.resultCode = 1;
