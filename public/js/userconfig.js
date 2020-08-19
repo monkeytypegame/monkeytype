@@ -12,6 +12,7 @@ let defaultConfig = {
     "#ca4754",
     "#7e2a33",
   ],
+  favThemes: [],
   showKeyTips: true,
   showLiveWpm: false,
   showTimerProgress: true,
@@ -34,7 +35,7 @@ let defaultConfig = {
   confidenceMode: "off",
   timerStyle: "bar",
   colorfulMode: true,
-  randomTheme: false,
+  randomTheme: "off",
   timerColor: "black",
   timerOpacity: "0.25",
   stopOnError: "off",
@@ -164,6 +165,8 @@ function applyConfig(configObj) {
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
     setPlaySoundOnError(configObj.playSoundOnError, true);
     setStopOnError(configObj.stopOnError, true);
+    setFavThemes(configObj.favThemes, true);
+    setRandomTheme(configObj.randomTheme, true);
     // if (
     //   configObj.resultFilters !== null &&
     //   configObj.resultFilters !== undefined
@@ -225,6 +228,13 @@ function setDifficulty(diff, nosave) {
   config.difficulty = diff;
   restartTest();
   updateTestModesNotice();
+  if (!nosave) saveConfigToCookie();
+}
+
+//set fav themes
+function setFavThemes(themes, nosave) {
+  config.favThemes = themes;
+  refreshThemeButtons();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -661,28 +671,30 @@ function setTheme(name, nosave) {
 }
 
 function randomiseTheme() {
-  var randomList = themesList.filter(function (theme) {
-    return theme.name != "nausea" && theme.name != "round_round_baby";
+  var randomList = themesList.map((t) => {
+    return t.name;
   });
+  if (config.randomTheme === "fav" && config.favThemes.length > 0)
+    randomList = config.favThemes;
   let randomtheme = randomList[Math.floor(Math.random() * randomList.length)];
-  setTheme(randomtheme.name, true);
+  setTheme(randomtheme, true);
   setTimeout(() => {
     refreshThemeColorObject();
   }, 125);
 }
 
-function setRandomTheme(bool, nosave) {
-  if (bool == undefined) {
-    bool = false;
+function setRandomTheme(val, nosave) {
+  if (val === undefined || val === true || val === false) {
+    val = "off";
   }
-  config.randomTheme = bool;
+  config.randomTheme = val;
   if (!nosave) saveConfigToCookie();
 }
 
-function toggleRandomTheme() {
-  config.randomTheme = !config.randomTheme;
-  saveConfigToCookie();
-}
+// function toggleRandomTheme() {
+//   config.randomTheme = !config.randomTheme;
+//   saveConfigToCookie();
+// }
 
 function setCustomTheme(boolean, nosave) {
   if (boolean !== undefined) config.customTheme = boolean;

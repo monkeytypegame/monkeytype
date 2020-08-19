@@ -9,6 +9,7 @@ async function db_getUserSnapshot() {
     results: undefined,
     personalBests: {},
     tags: [],
+    favouriteThemes: [],
   };
   // await db.collection('results')
   //     .orderBy('timestamp', 'desc')
@@ -64,6 +65,8 @@ async function db_getUserSnapshot() {
           snap.discordId = data.discordId;
           snap.pairingCode = data.discordPairingCode;
           snap.config = data.config;
+          snap.favouriteThemes =
+            data.favouriteThemes === undefined ? [] : data.favouriteThemes;
         } catch (e) {
           //
         }

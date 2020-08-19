@@ -1983,14 +1983,33 @@
               <h1>randomise theme</h1>
               <div class="text">
                 After completing a test, the theme will be set to a random one.
-                The random themes are not saved to your config.
+                The random themes are not saved to your config. If set to 'fav'
+                only favourite themes will be randomised.
               </div>
               <div class="buttons">
-                <div class="button off" tabindex="0" onclick="this.blur();">
+                <div
+                  class="button"
+                  randomTheme="off"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
                   off
                 </div>
-                <div class="button on" tabindex="0" onclick="this.blur();">
+                <div
+                  class="button"
+                  randomTheme="on"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
                   on
+                </div>
+                <div
+                  class="button"
+                  randomTheme="fav"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  fav
                 </div>
               </div>
             </div>

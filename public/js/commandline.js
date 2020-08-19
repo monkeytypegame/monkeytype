@@ -170,13 +170,6 @@ let commands = {
       },
     },
     {
-      id: "toggleRandomTheme",
-      display: "Toggle random theme",
-      exec: () => {
-        toggleRandomTheme();
-      },
-    },
-    {
       id: "togglePresetCustomTheme",
       display: "Toggle preset/custom theme",
       exec: () => {
@@ -234,6 +227,15 @@ let commands = {
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsThemes);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeRandomTheme",
+      display: "Change random theme...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsRandomTheme);
         showCommandLine();
       },
     },
@@ -386,6 +388,33 @@ let commandsKeymapMode = {
       display: "react",
       exec: () => {
         changeKeymapMode("react");
+      },
+    },
+  ],
+};
+
+let commandsRandomTheme = {
+  title: "Change random theme...",
+  list: [
+    {
+      id: "setRandomOff",
+      display: "off",
+      exec: () => {
+        setRandomTheme("off");
+      },
+    },
+    {
+      id: "setRandomOn",
+      display: "on",
+      exec: () => {
+        setRandomTheme("on");
+      },
+    },
+    {
+      id: "setRandomFav",
+      display: "fav",
+      exec: () => {
+        setRandomTheme("fav");
       },
     },
   ],

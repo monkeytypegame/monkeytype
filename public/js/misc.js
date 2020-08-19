@@ -2,16 +2,36 @@ let themesList = null;
 async function getThemesList() {
   if (themesList == null) {
     return $.getJSON("themes/list.json", function (data) {
-      themesList = data.sort(function (a, b) {
-        (nameA = a.name.toLowerCase()), (nameB = b.name.toLowerCase());
+      list = data.sort(function (a, b) {
+        nameA = a.name.toLowerCase();
+        nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
         if (nameA > nameB) return 1;
         return 0;
       });
+      themesList = list;
       return themesList;
     });
   } else {
     return themesList;
+  }
+}
+
+let sortedThemesList = null;
+async function getSortedThemesList() {
+  if (sortedThemesList == null) {
+    if (themesList == null) {
+      await getThemesList();
+    }
+    sorted = themesList.sort((a, b) => {
+      let b1 = hexToHSL(a.bgColor);
+      let b2 = hexToHSL(b.bgColor);
+      return b2.lgt - b1.lgt;
+    });
+    sortedThemesList = sorted;
+    return sortedThemesList;
+  } else {
+    return sortedThemesList;
   }
 }
 

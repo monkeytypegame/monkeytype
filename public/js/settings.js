@@ -189,22 +189,7 @@ settingsGroups.alwaysShowDecimalPlaces = new SettingsGroup(
 fillSettingsPage();
 
 async function fillSettingsPage() {
-  let themesEl = $(".pageSettings .section.themes .buttons").empty();
-
-  getThemesList().then((themes) => {
-    themes = themes.sort((a, b) => {
-      let b1 = hexToHSL(a.bgColor);
-      let b2 = hexToHSL(b.bgColor);
-      return b2.lgt - b1.lgt;
-    });
-    themes.forEach((theme) => {
-      themesEl.append(
-        `<div class="theme button" theme='${theme.name}' style="color:${
-          theme.textColor
-        };background:${theme.bgColor}">${theme.name.replace(/_/g, " ")}</div>`
-      );
-    });
-  });
+  refreshThemeButtons();
 
   let langEl = $(".pageSettings .section.language .buttons").empty();
   Object.keys(words).forEach((language) => {
@@ -278,6 +263,43 @@ async function fillSettingsPage() {
           font.display !== undefined ? font.display : font.name
         }</div>`
       );
+    });
+  });
+}
+
+function refreshThemeButtons() {
+  let themesEl = $(".pageSettings .section.themes .buttons").empty();
+
+  getSortedThemesList().then((themes) => {
+    //first show favourites
+    if (config.favThemes.length > 0) {
+      themes.forEach((theme) => {
+        if (config.favThemes.includes(theme.name)) {
+          let activeTheme = config.theme === theme.name ? "active" : "";
+          themesEl.append(
+            `<div class="theme button" theme='${theme.name}' style="color:${
+              theme.textColor
+            };background:${theme.bgColor}">
+          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
+          <div class="text">${theme.name.replace(/_/g, " ")}</div>
+          <div class="favButton active"><i class="fas fa-star"></i></div></div>`
+          );
+        }
+      });
+    }
+    //then the rest
+    themes.forEach((theme) => {
+      if (!config.favThemes.includes(theme.name)) {
+        let activeTheme = config.theme === theme.name ? "active" : "";
+        themesEl.append(
+          `<div class="theme button" theme='${theme.name}' style="color:${
+            theme.textColor
+          };background:${theme.bgColor}">
+          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
+          <div class="text">${theme.name.replace(/_/g, " ")}</div>
+          <div class="favButton"><i class="far fa-star"></i></div></div>`
+        );
+      }
     });
   });
 }
@@ -361,6 +383,22 @@ $("#customThemeShare .button").click((e) => {
 $("#shareCustomThemeButton").click((e) => {
   showCustomThemeShare();
 });
+
+function toggleFavouriteTheme(themename) {
+  if (config.favThemes.includes(themename)) {
+    //already favourite, remove
+    config.favThemes = config.favThemes.filter((t) => {
+      if (t !== themename) {
+        return t;
+      }
+    });
+  } else {
+    //add to favourites
+    config.favThemes.push(themename);
+  }
+  saveConfigToCookie();
+  refreshThemeButtons();
+}
 
 function refreshTagsSettingsSection() {
   if (firebase.auth().currentUser !== null && dbSnapshot !== null) {
@@ -516,11 +554,23 @@ function updateDiscordSettingsSection() {
   }
 }
 
-$(document).on("click", ".pageSettings .section.themes .theme", (e) => {
+$(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
   let theme = $(e.currentTarget).attr("theme");
-  setTheme(theme);
-  setActiveThemeButton();
+  if (!$(e.target).hasClass("favButton")) {
+    setTheme(theme);
+    setActiveThemeButton();
+    refreshThemeButtons();
+  }
 });
+
+$(document).on(
+  "click",
+  ".pageSettings .section.themes .theme .favButton",
+  (e) => {
+    let theme = $(e.currentTarget).parents(".theme.button").attr("theme");
+    toggleFavouriteTheme(theme);
+  }
+);
 
 //discord
 $(

@@ -1899,6 +1899,52 @@ key {
           }
         }
       }
+
+      .theme.button {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        .text {
+          color: inherit;
+        }
+        .activeIndicator {
+          overflow: hidden;
+          width: 1.25rem;
+          transition: 0.25s;
+          opacity: 0;
+          color: inherit;
+          .far {
+            margin: 0;
+          }
+          &.active {
+            width: 1.25rem;
+            opacity: 1;
+          }
+        }
+        .favButton {
+          overflow: hidden;
+          width: 1.25rem;
+          transition: 0.25s;
+          opacity: 0;
+          .far,
+          .fas {
+            margin: 0;
+            pointer-events: none;
+          }
+          &:hover {
+            cursor: pointer;
+          }
+          &.active {
+            width: 1.25rem;
+            opacity: 1;
+          }
+        }
+        &:hover {
+          .favButton {
+            width: 1.25rem;
+            opacity: 1;
+          }
+        }
+      }
     }
 
     &.themes,
