@@ -1627,15 +1627,12 @@ function showResult(difficultyFailed = false) {
               }
               localPb = true;
             }
-            if (highestwpm > 0) {
-              wpmOverTimeChart.options.annotation.annotations[0].value = highestwpm;
+            if (lpb > 0) {
+              wpmOverTimeChart.options.annotation.annotations[0].value = lpb;
               wpmOverTimeChart.options.annotation.annotations[0].label.content =
-                "PB: " + highestwpm;
-              if (
-                maxChartVal >= highestwpm - 15 &&
-                maxChartVal <= highestwpm + 15
-              ) {
-                maxChartVal = highestwpm + 15;
+                "PB: " + lpb;
+              if (maxChartVal >= lpb - 15 && maxChartVal <= lpb + 15) {
+                maxChartVal = lpb + 15;
               }
               wpmOverTimeChart.options.scales.yAxes[0].ticks.max = Math.round(
                 maxChartVal
