@@ -149,6 +149,11 @@ function signUp() {
                 console.log("Analytics unavailable");
               }
               $(".pageLogin .preloader").addClass("hidden");
+              dbSnapshot = {
+                results: [],
+                personalBests: {},
+                tags: [],
+              };
               changePage("account");
             })
             .catch(function (error) {
@@ -158,7 +163,10 @@ function signUp() {
                 .delete()
                 .then(function () {
                   // User deleted.
-                  showNotification("An error occured", 2000);
+                  showNotification(
+                    "An error occured. Account not created.",
+                    2000
+                  );
                   $(".pageLogin .preloader").addClass("hidden");
                 })
                 .catch(function (error) {
