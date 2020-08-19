@@ -2170,7 +2170,11 @@ function restartTest(withSameWordset = false) {
     el = $("#wordsWrapper");
   }
   if (resultVisible) {
-    if (config.randomTheme && !pageTransition && !config.customTheme) {
+    if (
+      config.randomTheme !== "off" &&
+      !pageTransition &&
+      !config.customTheme
+    ) {
       randomiseTheme();
       showNotification(config.theme.replace(/_/g, " "), 1500);
     }
