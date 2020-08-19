@@ -135,7 +135,10 @@ function showNotification(text, time) {
               top: `-${noti.outerHeight()}px`,
             },
             250,
-            "swing"
+            "swing",
+            () => {
+              noti.text("");
+            }
           );
         }
       );
