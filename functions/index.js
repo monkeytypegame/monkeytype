@@ -446,6 +446,32 @@ exports.requestTest = functions.https.onRequest((request, response) => {
   response.status(200).send({ data: "test" });
 });
 
+async function incrementTestCounter(uid) {
+  let userDoc = await db.collection("users").doc(uid).get();
+  let userData = userDoc.data();
+  if (userData.completedTests === undefined) {
+    let results = await db.collection(`users/${uid}/results`).get();
+    let count = results.docs.length;
+    db.collection("users")
+      .doc(uid)
+      .update({
+        completedTests: admin.firestore.FieldValue.increment(count),
+      });
+    db.collection("public")
+      .doc("stats")
+      .update({
+        completedTests: admin.firestore.FieldValue.increment(count),
+      });
+  } else {
+    db.collection("users")
+      .doc(uid)
+      .update({ completedTests: admin.firestore.FieldValue.increment(1) });
+    db.collection("public")
+      .doc("stats")
+      .update({ completedTests: admin.firestore.FieldValue.increment(1) });
+  }
+}
+
 exports.testCompleted = functions.https.onRequest(async (request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
   if (request.method === "OPTIONS") {
@@ -627,6 +653,8 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
                 let dailylb = values[1].insertedAt;
                 let ispb = values[2];
                 // console.log(values);
+
+                incrementTestCounter(request.uid);
 
                 let usr =
                   userdata.discordId !== undefined
