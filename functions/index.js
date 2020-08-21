@@ -1320,54 +1320,42 @@ async function checkLeaderboards(
       ["15", "60"].includes(String(resultObj.mode2)) &&
       resultObj.language === "english"
     ) {
-      return db
-        .collection("leaderboards")
-        .where("mode", "==", String(resultObj.mode))
-        .where("mode2", "==", String(resultObj.mode2))
-        .where("type", "==", type)
-        .get()
-        .then((ret) => {
-          if (ret.docs.length === 0) {
-            //no lb found, create
-            console.log(
-              `no ${resultObj.mode} ${resultObj.mode2} ${type} leaderboard found - creating`
-            );
-            let toAdd = {
-              size: 20,
-              mode: String(resultObj.mode),
-              mode2: String(resultObj.mode2),
-              type: type,
-            };
-            return db
+      return await db.runTransaction(async (t) => {
+        const lbdoc = await t.get(
+          db
+            .collection("leaderboards")
+            .where("mode", "==", String(resultObj.mode))
+            .where("mode2", "==", String(resultObj.mode2))
+            .where("type", "==", type)
+        );
+        let lbData;
+        let docid = `${String(resultObj.mode)}_${String(
+          resultObj.mode2
+        )}_${type}`;
+        if (lbdoc.docs.length === 0) {
+          console.log(
+            `no ${resultObj.mode} ${resultObj.mode2} ${type} leaderboard found - creating`
+          );
+          let toAdd = {
+            size: 20,
+            mode: String(resultObj.mode),
+            mode2: String(resultObj.mode2),
+            type: type,
+          };
+          await t.set(
+            db
               .collection("leaderboards")
               .doc(
                 `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`
-              )
-              .set(toAdd)
-              .then((ret) => {
-                return cont(
-                  `${String(resultObj.mode)}_${String(
-                    resultObj.mode2
-                  )}_${type}`,
-                  toAdd
-                );
-              });
-          } else {
-            //continue
-            return cont(
-              `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`,
-              ret.docs[0].data()
-            );
-          }
-        });
-
-      function cont(docid, documentData) {
-        let boardInfo = documentData;
-        let boardData = boardInfo.board;
-
-        // console.log(`info ${JSON.stringify(boardInfo)}`);
-        // console.log(`data ${JSON.stringify(boardData)}`);
-
+              ),
+            toAdd
+          );
+          lbData = toAdd;
+        } else {
+          lbData = lbdoc.docs[0].data();
+        }
+        let boardInfo = lbData;
+        let boardData = lbData.board;
         let lb = new Leaderboard(
           boardInfo.size,
           resultObj.mode,
@@ -1375,17 +1363,7 @@ async function checkLeaderboards(
           boardInfo.type,
           boardData
         );
-
-        // console.log("board created");
-        // lb.logBoard();
-        console.log(
-          `inserting result by user ${resultObj.uid} ${resultObj.wpm} ${resultObj.rawWpm} ${resultObj.acc} into leaderboard ${resultObj.mode} ${resultObj.mode2} ${type}`
-        );
         let insertResult = lb.insert(resultObj);
-
-        // console.log("board after inseft");
-        // lb.logBoard();
-        // console.log(lb);
 
         if (insertResult.insertedAt >= 0) {
           //update the database here
@@ -1394,22 +1372,17 @@ async function checkLeaderboards(
               resultObj.mode2
             } ${type} - ${JSON.stringify(lb.board)}`
           );
-          db.collection("leaderboards").doc(docid).set(
-            {
-              size: lb.size,
-              type: lb.type,
-              board: lb.board,
-            },
-            { merge: true }
-          );
-        } else {
-          // console.log("board is the same");
+          await t.update(db.collection("leaderboards").doc(docid), {
+            size: lb.size,
+            type: lb.type,
+            board: lb.board,
+          });
         }
 
         return {
           insertedAt: insertResult,
         };
-      }
+      });
     } else {
       return {
         insertedAt: null,
