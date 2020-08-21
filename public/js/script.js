@@ -1647,180 +1647,188 @@ function showResult(difficultyFailed = false) {
             testCompleted({
               uid: firebase.auth().currentUser.uid,
               obj: completedEvent,
-            }).then((e) => {
-              // console.log(e.data);
-              accountIconLoading(false);
-              // console.log(JSON.stringify(e.data));
-              if (e.data == null) {
-                showNotification("Unexpected response from the server.", 4000);
-                return;
-              }
-              if (e.data.resultCode === -1) {
-                showNotification("Could not save result", 3000);
-              } else if (e.data.resultCode === -2) {
-                showNotification(
-                  "Possible bot detected. Result not saved.",
-                  4000
-                );
-              } else if (e.data.resultCode === -3) {
-                showNotification(
-                  "Could not verify keypress stats. Result not saved.",
-                  4000
-                );
-              } else if (e.data.resultCode === -4) {
-                showNotification(
-                  "Result data does not make sense. Result not saved.",
-                  4000
-                );
-              } else if (e.data.resultCode === -999) {
-                console.error("internal error: " + e.data.message);
-                showNotification(
-                  "Internal error. Result might not be saved. " +
-                    e.data.message,
-                  6000
-                );
-              } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
-                completedEvent.id = e.data.createdId;
-                if (dbSnapshot.results !== undefined)
-                  dbSnapshot.results.unshift(completedEvent);
-                try {
-                  firebase
-                    .analytics()
-                    .logEvent("testCompleted", completedEvent);
-                } catch (e) {
-                  console.log("Analytics unavailable");
+            })
+              .then((e) => {
+                // console.log(e.data);
+                accountIconLoading(false);
+                // console.log(JSON.stringify(e.data));
+                if (e.data == null) {
+                  showNotification(
+                    "Unexpected response from the server.",
+                    4000
+                  );
+                  return;
                 }
-
-                //global
-                let globalLbString = "";
-                if (e.data.globalLeaderboard === null) {
-                  globalLbString = "global: not found";
-                } else if (e.data.globalLeaderboard.insertedAt === -1) {
-                  globalLbString = "global: not qualified";
-                } else if (e.data.globalLeaderboard.insertedAt >= 0) {
-                  if (e.data.globalLeaderboard.newBest) {
-                    let pos = e.data.globalLeaderboard.insertedAt + 1;
-                    let numend = "th";
-                    let t = pos % 10;
-                    let h = pos % 100;
-                    if (t == 1 && h != 11) {
-                      numend = "st";
-                    }
-                    if (t == 2 && h != 12) {
-                      numend = "nd";
-                    }
-                    if (t == 3 && h != 13) {
-                      numend = "rd";
-                    }
-                    globalLbString = `global: ${pos}${numend} place`;
-                  } else {
-                    let pos = e.data.globalLeaderboard.foundAt + 1;
-                    let numend = "th";
-                    let t = pos % 10;
-                    let h = pos % 100;
-                    if (t == 1 && h != 11) {
-                      numend = "st";
-                    }
-                    if (t == 2 && h != 12) {
-                      numend = "nd";
-                    }
-                    if (t == 3 && h != 13) {
-                      numend = "rd";
-                    }
-                    globalLbString = `global: already ${pos}${numend}`;
+                if (e.data.resultCode === -1) {
+                  showNotification("Could not save result", 3000);
+                } else if (e.data.resultCode === -2) {
+                  showNotification(
+                    "Possible bot detected. Result not saved.",
+                    4000
+                  );
+                } else if (e.data.resultCode === -3) {
+                  showNotification(
+                    "Could not verify keypress stats. Result not saved.",
+                    4000
+                  );
+                } else if (e.data.resultCode === -4) {
+                  showNotification(
+                    "Result data does not make sense. Result not saved.",
+                    4000
+                  );
+                } else if (e.data.resultCode === -999) {
+                  console.error("internal error: " + e.data.message);
+                  showNotification(
+                    "Internal error. Result might not be saved. " +
+                      e.data.message,
+                    6000
+                  );
+                } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
+                  completedEvent.id = e.data.createdId;
+                  if (dbSnapshot.results !== undefined)
+                    dbSnapshot.results.unshift(completedEvent);
+                  try {
+                    firebase
+                      .analytics()
+                      .logEvent("testCompleted", completedEvent);
+                  } catch (e) {
+                    console.log("Analytics unavailable");
                   }
-                }
 
-                //daily
-                let dailyLbString = "";
-                if (e.data.dailyLeaderboard === null) {
-                  dailyLbString = "daily: not found";
-                } else if (e.data.dailyLeaderboard.insertedAt === -1) {
-                  dailyLbString = "daily: not qualified";
-                } else if (e.data.dailyLeaderboard.insertedAt >= 0) {
-                  if (e.data.dailyLeaderboard.newBest) {
-                    let pos = e.data.dailyLeaderboard.insertedAt + 1;
-                    let numend = "th";
-                    if (pos === 1) {
-                      numend = "st";
-                    } else if (pos === 2) {
-                      numend = "nd";
-                    } else if (pos === 3) {
-                      numend = "rd";
+                  //global
+                  let globalLbString = "";
+                  if (e.data.globalLeaderboard === null) {
+                    globalLbString = "global: not found";
+                  } else if (e.data.globalLeaderboard.insertedAt === -1) {
+                    globalLbString = "global: not qualified";
+                  } else if (e.data.globalLeaderboard.insertedAt >= 0) {
+                    if (e.data.globalLeaderboard.newBest) {
+                      let pos = e.data.globalLeaderboard.insertedAt + 1;
+                      let numend = "th";
+                      let t = pos % 10;
+                      let h = pos % 100;
+                      if (t == 1 && h != 11) {
+                        numend = "st";
+                      }
+                      if (t == 2 && h != 12) {
+                        numend = "nd";
+                      }
+                      if (t == 3 && h != 13) {
+                        numend = "rd";
+                      }
+                      globalLbString = `global: ${pos}${numend} place`;
+                    } else {
+                      let pos = e.data.globalLeaderboard.foundAt + 1;
+                      let numend = "th";
+                      let t = pos % 10;
+                      let h = pos % 100;
+                      if (t == 1 && h != 11) {
+                        numend = "st";
+                      }
+                      if (t == 2 && h != 12) {
+                        numend = "nd";
+                      }
+                      if (t == 3 && h != 13) {
+                        numend = "rd";
+                      }
+                      globalLbString = `global: already ${pos}${numend}`;
                     }
-                    dailyLbString = `daily: ${pos}${numend} place`;
-                  } else {
-                    let pos = e.data.dailyLeaderboard.foundAt + 1;
-                    let numend = "th";
-                    if (pos === 1) {
-                      numend = "st";
-                    } else if (pos === 2) {
-                      numend = "nd";
-                    } else if (pos === 3) {
-                      numend = "rd";
+                  }
+
+                  //daily
+                  let dailyLbString = "";
+                  if (e.data.dailyLeaderboard === null) {
+                    dailyLbString = "daily: not found";
+                  } else if (e.data.dailyLeaderboard.insertedAt === -1) {
+                    dailyLbString = "daily: not qualified";
+                  } else if (e.data.dailyLeaderboard.insertedAt >= 0) {
+                    if (e.data.dailyLeaderboard.newBest) {
+                      let pos = e.data.dailyLeaderboard.insertedAt + 1;
+                      let numend = "th";
+                      if (pos === 1) {
+                        numend = "st";
+                      } else if (pos === 2) {
+                        numend = "nd";
+                      } else if (pos === 3) {
+                        numend = "rd";
+                      }
+                      dailyLbString = `daily: ${pos}${numend} place`;
+                    } else {
+                      let pos = e.data.dailyLeaderboard.foundAt + 1;
+                      let numend = "th";
+                      if (pos === 1) {
+                        numend = "st";
+                      } else if (pos === 2) {
+                        numend = "nd";
+                      } else if (pos === 3) {
+                        numend = "rd";
+                      }
+                      dailyLbString = `daily: already ${pos}${numend}`;
                     }
-                    dailyLbString = `daily: already ${pos}${numend}`;
                   }
-                }
 
-                $("#result .stats .leaderboards .bottom").html(
-                  globalLbString + "<br>" + dailyLbString
-                );
+                  $("#result .stats .leaderboards .bottom").html(
+                    globalLbString + "<br>" + dailyLbString
+                  );
 
-                if (
-                  e.data.dailyLeaderboard === null &&
-                  e.data.globalLeaderboard === null
-                ) {
-                  $("#result .stats .leaderboards").addClass("hidden");
-                }
-                if (e.data.needsToVerifyEmail === true) {
-                  $("#result .stats .leaderboards").removeClass("hidden");
-                  $("#result .stats .leaderboards .bottom").html(
-                    `please verify your email to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`
-                  );
-                } else if (e.data.lbBanned) {
-                  $("#result .stats .leaderboards").removeClass("hidden");
-                  $("#result .stats .leaderboards .bottom").html("banned");
-                } else if (e.data.name === false) {
-                  $("#result .stats .leaderboards").removeClass("hidden");
-                  $("#result .stats .leaderboards .bottom").html(
-                    "update your name to access leaderboards"
-                  );
-                } else if (e.data.needsToVerify === true) {
-                  $("#result .stats .leaderboards").removeClass("hidden");
-                  $("#result .stats .leaderboards .bottom").html(
-                    "verification needed to access leaderboards"
-                  );
-                }
-
-                if (e.data.resultCode === 2) {
-                  //new pb
-                  if (!localPb) {
-                    // showNotification(
-                    //   "Local PB data is out of sync! Resyncing.",
-                    //   5000
-                    // );
+                  if (
+                    e.data.dailyLeaderboard === null &&
+                    e.data.globalLeaderboard === null
+                  ) {
+                    $("#result .stats .leaderboards").addClass("hidden");
                   }
-                  db_saveLocalPB(
-                    config.mode,
-                    mode2,
-                    config.punctuation,
-                    config.language,
-                    config.difficulty,
-                    stats.wpm,
-                    stats.acc,
-                    stats.wpmRaw
-                  );
-                } else if (e.data.resultCode === 1) {
-                  if (localPb) {
-                    showNotification(
-                      "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
-                      15000
+                  if (e.data.needsToVerifyEmail === true) {
+                    $("#result .stats .leaderboards").removeClass("hidden");
+                    $("#result .stats .leaderboards .bottom").html(
+                      `please verify your email to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`
+                    );
+                  } else if (e.data.lbBanned) {
+                    $("#result .stats .leaderboards").removeClass("hidden");
+                    $("#result .stats .leaderboards .bottom").html("banned");
+                  } else if (e.data.name === false) {
+                    $("#result .stats .leaderboards").removeClass("hidden");
+                    $("#result .stats .leaderboards .bottom").html(
+                      "update your name to access leaderboards"
+                    );
+                  } else if (e.data.needsToVerify === true) {
+                    $("#result .stats .leaderboards").removeClass("hidden");
+                    $("#result .stats .leaderboards .bottom").html(
+                      "verification needed to access leaderboards"
                     );
                   }
+
+                  if (e.data.resultCode === 2) {
+                    //new pb
+                    if (!localPb) {
+                      // showNotification(
+                      //   "Local PB data is out of sync! Resyncing.",
+                      //   5000
+                      // );
+                    }
+                    db_saveLocalPB(
+                      config.mode,
+                      mode2,
+                      config.punctuation,
+                      config.language,
+                      config.difficulty,
+                      stats.wpm,
+                      stats.acc,
+                      stats.wpmRaw
+                    );
+                  } else if (e.data.resultCode === 1) {
+                    if (localPb) {
+                      showNotification(
+                        "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
+                        15000
+                      );
+                    }
+                  }
                 }
-              }
-            });
+              })
+              .catch((e) => {
+                console.error(e);
+                showNotification("Could not save result. " + e, 5000);
+              });
           });
         });
       } else {
