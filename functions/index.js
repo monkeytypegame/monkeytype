@@ -139,12 +139,6 @@ exports.changeName = functions.https.onCall((request, response) => {
   }
 });
 
-exports.handler = (req, res) => {
-  res
-    .set({ "Access-Control-Allow-Origin": "https://monkey-type.com/" })
-    .sendStatus(200);
-};
-
 exports.checkIfNeedsToChangeName = functions.https.onCall(
   (request, response) => {
     try {
@@ -656,7 +650,7 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
                   console.log(
                     `saved result for ${
                       request.uid
-                    } (new PB) - ${JSON.stringify(lobobj)}`
+                    } (new PB) - ${JSON.stringify(logobj)}`
                   );
                   if (
                     obj.mode === "time" &&
