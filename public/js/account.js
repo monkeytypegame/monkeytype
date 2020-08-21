@@ -278,6 +278,7 @@ firebase.auth().onAuthStateChanged(function (user) {
       if ($(".pageLogin").hasClass("active")) {
         changePage("account");
       }
+      refreshThemeButtons();
       accountIconLoading(false);
       updateFilterTags();
       updateCommandsTagsList();

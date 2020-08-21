@@ -234,8 +234,10 @@ function setDifficulty(diff, nosave) {
 //set fav themes
 function setFavThemes(themes, nosave) {
   config.favThemes = themes;
-  refreshThemeButtons();
-  if (!nosave) saveConfigToCookie();
+  if (!nosave) {
+    refreshThemeButtons();
+    saveConfigToCookie();
+  }
 }
 
 //blind mode
