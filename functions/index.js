@@ -1173,7 +1173,7 @@ exports.generatePairingCode = functions
     timeoutSeconds: 100,
     memory: "2GB",
   })
-  .https.onCall((request, response) => {
+  .https.onRequest((request, response) => {
     response.set("Access-Control-Allow-Origin", "*");
     if (request.method === "OPTIONS") {
       // Send response to OPTIONS requests
