@@ -226,7 +226,6 @@ firebase.auth().onAuthStateChanged(function (user) {
     db_getUserSnapshot().then((e) => {
       if (!configChangedBeforeDb) {
         if (cookieConfig === null) {
-          dbConfigLoaded = true;
           accountIconLoading(false);
           applyConfig(dbSnapshot.config);
           // showNotification('Applying db config',3000);
@@ -255,13 +254,13 @@ firebase.auth().onAuthStateChanged(function (user) {
             }
           });
           if (configsDifferent) {
-            dbConfigLoaded = true;
             accountIconLoading(false);
             applyConfig(dbSnapshot.config);
             updateSettingsPage();
             saveConfigToCookie(true);
           }
         }
+        dbConfigLoaded = true;
       } else {
         accountIconLoading(false);
       }

@@ -1986,7 +1986,7 @@ function showResult(difficultyFailed = false) {
 
 function startTest() {
   if (!dbConfigLoaded) {
-    console.log("config changed before db loaded!");
+    // console.log("config changed before db loaded!");
     configChangedBeforeDb = true;
   }
   try {
