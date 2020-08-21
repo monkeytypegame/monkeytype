@@ -270,7 +270,11 @@ firebase.auth().onAuthStateChanged(function (user) {
         config.resultFilters === null ||
         config.resultFilters.difficulty === undefined
       ) {
-        config.resultFilters = defaultAccountFilters;
+        if (dbSnapshot.config.resultFilters == null) {
+          config.resultFilters = defaultAccountFilters;
+        } else {
+          config.resultFilters = dbSnapshot.config.resultFilters;
+        }
       }
       if ($(".pageLogin").hasClass("active")) {
         changePage("account");
