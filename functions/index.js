@@ -1,6 +1,5 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-
 let key = "./serviceAccountKey.json";
 
 if (process.env.GCLOUD_PROJECT === "monkey-type") {
@@ -440,11 +439,29 @@ function validateResult(result) {
   return true;
 }
 
-exports.testCompleted = functions.https.onCall(async (request, response) => {
+exports.requestTest = functions.https.onRequest((request, response) => {
+  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Headers", "*");
+  response.set("Access-Control-Allow-Credentials", "true");
+  response.status(200).send({ data: "test" });
+});
+
+exports.testCompleted = functions.https.onRequest(async (request, response) => {
+  response.set("Access-Control-Allow-Origin", "*");
+  if (request.method === "OPTIONS") {
+    // Send response to OPTIONS requests
+    response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    response.set("Access-Control-Allow-Headers", "Authorization,Content-Type");
+    response.set("Access-Control-Max-Age", "3600");
+    response.status(204).send("");
+    return;
+  }
+  request = request.body.data;
   try {
     if (request.uid === undefined || request.obj === undefined) {
       console.error(`error saving result for ${request.uid} - missing input`);
-      return { resultCode: -999 };
+      response.status(200).send({ data: { resultCode: -999 } });
+      return;
     }
 
     let obj = request.obj;
@@ -466,11 +483,13 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
           request.obj
         )}`
       );
-      return { resultCode: -1 };
+      response.status(200).send({ data: { resultCode: -1 } });
+      return;
     }
 
     if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
-      return { resultCode: -1 };
+      response.status(200).send({ data: { resultCode: -1 } });
+      return;
     }
 
     if (!validateResult(obj)) {
@@ -482,7 +501,8 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
       ) {
         //dont give an error
       } else {
-        return { resultCode: -4 };
+        response.status(200).send({ data: { resultCode: -4 } });
+        return;
       }
     }
 
@@ -553,7 +573,8 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
                     keySpacing
                   )} duration ${JSON.stringify(keyDuration)}`
                 );
-                return { resultCode: -2 };
+                response.status(200).send({ data: { resultCode: -2 } });
+                return;
               }
               if (
                 (keySpacing.sd > 15 && keySpacing.sd <= 25) ||
@@ -571,7 +592,8 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
                 );
               }
             } else {
-              return { resultCode: -3 };
+              response.status(200).send({ data: { resultCode: -3 } });
+              return;
             }
           }
         }
@@ -680,27 +702,37 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
                   );
                   returnobj.resultCode = 1;
                 }
-                return returnobj;
+                response.status(200).send({ data: returnobj });
+                return;
               })
               .catch((e) => {
                 console.error(
                   `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
                 );
-                return { resultCode: -999, message: e.message };
+                response
+                  .status(200)
+                  .send({ data: { resultCode: -999, message: e.message } });
+                return;
               });
           })
           .catch((e) => {
             console.error(
               `error saving result when adding result to the db for ${request.uid} - ${e.message}`
             );
-            return { resultCode: -999, message: e.message };
+            response
+              .status(200)
+              .send({ data: { resultCode: -999, message: e.message } });
+            return;
           });
       })
       .catch((e) => {
         console.error(
           `error saving result when getting user data for ${request.uid} - ${e.message}`
         );
-        return { resultCode: -999, message: e.message };
+        response
+          .status(200)
+          .send({ data: { resultCode: -999, message: e.message } });
+        return;
       });
   } catch (e) {
     console.error(
@@ -708,7 +740,10 @@ exports.testCompleted = functions.https.onCall(async (request, response) => {
         request.obj
       )} - ${e}`
     );
-    return { resultCode: -999, message: e.message };
+    response
+      .status(200)
+      .send({ data: { resultCode: -999, message: e.message } });
+    return;
   }
 });
 
@@ -1139,14 +1174,26 @@ exports.generatePairingCode = functions
     memory: "2GB",
   })
   .https.onCall((request, response) => {
+    response.set("Access-Control-Allow-Origin", "*");
+    if (request.method === "OPTIONS") {
+      // Send response to OPTIONS requests
+      response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      response.set(
+        "Access-Control-Allow-Headers",
+        "Authorization,Content-Type"
+      );
+      response.set("Access-Control-Max-Age", "3600");
+      response.status(204).send("");
+      return;
+    }
+    request = request.body.data;
     try {
       if (request === null) {
         console.error(
           `error while trying to generate discord pairing code - no input`
         );
-        return {
-          status: -999,
-        };
+        response.status(200).send({ data: { status: -999 } });
+        return;
       }
 
       return db
@@ -1198,18 +1245,24 @@ exports.generatePairingCode = functions
                     console.log(
                       `generated ${randomCode} for user ${request.uid}`
                     );
-                    return {
-                      status: 1,
-                      pairingCode: randomCode,
-                    };
+                    response.status(200).send({
+                      data: {
+                        status: 1,
+                        pairingCode: randomCode,
+                      },
+                    });
+                    return;
                   })
                   .catch((e) => {
                     console.error(
                       `error while trying to set discord pairing code ${randomCode} for user ${request.uid} - ${e}`
                     );
-                    return {
-                      status: -999,
-                    };
+                    response.status(200).send({
+                      data: {
+                        status: -999,
+                      },
+                    });
+                    return;
                   });
               });
           }
@@ -1218,9 +1271,12 @@ exports.generatePairingCode = functions
       console.error(
         `error while trying to generate discord pairing code for user ${request.uid} - ${e}`
       );
-      return {
-        status: -999,
-      };
+      response.status(200).send({
+        data: {
+          status: -999,
+        },
+      });
+      return;
     }
   });
 
