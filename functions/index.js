@@ -446,6 +446,22 @@ exports.requestTest = functions.https.onRequest((request, response) => {
   response.status(200).send({ data: "test" });
 });
 
+exports.getPatreons = functions.https.onRequest(async (request, response) => {
+  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Headers", "*");
+  response.set("Access-Control-Allow-Credentials", "true");
+
+  let patreon = await db.collection("patreon").orderBy("value", "desc").get();
+  let ret = [];
+  patreon.docs.forEach((pdoc) => {
+    ret.push(pdoc.data().name);
+  });
+
+  // console.log(ret);
+
+  response.status(200).send({ data: ret });
+});
+
 async function incrementTestCounter(uid) {
   let userDoc = await db.collection("users").doc(uid).get();
   let userData = userDoc.data();

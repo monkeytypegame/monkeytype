@@ -1670,6 +1670,14 @@ key {
     display: grid;
     gap: 0.5rem;
 
+    .supporters {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      justify-items: center;
+      gap: 0.25rem;
+      color: var(--text-color);
+    }
+
     h1 {
       font-size: 1rem;
       line-height: 1rem;

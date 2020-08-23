@@ -3804,6 +3804,7 @@ $(document).keydown((event) => {
 
 loadConfigFromCookie();
 getReleasesFromGitHub();
+getPatreonNames();
 
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
