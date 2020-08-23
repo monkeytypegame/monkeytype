@@ -177,7 +177,7 @@ function getPatreonNames() {
     .then((data) => {
       let names = data.data;
       names.forEach((name) => {
-        namesel.prepend(`<div>${name}</div>`);
+        namesel.append(`<div>${name}</div>`);
       });
     });
 }
