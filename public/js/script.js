@@ -288,7 +288,11 @@ function setFocus(foc) {
     $("#middle").addClass("focus");
   } else if (!foc && focusState) {
     focusState = false;
-    startCaretAnimation();
+    if (testActive) {
+      stopCaretAnimation();
+    } else {
+      startCaretAnimation();
+    }
     $("#top").removeClass("focus");
     $("#bottom").removeClass("focus");
     $("body").css("cursor", "default");
