@@ -11,12 +11,12 @@
   },
   {
     "name": "8008",
-    "bgColor": "#3c4756",
+    "bgColor": "#333a45",
     "textColor": "#f44c7f"
   },
   {
     "name": "carbon",
-    "bgColor": "#575d5e",
+    "bgColor": "#313131",
     "textColor": "#ed6b21"
   },
   {
@@ -26,13 +26,13 @@
   },
   {
     "name": "nautilus",
-    "bgColor": "#20304a",
+    "bgColor": "#132237",
     "textColor": "#eab622"
   },
   {
     "name": "serika",
-    "bgColor": "#e2b714",
-    "textColor": "#323437"
+    "bgColor": "#e1e1e3",
+    "textColor": "#e2b714"
   },
   {
     "name": "serika_dark",
@@ -41,7 +41,7 @@
   },
   {
     "name": "bushido",
-    "bgColor": "#414755",
+    "bgColor": "#242933",
     "textColor": "#ec4c56"
   },
   {
@@ -66,7 +66,7 @@
   },
   {
     "name": "retro",
-    "bgColor": "#b3b0a8",
+    "bgColor": "#dad3c1",
     "textColor": "#1d181a"
   },
   {
@@ -81,7 +81,7 @@
   },
   {
     "name": "mr_sleeves",
-    "bgColor": "#bdc6ca",
+    "bgColor": "#d1d7da",
     "textColor": "#000"
   },
   {
@@ -126,7 +126,7 @@
   },
   {
     "name": "modern_dolch",
-    "bgColor": "#585b5f",
+    "bgColor": "#2d2e30",
     "textColor": "#65d2cd"
   },
   {
@@ -136,12 +136,12 @@
   },
   {
     "name": "9009",
-    "bgColor": "#99947f",
+    "bgColor": "#eeebe2",
     "textColor": "#080909"
   },
   {
     "name": "bingsu",
-    "bgColor": "#524149",
+    "bgColor": "#b8a7aa",
     "textColor": "#ede8ec"
   },
   {
@@ -206,12 +206,12 @@
   },
   {
     "name": "strawberry",
-    "bgColor": "#e53c58",
+    "bgColor": "#f37f83",
     "textColor": "#fcfcf8"
   },
   {
     "name": "night_runner",
-    "bgColor": "#5c4a9c",
+    "bgColor": "#212121",
     "textColor": "#feff04"
   },
   {
@@ -241,8 +241,8 @@
   },
   {
     "name": "terra",
-    "bgColor": "#89c559",
-    "textColor": "#0c100e"
+    "bgColor": "#0c100e",
+    "textColor": "#89c559"
   },
   {
     "name": "red_dragon",
@@ -291,7 +291,7 @@
   },
   {
     "name": "bento",
-    "bgColor": "#335C71",
+    "bgColor": "#2d394d",
     "textColor": "#FC7374"
   },
   {
@@ -306,8 +306,8 @@
   },
   {
     "name": "ishtar",
-    "bgColor": "#fae1c3",
-    "textColor": "#bb1e10"
+    "bgColor": "#202020",
+    "textColor": "#91170c"
   },
   {
     "name": "mashu",
