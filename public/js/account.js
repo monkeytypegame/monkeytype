@@ -269,7 +269,10 @@ firebase.auth().onAuthStateChanged(function (user) {
         config.resultFilters === null ||
         config.resultFilters.difficulty === undefined
       ) {
-        if (dbSnapshot.config.resultFilters == null) {
+        if (
+          dbSnapshot.config.resultFilters == null ||
+          dbSnapshot.config.resultFilters.difficulty === undefined
+        ) {
           config.resultFilters = defaultAccountFilters;
         } else {
           config.resultFilters = dbSnapshot.config.resultFilters;
