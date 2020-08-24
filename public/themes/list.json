@@ -343,5 +343,10 @@
     "name": "cafe",
     "bgColor": "#CEB18D",
     "textColor": "#14120F"
+  },
+  {
+    "name": "alpine",
+    "bgColor": "#6c687f",
+    "textColor": "#ffffff"
   }
 ]
