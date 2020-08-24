@@ -85,6 +85,7 @@ async function db_getUserSnapshot() {
 async function db_getUserResults() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
+  if (dbSnapshot === null) return false;
   if (dbSnapshot.results !== undefined) {
     return true;
   } else {

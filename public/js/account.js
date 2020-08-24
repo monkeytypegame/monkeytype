@@ -1423,7 +1423,10 @@ function refreshAccountPage() {
         // cont();
         showActiveFilters();
       } else {
-        console.log("something went wrong");
+        setTimeout((f) => {
+          changePage("");
+        }, 500);
+        // console.log("something went wrong");
       }
     });
   } else {
