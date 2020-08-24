@@ -162,6 +162,14 @@ settingsGroups.playSoundOnError = new SettingsGroup(
   "playSoundOnError",
   setPlaySoundOnError
 );
+settingsGroups.playSoundOnClick = new SettingsGroup(
+  "playSoundOnClick",
+  setPlaySoundOnClick,
+  () => {
+    if (config.playSoundOnClick !== "off")
+      clickSounds[config.playSoundOnClick][0].play();
+  }
+);
 settingsGroups.showAllLines = new SettingsGroup(
   "showAllLines",
   setShowAllLines

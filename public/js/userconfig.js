@@ -48,6 +48,7 @@ let defaultConfig = {
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
   playSoundOnError: false,
+  playSoundOnClick: "off",
 };
 
 let cookieConfig = null;
@@ -164,6 +165,7 @@ function applyConfig(configObj) {
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
     setPlaySoundOnError(configObj.playSoundOnError, true);
+    setPlaySoundOnClick(configObj.playSoundOnClick, true);
     setStopOnError(configObj.stopOnError, true);
     setFavThemes(configObj.favThemes, true);
     setRandomTheme(configObj.randomTheme, true);
@@ -207,6 +209,14 @@ function setPlaySoundOnError(val, nosave) {
     val = false;
   }
   config.playSoundOnError = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+function setPlaySoundOnClick(val, nosave) {
+  if (val == undefined) {
+    val = "off";
+  }
+  config.playSoundOnClick = val;
   if (!nosave) saveConfigToCookie();
 }
 

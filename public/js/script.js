@@ -67,6 +67,19 @@ let keypressStats = {
 
 let errorSound = new Audio("../sound/error.wav");
 
+let clickSounds = {
+  "1": [
+    new Audio("../sound/click1/click1_1.wav"),
+    new Audio("../sound/click1/click1_2.wav"),
+    new Audio("../sound/click1/click1_3.wav"),
+  ],
+  "2": [
+    new Audio("../sound/click2/click2_1.wav"),
+    new Audio("../sound/click2/click2_2.wav"),
+    new Audio("../sound/click2/click2_3.wav"),
+  ],
+};
+
 let customText = "The quick brown fox jumps over the lazy dog".split(" ");
 let customTextIsRandom = false;
 let customTextWordCount = 1;
@@ -3118,6 +3131,18 @@ function hideCustomMode2Popup() {
   }
 }
 
+function playClickSound() {
+  if (config.playSoundOnClick === "off") return;
+
+  let rand = Math.floor(Math.random() * 3);
+  let sounds = clickSounds[config.playSoundOnClick];
+  sounds[rand].currentTime = 0;
+  sounds[rand].play();
+
+  // clickSound.currentTime = 0;
+  // clickSound.play();
+}
+
 function playErrorSound() {
   if (!config.playSoundOnError) return;
   errorSound.currentTime = 0;
@@ -3404,6 +3429,7 @@ $(document).keypress(function (event) {
     thisCharCorrect = false;
     playErrorSound();
   } else {
+    playClickSound();
     accuracyStats.correct++;
     thisCharCorrect = true;
   }
@@ -3558,6 +3584,7 @@ $(document).keydown((event) => {
           currentWordElementIndex--;
           updateActiveElement();
           compareInput(!config.blindMode);
+          playClickSound();
         }
       } else {
         if (config.confidenceMode === "max") return;
@@ -3771,6 +3798,7 @@ $(document).keydown((event) => {
         currentKeypress.count++;
         currentKeypress.words.push(currentWordIndex);
       }
+      playClickSound();
       correctedHistory.push(currentCorrected);
       currentCorrected = "";
       if (config.keymapMode === "react") {
@@ -3802,10 +3830,6 @@ $(document).keydown((event) => {
   }
 });
 
-loadConfigFromCookie();
-getReleasesFromGitHub();
-getPatreonNames();
-
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
   $("head title").text("Monkey Dev");
@@ -3833,6 +3857,10 @@ if (window.location.hostname === "localhost") {
   local
 </div>`);
 }
+
+loadConfigFromCookie();
+getReleasesFromGitHub();
+getPatreonNames();
 
 $(document).on("mouseenter", "#words .word", (e) => {
   if (resultVisible) {
