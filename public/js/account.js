@@ -1409,7 +1409,7 @@ function refreshAccountPage() {
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
 
-  if (dbSnapshot.results === undefined) {
+  if (dbSnapshot === null || dbSnapshot.results === undefined) {
     db_getUserResults().then((d) => {
       if (d) {
         // cont();
