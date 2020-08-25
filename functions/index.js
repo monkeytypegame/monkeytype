@@ -527,12 +527,12 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
     }
 
     let errCount = verifyValue(obj);
-    console.log(errCount);
+    // console.log(errCount);
     if (errCount > 0) {
       console.error(
-        `error saving result for ${request.uid} - bad input - ${JSON.stringify(
-          request.obj
-        )}`
+        `error saving result for ${
+          request.uid
+        } error count ${errCount} - bad input - ${JSON.stringify(request.obj)}`
       );
       response.status(200).send({ data: { resultCode: -1 } });
       return;
