@@ -3440,11 +3440,18 @@ $(document).keypress(function (event) {
     currentError.count++;
     currentError.words.push(currentWordIndex);
     thisCharCorrect = false;
-    playErrorSound();
   } else {
-    playClickSound();
     accuracyStats.correct++;
     thisCharCorrect = true;
+  }
+  if (thisCharCorrect) {
+    playClickSound();
+  } else {
+    if (!config.playSoundOnError) {
+      playClickSound();
+    } else {
+      playErrorSound();
+    }
   }
   if (currentCorrected === "") {
     currentCorrected = currentInput + event["key"];
@@ -3597,7 +3604,6 @@ $(document).keydown((event) => {
           currentWordElementIndex--;
           updateActiveElement();
           compareInput(!config.blindMode);
-          playClickSound();
         }
       } else {
         if (config.confidenceMode === "max") return;
@@ -3608,6 +3614,7 @@ $(document).keydown((event) => {
         }
         compareInput(!config.blindMode);
       }
+      playClickSound();
       if (config.keymapMode === "react") {
         flashPressedKeymapKey(event.code, true);
       } else if (config.keymapMode === "next") {
