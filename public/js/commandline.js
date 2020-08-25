@@ -70,6 +70,15 @@ let commands = {
       },
     },
     {
+      id: "changeSoundOnClick",
+      display: "Change sound on click...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsSoundOnClick);
+        showCommandLine();
+      },
+    },
+    {
       id: "toggleSmoothCaret",
       display: "Toggle smooth caret",
       exec: () => {
@@ -388,6 +397,39 @@ let commandsKeymapMode = {
       display: "react",
       exec: () => {
         changeKeymapMode("react");
+      },
+    },
+  ],
+};
+
+let commandsSoundOnClick = {
+  title: "Change sound on click...",
+  list: [
+    {
+      id: "setSoundOnClickOff",
+      display: "off",
+      exec: () => {
+        setPlaySoundOnClick("off");
+      },
+    },
+    {
+      id: "setSoundOnClick1",
+      display: "1",
+      exec: () => {
+        setPlaySoundOnClick("1");
+      },
+      hover: () => {
+        clickSounds["1"][0].play();
+      },
+    },
+    {
+      id: "setSoundOnClick2",
+      display: "2",
+      exec: () => {
+        setPlaySoundOnClick("2");
+      },
+      hover: () => {
+        clickSounds["2"][0].play();
       },
     },
   ],
