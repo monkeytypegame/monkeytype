@@ -69,14 +69,50 @@ let errorSound = new Audio("../sound/error.wav");
 
 let clickSounds = {
   "1": [
-    new Audio("../sound/click1/click1_1.wav"),
-    new Audio("../sound/click1/click1_2.wav"),
-    new Audio("../sound/click1/click1_3.wav"),
+    {
+      sounds: [
+        new Audio("../sound/click1/click1_1.wav"),
+        new Audio("../sound/click1/click1_1.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click1/click1_2.wav"),
+        new Audio("../sound/click1/click1_2.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click1/click1_3.wav"),
+        new Audio("../sound/click1/click1_3.wav"),
+      ],
+      counter: 0,
+    },
   ],
   "2": [
-    new Audio("../sound/click2/click2_1.wav"),
-    new Audio("../sound/click2/click2_2.wav"),
-    new Audio("../sound/click2/click2_3.wav"),
+    {
+      sounds: [
+        new Audio("../sound/click2/click2_1.wav"),
+        new Audio("../sound/click2/click2_1.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click2/click2_2.wav"),
+        new Audio("../sound/click2/click2_2.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click2/click2_3.wav"),
+        new Audio("../sound/click2/click2_3.wav"),
+      ],
+      counter: 0,
+    },
   ],
 };
 
@@ -3148,9 +3184,11 @@ function playClickSound() {
   if (config.playSoundOnClick === "off") return;
 
   let rand = Math.floor(Math.random() * 3);
-  let sounds = clickSounds[config.playSoundOnClick];
-  sounds[rand].currentTime = 0;
-  sounds[rand].play();
+  let randomSound = clickSounds[config.playSoundOnClick][rand];
+  randomSound.counter++;
+  if (randomSound.counter === 2) randomSound.counter = 0;
+  randomSound.sounds[randomSound.counter].currentTime = 0;
+  randomSound.sounds[randomSound.counter].play();
 
   // clickSound.currentTime = 0;
   // clickSound.play();
