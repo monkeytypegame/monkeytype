@@ -3485,7 +3485,7 @@ $(document).keypress(function (event) {
   if (thisCharCorrect) {
     playClickSound();
   } else {
-    if (!config.playSoundOnError) {
+    if (!config.playSoundOnError || config.blindMode) {
       playClickSound();
     } else {
       playErrorSound();
@@ -3796,8 +3796,13 @@ $(document).keydown((event) => {
         updateCaretPosition();
         currentKeypress.count++;
         currentKeypress.words.push(currentWordIndex);
+        playClickSound();
       } else {
-        playErrorSound();
+        if (!config.playSoundOnError || config.blindMode) {
+          playClickSound();
+        } else {
+          playErrorSound();
+        }
         accuracyStats.incorrect++;
         let cil = currentInput.length;
         if (cil < wordsList[currentWordIndex].length) {
@@ -3856,7 +3861,6 @@ $(document).keydown((event) => {
         currentKeypress.count++;
         currentKeypress.words.push(currentWordIndex);
       }
-      playClickSound();
       correctedHistory.push(currentCorrected);
       currentCorrected = "";
       if (config.keymapMode === "react") {
