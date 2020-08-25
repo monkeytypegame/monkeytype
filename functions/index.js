@@ -508,18 +508,27 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
 
     let obj = request.obj;
 
-    let err = false;
-    Object.keys(obj).forEach((key) => {
-      let val = obj[key];
+    function verifyValue(val) {
+      let errCount = 0;
       if (Array.isArray(val)) {
-        val.forEach((valarr) => {
-          if (!/^[0-9a-zA-Z._]+$/.test(valarr)) err = true;
+        //array
+        val.forEach((val2) => {
+          errCount += verifyValue(val2);
+        });
+      } else if (typeof val === "object" && !Array.isArray(val)) {
+        //object
+        Object.keys(val).forEach((valkey) => {
+          errCount += verifyValue(val[valkey]);
         });
       } else {
-        if (val === undefined || !/^[0-9a-zA-Z._]+$/.test(val)) err = true;
+        if (!/^[0-9a-zA-Z._]+$/.test(val)) errCount++;
       }
-    });
-    if (err) {
+      return errCount;
+    }
+
+    let errCount = verifyValue(obj);
+    console.log(errCount);
+    if (errCount > 0) {
       console.error(
         `error saving result for ${request.uid} - bad input - ${JSON.stringify(
           request.obj
