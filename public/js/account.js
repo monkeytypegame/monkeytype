@@ -646,14 +646,15 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
 });
 
 function updateHoverChart(filteredId) {
+  let data = filteredResults[filteredId].chartData;
   let labels = [];
-  for (let i = 1; i <= filteredResults[filteredId].chartData.wpm.length; i++) {
+  for (let i = 1; i <= data.wpm.length; i++) {
     labels.push(i.toString());
   }
   hoverChart.data.labels = labels;
-  hoverChart.data.datasets[0].data = filteredResults[filteredId].chartData.wpm;
-  hoverChart.data.datasets[1].data = filteredResults[filteredId].chartData.raw;
-  hoverChart.data.datasets[2].data = filteredResults[filteredId].chartData.err;
+  hoverChart.data.datasets[0].data = data.wpm;
+  hoverChart.data.datasets[1].data = data.raw;
+  hoverChart.data.datasets[2].data = data.err;
 
   hoverChart.options.scales.xAxes[0].ticks.minor.fontColor = themeColors.sub;
   hoverChart.options.scales.xAxes[0].scaleLabel.fontColor = themeColors.sub;
@@ -671,6 +672,11 @@ function updateHoverChart(filteredId) {
   hoverChart.options.annotation.annotations[0].label.backgroundColor =
     themeColors.sub;
   hoverChart.options.annotation.annotations[0].label.fontColor = themeColors.bg;
+
+  let maxChartVal = Math.max(...[Math.max(...data.wpm), Math.max(...data.raw)]);
+
+  hoverChart.options.scales.yAxes[0].ticks.max = Math.round(maxChartVal);
+  hoverChart.options.scales.yAxes[1].ticks.max = Math.round(maxChartVal);
 
   hoverChart.update({ duration: 0 });
 }
