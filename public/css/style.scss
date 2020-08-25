@@ -2046,6 +2046,40 @@ key {
     gap: 2rem;
   }
 
+  // .hoverChartWrapper {
+  //   z-index: 999;
+  //   display: none;
+  //   width: 100%;
+  //   height: 100%;
+  //   background: rgba(0, 0, 0, 0.25);
+  //   position: fixed;
+  //   left: 0;
+  //   top: 0;
+  // }
+  .hoverChartWrapper {
+    // pointer-events: none;
+    z-index: 999;
+    display: none;
+    height: 15rem;
+    background: var(--bg-color);
+    width: 45rem;
+    position: absolute;
+    border-radius: var(--roundness);
+    padding: 1rem;
+    // box-shadow: 0 0 1rem rgba(0, 0, 0, 0.25);
+  }
+
+  .hoverChartBg {
+    display: none;
+    z-index: 998;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.25);
+    position: fixed;
+    left: 0;
+    top: 0;
+  }
+
   .preloader {
     font-size: 2rem;
     justify-self: center;
@@ -2169,6 +2203,14 @@ key {
 
     td.infoIcons span {
       margin: 0 0.1rem;
+    }
+    .hoverChartButton {
+      opacity: 0.25;
+      transition: 0.25s;
+      cursor: pointer;
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 

@@ -449,6 +449,266 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
   },
 });
 
+let hoverChart = new Chart($(".pageAccount #hoverChart"), {
+  type: "line",
+  data: {
+    labels: [],
+    datasets: [
+      {
+        label: "wpm",
+        data: [],
+        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 2,
+        yAxisID: "wpm",
+        order: 2,
+        radius: 2,
+      },
+      {
+        label: "raw",
+        data: [],
+        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 2,
+        yAxisID: "raw",
+        order: 3,
+        radius: 2,
+      },
+      {
+        label: "errors",
+        data: [],
+        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
+        borderColor: "rgba(255, 125, 125, 1)",
+        pointBackgroundColor: "rgba(255, 125, 125, 1)",
+        borderWidth: 2,
+        order: 1,
+        yAxisID: "error",
+        // barPercentage: 0.1,
+        maxBarThickness: 10,
+        type: "scatter",
+        pointStyle: "crossRot",
+        radius: function (context) {
+          var index = context.dataIndex;
+          var value = context.dataset.data[index];
+          return value.y <= 0 ? 0 : 3;
+        },
+        pointHoverRadius: function (context) {
+          var index = context.dataIndex;
+          var value = context.dataset.data[index];
+          return value.y <= 0 ? 0 : 5;
+        },
+      },
+    ],
+  },
+  options: {
+    tooltips: {
+      titleFontFamily: "Roboto Mono",
+      bodyFontFamily: "Roboto Mono",
+      mode: "index",
+      intersect: false,
+    },
+    legend: {
+      display: false,
+      labels: {
+        defaultFontFamily: "Roboto Mono",
+      },
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+    // hover: {
+    //   mode: 'x',
+    //   intersect: false
+    // },
+    scales: {
+      xAxes: [
+        {
+          ticks: {
+            fontFamily: "Roboto Mono",
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          display: true,
+          scaleLabel: {
+            display: false,
+            labelString: "Seconds",
+            fontFamily: "Roboto Mono",
+          },
+        },
+      ],
+      yAxes: [
+        {
+          id: "wpm",
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: "Words per Minute",
+            fontFamily: "Roboto Mono",
+          },
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            min: 0,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          gridLines: {
+            display: true,
+          },
+        },
+        {
+          id: "raw",
+          display: false,
+          scaleLabel: {
+            display: true,
+            labelString: "Raw Words per Minute",
+            fontFamily: "Roboto Mono",
+          },
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            min: 0,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          gridLines: {
+            display: false,
+          },
+        },
+        {
+          id: "error",
+          display: true,
+          position: "right",
+          scaleLabel: {
+            display: true,
+            labelString: "Errors",
+            fontFamily: "Roboto Mono",
+          },
+          ticks: {
+            precision: 0,
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          gridLines: {
+            display: false,
+          },
+        },
+      ],
+    },
+    annotation: {
+      annotations: [
+        {
+          enabled: false,
+          type: "line",
+          mode: "horizontal",
+          scaleID: "wpm",
+          value: "-30",
+          borderColor: "red",
+          borderWidth: 1,
+          borderDash: [2, 2],
+          label: {
+            // Background color of label, default below
+            backgroundColor: "blue",
+            fontFamily: "Roboto Mono",
+
+            // Font size of text, inherits from global
+            fontSize: 11,
+
+            // Font style of text, default below
+            fontStyle: "normal",
+
+            // Font color of text, default below
+            fontColor: "#fff",
+
+            // Padding of label to add left/right, default below
+            xPadding: 6,
+
+            // Padding of label to add top/bottom, default below
+            yPadding: 6,
+
+            // Radius of label rectangle, default below
+            cornerRadius: 3,
+
+            // Anchor position of label on line, can be one of: top, bottom, left, right, center. Default below.
+            position: "center",
+
+            // Whether the label is enabled and should be displayed
+            enabled: true,
+
+            // Text to display in label - default is null. Provide an array to display values on a new line
+            content: "PB",
+          },
+        },
+      ],
+    },
+  },
+});
+
+function updateHoverChart(filteredId) {
+  let labels = [];
+  for (let i = 1; i <= filteredResults[filteredId].chartData.wpm.length; i++) {
+    labels.push(i.toString());
+  }
+  hoverChart.data.labels = labels;
+  hoverChart.data.datasets[0].data = filteredResults[filteredId].chartData.wpm;
+  hoverChart.data.datasets[1].data = filteredResults[filteredId].chartData.raw;
+  hoverChart.data.datasets[2].data = filteredResults[filteredId].chartData.err;
+
+  hoverChart.options.scales.xAxes[0].ticks.minor.fontColor = themeColors.sub;
+  hoverChart.options.scales.xAxes[0].scaleLabel.fontColor = themeColors.sub;
+  hoverChart.options.scales.yAxes[0].ticks.minor.fontColor = themeColors.sub;
+  hoverChart.options.scales.yAxes[2].ticks.minor.fontColor = themeColors.sub;
+  hoverChart.options.scales.yAxes[0].scaleLabel.fontColor = themeColors.sub;
+  hoverChart.options.scales.yAxes[2].scaleLabel.fontColor = themeColors.sub;
+
+  hoverChart.data.datasets[0].borderColor = themeColors.main;
+  hoverChart.data.datasets[0].pointBackgroundColor = themeColors.main;
+  hoverChart.data.datasets[1].borderColor = themeColors.sub;
+  hoverChart.data.datasets[1].pointBackgroundColor = themeColors.sub;
+
+  hoverChart.options.annotation.annotations[0].borderColor = themeColors.sub;
+  hoverChart.options.annotation.annotations[0].label.backgroundColor =
+    themeColors.sub;
+  hoverChart.options.annotation.annotations[0].label.fontColor = themeColors.bg;
+
+  hoverChart.update({ duration: 0 });
+}
+
+function showHoverChart() {
+  $(".pageAccount .hoverChartWrapper").stop(true, true).fadeIn(125);
+  $(".pageAccount .hoverChartBg").stop(true, true).fadeIn(125);
+}
+
+function hideHoverChart() {
+  $(".pageAccount .hoverChartWrapper").stop(true, true).fadeOut(125);
+  $(".pageAccount .hoverChartBg").stop(true, true).fadeOut(125);
+}
+
+function updateHoverChartPosition(x, y) {
+  $(".pageAccount .hoverChartWrapper").css({ top: y, left: x });
+}
+
+$(document).on("click", ".pageAccount .hoverChartButton", (event) => {
+  console.log("updating");
+  let filterid = $(event.currentTarget).attr("filteredResultsId");
+  if (filterid === undefined) return;
+  updateHoverChart(filterid);
+  showHoverChart();
+  updateHoverChartPosition(
+    event.pageX - $(".pageAccount .hoverChartWrapper").outerWidth(),
+    event.pageY + 30
+  );
+});
+
+$(document).on("click", ".pageAccount .hoverChartBg", (event) => {
+  hideHoverChart();
+});
+
+// $(document).on("mouseleave", ".pageAccount .hoverChartButton", (event) => {
+//   hideHoverChart();
+// });
+
 let defaultAccountFilters = {
   difficulty: {
     normal: true,
@@ -974,6 +1234,16 @@ function loadMoreLines() {
         /_/g,
         " "
       )}" data-balloon-pos="up"><i class="fas fa-gamepad"></i></span>`;
+    }
+
+    if (result.chartData === undefined) {
+      icons += `<span class="hoverChartButton" aria-label="No chart data found" data-balloon-pos="up"><i class="fas fa-chart-line"></i></span>`;
+    } else if (result.chartData === "toolong") {
+      icons += `<span class="hoverChartButton" aria-label="Chart history is not available for long tests" data-balloon-pos="up"><i class="fas fa-chart-line"></i></span>`;
+    } else {
+      icons += `<span class="hoverChartButton" filteredResultsId="${
+        visibleTableLines + i
+      }" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
     }
 
     let tagNames = "";

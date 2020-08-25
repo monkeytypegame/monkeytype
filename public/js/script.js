@@ -1576,7 +1576,7 @@ function showResult(difficultyFailed = false) {
       err: errorsNoZero,
     };
 
-    if (testtime > 61) chartData = "toolong";
+    if (testtime > 122) chartData = "toolong";
 
     let completedEvent = {
       wpm: stats.wpm,
