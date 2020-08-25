@@ -1570,6 +1570,14 @@ function showResult(difficultyFailed = false) {
       });
     } catch (e) {}
 
+    let chartData = {
+      wpm: wpmHistory,
+      raw: rawWpmPerSecond,
+      err: errorsNoZero,
+    };
+
+    if (testtime > 61) chartData = "toolong";
+
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
@@ -1595,6 +1603,7 @@ function showResult(difficultyFailed = false) {
       keyConsistency: keyConsistency,
       funbox: activeFunBox,
       bailedOut: bailout,
+      chartData: chartData,
     };
     if (
       config.difficulty == "normal" ||
