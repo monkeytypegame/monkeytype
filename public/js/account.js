@@ -265,19 +265,23 @@ firebase.auth().onAuthStateChanged(function (user) {
         } else {
           accountIconLoading(false);
         }
-        if (
-          config.resultFilters === undefined ||
-          config.resultFilters === null ||
-          config.resultFilters.difficulty === undefined
-        ) {
+        try {
           if (
-            dbSnapshot.config.resultFilters == null ||
-            dbSnapshot.config.resultFilters.difficulty === undefined
+            config.resultFilters === undefined ||
+            config.resultFilters === null ||
+            config.resultFilters.difficulty === undefined
           ) {
-            config.resultFilters = defaultAccountFilters;
-          } else {
-            config.resultFilters = dbSnapshot.config.resultFilters;
+            if (
+              dbSnapshot.config.resultFilters == null ||
+              dbSnapshot.config.resultFilters.difficulty === undefined
+            ) {
+              config.resultFilters = defaultAccountFilters;
+            } else {
+              config.resultFilters = dbSnapshot.config.resultFilters;
+            }
           }
+        } catch (e) {
+          config.resultFilters = defaultAccountFilters;
         }
         if ($(".pageLogin").hasClass("active")) {
           changePage("account");
@@ -293,7 +297,7 @@ firebase.auth().onAuthStateChanged(function (user) {
       })
       .catch((e) => {
         accountIconLoading(false);
-        showNotification("Error donwloading user data: " + e, 5000);
+        showNotification("Error downloading user data: " + e, 5000);
       });
     var displayName = user.displayName;
     var email = user.email;
