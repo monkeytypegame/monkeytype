@@ -859,15 +859,17 @@ function showTimer() {
       250
     );
   } else if (config.timerStyle === "mini") {
-    $("#miniTimerAndLiveWpm .time")
-      .stop(true, true)
-      .removeClass("hidden")
-      .animate(
-        {
-          opacity: op,
-        },
-        250
-      );
+    if (op > 0) {
+      $("#miniTimerAndLiveWpm .time")
+        .stop(true, true)
+        .removeClass("hidden")
+        .animate(
+          {
+            opacity: op,
+          },
+          250
+        );
+    }
   }
 }
 
@@ -878,12 +880,17 @@ function hideTimer() {
     },
     125
   );
-  $("#miniTimerAndLiveWpm .time").stop(true, true).animate(
-    {
-      opacity: 0,
-    },
-    125
-  );
+  $("#miniTimerAndLiveWpm .time")
+    .stop(true, true)
+    .animate(
+      {
+        opacity: 0,
+      },
+      125,
+      () => {
+        $("#miniTimerAndLiveWpm .time").addClass("hidden");
+      }
+    );
   $("#timerNumber").stop(true, true).animate(
     {
       opacity: 0,
@@ -2333,6 +2340,8 @@ function restartTest(withSameWordset = false) {
       } else {
         hideKeymap();
       }
+      document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = "0";
+      document.querySelector("#liveWpm").innerHTML = "0";
 
       if (activeFunBox === "layoutfluid") {
         changeLayout("qwerty");
