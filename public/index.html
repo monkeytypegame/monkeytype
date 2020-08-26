@@ -975,6 +975,10 @@
           <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
           <div id="wordsTitle">input history</div>
           <div id="timerNumber">60</div>
+          <div id="miniTimerAndLiveWpm">
+            <div class="time">1:00</div>
+            <div class="wpm">60</div>
+          </div>
           <div id="wordsWrapper">
             <div id="words" class="size15"></div>
           </div>
@@ -1728,6 +1732,14 @@
                   onclick="this.blur();"
                 >
                   text
+                </div>
+                <div
+                  class="button"
+                  timerStyle="mini"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  mini
                 </div>
               </div>
             </div>

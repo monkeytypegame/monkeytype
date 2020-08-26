@@ -574,6 +574,13 @@ let commandsTimerStyle = {
         setTimerStyle("text");
       },
     },
+    {
+      id: "setTimerStyleMini",
+      display: "mini",
+      exec: () => {
+        setTimerStyle("mini");
+      },
+    },
   ],
 };
 

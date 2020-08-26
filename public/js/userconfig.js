@@ -33,7 +33,7 @@ let defaultConfig = {
   flipTestColors: false,
   layout: "default",
   confidenceMode: "off",
-  timerStyle: "text",
+  timerStyle: "mini",
   colorfulMode: true,
   randomTheme: "off",
   timerColor: "black",
@@ -974,15 +974,22 @@ function changeFontSize(fontSize, nosave) {
   $("#words").removeClass("size2");
   $("#caret").removeClass("size2");
 
+  $("#miniTimerAndLiveWpm").removeClass("size125");
+  $("#miniTimerAndLiveWpm").removeClass("size15");
+  $("#miniTimerAndLiveWpm").removeClass("size2");
+
   if (fontSize == 125) {
     $("#words").addClass("size125");
     $("#caret").addClass("size125");
+    $("#miniTimerAndLiveWpm").addClass("size125");
   } else if (fontSize == 15) {
     $("#words").addClass("size15");
     $("#caret").addClass("size15");
+    $("#miniTimerAndLiveWpm").addClass("size15");
   } else if (fontSize == 2) {
     $("#words").addClass("size2");
     $("#caret").addClass("size2");
+    $("#miniTimerAndLiveWpm").addClass("size2");
   }
   if (!nosave) saveConfigToCookie();
   // restartTest();

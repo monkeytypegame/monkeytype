@@ -1454,6 +1454,57 @@ key {
         margin-right: 0.5rem;
       }
     }
+    #miniTimerAndLiveWpm {
+      height: 0;
+      margin-left: 0.37rem;
+      display: flex;
+      font-size: 1rem;
+      line-height: 1rem;
+      margin-top: -1.5rem;
+      position: absolute;
+      color: black;
+
+      .time {
+        margin-right: 2rem;
+      }
+
+      .wpm {
+        transition: 0.125s;
+      }
+
+      .time,
+      .wpm {
+        opacity: 0;
+      }
+
+      &.timerMain {
+        color: var(--main-color);
+      }
+
+      &.timerSub {
+        color: var(--sub-color);
+      }
+
+      &.timerText {
+        color: var(--text-color);
+      }
+
+      &.size125 {
+        margin-top: -1.75rem;
+        font-size: 1.25rem;
+        line-height: 1.25rem;
+      }
+      &.size15 {
+        margin-top: -2rem;
+        font-size: 1.5rem;
+        line-height: 1.5rem;
+      }
+      &.size2 {
+        margin-top: -2.5rem;
+        font-size: 2rem;
+        line-height: 2rem;
+      }
+    }
   }
 
   &.focus .pageTest {

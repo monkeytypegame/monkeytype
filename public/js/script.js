@@ -858,25 +858,38 @@ function showTimer() {
       },
       250
     );
+  } else if (config.timerStyle === "mini") {
+    $("#miniTimerAndLiveWpm .time")
+      .stop(true, true)
+      .removeClass("hidden")
+      .animate(
+        {
+          opacity: op,
+        },
+        250
+      );
   }
 }
 
 function hideTimer() {
-  if (config.timerStyle === "bar") {
-    $("#timerWrapper").stop(true, true).animate(
-      {
-        opacity: 0,
-      },
-      125
-    );
-  } else if (config.timerStyle === "text") {
-    $("#timerNumber").stop(true, true).animate(
-      {
-        opacity: 0,
-      },
-      125
-    );
-  }
+  $("#timerWrapper").stop(true, true).animate(
+    {
+      opacity: 0,
+    },
+    125
+  );
+  $("#miniTimerAndLiveWpm .time").stop(true, true).animate(
+    {
+      opacity: 0,
+    },
+    125
+  );
+  $("#timerNumber").stop(true, true).animate(
+    {
+      opacity: 0,
+    },
+    125
+  );
 }
 
 function changeTimerColor(color) {
@@ -892,18 +905,25 @@ function changeTimerColor(color) {
   $("#liveWpm").removeClass("timerText");
   $("#liveWpm").removeClass("timerMain");
 
+  $("#miniTimerAndLiveWpm").removeClass("timerSub");
+  $("#miniTimerAndLiveWpm").removeClass("timerText");
+  $("#miniTimerAndLiveWpm").removeClass("timerMain");
+
   if (color === "main") {
     $("#timer").addClass("timerMain");
     $("#timerNumber").addClass("timerMain");
     $("#liveWpm").addClass("timerMain");
+    $("#miniTimerAndLiveWpm").addClass("timerMain");
   } else if (color === "sub") {
     $("#timer").addClass("timerSub");
     $("#timerNumber").addClass("timerSub");
     $("#liveWpm").addClass("timerSub");
+    $("#miniTimerAndLiveWpm").addClass("timerSub");
   } else if (color === "text") {
     $("#timer").addClass("timerText");
     $("#timerNumber").addClass("timerText");
     $("#liveWpm").addClass("timerText");
+    $("#miniTimerAndLiveWpm").addClass("timerText");
   }
 }
 
@@ -959,6 +979,9 @@ function updateTimer() {
       let displayTime = secondsToString(config.time - time);
       $("#timerNumber").html(displayTime);
       // $("#timerNumber").html(config.time - time);
+    } else if (config.timerStyle === "mini") {
+      let displayTime = secondsToString(config.time - time);
+      $("#miniTimerAndLiveWpm .time").html(displayTime);
     }
   } else if (
     config.mode === "words" ||
@@ -1000,6 +1023,8 @@ function updateTimer() {
       }
       $("#timerNumber").html(`${inputHistory.length}/${outof}`);
       // $("#timerNumber").html(config.time - time);
+    } else if (config.timerStyle === "mini") {
+      $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}/${outof}`);
     }
   }
 }
@@ -2560,6 +2585,7 @@ function updateLiveWpm(wpm) {
     showLiveWpm();
   }
   // let wpmstring = wpm < 100 ? `&nbsp;${wpm}` : `${wpm}`;
+  document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = wpm;
   document.querySelector("#liveWpm").innerHTML = wpm;
   // $("#liveWpm").html(wpm);
 }
@@ -2567,8 +2593,11 @@ function updateLiveWpm(wpm) {
 function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
-  $("#liveWpm").css("opacity", config.timerOpacity);
-
+  if (config.timerStyle === "mini") {
+    $("#miniTimerAndLiveWpm .wpm").css("opacity", config.timerOpacity);
+  } else if (config.timerStyle === "text") {
+    $("#liveWpm").css("opacity", config.timerOpacity);
+  }
   // if (config.timerStyle === "text") {
   //   $("#timerNumber").css("opacity", config.timerOpacity);
   // }
@@ -2576,6 +2605,7 @@ function showLiveWpm() {
 
 function hideLiveWpm() {
   $("#liveWpm").css("opacity", 0);
+  $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
 }
 
 function swapElements(
