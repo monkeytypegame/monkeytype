@@ -276,15 +276,19 @@ async function fillSettingsPage() {
 }
 
 function refreshThemeButtons() {
-  let themesEl = $(".pageSettings .section.themes .buttons").empty();
+  let favThemesEl = $(
+    ".pageSettings .section.themes .favThemes.buttons"
+  ).empty();
+  let themesEl = $(".pageSettings .section.themes .allThemes.buttons").empty();
 
   getSortedThemesList().then((themes) => {
     //first show favourites
     if (config.favThemes.length > 0) {
+      favThemesEl.css({ paddingBottom: "1rem" });
       themes.forEach((theme) => {
         if (config.favThemes.includes(theme.name)) {
           let activeTheme = config.theme === theme.name ? "active" : "";
-          themesEl.append(
+          favThemesEl.append(
             `<div class="theme button" theme='${theme.name}' style="color:${
               theme.textColor
             };background:${theme.bgColor}">
@@ -294,6 +298,8 @@ function refreshThemeButtons() {
           );
         }
       });
+    } else {
+      favThemesEl.css({ paddingBottom: "0" });
     }
     //then the rest
     themes.forEach((theme) => {

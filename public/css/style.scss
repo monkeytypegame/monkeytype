@@ -2386,6 +2386,20 @@ key {
   }
 }
 
+@media only screen and (max-width: 1000px) {
+  #centerContent {
+    .pageSettings .section.themes .buttons,
+    .pageSettings .section.language .buttons,
+    .pageSettings .section.layout .buttons,
+    .pageSettings .section.keymapLayout .buttons,
+    .pageSettings .section.fontFamily .buttons,
+    .pageSettings .section.funbox .buttons,
+    .pageSettings .section.keymapStyle .buttons {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+}
+
 @media only screen and (max-width: 800px) {
   #centerContent {
     #top {
@@ -2424,7 +2438,7 @@ key {
       "text text"
       "buttons buttons";
 
-    .text {
+    & > .text {
       margin-bottom: 1rem;
     }
   }
@@ -2432,6 +2446,18 @@ key {
   #commandLine,
   #commandLineInput {
     width: 400px !important;
+  }
+
+  #centerContent {
+    .pageSettings .section.themes .buttons,
+    .pageSettings .section.language .buttons,
+    .pageSettings .section.layout .buttons,
+    .pageSettings .section.keymapLayout .buttons,
+    .pageSettings .section.fontFamily .buttons,
+    .pageSettings .section.funbox .buttons,
+    .pageSettings .section.keymapStyle .buttons {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 }
 
