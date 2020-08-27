@@ -2604,7 +2604,7 @@ function showLiveWpm() {
   if (!testActive) return;
   if (config.timerStyle === "mini") {
     $("#miniTimerAndLiveWpm .wpm").css("opacity", config.timerOpacity);
-  } else if (config.timerStyle === "text") {
+  } else {
     $("#liveWpm").css("opacity", config.timerOpacity);
   }
   // if (config.timerStyle === "text") {
