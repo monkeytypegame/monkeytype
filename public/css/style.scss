@@ -936,7 +936,7 @@ a:hover {
   gap: 0.5rem;
 
   .logo {
-    margin-bottom: -0.12rem;
+    margin-bottom: 0.6rem;
     white-space: nowrap;
 
     .top {
@@ -2457,6 +2457,9 @@ key {
       grid-template-areas:
         "logo config"
         "menu config";
+      .logo {
+        margin-bottom: 0;
+      }
     }
 
     #result .morestats {
