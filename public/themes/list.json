@@ -60,6 +60,11 @@
     "textColor": "#a5a096"
   },
   {
+    "name": "metropolis",
+    "bgColor": "#0f1f2c",
+    "textColor": "#56c3b7"
+  },
+  {
     "name": "laser",
     "bgColor": "#221b44",
     "textColor": "#b82356"
