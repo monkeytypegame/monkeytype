@@ -1031,6 +1031,17 @@ function updateTimer() {
       $("#timerNumber").html(`${inputHistory.length}/${outof}`);
       // $("#timerNumber").html(config.time - time);
     } else if (config.timerStyle === "mini") {
+      let outof = wordsList.length;
+      if (config.mode === "words") {
+        outof = config.words;
+      }
+      if (config.mode === "custom") {
+        if (customTextIsRandom) {
+          outof = customTextWordCount;
+        } else {
+          outof = customText.length;
+        }
+      }
       $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}/${outof}`);
     }
   }
