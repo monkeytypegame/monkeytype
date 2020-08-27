@@ -938,6 +938,7 @@ a:hover {
   .logo {
     margin-bottom: 0.6rem;
     white-space: nowrap;
+    user-select: none;
 
     .top {
       font-size: 0.65rem;
