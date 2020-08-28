@@ -353,5 +353,10 @@
     "name": "alpine",
     "bgColor": "#6c687f",
     "textColor": "#ffffff"
+  },
+  {
+    "name": "superuser",
+    "bgColor": "#262A33",
+    "textColor": "#43FFAF"
   }
 ]
