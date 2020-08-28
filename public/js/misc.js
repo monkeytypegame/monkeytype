@@ -117,20 +117,20 @@ function showNotification(text, time) {
   let noti = $(".notification");
   noti.text(text);
   noti.css("top", `-${noti.outerHeight()}px`);
-  noti.stop(true, true).animate(
+  noti.stop(true, false).animate(
     {
       top: "1rem",
     },
     250,
     "swing",
     () => {
-      noti.stop(true, true).animate(
+      noti.stop(true, false).animate(
         {
           opacity: 1,
         },
         time,
         () => {
-          noti.stop(true, true).animate(
+          noti.stop(true, false).animate(
             {
               top: `-${noti.outerHeight()}px`,
             },
