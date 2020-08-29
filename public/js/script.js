@@ -418,6 +418,9 @@ function initWords() {
         wordsBound = customText.length;
       }
     }
+    if (activeFunBox === "plus_one") {
+      wordsBound = 2;
+    }
     let wordset = language;
     if (config.mode == "custom") {
       wordset = customText;
@@ -610,9 +613,11 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
 }
 
 function addWord() {
+  let bound = 60;
+  if (activeFunBox === "plus_one") bound = 1;
   if (
     !config.showAllLines &&
-    (wordsList.length - inputHistory.length > 60 ||
+    (wordsList.length - inputHistory.length > bound ||
       (config.mode === "words" && wordsList.length >= config.words) ||
       (config.mode === "custom" &&
         customTextIsRandom &&
