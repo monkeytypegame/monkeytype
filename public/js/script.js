@@ -1891,7 +1891,7 @@ function showResult(difficultyFailed = false) {
                   if (e.data.needsToVerifyEmail === true) {
                     $("#result .stats .leaderboards").removeClass("hidden");
                     $("#result .stats .leaderboards .bottom").html(
-                      `please verify your email to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`
+                      `please verify your email<br>to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`
                     );
                   } else if (e.data.lbBanned) {
                     $("#result .stats .leaderboards").removeClass("hidden");
