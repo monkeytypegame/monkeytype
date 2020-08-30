@@ -109,7 +109,7 @@ settingsGroups.keymapLayout = new SettingsGroup(
   "keymapLayout",
   changeKeymapLayout
 );
-settingsGroups.quickTab = new SettingsGroup(
+settingsGroups.showKeyTips = new SettingsGroup(
   "showKeyTips",
   setKeyTips,
   null,
