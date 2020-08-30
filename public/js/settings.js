@@ -700,8 +700,8 @@ $(
   let $pickedColor = $(e.currentTarget).val();
 
   document.documentElement.style.setProperty($colorVar, $pickedColor);
-  $("#" + $colorVar).attr("value", $pickedColor);
-  $("[for=" + $colorVar + "]").text($pickedColor);
+  $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
+  $(".colorPicker [for=" + $colorVar + "]").text($pickedColor);
 });
 
 $(".pageSettings .saveCustomThemeButton").click((e) => {
@@ -714,6 +714,42 @@ $(".pageSettings .saveCustomThemeButton").click((e) => {
   );
   setCustomThemeColors(save);
   showNotification("Custom theme colors saved", 1000);
+});
+
+$(".pageSettings #loadCustomColorsFromPreset").click((e) => {
+  previewTheme(config.theme);
+  colorVars.forEach((e) => {
+    document.documentElement.style.setProperty(e, "");
+  });
+
+  setTimeout((fn) => {
+    refreshThemeColorObject();
+    colorVars.forEach((colorName) => {
+      let color;
+      if (colorName === "--bg-color") {
+        color = themeColors.bg;
+      } else if (colorName === "--main-color") {
+        color = themeColors.main;
+      } else if (colorName === "--sub-color") {
+        color = themeColors.sub;
+      } else if (colorName === "--caret-color") {
+        color = themeColors.caret;
+      } else if (colorName === "--text-color") {
+        color = themeColors.text;
+      } else if (colorName === "--error-color") {
+        color = themeColors.error;
+      } else if (colorName === "--error-extra-color") {
+        color = themeColors.errorExtra;
+      } else if (colorName === "--colorful-error-color") {
+        color = themeColors.colorfulError;
+      } else if (colorName === "--colorful-error-extra-color") {
+        color = themeColors.colorfulErrorExtra;
+      }
+      $(".colorPicker #" + colorName).attr("value", color);
+      $(".colorPicker #" + colorName).val(color);
+      $(".colorPicker [for=" + colorName + "]").text(color);
+    });
+  }, 250);
 });
 
 $(".pageSettings .sectionGroupTitle").click((e) => {

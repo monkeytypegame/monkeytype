@@ -2159,17 +2159,25 @@
                       id="--colorful-error-extra-color"
                     />
                   </span>
-                  <div
+                  <!-- <div
                     style="
-                      grid-column: 3/5;
                       display: grid;
-                      gap: 1rem;
+                      gap: 2rem;
                       grid-auto-flow: column;
+                      grid-column: 1/5;
                     "
+                  > -->
+                  <div
+                    class="button"
+                    id="loadCustomColorsFromPreset"
+                    style="grid-column: 1/3;"
                   >
-                    <div class="button" id="shareCustomThemeButton">share</div>
-                    <div class="button saveCustomThemeButton">save</div>
+                    load from preset
                   </div>
+
+                  <div class="button" id="shareCustomThemeButton">share</div>
+                  <div class="button saveCustomThemeButton">save</div>
+                  <!-- </div> -->
                 </div>
                 <div tabContent="preset" class="tabContent">
                   <div class="favThemes buttons"></div>
