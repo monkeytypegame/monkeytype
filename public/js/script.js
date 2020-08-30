@@ -3700,7 +3700,7 @@ $(document).keydown((event) => {
         }
       } else {
         if (config.confidenceMode === "max") return;
-        if (event["ctrlKey"]) {
+        if (event["ctrlKey"] || event["altKey"]) {
           currentInput = "";
         } else {
           currentInput = currentInput.substring(0, currentInput.length - 1);
