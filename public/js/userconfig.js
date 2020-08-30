@@ -690,9 +690,6 @@ function randomiseTheme() {
     randomList = config.favThemes;
   let randomtheme = randomList[Math.floor(Math.random() * randomList.length)];
   setTheme(randomtheme, true);
-  setTimeout(() => {
-    refreshThemeColorObject();
-  }, 125);
 }
 
 function setRandomTheme(val, nosave) {
