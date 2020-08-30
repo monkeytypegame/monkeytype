@@ -4077,18 +4077,20 @@ let wpmOverTimeChart = new Chart(ctx, {
       intersect: false,
       callbacks: {
         afterLabel: function (ti, data) {
-          $(".wordInputAfter").remove();
+          try {
+            $(".wordInputAfter").remove();
 
-          let wordsToHighlight =
-            keypressPerSecond[parseInt(ti.xLabel) - 1].words;
+            let wordsToHighlight =
+              keypressPerSecond[parseInt(ti.xLabel) - 1].words;
 
-          let unique = [...new Set(wordsToHighlight)];
-          unique.forEach((wordIndex) => {
-            let wordEl = $($("#words .word")[wordIndex]);
-            let input = wordEl.attr("input");
-            if (input != undefined)
-              wordEl.append(`<div class="wordInputAfter">${input}</div>`);
-          });
+            let unique = [...new Set(wordsToHighlight)];
+            unique.forEach((wordIndex) => {
+              let wordEl = $($("#words .word")[wordIndex]);
+              let input = wordEl.attr("input");
+              if (input != undefined)
+                wordEl.append(`<div class="wordInputAfter">${input}</div>`);
+            });
+          } catch (e) {}
         },
       },
     },
