@@ -2438,6 +2438,26 @@ key {
   }
 }
 
+.scrollToTopButton {
+  bottom: 2rem;
+  right: 2rem;
+  position: fixed;
+  font-size: 2rem;
+  width: 4rem;
+  height: 4rem;
+  text-align: center;
+  line-height: 4rem;
+  background: var(--bg-color);
+  border-radius: 99rem;
+  z-index: 99;
+  cursor: pointer;
+  color: var(--sub-color);
+  transition: 0.25s;
+  &:hover {
+    color: var(--main-color);
+  }
+}
+
 @media only screen and (max-width: 1000px) {
   #centerContent {
     .pageSettings .section.themes .buttons,

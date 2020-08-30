@@ -4017,6 +4017,10 @@ $(document).ready(() => {
     });
 });
 
+$(".scrollToTopButton").click((event) => {
+  window.scrollTo(0, 0);
+});
+
 let ctx = $("#wpmChart");
 let wpmOverTimeChart = new Chart(ctx, {
   type: "line",
