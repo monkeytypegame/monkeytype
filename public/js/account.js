@@ -154,6 +154,15 @@ function signUp() {
                 personalBests: {},
                 tags: [],
               };
+              if (notSignedInLastResult !== null) {
+                notSignedInLastResult.uid = usr.uid;
+                testCompleted({
+                  uid: usr.uid,
+                  obj: notSignedInLastResult,
+                });
+                dbSnapshot.results.push(notSignedInLastResult);
+                config.resultFilters = defaultAccountFilters;
+              }
               changePage("account");
             })
             .catch(function (error) {

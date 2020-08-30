@@ -36,6 +36,7 @@ let focusState = false;
 let activeFunBox = "none";
 let manualRestart = false;
 let bailout = false;
+let notSignedInLastResult = null;
 
 let themeColors = {
   bg: "#323437",
@@ -1947,6 +1948,7 @@ function showResult(difficultyFailed = false) {
         } catch (e) {
           console.log("Analytics unavailable");
         }
+        notSignedInLastResult = completedEvent;
 
         // showNotification("Sign in to save your result",3000);
       }
