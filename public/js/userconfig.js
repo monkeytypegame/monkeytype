@@ -169,6 +169,7 @@ function applyConfig(configObj) {
     setStopOnError(configObj.stopOnError, true);
     setFavThemes(configObj.favThemes, true);
     setRandomTheme(configObj.randomTheme, true);
+    setShowAllLines(configObj.showAllLines, true);
     // if (
     //   configObj.resultFilters !== null &&
     //   configObj.resultFilters !== undefined
@@ -332,8 +333,10 @@ function setShowAllLines(sal, nosave) {
     sal = false;
   }
   config.showAllLines = sal;
-  restartTest();
-  if (!nosave) saveConfigToCookie();
+  if (!nosave) {
+    saveConfigToCookie();
+    restartTest();
+  }
 }
 
 //quickend
