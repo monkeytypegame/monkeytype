@@ -201,6 +201,7 @@ function signOut() {
     .signOut()
     .then(function () {
       showNotification("Signed out", 2000);
+      hideAccountSettingsSection();
       updateAccountLoginButton();
       changePage("login");
       dbSnapshot = null;
@@ -301,8 +302,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         updateCommandsTagsList();
         loadActiveTagsFromCookie();
         updateResultEditTagsPanelButtons();
-        refreshTagsSettingsSection();
-        updateDiscordSettingsSection();
+        showAccountSettingsSection();
       })
       .catch((e) => {
         accountIconLoading(false);

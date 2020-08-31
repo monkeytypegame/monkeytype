@@ -418,6 +418,18 @@ function toggleFavouriteTheme(themename) {
   refreshThemeButtons();
 }
 
+function showAccountSettingsSection() {
+  $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
+  $(`.settingsGroup.account`).removeClass("hidden");
+  refreshTagsSettingsSection();
+  updateDiscordSettingsSection();
+}
+
+function hideAccountSettingsSection() {
+  $(`.sectionGroupTitle[group='account']`).addClass("hidden");
+  $(`.settingsGroup.account`).addClass("hidden");
+}
+
 function refreshTagsSettingsSection() {
   if (firebase.auth().currentUser !== null && dbSnapshot !== null) {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
