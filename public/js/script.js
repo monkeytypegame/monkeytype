@@ -763,7 +763,27 @@ function compareInput(showError) {
   let ret = "";
 
   for (let i = 0; i < input.length; i++) {
+    let charCorrect;
     if (currentWord[i] == input[i]) {
+      charCorrect = true;
+    } else {
+      charCorrect = false;
+    }
+
+    try {
+      if (config.language === "russian" && charCorrect === false) {
+        if (
+          (currentWord[i].toLowerCase() === "е" &&
+            input[i].toLowerCase() === "ё") ||
+          (currentWord[i].toLowerCase() === "ё" &&
+            input[i].toLowerCase() === "е")
+        ) {
+          charCorrect = true;
+        }
+      }
+    } catch (e) {}
+
+    if (charCorrect) {
       ret += '<letter class="correct">' + currentWord[i] + "</letter>";
       // $(letterElems[i]).removeClass('incorrect').addClass('correct');
     } else {
@@ -3524,14 +3544,33 @@ $(document).keypress(function (event) {
   }
   let thisCharCorrect;
 
+  let nextCharInWord = wordsList[currentWordIndex].substring(
+    currentInput.length,
+    currentInput.length + 1
+  );
+
   if (
-    wordsList[currentWordIndex].substring(
-      currentInput.length,
-      currentInput.length + 1
-    ) != event["key"]
+    config.language === "russian" &&
+    (event["key"].toLowerCase() == "e" || event["key"].toLowerCase() == "ё")
   ) {
+    if (
+      nextCharInWord.toLowerCase() == "e" ||
+      nextCharInWord.toLowerCase() == "ё"
+    ) {
+      thisCharCorrect = true;
+    } else {
+      thisCharCorrect = false;
+    }
+  } else {
+    if (nextCharInWord == event["key"]) {
+      thisCharCorrect = true;
+    } else {
+      thisCharCorrect = false;
+    }
+  }
+
+  if (!thisCharCorrect) {
     accuracyStats.incorrect++;
-    // currentErrorCount++;
     currentError.count++;
     currentError.words.push(currentWordIndex);
     thisCharCorrect = false;
