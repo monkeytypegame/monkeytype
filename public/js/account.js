@@ -1820,15 +1820,57 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
   }).then((r) => {
     hideBackgroundLoader();
     if (r.data.resultCode === 1) {
-      showNotification(
-        "Tags updated. Results will update when you change filters.",
-        3000
-      );
+      showNotification("Tags updated.", 3000);
       dbSnapshot.results.forEach((result) => {
         if (result.id === resultid) {
           result.tags = newtags;
         }
       });
+
+      let tagNames = "";
+
+      if (newtags.length > 0) {
+        newtags.forEach((tag) => {
+          dbSnapshot.tags.forEach((snaptag) => {
+            if (tag === snaptag.id) {
+              tagNames += snaptag.name + ", ";
+            }
+          });
+        });
+        tagNames = tagNames.substring(0, tagNames.length - 2);
+      }
+
+      let restags;
+      if (newtags === undefined) {
+        restags = "[]";
+      } else {
+        restags = JSON.stringify(newtags);
+      }
+
+      $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
+        "tags",
+        restags
+      );
+      if (newtags.length > 0) {
+        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).css(
+          "opacity",
+          1
+        );
+        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
+          "aria-label",
+          tagNames
+        );
+      } else {
+        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).css(
+          "opacity",
+          0.25
+        );
+        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
+          "aria-label",
+          "no tags"
+        );
+      }
+
       // refreshAccountPage();
     } else {
       showNotification("Error updating tags", 3000);
