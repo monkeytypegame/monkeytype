@@ -243,7 +243,9 @@ async function fillSettingsPage() {
     funboxModes.forEach((funbox) => {
       if (funbox.name === "mirror") {
         funboxEl.append(
-          `<div class="funbox button" funbox='${funbox.name}' type="${
+          `<div class="funbox button" funbox='${funbox.name}' aria-label="${
+            funbox.info
+          }" data-balloon-pos="up" data-balloon-length="fit" type="${
             funbox.type
           }" style="transform:scaleX(-1);">${funbox.name.replace(
             /_/g,
@@ -252,7 +254,9 @@ async function fillSettingsPage() {
         );
       } else {
         funboxEl.append(
-          `<div class="funbox button" funbox='${funbox.name}' type="${
+          `<div class="funbox button" funbox='${funbox.name}' aria-label="${
+            funbox.info
+          }" data-balloon-pos="up" data-balloon-length="fit" type="${
             funbox.type
           }">${funbox.name.replace(/_/g, " ")}</div>`
         );
