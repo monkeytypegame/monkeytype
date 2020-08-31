@@ -3636,7 +3636,11 @@ $(document).keydown((event) => {
 
   //tab
   if (event["keyCode"] == 9) {
-    if (config.quickTab && !$(".pageLogin").hasClass("active")) {
+    if (
+      !event.ctrlKey &&
+      config.quickTab &&
+      !$(".pageLogin").hasClass("active")
+    ) {
       event.preventDefault();
       if ($(".pageTest").hasClass("active")) {
         if (
