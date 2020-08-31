@@ -1820,13 +1820,16 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
   }).then((r) => {
     hideBackgroundLoader();
     if (r.data.resultCode === 1) {
-      showNotification("Tags updated", 1000);
+      showNotification(
+        "Tags updated. Results will update when you change filters.",
+        3000
+      );
       dbSnapshot.results.forEach((result) => {
         if (result.id === resultid) {
           result.tags = newtags;
         }
       });
-      refreshAccountPage();
+      // refreshAccountPage();
     } else {
       showNotification("Error updating tags", 3000);
     }
