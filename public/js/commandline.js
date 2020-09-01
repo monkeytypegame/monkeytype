@@ -419,7 +419,7 @@ let commandsSoundOnClick = {
         setPlaySoundOnClick("1");
       },
       hover: () => {
-        clickSounds["1"][0].play();
+        clickSounds["1"][0].sounds[0].play();
       },
     },
     {
@@ -429,7 +429,27 @@ let commandsSoundOnClick = {
         setPlaySoundOnClick("2");
       },
       hover: () => {
-        clickSounds["2"][0].play();
+        clickSounds["2"][0].sounds[0].play();
+      },
+    },
+    {
+      id: "setSoundOnClick3",
+      display: "3",
+      exec: () => {
+        setPlaySoundOnClick("3");
+      },
+      hover: () => {
+        clickSounds["3"][0].sounds[0].play();
+      },
+    },
+    {
+      id: "setSoundOnClick4",
+      display: "4",
+      exec: () => {
+        setPlaySoundOnClick("4");
+      },
+      hover: () => {
+        clickSounds["4"][0].sounds[0].play();
       },
     },
   ],

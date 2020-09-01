@@ -115,6 +115,73 @@ let clickSounds = {
       counter: 0,
     },
   ],
+  "3": [
+    {
+      sounds: [
+        new Audio("../sound/click3/click3_1.wav"),
+        new Audio("../sound/click3/click3_1.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click3/click3_2.wav"),
+        new Audio("../sound/click3/click3_2.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click3/click3_3.wav"),
+        new Audio("../sound/click3/click3_3.wav"),
+      ],
+      counter: 0,
+    },
+  ],
+  "4": [
+    {
+      sounds: [
+        new Audio("../sound/click4/click4_1.wav"),
+        new Audio("../sound/click4/click4_1.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click4/click4_2.wav"),
+        new Audio("../sound/click4/click4_2.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click4/click4_3.wav"),
+        new Audio("../sound/click4/click4_3.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click4/click4_4.wav"),
+        new Audio("../sound/click4/click4_4.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click4/click4_5.wav"),
+        new Audio("../sound/click4/click4_5.wav"),
+      ],
+      counter: 0,
+    },
+    {
+      sounds: [
+        new Audio("../sound/click4/click4_6.wav"),
+        new Audio("../sound/click4/click4_6.wav"),
+      ],
+      counter: 0,
+    },
+  ],
 };
 
 let customText = "The quick brown fox jumps over the lazy dog".split(" ");
@@ -1492,6 +1559,7 @@ function showResult(difficultyFailed = false) {
   clearIntervals();
   let testtime = stats.time;
   let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+  let afkSecondsPercent = roundTo2((afkseconds / testtime) * 100);
 
   if (config.alwaysShowDecimalPlaces) {
     $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm));
@@ -1501,7 +1569,10 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .wpm .bottom").removeAttr("aria-label");
     $("#result .stats .raw .bottom").removeAttr("aria-label");
     $("#result .stats .acc .bottom").removeAttr("aria-label");
-    $("#result .stats .time .bottom").attr("aria-label", `${afkseconds}s afk`);
+    $("#result .stats .time .bottom").attr(
+      "aria-label",
+      `${afkseconds}s afk ${afkSecondsPercent}%`
+    );
   } else {
     $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
     $("#result .stats .wpm .bottom").attr("aria-label", stats.wpm);
@@ -1512,7 +1583,7 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .time .bottom").text(Math.round(testtime) + "s");
     $("#result .stats .time .bottom").attr(
       "aria-label",
-      `${roundTo2(testtime)}s (${afkseconds}s afk)`
+      `${roundTo2(testtime)}s (${afkseconds}s afk ${afkSecondsPercent}%)`
     );
   }
 
@@ -1816,7 +1887,7 @@ function showResult(difficultyFailed = false) {
                   );
                 } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                   completedEvent.id = e.data.createdId;
-                  if (dbSnapshot.results !== undefined)
+                  if (dbSnapshot !== null && dbSnapshot.results !== undefined)
                     dbSnapshot.results.unshift(completedEvent);
                   try {
                     firebase
@@ -3260,7 +3331,9 @@ function hideCustomMode2Popup() {
 function playClickSound() {
   if (config.playSoundOnClick === "off") return;
 
-  let rand = Math.floor(Math.random() * 3);
+  let rand = Math.floor(
+    Math.random() * clickSounds[config.playSoundOnClick].length
+  );
   let randomSound = clickSounds[config.playSoundOnClick][rand];
   randomSound.counter++;
   if (randomSound.counter === 2) randomSound.counter = 0;
