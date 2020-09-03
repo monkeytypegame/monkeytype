@@ -79,6 +79,14 @@ let commands = {
       },
     },
     {
+      id: "toggleNumbers",
+      display: "Toggle numbers",
+      exec: () => {
+        toggleNumbers();
+        restartTest();
+      },
+    },
+    {
       id: "toggleSmoothCaret",
       display: "Toggle smooth caret",
       exec: () => {
