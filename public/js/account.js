@@ -1004,6 +1004,12 @@ function showActiveFilters() {
         text-align: center;
         display: inline-block;
         letter-spacing: -.1rem;">!?</span>`;
+      } else if (group == "numbers") {
+        chartString += `<span class="numbers" style="font-weight: 900;
+          width: 1.25rem;
+          text-align: center;
+          display: inline-block;
+          letter-spacing: -.1rem;">15</span>`;
       } else if (group == "words") {
         chartString += `<i class="fas fa-fw fa-font"></i>`;
       } else if (group == "time") {
@@ -1247,6 +1253,10 @@ function loadMoreLines() {
 
     if (result.punctuation) {
       icons += `<span aria-label="punctuation" data-balloon-pos="up" style="font-weight:900">!?</span>`;
+    }
+
+    if (result.numbers) {
+      icons += `<span aria-label="numbers" data-balloon-pos="up" style="font-weight:900">15</span>`;
     }
 
     if (result.blindMode) {
