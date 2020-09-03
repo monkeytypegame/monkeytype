@@ -539,7 +539,9 @@ function initWords() {
         randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
       }
       if (config.numbers && config.mode != "custom") {
-        addNumber(wordsList);
+        if (Math.random() < 0.1) {
+          randomWord = Math.floor(Math.random() * 1000).toString();
+        }
       }
 
       wordsList.push(randomWord);
@@ -554,7 +556,7 @@ function initWords() {
   showWords();
 }
 
-function setToggleSettings(state){
+function setToggleSettings(state) {
   setPunctuation(state);
   setNumbers(state);
 }
@@ -635,12 +637,6 @@ function emulateLayout(event) {
   event.key = newKey;
   event.code = "Key" + newKey.toUpperCase();
   return event;
-}
-
-function addNumber(wordlist){
-  if(Math.random() < 0.1){
-    wordlist.push(Math.floor(Math.random() * 1000).toString());
-  }
 }
 
 function punctuateWord(previousWord, currentWord, index, maxindex) {
@@ -759,7 +755,9 @@ function addWord() {
     randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0);
   }
   if (config.numbers && config.mode != "custom") {
-    addNumber(wordsList);
+    if (Math.random() < 0.1) {
+      randomWord = Math.floor(Math.random() * 1000).toString();
+    }
   }
 
   wordsList.push(randomWord);
