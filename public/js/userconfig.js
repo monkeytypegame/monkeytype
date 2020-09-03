@@ -579,7 +579,7 @@ function toggleQuickTabMode() {
 
 //numbers
 function setNumbers(numb, nosave) {
-  config.number = numb;
+  config.numbers = numb;
   if (!config.numbers) {
     $("#top .config .numbersMode .text-button").removeClass("active");
   } else {
