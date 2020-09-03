@@ -299,7 +299,7 @@ function checkIfPB(uid, obj) {
               });
           });
       }
-      // //check mode, mode2, punctuation,numbers, language and difficulty
+      // //check mode, mode2, punctuation, language and difficulty
 
       let toUpdate = false;
       let found = false;
@@ -332,7 +332,7 @@ function checkIfPB(uid, obj) {
           pbs[obj.mode][obj.mode2].push({
             language: obj.language,
             difficulty: obj.difficulty,
-            numbers: obj.numbers,
+            punctuation: obj.punctuation,
             wpm: obj.wpm,
             acc: obj.acc,
             raw: obj.rawWpm,
