@@ -525,18 +525,21 @@ function initWords() {
       } else if (activeFunBox === "gibberish") {
         randomWord = getGibberish();
       } else if (activeFunBox === "58008") {
-        setPunctuation(false);
+        setToggleSettings(false);
         randomWord = getNumbers();
       } else if (activeFunBox === "specials") {
-        setPunctuation(false);
+        setToggleSettings(false);
         randomWord = getSpecials();
       } else if (activeFunBox === "ascii") {
-        setPunctuation(false);
+        setToggleSettings(false);
         randomWord = getASCII();
       }
 
       if (config.punctuation && config.mode != "custom") {
         randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
+      }
+      if (config.numbers && config.mode != "custom") {
+        addNumber(wordsList);
       }
 
       wordsList.push(randomWord);
@@ -549,6 +552,11 @@ function initWords() {
     }
   }
   showWords();
+}
+
+function setToggleSettings(state){
+  setPunctuation(state);
+  setNumbers(state);
 }
 
 function emulateLayout(event) {
@@ -627,6 +635,12 @@ function emulateLayout(event) {
   event.key = newKey;
   event.code = "Key" + newKey.toUpperCase();
   return event;
+}
+
+function addNumber(wordlist){
+  if(Math.random() < 0.1){
+    wordlist.push(Math.floor(Math.random() * 1000).toString());
+  }
 }
 
 function punctuateWord(previousWord, currentWord, index, maxindex) {
@@ -743,6 +757,9 @@ function addWord() {
 
   if (config.punctuation && config.mode != "custom") {
     randomWord = punctuateWord(previousWord, randomWord, wordsList.length, 0);
+  }
+  if (config.numbers && config.mode != "custom") {
+    addNumber(wordsList);
   }
 
   wordsList.push(randomWord);
@@ -1764,6 +1781,7 @@ function showResult(difficultyFailed = false) {
       mode: config.mode,
       mode2: mode2,
       punctuation: config.punctuation,
+      numbers: config.numbers,
       timestamp: Date.now(),
       language: config.language,
       restartCount: restartCount,
@@ -2078,6 +2096,9 @@ function showResult(difficultyFailed = false) {
   }
   if (config.punctuation) {
     testType += "<br>punctuation";
+  }
+  if (config.numbers) {
+    testType += "<br>numbers";
   }
   if (config.blindMode) {
     testType += "<br>blind";
@@ -2615,11 +2636,13 @@ function changeMode(mode, nosave) {
     $("#top .config .time").removeClass("hidden");
     $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("hidden");
+    $("#top .config .numbersMode").removeClass("hidden");
   } else if (config.mode == "words") {
     $("#top .config .wordCount").removeClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("hidden");
+    $("#top .config .numbersMode").removeClass("hidden");
   } else if (config.mode == "custom") {
     if (
       activeFunBox === "58008" ||
@@ -2633,12 +2656,14 @@ function changeMode(mode, nosave) {
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").removeClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
+    $("#top .config .numbersMode").addClass("hidden");
   } else if (config.mode == "quote") {
-    setPunctuation(false);
+    setToggleSettings(false);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
+    $("#top .config .numbersMode").addClass("hidden");
     $("#result .stats .source").removeClass("hidden");
     changeLanguage("english");
   }
@@ -3459,6 +3484,13 @@ $(document).on("click", "#top .config .customText .text-button", (e) => {
 
 $(document).on("click", "#top .config .punctuationMode .text-button", (e) => {
   togglePunctuation();
+  manualRestart = true;
+
+  restartTest();
+});
+
+$(document).on("click", "#top .config .numbersMode .text-button", (e) => {
+  toggleNumbers();
   manualRestart = true;
 
   restartTest();

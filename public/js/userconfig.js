@@ -135,6 +135,7 @@ function applyConfig(configObj) {
     setCustomTheme(configObj.customTheme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
     setQuickTabMode(configObj.quickTab, true);
+    setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
     setKeyTips(configObj.showKeyTips, true);
     changeTimeConfig(configObj.time, true);
@@ -573,6 +574,27 @@ function toggleQuickTabMode() {
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
       <key>esc</key> - command line`);
   }
+  saveConfigToCookie();
+}
+
+//numbers
+function setNumbers(numb, nosave) {
+  config.number = numb;
+  if (!config.numbers) {
+    $("#top .config .numbersMode .text-button").removeClass("active");
+  } else {
+    $("#top .config .numbersMode .text-button").addClass("active");
+  }
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleNumbers() {
+  if (config.numbers) {
+    $("#top .config .numbersMode .text-button").removeClass("active");
+  } else {
+    $("#top .config .numbersMode .text-button").addClass("active");
+  }
+  config.numbers = !config.numbers;
   saveConfigToCookie();
 }
 

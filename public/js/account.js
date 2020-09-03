@@ -1182,6 +1182,11 @@ $(".pageAccount #currentConfigFilter").click((e) => {
   } else {
     config.resultFilters.punctuation.off = true;
   }
+  if (config.numbers) {
+    config.resultFilters.numbers.on = true;
+  } else {
+    config.resultFilters.numbers.off = true;
+  }
   config.resultFilters.language[config.language] = true;
   config.resultFilters.funbox[activeFunBox] = true;
   config.resultFilters.tags.none = true;
@@ -1419,6 +1424,12 @@ function refreshAccountPage() {
       if (!config.resultFilters.punctuation[puncfilter]) return;
       // if (!activeFilters.includes(puncfilter)) return;
 
+      let numfilter = "off";
+      if (result.numbers) {
+        numfilter = "on";
+      }
+      if (!config.resultFilters.numbers[numfilter]) return;
+
       if (result.funbox === "none" || result.funbox === undefined) {
         // if (!activeFilters.includes("funbox_none")) return;
         if (!config.resultFilters.funbox.none) return;
@@ -1548,8 +1559,9 @@ function refreshAccountPage() {
 
       if (result.wpm > topWpm) {
         let puncsctring = result.punctuation ? ",<br>with punctuation" : "";
+        let numbsctring = result.numbers ?  ",<br> "+(result.punctuation ? "&" : "" )+"with numbers" : "";
         topWpm = result.wpm;
-        topMode = result.mode + " " + result.mode2 + puncsctring;
+        topMode = result.mode + " " + result.mode2 + puncsctring + numbsctring;
       }
 
       totalWpm += result.wpm;
