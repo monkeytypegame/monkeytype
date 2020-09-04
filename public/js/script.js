@@ -1092,7 +1092,7 @@ function updateTimer() {
       //   }
       // }
       let displayTime = secondsToString(config.time - time);
-      $("#timerNumber").html(displayTime);
+      $("#timerNumber").html("<div>"+displayTime+"</div>");
       // $("#timerNumber").html(config.time - time);
     } else if (config.timerStyle === "mini") {
       let displayTime = secondsToString(config.time - time);
@@ -1136,7 +1136,7 @@ function updateTimer() {
           outof = customText.length;
         }
       }
-      $("#timerNumber").html(`${inputHistory.length}/${outof}`);
+      $("#timerNumber").html("<div>"+`${inputHistory.length}/${outof}`+"</div>");
       // $("#timerNumber").html(config.time - time);
     } else if (config.timerStyle === "mini") {
       let outof = wordsList.length;

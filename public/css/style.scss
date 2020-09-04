@@ -718,6 +718,11 @@ a:hover {
 }
 
 #timerNumber {
+  width: 0;
+  height: 0;
+  margin: 0 auto;
+  display: grid;
+  justify-content: center;
   bottom: 6rem;
   transition: none;
 }
