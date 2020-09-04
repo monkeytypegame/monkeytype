@@ -347,11 +347,11 @@ function verifyUsername() {
 
   $(".nameChangeMessage").click((e) => {
     alert(`Im currently preparing the system to be ready for leaderboards and other awesome features - it looks like you need to change your display name.
-
-    It either contains special characters, or your display name is the same as someone elses and your account was made later.
-
-    Sorry for this inconvenience.
-    `);
+        
+        It either contains special characters, or your display name is the same as someone elses and your account was made later.
+        
+        Sorry for this inconvenience.
+        `);
     let newName = prompt(
       "Please provide a new username - you can use lowercase and uppercase characters, numbers and one of these special characters ( . _ - ). The new name cannot be longer than 12 characters.",
       firebase.auth().currentUser.displayName
@@ -4068,14 +4068,9 @@ $(document).keydown((event) => {
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
   $("head title").text("Monkey Dev");
-  $("body").append(`
-<div class="devIndicator tr">
-  DEV
-</div>
-<div class="devIndicator bl">
-  DEV
-</div>
-`);
+  $("body").append(
+    `<div class="devIndicator tr">DEV</div><div class="devIndicator bl">DEV</div>`
+  );
 }
 
 if (window.location.hostname === "localhost") {
@@ -4085,12 +4080,9 @@ if (window.location.hostname === "localhost") {
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   firebase.functions().useFunctionsEmulator("http://localhost:5001");
-  $("body").append(`<div class="devIndicator tl">
-  local
-</div>
-<div class="devIndicator br">
-  local
-</div>`);
+  $("body").append(
+    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
+  );
 }
 
 loadConfigFromCookie();
@@ -4137,6 +4129,17 @@ $(document).ready(() => {
 
 $(".scrollToTopButton").click((event) => {
   window.scrollTo(0, 0);
+});
+
+$(".pageTest #copyWordsListButton").click(async (event) => {
+  try {
+    await navigator.clipboard.writeText(
+      wordsList.slice(0, inputHistory.length).join(" ")
+    );
+    showNotification("Copied to clipboard", 1000);
+  } catch (e) {
+    showNotification("Could not copy to clipboard: " + e, 5000);
+  }
 });
 
 let ctx = $("#wpmChart");

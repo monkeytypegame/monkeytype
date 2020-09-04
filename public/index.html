@@ -973,7 +973,18 @@
             <div class="loginTip">Sign in to save your results</div>
           </div>
           <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
-          <div id="wordsTitle">input history</div>
+          <div id="wordsTitle">
+            input history
+            <span
+              id="copyWordsListButton"
+              class="icon-button"
+              aria-label="Copy words list"
+              data-balloon-pos="up"
+              style="display: inline-block;"
+            >
+              <i class="fas fa-copy"></i>
+            </span>
+          </div>
           <div id="timerNumber">60</div>
           <div id="miniTimerAndLiveWpm">
             <div class="time hidden">1:00</div>
@@ -1199,7 +1210,7 @@
               </div>
               <div
                 id="showWordHistoryButton"
-                aria-label="Show words history"
+                aria-label="Toggle words history"
                 data-balloon-pos="down"
                 tabindex="0"
                 onclick="this.blur();"

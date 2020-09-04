@@ -2430,6 +2430,9 @@ key {
   border-radius: var(--roundness);
   cursor: pointer;
 
+  &:hover {
+    color: var(--main-color);
+  }
   &:focus {
     background: var(--sub-color);
     color: var(--main-color);
