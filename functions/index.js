@@ -488,7 +488,81 @@ async function incrementTestCounter(uid) {
   }
 }
 
-exports.testCompleted = functions.https.onRequest(async (request, response) => {
+async function incrementStartedTestCounter(uid, num) {
+  let userDoc = await db.collection("users").doc(uid).get();
+  let userData = userDoc.data();
+  if (userData.startedTests === undefined) {
+    let results = await db.collection(`users/${uid}/results`).get();
+    let count = 0;
+    results.docs.forEach((result) => {
+      try{
+        let rc = result.data().restartCount;
+        if (rc === undefined) {
+          rc = 0;
+        }
+
+        count += parseInt(rc);
+      }catch(e){}
+    });
+    count += results.docs.length;
+    db.collection("users")
+      .doc(uid)
+      .update({
+        startedTests: admin.firestore.FieldValue.increment(count),
+      });
+    db.collection("public")
+      .doc("stats")
+      .update({
+        startedTests: admin.firestore.FieldValue.increment(count),
+      });
+  } else {
+    db.collection("users")
+      .doc(uid)
+      .update({ startedTests: admin.firestore.FieldValue.increment(num) });
+    db.collection("public")
+      .doc("stats")
+      .update({ startedTests: admin.firestore.FieldValue.increment(num) });
+  }
+}
+
+async function incrementTimeSpentTyping(uid, res) {
+  let userDoc = await db.collection("users").doc(uid).get();
+  let userData = userDoc.data();
+  if (userData.timeTyping === undefined) {
+    let results = await db.collection(`users/${uid}/results`).get();
+    let timeSum = 0;
+    results.docs.forEach((result) => {
+      try{
+      let ts = result.data().testDuration;
+      let its = result.data().incompleteTestSeconds;
+      let s1 = ts == undefined ? 0 : ts;
+      let s2 = its == undefined ? 0 : its;
+
+        timeSum += (parseFloat(s1) + parseFloat(s2));
+      }catch(e){}
+    });
+    db.collection("users")
+      .doc(uid)
+      .update({
+        timeTyping: admin.firestore.FieldValue.increment(timeSum),
+      });
+    db.collection("public")
+      .doc("stats")
+      .update({
+        timeTyping: admin.firestore.FieldValue.increment(timeSum),
+      });
+  } else {
+    db.collection("users")
+      .doc(uid)
+      .update({ timeTyping: admin.firestore.FieldValue.increment(res.testDuration + res.incompleteTestSeconds) });
+    db.collection("public")
+      .doc("stats")
+      .update({ timeTyping: admin.firestore.FieldValue.increment(res.testDuration + res.incompleteTestSeconds) });
+  }
+}
+
+
+exports.testCompleted = functions.runWith({ timeoutSeconds: 540, memory: "2GB" }).https.onRequest(async (request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
   if (request.method === "OPTIONS") {
     // Send response to OPTIONS requests
@@ -680,6 +754,8 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
                 // console.log(values);
 
                 incrementTestCounter(request.uid);
+                incrementStartedTestCounter(request.uid, obj.restartCount + 1);
+                incrementTimeSpentTyping(request.uid, obj);
 
                 let usr =
                   userdata.discordId !== undefined
