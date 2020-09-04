@@ -19,6 +19,7 @@ let defaultConfig = {
   smoothCaret: true,
   quickTab: false,
   punctuation: false,
+  numbers: false,
   words: 50,
   time: 30,
   mode: "time",

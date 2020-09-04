@@ -128,7 +128,6 @@ async function db_getUserHighestWpm(
         result.mode == mode &&
         result.mode2 == mode2 &&
         result.punctuation == punctuation &&
-        result.numbers == numbers &&
         result.language == language &&
         result.difficulty == difficulty
       ) {
