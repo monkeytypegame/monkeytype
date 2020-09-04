@@ -825,11 +825,27 @@
         </div>
 
         <div class="config">
-          <div class="group punctuationMode">
-            <!--           <div class="title">time</div> -->
-            <div class="buttons">
-              <div class="text-button toggleButton" tabindex="2">
-                punctuation
+          <div
+            style="
+              display: grid;
+              grid-auto-flow: column;
+              margin-bottom: -0.11rem;
+            "
+          >
+            <div class="group punctuationMode">
+              <!--           <div class="title">time</div> -->
+              <div class="buttons">
+                <div class="text-button toggleButton" tabindex="2">
+                  punctuation
+                </div>
+              </div>
+            </div>
+            <div class="group numbersMode">
+              <!--           <div class="title">time</div> -->
+              <div class="buttons">
+                <div class="text-button toggleButton" tabindex="2">
+                  numbers
+                </div>
               </div>
             </div>
           </div>
@@ -2337,11 +2353,25 @@
               >
                 set filters to current settings
               </div>
-              <div class="buttonsAndTitle">
+              <div class="buttonsAndTitle" style="grid-column: 1/3;">
                 <div class="title">filters</div>
                 <div class="buttons">
                   <div class="button allFilters">all</div>
                   <div class="button noFilters">none</div>
+                </div>
+              </div>
+              <div class="buttonsAndTitle">
+                <div class="title">punctuation</div>
+                <div class="buttons filterGroup" group="punctuation">
+                  <div class="button" filter="on">on</div>
+                  <div class="button" filter="off">off</div>
+                </div>
+              </div>
+              <div class="buttonsAndTitle">
+                <div class="title">numbers</div>
+                <div class="buttons filterGroup" group="numbers">
+                  <div class="button" filter="on">on</div>
+                  <div class="button" filter="off">off</div>
                 </div>
               </div>
               <div class="buttonsAndTitle">
@@ -2359,13 +2389,6 @@
                   <div class="button" filter="time">time</div>
                   <div class="button" filter="quote">quote</div>
                   <div class="button" filter="custom">custom</div>
-                </div>
-              </div>
-              <div class="buttonsAndTitle">
-                <div class="title">punctuation</div>
-                <div class="buttons filterGroup" group="punctuation">
-                  <div class="button" filter="on">on</div>
-                  <div class="button" filter="off">off</div>
                 </div>
               </div>
               <div class="buttonsAndTitle">

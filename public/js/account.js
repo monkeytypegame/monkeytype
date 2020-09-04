@@ -755,6 +755,10 @@ let defaultAccountFilters = {
     on: true,
     off: true,
   },
+  numbers: {
+    on: true,
+    off: true,
+  },
   date: {
     last_day: false,
     last_week: false,
@@ -1000,6 +1004,12 @@ function showActiveFilters() {
         text-align: center;
         display: inline-block;
         letter-spacing: -.1rem;">!?</span>`;
+      } else if (group == "numbers") {
+        chartString += `<span class="numbers" style="font-weight: 900;
+          width: 1.25rem;
+          text-align: center;
+          display: inline-block;
+          letter-spacing: -.1rem;">15</span>`;
       } else if (group == "words") {
         chartString += `<i class="fas fa-fw fa-font"></i>`;
       } else if (group == "time") {
@@ -1182,6 +1192,11 @@ $(".pageAccount #currentConfigFilter").click((e) => {
   } else {
     config.resultFilters.punctuation.off = true;
   }
+  if (config.numbers) {
+    config.resultFilters.numbers.on = true;
+  } else {
+    config.resultFilters.numbers.off = true;
+  }
   config.resultFilters.language[config.language] = true;
   config.resultFilters.funbox[activeFunBox] = true;
   config.resultFilters.tags.none = true;
@@ -1238,6 +1253,10 @@ function loadMoreLines() {
 
     if (result.punctuation) {
       icons += `<span aria-label="punctuation" data-balloon-pos="up" style="font-weight:900">!?</span>`;
+    }
+
+    if (result.numbers) {
+      icons += `<span aria-label="numbers" data-balloon-pos="up" style="font-weight:900">15</span>`;
     }
 
     if (result.blindMode) {
@@ -1384,101 +1403,116 @@ function refreshAccountPage() {
 
       // console.log(result);
       //apply filters
-      let resdiff = result.difficulty;
-      if (resdiff == undefined) {
-        resdiff = "normal";
-      }
-      // if (!activeFilters.includes("difficulty_" + resdiff)) return;
-      if (!config.resultFilters.difficulty[resdiff]) return;
-      // if (!activeFilters.includes("mode_" + result.mode)) return;
-      if (!config.resultFilters.mode[result.mode]) return;
-
-      if (result.mode == "time") {
-        let timefilter = "custom";
-        if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
-          timefilter = result.mode2;
+      try {
+        let resdiff = result.difficulty;
+        if (resdiff == undefined) {
+          resdiff = "normal";
         }
-        // if (!activeFilters.includes(timefilter)) return;
-        if (!config.resultFilters.time[timefilter]) return;
-      } else if (result.mode == "words") {
-        let wordfilter = "custom";
-        if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
-          wordfilter = result.mode2;
-        }
-        // if (!activeFilters.includes(wordfilter)) return;
-        if (!config.resultFilters.words[wordfilter]) return;
-      }
+        // if (!activeFilters.includes("difficulty_" + resdiff)) return;
+        if (!config.resultFilters.difficulty[resdiff]) return;
+        // if (!activeFilters.includes("mode_" + result.mode)) return;
+        if (!config.resultFilters.mode[result.mode]) return;
 
-      // if (!activeFilters.includes("lang_" + result.language)) return;
-      if (!config.resultFilters.language[result.language]) return;
-
-      let puncfilter = "off";
-      if (result.punctuation) {
-        puncfilter = "on";
-      }
-      if (!config.resultFilters.punctuation[puncfilter]) return;
-      // if (!activeFilters.includes(puncfilter)) return;
-
-      if (result.funbox === "none" || result.funbox === undefined) {
-        // if (!activeFilters.includes("funbox_none")) return;
-        if (!config.resultFilters.funbox.none) return;
-      } else {
-        // if (!activeFilters.includes("funbox_" + result.funbox)) return;
-        if (!config.resultFilters.funbox[result.funbox]) return;
-      }
-
-      let tagHide = true;
-
-      if (result.tags === undefined || result.tags.length === 0) {
-        //no tags, show when no tag is enabled
-        if (dbSnapshot.tags.length > 0) {
-          // if (activeFilters.includes("tag_notag")) tagHide = false;
-          if (config.resultFilters.tags.none) tagHide = false;
-        } else {
-          tagHide = false;
-        }
-      } else {
-        //tags exist
-        let validTags = dbSnapshot.tags.map((t) => t.id);
-        result.tags.forEach((tag) => {
-          //check if i even need to check tags anymore
-          if (!tagHide) return;
-          //check if tag is valid
-          if (validTags.includes(tag)) {
-            //tag valid, check if filter is on
-            // if (activeFilters.includes("tag_" + tag)) tagHide = false;
-            if (config.resultFilters.tags[tag]) tagHide = false;
+        if (result.mode == "time") {
+          let timefilter = "custom";
+          if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
+            timefilter = result.mode2;
           }
-        });
+          // if (!activeFilters.includes(timefilter)) return;
+          if (!config.resultFilters.time[timefilter]) return;
+        } else if (result.mode == "words") {
+          let wordfilter = "custom";
+          if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
+            wordfilter = result.mode2;
+          }
+          // if (!activeFilters.includes(wordfilter)) return;
+          if (!config.resultFilters.words[wordfilter]) return;
+        }
+
+        // if (!activeFilters.includes("lang_" + result.language)) return;
+        if (!config.resultFilters.language[result.language]) return;
+
+        let puncfilter = "off";
+        if (result.punctuation) {
+          puncfilter = "on";
+        }
+        if (!config.resultFilters.punctuation[puncfilter]) return;
+        // if (!activeFilters.includes(puncfilter)) return;
+
+        let numfilter = "off";
+        if (result.numbers) {
+          numfilter = "on";
+        }
+        if (!config.resultFilters.numbers[numfilter]) return;
+
+        if (result.funbox === "none" || result.funbox === undefined) {
+          // if (!activeFilters.includes("funbox_none")) return;
+          if (!config.resultFilters.funbox.none) return;
+        } else {
+          // if (!activeFilters.includes("funbox_" + result.funbox)) return;
+          if (!config.resultFilters.funbox[result.funbox]) return;
+        }
+
+        let tagHide = true;
+
+        if (result.tags === undefined || result.tags.length === 0) {
+          //no tags, show when no tag is enabled
+          if (dbSnapshot.tags.length > 0) {
+            // if (activeFilters.includes("tag_notag")) tagHide = false;
+            if (config.resultFilters.tags.none) tagHide = false;
+          } else {
+            tagHide = false;
+          }
+        } else {
+          //tags exist
+          let validTags = dbSnapshot.tags.map((t) => t.id);
+          result.tags.forEach((tag) => {
+            //check if i even need to check tags anymore
+            if (!tagHide) return;
+            //check if tag is valid
+            if (validTags.includes(tag)) {
+              //tag valid, check if filter is on
+              // if (activeFilters.includes("tag_" + tag)) tagHide = false;
+              if (config.resultFilters.tags[tag]) tagHide = false;
+            }
+          });
+        }
+
+        if (tagHide) return;
+
+        let timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
+
+        let datehide = true;
+
+        // if (
+        //   activeFilters.includes("date_all") ||
+        //   (activeFilters.includes("date_day") && timeSinceTest <= 86400) ||
+        //   (activeFilters.includes("date_week") && timeSinceTest <= 604800) ||
+        //   (activeFilters.includes("date_month") && timeSinceTest <= 18144000)
+        // ) {
+        //   datehide = false;
+        // }
+
+        if (
+          config.resultFilters.date.all ||
+          (config.resultFilters.date.last_day && timeSinceTest <= 86400) ||
+          (config.resultFilters.date.last_week && timeSinceTest <= 604800) ||
+          (config.resultFilters.date.last_month && timeSinceTest <= 2592000)
+        ) {
+          datehide = false;
+        }
+
+        if (datehide) return;
+
+        filteredResults.push(result);
+      } catch (e) {
+        showNotification(
+          "Something went wrong when filtering. Resetting filters.",
+          5000
+        );
+        config.resultFilters = defaultAccountFilters;
+        saveConfigToCookie();
       }
-
-      if (tagHide) return;
-
-      let timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
-
-      let datehide = true;
-
-      // if (
-      //   activeFilters.includes("date_all") ||
-      //   (activeFilters.includes("date_day") && timeSinceTest <= 86400) ||
-      //   (activeFilters.includes("date_week") && timeSinceTest <= 604800) ||
-      //   (activeFilters.includes("date_month") && timeSinceTest <= 18144000)
-      // ) {
-      //   datehide = false;
-      // }
-
-      if (
-        config.resultFilters.date.all ||
-        (config.resultFilters.date.last_day && timeSinceTest <= 86400) ||
-        (config.resultFilters.date.last_week && timeSinceTest <= 604800) ||
-        (config.resultFilters.date.last_month && timeSinceTest <= 2592000)
-      ) {
-        datehide = false;
-      }
-
-      if (datehide) return;
-
-      filteredResults.push(result);
 
       //filters done
       //=======================================
@@ -1548,8 +1582,11 @@ function refreshAccountPage() {
 
       if (result.wpm > topWpm) {
         let puncsctring = result.punctuation ? ",<br>with punctuation" : "";
+        let numbsctring = result.numbers
+          ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
+          : "";
         topWpm = result.wpm;
-        topMode = result.mode + " " + result.mode2 + puncsctring;
+        topMode = result.mode + " " + result.mode2 + puncsctring + numbsctring;
       }
 
       totalWpm += result.wpm;
