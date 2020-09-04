@@ -37,6 +37,7 @@ let activeFunBox = "none";
 let manualRestart = false;
 let bailout = false;
 let notSignedInLastResult = null;
+let caretAnimating = true;
 
 let themeColors = {
   bg: "#323437",
@@ -1168,12 +1169,18 @@ function showCaret() {
 }
 
 function stopCaretAnimation() {
-  $("#caret").css("animation-name", "none");
-  $("#caret").css("opacity", "1");
+  if (caretAnimating === true) {
+    $("#caret").css("animation-name", "none");
+    $("#caret").css("opacity", "1");
+    caretAnimating = false;
+  }
 }
 
 function startCaretAnimation() {
-  $("#caret").css("animation-name", "caretFlash");
+  if (caretAnimating === false) {
+    $("#caret").css("animation-name", "caretFlash");
+    caretAnimating = true;
+  }
 }
 
 function hideKeymap() {
@@ -3724,8 +3731,10 @@ $(document).keypress(function (event) {
 
   currentInput += event["key"];
   setFocus(true);
+  stopCaretAnimation();
   activeWordTopBeforeJump = activeWordTop;
   compareInput(!config.blindMode);
+  
   // let newActiveTop = $("#words .word.active").position().top;
 
   // console.time("offcheck1");
