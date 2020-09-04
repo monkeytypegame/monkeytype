@@ -526,7 +526,7 @@ function initWords() {
         randomWord = getGibberish();
       } else if (activeFunBox === "58008") {
         setToggleSettings(false);
-        randomWord = getNumbers();
+        randomWord = getNumbers(7);
       } else if (activeFunBox === "specials") {
         setToggleSettings(false);
         randomWord = getSpecials();
@@ -540,7 +540,7 @@ function initWords() {
       }
       if (config.numbers && config.mode != "custom") {
         if (Math.random() < 0.1) {
-          randomWord = Math.floor(Math.random() * 1000).toString();
+          randomWord = getNumbers(4);
         }
       }
 
@@ -744,7 +744,7 @@ function addWord() {
   } else if (activeFunBox === "gibberish") {
     randomWord = getGibberish();
   } else if (activeFunBox === "58008") {
-    randomWord = getNumbers();
+    randomWord = getNumbers(7);
   } else if (activeFunBox === "specials") {
     randomWord = getSpecials();
   } else if (activeFunBox === "ascii") {
@@ -756,7 +756,7 @@ function addWord() {
   }
   if (config.numbers && config.mode != "custom") {
     if (Math.random() < 0.1) {
-      randomWord = Math.floor(Math.random() * 1000).toString();
+      randomWord = getNumbers(4);
     }
   }
 

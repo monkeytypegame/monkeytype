@@ -326,8 +326,8 @@ function secondsToString(sec) {
   return ret;
 }
 
-function getNumbers() {
-  let randLen = Math.floor(Math.random() * 7) + 1;
+function getNumbers(len) {
+  let randLen = Math.floor(Math.random() * len) + 1;
   let ret = "";
   for (let i = 0; i < randLen; i++) {
     randomNum = Math.floor(Math.random() * 10);
