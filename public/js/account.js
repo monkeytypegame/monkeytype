@@ -141,6 +141,7 @@ function signUp() {
                 .doc(usr.uid)
                 .set({ name: nname }, { merge: true });
               usr.sendEmailVerification();
+              clearGlobalStats();
               showNotification("Account created", 2000);
               $("#menu .icon-button.account .text").text(nname);
               try {
@@ -153,6 +154,11 @@ function signUp() {
                 results: [],
                 personalBests: {},
                 tags: [],
+                globalStats: {
+                  time: undefined,
+                  started: undefined,
+                  completed: undefined
+                }
               };
               if (notSignedInLastResult !== null) {
                 notSignedInLastResult.uid = usr.uid;
@@ -201,6 +207,7 @@ function signOut() {
     .signOut()
     .then(function () {
       showNotification("Signed out", 2000);
+      clearGlobalStats();
       hideAccountSettingsSection();
       updateAccountLoginButton();
       changePage("login");
@@ -328,6 +335,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
   data: {
     datasets: [
       {
+        yAxisID: "wpm",
         label: "wpm",
         fill: false,
         data: [],
@@ -343,6 +351,14 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           lineStyle: "dotted",
           width: 4,
         },
+      },
+      {
+        yAxisID: "acc",
+        label: "acc",
+        fill: false,
+        data: [],
+        borderColor: "#cccccc",
+        borderWidth: 2,
       },
     ],
   },
@@ -443,14 +459,34 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
       ],
       yAxes: [
         {
+          id: "wpm",
           ticks: {
             fontFamily: "Roboto Mono",
             beginAtZero: true,
           },
           display: true,
           scaleLabel: {
-            display: false,
+            display: true,
             labelString: "Words per Minute",
+            fontFamily: "Roboto Mono",
+          },
+        },
+        {
+          id: "acc",
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            max: 100
+          },
+          display: true,
+          position: "right",
+          scaleLabel: {
+            display: true,
+            labelString: "Accuracy",
+            fontFamily: "Roboto Mono",
+          },
+          gridLines: {
+            display: false,
           },
         },
       ],
@@ -1344,18 +1380,30 @@ function loadMoreLines() {
   }
 }
 
+function clearGlobalStats() {
+  $(".pageAccount .globalTimeTyping .val").text(`-`);
+  $(".pageAccount .globalTestsStarted .val").text(`-`);
+  $(".pageAccount .globalTestsCompleted .val").text(`-`);
+}
+
 function refreshGlobalStats() {
-  let th = Math.floor(dbSnapshot.globalStats.time / 3600);
-  let tm = Math.floor((dbSnapshot.globalStats.time % 3600) / 60);
-  let ts = Math.floor((dbSnapshot.globalStats.time % 3600) % 60);
-  $(".pageAccount .globalTimeTyping .val").text(`
-    
-    ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
-    ts < 10 ? "0" + ts : ts
-  }
+  if(dbSnapshot.globalStats.time != undefined){
+    let th = Math.floor(dbSnapshot.globalStats.time / 3600);
+    let tm = Math.floor((dbSnapshot.globalStats.time % 3600) / 60);
+    let ts = Math.floor((dbSnapshot.globalStats.time % 3600) % 60);
+    $(".pageAccount .globalTimeTyping .val").text(`
+      
+      ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
+      ts < 10 ? "0" + ts : ts
+    }
   `);
-  $(".pageAccount .globalTestsStarted .val").text(dbSnapshot.globalStats.started);
-  $(".pageAccount .globalTestsCompleted .val").text(dbSnapshot.globalStats.completed);
+  }
+  if (dbSnapshot.globalStats.started != undefined) {
+    $(".pageAccount .globalTestsStarted .val").text(dbSnapshot.globalStats.started);
+  }
+  if (dbSnapshot.globalStats.completed != undefined) {
+    $(".pageAccount .globalTestsCompleted .val").text(dbSnapshot.globalStats.completed);
+  }
 }
 
 let totalSecondsFiltered = 0;
@@ -1366,6 +1414,7 @@ function refreshAccountPage() {
     refreshGlobalStats();
 
     let chartData = [];
+    let accChartData = [];
     visibleTableLines = 0;
 
     let topWpm = 0;
@@ -1598,6 +1647,11 @@ function refreshAccountPage() {
         difficulty: result.difficulty,
       });
 
+      // accChartData.push({
+      //   x: result.timestamp,
+      //   y: result.acc,
+      // })
+
       if (result.wpm > topWpm) {
         let puncsctring = result.punctuation ? ",<br>with punctuation" : "";
         let numbsctring = result.numbers
@@ -1616,11 +1670,21 @@ function refreshAccountPage() {
       themeColors.sub;
     resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor =
       themeColors.sub;
+    resultHistoryChart.options.scales.yAxes[0].scaleLabel.fontColor =
+      themeColors.sub;
+      resultHistoryChart.options.scales.yAxes[1].ticks.minor.fontColor =
+      themeColors.sub;
+    resultHistoryChart.options.scales.yAxes[1].scaleLabel.fontColor =
+      themeColors.sub;
     resultHistoryChart.data.datasets[0].borderColor = themeColors.main;
+    resultHistoryChart.data.datasets[1].borderColor = themeColors.sub;
+
     resultHistoryChart.options.legend.labels.fontColor = themeColors.sub;
     resultHistoryChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
 
     resultHistoryChart.data.datasets[0].data = chartData;
+    resultHistoryChart.data.datasets[1].data = accChartData;
+
 
     if (chartData == [] || chartData.length == 0) {
       $(".pageAccount .group.noDataError").removeClass("hidden");
