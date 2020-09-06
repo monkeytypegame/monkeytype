@@ -140,7 +140,6 @@ function signUp() {
                 .collection("users")
                 .doc(usr.uid)
                 .set({ name: nname }, { merge: true });
-              usr.sendEmailVerification();
               showNotification("Account created", 2000);
               $("#menu .icon-button.account .text").text(nname);
               try {
@@ -164,6 +163,7 @@ function signUp() {
                 config.resultFilters = defaultAccountFilters;
               }
               changePage("account");
+              usr.sendEmailVerification();
             })
             .catch(function (error) {
               // An error happened.
