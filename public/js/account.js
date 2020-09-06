@@ -170,6 +170,7 @@ function signUp() {
                 config.resultFilters = defaultAccountFilters;
               }
               changePage("account");
+              usr.sendEmailVerification();
             })
             .catch(function (error) {
               // An error happened.
