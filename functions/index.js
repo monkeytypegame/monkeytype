@@ -497,11 +497,31 @@ async function incrementStartedTestCounter(uid, num) {
     let userDoc = await db.collection("users").doc(uid).get();
     let userData = userDoc.data();
     if (userData.startedTests === undefined) {
-      let results = await db.collection(`users/${uid}/results`).get();
+      // let results = await db.collection(`users/${uid}/results`).get();
+
+      let stepSize = 1000;
+      let results = [];
+      let query = await db.collection(`users/${uid}/results`)
+          .orderBy("timestamp", "desc")
+          .limit(stepSize)
+        .get();
+      let lastDoc;
+      while (query.docs.length > 0) {
+        lastDoc = query.docs[query.docs.length - 1];
+        query.docs.forEach(doc => {
+          results.push({ restartCount: doc.data().restartCount });
+        })
+        query = await db.collection(`users/${uid}/results`)
+        .orderBy("timestamp", "desc")
+        .limit(stepSize)
+        .startAfter(lastDoc)
+        .get();
+      }
+
       let count = 0;
-      results.docs.forEach((result) => {
+      results.forEach((result) => {
         try{
-          let rc = result.data().restartCount;
+          let rc = result.restartCount;
           if (rc === undefined) {
             rc = 0;
           }
@@ -509,7 +529,7 @@ async function incrementStartedTestCounter(uid, num) {
           count += parseInt(rc);
         }catch(e){}
       });
-      count += results.docs.length;
+      count += results.length;
       db.collection("users")
         .doc(uid)
         .update({
@@ -538,13 +558,37 @@ async function incrementTimeSpentTyping(uid, res) {
     let userDoc = await db.collection("users").doc(uid).get();
     let userData = userDoc.data();
     if (userData.timeTyping === undefined) {
-      let results = await db.collection(`users/${uid}/results`).get();
+      // let results = await db.collection(`users/${uid}/results`).get();
+
+      let stepSize = 1000;
+      let results = [];
+      let query = await db.collection(`users/${uid}/results`)
+          .orderBy("timestamp", "desc")
+          .limit(stepSize)
+        .get();
+      let lastDoc;
+      while (query.docs.length > 0) {
+        lastDoc = query.docs[query.docs.length - 1];
+        query.docs.forEach(doc => {
+          let dd = doc.data();
+          results.push({
+            testDuration: dd.testDuration,
+            incompleteTestSeconds: dd.incompleteTestSeconds
+          });
+        })
+        query = await db.collection(`users/${uid}/results`)
+        .orderBy("timestamp", "desc")
+        .limit(stepSize)
+        .startAfter(lastDoc)
+        .get();
+      }
+
+
       let timeSum = 0;
-      results.docs.forEach((result) => {
+      results.forEach((result) => {
         try {
-          let dat = result.data();
-          let ts = dat.testDuration;
-          let its = dat.incompleteTestSeconds;
+          let ts = result.testDuration;
+          let its = result.incompleteTestSeconds;
           let s1 = ts == undefined ? 0 : ts;
           let s2 = its == undefined ? 0 : its;
 
