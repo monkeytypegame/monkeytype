@@ -1914,8 +1914,24 @@ function showResult(difficultyFailed = false) {
                   );
                 } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                   completedEvent.id = e.data.createdId;
-                  if (dbSnapshot !== null && dbSnapshot.results !== undefined)
+                  if (dbSnapshot !== null && dbSnapshot.results !== undefined) {
                     dbSnapshot.results.unshift(completedEvent);
+                    if (dbSnapshot.globalStats.time == undefined) {
+                      dbSnapshot.globalStats.time = testtime;
+                    } else {
+                      dbSnapshot.globalStats.time += testtime;
+                    }
+                    if (dbSnapshot.globalStats.started == undefined) {
+                      dbSnapshot.globalStats.started = restartCount + 1;
+                    } else {
+                      dbSnapshot.globalStats.started += restartCount + 1;
+                    }
+                    if (dbSnapshot.globalStats.completed == undefined) {
+                      dbSnapshot.globalStats.completed = 1;
+                    } else {
+                      dbSnapshot.globalStats.completed += 1;
+                    }
+                  }
                   try {
                     firebase
                       .analytics()
