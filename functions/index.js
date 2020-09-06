@@ -532,11 +532,12 @@ async function incrementTimeSpentTyping(uid, res) {
     let results = await db.collection(`users/${uid}/results`).get();
     let timeSum = 0;
     results.docs.forEach((result) => {
-      try{
-      let ts = result.data().testDuration;
-      let its = result.data().incompleteTestSeconds;
-      let s1 = ts == undefined ? 0 : ts;
-      let s2 = its == undefined ? 0 : its;
+      try {
+        let dat = result.data();
+        let ts = dat.testDuration;
+        let its = dat.incompleteTestSeconds;
+        let s1 = ts == undefined ? 0 : ts;
+        let s2 = its == undefined ? 0 : its;
 
         timeSum += (parseFloat(s1) + parseFloat(s2));
       }catch(e){}
