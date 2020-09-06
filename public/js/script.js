@@ -1774,7 +1774,11 @@ function showResult(difficultyFailed = false) {
       err: errorsNoZero,
     };
 
-    if (testtime > 122) chartData = "toolong";
+    if (testtime > 122) {
+      chartData = "toolong";
+      keypressStats.spacing.array = "toolong";
+      keypressStats.duration.array = "toolong";
+    }
 
     let completedEvent = {
       wpm: stats.wpm,
