@@ -463,102 +463,114 @@ exports.getPatreons = functions.https.onRequest(async (request, response) => {
 });
 
 async function incrementTestCounter(uid) {
-  let userDoc = await db.collection("users").doc(uid).get();
-  let userData = userDoc.data();
-  if (userData.completedTests === undefined) {
-    let results = await db.collection(`users/${uid}/results`).get();
-    let count = results.docs.length;
-    db.collection("users")
-      .doc(uid)
-      .update({
-        completedTests: admin.firestore.FieldValue.increment(count),
-      });
-    db.collection("public")
-      .doc("stats")
-      .update({
-        completedTests: admin.firestore.FieldValue.increment(count),
-      });
-  } else {
-    db.collection("users")
-      .doc(uid)
-      .update({ completedTests: admin.firestore.FieldValue.increment(1) });
-    db.collection("public")
-      .doc("stats")
-      .update({ completedTests: admin.firestore.FieldValue.increment(1) });
+  try{
+    let userDoc = await db.collection("users").doc(uid).get();
+    let userData = userDoc.data();
+    if (userData.completedTests === undefined) {
+      let results = await db.collection(`users/${uid}/results`).get();
+      let count = results.docs.length;
+      db.collection("users")
+        .doc(uid)
+        .update({
+          completedTests: admin.firestore.FieldValue.increment(count),
+        });
+      db.collection("public")
+        .doc("stats")
+        .update({
+          completedTests: admin.firestore.FieldValue.increment(count),
+        });
+    } else {
+      db.collection("users")
+        .doc(uid)
+        .update({ completedTests: admin.firestore.FieldValue.increment(1) });
+      db.collection("public")
+        .doc("stats")
+        .update({ completedTests: admin.firestore.FieldValue.increment(1) });
+    }
+  } catch (e) {
+    console.error(`Error while incrementing completed tests for user ${uid}: ${e}`);
   }
 }
 
 async function incrementStartedTestCounter(uid, num) {
-  let userDoc = await db.collection("users").doc(uid).get();
-  let userData = userDoc.data();
-  if (userData.startedTests === undefined) {
-    let results = await db.collection(`users/${uid}/results`).get();
-    let count = 0;
-    results.docs.forEach((result) => {
-      try{
-        let rc = result.data().restartCount;
-        if (rc === undefined) {
-          rc = 0;
-        }
+  try{
+    let userDoc = await db.collection("users").doc(uid).get();
+    let userData = userDoc.data();
+    if (userData.startedTests === undefined) {
+      let results = await db.collection(`users/${uid}/results`).get();
+      let count = 0;
+      results.docs.forEach((result) => {
+        try{
+          let rc = result.data().restartCount;
+          if (rc === undefined) {
+            rc = 0;
+          }
 
-        count += parseInt(rc);
-      }catch(e){}
-    });
-    count += results.docs.length;
-    db.collection("users")
-      .doc(uid)
-      .update({
-        startedTests: admin.firestore.FieldValue.increment(count),
+          count += parseInt(rc);
+        }catch(e){}
       });
-    db.collection("public")
-      .doc("stats")
-      .update({
-        startedTests: admin.firestore.FieldValue.increment(count),
-      });
-  } else {
-    db.collection("users")
-      .doc(uid)
-      .update({ startedTests: admin.firestore.FieldValue.increment(num) });
-    db.collection("public")
-      .doc("stats")
-      .update({ startedTests: admin.firestore.FieldValue.increment(num) });
+      count += results.docs.length;
+      db.collection("users")
+        .doc(uid)
+        .update({
+          startedTests: admin.firestore.FieldValue.increment(count),
+        });
+      db.collection("public")
+        .doc("stats")
+        .update({
+          startedTests: admin.firestore.FieldValue.increment(count),
+        });
+    } else {
+      db.collection("users")
+        .doc(uid)
+        .update({ startedTests: admin.firestore.FieldValue.increment(num) });
+      db.collection("public")
+        .doc("stats")
+        .update({ startedTests: admin.firestore.FieldValue.increment(num) });
+    }
+  } catch (e) {
+    console.error(`Error while incrementing started tests for user ${uid}: ${e}`);
   }
 }
 
 async function incrementTimeSpentTyping(uid, res) {
-  let userDoc = await db.collection("users").doc(uid).get();
-  let userData = userDoc.data();
-  if (userData.timeTyping === undefined) {
-    let results = await db.collection(`users/${uid}/results`).get();
-    let timeSum = 0;
-    results.docs.forEach((result) => {
-      try {
-        let dat = result.data();
-        let ts = dat.testDuration;
-        let its = dat.incompleteTestSeconds;
-        let s1 = ts == undefined ? 0 : ts;
-        let s2 = its == undefined ? 0 : its;
+  try {
+    let userDoc = await db.collection("users").doc(uid).get();
+    let userData = userDoc.data();
+    if (userData.timeTyping === undefined) {
+      let results = await db.collection(`users/${uid}/results`).get();
+      let timeSum = 0;
+      results.docs.forEach((result) => {
+        try {
+          let dat = result.data();
+          let ts = dat.testDuration;
+          let its = dat.incompleteTestSeconds;
+          let s1 = ts == undefined ? 0 : ts;
+          let s2 = its == undefined ? 0 : its;
 
-        timeSum += (parseFloat(s1) + parseFloat(s2));
-      }catch(e){}
-    });
-    db.collection("users")
-      .doc(uid)
-      .update({
-        timeTyping: admin.firestore.FieldValue.increment(timeSum),
+          timeSum += (parseFloat(s1) + parseFloat(s2));
+        } catch (e) { }
       });
-    db.collection("public")
-      .doc("stats")
-      .update({
-        timeTyping: admin.firestore.FieldValue.increment(timeSum),
-      });
-  } else {
-    db.collection("users")
-      .doc(uid)
-      .update({ timeTyping: admin.firestore.FieldValue.increment(res.testDuration + res.incompleteTestSeconds) });
-    db.collection("public")
-      .doc("stats")
-      .update({ timeTyping: admin.firestore.FieldValue.increment(res.testDuration + res.incompleteTestSeconds) });
+      db.collection("users")
+        .doc(uid)
+        .update({
+          timeTyping: admin.firestore.FieldValue.increment(timeSum),
+        });
+      db.collection("public")
+        .doc("stats")
+        .update({
+          timeTyping: admin.firestore.FieldValue.increment(timeSum),
+        });
+    } else {
+      db.collection("users")
+        .doc(uid)
+        .update({ timeTyping: admin.firestore.FieldValue.increment(res.testDuration + res.incompleteTestSeconds) });
+      db.collection("public")
+        .doc("stats")
+        .update({ timeTyping: admin.firestore.FieldValue.increment(res.testDuration + res.incompleteTestSeconds) });
+    }
+  } catch (e) {
+    console.error(`Error while incrementing time typing for user ${uid}: ${e}`);
   }
 }
 
