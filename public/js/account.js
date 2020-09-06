@@ -1344,11 +1344,26 @@ function loadMoreLines() {
   }
 }
 
+function refreshGlobalStats() {
+  let th = Math.floor(dbSnapshot.globalStats.time / 3600);
+  let tm = Math.floor((dbSnapshot.globalStats.time % 3600) / 60);
+  let ts = Math.floor((dbSnapshot.globalStats.time % 3600) % 60);
+  $(".pageAccount .globalTimeTyping .val").text(`
+    
+    ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
+    ts < 10 ? "0" + ts : ts
+  }
+  `);
+  $(".pageAccount .globalTestsStarted .val").text(dbSnapshot.globalStats.started);
+  $(".pageAccount .globalTestsCompleted .val").text(dbSnapshot.globalStats.completed);
+}
+
 let totalSecondsFiltered = 0;
 
 function refreshAccountPage() {
   function cont() {
     refreshThemeColorObject();
+    refreshGlobalStats();
 
     let chartData = [];
     visibleTableLines = 0;
@@ -1474,6 +1489,9 @@ function refreshAccountPage() {
               //tag valid, check if filter is on
               // if (activeFilters.includes("tag_" + tag)) tagHide = false;
               if (config.resultFilters.tags[tag]) tagHide = false;
+            } else {
+              //tag not found in valid tags, meaning probably deleted
+              if (config.resultFilters.tags.none) tagHide = false;
             }
           });
         }

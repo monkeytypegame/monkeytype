@@ -67,6 +67,11 @@ async function db_getUserSnapshot() {
           snap.config = data.config;
           snap.favouriteThemes =
             data.favouriteThemes === undefined ? [] : data.favouriteThemes;
+          snap.globalStats = {
+            time: data.timeTyping,
+            started: data.startedTests,
+            completed: data.completedTests
+          }
         } catch (e) {
           //
         }
@@ -93,6 +98,7 @@ async function db_getUserResults() {
       return await db
         .collection(`users/${user.uid}/results/`)
         .orderBy("timestamp", "desc")
+        .limit(1000)
         .get()
         .then((data) => {
           dbSnapshot.results = [];
