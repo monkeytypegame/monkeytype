@@ -3733,7 +3733,7 @@ $(document).keypress(function (event) {
     }
   }
 
-  currentInput += event["key"];
+  if(currentInput.length < wordsList[currentWordIndex].length + 20) currentInput += event["key"];
   setFocus(true);
   stopCaretAnimation();
   activeWordTopBeforeJump = activeWordTop;
