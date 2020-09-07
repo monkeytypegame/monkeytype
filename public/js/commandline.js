@@ -138,6 +138,13 @@ let commands = {
       },
     },
     {
+      id: "toggleReadAheadMode",
+      display: "Toggle read ahead mode",
+      exec: () => {
+        toggleReadAheadMode();
+      },
+    },
+    {
       id: "toggleQuickEnd",
       display: "Toggle quick end",
       exec: () => {

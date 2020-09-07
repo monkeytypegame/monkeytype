@@ -1407,6 +1407,13 @@ key {
       }
     }
   }
+
+  &.readAheadMode {
+    .word.active:nth-of-type(n + 2),
+    .word.active:nth-of-type(n + 2) + .word {
+      color: var(--bg-color);
+    }
+  }
 }
 
 #words.flipped.colorfulMode .word.error,
