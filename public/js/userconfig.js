@@ -708,19 +708,23 @@ function setTheme(name, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
+let randomTheme = null;
 function randomiseTheme() {
   var randomList = themesList.map((t) => {
     return t.name;
   });
   if (config.randomTheme === "fav" && config.favThemes.length > 0)
     randomList = config.favThemes;
-  let randomtheme = randomList[Math.floor(Math.random() * randomList.length)];
-  setTheme(randomtheme, true);
+    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
+  setTheme(randomTheme, true);
 }
 
 function setRandomTheme(val, nosave) {
   if (val === undefined || val === true || val === false) {
     val = "off";
+  }
+  if (val === "off") {
+    randomTheme = null;
   }
   config.randomTheme = val;
   if (!nosave) saveConfigToCookie();

@@ -285,13 +285,18 @@ function refreshThemeButtons() {
   ).empty();
   let themesEl = $(".pageSettings .section.themes .allThemes.buttons").empty();
 
+  let activeThemeName = config.theme;
+  if (config.randomTheme !== "off" && randomTheme !== null) {
+    activeThemeName = randomTheme;
+  }
+
   getSortedThemesList().then((themes) => {
     //first show favourites
     if (config.favThemes.length > 0) {
       favThemesEl.css({ paddingBottom: "1rem" });
       themes.forEach((theme) => {
         if (config.favThemes.includes(theme.name)) {
-          let activeTheme = config.theme === theme.name ? "active" : "";
+          let activeTheme = activeThemeName === theme.name ? "active" : "";
           favThemesEl.append(
             `<div class="theme button" theme='${theme.name}' style="color:${
               theme.textColor
@@ -308,7 +313,7 @@ function refreshThemeButtons() {
     //then the rest
     themes.forEach((theme) => {
       if (!config.favThemes.includes(theme.name)) {
-        let activeTheme = config.theme === theme.name ? "active" : "";
+        let activeTheme = activeThemeName === theme.name ? "active" : "";
         themesEl.append(
           `<div class="theme button" theme='${theme.name}' style="color:${
             theme.textColor
@@ -333,6 +338,7 @@ function updateSettingsPage() {
   setActiveThemeTab();
   setCustomThemeInputs();
   updateDiscordSettingsSection();
+  refreshThemeButtons();
 }
 
 function showCustomThemeShare() {
