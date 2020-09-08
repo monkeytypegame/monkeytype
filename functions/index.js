@@ -475,10 +475,8 @@ exports.getPatreons = functions.https.onRequest(async (request, response) => {
 
 
 
-async function incrementTestCounter(uid) {
+async function incrementTestCounter(uid, userData) {
   try{
-    let userDoc = await db.collection("users").doc(uid).get();
-    let userData = userDoc.data();
     if (userData.completedTests === undefined) {
       let results = await db.collection(`users/${uid}/results`).get();
       let count = results.docs.length;
@@ -505,13 +503,9 @@ async function incrementTestCounter(uid) {
   }
 }
 
-async function incrementStartedTestCounter(uid, num) {
+async function incrementStartedTestCounter(uid, num, userData) {
   try{
-    let userDoc = await db.collection("users").doc(uid).get();
-    let userData = userDoc.data();
     if (userData.startedTests === undefined) {
-      // let results = await db.collection(`users/${uid}/results`).get();
-
       let stepSize = 1000;
       let results = [];
       let query = await db.collection(`users/${uid}/results`)
@@ -566,13 +560,9 @@ async function incrementStartedTestCounter(uid, num) {
   }
 }
 
-async function incrementTimeSpentTyping(uid, res) {
+async function incrementTimeSpentTyping(uid, res, userData) {
   try {
-    let userDoc = await db.collection("users").doc(uid).get();
-    let userData = userDoc.data();
     if (userData.timeTyping === undefined) {
-      // let results = await db.collection(`users/${uid}/results`).get();
-
       let stepSize = 1000;
       let results = [];
       let query = await db.collection(`users/${uid}/results`)
@@ -823,9 +813,9 @@ exports.testCompleted = functions.runWith({ timeoutSeconds: 540, memory: "2GB" }
                 let ispb = values[2];
                 // console.log(values);
 
-                incrementTestCounter(request.uid);
-                incrementStartedTestCounter(request.uid, obj.restartCount + 1);
-                incrementTimeSpentTyping(request.uid, obj);
+                incrementTestCounter(request.uid, userdata);
+                incrementStartedTestCounter(request.uid, obj.restartCount + 1, userdata);
+                incrementTimeSpentTyping(request.uid, obj, userdata);
 
                 let usr =
                   userdata.discordId !== undefined
