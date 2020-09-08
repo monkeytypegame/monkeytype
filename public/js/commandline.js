@@ -137,13 +137,13 @@ let commands = {
         toggleBlindMode();
       },
     },
-    {
-      id: "toggleReadAheadMode",
-      display: "Toggle read ahead mode",
-      exec: () => {
-        toggleReadAheadMode();
-      },
-    },
+    // {
+    //   id: "toggleReadAheadMode",
+    //   display: "Toggle read ahead mode",
+    //   exec: () => {
+    //     toggleReadAheadMode();
+    //   },
+    // },
     {
       id: "toggleQuickEnd",
       display: "Toggle quick end",

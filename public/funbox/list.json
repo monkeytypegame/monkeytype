@@ -73,5 +73,10 @@
     "name": "plus_one",
     "type": "script",
     "info": "React quickly! Only one future word is visible."
+  },
+  {
+    "name": "read_ahead",
+    "type": "style",
+    "info": "Current and the next word is invisible!"
   }
 ]

@@ -1798,7 +1798,7 @@ function showResult(difficultyFailed = false) {
       difficulty: config.difficulty,
       testDuration: testtime,
       blindMode: config.blindMode,
-      readAheadMode: config.readAheadMode,
+      // readAheadMode: config.readAheadMode,
       theme: config.theme,
       tags: activeTags,
       keySpacing: keypressStats.spacing.array,
@@ -2129,9 +2129,9 @@ function showResult(difficultyFailed = false) {
   if (config.blindMode) {
     testType += "<br>blind";
   }
-  if (config.readAheadMode) {
-    testType += "<br>read_ahead";
-  }
+  // if (config.readAheadMode) {
+  //   testType += "<br>read_ahead";
+  // }
   if (activeFunBox !== "none") {
     testType += "<br>" + activeFunBox;
   }
@@ -3026,13 +3026,13 @@ function applyColorfulMode(tc) {
   }
 }
 
-function applyReadAheadMode(tc) {
-  if (tc) {
-    $("#words").addClass("readAheadMode");
-  } else {
-    $("#words").removeClass("readAheadMode");
-  }
-}
+// function applyReadAheadMode(tc) {
+//   if (tc) {
+//     $("#words").addClass("readAheadMode");
+//   } else {
+//     $("#words").removeClass("readAheadMode");
+//   }
+// }
 
 function showEditTags(action, id, name) {
   if (action === "add") {
@@ -3116,11 +3116,11 @@ function updateTestModesNotice() {
     );
   }
 
-  if (config.readAheadMode) {
-    $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-arrow-right"></i>read ahead</div>`
-    );
-  }
+  // if (config.readAheadMode) {
+  //   $(".pageTest #testModesNotice").append(
+  //     `<div><i class="fas fa-arrow-right"></i>read ahead</div>`
+  //   );
+  // }
 
   if (activeFunBox !== "none") {
     $(".pageTest #testModesNotice").append(
