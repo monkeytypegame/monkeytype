@@ -239,23 +239,41 @@ exports.checkIfNeedsToChangeName = functions.https.onCall(
   }
 );
 
-function checkIfPB(uid, obj) {
-  return db
-    .collection(`users`)
-    .doc(uid)
-    .get()
-    .then((data) => {
-      let pbs = null;
-      try {
-        pbs = data.data().personalBests;
-        if (pbs === undefined) {
-          throw new Error("pb is undefined");
-        }
-      } catch (e) {
+function checkIfPB(uid, obj, userdata) {
+  let pbs = null;
+  try {
+    pbs = userdata.personalBests;
+    if (pbs === undefined) {
+      throw new Error("pb is undefined");
+    }
+  } catch (e) {
+    return db
+      .collection("users")
+      .doc(uid)
+      .update({
+        personalBests: {
+          [obj.mode]: {
+            [obj.mode2]: [
+              {
+                language: obj.language,
+                difficulty: obj.difficulty,
+                punctuation: obj.punctuation,
+                wpm: obj.wpm,
+                acc: obj.acc,
+                raw: obj.rawWpm,
+              },
+            ],
+          },
+        },
+      })
+      .then((e) => {
+        return true;
+      })
+      .catch((e) => {
         return db
           .collection("users")
           .doc(uid)
-          .update({
+          .set({
             personalBests: {
               [obj.mode]: {
                 [obj.mode2]: [
@@ -273,100 +291,76 @@ function checkIfPB(uid, obj) {
           })
           .then((e) => {
             return true;
-          })
-          .catch((e) => {
-            return db
-              .collection("users")
-              .doc(uid)
-              .set({
-                personalBests: {
-                  [obj.mode]: {
-                    [obj.mode2]: [
-                      {
-                        language: obj.language,
-                        difficulty: obj.difficulty,
-                        punctuation: obj.punctuation,
-                        wpm: obj.wpm,
-                        acc: obj.acc,
-                        raw: obj.rawWpm,
-                      },
-                    ],
-                  },
-                },
-              })
-              .then((e) => {
-                return true;
-              });
           });
-      }
-      // //check mode, mode2, punctuation, language and difficulty
+      });
+  }
+  // //check mode, mode2, punctuation, language and difficulty
 
-      let toUpdate = false;
-      let found = false;
-      try {
-        if (pbs[obj.mode][obj.mode2] === undefined) {
-          pbs[obj.mode][obj.mode2] = [];
-        }
-        pbs[obj.mode][obj.mode2].forEach((pb) => {
-          if (
-            pb.punctuation === obj.punctuation &&
-            pb.difficulty === obj.difficulty &&
-            pb.language === obj.language
-          ) {
-            //entry like this already exists, compare wpm
-            found = true;
-            if (pb.wpm < obj.wpm) {
-              //new pb
-              pb.wpm = obj.wpm;
-              pb.acc = obj.acc;
-              pb.raw = obj.rawWpm;
-              toUpdate = true;
-            } else {
-              //no pb
-              return false;
-            }
-          }
-        });
-        //checked all pbs, nothing found - meaning this is a new pb
-        if (!found) {
-          pbs[obj.mode][obj.mode2].push({
-            language: obj.language,
-            difficulty: obj.difficulty,
-            punctuation: obj.punctuation,
-            wpm: obj.wpm,
-            acc: obj.acc,
-            raw: obj.rawWpm,
-          });
+  let toUpdate = false;
+  let found = false;
+  try {
+    if (pbs[obj.mode][obj.mode2] === undefined) {
+      pbs[obj.mode][obj.mode2] = [];
+    }
+    pbs[obj.mode][obj.mode2].forEach((pb) => {
+      if (
+        pb.punctuation === obj.punctuation &&
+        pb.difficulty === obj.difficulty &&
+        pb.language === obj.language
+      ) {
+        //entry like this already exists, compare wpm
+        found = true;
+        if (pb.wpm < obj.wpm) {
+          //new pb
+          pb.wpm = obj.wpm;
+          pb.acc = obj.acc;
+          pb.raw = obj.rawWpm;
           toUpdate = true;
+        } else {
+          //no pb
+          return false;
         }
-      } catch (e) {
-        // console.log(e);
-        pbs[obj.mode] = {};
-        pbs[obj.mode][obj.mode2] = [
-          {
-            language: obj.language,
-            difficulty: obj.difficulty,
-            punctuation: obj.punctuation,
-            wpm: obj.wpm,
-            acc: obj.acc,
-            raw: obj.rawWpm,
-          },
-        ];
-        toUpdate = true;
-      }
-
-      if (toUpdate) {
-        return db
-          .collection("users")
-          .doc(uid)
-          .update({ personalBests: pbs })
-          .then((e) => {
-            return true;
-          });
-      } else {
-        return false;
       }
     });
+    //checked all pbs, nothing found - meaning this is a new pb
+    if (!found) {
+      pbs[obj.mode][obj.mode2].push({
+        language: obj.language,
+        difficulty: obj.difficulty,
+        punctuation: obj.punctuation,
+        wpm: obj.wpm,
+        acc: obj.acc,
+        raw: obj.rawWpm,
+      });
+      toUpdate = true;
+    }
+  } catch (e) {
+    // console.log(e);
+    pbs[obj.mode] = {};
+    pbs[obj.mode][obj.mode2] = [
+      {
+        language: obj.language,
+        difficulty: obj.difficulty,
+        punctuation: obj.punctuation,
+        wpm: obj.wpm,
+        acc: obj.acc,
+        raw: obj.rawWpm,
+      },
+    ];
+    toUpdate = true;
+  }
+
+  if (toUpdate) {
+    return db
+      .collection("users")
+      .doc(uid)
+      .update({ personalBests: pbs })
+      .then((e) => {
+        return true;
+      });
+  } else {
+    return false;
+  }
 }
 
 function stdDev(array) {
@@ -821,7 +815,7 @@ exports.testCompleted = functions.runWith({ timeoutSeconds: 540, memory: "2GB" }
                 verified,
                 emailVerified
               ),
-              checkIfPB(request.uid, request.obj),
+              checkIfPB(request.uid, request.obj, userdata),
             ])
               .then((values) => {
                 let globallb = values[0].insertedAt;
