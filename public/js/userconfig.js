@@ -30,6 +30,7 @@ let defaultConfig = {
   difficulty: "normal",
   blindMode: false,
   quickEnd: false,
+  readAheadMode: false,
   caretStyle: "default",
   flipTestColors: false,
   layout: "default",
@@ -150,6 +151,7 @@ function applyConfig(configObj) {
     setDifficulty(configObj.difficulty, true);
     setBlindMode(configObj.blindMode, true);
     setQuickEnd(configObj.quickEnd, true);
+    setReadAheadMode(configObj.readAheadMode, true);
     setFlipTestColors(configObj.flipTestColors, true);
     setColorfulMode(configObj.colorfulMode, true);
     setConfidenceMode(configObj.confidenceMode, true);
@@ -269,6 +271,24 @@ function setBlindMode(blind, nosave) {
     blind = false;
   }
   config.blindMode = blind;
+  updateTestModesNotice();
+  if (!nosave) saveConfigToCookie();
+}
+
+//read ahead mode
+function toggleReadAheadMode() {
+  config.readAheadMode = !config.readAheadMode;
+  applyReadAheadMode(config.readAheadMode);
+  updateTestModesNotice();
+  saveConfigToCookie();
+}
+
+function setReadAheadMode(readAhead, nosave) {
+  if (readAhead == undefined) {
+    readAhead = false;
+  }
+  config.readAheadMode = readAhead;
+  applyReadAheadMode(readAhead);
   updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }
