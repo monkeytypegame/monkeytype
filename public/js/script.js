@@ -2133,7 +2133,7 @@ function showResult(difficultyFailed = false) {
   //   testType += "<br>read_ahead";
   // }
   if (activeFunBox !== "none") {
-    testType += "<br>" + activeFunBox;
+    testType += "<br>" + activeFunBox.replace(/_/g, " ");
   }
   if (config.difficulty == "expert") {
     testType += "<br>expert";
