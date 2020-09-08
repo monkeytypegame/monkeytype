@@ -229,7 +229,7 @@ exports.checkIfNeedsToChangeName = functions.https.onCall(
                 }
               });
           } else {
-            console.log("name is good");
+            // console.log("name is good");
             return 0;
           }
         });
