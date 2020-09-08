@@ -1438,8 +1438,8 @@ function countChars() {
   let spaces = 0;
   let correctspaces = 0;
   for (let i = 0; i < inputHistory.length; i++) {
-    if (inputHistory[i] === currentInput) {
-      //last word that was not finished
+    if (inputHistory[i] === "") {
+      //last word that was not started
       continue;
     }
     if (inputHistory[i] == wordsList[i]) {
@@ -2739,7 +2739,7 @@ function liveWpmAndRaw() {
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
-  let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
+  let raw = Math.round(((chars + spaces + currentInput.length) * (60 / testSeconds)) / 5);
   return {
     wpm: wpm,
     raw: raw,
@@ -2931,66 +2931,78 @@ function toggleResultWordsDisplay() {
 
 async function loadWordsHistory() {
   $("#words").empty();
-  inputHistory.forEach((input, index) => {
-    if (input === "") return;
+  // inputHistory.forEach((input, index) => {
+  for (let i = 0; i < inputHistory.length + 2; i++) {
+    let input = inputHistory[i];
     let wordEl = "";
-    if (correctedHistory[index] !== "") {
-      wordEl = `<div class='word' input='${correctedHistory[index]}'>`;
-    } else {
-      wordEl = `<div class='word' input='${input}'>`;
-    }
-    if (input !== wordsList[index]) {
-      wordEl = `<div class='word error' input='${input}'>`;
-    }
-
-    let loop;
-    if (input.length > wordsList[index].length) {
-      //input is longer - extra characters possible (loop over input)
-      loop = input.length;
-    } else {
-      //input is shorter or equal (loop over word list)
-      loop = wordsList[index].length;
-    }
-
-    for (let c = 0; c < loop; c++) {
-      // input.forEach((inputLetter, inputLetterIndex) => {
-      let correctedChar;
-      try {
-        correctedChar = correctedHistory[index][c];
-      } catch (e) {
-        correctedChar = undefined;
+    try {
+      if (input === "") throw Exception;
+      if (correctedHistory[i] !== "") {
+        wordEl = `<div class='word' input='${correctedHistory[i]}'>`;
+      } else {
+        wordEl = `<div class='word' input='${input}'>`;
       }
-      let extraCorrected = "";
-      if (c + 1 === loop && correctedHistory[index].length > input.length) {
-        extraCorrected = "extraCorrected";
+      if (input !== wordsList[i]) {
+        wordEl = `<div class='word error' input='${input}'>`;
       }
-      if (wordsList[index][c] !== undefined) {
-        if (input[c] === wordsList[index][c]) {
-          if (correctedChar === input[c] || correctedChar === undefined) {
-            wordEl += `<letter class="correct ${extraCorrected}">${wordsList[index][c]}</letter>`;
+
+      let loop;
+      if (input.length > wordsList[i].length) {
+        //input is longer - extra characters possible (loop over input)
+        loop = input.length;
+      } else {
+        //input is shorter or equal (loop over word list)
+        loop = wordsList[i].length;
+      }
+
+      for (let c = 0; c < loop; c++) {
+        // input.forEach((inputLetter, inputLetteri) => {
+        let correctedChar;
+        try {
+          correctedChar = correctedHistory[i][c];
+        } catch (e) {
+          correctedChar = undefined;
+        }
+        let extraCorrected = "";
+        if (c + 1 === loop && correctedHistory[i].length > input.length) {
+          extraCorrected = "extraCorrected";
+        }
+        if (wordsList[i][c] !== undefined) {
+          if (input[c] === wordsList[i][c]) {
+            if (correctedChar === input[c] || correctedChar === undefined) {
+              wordEl += `<letter class="correct ${extraCorrected}">${wordsList[i][c]}</letter>`;
+            } else {
+              wordEl +=
+                `<letter class="corrected ${extraCorrected}">` +
+                wordsList[i][c] +
+                "</letter>";
+            }
           } else {
-            wordEl +=
-              `<letter class="corrected ${extraCorrected}">` +
-              wordsList[index][c] +
-              "</letter>";
+            if (input[c] === currentInput) {
+              wordEl += "<letter class='correct'>" + wordsList[i][c] + "</letter>";
+            } else if (input[c] === undefined) {
+              wordEl += "<letter>" + wordsList[i][c] + "</letter>";
+            } else {
+              wordEl +=
+                `<letter class="incorrect ${extraCorrected}">` +
+                wordsList[i][c] +
+                "</letter>";
+            }
           }
         } else {
-          if (input[c] === currentInput || input[c] === undefined) {
-            wordEl += "<letter>" + wordsList[index][c] + "</letter>";
-          } else {
-            wordEl +=
-              `<letter class="incorrect ${extraCorrected}">` +
-              wordsList[index][c] +
-              "</letter>";
-          }
+          wordEl += '<letter class="incorrect extra">' + input[c] + "</letter>";
         }
-      } else {
-        wordEl += '<letter class="incorrect extra">' + input[c] + "</letter>";
       }
+      wordEl += "</div>";
+    }catch (e) {
+      wordEl = "<div class='word'>";
+      for (let c = 0; c < wordsList[i].length; c++) {
+        wordEl += "<letter>" + wordsList[i][c] + "</letter>";
+      }
+      wordEl += "</div>"
     }
-    wordEl += "</div>";
     $("#words").append(wordEl);
-  });
+  };
   $("#showWordHistoryButton").addClass("loaded");
 }
 
