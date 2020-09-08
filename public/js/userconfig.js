@@ -950,7 +950,7 @@ function changeKeymapLayout(layout, nosave) {
   var _ = toReplace.splice(12, 1);
   var count = 0;
 
-  $(".letter")
+  $(".keymap .letter")
     .map(function () {
       if (
         !this.parentElement.classList.contains("hidden-key") &&
