@@ -1133,33 +1133,34 @@ function showActiveFilters() {
     if (aboveChartDisplay[group].array.length > 0) {
       chartString += "<div class='group'>";
       if (group == "difficulty") {
-        chartString += `<i class="fas fa-fw fa-star"></i>`;
+        chartString += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
       } else if (group == "mode") {
-        chartString += `<i class="fas fa-fw fa-bars"></i>`;
+        chartString += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
       } else if (group == "punctuation") {
-        chartString += `<span class="punc" style="font-weight: 900;
+        chartString += `<span aria-label="Punctuation" data-balloon-pos="up"><span class="punc" style="font-weight: 900;
         width: 1.25rem;
         text-align: center;
         display: inline-block;
         letter-spacing: -.1rem;">!?</span>`;
       } else if (group == "numbers") {
-        chartString += `<span class="numbers" style="font-weight: 900;
+        chartString += `<span aria-label="Numbers" data-balloon-pos="up"><span class="numbers" style="font-weight: 900;
           width: 1.25rem;
           text-align: center;
+          margin-right: .1rem;
           display: inline-block;
           letter-spacing: -.1rem;">15</span>`;
       } else if (group == "words") {
-        chartString += `<i class="fas fa-fw fa-font"></i>`;
+        chartString += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
       } else if (group == "time") {
-        chartString += `<i class="fas fa-fw fa-clock"></i>`;
+        chartString += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
       } else if (group == "date") {
-        chartString += `<i class="fas fa-fw fa-calendar"></i>`;
+        chartString += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
       } else if (group == "tags") {
-        chartString += `<i class="fas fa-fw fa-tags"></i>`;
+        chartString += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
       } else if (group == "language") {
-        chartString += `<i class="fas fa-fw fa-globe-americas"></i>`;
+        chartString += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
       } else if (group == "funbox") {
-        chartString += `<i class="fas fa-fw fa-gamepad"></i>`;
+        chartString += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
       }
 
       if (aboveChartDisplay[group].all) {
@@ -1182,7 +1183,7 @@ function showActiveFilters() {
             .replace(/_/g, " ");
         }
       }
-      chartString += "</div>";
+      chartString += "</span></div>";
       if (Object.keys(aboveChartDisplay).length !== count)
         chartString += `<div class="spacer"></div>`;
     }
