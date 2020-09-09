@@ -515,6 +515,16 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
     ],
   },
   options: {
+    tooltips: {
+      callbacks: {
+        // HERE YOU CUSTOMIZE THE LABELS
+        title: function (tooltipItem, data) {
+          let resultData =
+            data.datasets[tooltipItem[0].datasetIndex].data[tooltipItem[0].index];
+          return moment(resultData.x).format("DD MMM YYYY")
+        },
+      },
+    },
     animation: {
       duration: 250,
     },
@@ -541,7 +551,10 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
           },
           type: "time",
           time: {
-            unit: 'day'
+            unit: 'day',
+            displayFormats: {
+              day: 'D MMM'
+            }
           },
           bounds: "ticks",
           distribution: "series",
@@ -1802,7 +1815,7 @@ function refreshAccountPage() {
 
         if (datecheck === thisDate) {
           tempChartData.push({
-            x: new Date(parseInt(thisDate)),
+            x: parseInt(thisDate),
             y: 0
           })
         }
@@ -1810,7 +1823,7 @@ function refreshAccountPage() {
         for (let i = 0; i < numDaysBetweenTheDays - 1; i++){
           
           tempChartData.push({
-            x: new Date(parseInt(datecheck) - (86400000 * (i+1))),
+            x: parseInt(datecheck) - (86400000 * (i+1)),
             y: 0
           })
 
@@ -1819,7 +1832,7 @@ function refreshAccountPage() {
 
 
       tempChartData.push({
-        x: new Date(parseInt(date)),
+        x: parseInt(date),
         y: activityChartData[date]
       })
       lastTimestamp = date;
@@ -1982,10 +1995,16 @@ function refreshAccountPage() {
     //   $(".pageAccount .favouriteTest .val").text(`${favModeName} (${Math.floor((favMode.length/testCount) * 100)}%)`);
     // }
 
-    if (resultHistoryChart.data.datasets[0].length > 0) {
+    if (resultHistoryChart.data.datasets[0].data.length > 0) {
       resultHistoryChart.options.plugins.trendlineLinear = true;
     } else {
       resultHistoryChart.options.plugins.trendlineLinear = false;
+    }
+
+    if (activityChart.data.datasets[0].data.length > 0) {
+      activityChart.options.plugins.trendlineLinear = true;
+    } else {
+      activityChart.options.plugins.trendlineLinear = false;
     }
 
     let wpmPoints = filteredResults.map((r) => r.wpm).reverse();
