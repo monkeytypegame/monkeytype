@@ -1748,6 +1748,11 @@ function showResult(difficultyFailed = false) {
     ...[Math.min(...rawWpmPerSecond), Math.min(...wpmHistory)]
   );
 
+  if (!config.startGraphsAtZero) {
+    wpmOverTimeChart.options.scales.yAxes[0].ticks.min = minChartVal;
+    wpmOverTimeChart.options.scales.yAxes[1].ticks.min = minChartVal;
+  }
+
   // wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.round(minChartVal);
   // wpmOverTimeChart.options.scales.yAxes[1].ticks.min = Math.round(minChartVal);
 

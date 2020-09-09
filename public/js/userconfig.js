@@ -52,6 +52,7 @@ let defaultConfig = {
   alwaysShowWordsHistory: false,
   playSoundOnError: false,
   playSoundOnClick: "off",
+  startGraphsAtZero: true
 };
 
 let cookieConfig = null;
@@ -551,6 +552,17 @@ function toggleSmoothCaret() {
   config.smoothCaret = !config.smoothCaret;
   saveConfigToCookie();
 }
+
+//startgraphsatzero
+function setStartGraphsAtZero(mode, nosave) {
+  config.startGraphsAtZero = mode;
+  if (!nosave) saveConfigToCookie();
+}
+
+// function toggleSmoothCaret() {
+//   config.smoothCaret = !config.smoothCaret;
+//   saveConfigToCookie();
+// }
 
 //linescroll
 function setSmoothLineScroll(mode, nosave) {

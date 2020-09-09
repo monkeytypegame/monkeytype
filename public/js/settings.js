@@ -154,6 +154,10 @@ settingsGroups.colorfulMode = new SettingsGroup(
   "colorfulMode",
   setColorfulMode
 );
+settingsGroups.startGraphsAtZero = new SettingsGroup(
+  "startGraphsAtZero",
+  setStartGraphsAtZero
+);
 settingsGroups.randomTheme = new SettingsGroup("randomTheme", setRandomTheme);
 settingsGroups.stopOnError = new SettingsGroup(
   "stopOnError",

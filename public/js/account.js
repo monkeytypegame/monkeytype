@@ -464,6 +464,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           ticks: {
             fontFamily: "Roboto Mono",
             beginAtZero: true,
+            min: 0
           },
           display: true,
           scaleLabel: {
@@ -720,9 +721,16 @@ function updateHoverChart(filteredId) {
   hoverChart.options.annotation.annotations[0].label.fontColor = themeColors.bg;
 
   let maxChartVal = Math.max(...[Math.max(...data.wpm), Math.max(...data.raw)]);
-
+  let minChartVal = Math.min(
+    ...[Math.min(...data.wpm), Math.min(...data.raw)]
+  );
   hoverChart.options.scales.yAxes[0].ticks.max = Math.round(maxChartVal);
   hoverChart.options.scales.yAxes[1].ticks.max = Math.round(maxChartVal);
+
+  if (!config.startGraphsAtZero) {
+    hoverChart.options.scales.yAxes[0].ticks.min = Math.round(minChartVal);
+    hoverChart.options.scales.yAxes[1].ticks.min = Math.round(minChartVal);
+  }
 
   hoverChart.update({ duration: 0 });
 }
@@ -1415,6 +1423,7 @@ function refreshAccountPage() {
     refreshGlobalStats();
 
     let chartData = [];
+    let wpmChartData = [];
     let accChartData = [];
     visibleTableLines = 0;
 
@@ -1648,6 +1657,8 @@ function refreshAccountPage() {
         difficulty: result.difficulty,
       });
 
+      wpmChartData.push(result.wpm);
+
       // accChartData.push({
       //   x: result.timestamp,
       //   y: result.acc,
@@ -1685,6 +1696,13 @@ function refreshAccountPage() {
 
     resultHistoryChart.data.datasets[0].data = chartData;
     resultHistoryChart.data.datasets[1].data = accChartData;
+
+    let minChartVal = Math.min(...wpmChartData);
+
+    if (!config.startGraphsAtZero) {
+      resultHistoryChart.options.scales.yAxes[0].ticks.min = Math.round(minChartVal);
+      resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.round(minChartVal);
+    }
 
 
     if (chartData == [] || chartData.length == 0) {
