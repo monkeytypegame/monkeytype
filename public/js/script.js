@@ -563,7 +563,34 @@ function setToggleSettings(state) {
 }
 
 function emulateLayout(event) {
-  if (config.layout == "default" || event.key === " ") return event;
+  function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
+    if (config.capsLockBackspace) return event.shiftKey;
+    const isCapsLockHeld = event.originalEvent.getModifierState("CapsLock");
+    if (isCapsLockHeld) return isASCIILetter(newKeyPreview) !== event.shiftKey;
+    return event.shiftKey;
+  }
+  function replaceEventKey(event, keyCode) {
+    const newKey = String.fromCharCode(keyCode);
+    event.keyCode = keyCode;
+    event.charCode = keyCode;
+    event.which = keyCode;
+    event.key = newKey;
+    event.code = "Key" + newKey.toUpperCase();
+  }
+  if (event.key === " " || event.key === "Enter")
+    return event;
+  if (config.layout === "default") {
+    //override the caps lock modifier for the default layout if needed
+    if (config.capsLockBackspace && isASCIILetter(event.key)) {
+      replaceEventKey(
+        event,
+        event.shiftKey
+          ? event.key.toUpperCase().charCodeAt(0)
+          : event.key.toLowerCase().charCodeAt(0)
+      );
+    }
+    return event;
+  }
   const qwertyMasterLayout = {
     Backquote: "`~",
     Digit1: "1!",
@@ -614,29 +641,22 @@ function emulateLayout(event) {
     Slash: "/?",
     Space: "  ",
   };
-  let layoutMap = layouts[config.layout];
-  let qwertyMap = layouts["qwerty"];
+  const layoutMap = layouts[config.layout];
+  const qwertyMap = layouts["qwerty"];
 
-  let qwertyKey = qwertyMasterLayout[event.code];
+  const qwertyKey = qwertyMasterLayout[event.code];
   let mapIndex;
-  let newKey;
-  let shift = event.shiftKey ? 1 : 0;
   for (let i = 0; i < qwertyMap.length; i++) {
     const key = qwertyMap[i];
-    let keyIndex = key.indexOf(qwertyKey);
+    const keyIndex = key.indexOf(qwertyKey);
     if (keyIndex != -1) {
       mapIndex = i;
     }
   }
-  if (!shift && /[A-Z]/gm.test(event.key)) {
-    shift = 1;
-  }
-  newKey = layoutMap[mapIndex][shift];
-  event.keyCode = newKey.charCodeAt(0);
-  event.charCode = newKey.charCodeAt(0);
-  event.which = newKey.charCodeAt(0);
-  event.key = newKey;
-  event.code = "Key" + newKey.toUpperCase();
+  const newKeyPreview = layoutMap[mapIndex][0];
+  const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
+  const newKey = layoutMap[mapIndex][shift];
+  replaceEventKey(event, newKey.charCodeAt(0));
   return event;
 }
 
@@ -3808,7 +3828,10 @@ $(document).keydown((event) => {
   keypressStats.duration.current = performance.now();
   if ($("#wordsInput").is(":focus")) {
     try {
-      if (event.originalEvent.getModifierState("CapsLock")) {
+      if (
+        !config.capsLockBackspace &&
+        event.originalEvent.getModifierState("CapsLock")
+      ) {
         showCapsWarning();
       } else {
         hideCapsWarning();
@@ -3873,8 +3896,10 @@ $(document).keydown((event) => {
 
   //only for the typing test
   if ($("#wordsInput").is(":focus")) {
-    //backspace
-    if (event["keyCode"] == 8) {
+    const isBackspace =
+      event["keyCode"] === 8 ||
+      (config.capsLockBackspace && event.key === "CapsLock");
+    if (isBackspace) {
       event.preventDefault();
       if (!testActive) return;
       if (
