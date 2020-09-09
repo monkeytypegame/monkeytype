@@ -873,7 +873,7 @@ function changeLanguage(language, nosave) {
 }
 
 function setCapsLockBackspace(capsLockBackspace, nosave) {
-  if (capsLockBackspace == null || capsLockBackspace == undefined) {
+  if (capsLockBackspace === null || capsLockBackspace === undefined) {
     capsLockBackspace = false;
   }
   config.capsLockBackspace = capsLockBackspace;

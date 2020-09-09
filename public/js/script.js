@@ -563,14 +563,34 @@ function setToggleSettings(state) {
 }
 
 function emulateLayout(event) {
-  function shouldShiftKey(event, newKeyPreview) {
+  function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
     if (config.capsLockBackspace) return event.shiftKey;
     const isCapsLockHeld = event.originalEvent.getModifierState("CapsLock");
     if (isCapsLockHeld) return isASCIILetter(newKeyPreview) !== event.shiftKey;
     return event.shiftKey;
   }
-  if (config.layout === "default" || event.key === " " || event.key === "Enter")
+  function replaceEventKey(event, keyCode) {
+    const newKey = String.fromCharCode(keyCode);
+    event.keyCode = keyCode;
+    event.charCode = keyCode;
+    event.which = keyCode;
+    event.key = newKey;
+    event.code = "Key" + newKey.toUpperCase();
+  }
+  if (event.key === " " || event.key === "Enter")
     return event;
+  if (config.layout === "default") {
+    //override the shift modifier for the default layout if needed
+    if (config.capsLockBackspace && isASCIILetter(event.key)) {
+      replaceEventKey(
+        event,
+        event.shiftKey
+          ? event.key.toUpperCase().charCodeAt(0)
+          : event.key.toLowerCase().charCodeAt(0)
+      );
+    }
+    return event;
+  }
   const qwertyMasterLayout = {
     Backquote: "`~",
     Digit1: "1!",
@@ -621,27 +641,22 @@ function emulateLayout(event) {
     Slash: "/?",
     Space: "  ",
   };
-  let layoutMap = layouts[config.layout];
-  let qwertyMap = layouts["qwerty"];
+  const layoutMap = layouts[config.layout];
+  const qwertyMap = layouts["qwerty"];
 
-  let qwertyKey = qwertyMasterLayout[event.code];
+  const qwertyKey = qwertyMasterLayout[event.code];
   let mapIndex;
-  let newKey;
   for (let i = 0; i < qwertyMap.length; i++) {
     const key = qwertyMap[i];
-    let keyIndex = key.indexOf(qwertyKey);
+    const keyIndex = key.indexOf(qwertyKey);
     if (keyIndex != -1) {
       mapIndex = i;
     }
   }
   const newKeyPreview = layoutMap[mapIndex][0];
-  const shift = shouldShiftKey(event, newKeyPreview) ? 1 : 0;
-  newKey = layoutMap[mapIndex][shift];
-  event.keyCode = newKey.charCodeAt(0);
-  event.charCode = newKey.charCodeAt(0);
-  event.which = newKey.charCodeAt(0);
-  event.key = newKey;
-  event.code = "Key" + newKey.toUpperCase();
+  const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
+  const newKey = layoutMap[mapIndex][shift];
+  replaceEventKey(event, newKey.charCodeAt(0));
   return event;
 }
 
