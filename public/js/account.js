@@ -453,7 +453,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           distribution: "series",
           display: false,
           scaleLabel: {
-            display: true,
+            display: false,
             labelString: "Date",
           },
         },
@@ -489,6 +489,85 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           },
           gridLines: {
             display: false,
+          },
+        },
+      ],
+    },
+  },
+});
+
+let activityChart = new Chart($(".pageAccount #activityChart"), {
+  animationSteps: 60,
+  type: "bar",
+  data: {
+    datasets: [
+      {
+        yAxisID: "count",
+        label: "Tests Completed",
+        data: [],
+        trendlineLinear: {
+          style: "rgba(255,105,180, .8)",
+          lineStyle: "dotted",
+          width: 4,
+        },
+      },
+    ],
+  },
+  options: {
+    animation: {
+      duration: 250,
+    },
+    legend: {
+      display: false,
+      labels: {
+        fontFamily: "Roboto Mono",
+        fontColor: "#ffffff",
+      },
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+    hover: {
+      mode: "nearest",
+      intersect: true,
+    },
+    scales: {
+      xAxes: [
+        {
+          ticks: {
+            fontFamily: "Roboto Mono",
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          type: "time",
+          time: {
+            unit: 'day'
+          },
+          bounds: "ticks",
+          distribution: "series",
+          display: true,
+          scaleLabel: {
+            display: false,
+            labelString: "Date",
+          },
+          offset: true
+        },
+      ],
+      yAxes: [
+        {
+          id: "count",
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            min: 0,
+            autoSkip: true,
+            stepSize: 1,
+            autoSkipPadding: 40,
+          },
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: "Tests Completed",
+            fontFamily: "Roboto Mono",
           },
         },
       ],
@@ -1077,7 +1156,10 @@ function showActiveFilters() {
           chartString += aboveChartDisplay.tags.array
             .map((id) => {
               if (id == "none") return id;
-              return dbSnapshot.tags.filter((t) => t.id == id)[0].name;
+              let name = dbSnapshot.tags.filter((t) => t.id == id)[0];
+              if (name !== undefined) {
+                return dbSnapshot.tags.filter((t) => t.id == id)[0].name;
+              }
             })
             .join(", ");
         } else {
@@ -1454,6 +1536,9 @@ function refreshAccountPage() {
     let totalCons10 = 0;
     let consCount = 0;
 
+    let dailyActivityDays = [];
+    let activityChartData = [];
+
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
     dbSnapshot.results.forEach((result) => {
@@ -1594,6 +1679,19 @@ function refreshAccountPage() {
       //filters done
       //=======================================
 
+      let resultDate = new Date(result.timestamp);
+      resultDate.setSeconds(0);
+      resultDate.setMinutes(0);
+      resultDate.setHours(0);
+      resultDate.setMilliseconds(0);
+      resultDate = resultDate.getTime();
+
+      if (Object.keys(activityChartData).includes(String(resultDate))) {
+        activityChartData[resultDate] = activityChartData[resultDate] + 1;
+      } else {
+        activityChartData[resultDate] = 1;
+      }
+
       tt = 0;
       if (result.testDuration == undefined) {
         //test finished before testDuration field was introduced - estimate
@@ -1678,6 +1776,71 @@ function refreshAccountPage() {
     loadMoreLines();
     ////////
 
+
+    let thisDate = new Date(Date.now());
+    thisDate.setSeconds(0);
+    thisDate.setMinutes(0);
+    thisDate.setHours(0);
+    thisDate.setMilliseconds(0);
+    thisDate = thisDate.getTime();
+
+    let tempChartData = [];
+    let lastTimestamp = 0;
+    Object.keys(activityChartData).forEach(date => {
+
+      let datecheck;
+      if (lastTimestamp > 0) {
+        datecheck = lastTimestamp;
+      } else {
+        datecheck = thisDate
+      }
+        
+      let numDaysBetweenTheDays = (datecheck - date) / 86400000;
+
+      if (numDaysBetweenTheDays > 1) {
+
+        if (datecheck === thisDate) {
+          tempChartData.push({
+            x: new Date(parseInt(thisDate)),
+            y: 0
+          })
+        }
+
+        for (let i = 0; i < numDaysBetweenTheDays - 1; i++){
+          
+          tempChartData.push({
+            x: new Date(parseInt(datecheck) - (86400000 * (i+1))),
+            y: 0
+          })
+
+        }
+      }
+
+
+      tempChartData.push({
+        x: new Date(parseInt(date)),
+        y: activityChartData[date]
+      })
+      lastTimestamp = date;
+    })
+
+    // console.log(activityChartData);
+
+    activityChart.options.scales.xAxes[0].ticks.minor.fontColor =
+      themeColors.sub;
+    activityChart.options.scales.yAxes[0].ticks.minor.fontColor =
+      themeColors.sub;
+    activityChart.options.scales.yAxes[0].scaleLabel.fontColor =
+      themeColors.sub;
+    activityChart.data.datasets[0].borderColor = themeColors.main;
+    activityChart.data.datasets[0].backgroundColor = themeColors.main;
+
+
+    activityChart.options.legend.labels.fontColor = themeColors.sub;
+    activityChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
+
+    activityChart.data.datasets[0].data = tempChartData;
+
     resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor =
       themeColors.sub;
     resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor =
@@ -1708,11 +1871,13 @@ function refreshAccountPage() {
     if (chartData == [] || chartData.length == 0) {
       $(".pageAccount .group.noDataError").removeClass("hidden");
       $(".pageAccount .group.chart").addClass("hidden");
+      $(".pageAccount .group.dailyActivityChart").addClass("hidden");
       $(".pageAccount .group.history").addClass("hidden");
       $(".pageAccount .triplegroup.stats").addClass("hidden");
     } else {
       $(".pageAccount .group.noDataError").addClass("hidden");
       $(".pageAccount .group.chart").removeClass("hidden");
+      $(".pageAccount .group.dailyActivityChart").removeClass("hidden");
       $(".pageAccount .group.history").removeClass("hidden");
       $(".pageAccount .triplegroup.stats").removeClass("hidden");
     }
@@ -1840,6 +2005,8 @@ function refreshAccountPage() {
     );
 
     resultHistoryChart.update({ duration: 0 });
+    activityChart.update({ duration: 0 });
+
 
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
