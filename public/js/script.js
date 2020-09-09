@@ -569,7 +569,8 @@ function emulateLayout(event) {
     if (isCapsLockHeld) return isASCIILetter(newKeyPreview) !== event.shiftKey;
     return event.shiftKey;
   }
-  if (config.layout == "default" || event.key === " ") return event;
+  if (config.layout === "default" || event.key === " " || event.key === "Enter")
+    return event;
   const qwertyMasterLayout = {
     Backquote: "`~",
     Digit1: "1!",
