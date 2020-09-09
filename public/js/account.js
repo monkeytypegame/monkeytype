@@ -452,6 +452,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           bounds: "ticks",
           distribution: "series",
           display: false,
+          offset: true,
           scaleLabel: {
             display: false,
             labelString: "Date",
