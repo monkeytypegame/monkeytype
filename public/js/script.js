@@ -580,7 +580,7 @@ function emulateLayout(event) {
   if (event.key === " " || event.key === "Enter")
     return event;
   if (config.layout === "default") {
-    //override the shift modifier for the default layout if needed
+    //override the caps lock modifier for the default layout if needed
     if (config.capsLockBackspace && isASCIILetter(event.key)) {
       replaceEventKey(
         event,
