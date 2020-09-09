@@ -479,10 +479,10 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
             beginAtZero: true,
             max: 100
           },
-          display: true,
+          display: false,
           position: "right",
           scaleLabel: {
-            display: true,
+            display: false,
             labelString: "Accuracy",
             fontFamily: "Roboto Mono",
           },
