@@ -182,6 +182,10 @@ settingsGroups.smoothLineScroll = new SettingsGroup(
   "smoothLineScroll",
   setSmoothLineScroll
 );
+settingsGroups.capsLockBackspace = new SettingsGroup(
+  "capsLockBackspace",
+  setCapsLockBackspace
+);
 settingsGroups.layout = new SettingsGroup("layout", changeLayout);
 settingsGroups.language = new SettingsGroup("language", changeLanguage);
 settingsGroups.fontSize = new SettingsGroup("fontSize", changeFontSize);

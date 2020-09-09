@@ -282,6 +282,13 @@ let commands = {
       },
     },
     {
+      id: "toggleCapsLockBackspace",
+      display: "Toggle caps lock backspace",
+      exec: () => {
+        toggleCapsLockBackspace();
+      },
+    },
+    {
       id: "changeLayout",
       display: "Change layout...",
       subgroup: true,

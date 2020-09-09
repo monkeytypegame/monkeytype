@@ -190,6 +190,10 @@ function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function isASCIILetter(c) {
+  return c.length === 1 && /[a-z]/i.test(c);
+}
+
 function kogasa(cov) {
   return (
     100 * (1 - Math.tanh(cov + Math.pow(cov, 3) / 3 + Math.pow(cov, 5) / 5))

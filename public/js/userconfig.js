@@ -33,6 +33,7 @@ let defaultConfig = {
   // readAheadMode: false,
   caretStyle: "default",
   flipTestColors: false,
+  capsLockBackspace: false,
   layout: "default",
   confidenceMode: "off",
   timerStyle: "text",
@@ -144,6 +145,7 @@ function applyConfig(configObj) {
     changeWordCount(configObj.words, true);
     changeMode(configObj.mode, true);
     changeLanguage(configObj.language, true);
+    setCapsLockBackspace(configObj.capsLockBackspace, true);
     changeLayout(configObj.layout, true);
     changeFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
@@ -868,6 +870,18 @@ function changeLanguage(language, nosave) {
     console.log("Analytics unavailable");
   }
   if (!nosave) saveConfigToCookie();
+}
+
+function setCapsLockBackspace(capsLockBackspace, nosave) {
+  if (capsLockBackspace == null || capsLockBackspace == undefined) {
+    capsLockBackspace = false;
+  }
+  config.capsLockBackspace = capsLockBackspace;
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleCapsLockBackspace() {
+  setCapsLockBackspace(!config.capsLockBackspace, false);
 }
 
 function changeLayout(layout, nosave) {
