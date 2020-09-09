@@ -509,7 +509,7 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
         trendlineLinear: {
           style: "rgba(255,105,180, .8)",
           lineStyle: "dotted",
-          width: 4,
+          width: 2,
         },
       },
     ],
