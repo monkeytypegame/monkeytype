@@ -358,5 +358,15 @@
     "name": "superuser",
     "bgColor": "#262A33",
     "textColor": "#43FFAF"
+  },
+  {
+    "name": "ms_cupcakes",
+    "bgColor": "#ffffff",
+    "textColor": "#5ed5f3"
+  },
+  {
+    "name": "dollar",
+    "bgColor": "#e4e4d4",
+    "textColor": "#6b886b"
   }
 ]
