@@ -1345,6 +1345,7 @@ key {
     }
   }
   &.blurred{
+    opacity: 0.5;
     filter: blur(4px);
     -webkit-filter: blur(4px);
   }
