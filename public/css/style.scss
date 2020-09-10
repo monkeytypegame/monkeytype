@@ -1352,11 +1352,11 @@ key {
 
       & letter.corrected {
         color: var(--sub-color);
-        border-bottom: 2px dotted var(--sub-color);
+        border-bottom: 2px dotted var(--main-color);
       }
 
       & letter.extraCorrected {
-        border-right: 2px dotted var(--sub-color);
+        border-right: 2px dotted var(--main-color);
       }
     }
   }
@@ -1369,11 +1369,11 @@ key {
 
       & letter.corrected {
         color: var(--main-color);
-        border-bottom: 2px dotted var(--main-color);
+        border-bottom: 2px dotted var(--text-color);
       }
 
       & letter.extraCorrected {
-        border-right: 2px dotted var(--main-color);
+        border-right: 2px dotted var(--text-color);
       }
 
       & letter.incorrect {
@@ -1396,11 +1396,11 @@ key {
 
       & letter.corrected {
         color: var(--sub-color);
-        border-bottom: 2px dotted var(--sub-color);
+        border-bottom: 2px dotted var(--main-color);
       }
 
       & letter.extraCorrected {
-        border-right: 2px dotted var(--sub-color);
+        border-right: 2px dotted var(--main-color);
       }
 
       & letter.incorrect {
@@ -1613,7 +1613,7 @@ key {
 
 .word letter.corrected {
   color: var(--text-color);
-  border-bottom: 2px dotted var(--text-color);
+  border-bottom: 2px dotted var(--main-color);
 }
 
 .word letter.incorrect {
