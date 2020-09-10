@@ -3034,12 +3034,14 @@ async function loadWordsHistory() {
         }
       }
       wordEl += "</div>";
-    }catch (e) {
-      wordEl = "<div class='word'>";
-      for (let c = 0; c < wordsList[i].length; c++) {
-        wordEl += "<letter>" + wordsList[i][c] + "</letter>";
-      }
-      wordEl += "</div>"
+    } catch (e) {
+      try{
+        wordEl = "<div class='word'>";
+        for (let c = 0; c < wordsList[i].length; c++) {
+          wordEl += "<letter>" + wordsList[i][c] + "</letter>";
+        }
+          wordEl += "</div>"
+      }catch(e){}
     }
     $("#words").append(wordEl);
   };
