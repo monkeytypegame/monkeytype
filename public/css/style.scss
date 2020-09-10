@@ -1819,6 +1819,15 @@ key {
     column-gap: 2rem;
     align-items: center;
 
+    .button.danger {
+      background: #d00;
+      color: #eee;
+      &:hover {
+        background: var(--main-color);
+        color: var(--bg-color);
+      }
+    }
+
     &.customTheme {
       grid-template-columns: 1fr 1fr 1fr 1fr;
       justify-items: stretch;
