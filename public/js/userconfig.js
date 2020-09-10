@@ -874,6 +874,14 @@ function changeLanguage(language, nosave) {
     language = "english";
   }
   config.language = language;
+  //right-to-left languages
+  if (["hebrew"].includes(language)) {
+    isLanguageLeftToRight = false;
+    arrangeCharactersRightToLeft();
+  } else {
+    isLanguageLeftToRight = true;
+    arrangeCharactersLeftToRight();
+  }
   try {
     firebase.analytics().logEvent("changedLanguage", {
       language: language,

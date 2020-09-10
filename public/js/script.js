@@ -38,6 +38,7 @@ let manualRestart = false;
 let bailout = false;
 let notSignedInLastResult = null;
 let caretAnimating = true;
+let isLanguageLeftToRight = true;
 
 let themeColors = {
   bg: "#323437",
@@ -553,12 +554,6 @@ function initWords() {
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
     }
-  }
-  //special case right-to-left languages (currently only Hebrew)
-  if (config.language === "hebrew") {
-    arrangeCharactersRightToLeft();
-  } else {
-    arrangeCharactersLeftToRight();
   }
   showWords();
 }
@@ -1412,9 +1407,7 @@ function updateCaretPosition() {
       .querySelectorAll("letter")[currentLetterIndex];
 
     if ($(currentLetter).length == 0) return;
-    //special case right to left languages (currently only Hebrew)
-    const isLeftToRight = config.language !== "hebrew";
-    let currentLetterPosLeft = isLeftToRight
+    let currentLetterPosLeft = isLanguageLeftToRight
       ? currentLetter.offsetLeft
       : currentLetter.offsetLeft + $(currentLetter).width();
     let currentLetterPosTop = currentLetter.offsetTop;
@@ -1424,11 +1417,11 @@ function updateCaretPosition() {
 
     newTop = currentLetterPosTop - letterHeight / 4;
     if (inputLen == 0) {
-      newLeft = isLeftToRight
+      newLeft = isLanguageLeftToRight
         ? currentLetterPosLeft - caret.width() / 2
         : currentLetterPosLeft + caret.width() / 2;
     } else {
-      newLeft = isLeftToRight
+      newLeft = isLanguageLeftToRight
         ? currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2
         : currentLetterPosLeft - $(currentLetter).width() + caret.width() / 2;
     }
