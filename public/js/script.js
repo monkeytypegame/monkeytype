@@ -554,8 +554,8 @@ function initWords() {
       wordsList.push(w[i]);
     }
   }
-  //special case right-to-left languages.
-  if (config.language == "hebrew") {
+  //special case right-to-left languages (currently only Hebrew)
+  if (config.language === "hebrew") {
     arrangeCharactersRightToLeft();
   } else {
     arrangeCharactersLeftToRight();
@@ -564,11 +564,11 @@ function initWords() {
 }
 
 function arrangeCharactersRightToLeft() {
-  $("#middle > div.pageTest").addClass("rightToLeftTest");
+  $("#words").addClass("rightToLeftTest");
 }
 
 function arrangeCharactersLeftToRight() {
-  $("#middle > div.pageTest").removeClass("rightToLeftTest");
+  $("#words").removeClass("rightToLeftTest");
 }
 
 function setToggleSettings(state) {
@@ -1412,7 +1412,7 @@ function updateCaretPosition() {
       .querySelectorAll("letter")[currentLetterIndex];
 
     if ($(currentLetter).length == 0) return;
-    //special case right to left languages
+    //special case right to left languages (currently only Hebrew)
     const isLeftToRight = config.language !== "hebrew";
     let currentLetterPosLeft = isLeftToRight
       ? currentLetter.offsetLeft

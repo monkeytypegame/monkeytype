@@ -1337,6 +1337,14 @@ key {
   align-content: flex-start;
   user-select: none;
 
+  /* a little hack for right-to-left languages */
+  &.rightToLeftTest {
+    flex-direction: row-reverse;
+    .word {
+      flex-direction: row-reverse;
+    }
+  }
+
   &.flipped {
     .word {
       color: var(--text-color);
@@ -1520,16 +1528,6 @@ key {
   &.focus .pageTest {
     #testModesNotice {
       opacity: 0 !important;
-    }
-  }
-
-  /* a little hack for right-to-left languages */
-  div.pageTest.rightToLeftTest {
-    #words {
-      flex-direction: row-reverse;
-      .word {
-        flex-direction: row-reverse;
-      }
     }
   }
 }
