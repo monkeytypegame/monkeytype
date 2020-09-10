@@ -786,6 +786,13 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
   }, 250);
 });
 
+$("#resetSettingsButton").click((e) => {
+  if (confirm("Press OK to confirm.")) {
+    resetConfig();
+    location.reload();
+  }
+});
+
 $(".pageSettings .sectionGroupTitle").click((e) => {
   let group = $(e.currentTarget).attr("group");
   $(`.pageSettings .settingsGroup.${group}`)
