@@ -104,6 +104,14 @@ async function saveConfigToDB() {
   }
 }
 
+function resetConfig() {
+  config = {
+    ...defaultConfig
+  };
+  applyConfig();
+  saveConfigToCookie();
+}
+
 function saveActiveTagsToCookie() {
   let tags = [];
 

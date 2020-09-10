@@ -1005,6 +1005,7 @@
             <div class="time hidden">1:00</div>
             <div class="wpm">60</div>
           </div>
+          <div class="outOfFocusWarning"><i class="fas fa-mouse-pointer"></i> Click anywhere to focus</div>
           <div id="wordsWrapper">
             <div id="words" class="size15"></div>
           </div>
@@ -2327,6 +2328,29 @@
                 </div>
                 <div class="button on" tabindex="0" onclick="this.blur();">
                   show
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sectionGroupTitle" group="dangerSection">
+            danger section
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="settingsGroup dangerSection">
+            <div class="section resetSettings">
+              <h1>reset settings</h1>
+              <div class="text">
+                Resets settings to the default (but doesn't touch your tags).
+                Warning: you can't undo this action!
+              </div>
+              <div class="buttons">
+                <div
+                  class="button off danger"
+                  id="resetSettingsButton"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  reset
                 </div>
               </div>
             </div>

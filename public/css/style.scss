@@ -1344,6 +1344,10 @@ key {
       flex-direction: row-reverse;
     }
   }
+  &.blurred{
+    filter: blur(4px);
+    -webkit-filter: blur(4px);
+  }
 
   &.flipped {
     .word {
@@ -1355,11 +1359,11 @@ key {
 
       & letter.corrected {
         color: var(--sub-color);
-        border-bottom: 2px dotted var(--sub-color);
+        border-bottom: 2px dotted var(--main-color);
       }
 
       & letter.extraCorrected {
-        border-right: 2px dotted var(--sub-color);
+        border-right: 2px dotted var(--main-color);
       }
     }
   }
@@ -1372,11 +1376,11 @@ key {
 
       & letter.corrected {
         color: var(--main-color);
-        border-bottom: 2px dotted var(--main-color);
+        border-bottom: 2px dotted var(--text-color);
       }
 
       & letter.extraCorrected {
-        border-right: 2px dotted var(--main-color);
+        border-right: 2px dotted var(--text-color);
       }
 
       & letter.incorrect {
@@ -1399,11 +1403,11 @@ key {
 
       & letter.corrected {
         color: var(--sub-color);
-        border-bottom: 2px dotted var(--sub-color);
+        border-bottom: 2px dotted var(--main-color);
       }
 
       & letter.extraCorrected {
-        border-right: 2px dotted var(--sub-color);
+        border-right: 2px dotted var(--main-color);
       }
 
       & letter.incorrect {
@@ -1456,6 +1460,17 @@ key {
 
 #middle {
   .pageTest {
+
+    .outOfFocusWarning{
+      text-align: center;
+      height: 0;
+      line-height: 150px;
+      z-index: 999;
+      position: relative;
+      user-select: none;
+      pointer-events: none;
+    }
+
     #testModesNotice {
       display: grid;
       grid-auto-flow: column;
@@ -1605,7 +1620,7 @@ key {
 
 .word letter.corrected {
   color: var(--text-color);
-  border-bottom: 2px dotted var(--text-color);
+  border-bottom: 2px dotted var(--main-color);
 }
 
 .word letter.incorrect {
@@ -1810,6 +1825,15 @@ key {
     grid-template-columns: 2fr 1fr;
     column-gap: 2rem;
     align-items: center;
+
+    .button.danger {
+      background: #d00;
+      color: #eee;
+      &:hover {
+        background: var(--main-color);
+        color: var(--bg-color);
+      }
+    }
 
     &.customTheme {
       grid-template-columns: 1fr 1fr 1fr 1fr;

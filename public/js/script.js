@@ -825,17 +825,25 @@ function showWords() {
   }
 
   $("#wordsWrapper").removeClass("hidden");
+  const wordHeight = $(document.querySelector(".word")).outerHeight(true);
+  const wordsHeight = $(document.querySelector("#words")).outerHeight(true);
   if (config.showAllLines && config.mode != "time") {
     $("#words").css("height", "auto");
     $("#wordsWrapper").css("height", "auto");
+    let nh = wordHeight * 3;
+
+    if (nh > wordsHeight) {
+      nh = wordsHeight;
+    }
+    $(".outOfFocusWarning").css("line-height", nh+"px");
   } else {
-    const wordHeight = $(document.querySelector(".word")).outerHeight(true);
     $("#words")
       .css("height", wordHeight * 4 + "px")
       .css("overflow", "hidden");
     $("#wordsWrapper")
       .css("height", wordHeight * 3 + "px")
       .css("overflow", "hidden");
+    $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
   }
 
   var currentKey = wordsList[currentWordIndex]
@@ -1543,13 +1551,13 @@ function countChars() {
 }
 
 function calculateStats() {
+  let testSeconds = roundTo2((testEnd - testStart) / 1000);
+
   // if (config.mode == "words" && config.difficulty == "normal") {
   //   if (inputHistory.length != wordsList.length) return;
   // }
   let chars = countChars();
-
   // let testNow = Date.now();
-  let testSeconds = roundTo2((testEnd - testStart) / 1000);
   let wpm = roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
@@ -1663,7 +1671,8 @@ function showResult(difficultyFailed = false) {
   );
   $("#result .stats .key .bottom").text(testtime + "s");
   $("#result .stats .key .bottom").attr("aria-label", `${correctcharpercent}%`);
-
+  $("#words").removeClass("blurred");
+  $(".outOfFocusWarning").addClass('hidden');
   $("#result .stats .key .bottom").text(
     stats.correctChars + stats.correctSpaces + "/" + stats.incorrectChars
   );
@@ -2618,7 +2627,9 @@ function restartTest(withSameWordset = false) {
 }
 
 function focusWords() {
-  if (!$("#wordsWrapper").hasClass("hidden")) $("#wordsInput").focus();
+  if (!$("#wordsWrapper").hasClass("hidden")) {
+    $("#wordsInput").focus();
+  }
 }
 
 function changeCustomText() {
@@ -3050,12 +3061,14 @@ async function loadWordsHistory() {
         }
       }
       wordEl += "</div>";
-    }catch (e) {
-      wordEl = "<div class='word'>";
-      for (let c = 0; c < wordsList[i].length; c++) {
-        wordEl += "<letter>" + wordsList[i][c] + "</letter>";
-      }
-      wordEl += "</div>"
+    } catch (e) {
+      try{
+        wordEl = "<div class='word'>";
+        for (let c = 0; c < wordsList[i].length; c++) {
+          wordEl += "<letter>" + wordsList[i][c] + "</letter>";
+        }
+          wordEl += "</div>"
+      }catch(e){}
     }
     $("#words").append(wordEl);
   };
@@ -3603,7 +3616,7 @@ $(document).on("click", "#top .config .numbersMode .text-button", (e) => {
   restartTest();
 });
 
-$("#wordsWrapper").click((e) => {
+$("#wordsWrapper").on("click",(e) => {
   focusWords();
 });
 
@@ -3719,11 +3732,24 @@ $("#wordsInput").keypress((event) => {
   event.preventDefault();
 });
 
+let outOfFocusTimeout;
+
 $("#wordsInput").on("focus", (event) => {
+  if (!resultVisible) {
+    $("#words").removeClass("blurred");
+    $(".outOfFocusWarning").addClass('hidden');
+    clearTimeout(outOfFocusTimeout);
+  }
   showCaret();
 });
 
 $("#wordsInput").on("focusout", (event) => {
+  if (!resultVisible) {
+  outOfFocusTimeout = setTimeout(() => {
+    $("#words").addClass('blurred');
+    $(".outOfFocusWarning").removeClass('hidden');
+  }, 1000)
+}
   hideCaret();
 });
 

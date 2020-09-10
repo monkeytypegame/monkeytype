@@ -1422,7 +1422,6 @@ const words = {
     leftToRight: true,
     words: [
       "como",
-      "I",
       "su",
       "que",
       "él",
