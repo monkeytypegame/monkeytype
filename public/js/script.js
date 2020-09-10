@@ -38,7 +38,6 @@ let manualRestart = false;
 let bailout = false;
 let notSignedInLastResult = null;
 let caretAnimating = true;
-let isLanguageLeftToRight = true;
 
 let themeColors = {
   bg: "#323437",
@@ -429,7 +428,10 @@ function initWords() {
       async: false,
       success: function (data) {
         hideBackgroundLoader();
-        words["english_10k"] = data;
+        words["english_10k"] = {
+          leftToRight: true,
+          words: data
+        };
         language = words[config.language];
       },
     });
@@ -447,7 +449,7 @@ function initWords() {
     });
   }
 
-  if (language == undefined || language == []) {
+  if (!language) {
     config.language = "english";
     language = words[config.language];
   }
@@ -491,7 +493,7 @@ function initWords() {
     if (activeFunBox === "plus_one") {
       wordsBound = 2;
     }
-    let wordset = language;
+    let wordset = language.words;
     if (config.mode == "custom") {
       wordset = customText;
     }
@@ -554,6 +556,12 @@ function initWords() {
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
     }
+  }
+  //handle right-to-left languages
+  if (language.leftToRight) {
+    arrangeCharactersLeftToRight();
+  } else {
+    arrangeCharactersRightToLeft();
   }
   showWords();
 }
@@ -735,19 +743,23 @@ function addWord() {
         wordsList.length >= customText.length))
   )
     return;
-  let language = words[config.language];
-  if (config.mode == "custom") {
-    language = customText;
-  }
-  let randomWord = language[Math.floor(Math.random() * language.length)];
+  const language = config.mode !== "custom"
+    ? words[config.language]
+    : {
+      //borrow the direction of the current language
+      leftToRight: language.leftToRight,
+      words: customText
+    };
+  const wordset = language.words;
+  let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
   previousWord = wordsList[wordsList.length - 1];
   previousWordStripped = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
   previousWord2Stripped = wordsList[wordsList.length - 2]
     .replace(/[.?!":\-,]/g, "")
     .toLowerCase();
 
-  if (config.mode == "custom" && customTextIsRandom && language.length < 3) {
-    randomWord = language[Math.floor(Math.random() * language.length)];
+  if (config.mode === "custom" && customTextIsRandom && wordset.length < 3) {
+    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
   } else if (config.mode == "custom" && !customTextIsRandom) {
     randomWord = customText[wordsList.length];
   } else {
@@ -757,7 +769,7 @@ function addWord() {
       randomWord.indexOf(" ") > -1 ||
       (!config.punctuation && randomWord == "I")
     ) {
-      randomWord = language[Math.floor(Math.random() * language.length)];
+      randomWord = wordset[Math.floor(Math.random() * wordset.length)];
     }
   }
 
@@ -1407,6 +1419,7 @@ function updateCaretPosition() {
       .querySelectorAll("letter")[currentLetterIndex];
 
     if ($(currentLetter).length == 0) return;
+    const isLanguageLeftToRight = words[config.language].leftToRight;
     let currentLetterPosLeft = isLanguageLeftToRight
       ? currentLetter.offsetLeft
       : currentLetter.offsetLeft + $(currentLetter).width();
