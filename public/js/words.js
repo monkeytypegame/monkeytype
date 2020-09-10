@@ -1411,7 +1411,6 @@ const words = {
   ],
   spanish: [
     "como",
-    "I",
     "su",
     "que",
     "él",
