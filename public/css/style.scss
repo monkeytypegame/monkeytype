@@ -1337,6 +1337,13 @@ key {
   align-content: flex-start;
   user-select: none;
 
+  /* a little hack for right-to-left languages */
+  &.rightToLeftTest {
+    flex-direction: row-reverse;
+    .word {
+      flex-direction: row-reverse;
+    }
+  }
   &.blurred{
     filter: blur(4px);
     -webkit-filter: blur(4px);
