@@ -804,17 +804,25 @@ function showWords() {
   }
 
   $("#wordsWrapper").removeClass("hidden");
+  const wordHeight = $(document.querySelector(".word")).outerHeight(true);
+  const wordsHeight = $(document.querySelector("#words")).outerHeight(true);
   if (config.showAllLines && config.mode != "time") {
     $("#words").css("height", "auto");
     $("#wordsWrapper").css("height", "auto");
+    let nh = wordHeight * 3;
+
+    if (nh > wordsHeight) {
+      nh = wordsHeight;
+    }
+    $(".outOfFocusWarning").css("line-height", nh+"px");
   } else {
-    const wordHeight = $(document.querySelector(".word")).outerHeight(true);
     $("#words")
       .css("height", wordHeight * 4 + "px")
       .css("overflow", "hidden");
     $("#wordsWrapper")
       .css("height", wordHeight * 3 + "px")
       .css("overflow", "hidden");
+    $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
   }
 
   var currentKey = wordsList[currentWordIndex]
@@ -2591,7 +2599,9 @@ function restartTest(withSameWordset = false) {
 }
 
 function focusWords() {
-  if (!$("#wordsWrapper").hasClass("hidden")) $("#wordsInput").focus();
+  if (!$("#wordsWrapper").hasClass("hidden")) {
+    $("#wordsInput").focus();
+  }
 }
 
 function changeCustomText() {
@@ -3576,7 +3586,7 @@ $(document).on("click", "#top .config .numbersMode .text-button", (e) => {
   restartTest();
 });
 
-$("#wordsWrapper").click((e) => {
+$("#wordsWrapper").on("click",(e) => {
   focusWords();
 });
 
@@ -3692,11 +3702,20 @@ $("#wordsInput").keypress((event) => {
   event.preventDefault();
 });
 
+let outOfFocusTimeout;
+
 $("#wordsInput").on("focus", (event) => {
+  $("#words").removeClass("blurred");
+  $(".outOfFocusWarning").addClass('hidden');
+  clearTimeout(outOfFocusTimeout);
   showCaret();
 });
 
 $("#wordsInput").on("focusout", (event) => {
+  outOfFocusTimeout = setTimeout(() => {
+    $("#words").addClass('blurred');
+    $(".outOfFocusWarning").removeClass('hidden');
+  },1000)
   hideCaret();
 });
 

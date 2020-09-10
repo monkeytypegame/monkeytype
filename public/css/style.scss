@@ -1337,6 +1337,11 @@ key {
   align-content: flex-start;
   user-select: none;
 
+  &.blurred{
+    filter: blur(4px);
+    -webkit-filter: blur(4px);
+  }
+
   &.flipped {
     .word {
       color: var(--text-color);
@@ -1448,6 +1453,17 @@ key {
 
 #middle {
   .pageTest {
+
+    .outOfFocusWarning{
+      text-align: center;
+      height: 0;
+      line-height: 150px;
+      z-index: 999;
+      position: relative;
+      user-select: none;
+      pointer-events: none;
+    }
+
     #testModesNotice {
       display: grid;
       grid-auto-flow: column;
