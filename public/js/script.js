@@ -1516,13 +1516,13 @@ function countChars() {
 }
 
 function calculateStats() {
+  let testSeconds = roundTo2((testEnd - testStart) / 1000);
+
   // if (config.mode == "words" && config.difficulty == "normal") {
   //   if (inputHistory.length != wordsList.length) return;
   // }
   let chars = countChars();
-
   // let testNow = Date.now();
-  let testSeconds = roundTo2((testEnd - testStart) / 1000);
   let wpm = roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
