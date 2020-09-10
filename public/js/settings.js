@@ -789,7 +789,9 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
 $("#resetSettingsButton").click((e) => {
   if (confirm("Press OK to confirm.")) {
     resetConfig();
-    location.reload();
+    setTimeout(() => {
+      location.reload();
+    },1000)
   }
 });
 
