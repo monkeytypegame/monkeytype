@@ -554,7 +554,21 @@ function initWords() {
       wordsList.push(w[i]);
     }
   }
+  //special case right-to-left languages.
+  if (config.language == "hebrew") {
+    arrangeCharactersRightToLeft();
+  } else {
+    arrangeCharactersLeftToRight();
+  }
   showWords();
+}
+
+function arrangeCharactersRightToLeft() {
+  $("#middle > div.pageTest").addClass("rightToLeftTest");
+}
+
+function arrangeCharactersLeftToRight() {
+  $("#middle > div.pageTest").removeClass("rightToLeftTest");
 }
 
 function setToggleSettings(state) {
@@ -1398,7 +1412,11 @@ function updateCaretPosition() {
       .querySelectorAll("letter")[currentLetterIndex];
 
     if ($(currentLetter).length == 0) return;
-    let currentLetterPosLeft = currentLetter.offsetLeft;
+    //special case right to left languages
+    const isLeftToRight = config.language !== "hebrew";
+    let currentLetterPosLeft = isLeftToRight
+      ? currentLetter.offsetLeft
+      : currentLetter.offsetLeft + $(currentLetter).width();
     let currentLetterPosTop = currentLetter.offsetTop;
     let letterHeight = $(currentLetter).height();
     let newTop = 0;
@@ -1406,10 +1424,13 @@ function updateCaretPosition() {
 
     newTop = currentLetterPosTop - letterHeight / 4;
     if (inputLen == 0) {
-      newLeft = currentLetterPosLeft - caret.width() / 2;
+      newLeft = isLeftToRight
+        ? currentLetterPosLeft - caret.width() / 2
+        : currentLetterPosLeft + caret.width() / 2;
     } else {
-      newLeft =
-        currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2;
+      newLeft = isLeftToRight
+        ? currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2
+        : currentLetterPosLeft - $(currentLetter).width() + caret.width() / 2;
     }
 
     let duration = 0;
