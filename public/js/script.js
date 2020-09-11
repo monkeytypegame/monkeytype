@@ -2314,8 +2314,6 @@ function startTest() {
   }
   testActive = true;
   testStart = Date.now();
-  const stepIntervalMS = 1000;
-  const expectedStepEnd = testStart + stepIntervalMS;
   // if (config.mode == "time") {
   restartTimer();
   showTimer();
@@ -2336,6 +2334,7 @@ function startTest() {
     },
   };
   //use a recursive self-adjusting timer to avoid time drift
+  const stepIntervalMS = 1000;
   (function loop(expectedStepEnd) {
     const delay = expectedStepEnd - Date.now();
     timer = setTimeout(function () {
