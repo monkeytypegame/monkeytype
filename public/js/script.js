@@ -6,7 +6,7 @@ let correctedHistory = [];
 let currentCorrected = "";
 let currentInput = "";
 let time = 0;
-let timers = [];
+let timer = null;
 let testActive = false;
 let testStart, testEnd;
 let wpmHistory = [];
@@ -1633,7 +1633,7 @@ function showResult(difficultyFailed = false) {
       correctSpaces: 0,
     };
   }
-  clearIntervals();
+  clearTimeout(timer);
   let testtime = stats.time;
   let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
   let afkSecondsPercent = roundTo2((afkseconds / testtime) * 100);
@@ -2322,7 +2322,7 @@ function startTest() {
   // }
   // updateActiveElement();
   updateTimer();
-  clearIntervals();
+  clearTimeout(timer);
   keypressStats = {
     spacing: {
       current: -1,
@@ -2333,8 +2333,11 @@ function startTest() {
       array: [],
     },
   };
-  timers.push(
-    setInterval(function () {
+  //use a recursive self-adjusting timer to avoid time drift
+  const stepIntervalMS = 1000;
+  (function loop(expectedStepEnd) {
+    const delay = expectedStepEnd - Date.now();
+    timer = setTimeout(function () {
       time++;
       if (config.mode === "time") {
         updateTimer();
@@ -2412,16 +2415,18 @@ function startTest() {
       if (config.mode == "time") {
         if (time >= config.time) {
           //times up
-          clearIntervals();
+          clearTimeout(timer);
           hideCaret();
           testActive = false;
           inputHistory.push(currentInput);
           correctedHistory.push(currentCorrected);
           showResult();
+          return;
         }
       }
-    }, 1000)
-  );
+      loop(expectedStepEnd + stepIntervalMS);
+    }, delay);
+  })(testStart + stepIntervalMS);
 }
 
 function restartTest(withSameWordset = false) {
@@ -2447,7 +2452,7 @@ function restartTest(withSameWordset = false) {
   }
 
   manualRestart = false;
-  clearIntervals();
+  clearTimeout(timer);
   time = 0;
   // afkDetected = false;
   wpmHistory = [];
@@ -2588,7 +2593,7 @@ function restartTest(withSameWordset = false) {
           125,
           () => {
             hideCrown();
-            clearIntervals();
+            clearTimeout(timer);
             $("#restartTestButton").css("opacity", 1);
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
             wpmOverTimeChart.options.annotation.annotations[0].value = "-30";
@@ -2901,12 +2906,6 @@ function swapElements(
   } else {
     callback();
   }
-}
-
-function clearIntervals() {
-  timers.forEach((timer) => {
-    clearInterval(timer);
-  });
 }
 
 function updateAccountLoginButton() {
