@@ -747,7 +747,7 @@ function addWord() {
     ? words[config.language]
     : {
       //borrow the direction of the current language
-      leftToRight: language.leftToRight,
+      leftToRight: words[config.language].leftToRight,
       words: customText
     };
   const wordset = language.words;
