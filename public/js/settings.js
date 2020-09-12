@@ -150,6 +150,10 @@ settingsGroups.flipTestColors = new SettingsGroup(
   "flipTestColors",
   setFlipTestColors
 );
+settingsGroups.swapEscAndTab = new SettingsGroup(
+  "swapEscAndTab",
+  setSwapEscAndTab
+);
 settingsGroups.colorfulMode = new SettingsGroup(
   "colorfulMode",
   setColorfulMode

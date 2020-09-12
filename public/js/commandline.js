@@ -180,6 +180,13 @@ let commands = {
       },
     },
     {
+      id: "toggleSwapEscAndTab",
+      display: "Toggle swap esc and tab",
+      exec: () => {
+        toggleSwapEscAndTab();
+      },
+    },
+    {
       id: "toggleShowAllLines",
       display: "Toggle show all lines",
       exec: () => {
@@ -1110,7 +1117,8 @@ $("#commandLine input").keyup((e) => {
 $(document).ready((e) => {
   $(document).keydown((event) => {
     //escape
-    if (event.keyCode == 27) {
+    if ((event.keyCode == 27 && !config.swapEscAndTab) || (event["keyCode"] == 9 && config.swapEscAndTab)) {
+      event.preventDefault();
       if ($("#commandLineWrapper").hasClass("hidden")) {
         currentCommands = [commands];
         showCommandLine();

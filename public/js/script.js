@@ -3916,7 +3916,7 @@ $(document).keydown((event) => {
   keypressStats.spacing.current = now;
 
   //tab
-  if (event["keyCode"] == 9) {
+  if ((event["keyCode"] == 9 && !config.swapEscAndTab) || (event["keyCode"] == 27 && config.swapEscAndTab)) {
     if (
       !event.ctrlKey &&
       config.quickTab &&

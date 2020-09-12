@@ -52,7 +52,8 @@ let defaultConfig = {
   alwaysShowWordsHistory: false,
   playSoundOnError: false,
   playSoundOnClick: "off",
-  startGraphsAtZero: true
+  startGraphsAtZero: true,
+  swapEscAndTab: false
 };
 
 let cookieConfig = null;
@@ -185,6 +186,7 @@ function applyConfig(configObj) {
     setFavThemes(configObj.favThemes, true);
     setRandomTheme(configObj.randomTheme, true);
     setShowAllLines(configObj.showAllLines, true);
+    setSwapEscAndTab(configObj.swapEscAndTab, true);
     // if (
     //   configObj.resultFilters !== null &&
     //   configObj.resultFilters !== undefined
@@ -338,6 +340,20 @@ function setAlwaysShowDecimalPlaces(val, nosave) {
     val = false;
   }
   config.alwaysShowDecimalPlaces = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+//swap esc and tab
+function toggleSwapEscAndTab() {
+  config.swapEscAndTab = !config.swapEscAndTab;
+  saveConfigToCookie();
+}
+
+function setSwapEscAndTab(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.swapEscAndTab = val;
   if (!nosave) saveConfigToCookie();
 }
 

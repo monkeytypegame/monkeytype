@@ -1498,89 +1498,9 @@
                 </div>
               </div>
             </div>
-            <div class="section freedomMode">
-              <h1>freedom mode</h1>
-              <div class="text">
-                Allows you to delete any word, even if it was typed correctly.
-              </div>
-              <div class="buttons">
-                <div class="button off" tabindex="0" onclick="this.blur();">
-                  off
-                </div>
-                <div class="button on" tabindex="0" onclick="this.blur();">
-                  on
-                </div>
-              </div>
-            </div>
-            <div class="section confidenceMode">
-              <h1>confidence mode</h1>
-              <div class="text">
-                When enabled, you will not be able to go back to previous words
-                to fix mistakes. When turned up to the max, you won't be able to
-                backspace at all.
-              </div>
-              <div class="buttons">
-                <div
-                  class="button"
-                  confidenceMode="off"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  off
-                </div>
 
-                <div
-                  class="button"
-                  confidenceMode="on"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  on
-                </div>
-                <div
-                  class="button"
-                  confidenceMode="max"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  max
-                </div>
-              </div>
-            </div>
-            <div class="section stopOnError">
-              <h1>stop on error</h1>
-              <div class="text">
-                Letter mode will stop input when pressing any incorrect letters.
-                Word mode will not allow you to continue to the next word until
-                you correct all mistakes.
-              </div>
-              <div class="buttons">
-                <div
-                  class="button"
-                  stopOnError="off"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  off
-                </div>
-                <div
-                  class="button"
-                  stopOnError="word"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  word
-                </div>
-                <div
-                  class="button"
-                  stopOnError="letter"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  letter
-                </div>
-              </div>
-            </div>
+            
+            
             <div class="section blindMode">
               <h1>blind mode</h1>
               <div class="text">
@@ -1643,6 +1563,145 @@
                 </div>
               </div>
             </div>
+            <div class="section language">
+              <h1>language</h1>
+              <div class="buttons"></div>
+            </div>
+            <div class="section funbox">
+              <h1>funbox</h1>
+              <div class="buttons"></div>
+            </div>
+            <div class="sectionSpacer"></div>
+          </div>
+
+          <div class="sectionGroupTitle" group="input">
+            input
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="settingsGroup input">
+            <div class="section freedomMode">
+              <h1>freedom mode</h1>
+              <div class="text">
+                Allows you to delete any word, even if it was typed correctly.
+              </div>
+              <div class="buttons">
+                <div class="button off" tabindex="0" onclick="this.blur();">
+                  off
+                </div>
+                <div class="button on" tabindex="0" onclick="this.blur();">
+                  on
+                </div>
+              </div>
+            </div>
+            <div class="section stopOnError">
+              <h1>stop on error</h1>
+              <div class="text">
+                Letter mode will stop input when pressing any incorrect letters.
+                Word mode will not allow you to continue to the next word until
+                you correct all mistakes.
+              </div>
+              <div class="buttons">
+                <div
+                  class="button"
+                  stopOnError="off"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  off
+                </div>
+                <div
+                  class="button"
+                  stopOnError="word"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  word
+                </div>
+                <div
+                  class="button"
+                  stopOnError="letter"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  letter
+                </div>
+              </div>
+            </div>
+            <div class="section confidenceMode">
+              <h1>confidence mode</h1>
+              <div class="text">
+                When enabled, you will not be able to go back to previous words
+                to fix mistakes. When turned up to the max, you won't be able to
+                backspace at all.
+              </div>
+              <div class="buttons">
+                <div
+                  class="button"
+                  confidenceMode="off"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  off
+                </div>
+
+                <div
+                  class="button"
+                  confidenceMode="on"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  on
+                </div>
+                <div
+                  class="button"
+                  confidenceMode="max"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  max
+                </div>
+              </div>
+            </div>
+            <div class="section swapEscAndTab" section="">
+              <h1>swap esc and tab</h1>
+              <div class="text">
+                Swap the behaviour of tab and escape keys.
+              </div>
+              <div class="buttons">
+                <div class="button off" tabindex="0" onclick="this.blur();">
+                  off
+                </div>
+                <div class="button on" tabindex="0" onclick="this.blur();">
+                  on
+                </div>
+              </div>
+            </div>
+            <div class="section capsLockBackspace">
+              <h1>caps lock backspace</h1>
+              <div class="text">
+                Makes caps lock act like backspace.
+              </div>
+              <div class="buttons">
+                <div class="button off" tabindex="0" onclick="this.blur();">
+                  off
+                </div>
+                <div class="button on" tabindex="0" onclick="this.blur();">
+                  on
+                </div>
+              </div>
+            </div>
+            <div class="section layout">
+              <h1>layout override</h1>
+              <div class="buttons"></div>
+            </div>
+            <div class="sectionSpacer"></div>
+          </div>
+
+          <div class="sectionGroupTitle" group="sound">
+            sound
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="settingsGroup sound">
             <div class="section playSoundOnClick">
               <h1>play sound on click</h1>
               <div class="text">
@@ -1705,32 +1764,6 @@
                   on
                 </div>
               </div>
-            </div>
-            <div class="section capsLockBackspace">
-              <h1>caps lock backspace</h1>
-              <div class="text">
-                Makes caps lock act like backspace.
-              </div>
-              <div class="buttons">
-                <div class="button off" tabindex="0" onclick="this.blur();">
-                  off
-                </div>
-                <div class="button on" tabindex="0" onclick="this.blur();">
-                  on
-                </div>
-              </div>
-            </div>
-            <div class="section layout">
-              <h1>layout override</h1>
-              <div class="buttons"></div>
-            </div>
-            <div class="section language">
-              <h1>language</h1>
-              <div class="buttons"></div>
-            </div>
-            <div class="section funbox">
-              <h1>funbox</h1>
-              <div class="buttons"></div>
             </div>
             <div class="sectionSpacer"></div>
           </div>
@@ -2331,12 +2364,13 @@
                 </div>
               </div>
             </div>
+            <div class="sectionSpacer"></div>
           </div>
-          <div class="sectionGroupTitle" group="dangerSection">
-            danger section
+          <div class="sectionGroupTitle" group="dangerZone">
+            danger zone
             <i class="fas fa-chevron-down"></i>
           </div>
-          <div class="settingsGroup dangerSection">
+          <div class="settingsGroup dangerZone">
             <div class="section resetSettings">
               <h1>reset settings</h1>
               <div class="text">

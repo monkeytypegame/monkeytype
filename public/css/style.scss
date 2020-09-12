@@ -1828,7 +1828,7 @@ key {
     align-items: center;
 
     .button.danger {
-      background: #d00;
+      background: var(--error-color);
       color: #eee;
       &:hover {
         background: var(--main-color);
