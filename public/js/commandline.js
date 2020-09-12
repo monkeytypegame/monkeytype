@@ -201,6 +201,13 @@ let commands = {
       },
     },
     {
+      id: "toggleShowOutOfFocusWarning",
+      display: "Toggle out of focus warning",
+      exec: () => {
+        toggleShowOutOfFocusWarning();
+      },
+    },
+    {
       id: "togglePresetCustomTheme",
       display: "Toggle preset/custom theme",
       exec: () => {

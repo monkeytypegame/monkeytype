@@ -53,7 +53,8 @@ let defaultConfig = {
   playSoundOnError: false,
   playSoundOnClick: "off",
   startGraphsAtZero: true,
-  swapEscAndTab: false
+  swapEscAndTab: false,
+  showOutOfFocusWarning: true
 };
 
 let cookieConfig = null;
@@ -187,6 +188,7 @@ function applyConfig(configObj) {
     setRandomTheme(configObj.randomTheme, true);
     setShowAllLines(configObj.showAllLines, true);
     setSwapEscAndTab(configObj.swapEscAndTab, true);
+    setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
 
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -342,6 +344,30 @@ function setAlwaysShowDecimalPlaces(val, nosave) {
     val = false;
   }
   config.alwaysShowDecimalPlaces = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+//show out of focus warning
+function toggleShowOutOfFocusWarning() {
+  config.showOutOfFocusWarning = !config.showOutOfFocusWarning;
+  if (!config.showOutOfFocusWarning) {
+    $("#words").css("transition","none").removeClass("blurred");
+    $(".outOfFocusWarning").addClass('hidden');
+    clearTimeouts(outOfFocusTimeouts);
+  }
+  saveConfigToCookie();
+}
+
+function setShowOutOfFocusWarning(val, nosave) {
+  if (val == undefined) {
+    val = true;
+  }
+  config.showOutOfFocusWarning = val;
+  if (!config.showOutOfFocusWarning) {
+    $("#words").css("transition","none").removeClass("blurred");
+    $(".outOfFocusWarning").addClass('hidden');
+    clearTimeouts(outOfFocusTimeouts);
+  }
   if (!nosave) saveConfigToCookie();
 }
 

@@ -3763,7 +3763,7 @@ function clearTimeouts(timeouts) {
 }
 
 $("#wordsInput").on("focus", (event) => {
-  if (!resultVisible) {
+  if (!resultVisible && config.showOutOfFocusWarning) {
     $("#words").css("transition","none").removeClass("blurred");
     $(".outOfFocusWarning").addClass('hidden');
     clearTimeouts(outOfFocusTimeouts);
@@ -3772,7 +3772,7 @@ $("#wordsInput").on("focus", (event) => {
 });
 
 $("#wordsInput").on("focusout", (event) => {
-  if (!resultVisible) {
+  if (!resultVisible && config.showOutOfFocusWarning) {
     outOfFocusTimeouts.push(setTimeout(() => {
       $("#words").css("transition", "0.25s").addClass('blurred');
       $(".outOfFocusWarning").removeClass('hidden');
