@@ -3510,6 +3510,28 @@ $("#customMode2Popup .button").click((e) => {
   applyMode2Popup();
 });
 
+function updateKeytips() {
+  if (config.swapEscAndTab) {
+    $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (
+    <key>tab</key>
+    )`);
+    $("#bottom .keyTips").html(`
+    <key>esc</key> - restart test<br>
+      <key>tab</key> - command line`);
+  } else {
+    $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (
+    <key>esc</key>
+    )`);
+    $("#bottom .keyTips").html(`
+    <key>tab</key> - restart test<br>
+      <key>esc</key> - command line`);
+  }
+}
+
 function applyMode2Popup() {
   let mode = $("#customMode2Popup").attr("mode");
   let val = $("#customMode2Popup input").val();

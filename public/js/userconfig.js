@@ -187,6 +187,8 @@ function applyConfig(configObj) {
     setRandomTheme(configObj.randomTheme, true);
     setShowAllLines(configObj.showAllLines, true);
     setSwapEscAndTab(configObj.swapEscAndTab, true);
+
+    config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
     //   configObj.resultFilters !== null &&
     //   configObj.resultFilters !== undefined
@@ -347,6 +349,7 @@ function setAlwaysShowDecimalPlaces(val, nosave) {
 function toggleSwapEscAndTab() {
   config.swapEscAndTab = !config.swapEscAndTab;
   saveConfigToCookie();
+  updateKeytips();
 }
 
 function setSwapEscAndTab(val, nosave) {
@@ -354,6 +357,7 @@ function setSwapEscAndTab(val, nosave) {
     val = false;
   }
   config.swapEscAndTab = val;
+  updateKeytips();
   if (!nosave) saveConfigToCookie();
 }
 
