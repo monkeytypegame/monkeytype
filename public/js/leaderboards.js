@@ -141,9 +141,9 @@ function updateLeaderboards() {
             <tr>
             <td>${dindex + 1}</td>
             <td>You</td>
-            <td>${entry.wpm}</td>
-            <td>${entry.raw}</td>
-            <td>${entry.acc}%</td>
+            <td>${entry.wpm.toFixed(2)}</td>
+            <td>${entry.raw.toFixed(2)}</td>
+            <td>${entry.acc.toFixed(2)}%</td>
             <td>${entry.mode} ${entry.mode2}</td>
             <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
           </tr>
@@ -155,9 +155,9 @@ function updateLeaderboards() {
             dindex === 0 ? '<i class="fas fa-fw fa-crown"></i>' : dindex + 1
           }</td>
           <td ${meClassString}>${entry.name}</td>
-          <td>${entry.wpm}</td>
-          <td>${entry.raw}</td>
-          <td>${entry.acc}%</td>
+          <td>${entry.wpm.toFixed(2)}</td>
+          <td>${entry.raw.toFixed(2)}</td>
+          <td>${entry.acc.toFixed(2)}%</td>
           <td>${entry.mode} ${entry.mode2}</td>
           <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
         </tr>
@@ -203,9 +203,9 @@ function updateLeaderboards() {
             <tr>
             <td>${index + 1}</td>
             <td>You</td>
-            <td>${entry.wpm}</td>
-            <td>${entry.raw}</td>
-            <td>${entry.acc}%</td>
+            <td>${entry.wpm.toFixed(2)}</td>
+            <td>${entry.raw.toFixed(2)}</td>
+            <td>${entry.acc.toFixed(2)}%</td>
             <td>${entry.mode} ${entry.mode2}</td>
             <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
           </tr>
@@ -217,9 +217,9 @@ function updateLeaderboards() {
             index === 0 ? '<i class="fas fa-fw fa-crown"></i>' : index + 1
           }</td>
           <td ${meClassString}>${entry.name}</td>
-          <td>${entry.wpm}</td>
-          <td>${entry.raw}</td>
-          <td>${entry.acc}%</td>
+          <td>${entry.wpm.toFixed(2)}</td>
+          <td>${entry.raw.toFixed(2)}</td>
+          <td>${entry.acc.toFixed(2)}%</td>
           <td>${entry.mode} ${entry.mode2}</td>
           <td>${moment(entry.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
         </tr>

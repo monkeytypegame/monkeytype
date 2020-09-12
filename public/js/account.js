@@ -486,7 +486,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           ticks: {
             fontFamily: "Roboto Mono",
             beginAtZero: true,
-            max: 110
+            max: 100
           },
           display: true,
           position: "right",
@@ -583,6 +583,7 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
             autoSkip: true,
             stepSize: 1,
             autoSkipPadding: 40,
+            stepSize: 10
           },
           display: true,
           scaleLabel: {
@@ -1463,12 +1464,12 @@ function loadMoreLines() {
       }
     }
 
-    let consistency = result.consistency.toFixed(2);
+    let consistency = result.consistency;
 
     if (consistency === undefined) {
       consistency = "-";
     } else {
-      consistency += "%";
+      consistency = consistency.toFixed(2) + "%";
     }
 
     $(".pageAccount .history table tbody").append(`
