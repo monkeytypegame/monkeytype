@@ -381,12 +381,18 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           return;
         },
         beforeLabel: function (tooltipItem, data) {
+ 
           let resultData =
             data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+          if (tooltipItem.datasetIndex !== 0) {
+            return `acc: ${resultData.y}%`;
+          }
           let label =
             `${data.datasets[tooltipItem.datasetIndex].label}: ${
               tooltipItem.yLabel
             }` +
+            "\n" +
+            `raw: ${resultData.raw}` +
             "\n" +
             `acc: ${resultData.acc}` +
             "\n\n" +
@@ -433,14 +439,14 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
       },
     },
     responsive: true,
-    // maintainAspectRatio: false,
+    maintainAspectRatio: false,
     // tooltips: {
     //   mode: 'index',
     //   intersect: false,
     // },
     hover: {
       mode: "nearest",
-      intersect: true,
+      intersect: false,
     },
     scales: {
       xAxes: [
@@ -465,7 +471,8 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           ticks: {
             fontFamily: "Roboto Mono",
             beginAtZero: true,
-            min: 0
+            min: 0,
+            stepSize: 10
           },
           display: true,
           scaleLabel: {
@@ -479,12 +486,12 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           ticks: {
             fontFamily: "Roboto Mono",
             beginAtZero: true,
-            max: 100
+            max: 110
           },
-          display: false,
+          display: true,
           position: "right",
           scaleLabel: {
-            display: false,
+            display: true,
             labelString: "Accuracy",
             fontFamily: "Roboto Mono",
           },
@@ -539,7 +546,7 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
     maintainAspectRatio: false,
     hover: {
       mode: "nearest",
-      intersect: true,
+      intersect: false,
     },
     scales: {
       xAxes: [
@@ -1456,7 +1463,7 @@ function loadMoreLines() {
       }
     }
 
-    let consistency = result.consistency;
+    let consistency = result.consistency.toFixed(2);
 
     if (consistency === undefined) {
       consistency = "-";
@@ -1466,9 +1473,9 @@ function loadMoreLines() {
 
     $(".pageAccount .history table tbody").append(`
     <tr>
-    <td>${result.wpm}</td>
-    <td>${raw}</td>
-    <td>${result.acc}%</td>
+    <td>${result.wpm.toFixed(2)}</td>
+    <td>${raw.toFixed(2)}</td>
+    <td>${result.acc.toFixed(2)}%</td>
     <td>${result.correctChars}</td>
     <td>${result.incorrectChars}</td>
     <td>${consistency}</td>
@@ -1521,6 +1528,7 @@ function refreshAccountPage() {
 
     let chartData = [];
     let wpmChartData = [];
+    let rawChartData = [];
     let accChartData = [];
     visibleTableLines = 0;
 
@@ -1768,14 +1776,15 @@ function refreshAccountPage() {
         language: result.language,
         timestamp: result.timestamp,
         difficulty: result.difficulty,
+        raw: result.rawWpm
       });
 
       wpmChartData.push(result.wpm);
 
-      // accChartData.push({
-      //   x: result.timestamp,
-      //   y: result.acc,
-      // })
+      accChartData.push({
+        x: result.timestamp,
+        y: result.acc,
+      })
 
       if (result.wpm > topWpm) {
         let puncsctring = result.punctuation ? ",<br>with punctuation" : "";
@@ -1850,7 +1859,6 @@ function refreshAccountPage() {
     activityChart.data.datasets[0].borderColor = themeColors.main;
     activityChart.data.datasets[0].backgroundColor = themeColors.main;
 
-
     activityChart.options.legend.labels.fontColor = themeColors.sub;
     activityChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
 
@@ -1877,9 +1885,15 @@ function refreshAccountPage() {
 
     let minChartVal = Math.min(...wpmChartData);
 
+    let wpms = chartData.map((r) => r.y);
+    let maxChartVal = Math.max(...wpms);
+
+    resultHistoryChart.options.scales.yAxes[0].ticks.max = Math.floor(maxChartVal) + (10 - Math.floor(maxChartVal) % 10);
+      // resultHistoryChart.options.scales.yAxes[1].ticks.max = Math.floor(maxChartVal) + 10;
+
     if (!config.startGraphsAtZero) {
-      resultHistoryChart.options.scales.yAxes[0].ticks.min = Math.round(minChartVal);
-      resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.round(minChartVal);
+      resultHistoryChart.options.scales.yAxes[0].ticks.min = Math.floor(minChartVal);
+      resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.floor(minChartVal);
     }
 
 
@@ -2027,7 +2041,6 @@ function refreshAccountPage() {
 
     resultHistoryChart.update({ duration: 0 });
     activityChart.update({ duration: 0 });
-
 
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
