@@ -3731,24 +3731,31 @@ $("#wordsInput").keypress((event) => {
   event.preventDefault();
 });
 
-let outOfFocusTimeout;
+let outOfFocusTimeouts = [];
+
+function clearTimeouts(timeouts) {
+  timeouts.forEach(to => {
+    clearTimeout(to);
+    to = null;
+  })
+}
 
 $("#wordsInput").on("focus", (event) => {
   if (!resultVisible) {
     $("#words").css("transition","none").removeClass("blurred");
     $(".outOfFocusWarning").addClass('hidden');
-    clearTimeout(outOfFocusTimeout);
+    clearTimeouts(outOfFocusTimeouts);
   }
   showCaret();
 });
 
 $("#wordsInput").on("focusout", (event) => {
   if (!resultVisible) {
-  outOfFocusTimeout = setTimeout(() => {
-    $("#words").css("transition","0.25s").addClass('blurred');
-    $(".outOfFocusWarning").removeClass('hidden');
-  }, 1000)
-}
+    outOfFocusTimeouts.push(setTimeout(() => {
+      $("#words").css("transition", "0.25s").addClass('blurred');
+      $(".outOfFocusWarning").removeClass('hidden');
+    }, 1000));
+  }
   hideCaret();
 });
 
