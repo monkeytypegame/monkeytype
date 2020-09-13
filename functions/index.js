@@ -839,7 +839,9 @@ exports.testCompleted = functions.runWith({ timeoutSeconds: 540, memory: "2GB" }
                     usr,
                     globallb.insertedAt + 1,
                     lbstring,
-                    obj.wpm
+                    obj.wpm,
+                    obj.rawWpm,
+                    obj.acc
                   );
                 }
 
@@ -1716,10 +1718,10 @@ exports.scheduledFunctionCrontab = functions.pubsub
     }
   });
 
-async function announceLbUpdate(discordId, pos, lb, wpm) {
+async function announceLbUpdate(discordId, pos, lb, wpm, raw, acc) {
   db.collection("bot-commands").add({
     command: "sayLbUpdate",
-    arguments: [discordId, pos, lb, wpm],
+    arguments: [discordId, pos, lb, wpm, raw, acc],
     executed: false,
     requestTimestamp: Date.now(),
   });
