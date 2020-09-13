@@ -3935,6 +3935,28 @@ $(document).keyup((event) => {
   keypressStats.duration.current = now;
 });
 
+window.addEventListener('beforeunload', (event) => {
+  // Cancel the event as stated by the standard.
+  if (
+    (config.mode === "words" && config.words < 1000) ||
+    (config.mode === "time" && config.time < 3600) ||
+    config.mode === "quote" ||
+    (config.mode === "custom" &&
+      customTextIsRandom &&
+      customTextWordCount < 1000) ||
+    (config.mode === "custom" &&
+      !customTextIsRandom &&
+      customText.length < 1000)
+  ) {
+  } else {
+    if (testActive) {
+      event.preventDefault();
+      // Chrome requires returnValue to be set.
+      event.returnValue = '';
+    }
+  }
+});
+
 //handle keyboard events
 $(document).keydown((event) => {
   let now = performance.now();
