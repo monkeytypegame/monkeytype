@@ -1229,15 +1229,19 @@ key {
         display: flex;
         // margin-top: -0.5rem;
 
-        .crownWrapper {
-          width: 1.7rem;
-          overflow: hidden;
-          height: 1.7rem;
-          margin-left: 0.5rem;
-          // margin-top: 0.98rem;
-          margin-top: -0.5rem;
+        // .crownWrapper {
+        //   width: 1.7rem;
+        //   overflow: hidden;
+        //   height: 1.7rem;
+        //   margin-left: 0.5rem;
+        //   // margin-top: 0.98rem;
+        //   margin-top: -0.5rem;
 
           .crown {
+            height: 1.7rem;
+            width: 1.7rem;
+            margin-left: 0.5rem;
+
             font-size: 0.7rem;
             line-height: 1.7rem;
             background: var(--main-color);
@@ -1248,7 +1252,7 @@ key {
             width: 1.7rem;
             height: 1.7rem;
           }
-        }
+        // }
       }
 
       .bottom {

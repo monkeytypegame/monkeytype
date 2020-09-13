@@ -1597,11 +1597,11 @@ function calculateStats() {
 }
 
 function hideCrown() {
-  $("#result .stats .wpm .crownWrapper").css("opacity", 0);
+  $("#result .stats .wpm .crownWrapper").css("opacity", 0).addClass('hidden');
 }
 
 function showCrown() {
-  $("#result .stats .wpm .crownWrapper").animate(
+  $("#result .stats .wpm .crown").removeClass('hidden').css('opacity','0').animate(
     {
       opacity: 1,
     },
@@ -1893,6 +1893,7 @@ function showResult(difficultyFailed = false) {
         accountIconLoading(true);
         let localPb = false;
         let dontShowCrown = false;
+        let pbDiff = 0;
         db_getLocalPB(
           config.mode,
           mode2,
@@ -1912,9 +1913,13 @@ function showResult(difficultyFailed = false) {
             }
             if (lpb < stats.wpm) {
               //new pb based on local
+              pbDiff = Math.abs(stats.wpm - lpb);
               if (!dontShowCrown) {
                 hideCrown();
                 showCrown();
+                $("#result .stats .wpm .crown").attr('aria-label', '+' + roundTo2(pbDiff));
+              } else {
+                $("#result .stats .wpm .crown").attr('aria-label', '');
               }
               localPb = true;
             }
