@@ -1128,76 +1128,189 @@ function showActiveFilters() {
     });
   });
 
-  let chartString = "";
-  let allall = true;
-  let count = 0;
-  Object.keys(aboveChartDisplay).forEach((group) => {
-    count++;
-    if (group === "time" && !aboveChartDisplay.mode.array.includes("time"))
-      return;
-    if (group === "words" && !aboveChartDisplay.mode.array.includes("words"))
-      return;
-
-    if (aboveChartDisplay[group].array.length > 0) {
-      chartString += "<div class='group'>";
-      if (group == "difficulty") {
-        chartString += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
-      } else if (group == "mode") {
-        chartString += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
-      } else if (group == "punctuation") {
-        chartString += `<span aria-label="Punctuation" data-balloon-pos="up"><span class="punc" style="font-weight: 900;
+  function addText(group) {
+    let ret = "";
+    ret += "<div class='group'>";
+    if (group == "difficulty") {
+      ret += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
+    } else if (group == "mode") {
+      ret += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
+    } else if (group == "punctuation") {
+      ret += `<span aria-label="Punctuation" data-balloon-pos="up"><span class="punc" style="font-weight: 900;
+      width: 1.25rem;
+      text-align: center;
+      display: inline-block;
+      letter-spacing: -.1rem;">!?</span>`;
+    } else if (group == "numbers") {
+      ret += `<span aria-label="Numbers" data-balloon-pos="up"><span class="numbers" style="font-weight: 900;
         width: 1.25rem;
         text-align: center;
+        margin-right: .1rem;
         display: inline-block;
-        letter-spacing: -.1rem;">!?</span>`;
-      } else if (group == "numbers") {
-        chartString += `<span aria-label="Numbers" data-balloon-pos="up"><span class="numbers" style="font-weight: 900;
-          width: 1.25rem;
-          text-align: center;
-          margin-right: .1rem;
-          display: inline-block;
-          letter-spacing: -.1rem;">15</span>`;
-      } else if (group == "words") {
-        chartString += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
-      } else if (group == "time") {
-        chartString += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
-      } else if (group == "date") {
-        chartString += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
-      } else if (group == "tags") {
-        chartString += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
-      } else if (group == "language") {
-        chartString += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
-      } else if (group == "funbox") {
-        chartString += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
-      }
-
-      if (aboveChartDisplay[group].all) {
-        chartString += "all";
-      } else {
-        allall = false;
-        if (group === "tags") {
-          chartString += aboveChartDisplay.tags.array
-            .map((id) => {
-              if (id == "none") return id;
-              let name = dbSnapshot.tags.filter((t) => t.id == id)[0];
-              if (name !== undefined) {
-                return dbSnapshot.tags.filter((t) => t.id == id)[0].name;
-              }
-            })
-            .join(", ");
-        } else {
-          chartString += aboveChartDisplay[group].array
-            .join(", ")
-            .replace(/_/g, " ");
-        }
-      }
-      chartString += "</span></div>";
-      if (Object.keys(aboveChartDisplay).length !== count)
-        chartString += `<div class="spacer"></div>`;
+        letter-spacing: -.1rem;">15</span>`;
+    } else if (group == "words") {
+      ret += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
+    } else if (group == "time") {
+      ret += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
+    } else if (group == "date") {
+      ret += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
+    } else if (group == "tags") {
+      ret += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
+    } else if (group == "language") {
+      ret += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
+    } else if (group == "funbox") {
+      ret += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
     }
-  });
+    if (aboveChartDisplay[group].all) {
+      ret += "all";
+    } else {
+      allall = false;
+      if (group === "tags") {
+        ret += aboveChartDisplay.tags.array
+          .map((id) => {
+            if (id == "none") return id;
+            let name = dbSnapshot.tags.filter((t) => t.id == id)[0];
+            if (name !== undefined) {
+              return dbSnapshot.tags.filter((t) => t.id == id)[0].name;
+            }
+          })
+          .join(", ");
+      } else {
+        ret += aboveChartDisplay[group].array
+          .join(", ")
+          .replace(/_/g, " ");
+      }
+    }
+    ret += "</span></div>";
+    return ret;
+  }
 
-  if (allall) chartString = `<i class="fas fa-fw fa-filter"></i>all`;
+  let chartString = "";
+
+  //date 
+  chartString += addText("date");
+  chartString += `<div class="spacer"></div>`;
+
+  //mode
+  chartString += addText("mode");
+  chartString += `<div class="spacer"></div>`;
+
+  //time
+  if (aboveChartDisplay.mode.array.includes("time")) {
+    chartString += addText("time");
+    chartString += `<div class="spacer"></div>`;
+  }
+
+  //words
+  if (aboveChartDisplay.mode.array.includes("words")) {
+    chartString += addText("words");
+    chartString += `<div class="spacer"></div>`;
+  }
+
+  //diff
+  chartString += addText("difficulty");
+  chartString += `<div class="spacer"></div>`;
+
+  //punc
+  chartString += addText("punctuation");
+  chartString += `<div class="spacer"></div>`;
+  
+  //numbers  
+  chartString += addText("numbers");
+  chartString += `<div class="spacer"></div>`;
+
+  //language
+  chartString += addText("language");
+  chartString += `<div class="spacer"></div>`;
+
+  //funbox  
+  chartString += addText("funbox");
+  chartString += `<div class="spacer"></div>`;
+    
+  //tags
+  chartString += addText("tags");
+  // chartString += `<div class="spacer"></div>`;
+ 
+ 
+
+
+
+  // let allall = true;
+  // let count = 0;
+  // Object.keys(aboveChartDisplay).forEach((group) => {
+  //   count++;
+  //   if (group === "time" && !aboveChartDisplay.mode.array.includes("time"))
+  //     return;
+  //   if (group === "words" && !aboveChartDisplay.mode.array.includes("words"))
+  //     return;
+
+  //   if (aboveChartDisplay[group].array.length > 0) {
+  //     chartString += "<div class='group'>";
+  //     if (group == "difficulty") {
+  //       chartString += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
+  //     } else if (group == "mode") {
+  //       chartString += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
+  //     } else if (group == "punctuation") {
+  //       chartString += `<span aria-label="Punctuation" data-balloon-pos="up"><span class="punc" style="font-weight: 900;
+  //       width: 1.25rem;
+  //       text-align: center;
+  //       display: inline-block;
+  //       letter-spacing: -.1rem;">!?</span>`;
+  //     } else if (group == "numbers") {
+  //       chartString += `<span aria-label="Numbers" data-balloon-pos="up"><span class="numbers" style="font-weight: 900;
+  //         width: 1.25rem;
+  //         text-align: center;
+  //         margin-right: .1rem;
+  //         display: inline-block;
+  //         letter-spacing: -.1rem;">15</span>`;
+  //     } else if (group == "words") {
+  //       chartString += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
+  //     } else if (group == "time") {
+  //       chartString += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
+  //     } else if (group == "date") {
+  //       chartString += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
+  //     } else if (group == "tags") {
+  //       chartString += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
+  //     } else if (group == "language") {
+  //       chartString += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
+  //     } else if (group == "funbox") {
+  //       chartString += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
+  //     }
+
+  //     if (aboveChartDisplay[group].all) {
+  //       chartString += "all";
+  //     } else {
+  //       allall = false;
+  //       if (group === "tags") {
+  //         chartString += aboveChartDisplay.tags.array
+  //           .map((id) => {
+  //             if (id == "none") return id;
+  //             let name = dbSnapshot.tags.filter((t) => t.id == id)[0];
+  //             if (name !== undefined) {
+  //               return dbSnapshot.tags.filter((t) => t.id == id)[0].name;
+  //             }
+  //           })
+  //           .join(", ");
+  //       } else {
+  //         chartString += aboveChartDisplay[group].array
+  //           .join(", ")
+  //           .replace(/_/g, " ");
+  //       }
+  //     }
+  //     chartString += "</span></div>";
+  //     if (Object.keys(aboveChartDisplay).length !== count)
+  //       chartString += `<div class="spacer"></div>`;
+  //   }
+  // });
+
+  // if (allall) chartString = `<i class="fas fa-fw fa-filter"></i>all`;
+
+
+
+
+
+
+
 
   $(".pageAccount .group.chart .above").html(chartString);
 
@@ -1221,6 +1334,66 @@ function hideChartPreloader() {
     125
   );
 }
+
+$(".pageAccount .topFilters .button.allFilters").click((e) => {
+  Object.keys(config.resultFilters).forEach((group) => {
+    Object.keys(config.resultFilters[group]).forEach((filter) => {
+      if (group === "date") {
+        config.resultFilters[group][filter] = false;
+      } else {
+        config.resultFilters[group][filter] = true;
+      }
+    });
+  });
+  config.resultFilters.date.all = true;
+  showActiveFilters();
+  saveConfigToCookie();
+})
+
+$(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
+  
+  Object.keys(config.resultFilters).forEach((group) => {
+    Object.keys(config.resultFilters[group]).forEach((filter) => {
+      config.resultFilters[group][filter] = false;
+    });
+  });
+
+  config.resultFilters.difficulty[config.difficulty] = true;
+  config.resultFilters.mode[config.mode] = true;
+  if (config.mode === "time") {
+    config.resultFilters.time[config.time] = true;
+  } else if (config.mode === "words") {
+    config.resultFilters.words[config.words] = true;
+  }
+  if (config.punctuation) {
+    config.resultFilters.punctuation.on = true;
+  } else {
+    config.resultFilters.punctuation.off = true;
+  }
+  if (config.numbers) {
+    config.resultFilters.numbers.on = true;
+  } else {
+    config.resultFilters.numbers.off = true;
+  }
+  config.resultFilters.language[config.language] = true;
+  config.resultFilters.funbox[activeFunBox] = true;
+  config.resultFilters.tags.none = true;
+  dbSnapshot.tags.forEach((tag) => {
+    if (tag.active === true) {
+      config.resultFilters.tags.none = false;
+      config.resultFilters.tags[tag.id] = true;
+    }
+  });
+
+  config.resultFilters.date.all = true;
+
+  showActiveFilters();
+  saveConfigToCookie();
+})
+
+$(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
+  $(".pageAccount .filterButtons").slideToggle(250);
+})
 
 $(".pageAccount .filterButtons .buttonsAndTitle .buttons").click(
   ".button",
@@ -1259,109 +1432,6 @@ $(".pageAccount .filterButtons .buttonsAndTitle .buttons").click(
     saveConfigToCookie();
   }
 );
-
-$(".pageAccount #currentConfigFilter").click((e) => {
-  // let disableGroups = [
-  //   "globalFilters",
-  //   "difficultyFilters",
-  //   "modeFilters",
-  //   "punctuationFilter",
-  //   "wordsFilter",
-  //   "timeFilter",
-  //   "languages",
-  //   "tags",
-  //   "funbox",
-  // ];
-  // disableGroups.forEach((group) => {
-  //   $.each(
-  //     $(`.pageAccount .filterButtons .buttons.${group} .button`),
-  //     (index, button) => {
-  //       let fl = $(button).attr("filter");
-  //       disableFilterButton(fl);
-  //       config.resultFilters = config.resultFilters.filter((f) => f !== fl);
-  //     }
-  //   );
-  // });
-  // showActiveFilters();
-
-  Object.keys(config.resultFilters).forEach((group) => {
-    Object.keys(config.resultFilters[group]).forEach((filter) => {
-      config.resultFilters[group][filter] = false;
-    });
-  });
-
-  //rewrite this monstrosity soon pls
-  // config.resultFilters.push(`difficulty_${config.difficulty}`);
-  // toggleFilterButton(`difficulty_${config.difficulty}`);
-  // config.resultFilters.push(`mode_${config.mode}`);
-  // toggleFilterButton(`mode_${config.mode}`);
-  // if (config.mode === "time") {
-  //   config.resultFilters.push(`time_${config.time}`);
-  //   toggleFilterButton(`time_${config.time}`);
-  // } else if (config.mode === "words") {
-  //   config.resultFilters.push(`words_${config.words}`);
-  //   toggleFilterButton(`words_${config.words}`);
-  // }
-  // let puncfilter = config.punctuation ? "punc_on" : "punc_off";
-  // config.resultFilters.push(puncfilter);
-  // toggleFilterButton(puncfilter);
-  // config.resultFilters.push(`lang_${config.language}`);
-  // toggleFilterButton(`lang_${config.language}`);
-
-  // config.resultFilters.push(`funbox_${activeFunBox}`);
-  // toggleFilterButton(`funbox_${activeFunBox}`);
-
-  // let activeTags = [];
-  // try {
-  //   dbSnapshot.tags.forEach((tag) => {
-  //     if (tag.active === true) {
-  //       activeTags.push(tag.id);
-  //     }
-  //   });
-  // } catch (e) {}
-
-  // if (activeTags.length > 0) {
-  //   activeTags.forEach((tag) => {
-  //     config.resultFilters.push(`tag_${tag}`);
-  //     toggleFilterButton(`tag_${tag}`);
-  //   });
-  // } else {
-  //   config.resultFilters.push(`tag_notag`);
-  //   toggleFilterButton(`tag_notag`);
-  // }
-
-  config.resultFilters.difficulty[config.difficulty] = true;
-  config.resultFilters.mode[config.mode] = true;
-  if (config.mode === "time") {
-    config.resultFilters.time[config.time] = true;
-  } else if (config.mode === "words") {
-    config.resultFilters.words[config.words] = true;
-  }
-  if (config.punctuation) {
-    config.resultFilters.punctuation.on = true;
-  } else {
-    config.resultFilters.punctuation.off = true;
-  }
-  if (config.numbers) {
-    config.resultFilters.numbers.on = true;
-  } else {
-    config.resultFilters.numbers.off = true;
-  }
-  config.resultFilters.language[config.language] = true;
-  config.resultFilters.funbox[activeFunBox] = true;
-  config.resultFilters.tags.none = true;
-  dbSnapshot.tags.forEach((tag) => {
-    if (tag.active === true) {
-      config.resultFilters.tags.none = false;
-      config.resultFilters.tags[tag.id] = true;
-    }
-  });
-
-  config.resultFilters.date.all = true;
-
-  showActiveFilters();
-  saveConfigToCookie();
-});
 
 let filteredResults = [];
 let visibleTableLines = 0;

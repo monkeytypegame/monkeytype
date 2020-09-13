@@ -2140,6 +2140,15 @@ key {
     gap: 2rem;
   }
 
+  .topFilters .buttons{
+    display: flex;
+    justify-content: space-evenly;
+    gap: 1rem;
+    .button{
+      width: 100%;
+    }
+  }
+
   // .hoverChartWrapper {
   //   z-index: 999;
   //   display: none;
