@@ -154,6 +154,10 @@ settingsGroups.swapEscAndTab = new SettingsGroup(
   "swapEscAndTab",
   setSwapEscAndTab
 );
+settingsGroups.showOutOfFocusWarning = new SettingsGroup(
+  "showOutOfFocusWarning",
+  setShowOutOfFocusWarning
+);
 settingsGroups.colorfulMode = new SettingsGroup(
   "colorfulMode",
   setColorfulMode
