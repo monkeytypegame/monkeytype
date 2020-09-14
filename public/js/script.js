@@ -333,50 +333,6 @@ function toggleScriptFunbox(...params) {
   }
 }
 
-function verifyUsername() {
-  //   test = firebase.functions().httpsCallable('moveResults')
-  // test2 = firebase.functions().httpsCallable('getNames')
-  // test3 = firebase.functions().httpsCallable('checkNameAvailability')
-  const check = firebase.functions().httpsCallable("checkIfNeedsToChangeName");
-  check({ uid: firebase.auth().currentUser.uid }).then((data) => {
-    if (data.data === 1) {
-      $(".nameChangeMessage").slideDown();
-    } else if (data.data === 2) {
-      $(".nameChangeMessage").slideDown();
-    }
-  });
-
-  $(".nameChangeMessage").click((e) => {
-    alert(`Im currently preparing the system to be ready for leaderboards and other awesome features - it looks like you need to change your display name.
-        
-        It either contains special characters, or your display name is the same as someone elses and your account was made later.
-        
-        Sorry for this inconvenience.
-        `);
-    let newName = prompt(
-      "Please provide a new username - you can use lowercase and uppercase characters, numbers and one of these special characters ( . _ - ). The new name cannot be longer than 12 characters.",
-      firebase.auth().currentUser.displayName
-    );
-    if (newName) {
-      cn = firebase.functions().httpsCallable("changeName");
-      cn({ uid: firebase.auth().currentUser.uid, name: newName }).then((d) => {
-        if (d.data === 1) {
-          //all good
-          alert("Thanks! All good.");
-          location.reload();
-          $(".nameChangeMessage").slideUp();
-        } else if (d.data === 0) {
-          //invalid or unavailable
-          alert("Name invalid or taken. Try again.");
-        } else if (d.data === -1) {
-          //error
-          alert("Unknown error. Contact Miodec on Discord.");
-        }
-      });
-    }
-  });
-}
-
 function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
   console.log(firebase.auth().currentUser.uid);

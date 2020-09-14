@@ -325,7 +325,6 @@ firebase.auth().onAuthStateChanged(function (user) {
     var providerData = user.providerData;
     // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass("hidden");
-    if (!dontCheckUserName) verifyUsername();
     $("#menu .icon-button.account .text").text(displayName);
   }
 });
