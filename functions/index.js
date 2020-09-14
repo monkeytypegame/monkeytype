@@ -14,18 +14,39 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-function getAllNames() {
-  return admin
-    .auth()
-    .listUsers()
-    .then((data) => {
-      let names = [];
-      data.users.forEach((user) => {
-        names.push(user.displayName);
-      });
-      return names;
-    });
+async function getAllNames() {
+  // return admin
+  //   .auth()
+  //   .listUsers()
+  //   .then((data) => {
+  //     let names = [];
+  //     data.users.forEach((user) => {
+  //       names.push(user.displayName);
+  //     });
+  //     return names;
+  //   });
+
+  let ret = [];
+
+  async function getAll(nextPageToken) {
+    // List batch of users, 1000 at a time.
+    let listUsersResult = await admin.auth().listUsers(1000, nextPageToken);
+    for (let i = 0; i < listUsersResult.users.length; i++){
+      ret.push(listUsersResult.users[i].displayName);
+    }
+    if (listUsersResult.pageToken) {
+      // List next batch of users.
+      await getAll(listUsersResult.pageToken);
+    }
+  }
+
+  await getAll();
+  return ret;
 }
+
+// exports.testGetAllNames = functions.https.onCall(async (request, response) => {
+//   return await getAllNames();
+// });
 
 function getAllUsers() {
   return admin
