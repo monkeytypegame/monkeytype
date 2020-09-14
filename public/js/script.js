@@ -925,7 +925,7 @@ function compareInput(showError) {
           correctedHistory.push(currentCorrected);
           document
             .querySelector("#words .word.active")
-            .setAttribute("input", currentInput);
+            .setAttribute("input", currentInput.replace(/'/g, "\'"));
           showResult(true);
         }
         let testNow = Date.now();
@@ -3009,12 +3009,12 @@ async function loadWordsHistory() {
     try {
       if (input === "") throw Exception;
       if (correctedHistory[i] !== "") {
-        wordEl = `<div class='word' input='${correctedHistory[i]}'>`;
+        wordEl = `<div class='word' input="${correctedHistory[i].replace(/"/g, "&quot;")}">`;
       } else {
-        wordEl = `<div class='word' input='${input}'>`;
+        wordEl = `<div class='word' input="${input.replace(/"/g, "&quot;")}">`;
       }
       if (input !== wordsList[i]) {
-        wordEl = `<div class='word error' input='${input}'>`;
+        wordEl = `<div class='word error' input="${input.replace(/"/g, "&quot;")}">`;
       }
 
       let loop;
