@@ -1908,6 +1908,8 @@ function showResult(difficultyFailed = false) {
             config.language,
             config.difficulty
           ).then((highestwpm) => {
+            hideCrown();
+            $("#result .stats .wpm .crown").attr('aria-label', '');
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
               dontShowCrown = true;
             }
@@ -1918,9 +1920,6 @@ function showResult(difficultyFailed = false) {
                 hideCrown();
                 showCrown();
                 $("#result .stats .wpm .crown").attr('aria-label', '+' + roundTo2(pbDiff));
-              } else {
-                hideCrown();
-                $("#result .stats .wpm .crown").attr('aria-label', '');
               }
               localPb = true;
             }
