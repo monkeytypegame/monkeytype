@@ -1919,6 +1919,7 @@ function showResult(difficultyFailed = false) {
                 showCrown();
                 $("#result .stats .wpm .crown").attr('aria-label', '+' + roundTo2(pbDiff));
               } else {
+                hideCrown();
                 $("#result .stats .wpm .crown").attr('aria-label', '');
               }
               localPb = true;
