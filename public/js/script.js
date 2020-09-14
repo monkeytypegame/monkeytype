@@ -2462,6 +2462,7 @@ function restartTest(withSameWordset = false) {
   // afkDetected = false;
   wpmHistory = [];
   rawHistory = [];
+  correctedHistory = [];
   setFocus(false);
   hideCaret();
   testActive = false;
