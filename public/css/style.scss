@@ -1225,7 +1225,7 @@ key {
 
       .top {
         font-size: 2rem;
-        line-height: 1rem;
+        line-height: 1.5rem;
         display: flex;
         // margin-top: -0.5rem;
 
@@ -1241,7 +1241,7 @@ key {
             height: 1.7rem;
             width: 1.7rem;
             margin-left: 0.5rem;
-
+            margin-top: -0.2rem;
             font-size: 0.7rem;
             line-height: 1.7rem;
             background: var(--main-color);
@@ -1274,7 +1274,7 @@ key {
 
       .top {
         font-size: 2rem;
-        line-height: 1rem;
+        line-height: 1.5rem;
       }
 
       .bottom {
