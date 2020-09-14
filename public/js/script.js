@@ -1597,7 +1597,7 @@ function calculateStats() {
 }
 
 function hideCrown() {
-  $("#result .stats .wpm .crownWrapper").css("opacity", 0).addClass('hidden');
+  $("#result .stats .wpm .crown").css("opacity", 0).addClass('hidden');
 }
 
 function showCrown() {
