@@ -2,14 +2,14 @@
 
 ## Project Setup
 
-1.  [Make a new Firebase project. ](https://console.firebase.google.com/u/0/)
+1.  [Create a new Firebase project. ](https://console.firebase.google.com/u/0/)
 
     - The project name doesn't really matter, but just name it `monkey-type`.
-    - Google Analytics not necessary.
+    - Google Analytics is not necessary.
 
 2.  [Install the Firebase CLI](https://firebase.google.com/docs/cli)
-3.  Run `firebase login` on your terminal to log in to the same google account as you just used to make the project.
-4.  Git clone the project.
+3.  Run `firebase login` on your terminal to log in to the same google account as you just used to create the project.
+4.  Git clone this project.
 5.  Rename `.firebaserc_example` to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
     - If `.firebaserc_example` does not exist after cloning, create your own with:
@@ -34,4 +34,4 @@
 
 ## Questions
 
-That should be it. If you run into any problems, let [me](https://github.com/Miodec) know.
+If you run into any problems, let [me](https://github.com/Miodec) know.
