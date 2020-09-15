@@ -368,5 +368,25 @@
     "name": "dollar",
     "bgColor": "#e4e4d4",
     "textColor": "#6b886b"
+  },
+  {
+    "name": "lime",
+    "bgColor": "#7c878e",
+    "textColor": "#93c247"
+  },
+  {
+    "name": "sweden",
+    "bgColor": "#0058a3",
+    "textColor": "#ffcc02"
+  },
+  {
+    "name": "wavez",
+    "bgColor": "#1c292f",
+    "textColor": "#6bde3b"
+  },
+  {
+    "name": "nebula",
+    "bgColor": "#212135",
+    "textColor": "#be3c88"
   }
 ]
