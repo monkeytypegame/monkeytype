@@ -2354,6 +2354,25 @@ function hideResultEditTagsPanel() {
   }
 }
 
+let chartAccuracyVisible = true;
+
+function toggleChartAccuracy() {
+  if (chartAccuracyVisible) {
+    resultHistoryChart.data.datasets[1].hidden = true;
+    resultHistoryChart.options.scales.yAxes[1].display = false;
+    chartAccuracyVisible = false;
+  } else {
+    resultHistoryChart.data.datasets[1].hidden = false;
+    resultHistoryChart.options.scales.yAxes[1].display = true;
+    chartAccuracyVisible = true;
+  }
+  resultHistoryChart.update();
+}
+
+$(".pageAccount .toggleAccuracyOnChart").click((params) => {
+  toggleChartAccuracy();
+})
+
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
   if (dbSnapshot.tags.length > 0) {
     let resultid = $(f.target).parents("span").attr("resultid");
