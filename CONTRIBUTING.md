@@ -6,14 +6,14 @@
 
    - If `.firebaserc_example` does not exist after cloning, create your own:
 
-````.firebaserc
-     {
-         "projects": {
-             "default": "monkey-type-dev-67af4",
-             "live": "monkey-type"
-         }
-     }
-     ```
+   ```.firebaserc
+        {
+            "projects": {
+                "default": "monkey-type-dev-67af4",
+                "live": "monkey-type"
+            }
+        }
+   ```
 
    - The "live" option in `.firebaserc_example` is not necessary.
 
@@ -26,4 +26,3 @@
 2. Install [Prettier](https://prettier.io/docs/en/install.html). Its a code formatter, and it will make sure that we avoid any whitespace or formatting issues when merging code.
 
 That should be it. If you run into any problems, let me know.
-````
