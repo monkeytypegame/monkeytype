@@ -68,122 +68,125 @@ let keypressStats = {
 };
 
 let errorSound = new Audio("../sound/error.wav");
+let clickSounds = null;
 
-let clickSounds = {
-  "1": [
-    {
-      sounds: [
-        new Audio("../sound/click1/click1_1.wav"),
-        new Audio("../sound/click1/click1_1.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click1/click1_2.wav"),
-        new Audio("../sound/click1/click1_2.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click1/click1_3.wav"),
-        new Audio("../sound/click1/click1_3.wav"),
-      ],
-      counter: 0,
-    },
-  ],
-  "2": [
-    {
-      sounds: [
-        new Audio("../sound/click2/click2_1.wav"),
-        new Audio("../sound/click2/click2_1.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click2/click2_2.wav"),
-        new Audio("../sound/click2/click2_2.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click2/click2_3.wav"),
-        new Audio("../sound/click2/click2_3.wav"),
-      ],
-      counter: 0,
-    },
-  ],
-  "3": [
-    {
-      sounds: [
-        new Audio("../sound/click3/click3_1.wav"),
-        new Audio("../sound/click3/click3_1.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click3/click3_2.wav"),
-        new Audio("../sound/click3/click3_2.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click3/click3_3.wav"),
-        new Audio("../sound/click3/click3_3.wav"),
-      ],
-      counter: 0,
-    },
-  ],
-  "4": [
-    {
-      sounds: [
-        new Audio("../sound/click4/click4_1.wav"),
-        new Audio("../sound/click4/click4_1.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click4/click4_2.wav"),
-        new Audio("../sound/click4/click4_2.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click4/click4_3.wav"),
-        new Audio("../sound/click4/click4_3.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click4/click4_4.wav"),
-        new Audio("../sound/click4/click4_4.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click4/click4_5.wav"),
-        new Audio("../sound/click4/click4_5.wav"),
-      ],
-      counter: 0,
-    },
-    {
-      sounds: [
-        new Audio("../sound/click4/click4_6.wav"),
-        new Audio("../sound/click4/click4_6.wav"),
-      ],
-      counter: 0,
-    },
-  ],
-};
+function initClickSounds() {
+  clickSounds = {
+    "1": [
+      {
+        sounds: [
+          new Audio("../sound/click1/click1_1.wav"),
+          new Audio("../sound/click1/click1_1.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click1/click1_2.wav"),
+          new Audio("../sound/click1/click1_2.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click1/click1_3.wav"),
+          new Audio("../sound/click1/click1_3.wav"),
+        ],
+        counter: 0,
+      },
+    ],
+    "2": [
+      {
+        sounds: [
+          new Audio("../sound/click2/click2_1.wav"),
+          new Audio("../sound/click2/click2_1.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click2/click2_2.wav"),
+          new Audio("../sound/click2/click2_2.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click2/click2_3.wav"),
+          new Audio("../sound/click2/click2_3.wav"),
+        ],
+        counter: 0,
+      },
+    ],
+    "3": [
+      {
+        sounds: [
+          new Audio("../sound/click3/click3_1.wav"),
+          new Audio("../sound/click3/click3_1.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click3/click3_2.wav"),
+          new Audio("../sound/click3/click3_2.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click3/click3_3.wav"),
+          new Audio("../sound/click3/click3_3.wav"),
+        ],
+        counter: 0,
+      },
+    ],
+    "4": [
+      {
+        sounds: [
+          new Audio("../sound/click4/click4_1.wav"),
+          new Audio("../sound/click4/click4_1.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click4/click4_2.wav"),
+          new Audio("../sound/click4/click4_2.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click4/click4_3.wav"),
+          new Audio("../sound/click4/click4_3.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click4/click4_4.wav"),
+          new Audio("../sound/click4/click4_4.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click4/click4_5.wav"),
+          new Audio("../sound/click4/click4_5.wav"),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Audio("../sound/click4/click4_6.wav"),
+          new Audio("../sound/click4/click4_6.wav"),
+        ],
+        counter: 0,
+      },
+    ],
+  };
+}
 
 let customText = "The quick brown fox jumps over the lazy dog".split(" ");
 let customTextIsRandom = false;
@@ -3436,6 +3439,7 @@ function hideCustomMode2Popup() {
 
 function playClickSound() {
   if (config.playSoundOnClick === "off") return;
+  if (clickSounds === null) initClickSounds();
 
   let rand = Math.floor(
     Math.random() * clickSounds[config.playSoundOnClick].length
