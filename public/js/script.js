@@ -2773,6 +2773,10 @@ function liveWpmAndRaw() {
     }
     chars += inputHistory[i].length;
   }
+  if (wordsList[currentWordIndex] === currentInput) {
+    correctWordChars += currentInput.length;
+  }
+  chars += currentInput.length;
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
