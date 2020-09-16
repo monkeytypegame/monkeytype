@@ -2014,12 +2014,12 @@ function showResult(difficultyFailed = false) {
                         glb.insertedAt
                       );
                       let str = getPositionString(glb.insertedAt + 1);
-                      globalLbString = `global: ${str} place`;
+                      globalLbString = `global: ${str}`;
                     } else {
                       globalLbDiff = glbMemory - glb.foundAt;
                       updateLbMemory(config.mode, mode2, "global", glb.foundAt);
                       let str = getPositionString(glb.foundAt + 1);
-                      globalLbString = `global: already ${str}`;
+                      globalLbString = `global: ${str}`;
                     }
                   }
                   if (!dontShowGlobalDiff) {
@@ -2057,12 +2057,12 @@ function showResult(difficultyFailed = false) {
                         dlb.insertedAt
                       );
                       let str = getPositionString(dlb.insertedAt + 1);
-                      dailyLbString = `daily: ${str} place`;
+                      dailyLbString = `daily: ${str}`;
                     } else {
                       dailyLbDiff = dlbMemory - dlb.foundAt;
                       updateLbMemory(config.mode, mode2, "daily", dlb.foundAt);
                       let str = getPositionString(dlb.foundAt + 1);
-                      dailyLbString = `daily: already ${str}`;
+                      dailyLbString = `daily: ${str}`;
                     }
                   }
                   if (!dontShowDailyDiff) {
