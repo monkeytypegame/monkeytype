@@ -1607,7 +1607,10 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
     $("#result .stats .acc .bottom").text(roundTo2(stats.acc) + "%");
     $("#result .stats .time .bottom").text(roundTo2(testtime) + "s");
-    $("#result .stats .wpm .bottom").removeAttr("aria-label");
+    $("#result .stats .wpm .bottom").attr(
+      "aria-label",
+      roundTo2(stats.wpm * 5)
+    );
     $("#result .stats .raw .bottom").removeAttr("aria-label");
     $("#result .stats .acc .bottom").removeAttr("aria-label");
     $("#result .stats .time .bottom").attr(
@@ -1616,7 +1619,10 @@ function showResult(difficultyFailed = false) {
     );
   } else {
     $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
-    $("#result .stats .wpm .bottom").attr("aria-label", stats.wpm);
+    $("#result .stats .wpm .bottom").attr(
+      "aria-label",
+      stats.wpm + ` (${roundTo2(stats.wpm * 5)} cpm)`
+    );
     $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
     $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
     $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
