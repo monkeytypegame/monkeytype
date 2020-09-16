@@ -389,7 +389,7 @@ function initWords() {
         hideBackgroundLoader();
         words["english_10k"] = {
           leftToRight: true,
-          words: data
+          words: data,
         };
         language = words[config.language];
       },
@@ -553,8 +553,7 @@ function emulateLayout(event) {
     event.key = newKey;
     event.code = "Key" + newKey.toUpperCase();
   }
-  if (event.key === " " || event.key === "Enter")
-    return event;
+  if (event.key === " " || event.key === "Enter") return event;
   if (config.layout === "default") {
     //override the caps lock modifier for the default layout if needed
     if (config.capsLockBackspace && isASCIILetter(event.key)) {
@@ -702,13 +701,14 @@ function addWord() {
         wordsList.length >= customText.length))
   )
     return;
-  const language = config.mode !== "custom"
-    ? words[config.language]
-    : {
-      //borrow the direction of the current language
-      leftToRight: words[config.language].leftToRight,
-      words: customText
-    };
+  const language =
+    config.mode !== "custom"
+      ? words[config.language]
+      : {
+          //borrow the direction of the current language
+          leftToRight: words[config.language].leftToRight,
+          words: customText,
+        };
   const wordset = language.words;
   let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
   previousWord = wordsList[wordsList.length - 1];
@@ -794,7 +794,7 @@ function showWords() {
     if (nh > wordsHeight) {
       nh = wordsHeight;
     }
-    $(".outOfFocusWarning").css("line-height", nh+"px");
+    $(".outOfFocusWarning").css("line-height", nh + "px");
   } else {
     $("#words")
       .css("height", wordHeight * 4 + "px")
@@ -884,7 +884,7 @@ function compareInput(showError) {
           correctedHistory.push(currentCorrected);
           document
             .querySelector("#words .word.active")
-            .setAttribute("input", currentInput.replace(/'/g, "\'"));
+            .setAttribute("input", currentInput.replace(/'/g, "'"));
           showResult(true);
         }
         let testNow = Date.now();
@@ -1101,7 +1101,7 @@ function updateTimer() {
       //   }
       // }
       let displayTime = secondsToString(config.time - time);
-      $("#timerNumber").html("<div>"+displayTime+"</div>");
+      $("#timerNumber").html("<div>" + displayTime + "</div>");
       // $("#timerNumber").html(config.time - time);
     } else if (config.timerStyle === "mini") {
       let displayTime = secondsToString(config.time - time);
@@ -1145,7 +1145,9 @@ function updateTimer() {
           outof = customText.length;
         }
       }
-      $("#timerNumber").html("<div>"+`${inputHistory.length}/${outof}`+"</div>");
+      $("#timerNumber").html(
+        "<div>" + `${inputHistory.length}/${outof}` + "</div>"
+      );
       // $("#timerNumber").html(config.time - time);
     } else if (config.timerStyle === "mini") {
       let outof = wordsList.length;
@@ -1556,17 +1558,20 @@ function calculateStats() {
 }
 
 function hideCrown() {
-  $("#result .stats .wpm .crown").css("opacity", 0).addClass('hidden');
+  $("#result .stats .wpm .crown").css("opacity", 0).addClass("hidden");
 }
 
 function showCrown() {
-  $("#result .stats .wpm .crown").removeClass('hidden').css('opacity','0').animate(
-    {
-      opacity: 1,
-    },
-    250,
-    "easeOutCubic"
-  );
+  $("#result .stats .wpm .crown")
+    .removeClass("hidden")
+    .css("opacity", "0")
+    .animate(
+      {
+        opacity: 1,
+      },
+      250,
+      "easeOutCubic"
+    );
 }
 
 function showResult(difficultyFailed = false) {
@@ -1631,7 +1636,7 @@ function showResult(difficultyFailed = false) {
   $("#result .stats .key .bottom").text(testtime + "s");
   $("#result .stats .key .bottom").attr("aria-label", `${correctcharpercent}%`);
   $("#words").removeClass("blurred");
-  $(".outOfFocusWarning").addClass('hidden');
+  $(".outOfFocusWarning").addClass("hidden");
   $("#result .stats .key .bottom").text(
     stats.correctChars + stats.correctSpaces + "/" + stats.incorrectChars
   );
@@ -1868,7 +1873,7 @@ function showResult(difficultyFailed = false) {
             config.difficulty
           ).then((highestwpm) => {
             hideCrown();
-            $("#result .stats .wpm .crown").attr('aria-label', '');
+            $("#result .stats .wpm .crown").attr("aria-label", "");
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
               dontShowCrown = true;
             }
@@ -1878,7 +1883,10 @@ function showResult(difficultyFailed = false) {
               if (!dontShowCrown) {
                 hideCrown();
                 showCrown();
-                $("#result .stats .wpm .crown").attr('aria-label', '+' + roundTo2(pbDiff));
+                $("#result .stats .wpm .crown").attr(
+                  "aria-label",
+                  "+" + roundTo2(pbDiff)
+                );
               }
               localPb = true;
             }
@@ -2780,7 +2788,9 @@ function liveWpmAndRaw() {
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
-  let raw = Math.round(((chars + spaces + currentInput.length) * (60 / testSeconds)) / 5);
+  let raw = Math.round(
+    ((chars + spaces + currentInput.length) * (60 / testSeconds)) / 5
+  );
   return {
     wpm: wpm,
     raw: raw,
@@ -2973,12 +2983,18 @@ async function loadWordsHistory() {
     try {
       if (input === "") throw Exception;
       if (correctedHistory[i] !== "") {
-        wordEl = `<div class='word' input="${correctedHistory[i].replace(/"/g, "&quot;")}">`;
+        wordEl = `<div class='word' input="${correctedHistory[i].replace(
+          /"/g,
+          "&quot;"
+        )}">`;
       } else {
         wordEl = `<div class='word' input="${input.replace(/"/g, "&quot;")}">`;
       }
       if (input !== wordsList[i]) {
-        wordEl = `<div class='word error' input="${input.replace(/"/g, "&quot;")}">`;
+        wordEl = `<div class='word error' input="${input.replace(
+          /"/g,
+          "&quot;"
+        )}">`;
       }
 
       let loop;
@@ -3014,7 +3030,8 @@ async function loadWordsHistory() {
             }
           } else {
             if (input[c] === currentInput) {
-              wordEl += "<letter class='correct'>" + wordsList[i][c] + "</letter>";
+              wordEl +=
+                "<letter class='correct'>" + wordsList[i][c] + "</letter>";
             } else if (input[c] === undefined) {
               wordEl += "<letter>" + wordsList[i][c] + "</letter>";
             } else {
@@ -3030,16 +3047,16 @@ async function loadWordsHistory() {
       }
       wordEl += "</div>";
     } catch (e) {
-      try{
+      try {
         wordEl = "<div class='word'>";
         for (let c = 0; c < wordsList[i].length; c++) {
           wordEl += "<letter>" + wordsList[i][c] + "</letter>";
         }
-          wordEl += "</div>"
-      }catch(e){}
+        wordEl += "</div>";
+      } catch (e) {}
     }
     $("#words").append(wordEl);
-  };
+  }
   $("#showWordHistoryButton").addClass("loaded");
 }
 
@@ -3607,7 +3624,7 @@ $(document).on("click", "#top .config .numbersMode .text-button", (e) => {
   restartTest();
 });
 
-$("#wordsWrapper").on("click",(e) => {
+$("#wordsWrapper").on("click", (e) => {
   focusWords();
 });
 
@@ -3726,16 +3743,16 @@ $("#wordsInput").keypress((event) => {
 let outOfFocusTimeouts = [];
 
 function clearTimeouts(timeouts) {
-  timeouts.forEach(to => {
+  timeouts.forEach((to) => {
     clearTimeout(to);
     to = null;
-  })
+  });
 }
 
 $("#wordsInput").on("focus", (event) => {
   if (!resultVisible && config.showOutOfFocusWarning) {
-    $("#words").css("transition","none").removeClass("blurred");
-    $(".outOfFocusWarning").addClass('hidden');
+    $("#words").css("transition", "none").removeClass("blurred");
+    $(".outOfFocusWarning").addClass("hidden");
     clearTimeouts(outOfFocusTimeouts);
   }
   showCaret();
@@ -3743,10 +3760,12 @@ $("#wordsInput").on("focus", (event) => {
 
 $("#wordsInput").on("focusout", (event) => {
   if (!resultVisible && config.showOutOfFocusWarning) {
-    outOfFocusTimeouts.push(setTimeout(() => {
-      $("#words").css("transition", "0.25s").addClass('blurred');
-      $(".outOfFocusWarning").removeClass('hidden');
-    }, 1000));
+    outOfFocusTimeouts.push(
+      setTimeout(() => {
+        $("#words").css("transition", "0.25s").addClass("blurred");
+        $(".outOfFocusWarning").removeClass("hidden");
+      }, 1000)
+    );
   }
   hideCaret();
 });
@@ -3855,12 +3874,13 @@ $(document).keypress(function (event) {
     }
   }
 
-  if(currentInput.length < wordsList[currentWordIndex].length + 20) currentInput += event["key"];
+  if (currentInput.length < wordsList[currentWordIndex].length + 20)
+    currentInput += event["key"];
   setFocus(true);
   stopCaretAnimation();
   activeWordTopBeforeJump = activeWordTop;
   compareInput(!config.blindMode);
-  
+
   // let newActiveTop = $("#words .word.active").position().top;
 
   // console.time("offcheck1");
@@ -3905,7 +3925,7 @@ $(document).keyup((event) => {
   keypressStats.duration.current = now;
 });
 
-window.addEventListener('beforeunload', (event) => {
+window.addEventListener("beforeunload", (event) => {
   // Cancel the event as stated by the standard.
   if (
     (config.mode === "words" && config.words < 1000) ||
@@ -3922,7 +3942,7 @@ window.addEventListener('beforeunload', (event) => {
     if (testActive) {
       event.preventDefault();
       // Chrome requires returnValue to be set.
-      event.returnValue = '';
+      event.returnValue = "";
     }
   }
 });
@@ -3937,7 +3957,10 @@ $(document).keydown((event) => {
   keypressStats.spacing.current = now;
 
   //tab
-  if ((event["keyCode"] == 9 && !config.swapEscAndTab) || (event["keyCode"] == 27 && config.swapEscAndTab)) {
+  if (
+    (event["keyCode"] == 9 && !config.swapEscAndTab) ||
+    (event["keyCode"] == 27 && config.swapEscAndTab)
+  ) {
     if (
       !event.ctrlKey &&
       config.quickTab &&
