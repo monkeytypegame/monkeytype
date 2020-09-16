@@ -1988,35 +1988,11 @@ function showResult(difficultyFailed = false) {
                     globalLbString = "global: not qualified";
                   } else if (e.data.globalLeaderboard.insertedAt >= 0) {
                     if (e.data.globalLeaderboard.newBest) {
-                      let pos = e.data.globalLeaderboard.insertedAt + 1;
-                      let numend = "th";
-                      let t = pos % 10;
-                      let h = pos % 100;
-                      if (t == 1 && h != 11) {
-                        numend = "st";
-                      }
-                      if (t == 2 && h != 12) {
-                        numend = "nd";
-                      }
-                      if (t == 3 && h != 13) {
-                        numend = "rd";
-                      }
-                      globalLbString = `global: ${pos}${numend} place`;
+                      let str = getPositionString(e.data.globalLeaderboard.insertedAt + 1);
+                      globalLbString = `global: ${str} place`;
                     } else {
-                      let pos = e.data.globalLeaderboard.foundAt + 1;
-                      let numend = "th";
-                      let t = pos % 10;
-                      let h = pos % 100;
-                      if (t == 1 && h != 11) {
-                        numend = "st";
-                      }
-                      if (t == 2 && h != 12) {
-                        numend = "nd";
-                      }
-                      if (t == 3 && h != 13) {
-                        numend = "rd";
-                      }
-                      globalLbString = `global: already ${pos}${numend}`;
+                      let str = getPositionString(e.data.globalLeaderboard.foundAt + 1);
+                      globalLbString = `global: already ${str}`;
                     }
                   }
 
@@ -2028,27 +2004,11 @@ function showResult(difficultyFailed = false) {
                     dailyLbString = "daily: not qualified";
                   } else if (e.data.dailyLeaderboard.insertedAt >= 0) {
                     if (e.data.dailyLeaderboard.newBest) {
-                      let pos = e.data.dailyLeaderboard.insertedAt + 1;
-                      let numend = "th";
-                      if (pos === 1) {
-                        numend = "st";
-                      } else if (pos === 2) {
-                        numend = "nd";
-                      } else if (pos === 3) {
-                        numend = "rd";
-                      }
-                      dailyLbString = `daily: ${pos}${numend} place`;
+                      let str = getPositionString(e.data.dailyLeaderboard.insertedAt + 1);
+                      dailyLbString = `daily: ${str} place`;
                     } else {
-                      let pos = e.data.dailyLeaderboard.foundAt + 1;
-                      let numend = "th";
-                      if (pos === 1) {
-                        numend = "st";
-                      } else if (pos === 2) {
-                        numend = "nd";
-                      } else if (pos === 3) {
-                        numend = "rd";
-                      }
-                      dailyLbString = `daily: already ${pos}${numend}`;
+                      let str = getPositionString(e.data.dailyLeaderboard.foundAt + 1);
+                      dailyLbString = `daily: already ${str}`;
                     }
                   }
 
