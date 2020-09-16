@@ -10,6 +10,16 @@ async function db_getUserSnapshot() {
     personalBests: {},
     tags: [],
     favouriteThemes: [],
+    lbMemory: {
+      time15: {
+        global: null,
+        daily: null
+      },
+      time60: {
+        global: null,
+        daily: null
+      }
+    }
   };
   // await db.collection('results')
   //     .orderBy('timestamp', 'desc')
@@ -71,6 +81,9 @@ async function db_getUserSnapshot() {
             time: data.timeTyping,
             started: data.startedTests,
             completed: data.completedTests
+          }
+          if (data.lbMemory !== undefined) {
+            snap.lbMemory = data.lbMemory;
           }
         } catch (e) {
           //

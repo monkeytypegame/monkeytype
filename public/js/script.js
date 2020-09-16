@@ -202,6 +202,7 @@ const saveConfig = firebase.functions().httpsCallable("saveConfig");
 const generatePairingCode = firebase
   .functions()
   .httpsCallable("generatePairingCode");
+const saveLbMemory = firebase.functions().httpsCallable("saveLbMemory");
 
 function refreshThemeColorObject() {
   let st = getComputedStyle(document.body);
@@ -1980,40 +1981,116 @@ function showResult(difficultyFailed = false) {
                     console.log("Analytics unavailable");
                   }
 
+                  const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
+                  const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
+                  const lbRightIcon = `<i class="fas fa-angle-right"></i>`;
+
                   //global
                   let globalLbString = "";
-                  if (e.data.globalLeaderboard === null) {
+                  const glb = e.data.globalLeaderboard;
+                  const glbMemory =
+                    dbSnapshot.lbMemory[config.mode + mode2].global;
+                  let dontShowGlobalDiff = glbMemory == null ? true : false;
+                  let globalLbDiff = null;
+                  if (glb === null) {
                     globalLbString = "global: not found";
-                  } else if (e.data.globalLeaderboard.insertedAt === -1) {
+                  } else if (glb.insertedAt === -1) {
+                    globalLbDiff = glbMemory - glb.insertedAt;
+                    updateLbMemory(
+                      config.mode,
+                      mode2,
+                      "global",
+                      glb.insertedAt
+                    );
+
                     globalLbString = "global: not qualified";
-                  } else if (e.data.globalLeaderboard.insertedAt >= 0) {
-                    if (e.data.globalLeaderboard.newBest) {
-                      let str = getPositionString(e.data.globalLeaderboard.insertedAt + 1);
+                  } else if (glb.insertedAt >= 0) {
+                    if (glb.newBest) {
+                      globalLbDiff = glbMemory - glb.insertedAt;
+                      updateLbMemory(
+                        config.mode,
+                        mode2,
+                        "global",
+                        glb.insertedAt
+                      );
+                      let str = getPositionString(glb.insertedAt + 1);
                       globalLbString = `global: ${str} place`;
                     } else {
-                      let str = getPositionString(e.data.globalLeaderboard.foundAt + 1);
+                      globalLbDiff = glbMemory - glb.foundAt;
+                      updateLbMemory(config.mode, mode2, "global", glb.foundAt);
+                      let str = getPositionString(glb.foundAt + 1);
                       globalLbString = `global: already ${str}`;
+                    }
+                  }
+                  if (!dontShowGlobalDiff) {
+                    let sString =
+                      globalLbDiff === 1 || globalLbDiff === -1 ? "" : "s";
+                    if (globalLbDiff > 0) {
+                      globalLbString += ` <span class="lbChange" aria-label="You've gained ${globalLbDiff} position${sString}" data-balloon-pos="up">(${lbUpIcon}${globalLbDiff})</span>`;
+                    } else if (globalLbDiff === 0) {
+                      globalLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="up">(${lbRightIcon}${globalLbDiff})</span>`;
+                    } else if (globalLbDiff < 0) {
+                      globalLbString += ` <span class="lbChange" aria-label="You've lost ${globalLbDiff} position${sString}" data-balloon-pos="up">(${lbDownIcon}${globalLbDiff})</span>`;
                     }
                   }
 
                   //daily
                   let dailyLbString = "";
-                  if (e.data.dailyLeaderboard === null) {
+                  const dlb = e.data.dailyLeaderboard;
+                  const dlbMemory =
+                    dbSnapshot.lbMemory[config.mode + mode2].daily;
+                  let dontShowDailyDiff = dlbMemory == null ? true : false;
+                  let dailyLbDiff = null;
+                  if (dlb === null) {
                     dailyLbString = "daily: not found";
-                  } else if (e.data.dailyLeaderboard.insertedAt === -1) {
+                  } else if (dlb.insertedAt === -1) {
+                    dailyLbDiff = dlbMemory - dlb.insertedAt;
+                    updateLbMemory(config.mode, mode2, "daily", dlb.insertedAt);
                     dailyLbString = "daily: not qualified";
-                  } else if (e.data.dailyLeaderboard.insertedAt >= 0) {
-                    if (e.data.dailyLeaderboard.newBest) {
-                      let str = getPositionString(e.data.dailyLeaderboard.insertedAt + 1);
+                  } else if (dlb.insertedAt >= 0) {
+                    if (dlb.newBest) {
+                      dailyLbDiff = dlbMemory - dlb.insertedAt;
+                      updateLbMemory(
+                        config.mode,
+                        mode2,
+                        "daily",
+                        dlb.insertedAt
+                      );
+                      let str = getPositionString(dlb.insertedAt + 1);
                       dailyLbString = `daily: ${str} place`;
                     } else {
-                      let str = getPositionString(e.data.dailyLeaderboard.foundAt + 1);
+                      dailyLbDiff = dlbMemory - dlb.foundAt;
+                      updateLbMemory(config.mode, mode2, "daily", dlb.foundAt);
+                      let str = getPositionString(dlb.foundAt + 1);
                       dailyLbString = `daily: already ${str}`;
                     }
                   }
-
+                  if (!dontShowDailyDiff) {
+                    let sString =
+                      dailyLbDiff === 1 || dailyLbDiff === -1 ? "" : "s";
+                    if (dailyLbDiff > 0) {
+                      dailyLbString += ` <span class="lbChange" aria-label="You've gained ${dailyLbDiff} position${sString}" data-balloon-pos="up">(${lbUpIcon}${dailyLbDiff})</span>`;
+                    } else if (dailyLbDiff === 0) {
+                      dailyLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="up">(${lbRightIcon}${dailyLbDiff})</span>`;
+                    } else if (dailyLbDiff < 0) {
+                      dailyLbString += ` <span class="lbChange" aria-label="You've lost ${dailyLbDiff} position${sString}" data-balloon-pos="up">(${lbDownIcon}${dailyLbDiff})</span>`;
+                    }
+                  }
                   $("#result .stats .leaderboards .bottom").html(
                     globalLbString + "<br>" + dailyLbString
+                  );
+
+                  saveLbMemory({ uid: firebase.auth().currentUser.uid, obj: dbSnapshot.lbMemory }).then(
+                    (d) => {
+                      if (d.data.returnCode === 1) {
+                        // showNotification('config saved to db',1000);
+                      } else {
+                        showNotification(
+                          `Error saving lb memory ${d.data.message}`,
+                          4000
+                        );
+                      }
+                    }
                   );
 
                   if (

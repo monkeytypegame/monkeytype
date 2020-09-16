@@ -1164,6 +1164,50 @@ exports.saveConfig = functions.https.onCall((request, response) => {
   }
 });
 
+exports.saveLbMemory = functions.https.onCall((request, response) => {
+  try {
+    if (request.uid === undefined || request.obj === undefined) {
+      console.error(`error saving lb memory for ${request.uid} - missing input`);
+      return {
+        returnCode: -1,
+        message: "Missing input",
+      };
+    }
+
+    let obj = request.obj;
+    return db
+      .collection(`users`)
+      .doc(request.uid)
+      .set(
+        {
+          lbMemory: obj,
+        },
+        { merge: true }
+      )
+      .then((e) => {
+        return {
+          returnCode: 1,
+          message: "Saved",
+        };
+      })
+      .catch((e) => {
+        console.error(
+          `error saving lb memory to DB for ${request.uid} - ${e.message}`
+        );
+        return {
+          returnCode: -1,
+          message: e.message,
+        };
+      });
+  } catch (e) {
+    console.error(`error saving lb memory for ${request.uid} - ${e}`);
+    return {
+      resultCode: -999,
+      message: e,
+    };
+  }
+});
+
 function generate(n) {
   var add = 1,
     max = 12 - add;

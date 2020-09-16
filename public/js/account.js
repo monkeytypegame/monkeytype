@@ -2486,3 +2486,8 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
     }
   });
 });
+
+function updateLbMemory(mode, mode2, type, value) {
+  dbSnapshot.lbMemory[mode + mode2][type] = value;
+}
+
