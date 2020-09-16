@@ -157,8 +157,8 @@ function signUp() {
                 globalStats: {
                   time: undefined,
                   started: undefined,
-                  completed: undefined
-                }
+                  completed: undefined,
+                },
               };
               if (notSignedInLastResult !== null) {
                 notSignedInLastResult.uid = usr.uid;
@@ -380,7 +380,6 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           return;
         },
         beforeLabel: function (tooltipItem, data) {
- 
           let resultData =
             data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
           if (tooltipItem.datasetIndex !== 0) {
@@ -471,7 +470,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
             fontFamily: "Roboto Mono",
             beginAtZero: true,
             min: 0,
-            stepSize: 10
+            stepSize: 10,
           },
           display: true,
           scaleLabel: {
@@ -485,7 +484,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           ticks: {
             fontFamily: "Roboto Mono",
             beginAtZero: true,
-            max: 100
+            max: 100,
           },
           display: true,
           position: "right",
@@ -526,8 +525,10 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
         // HERE YOU CUSTOMIZE THE LABELS
         title: function (tooltipItem, data) {
           let resultData =
-            data.datasets[tooltipItem[0].datasetIndex].data[tooltipItem[0].index];
-          return moment(resultData.x).format("DD MMM YYYY")
+            data.datasets[tooltipItem[0].datasetIndex].data[
+              tooltipItem[0].index
+            ];
+          return moment(resultData.x).format("DD MMM YYYY");
         },
       },
     },
@@ -557,10 +558,10 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
           },
           type: "time",
           time: {
-            unit: 'day',
+            unit: "day",
             displayFormats: {
-              day: 'D MMM'
-            }
+              day: "D MMM",
+            },
           },
           bounds: "ticks",
           distribution: "series",
@@ -569,7 +570,7 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
             display: false,
             labelString: "Date",
           },
-          offset: true
+          offset: true,
         },
       ],
       yAxes: [
@@ -582,7 +583,7 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
             autoSkip: true,
             stepSize: 1,
             autoSkipPadding: 40,
-            stepSize: 10
+            stepSize: 10,
           },
           display: true,
           scaleLabel: {
@@ -821,9 +822,7 @@ function updateHoverChart(filteredId) {
   hoverChart.options.annotation.annotations[0].label.fontColor = themeColors.bg;
 
   let maxChartVal = Math.max(...[Math.max(...data.wpm), Math.max(...data.raw)]);
-  let minChartVal = Math.min(
-    ...[Math.min(...data.wpm), Math.min(...data.raw)]
-  );
+  let minChartVal = Math.min(...[Math.min(...data.wpm), Math.min(...data.raw)]);
   hoverChart.options.scales.yAxes[0].ticks.max = Math.round(maxChartVal);
   hoverChart.options.scales.yAxes[1].ticks.max = Math.round(maxChartVal);
 
@@ -1175,9 +1174,7 @@ function showActiveFilters() {
           })
           .join(", ");
       } else {
-        ret += aboveChartDisplay[group].array
-          .join(", ")
-          .replace(/_/g, " ");
+        ret += aboveChartDisplay[group].array.join(", ").replace(/_/g, " ");
       }
     }
     ret += "</span></div>";
@@ -1186,7 +1183,7 @@ function showActiveFilters() {
 
   let chartString = "";
 
-  //date 
+  //date
   chartString += addText("date");
   chartString += `<div class="spacer"></div>`;
 
@@ -1213,8 +1210,8 @@ function showActiveFilters() {
   //punc
   chartString += addText("punctuation");
   chartString += `<div class="spacer"></div>`;
-  
-  //numbers  
+
+  //numbers
   chartString += addText("numbers");
   chartString += `<div class="spacer"></div>`;
 
@@ -1222,17 +1219,13 @@ function showActiveFilters() {
   chartString += addText("language");
   chartString += `<div class="spacer"></div>`;
 
-  //funbox  
+  //funbox
   chartString += addText("funbox");
   chartString += `<div class="spacer"></div>`;
-    
+
   //tags
   chartString += addText("tags");
   // chartString += `<div class="spacer"></div>`;
- 
- 
-
-
 
   // let allall = true;
   // let count = 0;
@@ -1304,13 +1297,6 @@ function showActiveFilters() {
 
   // if (allall) chartString = `<i class="fas fa-fw fa-filter"></i>all`;
 
-
-
-
-
-
-
-
   $(".pageAccount .group.chart .above").html(chartString);
 
   refreshAccountPage();
@@ -1347,10 +1333,9 @@ $(".pageAccount .topFilters .button.allFilters").click((e) => {
   config.resultFilters.date.all = true;
   showActiveFilters();
   saveConfigToCookie();
-})
+});
 
 $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
-  
   Object.keys(config.resultFilters).forEach((group) => {
     Object.keys(config.resultFilters[group]).forEach((filter) => {
       config.resultFilters[group][filter] = false;
@@ -1388,11 +1373,11 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
 
   showActiveFilters();
   saveConfigToCookie();
-})
+});
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
   $(".pageAccount .filterButtons").slideToggle(250);
-})
+});
 
 $(".pageAccount .filterButtons .buttonsAndTitle .buttons").click(
   ".button",
@@ -1496,8 +1481,8 @@ function fillPbTables() {
     text += `<tr>
       <td>15</td>
       <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? '-' : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? '-' : pbData.acc+"%"}</td>
+      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
+      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -1512,8 +1497,8 @@ function fillPbTables() {
     text += `<tr>
       <td>30</td>
       <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? '-' : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? '-' : pbData.acc+"%"}</td>
+      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
+      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -1528,8 +1513,8 @@ function fillPbTables() {
     text += `<tr>
       <td>60</td>
       <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? '-' : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? '-' : pbData.acc+"%"}</td>
+      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
+      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -1544,8 +1529,8 @@ function fillPbTables() {
     text += `<tr>
       <td>120</td>
       <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? '-' : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? '-' : pbData.acc+"%"}</td>
+      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
+      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -1563,8 +1548,8 @@ function fillPbTables() {
     text += `<tr>
       <td>10</td>
       <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? '-' : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? '-' : pbData.acc+"%"}</td>
+      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
+      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -1579,8 +1564,8 @@ function fillPbTables() {
     text += `<tr>
       <td>25</td>
       <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? '-' : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? '-' : pbData.acc+"%"}</td>
+      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
+      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -1595,8 +1580,8 @@ function fillPbTables() {
     text += `<tr>
       <td>50</td>
       <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? '-' : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? '-' : pbData.acc+"%"}</td>
+      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
+      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -1611,8 +1596,8 @@ function fillPbTables() {
     text += `<tr>
       <td>100</td>
       <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? '-' : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? '-' : pbData.acc+"%"}</td>
+      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
+      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
     </tr>`;
   } catch (e) {
     text += `<tr>
@@ -1763,7 +1748,7 @@ function clearGlobalStats() {
 }
 
 function refreshGlobalStats() {
-  if(dbSnapshot.globalStats.time != undefined){
+  if (dbSnapshot.globalStats.time != undefined) {
     let th = Math.floor(dbSnapshot.globalStats.time / 3600);
     let tm = Math.floor((dbSnapshot.globalStats.time % 3600) / 60);
     let ts = Math.floor((dbSnapshot.globalStats.time % 3600) % 60);
@@ -1775,10 +1760,14 @@ function refreshGlobalStats() {
   `);
   }
   if (dbSnapshot.globalStats.started != undefined) {
-    $(".pageAccount .globalTestsStarted .val").text(dbSnapshot.globalStats.started);
+    $(".pageAccount .globalTestsStarted .val").text(
+      dbSnapshot.globalStats.started
+    );
   }
   if (dbSnapshot.globalStats.completed != undefined) {
-    $(".pageAccount .globalTestsCompleted .val").text(dbSnapshot.globalStats.completed);
+    $(".pageAccount .globalTestsCompleted .val").text(
+      dbSnapshot.globalStats.completed
+    );
   }
 }
 
@@ -2040,7 +2029,7 @@ function refreshAccountPage() {
         language: result.language,
         timestamp: result.timestamp,
         difficulty: result.difficulty,
-        raw: result.rawWpm
+        raw: result.rawWpm,
       });
 
       wpmChartData.push(result.wpm);
@@ -2048,7 +2037,7 @@ function refreshAccountPage() {
       accChartData.push({
         x: result.timestamp,
         y: result.acc,
-      })
+      });
 
       if (result.wpm > topWpm) {
         let puncsctring = result.punctuation ? ",<br>with punctuation" : "";
@@ -2064,7 +2053,6 @@ function refreshAccountPage() {
     loadMoreLines();
     ////////
 
-
     let thisDate = new Date(Date.now());
     thisDate.setSeconds(0);
     thisDate.setMinutes(0);
@@ -2074,43 +2062,38 @@ function refreshAccountPage() {
 
     let tempChartData = [];
     let lastTimestamp = 0;
-    Object.keys(activityChartData).forEach(date => {
-
+    Object.keys(activityChartData).forEach((date) => {
       let datecheck;
       if (lastTimestamp > 0) {
         datecheck = lastTimestamp;
       } else {
-        datecheck = thisDate
+        datecheck = thisDate;
       }
-        
+
       let numDaysBetweenTheDays = (datecheck - date) / 86400000;
 
       if (numDaysBetweenTheDays > 1) {
-
         if (datecheck === thisDate) {
           tempChartData.push({
             x: parseInt(thisDate),
-            y: 0
-          })
+            y: 0,
+          });
         }
 
-        for (let i = 0; i < numDaysBetweenTheDays - 1; i++){
-          
+        for (let i = 0; i < numDaysBetweenTheDays - 1; i++) {
           tempChartData.push({
-            x: parseInt(datecheck) - (86400000 * (i+1)),
-            y: 0
-          })
-
+            x: parseInt(datecheck) - 86400000 * (i + 1),
+            y: 0,
+          });
         }
       }
 
-
       tempChartData.push({
         x: parseInt(date),
-        y: activityChartData[date]
-      })
+        y: activityChartData[date],
+      });
       lastTimestamp = date;
-    })
+    });
 
     // console.log(activityChartData);
 
@@ -2134,7 +2117,7 @@ function refreshAccountPage() {
       themeColors.sub;
     resultHistoryChart.options.scales.yAxes[0].scaleLabel.fontColor =
       themeColors.sub;
-      resultHistoryChart.options.scales.yAxes[1].ticks.minor.fontColor =
+    resultHistoryChart.options.scales.yAxes[1].ticks.minor.fontColor =
       themeColors.sub;
     resultHistoryChart.options.scales.yAxes[1].scaleLabel.fontColor =
       themeColors.sub;
@@ -2152,14 +2135,18 @@ function refreshAccountPage() {
     let wpms = chartData.map((r) => r.y);
     let maxChartVal = Math.max(...wpms);
 
-    resultHistoryChart.options.scales.yAxes[0].ticks.max = Math.floor(maxChartVal) + (10 - Math.floor(maxChartVal) % 10);
-      // resultHistoryChart.options.scales.yAxes[1].ticks.max = Math.floor(maxChartVal) + 10;
+    resultHistoryChart.options.scales.yAxes[0].ticks.max =
+      Math.floor(maxChartVal) + (10 - (Math.floor(maxChartVal) % 10));
+    // resultHistoryChart.options.scales.yAxes[1].ticks.max = Math.floor(maxChartVal) + 10;
 
     if (!config.startGraphsAtZero) {
-      resultHistoryChart.options.scales.yAxes[0].ticks.min = Math.floor(minChartVal);
-      resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.floor(minChartVal);
+      resultHistoryChart.options.scales.yAxes[0].ticks.min = Math.floor(
+        minChartVal
+      );
+      resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.floor(
+        minChartVal
+      );
     }
-
 
     if (chartData == [] || chartData.length == 0) {
       $(".pageAccount .group.noDataError").removeClass("hidden");
@@ -2371,7 +2358,7 @@ function toggleChartAccuracy() {
 
 $(".pageAccount .toggleAccuracyOnChart").click((params) => {
   toggleChartAccuracy();
-})
+});
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
   if (dbSnapshot.tags.length > 0) {
