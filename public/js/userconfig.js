@@ -239,6 +239,7 @@ function setPlaySoundOnClick(val, nosave) {
     val = "off";
   }
   config.playSoundOnClick = val;
+  if (clickSounds === null && config.playSoundOnClick !== "off") initClickSounds();
   if (!nosave) saveConfigToCookie();
 }
 
