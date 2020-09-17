@@ -1610,7 +1610,7 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .time .bottom").text(roundTo2(testtime) + "s");
     $("#result .stats .wpm .bottom").attr(
       "aria-label",
-      roundTo2(stats.wpm * 5)
+      roundTo2(stats.wpm * 5) + " cpm"
     );
     $("#result .stats .raw .bottom").removeAttr("aria-label");
     $("#result .stats .acc .bottom").removeAttr("aria-label");
