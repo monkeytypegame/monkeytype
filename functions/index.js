@@ -1446,59 +1446,64 @@ exports.generatePairingCode = functions
               pairingCode: userDocData.discordPairingCode,
             };
           } else {
+
+            let stepSize = 1000;
+            let existingCodes = [];
+            let query = await db.collection(`users`)
+                .limit(stepSize)
+              .get();
+            let lastDoc;
+            while (query.docs.length > 0) {
+              lastDoc = query.docs[query.docs.length - 1];
+              query.docs.forEach(doc => {
+                let docData = doc.data();
+                if (docData.discordPairingCode !== undefined) {
+                  existingCodes.push(docData.discordPairingCode);
+                }
+              })
+              query = await db.collection(`users`)
+              .limit(stepSize)
+              .startAfter(lastDoc)
+              .get();
+            }
+
+            let randomCode = generate(9);
+
+            while (existingCodes.includes(randomCode)) {
+              randomCode = generate(9);
+            }
+
             return db
               .collection("users")
-              .get()
+              .doc(request.uid)
+              .update(
+                {
+                  discordPairingCode: randomCode,
+                },
+                { merge: true }
+              )
               .then((res) => {
-                let existingCodes = [];
-
-                res.docs.forEach((doc) => {
-                  let docData = doc.data();
-                  if (docData.discordPairingCode !== undefined) {
-                    existingCodes.push(docData.discordPairingCode);
-                  }
+                console.log(
+                  `generated ${randomCode} for user ${request.uid}`
+                );
+                response.status(200).send({
+                  data: {
+                    status: 1,
+                    pairingCode: randomCode,
+                  },
                 });
-
-                // console.log(`existing codes ${JSON.stringify(existingCodes)}`);
-
-                let randomCode = generate(9);
-
-                while (existingCodes.includes(randomCode)) {
-                  randomCode = generate(9);
-                }
-
-                return db
-                  .collection("users")
-                  .doc(request.uid)
-                  .update(
-                    {
-                      discordPairingCode: randomCode,
-                    },
-                    { merge: true }
-                  )
-                  .then((res) => {
-                    console.log(
-                      `generated ${randomCode} for user ${request.uid}`
-                    );
-                    response.status(200).send({
-                      data: {
-                        status: 1,
-                        pairingCode: randomCode,
-                      },
-                    });
-                    return;
-                  })
-                  .catch((e) => {
-                    console.error(
-                      `error while trying to set discord pairing code ${randomCode} for user ${request.uid} - ${e}`
-                    );
-                    response.status(200).send({
-                      data: {
-                        status: -999,
-                      },
-                    });
-                    return;
-                  });
+                return;
+              })
+              .catch((e) => {
+                console.error(
+                  `error while trying to set discord pairing code ${randomCode} for user ${request.uid} - ${e}`
+                );
+                response.status(200).send({
+                  data: {
+                    status: -999,
+                  },
+                });
+                return;
               });
           }
         });
