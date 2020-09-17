@@ -1435,7 +1435,7 @@ exports.generatePairingCode = functions
         .collection("users")
         .doc(request.uid)
         .get()
-        .then((userDoc) => {
+        .then(async (userDoc) => {
           userDocData = userDoc.data();
           if (userDocData.discordPairingCode !== undefined) {
             console.log(
