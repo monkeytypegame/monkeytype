@@ -1991,7 +1991,7 @@ function showResult(difficultyFailed = false) {
                     let globalLbString = "";
                     const glb = e.data.globalLeaderboard;
                     const glbMemory =
-                      dbSnapshot.lbMemory[config.mode |+ mode2].global;
+                      dbSnapshot.lbMemory[config.mode + mode2].global;
                     let dontShowGlobalDiff = glbMemory == null || glbMemory === -1 ? true : false;
                     let globalLbDiff = null;
                     if (glb === null) {
