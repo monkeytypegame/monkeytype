@@ -1991,8 +1991,8 @@ function showResult(difficultyFailed = false) {
                     let globalLbString = "";
                     const glb = e.data.globalLeaderboard;
                     const glbMemory =
-                      dbSnapshot.lbMemory[config.mode + mode2].global;
-                    let dontShowGlobalDiff = glbMemory == null ? true : false;
+                      dbSnapshot.lbMemory[config.mode |+ mode2].global;
+                    let dontShowGlobalDiff = glbMemory == null || glbMemory === -1 ? true : false;
                     let globalLbDiff = null;
                     if (glb === null) {
                       globalLbString = "global: not found";
@@ -2041,7 +2041,7 @@ function showResult(difficultyFailed = false) {
                     const dlb = e.data.dailyLeaderboard;
                     const dlbMemory =
                       dbSnapshot.lbMemory[config.mode + mode2].daily;
-                    let dontShowDailyDiff = dlbMemory == null ? true : false;
+                    let dontShowDailyDiff = dlbMemory == null || dlbMemory === -1 ? true : false;
                     let dailyLbDiff = null;
                     if (dlb === null) {
                       dailyLbString = "daily: not found";
