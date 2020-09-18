@@ -2287,7 +2287,7 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.update({ duration: 0 });
   wpmOverTimeChart.resize();
-  swapElements($("#wordsWrapper"), $("#result"), 250, () => {
+  swapElements($("#typingTest"), $("#result"), 250, () => {
     $("#words").empty();
     wpmOverTimeChart.resize();
     if (config.alwaysShowWordsHistory) {
@@ -2512,7 +2512,7 @@ function restartTest(withSameWordset = false) {
     el = $("#result");
   } else {
     //words are being displayed
-    el = $("#wordsWrapper");
+    el = $("#typingTest");
   }
   if (resultVisible) {
     if (
@@ -2523,34 +2523,6 @@ function restartTest(withSameWordset = false) {
       randomiseTheme();
       showNotification(config.theme.replace(/_/g, " "), 1500);
     }
-    $("#wordsWrapper").stop(true, true).animate(
-      {
-        opacity: 0,
-      },
-      125
-    );
-    $("#wordsTitle")
-      .stop(true, true)
-      .animate(
-        {
-          opacity: 0,
-        },
-        125,
-        () => {
-          $("#wordsTitle").slideUp(0);
-        }
-      );
-    $("#resultExtraButtons")
-      .stop(true, true)
-      .animate(
-        {
-          opacity: 0,
-        },
-        125,
-        () => {
-          $("#resultExtraButtons").addClass("hidden");
-        }
-      );
   }
   resultVisible = false;
 
@@ -2562,6 +2534,9 @@ function restartTest(withSameWordset = false) {
     },
     125,
     () => {
+      $("#typingTest")
+          .css("opacity", 0)
+          .removeClass("hidden");
       if (!withSameWordset) {
         sameWordset = false;
         initWords();
@@ -2600,7 +2575,7 @@ function restartTest(withSameWordset = false) {
         // 'height': 'auto',
         // 'margin-bottom': '1.25rem'
       });
-      $("#wordsWrapper")
+      $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
         .stop(true, true)
@@ -2612,7 +2587,6 @@ function restartTest(withSameWordset = false) {
           () => {
             hideCrown();
             clearTimeout(timer);
-            $("#restartTestButton").css("opacity", 1);
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
             wpmOverTimeChart.options.annotation.annotations[0].value = "-30";
             wpmOverTimeChart.update();
@@ -2964,63 +2938,33 @@ function accountIconLoading(truefalse) {
 
 function toggleResultWordsDisplay() {
   if (resultVisible) {
-    if ($("#wordsWrapper").stop(true, true).hasClass("hidden")) {
+    if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
-      $("#wordsTitle").css("opacity", 1).removeClass("hidden").slideDown(250);
+
 
       if (!$("#showWordHistoryButton").hasClass("loaded")) {
         $("#words").html(
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
-        loadWordsHistory();
+        loadWordsHistory().then(() => {
+          $("#resultWordsHistory").removeClass("hidden").css("display", "none").slideDown(250);
+        });
+      } else {
+        $("#resultWordsHistory").removeClass("hidden").css("display", "none").slideDown(250);
       }
-
-      $("#words").css("height", "auto");
-      let newHeight = $("#wordsWrapper")
-        .removeClass("hidden")
-        .css("height", "auto")
-        .outerHeight();
-
-      $("#wordsWrapper")
-        .css({
-          height: 0,
-          opacity: 0,
-        })
-        .animate(
-          {
-            height: newHeight,
-            opacity: 1,
-          },
-          250
-        );
     } else {
       //hide
 
-      $("#wordsTitle").slideUp(250);
+      $("#resultWordsHistory").slideUp(250, () => {
+        $("#resultWordsHistory").addClass("hidden");
+      });
 
-      let oldHeight = $("#wordsWrapper").outerHeight();
-      $("#wordsWrapper").removeClass("hidden");
-      $("#wordsWrapper")
-        .css({
-          opacity: 1,
-          height: oldHeight,
-        })
-        .animate(
-          {
-            height: 0,
-            opacity: 0,
-          },
-          250,
-          () => {
-            $("#wordsWrapper").addClass("hidden");
-          }
-        );
     }
   }
 }
 
 async function loadWordsHistory() {
-  $("#words").empty();
+  $("#resultWordsHistory .words").empty();
   // inputHistory.forEach((input, index) => {
   for (let i = 0; i < inputHistory.length + 2; i++) {
     let input = inputHistory[i];
@@ -3100,9 +3044,10 @@ async function loadWordsHistory() {
         wordEl += "</div>";
       } catch (e) {}
     }
-    $("#words").append(wordEl);
+    $("#resultWordsHistory .words").append(wordEl);
   }
   $("#showWordHistoryButton").addClass("loaded");
+  return true;
 }
 
 function flipTestColors(tf) {
@@ -3740,6 +3685,17 @@ $(document.body).on("click", "#restartTestButton", (event) => {
   restartTest();
 });
 
+$(document).on("keypress", "#nextTestButton", (event) => {
+  if (event.keyCode == 13) {
+    restartTest();
+  }
+});
+
+$(document.body).on("click", "#nextTestButton", (event) => {
+  manualRestart = true;
+  restartTest();
+});
+
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
   if (event.keyCode == 13) {
     toggleResultWordsDisplay();
@@ -4349,7 +4305,7 @@ loadConfigFromCookie();
 getReleasesFromGitHub();
 getPatreonNames();
 
-$(document).on("mouseenter", "#words .word", (e) => {
+$(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   if (resultVisible) {
     let input = $(e.currentTarget).attr("input");
     if (input != undefined)
@@ -4357,7 +4313,7 @@ $(document).on("mouseenter", "#words .word", (e) => {
   }
 });
 
-$(document).on("mouseleave", "#words .word", (e) => {
+$(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
   $(".wordInputAfter").remove();
 });
 
@@ -4470,7 +4426,7 @@ let wpmOverTimeChart = new Chart(ctx, {
 
             let unique = [...new Set(wordsToHighlight)];
             unique.forEach((wordIndex) => {
-              let wordEl = $($("#words .word")[wordIndex]);
+              let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
               let input = wordEl.attr("input");
               if (input != undefined)
                 wordEl.append(`<div class="wordInputAfter">${input}</div>`);

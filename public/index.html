@@ -907,13 +907,228 @@
       </div>
       <div id="middle">
         <div class="page pageTest active">
-          <div id="capsWarning" class="hidden">
-            <i class="fas fa-lock"></i>
-            Caps Lock
+
+          <div id="typingTest">
+            <div id="capsWarning" class="hidden">
+              <i class="fas fa-lock"></i>
+              Caps Lock
+            </div>
+            <div id="testModesNotice"></div>
+            <div id="caret" class="default size15"></div>
+            <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
+            <div id="timerNumber"><div>60</div></div>
+            <div id="miniTimerAndLiveWpm">
+              <div class="time hidden">1:00</div>
+              <div class="wpm">60</div>
+            </div>
+            <div class="outOfFocusWarning"><i class="fas fa-mouse-pointer"></i> Click the words to focus</div>
+            <div id="wordsWrapper">
+              <div id="words" class="size15"></div>
+            </div>
+            <div id="liveWpm">123</div>
+            <div class="keymap hidden">
+              <!-- <div class="row r1">
+              <div class="keymap-key inactive hidden-key">
+                <span class="letter">`</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key1">
+                <span class="letter">1</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key2">
+                <span class="letter">2</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key3">
+                <span class="letter">3</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key4">
+                <span class="letter">4</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key5">
+                <span class="letter">5</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key6">
+                <span class="letter">6</span>
+              </div>
+                <div class="keymap-split-spacer"></div>
+  
+              <div class="keymap-key inactive hidden-key" id="Key7">
+                <span class="letter">7</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key8">
+                <span class="letter">8</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key9">
+                <span class="letter">9</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key0">
+                <span class="letter">0</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key-">
+                <span class="letter">-</span>
+              </div>
+              <div class="keymap-key inactive hidden-key" id="Key=">
+                <span class="letter">=</span>
+              </div>
+              <div class="keymap-key inactive hidden-key">
+                <span class="letter">delete</span>
+              </div>
+            </div> -->
+              <div class="row r2">
+                <div class="keymap-key hidden-key">
+                  <span class="letter"></span>
+                </div>
+                <div class="keymap-key" id="KeyQ">
+                  <span class="letter">q</span>
+                </div>
+                <div class="keymap-key" id="KeyW">
+                  <span class="letter">w</span>
+                </div>
+                <div class="keymap-key" id="KeyE">
+                  <span class="letter">e</span>
+                </div>
+                <div class="keymap-key" id="KeyR">
+                  <span class="letter">r</span>
+                </div>
+                <div class="keymap-key" id="KeyT">
+                  <span class="letter">t</span>
+                </div>
+                <div class="keymap-split-spacer"></div>
+                <div class="keymap-key" id="KeyY">
+                  <span class="letter">y</span>
+                </div>
+                <div class="keymap-key" id="KeyU">
+                  <span class="letter">u</span>
+                </div>
+                <div class="keymap-key" id="KeyI">
+                  <span class="letter">i</span>
+                </div>
+                <div class="keymap-key" id="KeyO">
+                  <span class="letter">o</span>
+                </div>
+                <div class="keymap-key" id="KeyP">
+                  <span class="letter">p</span>
+                </div>
+                <div class="keymap-key" id="KeyLeftBracket">
+                  <span class="letter">[</span>
+                </div>
+                <div class="keymap-key" id="KeyRightBracket">
+                  <span class="letter">]</span>
+                </div>
+                <div class="keymap-key hidden-key" id="Backslash">
+                  <span class="letter">\</span>
+                </div>
+              </div>
+              <div class="row r3">
+                <div class="keymap-key hidden-key">
+                  <span class="letter"></span>
+                </div>
+                <div class="keymap-key" id="KeyA">
+                  <span class="letter">a</span>
+                </div>
+                <div class="keymap-key" id="KeyS">
+                  <span class="letter">s</span>
+                </div>
+                <div class="keymap-key" id="KeyD">
+                  <span class="letter">d</span>
+                </div>
+                <div class="keymap-key" id="KeyF">
+                  <span class="letter">f</span>
+                  <div class="bump"></div>
+                </div>
+                <div class="keymap-key" id="KeyG">
+                  <span class="letter">g</span>
+                </div>
+                <div class="keymap-split-spacer"></div>
+                <div class="keymap-key" id="KeyH">
+                  <span class="letter">h</span>
+                </div>
+                <div class="keymap-key" id="KeyJ">
+                  <span class="letter">j</span>
+                  <div class="bump"></div>
+                </div>
+                <div class="keymap-key" id="KeyK">
+                  <span class="letter">k</span>
+                </div>
+                <div class="keymap-key" id="KeyL">
+                  <span class="letter">l</span>
+                </div>
+                <div class="keymap-key" id="KeySemicolon">
+                  <span class="letter">;</span>
+                </div>
+                <div class="keymap-key" id="KeyQuote">
+                  <span class="letter">'</span>
+                </div>
+                <div class="keymap-key hidden-key">
+                  <span class="letter"></span>
+                </div>
+              </div>
+              <div class="row r4">
+                <div class="keymap-key hidden-key">
+                  <span class="letter"></span>
+                </div>
+                <div class="keymap-key" id="KeyZ">
+                  <span class="letter">z</span>
+                </div>
+                <div class="keymap-key" id="KeyX">
+                  <span class="letter">x</span>
+                </div>
+                <div class="keymap-key" id="KeyC">
+                  <span class="letter">c</span>
+                </div>
+                <div class="keymap-key" id="KeyV">
+                  <span class="letter">v</span>
+                </div>
+                <div class="keymap-key" id="KeyB">
+                  <span class="letter">b</span>
+                </div>
+                <div class="keymap-split-spacer"></div>
+                <div class="keymap-key" id="KeyN">
+                  <span class="letter">n</span>
+                </div>
+                <div class="keymap-key" id="KeyM">
+                  <span class="letter">m</span>
+                </div>
+                <div class="keymap-key" id="KeyComma">
+                  <span class="letter">,</span>
+                </div>
+                <div class="keymap-key" id="KeyPeriod">
+                  <span class="letter">.</span>
+                </div>
+                <div class="keymap-key" id="KeySlash">
+                  <span class="letter">/</span>
+                </div>
+                <div class="keymap-key hidden-key">
+                  <span class="letter"></span>
+                </div>
+              </div>
+              <div class="row r5">
+                <div class="keymap-key hidden-key">
+                  <span class="letter"></span>
+                </div>
+                <div class="keymap-key key-split-space" id="KeySpace">
+                  <span class="letter"></span>
+                </div>
+                <div class="keymap-split-spacer"></div>
+                <div class="keymap-key key-split-space" id="KeySpace2">
+                  <span class="letter"></span>
+                </div>
+                <div class="keymap-key hidden-key">
+                  <span class="letter"></span>
+                </div>
+              </div>
+            </div>
+            <div
+              id="restartTestButton"
+              aria-label="Restart test"
+              data-balloon-pos="down"
+              class=""
+              tabindex="0"
+              onclick="this.blur();"
+            >
+              <i class="fas fa-fw fa-redo-alt"></i>
+            </div>
           </div>
-          <div id="testModesNotice"></div>
-          <div id="caret" class="default size15"></div>
-          <div id="result" class="hidden">
+          <div id="result">
             <div class="stats">
               <!-- <div class="info">words 10<br>punctuation</div> -->
 
@@ -984,236 +1199,33 @@
               <!-- <div class="title">wpm over time</div> -->
               <canvas id="wpmChart"></canvas>
             </div>
+            <div id="resultWordsHistory" class="hidden">
+              <div class="title">
+                input history
+                <span
+                  id="copyWordsListButton"
+                  class="icon-button"
+                  aria-label="Copy words list"
+                  data-balloon-pos="up"
+                  style="display: inline-block;"
+                >
+                  <i class="fas fa-copy"></i>
+                </span>
+              </div>
+              <div class="words"></div>
+            </div>
             <div class="loginTip">Sign in to save your results</div>
-          </div>
-          <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
-          <div id="wordsTitle">
-            input history
-            <span
-              id="copyWordsListButton"
-              class="icon-button"
-              aria-label="Copy words list"
-              data-balloon-pos="up"
-              style="display: inline-block;"
-            >
-              <i class="fas fa-copy"></i>
-            </span>
-          </div>
-          <div id="timerNumber"><div>60</div></div>
-          <div id="miniTimerAndLiveWpm">
-            <div class="time hidden">1:00</div>
-            <div class="wpm">60</div>
-          </div>
-          <div class="outOfFocusWarning"><i class="fas fa-mouse-pointer"></i> Click the words to focus</div>
-          <div id="wordsWrapper">
-            <div id="words" class="size15"></div>
-          </div>
-          <div id="liveWpm">123</div>
-          <div class="ssWatermark hidden">monkey-type.com</div>
-          <div class="keymap hidden">
-            <!-- <div class="row r1">
-            <div class="keymap-key inactive hidden-key">
-              <span class="letter">`</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key1">
-              <span class="letter">1</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key2">
-              <span class="letter">2</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key3">
-              <span class="letter">3</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key4">
-              <span class="letter">4</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key5">
-              <span class="letter">5</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key6">
-              <span class="letter">6</span>
-            </div>
-              <div class="keymap-split-spacer"></div>
-
-            <div class="keymap-key inactive hidden-key" id="Key7">
-              <span class="letter">7</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key8">
-              <span class="letter">8</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key9">
-              <span class="letter">9</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key0">
-              <span class="letter">0</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key-">
-              <span class="letter">-</span>
-            </div>
-            <div class="keymap-key inactive hidden-key" id="Key=">
-              <span class="letter">=</span>
-            </div>
-            <div class="keymap-key inactive hidden-key">
-              <span class="letter">delete</span>
-            </div>
-          </div> -->
-            <div class="row r2">
-              <div class="keymap-key hidden-key">
-                <span class="letter"></span>
+            <div class="ssWatermark hidden">monkey-type.com</div>
+            <div class="buttons">
+              <div
+                id="nextTestButton"
+                aria-label="Next test"
+                data-balloon-pos="down"
+                tabindex="0"
+                onclick="this.blur();"
+              >
+                <i class="fas fa-fw fa-chevron-right"></i>
               </div>
-              <div class="keymap-key" id="KeyQ">
-                <span class="letter">q</span>
-              </div>
-              <div class="keymap-key" id="KeyW">
-                <span class="letter">w</span>
-              </div>
-              <div class="keymap-key" id="KeyE">
-                <span class="letter">e</span>
-              </div>
-              <div class="keymap-key" id="KeyR">
-                <span class="letter">r</span>
-              </div>
-              <div class="keymap-key" id="KeyT">
-                <span class="letter">t</span>
-              </div>
-              <div class="keymap-split-spacer"></div>
-              <div class="keymap-key" id="KeyY">
-                <span class="letter">y</span>
-              </div>
-              <div class="keymap-key" id="KeyU">
-                <span class="letter">u</span>
-              </div>
-              <div class="keymap-key" id="KeyI">
-                <span class="letter">i</span>
-              </div>
-              <div class="keymap-key" id="KeyO">
-                <span class="letter">o</span>
-              </div>
-              <div class="keymap-key" id="KeyP">
-                <span class="letter">p</span>
-              </div>
-              <div class="keymap-key" id="KeyLeftBracket">
-                <span class="letter">[</span>
-              </div>
-              <div class="keymap-key" id="KeyRightBracket">
-                <span class="letter">]</span>
-              </div>
-              <div class="keymap-key hidden-key" id="Backslash">
-                <span class="letter">\</span>
-              </div>
-            </div>
-            <div class="row r3">
-              <div class="keymap-key hidden-key">
-                <span class="letter"></span>
-              </div>
-              <div class="keymap-key" id="KeyA">
-                <span class="letter">a</span>
-              </div>
-              <div class="keymap-key" id="KeyS">
-                <span class="letter">s</span>
-              </div>
-              <div class="keymap-key" id="KeyD">
-                <span class="letter">d</span>
-              </div>
-              <div class="keymap-key" id="KeyF">
-                <span class="letter">f</span>
-                <div class="bump"></div>
-              </div>
-              <div class="keymap-key" id="KeyG">
-                <span class="letter">g</span>
-              </div>
-              <div class="keymap-split-spacer"></div>
-              <div class="keymap-key" id="KeyH">
-                <span class="letter">h</span>
-              </div>
-              <div class="keymap-key" id="KeyJ">
-                <span class="letter">j</span>
-                <div class="bump"></div>
-              </div>
-              <div class="keymap-key" id="KeyK">
-                <span class="letter">k</span>
-              </div>
-              <div class="keymap-key" id="KeyL">
-                <span class="letter">l</span>
-              </div>
-              <div class="keymap-key" id="KeySemicolon">
-                <span class="letter">;</span>
-              </div>
-              <div class="keymap-key" id="KeyQuote">
-                <span class="letter">'</span>
-              </div>
-              <div class="keymap-key hidden-key">
-                <span class="letter"></span>
-              </div>
-            </div>
-            <div class="row r4">
-              <div class="keymap-key hidden-key">
-                <span class="letter"></span>
-              </div>
-              <div class="keymap-key" id="KeyZ">
-                <span class="letter">z</span>
-              </div>
-              <div class="keymap-key" id="KeyX">
-                <span class="letter">x</span>
-              </div>
-              <div class="keymap-key" id="KeyC">
-                <span class="letter">c</span>
-              </div>
-              <div class="keymap-key" id="KeyV">
-                <span class="letter">v</span>
-              </div>
-              <div class="keymap-key" id="KeyB">
-                <span class="letter">b</span>
-              </div>
-              <div class="keymap-split-spacer"></div>
-              <div class="keymap-key" id="KeyN">
-                <span class="letter">n</span>
-              </div>
-              <div class="keymap-key" id="KeyM">
-                <span class="letter">m</span>
-              </div>
-              <div class="keymap-key" id="KeyComma">
-                <span class="letter">,</span>
-              </div>
-              <div class="keymap-key" id="KeyPeriod">
-                <span class="letter">.</span>
-              </div>
-              <div class="keymap-key" id="KeySlash">
-                <span class="letter">/</span>
-              </div>
-              <div class="keymap-key hidden-key">
-                <span class="letter"></span>
-              </div>
-            </div>
-            <div class="row r5">
-              <div class="keymap-key hidden-key">
-                <span class="letter"></span>
-              </div>
-              <div class="keymap-key key-split-space" id="KeySpace">
-                <span class="letter"></span>
-              </div>
-              <div class="keymap-split-spacer"></div>
-              <div class="keymap-key key-split-space" id="KeySpace2">
-                <span class="letter"></span>
-              </div>
-              <div class="keymap-key hidden-key">
-                <span class="letter"></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="buttons">
-            <div
-              id="restartTestButton"
-              aria-label="Restart test"
-              data-balloon-pos="down"
-              class=""
-              tabindex="0"
-              onclick="this.blur();"
-            >
-              <i class="fas fa-fw fa-redo-alt"></i>
-            </div>
-            <div id="resultExtraButtons" class="hidden">
               <div
                 id="restartTestButtonWithSameWordset"
                 aria-label="Repeat test"
