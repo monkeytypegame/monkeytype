@@ -4247,8 +4247,6 @@ $(document).keydown((event) => {
           return;
         }
         inputHistory.push(currentInput);
-        correctedHistory.push(currentCorrected);
-        currentCorrected = "";
         highlightBadWord(currentWordElementIndex, !config.blindMode);
         currentInput = "";
         currentWordIndex++;
@@ -4262,6 +4260,8 @@ $(document).keydown((event) => {
           config.difficulty == "expert" ||
           config.difficulty == "master"
         ) {
+          correctedHistory.push(currentCorrected);
+          currentCorrected = "";
           //submitted last word incorrect and failed test
           lastSecondNotRound = true;
           showResult(true);
@@ -4278,7 +4278,8 @@ $(document).keydown((event) => {
         currentKeypress.count++;
         currentKeypress.words.push(currentWordIndex);
       }
-
+      correctedHistory.push(currentCorrected);
+      currentCorrected = "";
       if (config.keymapMode === "react") {
         flashPressedKeymapKey(event.code, true);
       } else if (config.keymapMode === "next") {
