@@ -4221,6 +4221,8 @@ $(document).keydown((event) => {
           return;
         }
         inputHistory.push(currentInput);
+        correctedHistory.push(currentCorrected);
+        currentCorrected = "";
         highlightBadWord(currentWordElementIndex, !config.blindMode);
         currentInput = "";
         currentWordIndex++;
@@ -4234,8 +4236,6 @@ $(document).keydown((event) => {
           config.difficulty == "master"
         ) {
           //submitted last word incorrect and failed test
-          inputHistory.push(currentInput);
-          correctedHistory.push(currentCorrected);
           showResult(true);
           // if (!afkDetected) {
           let testNow = Date.now();
@@ -4250,8 +4250,7 @@ $(document).keydown((event) => {
         currentKeypress.count++;
         currentKeypress.words.push(currentWordIndex);
       }
-      correctedHistory.push(currentCorrected);
-      currentCorrected = "";
+
       if (config.keymapMode === "react") {
         flashPressedKeymapKey(event.code, true);
       } else if (config.keymapMode === "next") {
