@@ -38,6 +38,7 @@ let manualRestart = false;
 let bailout = false;
 let notSignedInLastResult = null;
 let caretAnimating = true;
+let lastSecondNotRound = false;
 
 let themeColors = {
   bg: "#323437",
@@ -886,6 +887,7 @@ function compareInput(showError) {
           document
             .querySelector("#words .word.active")
             .setAttribute("input", currentInput.replace(/'/g, "'"));
+          lastSecondNotRound = true;
           showResult(true);
         }
         let testNow = Date.now();
@@ -933,6 +935,7 @@ function compareInput(showError) {
       if (keypressPerSecond.length === 0) {
         keypressPerSecond.push(currentKeypress);
       }
+      lastSecondNotRound = true;
       showResult();
     }
   }
@@ -1673,9 +1676,29 @@ function showResult(difficultyFailed = false) {
     mode2 = randomQuote.id;
   }
 
+  if (lastSecondNotRound) {
+    let wpmAndRaw = liveWpmAndRaw();
+    wpmHistory.push(wpmAndRaw.wpm);
+    rawHistory.push(wpmAndRaw.raw);
+    keypressPerSecond.push(currentKeypress);
+      currentKeypress = {
+        count: 0,
+        words: [],
+      };
+      errorsPerSecond.push(currentError);
+      currentError = {
+        count: 0,
+        words: [],
+      };
+  }
+
   let labels = [];
   for (let i = 1; i <= wpmHistory.length; i++) {
-    labels.push(i.toString());
+    if (lastSecondNotRound && i === wpmHistory.length) {
+      labels.push(roundTo2(testtime).toString());
+    } else {
+      labels.push(i.toString());
+    }
   }
 
   if (themeColors.main == "") {
@@ -2483,6 +2506,7 @@ function restartTest(withSameWordset = false) {
   bailout = false;
   $("#showWordHistoryButton").removeClass("loaded");
   keypressPerSecond = [];
+  lastSecondNotRound = false;
   currentKeypress = {
     count: 0,
     words: [],
@@ -3864,6 +3888,7 @@ $(document).keypress(function (event) {
       //failed due to master diff when pressing a key
       inputHistory.push(currentInput);
       correctedHistory.push(currentCorrected);
+      lastSecondNotRound = true;
       showResult(true);
       let testNow = Date.now();
       let testSeconds = roundTo2((testNow - testStart) / 1000);
@@ -4209,6 +4234,7 @@ $(document).keydown((event) => {
             //failed due to diff when pressing space
             inputHistory.push(currentInput);
             correctedHistory.push(currentCorrected);
+            lastSecondNotRound = true;
             showResult(true);
             // if (!afkDetected) {
             let testNow = Date.now();
@@ -4229,6 +4255,7 @@ $(document).keydown((event) => {
         currentWordElementIndex++;
         if (currentWordIndex == wordsList.length) {
           //submitted last word that is incorrect
+          lastSecondNotRound = true;
           showResult();
           return;
         } else if (
@@ -4236,6 +4263,7 @@ $(document).keydown((event) => {
           config.difficulty == "master"
         ) {
           //submitted last word incorrect and failed test
+          lastSecondNotRound = true;
           showResult(true);
           // if (!afkDetected) {
           let testNow = Date.now();
