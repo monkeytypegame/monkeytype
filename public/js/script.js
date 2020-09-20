@@ -40,6 +40,7 @@ let notSignedInLastResult = null;
 let caretAnimating = true;
 let lastSecondNotRound = false;
 let paceCaret = null;
+let missedWords = [];
 
 let themeColors = {
   bg: "#323437",
@@ -2522,6 +2523,7 @@ function restartTest(withSameWordset = false) {
   // afkDetected = false;
   wpmHistory = [];
   rawHistory = [];
+  missedWords = [];
   correctedHistory = [];
   setFocus(false);
   hideCaret();
@@ -3888,6 +3890,32 @@ $(document.body).on("click", "#restartTestButton", (event) => {
   restartTest();
 });
 
+$(document).on("keypress", "#practiseMissedWordsButton", (event) => {
+  if (event.keyCode == 13) {
+    if (missedWords.length > 0) {
+      changeMode("custom");
+      customText = missedWords;
+      customTextIsRandom = true;
+      customTextWordCount = 50;
+      restartTest();
+    } else {
+      showNotification("You haven't missed any words.", 2000);
+    }
+  }
+});
+
+$(document.body).on("click", "#practiseMissedWordsButton", (event) => {
+  if (missedWords.length > 0) {
+    changeMode("custom");
+    customText = missedWords;
+    customTextIsRandom = true;
+    customTextWordCount = 50;
+    restartTest();
+  } else {
+    showNotification("You haven't missed any words.", 2000);
+  }
+});
+
 $(document).on("keypress", "#nextTestButton", (event) => {
   if (event.keyCode == 13) {
     restartTest();
@@ -4033,6 +4061,9 @@ $(document).keypress(function (event) {
     currentError.count++;
     currentError.words.push(currentWordIndex);
     thisCharCorrect = false;
+    if (!missedWords.includes(wordsList[currentWordIndex])) {
+      missedWords.push(wordsList[currentWordIndex]);
+    }
   } else {
     accuracyStats.correct++;
     thisCharCorrect = true;
