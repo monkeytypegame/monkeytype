@@ -1606,6 +1606,8 @@ function showResult(difficultyFailed = false) {
   let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
   let afkSecondsPercent = roundTo2((afkseconds / testtime) * 100);
 
+  $("#result #resultWordsHistory").addClass('hidden');
+
   if (config.alwaysShowDecimalPlaces) {
     $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm));
     $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
