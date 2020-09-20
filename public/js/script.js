@@ -3643,9 +3643,12 @@ function movePaceCaret() {
     let smoothlinescroll = $("#words .smoothScroller").height();
     if (smoothlinescroll === undefined) smoothlinescroll = 0;
 
+    $("#paceCaret").css({
+      top: newTop - smoothlinescroll,
+    });
+
     caret.stop(true, true).animate(
       {
-        top: newTop - smoothlinescroll,
         left: newLeft,
       },
       duration,
@@ -3653,6 +3656,7 @@ function movePaceCaret() {
     );
   } catch (e) {
     // $("#paceCaret").animate({ opacity: 0 }, 250, () => {
+    console.error(e);
     $("#paceCaret").addClass("hidden");
     // });
   }
@@ -4349,6 +4353,9 @@ $(document).keydown((event) => {
                   $("#words .smoothScroller").remove();
                 }
               );
+              $("#paceCaret").animate({
+                top: document.querySelector("#paceCaret").offsetTop - wordHeight,
+              },125);
               $("#words").animate(
                 {
                   marginTop: `-${wordHeight}px`,
@@ -4367,8 +4374,10 @@ $(document).keydown((event) => {
             } else {
               toHide.forEach((el) => el.remove());
               currentWordElementIndex -= toHide.length;
+              $("#paceCaret").css({
+                top: document.querySelector("#paceCaret").offsetTop - wordHeight,
+              });
             }
-
             // if (config.smoothLineScroll) {
             //   let word = $(document.querySelector(".word"));
             //   $("#words").prepend(
