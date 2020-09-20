@@ -54,7 +54,8 @@ let defaultConfig = {
   playSoundOnClick: "off",
   startGraphsAtZero: true,
   swapEscAndTab: false,
-  showOutOfFocusWarning: true
+  showOutOfFocusWarning: true,
+  paceCaret: "off",
 };
 
 let cookieConfig = null;
@@ -108,7 +109,7 @@ async function saveConfigToDB() {
 
 function resetConfig() {
   config = {
-    ...defaultConfig
+    ...defaultConfig,
   };
   applyConfig();
   saveConfigToCookie();
@@ -189,6 +190,7 @@ function applyConfig(configObj) {
     setShowAllLines(configObj.showAllLines, true);
     setSwapEscAndTab(configObj.swapEscAndTab, true);
     setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
+    setPaceCaret(configObj.paceCaret, true);
 
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -239,7 +241,8 @@ function setPlaySoundOnClick(val, nosave) {
     val = "off";
   }
   config.playSoundOnClick = val;
-  if (clickSounds === null && config.playSoundOnClick !== "off") initClickSounds();
+  if (clickSounds === null && config.playSoundOnClick !== "off")
+    initClickSounds();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -352,8 +355,8 @@ function setAlwaysShowDecimalPlaces(val, nosave) {
 function toggleShowOutOfFocusWarning() {
   config.showOutOfFocusWarning = !config.showOutOfFocusWarning;
   if (!config.showOutOfFocusWarning) {
-    $("#words").css("transition","none").removeClass("blurred");
-    $(".outOfFocusWarning").addClass('hidden');
+    $("#words").css("transition", "none").removeClass("blurred");
+    $(".outOfFocusWarning").addClass("hidden");
     clearTimeouts(outOfFocusTimeouts);
   }
   saveConfigToCookie();
@@ -365,8 +368,8 @@ function setShowOutOfFocusWarning(val, nosave) {
   }
   config.showOutOfFocusWarning = val;
   if (!config.showOutOfFocusWarning) {
-    $("#words").css("transition","none").removeClass("blurred");
-    $(".outOfFocusWarning").addClass('hidden');
+    $("#words").css("transition", "none").removeClass("blurred");
+    $(".outOfFocusWarning").addClass("hidden");
     clearTimeouts(outOfFocusTimeouts);
   }
   if (!nosave) saveConfigToCookie();
@@ -385,6 +388,15 @@ function setSwapEscAndTab(val, nosave) {
   }
   config.swapEscAndTab = val;
   updateKeytips();
+  if (!nosave) saveConfigToCookie();
+}
+
+//pace caret
+function setPaceCaret(val, nosave) {
+  if (val == undefined) {
+    val = "off";
+  }
+  config.paceCaret = val;
   if (!nosave) saveConfigToCookie();
 }
 
@@ -474,19 +486,19 @@ function setCaretStyle(caretStyle, nosave) {
     caretStyle = "default";
   }
   config.caretStyle = caretStyle;
-  $("#caret").removeClass("default");
-  $("#caret").removeClass("underline");
-  $("#caret").removeClass("outline");
-  $("#caret").removeClass("block");
+  $("#caret, #paceCaret").removeClass("default");
+  $("#caret, #paceCaret").removeClass("underline");
+  $("#caret, #paceCaret").removeClass("outline");
+  $("#caret, #paceCaret").removeClass("block");
 
   if (caretStyle == "default") {
-    $("#caret").addClass("default");
+    $("#caret, #paceCaret").addClass("default");
   } else if (caretStyle == "block") {
-    $("#caret").addClass("block");
+    $("#caret, #paceCaret").addClass("block");
   } else if (caretStyle == "outline") {
-    $("#caret").addClass("outline");
+    $("#caret, #paceCaret").addClass("outline");
   } else if (caretStyle == "underline") {
-    $("#caret").addClass("underline");
+    $("#caret, #paceCaret").addClass("underline");
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -804,7 +816,7 @@ function randomiseTheme() {
   });
   if (config.randomTheme === "fav" && config.favThemes.length > 0)
     randomList = config.favThemes;
-    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
+  randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
   setTheme(randomTheme, true);
 }
 
@@ -1096,11 +1108,11 @@ function changeFontSize(fontSize, nosave) {
   // $("#words").stop(true, true).animate({ opacity: 0 }, 125, e => {
   config.fontSize = fontSize;
   $("#words").removeClass("size125");
-  $("#caret").removeClass("size125");
+  $("#caret, #paceCaret").removeClass("size125");
   $("#words").removeClass("size15");
-  $("#caret").removeClass("size15");
+  $("#caret, #paceCaret").removeClass("size15");
   $("#words").removeClass("size2");
-  $("#caret").removeClass("size2");
+  $("#caret, #paceCaret").removeClass("size2");
 
   $("#miniTimerAndLiveWpm").removeClass("size125");
   $("#miniTimerAndLiveWpm").removeClass("size15");
@@ -1108,15 +1120,15 @@ function changeFontSize(fontSize, nosave) {
 
   if (fontSize == 125) {
     $("#words").addClass("size125");
-    $("#caret").addClass("size125");
+    $("#caret, #paceCaret").addClass("size125");
     $("#miniTimerAndLiveWpm").addClass("size125");
   } else if (fontSize == 15) {
     $("#words").addClass("size15");
-    $("#caret").addClass("size15");
+    $("#caret, #paceCaret").addClass("size15");
     $("#miniTimerAndLiveWpm").addClass("size15");
   } else if (fontSize == 2) {
     $("#words").addClass("size2");
-    $("#caret").addClass("size2");
+    $("#caret, #paceCaret").addClass("size2");
     $("#miniTimerAndLiveWpm").addClass("size2");
   }
   if (!nosave) saveConfigToCookie();

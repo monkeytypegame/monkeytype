@@ -191,6 +191,17 @@ settingsGroups.showAllLines = new SettingsGroup(
   "showAllLines",
   setShowAllLines
 );
+settingsGroups.paceCaret = new SettingsGroup("paceCaret", setPaceCaret, () => {
+  if (config.paceCaret === "custom") {
+    $(
+      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+    ).removeClass("hidden");
+  } else {
+    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
+      "hidden"
+    );
+  }
+});
 settingsGroups.smoothLineScroll = new SettingsGroup(
   "smoothLineScroll",
   setSmoothLineScroll
@@ -360,6 +371,16 @@ function updateSettingsPage() {
   setCustomThemeInputs();
   updateDiscordSettingsSection();
   refreshThemeButtons();
+  
+  if (config.paceCaret === "custom") {
+    $(
+      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+    ).removeClass("hidden");
+  } else {
+    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
+      "hidden"
+    );
+  }
 }
 
 function showCustomThemeShare() {
@@ -800,7 +821,7 @@ $("#resetSettingsButton").click((e) => {
     resetConfig();
     setTimeout(() => {
       location.reload();
-    },1000)
+    }, 1000);
   }
 });
 

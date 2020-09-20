@@ -915,6 +915,7 @@
             </div>
             <div id="testModesNotice"></div>
             <div id="caret" class="default size15"></div>
+            <div id="paceCaret"></div>
             <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
             <div id="timerNumber"><div>60</div></div>
             <div id="miniTimerAndLiveWpm">
@@ -1836,6 +1837,39 @@
                 >
                   _
                 </div>
+              </div>
+            </div>
+            <div class="section paceCaret" section="">
+              <h1>pace caret</h1>
+              <div class="text">
+                Displays a second caret that moves at constant speed.
+              </div>
+              <div class="buttons">
+                <div
+                  class="button"
+                  paceCaret="off"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  off
+                </div>
+                <div
+                  class="button"
+                  paceCaret="pb"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  pb
+                </div>
+                <div
+                  class="button"
+                  paceCaret="custom"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  custom
+                </div>
+                <input type="number" step="1" class="customPaceCaretSpeed" placeholder="wpm" min="0">
               </div>
             </div>
             <div class="section timerStyle" section="">

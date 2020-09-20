@@ -787,7 +787,21 @@ a:hover {
   border-radius: var(--roundness);
   // transition: 0.05s;
   transform-origin: top left;
+}
 
+#paceCaret{
+  height: 1.5rem;
+  // background: var(--sub-color);
+  background: var(--sub-color);
+  opacity: 0.5;
+  position: absolute;
+  border-radius: var(--roundness);
+  // transition: 0.25s;
+  transform-origin: top left;
+  width: 2px;
+}
+
+#caret, #paceCaret{
   &.default {
     width: 2px;
   }
@@ -1127,6 +1141,7 @@ key {
 
   #resultWordsHistory{
     // grid-area: wordsHistory;
+    color: var(--sub-color);
     grid-column: 1/3;
     .words{
       display: flex;
@@ -1880,6 +1895,13 @@ key {
 
       & .spacer {
         grid-column: 3 / 5;
+      }
+    }
+
+    &.paceCaret{
+      .customPaceCaretSpeed{
+        width: 4rem;
+        padding: 0 .5rem;
       }
     }
 

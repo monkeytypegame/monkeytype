@@ -233,6 +233,15 @@ let commands = {
       },
     },
     {
+      id: "changePaceCaret",
+      display: "Change pace caret...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsPaceCaret);
+        showCommandLine();
+      },
+    },
+    {
       id: "changeTimerStyle",
       display: "Change timer/progress style...",
       subgroup: true,
@@ -570,6 +579,35 @@ let commandsCaretStyle = {
     },
   ],
 };
+
+
+let commandsPaceCaret = {
+  title: "Change pace caret...",
+  list: [
+    {
+      id: "setPaceCaretOff",
+      display: "off",
+      exec: () => {
+        setPaceCaret("off");
+      },
+    },
+    {
+      id: "setPaceCaretPb",
+      display: "pb",
+      exec: () => {
+        setPaceCaret("pb");
+      },
+    },
+    {
+      id: "setPaceCaretCustom",
+      display: "custom",
+      exec: () => {
+        setPaceCaret("custom");
+      },
+    },
+  ],
+};
+
 
 let commandsKeymapStyle = {
   title: "Change keymap style...",

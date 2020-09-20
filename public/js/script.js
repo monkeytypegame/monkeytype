@@ -39,6 +39,7 @@ let bailout = false;
 let notSignedInLastResult = null;
 let caretAnimating = true;
 let lastSecondNotRound = false;
+let paceCaret = null;
 
 let themeColors = {
   bg: "#323437",
@@ -1606,7 +1607,7 @@ function showResult(difficultyFailed = false) {
   let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
   let afkSecondsPercent = roundTo2((afkseconds / testtime) * 100);
 
-  $("#result #resultWordsHistory").addClass('hidden');
+  $("#result #resultWordsHistory").addClass("hidden");
 
   if (config.alwaysShowDecimalPlaces) {
     $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm));
@@ -1683,15 +1684,15 @@ function showResult(difficultyFailed = false) {
     wpmHistory.push(wpmAndRaw.wpm);
     rawHistory.push(wpmAndRaw.raw);
     keypressPerSecond.push(currentKeypress);
-      currentKeypress = {
-        count: 0,
-        words: [],
-      };
-      errorsPerSecond.push(currentError);
-      currentError = {
-        count: 0,
-        words: [],
-      };
+    currentKeypress = {
+      count: 0,
+      words: [],
+    };
+    errorsPerSecond.push(currentError);
+    currentError = {
+      count: 0,
+      words: [],
+    };
   }
 
   let labels = [];
@@ -2006,8 +2007,10 @@ function showResult(difficultyFailed = false) {
                     console.log("Analytics unavailable");
                   }
 
-                  if (config.mode === "time" && (mode2 == "15" || mode2 == "60")) {
-
+                  if (
+                    config.mode === "time" &&
+                    (mode2 == "15" || mode2 == "60")
+                  ) {
                     const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
                     const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
                     const lbRightIcon = `<i class="fas fa-angle-right"></i>`;
@@ -2017,7 +2020,8 @@ function showResult(difficultyFailed = false) {
                     const glb = e.data.globalLeaderboard;
                     const glbMemory =
                       dbSnapshot.lbMemory[config.mode + mode2].global;
-                    let dontShowGlobalDiff = glbMemory == null || glbMemory === -1 ? true : false;
+                    let dontShowGlobalDiff =
+                      glbMemory == null || glbMemory === -1 ? true : false;
                     let globalLbDiff = null;
                     if (glb === null) {
                       globalLbString = "global: not found";
@@ -2044,7 +2048,12 @@ function showResult(difficultyFailed = false) {
                         globalLbString = `global: ${str}`;
                       } else {
                         globalLbDiff = glbMemory - glb.foundAt;
-                        updateLbMemory(config.mode, mode2, "global", glb.foundAt);
+                        updateLbMemory(
+                          config.mode,
+                          mode2,
+                          "global",
+                          glb.foundAt
+                        );
                         let str = getPositionString(glb.foundAt + 1);
                         globalLbString = `global: ${str}`;
                       }
@@ -2066,13 +2075,19 @@ function showResult(difficultyFailed = false) {
                     const dlb = e.data.dailyLeaderboard;
                     const dlbMemory =
                       dbSnapshot.lbMemory[config.mode + mode2].daily;
-                    let dontShowDailyDiff = dlbMemory == null || dlbMemory === -1 ? true : false;
+                    let dontShowDailyDiff =
+                      dlbMemory == null || dlbMemory === -1 ? true : false;
                     let dailyLbDiff = null;
                     if (dlb === null) {
                       dailyLbString = "daily: not found";
                     } else if (dlb.insertedAt === -1) {
                       dailyLbDiff = dlbMemory - dlb.insertedAt;
-                      updateLbMemory(config.mode, mode2, "daily", dlb.insertedAt);
+                      updateLbMemory(
+                        config.mode,
+                        mode2,
+                        "daily",
+                        dlb.insertedAt
+                      );
                       dailyLbString = "daily: not qualified";
                     } else if (dlb.insertedAt >= 0) {
                       if (dlb.newBest) {
@@ -2087,7 +2102,12 @@ function showResult(difficultyFailed = false) {
                         dailyLbString = `daily: ${str}`;
                       } else {
                         dailyLbDiff = dlbMemory - dlb.foundAt;
-                        updateLbMemory(config.mode, mode2, "daily", dlb.foundAt);
+                        updateLbMemory(
+                          config.mode,
+                          mode2,
+                          "daily",
+                          dlb.foundAt
+                        );
                         let str = getPositionString(dlb.foundAt + 1);
                         dailyLbString = `daily: ${str}`;
                       }
@@ -2107,18 +2127,19 @@ function showResult(difficultyFailed = false) {
                       globalLbString + "<br>" + dailyLbString
                     );
 
-                    saveLbMemory({ uid: firebase.auth().currentUser.uid, obj: dbSnapshot.lbMemory }).then(
-                      (d) => {
-                        if (d.data.returnCode === 1) {
-                          // showNotification('config saved to db',1000);
-                        } else {
-                          showNotification(
-                            `Error saving lb memory ${d.data.message}`,
-                            4000
-                          );
-                        }
+                    saveLbMemory({
+                      uid: firebase.auth().currentUser.uid,
+                      obj: dbSnapshot.lbMemory,
+                    }).then((d) => {
+                      if (d.data.returnCode === 1) {
+                        // showNotification('config saved to db',1000);
+                      } else {
+                        showNotification(
+                          `Error saving lb memory ${d.data.message}`,
+                          4000
+                        );
                       }
-                    );
+                    });
                   }
                   if (
                     e.data.dailyLeaderboard === null &&
@@ -2375,12 +2396,14 @@ function startTest() {
       array: [],
     },
   };
+  if(config.paceCaret !== "off") movePaceCaret();
   //use a recursive self-adjusting timer to avoid time drift
   const stepIntervalMS = 1000;
   (function loop(expectedStepEnd) {
     const delay = expectedStepEnd - Date.now();
     timer = setTimeout(function () {
       time++;
+      if(config.paceCaret !== "off") movePaceCaret();
       if (config.mode === "time") {
         updateTimer();
       }
@@ -2560,12 +2583,11 @@ function restartTest(withSameWordset = false) {
     },
     125,
     () => {
-      $("#typingTest")
-          .css("opacity", 0)
-          .removeClass("hidden");
+      $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         sameWordset = false;
         initWords();
+        initPaceCaret();
       } else {
         sameWordset = true;
         testActive = false;
@@ -2967,16 +2989,21 @@ function toggleResultWordsDisplay() {
     if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
       //show
 
-
       if (!$("#showWordHistoryButton").hasClass("loaded")) {
         $("#words").html(
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
         loadWordsHistory().then(() => {
-          $("#resultWordsHistory").removeClass("hidden").css("display", "none").slideDown(250);
+          $("#resultWordsHistory")
+            .removeClass("hidden")
+            .css("display", "none")
+            .slideDown(250);
         });
       } else {
-        $("#resultWordsHistory").removeClass("hidden").css("display", "none").slideDown(250);
+        $("#resultWordsHistory")
+          .removeClass("hidden")
+          .css("display", "none")
+          .slideDown(250);
       }
     } else {
       //hide
@@ -2984,7 +3011,6 @@ function toggleResultWordsDisplay() {
       $("#resultWordsHistory").slideUp(250, () => {
         $("#resultWordsHistory").addClass("hidden");
       });
-
     }
   }
 }
@@ -3497,6 +3523,157 @@ function playErrorSound() {
   errorSound.play();
 }
 
+async function initPaceCaret() {
+  resetPaceCaret();
+
+  let mode2 = "";
+  if (config.mode === "time") {
+    mode2 = config.time;
+  } else if (config.mode === "words") {
+    mode2 = config.words;
+  } else if (config.mode === "custom") {
+    mode2 = "custom";
+  } else if (config.mode === "quote") {
+    mode2 = randomQuote.id;
+  }
+  let wpm;
+  if (config.paceCaret === "pb") {
+    wpm = await db_getLocalPB(
+      config.mode,
+      mode2,
+      config.punctuation,
+      config.language,
+      config.difficulty
+    );
+  } else if(config.paceCaret === "custom") {
+    wpm = parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val());
+  }
+
+  if (wpm < 1 || wpm == false || wpm == undefined) {
+    config.paceCaret = "off";
+  }
+
+  let characters = wpm * 5;
+  let cps = characters / 60; //characters per step
+
+  paceCaret = {
+    cps: cps,
+    currentWordIndex: 0,
+    currentLetterIndex: -1,
+  };
+}
+
+function movePaceCaret() {
+  if ($("#paceCaret").hasClass("hidden")) {
+    $("#paceCaret").removeClass("hidden");
+  }
+  try {
+    let currentMove = 0;
+    let newCurrentWord = paceCaret.currentWordIndex;
+    let newCurrentLetter = paceCaret.currentLetterIndex;
+
+    while (currentMove < paceCaret.cps) {
+      let currentWordLen;
+      if (newCurrentLetter <= 0) {
+        currentWordLen = wordsList[newCurrentWord].length;
+      } else {
+        currentWordLen = wordsList[newCurrentWord].length - newCurrentLetter;
+      }
+      if (currentMove + currentWordLen <= paceCaret.cps) {
+        //good to move
+        currentMove += currentWordLen;
+        currentMove++; //space
+        newCurrentWord++;
+        newCurrentLetter = -1;
+      } else {
+        //too much, need to go sub
+        if (currentWordLen === 1) {
+          newCurrentWord++;
+          currentMove += paceCaret.cps - currentMove;
+          newCurrentLetter = -1;
+        } else {
+          newCurrentLetter += paceCaret.cps - currentMove;
+          currentMove += paceCaret.cps - currentMove;
+        }
+
+        // newCurrentWord++;
+      }
+    }
+
+    paceCaret.currentWordIndex = Math.floor(newCurrentWord);
+    paceCaret.currentLetterIndex = Math.floor(newCurrentLetter);
+
+    let caret = $("#paceCaret");
+    let currentLetter;
+    if (paceCaret.currentLetterIndex === -1) {
+      currentLetter = document
+        .querySelectorAll("#words .word")
+        [
+          paceCaret.currentWordIndex -
+            (currentWordIndex - currentWordElementIndex)
+        ].querySelectorAll("letter")[0];
+    } else {
+      currentLetter = document
+        .querySelectorAll("#words .word")
+        [
+          paceCaret.currentWordIndex -
+            (currentWordIndex - currentWordElementIndex)
+        ].querySelectorAll("letter")[paceCaret.currentLetterIndex];
+    }
+
+    let newTop = currentLetter.offsetTop - $(currentLetter).height() / 4;
+    let newLeft;
+    if (paceCaret.currentLetterIndex === -1) {
+      newLeft = currentLetter.offsetLeft;
+    } else {
+      newLeft =
+        currentLetter.offsetLeft + $(currentLetter).width() - caret.width() / 2;
+    }
+
+    let duration = 1000;
+
+    if (newTop > document.querySelector("#paceCaret").offsetTop) {
+      duration = 0;
+    }
+
+    let smoothlinescroll = $("#words .smoothScroller").height();
+    if (smoothlinescroll === undefined) smoothlinescroll = 0;
+
+    caret.stop(true, true).animate(
+      {
+        top: newTop - smoothlinescroll,
+        left: newLeft,
+      },
+      duration,
+      "linear"
+    );
+  } catch (e) {
+    // $("#paceCaret").animate({ opacity: 0 }, 250, () => {
+    $("#paceCaret").addClass("hidden");
+    // });
+  }
+}
+
+function resetPaceCaret() {
+  if (!$("#paceCaret").hasClass("hidden")) {
+    $("#paceCaret").addClass("hidden");
+  }
+
+  let caret = $("#paceCaret");
+  let firstLetter = document
+    .querySelector("#words .word")
+    .querySelector("letter");
+
+  caret.stop(true, true).animate(
+    {
+      top: firstLetter.offsetTop - $(firstLetter).height() / 4,
+      left: firstLetter.offsetLeft,
+    },
+    0,
+    "linear"
+  );
+}
+
 $("#customMode2PopupWrapper").click((e) => {
   if ($(e.target).attr("id") === "customMode2PopupWrapper") {
     hideCustomMode2Popup();
@@ -3504,7 +3681,7 @@ $("#customMode2PopupWrapper").click((e) => {
 });
 
 $("#customMode2Popup input").keypress((e) => {
-  if (event.keyCode == 13) {
+  if (e.keyCode == 13) {
     applyMode2Popup();
   }
 });
