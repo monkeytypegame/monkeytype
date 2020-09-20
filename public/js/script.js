@@ -3550,7 +3550,7 @@ async function initPaceCaret() {
     wpm = parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val());
   }
 
-  if (wpm < 1 || wpm == false || wpm == undefined || wpm.isNaN()) {
+  if (wpm < 1 || wpm == false || wpm == undefined || Number.isNaN(wpm)) {
     config.paceCaret = "off";
     return;
   }
