@@ -3526,7 +3526,6 @@ function playErrorSound() {
 }
 
 async function initPaceCaret() {
-  resetPaceCaret();
 
   let mode2 = "";
   if (config.mode === "time") {
@@ -3551,9 +3550,12 @@ async function initPaceCaret() {
     wpm = parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val());
   }
 
-  if (wpm < 1 || wpm == false || wpm == undefined) {
+  if (wpm < 1 || wpm == false || wpm == undefined || wpm.isNaN()) {
     config.paceCaret = "off";
+    return;
   }
+
+  resetPaceCaret();
 
   let characters = wpm * 5;
   let cps = characters / 60; //characters per step
@@ -3657,6 +3659,7 @@ function movePaceCaret() {
 }
 
 function resetPaceCaret() {
+  if (config.paceCaret === "off") return;
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
   }
