@@ -1528,11 +1528,11 @@ function calculateStats() {
   let wpm = roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
-  console.log(
-    `pre-spacegate ${roundTo2(
-      ((chars.correctWordChars + chars.spaces) * (60 / testSeconds)) / 5
-    )} (current ${wpm})`
-  );
+  // console.log(
+  //   `pre-spacegate ${roundTo2(
+  //     ((chars.correctWordChars + chars.spaces) * (60 / testSeconds)) / 5
+  //   )} (current ${wpm})`
+  // );
   let wpmraw = roundTo2(
     ((chars.allCorrectChars +
       chars.spaces +
@@ -2588,6 +2588,7 @@ function restartTest(withSameWordset = false) {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         sameWordset = false;
+        paceCaret = null;
         initWords();
         initPaceCaret();
       } else {
@@ -2625,6 +2626,7 @@ function restartTest(withSameWordset = false) {
         // 'height': 'auto',
         // 'margin-bottom': '1.25rem'
       });
+      resetPaceCaret();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -2635,6 +2637,7 @@ function restartTest(withSameWordset = false) {
           },
           125,
           () => {
+            resetPaceCaret();
             hideCrown();
             clearTimeout(timer);
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
@@ -3551,11 +3554,9 @@ async function initPaceCaret() {
   }
 
   if (wpm < 1 || wpm == false || wpm == undefined || Number.isNaN(wpm)) {
-    config.paceCaret = "off";
+    paceCaret = null;
     return;
   }
-
-  resetPaceCaret();
 
   let characters = wpm * 5;
   let cps = characters / 60; //characters per step
@@ -3567,7 +3568,10 @@ async function initPaceCaret() {
   };
 }
 
-function movePaceCaret() {
+function movePaceCaret() { 
+  if (paceCaret === null) {
+    return;
+  }
   if ($("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").removeClass("hidden");
   }
@@ -3576,12 +3580,21 @@ function movePaceCaret() {
     let newCurrentWord = paceCaret.currentWordIndex;
     let newCurrentLetter = paceCaret.currentLetterIndex;
 
+   
+
     while (currentMove < paceCaret.cps) {
       let currentWordLen;
-      if (newCurrentLetter <= 0) {
-        currentWordLen = wordsList[newCurrentWord].length;
-      } else {
-        currentWordLen = wordsList[newCurrentWord].length - newCurrentLetter;
+      try {
+        if (newCurrentLetter <= 0) {
+          currentWordLen = wordsList[newCurrentWord].length;
+        } else {
+          currentWordLen = wordsList[newCurrentWord].length - newCurrentLetter;
+        }
+      } catch (e) {
+        //out of words
+        paceCaret = null;
+        $("#paceCaret").addClass("hidden");
+        return;
       }
       if (currentMove + currentWordLen <= paceCaret.cps) {
         //good to move
@@ -3609,21 +3622,23 @@ function movePaceCaret() {
 
     let caret = $("#paceCaret");
     let currentLetter;
-    if (paceCaret.currentLetterIndex === -1) {
-      currentLetter = document
-        .querySelectorAll("#words .word")
+    try {
+      if (paceCaret.currentLetterIndex === -1) {
+        currentLetter = document
+          .querySelectorAll("#words .word")
         [
           paceCaret.currentWordIndex -
-            (currentWordIndex - currentWordElementIndex)
+          (currentWordIndex - currentWordElementIndex)
         ].querySelectorAll("letter")[0];
-    } else {
-      currentLetter = document
-        .querySelectorAll("#words .word")
+      } else {
+        currentLetter = document
+          .querySelectorAll("#words .word")
         [
           paceCaret.currentWordIndex -
-            (currentWordIndex - currentWordElementIndex)
+          (currentWordIndex - currentWordElementIndex)
         ].querySelectorAll("letter")[paceCaret.currentLetterIndex];
-    }
+      }
+    }catch(e){}
 
     let newTop = currentLetter.offsetTop - $(currentLetter).height() / 4;
     let newLeft;
