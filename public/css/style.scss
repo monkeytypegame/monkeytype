@@ -585,7 +585,7 @@ a:hover {
     background: var(--bg-color);
     border-radius: var(--roundness);
 
-    textarea {
+    input {
       background: var(--bg-color);
       padding: 1rem;
       color: var(--main-color);
@@ -595,8 +595,6 @@ a:hover {
       font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
-      resize: vertical;
-      height: 200px;
     }
 
     .shiftEnter {

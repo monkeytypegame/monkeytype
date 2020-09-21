@@ -582,6 +582,10 @@ function toggleKeyTips() {
 
 //mode
 function changeTimeConfig(time, nosave) {
+  if (time !== null && !isNaN(time) && time > 0) {
+  } else {
+    time = 15;
+  }
   time = parseInt(time);
   changeMode("time", nosave);
   config.time = time;
@@ -596,6 +600,10 @@ function changeTimeConfig(time, nosave) {
 }
 
 function changeWordCount(wordCount, nosave) {
+  if (wordCount !== null && !isNaN(wordCount) && wordCount > 0) {
+  } else {
+    wordCount = 10;
+  }
   wordCount = parseInt(wordCount);
   changeMode("words", nosave);
   config.words = wordCount;

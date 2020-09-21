@@ -600,11 +600,21 @@ let commandsPaceCaret = {
     },
     {
       id: "setPaceCaretCustom",
-      display: "custom",
-      exec: () => {
+      display: "custom...",
+      input: true,
+      exec: (input) => {
+        $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(input);
         setPaceCaret("custom");
       },
     },
+    // {
+    //   id: "setPaceCaretCustomSpeed",
+    //   display: "Set custom speed...",
+    //   input: true,
+    //   exec: (input) => {
+    //     console.log(input);
+    //   },
+    // },
   ],
 };
 
@@ -781,6 +791,15 @@ let commandsWordCount = {
         restartTest();
       },
     },
+    {
+      id: "changeWordCountCustom",
+      display: "custom...",
+      input: true,
+      exec: (input) => {
+        changeWordCount(input);
+        restartTest();
+      },
+    },
   ],
 };
 let commandsMode = {
@@ -852,6 +871,15 @@ let commandsTimeConfig = {
       display: "120",
       exec: () => {
         changeTimeConfig("120");
+        restartTest();
+      },
+    },
+    {
+      id: "changeTimeConfigCustom",
+      display: "custom...",
+      input: true,
+      exec: (input) => {
+        changeTimeConfig(input);
         restartTest();
       },
     },
@@ -1176,12 +1204,12 @@ $(document).ready((e) => {
   });
 });
 
-$("#commandInput textarea").keydown((e) => {
-  if (e.keyCode == 13 && e.shiftKey) {
+$("#commandInput input").keydown((e) => {
+  if (e.keyCode == 13) {
     //enter
     e.preventDefault();
-    let command = $("#commandInput textarea").attr("command");
-    let value = $("#commandInput textarea").val();
+    let command = $("#commandInput input").attr("command");
+    let value = $("#commandInput input").val();
     let list = currentCommands[currentCommands.length - 1];
     $.each(list.list, (i, obj) => {
       if (obj.id == command) {
@@ -1338,6 +1366,7 @@ function hideCommandLine() {
       100,
       () => {
         $("#commandLineWrapper").addClass("hidden");
+        focusWords();
       }
     );
   focusWords();
@@ -1368,11 +1397,11 @@ function showCommandInput(command, placeholder) {
   $("#commandLineWrapper").removeClass("hidden");
   $("#commandLine").addClass("hidden");
   $("#commandInput").removeClass("hidden");
-  $("#commandInput textarea").attr("placeholder", placeholder);
-  $("#commandInput textarea").val("");
-  $("#commandInput textarea").focus();
-  $("#commandInput textarea").attr("command", "");
-  $("#commandInput textarea").attr("command", command);
+  $("#commandInput input").attr("placeholder", placeholder);
+  $("#commandInput input").val("");
+  $("#commandInput input").focus();
+  $("#commandInput input").attr("command", "");
+  $("#commandInput input").attr("command", command);
 }
 
 function updateSuggestedCommands() {
