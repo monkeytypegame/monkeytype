@@ -2490,6 +2490,7 @@ function startTest() {
           return;
         }
       }
+      // console.log('step');
       loop(expectedStepEnd + stepIntervalMS);
     }, delay);
   })(testStart + stepIntervalMS);
@@ -3617,11 +3618,13 @@ function movePaceCaret() {
       }
     }
 
-    paceCaret.currentWordIndex = Math.floor(newCurrentWord);
-    paceCaret.currentLetterIndex = Math.floor(newCurrentLetter);
+    paceCaret.currentWordIndex = Math.round(newCurrentWord);
+    paceCaret.currentLetterIndex = Math.round(newCurrentLetter);
 
     let caret = $("#paceCaret");
     let currentLetter;
+    let newTop;
+    let newLeft;
     try {
       if (paceCaret.currentLetterIndex === -1) {
         currentLetter = document
@@ -3638,16 +3641,15 @@ function movePaceCaret() {
           (currentWordIndex - currentWordElementIndex)
         ].querySelectorAll("letter")[paceCaret.currentLetterIndex];
       }
-    }catch(e){}
-
-    let newTop = currentLetter.offsetTop - $(currentLetter).height() / 4;
-    let newLeft;
+    newTop = currentLetter.offsetTop - $(currentLetter).height() / 4;
+    newLeft;
     if (paceCaret.currentLetterIndex === -1) {
       newLeft = currentLetter.offsetLeft;
     } else {
       newLeft =
         currentLetter.offsetLeft + $(currentLetter).width() - caret.width() / 2;
-    }
+      }
+    }catch(e){}
 
     let duration = 1000;
 
