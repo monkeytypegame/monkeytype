@@ -604,7 +604,6 @@ let commandsPaceCaret = {
       input: true,
       exec: (input) => {
         setPaceCaretCustomSpeed(input);
-        $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(input)
         setPaceCaret("custom");
       },
     },

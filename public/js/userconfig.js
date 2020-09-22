@@ -410,6 +410,7 @@ function setPaceCaretCustomSpeed(val, nosave) {
     val = 100;
   }
   config.paceCaretCustomSpeed = val;
+  $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(val);
   if (!nosave) saveConfigToCookie();
 }
 
