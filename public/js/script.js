@@ -3746,16 +3746,31 @@ function movePaceCaret() {
       top: newTop - smoothlinescroll,
     });
 
-    caret.stop(true, true).animate(
-      {
-        left: newLeft,
-      },
-      paceCaret.spc * 1000,
-      "linear",
-      () => {
+    let duration = paceCaret.spc * 1000;
+
+    if (config.smoothCaret) {
+      caret.stop(true, true).animate(
+        {
+          left: newLeft,
+        },
+        duration,
+        "linear",
+        () => {
+          movePaceCaret();
+        }
+      );
+    } else {
+      caret.stop(true, true).animate(
+        {
+          left: newLeft,
+        },
+        0,
+        "linear"
+      )
+      setTimeout(() => {
         movePaceCaret();
-      }
-    );
+      },duration)
+    }
   } catch (e) {
     // $("#paceCaret").animate({ opacity: 0 }, 250, () => {
     console.error(e);
