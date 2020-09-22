@@ -3586,7 +3586,7 @@ function movePaceCaret() {
     while (currentMove < paceCaret.cps) {
       let currentWordLen;
       try {
-        if (newCurrentLetter <= 0) {
+        if (newCurrentLetter < 0) {
           currentWordLen = wordsList[newCurrentWord].length;
         } else {
           currentWordLen = wordsList[newCurrentWord].length - newCurrentLetter;
@@ -3651,7 +3651,7 @@ function movePaceCaret() {
       }
     }catch(e){}
 
-    let duration = 1000;
+    let duration = 0;
 
     if (newTop > document.querySelector("#paceCaret").offsetTop) {
       duration = 0;
@@ -3751,7 +3751,7 @@ function applyMode2Popup() {
         showNotification("Stay safe and take breaks!", 3000);
       }
     } else {
-      showNotification("Custom time must be larger than 1", 3000);
+      showNotification("Custom time must be at least 1", 3000);
     }
   } else if (mode == "words") {
     if (val !== null && !isNaN(val) && val > 0) {
@@ -3762,7 +3762,7 @@ function applyMode2Popup() {
         showNotification("Stay safe and take breaks!", 3000);
       }
     } else {
-      showNotification("Custom word amount must be larger than 1", 3000);
+      showNotification("Custom word amount must be at least 1", 3000);
     }
   }
 
