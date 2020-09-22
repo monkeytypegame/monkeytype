@@ -3216,7 +3216,7 @@ function updateTestModesNotice() {
 
   if (config.paceCaret !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-tachometer-alt"></i>${config.paceCaret === "pb" ? "pb" : parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val())+" wpm"} pace</div>`
+      `<div><i class="fas fa-tachometer-alt"></i>${config.paceCaret === "pb" ? "pb" : config.paceCaretCustomSpeed+" wpm"} pace</div>`
     );
   }
 
@@ -3537,6 +3537,8 @@ function playErrorSound() {
 
 async function initPaceCaret() {
 
+  setPaceCaretCustomSpeed(parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()));
+
   let mode2 = "";
   if (config.mode === "time") {
     mode2 = config.time;
@@ -3557,7 +3559,7 @@ async function initPaceCaret() {
       config.difficulty
     );
   } else if(config.paceCaret === "custom") {
-    wpm = parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val());
+    wpm = config.paceCaretCustomSpeed;
   }
 
   if (wpm < 1 || wpm == false || wpm == undefined || Number.isNaN(wpm)) {

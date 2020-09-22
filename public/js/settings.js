@@ -376,6 +376,9 @@ function updateSettingsPage() {
     $(
       ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
     ).removeClass("hidden");
+    $(
+      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+    ).val(config.paceCaretCustomSpeed);
   } else {
     $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
       "hidden"

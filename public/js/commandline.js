@@ -603,7 +603,8 @@ let commandsPaceCaret = {
       display: "custom...",
       input: true,
       exec: (input) => {
-        $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(input);
+        setPaceCaretCustomSpeed(input);
+        $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(input)
         setPaceCaret("custom");
       },
     },

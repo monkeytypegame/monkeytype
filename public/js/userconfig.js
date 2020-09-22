@@ -56,6 +56,7 @@ let defaultConfig = {
   swapEscAndTab: false,
   showOutOfFocusWarning: true,
   paceCaret: "off",
+  paceCaretCustomSpeed: 100
 };
 
 let cookieConfig = null;
@@ -191,6 +192,8 @@ function applyConfig(configObj) {
     setSwapEscAndTab(configObj.swapEscAndTab, true);
     setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
     setPaceCaret(configObj.paceCaret, true);
+    setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
+
 
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -399,6 +402,14 @@ function setPaceCaret(val, nosave) {
   config.paceCaret = val;
   updateTestModesNotice();
   initPaceCaret();
+  if (!nosave) saveConfigToCookie();
+}
+
+function setPaceCaretCustomSpeed(val, nosave) {
+  if (val == undefined || Number.isNaN(parseInt(val))) {
+    val = 100;
+  }
+  config.paceCaretCustomSpeed = val;
   if (!nosave) saveConfigToCookie();
 }
 
