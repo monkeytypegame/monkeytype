@@ -4421,7 +4421,7 @@ $(document).keydown((event) => {
           }
           currentTestLine++;
         }
-      }
+      } //end of line wrap
       if (activeFunBox === "layoutfluid" && config.mode !== "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];
         let index = 0;
@@ -4490,12 +4490,7 @@ $(document).keydown((event) => {
         currentInput = "";
         currentWordIndex++;
         currentWordElementIndex++;
-        if (currentWordIndex == wordsList.length) {
-          //submitted last word that is incorrect
-          lastSecondNotRound = true;
-          showResult();
-          return;
-        } else if (
+        if (
           config.difficulty == "expert" ||
           config.difficulty == "master"
         ) {
@@ -4510,6 +4505,11 @@ $(document).keydown((event) => {
           incompleteTestSeconds += testSeconds;
           restartCount++;
           // }
+          return;
+        }else if (currentWordIndex == wordsList.length) {
+          //submitted last word that is incorrect
+          lastSecondNotRound = true;
+          showResult();
           return;
         }
         updateActiveElement();
