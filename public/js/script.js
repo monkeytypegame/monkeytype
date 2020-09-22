@@ -3569,6 +3569,8 @@ async function initPaceCaret() {
   let cps = characters / 60; //characters per step
   let spc = 60 / characters; //seconds per character
 
+  updateTestModesNotice();
+
   paceCaret = {
     cps: cps,
     spc: spc,
