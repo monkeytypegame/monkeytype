@@ -2404,7 +2404,7 @@ function startTest() {
     const delay = expectedStepEnd - Date.now();
     timer = setTimeout(function () {
       time++;
-      if(config.paceCaret !== "off") movePaceCaret();
+      // if(config.paceCaret !== "off") movePaceCaret();
       if (config.mode === "time") {
         updateTimer();
       }
@@ -3214,6 +3214,12 @@ function updateTestModesNotice() {
     );
   }
 
+  if (config.paceCaret !== "off") {
+    $(".pageTest #testModesNotice").append(
+      `<div><i class="fas fa-tachometer-alt"></i>${config.paceCaret === "pb" ? "pb" : parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val())+" wpm"} pace</div>`
+    );
+  }
+
   // if (config.readAheadMode) {
   //   $(".pageTest #testModesNotice").append(
   //     `<div><i class="fas fa-arrow-right"></i>read ahead</div>`
@@ -3561,66 +3567,148 @@ async function initPaceCaret() {
 
   let characters = wpm * 5;
   let cps = characters / 60; //characters per step
+  let spc = 60 / characters; //seconds per character
 
   paceCaret = {
     cps: cps,
+    spc: spc,
     currentWordIndex: 0,
     currentLetterIndex: -1,
   };
 }
 
-function movePaceCaret() { 
-  if (paceCaret === null) {
+// function movePaceCaret() { 
+//   if (paceCaret === null) {
+//     return;
+//   }
+//   if ($("#paceCaret").hasClass("hidden")) {
+//     $("#paceCaret").removeClass("hidden");
+//   }
+//   try {
+//     let currentMove = 0;
+//     let newCurrentWord = paceCaret.currentWordIndex;
+//     let newCurrentLetter = paceCaret.currentLetterIndex;
+
+   
+
+//     while (currentMove < paceCaret.cps) {
+//       let currentWordLen;
+//       try {
+//         if (newCurrentLetter < 0) {
+//           currentWordLen = wordsList[newCurrentWord].length;
+//         } else {
+//           currentWordLen = wordsList[newCurrentWord].length - newCurrentLetter;
+//         }
+//       } catch (e) {
+//         //out of words
+//         paceCaret = null;
+//         $("#paceCaret").addClass("hidden");
+//         return;
+//       }
+//       if (currentMove + currentWordLen <= paceCaret.cps) {
+//         //good to move
+//         currentMove += currentWordLen;
+//         currentMove++; //space
+//         newCurrentWord++;
+//         newCurrentLetter = -1;
+//       } else {
+//         //too much, need to go sub
+//         if (currentWordLen === 1) {
+//           newCurrentWord++;
+//           currentMove += paceCaret.cps - currentMove;
+//           newCurrentLetter = -1;
+//         } else {
+//           newCurrentLetter += paceCaret.cps - currentMove;
+//           currentMove += paceCaret.cps - currentMove;
+//         }
+
+//         // newCurrentWord++;
+//       }
+//     }
+
+//     paceCaret.currentWordIndex = Math.round(newCurrentWord);
+//     paceCaret.currentLetterIndex = Math.round(newCurrentLetter);
+
+//     let caret = $("#paceCaret");
+//     let currentLetter;
+//     let newTop;
+//     let newLeft;
+//     try {
+//       if (paceCaret.currentLetterIndex === -1) {
+//         currentLetter = document
+//           .querySelectorAll("#words .word")
+//         [
+//           paceCaret.currentWordIndex -
+//           (currentWordIndex - currentWordElementIndex)
+//         ].querySelectorAll("letter")[0];
+//       } else {
+//         currentLetter = document
+//           .querySelectorAll("#words .word")
+//         [
+//           paceCaret.currentWordIndex -
+//           (currentWordIndex - currentWordElementIndex)
+//         ].querySelectorAll("letter")[paceCaret.currentLetterIndex];
+//       }
+//     newTop = currentLetter.offsetTop - $(currentLetter).height() / 4;
+//     newLeft;
+//     if (paceCaret.currentLetterIndex === -1) {
+//       newLeft = currentLetter.offsetLeft;
+//     } else {
+//       newLeft =
+//         currentLetter.offsetLeft + $(currentLetter).width() - caret.width() / 2;
+//       }
+//     }catch(e){}
+
+//     let duration = 0;
+
+//     if (newTop > document.querySelector("#paceCaret").offsetTop) {
+//       duration = 0;
+//     }
+
+//     let smoothlinescroll = $("#words .smoothScroller").height();
+//     if (smoothlinescroll === undefined) smoothlinescroll = 0;
+
+//     $("#paceCaret").css({
+//       top: newTop - smoothlinescroll,
+//     });
+
+//     caret.stop(true, true).animate(
+//       {
+//         left: newLeft,
+//       },
+//       duration,
+//       "linear"
+//     );
+//   } catch (e) {
+//     // $("#paceCaret").animate({ opacity: 0 }, 250, () => {
+//     console.error(e);
+//     $("#paceCaret").addClass("hidden");
+//     // });
+//   }
+// }
+
+function movePaceCaret() {
+  if (paceCaret === null || !testActive) {
     return;
   }
   if ($("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").removeClass("hidden");
   }
+  paceCaret.currentLetterIndex++;
   try {
-    let currentMove = 0;
-    let newCurrentWord = paceCaret.currentWordIndex;
-    let newCurrentLetter = paceCaret.currentLetterIndex;
-
-   
-
-    while (currentMove < paceCaret.cps) {
-      let currentWordLen;
-      try {
-        if (newCurrentLetter < 0) {
-          currentWordLen = wordsList[newCurrentWord].length;
-        } else {
-          currentWordLen = wordsList[newCurrentWord].length - newCurrentLetter;
-        }
-      } catch (e) {
-        //out of words
-        paceCaret = null;
-        $("#paceCaret").addClass("hidden");
-        return;
-      }
-      if (currentMove + currentWordLen <= paceCaret.cps) {
-        //good to move
-        currentMove += currentWordLen;
-        currentMove++; //space
-        newCurrentWord++;
-        newCurrentLetter = -1;
-      } else {
-        //too much, need to go sub
-        if (currentWordLen === 1) {
-          newCurrentWord++;
-          currentMove += paceCaret.cps - currentMove;
-          newCurrentLetter = -1;
-        } else {
-          newCurrentLetter += paceCaret.cps - currentMove;
-          currentMove += paceCaret.cps - currentMove;
-        }
-
-        // newCurrentWord++;
-      }
+    if (paceCaret.currentLetterIndex >= wordsList[paceCaret.currentWordIndex].length) {
+      //go to the next word
+      paceCaret.currentLetterIndex = -1;
+      paceCaret.currentWordIndex++;
     }
+  } catch (e) {
+    //out of words
+    paceCaret = null;
+    $("#paceCaret").addClass("hidden");
+    return;
+  }
 
-    paceCaret.currentWordIndex = Math.round(newCurrentWord);
-    paceCaret.currentLetterIndex = Math.round(newCurrentLetter);
-
+  try{
     let caret = $("#paceCaret");
     let currentLetter;
     let newTop;
@@ -3651,12 +3739,6 @@ function movePaceCaret() {
       }
     }catch(e){}
 
-    let duration = 0;
-
-    if (newTop > document.querySelector("#paceCaret").offsetTop) {
-      duration = 0;
-    }
-
     let smoothlinescroll = $("#words .smoothScroller").height();
     if (smoothlinescroll === undefined) smoothlinescroll = 0;
 
@@ -3668,8 +3750,11 @@ function movePaceCaret() {
       {
         left: newLeft,
       },
-      duration,
-      "linear"
+      paceCaret.spc * 1000,
+      "linear",
+      () => {
+        movePaceCaret();
+      }
     );
   } catch (e) {
     // $("#paceCaret").animate({ opacity: 0 }, 250, () => {

@@ -397,6 +397,8 @@ function setPaceCaret(val, nosave) {
     val = "off";
   }
   config.paceCaret = val;
+  updateTestModesNotice();
+  initPaceCaret();
   if (!nosave) saveConfigToCookie();
 }
 
