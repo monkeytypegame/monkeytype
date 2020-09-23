@@ -1,6 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-let key = "./serviceAccountKey_live.json";
+let key = "./serviceAccountKey.json";
 
 if (process.env.GCLOUD_PROJECT === "monkey-type") {
   key = "./serviceAccountKey_live.json";
