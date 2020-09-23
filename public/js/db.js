@@ -73,7 +73,7 @@ async function db_getUserSnapshot() {
             snap.personalBests = data.personalBests;
           }
           snap.discordId = data.discordId;
-          snap.pairingCode = data.discordPairingCode;
+          snap.pairingCode = data.discordPairingCode == null ? undefined : data.discordPairingCode;
           snap.config = data.config;
           snap.favouriteThemes =
             data.favouriteThemes === undefined ? [] : data.favouriteThemes;
