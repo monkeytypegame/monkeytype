@@ -1437,14 +1437,16 @@ exports.generatePairingCode = functions
         .get()
         .then(async (userDoc) => {
           userDocData = userDoc.data();
-          if (userDocData.discordPairingCode !== undefined) {
+          if (userDocData.discordPairingCode !== undefined && userDocData.discordPairingCode !== null) {
             console.log(
               `user ${request.uid} already has code ${userDocData.discordPairingCode}`
             );
-            return {
-              status: 2,
-              pairingCode: userDocData.discordPairingCode,
-            };
+            response.status(200).send({
+              data: {
+                status: -999,
+                pairingCode: userDocData.discordPairingCode,
+              },
+            });
           } else {
 
             let stepSize = 1000;
