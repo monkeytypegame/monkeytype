@@ -620,7 +620,6 @@ function updateDiscordSettingsSection() {
         "hidden"
       );
     } else if (
-      dbSnapshot.pairingCode !== undefined &&
       dbSnapshot.discordId !== undefined
     ) {
       $(".pageSettings .section.discordIntegration .howto").addClass("hidden");
