@@ -433,31 +433,6 @@ function validateResult(result) {
   return true;
 }
 
-exports.clearDiscordPairingCodes = functions.https.onCall(async (request, response) => {
-  
-  let stepSize = 1000;
-  let query = await db.collection(`users`)
-    .where("discordPairingCode", ">", '')
-    .limit(stepSize)
-  .get();
-  let lastDoc;
-  while (query.docs.length > 0) {
-    lastDoc = query.docs[query.docs.length - 1];
-    for (let i = 0; i < query.docs.length; i++){
-      await db.collection('users').doc(query.docs[i].id).update({
-        discordPairingCode: null
-      })
-    }
-    query = await db.collection(`users`)
-    .where("discordPairingCode", ">", '')
-    .limit(stepSize)
-    .startAfter(lastDoc)
-    .get();
-  }
-
-
-})
-
 exports.requestTest = functions.https.onRequest((request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
   response.set("Access-Control-Allow-Headers", "*");
