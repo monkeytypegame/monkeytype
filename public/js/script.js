@@ -2608,7 +2608,6 @@ function restartTest(withSameWordset = false) {
         inputHistory = [];
         currentInput = "";
         initPaceCaret();
-
         showWords();
       }
       if (config.keymapMode !== "off") {
@@ -3582,8 +3581,10 @@ async function initPaceCaret() {
   paceCaret = {
     cps: cps,
     spc: spc,
+    correction: 0,
     currentWordIndex: 0,
     currentLetterIndex: -1,
+    wordsStatus: {}
   };
 }
 
@@ -3704,13 +3705,39 @@ function movePaceCaret(expectedStepEnd) {
   if ($("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").removeClass("hidden");
   }
-  paceCaret.currentLetterIndex++;
   try {
-    if (paceCaret.currentLetterIndex >= wordsList[paceCaret.currentWordIndex].length) {
-      //go to the next word
-      paceCaret.currentLetterIndex = -1;
-      paceCaret.currentWordIndex++;
-    }
+    if (paceCaret.correction < 0) {
+      // paceCaret.correction++;
+
+      while (paceCaret.correction < 0) {
+        paceCaret.currentLetterIndex--;
+        if  (paceCaret.currentLetterIndex == -2) {
+          //go to the next word
+          paceCaret.currentLetterIndex = wordsList[paceCaret.currentWordIndex - 1].length;
+          paceCaret.currentWordIndex--;
+        }
+        paceCaret.correction++;
+      }
+
+
+    } else if (paceCaret.correction > 0) {
+      while (paceCaret.correction > 0) {
+        paceCaret.currentLetterIndex++;
+        if  (paceCaret.currentLetterIndex >= wordsList[paceCaret.currentWordIndex].length) {
+          //go to the next word
+          paceCaret.currentLetterIndex = -1;
+          paceCaret.currentWordIndex++;
+        }
+        paceCaret.correction--;
+      }
+    } else {
+      paceCaret.currentLetterIndex++;
+      if  (paceCaret.currentLetterIndex >= wordsList[paceCaret.currentWordIndex].length) {
+        //go to the next word
+        paceCaret.currentLetterIndex = -1;
+        paceCaret.currentWordIndex++;
+      }
+    } 
   } catch (e) {
     //out of words
     paceCaret = null;
@@ -4551,6 +4578,11 @@ $(document).keydown((event) => {
       //   .querySelector("#words .word.active")
       //   .setAttribute("input", currentInput);
       if (currentWord == currentInput) {
+        //correct word
+        if (paceCaret !== null && paceCaret.wordsStatus[currentWordIndex] === true) {
+          paceCaret.wordsStatus[currentWordIndex] = undefined;
+          paceCaret.correction -= currentWord.length + 1;
+        }
         accuracyStats.correct++;
         inputHistory.push(currentInput);
         currentInput = "";
@@ -4562,6 +4594,11 @@ $(document).keydown((event) => {
         currentKeypress.words.push(currentWordIndex);
         playClickSound();
       } else {
+        //incorrect word
+        if (paceCaret !== null && paceCaret.wordsStatus[currentWordIndex] === undefined) {
+          paceCaret.wordsStatus[currentWordIndex] = true;
+          paceCaret.correction += currentWord.length + 1;
+        }
         if (!config.playSoundOnError || config.blindMode) {
           playClickSound();
         } else {
