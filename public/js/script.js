@@ -3989,7 +3989,6 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
   mode = $(e.currentTarget).attr("mode");
   changeMode(mode);
   manualRestart = true;
-
   restartTest();
 });
 
@@ -3999,6 +3998,7 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
     showLeaderboards();
   } else {
     href = $(e.currentTarget).attr("href");
+    manualRestart = true;
     changePage(href.replace("/", ""));
   }
 });
