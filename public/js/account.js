@@ -1631,8 +1631,13 @@ function loadMoreLines() {
       diff = "normal";
     }
 
-    let raw = result.rawWpm;
-    if (raw == undefined) {
+    let raw;
+    try{
+      raw = result.rawWpm.toFixed(2);
+      if (raw == undefined) {
+        raw = "-";
+      }
+    } catch (e) {
       raw = "-";
     }
 
@@ -1723,7 +1728,7 @@ function loadMoreLines() {
     $(".pageAccount .history table tbody").append(`
     <tr>
     <td>${result.wpm.toFixed(2)}</td>
-    <td>${raw.toFixed(2)}</td>
+    <td>${raw}</td>
     <td>${result.acc.toFixed(2)}%</td>
     <td>${result.correctChars}</td>
     <td>${result.incorrectChars}</td>
