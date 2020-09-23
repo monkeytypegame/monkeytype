@@ -2397,7 +2397,7 @@ function startTest() {
       array: [],
     },
   };
-  if(config.paceCaret !== "off") movePaceCaret();
+  if(config.paceCaret !== "off") movePaceCaret(performance.now() + (paceCaret.spc * 1000));
   //use a recursive self-adjusting timer to avoid time drift
   const stepIntervalMS = 1000;
   (function loop(expectedStepEnd) {
@@ -2603,6 +2603,8 @@ function restartTest(withSameWordset = false) {
         };
         inputHistory = [];
         currentInput = "";
+        paceCaret.currentLetterIndex = -1;
+        paceCaret.currentWordIndex = 0;
         showWords();
       }
       if (config.keymapMode !== "off") {
@@ -3691,7 +3693,7 @@ async function initPaceCaret() {
 //   }
 // }
 
-function movePaceCaret() {
+function movePaceCaret(expectedStepEnd) {
   if (paceCaret === null || !testActive) {
     return;
   }
@@ -3750,7 +3752,8 @@ function movePaceCaret() {
       top: newTop - smoothlinescroll,
     });
 
-    let duration = paceCaret.spc * 1000;
+    let duration = expectedStepEnd - performance.now();
+    // console.log(duration);
 
     if (config.smoothCaret) {
       caret.stop(true, true).animate(
@@ -3760,7 +3763,7 @@ function movePaceCaret() {
         duration,
         "linear",
         () => {
-          movePaceCaret();
+          movePaceCaret(expectedStepEnd + (paceCaret.spc * 1000));
         }
       );
     } else {
@@ -3772,7 +3775,7 @@ function movePaceCaret() {
         "linear"
       )
       setTimeout(() => {
-        movePaceCaret();
+        movePaceCaret(expectedStepEnd + (paceCaret.spc * 1000));
       },duration)
     }
   } catch (e) {
