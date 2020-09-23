@@ -4596,7 +4596,7 @@ $(document).keydown((event) => {
         //incorrect word
         if (paceCaret !== null && paceCaret.wordsStatus[currentWordIndex] === undefined) {
           paceCaret.wordsStatus[currentWordIndex] = true;
-          paceCaret.correction += currentInput.length + 1;
+          paceCaret.correction += currentInput.length;
         }
         if (!config.playSoundOnError || config.blindMode) {
           playClickSound();
