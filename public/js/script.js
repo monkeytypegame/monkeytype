@@ -2397,7 +2397,11 @@ function startTest() {
       array: [],
     },
   };
-  if(config.paceCaret !== "off") movePaceCaret(performance.now() + (paceCaret.spc * 1000));
+  try {
+    if (config.paceCaret !== "off") movePaceCaret(performance.now() + (paceCaret.spc * 1000));
+  } catch (e) {
+    
+  }
   //use a recursive self-adjusting timer to avoid time drift
   const stepIntervalMS = 1000;
   (function loop(expectedStepEnd) {
