@@ -4580,7 +4580,7 @@ $(document).keydown((event) => {
         //correct word
         if (paceCaret !== null && paceCaret.wordsStatus[currentWordIndex] === true) {
           paceCaret.wordsStatus[currentWordIndex] = undefined;
-          paceCaret.correction -= currentWord.length;
+          paceCaret.correction -= currentWord.length + 1;
         }
         accuracyStats.correct++;
         inputHistory.push(currentInput);
@@ -4596,7 +4596,7 @@ $(document).keydown((event) => {
         //incorrect word
         if (paceCaret !== null && paceCaret.wordsStatus[currentWordIndex] === undefined) {
           paceCaret.wordsStatus[currentWordIndex] = true;
-          paceCaret.correction += currentWord.length;
+          paceCaret.correction += currentWord.length + 1;
         }
         if (!config.playSoundOnError || config.blindMode) {
           playClickSound();
