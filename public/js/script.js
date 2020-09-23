@@ -2607,8 +2607,8 @@ function restartTest(withSameWordset = false) {
         };
         inputHistory = [];
         currentInput = "";
-        paceCaret.currentLetterIndex = -1;
-        paceCaret.currentWordIndex = 0;
+        initPaceCaret();
+
         showWords();
       }
       if (config.keymapMode !== "off") {
