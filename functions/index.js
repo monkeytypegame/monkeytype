@@ -1,6 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-let key = "./serviceAccountKey.json";
+let key = "./serviceAccountKey_live.json";
 
 if (process.env.GCLOUD_PROJECT === "monkey-type") {
   key = "./serviceAccountKey_live.json";
@@ -432,6 +432,31 @@ function validateResult(result) {
 
   return true;
 }
+
+exports.clearDiscordPairingCodes = functions.https.onCall(async (request, response) => {
+  
+  let stepSize = 1000;
+  let query = await db.collection(`users`)
+    .where("discordPairingCode", ">", '')
+    .limit(stepSize)
+  .get();
+  let lastDoc;
+  while (query.docs.length > 0) {
+    lastDoc = query.docs[query.docs.length - 1];
+    for (let i = 0; i < query.docs.length; i++){
+      await db.collection('users').doc(query.docs[i].id).update({
+        discordPairingCode: null
+      })
+    }
+    query = await db.collection(`users`)
+    .where("discordPairingCode", ">", '')
+    .limit(stepSize)
+    .startAfter(lastDoc)
+    .get();
+  }
+
+
+})
 
 exports.requestTest = functions.https.onRequest((request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
@@ -1450,6 +1475,7 @@ exports.generatePairingCode = functions
             let stepSize = 1000;
             let existingCodes = [];
             let query = await db.collection(`users`)
+                .where("discordPairingCode", ">", '')
                 .limit(stepSize)
               .get();
             let lastDoc;
@@ -1462,6 +1488,7 @@ exports.generatePairingCode = functions
                 }
               })
               query = await db.collection(`users`)
+              .where("discordPairingCode", ">", '')
               .limit(stepSize)
               .startAfter(lastDoc)
               .get();
