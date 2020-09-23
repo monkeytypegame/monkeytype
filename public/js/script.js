@@ -3706,6 +3706,12 @@ function movePaceCaret(expectedStepEnd) {
     $("#paceCaret").removeClass("hidden");
   }
   try {
+    paceCaret.currentLetterIndex++;
+    if  (paceCaret.currentLetterIndex >= wordsList[paceCaret.currentWordIndex].length) {
+      //go to the next word
+      paceCaret.currentLetterIndex = -1;
+      paceCaret.currentWordIndex++;
+    }
     if (paceCaret.correction < 0) {
       // paceCaret.correction++;
 
@@ -3730,14 +3736,7 @@ function movePaceCaret(expectedStepEnd) {
         }
         paceCaret.correction--;
       }
-    } else {
-      paceCaret.currentLetterIndex++;
-      if  (paceCaret.currentLetterIndex >= wordsList[paceCaret.currentWordIndex].length) {
-        //go to the next word
-        paceCaret.currentLetterIndex = -1;
-        paceCaret.currentWordIndex++;
-      }
-    } 
+    }
   } catch (e) {
     //out of words
     paceCaret = null;
