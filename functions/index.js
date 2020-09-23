@@ -31,7 +31,7 @@ async function getAllNames() {
   async function getAll(nextPageToken) {
     // List batch of users, 1000 at a time.
     let listUsersResult = await admin.auth().listUsers(1000, nextPageToken);
-    for (let i = 0; i < listUsersResult.users.length; i++){
+    for (let i = 0; i < listUsersResult.users.length; i++) {
       ret.push(listUsersResult.users[i].displayName);
     }
     if (listUsersResult.pageToken) {
@@ -454,12 +454,13 @@ exports.getPatreons = functions.https.onRequest(async (request, response) => {
   }
   request = request.body.data;
   try {
-
-    let patreon = await db.collection("patreon").doc('patreons').get();
+    let patreon = await db.collection("patreon").doc("patreons").get();
     let data = patreon.data().list;
 
-    data = data.sort((a, b) => { return b.value - a.value });
-    
+    data = data.sort((a, b) => {
+      return b.value - a.value;
+    });
+
     let ret = [];
     data.forEach((pdoc) => {
       ret.push(pdoc.name);
@@ -468,15 +469,13 @@ exports.getPatreons = functions.https.onRequest(async (request, response) => {
     response.status(200).send({ data: ret });
     return;
   } catch (e) {
-    response.status(200).send({e});
+    response.status(200).send({ e });
     return;
   }
 });
 
-
-
 async function incrementTestCounter(uid, userData) {
-  try{
+  try {
     if (userData.completedTests === undefined) {
       let results = await db.collection(`users/${uid}/results`).get();
       let count = results.docs.length;
@@ -499,42 +498,46 @@ async function incrementTestCounter(uid, userData) {
         .update({ completedTests: admin.firestore.FieldValue.increment(1) });
     }
   } catch (e) {
-    console.error(`Error while incrementing completed tests for user ${uid}: ${e}`);
+    console.error(
+      `Error while incrementing completed tests for user ${uid}: ${e}`
+    );
   }
 }
 
 async function incrementStartedTestCounter(uid, num, userData) {
-  try{
+  try {
     if (userData.startedTests === undefined) {
       let stepSize = 1000;
       let results = [];
-      let query = await db.collection(`users/${uid}/results`)
-          .orderBy("timestamp", "desc")
-          .limit(stepSize)
+      let query = await db
+        .collection(`users/${uid}/results`)
+        .orderBy("timestamp", "desc")
+        .limit(stepSize)
         .get();
       let lastDoc;
       while (query.docs.length > 0) {
         lastDoc = query.docs[query.docs.length - 1];
-        query.docs.forEach(doc => {
+        query.docs.forEach((doc) => {
           results.push({ restartCount: doc.data().restartCount });
-        })
-        query = await db.collection(`users/${uid}/results`)
-        .orderBy("timestamp", "desc")
-        .limit(stepSize)
-        .startAfter(lastDoc)
-        .get();
+        });
+        query = await db
+          .collection(`users/${uid}/results`)
+          .orderBy("timestamp", "desc")
+          .limit(stepSize)
+          .startAfter(lastDoc)
+          .get();
       }
 
       let count = 0;
       results.forEach((result) => {
-        try{
+        try {
           let rc = result.restartCount;
           if (rc === undefined) {
             rc = 0;
           }
 
           count += parseInt(rc);
-        }catch(e){}
+        } catch (e) {}
       });
       count += results.length;
       db.collection("users")
@@ -556,7 +559,9 @@ async function incrementStartedTestCounter(uid, num, userData) {
         .update({ startedTests: admin.firestore.FieldValue.increment(num) });
     }
   } catch (e) {
-    console.error(`Error while incrementing started tests for user ${uid}: ${e}`);
+    console.error(
+      `Error while incrementing started tests for user ${uid}: ${e}`
+    );
   }
 }
 
@@ -565,27 +570,28 @@ async function incrementTimeSpentTyping(uid, res, userData) {
     if (userData.timeTyping === undefined) {
       let stepSize = 1000;
       let results = [];
-      let query = await db.collection(`users/${uid}/results`)
-          .orderBy("timestamp", "desc")
-          .limit(stepSize)
+      let query = await db
+        .collection(`users/${uid}/results`)
+        .orderBy("timestamp", "desc")
+        .limit(stepSize)
         .get();
       let lastDoc;
       while (query.docs.length > 0) {
         lastDoc = query.docs[query.docs.length - 1];
-        query.docs.forEach(doc => {
+        query.docs.forEach((doc) => {
           let dd = doc.data();
           results.push({
             testDuration: dd.testDuration,
-            incompleteTestSeconds: dd.incompleteTestSeconds
+            incompleteTestSeconds: dd.incompleteTestSeconds,
           });
-        })
-        query = await db.collection(`users/${uid}/results`)
-        .orderBy("timestamp", "desc")
-        .limit(stepSize)
-        .startAfter(lastDoc)
-        .get();
+        });
+        query = await db
+          .collection(`users/${uid}/results`)
+          .orderBy("timestamp", "desc")
+          .limit(stepSize)
+          .startAfter(lastDoc)
+          .get();
       }
-
 
       let timeSum = 0;
       results.forEach((result) => {
@@ -595,8 +601,8 @@ async function incrementTimeSpentTyping(uid, res, userData) {
           let s1 = ts == undefined ? 0 : ts;
           let s2 = its == undefined ? 0 : its;
 
-          timeSum += (parseFloat(s1) + parseFloat(s2));
-        } catch (e) { }
+          timeSum += parseFloat(s1) + parseFloat(s2);
+        } catch (e) {}
       });
       db.collection("users")
         .doc(uid)
@@ -611,332 +617,352 @@ async function incrementTimeSpentTyping(uid, res, userData) {
     } else {
       db.collection("users")
         .doc(uid)
-        .update({ timeTyping: admin.firestore.FieldValue.increment(res.testDuration + res.incompleteTestSeconds) });
+        .update({
+          timeTyping: admin.firestore.FieldValue.increment(
+            res.testDuration + res.incompleteTestSeconds
+          ),
+        });
       db.collection("public")
         .doc("stats")
-        .update({ timeTyping: admin.firestore.FieldValue.increment(res.testDuration + res.incompleteTestSeconds) });
+        .update({
+          timeTyping: admin.firestore.FieldValue.increment(
+            res.testDuration + res.incompleteTestSeconds
+          ),
+        });
     }
   } catch (e) {
     console.error(`Error while incrementing time typing for user ${uid}: ${e}`);
   }
 }
 
-
-exports.testCompleted = functions.runWith({ timeoutSeconds: 540, memory: "2GB" }).https.onRequest(async (request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
-  if (request.method === "OPTIONS") {
-    // Send response to OPTIONS requests
-    response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-    response.set("Access-Control-Allow-Headers", "Authorization,Content-Type");
-    response.set("Access-Control-Max-Age", "3600");
-    response.status(204).send("");
-    return;
-  }
-  request = request.body.data;
-  try {
-    if (request.uid === undefined || request.obj === undefined) {
-      console.error(`error saving result for ${request.uid} - missing input`);
-      response.status(200).send({ data: { resultCode: -999 } });
-      return;
-    }
-
-    let obj = request.obj;
-
-    function verifyValue(val) {
-      let errCount = 0;
-      if (Array.isArray(val)) {
-        //array
-        val.forEach((val2) => {
-          errCount += verifyValue(val2);
-        });
-      } else if (typeof val === "object" && !Array.isArray(val)) {
-        //object
-        Object.keys(val).forEach((valkey) => {
-          errCount += verifyValue(val[valkey]);
-        });
-      } else {
-        if (!/^[0-9a-zA-Z._]+$/.test(val)) errCount++;
-      }
-      return errCount;
-    }
-
-    let errCount = verifyValue(obj);
-    // console.log(errCount);
-    if (errCount > 0) {
-      console.error(
-        `error saving result for ${
-          request.uid
-        } error count ${errCount} - bad input - ${JSON.stringify(request.obj)}`
+exports.testCompleted = functions
+  .runWith({ timeoutSeconds: 540, memory: "2GB" })
+  .https.onRequest(async (request, response) => {
+    response.set("Access-Control-Allow-Origin", "*");
+    if (request.method === "OPTIONS") {
+      // Send response to OPTIONS requests
+      response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      response.set(
+        "Access-Control-Allow-Headers",
+        "Authorization,Content-Type"
       );
-      response.status(200).send({ data: { resultCode: -1 } });
+      response.set("Access-Control-Max-Age", "3600");
+      response.status(204).send("");
       return;
     }
-
-    if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
-      response.status(200).send({ data: { resultCode: -1 } });
-      return;
-    }
-
-    if (!validateResult(obj)) {
-      if (
-        obj.bailedOut &&
-        ((obj.mode === "time" && obj.mode2 >= 3600) ||
-          (obj.mode === "words" && obj.mode2 >= 5000) ||
-          obj.mode === "custom")
-      ) {
-        //dont give an error
-      } else {
-        response.status(200).send({ data: { resultCode: -4 } });
+    request = request.body.data;
+    try {
+      if (request.uid === undefined || request.obj === undefined) {
+        console.error(`error saving result for ${request.uid} - missing input`);
+        response.status(200).send({ data: { resultCode: -999 } });
         return;
       }
-    }
 
-    let keySpacing = null;
-    let keyDuration = null;
+      let obj = request.obj;
 
-    try {
-      keySpacing = {
-        average:
-          obj.keySpacing.reduce((previous, current) => (current += previous)) /
-          obj.keySpacing.length,
-        sd: stdDev(obj.keySpacing),
-      };
+      function verifyValue(val) {
+        let errCount = 0;
+        if (Array.isArray(val)) {
+          //array
+          val.forEach((val2) => {
+            errCount += verifyValue(val2);
+          });
+        } else if (typeof val === "object" && !Array.isArray(val)) {
+          //object
+          Object.keys(val).forEach((valkey) => {
+            errCount += verifyValue(val[valkey]);
+          });
+        } else {
+          if (!/^[0-9a-zA-Z._]+$/.test(val)) errCount++;
+        }
+        return errCount;
+      }
 
-      keyDuration = {
-        average:
-          obj.keyDuration.reduce((previous, current) => (current += previous)) /
-          obj.keyDuration.length,
-        sd: stdDev(obj.keyDuration),
-      };
-    } catch (e) {
-      console.error(
-        `cant verify key spacing or duration for user ${request.uid}! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
-      );
-    }
+      let errCount = verifyValue(obj);
+      // console.log(errCount);
+      if (errCount > 0) {
+        console.error(
+          `error saving result for ${
+            request.uid
+          } error count ${errCount} - bad input - ${JSON.stringify(
+            request.obj
+          )}`
+        );
+        response.status(200).send({ data: { resultCode: -1 } });
+        return;
+      }
 
-    obj.keySpacingStats = keySpacing;
-    obj.keyDurationStats = keyDuration;
+      if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
+        response.status(200).send({ data: { resultCode: -1 } });
+        return;
+      }
 
-    if (obj.mode == "time" && (obj.mode2 == 15 || obj.mode2 == 60)) {
-    } else {
-      obj.keySpacing = "removed";
-      obj.keyDuration = "removed";
-    }
+      if (!validateResult(obj)) {
+        if (
+          obj.bailedOut &&
+          ((obj.mode === "time" && obj.mode2 >= 3600) ||
+            (obj.mode === "words" && obj.mode2 >= 5000) ||
+            obj.mode === "custom")
+        ) {
+          //dont give an error
+        } else {
+          response.status(200).send({ data: { resultCode: -4 } });
+          return;
+        }
+      }
 
-    emailVerified = await admin
-      .auth()
-      .getUser(request.uid)
-      .then((user) => {
-        return user.emailVerified;
-      });
+      let keySpacing = null;
+      let keyDuration = null;
 
-    return db
-      .collection("users")
-      .doc(request.uid)
-      .get()
-      .then((ret) => {
-        let userdata = ret.data();
-        let name = userdata.name === undefined ? false : userdata.name;
-        let banned = userdata.banned === undefined ? false : userdata.banned;
-        let verified = userdata.verified;
-        request.obj.name = name;
+      try {
+        keySpacing = {
+          average:
+            obj.keySpacing.reduce(
+              (previous, current) => (current += previous)
+            ) / obj.keySpacing.length,
+          sd: stdDev(obj.keySpacing),
+        };
 
-        //check keyspacing and duration here
-        if (obj.mode === "time" && obj.wpm > 130) {
-          if (verified === false || verified === undefined) {
-            if (keySpacing !== null && keyDuration !== null) {
-              if (
-                keySpacing.sd <= 15 ||
-                keyDuration.sd <= 10 ||
-                keyDuration.average < 15 ||
-                (obj.wpm > 200 && obj.consistency < 60)
-              ) {
-                console.error(
-                  `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
-                    obj.acc
-                  }) ${request.uid} ${name} - spacing ${JSON.stringify(
-                    keySpacing
-                  )} duration ${JSON.stringify(keyDuration)}`
-                );
-                response.status(200).send({ data: { resultCode: -2 } });
+        keyDuration = {
+          average:
+            obj.keyDuration.reduce(
+              (previous, current) => (current += previous)
+            ) / obj.keyDuration.length,
+          sd: stdDev(obj.keyDuration),
+        };
+      } catch (e) {
+        console.error(
+          `cant verify key spacing or duration for user ${request.uid}! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
+        );
+      }
+
+      obj.keySpacingStats = keySpacing;
+      obj.keyDurationStats = keyDuration;
+
+      if (obj.mode == "time" && (obj.mode2 == 15 || obj.mode2 == 60)) {
+      } else {
+        obj.keySpacing = "removed";
+        obj.keyDuration = "removed";
+      }
+
+      emailVerified = await admin
+        .auth()
+        .getUser(request.uid)
+        .then((user) => {
+          return user.emailVerified;
+        });
+
+      return db
+        .collection("users")
+        .doc(request.uid)
+        .get()
+        .then((ret) => {
+          let userdata = ret.data();
+          let name = userdata.name === undefined ? false : userdata.name;
+          let banned = userdata.banned === undefined ? false : userdata.banned;
+          let verified = userdata.verified;
+          request.obj.name = name;
+
+          //check keyspacing and duration here
+          if (obj.mode === "time" && obj.wpm > 130) {
+            if (verified === false || verified === undefined) {
+              if (keySpacing !== null && keyDuration !== null) {
+                if (
+                  keySpacing.sd <= 15 ||
+                  keyDuration.sd <= 10 ||
+                  keyDuration.average < 15 ||
+                  (obj.wpm > 200 && obj.consistency < 60)
+                ) {
+                  console.error(
+                    `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
+                      obj.acc
+                    }) ${request.uid} ${name} - spacing ${JSON.stringify(
+                      keySpacing
+                    )} duration ${JSON.stringify(keyDuration)}`
+                  );
+                  response.status(200).send({ data: { resultCode: -2 } });
+                  return;
+                }
+                if (
+                  (keySpacing.sd > 15 && keySpacing.sd <= 25) ||
+                  (keyDuration.sd > 10 && keyDuration.sd <= 15) ||
+                  (keyDuration.average > 15 && keyDuration.average <= 20)
+                ) {
+                  console.error(
+                    `very close to bot threshold by user (${obj.wpm} ${
+                      obj.rawWpm
+                    } ${obj.acc}) ${
+                      request.uid
+                    } ${name} - spacing ${JSON.stringify(
+                      keySpacing
+                    )} duration ${JSON.stringify(keyDuration)}`
+                  );
+                }
+              } else {
+                response.status(200).send({ data: { resultCode: -3 } });
                 return;
               }
-              if (
-                (keySpacing.sd > 15 && keySpacing.sd <= 25) ||
-                (keyDuration.sd > 10 && keyDuration.sd <= 15) ||
-                (keyDuration.average > 15 && keyDuration.average <= 20)
-              ) {
-                console.error(
-                  `very close to bot threshold by user (${obj.wpm} ${
-                    obj.rawWpm
-                  } ${obj.acc}) ${
-                    request.uid
-                  } ${name} - spacing ${JSON.stringify(
-                    keySpacing
-                  )} duration ${JSON.stringify(keyDuration)}`
-                );
-              }
-            } else {
-              response.status(200).send({ data: { resultCode: -3 } });
-              return;
             }
           }
-        }
 
-        return db
-          .collection(`users/${request.uid}/results`)
-          .add(obj)
-          .then((e) => {
-            let createdDocId = e.id;
-            return Promise.all([
-              checkLeaderboards(
-                request.obj,
-                "global",
-                banned,
-                name,
-                verified,
-                emailVerified
-              ),
-              checkLeaderboards(
-                request.obj,
-                "daily",
-                banned,
-                name,
-                verified,
-                emailVerified
-              ),
-              checkIfPB(request.uid, request.obj, userdata),
-            ])
-              .then((values) => {
-                let globallb = values[0].insertedAt;
-                let dailylb = values[1].insertedAt;
-                let ispb = values[2];
-                // console.log(values);
+          return db
+            .collection(`users/${request.uid}/results`)
+            .add(obj)
+            .then((e) => {
+              let createdDocId = e.id;
+              return Promise.all([
+                checkLeaderboards(
+                  request.obj,
+                  "global",
+                  banned,
+                  name,
+                  verified,
+                  emailVerified
+                ),
+                checkLeaderboards(
+                  request.obj,
+                  "daily",
+                  banned,
+                  name,
+                  verified,
+                  emailVerified
+                ),
+                checkIfPB(request.uid, request.obj, userdata),
+              ])
+                .then((values) => {
+                  let globallb = values[0].insertedAt;
+                  let dailylb = values[1].insertedAt;
+                  let ispb = values[2];
+                  // console.log(values);
 
-                incrementTestCounter(request.uid, userdata);
-                incrementStartedTestCounter(request.uid, obj.restartCount + 1, userdata);
-                incrementTimeSpentTyping(request.uid, obj, userdata);
-
-                let usr =
-                  userdata.discordId !== undefined
-                    ? userdata.discordId
-                    : userdata.name;
-
-                if (
-                  globallb !== null &&
-                  globallb.insertedAt >= 0 &&
-                  globallb.insertedAt <= 9 &&
-                  globallb.newBest
-                ) {
-                  let lbstring = `${obj.mode} ${obj.mode2} global`;
-                  console.log(
-                    `sending command to the bot to announce lb update ${
-                      userdata.discordId
-                    } ${globallb + 1} ${lbstring} ${obj.wpm}`
+                  incrementTestCounter(request.uid, userdata);
+                  incrementStartedTestCounter(
+                    request.uid,
+                    obj.restartCount + 1,
+                    userdata
                   );
+                  incrementTimeSpentTyping(request.uid, obj, userdata);
 
-                  announceLbUpdate(
-                    usr,
-                    globallb.insertedAt + 1,
-                    lbstring,
-                    obj.wpm,
-                    obj.rawWpm,
-                    obj.acc
-                  );
-                }
-
-                let returnobj = {
-                  resultCode: null,
-                  globalLeaderboard: globallb,
-                  dailyLeaderboard: dailylb,
-                  lbBanned: banned,
-                  name: name,
-                  createdId: createdDocId,
-                  needsToVerify: values[0].needsToVerify,
-                  needsToVerifyEmail: values[0].needsToVerifyEmail,
-                };
-
-                if (ispb) {
-                  let logobj = request.obj;
-                  logobj.keySpacing = "removed";
-                  logobj.keyDuration = "removed";
-                  console.log(
-                    `saved result for ${
-                      request.uid
-                    } (new PB) - ${JSON.stringify(logobj)}`
-                  );
-                  if (
-                    obj.mode === "time" &&
-                    String(obj.mode2) === "60" &&
-                    userdata.discordId !== null &&
+                  let usr =
                     userdata.discordId !== undefined
+                      ? userdata.discordId
+                      : userdata.name;
+
+                  if (
+                    globallb !== null &&
+                    globallb.insertedAt >= 0 &&
+                    globallb.insertedAt <= 9 &&
+                    globallb.newBest
                   ) {
-                    if (verified !== false) {
-                      console.log(
-                        `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
-                      );
-                      updateDiscordRole(
-                        userdata.discordId,
-                        Math.round(obj.wpm)
-                      );
-                    }
+                    let lbstring = `${obj.mode} ${obj.mode2} global`;
+                    console.log(
+                      `sending command to the bot to announce lb update ${
+                        userdata.discordId
+                      } ${globallb + 1} ${lbstring} ${obj.wpm}`
+                    );
+
+                    announceLbUpdate(
+                      usr,
+                      globallb.insertedAt + 1,
+                      lbstring,
+                      obj.wpm,
+                      obj.rawWpm,
+                      obj.acc
+                    );
                   }
-                  returnobj.resultCode = 2;
-                } else {
-                  let logobj = request.obj;
-                  logobj.keySpacing = "removed";
-                  logobj.keyDuration = "removed";
-                  console.log(
-                    `saved result for ${request.uid} - ${JSON.stringify(
-                      logobj
-                    )}`
+
+                  let returnobj = {
+                    resultCode: null,
+                    globalLeaderboard: globallb,
+                    dailyLeaderboard: dailylb,
+                    lbBanned: banned,
+                    name: name,
+                    createdId: createdDocId,
+                    needsToVerify: values[0].needsToVerify,
+                    needsToVerifyEmail: values[0].needsToVerifyEmail,
+                  };
+
+                  if (ispb) {
+                    let logobj = request.obj;
+                    logobj.keySpacing = "removed";
+                    logobj.keyDuration = "removed";
+                    console.log(
+                      `saved result for ${
+                        request.uid
+                      } (new PB) - ${JSON.stringify(logobj)}`
+                    );
+                    if (
+                      obj.mode === "time" &&
+                      String(obj.mode2) === "60" &&
+                      userdata.discordId !== null &&
+                      userdata.discordId !== undefined
+                    ) {
+                      if (verified !== false) {
+                        console.log(
+                          `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                        );
+                        updateDiscordRole(
+                          userdata.discordId,
+                          Math.round(obj.wpm)
+                        );
+                      }
+                    }
+                    returnobj.resultCode = 2;
+                  } else {
+                    let logobj = request.obj;
+                    logobj.keySpacing = "removed";
+                    logobj.keyDuration = "removed";
+                    console.log(
+                      `saved result for ${request.uid} - ${JSON.stringify(
+                        logobj
+                      )}`
+                    );
+                    returnobj.resultCode = 1;
+                  }
+                  response.status(200).send({ data: returnobj });
+                  return;
+                })
+                .catch((e) => {
+                  console.error(
+                    `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
                   );
-                  returnobj.resultCode = 1;
-                }
-                response.status(200).send({ data: returnobj });
-                return;
-              })
-              .catch((e) => {
-                console.error(
-                  `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
-                );
-                response
-                  .status(200)
-                  .send({ data: { resultCode: -999, message: e.message } });
-                return;
-              });
-          })
-          .catch((e) => {
-            console.error(
-              `error saving result when adding result to the db for ${request.uid} - ${e.message}`
-            );
-            response
-              .status(200)
-              .send({ data: { resultCode: -999, message: e.message } });
-            return;
-          });
-      })
-      .catch((e) => {
-        console.error(
-          `error saving result when getting user data for ${request.uid} - ${e.message}`
-        );
-        response
-          .status(200)
-          .send({ data: { resultCode: -999, message: e.message } });
-        return;
-      });
-  } catch (e) {
-    console.error(
-      `error saving result for ${request.uid} - ${JSON.stringify(
-        request.obj
-      )} - ${e}`
-    );
-    response
-      .status(200)
-      .send({ data: { resultCode: -999, message: e.message } });
-    return;
-  }
-});
+                  response
+                    .status(200)
+                    .send({ data: { resultCode: -999, message: e.message } });
+                  return;
+                });
+            })
+            .catch((e) => {
+              console.error(
+                `error saving result when adding result to the db for ${request.uid} - ${e.message}`
+              );
+              response
+                .status(200)
+                .send({ data: { resultCode: -999, message: e.message } });
+              return;
+            });
+        })
+        .catch((e) => {
+          console.error(
+            `error saving result when getting user data for ${request.uid} - ${e.message}`
+          );
+          response
+            .status(200)
+            .send({ data: { resultCode: -999, message: e.message } });
+          return;
+        });
+    } catch (e) {
+      console.error(
+        `error saving result for ${request.uid} - ${JSON.stringify(
+          request.obj
+        )} - ${e}`
+      );
+      response
+        .status(200)
+        .send({ data: { resultCode: -999, message: e.message } });
+      return;
+    }
+  });
 
 function updateDiscordRole(discordId, wpm) {
   db.collection("bot-commands").add({
@@ -1167,7 +1193,9 @@ exports.saveConfig = functions.https.onCall((request, response) => {
 exports.saveLbMemory = functions.https.onCall((request, response) => {
   try {
     if (request.uid === undefined || request.obj === undefined) {
-      console.error(`error saving lb memory for ${request.uid} - missing input`);
+      console.error(
+        `error saving lb memory for ${request.uid} - missing input`
+      );
       return {
         returnCode: -1,
         message: "Missing input",
@@ -1437,7 +1465,10 @@ exports.generatePairingCode = functions
         .get()
         .then(async (userDoc) => {
           userDocData = userDoc.data();
-          if (userDocData.discordPairingCode !== undefined && userDocData.discordPairingCode !== null) {
+          if (
+            userDocData.discordPairingCode !== undefined &&
+            userDocData.discordPairingCode !== null
+          ) {
             console.log(
               `user ${request.uid} already has code ${userDocData.discordPairingCode}`
             );
@@ -1448,27 +1479,31 @@ exports.generatePairingCode = functions
               },
             });
           } else {
-
             let stepSize = 1000;
             let existingCodes = [];
-            let query = await db.collection(`users`)
-                .where("discordPairingCode", ">", '')
-                .limit(stepSize)
+            let query = await db
+              .collection(`users`)
+              .where("discordPairingCode", ">", "")
+              .limit(stepSize)
               .get();
             let lastDoc;
             while (query.docs.length > 0) {
               lastDoc = query.docs[query.docs.length - 1];
-              query.docs.forEach(doc => {
+              query.docs.forEach((doc) => {
                 let docData = doc.data();
-                if (docData.discordPairingCode !== undefined && docData.discordPairingCode !== null) {
+                if (
+                  docData.discordPairingCode !== undefined &&
+                  docData.discordPairingCode !== null
+                ) {
                   existingCodes.push(docData.discordPairingCode);
                 }
-              })
-              query = await db.collection(`users`)
-              .where("discordPairingCode", ">", '')
-              .limit(stepSize)
-              .startAfter(lastDoc)
-              .get();
+              });
+              query = await db
+                .collection(`users`)
+                .where("discordPairingCode", ">", "")
+                .limit(stepSize)
+                .startAfter(lastDoc)
+                .get();
             }
 
             let randomCode = generate(9);
@@ -1487,9 +1522,7 @@ exports.generatePairingCode = functions
                 { merge: true }
               )
               .then((res) => {
-                console.log(
-                  `generated ${randomCode} for user ${request.uid}`
-                );
+                console.log(`generated ${randomCode} for user ${request.uid}`);
                 response.status(200).send({
                   data: {
                     status: 1,
