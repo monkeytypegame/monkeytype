@@ -1483,7 +1483,7 @@ exports.generatePairingCode = functions
               lastDoc = query.docs[query.docs.length - 1];
               query.docs.forEach(doc => {
                 let docData = doc.data();
-                if (docData.discordPairingCode !== undefined) {
+                if (docData.discordPairingCode !== undefined && docData.discordPairingCode !== null) {
                   existingCodes.push(docData.discordPairingCode);
                 }
               })
