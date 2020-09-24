@@ -3203,6 +3203,12 @@ function updateTestModesNotice() {
 
   $(".pageTest #testModesNotice").empty();
 
+  if (sameWordset) {
+    $(".pageTest #testModesNotice").append(
+      `<div style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
+    );
+  }
+
   if (config.difficulty === "expert") {
     $(".pageTest #testModesNotice").append(
       `<div><i class="fas fa-star-half-alt"></i>expert</div>`
