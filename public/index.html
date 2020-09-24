@@ -2472,12 +2472,11 @@
           <div class="register side">
             <div class="title">register</div>
             <form action="" autocomplete="off">
-              <input type="text" placeholder="username" />
+              <input type="text" placeholder="username"  />
               <input type="text" placeholder="email" />
               <input
                 type="password"
                 placeholder="password"
-                autocomplete="new-password"
               />
               <input type="password" placeholder="verify password" />
               <div class="button">
@@ -2490,8 +2489,8 @@
             <div class="title">login</div>
             <div id="forgotPasswordButton">Forgot password?</div>
             <form action="">
-              <input type="text" placeholder="email" />
-              <input type="password" placeholder="password" />
+              <input type="text" placeholder="email" autocomplete="email"/>
+              <input type="password" placeholder="password" autocomplete="password"/>
               <div>
                 <label id="rememberMe">
                   <input type="checkbox" checked />
