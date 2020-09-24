@@ -3765,15 +3765,18 @@ function movePaceCaret(expectedStepEnd) {
           (currentWordIndex - currentWordElementIndex)
         ].querySelectorAll("letter")[paceCaret.currentLetterIndex];
       }
-    newTop = currentLetter.offsetTop - $(currentLetter).height() / 4;
-    newLeft;
-    if (paceCaret.currentLetterIndex === -1) {
-      newLeft = currentLetter.offsetLeft;
-    } else {
-      newLeft =
+      newTop = currentLetter.offsetTop - $(currentLetter).height() / 4;
+      newLeft;
+      if (paceCaret.currentLetterIndex === -1) {
+        newLeft = currentLetter.offsetLeft;
+      } else {
+        newLeft =
         currentLetter.offsetLeft + $(currentLetter).width() - caret.width() / 2;
       }
-    }catch(e){}
+      caret.removeClass('hidden');
+    } catch (e) {
+      caret.addClass('hidden');
+    }
 
     let smoothlinescroll = $("#words .smoothScroller").height();
     if (smoothlinescroll === undefined) smoothlinescroll = 0;
