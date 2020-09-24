@@ -800,6 +800,11 @@ a:hover {
 }
 
 #caret, #paceCaret{
+
+  &.off {
+    width: 0;
+  }
+
   &.default {
     width: 2px;
   }

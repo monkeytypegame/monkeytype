@@ -500,12 +500,15 @@ function setCaretStyle(caretStyle, nosave) {
     caretStyle = "default";
   }
   config.caretStyle = caretStyle;
+  $("#caret, #paceCaret").removeClass("off");
   $("#caret, #paceCaret").removeClass("default");
   $("#caret, #paceCaret").removeClass("underline");
   $("#caret, #paceCaret").removeClass("outline");
   $("#caret, #paceCaret").removeClass("block");
 
-  if (caretStyle == "default") {
+  if (caretStyle == "off") {
+    $("#caret, #paceCaret").addClass("off");
+  }else if (caretStyle == "default") {
     $("#caret, #paceCaret").addClass("default");
   } else if (caretStyle == "block") {
     $("#caret, #paceCaret").addClass("block");

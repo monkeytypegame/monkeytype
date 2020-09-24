@@ -550,6 +550,13 @@ let commandsCaretStyle = {
   title: "Change caret...",
   list: [
     {
+      id: "setCaretStyleOff",
+      display: "off",
+      exec: () => {
+        setCaretStyle("off");
+      },
+    },
+    {
       id: "setCaretStyleDefault",
       display: "line",
       exec: () => {
