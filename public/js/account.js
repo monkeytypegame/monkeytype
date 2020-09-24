@@ -1679,7 +1679,7 @@ function loadMoreLines() {
       icons += `<span class="hoverChartButton" aria-label="Chart history is not available for long tests" data-balloon-pos="up"><i class="fas fa-chart-line"></i></span>`;
     } else {
       icons += `<span class="hoverChartButton" filteredResultsId="${
-        visibleTableLines + i
+        i
       }" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
     }
 
