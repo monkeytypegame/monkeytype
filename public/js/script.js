@@ -1378,6 +1378,9 @@ function updateHighlightedKeymapKey() {
 function updateCaretPosition() {
   // return;
   if ($("#wordsWrapper").hasClass("hidden")) return;
+  if ($("#caret").hasClass("off")) {
+    return;
+  }
 
   let caret = $("#caret");
   // let activeWord = $("#words .word.active");
@@ -3710,6 +3713,9 @@ function movePaceCaret(expectedStepEnd) {
   }
   if ($("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").removeClass("hidden");
+  }
+  if ($("#paceCaret").hasClass("off")) {
+    return;
   }
   try {
     paceCaret.currentLetterIndex++;
