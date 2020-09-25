@@ -2422,7 +2422,7 @@ function startTest() {
       // wpmHistory.push(wpm);
       // rawHistory.push(liveRaw());
       let wpmAndRaw = liveWpmAndRaw();
-      updateLiveWpm(wpmAndRaw.wpm);
+      updateLiveWpm(wpmAndRaw.wpm, wpmAndRaw.raw);
       wpmHistory.push(wpmAndRaw.wpm);
       rawHistory.push(wpmAndRaw.raw);
 
@@ -2879,15 +2879,19 @@ function liveWpmAndRaw() {
   };
 }
 
-function updateLiveWpm(wpm) {
+function updateLiveWpm(wpm,raw) {
   if (!testActive || !config.showLiveWpm) {
     hideLiveWpm();
   } else {
     showLiveWpm();
   }
   // let wpmstring = wpm < 100 ? `&nbsp;${wpm}` : `${wpm}`;
-  document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = wpm;
-  document.querySelector("#liveWpm").innerHTML = wpm;
+  let number = wpm;
+  if (config.blindMode) {
+    number = raw;
+  }
+  document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = number;
+  document.querySelector("#liveWpm").innerHTML = number;
   // $("#liveWpm").html(wpm);
 }
 
