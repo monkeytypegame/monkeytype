@@ -137,6 +137,13 @@ let commands = {
         toggleBlindMode();
       },
     },
+    {
+      id: "toggleIndicateTypos",
+      display: "Toggle indicate typos",
+      exec: () => {
+        toggleIndicateTypos();
+      },
+    },
     // {
     //   id: "toggleReadAheadMode",
     //   display: "Toggle read ahead mode",
