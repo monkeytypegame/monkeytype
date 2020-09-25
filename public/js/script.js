@@ -4764,6 +4764,23 @@ $(document).ready(() => {
     .removeClass("hidden")
     .stop(true, true)
     .animate({ opacity: 1 }, 250, () => {
+      let theme = findGetParameter("customTheme");
+      if (theme !== null) {
+        try {
+          theme = theme.split(",");
+          config.customThemeColors = theme;
+          showNotification("Custom theme applied", 1000);
+        } catch (e) {
+          showNotification(
+            "Something went wrong. Reverting to default custom colors.",
+            3000
+          );
+          config.customThemeColors = defaultConfig.customThemeColors;
+        }
+        setCustomTheme(true);
+        setCustomThemeInputs();
+        applyCustomThemeColors();
+      }
       if (window.location.pathname === "/account") {
         history.replaceState("/", null, "/");
       } else if (window.location.pathname !== "/") {

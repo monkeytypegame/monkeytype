@@ -445,12 +445,27 @@ $("#customThemeShareWrapper").click((e) => {
   }
 });
 
-$("#customThemeShare .button").click((e) => {
-  hideCustomThemeShare();
-});
+// $("#customThemeShare .button").click((e) => {
+//   hideCustomThemeShare();
+// });
 
 $("#shareCustomThemeButton").click((e) => {
-  showCustomThemeShare();
+  // showCustomThemeShare();
+
+  let share = [];
+  $.each(
+    $(".pageSettings .section.customTheme [type='color']"),
+    (index, element) => {
+      share.push($(element).attr("value"));
+    }
+  );
+
+  let url = "https://monkey-type.com?" + objectToQueryString({ customTheme: share });
+  navigator.clipboard.writeText(url).then(function() {
+    showNotification("URL Copied to clipboard", 2000);
+  }, function(err) {
+    showNotification("Something went wrong when copying the URL: "+ err, 5000);
+  });
 });
 
 function toggleFavouriteTheme(themename) {
