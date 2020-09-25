@@ -1385,6 +1385,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
   $(".pageAccount .filterButtons").slideToggle(250);
+  $(".pageAccount .topFilters .button.toggleAdvancedFilters").toggleClass('active');
 });
 
 $(".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons").click(
