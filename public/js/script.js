@@ -3741,7 +3741,7 @@ function movePaceCaret(expectedStepEnd) {
     } else if (paceCaret.correction > 0) {
       while (paceCaret.correction > 0) {
         paceCaret.currentLetterIndex++;
-        if  (paceCaret.currentLetterIndex >= wordsList[paceCaret.currentWordIndex].length + 1) {
+        if  (paceCaret.currentLetterIndex >= wordsList[paceCaret.currentWordIndex].length) {
           //go to the next word
           paceCaret.currentLetterIndex = -1;
           paceCaret.currentWordIndex++;
