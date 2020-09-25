@@ -373,6 +373,11 @@ let commands = {
       },
     },
     {
+      id: "randomiseTheme",
+      display: "Next random theme",
+      exec: () => randomiseTheme()
+    },
+    {
       id: "bailOut",
       display: "Bail out...",
       subgroup: true,
