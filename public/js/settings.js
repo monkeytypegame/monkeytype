@@ -136,6 +136,7 @@ settingsGroups.confidenceMode = new SettingsGroup(
     settingsGroups.stopOnError.updateButton();
   }
 );
+settingsGroups.indicateTypos = new SettingsGroup("indicateTypos", setIndicateTypos);
 settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
 settingsGroups.quickEnd = new SettingsGroup("quickEnd", setQuickEnd);
 // settingsGroups.readAheadMode = new SettingsGroup(
