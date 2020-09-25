@@ -2539,6 +2539,7 @@ function restartTest(withSameWordset = false) {
   hideLiveWpm();
   hideTimer();
   bailout = false;
+  if(paceCaret !== null) clearTimeout(paceCaret.timeout);
   $("#showWordHistoryButton").removeClass("loaded");
   keypressPerSecond = [];
   lastSecondNotRound = false;
@@ -3593,7 +3594,8 @@ async function initPaceCaret() {
     correction: 0,
     currentWordIndex: 0,
     currentLetterIndex: -1,
-    wordsStatus: {}
+    wordsStatus: {},
+    timeout: null,
   };
 }
 
@@ -3708,7 +3710,7 @@ async function initPaceCaret() {
 // }
 
 function movePaceCaret(expectedStepEnd) {
-  if (paceCaret === null || !testActive) {
+  if (paceCaret === null || !testActive || resultVisible) {
     return;
   }
   if ($("#paceCaret").hasClass("hidden")) {
@@ -3806,10 +3808,7 @@ function movePaceCaret(expectedStepEnd) {
           left: newLeft,
         },
         duration,
-        "linear",
-        () => {
-          movePaceCaret(expectedStepEnd + (paceCaret.spc * 1000));
-        }
+        "linear"
       );
     } else {
       caret.stop(true, true).animate(
@@ -3819,10 +3818,10 @@ function movePaceCaret(expectedStepEnd) {
         0,
         "linear"
       )
-      setTimeout(() => {
-        movePaceCaret(expectedStepEnd + (paceCaret.spc * 1000));
-      },duration)
     }
+    paceCaret.timeout = setTimeout(() => {
+      movePaceCaret(expectedStepEnd + (paceCaret.spc * 1000));
+    }, duration);
   } catch (e) {
     // $("#paceCaret").animate({ opacity: 0 }, 250, () => {
     console.error(e);
