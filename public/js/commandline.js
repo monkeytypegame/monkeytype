@@ -411,6 +411,11 @@ let commands = {
       },
     },
     {
+      id: "randomiseTheme",
+      display: "Randomise Theme",
+      exec: () => randomiseTheme()
+    },
+    {
       id: "joinDiscord",
       display: "Join the Discord server",
       exec: () => {
