@@ -816,6 +816,7 @@ function setTheme(name, nosave) {
   config.theme = name;
   $(".keymap-key").attr("style", "");
   $("#currentTheme").attr("href", `themes/${name}.css`);
+  $(".current-theme").text(name.replace('_',' '));
   setTimeout(() => {
     updateFavicon(32, 14);
   }, 500);
