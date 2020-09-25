@@ -1116,9 +1116,16 @@ function showActiveFilters() {
       } else {
         aboveChartDisplay[group].all = false;
       }
-      let buttonEl = $(
-        `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
-      );
+      let buttonEl;
+      if (group === "date") {
+        buttonEl = $(
+          `.pageAccount .group.topFilters .filterGroup[group="${group}"] .button[filter="${filter}"]`
+        );
+      } else {
+        buttonEl = $(
+          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
+        );
+      }
       if (config.resultFilters[group][filter]) {
         buttonEl.addClass("active");
       } else {
@@ -1380,7 +1387,7 @@ $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
   $(".pageAccount .filterButtons").slideToggle(250);
 });
 
-$(".pageAccount .filterButtons .buttonsAndTitle .buttons").click(
+$(".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons").click(
   ".button",
   (e) => {
     const filter = $(e.target).attr("filter");
