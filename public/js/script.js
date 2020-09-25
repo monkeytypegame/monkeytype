@@ -2871,7 +2871,7 @@ function liveWpmAndRaw() {
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
   let raw = Math.round(
-    ((chars + spaces + currentInput.length) * (60 / testSeconds)) / 5
+    ((chars + spaces) * (60 / testSeconds)) / 5
   );
   return {
     wpm: wpm,
