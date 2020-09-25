@@ -36,6 +36,7 @@ let defaultConfig = {
   capsLockBackspace: false,
   layout: "default",
   confidenceMode: "off",
+  indicateTypos: false,
   timerStyle: "text",
   colorfulMode: false,
   randomTheme: "off",
@@ -170,6 +171,7 @@ function applyConfig(configObj) {
     setFlipTestColors(configObj.flipTestColors, true);
     setColorfulMode(configObj.colorfulMode, true);
     setConfidenceMode(configObj.confidenceMode, true);
+    setIndicateTypos(configObj.indicateTypos, true);
     setTimerStyle(configObj.timerStyle, true);
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
@@ -789,6 +791,25 @@ function setConfidenceMode(cm, nosave) {
   updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }
+
+
+function toggleIndicateTypos() {
+  it = !config.indicateTypos;
+  if (it == undefined) {
+    it = false;
+  }
+  config.indicateTypos = it;
+  saveConfigToCookie();
+}
+
+function setIndicateTypos(it, nosave) {
+  if (it == undefined) {
+    it = false;
+  }
+  config.indicateTypos = it;
+  if (!nosave) saveConfigToCookie();
+}
+
 
 function previewTheme(name) {
   if (
