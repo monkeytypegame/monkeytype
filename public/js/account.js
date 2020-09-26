@@ -2144,21 +2144,26 @@ function refreshAccountPage() {
     resultHistoryChart.data.datasets[0].data = chartData;
     resultHistoryChart.data.datasets[1].data = accChartData;
 
-    let minChartVal = Math.min(...wpmChartData);
-
     let wpms = chartData.map((r) => r.y);
-    let maxChartVal = Math.max(...wpms);
+    let minWpmChartVal = Math.min(...wpms);
+    let maxWpmChartVal = Math.max(...wpms);
+
+    let accuracies = accChartData.map((r) => r.y);
+    let minAccuracyChartVal = Math.min(...accuracies);
+    let maxAccuracyChartVal = Math.max(...accuracies);
 
     resultHistoryChart.options.scales.yAxes[0].ticks.max =
-      Math.floor(maxChartVal) + (10 - (Math.floor(maxChartVal) % 10));
-    // resultHistoryChart.options.scales.yAxes[1].ticks.max = Math.floor(maxChartVal) + 10;
+      Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
+    resultHistoryChart.options.scales.yAxes[1].ticks.max = Math.ceil(
+      maxAccuracyChartVal
+    );
 
     if (!config.startGraphsAtZero) {
       resultHistoryChart.options.scales.yAxes[0].ticks.min = Math.floor(
-        minChartVal
+        minWpmChartVal
       );
       resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.floor(
-        minChartVal
+        minAccuracyChartVal
       );
     }
 
