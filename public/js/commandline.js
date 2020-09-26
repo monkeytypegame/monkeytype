@@ -241,10 +241,19 @@ let commands = {
     },
     {
       id: "changePaceCaret",
-      display: "Change pace caret...",
+      display: "Change pace caret mode...",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsPaceCaret);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changePaceCaretStyle",
+      display: "Change pace caret style...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsPaceCaretStyle);
         showCommandLine();
       },
     },
@@ -559,7 +568,7 @@ let commandsDifficulty = {
 };
 
 let commandsCaretStyle = {
-  title: "Change caret...",
+  title: "Change caret style...",
   list: [
     {
       id: "setCaretStyleOff",
@@ -599,9 +608,49 @@ let commandsCaretStyle = {
   ],
 };
 
+let commandsPaceCaretStyle = {
+  title: "Change pace caret style...",
+  list: [
+    {
+      id: "setPaceCaretStyleOff",
+      display: "off",
+      exec: () => {
+        setPaceCaretStyle("off");
+      },
+    },
+    {
+      id: "setPaceCaretStyleDefault",
+      display: "line",
+      exec: () => {
+        setPaceCaretStyle("default");
+      },
+    },
+    {
+      id: "setPaceCaretStyleBlock",
+      display: "block",
+      exec: () => {
+        setPaceCaretStyle("block");
+      },
+    },
+    {
+      id: "setPaceCaretStyleOutline",
+      display: "outline-block",
+      exec: () => {
+        setPaceCaretStyle("outline");
+      },
+    },
+    {
+      id: "setPaceCaretStyleUnderline",
+      display: "underline",
+      exec: () => {
+        setPaceCaretStyle("underline");
+      },
+    },
+  ],
+};
 
 let commandsPaceCaret = {
-  title: "Change pace caret...",
+  title: "Change pace caret mode...",
   list: [
     {
       id: "setPaceCaretOff",

@@ -215,6 +215,7 @@ settingsGroups.layout = new SettingsGroup("layout", changeLayout);
 settingsGroups.language = new SettingsGroup("language", changeLanguage);
 settingsGroups.fontSize = new SettingsGroup("fontSize", changeFontSize);
 settingsGroups.caretStyle = new SettingsGroup("caretStyle", setCaretStyle);
+settingsGroups.paceCaretStyle = new SettingsGroup("paceCaretStyle", setPaceCaretStyle);
 settingsGroups.timerStyle = new SettingsGroup("timerStyle", setTimerStyle);
 settingsGroups.timerOpacity = new SettingsGroup(
   "timerOpacity",

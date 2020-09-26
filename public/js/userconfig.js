@@ -32,6 +32,7 @@ let defaultConfig = {
   quickEnd: false,
   // readAheadMode: false,
   caretStyle: "default",
+  paceCaretStyle: "default",
   flipTestColors: false,
   capsLockBackspace: false,
   layout: "default",
@@ -164,6 +165,7 @@ function applyConfig(configObj) {
     changeFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
+    setPaceCaretStyle(configObj.paceCaretStyle, true);
     setDifficulty(configObj.difficulty, true);
     setBlindMode(configObj.blindMode, true);
     setQuickEnd(configObj.quickEnd, true);
@@ -502,22 +504,47 @@ function setCaretStyle(caretStyle, nosave) {
     caretStyle = "default";
   }
   config.caretStyle = caretStyle;
-  $("#caret, #paceCaret").removeClass("off");
-  $("#caret, #paceCaret").removeClass("default");
-  $("#caret, #paceCaret").removeClass("underline");
-  $("#caret, #paceCaret").removeClass("outline");
-  $("#caret, #paceCaret").removeClass("block");
+  $("#caret").removeClass("off");
+  $("#caret").removeClass("default");
+  $("#caret").removeClass("underline");
+  $("#caret").removeClass("outline");
+  $("#caret").removeClass("block");
 
   if (caretStyle == "off") {
-    $("#caret, #paceCaret").addClass("off");
+    $("#caret").addClass("off");
   }else if (caretStyle == "default") {
-    $("#caret, #paceCaret").addClass("default");
+    $("#caret").addClass("default");
   } else if (caretStyle == "block") {
-    $("#caret, #paceCaret").addClass("block");
+    $("#caret").addClass("block");
   } else if (caretStyle == "outline") {
-    $("#caret, #paceCaret").addClass("outline");
+    $("#caret").addClass("outline");
   } else if (caretStyle == "underline") {
-    $("#caret, #paceCaret").addClass("underline");
+    $("#caret").addClass("underline");
+  }
+  if (!nosave) saveConfigToCookie();
+}
+
+function setPaceCaretStyle(caretStyle, nosave) {
+  if (caretStyle == null || caretStyle == undefined) {
+    caretStyle = "default";
+  }
+  config.paceCaretStyle = caretStyle;
+  $("#paceCaret").removeClass("off");
+  $("#paceCaret").removeClass("default");
+  $("#paceCaret").removeClass("underline");
+  $("#paceCaret").removeClass("outline");
+  $("#paceCaret").removeClass("block");
+
+  if (caretStyle == "off") {
+    $("#paceCaret").addClass("off");
+  }else if (caretStyle == "default") {
+    $("#paceCaret").addClass("default");
+  } else if (caretStyle == "block") {
+    $("#paceCaret").addClass("block");
+  } else if (caretStyle == "outline") {
+    $("#paceCaret").addClass("outline");
+  } else if (caretStyle == "underline") {
+    $("#paceCaret").addClass("underline");
   }
   if (!nosave) saveConfigToCookie();
 }
