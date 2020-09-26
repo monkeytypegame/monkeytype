@@ -946,6 +946,7 @@ function applyCustomThemeColors() {
   array = config.customThemeColors;
 
   if (config.customTheme === true) {
+    $(".current-theme").text("custom");
     previewTheme("serika_dark");
     colorVars.forEach((e, index) => {
       document.documentElement.style.setProperty(e, array[index]);
