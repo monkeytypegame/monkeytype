@@ -1090,17 +1090,41 @@ key {
   line-height: 1rem;
   font-size: 0.75rem;
   color: var(--sub-color);
-  transition: 0.5s;
+  transition: 0.25s;
+  padding: 0 5px;
 
   // margin-bottom: 2rem;
   .keyTips {
     margin-bottom: 1rem;
   }
 
+  .leftright{
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    .left{
+      text-align: left;
+    }
+    .right{
+      text-align: right;
+      // display: flex;
+      // gap: 1rem;
+      // align-items: center;
+      // justify-content: flex-end;
+      .discordLink{
+        transition: .25s;
+        text-decoration: none;
+        &:hover{
+          color: var(--main-color);
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
   .version {
     opacity: 0;
-    transition: 0.25s;
-
+    transition: .25s;
     &:hover {
       cursor: pointer;
       color: var(--main-color);
