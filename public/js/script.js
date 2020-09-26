@@ -907,7 +907,7 @@ function compareInput(showError) {
         if (currentWord[i] == undefined) {
           ret += '<letter class="incorrect extra">' + input[i] + "</letter>";
         } else {
-          ret += '<letter class="incorrect">' + currentWord[i] + "</letter>";
+          ret += '<letter class="incorrect">' + currentWord[i] + (config.indicateTypos ? `<hint>${input[i]}</hint>` : '') + "</letter>";
         }
       }
     }
