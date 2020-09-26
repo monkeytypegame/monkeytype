@@ -1694,11 +1694,13 @@ key {
   bottom: -1.2em;
   color: var(--text-color);
   line-height: 1em;
-  font-size: .8em;
+  font-size: .75em;
   text-shadow: none;
   padding: 1px;
   left: 0;
   opacity: .5;
+  text-align: center;
+  width: 100%;
 }
 
 .word letter.incorrect.extra {
