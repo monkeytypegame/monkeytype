@@ -41,6 +41,15 @@ let commands = {
       },
     },
     {
+      id: "changeQuoteLength",
+      display: "Change quote length...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsQuoteLengthConfig);
+        showCommandLine();
+      },
+    },
+    {
       visible: false,
       id: "changeTags",
       display: "Change tags...",
@@ -870,6 +879,46 @@ let commandsWordCount = {
     },
   ],
 };
+
+
+let commandsQuoteLengthConfig = {
+  title: "Change quote length...",
+  list: [
+    {
+      id: "changeQuoteLengthShort",
+      display: "short",
+      exec: () => {
+        changeQuoteLength(0);
+        restartTest();
+      },
+    },
+    {
+      id: "changeQuoteLengthMedium",
+      display: "medium",
+      exec: () => {
+        changeQuoteLength(1);
+        restartTest();
+      },
+    },
+    {
+      id: "changeQuoteLengthLong",
+      display: "long",
+      exec: () => {
+        changeQuoteLength(2);
+        restartTest();
+      },
+    },
+    {
+      id: "changeQuoteLengthThicc",
+      display: "thicc",
+      exec: () => {
+        changeQuoteLength(3);
+        restartTest();
+      },
+    },
+  ],
+};
+
 let commandsMode = {
   title: "Change mode...",
   list: [

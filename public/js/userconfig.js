@@ -23,6 +23,7 @@ let defaultConfig = {
   words: 50,
   time: 30,
   mode: "time",
+  quoteLength: 1,
   language: "english",
   fontSize: 15,
   freedomMode: false,
@@ -157,6 +158,7 @@ function applyConfig(configObj) {
     setPunctuation(configObj.punctuation, true);
     setKeyTips(configObj.showKeyTips, true);
     changeTimeConfig(configObj.time, true);
+    changeQuoteLength(configObj.quoteLength, true);
     changeWordCount(configObj.words, true);
     changeMode(configObj.mode, true);
     changeLanguage(configObj.language, true);
@@ -640,6 +642,22 @@ function changeTimeConfig(time, nosave) {
     time = "custom";
   }
   $("#top .config .time .text-button[timeConfig='" + time + "']").addClass(
+    "active"
+  );
+  if (!nosave) saveConfigToCookie();
+}
+
+//quote length
+function changeQuoteLength(len, nosave) {
+  if (len !== null && !isNaN(len) && len >= 0) {
+  } else {
+    len = 1;
+  }
+  len = parseInt(len);
+  changeMode("quote", nosave);
+  config.quoteLength = len;
+  $("#top .config .quoteLength .text-button").removeClass("active");
+  $("#top .config .quoteLength .text-button[quoteLength='" + len + "']").addClass(
     "active"
   );
   if (!nosave) saveConfigToCookie();

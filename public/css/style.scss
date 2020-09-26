@@ -984,8 +984,8 @@ a:hover {
     display: grid;
     grid-auto-flow: row;
     grid-gap: 0.2rem;
-    width: min-content;
-    width: -moz-min-content;
+    // width: min-content;
+    // width: -moz-min-content;
     transition: 0.25s;
     /*   margin-bottom: 0.1rem; */
     justify-items: self-end;

@@ -31,7 +31,7 @@ let activeWordTopBeforeJump = 0;
 let activeWordTop = 0;
 let activeWordJumped = false;
 let sameWordset = false;
-let quotes = [];
+let quotes = null;
 let focusState = false;
 let activeFunBox = "none";
 let manualRestart = false;
@@ -400,7 +400,7 @@ function initWords() {
     });
   }
 
-  if (config.mode === "quote" && quotes.length == 0) {
+  if (config.mode === "quote" && quotes === null) {
     showBackgroundLoader();
     $.ajax({
       url: "js/english_quotes.json",
@@ -408,6 +408,12 @@ function initWords() {
       success: function (data) {
         hideBackgroundLoader();
         quotes = data;
+        quotes.groups.forEach((qg,i) => {
+          let lower = qg[0];
+          let upper = qg[1];
+          quotes.groups[i] = quotes.quotes.filter(q => q.length >= lower && q.length <= upper);
+        })
+        quotes.quotes = [];
       },
     });
   }
@@ -514,7 +520,7 @@ function initWords() {
       wordsList.push(randomWord);
     }
   } else if (config.mode == "quote") {
-    randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    randomQuote = quotes.groups[config.quoteLength][Math.floor(Math.random() * quotes.groups[config.quoteLength].length)];
     let w = randomQuote.text.trim().split(" ");
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
@@ -2789,12 +2795,14 @@ function changeMode(mode, nosave) {
     $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("hidden");
     $("#top .config .numbersMode").removeClass("hidden");
+    $("#top .config .quoteLength").addClass("hidden");
   } else if (config.mode == "words") {
     $("#top .config .wordCount").removeClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("hidden");
     $("#top .config .numbersMode").removeClass("hidden");
+    $("#top .config .quoteLength").addClass("hidden");
   } else if (config.mode == "custom") {
     if (
       activeFunBox === "58008" ||
@@ -2809,6 +2817,7 @@ function changeMode(mode, nosave) {
     $("#top .config .customText").removeClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
+    $("#top .config .quoteLength").addClass("hidden");
   } else if (config.mode == "quote") {
     setToggleSettings(false);
     $("#top .config .wordCount").addClass("hidden");
@@ -2817,6 +2826,7 @@ function changeMode(mode, nosave) {
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
     $("#result .stats .source").removeClass("hidden");
+    $("#top .config .quoteLength").removeClass("hidden");
     changeLanguage("english");
   }
   if (!nosave) saveConfigToCookie();
@@ -3978,6 +3988,13 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 
     restartTest();
   }
+});
+
+$(document).on("click", "#top .config .quoteLength .text-button", (e) => {
+  let len = $(e.currentTarget).attr("quoteLength");
+  changeQuoteLength(len);
+  manualRestart = true;
+  restartTest();
 });
 
 $(document).on("click", "#top .config .customText .text-button", (e) => {
