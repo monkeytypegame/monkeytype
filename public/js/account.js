@@ -1733,8 +1733,16 @@ function loadMoreLines() {
       consistency = consistency.toFixed(2) + "%";
     }
 
+    let pb = result.isPb;
+    if (pb) {
+      pb = '<i class="fas fa-fw fa-crown"></i>'
+    } else {
+      pb = '';
+    }
+
     $(".pageAccount .history table tbody").append(`
     <tr>
+    <td>${pb}</td>
     <td>${result.wpm.toFixed(2)}</td>
     <td>${raw}</td>
     <td>${result.acc.toFixed(2)}%</td>

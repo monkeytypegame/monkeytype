@@ -1991,6 +1991,9 @@ function showResult(difficultyFailed = false) {
                   );
                 } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                   completedEvent.id = e.data.createdId;
+                  if (e.data.resultCode === 2) {
+                    completedEvent.isPb = true;
+                  }
                   if (dbSnapshot !== null && dbSnapshot.results !== undefined) {
                     dbSnapshot.results.unshift(completedEvent);
                     if (dbSnapshot.globalStats.time == undefined) {
@@ -2193,7 +2196,7 @@ function showResult(difficultyFailed = false) {
                       config.difficulty,
                       stats.wpm,
                       stats.acc,
-                      stats.wpmRaw
+                      stats.wpmRaw,
                     );
                   } else if (e.data.resultCode === 1) {
                     if (localPb) {

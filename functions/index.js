@@ -829,12 +829,11 @@ exports.testCompleted = functions
                 ),
                 checkIfPB(request.uid, request.obj, userdata),
               ])
-                .then((values) => {
+                .then(async (values) => {
                   let globallb = values[0].insertedAt;
                   let dailylb = values[1].insertedAt;
                   let ispb = values[2];
                   // console.log(values);
-
                   incrementTestCounter(request.uid, userdata);
                   incrementStartedTestCounter(
                     request.uid,
@@ -891,6 +890,10 @@ exports.testCompleted = functions
                         request.uid
                       } (new PB) - ${JSON.stringify(logobj)}`
                     );
+                    await db
+                      .collection(`users/${request.uid}/results/`)
+                      .doc(createdDocId)
+                      .update({ isPb: true });
                     if (
                       obj.mode === "time" &&
                       String(obj.mode2) === "60" &&
