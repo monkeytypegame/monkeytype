@@ -5175,7 +5175,11 @@ const words = {
       "svoj",
       "môcť",
       "človek",
-      "borovička"
+      "borovička",
+      "žena",
+      "matka",
+      "mesto",
+      "zviera"
     ]
   }
 };
