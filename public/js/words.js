@@ -4973,7 +4973,8 @@ const words = {
       "vzít",
       "dlouhý",
       "čekat",
-      "patřit"
+      "patřit",
+      "vláda"
       ]
   }
 };
