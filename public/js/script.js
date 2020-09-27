@@ -2244,7 +2244,21 @@ function showResult(difficultyFailed = false) {
 
   let testType = "";
 
-  testType += config.mode;
+  if (config.mode === "quote") {
+    let qlen;
+    if (config.quoteLength === 0) {
+      qlen = "short";
+    }else if (config.quoteLength === 1) {
+      qlen = "medium";
+    }else if (config.quoteLength === 2) {
+      qlen = "long";
+    }else if (config.quoteLength === 2) {
+      qlen = "thicc";
+    }
+    testType += qlen + ' ' + config.mode;
+  } else {
+    testType += config.mode;
+  }
   if (config.mode == "time") {
     testType += " " + config.time;
   } else if (config.mode == "words") {
