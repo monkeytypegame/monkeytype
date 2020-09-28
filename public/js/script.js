@@ -2556,6 +2556,7 @@ function restartTest(withSameWordset = false) {
   rawHistory = [];
   missedWords = [];
   correctedHistory = [];
+  currentCorrected = "";
   setFocus(false);
   hideCaret();
   testActive = false;
@@ -2676,6 +2677,7 @@ function restartTest(withSameWordset = false) {
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
             wpmOverTimeChart.options.annotation.annotations[0].value = "-30";
             wpmOverTimeChart.update();
+            updateTestModesNotice();
 
             // let oldHeight = $("#words").height();
             // let newHeight = $("#words")
@@ -3240,29 +3242,29 @@ function updateTestModesNotice() {
 
   if (sameWordset) {
     $(".pageTest #testModesNotice").append(
-      `<div style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
+      `<div class="text-button" onClick="restartTest()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
     );
   }
 
   if (config.difficulty === "expert") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-star-half-alt"></i>expert</div>`
+      `<div class="text-button" commands="commandsDifficulty"><i class="fas fa-star-half-alt"></i>expert</div>`
     );
   } else if (config.difficulty === "master") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-star"></i>master</div>`
+      `<div class="text-button" commands="commandsDifficulty"><i class="fas fa-star"></i>master</div>`
     );
   }
 
   if (config.blindMode) {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-eye-slash"></i>blind</div>`
+      `<div class="text-button" onClick="toggleBlindMode()"><i class="fas fa-eye-slash"></i>blind</div>`
     );
   }
 
   if (config.paceCaret !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-tachometer-alt"></i>${config.paceCaret === "pb" ? "pb" : config.paceCaretCustomSpeed+" wpm"} pace</div>`
+      `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${config.paceCaret === "pb" ? "pb" : config.paceCaretCustomSpeed+" wpm"} pace</div>`
     );
   }
 
@@ -3274,7 +3276,7 @@ function updateTestModesNotice() {
 
   if (activeFunBox !== "none") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-gamepad"></i>${activeFunBox.replace(
+      `<div class="text-button" commands="commandsFunbox"><i class="fas fa-gamepad"></i>${activeFunBox.replace(
         /_/g,
         " "
       )}</div>`
@@ -3283,24 +3285,24 @@ function updateTestModesNotice() {
 
   if (config.confidenceMode === "on") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-backspace"></i>confidence</div>`
+      `<div class="text-button" commands="commandsConfidenceMode"><i class="fas fa-backspace"></i>confidence</div>`
     );
   }
   if (config.confidenceMode === "max") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-backspace"></i>max confidence</div>`
+      `<div class="text-button" commands="commandsConfidenceMode"><i class="fas fa-backspace"></i>max confidence</div>`
     );
   }
 
   if (config.stopOnError != "off") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-hand-paper"></i>stop on ${config.stopOnError}</div>`
+      `<div class="text-button" commands="commandsStopOnError"><i class="fas fa-hand-paper"></i>stop on ${config.stopOnError}</div>`
     );
   }
 
   if (config.layout !== "default") {
     $(".pageTest #testModesNotice").append(
-      `<div><i class="fas fa-keyboard"></i>${config.layout}</div>`
+      `<div class="text-button" commands="commandsLayouts"><i class="fas fa-keyboard"></i>${config.layout}</div>`
     );
   }
 
@@ -3319,7 +3321,7 @@ function updateTestModesNotice() {
 
     if (tagsString !== "") {
       $(".pageTest #testModesNotice").append(
-        `<div><i class="fas fa-tag"></i>${tagsString.substring(
+        `<div class="text-button" commands="commandsTags"><i class="fas fa-tag"></i>${tagsString.substring(
           0,
           tagsString.length - 2
         )}</div>`
@@ -4229,6 +4231,14 @@ $(document).mousemove(function (event) {
     setFocus(false);
   }
 });
+
+$(document).on('click', "#testModesNotice .text-button", (event) => {
+  let commands = eval($(event.currentTarget).attr("commands"));
+  if (commands !== undefined) {
+    currentCommands.push(commands);
+    showCommandLine();
+  }
+})
 
 //keypresses for the test, using different method to be more responsive
 $(document).keypress(function (event) {
