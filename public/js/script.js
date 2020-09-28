@@ -520,7 +520,14 @@ function initWords() {
       wordsList.push(randomWord);
     }
   } else if (config.mode == "quote") {
-    randomQuote = quotes.groups[config.quoteLength][Math.floor(Math.random() * quotes.groups[config.quoteLength].length)];
+
+    let group = config.quoteLength;
+
+    if (config.quoteLength === -1) {
+      group = Math.floor(Math.random() * quotes.groups.length);
+    }
+
+    randomQuote = quotes.groups[group][Math.floor(Math.random() * quotes.groups[group].length)];
     let w = randomQuote.text.trim().split(" ");
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
@@ -2247,15 +2254,15 @@ function showResult(difficultyFailed = false) {
   if (config.mode === "quote") {
     let qlen;
     if (config.quoteLength === 0) {
-      qlen = "short";
+      qlen = "short ";
     }else if (config.quoteLength === 1) {
-      qlen = "medium";
+      qlen = "medium ";
     }else if (config.quoteLength === 2) {
-      qlen = "long";
+      qlen = "long ";
     }else if (config.quoteLength === 2) {
-      qlen = "thicc";
+      qlen = "thicc ";
     }
-    testType += qlen + ' ' + config.mode;
+    testType += qlen + config.mode;
   } else {
     testType += config.mode;
   }

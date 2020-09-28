@@ -649,7 +649,7 @@ function changeTimeConfig(time, nosave) {
 
 //quote length
 function changeQuoteLength(len, nosave) {
-  if (len !== null && !isNaN(len) && len >= 0) {
+  if (len !== null && !isNaN(len) && len >= -1 && len <= 3) {
   } else {
     len = 1;
   }
