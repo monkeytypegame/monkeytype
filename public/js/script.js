@@ -2253,7 +2253,7 @@ function showResult(difficultyFailed = false) {
   let testType = "";
 
   if (config.mode === "quote") {
-    let qlen;
+    let qlen = '';
     if (config.quoteLength === 0) {
       qlen = "short ";
     }else if (config.quoteLength === 1) {
