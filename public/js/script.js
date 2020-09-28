@@ -1595,8 +1595,9 @@ function showCrown() {
       "easeOutCubic"
     );
 }
-
+let resultCalculating = false;
 function showResult(difficultyFailed = false) {
+  resultCalculating = true;
   resultVisible = true;
   testEnd = Date.now();
   testActive = false;
@@ -2368,6 +2369,7 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.update({ duration: 0 });
   wpmOverTimeChart.resize();
   swapElements($("#typingTest"), $("#result"), 250, () => {
+    resultCalculating = false;
     $("#words").empty();
     wpmOverTimeChart.resize();
     if (config.alwaysShowWordsHistory) {
@@ -4432,7 +4434,8 @@ $(document).keydown((event) => {
     if (
       !event.ctrlKey &&
       config.quickTab &&
-      !$(".pageLogin").hasClass("active")
+      !$(".pageLogin").hasClass("active") &&
+      !resultCalculating
     ) {
       event.preventDefault();
       if ($(".pageTest").hasClass("active")) {
