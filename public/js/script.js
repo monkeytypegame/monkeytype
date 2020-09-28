@@ -2259,7 +2259,7 @@ function showResult(difficultyFailed = false) {
       qlen = "medium ";
     }else if (config.quoteLength === 2) {
       qlen = "long ";
-    }else if (config.quoteLength === 2) {
+    }else if (config.quoteLength === 3) {
       qlen = "thicc ";
     }
     testType += qlen + config.mode;
