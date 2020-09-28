@@ -610,8 +610,8 @@ function updateDiscordSettingsSection() {
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
     if (
-      dbSnapshot.pairingCode === undefined &&
-      dbSnapshot.discordId === undefined
+      dbSnapshot.pairingCode == undefined &&
+      dbSnapshot.discordId == undefined
     ) {
       //show button
       $(".pageSettings .section.discordIntegration .howto").addClass("hidden");
@@ -621,8 +621,8 @@ function updateDiscordSettingsSection() {
       $(".pageSettings .section.discordIntegration .info").addClass("hidden");
       $(".pageSettings .section.discordIntegration .code").addClass("hidden");
     } else if (
-      dbSnapshot.pairingCode !== undefined &&
-      dbSnapshot.discordId === undefined
+      dbSnapshot.pairingCode != undefined &&
+      dbSnapshot.discordId == undefined
     ) {
       //show code
       $(".pageSettings .section.discordIntegration .code .bottom").text(
@@ -642,7 +642,7 @@ function updateDiscordSettingsSection() {
         "hidden"
       );
     } else if (
-      dbSnapshot.discordId !== undefined
+      dbSnapshot.discordId != undefined
     ) {
       $(".pageSettings .section.discordIntegration .howto").addClass("hidden");
       $(".pageSettings .section.discordIntegration .buttons").addClass(
@@ -697,6 +697,27 @@ $(
       hideBackgroundLoader();
       showNotification("Something went wrong. Error: " + e.message, 4000);
     });
+});
+
+$(
+  ".pageSettings .section.discordIntegration #unlinkDiscordButton"
+).click((e) => {
+  if (confirm("Are you sure?")) {
+    showBackgroundLoader();
+    unlinkDiscord({ uid: firebase.auth().currentUser.uid })
+      .then(ret => {
+        hideBackgroundLoader();
+        console.log(ret);
+        if (ret.data.status === 1) {
+          dbSnapshot.discordId = null;
+          showNotification("Accounts unlinked", 2000);
+          updateDiscordSettingsSection();
+        } else {
+          showNotification("Something went wrong: " + ret.data.message, 5000);
+          updateDiscordSettingsSection();
+        }
+    })
+  }
 });
 
 //funbox

@@ -1978,6 +1978,12 @@ key {
     }
 
     &.discordIntegration {
+
+      #unlinkDiscordButton{
+        margin-top: 0.5rem;
+        font-size: 0.75rem;
+      }
+
       .code {
         grid-area: buttons;
         justify-content: center;

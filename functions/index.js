@@ -1560,6 +1560,58 @@ exports.generatePairingCode = functions
     }
   });
 
+
+  
+exports.unlinkDiscord = functions.https.onRequest((request, response) => {
+  response.set("Access-Control-Allow-Origin", "*");
+  if (request.method === "OPTIONS") {
+    // Send response to OPTIONS requests
+    response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    response.set(
+      "Access-Control-Allow-Headers",
+      "Authorization,Content-Type"
+    );
+    response.set("Access-Control-Max-Age", "3600");
+    response.status(204).send("");
+    return;
+  }
+  request = request.body.data;
+  try {
+    if (request === null || request.uid === undefined) {
+      response.status(200).send({ data: { status: -999, message: "Empty request" } });
+      return;
+    }
+    return db.collection(`users`).doc(request.uid).update({
+      discordId: null
+    }).then(f => {
+      response.status(200).send({
+        data: {
+          status: 1,
+          message: "Unlinked"
+        },
+      });
+      return;
+    }).catch(e => {
+      response.status(200).send({
+        data: {
+          status: -999,
+          message: e.message
+        },
+      });
+      return;
+    })
+  } catch (e) {
+    response.status(200).send({
+      data: {
+        status: -999,
+        message: e
+      },
+    });
+    return;
+  }
+});
+
+
 async function checkLeaderboards(
   resultObj,
   type,

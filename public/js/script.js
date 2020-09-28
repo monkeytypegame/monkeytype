@@ -206,6 +206,8 @@ const generatePairingCode = firebase
   .functions()
   .httpsCallable("generatePairingCode");
 const saveLbMemory = firebase.functions().httpsCallable("saveLbMemory");
+const unlinkDiscord = firebase.functions().httpsCallable("unlinkDiscord");
+
 
 function refreshThemeColorObject() {
   let st = getComputedStyle(document.body);
