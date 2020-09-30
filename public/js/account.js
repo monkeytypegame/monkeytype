@@ -243,7 +243,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     accountIconLoading(true);
     db_getUserSnapshot()
       .then((e) => {
-        initPaceCaret();
+        initPaceCaret(true);
         if (!configChangedBeforeDb) {
           if (cookieConfig === null) {
             accountIconLoading(false);

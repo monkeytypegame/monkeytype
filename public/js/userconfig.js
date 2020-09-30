@@ -271,7 +271,7 @@ function setDifficulty(diff, nosave) {
     diff = "normal";
   }
   config.difficulty = diff;
-  restartTest();
+  restartTest(false,nosave);
   updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }
@@ -407,7 +407,7 @@ function setPaceCaret(val, nosave) {
   }
   config.paceCaret = val;
   updateTestModesNotice();
-  initPaceCaret();
+  initPaceCaret(nosave);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -1076,7 +1076,7 @@ function changeKeymapMode(mode, nosave) {
     $(".keymap-key").attr("style", "");
   }
   config.keymapMode = mode;
-  restartTest();
+  restartTest(false,nosave);
   if (!nosave) saveConfigToCookie();
 }
 

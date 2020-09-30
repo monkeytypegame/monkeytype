@@ -552,9 +552,9 @@ function arrangeCharactersLeftToRight() {
   $("#words").removeClass("rightToLeftTest");
 }
 
-function setToggleSettings(state) {
-  setPunctuation(state);
-  setNumbers(state);
+function setToggleSettings(state, nosave) {
+  setPunctuation(state, nosave);
+  setNumbers(state, nosave);
 }
 
 function emulateLayout(event) {
@@ -2537,7 +2537,8 @@ function startTest() {
   })(testStart + stepIntervalMS);
 }
 
-function restartTest(withSameWordset = false) {
+function restartTest(withSameWordset = false, nosave = false) {
+  console.log('restart test enter no save ' + nosave);
   if (!manualRestart) {
     if (
       (config.mode === "words" && config.words < 1000) ||
@@ -2634,7 +2635,8 @@ function restartTest(withSameWordset = false) {
         sameWordset = false;
         paceCaret = null;
         initWords();
-        initPaceCaret();
+        console.log('restart test before init pace ' + nosave);
+        initPaceCaret(nosave);
       } else {
         sameWordset = true;
         testActive = false;
@@ -2849,7 +2851,7 @@ function changeMode(mode, nosave) {
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
   } else if (config.mode == "quote") {
-    setToggleSettings(false);
+    setToggleSettings(false, nosave);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
@@ -2857,7 +2859,7 @@ function changeMode(mode, nosave) {
     $("#top .config .numbersMode").addClass("hidden");
     $("#result .stats .source").removeClass("hidden");
     $("#top .config .quoteLength").removeClass("hidden");
-    changeLanguage("english");
+    changeLanguage("english", nosave);
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -3594,9 +3596,9 @@ function playErrorSound() {
   errorSound.play();
 }
 
-async function initPaceCaret() {
+async function initPaceCaret(nosave = false) {
 
-  setPaceCaretCustomSpeed(parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()));
+  setPaceCaretCustomSpeed(parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()),nosave);
 
   let mode2 = "";
   if (config.mode === "time") {
@@ -4815,7 +4817,7 @@ $(document).ready(() => {
   updateFavicon(32, 14);
   $("body").css("transition", ".25s");
   manualRestart = true;
-  restartTest();
+  restartTest(false,true);
   if (config.quickTab) {
     $("#restartTestButton").addClass("hidden");
   }
