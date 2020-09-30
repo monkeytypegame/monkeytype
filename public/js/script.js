@@ -2538,7 +2538,6 @@ function startTest() {
 }
 
 function restartTest(withSameWordset = false, nosave = false) {
-  console.log('restart test enter no save ' + nosave);
   if (!manualRestart) {
     if (
       (config.mode === "words" && config.words < 1000) ||
@@ -2635,7 +2634,6 @@ function restartTest(withSameWordset = false, nosave = false) {
         sameWordset = false;
         paceCaret = null;
         initWords();
-        console.log('restart test before init pace ' + nosave);
         initPaceCaret(nosave);
       } else {
         sameWordset = true;
