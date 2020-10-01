@@ -2574,6 +2574,7 @@ function restartTest(withSameWordset = false, nosave = false) {
   hideLiveWpm();
   hideTimer();
   bailout = false;
+  paceCaret = null;
   if(paceCaret !== null) clearTimeout(paceCaret.timeout);
   $("#showWordHistoryButton").removeClass("loaded");
   keypressPerSecond = [];
@@ -2632,7 +2633,6 @@ function restartTest(withSameWordset = false, nosave = false) {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         sameWordset = false;
-        paceCaret = null;
         initWords();
         initPaceCaret(nosave);
       } else {
@@ -3595,8 +3595,6 @@ function playErrorSound() {
 }
 
 async function initPaceCaret(nosave = false) {
-
-  setPaceCaretCustomSpeed(parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()),nosave);
 
   let mode2 = "";
   if (config.mode === "time") {

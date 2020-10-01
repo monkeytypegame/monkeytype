@@ -656,6 +656,10 @@ function updateDiscordSettingsSection() {
   }
 }
 
+$(document).on('focusout', ".pageSettings .section.paceCaret input.customPaceCaretSpeed", (e) => {
+  setPaceCaretCustomSpeed(parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()));
+})
+
 $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
   let theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton")) {
