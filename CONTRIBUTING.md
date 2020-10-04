@@ -30,6 +30,10 @@
 ## Standards & Conventions
 
 1. Use a SCSS compiler. For VSCode I recommend `Easy Sass` or `Live Sass Compiler` extension.
+    ===For Easy Sass===
+    -Navigate to the public > css folder and select style.css
+    -Press command + shift + p 
+    -Use the "Compile all SCSS/SASS files in the project" option
 2. Install [Prettier](https://prettier.io/docs/en/install.html). Its a code formatter, and it will make sure that we avoid any whitespace or formatting issues when merging code.
 
 ## Questions
