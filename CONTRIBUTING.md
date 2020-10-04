@@ -50,4 +50,4 @@
 
 ## Questions
 
-If you run into any problems, let [me](https://github.com/Miodec) know.
+If you run into any problems, let me know on [GitHub](https://github.com/Miodec) or [Discord](https://discord.gg/monkeytype) in the `#development` channel.
