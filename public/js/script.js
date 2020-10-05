@@ -72,6 +72,7 @@ let keypressStats = {
 
 let errorSound = new Audio("../sound/error.wav");
 let clickSounds = null;
+let timerPollRateHz = 10;
 
 function initClickSounds() {
   clickSounds = {
@@ -1622,7 +1623,7 @@ function showResult(difficultyFailed = false) {
       correctSpaces: 0,
     };
   }
-  clearTimeout(timer);
+  stopTiming();
   let testtime = stats.time;
   let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
   let afkSecondsPercent = roundTo2((afkseconds / testtime) * 100);
@@ -2403,6 +2404,10 @@ function stopTiming() {
   clearInterval(timer);
 }
 
+function calculateNextSecond(baseTime = testStart, currentTime = time) {
+  return baseTime + ( currentTime + 1 ) * 1000;
+}
+
 function startTest() {
   if (!dbConfigLoaded) {
     // console.log("config changed before db loaded!");
@@ -2427,7 +2432,7 @@ function startTest() {
   // }
   // updateActiveElement();
   updateTimer();
-  clearTimeout(timer);
+  stopTiming();
   keypressStats = {
     spacing: {
       current: -1,
@@ -2443,102 +2448,110 @@ function startTest() {
   } catch (e) {
     
   }
-  //use a recursive self-adjusting timer to avoid time drift
-  const stepIntervalMS = 1000;
-  (function loop(expectedStepEnd) {
-    const delay = expectedStepEnd - Date.now();
-    timer = setTimeout(function () {
-      time++;
-      // if(config.paceCaret !== "off") movePaceCaret();
-      if (config.mode === "time") {
-        updateTimer();
+  //using polling for improved stability on large tests, and also 
+
+  let nextSecond = calculateNextSecond();
+  
+  timer = setInterval( () => {
+  
+    if (!testActive && timer) 
+      stopTiming();
+    else 
+      if (Date.now() >= nextSecond ) {
+        time++;
+        nextSecond = calculateNextSecond();
+        // if(config.paceCaret !== "off") movePaceCaret();
+        if (config.mode === "time") {
+          updateTimer();
+        }
+        // console.time("livewpm");
+        // let wpm = liveWPM();
+        // updateLiveWpm(wpm);
+        // showLiveWpm();
+        // wpmHistory.push(wpm);
+        // rawHistory.push(liveRaw());
+        let wpmAndRaw = liveWpmAndRaw();
+        updateLiveWpm(wpmAndRaw.wpm, wpmAndRaw.raw);
+        wpmHistory.push(wpmAndRaw.wpm);
+        rawHistory.push(wpmAndRaw.raw);
+
+        if (activeFunBox === "layoutfluid" && config.mode === "time") {
+          const layouts = ["qwerty", "dvorak", "colemak"];
+          let index = 0;
+          index = Math.floor(time / (config.time / 3));
+
+          if (
+            time == Math.floor(config.time / 3) - 3 ||
+            time == (config.time / 3) * 2 - 3
+          ) {
+            showNotification("3", 1000);
+          }
+          if (
+            time == Math.floor(config.time / 3) - 2 ||
+            time == Math.floor(config.time / 3) * 2 - 2
+          ) {
+            showNotification("2", 1000);
+          }
+          if (
+            time == Math.floor(config.time / 3) - 1 ||
+            time == Math.floor(config.time / 3) * 2 - 1
+          ) {
+            showNotification("1", 1000);
+          }
+
+          if (config.layout !== layouts[index] && layouts[index] !== undefined) {
+            showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+          }
+          changeLayout(layouts[index]);
+          changeKeymapLayout(layouts[index]);
+          updateHighlightedKeymapKey();
+          settingsGroups.layout.updateButton();
+        }
+
+        // console.timeEnd("livewpm");
+        keypressPerSecond.push(currentKeypress);
+        currentKeypress = {
+          count: 0,
+          words: [],
+        };
+        errorsPerSecond.push(currentError);
+        currentError = {
+          count: 0,
+          words: [],
+        };
+        // if (
+        //   keypressPerSecond[time - 1] == 0 &&
+        //   keypressPerSecond[time - 2] == 0 &&
+        //   keypressPerSecond[time - 3] == 0 &&
+        //   keypressPerSecond[time - 4] == 0 &&
+        //   keypressPerSecond[time - 5] == 0 &&
+        //   keypressPerSecond[time - 6] == 0 &&
+        //   keypressPerSecond[time - 7] == 0 &&
+        //   keypressPerSecond[time - 8] == 0 &&
+        //   keypressPerSecond[time - 9] == 0 &&
+        //   !afkDetected
+        // ) {
+        //   showNotification("AFK detected", 3000);
+        //   afkDetected = true;
+        // }
+        if (config.mode == "time") {
+          if (time >= config.time) {
+            //times up
+            stopTiming();
+            hideCaret();
+            testActive = false;
+            inputHistory.push(currentInput);
+            correctedHistory.push(currentCorrected);
+            showResult();
+            return;
+          }
+        }
+        // console.log('step');
+
       }
-      // console.time("livewpm");
-      // let wpm = liveWPM();
-      // updateLiveWpm(wpm);
-      // showLiveWpm();
-      // wpmHistory.push(wpm);
-      // rawHistory.push(liveRaw());
-      let wpmAndRaw = liveWpmAndRaw();
-      updateLiveWpm(wpmAndRaw.wpm, wpmAndRaw.raw);
-      wpmHistory.push(wpmAndRaw.wpm);
-      rawHistory.push(wpmAndRaw.raw);
+    
+  }, 1000/timerPollRateHz); 
 
-      if (activeFunBox === "layoutfluid" && config.mode === "time") {
-        const layouts = ["qwerty", "dvorak", "colemak"];
-        let index = 0;
-        index = Math.floor(time / (config.time / 3));
-
-        if (
-          time == Math.floor(config.time / 3) - 3 ||
-          time == (config.time / 3) * 2 - 3
-        ) {
-          showNotification("3", 1000);
-        }
-        if (
-          time == Math.floor(config.time / 3) - 2 ||
-          time == Math.floor(config.time / 3) * 2 - 2
-        ) {
-          showNotification("2", 1000);
-        }
-        if (
-          time == Math.floor(config.time / 3) - 1 ||
-          time == Math.floor(config.time / 3) * 2 - 1
-        ) {
-          showNotification("1", 1000);
-        }
-
-        if (config.layout !== layouts[index] && layouts[index] !== undefined) {
-          showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
-        }
-        changeLayout(layouts[index]);
-        changeKeymapLayout(layouts[index]);
-        updateHighlightedKeymapKey();
-        settingsGroups.layout.updateButton();
-      }
-
-      // console.timeEnd("livewpm");
-      keypressPerSecond.push(currentKeypress);
-      currentKeypress = {
-        count: 0,
-        words: [],
-      };
-      errorsPerSecond.push(currentError);
-      currentError = {
-        count: 0,
-        words: [],
-      };
-      // if (
-      //   keypressPerSecond[time - 1] == 0 &&
-      //   keypressPerSecond[time - 2] == 0 &&
-      //   keypressPerSecond[time - 3] == 0 &&
-      //   keypressPerSecond[time - 4] == 0 &&
-      //   keypressPerSecond[time - 5] == 0 &&
-      //   keypressPerSecond[time - 6] == 0 &&
-      //   keypressPerSecond[time - 7] == 0 &&
-      //   keypressPerSecond[time - 8] == 0 &&
-      //   keypressPerSecond[time - 9] == 0 &&
-      //   !afkDetected
-      // ) {
-      //   showNotification("AFK detected", 3000);
-      //   afkDetected = true;
-      // }
-      if (config.mode == "time") {
-        if (time >= config.time) {
-          //times up
-          clearTimeout(timer);
-          hideCaret();
-          testActive = false;
-          inputHistory.push(currentInput);
-          correctedHistory.push(currentCorrected);
-          showResult();
-          return;
-        }
-      }
-      // console.log('step');
-      loop(expectedStepEnd + stepIntervalMS);
-    }, delay);
-  })(testStart + stepIntervalMS);
 }
 
 function restartTest(withSameWordset = false, nosave = false) {
@@ -2564,7 +2577,7 @@ function restartTest(withSameWordset = false, nosave = false) {
   }
 
   manualRestart = false;
-  clearTimeout(timer);
+  stopTiming();
   time = 0;
   // afkDetected = false;
   wpmHistory = [];
@@ -2688,7 +2701,7 @@ function restartTest(withSameWordset = false, nosave = false) {
           () => {
             resetPaceCaret();
             hideCrown();
-            clearTimeout(timer);
+            stopTiming();
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
             wpmOverTimeChart.options.annotation.annotations[0].value = "-30";
             wpmOverTimeChart.update();
