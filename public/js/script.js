@@ -529,8 +529,12 @@ function initWords() {
       group = Math.floor(Math.random() * quotes.groups.length);
     }
 
-    randomQuote = quotes.groups[group][Math.floor(Math.random() * quotes.groups[group].length)];
-    let w = randomQuote.text.trim().split(" ");
+    rq = quotes.groups[group][Math.floor(Math.random() * quotes.groups[group].length)];
+    if (randomQuote != null && rq.id === randomQuote.id) {
+      rq = quotes.groups[group][Math.floor(Math.random() * quotes.groups[group].length)];
+    }
+    randomQuote = rq;
+    let w = rq.text.trim().split(" ");
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
     }
@@ -2741,6 +2745,19 @@ function changeCustomText() {
   // initWords();
 }
 
+function cleanTypographySymbols(textToClean) {
+  var specials = {
+    '“': '"', // &ldquo;	&#8220;
+    '”': '"', // &rdquo;	&#8221;
+    '’': "'", // &lsquo;	&#8216;
+    '‘': "'", // &rsquo;	&#8217;
+    ',': ",", // &sbquo;	&#8218;
+    '—': "-", // &mdash;  &#8212;
+    '…': "..."// &hellip; &#8230; 
+  }
+  return textToClean.replace(/[“”’‘—,…]/g, (char) => specials[char] || '');
+}
+
 function changePage(page) {
   if (pageTransition) {
     return;
@@ -3516,6 +3533,9 @@ $("#customTextPopup .button").click((e) => {
   text = text.trim();
   text = text.replace(/[\n\r\t ]/gm, " ");
   text = text.replace(/ +/gm, " ");
+  if($("#customTextPopup .typographyCheck input").prop("checked")) {
+    text = cleanTypographySymbols(text)
+  }
   text = text.split(" ");
   // if (text.length >= 10000) {
   //   showNotification("Custom text cannot be longer than 10000 words.", 4000);
@@ -4799,6 +4819,11 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
     if (input != undefined)
       $(e.currentTarget).append(`<div class="wordInputAfter">${input}</div>`);
   }
+});
+
+$(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
+  currentCommands.push(commandsThemes);
+  showCommandLine();
 });
 
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
