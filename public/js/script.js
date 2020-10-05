@@ -2399,6 +2399,10 @@ function showResult(difficultyFailed = false) {
   });
 }
 
+function stopTiming() {
+  clearInterval(timer);
+}
+
 function startTest() {
   if (!dbConfigLoaded) {
     // console.log("config changed before db loaded!");
