@@ -1146,6 +1146,14 @@ key {
       // gap: 1rem;
       // align-items: center;
       // justify-content: flex-end;
+      .current-theme{
+        transition: .25s;
+        text-decoration: none;
+        &:hover{
+          color: var(--main-color);
+          cursor: pointer;
+        }
+      }
       .discordLink{
         transition: .25s;
         text-decoration: none;

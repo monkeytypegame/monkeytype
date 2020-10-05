@@ -4817,6 +4817,11 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   }
 });
 
+$(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
+  currentCommands.push(commandsThemes);
+  showCommandLine();
+});
+
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
   $(".wordInputAfter").remove();
 });
