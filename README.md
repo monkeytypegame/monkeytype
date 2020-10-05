@@ -36,4 +36,4 @@ If you wish to support further development and feeling extra awesome, you can do
 
 # how to contribute
 
-Refer to CONTRIBUTING.md.
+Refer to [CONTRIBUTING.md](https://github.com/Miodec/monkey-type/blob/master/CONTRIBUTING.md)
