@@ -29,7 +29,7 @@
 
 ## Standards & Conventions
 
-1. Use a SCSS compiler, and make sure that a `style.mis.css` file is generated in the same directory as the `style.scss`. For VSCode I recommend `Easy Sass` extension by Wojciech Sura. After installing it, to configure it:
+1. Use a SCSS compiler, and make sure that a `style.min.css` file is generated in the same directory as the `style.scss`. For VSCode I recommend `Easy Sass` extension by Wojciech Sura. After installing it, to configure it:
 
     - Navigate to the VSCode settings, `Extensions` section and find `Easy Sass configuration`
     - Under the `Formats` group click `edit in settings.json`
