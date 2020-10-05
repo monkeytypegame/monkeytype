@@ -529,8 +529,12 @@ function initWords() {
       group = Math.floor(Math.random() * quotes.groups.length);
     }
 
-    randomQuote = quotes.groups[group][Math.floor(Math.random() * quotes.groups[group].length)];
-    let w = randomQuote.text.trim().split(" ");
+    rq = quotes.groups[group][Math.floor(Math.random() * quotes.groups[group].length)];
+    if (randomQuote != null && rq.id === randomQuote.id) {
+      rq = quotes.groups[group][Math.floor(Math.random() * quotes.groups[group].length)];
+    }
+    randomQuote = rq;
+    let w = rq.text.trim().split(" ");
     for (let i = 0; i < w.length; i++) {
       wordsList.push(w[i]);
     }
