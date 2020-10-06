@@ -335,6 +335,8 @@ function getAccountDataAndInit() {
     accountIconLoading(false);
     console.error(e);
     showNotification("Error downloading user data. Refresh to try again. If error persists contact Miodec.", 5000);
+    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
+    $("#top #menu .account").css('opacity', 1);
   });
 }
 
@@ -2332,6 +2334,7 @@ function refreshAccountPage() {
   }
   if (dbSnapshot === null) {
     showNotification(`Missing account data. Please refresh.`, 5000);
+    $('.pageAccount .preloader').html('Missing account data. Please refresh.');
   }else if (dbSnapshot.results === undefined) {
     db_getUserResults().then((d) => {
       if (d) {
