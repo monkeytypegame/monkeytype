@@ -86,17 +86,16 @@ async function db_getUserSnapshot() {
             snap.lbMemory = data.lbMemory;
           }
         } catch (e) {
-          //
+          throw e;
         }
       })
       .catch((e) => {
         throw e;
       });
+    dbSnapshot = snap;
   } catch (e) {
     console.error(e);
-    showNotification("Error getting account data.", 3000);
   }
-  dbSnapshot = snap;
   return dbSnapshot;
 }
 

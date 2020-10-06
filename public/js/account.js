@@ -241,82 +241,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     }
     updateAccountLoginButton();
     accountIconLoading(true);
-    db_getUserSnapshot()
-      .then((e) => {
-        initPaceCaret(true);
-        if (!configChangedBeforeDb) {
-          if (cookieConfig === null) {
-            accountIconLoading(false);
-            applyConfig(dbSnapshot.config);
-            // showNotification('Applying db config',3000);
-            updateSettingsPage();
-            saveConfigToCookie(true);
-          } else if (dbSnapshot.config !== undefined) {
-            let configsDifferent = false;
-            Object.keys(config).forEach((key) => {
-              if (!configsDifferent) {
-                try {
-                  if (key !== "resultFilters") {
-                    if (Array.isArray(config[key])) {
-                      config[key].forEach((arrval, index) => {
-                        if (arrval != dbSnapshot.config[key][index])
-                          configsDifferent = true;
-                      });
-                    } else {
-                      if (config[key] != dbSnapshot.config[key])
-                        configsDifferent = true;
-                    }
-                  }
-                } catch (e) {
-                  console.log(e);
-                  configsDifferent = true;
-                }
-              }
-            });
-            if (configsDifferent) {
-              accountIconLoading(false);
-              applyConfig(dbSnapshot.config);
-              updateSettingsPage();
-              saveConfigToCookie(true);
-            }
-          }
-          dbConfigLoaded = true;
-        } else {
-          accountIconLoading(false);
-        }
-        try {
-          if (
-            config.resultFilters === undefined ||
-            config.resultFilters === null ||
-            config.resultFilters.difficulty === undefined
-          ) {
-            if (
-              dbSnapshot.config.resultFilters == null ||
-              dbSnapshot.config.resultFilters.difficulty === undefined
-            ) {
-              config.resultFilters = defaultAccountFilters;
-            } else {
-              config.resultFilters = dbSnapshot.config.resultFilters;
-            }
-          }
-        } catch (e) {
-          config.resultFilters = defaultAccountFilters;
-        }
-        if ($(".pageLogin").hasClass("active")) {
-          changePage("account");
-        }
-        refreshThemeButtons();
-        accountIconLoading(false);
-        updateFilterTags();
-        updateCommandsTagsList();
-        loadActiveTagsFromCookie();
-        updateResultEditTagsPanelButtons();
-        showAccountSettingsSection();
-      })
-      .catch((e) => {
-        accountIconLoading(false);
-        showNotification("Error downloading user data: " + e, 5000);
-      });
+    getAccountDataAndInit();
     var displayName = user.displayName;
     var email = user.email;
     var emailVerified = user.emailVerified;
@@ -329,6 +254,89 @@ firebase.auth().onAuthStateChanged(function (user) {
     $("#menu .icon-button.account .text").text(displayName);
   }
 });
+
+function getAccountDataAndInit() {
+  db_getUserSnapshot()
+    .then((e) => {
+      if (dbSnapshot === null) {
+        throw ("Missing db snapshot. Client likely could not connect to the backend.");
+      }
+    initPaceCaret(true);
+    if (!configChangedBeforeDb) {
+      if (cookieConfig === null) {
+        accountIconLoading(false);
+        applyConfig(dbSnapshot.config);
+        // showNotification('Applying db config',3000);
+        updateSettingsPage();
+        saveConfigToCookie(true);
+      } else if (dbSnapshot.config !== undefined) {
+        let configsDifferent = false;
+        Object.keys(config).forEach((key) => {
+          if (!configsDifferent) {
+            try {
+              if (key !== "resultFilters") {
+                if (Array.isArray(config[key])) {
+                  config[key].forEach((arrval, index) => {
+                    if (arrval != dbSnapshot.config[key][index])
+                      configsDifferent = true;
+                  });
+                } else {
+                  if (config[key] != dbSnapshot.config[key])
+                    configsDifferent = true;
+                }
+              }
+            } catch (e) {
+              console.log(e);
+              configsDifferent = true;
+            }
+          }
+        });
+        if (configsDifferent) {
+          accountIconLoading(false);
+          applyConfig(dbSnapshot.config);
+          updateSettingsPage();
+          saveConfigToCookie(true);
+        }
+      }
+      dbConfigLoaded = true;
+    } else {
+      accountIconLoading(false);
+    }
+    try {
+      if (
+        config.resultFilters === undefined ||
+        config.resultFilters === null ||
+        config.resultFilters.difficulty === undefined
+      ) {
+        if (
+          dbSnapshot.config.resultFilters == null ||
+          dbSnapshot.config.resultFilters.difficulty === undefined
+        ) {
+          config.resultFilters = defaultAccountFilters;
+        } else {
+          config.resultFilters = dbSnapshot.config.resultFilters;
+        }
+      }
+    } catch (e) {
+      config.resultFilters = defaultAccountFilters;
+    }
+    if ($(".pageLogin").hasClass("active")) {
+      changePage("account");
+    }
+    refreshThemeButtons();
+    accountIconLoading(false);
+    updateFilterTags();
+    updateCommandsTagsList();
+    loadActiveTagsFromCookie();
+    updateResultEditTagsPanelButtons();
+    showAccountSettingsSection();
+  })
+  .catch((e) => {
+    accountIconLoading(false);
+    console.error(e);
+    showNotification("Error downloading user data. Refresh to try again. If error persists contact Miodec.", 5000);
+  });
+}
 
 var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
   animationSteps: 60,
@@ -2322,8 +2330,9 @@ function refreshAccountPage() {
 
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
-
-  if (dbSnapshot === null || dbSnapshot.results === undefined) {
+  if (dbSnapshot === null) {
+    showNotification(`Missing account data. Please refresh.`, 5000);
+  }else if (dbSnapshot.results === undefined) {
     db_getUserResults().then((d) => {
       if (d) {
         // cont();
@@ -2337,7 +2346,11 @@ function refreshAccountPage() {
     });
   } else {
     console.log("using db snap");
-    cont();
+    try {
+      cont();
+    } catch (e) {
+      showNotification(`Something went wrong: ${e}`, 5000);
+    }
   }
 }
 
