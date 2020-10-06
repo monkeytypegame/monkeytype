@@ -59,7 +59,8 @@ let defaultConfig = {
   swapEscAndTab: false,
   showOutOfFocusWarning: true,
   paceCaret: "off",
-  paceCaretCustomSpeed: 100
+  paceCaretCustomSpeed: 100,
+  pageWidth: "100"
 };
 
 let cookieConfig = null;
@@ -199,7 +200,7 @@ function applyConfig(configObj) {
     setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
     setPaceCaret(configObj.paceCaret, true);
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
-
+    setPageWidth(configObj.pageWidth, true);
 
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -498,6 +499,23 @@ function toggleColorfulMode() {
   config.colorfulMode = !config.colorfulMode;
   applyColorfulMode(config.colorfulMode);
   saveConfigToCookie();
+}
+
+function setPageWidth(val, nosave) {
+  if (val == null || val == undefined) {
+    val = "100";
+  }
+  config.pageWidth = val;
+  $("#centerContent").removeClass("wide125");
+  $("#centerContent").removeClass("wide150");
+  $("#centerContent").removeClass("wide200");
+  $("#centerContent").removeClass("widemax");
+
+
+  if (val !== "100") {
+    $("#centerContent").addClass('wide' + val);
+  }
+  if (!nosave) saveConfigToCookie();
 }
 
 function setCaretStyle(caretStyle, nosave) {

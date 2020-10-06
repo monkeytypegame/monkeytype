@@ -807,6 +807,18 @@ a:hover {
   align-items: center;
   z-index: 999;
   grid-template-rows: auto 1fr auto;
+  &.wide125{
+    max-width: 1250px;
+  }
+  &.wide150{
+    max-width: 1500px;
+  }
+  &.wide200{
+    max-width: 2000px;
+  }
+  &.widemax{
+    max-width: unset;
+  }
 }
 
 #caret {
