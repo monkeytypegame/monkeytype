@@ -2036,8 +2036,8 @@ function showResult(difficultyFailed = false) {
 
                   if (
                     config.mode === "time" &&
-                    (mode2 == "15" || mode2 == "60")
-                  ) {
+                    (mode2 == "15" || mode2 == "60") &&
+                    dbSnapshot !== null) {
                     const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
                     const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
                     const lbRightIcon = `<i class="fas fa-angle-right"></i>`;
