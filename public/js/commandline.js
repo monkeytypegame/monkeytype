@@ -391,6 +391,15 @@ let commands = {
       },
     },
     {
+      id: "changePageWidth",
+      display: "Change page width...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsPageWidth);
+        showCommandLine();
+      },
+    },
+    {
       id: "randomiseTheme",
       display: "Next random theme",
       exec: () => randomiseTheme()
@@ -445,6 +454,47 @@ let commands = {
       display: "Join the Discord server",
       exec: () => {
         window.open("https://discord.gg/yENzqcB");
+      },
+    },
+  ],
+};
+
+let commandsPageWidth = {
+  title: "Change page width...",
+  list: [
+    {
+      id: "setPageWidth100",
+      display: "100",
+      exec: () => {
+        setPageWidth("100");
+      },
+    },
+    {
+      id: "setPageWidth125",
+      display: "125",
+      exec: () => {
+        setPageWidth("125");
+      },
+    },
+    {
+      id: "setPageWidth150",
+      display: "150",
+      exec: () => {
+        setPageWidth("150");
+      },
+    },
+    {
+      id: "setPageWidth200",
+      display: "200",
+      exec: () => {
+        setPageWidth("200");
+      },
+    },
+    {
+      id: "setPageWidthMax",
+      display: "max",
+      exec: () => {
+        setPageWidth("max");
       },
     },
   ],
