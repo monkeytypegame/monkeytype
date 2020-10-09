@@ -779,6 +779,16 @@
           <div
             class="icon-button"
             tabindex="2"
+            href="/tribe"
+            onclick="this.blur();"
+          >
+            <div class="icon">
+              <i class="fas fa-satellite-dish"></i>
+            </div>
+          </div>
+          <div
+            class="icon-button"
+            tabindex="2"
             href="/about"
             onclick="this.blur();"
           >
@@ -2995,6 +3005,34 @@
             </div>
           </div>
         </div>
+        <div class="page pageTribe hidden">
+
+          <div class="preloader">
+            <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+            <div class="text">Waiting for login</div>
+          </div>
+          <div class="prelobby hidden">
+            <div id="joinRandomRoom" class="button">Join random room</div>
+            <div id="createPrivateRoom" class="button">Create room</div>
+          </div>
+          <div class="lobby hidden">
+            <div class="currentSettings">
+              <div class="title"></div>
+            </div>
+            <div class="chat">
+              <div class="title">chat</div>
+              <div class="messages"></div>
+              <div class="input">
+                <input type="text">
+              </div>
+            </div>
+            <div class="userlist">
+              <div class="title">users</div>
+              <div class="list"></div>
+            </div>
+          </div>
+          
+        </div>
       </div>
 
       <div id="bottom">
@@ -3066,6 +3104,7 @@
   <script src="js/easing.js"></script>
   <script src="js/jquery.cookie-1.4.1.min.js"></script>
   <script src="js/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script> -->
   <script src="js/chart.min.js"></script>
   <script src="js/chartjs-plugin-trendline.js"></script>
@@ -3081,4 +3120,5 @@
   <script src="js/settings.js"></script>
   <script src="js/account.js"></script>
   <script src="js/script.js"></script>
+  <script src="js/tribe.js"></script>
 </html>
