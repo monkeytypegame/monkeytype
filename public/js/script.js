@@ -790,7 +790,7 @@ function addWord() {
 
 function showWords() {
   //handle right-to-left languages
-  if (language.leftToRight) {
+  if (words[config.language].leftToRight) {
     arrangeCharactersLeftToRight();
   } else {
     arrangeCharactersRightToLeft();
