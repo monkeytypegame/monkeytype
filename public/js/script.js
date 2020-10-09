@@ -539,12 +539,6 @@ function initWords() {
       wordsList.push(w[i]);
     }
   }
-  //handle right-to-left languages
-  if (language.leftToRight) {
-    arrangeCharactersLeftToRight();
-  } else {
-    arrangeCharactersRightToLeft();
-  }
   showWords();
 }
 
@@ -795,6 +789,12 @@ function addWord() {
 }
 
 function showWords() {
+  //handle right-to-left languages
+  if (language.leftToRight) {
+    arrangeCharactersLeftToRight();
+  } else {
+    arrangeCharactersRightToLeft();
+  }
   $("#words").empty();
 
   for (let i = 0; i < wordsList.length; i++) {
