@@ -256,7 +256,7 @@ firebase.auth().onAuthStateChanged(function (user) {
   } else {
     console.log('user is not logged in');
   }
-  if ($(".pageTribe").hasClass('active') && !MP.socket.connected) {
+  if (!MP.socket.connected) {
     if (MP.state === -1) {
       mp_init();
     }

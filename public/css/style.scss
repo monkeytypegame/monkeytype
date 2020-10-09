@@ -2306,7 +2306,10 @@ key {
   .lobby{
     display: grid;
     grid-template-areas: "currentsettings currentsettings"
-                         "chat userlist";
+                         "chat userlist"
+                         "inviteLink inviteLink";
+    gap: 2rem;
+    grid-template-columns: 3fr 1fr;
     .title{
       color: var(--sub-color);
     }
@@ -2315,7 +2318,10 @@ key {
     }
     .chat{
       grid-area: chat;
+      gap: 1rem;
       .messages{
+        height: 200px;
+        overflow-y: scroll;
         .systemMessage{
           color: var(--sub-color);
         }
@@ -2328,6 +2334,14 @@ key {
           }
         }
       }
+      .input input{
+        width: 100%;
+      }
+    }
+    .inviteLink{
+      grid-area: inviteLink;
+      text-align: center;
+      color: var(--sub-color);
     }
     .userlist{
       grid-area: userlist;

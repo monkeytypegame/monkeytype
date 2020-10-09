@@ -4882,11 +4882,16 @@ $(document).ready(() => {
       if (window.location.pathname === "/account") {
         history.replaceState("/", null, "/");
       } else if (window.location.pathname !== "/") {
-        let page = window.location.pathname.replace("/", "");
-        changePage(page);
-      }
-      if (/\/tribe\/.+/.test(window.location.pathname)) {
-        MP.autoJoin = window.location.pathname.split('/')[2];
+        if (/\/tribe_.+/.test(window.location.pathname)) {
+          changePage('tribe');
+          let code = window.location.pathname.split('/')[1];
+          code = code.substring(5);
+          code = "room" + code;
+          MP.autoJoin = code;
+        } else {
+          let page = window.location.pathname.replace("/", "");
+          changePage(page);
+        }
       }
     });
 });

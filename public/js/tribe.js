@@ -29,6 +29,12 @@ function mp_refreshUserList() {
   })
 }
 
+function resetLobby(){
+  $(".pageTribe .lobby .userlist .list").empty();
+  $(".pageTribe .lobby .chat .messages").empty();
+  $(".pageTribe .lobby .inviteLink").text('');
+}
+
 MP.socket.on('connect', (f) => {
   MP.state = 1;
   MP.reconnectionAttempts = 0;
@@ -48,8 +54,16 @@ MP.socket.on('connect', (f) => {
 })
 
 MP.socket.on('disconnect', (f) => {
-  MP.state = 1;
+  MP.state = -1;
+  MP.room = undefined;
   showNotification('Disconnected from Tribe', 1000);
+  resetLobby();
+  $(".pageTribe div").addClass("hidden");
+  $('.pageTribe .preloader').removeClass('hidden').css('opacity',1);
+  $(".pageTribe .preloader").html(`
+  <i class="fas fa-fw fa-times"></i>
+            <div class="text">Disconnected from tribe</div>
+            `);
 })
 
 MP.socket.on('connect_failed', (f) => {
@@ -88,6 +102,8 @@ MP.socket.on('mp_room_joined', data => {
     //user is already in the room and somebody joined
   } else if(MP.state === 1) {
     //user is in prelobby and joined a room
+    let link = "www.monkey-type.com/tribe" + MP.room.id.substring(4);
+    $(".pageTribe .lobby .inviteLink").text(link);
     swapElements($(".pageTribe .prelobby"), $(".pageTribe .lobby"), 250, () => {MP.state = 10});
   }
 })
@@ -103,6 +119,8 @@ MP.socket.on('mp_chat_message', data => {
   $(".pageTribe .lobby .chat .messages").append(`
     <div class="${cls}">${author}${data.message}</div>
   `);
+  let chatEl = $(".pageTribe .lobby .chat .messages");
+  chatEl.animate({ scrollTop: $($(".pageTribe .lobby .chat .message")[0]).outerHeight() * 2 * $(".pageTribe .lobby .chat .messages .message").length }, 0);
 })
 
 MP.socket.on('mp_system_message', data => {
