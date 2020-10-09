@@ -393,5 +393,10 @@
     "name": "lil_dragon",
     "bgColor": "#ebe1ef",
     "textColor": "#8a5bd6"
+  },
+  {
+    "name": "pastel",
+    "bgColor": "#ffd1dc",
+    "textColor": "#b39eb5"
   }
 ]

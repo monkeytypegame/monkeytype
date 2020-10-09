@@ -1470,6 +1470,7 @@ key {
   width: 100%;
   align-content: flex-start;
   user-select: none;
+  padding-bottom: 1em;
 
   /* a little hack for right-to-left languages */
   &.rightToLeftTest {
