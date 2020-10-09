@@ -2829,6 +2829,19 @@ function changePage(page) {
       hideTestConfig();
       hideSignOutButton();
     }
+  } else if (page == "tribe") {
+    pageTransition = true;
+    restartTest();
+    swapElements(activePage, $(".page.pageTribe"), 250, () => {
+      pageTransition = false;
+      history.pushState("tribe", null, "tribe");
+      $(".page.pageTribe").addClass("active");
+      if (!MP.socket.connected && firebase.auth().currentUser !== null) {
+        if (MP.state === -1) {
+          mp_init();
+        }
+      }
+    });
   }
 }
 
@@ -4871,6 +4884,9 @@ $(document).ready(() => {
       } else if (window.location.pathname !== "/") {
         let page = window.location.pathname.replace("/", "");
         changePage(page);
+      }
+      if (/\/tribe\/.+/.test(window.location.pathname)) {
+        MP.autoJoin = window.location.pathname.split('/')[2];
       }
     });
 });

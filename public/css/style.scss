@@ -2289,6 +2289,53 @@ key {
   }
 }
 
+.pageTribe{
+  display: grid;
+  gap: 1rem;
+  .preloader {
+    font-size: 2rem;
+    justify-self: center;
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    .text{
+      font-size: 1rem;
+      color: var(--sub-color);
+    }
+  }
+  .lobby{
+    display: grid;
+    grid-template-areas: "currentsettings currentsettings"
+                         "chat userlist";
+    .title{
+      color: var(--sub-color);
+    }
+    .currentSettings{
+      grid-area: currentsettings;
+    }
+    .chat{
+      grid-area: chat;
+      .messages{
+        .systemMessage{
+          color: var(--sub-color);
+        }
+        .message{
+          display: flex;
+          gap: .5rem;
+          color: var(--text-color);
+          .author{
+            color: var(--main-color);
+          }
+        }
+      }
+    }
+    .userlist{
+      grid-area: userlist;
+    }
+  }
+
+}
+
 .pageAccount {
   display: grid;
   gap: 1rem;

@@ -233,6 +233,7 @@ function sendVerificationEmail() {
 
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
+    console.log('user is logged in');
     // User is signed in.
     if (user.emailVerified === false) {
       $(".pageAccount .content").prepend(
@@ -252,6 +253,13 @@ firebase.auth().onAuthStateChanged(function (user) {
     // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
+  } else {
+    console.log('user is not logged in');
+  }
+  if ($(".pageTribe").hasClass('active') && !MP.socket.connected) {
+    if (MP.state === -1) {
+      mp_init();
+    }
   }
 });
 
