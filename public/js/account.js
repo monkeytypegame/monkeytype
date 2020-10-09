@@ -527,6 +527,16 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
           lineStyle: "dotted",
           width: 2,
         },
+        order: 3
+      },
+      {
+        yAxisID: "avgWpm",
+        label: "Average Wpm",
+        data: [],
+        type: "line",
+        order: 2,
+        lineTension: 0,
+        fill: false,
       },
     ],
   },
@@ -601,6 +611,28 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
             display: true,
             labelString: "Tests Completed",
             fontFamily: "Roboto Mono",
+          },
+        },
+        {
+          id: "avgWpm",
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            min: 0,
+            autoSkip: true,
+            stepSize: 1,
+            autoSkipPadding: 40,
+            stepSize: 10,
+          },
+          display: true,
+          position: "right",
+          scaleLabel: {
+            display: true,
+            labelString: "Average Wpm",
+            fontFamily: "Roboto Mono",
+          },
+          gridLines: {
+            display: false,
           },
         },
       ],
@@ -1848,7 +1880,7 @@ function refreshAccountPage() {
     let consCount = 0;
 
     let dailyActivityDays = [];
-    let activityChartData = [];
+    let activityChartData = {};
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
@@ -1998,9 +2030,13 @@ function refreshAccountPage() {
       resultDate = resultDate.getTime();
 
       if (Object.keys(activityChartData).includes(String(resultDate))) {
-        activityChartData[resultDate] = activityChartData[resultDate] + 1;
+        activityChartData[resultDate].amount++;
+        activityChartData[resultDate].totalWpm += result.wpm;
       } else {
-        activityChartData[resultDate] = 1;
+        activityChartData[resultDate] = {
+          amount: 1,
+          totalWpm: result.wpm,
+        }
       }
 
       tt = 0;
@@ -2095,7 +2131,10 @@ function refreshAccountPage() {
     thisDate.setMilliseconds(0);
     thisDate = thisDate.getTime();
 
-    let tempChartData = [];
+    console.log(activityChartData);
+
+    let activityChartData_amount = [];
+    let activityChartData_avgWpm = [];
     let lastTimestamp = 0;
     Object.keys(activityChartData).forEach((date) => {
       let datecheck;
@@ -2109,23 +2148,27 @@ function refreshAccountPage() {
 
       if (numDaysBetweenTheDays > 1) {
         if (datecheck === thisDate) {
-          tempChartData.push({
+          activityChartData_amount.push({
             x: parseInt(thisDate),
             y: 0,
           });
         }
 
         for (let i = 0; i < numDaysBetweenTheDays - 1; i++) {
-          tempChartData.push({
+          activityChartData_amount.push({
             x: parseInt(datecheck) - 86400000 * (i + 1),
             y: 0,
           });
         }
       }
 
-      tempChartData.push({
+      activityChartData_amount.push({
         x: parseInt(date),
-        y: activityChartData[date],
+        y: activityChartData[date].amount,
+      });
+      activityChartData_avgWpm.push({
+        x: parseInt(date),
+        y: roundTo2(activityChartData[date].totalWpm / activityChartData[date].amount),
       });
       lastTimestamp = date;
     });
@@ -2144,7 +2187,18 @@ function refreshAccountPage() {
     activityChart.options.legend.labels.fontColor = themeColors.sub;
     activityChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
 
-    activityChart.data.datasets[0].data = tempChartData;
+    activityChart.data.datasets[0].data = activityChartData_amount;
+
+    activityChart.options.scales.yAxes[1].ticks.minor.fontColor =
+    themeColors.sub;
+    activityChart.options.scales.yAxes[1].scaleLabel.fontColor =
+      themeColors.sub;
+    activityChart.data.datasets[1].borderColor = themeColors.sub;
+    // activityChart.data.datasets[1].backgroundColor = themeColors.main;
+    activityChart.data.datasets[1].data = activityChartData_avgWpm;
+
+
+    activityChart.options.legend.labels.fontColor = themeColors.sub;
 
     resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor =
       themeColors.sub;
@@ -2358,6 +2412,7 @@ function refreshAccountPage() {
     try {
       cont();
     } catch (e) {
+      console.error(e);
       showNotification(`Something went wrong: ${e}`, 5000);
     }
   }
