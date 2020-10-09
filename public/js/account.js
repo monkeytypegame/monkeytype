@@ -840,6 +840,9 @@ function updateHoverChart(filteredId) {
   if (!config.startGraphsAtZero) {
     hoverChart.options.scales.yAxes[0].ticks.min = Math.round(minChartVal);
     hoverChart.options.scales.yAxes[1].ticks.min = Math.round(minChartVal);
+  } else {
+    hoverChart.options.scales.yAxes[0].ticks.min = 0;
+    hoverChart.options.scales.yAxes[1].ticks.min = 0;
   }
 
   hoverChart.update({ duration: 0 });
@@ -2183,6 +2186,9 @@ function refreshAccountPage() {
       resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.floor(
         minAccuracyChartVal
       );
+    } else {
+      resultHistoryChart.options.scales.yAxes[0].ticks.min = 0;
+      resultHistoryChart.options.scales.yAxes[1].ticks.min = 0;
     }
 
     if (chartData == [] || chartData.length == 0) {

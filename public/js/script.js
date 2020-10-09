@@ -1808,6 +1808,9 @@ function showResult(difficultyFailed = false) {
   if (!config.startGraphsAtZero) {
     wpmOverTimeChart.options.scales.yAxes[0].ticks.min = minChartVal;
     wpmOverTimeChart.options.scales.yAxes[1].ticks.min = minChartVal;
+  } else {
+    wpmOverTimeChart.options.scales.yAxes[0].ticks.min = 0;
+    wpmOverTimeChart.options.scales.yAxes[1].ticks.min = 0;
   }
 
   // wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.round(minChartVal);
