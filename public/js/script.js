@@ -4827,6 +4827,9 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
 });
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
+  if (config.customTheme) {
+    togglePresetCustomTheme();
+  }
   currentCommands.push(commandsThemes);
   showCommandLine();
 });

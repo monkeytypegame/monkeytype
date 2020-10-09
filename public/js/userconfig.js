@@ -969,6 +969,7 @@ function applyCustomThemeColors() {
       document.documentElement.style.setProperty(e, array[index]);
     });
   } else {
+    $(".current-theme").text(config.theme.replace('_',' '));
     previewTheme(config.theme);
     colorVars.forEach((e) => {
       document.documentElement.style.setProperty(e, "");
