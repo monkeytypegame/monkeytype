@@ -388,5 +388,10 @@
     "name": "nebula",
     "bgColor": "#212135",
     "textColor": "#be3c88"
+  },
+  {
+    "name": "pastel",
+    "bgColor": "#ffd1dc",
+    "textColor": "#b39eb5"
   }
 ]
