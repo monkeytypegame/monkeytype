@@ -29,10 +29,19 @@ function mp_refreshUserList() {
   })
 }
 
-function resetLobby(){
+function mp_resetLobby(){
   $(".pageTribe .lobby .userlist .list").empty();
   $(".pageTribe .lobby .chat .messages").empty();
   $(".pageTribe .lobby .inviteLink").text('');
+}
+
+function mp_applyRoomConfig(cfg) {
+  setDifficulty(cfg.difficulty, true);
+  setBlindMode(cfg.blindMode, true);
+  changeLanguage(cfg.language, true);
+  activateFunbox(cfg.funbox, true);
+  setStopOnError(cfg.stopOnError, true);
+  setConfidenceMode(cfg.confidenceMode, true);
 }
 
 MP.socket.on('connect', (f) => {
@@ -50,6 +59,7 @@ MP.socket.on('connect', (f) => {
     MP.socket.emit("mp_room_join", { roomId: MP.autoJoin });
     MP.autoJoin = undefined;
   }
+  $(".pageTribe .prelobby .button").removeClass('hidden');
   swapElements($(".pageTribe .preloader"), $(".pageTribe .prelobby"), 250);
 })
 
@@ -57,7 +67,7 @@ MP.socket.on('disconnect', (f) => {
   MP.state = -1;
   MP.room = undefined;
   showNotification('Disconnected from Tribe', 1000);
-  resetLobby();
+  mp_resetLobby();
   $(".pageTribe div").addClass("hidden");
   $('.pageTribe .preloader').removeClass('hidden').css('opacity',1);
   $(".pageTribe .preloader").html(`
@@ -96,8 +106,11 @@ MP.socket.on('connect_error', (f) => {
 
 MP.socket.on('mp_room_joined', data => {
   MP.room = data.room;
-
+  if (MP.room.users.filter(user => user.socketId === MP.socket.id)[0].isLeader) {
+    MP.room.isLeader = true;
+  }
   mp_refreshUserList();
+  mp_applyRoomConfig(MP.room.config);
   if (MP.state === 10) {
     //user is already in the room and somebody joined
   } else if(MP.state === 1) {
@@ -128,7 +141,19 @@ MP.socket.on('mp_system_message', data => {
 })
 
 $(".pageTribe #createPrivateRoom").click(f => {
-  MP.socket.emit("mp_room_create");
+  activateFunbox("none");
+  changeLanguage("english");
+  changeMode("quote");
+  MP.socket.emit("mp_room_create", {
+    config: {
+      difficulty: config.difficulty,
+      blindMode: config.blindMode,
+      language: config.language,
+      funbox: activeFunBox,
+      stopOnError: config.stopOnError,
+      confidenceMode: config.confidenceMode
+    }
+  });
 })
 
 $(".pageTribe .lobby .chat .input input").keyup(e => {
