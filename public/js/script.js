@@ -42,6 +42,7 @@ let lastSecondNotRound = false;
 let paceCaret = null;
 let missedWords = [];
 let verifyUserWhenLoggedIn = null;
+let modeBeforePractise = null;
 
 let themeColors = {
   bg: "#323437",
@@ -2569,6 +2570,12 @@ function restartTest(withSameWordset = false, nosave = false) {
     }
   }
 
+  if (modeBeforePractise !== null) {
+    showNotification("Reverting to previous settings.", 1500);
+    changeMode(modeBeforePractise);
+    modeBeforePractise = null;
+  }
+
   manualRestart = false;
   clearTimeout(timer);
   time = 0;
@@ -4147,11 +4154,13 @@ $(document.body).on("click", "#restartTestButton", (event) => {
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
   if (event.keyCode == 13) {
     if (missedWords.length > 0) {
+      let currentMode = config.mode;
       changeMode("custom");
       customText = missedWords;
       customTextIsRandom = true;
       customTextWordCount = 50;
       restartTest();
+      modeBeforePractise = currentMode;
     } else {
       showNotification("You haven't missed any words.", 2000);
     }
@@ -4160,11 +4169,13 @@ $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
 
 $(document.body).on("click", "#practiseMissedWordsButton", (event) => {
   if (missedWords.length > 0) {
+    let currentMode = config.mode;
     changeMode("custom");
     customText = missedWords;
     customTextIsRandom = true;
     customTextWordCount = 50;
     restartTest();
+    modeBeforePractise = currentMode;
   } else {
     showNotification("You haven't missed any words.", 2000);
   }
