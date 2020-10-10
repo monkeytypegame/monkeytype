@@ -41,6 +41,7 @@ let caretAnimating = true;
 let lastSecondNotRound = false;
 let paceCaret = null;
 let missedWords = [];
+let verifyUserWhenLoggedIn = null;
 
 let themeColors = {
   bg: "#323437",
@@ -207,6 +208,8 @@ const generatePairingCode = firebase
   .httpsCallable("generatePairingCode");
 const saveLbMemory = firebase.functions().httpsCallable("saveLbMemory");
 const unlinkDiscord = firebase.functions().httpsCallable("unlinkDiscord");
+const verifyUser = firebase.functions().httpsCallable("verifyUser");
+
 
 
 function refreshThemeColorObject() {
@@ -4872,7 +4875,18 @@ $(document).ready(() => {
         setCustomThemeInputs();
         applyCustomThemeColors();
       }
-      if (window.location.pathname === "/account") {
+      if (window.location.pathname === "/verify") {
+        const fragment = new URLSearchParams(window.location.hash.slice(1));
+        if (fragment.has("access_token")) {
+          const accessToken = fragment.get("access_token");
+          const tokenType = fragment.get("token_type");
+          verifyUserWhenLoggedIn = {
+            accessToken: accessToken,
+            tokenType: tokenType
+          }
+          history.replaceState("/", null, "/");
+        }
+      }else if (window.location.pathname === "/account") {
         history.replaceState("/", null, "/");
       } else if (window.location.pathname !== "/") {
         let page = window.location.pathname.replace("/", "");

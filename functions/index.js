@@ -13,6 +13,7 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+const fetch = require("node-fetch");
 
 async function getAllNames() {
   // return admin
@@ -470,6 +471,55 @@ exports.getPatreons = functions.https.onRequest(async (request, response) => {
     return;
   } catch (e) {
     response.status(200).send({ e });
+    return;
+  }
+});
+
+exports.verifyUser = functions.https.onRequest(async (request, response) => {
+  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Headers", "*");
+  response.set("Access-Control-Allow-Credentials", "true");
+  if (request.method === "OPTIONS") {
+    // Send response to OPTIONS requests
+    response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    response.set("Access-Control-Allow-Headers", "Authorization,Content-Type");
+    response.set("Access-Control-Max-Age", "3600");
+    response.status(204).send("");
+    return;
+  }
+  request = request.body.data;
+  if (request.uid == undefined) {
+    response.status(200).send({ data: { status: -1, message: "Need to provide uid" } });
+    return;
+  }
+  try {
+    return fetch("https://discord.com/api/users/@me", {
+      headers: {
+        authorization: `${request.tokenType} ${request.accessToken}`,
+      },
+    })
+      .then((res) => res.json())
+      .then(async (res2) => {
+        let did = res2.id;
+        await db.collection('users').doc(request.uid).update({
+          discordId: did
+        })
+        await db.collection("bot-commands").add({
+          command: "verify",
+          arguments: [did,request.uid],
+          executed: false,
+          requestTimestamp: Date.now(),
+        });
+        response.status(200).send({ data: { status: 1, message: "Verified", did: did } });
+        return;
+      })
+      .catch((e) => {
+        console.error('Something went wrong when trying to verify user ' + e.message);
+        response.status(200).send({ data: { status: -1, message: e.message } });
+        return;
+      });
+  } catch (e) {
+    response.status(200).send({ data: { status: -1, message: e } });
     return;
   }
 });
@@ -1434,143 +1484,138 @@ class Leaderboard {
   }
 }
 
-exports.generatePairingCode = functions
-  .runWith({
-    timeoutSeconds: 100,
-    memory: "2GB",
-  })
-  .https.onRequest((request, response) => {
-    response.set("Access-Control-Allow-Origin", "*");
-    if (request.method === "OPTIONS") {
-      // Send response to OPTIONS requests
-      response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-      response.set(
-        "Access-Control-Allow-Headers",
-        "Authorization,Content-Type"
-      );
-      response.set("Access-Control-Max-Age", "3600");
-      response.status(204).send("");
-      return;
-    }
-    request = request.body.data;
-    try {
-      if (request === null) {
-        console.error(
-          `error while trying to generate discord pairing code - no input`
-        );
-        response.status(200).send({ data: { status: -999 } });
-        return;
-      }
+// exports.generatePairingCode = functions
+//   .runWith({
+//     timeoutSeconds: 100,
+//     memory: "2GB",
+//   })
+//   .https.onRequest((request, response) => {
+//     response.set("Access-Control-Allow-Origin", "*");
+//     if (request.method === "OPTIONS") {
+//       // Send response to OPTIONS requests
+//       response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+//       response.set(
+//         "Access-Control-Allow-Headers",
+//         "Authorization,Content-Type"
+//       );
+//       response.set("Access-Control-Max-Age", "3600");
+//       response.status(204).send("");
+//       return;
+//     }
+//     request = request.body.data;
+//     try {
+//       if (request === null) {
+//         console.error(
+//           `error while trying to generate discord pairing code - no input`
+//         );
+//         response.status(200).send({ data: { status: -999 } });
+//         return;
+//       }
 
-      return db
-        .collection("users")
-        .doc(request.uid)
-        .get()
-        .then(async (userDoc) => {
-          userDocData = userDoc.data();
-          if (
-            userDocData.discordPairingCode !== undefined &&
-            userDocData.discordPairingCode !== null
-          ) {
-            console.log(
-              `user ${request.uid} already has code ${userDocData.discordPairingCode}`
-            );
-            response.status(200).send({
-              data: {
-                status: -999,
-                pairingCode: userDocData.discordPairingCode,
-              },
-            });
-          } else {
-            let stepSize = 1000;
-            let existingCodes = [];
-            let query = await db
-              .collection(`users`)
-              .where("discordPairingCode", ">", "")
-              .limit(stepSize)
-              .get();
-            let lastDoc;
-            while (query.docs.length > 0) {
-              lastDoc = query.docs[query.docs.length - 1];
-              query.docs.forEach((doc) => {
-                let docData = doc.data();
-                if (
-                  docData.discordPairingCode !== undefined &&
-                  docData.discordPairingCode !== null
-                ) {
-                  existingCodes.push(docData.discordPairingCode);
-                }
-              });
-              query = await db
-                .collection(`users`)
-                .where("discordPairingCode", ">", "")
-                .limit(stepSize)
-                .startAfter(lastDoc)
-                .get();
-            }
+//       return db
+//         .collection("users")
+//         .doc(request.uid)
+//         .get()
+//         .then(async (userDoc) => {
+//           userDocData = userDoc.data();
+//           if (
+//             userDocData.discordPairingCode !== undefined &&
+//             userDocData.discordPairingCode !== null
+//           ) {
+//             console.log(
+//               `user ${request.uid} already has code ${userDocData.discordPairingCode}`
+//             );
+//             response.status(200).send({
+//               data: {
+//                 status: -999,
+//                 pairingCode: userDocData.discordPairingCode,
+//               },
+//             });
+//           } else {
+//             let stepSize = 1000;
+//             let existingCodes = [];
+//             let query = await db
+//               .collection(`users`)
+//               .where("discordPairingCode", ">", "")
+//               .limit(stepSize)
+//               .get();
+//             let lastDoc;
+//             while (query.docs.length > 0) {
+//               lastDoc = query.docs[query.docs.length - 1];
+//               query.docs.forEach((doc) => {
+//                 let docData = doc.data();
+//                 if (
+//                   docData.discordPairingCode !== undefined &&
+//                   docData.discordPairingCode !== null
+//                 ) {
+//                   existingCodes.push(docData.discordPairingCode);
+//                 }
+//               });
+//               query = await db
+//                 .collection(`users`)
+//                 .where("discordPairingCode", ">", "")
+//                 .limit(stepSize)
+//                 .startAfter(lastDoc)
+//                 .get();
+//             }
 
-            let randomCode = generate(9);
+//             let randomCode = generate(9);
 
-            while (existingCodes.includes(randomCode)) {
-              randomCode = generate(9);
-            }
+//             while (existingCodes.includes(randomCode)) {
+//               randomCode = generate(9);
+//             }
 
-            return db
-              .collection("users")
-              .doc(request.uid)
-              .update(
-                {
-                  discordPairingCode: randomCode,
-                },
-                { merge: true }
-              )
-              .then((res) => {
-                console.log(`generated ${randomCode} for user ${request.uid}`);
-                response.status(200).send({
-                  data: {
-                    status: 1,
-                    pairingCode: randomCode,
-                  },
-                });
-                return;
-              })
-              .catch((e) => {
-                console.error(
-                  `error while trying to set discord pairing code ${randomCode} for user ${request.uid} - ${e}`
-                );
-                response.status(200).send({
-                  data: {
-                    status: -999,
-                  },
-                });
-                return;
-              });
-          }
-        });
-    } catch (e) {
-      console.error(
-        `error while trying to generate discord pairing code for user ${request.uid} - ${e}`
-      );
-      response.status(200).send({
-        data: {
-          status: -999,
-        },
-      });
-      return;
-    }
-  });
+//             return db
+//               .collection("users")
+//               .doc(request.uid)
+//               .update(
+//                 {
+//                   discordPairingCode: randomCode,
+//                 },
+//                 { merge: true }
+//               )
+//               .then((res) => {
+//                 console.log(`generated ${randomCode} for user ${request.uid}`);
+//                 response.status(200).send({
+//                   data: {
+//                     status: 1,
+//                     pairingCode: randomCode,
+//                   },
+//                 });
+//                 return;
+//               })
+//               .catch((e) => {
+//                 console.error(
+//                   `error while trying to set discord pairing code ${randomCode} for user ${request.uid} - ${e}`
+//                 );
+//                 response.status(200).send({
+//                   data: {
+//                     status: -999,
+//                   },
+//                 });
+//                 return;
+//               });
+//           }
+//         });
+//     } catch (e) {
+//       console.error(
+//         `error while trying to generate discord pairing code for user ${request.uid} - ${e}`
+//       );
+//       response.status(200).send({
+//         data: {
+//           status: -999,
+//         },
+//       });
+//       return;
+//     }
+//   });
 
-
-  
 exports.unlinkDiscord = functions.https.onRequest((request, response) => {
   response.set("Access-Control-Allow-Origin", "*");
   if (request.method === "OPTIONS") {
     // Send response to OPTIONS requests
     response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-    response.set(
-      "Access-Control-Allow-Headers",
-      "Authorization,Content-Type"
-    );
+    response.set("Access-Control-Allow-Headers", "Authorization,Content-Type");
     response.set("Access-Control-Max-Age", "3600");
     response.status(204).send("");
     return;
@@ -1578,39 +1623,45 @@ exports.unlinkDiscord = functions.https.onRequest((request, response) => {
   request = request.body.data;
   try {
     if (request === null || request.uid === undefined) {
-      response.status(200).send({ data: { status: -999, message: "Empty request" } });
+      response
+        .status(200)
+        .send({ data: { status: -999, message: "Empty request" } });
       return;
     }
-    return db.collection(`users`).doc(request.uid).update({
-      discordId: null
-    }).then(f => {
-      response.status(200).send({
-        data: {
-          status: 1,
-          message: "Unlinked"
-        },
+    return db
+      .collection(`users`)
+      .doc(request.uid)
+      .update({
+        discordId: null,
+      })
+      .then((f) => {
+        response.status(200).send({
+          data: {
+            status: 1,
+            message: "Unlinked",
+          },
+        });
+        return;
+      })
+      .catch((e) => {
+        response.status(200).send({
+          data: {
+            status: -999,
+            message: e.message,
+          },
+        });
+        return;
       });
-      return;
-    }).catch(e => {
-      response.status(200).send({
-        data: {
-          status: -999,
-          message: e.message
-        },
-      });
-      return;
-    })
   } catch (e) {
     response.status(200).send({
       data: {
         status: -999,
-        message: e
+        message: e,
       },
     });
     return;
   }
 });
-
 
 async function checkLeaderboards(
   resultObj,
