@@ -262,6 +262,7 @@ function checkIfPB(uid, obj, userdata) {
                 wpm: obj.wpm,
                 acc: obj.acc,
                 raw: obj.rawWpm,
+                timestamp: Date.now()
               },
             ],
           },
@@ -285,6 +286,7 @@ function checkIfPB(uid, obj, userdata) {
                     wpm: obj.wpm,
                     acc: obj.acc,
                     raw: obj.rawWpm,
+                    timestamp: Date.now()
                   },
                 ],
               },
@@ -316,6 +318,7 @@ function checkIfPB(uid, obj, userdata) {
           pb.wpm = obj.wpm;
           pb.acc = obj.acc;
           pb.raw = obj.rawWpm;
+          pb.timestamp = Date.now();
           toUpdate = true;
         } else {
           //no pb
@@ -332,6 +335,7 @@ function checkIfPB(uid, obj, userdata) {
         wpm: obj.wpm,
         acc: obj.acc,
         raw: obj.rawWpm,
+        timestamp: Date.now()
       });
       toUpdate = true;
     }
@@ -346,6 +350,7 @@ function checkIfPB(uid, obj, userdata) {
         wpm: obj.wpm,
         acc: obj.acc,
         raw: obj.rawWpm,
+        timestamp: Date.now()
       },
     ];
     toUpdate = true;
@@ -701,9 +706,13 @@ exports.testCompleted = functions
       return;
     }
     request = request.body.data;
+    if (request === undefined) {
+      response.status(200).send({ data: { resultCode: -999 } });
+      return;
+    }
     try {
       if (request.uid === undefined || request.obj === undefined) {
-        console.error(`error saving result for ${request.uid} - missing input`);
+        console.error(`error saving result for - missing input`);
         response.status(200).send({ data: { resultCode: -999 } });
         return;
       }
