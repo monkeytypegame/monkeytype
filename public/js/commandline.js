@@ -31,6 +31,28 @@ function generateSingleListOfCommands() {
     list: allCommands};
 }
 
+function isSingleListCommandLineActive() {
+  return $("#commandLine").hasClass("allCommands");
+}
+
+function useSingleListCommandLine(show = true) {
+  let allCommands = generateSingleListOfCommands();
+  if (config.singleListCommandLine == "manual") currentCommands.push(allCommands); 
+  else if (config.singleListCommandLine == "on") currentCommands = [allCommands]; 
+
+  if (config.singleListCommandLine != "off") $("#commandLine").addClass("allCommands");
+  if (show) showCommandLine();
+}
+
+function restoreOldCommandLine(show = true) {
+  if (isSingleListCommandLineActive()) {
+    $("#commandLine").removeClass("allCommands");
+    currentCommands = currentCommands.filter( l => l.title != "All Commands");
+    if (currentCommands.length < 1) currentCommands = [commands];
+  }
+  if (show) showCommandLine();
+}
+
 let commands = {
   title: "",
   list: [
