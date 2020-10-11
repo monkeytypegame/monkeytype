@@ -2,6 +2,35 @@ function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function addChildCommands(unifiedCommands, commandItem, parentCommandDisplay = '') {
+  let commandItemDisplay = commandItem.display;
+  if (parentCommandDisplay) commandItemDisplay = parentCommandDisplay + " → " + commandItemDisplay;
+  if (commandItem.subgroup) {
+    try {
+      commandItem.exec();
+      currentCommandsIndex = currentCommands.length-1;
+      currentCommands[currentCommandsIndex].list.forEach( cmd => addChildCommands(unifiedCommands, cmd, commandItemDisplay));
+      currentCommands.pop();
+    } catch(e) {}
+  } else {
+    let tempCommandItem = {...commandItem};
+    if (parentCommandDisplay)
+      tempCommandItem.display = commandItemDisplay;
+    unifiedCommands.push(tempCommandItem);
+  }
+}
+
+function generateSingleListOfCommands() {
+  allCommands = [];
+  oldShowCommandLine = showCommandLine;
+  showCommandLine = () => {};
+  commands.list.forEach(c => addChildCommands(allCommands, c));
+  showCommandLine = oldShowCommandLine;
+  return {
+    title: "All Commands",
+    list: allCommands};
+}
+
 let commands = {
   title: "",
   list: [
