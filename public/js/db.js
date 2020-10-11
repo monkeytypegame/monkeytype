@@ -207,7 +207,8 @@ async function db_saveLocalPB(
   difficulty,
   wpm,
   acc,
-  raw
+  raw,
+  consistency
 ) {
   function cont() {
     try {
@@ -226,6 +227,7 @@ async function db_saveLocalPB(
           pb.acc = acc;
           pb.raw = raw;
           pb.timestamp = Date.now();
+          pb.consistency = consistency;
         }
       });
       if (!found) {
@@ -237,7 +239,8 @@ async function db_saveLocalPB(
           wpm: wpm,
           acc: acc,
           raw: raw,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          consistency: consistency
         });
       }
     } catch (e) {
@@ -251,7 +254,8 @@ async function db_saveLocalPB(
           wpm: wpm,
           acc: acc,
           raw: raw,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          consistency: consistency
         },
       ];
     }

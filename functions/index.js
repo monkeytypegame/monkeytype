@@ -262,7 +262,8 @@ function checkIfPB(uid, obj, userdata) {
                 wpm: obj.wpm,
                 acc: obj.acc,
                 raw: obj.rawWpm,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                consistency: obj.consistency
               },
             ],
           },
@@ -286,7 +287,8 @@ function checkIfPB(uid, obj, userdata) {
                     wpm: obj.wpm,
                     acc: obj.acc,
                     raw: obj.rawWpm,
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    consistency: obj.consistency
                   },
                 ],
               },
@@ -319,6 +321,7 @@ function checkIfPB(uid, obj, userdata) {
           pb.acc = obj.acc;
           pb.raw = obj.rawWpm;
           pb.timestamp = Date.now();
+          pb.consistency = obj.consistency;
           toUpdate = true;
         } else {
           //no pb
@@ -335,7 +338,8 @@ function checkIfPB(uid, obj, userdata) {
         wpm: obj.wpm,
         acc: obj.acc,
         raw: obj.rawWpm,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        consistency: obj.consistency
       });
       toUpdate = true;
     }
@@ -350,7 +354,8 @@ function checkIfPB(uid, obj, userdata) {
         wpm: obj.wpm,
         acc: obj.acc,
         raw: obj.rawWpm,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        consistency: obj.consistency
       },
     ];
     toUpdate = true;

@@ -2218,6 +2218,7 @@ function showResult(difficultyFailed = false) {
                       stats.wpm,
                       stats.acc,
                       stats.wpmRaw,
+                      stats.consistency
                     );
                   } else if (e.data.resultCode === 1) {
                     if (localPb) {
