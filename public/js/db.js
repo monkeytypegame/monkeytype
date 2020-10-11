@@ -225,6 +225,7 @@ async function db_saveLocalPB(
           pb.wpm = wpm;
           pb.acc = acc;
           pb.raw = raw;
+          pb.timestamp = Date.now();
         }
       });
       if (!found) {
@@ -236,6 +237,7 @@ async function db_saveLocalPB(
           wpm: wpm,
           acc: acc,
           raw: raw,
+          timestamp: Date.now()
         });
       }
     } catch (e) {
@@ -249,6 +251,7 @@ async function db_saveLocalPB(
           wpm: wpm,
           acc: acc,
           raw: raw,
+          timestamp: Date.now()
         },
       ];
     }
