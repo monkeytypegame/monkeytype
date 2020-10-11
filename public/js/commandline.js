@@ -219,6 +219,15 @@ let commands = {
       },
     },
     {
+      id: "singleListCommandLine",
+      display: "Single list command line...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsSingleListCommandLine);
+        showCommandLine();
+      },
+    },
+    {
       id: "togglePlaySoundOnError",
       display: "Toggle play sound on error",
       exec: () => {
@@ -889,6 +898,26 @@ let commandsTimerColor = {
         setTimerColor("main");
       },
     },
+  ],
+};
+
+let commandsSingleListCommandLine = {
+  title: "Single list command line...",
+  list: [
+    {
+      id: "singleListCommandLineManual",
+      display: "manual",
+      exec: () => {
+        setSingleListCommandLine("manual");
+      },
+    },
+    {
+      id: "singleListCommandLineOn",
+      display: "on",
+      exec: () => {
+        setSingleListCommandLine("on");
+      },
+    }
   ],
 };
 
