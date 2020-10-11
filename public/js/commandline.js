@@ -1432,11 +1432,15 @@ $(document).ready((e) => {
     if ((event.keyCode == 27 && !config.swapEscAndTab) || (event["keyCode"] == 9 && config.swapEscAndTab)) {
       event.preventDefault();
       if ($("#commandLineWrapper").hasClass("hidden")) {
-        currentCommands = [commands];
+        if (config.singleListCommandLine == "on") 
+          useSingleListCommandLine(false);
+        else 
+          currentCommands = [commands];
         showCommandLine();
       } else {
         if (currentCommands.length > 1) {
           currentCommands.pop();
+          $("#commandLine").removeClass("allCommands");
           showCommandLine();
         } else {
           hideCommandLine();
@@ -1508,6 +1512,17 @@ $("#commandLineWrapper").click((e) => {
 $(document).keydown((e) => {
   if (!$("#commandLineWrapper").hasClass("hidden")) {
     $("#commandLine input").focus();
+    if (e.key == ">" && config.singleListCommandLine == "manual") {
+      if (!isSingleListCommandLineActive()) {
+        useSingleListCommandLine();
+        return;
+      } else if ($("#commandLine input").val() == ">") { //so that it will ignore succeeding ">" when input is already ">"
+        e.preventDefault();
+        return;
+      }   
+    }
+    if (e.keyCode == 8 && $("#commandLine input").val().length == 1 && config.singleListCommandLine == "manual" && isSingleListCommandLineActive()) 
+      restoreOldCommandLine();
     if (e.keyCode == 13) {
       //enter
       e.preventDefault();
@@ -1615,6 +1630,7 @@ function hideCommandLine() {
       100,
       () => {
         $("#commandLineWrapper").addClass("hidden");
+        $("#commandLine").removeClass("allCommands");
         focusWords();
       }
     );
@@ -1656,6 +1672,8 @@ function showCommandInput(command, placeholder) {
 function updateSuggestedCommands() {
   let inputVal = $("#commandLine input").val().toLowerCase().split(" ");
   let list = currentCommands[currentCommands.length - 1];
+  //ignore the preceeding ">"s in the command line input
+  if (inputVal[0] && inputVal[0][0] == ">") inputVal[0] = inputVal[0].replace(/^>+/,'');
   if (inputVal[0] == "") {
     $.each(list.list, (index, obj) => {
       if (obj.visible !== false) obj.found = true;
