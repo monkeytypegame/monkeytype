@@ -53,6 +53,7 @@ let defaultConfig = {
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
+  singleListCommandLine: "manual",
   playSoundOnError: false,
   playSoundOnClick: "off",
   startGraphsAtZero: true,
@@ -190,6 +191,7 @@ function applyConfig(configObj) {
     setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
+    setSingleListCommandLine(configObj.singleListCommandLine, true);
     setPlaySoundOnError(configObj.playSoundOnError, true);
     setPlaySoundOnClick(configObj.playSoundOnClick, true);
     setStopOnError(configObj.stopOnError, true);
@@ -426,6 +428,13 @@ function setAlwaysShowWordsHistory(val, nosave) {
     val = false;
   }
   config.alwaysShowWordsHistory = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+//single list command line
+function setSingleListCommandLine(option, nosave) {
+  if (!option) option = "manual";
+  config.singleListCommandLine = option;
   if (!nosave) saveConfigToCookie();
 }
 
