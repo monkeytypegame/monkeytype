@@ -256,11 +256,20 @@ firebase.auth().onAuthStateChanged(function (user) {
   } else {
     console.log('user is not logged in');
   }
-  if (!MP.socket.connected) {
-    if (MP.state === -1) {
-      mp_init();
+  setTimeout(f => {
+    if (/\/tribe_.+/.test(window.location.pathname)) {
+      changePage('tribe');
+      let code = window.location.pathname.split('/')[1];
+      code = code.substring(5);
+      code = "room" + code;
+      MP.autoJoin = code;
     }
-  }
+    if (!MP.socket.connected && MP.autoJoin != undefined) {
+      if (MP.state === -1) {
+        mp_init();
+      }
+    }
+  }, 250);
 });
 
 function getAccountDataAndInit() {

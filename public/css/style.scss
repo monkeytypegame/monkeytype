@@ -2305,7 +2305,7 @@ key {
   }
   .lobby{
     display: grid;
-    grid-template-areas: "currentsettings currentsettings"
+    grid-template-areas: "currentsettings lobbyButtons"
                          "chat userlist"
                          "inviteLink inviteLink";
     gap: 2rem;
@@ -2313,8 +2313,25 @@ key {
     .title{
       color: var(--sub-color);
     }
+    .lobbyButtons{
+      grid-area: lobbyButtons;
+    }
     .currentSettings{
       grid-area: currentsettings;
+      .groups{
+        display: grid;
+        // grid-auto-flow: column;
+        justify-items: center;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        .group{
+          padding: .5rem;
+          color: var(--text-color);
+          .fas,.far{
+            margin-right: .5rem;
+            color: var(--main-color);
+          }
+        }
+      }
     }
     .chat{
       grid-area: chat;

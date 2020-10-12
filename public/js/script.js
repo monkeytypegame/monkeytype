@@ -2836,7 +2836,7 @@ function changePage(page) {
       pageTransition = false;
       history.pushState("tribe", null, "tribe");
       $(".page.pageTribe").addClass("active");
-      if (!MP.socket.connected && firebase.auth().currentUser !== null) {
+      if (!MP.socket.connected) {
         if (MP.state === -1) {
           mp_init();
         }
@@ -4883,11 +4883,7 @@ $(document).ready(() => {
         history.replaceState("/", null, "/");
       } else if (window.location.pathname !== "/") {
         if (/\/tribe_.+/.test(window.location.pathname)) {
-          changePage('tribe');
-          let code = window.location.pathname.split('/')[1];
-          code = code.substring(5);
-          code = "room" + code;
-          MP.autoJoin = code;
+
         } else {
           let page = window.location.pathname.replace("/", "");
           changePage(page);
