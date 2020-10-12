@@ -36,23 +36,59 @@ function mp_resetLobby(){
 }
 
 function mp_applyRoomConfig(cfg) {
-  changeMode(cfg.mode);
+  changeMode(cfg.mode, true, true);
   if (cfg.mode === "time") {
-    changeTimeConfig(cfg.mode2);
+    changeTimeConfig(cfg.mode2, true, true);
   } else if (cfg.mode === "words") {
-    changeWordCount(cfg.mode2);
+    changeWordCount(cfg.mode2, true, true);
   } else if (cfg.mode === "quote") {
-    changeQuoteLength(cfg.mode2);
+    changeQuoteLength(cfg.mode2, true, true);
   }
-  setDifficulty(cfg.difficulty, true);
-  setBlindMode(cfg.blindMode, true);
-  changeLanguage(cfg.language, true);
-  activateFunbox(cfg.funbox, true);
-  setStopOnError(cfg.stopOnError, true);
-  setConfidenceMode(cfg.confidenceMode, true);
+  setDifficulty(cfg.difficulty, true, true);
+  setBlindMode(cfg.blindMode, true, true);
+  changeLanguage(cfg.language, true, true);
+  activateFunbox(cfg.funbox, true, true);
+  setStopOnError(cfg.stopOnError, true, true);
+  setConfidenceMode(cfg.confidenceMode, true, true);
+}
+
+function mp_checkIfCanChangeConfig() {
+  if (MP.state >= 10) {
+    if (MP.room.isLeader) {
+      return true;
+    } else {
+      showNotification("Only the leader can change this setting", 3000);
+      return false;
+    }
+  } else {
+    return true;
+  }
+}
+
+function mp_syncConfig() {
+  let mode2;
+  if (config.mode === "time") {
+    mode2 = config.time;
+  } else if (config.mode === "words") {
+    mode2 = config.words;
+  } else if (config.mode === "quote") {
+    mode2 = config.quoteLength === undefined ? "-1" : config.quoteLength;
+  }
+  MP.socket.emit("mp_room_config_update", {
+    config: {
+      mode: config.mode,
+      mode2: mode2,
+      difficulty: config.difficulty,
+      blindMode: config.blindMode,
+      language: config.language,
+      funbox: activeFunBox,
+      stopOnError: config.stopOnError,
+      confidenceMode: config.confidenceMode
+  }});
 }
 
 function mp_refreshConfig() {
+  if (MP.room == undefined) return;
   $(".pageTribe .lobby .currentSettings .groups").empty();
 
   $(".pageTribe .lobby .currentSettings .groups").append(`
@@ -265,6 +301,11 @@ MP.socket.on('mp_room_joined', data => {
 MP.socket.on('mp_room_user_left', data => {
   MP.room = data.room;
   mp_refreshUserList();
+})
+
+MP.socket.on('mp_room_config_update', data => {
+  MP.room.config = data.newConfig;
+  mp_refreshConfig();
 })
 
 MP.socket.on('mp_chat_message', data => {

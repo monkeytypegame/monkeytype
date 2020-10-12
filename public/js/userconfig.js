@@ -264,7 +264,10 @@ function togglePlaySoundOnError() {
 }
 
 //difficulty
-function setDifficulty(diff, nosave) {
+function setDifficulty(diff, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig() && !mp) {
+    return;
+  }
   if (
     (diff !== "normal" && diff !== "expert" && diff !== "master") ||
     diff == undefined
@@ -274,6 +277,7 @@ function setDifficulty(diff, nosave) {
   config.difficulty = diff;
   restartTest(false,nosave);
   updateTestModesNotice();
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -297,12 +301,16 @@ function toggleBlindMode() {
   saveConfigToCookie();
 }
 
-function setBlindMode(blind, nosave) {
+function setBlindMode(blind, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig() && !mp) {
+    return;
+  }
   if (blind == undefined) {
     blind = false;
   }
   config.blindMode = blind;
   updateTestModesNotice();
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -335,7 +343,10 @@ function setBlindMode(blind, nosave) {
 //   saveConfigToCookie();
 // }
 
-function setStopOnError(soe, nosave) {
+function setStopOnError(soe, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig() && !mp) {
+    return;
+  }
   if (soe == undefined || soe === true || soe === false) {
     soe = "off";
   }
@@ -344,6 +355,7 @@ function setStopOnError(soe, nosave) {
     config.confidenceMode = "off";
   }
   updateTestModesNotice();
+  mp_syncConfig();]
   if (!nosave) saveConfigToCookie();
 }
 
@@ -646,7 +658,10 @@ function toggleKeyTips() {
 }
 
 //mode
-function changeTimeConfig(time, nosave) {
+function changeTimeConfig(time, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig() && !mp) {
+    return;
+  }
   if (time !== null && !isNaN(time) && time > 0) {
   } else {
     time = 15;
@@ -661,11 +676,15 @@ function changeTimeConfig(time, nosave) {
   $("#top .config .time .text-button[timeConfig='" + time + "']").addClass(
     "active"
   );
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
 //quote length
-function changeQuoteLength(len, nosave) {
+function changeQuoteLength(len, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig() && !mp) {
+    return;
+  }
   if (len !== null && !isNaN(len) && len >= -1 && len <= 3) {
   } else {
     len = 1;
@@ -677,10 +696,14 @@ function changeQuoteLength(len, nosave) {
   $("#top .config .quoteLength .text-button[quoteLength='" + len + "']").addClass(
     "active"
   );
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
-function changeWordCount(wordCount, nosave) {
+function changeWordCount(wordCount, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig() && !mp) {
+    return;
+  }
   if (wordCount !== null && !isNaN(wordCount) && wordCount > 0) {
   } else {
     wordCount = 10;
@@ -695,6 +718,7 @@ function changeWordCount(wordCount, nosave) {
   $(
     "#top .config .wordCount .text-button[wordCount='" + wordCount + "']"
   ).addClass("active");
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -840,7 +864,10 @@ function toggleFreedomMode() {
   saveConfigToCookie();
 }
 
-function setConfidenceMode(cm, nosave) {
+function setConfidenceMode(cm, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig() && !mp) {
+    return;
+  }
   if (cm == undefined) {
     cm = "off";
   }
@@ -849,7 +876,7 @@ function setConfidenceMode(cm, nosave) {
     config.freedomMode = false;
     config.stopOnError = "off";
   }
-
+  mp_syncConfig();
   updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }
@@ -1046,7 +1073,10 @@ function updateFavicon(size, curveSize) {
   $("#favicon").attr("href", canvas.toDataURL("image/png"));
 }
 
-function changeLanguage(language, nosave) {
+function changeLanguage(language, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig() && !mp) {
+    return;
+  }
   if (language == null || language == undefined) {
     language = "english";
   }
@@ -1058,6 +1088,7 @@ function changeLanguage(language, nosave) {
   } catch (e) {
     console.log("Analytics unavailable");
   }
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 

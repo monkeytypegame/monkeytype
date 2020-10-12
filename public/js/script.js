@@ -283,7 +283,10 @@ function copyResultToClipboard() {
   }
 }
 
-function activateFunbox(funbox, mode) {
+function activateFunbox(funbox, mode, mp = false) {
+  if (!mp_checkIfCanChangeConfig() && !mp) {
+    return;
+  }
   if (testActive || resultVisible) {
     showNotification(
       "You can only change the funbox before starting a test.",
@@ -324,6 +327,7 @@ function activateFunbox(funbox, mode) {
     }
     activeFunBox = funbox;
   }
+  mp_syncConfig();
   updateTestModesNotice();
   return true;
 }
@@ -2833,6 +2837,7 @@ function changePage(page) {
     pageTransition = true;
     restartTest();
     swapElements(activePage, $(".page.pageTribe"), 250, () => {
+      showTestConfig();
       pageTransition = false;
       history.pushState("tribe", null, "tribe");
       $(".page.pageTribe").addClass("active");
@@ -2845,7 +2850,10 @@ function changePage(page) {
   }
 }
 
-function changeMode(mode, nosave) {
+function changeMode(mode, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig() && !mp) {
+    return;
+  }
   config.mode = mode;
   $("#top .config .mode .text-button").removeClass("active");
   $("#top .config .mode .text-button[mode='" + mode + "']").addClass("active");
@@ -2889,6 +2897,7 @@ function changeMode(mode, nosave) {
     $("#top .config .quoteLength").removeClass("hidden");
     changeLanguage("english", nosave);
   }
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
