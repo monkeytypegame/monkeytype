@@ -2303,6 +2303,62 @@ key {
       color: var(--sub-color);
     }
   }
+  .prelobby{
+    display: grid;
+    grid-template-areas: "welcome welcome"
+                         "mm priv";
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    .welcome{
+      font-size: 2rem;
+      color: var(--text-color);
+    }
+    .matchmaking{
+      grid-area: mm;
+      display: grid;
+      gap: 1rem;
+      .title{
+        color: var(--sub-color);
+      }
+    }
+    .privateRooms{
+      grid-area: priv;
+      display: grid;
+      gap: 1rem;
+      .title{
+        color: var(--sub-color);
+      }
+      #createPrivateRoom{
+        padding: 2rem 0;
+      }
+    }
+    #joinByCode{
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      .button{
+        padding: .7rem;
+      }
+      input{
+        position: absolute;
+        opacity: 0;
+      }
+      .customInput{
+        color: var(--sub-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+        .byte{
+          transition: .125s;
+          &.focused{
+            color: var(--main-color);
+          }
+        }
+      }
+    }
+  }
   .lobby{
     display: grid;
     grid-template-areas: "currentsettings lobbyButtons"
@@ -2359,6 +2415,20 @@ key {
       grid-area: inviteLink;
       text-align: center;
       color: var(--sub-color);
+      .title{
+        line-height: 1rem;
+        font-size: 1rem;
+      }
+      .text{
+        font-size: 2rem;
+        line-height: 2rem;
+        color: var(--main-color);
+        cursor: pointer;
+      }
+      .link{
+        font-size: 0.75rem;
+        cursor: pointer;
+      }
     }
     .userlist{
       grid-area: userlist;

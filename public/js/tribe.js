@@ -289,8 +289,9 @@ MP.socket.on('mp_room_joined', data => {
     //user is in prelobby and joined a room
     mp_applyRoomConfig(MP.room.config);
     mp_refreshConfig();
-    let link = "www.monkey-type.com/tribe" + MP.room.id.substring(4);
-    $(".pageTribe .lobby .inviteLink").text(link);
+    let link = "www.monkeytype.com/tribe" + MP.room.id.substring(4);
+    $(".pageTribe .lobby .inviteLink .code .text").text(MP.room.id.substring(5));
+    $(".pageTribe .lobby .inviteLink .link").text(link);
     swapElements($(".pageTribe .prelobby"), $(".pageTribe .lobby"), 250, () => {
       MP.state = 10;
       // $(".pageTribe .prelobby").addClass('hidden');
@@ -367,4 +368,71 @@ $(".pageTribe .lobby .chat .input input").keyup(e => {
       });
     $(".pageTribe .lobby .chat .input input").val('');
   }
+})
+
+$(".pageTribe .lobby .inviteLink .text").click(async e => {
+  try {
+    await navigator.clipboard.writeText(
+      $(".pageTribe .lobby .inviteLink .text").text()
+    );
+    showNotification("Code copied", 1000);
+  } catch (e) {
+    showNotification("Could not copy to clipboard: " + e, 5000);
+  }
+})
+
+$(".pageTribe .lobby .inviteLink .link").click(async e => {
+  try {
+    await navigator.clipboard.writeText(
+      $(".pageTribe .lobby .inviteLink .link").text()
+    );
+    showNotification("Link copied", 1000);
+  } catch (e) {
+    showNotification("Could not copy to clipboard: " + e, 5000);
+  }
+})
+
+$(".pageTribe .prelobby #joinByCode .customInput").click(e => {
+  $(".pageTribe .prelobby #joinByCode input").focus();
+})
+
+$(".pageTribe .prelobby #joinByCode input").focus(e => {
+  $(".pageTribe .prelobby #joinByCode .customInput .byte").addClass('focused');
+})
+
+$(".pageTribe .prelobby #joinByCode input").focusout(e => {
+  $(".pageTribe .prelobby #joinByCode .customInput .byte").removeClass('focused');
+})
+
+$(".pageTribe .prelobby #joinByCode .button").click(e => {
+  let code = $(".pageTribe .prelobby #joinByCode input").val();
+  if (code.length !== 6) {
+    showNotification("Code required", 2000);
+  } else {
+    console.log(code);
+  }
+})
+
+$(".pageTribe .prelobby #joinByCode input").keyup(e => {
+  setTimeout(t => {
+    // let t1 = "xx";
+    // let t2 = "xx";
+    // let t2 = "xx";
+    let v = $(".pageTribe .prelobby #joinByCode input").val();
+    // let text = `${v[0] == undefined ? 'x' : v[0]}`;
+    // let iv = 0;
+    // for (let i = 0; i < 8; i++){
+    //   text[i] = v[iv] == undefined ? 'x' : v[iv];
+    //   if(![2,5].includes(i)) iv++;
+    // }
+    let code = [];
+    for (let i = 0; i < 6; i++) {
+      let char = v[i] == undefined ? '-' : v[i];
+      code.push(char);
+    }
+    let text = code.join('');
+    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[0]).text(text.substring(0,2));
+    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[1]).text(text.substring(2,4));
+    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[2]).text(text.substring(4,6));
+  },0)
 })

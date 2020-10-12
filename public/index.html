@@ -3012,8 +3012,29 @@
             <div class="text">Waiting for login</div>
           </div>
           <div class="prelobby hidden">
-            <div id="joinRandomRoom" class="button">Join random room</div>
-            <div id="createPrivateRoom" class="button">Create room</div>
+            <div class="welcome">
+              Welcome to <span style="color: var(--main-color);">Tribe</span>.
+            </div>
+            <div class="matchmaking">
+              <!-- <div id="joinRandomRoom" class="button">Join random room</div> -->
+              <div class="title">matchmaking</div>
+              <span style="text-align:center;color: var(--sub-color);">Coming soon...</span>
+            </div>
+            <div class="privateRooms">
+              <div class="title">private rooms</div>
+              <div id="createPrivateRoom" class="button"><i class="fas fa-users"></i>Create room</div>
+              <div id="joinByCode">
+                <div class="customInput">
+                  <span class="byte">--</span>
+                  /
+                  <span class="byte">--</span>
+                  /
+                  <span class="byte">--</span>
+                </div>
+                <input type="text" placeholder="Code" maxlength="6" class=""><div class="button"><i class="fas fa-chevron-right"></i>Join room</div>
+              </div>
+            </div>
+           
           </div>
           <div class="lobby hidden">
             <div class="currentSettings">
@@ -3027,14 +3048,22 @@
               <div class="title">chat</div>
               <div class="messages"></div>
               <div class="input">
-                <input type="text">
+                <input type="text" placeholder="Send a message">
               </div>
             </div>
             <div class="userlist">
               <div class="title">users</div>
               <div class="list"></div>
             </div>
-            <div class="inviteLink"></div>
+            <div class="inviteLink">
+              <div class="code">
+                <div class="title">
+                  room code
+                </div>
+                <div class="text"></div>
+              </div>
+              <div class="link"></div>
+            </div>
           </div>
           
         </div>

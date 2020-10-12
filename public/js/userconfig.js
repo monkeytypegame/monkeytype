@@ -355,7 +355,7 @@ function setStopOnError(soe, nosave, mp = false) {
     config.confidenceMode = "off";
   }
   updateTestModesNotice();
-  mp_syncConfig();]
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
