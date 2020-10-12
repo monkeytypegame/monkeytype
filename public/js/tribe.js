@@ -87,6 +87,11 @@ function mp_syncConfig() {
   }});
 }
 
+function mp_joinRoomByCode(code) {
+  code = "room_" + code;
+  MP.socket.emit("mp_room_join",{roomId:code});
+}
+
 function mp_refreshConfig() {
   if (MP.room == undefined) return;
   $(".pageTribe .lobby .currentSettings .groups").empty();
@@ -299,6 +304,13 @@ MP.socket.on('mp_room_joined', data => {
   }
 })
 
+MP.socket.on('mp_room_leave', () => {
+  MP.state = 1;
+  MP.room = undefined;
+  mp_resetLobby();
+  swapElements($('.pageTribe .lobby'), $(".pageTribe .prelobby"), 250);
+})
+
 MP.socket.on('mp_room_user_left', data => {
   MP.room = data.room;
   mp_refreshUserList();
@@ -409,7 +421,7 @@ $(".pageTribe .prelobby #joinByCode .button").click(e => {
   if (code.length !== 6) {
     showNotification("Code required", 2000);
   } else {
-    console.log(code);
+    mp_joinRoomByCode(code);
   }
 })
 
@@ -435,4 +447,8 @@ $(".pageTribe .prelobby #joinByCode input").keyup(e => {
     $($(".pageTribe .prelobby #joinByCode .customInput .byte")[1]).text(text.substring(2,4));
     $($(".pageTribe .prelobby #joinByCode .customInput .byte")[2]).text(text.substring(4,6));
   },0)
+})
+
+$(".pageTribe .lobby .lobbyButtons .leaveRoomButton").click(e => {
+  MP.socket.emit('mp_room_leave');
 })
