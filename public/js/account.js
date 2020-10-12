@@ -2142,8 +2142,6 @@ function refreshAccountPage() {
     thisDate.setMilliseconds(0);
     thisDate = thisDate.getTime();
 
-    console.log(activityChartData);
-
     let activityChartData_amount = [];
     let activityChartData_avgWpm = [];
     let lastTimestamp = 0;
