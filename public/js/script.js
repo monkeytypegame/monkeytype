@@ -435,7 +435,7 @@ function initWords() {
     config.mode == "custom"
   ) {
     // let wordsBound = config.mode == "time" ? 60 : config.words;
-    let wordsBound = 60;
+    let wordsBound = 100;
     if (config.showAllLines) {
       if (config.mode === "custom") {
         if (customTextIsRandom) {
