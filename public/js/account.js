@@ -1489,9 +1489,11 @@ function fillPbTables() {
     <td>-</td>
     <td>-</td>
     <td>-</td>
+    <td>-</td>
   </tr>
   <tr>
     <td>30</td>
+    <td>-</td>
     <td>-</td>
     <td>-</td>
     <td>-</td>
@@ -1501,9 +1503,11 @@ function fillPbTables() {
     <td>-</td>
     <td>-</td>
     <td>-</td>
+    <td>-</td>
   </tr>
   <tr>
     <td>120</td>
+    <td>-</td>
     <td>-</td>
     <td>-</td>
     <td>-</td>
@@ -1515,9 +1519,11 @@ function fillPbTables() {
     <td>-</td>
     <td>-</td>
     <td>-</td>
+    <td>-</td>
   </tr>
   <tr>
     <td>25</td>
+    <td>-</td>
     <td>-</td>
     <td>-</td>
     <td>-</td>
@@ -1527,9 +1533,11 @@ function fillPbTables() {
     <td>-</td>
     <td>-</td>
     <td>-</td>
+    <td>-</td>
   </tr>
   <tr>
     <td>100</td>
+    <td>-</td>
     <td>-</td>
     <td>-</td>
     <td>-</td>
@@ -1548,10 +1556,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>15</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1564,10 +1576,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>30</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1580,10 +1596,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>60</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1596,10 +1616,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>120</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1615,10 +1639,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>10</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1631,10 +1659,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>25</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1647,10 +1679,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>50</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1663,10 +1699,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>100</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
