@@ -2018,9 +2018,9 @@ function showResult(difficultyFailed = false) {
                   if (dbSnapshot !== null && dbSnapshot.results !== undefined) {
                     dbSnapshot.results.unshift(completedEvent);
                     if (dbSnapshot.globalStats.time == undefined) {
-                      dbSnapshot.globalStats.time = testtime;
+                      dbSnapshot.globalStats.time = testtime + completedEvent.incompleteTestSeconds;
                     } else {
-                      dbSnapshot.globalStats.time += testtime;
+                      dbSnapshot.globalStats.time += testtime + completedEvent.incompleteTestSeconds;
                     }
                     if (dbSnapshot.globalStats.started == undefined) {
                       dbSnapshot.globalStats.started = restartCount + 1;
