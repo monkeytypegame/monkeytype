@@ -1351,7 +1351,11 @@ $(document).ready((e) => {
     //escape
     if ((event.keyCode == 27 && !config.swapEscAndTab) || (event["keyCode"] == 9 && config.swapEscAndTab)) {
       event.preventDefault();
-      if ($("#commandLineWrapper").hasClass("hidden")) {
+      if (!$("#leaderboardsWrapper").hasClass("hidden")) {  //maybe add more condition for closing other dialogs in the future as well
+        event.preventDefault();
+        hideLeaderboards();
+        return;
+      } else if ($("#commandLineWrapper").hasClass("hidden")) {
         currentCommands = [commands];
         showCommandLine();
       } else {
