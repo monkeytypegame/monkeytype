@@ -717,7 +717,6 @@ function addWord() {
   let bound = 60;
   if (activeFunBox === "plus_one") bound = 1;
   if (
-    !config.showAllLines &&
     (wordsList.length - inputHistory.length > bound ||
       (config.mode === "words" && wordsList.length >= config.words) ||
       (config.mode === "custom" &&
@@ -4792,11 +4791,11 @@ $(document).keydown((event) => {
       ) {
         updateTimer();
       }
-      if (config.showAllLines) {
-        if (config.mode == "time") {
-          addWord();
-        }
-      } else {
+      // if (config.showAllLines) {
+      //   if (config.mode == "time") {
+      //     addWord();
+      //   }
+      // } else {
         if (
           config.mode == "time" ||
           config.mode == "words" ||
@@ -4804,7 +4803,7 @@ $(document).keydown((event) => {
         ) {
           addWord();
         }
-      }
+      // }
     }
   }
 });
