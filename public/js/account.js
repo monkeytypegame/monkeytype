@@ -252,6 +252,17 @@ firebase.auth().onAuthStateChanged(function (user) {
     // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
+    if (verifyUserWhenLoggedIn !== null) {
+      showNotification('Verifying', 1000);
+      verifyUserWhenLoggedIn.uid = user.uid;
+      verifyUser(verifyUserWhenLoggedIn).then(data => {
+        showNotification(data.data.message, 3000);
+        if (data.data.status === 1) {
+          dbSnapshot.discordId = data.data.did;
+          updateDiscordSettingsSection()
+        }
+      })
+    }
   }
 });
 
@@ -527,6 +538,16 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
           lineStyle: "dotted",
           width: 2,
         },
+        order: 3
+      },
+      {
+        yAxisID: "avgWpm",
+        label: "Average Wpm",
+        data: [],
+        type: "line",
+        order: 2,
+        lineTension: 0,
+        fill: false,
       },
     ],
   },
@@ -601,6 +622,28 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
             display: true,
             labelString: "Tests Completed",
             fontFamily: "Roboto Mono",
+          },
+        },
+        {
+          id: "avgWpm",
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            min: 0,
+            autoSkip: true,
+            stepSize: 1,
+            autoSkipPadding: 40,
+            stepSize: 10,
+          },
+          display: true,
+          position: "right",
+          scaleLabel: {
+            display: true,
+            labelString: "Average Wpm",
+            fontFamily: "Roboto Mono",
+          },
+          gridLines: {
+            display: false,
           },
         },
       ],
@@ -840,6 +883,9 @@ function updateHoverChart(filteredId) {
   if (!config.startGraphsAtZero) {
     hoverChart.options.scales.yAxes[0].ticks.min = Math.round(minChartVal);
     hoverChart.options.scales.yAxes[1].ticks.min = Math.round(minChartVal);
+  } else {
+    hoverChart.options.scales.yAxes[0].ticks.min = 0;
+    hoverChart.options.scales.yAxes[1].ticks.min = 0;
   }
 
   hoverChart.update({ duration: 0 });
@@ -1443,9 +1489,11 @@ function fillPbTables() {
     <td>-</td>
     <td>-</td>
     <td>-</td>
+    <td>-</td>
   </tr>
   <tr>
     <td>30</td>
+    <td>-</td>
     <td>-</td>
     <td>-</td>
     <td>-</td>
@@ -1455,9 +1503,11 @@ function fillPbTables() {
     <td>-</td>
     <td>-</td>
     <td>-</td>
+    <td>-</td>
   </tr>
   <tr>
     <td>120</td>
+    <td>-</td>
     <td>-</td>
     <td>-</td>
     <td>-</td>
@@ -1469,9 +1519,11 @@ function fillPbTables() {
     <td>-</td>
     <td>-</td>
     <td>-</td>
+    <td>-</td>
   </tr>
   <tr>
     <td>25</td>
+    <td>-</td>
     <td>-</td>
     <td>-</td>
     <td>-</td>
@@ -1481,9 +1533,11 @@ function fillPbTables() {
     <td>-</td>
     <td>-</td>
     <td>-</td>
+    <td>-</td>
   </tr>
   <tr>
     <td>100</td>
+    <td>-</td>
     <td>-</td>
     <td>-</td>
     <td>-</td>
@@ -1502,10 +1556,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>15</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1518,10 +1576,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>30</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1534,10 +1596,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>60</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1550,10 +1616,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>120</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1569,10 +1639,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>10</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1585,10 +1659,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>25</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1601,10 +1679,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>50</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1617,10 +1699,14 @@ function fillPbTables() {
       <td>${pbData.wpm}</td>
       <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
       <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
+      <td>
+      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
+      </td>
     </tr>`;
   } catch (e) {
     text += `<tr>
       <td>100</td>
+      <td>-</td>
       <td>-</td>
       <td>-</td>
       <td>-</td>
@@ -1845,7 +1931,7 @@ function refreshAccountPage() {
     let consCount = 0;
 
     let dailyActivityDays = [];
-    let activityChartData = [];
+    let activityChartData = {};
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
@@ -1995,9 +2081,13 @@ function refreshAccountPage() {
       resultDate = resultDate.getTime();
 
       if (Object.keys(activityChartData).includes(String(resultDate))) {
-        activityChartData[resultDate] = activityChartData[resultDate] + 1;
+        activityChartData[resultDate].amount++;
+        activityChartData[resultDate].totalWpm += result.wpm;
       } else {
-        activityChartData[resultDate] = 1;
+        activityChartData[resultDate] = {
+          amount: 1,
+          totalWpm: result.wpm,
+        }
       }
 
       tt = 0;
@@ -2092,7 +2182,8 @@ function refreshAccountPage() {
     thisDate.setMilliseconds(0);
     thisDate = thisDate.getTime();
 
-    let tempChartData = [];
+    let activityChartData_amount = [];
+    let activityChartData_avgWpm = [];
     let lastTimestamp = 0;
     Object.keys(activityChartData).forEach((date) => {
       let datecheck;
@@ -2106,23 +2197,27 @@ function refreshAccountPage() {
 
       if (numDaysBetweenTheDays > 1) {
         if (datecheck === thisDate) {
-          tempChartData.push({
+          activityChartData_amount.push({
             x: parseInt(thisDate),
             y: 0,
           });
         }
 
         for (let i = 0; i < numDaysBetweenTheDays - 1; i++) {
-          tempChartData.push({
+          activityChartData_amount.push({
             x: parseInt(datecheck) - 86400000 * (i + 1),
             y: 0,
           });
         }
       }
 
-      tempChartData.push({
+      activityChartData_amount.push({
         x: parseInt(date),
-        y: activityChartData[date],
+        y: activityChartData[date].amount,
+      });
+      activityChartData_avgWpm.push({
+        x: parseInt(date),
+        y: roundTo2(activityChartData[date].totalWpm / activityChartData[date].amount),
       });
       lastTimestamp = date;
     });
@@ -2141,7 +2236,18 @@ function refreshAccountPage() {
     activityChart.options.legend.labels.fontColor = themeColors.sub;
     activityChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
 
-    activityChart.data.datasets[0].data = tempChartData;
+    activityChart.data.datasets[0].data = activityChartData_amount;
+
+    activityChart.options.scales.yAxes[1].ticks.minor.fontColor =
+    themeColors.sub;
+    activityChart.options.scales.yAxes[1].scaleLabel.fontColor =
+      themeColors.sub;
+    activityChart.data.datasets[1].borderColor = themeColors.sub;
+    // activityChart.data.datasets[1].backgroundColor = themeColors.main;
+    activityChart.data.datasets[1].data = activityChartData_avgWpm;
+
+
+    activityChart.options.legend.labels.fontColor = themeColors.sub;
 
     resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor =
       themeColors.sub;
@@ -2183,6 +2289,9 @@ function refreshAccountPage() {
       resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.floor(
         minAccuracyChartVal
       );
+    } else {
+      resultHistoryChart.options.scales.yAxes[0].ticks.min = 0;
+      resultHistoryChart.options.scales.yAxes[1].ticks.min = 0;
     }
 
     if (chartData == [] || chartData.length == 0) {
@@ -2352,6 +2461,7 @@ function refreshAccountPage() {
     try {
       cont();
     } catch (e) {
+      console.error(e);
       showNotification(`Something went wrong: ${e}`, 5000);
     }
   }

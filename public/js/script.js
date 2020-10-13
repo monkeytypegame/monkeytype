@@ -41,6 +41,8 @@ let caretAnimating = true;
 let lastSecondNotRound = false;
 let paceCaret = null;
 let missedWords = [];
+let verifyUserWhenLoggedIn = null;
+let modeBeforePractise = null;
 
 let themeColors = {
   bg: "#323437",
@@ -207,6 +209,8 @@ const generatePairingCode = firebase
   .httpsCallable("generatePairingCode");
 const saveLbMemory = firebase.functions().httpsCallable("saveLbMemory");
 const unlinkDiscord = firebase.functions().httpsCallable("unlinkDiscord");
+const verifyUser = firebase.functions().httpsCallable("verifyUser");
+
 
 
 function refreshThemeColorObject() {
@@ -431,7 +435,7 @@ function initWords() {
     config.mode == "custom"
   ) {
     // let wordsBound = config.mode == "time" ? 60 : config.words;
-    let wordsBound = 60;
+    let wordsBound = 100;
     if (config.showAllLines) {
       if (config.mode === "custom") {
         if (customTextIsRandom) {
@@ -1808,6 +1812,9 @@ function showResult(difficultyFailed = false) {
   if (!config.startGraphsAtZero) {
     wpmOverTimeChart.options.scales.yAxes[0].ticks.min = minChartVal;
     wpmOverTimeChart.options.scales.yAxes[1].ticks.min = minChartVal;
+  } else {
+    wpmOverTimeChart.options.scales.yAxes[0].ticks.min = 0;
+    wpmOverTimeChart.options.scales.yAxes[1].ticks.min = 0;
   }
 
   // wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.round(minChartVal);
@@ -2011,9 +2018,9 @@ function showResult(difficultyFailed = false) {
                   if (dbSnapshot !== null && dbSnapshot.results !== undefined) {
                     dbSnapshot.results.unshift(completedEvent);
                     if (dbSnapshot.globalStats.time == undefined) {
-                      dbSnapshot.globalStats.time = testtime;
+                      dbSnapshot.globalStats.time = testtime + completedEvent.incompleteTestSeconds;
                     } else {
-                      dbSnapshot.globalStats.time += testtime;
+                      dbSnapshot.globalStats.time += testtime + completedEvent.incompleteTestSeconds;
                     }
                     if (dbSnapshot.globalStats.started == undefined) {
                       dbSnapshot.globalStats.started = restartCount + 1;
@@ -2211,6 +2218,7 @@ function showResult(difficultyFailed = false) {
                       stats.wpm,
                       stats.acc,
                       stats.wpmRaw,
+                      consistency
                     );
                   } else if (e.data.resultCode === 1) {
                     if (localPb) {
@@ -2561,6 +2569,12 @@ function restartTest(withSameWordset = false, nosave = false) {
       );
       return;
     }
+  }
+
+  if (modeBeforePractise !== null) {
+    showNotification("Reverting to previous settings.", 1500);
+    changeMode(modeBeforePractise);
+    modeBeforePractise = null;
   }
 
   manualRestart = false;
@@ -4141,11 +4155,13 @@ $(document.body).on("click", "#restartTestButton", (event) => {
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
   if (event.keyCode == 13) {
     if (missedWords.length > 0) {
+      let currentMode = config.mode;
       changeMode("custom");
       customText = missedWords;
       customTextIsRandom = true;
       customTextWordCount = 50;
       restartTest();
+      modeBeforePractise = currentMode;
     } else {
       showNotification("You haven't missed any words.", 2000);
     }
@@ -4154,11 +4170,13 @@ $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
 
 $(document.body).on("click", "#practiseMissedWordsButton", (event) => {
   if (missedWords.length > 0) {
+    let currentMode = config.mode;
     changeMode("custom");
     customText = missedWords;
     customTextIsRandom = true;
     customTextWordCount = 50;
     restartTest();
+    modeBeforePractise = currentMode;
   } else {
     showNotification("You haven't missed any words.", 2000);
   }
@@ -4824,6 +4842,9 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
 });
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
+  if (config.customTheme) {
+    togglePresetCustomTheme();
+  }
   currentCommands.push(commandsThemes);
   showCommandLine();
 });
@@ -4866,7 +4887,18 @@ $(document).ready(() => {
         setCustomThemeInputs();
         applyCustomThemeColors();
       }
-      if (window.location.pathname === "/account") {
+      if (window.location.pathname === "/verify") {
+        const fragment = new URLSearchParams(window.location.hash.slice(1));
+        if (fragment.has("access_token")) {
+          const accessToken = fragment.get("access_token");
+          const tokenType = fragment.get("token_type");
+          verifyUserWhenLoggedIn = {
+            accessToken: accessToken,
+            tokenType: tokenType
+          }
+          history.replaceState("/", null, "/");
+        }
+      }else if (window.location.pathname === "/account") {
         history.replaceState("/", null, "/");
       } else if (window.location.pathname !== "/") {
         let page = window.location.pathname.replace("/", "");

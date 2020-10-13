@@ -1414,12 +1414,14 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
 });
 
 $("#commandLineWrapper #commandLine .suggestions").click((e) => {
+  $(".suggestions .entry").removeClass('activeKeyboard');
   triggerCommand($(e.target).attr("command"));
 });
 
 $("#commandLineWrapper").click((e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hideCommandLine();
+    setTheme(config.theme, true);
   }
 });
 
