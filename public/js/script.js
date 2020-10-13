@@ -714,7 +714,7 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
 }
 
 function addWord() {
-  let bound = 60;
+  let bound = 100;
   if (activeFunBox === "plus_one") bound = 1;
   if (
     (wordsList.length - inputHistory.length > bound ||
