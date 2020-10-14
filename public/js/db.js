@@ -68,6 +68,7 @@ async function db_getUserSnapshot() {
       .then((res) => {
         // console.log('getting data from db!');
         let data = res.data();
+        if (data === undefined) return;
         try {
           if (data.personalBests !== undefined) {
             snap.personalBests = data.personalBests;

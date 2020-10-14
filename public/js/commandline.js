@@ -465,6 +465,34 @@ let commands = {
       exec: () => randomiseTheme()
     },
     {
+      id: "viewTypingPage",
+      display: "View Typing Page",
+      exec: () => $('#top #menu .icon-button.view-start').click()
+    },
+    {
+      id: "viewLeaderboards",
+      display: "View Leaderboards Page",
+      exec: () => $('#top #menu .icon-button.view-leaderboards').click()
+    },
+    {
+      id: "viewAbout",
+      display: "View About Page",
+      exec: () => $('#top #menu .icon-button.view-about').click()
+    },
+    {
+      id: "viewSettings",
+      display: "View Settings Page",
+      exec: () => $('#top #menu .icon-button.view-settings').click()
+    },
+    {
+      id: "viewAccount",
+      display: "View Account Page",
+      exec: () => 
+        $('#top #menu .icon-button.view-account').hasClass('hidden') ?
+          $('#top #menu .icon-button.view-login').click() :
+          $('#top #menu .icon-button.view-account').click()
+    },
+    {
       id: "bailOut",
       display: "Bail out...",
       subgroup: true,
