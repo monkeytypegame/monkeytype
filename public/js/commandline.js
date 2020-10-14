@@ -1705,11 +1705,11 @@ function showCommandInput(command, placeholder) {
 }
 
 function updateSuggestedCommands() {
-  let inputVal = $("#commandLine input").val().toLowerCase().split(" ");
+  let inputVal = $("#commandLine input").val().toLowerCase().split(" ").filter((s,i) => s||i==0); //remove empty entries after first
   let list = currentCommands[currentCommands.length - 1];
   //ignore the preceeding ">"s in the command line input
   if (inputVal[0] && inputVal[0][0] == ">") inputVal[0] = inputVal[0].replace(/^>+/,'');
-  if (inputVal[0] == "") {
+  if (inputVal[0] == "" && inputVal.length == 1) {
     $.each(list.list, (index, obj) => {
       if (obj.visible !== false) obj.found = true;
     });
