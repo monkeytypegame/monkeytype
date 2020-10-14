@@ -75,6 +75,8 @@ let keypressStats = {
 let errorSound = new Audio("../sound/error.wav");
 let clickSounds = null;
 
+let isPreviewingTheme = false;
+
 function initClickSounds() {
   clickSounds = {
     "1": [
@@ -4844,7 +4846,7 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (config.customTheme) {
     togglePresetCustomTheme();
   }
-  currentCommands.push(commandsThemes);
+  currentCommands = [commandsThemes];
   showCommandLine();
 });
 

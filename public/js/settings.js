@@ -147,6 +147,10 @@ settingsGroups.alwaysShowWordsHistory = new SettingsGroup(
   "alwaysShowWordsHistory",
   setAlwaysShowWordsHistory
 );
+settingsGroups.singleListCommandLine = new SettingsGroup(
+  "singleListCommandLine",
+  setSingleListCommandLine
+);
 settingsGroups.flipTestColors = new SettingsGroup(
   "flipTestColors",
   setFlipTestColors

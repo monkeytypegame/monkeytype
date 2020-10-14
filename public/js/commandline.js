@@ -2,6 +2,57 @@ function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function addChildCommands(unifiedCommands, commandItem, parentCommandDisplay = '') {
+  let commandItemDisplay = commandItem.display.replace(/\s?\.\.\.$/g,'');
+  if (parentCommandDisplay) commandItemDisplay = parentCommandDisplay + " > " + commandItemDisplay;
+  if (commandItem.subgroup) {
+    try {
+      commandItem.exec();
+      currentCommandsIndex = currentCommands.length-1;
+      currentCommands[currentCommandsIndex].list.forEach( cmd => addChildCommands(unifiedCommands, cmd, commandItemDisplay));
+      currentCommands.pop();
+    } catch(e) {}
+  } else {
+    let tempCommandItem = {...commandItem};
+    if (parentCommandDisplay)
+      tempCommandItem.display = commandItemDisplay;
+    unifiedCommands.push(tempCommandItem);
+  }
+}
+
+function generateSingleListOfCommands() {
+  allCommands = [];
+  oldShowCommandLine = showCommandLine;
+  showCommandLine = () => {};
+  commands.list.forEach(c => addChildCommands(allCommands, c));
+  showCommandLine = oldShowCommandLine;
+  return {
+    title: "All Commands",
+    list: allCommands};
+}
+
+function isSingleListCommandLineActive() {
+  return $("#commandLine").hasClass("allCommands");
+}
+
+function useSingleListCommandLine(show = true) {
+  let allCommands = generateSingleListOfCommands();
+  if (config.singleListCommandLine == "manual") currentCommands.push(allCommands); 
+  else if (config.singleListCommandLine == "on") currentCommands = [allCommands]; 
+
+  if (config.singleListCommandLine != "off") $("#commandLine").addClass("allCommands");
+  if (show) showCommandLine();
+}
+
+function restoreOldCommandLine(show = true) {
+  if (isSingleListCommandLineActive()) {
+    $("#commandLine").removeClass("allCommands");
+    currentCommands = currentCommands.filter( l => l.title != "All Commands");
+    if (currentCommands.length < 1) currentCommands = [commands];
+  }
+  if (show) showCommandLine();
+}
+
 let commands = {
   title: "",
   list: [
@@ -165,6 +216,15 @@ let commands = {
       display: "Toggle quick end",
       exec: () => {
         toggleQuickEnd();
+      },
+    },
+    {
+      id: "singleListCommandLine",
+      display: "Single list command line...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsSingleListCommandLine);
+        showCommandLine();
       },
     },
     {
@@ -869,6 +929,26 @@ let commandsTimerColor = {
   ],
 };
 
+let commandsSingleListCommandLine = {
+  title: "Single list command line...",
+  list: [
+    {
+      id: "singleListCommandLineManual",
+      display: "manual",
+      exec: () => {
+        setSingleListCommandLine("manual");
+      },
+    },
+    {
+      id: "singleListCommandLineOn",
+      display: "on",
+      exec: () => {
+        setSingleListCommandLine("on");
+      },
+    }
+  ],
+};
+
 let commandsTimerOpacity = {
   title: "Change timer opacity...",
   list: [
@@ -1384,11 +1464,15 @@ $(document).ready((e) => {
         hideLeaderboards();
         return;
       } else if ($("#commandLineWrapper").hasClass("hidden")) {
-        currentCommands = [commands];
+        if (config.singleListCommandLine == "on") 
+          useSingleListCommandLine(false);
+        else 
+          currentCommands = [commands];
         showCommandLine();
       } else {
         if (currentCommands.length > 1) {
           currentCommands.pop();
+          $("#commandLine").removeClass("allCommands");
           showCommandLine();
         } else {
           hideCommandLine();
@@ -1458,8 +1542,22 @@ $("#commandLineWrapper").click((e) => {
 });
 
 $(document).keydown((e) => {
+  if (isPreviewingTheme) {
+    previewTheme(config.theme, false);
+  }
   if (!$("#commandLineWrapper").hasClass("hidden")) {
     $("#commandLine input").focus();
+    if (e.key == ">" && config.singleListCommandLine == "manual") {
+      if (!isSingleListCommandLineActive()) {
+        useSingleListCommandLine();
+        return;
+      } else if ($("#commandLine input").val() == ">") { //so that it will ignore succeeding ">" when input is already ">"
+        e.preventDefault();
+        return;
+      }   
+    }
+    if (e.keyCode == 8 && $("#commandLine input").val().length == 1 && config.singleListCommandLine == "manual" && isSingleListCommandLineActive()) 
+      restoreOldCommandLine();
     if (e.keyCode == 13) {
       //enter
       e.preventDefault();
@@ -1567,6 +1665,7 @@ function hideCommandLine() {
       100,
       () => {
         $("#commandLineWrapper").addClass("hidden");
+        $("#commandLine").removeClass("allCommands");
         focusWords();
       }
     );
@@ -1606,9 +1705,11 @@ function showCommandInput(command, placeholder) {
 }
 
 function updateSuggestedCommands() {
-  let inputVal = $("#commandLine input").val().toLowerCase().split(" ");
+  let inputVal = $("#commandLine input").val().toLowerCase().split(" ").filter((s,i) => s||i==0); //remove empty entries after first
   let list = currentCommands[currentCommands.length - 1];
-  if (inputVal[0] == "") {
+  //ignore the preceeding ">"s in the command line input
+  if (inputVal[0] && inputVal[0][0] == ">") inputVal[0] = inputVal[0].replace(/^>+/,'');
+  if (inputVal[0] == "" && inputVal.length == 1) {
     $.each(list.list, (index, obj) => {
       if (obj.visible !== false) obj.found = true;
     });
