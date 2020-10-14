@@ -882,7 +882,7 @@ function setIndicateTypos(it, nosave) {
 }
 
 
-function previewTheme(name) {
+function previewTheme(name, setIsPreviewingVar = true) {
   if (
     (testActive || resultVisible) &&
     (config.theme === "nausea" || config.theme === "round_round_baby")
@@ -890,6 +890,7 @@ function previewTheme(name) {
     return;
   if (resultVisible && (name === "nausea" || name === "round_round_baby"))
     return;
+  isPreviewingTheme = setIsPreviewingVar;
   $("#currentTheme").attr("href", `themes/${name}.css`);
   setTimeout(() => {
     refreshThemeColorObject();
