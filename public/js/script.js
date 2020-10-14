@@ -435,7 +435,7 @@ function initWords() {
     config.mode == "custom"
   ) {
     // let wordsBound = config.mode == "time" ? 60 : config.words;
-    let wordsBound = 60;
+    let wordsBound = 100;
     if (config.showAllLines) {
       if (config.mode === "custom") {
         if (customTextIsRandom) {
@@ -2018,9 +2018,9 @@ function showResult(difficultyFailed = false) {
                   if (dbSnapshot !== null && dbSnapshot.results !== undefined) {
                     dbSnapshot.results.unshift(completedEvent);
                     if (dbSnapshot.globalStats.time == undefined) {
-                      dbSnapshot.globalStats.time = testtime;
+                      dbSnapshot.globalStats.time = testtime + completedEvent.incompleteTestSeconds;
                     } else {
-                      dbSnapshot.globalStats.time += testtime;
+                      dbSnapshot.globalStats.time += testtime + completedEvent.incompleteTestSeconds;
                     }
                     if (dbSnapshot.globalStats.started == undefined) {
                       dbSnapshot.globalStats.started = restartCount + 1;
@@ -2218,6 +2218,7 @@ function showResult(difficultyFailed = false) {
                       stats.wpm,
                       stats.acc,
                       stats.wpmRaw,
+                      consistency
                     );
                   } else if (e.data.resultCode === 1) {
                     if (localPb) {
