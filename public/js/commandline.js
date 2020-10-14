@@ -3,8 +3,8 @@ function capitalizeFirstLetter(str) {
 }
 
 function addChildCommands(unifiedCommands, commandItem, parentCommandDisplay = '') {
-  let commandItemDisplay = commandItem.display;
-  if (parentCommandDisplay) commandItemDisplay = parentCommandDisplay + " → " + commandItemDisplay;
+  let commandItemDisplay = commandItem.display.replace(/\s?\.\.\.$/g,'');
+  if (parentCommandDisplay) commandItemDisplay = parentCommandDisplay + " > " + commandItemDisplay;
   if (commandItem.subgroup) {
     try {
       commandItem.exec();
