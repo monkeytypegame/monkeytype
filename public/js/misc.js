@@ -148,7 +148,7 @@ function showNotification(text, time) {
 
 function getReleasesFromGitHub() {
   $.getJSON(
-    "https://api.github.com/repos/Miodec/monkey-type/releases",
+    "https://api.github.com/repos/Miodec/monkeytype/releases",
     (data) => {
       $("#bottom .version").text(data[0].name).css("opacity", 1);
       $("#versionHistory .releases").empty();
