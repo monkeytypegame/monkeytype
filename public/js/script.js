@@ -75,6 +75,8 @@ let keypressStats = {
 let errorSound = new Audio("../sound/error.wav");
 let clickSounds = null;
 
+let isPreviewingTheme = false;
+
 function initClickSounds() {
   clickSounds = {
     "1": [
