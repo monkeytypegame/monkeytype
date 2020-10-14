@@ -1515,18 +1515,31 @@ function countChars() {
       }
     } else {
       //not enough chars
+      let toAdd = {
+        correct: 0,
+        incorrect: 0,
+        missed: 0
+      }
       for (let c = 0; c < wordsList[i].length; c++) {
         if (c < inputHistory[i].length) {
           //on char that still has a word list pair
           if (inputHistory[i][c] == wordsList[i][c]) {
-            correctChars++;
+            toAdd.correct++;
           } else {
-            incorrectChars++;
+            toAdd.incorrect++;
           }
         } else {
           //on char that is extra
-          missedChars++;
+          toAdd.missed++;
         }
+      }
+      correctChars += toAdd.correct;
+      incorrectChars += toAdd.incorrect;
+      if (i === inputHistory.length - 1 && config.mode == "time") {
+        //last word - check if it was all correct - add to correct word chars
+        correctWordChars += toAdd.correct;
+      } else {
+        missedChars += toAdd.missed;
       }
     }
     if (i < inputHistory.length - 1) {
@@ -1578,7 +1591,9 @@ function calculateStats() {
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
     acc: acc,
     correctChars: chars.correctWordChars,
-    incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars,
+    incorrectChars: chars.incorrectChars,
+    missedChars: chars.missedChars,
+    extraChars: chars.extraChars,
     allChars:
       chars.allCorrectChars +
       chars.spaces +
@@ -1626,6 +1641,8 @@ function showResult(difficultyFailed = false) {
       acc: 0,
       correctChars: 0,
       incorrectChars: 0,
+      missedChars: 0,
+      extraChars: 0,
       time: 0,
       spaces: 0,
       correctSpaces: 0,
@@ -1672,15 +1689,18 @@ function showResult(difficultyFailed = false) {
 
   let correctcharpercent = roundTo2(
     ((stats.correctChars + stats.correctSpaces) /
-      (stats.correctChars + stats.correctSpaces + stats.incorrectChars)) *
+      (stats.correctChars + stats.correctSpaces + stats.incorrectChars + stats.extraChars)) *
       100
   );
   $("#result .stats .key .bottom").text(testtime + "s");
-  $("#result .stats .key .bottom").attr("aria-label", `${correctcharpercent}%`);
+  // $("#result .stats .key .bottom").attr("aria-label", `Correct, incorrect, missed and extra \n ${correctcharpercent}%`);
   $("#words").removeClass("blurred");
   $(".outOfFocusWarning").addClass("hidden");
   $("#result .stats .key .bottom").text(
-    stats.correctChars + stats.correctSpaces + "/" + stats.incorrectChars
+    stats.correctChars + stats.correctSpaces +
+    "/" + stats.incorrectChars +
+    "/" + stats.extraChars +
+    "/" + stats.missedChars
   );
 
   setTimeout(function () {
@@ -3116,7 +3136,7 @@ async function loadWordsHistory() {
     let wordEl = "";
     try {
       if (input === "") throw Exception;
-      if (correctedHistory[i] !== "") {
+      if (correctedHistory[i] !== undefined && correctedHistory[i] !== "") {
         wordEl = `<div class='word' input="${correctedHistory[i].replace(
           /"/g,
           "&quot;"
@@ -3124,11 +3144,39 @@ async function loadWordsHistory() {
       } else {
         wordEl = `<div class='word' input="${input.replace(/"/g, "&quot;")}">`;
       }
-      if (input !== wordsList[i]) {
-        wordEl = `<div class='word error' input="${input.replace(
-          /"/g,
-          "&quot;"
-        )}">`;
+      if (i === inputHistory.length - 1) {
+        //last word
+        let word = {
+          correct: 0,
+          incorrect: 0,
+          missed: 0
+        }
+        for (let c = 0; c < wordsList[i].length; c++) {
+          if (c < inputHistory[i].length) {
+            //on char that still has a word list pair
+            if (inputHistory[i][c] == wordsList[i][c]) {
+              word.correct++;
+            } else {
+              word.incorrect++;
+            }
+          } else {
+            //on char that is extra
+            word.missed++;
+          }
+        }
+        if (word.incorrect !== 0 || config.mode !== "time") {
+          wordEl = `<div class='word error' input="${input.replace(
+            /"/g,
+            "&quot;"
+          )}">`;
+        }
+      } else {
+        if (input !== wordsList[i]) {
+          wordEl = `<div class='word error' input="${input.replace(
+            /"/g,
+            "&quot;"
+          )}">`;
+        }
       }
 
       let loop;
@@ -3149,7 +3197,7 @@ async function loadWordsHistory() {
           correctedChar = undefined;
         }
         let extraCorrected = "";
-        if (c + 1 === loop && correctedHistory[i].length > input.length) {
+        if (c + 1 === loop && correctedHistory[i] !== undefined &&correctedHistory[i].length > input.length) {
           extraCorrected = "extraCorrected";
         }
         if (wordsList[i][c] !== undefined) {
