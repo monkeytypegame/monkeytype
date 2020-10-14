@@ -1542,6 +1542,9 @@ $("#commandLineWrapper").click((e) => {
 });
 
 $(document).keydown((e) => {
+  if (isPreviewingTheme) {
+    previewTheme(config.theme, false);
+  }
   if (!$("#commandLineWrapper").hasClass("hidden")) {
     $("#commandLine input").focus();
     if (e.key == ">" && config.singleListCommandLine == "manual") {
