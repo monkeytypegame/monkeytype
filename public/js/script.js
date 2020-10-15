@@ -1537,7 +1537,7 @@ function countChars() {
       incorrectChars += toAdd.incorrect;
       if (i === inputHistory.length - 1 && config.mode == "time") {
         //last word - check if it was all correct - add to correct word chars
-        correctWordChars += toAdd.correct;
+        if(toAdd.incorrect === 0) correctWordChars += toAdd.correct;
       } else {
         missedChars += toAdd.missed;
       }
