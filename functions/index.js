@@ -835,7 +835,7 @@ exports.testCompleted = functions
                   keySpacing.sd <= 15 ||
                   keyDuration.sd <= 10 ||
                   keyDuration.average < 15 ||
-                  (obj.wpm > 200 && obj.consistency < 60)
+                  (obj.wpm > 200 && obj.consistency < 75)
                 ) {
                   console.error(
                     `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
@@ -853,7 +853,7 @@ exports.testCompleted = functions
                   (keyDuration.average > 15 && keyDuration.average <= 20)
                 ) {
                   console.error(
-                    `very close to bot threshold by user (${obj.wpm} ${
+                    `very close to bot detected threshold by user (${obj.wpm} ${
                       obj.rawWpm
                     } ${obj.acc}) ${
                       request.uid
