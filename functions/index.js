@@ -835,7 +835,7 @@ exports.testCompleted = functions
                   keySpacing.sd <= 15 ||
                   keyDuration.sd <= 10 ||
                   keyDuration.average < 15 ||
-                  (obj.wpm > 200 && obj.consistency < 75)
+                  (obj.wpm > 200 && obj.consistency < 70)
                 ) {
                   console.error(
                     `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
