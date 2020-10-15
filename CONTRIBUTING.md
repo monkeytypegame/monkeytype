@@ -9,7 +9,7 @@
 
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
 
-   - The project name doesn't really matter, but just name it `monkey-type`.
+   - The project name doesn't really matter, but just name it `monkeytype`.
    - Google Analytics is not necessary.
 
 2. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
