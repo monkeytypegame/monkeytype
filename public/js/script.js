@@ -3165,10 +3165,12 @@ async function loadWordsHistory() {
           }
         }
         if (word.incorrect !== 0 || config.mode !== "time") {
-          wordEl = `<div class='word error' input="${input.replace(
-            /"/g,
-            "&quot;"
-          )}">`;
+          if (input !== wordsList[i]) {
+            wordEl = `<div class='word error' input="${input.replace(
+              /"/g,
+              "&quot;"
+            )}">`;
+          }
         }
       } else {
         if (input !== wordsList[i]) {
