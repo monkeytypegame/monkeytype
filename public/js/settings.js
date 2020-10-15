@@ -471,7 +471,7 @@ $("#shareCustomThemeButton").click((e) => {
       }
     );
 
-    let url = "https://monkey-type.com?" + objectToQueryString({ customTheme: share });
+    let url = "https://monkeytype.com?" + objectToQueryString({ customTheme: share });
     navigator.clipboard.writeText(url).then(function () {
       showNotification("URL Copied to clipboard", 2000);
     }, function (err) {
