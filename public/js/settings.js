@@ -147,6 +147,10 @@ settingsGroups.alwaysShowWordsHistory = new SettingsGroup(
   "alwaysShowWordsHistory",
   setAlwaysShowWordsHistory
 );
+settingsGroups.singleListCommandLine = new SettingsGroup(
+  "singleListCommandLine",
+  setSingleListCommandLine
+);
 settingsGroups.flipTestColors = new SettingsGroup(
   "flipTestColors",
   setFlipTestColors
@@ -467,7 +471,7 @@ $("#shareCustomThemeButton").click((e) => {
       }
     );
 
-    let url = "https://monkey-type.com?" + objectToQueryString({ customTheme: share });
+    let url = "https://monkeytype.com?" + objectToQueryString({ customTheme: share });
     navigator.clipboard.writeText(url).then(function () {
       showNotification("URL Copied to clipboard", 2000);
     }, function (err) {
@@ -611,48 +615,20 @@ function updateDiscordSettingsSection() {
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
     if (
-      dbSnapshot.pairingCode == undefined &&
       dbSnapshot.discordId == undefined
     ) {
       //show button
-      $(".pageSettings .section.discordIntegration .howto").addClass("hidden");
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
       );
       $(".pageSettings .section.discordIntegration .info").addClass("hidden");
-      $(".pageSettings .section.discordIntegration .code").addClass("hidden");
-    } else if (
-      dbSnapshot.pairingCode != undefined &&
-      dbSnapshot.discordId == undefined
-    ) {
-      //show code
-      $(".pageSettings .section.discordIntegration .code .bottom").text(
-        dbSnapshot.pairingCode
-      );
-      $(".pageSettings .section.discordIntegration .howtocode").text(
-        dbSnapshot.pairingCode
-      );
-      $(".pageSettings .section.discordIntegration .howto").removeClass(
-        "hidden"
-      );
-      $(".pageSettings .section.discordIntegration .buttons").addClass(
-        "hidden"
-      );
-      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
-      $(".pageSettings .section.discordIntegration .code").removeClass(
-        "hidden"
-      );
-    } else if (
-      dbSnapshot.discordId != undefined
-    ) {
-      $(".pageSettings .section.discordIntegration .howto").addClass("hidden");
+    } else{
       $(".pageSettings .section.discordIntegration .buttons").addClass(
         "hidden"
       );
       $(".pageSettings .section.discordIntegration .info").removeClass(
         "hidden"
       );
-      $(".pageSettings .section.discordIntegration .code").addClass("hidden");
     }
   }
 }

@@ -41,6 +41,8 @@ let caretAnimating = true;
 let lastSecondNotRound = false;
 let paceCaret = null;
 let missedWords = [];
+let verifyUserWhenLoggedIn = null;
+let modeBeforePractise = null;
 
 let themeColors = {
   bg: "#323437",
@@ -72,6 +74,8 @@ let keypressStats = {
 
 let errorSound = new Audio("../sound/error.wav");
 let clickSounds = null;
+
+let isPreviewingTheme = false;
 
 function initClickSounds() {
   clickSounds = {
@@ -207,6 +211,8 @@ const generatePairingCode = firebase
   .httpsCallable("generatePairingCode");
 const saveLbMemory = firebase.functions().httpsCallable("saveLbMemory");
 const unlinkDiscord = firebase.functions().httpsCallable("unlinkDiscord");
+const verifyUser = firebase.functions().httpsCallable("verifyUser");
+
 
 
 function refreshThemeColorObject() {
@@ -431,7 +437,7 @@ function initWords() {
     config.mode == "custom"
   ) {
     // let wordsBound = config.mode == "time" ? 60 : config.words;
-    let wordsBound = 60;
+    let wordsBound = 100;
     if (config.showAllLines) {
       if (config.mode === "custom") {
         if (customTextIsRandom) {
@@ -710,10 +716,9 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
 }
 
 function addWord() {
-  let bound = 60;
+  let bound = 100;
   if (activeFunBox === "plus_one") bound = 1;
   if (
-    !config.showAllLines &&
     (wordsList.length - inputHistory.length > bound ||
       (config.mode === "words" && wordsList.length >= config.words) ||
       (config.mode === "custom" &&
@@ -1510,18 +1515,31 @@ function countChars() {
       }
     } else {
       //not enough chars
+      let toAdd = {
+        correct: 0,
+        incorrect: 0,
+        missed: 0
+      }
       for (let c = 0; c < wordsList[i].length; c++) {
         if (c < inputHistory[i].length) {
           //on char that still has a word list pair
           if (inputHistory[i][c] == wordsList[i][c]) {
-            correctChars++;
+            toAdd.correct++;
           } else {
-            incorrectChars++;
+            toAdd.incorrect++;
           }
         } else {
           //on char that is extra
-          missedChars++;
+          toAdd.missed++;
         }
+      }
+      correctChars += toAdd.correct;
+      incorrectChars += toAdd.incorrect;
+      if (i === inputHistory.length - 1 && config.mode == "time") {
+        //last word - check if it was all correct - add to correct word chars
+        if(toAdd.incorrect === 0) correctWordChars += toAdd.correct;
+      } else {
+        missedChars += toAdd.missed;
       }
     }
     if (i < inputHistory.length - 1) {
@@ -1573,7 +1591,9 @@ function calculateStats() {
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
     acc: acc,
     correctChars: chars.correctWordChars,
-    incorrectChars: chars.incorrectChars + chars.extraChars + chars.missedChars,
+    incorrectChars: chars.incorrectChars,
+    missedChars: chars.missedChars,
+    extraChars: chars.extraChars,
     allChars:
       chars.allCorrectChars +
       chars.spaces +
@@ -1621,6 +1641,8 @@ function showResult(difficultyFailed = false) {
       acc: 0,
       correctChars: 0,
       incorrectChars: 0,
+      missedChars: 0,
+      extraChars: 0,
       time: 0,
       spaces: 0,
       correctSpaces: 0,
@@ -1667,15 +1689,18 @@ function showResult(difficultyFailed = false) {
 
   let correctcharpercent = roundTo2(
     ((stats.correctChars + stats.correctSpaces) /
-      (stats.correctChars + stats.correctSpaces + stats.incorrectChars)) *
+      (stats.correctChars + stats.correctSpaces + stats.incorrectChars + stats.extraChars)) *
       100
   );
   $("#result .stats .key .bottom").text(testtime + "s");
-  $("#result .stats .key .bottom").attr("aria-label", `${correctcharpercent}%`);
+  // $("#result .stats .key .bottom").attr("aria-label", `Correct, incorrect, missed and extra \n ${correctcharpercent}%`);
   $("#words").removeClass("blurred");
   $(".outOfFocusWarning").addClass("hidden");
   $("#result .stats .key .bottom").text(
-    stats.correctChars + stats.correctSpaces + "/" + stats.incorrectChars
+    stats.correctChars + stats.correctSpaces +
+    "/" + stats.incorrectChars +
+    "/" + stats.extraChars +
+    "/" + stats.missedChars
   );
 
   setTimeout(function () {
@@ -1808,6 +1833,9 @@ function showResult(difficultyFailed = false) {
   if (!config.startGraphsAtZero) {
     wpmOverTimeChart.options.scales.yAxes[0].ticks.min = minChartVal;
     wpmOverTimeChart.options.scales.yAxes[1].ticks.min = minChartVal;
+  } else {
+    wpmOverTimeChart.options.scales.yAxes[0].ticks.min = 0;
+    wpmOverTimeChart.options.scales.yAxes[1].ticks.min = 0;
   }
 
   // wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.round(minChartVal);
@@ -2011,9 +2039,9 @@ function showResult(difficultyFailed = false) {
                   if (dbSnapshot !== null && dbSnapshot.results !== undefined) {
                     dbSnapshot.results.unshift(completedEvent);
                     if (dbSnapshot.globalStats.time == undefined) {
-                      dbSnapshot.globalStats.time = testtime;
+                      dbSnapshot.globalStats.time = testtime + completedEvent.incompleteTestSeconds;
                     } else {
-                      dbSnapshot.globalStats.time += testtime;
+                      dbSnapshot.globalStats.time += testtime + completedEvent.incompleteTestSeconds;
                     }
                     if (dbSnapshot.globalStats.started == undefined) {
                       dbSnapshot.globalStats.started = restartCount + 1;
@@ -2211,6 +2239,7 @@ function showResult(difficultyFailed = false) {
                       stats.wpm,
                       stats.acc,
                       stats.wpmRaw,
+                      consistency
                     );
                   } else if (e.data.resultCode === 1) {
                     if (localPb) {
@@ -2561,6 +2590,12 @@ function restartTest(withSameWordset = false, nosave = false) {
       );
       return;
     }
+  }
+
+  if (modeBeforePractise !== null) {
+    showNotification("Reverting to previous settings.", 1500);
+    changeMode(modeBeforePractise);
+    modeBeforePractise = null;
   }
 
   manualRestart = false;
@@ -3101,7 +3136,7 @@ async function loadWordsHistory() {
     let wordEl = "";
     try {
       if (input === "") throw Exception;
-      if (correctedHistory[i] !== "") {
+      if (correctedHistory[i] !== undefined && correctedHistory[i] !== "") {
         wordEl = `<div class='word' input="${correctedHistory[i].replace(
           /"/g,
           "&quot;"
@@ -3109,11 +3144,41 @@ async function loadWordsHistory() {
       } else {
         wordEl = `<div class='word' input="${input.replace(/"/g, "&quot;")}">`;
       }
-      if (input !== wordsList[i]) {
-        wordEl = `<div class='word error' input="${input.replace(
-          /"/g,
-          "&quot;"
-        )}">`;
+      if (i === inputHistory.length - 1) {
+        //last word
+        let word = {
+          correct: 0,
+          incorrect: 0,
+          missed: 0
+        }
+        for (let c = 0; c < wordsList[i].length; c++) {
+          if (c < inputHistory[i].length) {
+            //on char that still has a word list pair
+            if (inputHistory[i][c] == wordsList[i][c]) {
+              word.correct++;
+            } else {
+              word.incorrect++;
+            }
+          } else {
+            //on char that is extra
+            word.missed++;
+          }
+        }
+        if (word.incorrect !== 0 || config.mode !== "time") {
+          if (input !== wordsList[i]) {
+            wordEl = `<div class='word error' input="${input.replace(
+              /"/g,
+              "&quot;"
+            )}">`;
+          }
+        }
+      } else {
+        if (input !== wordsList[i]) {
+          wordEl = `<div class='word error' input="${input.replace(
+            /"/g,
+            "&quot;"
+          )}">`;
+        }
       }
 
       let loop;
@@ -3134,7 +3199,7 @@ async function loadWordsHistory() {
           correctedChar = undefined;
         }
         let extraCorrected = "";
-        if (c + 1 === loop && correctedHistory[i].length > input.length) {
+        if (c + 1 === loop && correctedHistory[i] !== undefined &&correctedHistory[i].length > input.length) {
           extraCorrected = "extraCorrected";
         }
         if (wordsList[i][c] !== undefined) {
@@ -4141,11 +4206,13 @@ $(document.body).on("click", "#restartTestButton", (event) => {
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
   if (event.keyCode == 13) {
     if (missedWords.length > 0) {
+      let currentMode = config.mode;
       changeMode("custom");
       customText = missedWords;
       customTextIsRandom = true;
       customTextWordCount = 50;
       restartTest();
+      modeBeforePractise = currentMode;
     } else {
       showNotification("You haven't missed any words.", 2000);
     }
@@ -4154,11 +4221,13 @@ $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
 
 $(document.body).on("click", "#practiseMissedWordsButton", (event) => {
   if (missedWords.length > 0) {
+    let currentMode = config.mode;
     changeMode("custom");
     customText = missedWords;
     customTextIsRandom = true;
     customTextWordCount = 50;
     restartTest();
+    modeBeforePractise = currentMode;
   } else {
     showNotification("You haven't missed any words.", 2000);
   }
@@ -4774,11 +4843,11 @@ $(document).keydown((event) => {
       ) {
         updateTimer();
       }
-      if (config.showAllLines) {
-        if (config.mode == "time") {
-          addWord();
-        }
-      } else {
+      // if (config.showAllLines) {
+      //   if (config.mode == "time") {
+      //     addWord();
+      //   }
+      // } else {
         if (
           config.mode == "time" ||
           config.mode == "words" ||
@@ -4786,7 +4855,7 @@ $(document).keydown((event) => {
         ) {
           addWord();
         }
-      }
+      // }
     }
   }
 });
@@ -4824,7 +4893,10 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
 });
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
-  currentCommands.push(commandsThemes);
+  if (config.customTheme) {
+    togglePresetCustomTheme();
+  }
+  currentCommands = [commandsThemes];
   showCommandLine();
 });
 
@@ -4866,7 +4938,18 @@ $(document).ready(() => {
         setCustomThemeInputs();
         applyCustomThemeColors();
       }
-      if (window.location.pathname === "/account") {
+      if (window.location.pathname === "/verify") {
+        const fragment = new URLSearchParams(window.location.hash.slice(1));
+        if (fragment.has("access_token")) {
+          const accessToken = fragment.get("access_token");
+          const tokenType = fragment.get("token_type");
+          verifyUserWhenLoggedIn = {
+            accessToken: accessToken,
+            tokenType: tokenType
+          }
+          history.replaceState("/", null, "/");
+        }
+      }else if (window.location.pathname === "/account") {
         history.replaceState("/", null, "/");
       } else if (window.location.pathname !== "/") {
         let page = window.location.pathname.replace("/", "");

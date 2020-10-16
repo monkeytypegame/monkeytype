@@ -68,6 +68,7 @@ async function db_getUserSnapshot() {
       .then((res) => {
         // console.log('getting data from db!');
         let data = res.data();
+        if (data === undefined) return;
         try {
           if (data.personalBests !== undefined) {
             snap.personalBests = data.personalBests;
@@ -207,7 +208,8 @@ async function db_saveLocalPB(
   difficulty,
   wpm,
   acc,
-  raw
+  raw,
+  consistency
 ) {
   function cont() {
     try {
@@ -225,6 +227,8 @@ async function db_saveLocalPB(
           pb.wpm = wpm;
           pb.acc = acc;
           pb.raw = raw;
+          pb.timestamp = Date.now();
+          pb.consistency = consistency;
         }
       });
       if (!found) {
@@ -236,6 +240,8 @@ async function db_saveLocalPB(
           wpm: wpm,
           acc: acc,
           raw: raw,
+          timestamp: Date.now(),
+          consistency: consistency
         });
       }
     } catch (e) {
@@ -249,6 +255,8 @@ async function db_saveLocalPB(
           wpm: wpm,
           acc: acc,
           raw: raw,
+          timestamp: Date.now(),
+          consistency: consistency
         },
       ];
     }

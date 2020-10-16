@@ -53,6 +53,7 @@ let defaultConfig = {
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
   alwaysShowWordsHistory: false,
+  singleListCommandLine: "manual",
   playSoundOnError: false,
   playSoundOnClick: "off",
   startGraphsAtZero: true,
@@ -60,7 +61,8 @@ let defaultConfig = {
   showOutOfFocusWarning: true,
   paceCaret: "off",
   paceCaretCustomSpeed: 100,
-  pageWidth: "100"
+  pageWidth: "100",
+  chartAccuracy: true
 };
 
 let cookieConfig = null;
@@ -190,6 +192,7 @@ function applyConfig(configObj) {
     setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
+    setSingleListCommandLine(configObj.singleListCommandLine, true);
     setPlaySoundOnError(configObj.playSoundOnError, true);
     setPlaySoundOnClick(configObj.playSoundOnClick, true);
     setStopOnError(configObj.stopOnError, true);
@@ -201,6 +204,7 @@ function applyConfig(configObj) {
     setPaceCaret(configObj.paceCaret, true);
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setPageWidth(configObj.pageWidth, true);
+    setChartAccuracy(configObj.chartAccuracy, true);
 
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -303,6 +307,31 @@ function setBlindMode(blind, nosave) {
   }
   config.blindMode = blind;
   updateTestModesNotice();
+  if (!nosave) saveConfigToCookie();
+}
+
+function updateChartAccuracy() {
+  resultHistoryChart.data.datasets[1].hidden = !config.chartAccuracy;
+  resultHistoryChart.options.scales.yAxes[1].display = config.chartAccuracy;
+  resultHistoryChart.update();
+}
+
+function toggleChartAccuracy() {
+  if (config.chartAccuracy) {
+    config.chartAccuracy = false;
+  } else {
+    config.chartAccuracy = true;
+  }
+  updateChartAccuracy();
+  saveConfigToCookie();
+}
+
+function setChartAccuracy(chartAccuracy, nosave) {
+  if (chartAccuracy == undefined) {
+    chartAccuracy = true;
+  }
+  config.chartAccuracy = chartAccuracy;
+  updateChartAccuracy();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -426,6 +455,13 @@ function setAlwaysShowWordsHistory(val, nosave) {
     val = false;
   }
   config.alwaysShowWordsHistory = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+//single list command line
+function setSingleListCommandLine(option, nosave) {
+  if (!option) option = "manual";
+  config.singleListCommandLine = option;
   if (!nosave) saveConfigToCookie();
 }
 
@@ -873,7 +909,7 @@ function setIndicateTypos(it, nosave) {
 }
 
 
-function previewTheme(name) {
+function previewTheme(name, setIsPreviewingVar = true) {
   if (
     (testActive || resultVisible) &&
     (config.theme === "nausea" || config.theme === "round_round_baby")
@@ -881,6 +917,7 @@ function previewTheme(name) {
     return;
   if (resultVisible && (name === "nausea" || name === "round_round_baby"))
     return;
+  isPreviewingTheme = setIsPreviewingVar;
   $("#currentTheme").attr("href", `themes/${name}.css`);
   setTimeout(() => {
     refreshThemeColorObject();
@@ -969,6 +1006,7 @@ function applyCustomThemeColors() {
       document.documentElement.style.setProperty(e, array[index]);
     });
   } else {
+    $(".current-theme").text(config.theme.replace('_',' '));
     previewTheme(config.theme);
     colorVars.forEach((e) => {
       document.documentElement.style.setProperty(e, "");

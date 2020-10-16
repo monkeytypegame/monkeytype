@@ -1,6 +1,6 @@
 # about
 
-Monkey-type is a minimalistic, customisable typing test, featuring many test modes, an account system to save your typing speed history and user configurable features like themes, a smooth caret and more.
+Monkeytype is a minimalistic, customisable typing test, featuring many test modes, an account system to save your typing speed history and user configurable features like themes, a smooth caret and more.
 
 # features
 
@@ -36,4 +36,4 @@ If you wish to support further development and feeling extra awesome, you can do
 
 # how to contribute
 
-Refer to [CONTRIBUTING.md](https://github.com/Miodec/monkey-type/blob/master/CONTRIBUTING.md)
+Refer to [CONTRIBUTING.md](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)

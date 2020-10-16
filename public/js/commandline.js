@@ -2,6 +2,57 @@ function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+function addChildCommands(unifiedCommands, commandItem, parentCommandDisplay = '') {
+  let commandItemDisplay = commandItem.display.replace(/\s?\.\.\.$/g,'');
+  if (parentCommandDisplay) commandItemDisplay = parentCommandDisplay + " > " + commandItemDisplay;
+  if (commandItem.subgroup) {
+    try {
+      commandItem.exec();
+      currentCommandsIndex = currentCommands.length-1;
+      currentCommands[currentCommandsIndex].list.forEach( cmd => addChildCommands(unifiedCommands, cmd, commandItemDisplay));
+      currentCommands.pop();
+    } catch(e) {}
+  } else {
+    let tempCommandItem = {...commandItem};
+    if (parentCommandDisplay)
+      tempCommandItem.display = commandItemDisplay;
+    unifiedCommands.push(tempCommandItem);
+  }
+}
+
+function generateSingleListOfCommands() {
+  allCommands = [];
+  oldShowCommandLine = showCommandLine;
+  showCommandLine = () => {};
+  commands.list.forEach(c => addChildCommands(allCommands, c));
+  showCommandLine = oldShowCommandLine;
+  return {
+    title: "All Commands",
+    list: allCommands};
+}
+
+function isSingleListCommandLineActive() {
+  return $("#commandLine").hasClass("allCommands");
+}
+
+function useSingleListCommandLine(show = true) {
+  let allCommands = generateSingleListOfCommands();
+  if (config.singleListCommandLine == "manual") currentCommands.push(allCommands); 
+  else if (config.singleListCommandLine == "on") currentCommands = [allCommands]; 
+
+  if (config.singleListCommandLine != "off") $("#commandLine").addClass("allCommands");
+  if (show) showCommandLine();
+}
+
+function restoreOldCommandLine(show = true) {
+  if (isSingleListCommandLineActive()) {
+    $("#commandLine").removeClass("allCommands");
+    currentCommands = currentCommands.filter( l => l.title != "All Commands");
+    if (currentCommands.length < 1) currentCommands = [commands];
+  }
+  if (show) showCommandLine();
+}
+
 let commands = {
   title: "",
   list: [
@@ -165,6 +216,15 @@ let commands = {
       display: "Toggle quick end",
       exec: () => {
         toggleQuickEnd();
+      },
+    },
+    {
+      id: "singleListCommandLine",
+      display: "Single list command line...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsSingleListCommandLine);
+        showCommandLine();
       },
     },
     {
@@ -403,6 +463,34 @@ let commands = {
       id: "randomiseTheme",
       display: "Next random theme",
       exec: () => randomiseTheme()
+    },
+    {
+      id: "viewTypingPage",
+      display: "View Typing Page",
+      exec: () => $('#top #menu .icon-button.view-start').click()
+    },
+    {
+      id: "viewLeaderboards",
+      display: "View Leaderboards Page",
+      exec: () => $('#top #menu .icon-button.view-leaderboards').click()
+    },
+    {
+      id: "viewAbout",
+      display: "View About Page",
+      exec: () => $('#top #menu .icon-button.view-about').click()
+    },
+    {
+      id: "viewSettings",
+      display: "View Settings Page",
+      exec: () => $('#top #menu .icon-button.view-settings').click()
+    },
+    {
+      id: "viewAccount",
+      display: "View Account Page",
+      exec: () => 
+        $('#top #menu .icon-button.view-account').hasClass('hidden') ?
+          $('#top #menu .icon-button.view-login').click() :
+          $('#top #menu .icon-button.view-account').click()
     },
     {
       id: "bailOut",
@@ -838,6 +926,26 @@ let commandsTimerColor = {
         setTimerColor("main");
       },
     },
+  ],
+};
+
+let commandsSingleListCommandLine = {
+  title: "Single list command line...",
+  list: [
+    {
+      id: "singleListCommandLineManual",
+      display: "manual",
+      exec: () => {
+        setSingleListCommandLine("manual");
+      },
+    },
+    {
+      id: "singleListCommandLineOn",
+      display: "on",
+      exec: () => {
+        setSingleListCommandLine("on");
+      },
+    }
   ],
 };
 
@@ -1351,12 +1459,20 @@ $(document).ready((e) => {
     //escape
     if ((event.keyCode == 27 && !config.swapEscAndTab) || (event["keyCode"] == 9 && config.swapEscAndTab)) {
       event.preventDefault();
-      if ($("#commandLineWrapper").hasClass("hidden")) {
-        currentCommands = [commands];
+      if (!$("#leaderboardsWrapper").hasClass("hidden")) {  //maybe add more condition for closing other dialogs in the future as well
+        event.preventDefault();
+        hideLeaderboards();
+        return;
+      } else if ($("#commandLineWrapper").hasClass("hidden")) {
+        if (config.singleListCommandLine == "on") 
+          useSingleListCommandLine(false);
+        else 
+          currentCommands = [commands];
         showCommandLine();
       } else {
         if (currentCommands.length > 1) {
           currentCommands.pop();
+          $("#commandLine").removeClass("allCommands");
           showCommandLine();
         } else {
           hideCommandLine();
@@ -1414,18 +1530,34 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
 });
 
 $("#commandLineWrapper #commandLine .suggestions").click((e) => {
+  $(".suggestions .entry").removeClass('activeKeyboard');
   triggerCommand($(e.target).attr("command"));
 });
 
 $("#commandLineWrapper").click((e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hideCommandLine();
+    setTheme(config.theme, true);
   }
 });
 
 $(document).keydown((e) => {
+  if (isPreviewingTheme) {
+    previewTheme(config.theme, false);
+  }
   if (!$("#commandLineWrapper").hasClass("hidden")) {
     $("#commandLine input").focus();
+    if (e.key == ">" && config.singleListCommandLine == "manual") {
+      if (!isSingleListCommandLineActive()) {
+        useSingleListCommandLine();
+        return;
+      } else if ($("#commandLine input").val() == ">") { //so that it will ignore succeeding ">" when input is already ">"
+        e.preventDefault();
+        return;
+      }   
+    }
+    if (e.keyCode == 8 && $("#commandLine input").val().length == 1 && config.singleListCommandLine == "manual" && isSingleListCommandLineActive()) 
+      restoreOldCommandLine();
     if (e.keyCode == 13) {
       //enter
       e.preventDefault();
@@ -1533,6 +1665,7 @@ function hideCommandLine() {
       100,
       () => {
         $("#commandLineWrapper").addClass("hidden");
+        $("#commandLine").removeClass("allCommands");
         focusWords();
       }
     );
@@ -1572,9 +1705,11 @@ function showCommandInput(command, placeholder) {
 }
 
 function updateSuggestedCommands() {
-  let inputVal = $("#commandLine input").val().toLowerCase().split(" ");
+  let inputVal = $("#commandLine input").val().toLowerCase().split(" ").filter((s,i) => s||i==0); //remove empty entries after first
   let list = currentCommands[currentCommands.length - 1];
-  if (inputVal[0] == "") {
+  //ignore the preceeding ">"s in the command line input
+  if (inputVal[0] && inputVal[0][0] == ">") inputVal[0] = inputVal[0].replace(/^>+/,'');
+  if (inputVal[0] == "" && inputVal.length == 1) {
     $.each(list.list, (index, obj) => {
       if (obj.visible !== false) obj.found = true;
     });

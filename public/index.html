@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Monkey Type</title>
+    <title>Monkeytype</title>
     <!-- <link rel="stylesheet" href="css/fa.css" /> -->
     <link rel="stylesheet" href="css/balloon.css" />
     <link rel="stylesheet" href="css/style.min.css?v=58" />
@@ -11,34 +11,28 @@
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="fav.png" />
     <link rel="shortcut icon" href="fav.png" />
-    <meta name="name" content="Monkey Type" />
-    <meta name="image" content="https://monkey-type.com/mtsocial_large.png" />
+    <meta name="name" content="Monkeytype" />
+    <meta name="image" content="https://monkeytype.com/mtsocial.png" />
     <meta
       name="description"
-      content="A super customisable, minimalistic typing test."
+      content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
     />
     <meta
       name="keywords"
-      content="typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
+      content="typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkeytypes, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
     />
     <meta name="author" content="Miodec" />
-    <meta property="og:title" content="Monkey Type" />
-    <meta property="og:url" content="https://monkey-type.com/" />
+    <meta property="og:title" content="Monkeytype" />
+    <meta property="og:url" content="https://monkeytype.com/" />
     <meta property="og:type" content="website" />
     <meta
       property="og:description"
-      content="A super customisable, minimalistic typing test."
+      content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
     />
-    <meta
-      property="og:image"
-      content="https://monkey-type.com/mtsocial_large.png"
-    />
+    <meta property="og:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="theme-color" content="#e2b714" id="metaThemeColor" />
-    <meta name="twitter:title" content="Monkey Type" />
-    <meta
-      name="twitter:image"
-      content="https://monkey-type.com/mtsocial_large.png"
-    />
+    <meta name="twitter:title" content="Monkeytype" />
+    <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
   </head>
 
@@ -749,7 +743,7 @@
         <div class="suggestions"></div>
       </div>
       <div id="commandInput" class="hidden">
-        <input type="text" class="input" placeholder="input"></input>
+        <input type="text" class="input" placeholder="input" />
       </div>
     </div>
     <div id="timerWrapper">
@@ -758,17 +752,22 @@
     <div id="centerContent" class="hidden">
       <div id="top">
         <div class="logo">
-          <div class="top">monkey-see</div>
-          <div class="bottom">monkey-type</div>
+          <div class="top">monkey see</div>
+          <div class="bottom">monkeytype</div>
         </div>
         <div id="menu">
-          <div class="icon-button" tabindex="2" href="/" onclick="this.blur();">
+          <div
+            class="icon-button view-start"
+            tabindex="2"
+            href="/"
+            onclick="this.blur();"
+          >
             <div class="icon">
               <i class="fas fa-fw fa-keyboard"></i>
             </div>
           </div>
           <div
-            class="icon-button leaderboards"
+            class="icon-button leaderboards view-leaderboards"
             tabindex="2"
             onclick="this.blur();"
           >
@@ -777,7 +776,7 @@
             </div>
           </div>
           <div
-            class="icon-button"
+            class="icon-button view-about"
             tabindex="2"
             href="/about"
             onclick="this.blur();"
@@ -799,7 +798,7 @@
             </div>
           </a> -->
           <div
-            class="icon-button"
+            class="icon-button view-settings"
             tabindex="2"
             href="/settings"
             onclick="this.blur();"
@@ -809,7 +808,7 @@
             </div>
           </div>
           <div
-            class="icon-button hidden account"
+            class="icon-button hidden account view-account"
             tabindex="2"
             href="/account"
             onclick="this.blur();"
@@ -820,7 +819,7 @@
             <div class="text"></div>
           </div>
           <div
-            class="icon-button login"
+            class="icon-button login view-login"
             tabindex="2"
             href="/login"
             onclick="this.blur();"
@@ -832,12 +831,7 @@
         </div>
 
         <div class="config">
-          <div
-            style="
-              display: grid;
-              grid-auto-flow: column;
-            "
-          >
+          <div style="display: grid; grid-auto-flow: column;">
             <div class="group punctuationMode">
               <!--           <div class="title">time</div> -->
               <div class="buttons">
@@ -928,7 +922,6 @@
       </div>
       <div id="middle">
         <div class="page pageTest active">
-
           <div id="typingTest">
             <div id="capsWarning" class="hidden">
               <i class="fas fa-lock"></i>
@@ -936,14 +929,17 @@
             </div>
             <div id="testModesNotice"></div>
             <div id="caret" class="default size15"></div>
-            <div id="paceCaret"class="default size15 hidden"></div>
+            <div id="paceCaret" class="default size15 hidden"></div>
             <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
             <div id="timerNumber"><div>60</div></div>
             <div id="miniTimerAndLiveWpm">
               <div class="time hidden">1:00</div>
               <div class="wpm">60</div>
             </div>
-            <div class="outOfFocusWarning"><i class="fas fa-mouse-pointer"></i> Click the words to focus</div>
+            <div class="outOfFocusWarning">
+              <i class="fas fa-mouse-pointer"></i>
+              Click the words to focus
+            </div>
             <div id="wordsWrapper">
               <div id="words" class="size15"></div>
             </div>
@@ -1157,10 +1153,10 @@
               <div class="group wpm">
                 <div class="top">
                   wpm
-                    <div class="crown hidden"  aria-label="" data-balloon-pos="up">
-                      <i class="fas fa-crown"></i>
-                    </div>
+                  <div class="crown hidden" aria-label="" data-balloon-pos="up">
+                    <i class="fas fa-crown"></i>
                   </div>
+                </div>
                 <div class="bottom" aria-label="" data-balloon-pos="up">-</div>
               </div>
               <div class="group acc">
@@ -1190,8 +1186,15 @@
                 <div class="bottom" aria-label="" data-balloon-pos="up">-</div>
               </div>
               <div class="group key">
-                <div class="top">char</div>
-                <div class="bottom" aria-label="" data-balloon-pos="up">-</div>
+                <div class="top">characters</div>
+                <div
+                  class="bottom"
+                  aria-label="Correct, incorrect, extra and missed"
+                  data-balloon-break=""
+                  data-balloon-pos="up"
+                >
+                  -
+                </div>
               </div>
 
               <!-- </div> -->
@@ -1237,7 +1240,7 @@
               <div class="words"></div>
             </div>
             <div class="loginTip">Sign in to save your results</div>
-            <div class="ssWatermark hidden">monkey-type.com</div>
+            <div class="ssWatermark hidden">monkeytype.com</div>
             <div class="buttons">
               <div
                 id="nextTestButton"
@@ -1291,7 +1294,7 @@
           <div class="section">
             <h1>about</h1>
             <p>
-              Monkey-type is a minimalistic typing test, featuring many test
+              Monkeytype is a minimalistic typing test, featuring many test
               modes, an account system to save your typing speed history and
               user configurable features like themes, a smooth caret and more.
             </p>
@@ -1362,9 +1365,10 @@
                 Discord server
               </a>
               , send me a message on Reddit or create an issue on
-              <a href="https://github.com/Miodec/monkey-type" target="_blank">
-                GitHub.
+              <a href="https://github.com/Miodec/monkeytype" target="_blank">
+                GitHub
               </a>
+              .
             </p>
           </div>
           <div class="section">
@@ -1397,7 +1401,7 @@
             </p>
             <p>
               <a
-                href="https://github.com/Miodec/monkey-type/graphs/contributors"
+                href="https://github.com/Miodec/monkeytype/graphs/contributors"
               >
                 Contributors
               </a>
@@ -1451,34 +1455,31 @@
             <div class="section discordIntegration">
               <h1>discord integration</h1>
               <div class="text">
-                When you connect your monkey-type account to your Discord
+                When you connect your monkeytype account to your Discord
                 account, you will be automatically assigned a new role every
                 time you achieve a new personal best in a 60 second test.
-                <div class="howto hidden">
-                  To pair your accounts, direct message 'George' (our bot) on
-                  Discord with the message '!verify
-                  <span class="howtocode">-</span>
-                  '.
-                </div>
               </div>
               <div class="buttons">
-                <div class="button generateCodeButton">
-                  Generate pairing code
-                </div>
+                <a
+                  class="button"
+                  href="https://discord.com/api/oauth2/authorize?client_id=757704816532258856&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
+                  style="text-decoration: none;"
+                >
+                  Verify with Discord
+                </a>
               </div>
               <div class="info hidden">
                 <div>
                   <i class="fas fa-check"></i>
                   Your accounts are paired!
                 </div>
-                <div id="unlinkDiscordButton" class="text-button" aria-label="Unlink" data-balloon-pos="up">
+                <div
+                  id="unlinkDiscordButton"
+                  class="text-button"
+                  aria-label="Unlink"
+                  data-balloon-pos="up"
+                >
                   <i class="fas fa-unlink" aria-hidden="true"></i>
-                </div>
-              </div>
-              <div class="code hidden">
-                <div style="width: min-content; white-space: nowrap;">
-                  <div class="top">code</div>
-                  <div class="bottom">-</div>
                 </div>
               </div>
             </div>
@@ -1543,8 +1544,6 @@
               </div>
             </div>
 
-            
-            
             <div class="section blindMode">
               <h1>blind mode</h1>
               <div class="text">
@@ -1603,6 +1602,34 @@
                   off
                 </div>
                 <div class="button on" tabindex="0" onclick="this.blur();">
+                  on
+                </div>
+              </div>
+            </div>
+            <div class="section singleListCommandLine">
+              <h1>single list command line</h1>
+              <div class="text">
+                When enabled, it will show the command line with all commands in
+                a single list instead of submenu arrangements. Selecting
+                'manual' will expose all commands only after typing
+                <key>></key>
+                .
+              </div>
+              <div class="buttons">
+                <div
+                  class="button"
+                  singleListCommandLine="manual"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  manual
+                </div>
+                <div
+                  class="button"
+                  singleListCommandLine="on"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
                   on
                 </div>
               </div>
@@ -1923,7 +1950,14 @@
                 >
                   custom
                 </div>
-                <input type="number" step="1" class="customPaceCaretSpeed" placeholder="wpm" min="0" value="">
+                <input
+                  type="number"
+                  step="1"
+                  class="customPaceCaretSpeed"
+                  placeholder="wpm"
+                  min="0"
+                  value=""
+                />
               </div>
             </div>
             <div class="section paceCaretStyle" section="">
@@ -2137,7 +2171,8 @@
             <div class="section startGraphsAtZero">
               <h1>start graphs at zero</h1>
               <div class="text">
-                Force graph axis to always start at zero, no matter what the data is. Turning this off may exaggerate the value changes.
+                Force graph axis to always start at zero, no matter what the
+                data is. Turning this off may exaggerate the value changes.
               </div>
               <div class="buttons">
                 <div class="button off" tabindex="0" onclick="this.blur();">
@@ -2560,7 +2595,8 @@
             <div class="section showOutOfFocusWarning">
               <h1>out of focus warning</h1>
               <div class="text">
-                Shows an out of focus reminder after 1 second of being 'out of focus' (not being able to type).
+                Shows an out of focus reminder after 1 second of being 'out of
+                focus' (not being able to type).
               </div>
               <div class="buttons">
                 <div class="button off" tabindex="0" onclick="this.blur();">
@@ -2605,12 +2641,9 @@
           <div class="register side">
             <div class="title">register</div>
             <form action="" autocomplete="off">
-              <input type="text" placeholder="username"  />
+              <input type="text" placeholder="username" />
               <input type="text" placeholder="email" />
-              <input
-                type="password"
-                placeholder="password"
-              />
+              <input type="password" placeholder="password" />
               <input type="password" placeholder="verify password" />
               <div class="button">
                 <i class="fas fa-user-plus"></i>
@@ -2622,8 +2655,12 @@
             <div class="title">login</div>
             <div id="forgotPasswordButton">Forgot password?</div>
             <form action="">
-              <input type="text" placeholder="email" autocomplete="email"/>
-              <input type="password" placeholder="password" autocomplete="password"/>
+              <input type="text" placeholder="email" autocomplete="email" />
+              <input
+                type="password"
+                placeholder="password"
+                autocomplete="password"
+              />
               <div>
                 <label id="rememberMe">
                   <input type="checkbox" checked />
@@ -2667,9 +2704,7 @@
             </div>
             <div class="group">
               <div class="title">personal bests</div>
-              <div style="display: grid;
-              grid-auto-flow: column;
-              gap: 1rem;">
+              <div style="display: grid; grid-auto-flow: column; gap: 1rem;">
                 <div class="titleAndTable timePbTable">
                   <table width="100%">
                     <thead>
@@ -2678,6 +2713,7 @@
                         <td>wpm</td>
                         <td>raw</td>
                         <td>accuracy</td>
+                        <td>consistency</td>
                       </tr>
                     </thead>
                     <tbody>
@@ -2716,6 +2752,7 @@
                         <td>wpm</td>
                         <td>raw</td>
                         <td>accuracy</td>
+                        <td>consistency</td>
                       </tr>
                     </thead>
                     <tbody>
@@ -2768,7 +2805,10 @@
                   </div>
                 </div>
               </div>
-              <div class="buttonsAndTitle testDate" style="grid-column: 1/3;margin-top: 1rem">
+              <div
+                class="buttonsAndTitle testDate"
+                style="grid-column: 1/3; margin-top: 1rem;"
+              >
                 <!-- <div class="title">date</div> -->
                 <div class="buttons filterGroup" group="date">
                   <div class="button" filter="last_day">last day</div>
@@ -2778,7 +2818,7 @@
                 </div>
               </div>
             </div>
-            <div class="group filterButtons" style="display:none">
+            <div class="group filterButtons" style="display: none;">
               <div class="buttonsAndTitle" style="grid-column: 1/3;">
                 <div class="title">advanced filters</div>
                 <div class="buttons">
@@ -2861,7 +2901,10 @@
                 <canvas id="resultHistoryChart"></canvas>
               </div>
               <div class="below"></div>
-              <div class="toggleAccuracyOnChart button"><i class="fas fa-bullseye"></i>Toggle Accuracy</div>
+              <div class="toggleAccuracyOnChart button">
+                <i class="fas fa-bullseye"></i>
+                Toggle Accuracy
+              </div>
             </div>
             <div class="group dailyActivityChart">
               <div class="chart" style="height: 200px;">
@@ -2914,7 +2957,13 @@
               <div class="group testsCompleted">
                 <div class="title">
                   tests completed
-                  <span data-balloon-length="xlarge" aria-label="Due to the increasing number of results in the database, you can now only see your last 1000 results in detail. Total time spent typing, started and completed tests stats will still be up to date at the top of the page, above the filters." data-balloon-pos="up"><i class="fas fa-question-circle"></i></span>
+                  <span
+                    data-balloon-length="xlarge"
+                    aria-label="Due to the increasing number of results in the database, you can now only see your last 1000 results in detail. Total time spent typing, started and completed tests stats will still be up to date at the top of the page, above the filters."
+                    data-balloon-pos="up"
+                  >
+                    <i class="fas fa-question-circle"></i>
+                  </span>
                 </div>
                 <div class="val">-</div>
               </div>
@@ -3016,9 +3065,9 @@
             <div>
               <i class="fas fa-fw fa-code"></i>
               Contribute on
-              <a
-              href="https://github.com/Miodec/monkey-type"
-              target="_blank">GitHub</a>
+              <a href="https://github.com/Miodec/monkeytype" target="_blank">
+                GitHub
+              </a>
             </div>
             <div>
               <i class="fas fa-fw fa-donate"></i>
@@ -3037,7 +3086,9 @@
             </div>
             <div>
               <i class="fab fa-discord"></i>
-              <a href="https://www.discord.gg/monkeytype" class="discordLink">discord.gg/monkeytype</a>
+              <a href="https://www.discord.gg/monkeytype" class="discordLink">
+                discord.gg/monkeytype
+              </a>
             </div>
             <div>
               <i class="fas fa-code-branch"></i>
@@ -3060,7 +3111,10 @@
 
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js"></script>
-  <script src="https://kit.fontawesome.com/f3f87d89b4.js" crossorigin="anonymous"></script>
+  <script
+    src="https://kit.fontawesome.com/f3f87d89b4.js"
+    crossorigin="anonymous"
+  ></script>
   <script src="js/jquery-3.5.1.min.js"></script>
   <script src="js/jquery.color.min.js"></script>
   <script src="js/easing.js"></script>

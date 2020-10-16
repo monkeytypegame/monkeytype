@@ -9,14 +9,14 @@
 
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
 
-   - The project name doesn't really matter, but just name it `monkey-type`.
+   - The project name doesn't really matter, but just name it `monkeytype`.
    - Google Analytics is not necessary.
 
 2. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
 3. Run `firebase login` on your terminal to log in to the same google account as you just used to create the project.
 4. Git clone this project.
 5. Run `npm install` in the `functions/` directory
-6. Compile `public/css/style.scss` to `public/css/style.min.css` as [described below](https://github.com/Miodec/monkey-type/blob/master/CONTRIBUTING.md#standards--conventions)
+6. Compile `public/css/style.scss` to `public/css/style.min.css` as [described below](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md#standards--conventions)
 7. Rename `.firebaserc_example` to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
