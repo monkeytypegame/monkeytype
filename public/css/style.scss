@@ -2320,6 +2320,14 @@ key {
       .title{
         color: var(--sub-color);
       }
+      .buttons{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        .button{
+          padding: 2rem 0;
+        }
+      }
     }
     .privateRooms{
       grid-area: priv;
