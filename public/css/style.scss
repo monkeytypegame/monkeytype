@@ -2628,6 +2628,17 @@ key {
     background: var(--main-color);
     outline: none;
   }
+
+  &.disabled {
+    &:hover {
+      color: var(--sub-color);
+      background: var(--bg-color);
+      cursor: default;
+    }
+    color: var(--sub-color);
+    background: var(--bg-color);
+    cursor: default;
+  }
 }
 
 .text-button {

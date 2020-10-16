@@ -1,10 +1,12 @@
 $(".pageLogin .register input").keyup((e) => {
+  if ($(".pageLogin .register .button").hasClass("disabled")) return;
   if (e.key == "Enter") {
     signUp();
   }
 });
 
 $(".pageLogin .register .button").click((e) => {
+  if ($(".pageLogin .register .button").hasClass("disabled")) return;
   signUp();
 });
 
@@ -96,6 +98,7 @@ function signIn() {
 let dontCheckUserName = false;
 
 function signUp() {
+  $(".pageLogin .register .button").addClass("disabled");
   $(".pageLogin .preloader").removeClass("hidden");
   let nname = $(".pageLogin .register input")[0].value;
   let email = $(".pageLogin .register input")[1].value;
@@ -108,6 +111,7 @@ function signUp() {
     if (d.data === -1) {
       showNotification("Name unavailable", 3000);
       $(".pageLogin .preloader").addClass("hidden");
+      $(".pageLogin .register .button").removeClass("disabled");
       return;
     } else if (d.data === -2) {
       showNotification(
@@ -115,11 +119,13 @@ function signUp() {
         8000
       );
       $(".pageLogin .preloader").addClass("hidden");
+      $(".pageLogin .register .button").removeClass("disabled");
       return;
     } else if (d.data === 1) {
       if (password != passwordVerify) {
         showNotification("Passwords do not match", 3000);
         $(".pageLogin .preloader").addClass("hidden");
+        $(".pageLogin .register .button").removeClass("disabled");
         return;
       }
       firebase
@@ -171,9 +177,11 @@ function signUp() {
               }
               changePage("account");
               usr.sendEmailVerification();
+              $(".pageLogin .register .button").removeClass("disabled");
             })
             .catch(function (error) {
               // An error happened.
+              $(".pageLogin .register .button").removeClass("disabled");
               console.error(error);
               usr
                 .delete()
@@ -193,6 +201,7 @@ function signUp() {
         })
         .catch(function (error) {
           // Handle Errors here.
+          $(".pageLogin .register .button").removeClass("disabled");
           var errorCode = error.code;
           var errorMessage = error.message;
           showNotification(errorMessage, 5000);
@@ -2492,21 +2501,6 @@ function hideResultEditTagsPanel() {
         }
       );
   }
-}
-
-let chartAccuracyVisible = true;
-
-function toggleChartAccuracy() {
-  if (chartAccuracyVisible) {
-    resultHistoryChart.data.datasets[1].hidden = true;
-    resultHistoryChart.options.scales.yAxes[1].display = false;
-    chartAccuracyVisible = false;
-  } else {
-    resultHistoryChart.data.datasets[1].hidden = false;
-    resultHistoryChart.options.scales.yAxes[1].display = true;
-    chartAccuracyVisible = true;
-  }
-  resultHistoryChart.update();
 }
 
 $(".pageAccount .toggleAccuracyOnChart").click((params) => {
