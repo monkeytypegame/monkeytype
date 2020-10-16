@@ -1713,8 +1713,15 @@ function showCommandInput(command, placeholder) {
 }
 
 function updateSuggestedCommands() {
-  let inputVal = $("#commandLine input").val().toLowerCase().split(" ").filter((s,i) => s||i==0); //remove empty entries after first
+  let inputVal = $("#commandLine input").val().toLowerCase().split(" ").filter((s, i) => s || i == 0); //remove empty entries after first
   let list = currentCommands[currentCommands.length - 1];
+  if (inputVal[0] === "" && config.singleListCommandLine === "on") {
+    $.each(list.list, (index, obj) => {
+      obj.found = false;
+    });
+    displayFoundCommands();
+    return;
+  }
   //ignore the preceeding ">"s in the command line input
   if (inputVal[0] && inputVal[0][0] == ">") inputVal[0] = inputVal[0].replace(/^>+/,'');
   if (inputVal[0] == "" && inputVal.length == 1) {
@@ -1745,6 +1752,7 @@ function updateSuggestedCommands() {
 }
 
 function displayFoundCommands() {
+  console.time('a');
   $("#commandLine .suggestions").empty();
   let list = currentCommands[currentCommands.length - 1];
   $.each(list.list, (index, obj) => {
@@ -1754,6 +1762,8 @@ function displayFoundCommands() {
       );
     }
   });
+  console.timeEnd('a');
+  console.time('b');
   if ($("#commandLine .suggestions .entry").length == 0) {
     $("#commandLine .separator").css({ height: 0, margin: 0 });
   } else {
@@ -1762,6 +1772,8 @@ function displayFoundCommands() {
       "margin-bottom": ".5rem",
     });
   }
+  console.timeEnd('b');
+  console.time('c');
   let entries = $("#commandLine .suggestions .entry");
   if (entries.length > 0) {
     $(entries[0]).addClass("activeKeyboard");
@@ -1775,6 +1787,7 @@ function displayFoundCommands() {
     } catch (e) {}
   }
   $("#commandLine .listTitle").remove();
+  console.timeEnd('c');
   // if(currentCommands.title != ''){
   //   $("#commandLine .suggestions").before("<div class='listTitle'>"+currentCommands.title+"</div>");
   // }
