@@ -61,7 +61,8 @@ let defaultConfig = {
   showOutOfFocusWarning: true,
   paceCaret: "off",
   paceCaretCustomSpeed: 100,
-  pageWidth: "100"
+  pageWidth: "100",
+  chartAccuracy: true
 };
 
 let cookieConfig = null;
@@ -203,6 +204,7 @@ function applyConfig(configObj) {
     setPaceCaret(configObj.paceCaret, true);
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setPageWidth(configObj.pageWidth, true);
+    setChartAccuracy(configObj.chartAccuracy, true);
 
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -305,6 +307,31 @@ function setBlindMode(blind, nosave) {
   }
   config.blindMode = blind;
   updateTestModesNotice();
+  if (!nosave) saveConfigToCookie();
+}
+
+function updateChartAccuracy() {
+  resultHistoryChart.data.datasets[1].hidden = !config.chartAccuracy;
+  resultHistoryChart.options.scales.yAxes[1].display = config.chartAccuracy;
+  resultHistoryChart.update();
+}
+
+function toggleChartAccuracy() {
+  if (config.chartAccuracy) {
+    config.chartAccuracy = false;
+  } else {
+    config.chartAccuracy = true;
+  }
+  updateChartAccuracy();
+  saveConfigToCookie();
+}
+
+function setChartAccuracy(chartAccuracy, nosave) {
+  if (chartAccuracy == undefined) {
+    chartAccuracy = true;
+  }
+  config.chartAccuracy = chartAccuracy;
+  updateChartAccuracy();
   if (!nosave) saveConfigToCookie();
 }
 
