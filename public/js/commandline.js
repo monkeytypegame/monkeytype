@@ -1043,6 +1043,14 @@ let commandsQuoteLengthConfig = {
   title: "Change quote length...",
   list: [
     {
+      id: "changeQuoteLengthAll",
+      display: "all",
+      exec: () => {
+        changeQuoteLength(-1);
+        restartTest();
+      },
+    },
+    {
       id: "changeQuoteLengthShort",
       display: "short",
       exec: () => {
