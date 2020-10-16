@@ -947,6 +947,8 @@ function setTheme(name, nosave) {
   } catch (e) {
     console.log("Analytics unavailable");
   }
+  setCustomTheme(false, true);
+  applyCustomThemeColors();
   setTimeout(() => {
     $(".keymap-key").attr("style", "");
     refreshThemeColorObject();
