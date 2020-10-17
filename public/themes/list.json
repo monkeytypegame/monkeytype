@@ -398,5 +398,10 @@
     "name": "pastel",
     "bgColor": "#ffd1dc",
     "textColor": "#b39eb5"
-  }
+  },
+  {
+    "name": "alduin",
+    "bgColor": "#1c1c1c",
+    "textColor": "#dfd7af"
+  },
 ]
