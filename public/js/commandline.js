@@ -1269,6 +1269,19 @@ let commandsTags = {
 function updateCommandsTagsList() {
   if (dbSnapshot.tags.length > 0) {
     commandsTags.list = [];
+
+    commandsTags.list.push({
+      id: "clearTags",
+      display: 'Clear tags',
+      exec: () => {
+        dbSnapshot.tags.forEach((tag) => {
+          tag.active = false;
+        });
+        updateTestModesNotice();
+        saveActiveTagsToCookie();
+      },
+    });
+
     dbSnapshot.tags.forEach((tag) => {
       let dis = tag.name;
 
@@ -1292,9 +1305,16 @@ function updateCommandsTagsList() {
           } else {
             txt = '<i class="fas fa-square"></i>' + txt;
           }
-          $(
-            `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
-          ).html(txt);
+          if (isSingleListCommandLineActive()) {
+            $(
+              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+            ).html('Change tags > ' + txt);
+          } else {
+            $(
+              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+            ).html(txt);
+          }
+          
         },
       });
     });
