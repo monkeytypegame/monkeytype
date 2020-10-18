@@ -2592,7 +2592,7 @@ function restartTest(withSameWordset = false, nosave = false) {
     }
   }
 
-  if (modeBeforePractise !== null) {
+  if (modeBeforePractise !== null && !withSameWordset) {
     showNotification("Reverting to previous settings.", 1500);
     changeMode(modeBeforePractise);
     modeBeforePractise = null;
