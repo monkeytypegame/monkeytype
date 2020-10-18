@@ -797,7 +797,7 @@ a:hover {
 
 #centerContent {
   max-width: 1000px;
-  min-width: 500px;
+  // min-width: 500px;
   margin: 0 auto;
   display: grid;
   grid-auto-flow: row;
@@ -2774,6 +2774,29 @@ key {
     .pageSettings .section.keymapStyle .buttons {
       grid-template-columns: 1fr 1fr;
     }
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  #top{
+    .logo{
+      .bottom{
+        font-size: 1.75rem;
+        line-height: 1.75rem;
+        margin-top: .5rem;
+      }
+      .top{
+        display: none;
+      }
+    }
+    #menu{
+      .icon-button{
+        padding: 0;
+      }
+    }
+  }
+  #centerContent{
+    padding: 1rem;
   }
 }
 
