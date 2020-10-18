@@ -1,10 +1,5 @@
 [
   {
-    "name": "light",
-    "bgColor": "#fff",
-    "textColor": "#111"
-  },
-  {
     "name": "dark",
     "bgColor": "#111",
     "textColor": "#eee"
@@ -405,7 +400,7 @@
     "textColor": "#dfd7af"
   },
   {
-    "name": "paperColor",
+    "name": "paper",
     "bgColor": "#eeeeee",
     "textColor": "#444444"
   }
