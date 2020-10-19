@@ -4896,7 +4896,7 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (config.customTheme) {
     togglePresetCustomTheme();
   }
-  currentCommands = [commandsThemes];
+  currentCommands.push(commandsThemes);
   showCommandLine();
 });
 
