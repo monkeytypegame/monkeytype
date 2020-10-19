@@ -2704,7 +2704,7 @@ key {
   }
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1050px) {
   #centerContent {
     .pageSettings .section.themes .buttons,
     .pageSettings .section.language .buttons,
@@ -2715,8 +2715,14 @@ key {
     .pageSettings .section.keymapStyle .buttons {
       grid-template-columns: 1fr 1fr 1fr;
     }
+    
+    #result .morestats {
+      gap: 1rem;
+      grid-template-rows: 1fr 1fr;
+    }
   }
 }
+
 
 @media only screen and (max-width: 800px) {
   #centerContent {
@@ -2727,11 +2733,6 @@ key {
       .logo {
         margin-bottom: 0;
       }
-    }
-
-    #result .morestats {
-      gap: 1rem;
-      grid-template-rows: 1fr 1fr;
     }
 
     #menu {
