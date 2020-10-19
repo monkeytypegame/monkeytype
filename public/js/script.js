@@ -4973,6 +4973,13 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   }
 });
 
+//stop space scrolling
+window.addEventListener('keydown', function(e) {
+  if(e.keyCode == 32 && e.target == document.body) {
+    e.preventDefault();
+  }
+});
+
 let ctx = $("#wpmChart");
 let wpmOverTimeChart = new Chart(ctx, {
   type: "line",
