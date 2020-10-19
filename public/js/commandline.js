@@ -1506,7 +1506,7 @@ $(document).ready((e) => {
           hideCommandLine();
         }
         if (config.customTheme === true) {
-          setCustomTheme();
+          applyCustomThemeColors();
         } else {
           setTheme(config.theme);
         }
@@ -1565,7 +1565,11 @@ $("#commandLineWrapper #commandLine .suggestions").click((e) => {
 $("#commandLineWrapper").click((e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hideCommandLine();
-    setTheme(config.theme, true);
+    if (config.customTheme === true) {
+      applyCustomThemeColors();
+    } else {
+      setTheme(config.theme, true);
+    }
   }
 });
 
