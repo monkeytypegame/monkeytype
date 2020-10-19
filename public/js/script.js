@@ -4531,6 +4531,7 @@ window.addEventListener("beforeunload", (event) => {
 
 //handle keyboard events
 $(document).keydown((event) => {
+  if (resultVisible) return;
   let now = performance.now();
   let diff = Math.abs(keypressStats.spacing.current - now);
   if (keypressStats.spacing.current !== -1) {
