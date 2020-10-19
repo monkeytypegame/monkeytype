@@ -1739,7 +1739,9 @@ function showCommandInput(command, placeholder) {
 function updateSuggestedCommands() {
   let inputVal = $("#commandLine input").val().toLowerCase().split(" ").filter((s, i) => s || i == 0); //remove empty entries after first
   let list = currentCommands[currentCommands.length - 1];
-  if (inputVal[0] === "" && config.singleListCommandLine === "on" && currentCommands.length === 1) {
+  if (inputVal[0] === ""
+    && config.singleListCommandLine === "on"
+    && currentCommands.length === 1) {
     $.each(list.list, (index, obj) => {
       obj.found = false;
     });
