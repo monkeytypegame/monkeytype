@@ -4498,6 +4498,7 @@ $(document).keydown((event) => {
 });
 
 $(document).keyup((event) => {
+  if (resultVisible) return;
   let now = performance.now();
   let diff = Math.abs(keypressStats.duration.current - now);
   if (keypressStats.duration.current !== -1) {
