@@ -2914,6 +2914,8 @@ function changeMode(mode, nosave) {
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
+    setPunctuation(false, true);
+    setNumbers(false, true);
   } else if (config.mode == "quote") {
     setToggleSettings(false, nosave);
     $("#top .config .wordCount").addClass("hidden");
