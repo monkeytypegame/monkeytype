@@ -474,10 +474,15 @@ a:hover {
     padding: 2rem;
     display: grid;
     gap: 1rem;
-    width: 300px;
+    width: 400px;
 
     .title {
       font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+
+    .tip{
+      font-size: .75rem;
       color: var(--sub-color);
     }
   }
