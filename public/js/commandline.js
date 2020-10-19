@@ -519,8 +519,8 @@ let commands = {
                   (config.mode === "custom" &&
                     !customTextIsRandom &&
                     customText.length >= 5000) ||
-                  (config.mode === "words" && config.words >= 5000) ||
-                  (config.mode === "time" && config.time >= 3600)
+                  (config.mode === "words" && config.words >= 5000 || config.words === 0) ||
+                  (config.mode === "time" && (config.time >= 3600 || config.time === 0))
                 ) {
                   bailout = true;
                   showResult();
