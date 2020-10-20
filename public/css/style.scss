@@ -2444,15 +2444,18 @@ key {
       .below {
         text-align: center;
         color: var(--sub-color);
-        margin-top: 0.5rem;
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: auto 300px;
+        align-items: center;
+        .text{
+          height: min-content;
+        }
+        .buttons{
+          display: grid;
+          gap: .5rem;
+        }
       }
-
-      .toggleAccuracyOnChart {
-        position: absolute;
-        right: 0;
-        margin-top: -1.5rem;
-      }
-
       .chartPreloader {
         position: absolute;
         width: 100%;
