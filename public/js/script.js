@@ -76,7 +76,6 @@ let errorSound = new Audio("../sound/error.wav");
 let clickSounds = null;
 
 let isPreviewingTheme = false;
-let isPreviewingFont = true;
 
 function initClickSounds() {
   clickSounds = {
