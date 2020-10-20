@@ -256,20 +256,22 @@ firebase.auth().onAuthStateChanged(function (user) {
   } else {
     console.log('user is not logged in');
   }
-  setTimeout(f => {
-    if (/\/tribe_.+/.test(window.location.pathname)) {
+  // setTimeout(f => {
+    if (/\/tribe/.test(window.location.pathname)) {
+      if (/\/tribe_.+/.test(window.location.pathname)) {
+        let code = window.location.pathname.split('/')[1];
+        code = code.substring(5);
+        code = "room" + code;
+        MP.autoJoin = code;
+      }
       changePage('tribe');
-      let code = window.location.pathname.split('/')[1];
-      code = code.substring(5);
-      code = "room" + code;
-      MP.autoJoin = code;
     }
     if (!MP.socket.connected && MP.autoJoin != undefined) {
       if (MP.state === -1) {
         mp_init();
       }
     }
-  }, 250);
+  // }, 250);
 });
 
 function getAccountDataAndInit() {
