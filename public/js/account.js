@@ -2507,6 +2507,10 @@ $(".pageAccount .toggleAccuracyOnChart").click((params) => {
   toggleChartAccuracy();
 });
 
+$(".pageAccount .toggleChartStyle").click((params) => {
+  toggleChartStyle();
+});
+
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
   if (dbSnapshot.tags.length > 0) {
     let resultid = $(f.target).parents("span").attr("resultid");

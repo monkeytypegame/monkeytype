@@ -62,7 +62,8 @@ let defaultConfig = {
   paceCaret: "off",
   paceCaretCustomSpeed: 100,
   pageWidth: "100",
-  chartAccuracy: true
+  chartAccuracy: true,
+  chartStyle: "line"
 };
 
 let cookieConfig = null;
@@ -205,6 +206,7 @@ function applyConfig(configObj) {
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
     setPageWidth(configObj.pageWidth, true);
     setChartAccuracy(configObj.chartAccuracy, true);
+    setChartStyle(configObj.chartStyle, true);
 
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -316,6 +318,19 @@ function updateChartAccuracy() {
   resultHistoryChart.update();
 }
 
+function updateChartStyle() {
+  if (config.chartStyle == "scatter") {
+    resultHistoryChart.data.datasets[0].showLine = false;
+    resultHistoryChart.data.datasets[1].showLine = false;
+
+  } else {
+    resultHistoryChart.data.datasets[0].showLine = true;
+    resultHistoryChart.data.datasets[1].showLine = true;
+
+  }
+  resultHistoryChart.update();
+}
+
 function toggleChartAccuracy() {
   if (config.chartAccuracy) {
     config.chartAccuracy = false;
@@ -332,6 +347,25 @@ function setChartAccuracy(chartAccuracy, nosave) {
   }
   config.chartAccuracy = chartAccuracy;
   updateChartAccuracy();
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleChartStyle() {
+  if (config.chartStyle == "scatter") {
+    config.chartStyle = "line";
+  } else {
+    config.chartStyle = "scatter";
+  }
+  updateChartStyle();
+  saveConfigToCookie();
+}
+
+function setChartStyle(chartStyle, nosave) {
+  if (chartStyle == undefined) {
+    chartStyle = "line";
+  }
+  config.chartStyle = chartStyle;
+  updateChartStyle();
   if (!nosave) saveConfigToCookie();
 }
 
