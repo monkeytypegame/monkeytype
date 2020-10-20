@@ -4535,13 +4535,14 @@ window.addEventListener("beforeunload", (event) => {
 
 //handle keyboard events
 $(document).keydown((event) => {
-  if (resultVisible) return;
-  let now = performance.now();
-  let diff = Math.abs(keypressStats.spacing.current - now);
-  if (keypressStats.spacing.current !== -1) {
-    keypressStats.spacing.array.push(diff);
+  if (!resultVisible) {
+    let now = performance.now();
+    let diff = Math.abs(keypressStats.spacing.current - now);
+    if (keypressStats.spacing.current !== -1) {
+      keypressStats.spacing.array.push(diff);
+    }
+    keypressStats.spacing.current = now;
   }
-  keypressStats.spacing.current = now;
 
   //tab
   if (
