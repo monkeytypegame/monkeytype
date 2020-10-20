@@ -2439,7 +2439,7 @@ function refreshAccountPage() {
     // let slope = calculateSlope(trend);
     let plus = wpmChangePerHour > 0 ? "+" : "";
 
-    $(".pageAccount .group.chart .below").text(
+    $(".pageAccount .group.chart .below .text").text(
       `Speed change per hour spent typing: ${
         plus + roundTo2(wpmChangePerHour)
       } wpm.`
@@ -2505,6 +2505,10 @@ function hideResultEditTagsPanel() {
 
 $(".pageAccount .toggleAccuracyOnChart").click((params) => {
   toggleChartAccuracy();
+});
+
+$(".pageAccount .toggleChartStyle").click((params) => {
+  toggleChartStyle();
 });
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
