@@ -247,6 +247,7 @@ function copyResultToClipboard() {
     var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
     var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
     $(".notification").addClass("hidden");
+    $('.pageTest .loginTip').addClass('hidden');
     try {
       html2canvas(document.body, {
         backgroundColor: themeColors.bg,
@@ -271,12 +272,14 @@ function copyResultToClipboard() {
               showNotification("Copied to clipboard", 1000);
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
+              $('.pageTest .loginTip').removeClass('hidden');
             })
             .catch((f) => {
               $(".notification").removeClass("hidden");
               showNotification("Error saving image to clipboard", 2000);
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
+              $('.pageTest .loginTip').removeClass('hidden');
             });
         });
       });
@@ -285,6 +288,7 @@ function copyResultToClipboard() {
       showNotification("Error creating image", 2000);
       $(".pageTest .ssWatermark").addClass("hidden");
       $(".pageTest .buttons").removeClass("hidden");
+      $('.pageTest .loginTip').removeClass('hidden');
     }
   }
 }
