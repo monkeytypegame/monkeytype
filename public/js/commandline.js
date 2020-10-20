@@ -1347,6 +1347,9 @@ getFontsList().then((fonts) => {
     commandsFonts.list.push({
       id: "changeFont" + font.name.replace(/ /g, "_"),
       display: font.display !== undefined ? font.display : font.name,
+      hover: () => {
+        previewFontFamily(font.name);
+      },
       exec: () => {
         setFontFamily(font.name.replace(/ /g, "_"));
       },
@@ -1505,10 +1508,12 @@ $(document).ready((e) => {
         } else {
           hideCommandLine();
         }
+        setFontFamily(config.fontFamily, true);
         if (config.customTheme === true) {
           applyCustomThemeColors();
         } else {
           setTheme(config.theme);
+
         }
       }
     }
@@ -1565,6 +1570,7 @@ $("#commandLineWrapper #commandLine .suggestions").click((e) => {
 $("#commandLineWrapper").click((e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hideCommandLine();
+    setFontFamily(config.fontFamily, true);
     if (config.customTheme === true) {
       applyCustomThemeColors();
     } else {

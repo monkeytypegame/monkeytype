@@ -846,6 +846,14 @@ function togglePunctuation() {
   saveConfigToCookie();
 }
 
+function previewFontFamily(font) {
+  if (font == undefined) {
+    font = "Roboto_Mono";
+  }
+  document.documentElement.style.setProperty("--font", font.replace(/_/g, " "));
+  // if (!nosave) saveConfigToCookie();
+}
+
 //font family
 function setFontFamily(font, nosave) {
   if (font == undefined) {
