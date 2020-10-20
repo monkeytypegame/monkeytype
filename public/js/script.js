@@ -247,6 +247,7 @@ function copyResultToClipboard() {
     var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
     var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
     $(".notification").addClass("hidden");
+    $('.pageTest .loginTip').addClass('hidden');
     try {
       html2canvas(document.body, {
         backgroundColor: themeColors.bg,
@@ -271,12 +272,14 @@ function copyResultToClipboard() {
               showNotification("Copied to clipboard", 1000);
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
+              $('.pageTest .loginTip').removeClass('hidden');
             })
             .catch((f) => {
               $(".notification").removeClass("hidden");
               showNotification("Error saving image to clipboard", 2000);
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
+              $('.pageTest .loginTip').removeClass('hidden');
             });
         });
       });
@@ -285,6 +288,7 @@ function copyResultToClipboard() {
       showNotification("Error creating image", 2000);
       $(".pageTest .ssWatermark").addClass("hidden");
       $(".pageTest .buttons").removeClass("hidden");
+      $('.pageTest .loginTip').removeClass('hidden');
     }
   }
 }
@@ -466,6 +470,9 @@ function initWords() {
       ) {
         wordsBound = customText.length;
       }
+    }
+    if (config.mode === "words" && config.words === 0) {
+      wordsBound = 100;
     }
     if (activeFunBox === "plus_one") {
       wordsBound = 2;
@@ -719,14 +726,14 @@ function addWord() {
   let bound = 100;
   if (activeFunBox === "plus_one") bound = 1;
   if (
-    (wordsList.length - inputHistory.length > bound ||
-      (config.mode === "words" && wordsList.length >= config.words) ||
+    wordsList.length - inputHistory.length > bound ||
+      (config.mode === "words" && wordsList.length >= config.words && config.words > 0) ||
       (config.mode === "custom" &&
         customTextIsRandom &&
         wordsList.length >= customTextWordCount) ||
       (config.mode === "custom" &&
         !customTextIsRandom &&
-        wordsList.length >= customText.length))
+        wordsList.length >= customText.length)
   )
     return;
   const language =
@@ -832,11 +839,6 @@ function showWords() {
       .css("overflow", "hidden");
     $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
   }
-
-  var currentKey = wordsList[currentWordIndex]
-    .substring(currentInput.length, currentInput.length + 1)
-    .toString()
-    .toUpperCase();
 
   if (config.keymapMode === "next") {
     updateHighlightedKeymapKey();
@@ -1131,10 +1133,16 @@ function updateTimer() {
       //   }
       // }
       let displayTime = secondsToString(config.time - time);
+      if (config.time === 0) {
+        displayTime = secondsToString(time);
+      }
       $("#timerNumber").html("<div>" + displayTime + "</div>");
       // $("#timerNumber").html(config.time - time);
     } else if (config.timerStyle === "mini") {
       let displayTime = secondsToString(config.time - time);
+      if (config.time === 0) {
+        displayTime = secondsToString(time);
+      }
       $("#miniTimerAndLiveWpm .time").html(displayTime);
     }
   } else if (
@@ -1175,9 +1183,15 @@ function updateTimer() {
           outof = customText.length;
         }
       }
-      $("#timerNumber").html(
-        "<div>" + `${inputHistory.length}/${outof}` + "</div>"
-      );
+      if (config.words === 0) {
+        $("#timerNumber").html(
+          "<div>" + `${inputHistory.length}` + "</div>"
+        );
+      } else {
+        $("#timerNumber").html(
+          "<div>" + `${inputHistory.length}/${outof}` + "</div>"
+        );
+      }
       // $("#timerNumber").html(config.time - time);
     } else if (config.timerStyle === "mini") {
       let outof = wordsList.length;
@@ -1191,7 +1205,11 @@ function updateTimer() {
           outof = customText.length;
         }
       }
-      $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}/${outof}`);
+      if (config.words === 0) {
+        $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}`);
+      } else {
+        $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}/${outof}`);
+      }
     }
   }
 }
@@ -2553,7 +2571,7 @@ function startTest() {
       //   afkDetected = true;
       // }
       if (config.mode == "time") {
-        if (time >= config.time) {
+        if (time >= config.time && config.time !== 0) {
           //times up
           clearTimeout(timer);
           hideCaret();
@@ -2573,8 +2591,8 @@ function startTest() {
 function restartTest(withSameWordset = false, nosave = false) {
   if (!manualRestart) {
     if (
-      (config.mode === "words" && config.words < 1000) ||
-      (config.mode === "time" && config.time < 3600) ||
+      (config.mode === "words" && config.words < 1000 && config.words > 0) ||
+      (config.mode === "time" && config.time < 3600 && config.time > 0) ||
       config.mode === "quote" ||
       (config.mode === "custom" &&
         customTextIsRandom &&
@@ -2592,7 +2610,7 @@ function restartTest(withSameWordset = false, nosave = false) {
     }
   }
 
-  if (modeBeforePractise !== null) {
+  if (modeBeforePractise !== null && !withSameWordset) {
     showNotification("Reverting to previous settings.", 1500);
     changeMode(modeBeforePractise);
     modeBeforePractise = null;
@@ -2900,6 +2918,8 @@ function changeMode(mode, nosave) {
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
+    setPunctuation(false, true);
+    setNumbers(false, true);
   } else if (config.mode == "quote") {
     setToggleSettings(false, nosave);
     $("#top .config .wordCount").addClass("hidden");
@@ -4025,23 +4045,27 @@ function applyMode2Popup() {
   let val = $("#customMode2Popup input").val();
 
   if (mode == "time") {
-    if (val !== null && !isNaN(val) && val > 0) {
+    if (val !== null && !isNaN(val) && val >= 0) {
       changeTimeConfig(val);
       manualRestart = true;
       restartTest();
       if (val >= 1800) {
         showNotification("Stay safe and take breaks!", 3000);
+      } else if (val == 0) {
+        showNotification("Infinite time! Make sure to use Bail Out from the command line to save your result.", 5000);
       }
     } else {
       showNotification("Custom time must be at least 1", 3000);
     }
   } else if (mode == "words") {
-    if (val !== null && !isNaN(val) && val > 0) {
+    if (val !== null && !isNaN(val) && val >= 0) {
       changeWordCount(val);
       manualRestart = true;
       restartTest();
       if (val > 2000) {
         showNotification("Stay safe and take breaks!", 3000);
+      } else if (val == 0) {
+        showNotification("Infinite words! Make sure to use Bail Out from the command line to save your result.", 5000);
       }
     } else {
       showNotification("Custom word amount must be at least 1", 3000);
@@ -4478,6 +4502,7 @@ $(document).keydown((event) => {
 });
 
 $(document).keyup((event) => {
+  if (resultVisible) return;
   let now = performance.now();
   let diff = Math.abs(keypressStats.duration.current - now);
   if (keypressStats.duration.current !== -1) {
@@ -4510,6 +4535,7 @@ window.addEventListener("beforeunload", (event) => {
 
 //handle keyboard events
 $(document).keydown((event) => {
+  if (resultVisible) return;
   let now = performance.now();
   let diff = Math.abs(keypressStats.spacing.current - now);
   if (keypressStats.spacing.current !== -1) {
@@ -4896,7 +4922,7 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (config.customTheme) {
     togglePresetCustomTheme();
   }
-  currentCommands = [commandsThemes];
+  currentCommands.push(commandsThemes);
   showCommandLine();
 });
 
@@ -4970,6 +4996,13 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
     showNotification("Copied to clipboard", 1000);
   } catch (e) {
     showNotification("Could not copy to clipboard: " + e, 5000);
+  }
+});
+
+//stop space scrolling
+window.addEventListener('keydown', function(e) {
+  if(e.keyCode == 32 && e.target == document.body) {
+    e.preventDefault();
   }
 });
 

@@ -683,7 +683,7 @@ function toggleKeyTips() {
 
 //mode
 function changeTimeConfig(time, nosave) {
-  if (time !== null && !isNaN(time) && time > 0) {
+  if (time !== null && !isNaN(time) && time >= 0) {
   } else {
     time = 15;
   }
@@ -717,7 +717,7 @@ function changeQuoteLength(len, nosave) {
 }
 
 function changeWordCount(wordCount, nosave) {
-  if (wordCount !== null && !isNaN(wordCount) && wordCount > 0) {
+  if (wordCount !== null && !isNaN(wordCount) && wordCount >= 0) {
   } else {
     wordCount = 10;
   }
@@ -955,6 +955,8 @@ function setTheme(name, nosave) {
   } catch (e) {
     console.log("Analytics unavailable");
   }
+  setCustomTheme(false, true);
+  applyCustomThemeColors();
   setTimeout(() => {
     $(".keymap-key").attr("style", "");
     refreshThemeColorObject();

@@ -828,7 +828,7 @@ exports.testCompleted = functions
           request.obj.name = name;
 
           //check keyspacing and duration here
-          if (obj.mode === "time" && obj.wpm > 130) {
+          if (obj.mode === "time" && obj.wpm > 130 && obj.testDuration < 122) {
             if (verified === false || verified === undefined) {
               if (keySpacing !== null && keyDuration !== null) {
                 if (

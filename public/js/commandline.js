@@ -519,8 +519,8 @@ let commands = {
                   (config.mode === "custom" &&
                     !customTextIsRandom &&
                     customText.length >= 5000) ||
-                  (config.mode === "words" && config.words >= 5000) ||
-                  (config.mode === "time" && config.time >= 3600)
+                  (config.mode === "words" && config.words >= 5000 || config.words === 0) ||
+                  (config.mode === "time" && (config.time >= 3600 || config.time === 0))
                 ) {
                   bailout = true;
                   showResult();
@@ -1043,6 +1043,14 @@ let commandsQuoteLengthConfig = {
   title: "Change quote length...",
   list: [
     {
+      id: "changeQuoteLengthAll",
+      display: "all",
+      exec: () => {
+        changeQuoteLength(-1);
+        restartTest();
+      },
+    },
+    {
       id: "changeQuoteLengthShort",
       display: "short",
       exec: () => {
@@ -1261,6 +1269,19 @@ let commandsTags = {
 function updateCommandsTagsList() {
   if (dbSnapshot.tags.length > 0) {
     commandsTags.list = [];
+
+    commandsTags.list.push({
+      id: "clearTags",
+      display: 'Clear tags',
+      exec: () => {
+        dbSnapshot.tags.forEach((tag) => {
+          tag.active = false;
+        });
+        updateTestModesNotice();
+        saveActiveTagsToCookie();
+      },
+    });
+
     dbSnapshot.tags.forEach((tag) => {
       let dis = tag.name;
 
@@ -1284,9 +1305,16 @@ function updateCommandsTagsList() {
           } else {
             txt = '<i class="fas fa-square"></i>' + txt;
           }
-          $(
-            `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
-          ).html(txt);
+          if (isSingleListCommandLineActive()) {
+            $(
+              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+            ).html('Change tags > ' + txt);
+          } else {
+            $(
+              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+            ).html(txt);
+          }
+          
         },
       });
     });
@@ -1482,7 +1510,7 @@ $(document).ready((e) => {
         }
         setFontFamily(config.fontFamily, true);
         if (config.customTheme === true) {
-          setCustomTheme();
+          applyCustomThemeColors();
         } else {
           setTheme(config.theme);
 
@@ -1542,8 +1570,12 @@ $("#commandLineWrapper #commandLine .suggestions").click((e) => {
 $("#commandLineWrapper").click((e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hideCommandLine();
-    setTheme(config.theme, true);
     setFontFamily(config.fontFamily, true);
+    if (config.customTheme === true) {
+      applyCustomThemeColors();
+    } else {
+      setTheme(config.theme, true);
+    }
   }
 });
 
@@ -1711,8 +1743,17 @@ function showCommandInput(command, placeholder) {
 }
 
 function updateSuggestedCommands() {
-  let inputVal = $("#commandLine input").val().toLowerCase().split(" ").filter((s,i) => s||i==0); //remove empty entries after first
+  let inputVal = $("#commandLine input").val().toLowerCase().split(" ").filter((s, i) => s || i == 0); //remove empty entries after first
   let list = currentCommands[currentCommands.length - 1];
+  if (inputVal[0] === ""
+    && config.singleListCommandLine === "on"
+    && currentCommands.length === 1) {
+    $.each(list.list, (index, obj) => {
+      obj.found = false;
+    });
+    displayFoundCommands();
+    return;
+  }
   //ignore the preceeding ">"s in the command line input
   if (inputVal[0] && inputVal[0][0] == ">") inputVal[0] = inputVal[0].replace(/^>+/,'');
   if (inputVal[0] == "" && inputVal.length == 1) {

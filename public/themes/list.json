@@ -1,10 +1,5 @@
 [
   {
-    "name": "light",
-    "bgColor": "#fff",
-    "textColor": "#111"
-  },
-  {
     "name": "dark",
     "bgColor": "#111",
     "textColor": "#eee"
@@ -398,5 +393,15 @@
     "name": "pastel",
     "bgColor": "#ffd1dc",
     "textColor": "#b39eb5"
+  },
+  {
+    "name": "alduin",
+    "bgColor": "#1c1c1c",
+    "textColor": "#dfd7af"
+  },
+  {
+    "name": "paper",
+    "bgColor": "#eeeeee",
+    "textColor": "#444444"
   }
 ]
