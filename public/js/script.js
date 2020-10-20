@@ -4475,6 +4475,7 @@ $(document).keydown((event) => {
     (event["keyCode"] == 9 && !config.swapEscAndTab) ||
     (event["keyCode"] == 27 && config.swapEscAndTab)
   ) {
+    if (MP.state >= 10) return;
     if (
       !event.ctrlKey &&
       config.quickTab &&
