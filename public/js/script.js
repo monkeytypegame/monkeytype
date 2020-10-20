@@ -2545,7 +2545,8 @@ function startTest() {
   })(testStart + stepIntervalMS);
 }
 
-function restartTest(withSameWordset = false, nosave = false) {
+function restartTest(withSameWordset = false, nosave = false, tribe = false) {
+  if (MP.state >= 10 && !tribe) return;
   if (!manualRestart) {
     if (
       (config.mode === "words" && config.words < 1000) ||
@@ -4295,6 +4296,7 @@ $(document).on('click', "#testModesNotice .text-button", (event) => {
 
 //keypresses for the test, using different method to be more responsive
 $(document).keypress(function (event) {
+  if (MP.state >= 10 && MP.state <= 20) return;
   event = emulateLayout(event);
   if (!$("#wordsInput").is(":focus")) return;
   if (event["keyCode"] == 13) return;
@@ -4513,6 +4515,7 @@ $(document).keydown((event) => {
 
   //only for the typing test
   if ($("#wordsInput").is(":focus")) {
+    if (MP.state >= 10 && MP.state <= 20) return;
     const isBackspace =
       event["keyCode"] === 8 ||
       (config.capsLockBackspace && event.key === "CapsLock");
@@ -4895,8 +4898,8 @@ $(document).ready(() => {
         if (/\/tribe_.+/.test(window.location.pathname)) {
 
         } else {
-          let page = window.location.pathname.replace("/", "");
-          changePage(page);
+          // let page = window.location.pathname.replace("/", "");
+          // changePage(page);
         }
       }
     });
