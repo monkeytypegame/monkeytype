@@ -403,5 +403,10 @@
     "name": "paper",
     "bgColor": "#eeeeee",
     "textColor": "#444444"
+  },
+  {
+    "name": "fundamentals",
+    "bgColor": "#727474",
+    "textColor": "#196378"
   }
 ]
