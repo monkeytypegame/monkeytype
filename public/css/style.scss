@@ -2858,7 +2858,7 @@ key {
 
 .keymap-key {
   display: flex;
-  background-color: var(--bg-color);
+  background-color: transparent;
   color: var(--sub-color);
   border-radius: var(--roundness);
   border: 0.05rem solid;

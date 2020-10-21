@@ -1333,7 +1333,7 @@ function flashPressedKeymapKey(key, correct) {
         .animate(
           {
             color: themeColors.sub,
-            backgroundColor: themeColors.bg,
+            backgroundColor: "transparent",
             borderColor: themeColors.sub,
           },
           500,
@@ -1350,7 +1350,7 @@ function flashPressedKeymapKey(key, correct) {
         .animate(
           {
             color: themeColors.sub,
-            backgroundColor: themeColors.bg,
+            backgroundColor: "transparent",
             borderColor: themeColors.sub,
           },
           500,
