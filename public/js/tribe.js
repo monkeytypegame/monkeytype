@@ -92,6 +92,43 @@ function mp_joinRoomByCode(code) {
   MP.socket.emit("mp_room_join",{roomId:code});
 }
 
+function mp_sendTestProgress(wpm, acc, progress) {
+  MP.socket.emit('mp_room_test_progress_update', {
+    socketId: MP.socket.id,
+    roomId: MP.room.id,
+    stats: {
+      wpm: wpm,
+      acc: acc,
+      progress: progress
+    }
+  })
+}
+
+function mp_refreshTestUserList() {
+  $(".tribePlayers").empty();
+  MP.room.users.forEach(user => {
+    let me = '';
+    if (user.socketId === MP.socket.id) {
+      me = ' me';
+    }
+    $(".tribePlayers").append(`
+    <tr class="player ${me}" socketId="${user.socketId}">
+      <td class="name">${user.name}</td>
+      <td class="progress">
+        <div class="barBg">
+          <div class="bar" style="width: 0%;"></div>
+        </div>
+      </td>
+      <td class="stats">
+        <div class="wpm">-</div>
+        <div class="acc">-</div>
+      </td>
+    </tr>
+    `)
+  })
+  $(".tribePlayers").removeClass('hidden');
+}
+
 function mp_refreshConfig() {
   if (MP.room == undefined) return;
   $(".pageTribe .lobby .currentSettings .groups").empty();
@@ -359,6 +396,7 @@ MP.socket.on('mp_room_test_countdown', data => {
 
 MP.socket.on('mp_room_test_init', data => {
   Math.seedrandom(data.seed);
+  mp_refreshTestUserList();
   changePage('');
   restartTest(false, true, true);
 })
@@ -366,6 +404,18 @@ MP.socket.on('mp_room_test_init', data => {
 MP.socket.on('mp_room_state_update', data => {
   MP.state = data.newState;
   console.log(`state changed to ${data.newState}`);
+})
+
+MP.socket.on('mp_room_test_progress_update', data => {
+  if (data.length === 0) return;
+  Object.keys(data.stats).forEach(socketId => {
+    $(`.tribePlayers [socketId=${socketId}] .wpm`).text(data.stats[socketId].wpm);
+    $(`.tribePlayers [socketId=${socketId}] .acc`).text(data.stats[socketId].acc);
+    $(`.tribePlayers [socketId=${socketId}] .bar`).animate({
+      "width":
+        data.stats[socketId].progress + "%"
+    },1000,"linear");
+  })
 })
 
 $(".pageTribe #createPrivateRoom").click(f => {
