@@ -1799,6 +1799,48 @@ key {
     line-height: 1rem;
     text-align: right;
   }
+
+  .tribePlayers{
+    // display: grid;
+    // gap: 0.5rem;
+    margin-bottom: 1rem;
+    .player{
+      .name{
+        color: var(--sub-color);
+      }
+      .progress{
+        width: 100%;
+        padding: 0 1rem;
+        .barBg{
+          width: 100%;
+          height: .25rem;
+          background: rgba(0, 0, 0, 0.1);
+          border-radius: var(--roundness);
+          .bar{
+            height: .25rem;
+            background: var(--sub-color);
+            left: 0;
+            border-radius: var(--roundness);
+          }
+        }
+      }
+      .stats{
+        text-align: right;
+        grid-template-columns: auto auto;
+        color: var(--sub-color);
+        display: flex;
+        justify-content: flex-end;
+        min-width: 90px;
+        .acc{
+          margin-left: 1rem;
+        }
+      }
+    }
+    .player.me .barBg .bar{
+      background: var(--main-color);
+    }
+  }
+  
 }
 
 .pageLogin {
