@@ -2468,6 +2468,22 @@ function startTest() {
       wpmHistory.push(wpmAndRaw.wpm);
       rawHistory.push(wpmAndRaw.raw);
 
+      let acc = Math.round((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
+
+      let progress = 0;
+
+      if (config.mode === "time") {
+        progress = 100 - ((time + 1) / config.time) * 100;
+      } else {
+        let outof = wordsList.length;
+        if (config.mode === "words") {
+          outof = config.words;
+        }
+        progress = Math.floor(((currentWordIndex + 1) / outof) * 100);
+      }
+
+      mp_sendTestProgress(wpmAndRaw.wpm, acc, progress);
+
       if (activeFunBox === "layoutfluid" && config.mode === "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];
         let index = 0;
