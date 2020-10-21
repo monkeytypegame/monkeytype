@@ -1318,6 +1318,16 @@ key {
         font-size: 2rem;
         line-height: 2rem;
       }
+
+      &.time{
+        .afk{
+          color: var(--sub-color);
+          font-size: .75rem;
+          line-height: .75rem;
+          margin-left: 0.2rem;
+        }
+      }
+
     }
 
     // .infoAndTags {

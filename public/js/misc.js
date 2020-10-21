@@ -313,7 +313,7 @@ function getGibberish() {
 function secondsToString(sec) {
   hours = Math.floor(sec / 3600);
   minutes = Math.floor((sec % 3600) / 60);
-  seconds = (sec % 3600) % 60;
+  seconds = roundTo2((sec % 3600) % 60);
   let hoursString;
   let minutesString;
   let secondsString;

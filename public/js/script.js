@@ -1677,7 +1677,12 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm));
     $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
     $("#result .stats .acc .bottom").text(roundTo2(stats.acc) + "%");
-    $("#result .stats .time .bottom").text(roundTo2(testtime) + "s");
+    // $("#result .stats .time .bottom").text(roundTo2(testtime) + "s");
+    let time = roundTo2(testtime) + 's';
+    if (testtime > 61) {
+      time = secondsToString(roundTo2(testtime));
+    }
+    $("#result .stats .time .bottom .text").text(time)
     $("#result .stats .wpm .bottom").attr(
       "aria-label",
       roundTo2(stats.wpm * 5) + " cpm"
@@ -1698,11 +1703,19 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
     $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
     $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
-    $("#result .stats .time .bottom").text(Math.round(testtime) + "s");
+    let time = Math.round(testtime) + 's';
+    if (testtime > 61) {
+      time = secondsToString(Math.round(testtime));
+    }
+    $("#result .stats .time .bottom .text").text(time);
     $("#result .stats .time .bottom").attr(
       "aria-label",
       `${roundTo2(testtime)}s (${afkseconds}s afk ${afkSecondsPercent}%)`
     );
+  }
+  $("#result .stats .time .bottom .afk").text('');
+  if (afkSecondsPercent > 0) {
+    $("#result .stats .time .bottom .afk").text(afkSecondsPercent + "% afk");
   }
 
   let correctcharpercent = roundTo2(
