@@ -3630,6 +3630,14 @@ $("#customTextPopup .inputs .check input").change((e) => {
   }
 });
 
+$("#customTextPopup textarea").keypress((e) => {
+
+  if (e.code === "Enter" && e.ctrlKey) {
+    $("#customTextPopup .button").click();
+  }
+
+})
+
 $("#customTextPopup .button").click((e) => {
   let text = $("#customTextPopup textarea").val();
   text = text.trim();
