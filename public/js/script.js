@@ -1448,7 +1448,7 @@ function updateCaretPosition() {
     let newTop = 0;
     let newLeft = 0;
 
-    newTop = currentLetterPosTop - letterHeight / 4;
+    newTop = currentLetterPosTop - Math.round(letterHeight / 20);
     if (inputLen == 0) {
       newLeft = isLanguageLeftToRight
         ? currentLetterPosLeft - caret.width() / 2
@@ -1493,7 +1493,9 @@ function updateCaretPosition() {
         });
       }
     }
-  } catch (e) {}
+  } catch (e) {
+    console.log('could not move caret: ' + e.message);
+  }
 }
 
 function countChars() {

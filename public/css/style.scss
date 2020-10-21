@@ -1710,11 +1710,14 @@ key {
 .word {
   margin: 0.25rem;
   color: var(--sub-color);
-  display: flex;
+  // display: flex;
   // transition: 0.25s;
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid transparent;
   line-height: 1rem;
+  letter{
+    display: inline;
+  }
 
   // transition: .25s;
   .wordInputAfter {
