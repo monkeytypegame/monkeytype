@@ -2821,9 +2821,12 @@ function cleanTypographySymbols(textToClean) {
     '‘': "'", // &rsquo;	&#8217;
     ',': ",", // &sbquo;	&#8218;
     '—': "-", // &mdash;  &#8212;
-    '…': "..."// &hellip; &#8230; 
+    '…': "...",// &hellip; &#8230; 
+    '«': "<<",
+    '»': ">>",
+    '–': "-"
   }
-  return textToClean.replace(/[“”’‘—,…]/g, (char) => specials[char] || '');
+  return textToClean.replace(/[“”’‘—,…«»–]/g, (char) => specials[char] || '');
 }
 
 function changePage(page) {
