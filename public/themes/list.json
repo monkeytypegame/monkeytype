@@ -408,5 +408,10 @@
     "name": "fundamentals",
     "bgColor": "#727474",
     "textColor": "#196378"
+  },
+  {
+    "name": "drowning",
+    "bgColor": "#191826",
+    "textColor": "#4a6fb5"
   }
 ]
