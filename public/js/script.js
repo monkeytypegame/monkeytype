@@ -3956,7 +3956,7 @@ function movePaceCaret(expectedStepEnd) {
           (currentWordIndex - currentWordElementIndex)
         ].querySelectorAll("letter")[paceCaret.currentLetterIndex];
       }
-      newTop = currentLetter.offsetTop - $(currentLetter).height() / 4;
+      newTop = currentLetter.offsetTop - $(currentLetter).height() / 20;
       newLeft;
       if (paceCaret.currentLetterIndex === -1) {
         newLeft = currentLetter.offsetLeft;
