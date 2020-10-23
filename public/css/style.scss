@@ -1789,9 +1789,9 @@ key {
 
 .word letter.incorrect hint {
   position: absolute;
-  bottom: -1.2em;
+  bottom: -1em;
   color: var(--text-color);
-  line-height: 1em;
+  line-height: initial;
   font-size: .75em;
   text-shadow: none;
   padding: 1px;
