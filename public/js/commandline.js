@@ -1401,32 +1401,34 @@ let commandsLanguages = {
   ],
 };
 
-if (Object.keys(words).length > 0) {
+// if (getLanguageList().length > 0) {
   commandsLanguages.list = [];
-  Object.keys(words).forEach((language) => {
-    if (language === "english_10k") return;
-    commandsLanguages.list.push({
-      id: "changeLanguage" + capitalizeFirstLetter(language),
-      display: language.replace(/_/g, " "),
-      exec: () => {
-        changeLanguage(language);
-        restartTest();
-        saveConfigToCookie();
-      },
-    });
-    if (language === "english_expanded") {
+  getLanguageList().then(languages => {
+    languages.forEach((language) => {
+      // if (language === "english_10k") return;
       commandsLanguages.list.push({
-        id: "changeLanguageEnglish10k",
-        display: "english 10k",
+        id: "changeLanguage" + capitalizeFirstLetter(language),
+        display: language.replace(/_/g, " "),
         exec: () => {
-          changeLanguage("english_10k");
+          changeLanguage(language);
           restartTest();
           saveConfigToCookie();
         },
-      });
-    }
+      })
+    });
+    // if (language === "english_expanded") {
+    //   commandsLanguages.list.push({
+    //     id: "changeLanguageEnglish10k",
+    //     display: "english 10k",
+    //     exec: () => {
+    //       changeLanguage("english_10k");
+    //       restartTest();
+    //       saveConfigToCookie();
+    //     },
+    //   });
+    // }
   });
-}
+// }
 
 let commandsLayouts = {
   title: "Change layout...",

@@ -69,6 +69,40 @@ async function getFontsList() {
   }
 }
 
+let languageList = null;
+async function getLanguageList() {
+  if (languageList == null) {
+    return $.getJSON("languages/list.json", function (data) {
+      languageList = data;
+      return languageList;
+    });
+  } else {
+    return languageList;
+  }
+}
+
+let currentLanguage = null;
+async function getLanguage(lang) {
+  try {
+    if (currentLanguage == null || currentLanguage.name !== lang) {
+      console.log('getting language json');
+      await $.getJSON(`languages/${lang}.json`, function (data) {
+        currentLanguage = data;
+      })
+    }
+    return currentLanguage;
+  } catch (e) {
+    console.error(`error getting language`)
+    console.error(e);
+    config.language = "english";
+    showNotification(`Error getting language: ${e.message}`,4000);
+    await $.getJSON(`languages/english.json`, function (data) {
+      currentLanguage = data;
+    })
+    return currentLanguage;
+  }
+}
+
 function smooth(arr, windowSize, getter = (value) => value, setter) {
   const get = getter;
   const result = [];

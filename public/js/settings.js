@@ -239,19 +239,15 @@ async function fillSettingsPage() {
   refreshThemeButtons();
 
   let langEl = $(".pageSettings .section.language .buttons").empty();
-  Object.keys(words).forEach((language) => {
-    if (language === "english_10k") return;
-    langEl.append(
-      `<div class="language button" language='${language}'>${language.replace(
-        "_",
-        " "
-      )}</div>`
-    );
-    if (language === "english_expanded") {
+  getLanguageList().then(languages => {
+    languages.forEach((language) => {
       langEl.append(
-        `<div class="language button" language='english_10k'>english 10k</div>`
+        `<div class="language button" language='${language}'>${language.replace(
+          "_",
+          " "
+        )}</div>`
       );
-    }
+    });
   });
 
   let layoutEl = $(".pageSettings .section.layout .buttons").empty();

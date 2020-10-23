@@ -380,7 +380,7 @@ function setFocus(foc) {
   }
 }
 
-function initWords() {
+async function initWords() {
   testActive = false;
   wordsList = [];
   currentWordIndex = 0;
@@ -394,23 +394,7 @@ function initWords() {
   currentCorrected = "";
   currentInput = "";
 
-  let language = words[config.language];
-
-  if (language === undefined && config.language === "english_10k") {
-    showBackgroundLoader();
-    $.ajax({
-      url: "js/english_10k.json",
-      async: false,
-      success: function (data) {
-        hideBackgroundLoader();
-        words["english_10k"] = {
-          leftToRight: true,
-          words: data,
-        };
-        language = words[config.language];
-      },
-    });
-  }
+  let language = await getLanguage(config.language);
 
   if (config.mode === "quote" && quotes === null) {
     showBackgroundLoader();
@@ -738,10 +722,10 @@ function addWord() {
     return;
   const language =
     config.mode !== "custom"
-      ? words[config.language]
+      ? currentLanguage
       : {
           //borrow the direction of the current language
-          leftToRight: words[config.language].leftToRight,
+          leftToRight: currentLanguage.leftToRight,
           words: customText,
         };
   const wordset = language.words;
@@ -1439,7 +1423,7 @@ function updateCaretPosition() {
       .querySelectorAll("letter")[currentLetterIndex];
 
     if ($(currentLetter).length == 0) return;
-    const isLanguageLeftToRight = words[config.language].leftToRight;
+    const isLanguageLeftToRight = currentLanguage.leftToRight;
     let currentLetterPosLeft = isLanguageLeftToRight
       ? currentLetter.offsetLeft
       : currentLetter.offsetLeft + $(currentLetter).width();
@@ -2701,11 +2685,11 @@ function restartTest(withSameWordset = false, nosave = false) {
       opacity: 0,
     },
     125,
-    () => {
+    async () => {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         sameWordset = false;
-        initWords();
+        await initWords();
         initPaceCaret(nosave);
       } else {
         sameWordset = true;
@@ -3997,7 +3981,11 @@ function movePaceCaret(expectedStepEnd) {
       )
     }
     paceCaret.timeout = setTimeout(() => {
-      movePaceCaret(expectedStepEnd + (paceCaret.spc * 1000));
+      try {
+        movePaceCaret(expectedStepEnd + (paceCaret.spc * 1000));
+      } catch (e) {
+        paceCaret = null;
+      }
     }, duration);
   } catch (e) {
     // $("#paceCaret").animate({ opacity: 0 }, 250, () => {

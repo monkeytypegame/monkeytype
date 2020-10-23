@@ -297,21 +297,27 @@ function getAccountDataAndInit() {
               if (key !== "resultFilters") {
                 if (Array.isArray(config[key])) {
                   config[key].forEach((arrval, index) => {
-                    if (arrval != dbSnapshot.config[key][index])
+                    if (arrval != dbSnapshot.config[key][index]) {
                       configsDifferent = true;
+                      console.log(`.config is different: ${arrval} != ${dbSnapshot.config[key][index]}`);
+                    }
                   });
                 } else {
-                  if (config[key] != dbSnapshot.config[key])
+                  if (config[key] != dbSnapshot.config[key]) {
                     configsDifferent = true;
+                    console.log(`..config is different: ${config[key]} != ${dbSnapshot.config[key]}`);
+                  }
                 }
               }
             } catch (e) {
               console.log(e);
               configsDifferent = true;
+              console.log(`...config is different: ${e.message}`);
             }
           }
         });
         if (configsDifferent) {
+          console.log('applying config from db');
           accountIconLoading(false);
           applyConfig(dbSnapshot.config);
           updateSettingsPage();
@@ -984,23 +990,19 @@ let defaultAccountFilters = {
   },
 };
 
-Object.keys(words).forEach((language) => {
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
-  ).append(
-    `<div class="button" filter="${language}">${language.replace(
-      "_",
-      " "
-    )}</div>`
-  );
-  defaultAccountFilters.language[language] = true;
-  if (language === "english_expanded") {
+getLanguageList().then(languages => {
+  languages.forEach((language) => {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
-    ).append(`<div class="button" filter="english_10k">english 10k</div>`);
-    defaultAccountFilters.language["english_10k"] = true;
-  }
-});
+    ).append(
+      `<div class="button" filter="${language}">${language.replace(
+        "_",
+        " "
+      )}</div>`
+    );
+    defaultAccountFilters.language[language] = true;
+  });
+})
 
 $(
   ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
@@ -1992,7 +1994,13 @@ function refreshAccountPage() {
         }
 
         // if (!activeFilters.includes("lang_" + result.language)) return;
-        if (!config.resultFilters.language[result.language]) return;
+
+        let langFilter = config.resultFilters.language[result.language];
+
+        if (result.language === "english_expanded" && config.resultFilters.language.english_1k) {
+          langFilter = true;
+        }
+        if (!langFilter) return;
 
         let puncfilter = "off";
         if (result.punctuation) {
