@@ -534,6 +534,46 @@ exports.verifyUser = functions.https.onRequest(async (request, response) => {
   }
 });
 
+function incrementT60Bananas(uid, result, userData) {
+  try {
+    let best60;
+    try {
+      best60 = Math.max(...userData.personalBests.time[60].map(best => best.wpm));
+      if (!Number.isFinite(best60)) {
+        throw 'Not finite'
+      }
+    } catch (e) {
+      best60 = undefined;
+    }
+    
+    if (best60 != undefined && result.wpm < best60 - best60 * 0.25) {
+      console.log('returning');
+      return;
+    } else {
+      //increment
+      console.log('checking');
+      db.collection(`users/${uid}/bananas`).doc('bananas').get().then(docRef => {
+        let data = docRef.data();
+        if (data === undefined) {
+          //create doc
+          db.collection(`users/${uid}/bananas`).doc('bananas')
+            .set({
+              t60bananas: 1,
+            }, { merge: true });
+        } else {
+          //increment
+          db.collection(`users/${uid}/bananas`).doc('bananas')
+            .set({
+              t60bananas: admin.firestore.FieldValue.increment(1),
+            }, { merge: true });
+        }
+      })
+    }
+  } catch (e) {
+    console.log('something went wrong when trying to increment bananas ' + e.message);
+  }
+}
+
 async function incrementTestCounter(uid, userData) {
   try {
     if (userData.completedTests === undefined) {
@@ -898,6 +938,11 @@ exports.testCompleted = functions
                   let dailylb = values[1].insertedAt;
                   let ispb = values[2];
                   // console.log(values);
+
+                  if (obj.mode === "time" && String(obj.mode2) === "60") {
+                    incrementT60Bananas(request.uid, obj, userdata);
+                  }
+
                   incrementTestCounter(request.uid, userdata);
                   incrementStartedTestCounter(
                     request.uid,
