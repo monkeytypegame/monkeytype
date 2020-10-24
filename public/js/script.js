@@ -4634,7 +4634,8 @@ $(document).keydown((event) => {
       !event.ctrlKey &&
       config.quickTab &&
       !$(".pageLogin").hasClass("active") &&
-      !resultCalculating
+      !resultCalculating &&
+      $("#commandLineWrapper").hasClass("hidden")
     ) {
       event.preventDefault();
       if ($(".pageTest").hasClass("active")) {

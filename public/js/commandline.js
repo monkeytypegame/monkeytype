@@ -1538,7 +1538,7 @@ if (Object.keys(layouts).length > 0) {
 }
 
 $("#commandLine input").keyup((e) => {
-  if (e.keyCode == 38 || e.keyCode == 40 || e.keyCode == 13) return;
+  if (e.keyCode == 38 || e.keyCode == 40 || e.keyCode == 13 || e.code == "Tab") return;
   updateSuggestedCommands();
 });
 
@@ -1660,7 +1660,8 @@ $(document).keydown((e) => {
       triggerCommand(command);
       return;
     }
-    if (e.keyCode == 38 || e.keyCode == 40) {
+    if (e.keyCode == 38 || e.keyCode == 40 || e.code == "Tab") {
+      e.preventDefault();
       $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
         "mouseenter mouseleave"
       );
@@ -1670,7 +1671,7 @@ $(document).keydown((e) => {
       $.each(entries, (index, obj) => {
         if ($(obj).hasClass("activeKeyboard")) activenum = index;
       });
-      if (e.keyCode == 38) {
+      if (e.keyCode == 38 || (e.code == "Tab" && e.shiftKey)) {
         entries.removeClass("activeKeyboard");
         if (activenum == 0) {
           $(entries[entries.length - 1]).addClass("activeKeyboard");
@@ -1680,7 +1681,7 @@ $(document).keydown((e) => {
           hoverId = $(entries[activenum]).attr("command");
         }
       }
-      if (e.keyCode == 40) {
+      if (e.keyCode == 40 || (e.code == "Tab" && !e.shiftKey)) {
         entries.removeClass("activeKeyboard");
         if (activenum + 1 == entries.length) {
           $(entries[0]).addClass("activeKeyboard");
