@@ -1298,6 +1298,14 @@ let commandsFontSize = {
         restartTest();
       },
     },
+    {
+      id: "changeFontSize3",
+      display: "3x",
+      exec: () => {
+        changeFontSize(3);
+        restartTest();
+      },
+    },
   ],
 };
 

@@ -1327,10 +1327,13 @@ function changeFontSize(fontSize, nosave) {
   $("#caret, #paceCaret").removeClass("size15");
   $("#words").removeClass("size2");
   $("#caret, #paceCaret").removeClass("size2");
+  $("#words").removeClass("size3");
+  $("#caret, #paceCaret").removeClass("size3");
 
   $("#miniTimerAndLiveWpm").removeClass("size125");
   $("#miniTimerAndLiveWpm").removeClass("size15");
   $("#miniTimerAndLiveWpm").removeClass("size2");
+  $("#miniTimerAndLiveWpm").removeClass("size3");
 
   if (fontSize == 125) {
     $("#words").addClass("size125");
@@ -1344,6 +1347,10 @@ function changeFontSize(fontSize, nosave) {
     $("#words").addClass("size2");
     $("#caret, #paceCaret").addClass("size2");
     $("#miniTimerAndLiveWpm").addClass("size2");
+  } else if (fontSize == 3) {
+    $("#words").addClass("size3");
+    $("#caret, #paceCaret").addClass("size3");
+    $("#miniTimerAndLiveWpm").addClass("size3");
   }
   if (!nosave) saveConfigToCookie();
   // restartTest();

@@ -891,6 +891,10 @@ a:hover {
     &.size2 {
       margin-top: 2.7em;
     }
+
+    &.size3 {
+      margin-top: 3.9em;
+    }
   }
 
   &.size125 {
@@ -903,6 +907,10 @@ a:hover {
 
   &.size2 {
     transform: scale(1.9);
+  }
+  
+  &.size3 {
+    transform: scale(2.8);
   }
 }
 
@@ -1693,6 +1701,11 @@ key {
         font-size: 2rem;
         line-height: 2rem;
       }
+      &.size3 {
+        margin-top: -3.5rem;
+        font-size: 3rem;
+        line-height: 3rem;
+      }
     }
   }
 
@@ -1753,6 +1766,12 @@ key {
   line-height: 2rem;
   font-size: 2rem;
   margin: 0.5rem;
+}
+
+#words.size3 .word {
+  line-height: 3rem;
+  font-size: 3rem;
+  margin: 0.75rem;
 }
 
 .word.error {
