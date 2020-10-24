@@ -12,11 +12,13 @@ $(".pageLogin .register .button").click((e) => {
 
 $(".pageLogin .login input").keyup((e) => {
   if (e.key == "Enter") {
+    configChangedBeforeDb = false;
     signIn();
   }
 });
 
 $(".pageLogin .login .button").click((e) => {
+  configChangedBeforeDb = false;
   signIn();
 });
 
@@ -289,6 +291,7 @@ function getAccountDataAndInit() {
         // showNotification('Applying db config',3000);
         updateSettingsPage();
         saveConfigToCookie(true);
+        restartTest(false, true);
       } else if (dbSnapshot.config !== undefined) {
         let configsDifferent = false;
         Object.keys(config).forEach((key) => {
@@ -323,6 +326,7 @@ function getAccountDataAndInit() {
           applyConfig(config);
           updateSettingsPage();
           saveConfigToCookie(true);
+          restartTest(false, true);
         }
       }
       dbConfigLoaded = true;
