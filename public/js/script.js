@@ -307,6 +307,9 @@ function activateFunbox(funbox, mode) {
   $("#funBoxTheme").attr("href", ``);
   if (funbox === "none") {
     activeFunBox = "none";
+    memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+    memoryFunboxTimer = null;
+    $('#wordsWrapper').removeClass('hidden');
   }
   if (mode === "style") {
     if (funbox != undefined) {
@@ -2505,6 +2508,13 @@ function startTest() {
       array: [],
     },
   };
+
+  if (activeFunBox === "memory") {
+    memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+    memoryFunboxTimer = null;
+    $('#wordsWrapper').addClass('hidden');
+  }
+
   try {
     if (config.paceCaret !== "off") movePaceCaret(performance.now() + (paceCaret.spc * 1000));
   } catch (e) {
