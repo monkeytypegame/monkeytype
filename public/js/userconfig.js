@@ -151,6 +151,7 @@ function loadConfigFromCookie() {
     cookieConfig = newConfig;
     saveConfigToCookie(true);
   }
+  restartTest(false, true);
 }
 
 function applyConfig(configObj) {
@@ -210,7 +211,6 @@ function applyConfig(configObj) {
     setChartStyle(configObj.chartStyle, true);
     setMinWpm(configObj.minWpm, true);
     setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
-
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
     //   configObj.resultFilters !== null &&
@@ -281,7 +281,7 @@ function setDifficulty(diff, nosave) {
     diff = "normal";
   }
   config.difficulty = diff;
-  restartTest(false,nosave);
+  if (!nosave) restartTest(false,nosave);
   updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }
@@ -1196,7 +1196,7 @@ function changeKeymapMode(mode, nosave) {
     $(".keymap-key").attr("style", "");
   }
   config.keymapMode = mode;
-  restartTest(false,nosave);
+  if (!nosave) restartTest(false,nosave);
   if (!nosave) saveConfigToCookie();
 }
 
