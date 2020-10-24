@@ -4989,6 +4989,7 @@ if (window.location.hostname === "localhost") {
   );
 }
 
+manualRestart = true;
 loadConfigFromCookie();
 getReleasesFromGitHub();
 getPatreonNames();
