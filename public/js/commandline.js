@@ -1691,15 +1691,19 @@ $(document).keydown((e) => {
           hoverId = $(entries[activenum]).attr("command");
         }
       }
-      let scroll =
-        Math.abs(
-          $(".suggestions").offset().top -
+      try {
+        let scroll =
+          Math.abs(
+            $(".suggestions").offset().top -
             $(".entry.activeKeyboard").offset().top -
             $(".suggestions").scrollTop()
-        ) -
-        $(".suggestions").outerHeight() / 2 +
-        $($(".entry")[0]).outerHeight();
-      $(".suggestions").scrollTop(scroll);
+          ) -
+          $(".suggestions").outerHeight() / 2 +
+          $($(".entry")[0]).outerHeight();
+        $(".suggestions").scrollTop(scroll);
+      } catch (e) {
+        console.log('could not scroll suggestions: ' + e.message);
+      }
       // console.log(`scrolling to ${scroll}`);
       try {
         let list = currentCommands[currentCommands.length - 1];
