@@ -43,6 +43,9 @@ let paceCaret = null;
 let missedWords = [];
 let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
+let memoryFunboxTimer = null;
+let memoryFunboxInterval = null;
+
 
 let themeColors = {
   bg: "#323437",
@@ -331,6 +334,10 @@ function activateFunbox(funbox, mode) {
       changeKeymapLayout("qwerty");
       settingsGroups.keymapLayout.updateButton();
       restartTest();
+    } else if (funbox === "memory") {
+      changeMode('words');
+      setShowAllLines(true, true);
+      restartTest(false, true);
     }
     activeFunBox = funbox;
   }
@@ -826,6 +833,20 @@ function showWords() {
 
   if (config.keymapMode === "next") {
     updateHighlightedKeymapKey();
+  }
+
+  if (activeFunBox === "memory") {
+    memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+    memoryFunboxTimer = Math.round(Math.pow(wordsList.length, 1.2));
+    memoryFunboxInterval = setInterval(fn => {
+      memoryFunboxTimer-= 1;
+      showNotification(memoryFunboxTimer);
+      if (memoryFunboxTimer < 0) {
+        memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+        memoryFunboxTimer = null;
+        $('#wordsWrapper').addClass('hidden');
+      }
+    }, 1000);
   }
 
   updateActiveElement();
@@ -2888,6 +2909,12 @@ function changePage(page) {
 }
 
 function changeMode(mode, nosave) {
+
+  if (mode !== "words" && activeFunBox === "memory") {
+    showNotification("Memory funbox can only be used with words mode.");
+    return;
+  }
+
   config.mode = mode;
   $("#top .config .mode .text-button").removeClass("active");
   $("#top .config .mode .text-button[mode='" + mode + "']").addClass("active");

@@ -78,5 +78,10 @@
     "name": "read_ahead",
     "type": "style",
     "info": "Current and the next word is invisible!"
+  },
+  {
+    "name": "memory",
+    "type": "script",
+    "info": "Test your memory. Remember the words and type them blind."
   }
 ]
