@@ -5018,10 +5018,11 @@ $("#wpmChart").on("mouseleave", (e) => {
 });
 
 $(document).ready(() => {
+
   updateFavicon(32, 14);
   $("body").css("transition", ".25s");
-  manualRestart = true;
-  restartTest(false,true);
+  // manualRestart = true;
+  // restartTest(false,true);
   if (config.quickTab) {
     $("#restartTestButton").addClass("hidden");
   }
