@@ -3433,7 +3433,7 @@ function updateTestModesNotice() {
 
   if (config.minWpm !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsMinWpm"><i class="fas fa-bomb"></i>min ${config.paceCaretCustomSpeed} wpm</div>`
+      `<div class="text-button" commands="commandsMinWpm"><i class="fas fa-bomb"></i>min ${config.minWpmCustomSpeed} wpm</div>`
     );
   }
 
