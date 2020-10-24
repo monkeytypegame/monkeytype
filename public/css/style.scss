@@ -3005,10 +3005,6 @@ key {
     }
 
     .row {
-      :nth-child(0) {
-        opacity: 0;
-      }
-
       :nth-child(13) {
         opacity: 0;
       }
@@ -3078,11 +3074,7 @@ key {
       grid-template-columns: 6fr 2fr 1fr 2fr 6fr;
     }
 
-    .row { 
-      :nth-child(0) {
-        opacity: 0;
-      }
-      
+    .row {
       :nth-child(13) {
         opacity: 0;
       }
