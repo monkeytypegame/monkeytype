@@ -2621,14 +2621,14 @@ function restartTest(withSameWordset = false, nosave = false) {
   // afkDetected = false;
   wpmHistory = [];
   rawHistory = [];
-  missedWords = [];
+  missedWords = {};
   correctedHistory = [];
   currentCorrected = "";
   setFocus(false);
   hideCaret();
   testActive = false;
   hideLiveWpm();
-  hideTimer();
+  hideTimer();  
   bailout = false;
   paceCaret = null;
   if(paceCaret !== null) clearTimeout(paceCaret.timeout);
@@ -4243,10 +4243,16 @@ $(document.body).on("click", "#restartTestButton", (event) => {
 
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
   if (event.keyCode == 13) {
-    if (missedWords.length > 0) {
+    if (Object.keys(missedWords).length > 0) {
       let currentMode = config.mode;
       changeMode("custom");
-      customText = missedWords;
+      let newCustomText = [];
+      Object.keys(missedWords).forEach(missedWord => {
+        for (let i = 0; i < missedWords[missedWord]; i++) {
+          newCustomText.push(missedWord);
+        }
+      });
+      customText = newCustomText;
       customTextIsRandom = true;
       customTextWordCount = 50;
       restartTest();
@@ -4258,10 +4264,16 @@ $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
 });
 
 $(document.body).on("click", "#practiseMissedWordsButton", (event) => {
-  if (missedWords.length > 0) {
+  if (Object.keys(missedWords).length > 0) {
     let currentMode = config.mode;
     changeMode("custom");
-    customText = missedWords;
+    let newCustomText = [];
+    Object.keys(missedWords).forEach(missedWord => {
+      for (let i = 0; i < missedWords[missedWord]; i++) {
+        newCustomText.push(missedWord);
+      }
+    });
+    customText = newCustomText;
     customTextIsRandom = true;
     customTextWordCount = 50;
     restartTest();
@@ -4424,8 +4436,11 @@ $(document).keypress(function (event) {
     currentError.count++;
     currentError.words.push(currentWordIndex);
     thisCharCorrect = false;
-    if (!missedWords.includes(wordsList[currentWordIndex])) {
-      missedWords.push(wordsList[currentWordIndex]);
+    if (!Object.keys(missedWords).includes(wordsList[currentWordIndex])) {
+      // missedWords.push(wordsList[currentWordIndex]);
+      missedWords[wordsList[currentWordIndex]] = 1;
+    } else {
+      missedWords[wordsList[currentWordIndex]]++;
     }
   } else {
     accuracyStats.correct++;
