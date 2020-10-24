@@ -84,7 +84,6 @@ async function saveConfigToCookie(noDbCheck = false) {
     configChangedBeforeDb = true;
   }
   // showNotification('saving to cookie',1000);
-  if (config.freedomMode === null) config.freedomMode = false;
   let d = new Date();
   d.setFullYear(d.getFullYear() + 1);
   $.cookie("config", null);

@@ -305,7 +305,7 @@ function getAccountDataAndInit() {
                 } else {
                   if (config[key] != dbSnapshot.config[key]) {
                     configsDifferent = true;
-                    console.log(`..config is different: ${config[key]} != ${dbSnapshot.config[key]}`);
+                    console.log(`..config is different ${key}: ${config[key]} != ${dbSnapshot.config[key]}`);
                   }
                 }
               }
@@ -319,7 +319,8 @@ function getAccountDataAndInit() {
         if (configsDifferent) {
           console.log('applying config from db');
           accountIconLoading(false);
-          applyConfig(dbSnapshot.config);
+          config = dbSnapshot.config;
+          applyConfig(config);
           updateSettingsPage();
           saveConfigToCookie(true);
         }
