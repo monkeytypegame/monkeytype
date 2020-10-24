@@ -1639,6 +1639,38 @@
                 </div>
               </div>
             </div>
+            <div class="section minWpm" section="">
+              <h1>min wpm</h1>
+              <div class="text">
+                Automatically fails a test if your WPM falls below a threshold.
+              </div>
+              <div class="buttons">
+                <div
+                  class="button"
+                  minWpm="off"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  off
+                </div>
+                <div
+                  class="button"
+                  minWpm="custom"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  custom
+                </div>
+                <input
+                  type="number"
+                  step="1"
+                  class="customMinWpmSpeed"
+                  placeholder="wpm"
+                  min="0"
+                  value=""
+                />
+              </div>
+            </div>
             <div class="section language">
               <h1>language</h1>
               <div class="buttons"></div>

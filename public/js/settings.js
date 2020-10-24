@@ -207,6 +207,17 @@ settingsGroups.paceCaret = new SettingsGroup("paceCaret", setPaceCaret, () => {
     );
   }
 });
+settingsGroups.minWpm = new SettingsGroup("minWpm", setMinWpm, () => {
+  if (config.minWpm === "custom") {
+    $(
+      ".pageSettings .section.minWpm input.customMinWpmSpeed"
+    ).removeClass("hidden");
+  } else {
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
+      "hidden"
+    );
+  }
+});
 settingsGroups.smoothLineScroll = new SettingsGroup(
   "smoothLineScroll",
   setSmoothLineScroll
@@ -384,6 +395,19 @@ function updateSettingsPage() {
     ).val(config.paceCaretCustomSpeed);
   } else {
     $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
+      "hidden"
+    );
+  }
+
+  if (config.minWpm === "custom") {
+    $(
+      ".pageSettings .section.minWpm input.customMinWpmSpeed"
+    ).removeClass("hidden");
+    $(
+      ".pageSettings .section.minWpm input.customMinWpmSpeed"
+    ).val(config.minWpmCustomSpeed);
+  } else {
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
       "hidden"
     );
   }
@@ -631,6 +655,10 @@ function updateDiscordSettingsSection() {
 
 $(document).on('focusout', ".pageSettings .section.paceCaret input.customPaceCaretSpeed", (e) => {
   setPaceCaretCustomSpeed(parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()));
+})
+
+$(document).on('focusout', ".pageSettings .section.minWpm input.customMinWpmSpeed", (e) => {
+  setMinWpmCustomSpeed(parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val()));
 })
 
 $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {

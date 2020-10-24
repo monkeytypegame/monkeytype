@@ -63,7 +63,9 @@ let defaultConfig = {
   paceCaretCustomSpeed: 100,
   pageWidth: "100",
   chartAccuracy: true,
-  chartStyle: "line"
+  chartStyle: "line",
+  minWpm: "off",
+  minWpmCustomSpeed: 100
 };
 
 let cookieConfig = null;
@@ -207,6 +209,8 @@ function applyConfig(configObj) {
     setPageWidth(configObj.pageWidth, true);
     setChartAccuracy(configObj.chartAccuracy, true);
     setChartStyle(configObj.chartStyle, true);
+    setMinWpm(configObj.minWpm, true);
+    setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
 
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -480,6 +484,24 @@ function setPaceCaretCustomSpeed(val, nosave) {
     val = 100;
   }
   config.paceCaretCustomSpeed = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+//min wpm
+function setMinWpm(minwpm, nosave) {
+  if (minwpm == undefined) {
+    minwpm = "off";
+  }
+  config.minWpm = minwpm;
+  updateTestModesNotice();
+  if (!nosave) saveConfigToCookie();
+}
+
+function setMinWpmCustomSpeed(val, nosave) {
+  if (val == undefined || Number.isNaN(parseInt(val))) {
+    val = 100;
+  }
+  config.minWpmCustomSpeed = val;
   if (!nosave) saveConfigToCookie();
 }
 

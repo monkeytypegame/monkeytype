@@ -2590,6 +2590,15 @@ function startTest() {
       //   showNotification("AFK detected", 3000);
       //   afkDetected = true;
       // }
+      if (config.minWpm === "custom" && wpmAndRaw.wpm < parseInt(config.minWpmCustomSpeed)) {
+          clearTimeout(timer);
+          hideCaret();
+          testActive = false;
+          inputHistory.push(currentInput);
+          correctedHistory.push(currentCorrected);
+          showResult(true);
+          return;
+      }
       if (config.mode == "time") {
         if (time >= config.time && config.time !== 0) {
           //times up
@@ -3409,6 +3418,12 @@ function updateTestModesNotice() {
   if (config.paceCaret !== "off") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${config.paceCaret === "pb" ? "pb" : config.paceCaretCustomSpeed+" wpm"} pace</div>`
+    );
+  }
+
+  if (config.minWpm !== "off") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsMinWpm"><i class="fas fa-bomb"></i>min ${config.paceCaretCustomSpeed} wpm</div>`
     );
   }
 

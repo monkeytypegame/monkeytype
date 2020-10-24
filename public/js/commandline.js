@@ -228,6 +228,15 @@ let commands = {
       },
     },
     {
+      id: "changePaceCaret",
+      display: "Change min wpm mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsMinWpm);
+        showCommandLine();
+      },
+    },
+    {
       id: "togglePlaySoundOnError",
       display: "Toggle play sound on error",
       exec: () => {
@@ -832,6 +841,37 @@ let commandsPaceCaret = {
     // },
   ],
 };
+
+let commandsMinWpm = {
+  title: "Change min wpm mode...",
+  list: [
+    {
+      id: "setMinWpmOff",
+      display: "off",
+      exec: () => {
+        setMinWpm("off");
+      },
+    },
+    {
+      id: "setMinWpmCustom",
+      display: "custom...",
+      input: true,
+      exec: (input) => {
+        setMinWpmCustomSpeed(input);
+        setMinWpm("custom");
+      },
+    },
+    // {
+    //   id: "setPaceCaretCustomSpeed",
+    //   display: "Set custom speed...",
+    //   input: true,
+    //   exec: (input) => {
+    //     console.log(input);
+    //   },
+    // },
+  ],
+};
+
 
 
 let commandsKeymapStyle = {
