@@ -502,6 +502,13 @@ let commands = {
           $('#top #menu .icon-button.view-account').click()
     },
     {
+      id: "toggleFullscreen",
+      display: "Toggle Fullscreen",
+      exec: () => {
+        toggleFullscreen();
+      },
+    },
+    {
       id: "bailOut",
       display: "Bail out...",
       subgroup: true,
@@ -550,7 +557,7 @@ let commands = {
       id: "joinDiscord",
       display: "Join the Discord server",
       exec: () => {
-        window.open("https://discord.gg/yENzqcB");
+        window.open("https://discord.gg/monkeytype");
       },
     },
   ],
