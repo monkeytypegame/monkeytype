@@ -4,7 +4,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Oxygen&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Itim&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Itim&display=swap");
 
 :root {
   --roundness: 0.25rem;
@@ -481,8 +481,8 @@ a:hover {
       color: var(--sub-color);
     }
 
-    .tip{
-      font-size: .75rem;
+    .tip {
+      font-size: 0.75rem;
       color: var(--sub-color);
     }
   }
@@ -812,16 +812,16 @@ a:hover {
   align-items: center;
   z-index: 999;
   grid-template-rows: auto 1fr auto;
-  &.wide125{
+  &.wide125 {
     max-width: 1250px;
   }
-  &.wide150{
+  &.wide150 {
     max-width: 1500px;
   }
-  &.wide200{
+  &.wide200 {
     max-width: 2000px;
   }
-  &.widemax{
+  &.widemax {
     max-width: unset;
   }
 }
@@ -839,7 +839,7 @@ a:hover {
   transform-origin: top left;
 }
 
-#paceCaret{
+#paceCaret {
   height: 1.5rem;
   // background: var(--sub-color);
   background: var(--sub-color);
@@ -851,8 +851,8 @@ a:hover {
   width: 2px;
 }
 
-#caret, #paceCaret{
-
+#caret,
+#paceCaret {
   &.off {
     width: 0;
   }
@@ -908,7 +908,7 @@ a:hover {
   &.size2 {
     transform: scale(1.9);
   }
-  
+
   &.size3 {
     transform: scale(2.8);
   }
@@ -1158,31 +1158,31 @@ key {
     margin-bottom: 1rem;
   }
 
-  .leftright{
+  .leftright {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 1rem;
-    .left{
+    .left {
       text-align: left;
     }
-    .right{
+    .right {
       text-align: right;
       // display: flex;
       // gap: 1rem;
       // align-items: center;
       // justify-content: flex-end;
-      .current-theme{
-        transition: .25s;
+      .current-theme {
+        transition: 0.25s;
         text-decoration: none;
-        &:hover{
+        &:hover {
           color: var(--main-color);
           cursor: pointer;
         }
       }
-      .discordLink{
-        transition: .25s;
+      .discordLink {
+        transition: 0.25s;
         text-decoration: none;
-        &:hover{
+        &:hover {
           color: var(--main-color);
           cursor: pointer;
         }
@@ -1192,7 +1192,7 @@ key {
 
   .version {
     opacity: 0;
-    transition: .25s;
+    transition: 0.25s;
     &:hover {
       cursor: pointer;
       color: var(--main-color);
@@ -1215,10 +1215,10 @@ key {
   grid-template-areas:
     "stats chart"
     "morestats morestats";
-    // "wordsHistory wordsHistory"
-    // "buttons buttons"
-    // "login login"
-    // "ssw ssw";
+  // "wordsHistory wordsHistory"
+  // "buttons buttons"
+  // "login login"
+  // "ssw ssw";
 
   .buttons {
     display: grid;
@@ -1229,16 +1229,16 @@ key {
     grid-column: 1/3;
   }
 
-  .ssWatermark{
+  .ssWatermark {
     // grid-area: ssw;
     grid-column: 1/3;
   }
 
-  #resultWordsHistory{
+  #resultWordsHistory {
     // grid-area: wordsHistory;
     color: var(--sub-color);
     grid-column: 1/3;
-    .words{
+    .words {
       display: flex;
       flex-wrap: wrap;
       width: 100%;
@@ -1327,15 +1327,14 @@ key {
         line-height: 2rem;
       }
 
-      &.time{
-        .afk{
+      &.time {
+        .afk {
           color: var(--sub-color);
-          font-size: .75rem;
-          line-height: .75rem;
+          font-size: 0.75rem;
+          line-height: 0.75rem;
           margin-left: 0.2rem;
         }
       }
-
     }
 
     // .infoAndTags {
@@ -1416,7 +1415,7 @@ key {
       .bottom {
         font-size: 1rem;
         line-height: 1rem;
-        .lbChange .fas{
+        .lbChange .fas {
           margin-right: 0.15rem;
         }
       }
@@ -1618,7 +1617,7 @@ key {
   }
 }
 
-#restartTestButton{
+#restartTestButton {
   margin: 0 auto;
   margin-top: 1rem;
 }
@@ -1725,11 +1724,11 @@ key {
   color: var(--sub-color);
   font-variant: no-common-ligatures;
   // display: flex;
-  // transition: 0.25s;
+  // transition: 0.25s
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid transparent;
   line-height: 1rem;
-  letter{
+  letter {
     display: inline;
   }
 
@@ -1743,7 +1742,7 @@ key {
     padding: 0.5rem;
     /* left: .5rem; */
     margin-left: -0.5rem;
-    margin-top: -1.5rem; 
+    margin-top: -1.5rem;
     border-radius: var(--roundness);
     // box-shadow: 0 0 10px rgba(0,0,0,.25);
     transition: 0.25s;
@@ -1804,7 +1803,7 @@ key {
 
 .word letter.incorrect {
   color: var(--error-color);
-  position:relative;
+  position: relative;
 }
 
 .word letter.incorrect hint {
@@ -1812,11 +1811,11 @@ key {
   bottom: -1em;
   color: var(--text-color);
   line-height: initial;
-  font-size: .75em;
+  font-size: 0.75em;
   text-shadow: none;
   padding: 1px;
   left: 0;
-  opacity: .5;
+  opacity: 0.5;
   text-align: center;
   width: 100%;
 }
@@ -2035,10 +2034,10 @@ key {
       }
     }
 
-    &.paceCaret{
-      .customPaceCaretSpeed{
+    &.paceCaret {
+      .customPaceCaretSpeed {
         width: 4rem;
-        padding: 0 .5rem;
+        padding: 0 0.5rem;
       }
     }
 
@@ -2071,8 +2070,7 @@ key {
     }
 
     &.discordIntegration {
-
-      #unlinkDiscordButton{
+      #unlinkDiscordButton {
         margin-top: 0.5rem;
         font-size: 0.75rem;
       }
@@ -2481,12 +2479,12 @@ key {
         display: grid;
         grid-template-columns: auto 300px;
         align-items: center;
-        .text{
+        .text {
           height: min-content;
         }
-        .buttons{
+        .buttons {
           display: grid;
-          gap: .5rem;
+          gap: 0.5rem;
         }
       }
       .chartPreloader {
@@ -2751,14 +2749,13 @@ key {
     .pageSettings .section.keymapStyle .buttons {
       grid-template-columns: 1fr 1fr 1fr;
     }
-    
+
     #result .morestats {
       gap: 1rem;
       grid-template-rows: 1fr 1fr;
     }
   }
 }
-
 
 @media only screen and (max-width: 800px) {
   #centerContent {
@@ -2820,43 +2817,43 @@ key {
 }
 
 @media only screen and (max-width: 600px) {
-#middle{
-  #result{
-    grid-template-areas:
-      "stats stats"
-      "chart chart"
-      "morestats morestats";
-    .stats{
-      grid-template-areas: "wpm acc";
-      gap: 4rem;
-    }
-    .stats.morestats{
-      grid-template-rows: 1fr 1fr 1fr;
-      gap: 1rem;
+  #middle {
+    #result {
+      grid-template-areas:
+        "stats stats"
+        "chart chart"
+        "morestats morestats";
+      .stats {
+        grid-template-areas: "wpm acc";
+        gap: 4rem;
+      }
+      .stats.morestats {
+        grid-template-rows: 1fr 1fr 1fr;
+        gap: 1rem;
+      }
     }
   }
 }
-}
 
 @media only screen and (max-width: 500px) {
-  #top{
-    .logo{
-      .bottom{
+  #top {
+    .logo {
+      .bottom {
         font-size: 1.75rem;
         line-height: 1.75rem;
-        margin-top: .5rem;
+        margin-top: 0.5rem;
       }
-      .top{
+      .top {
         display: none;
       }
     }
-    #menu{
-      .icon-button{
+    #menu {
+      .icon-button {
         padding: 0;
       }
     }
   }
-  #centerContent{
+  #centerContent {
     padding: 1rem;
   }
 }
