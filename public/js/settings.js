@@ -899,7 +899,6 @@ $("#resetSettingsButton").click((e) => {
 });
 
 $("#exportSettingsButton").click((e) => {
-  console.log(JSON.stringify(config));
   let configJSON = JSON.stringify(config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
