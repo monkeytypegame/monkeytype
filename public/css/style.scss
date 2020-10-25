@@ -1779,9 +1779,9 @@ key {
   border-bottom: 2px solid var(--error-color);
   text-shadow: 1px 0px 0px var(--bg-color),
     // 2px 0px 0px var(--bg-color),
-      -1px 0px 0px var(--bg-color),
+    -1px 0px 0px var(--bg-color),
     // -2px 0px 0px var(--bg-color),
-      0px 1px 0px var(--bg-color),
+    0px 1px 0px var(--bg-color),
     1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
@@ -3005,14 +3005,14 @@ key {
       grid-template-columns: 6.9fr 4.6fr 6.9fr;
     }
 
-    #KeyLeftBracket {
-      opacity: 0;
-    }
-    #KeyRightBracket {
-      opacity: 0;
-    }
-    #KeyQuote {
-      opacity: 0;
+    .row {
+      :nth-child(13) {
+        opacity: 0;
+      }
+
+      :nth-child(14) {
+        opacity: 0;
+      }
     }
   }
   &.split {
@@ -3075,17 +3075,14 @@ key {
       grid-template-columns: 6fr 2fr 1fr 2fr 6fr;
     }
 
-    #KeyLeftBracket {
-      opacity: 0;
-    }
-    #KeyRightBracket {
-      opacity: 0;
-    }
-    #KeyQuote {
-      opacity: 0;
-    }
-    #KeySpace2 {
-      opacity: 1;
+    .row {
+      :nth-child(13) {
+        opacity: 0;
+      }
+      
+      :nth-child(14) {
+        opacity: 0;
+      }
     }
   }
 }
