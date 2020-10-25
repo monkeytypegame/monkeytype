@@ -507,13 +507,13 @@ async function initWords() {
       } else if (activeFunBox === "gibberish") {
         randomWord = getGibberish();
       } else if (activeFunBox === "58008") {
-        setToggleSettings(false);
+        setToggleSettings(false, true);
         randomWord = getNumbers(7);
       } else if (activeFunBox === "specials") {
-        setToggleSettings(false);
+        setToggleSettings(false, true);
         randomWord = getSpecials();
       } else if (activeFunBox === "ascii") {
-        setToggleSettings(false);
+        setToggleSettings(false, true);
         randomWord = getASCII();
       }
 

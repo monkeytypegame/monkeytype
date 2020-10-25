@@ -160,13 +160,10 @@ function applyConfig(configObj) {
     setCustomTheme(configObj.customTheme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
     setQuickTabMode(configObj.quickTab, true);
-    setNumbers(configObj.numbers, true);
-    setPunctuation(configObj.punctuation, true);
     setKeyTips(configObj.showKeyTips, true);
     changeTimeConfig(configObj.time, true);
     changeQuoteLength(configObj.quoteLength, true);
     changeWordCount(configObj.words, true);
-    changeMode(configObj.mode, true);
     changeLanguage(configObj.language, true);
     setCapsLockBackspace(configObj.capsLockBackspace, true);
     changeLayout(configObj.layout, true);
@@ -211,6 +208,9 @@ function applyConfig(configObj) {
     setChartStyle(configObj.chartStyle, true);
     setMinWpm(configObj.minWpm, true);
     setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
+    setNumbers(configObj.numbers, true);
+    setPunctuation(configObj.punctuation, true);
+    changeMode(configObj.mode, true);
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
     //   configObj.resultFilters !== null &&
@@ -762,7 +762,7 @@ function changeQuoteLength(len, nosave) {
     len = 1;
   }
   len = parseInt(len);
-  changeMode("quote", nosave);
+  if (!nosave) changeMode("quote", nosave);
   config.quoteLength = len;
   $("#top .config .quoteLength .text-button").removeClass("active");
   $("#top .config .quoteLength .text-button[quoteLength='" + len + "']").addClass(
