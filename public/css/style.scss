@@ -1723,6 +1723,7 @@ key {
 .word {
   margin: 0.25rem;
   color: var(--sub-color);
+  font-variant: no-common-ligatures;
   // display: flex;
   // transition: 0.25s;
   /*   margin-bottom: 1px; */
