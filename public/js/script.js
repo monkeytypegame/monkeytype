@@ -1370,58 +1370,62 @@ function flashPressedKeymapKey(key, correct) {
 
 function updateHighlightedKeymapKey() {
   // return;
-  if ($(".active-key") != undefined) {
-    $(".active-key").removeClass("active-key");
-  }
+  try {
+    if ($(".active-key") != undefined) {
+      $(".active-key").removeClass("active-key");
+    }
 
-  var currentKey = wordsList[currentWordIndex]
-    .substring(currentInput.length, currentInput.length + 1)
-    .toString()
-    .toUpperCase();
+    var currentKey = wordsList[currentWordIndex]
+      .substring(currentInput.length, currentInput.length + 1)
+      .toString()
+      .toUpperCase();
 
-  switch (currentKey) {
-    case "\\":
-    case "|":
-      var highlightKey = "#KeyBackslash";
-      break;
-    case "}":
-    case "]":
-      var highlightKey = "#KeyRightBracket";
-      break;
-    case "{":
-    case "[":
-      var highlightKey = "#KeyLeftBracket";
-      break;
-    case '"':
-    case "'":
-      var highlightKey = "#KeyQuote";
-      break;
-    case ":":
-    case ";":
-      var highlightKey = "#KeySemicolon";
-      break;
-    case "<":
-    case ",":
-      var highlightKey = "#KeyComma";
-      break;
-    case ">":
-    case ".":
-      var highlightKey = "#KeyPeriod";
-      break;
-    case "?":
-    case "/":
-      var highlightKey = "#KeySlash";
-      break;
-    case "":
-      var highlightKey = "#KeySpace";
-      break;
-    default:
-      var highlightKey = `#Key${currentKey}`;
-  }
+    switch (currentKey) {
+      case "\\":
+      case "|":
+        var highlightKey = "#KeyBackslash";
+        break;
+      case "}":
+      case "]":
+        var highlightKey = "#KeyRightBracket";
+        break;
+      case "{":
+      case "[":
+        var highlightKey = "#KeyLeftBracket";
+        break;
+      case '"':
+      case "'":
+        var highlightKey = "#KeyQuote";
+        break;
+      case ":":
+      case ";":
+        var highlightKey = "#KeySemicolon";
+        break;
+      case "<":
+      case ",":
+        var highlightKey = "#KeyComma";
+        break;
+      case ">":
+      case ".":
+        var highlightKey = "#KeyPeriod";
+        break;
+      case "?":
+      case "/":
+        var highlightKey = "#KeySlash";
+        break;
+      case "":
+        var highlightKey = "#KeySpace";
+        break;
+      default:
+        var highlightKey = `#Key${currentKey}`;
+    }
 
-  $(highlightKey).addClass("active-key");
-  if (highlightKey === "#KeySpace") {
-    $("#KeySpace2").addClass("active-key");
+    $(highlightKey).addClass("active-key");
+    if (highlightKey === "#KeySpace") {
+      $("#KeySpace2").addClass("active-key");
+    }
+  } catch (e) {
+    console.log('could not update highlighted keymap key: ' + e.message);
   }
 }
 
