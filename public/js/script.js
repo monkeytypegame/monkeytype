@@ -479,7 +479,7 @@ async function initWords() {
       randomWord = wordset[Math.floor(Math.random() * wordset.length)];
       previousWord = wordsList[i - 1];
       previousWord2 = wordsList[i - 2];
-      if (config.mode == "custom" && wordset.length < 3 && customTextIsRandom) {
+      if (config.mode == "custom" && customTextIsRandom) {
         randomWord = wordset[Math.floor(Math.random() * wordset.length)];
       } else if (config.mode == "custom" && !customTextIsRandom) {
         randomWord = customText[i];
