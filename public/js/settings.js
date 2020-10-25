@@ -136,7 +136,10 @@ settingsGroups.confidenceMode = new SettingsGroup(
     settingsGroups.stopOnError.updateButton();
   }
 );
-settingsGroups.indicateTypos = new SettingsGroup("indicateTypos", setIndicateTypos);
+settingsGroups.indicateTypos = new SettingsGroup(
+  "indicateTypos",
+  setIndicateTypos
+);
 settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
 settingsGroups.quickEnd = new SettingsGroup("quickEnd", setQuickEnd);
 // settingsGroups.readAheadMode = new SettingsGroup(
@@ -209,9 +212,9 @@ settingsGroups.paceCaret = new SettingsGroup("paceCaret", setPaceCaret, () => {
 });
 settingsGroups.minWpm = new SettingsGroup("minWpm", setMinWpm, () => {
   if (config.minWpm === "custom") {
-    $(
-      ".pageSettings .section.minWpm input.customMinWpmSpeed"
-    ).removeClass("hidden");
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
+      "hidden"
+    );
   } else {
     $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
       "hidden"
@@ -231,7 +234,10 @@ settingsGroups.language = new SettingsGroup("language", changeLanguage);
 settingsGroups.fontSize = new SettingsGroup("fontSize", changeFontSize);
 settingsGroups.pageWidth = new SettingsGroup("pageWidth", setPageWidth);
 settingsGroups.caretStyle = new SettingsGroup("caretStyle", setCaretStyle);
-settingsGroups.paceCaretStyle = new SettingsGroup("paceCaretStyle", setPaceCaretStyle);
+settingsGroups.paceCaretStyle = new SettingsGroup(
+  "paceCaretStyle",
+  setPaceCaretStyle
+);
 settingsGroups.timerStyle = new SettingsGroup("timerStyle", setTimerStyle);
 settingsGroups.timerOpacity = new SettingsGroup(
   "timerOpacity",
@@ -250,7 +256,7 @@ async function fillSettingsPage() {
   refreshThemeButtons();
 
   let langEl = $(".pageSettings .section.language .buttons").empty();
-  getLanguageList().then(languages => {
+  getLanguageList().then((languages) => {
     languages.forEach((language) => {
       langEl.append(
         `<div class="language button" language='${language}'>${language.replace(
@@ -385,14 +391,14 @@ function updateSettingsPage() {
   setCustomThemeInputs();
   updateDiscordSettingsSection();
   refreshThemeButtons();
-  
+
   if (config.paceCaret === "custom") {
     $(
       ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
     ).removeClass("hidden");
-    $(
-      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
-    ).val(config.paceCaretCustomSpeed);
+    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
+      config.paceCaretCustomSpeed
+    );
   } else {
     $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
       "hidden"
@@ -400,12 +406,12 @@ function updateSettingsPage() {
   }
 
   if (config.minWpm === "custom") {
-    $(
-      ".pageSettings .section.minWpm input.customMinWpmSpeed"
-    ).removeClass("hidden");
-    $(
-      ".pageSettings .section.minWpm input.customMinWpmSpeed"
-    ).val(config.minWpmCustomSpeed);
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
+      "hidden"
+    );
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
+      config.minWpmCustomSpeed
+    );
   } else {
     $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
       "hidden"
@@ -482,7 +488,6 @@ $("#shareCustomThemeButton").click((e) => {
   if (e.shiftKey) {
     showCustomThemeShare();
   } else {
-
     let share = [];
     $.each(
       $(".pageSettings .section.customTheme [type='color']"),
@@ -491,12 +496,19 @@ $("#shareCustomThemeButton").click((e) => {
       }
     );
 
-    let url = "https://monkeytype.com?" + objectToQueryString({ customTheme: share });
-    navigator.clipboard.writeText(url).then(function () {
-      showNotification("URL Copied to clipboard", 2000);
-    }, function (err) {
-      showNotification("Something went wrong when copying the URL: " + err, 5000);
-    });
+    let url =
+      "https://monkeytype.com?" + objectToQueryString({ customTheme: share });
+    navigator.clipboard.writeText(url).then(
+      function () {
+        showNotification("URL Copied to clipboard", 2000);
+      },
+      function (err) {
+        showNotification(
+          "Something went wrong when copying the URL: " + err,
+          5000
+        );
+      }
+    );
   }
 });
 
@@ -634,15 +646,13 @@ function updateDiscordSettingsSection() {
     if (dbSnapshot == null) return;
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
-    if (
-      dbSnapshot.discordId == undefined
-    ) {
+    if (dbSnapshot.discordId == undefined) {
       //show button
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
       );
       $(".pageSettings .section.discordIntegration .info").addClass("hidden");
-    } else{
+    } else {
       $(".pageSettings .section.discordIntegration .buttons").addClass(
         "hidden"
       );
@@ -653,13 +663,27 @@ function updateDiscordSettingsSection() {
   }
 }
 
-$(document).on('focusout', ".pageSettings .section.paceCaret input.customPaceCaretSpeed", (e) => {
-  setPaceCaretCustomSpeed(parseInt($(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()));
-})
+$(document).on(
+  "focusout",
+  ".pageSettings .section.paceCaret input.customPaceCaretSpeed",
+  (e) => {
+    setPaceCaretCustomSpeed(
+      parseInt(
+        $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()
+      )
+    );
+  }
+);
 
-$(document).on('focusout', ".pageSettings .section.minWpm input.customMinWpmSpeed", (e) => {
-  setMinWpmCustomSpeed(parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val()));
-})
+$(document).on(
+  "focusout",
+  ".pageSettings .section.minWpm input.customMinWpmSpeed",
+  (e) => {
+    setMinWpmCustomSpeed(
+      parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val())
+    );
+  }
+);
 
 $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
   let theme = $(e.currentTarget).attr("theme");
@@ -704,13 +728,11 @@ $(
     });
 });
 
-$(
-  ".pageSettings .section.discordIntegration #unlinkDiscordButton"
-).click((e) => {
-  if (confirm("Are you sure?")) {
-    showBackgroundLoader();
-    unlinkDiscord({ uid: firebase.auth().currentUser.uid })
-      .then(ret => {
+$(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
+  (e) => {
+    if (confirm("Are you sure?")) {
+      showBackgroundLoader();
+      unlinkDiscord({ uid: firebase.auth().currentUser.uid }).then((ret) => {
         hideBackgroundLoader();
         console.log(ret);
         if (ret.data.status === 1) {
@@ -721,9 +743,10 @@ $(
           showNotification("Something went wrong: " + ret.data.message, 5000);
           updateDiscordSettingsSection();
         }
-    })
+      });
+    }
   }
-});
+);
 
 //funbox
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
@@ -873,6 +896,67 @@ $("#resetSettingsButton").click((e) => {
       location.reload();
     }, 1000);
   }
+});
+
+$("#exportSettingsButton").click((e) => {
+  console.log(JSON.stringify(config));
+  let configJSON = JSON.stringify(config);
+  navigator.clipboard.writeText(configJSON).then(
+    function () {
+      showNotification("JSON Copied to clipboard", 2000);
+    },
+    function (err) {
+      showNotification(
+        "Something went wrong when copying the settings JSON: " + err,
+        5000
+      );
+    }
+  );
+});
+
+function showSettingsImport() {
+  if ($("#settingsImportWrapper").hasClass("hidden")) {
+    $("#settingsImportWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100, (e) => {
+        $("#settingsImportWrapper input").focus();
+        $("#settingsImportWrapper input").select();
+        $("#settingsImportWrapper input").focus();
+      });
+  }
+}
+
+function hideSettingsImport() {
+  if (!$("#settingsImportWrapper").hasClass("hidden")) {
+    if ($("#settingsImportWrapper input").val() !== "") {
+      try {
+        applyConfig(JSON.parse($("#settingsImportWrapper input").val()));
+      } catch (e) {
+        showNotification(
+          "An error occured while importing settings: " + e,
+          5000
+        );
+      }
+      saveConfigToCookie();
+      updateSettingsPage();
+    }
+    $("#settingsImportWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate({ opacity: 0 }, 100, (e) => {
+        $("#settingsImportWrapper").addClass("hidden");
+      });
+  }
+}
+
+$("#importSettingsButton").click((e) => {
+  showSettingsImport();
+});
+
+$("#settingsImport .button").click((e) => {
+  hideSettingsImport();
 });
 
 $(".pageSettings .sectionGroupTitle").click((e) => {
