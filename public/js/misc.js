@@ -85,20 +85,20 @@ let currentLanguage = null;
 async function getLanguage(lang) {
   try {
     if (currentLanguage == null || currentLanguage.name !== lang) {
-      console.log('getting language json');
+      console.log("getting language json");
       await $.getJSON(`languages/${lang}.json`, function (data) {
         currentLanguage = data;
-      })
+      });
     }
     return currentLanguage;
   } catch (e) {
-    console.error(`error getting language`)
+    console.error(`error getting language`);
     console.error(e);
     config.language = "english";
-    showNotification(`Error getting language: ${e.message}`,4000);
+    showNotification(`Error getting language: ${e.message}`, 4000);
     await $.getJSON(`languages/english.json`, function (data) {
       currentLanguage = data;
-    })
+    });
     return currentLanguage;
   }
 }
@@ -435,14 +435,14 @@ function getPositionString(number) {
 
 function findGetParameter(parameterName) {
   var result = null,
-      tmp = [];
+    tmp = [];
   location.search
-      .substr(1)
-      .split("&")
-      .forEach(function (item) {
-        tmp = item.split("=");
-        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-      });
+    .substr(1)
+    .split("&")
+    .forEach(function (item) {
+      tmp = item.split("=");
+      if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+    });
   return result;
 }
 
@@ -458,8 +458,12 @@ function objectToQueryString(obj) {
 function toggleFullscreen(elem) {
   elem = elem || document.documentElement;
 
-  if (!document.fullscreenElement && !document.mozFullScreenElement &&
-    !document.webkitFullscreenElement && !document.msFullscreenElement) {
+  if (
+    !document.fullscreenElement &&
+    !document.mozFullScreenElement &&
+    !document.webkitFullscreenElement &&
+    !document.msFullscreenElement
+  ) {
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
     } else if (elem.msRequestFullscreen) {

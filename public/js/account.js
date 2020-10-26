@@ -143,7 +143,6 @@ function signUp() {
               displayName: nname,
             })
             .then(async function () {
-
               // Update successful.
               await firebase
                 .firestore()
@@ -267,15 +266,15 @@ firebase.auth().onAuthStateChanged(function (user) {
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
     if (verifyUserWhenLoggedIn !== null) {
-      showNotification('Verifying', 1000);
+      showNotification("Verifying", 1000);
       verifyUserWhenLoggedIn.uid = user.uid;
-      verifyUser(verifyUserWhenLoggedIn).then(data => {
+      verifyUser(verifyUserWhenLoggedIn).then((data) => {
         showNotification(data.data.message, 3000);
         if (data.data.status === 1) {
           dbSnapshot.discordId = data.data.did;
-          updateDiscordSettingsSection()
+          updateDiscordSettingsSection();
         }
-      })
+      });
     }
   }
 });
@@ -284,94 +283,101 @@ function getAccountDataAndInit() {
   db_getUserSnapshot()
     .then((e) => {
       if (dbSnapshot === null) {
-        throw ("Missing db snapshot. Client likely could not connect to the backend.");
+        throw "Missing db snapshot. Client likely could not connect to the backend.";
       }
-    initPaceCaret(true);
-    if (!configChangedBeforeDb) {
-      if (cookieConfig === null) {
-        accountIconLoading(false);
-        applyConfig(dbSnapshot.config);
-        // showNotification('Applying db config',3000);
-        updateSettingsPage();
-        saveConfigToCookie(true);
-        restartTest(false, true);
-      } else if (dbSnapshot.config !== undefined) {
-        let configsDifferent = false;
-        Object.keys(config).forEach((key) => {
-          if (!configsDifferent) {
-            try {
-              if (key !== "resultFilters") {
-                if (Array.isArray(config[key])) {
-                  config[key].forEach((arrval, index) => {
-                    if (arrval != dbSnapshot.config[key][index]) {
-                      configsDifferent = true;
-                      console.log(`.config is different: ${arrval} != ${dbSnapshot.config[key][index]}`);
-                    }
-                  });
-                } else {
-                  if (config[key] != dbSnapshot.config[key]) {
-                    configsDifferent = true;
-                    console.log(`..config is different ${key}: ${config[key]} != ${dbSnapshot.config[key]}`);
-                  }
-                }
-              }
-            } catch (e) {
-              console.log(e);
-              configsDifferent = true;
-              console.log(`...config is different: ${e.message}`);
-            }
-          }
-        });
-        if (configsDifferent) {
-          console.log('applying config from db');
+      initPaceCaret(true);
+      if (!configChangedBeforeDb) {
+        if (cookieConfig === null) {
           accountIconLoading(false);
-          config = dbSnapshot.config;
-          applyConfig(config);
+          applyConfig(dbSnapshot.config);
+          // showNotification('Applying db config',3000);
           updateSettingsPage();
           saveConfigToCookie(true);
           restartTest(false, true);
+        } else if (dbSnapshot.config !== undefined) {
+          let configsDifferent = false;
+          Object.keys(config).forEach((key) => {
+            if (!configsDifferent) {
+              try {
+                if (key !== "resultFilters") {
+                  if (Array.isArray(config[key])) {
+                    config[key].forEach((arrval, index) => {
+                      if (arrval != dbSnapshot.config[key][index]) {
+                        configsDifferent = true;
+                        console.log(
+                          `.config is different: ${arrval} != ${dbSnapshot.config[key][index]}`
+                        );
+                      }
+                    });
+                  } else {
+                    if (config[key] != dbSnapshot.config[key]) {
+                      configsDifferent = true;
+                      console.log(
+                        `..config is different ${key}: ${config[key]} != ${dbSnapshot.config[key]}`
+                      );
+                    }
+                  }
+                }
+              } catch (e) {
+                console.log(e);
+                configsDifferent = true;
+                console.log(`...config is different: ${e.message}`);
+              }
+            }
+          });
+          if (configsDifferent) {
+            console.log("applying config from db");
+            accountIconLoading(false);
+            config = dbSnapshot.config;
+            applyConfig(config);
+            updateSettingsPage();
+            saveConfigToCookie(true);
+            restartTest(false, true);
+          }
         }
+        dbConfigLoaded = true;
+      } else {
+        accountIconLoading(false);
       }
-      dbConfigLoaded = true;
-    } else {
-      accountIconLoading(false);
-    }
-    try {
-      if (
-        config.resultFilters === undefined ||
-        config.resultFilters === null ||
-        config.resultFilters.difficulty === undefined
-      ) {
+      try {
         if (
-          dbSnapshot.config.resultFilters == null ||
-          dbSnapshot.config.resultFilters.difficulty === undefined
+          config.resultFilters === undefined ||
+          config.resultFilters === null ||
+          config.resultFilters.difficulty === undefined
         ) {
-          config.resultFilters = defaultAccountFilters;
-        } else {
-          config.resultFilters = dbSnapshot.config.resultFilters;
+          if (
+            dbSnapshot.config.resultFilters == null ||
+            dbSnapshot.config.resultFilters.difficulty === undefined
+          ) {
+            config.resultFilters = defaultAccountFilters;
+          } else {
+            config.resultFilters = dbSnapshot.config.resultFilters;
+          }
         }
+      } catch (e) {
+        config.resultFilters = defaultAccountFilters;
       }
-    } catch (e) {
-      config.resultFilters = defaultAccountFilters;
-    }
-    if ($(".pageLogin").hasClass("active")) {
-      changePage("account");
-    }
-    refreshThemeButtons();
-    accountIconLoading(false);
-    updateFilterTags();
-    updateCommandsTagsList();
-    loadActiveTagsFromCookie();
-    updateResultEditTagsPanelButtons();
-    showAccountSettingsSection();
-  })
-  .catch((e) => {
-    accountIconLoading(false);
-    console.error(e);
-    showNotification("Error downloading user data. Refresh to try again. If error persists contact Miodec.", 5000);
-    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
-    $("#top #menu .account").css('opacity', 1);
-  });
+      if ($(".pageLogin").hasClass("active")) {
+        changePage("account");
+      }
+      refreshThemeButtons();
+      accountIconLoading(false);
+      updateFilterTags();
+      updateCommandsTagsList();
+      loadActiveTagsFromCookie();
+      updateResultEditTagsPanelButtons();
+      showAccountSettingsSection();
+    })
+    .catch((e) => {
+      accountIconLoading(false);
+      console.error(e);
+      showNotification(
+        "Error downloading user data. Refresh to try again. If error persists contact Miodec.",
+        5000
+      );
+      $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
+      $("#top #menu .account").css("opacity", 1);
+    });
 }
 
 var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
@@ -561,7 +567,7 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
           lineStyle: "dotted",
           width: 2,
         },
-        order: 3
+        order: 3,
       },
       {
         yAxisID: "avgWpm",
@@ -998,7 +1004,7 @@ let defaultAccountFilters = {
   },
 };
 
-getLanguageList().then(languages => {
+getLanguageList().then((languages) => {
   languages.forEach((language) => {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
@@ -1010,7 +1016,7 @@ getLanguageList().then(languages => {
     );
     defaultAccountFilters.language[language] = true;
   });
-})
+});
 
 $(
   ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
@@ -1460,46 +1466,47 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
   $(".pageAccount .filterButtons").slideToggle(250);
-  $(".pageAccount .topFilters .button.toggleAdvancedFilters").toggleClass('active');
+  $(".pageAccount .topFilters .button.toggleAdvancedFilters").toggleClass(
+    "active"
+  );
 });
 
-$(".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons").click(
-  ".button",
-  (e) => {
-    const filter = $(e.target).attr("filter");
-    const group = $(e.target).parents(".buttons").attr("group");
-    // toggleFilterButton(filter);
-    if ($(e.target).hasClass("allFilters")) {
-      Object.keys(config.resultFilters).forEach((group) => {
-        Object.keys(config.resultFilters[group]).forEach((filter) => {
-          if (group === "date") {
-            config.resultFilters[group][filter] = false;
-          } else {
-            config.resultFilters[group][filter] = true;
-          }
-        });
-      });
-      config.resultFilters.date.all = true;
-    } else if ($(e.target).hasClass("noFilters")) {
-      Object.keys(config.resultFilters).forEach((group) => {
-        Object.keys(config.resultFilters[group]).forEach((filter) => {
+$(
+  ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
+).click(".button", (e) => {
+  const filter = $(e.target).attr("filter");
+  const group = $(e.target).parents(".buttons").attr("group");
+  // toggleFilterButton(filter);
+  if ($(e.target).hasClass("allFilters")) {
+    Object.keys(config.resultFilters).forEach((group) => {
+      Object.keys(config.resultFilters[group]).forEach((filter) => {
+        if (group === "date") {
           config.resultFilters[group][filter] = false;
-        });
+        } else {
+          config.resultFilters[group][filter] = true;
+        }
       });
+    });
+    config.resultFilters.date.all = true;
+  } else if ($(e.target).hasClass("noFilters")) {
+    Object.keys(config.resultFilters).forEach((group) => {
+      Object.keys(config.resultFilters[group]).forEach((filter) => {
+        config.resultFilters[group][filter] = false;
+      });
+    });
+  } else {
+    if (e.shiftKey) {
+      Object.keys(config.resultFilters[group]).forEach((filter) => {
+        config.resultFilters[group][filter] = false;
+      });
+      setFilter(group, filter, true);
     } else {
-      if (e.shiftKey) {
-        Object.keys(config.resultFilters[group]).forEach((filter) => {
-          config.resultFilters[group][filter] = false;
-        });
-        setFilter(group, filter, true);
-      } else {
-        toggleFilter(group, filter);
-      }
+      toggleFilter(group, filter);
     }
-    showActiveFilters();
-    saveConfigToCookie();
   }
-);
+  showActiveFilters();
+  saveConfigToCookie();
+});
 
 function fillPbTables() {
   $(".pageAccount .timePbTable tbody").html(`
@@ -1755,7 +1762,7 @@ function loadMoreLines() {
     }
 
     let raw;
-    try{
+    try {
       raw = result.rawWpm.toFixed(2);
       if (raw == undefined) {
         raw = "-";
@@ -1801,9 +1808,7 @@ function loadMoreLines() {
     } else if (result.chartData === "toolong") {
       icons += `<span class="hoverChartButton" aria-label="Chart history is not available for long tests" data-balloon-pos="up"><i class="fas fa-chart-line"></i></span>`;
     } else {
-      icons += `<span class="hoverChartButton" filteredResultsId="${
-        i
-      }" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
+      icons += `<span class="hoverChartButton" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
     }
 
     let tagNames = "";
@@ -1850,9 +1855,9 @@ function loadMoreLines() {
 
     let pb = result.isPb;
     if (pb) {
-      pb = '<i class="fas fa-fw fa-crown"></i>'
+      pb = '<i class="fas fa-fw fa-crown"></i>';
     } else {
-      pb = '';
+      pb = "";
     }
 
     $(".pageAccount .history table tbody").append(`
@@ -2005,7 +2010,10 @@ function refreshAccountPage() {
 
         let langFilter = config.resultFilters.language[result.language];
 
-        if (result.language === "english_expanded" && config.resultFilters.language.english_1k) {
+        if (
+          result.language === "english_expanded" &&
+          config.resultFilters.language.english_1k
+        ) {
           langFilter = true;
         }
         if (!langFilter) return;
@@ -2112,7 +2120,7 @@ function refreshAccountPage() {
         activityChartData[resultDate] = {
           amount: 1,
           totalWpm: result.wpm,
-        }
+        };
       }
 
       tt = 0;
@@ -2242,7 +2250,9 @@ function refreshAccountPage() {
       });
       activityChartData_avgWpm.push({
         x: parseInt(date),
-        y: roundTo2(activityChartData[date].totalWpm / activityChartData[date].amount),
+        y: roundTo2(
+          activityChartData[date].totalWpm / activityChartData[date].amount
+        ),
       });
       lastTimestamp = date;
     });
@@ -2264,13 +2274,12 @@ function refreshAccountPage() {
     activityChart.data.datasets[0].data = activityChartData_amount;
 
     activityChart.options.scales.yAxes[1].ticks.minor.fontColor =
-    themeColors.sub;
+      themeColors.sub;
     activityChart.options.scales.yAxes[1].scaleLabel.fontColor =
       themeColors.sub;
     activityChart.data.datasets[1].borderColor = themeColors.sub;
     // activityChart.data.datasets[1].backgroundColor = themeColors.main;
     activityChart.data.datasets[1].data = activityChartData_avgWpm;
-
 
     activityChart.options.legend.labels.fontColor = themeColors.sub;
 
@@ -2468,8 +2477,8 @@ function refreshAccountPage() {
   }
   if (dbSnapshot === null) {
     showNotification(`Missing account data. Please refresh.`, 5000);
-    $('.pageAccount .preloader').html('Missing account data. Please refresh.');
-  }else if (dbSnapshot.results === undefined) {
+    $(".pageAccount .preloader").html("Missing account data. Please refresh.");
+  } else if (dbSnapshot.results === undefined) {
     db_getUserResults().then((d) => {
       if (d) {
         // cont();
@@ -2657,4 +2666,3 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
 function updateLbMemory(mode, mode2, type, value) {
   dbSnapshot.lbMemory[mode + mode2][type] = value;
 }
-

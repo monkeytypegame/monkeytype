@@ -13,13 +13,13 @@ async function db_getUserSnapshot() {
     lbMemory: {
       time15: {
         global: null,
-        daily: null
+        daily: null,
       },
       time60: {
         global: null,
-        daily: null
-      }
-    }
+        daily: null,
+      },
+    },
   };
   // await db.collection('results')
   //     .orderBy('timestamp', 'desc')
@@ -74,15 +74,18 @@ async function db_getUserSnapshot() {
             snap.personalBests = data.personalBests;
           }
           snap.discordId = data.discordId;
-          snap.pairingCode = data.discordPairingCode == null ? undefined : data.discordPairingCode;
+          snap.pairingCode =
+            data.discordPairingCode == null
+              ? undefined
+              : data.discordPairingCode;
           snap.config = data.config;
           snap.favouriteThemes =
             data.favouriteThemes === undefined ? [] : data.favouriteThemes;
           snap.globalStats = {
             time: data.timeTyping,
             started: data.startedTests,
-            completed: data.completedTests
-          }
+            completed: data.completedTests,
+          };
           if (data.lbMemory !== undefined) {
             snap.lbMemory = data.lbMemory;
           }
@@ -241,7 +244,7 @@ async function db_saveLocalPB(
           acc: acc,
           raw: raw,
           timestamp: Date.now(),
-          consistency: consistency
+          consistency: consistency,
         });
       }
     } catch (e) {
@@ -256,7 +259,7 @@ async function db_saveLocalPB(
           acc: acc,
           raw: raw,
           timestamp: Date.now(),
-          consistency: consistency
+          consistency: consistency,
         },
       ];
     }
