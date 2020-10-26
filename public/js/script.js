@@ -304,7 +304,10 @@ function activateFunbox(funbox, mode) {
   }
   if (currentLanguage.ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
-      showNotification("Current language does not support this funbox mode", 3000);
+      showNotification(
+        "Current language does not support this funbox mode",
+        3000
+      );
       activateFunbox("none", null);
       return;
     }
@@ -316,7 +319,7 @@ function activateFunbox(funbox, mode) {
     memoryFunboxTimer = null;
     $("#wordsWrapper").removeClass("hidden");
   }
-  
+
   if (mode === "style") {
     if (funbox != undefined) {
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
@@ -573,9 +576,9 @@ async function initWords() {
     arrangeCharactersRightToLeft();
   }
   if (language.ligatures) {
-    $("#words").addClass('withLigatures');
+    $("#words").addClass("withLigatures");
   } else {
-    $("#words").removeClass('withLigatures');
+    $("#words").removeClass("withLigatures");
   }
   showWords();
 }
