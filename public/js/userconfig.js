@@ -37,6 +37,7 @@ let defaultConfig = {
   flipTestColors: false,
   capsLockBackspace: false,
   layout: "default",
+  savedLayout: "default",
   confidenceMode: "off",
   indicateTypos: false,
   timerStyle: "text",
@@ -65,7 +66,7 @@ let defaultConfig = {
   chartAccuracy: true,
   chartStyle: "line",
   minWpm: "off",
-  minWpmCustomSpeed: 100
+  minWpmCustomSpeed: 100,
 };
 
 let cookieConfig = null;
@@ -166,7 +167,7 @@ function applyConfig(configObj) {
     changeWordCount(configObj.words, true);
     changeLanguage(configObj.language, true);
     setCapsLockBackspace(configObj.capsLockBackspace, true);
-    changeLayout(configObj.layout, true);
+    changeLayout(configObj.savedLayout, true);
     changeFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
@@ -281,7 +282,7 @@ function setDifficulty(diff, nosave) {
     diff = "normal";
   }
   config.difficulty = diff;
-  if (!nosave) restartTest(false,nosave);
+  if (!nosave) restartTest(false, nosave);
   updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
 }
@@ -325,11 +326,9 @@ function updateChartStyle() {
   if (config.chartStyle == "scatter") {
     resultHistoryChart.data.datasets[0].showLine = false;
     resultHistoryChart.data.datasets[1].showLine = false;
-
   } else {
     resultHistoryChart.data.datasets[0].showLine = true;
     resultHistoryChart.data.datasets[1].showLine = true;
-
   }
   resultHistoryChart.update();
 }
@@ -602,9 +601,8 @@ function setPageWidth(val, nosave) {
   $("#centerContent").removeClass("wide200");
   $("#centerContent").removeClass("widemax");
 
-
   if (val !== "100") {
-    $("#centerContent").addClass('wide' + val);
+    $("#centerContent").addClass("wide" + val);
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -622,7 +620,7 @@ function setCaretStyle(caretStyle, nosave) {
 
   if (caretStyle == "off") {
     $("#caret").addClass("off");
-  }else if (caretStyle == "default") {
+  } else if (caretStyle == "default") {
     $("#caret").addClass("default");
   } else if (caretStyle == "block") {
     $("#caret").addClass("block");
@@ -647,7 +645,7 @@ function setPaceCaretStyle(caretStyle, nosave) {
 
   if (caretStyle == "off") {
     $("#paceCaret").addClass("off");
-  }else if (caretStyle == "default") {
+  } else if (caretStyle == "default") {
     $("#paceCaret").addClass("default");
   } else if (caretStyle == "block") {
     $("#paceCaret").addClass("block");
@@ -765,9 +763,9 @@ function changeQuoteLength(len, nosave) {
   if (!nosave) changeMode("quote", nosave);
   config.quoteLength = len;
   $("#top .config .quoteLength .text-button").removeClass("active");
-  $("#top .config .quoteLength .text-button[quoteLength='" + len + "']").addClass(
-    "active"
-  );
+  $(
+    "#top .config .quoteLength .text-button[quoteLength='" + len + "']"
+  ).addClass("active");
   if (!nosave) saveConfigToCookie();
 }
 
@@ -953,7 +951,6 @@ function setConfidenceMode(cm, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-
 function toggleIndicateTypos() {
   it = !config.indicateTypos;
   if (it == undefined) {
@@ -970,7 +967,6 @@ function setIndicateTypos(it, nosave) {
   config.indicateTypos = it;
   if (!nosave) saveConfigToCookie();
 }
-
 
 function previewTheme(name, setIsPreviewingVar = true) {
   if (
@@ -999,7 +995,7 @@ function setTheme(name, nosave) {
   config.theme = name;
   $(".keymap-key").attr("style", "");
   $("#currentTheme").attr("href", `themes/${name}.css`);
-  $(".current-theme").text(name.replace('_',' '));
+  $(".current-theme").text(name.replace("_", " "));
   setTimeout(() => {
     updateFavicon(32, 14);
   }, 500);
@@ -1071,7 +1067,7 @@ function applyCustomThemeColors() {
       document.documentElement.style.setProperty(e, array[index]);
     });
   } else {
-    $(".current-theme").text(config.theme.replace('_',' '));
+    $(".current-theme").text(config.theme.replace("_", " "));
     previewTheme(config.theme);
     colorVars.forEach((e) => {
       document.documentElement.style.setProperty(e, "");
@@ -1196,7 +1192,7 @@ function changeKeymapMode(mode, nosave) {
     $(".keymap-key").attr("style", "");
   }
   config.keymapMode = mode;
-  if (!nosave) restartTest(false,nosave);
+  if (!nosave) restartTest(false, nosave);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -1204,6 +1200,10 @@ function changeKeymapStyle(style, nosave) {
   $(".keymap").removeClass("matrix");
   $(".keymap").removeClass("split");
   $(".keymap").removeClass("split_matrix");
+
+  if (style == null || style == undefined) {
+    style = "staggered";
+  }
 
   if (style === "matrix") {
     $(".keymap").addClass("matrix");
