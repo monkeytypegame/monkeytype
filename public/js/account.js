@@ -142,13 +142,15 @@ function signUp() {
             .updateProfile({
               displayName: nname,
             })
-            .then(function () {
+            .then(async function () {
+
               // Update successful.
-              firebase
+              await firebase
                 .firestore()
                 .collection("users")
                 .doc(usr.uid)
                 .set({ name: nname }, { merge: true });
+              reserveName({ name: nname, uid: usr.uid });
               usr.sendEmailVerification();
               clearGlobalStats();
               showNotification("Account created", 2000);
