@@ -958,6 +958,12 @@ $("#settingsImport .button").click((e) => {
   hideSettingsImport();
 });
 
+$("#settingsImportWrapper").click((e) => {
+  if ($(e.target).attr("id") === "settingsImportWrapper") {
+    hideSettingsImport();
+  }
+});
+
 $(".pageSettings .sectionGroupTitle").click((e) => {
   let group = $(e.currentTarget).attr("group");
   $(`.pageSettings .settingsGroup.${group}`)
