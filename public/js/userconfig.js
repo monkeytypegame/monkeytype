@@ -1181,6 +1181,14 @@ function changeLayout(layout, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
+function changeLayoutSetting(layout, nosave) {
+  if (layout == null || layout == undefined) {
+    layout = "qwerty";
+  }
+  config.savedLayout = layout;
+  changeLayout(layout, nosave);
+}
+
 function changeKeymapMode(mode, nosave) {
   if (mode == null || mode == undefined) {
     mode = "off";
