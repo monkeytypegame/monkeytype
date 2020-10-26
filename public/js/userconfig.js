@@ -37,6 +37,7 @@ let defaultConfig = {
   flipTestColors: false,
   capsLockBackspace: false,
   layout: "default",
+  layoutBeforeLayoutfluid: "default",
   confidenceMode: "off",
   indicateTypos: false,
   timerStyle: "text",
@@ -166,7 +167,7 @@ function applyConfig(configObj) {
     changeWordCount(configObj.words, true);
     changeLanguage(configObj.language, true);
     setCapsLockBackspace(configObj.capsLockBackspace, true);
-    changeLayout(configObj.layout, true);
+    changeLayout(configObj.layoutBeforeLayoutfluid, true);
     changeFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);

@@ -45,7 +45,6 @@ let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
 let memoryFunboxTimer = null;
 let memoryFunboxInterval = null;
-let memoryFunboxKeyboardLayout = config.layout;
 
 let themeColors = {
   bg: "#323437",
@@ -330,7 +329,7 @@ function activateFunbox(funbox, mode) {
       config.keymapMode = "on";
       changeKeymapMode("next");
       settingsGroups.keymapMode.updateButton();
-      memoryFunboxKeyboardLayout = config.layout;
+      config.layoutBeforeLayoutfluid = config.layout;
       changeLayout("qwerty");
       settingsGroups.layout.updateButton();
       changeKeymapLayout("qwerty");
@@ -346,7 +345,7 @@ function activateFunbox(funbox, mode) {
 
   if (funbox !== "layoutfluid" || mode !== "script") {
     if (config.layout !== memoryFunboxKeyboardLayout) {
-      changeLayout(memoryFunboxKeyboardLayout);
+      changeLayout(config.layoutBeforeLayoutfluid);
     }
   }
   updateTestModesNotice();
