@@ -105,16 +105,23 @@ function isUsernameValid(name) {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-exports.reserveName = functions.auth.user().onCreate((user) => {
-  db.collection('takenNames')
-    .doc(user.uid)
+exports.reserveDisplayName = functions.https.onCall(async (request, response) => {
+  let udata = await db.collection('users').doc(request.uid).get();
+  udata = udata.data();
+  if (request.name.toLowerCase() === udata.name.toLowerCase()) {
+    db.collection('takenNames')
+    .doc(request.name.toLowerCase())
     .set({
       taken: true
     }, { merge: true });
-});
+  }
+})
 
 exports.clearName = functions.auth.user().onDelete((user) => {
   db.collection('takenNames')
+    .doc(user.displayName.toLowerCase())
+    .delete();
+  db.collection('users')
     .doc(user.uid)
     .delete();
 });
