@@ -1492,7 +1492,7 @@ function updateCaretPosition() {
     let newTop = 0;
     let newLeft = 0;
 
-    newTop = currentLetterPosTop - Math.round(letterHeight / 20);
+    newTop = currentLetterPosTop - Math.round(letterHeight / 5);
     if (inputLen == 0) {
       newLeft = isLanguageLeftToRight
         ? currentLetterPosLeft - caret.width() / 2
