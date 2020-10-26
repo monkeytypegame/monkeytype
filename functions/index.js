@@ -13,6 +13,7 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+const auth = admin.auth();
 const fetch = require("node-fetch");
 
 async function getAllNames() {
@@ -45,17 +46,54 @@ async function getAllNames() {
   return ret;
 }
 
-// exports.testGetAllNames = functions.https.onCall(async (request, response) => {
-//   return await getAllNames();
-// });
+async function getAllUsers() {
+  // return admin
+  //   .auth()
+  //   .listUsers()
+  //   .then((data) => {
+  //     let names = [];
+  //     data.users.forEach((user) => {
+  //       names.push(user.displayName);
+  //     });
+  //     return names;
+  //   });
 
-function getAllUsers() {
-  return admin
-    .auth()
-    .listUsers()
-    .then((data) => {
-      return data.users;
-    });
+  let ret = [];
+
+  async function getAll(nextPageToken) {
+
+    // List batch of users, 1000 at a time.
+    let listUsersResult = await auth.listUsers(1000, nextPageToken);
+    for (let i = 0; i < listUsersResult.users.length; i++) {
+      let loopuser = listUsersResult.users[i];
+
+      //if custom claim is undefined check, if its true then ignore
+
+      // if (loopuser === undefined || loopuser.customClaims === undefined || loopuser.customClaims['nameChecked'] === undefined) {
+        ret.push(listUsersResult.users[i]);
+      // }
+
+      // console.log(loopuser.customClaims['asd']);
+
+      // let userdata = await db.collection('users').doc(listUsersResult.users[i].uid).get();
+
+      // let data = userdata.data();
+
+      // if (data === undefined || data.needsToChangeName === undefined) {
+      //   // console.log(data);
+      //   ret.push(listUsersResult.users[i]);
+      //   // console.log('user added');
+      // } else {
+      //   // console.log('user already added');
+      // }
+    }
+    if (listUsersResult.pageToken) {
+      // List next batch of users.
+      await getAll(listUsersResult.pageToken);
+    }
+  }
+  await getAll();
+  return ret;
 }
 
 function isUsernameValid(name) {
@@ -63,33 +101,62 @@ function isUsernameValid(name) {
   if (/miodec/.test(name.toLowerCase())) return false;
   if (/bitly/.test(name.toLowerCase())) return false;
   if (name.length > 14) return false;
+  if (/^\..*/.test(name.toLowerCase())) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-exports.checkNameAvailability = functions.https.onCall((request, response) => {
+exports.reserveName = functions.auth.user().onCreate((user) => {
+  db.collection('takenNames')
+    .doc(user.uid)
+    .set({
+      taken: true
+    }, { merge: true });
+});
+
+exports.clearName = functions.auth.user().onDelete((user) => {
+  db.collection('takenNames')
+    .doc(user.uid)
+    .delete();
+});
+
+exports.checkNameAvailability = functions.https.onCall(async (request, response) => {
   // 1 - available
   // -1 - unavailable (taken)
   // -2 - not valid name
   // -999 - unknown error
   try {
     if (!isUsernameValid(request.name)) return -2;
-    return getAllNames().then((data) => {
-      let available = 1;
-      data.forEach((name) => {
-        try {
-          if (name.toLowerCase() === request.name.toLowerCase()) available = -1;
-        } catch (e) {
-          //
-        }
-      });
-      return available;
-    });
+
+    let takendata = await db.collection('takenNames')
+      .doc(request.name.toLowerCase())
+      .get();
+    
+    takendata = takendata.data();
+
+    if (takendata !== undefined && takendata.taken) {
+      return -1;
+    } else {
+      return 1;
+    }
+
+    // return getAllNames().then((data) => {
+    //   let available = 1;
+    //   data.forEach((name) => {
+    //     try {
+    //       if (name.toLowerCase() === request.name.toLowerCase()) available = -1;
+    //     } catch (e) {
+    //       //
+    //     }
+    //   });
+    //   return available;
+    // });
   } catch (e) {
+    console.log(e.message);
     return -999;
   }
 });
 
-// exports.changeName = functions.https.onCall((request, response) => {
+  // exports.changeName = functions.https.onCall((request, response) => {
 //   try {
 //     if (!isUsernameValid(request.name)) {
 //       console.warn(

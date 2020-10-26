@@ -107,6 +107,13 @@ function signUp() {
   let password = $(".pageLogin .register input")[2].value;
   let passwordVerify = $(".pageLogin .register input")[3].value;
 
+  if (password != passwordVerify) {
+    showNotification("Passwords do not match", 3000);
+    $(".pageLogin .preloader").addClass("hidden");
+    $(".pageLogin .register .button").removeClass("disabled");
+    return;
+  }
+
   const namecheck = firebase.functions().httpsCallable("checkNameAvailability");
 
   namecheck({ name: nname }).then((d) => {
@@ -124,12 +131,6 @@ function signUp() {
       $(".pageLogin .register .button").removeClass("disabled");
       return;
     } else if (d.data === 1) {
-      if (password != passwordVerify) {
-        showNotification("Passwords do not match", 3000);
-        $(".pageLogin .preloader").addClass("hidden");
-        $(".pageLogin .register .button").removeClass("disabled");
-        return;
-      }
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
