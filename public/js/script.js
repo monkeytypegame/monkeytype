@@ -302,6 +302,13 @@ function activateFunbox(funbox, mode) {
     );
     return false;
   }
+  if (currentLanguage.ligatures) {
+    if (funbox == "choo_choo" || funbox == "earthquake") {
+      showNotification("Current language does not support this funbox mode", 3000);
+      activateFunbox("none", null);
+      return;
+    }
+  }
   $("#funBoxTheme").attr("href", ``);
   if (funbox === "none") {
     activeFunBox = "none";
@@ -309,6 +316,7 @@ function activateFunbox(funbox, mode) {
     memoryFunboxTimer = null;
     $("#wordsWrapper").removeClass("hidden");
   }
+  
   if (mode === "style") {
     if (funbox != undefined) {
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
@@ -563,6 +571,11 @@ async function initWords() {
     arrangeCharactersLeftToRight();
   } else {
     arrangeCharactersRightToLeft();
+  }
+  if (language.ligatures) {
+    $("#words").addClass('withLigatures');
+  } else {
+    $("#words").removeClass('withLigatures');
   }
   showWords();
 }

@@ -1525,6 +1525,11 @@ key {
       flex-direction: row-reverse;
     }
   }
+  &.withLigatures{
+    letter{
+      display: inline;
+    }
+  }
   &.blurred {
     opacity: 0.25;
     filter: blur(4px);
@@ -1753,7 +1758,7 @@ key {
   border-bottom: 2px solid transparent;
   line-height: 1rem;
   letter {
-    display: inline;
+    display: inline-block;
   }
 
   // transition: .25s;

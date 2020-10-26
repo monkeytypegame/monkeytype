@@ -1,6 +1,7 @@
 {
   "name": "arabic",
   "leftToRight": false,
+  "ligatures": true,
   "words": [
     "اتمنى",
     "اثق",
