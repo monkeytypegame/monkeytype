@@ -344,8 +344,8 @@ function activateFunbox(funbox, mode) {
   }
 
   if (funbox !== "layoutfluid" || mode !== "script") {
-    if (config.layout !== config.layoutBeforeLayoutfluid) {
-      changeLayout(config.layoutBeforeLayoutfluid);
+    if (config.layout !== config.savedLayout) {
+      changeLayout(config.savedLayout);
     }
   }
   updateTestModesNotice();
