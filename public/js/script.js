@@ -344,7 +344,7 @@ function activateFunbox(funbox, mode) {
   }
 
   if (funbox !== "layoutfluid" || mode !== "script") {
-    if (config.layout !== memoryFunboxKeyboardLayout) {
+    if (config.layout !== config.layoutBeforeLayoutfluid) {
       changeLayout(config.layoutBeforeLayoutfluid);
     }
   }
