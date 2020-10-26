@@ -341,7 +341,7 @@ function activateFunbox(funbox, mode) {
       config.keymapMode = "on";
       changeKeymapMode("next");
       settingsGroups.keymapMode.updateButton();
-      config.layoutBeforeLayoutfluid = config.layout;
+      config.savedLayout = config.layout;
       changeLayout("qwerty");
       settingsGroups.layout.updateButton();
       changeKeymapLayout("qwerty");
