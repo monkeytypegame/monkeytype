@@ -358,6 +358,7 @@ function activateFunbox(funbox, mode) {
   if (funbox !== "layoutfluid" || mode !== "script") {
     if (config.layout !== config.savedLayout) {
       changeLayout(config.savedLayout);
+      settingsGroups.layout.updateButton();
     }
   }
   updateTestModesNotice();
