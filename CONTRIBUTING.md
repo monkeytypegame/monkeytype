@@ -15,7 +15,7 @@
 2. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
 3. Run `firebase login` on your terminal to log in to the same google account as you just used to create the project.
 4. Git clone this project.
-5. Run `npm install` in the `functions/` directory
+5. Run `npm install`
 6. Compile `public/css/style.scss` to `public/css/style.min.css` as [described below](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md#standards--conventions)
 7. Rename `.firebaserc_example` to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
@@ -37,7 +37,7 @@
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` in the `functions/` directory
 
-9. Run `firebase serve` to start a local server on port 5000. Use ctrl+c to stop it.
+9. Run `npm start` to start a local server on port 5000. Use ctrl+c to stop it.
    - Run `firebase use default` if you run into any errors for this.
 
 ## Standards & Conventions
