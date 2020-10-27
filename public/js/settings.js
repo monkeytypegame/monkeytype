@@ -229,7 +229,7 @@ settingsGroups.capsLockBackspace = new SettingsGroup(
   "capsLockBackspace",
   setCapsLockBackspace
 );
-settingsGroups.layout = new SettingsGroup("layout", changeLayout);
+settingsGroups.layout = new SettingsGroup("layout", changeSavedLayout);
 settingsGroups.language = new SettingsGroup("language", changeLanguage);
 settingsGroups.fontSize = new SettingsGroup("fontSize", changeFontSize);
 settingsGroups.pageWidth = new SettingsGroup("pageWidth", setPageWidth);
