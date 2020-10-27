@@ -1319,7 +1319,9 @@ function changeKeymapLayout(layout, nosave) {
       })
       .get();
   } catch (e) {
-    console.log('something went wrong when changing layout, resettings: ' + e.message);
+    console.log(
+      "something went wrong when changing layout, resettings: " + e.message
+    );
     changeKeymapLayout("qwerty", true);
   }
   // console.log(all.join());

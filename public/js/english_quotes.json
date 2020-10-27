@@ -1,11 +1,11 @@
 {
   "groups": [
-    [0,100],
-    [101,300],
-    [301,600],
-    [601,9999]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
-  "quotes":[
+  "quotes": [
     {
       "text": "You have the power to heal your life, and you need to know that.",
       "source": "Meditations to Heal Your Life",
