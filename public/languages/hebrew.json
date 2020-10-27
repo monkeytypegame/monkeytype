@@ -1,6 +1,7 @@
 {
   "name": "hebrew",
   "leftToRight": false,
+  "ligatures": true,
   "words": [
     "של",
     "את",
