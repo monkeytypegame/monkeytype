@@ -1251,66 +1251,69 @@ function changeKeymapLayout(layout, nosave) {
   // layouts[layout].forEach((x) => {
   //   console.log(x);
   // });
+  try {
+    var toReplace = layouts[layout].slice(13, 47);
+    var _ = toReplace.splice(12, 1);
+    var count = 0;
 
-  var toReplace = layouts[layout].slice(13, 47);
-  var _ = toReplace.splice(12, 1);
-  var count = 0;
+    $(".keymap .letter")
+      .map(function () {
+        if (
+          !this.parentElement.classList.contains("hidden-key") &&
+          !this.classList.contains("hidden-key")
+        ) {
+          if (count < toReplace.length) {
+            var key = toReplace[count].charAt(0);
+            this.innerHTML = key;
 
-  $(".keymap .letter")
-    .map(function () {
-      if (
-        !this.parentElement.classList.contains("hidden-key") &&
-        !this.classList.contains("hidden-key")
-      ) {
-        if (count < toReplace.length) {
-          var key = toReplace[count].charAt(0);
-          this.innerHTML = key;
-
-          switch (key) {
-            case "\\":
-            case "|":
-              this.parentElement.id = "KeyBackslash";
-              break;
-            case "}":
-            case "]":
-              this.parentElement.id = "KeyRightBracket";
-              break;
-            case "{":
-            case "[":
-              this.parentElement.id = "KeyLeftBracket";
-              break;
-            case '"':
-            case "'":
-              this.parentElement.id = "KeyQuote";
-              break;
-            case ":":
-            case ";":
-              this.parentElement.id = "KeySemicolon";
-              break;
-            case "<":
-            case ",":
-              this.parentElement.id = "KeyComma";
-              break;
-            case ">":
-            case ".":
-              this.parentElement.id = "KeyPeriod";
-              break;
-            case "?":
-            case "/":
-              this.parentElement.id = "KeySlash";
-              break;
-            case "":
-              this.parentElement.id = "KeySpace";
-              break;
-            default:
-              this.parentElement.id = `Key${key.toUpperCase()}`;
+            switch (key) {
+              case "\\":
+              case "|":
+                this.parentElement.id = "KeyBackslash";
+                break;
+              case "}":
+              case "]":
+                this.parentElement.id = "KeyRightBracket";
+                break;
+              case "{":
+              case "[":
+                this.parentElement.id = "KeyLeftBracket";
+                break;
+              case '"':
+              case "'":
+                this.parentElement.id = "KeyQuote";
+                break;
+              case ":":
+              case ";":
+                this.parentElement.id = "KeySemicolon";
+                break;
+              case "<":
+              case ",":
+                this.parentElement.id = "KeyComma";
+                break;
+              case ">":
+              case ".":
+                this.parentElement.id = "KeyPeriod";
+                break;
+              case "?":
+              case "/":
+                this.parentElement.id = "KeySlash";
+                break;
+              case "":
+                this.parentElement.id = "KeySpace";
+                break;
+              default:
+                this.parentElement.id = `Key${key.toUpperCase()}`;
+            }
           }
+          count++;
         }
-        count++;
-      }
-    })
-    .get();
-
+      })
+      .get();
+  } catch (e) {
+    console.log('something went wrong when changing layout, resettings: ' + e.message);
+    changeKeymapLayout("qwerty", true);
+  }
   // console.log(all.join());
 }
 
