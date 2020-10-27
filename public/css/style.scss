@@ -1525,8 +1525,8 @@ key {
       flex-direction: row-reverse;
     }
   }
-  &.withLigatures{
-    letter{
+  &.withLigatures {
+    letter {
       display: inline;
     }
   }
@@ -1808,9 +1808,9 @@ key {
   border-bottom: 2px solid var(--error-color);
   text-shadow: 1px 0px 0px var(--bg-color),
     // 2px 0px 0px var(--bg-color),
-      -1px 0px 0px var(--bg-color),
+    -1px 0px 0px var(--bg-color),
     // -2px 0px 0px var(--bg-color),
-      0px 1px 0px var(--bg-color),
+    0px 1px 0px var(--bg-color),
     1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 

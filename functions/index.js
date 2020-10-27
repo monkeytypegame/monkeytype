@@ -61,7 +61,6 @@ async function getAllUsers() {
   let ret = [];
 
   async function getAll(nextPageToken) {
-
     // List batch of users, 1000 at a time.
     let listUsersResult = await auth.listUsers(1000, nextPageToken);
     for (let i = 0; i < listUsersResult.users.length; i++) {
@@ -70,7 +69,7 @@ async function getAllUsers() {
       //if custom claim is undefined check, if its true then ignore
 
       // if (loopuser === undefined || loopuser.customClaims === undefined || loopuser.customClaims['nameChecked'] === undefined) {
-        ret.push(listUsersResult.users[i]);
+      ret.push(listUsersResult.users[i]);
       // }
 
       // console.log(loopuser.customClaims['asd']);
@@ -105,65 +104,67 @@ function isUsernameValid(name) {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-exports.reserveDisplayName = functions.https.onCall(async (request, response) => {
-  let udata = await db.collection('users').doc(request.uid).get();
-  udata = udata.data();
-  if (request.name.toLowerCase() === udata.name.toLowerCase()) {
-    db.collection('takenNames')
-    .doc(request.name.toLowerCase())
-    .set({
-      taken: true
-    }, { merge: true });
+exports.reserveDisplayName = functions.https.onCall(
+  async (request, response) => {
+    let udata = await db.collection("users").doc(request.uid).get();
+    udata = udata.data();
+    if (request.name.toLowerCase() === udata.name.toLowerCase()) {
+      db.collection("takenNames").doc(request.name.toLowerCase()).set(
+        {
+          taken: true,
+        },
+        { merge: true }
+      );
+    }
   }
-})
+);
 
 exports.clearName = functions.auth.user().onDelete((user) => {
-  db.collection('takenNames')
-    .doc(user.displayName.toLowerCase())
-    .delete();
-  db.collection('users')
-    .doc(user.uid)
-    .delete();
+  db.collection("takenNames").doc(user.displayName.toLowerCase()).delete();
+  db.collection("users").doc(user.uid).delete();
 });
 
-exports.checkNameAvailability = functions.https.onCall(async (request, response) => {
-  // 1 - available
-  // -1 - unavailable (taken)
-  // -2 - not valid name
-  // -999 - unknown error
-  try {
-    if (!isUsernameValid(request.name)) return -2;
+exports.checkNameAvailability = functions.https.onCall(
+  async (request, response) => {
+    // 1 - available
+    // -1 - unavailable (taken)
+    // -2 - not valid name
+    // -999 - unknown error
+    try {
+      if (!isUsernameValid(request.name)) return -2;
 
-    let takendata = await db.collection('takenNames')
-      .doc(request.name.toLowerCase())
-      .get();
-    
-    takendata = takendata.data();
+      let takendata = await db
+        .collection("takenNames")
+        .doc(request.name.toLowerCase())
+        .get();
 
-    if (takendata !== undefined && takendata.taken) {
-      return -1;
-    } else {
-      return 1;
+      takendata = takendata.data();
+
+      if (takendata !== undefined && takendata.taken) {
+        return -1;
+      } else {
+        return 1;
+      }
+
+      // return getAllNames().then((data) => {
+      //   let available = 1;
+      //   data.forEach((name) => {
+      //     try {
+      //       if (name.toLowerCase() === request.name.toLowerCase()) available = -1;
+      //     } catch (e) {
+      //       //
+      //     }
+      //   });
+      //   return available;
+      // });
+    } catch (e) {
+      console.log(e.message);
+      return -999;
     }
-
-    // return getAllNames().then((data) => {
-    //   let available = 1;
-    //   data.forEach((name) => {
-    //     try {
-    //       if (name.toLowerCase() === request.name.toLowerCase()) available = -1;
-    //     } catch (e) {
-    //       //
-    //     }
-    //   });
-    //   return available;
-    // });
-  } catch (e) {
-    console.log(e.message);
-    return -999;
   }
-});
+);
 
-  // exports.changeName = functions.https.onCall((request, response) => {
+// exports.changeName = functions.https.onCall((request, response) => {
 //   try {
 //     if (!isUsernameValid(request.name)) {
 //       console.warn(
@@ -337,7 +338,7 @@ function checkIfPB(uid, obj, userdata) {
                 acc: obj.acc,
                 raw: obj.rawWpm,
                 timestamp: Date.now(),
-                consistency: obj.consistency
+                consistency: obj.consistency,
               },
             ],
           },
@@ -362,7 +363,7 @@ function checkIfPB(uid, obj, userdata) {
                     acc: obj.acc,
                     raw: obj.rawWpm,
                     timestamp: Date.now(),
-                    consistency: obj.consistency
+                    consistency: obj.consistency,
                   },
                 ],
               },
@@ -413,7 +414,7 @@ function checkIfPB(uid, obj, userdata) {
         acc: obj.acc,
         raw: obj.rawWpm,
         timestamp: Date.now(),
-        consistency: obj.consistency
+        consistency: obj.consistency,
       });
       toUpdate = true;
     }
@@ -429,7 +430,7 @@ function checkIfPB(uid, obj, userdata) {
         acc: obj.acc,
         raw: obj.rawWpm,
         timestamp: Date.now(),
-        consistency: obj.consistency
+        consistency: obj.consistency,
       },
     ];
     toUpdate = true;
@@ -573,7 +574,9 @@ exports.verifyUser = functions.https.onRequest(async (request, response) => {
   }
   request = request.body.data;
   if (request.uid == undefined) {
-    response.status(200).send({ data: { status: -1, message: "Need to provide uid" } });
+    response
+      .status(200)
+      .send({ data: { status: -1, message: "Need to provide uid" } });
     return;
   }
   try {
@@ -585,20 +588,24 @@ exports.verifyUser = functions.https.onRequest(async (request, response) => {
       .then((res) => res.json())
       .then(async (res2) => {
         let did = res2.id;
-        await db.collection('users').doc(request.uid).update({
-          discordId: did
-        })
+        await db.collection("users").doc(request.uid).update({
+          discordId: did,
+        });
         await db.collection("bot-commands").add({
           command: "verify",
-          arguments: [did,request.uid],
+          arguments: [did, request.uid],
           executed: false,
           requestTimestamp: Date.now(),
         });
-        response.status(200).send({ data: { status: 1, message: "Verified", did: did } });
+        response
+          .status(200)
+          .send({ data: { status: 1, message: "Verified", did: did } });
         return;
       })
       .catch((e) => {
-        console.error('Something went wrong when trying to verify user ' + e.message);
+        console.error(
+          "Something went wrong when trying to verify user " + e.message
+        );
         response.status(200).send({ data: { status: -1, message: e.message } });
         return;
       });
@@ -612,39 +619,52 @@ function incrementT60Bananas(uid, result, userData) {
   try {
     let best60;
     try {
-      best60 = Math.max(...userData.personalBests.time[60].map(best => best.wpm));
+      best60 = Math.max(
+        ...userData.personalBests.time[60].map((best) => best.wpm)
+      );
       if (!Number.isFinite(best60)) {
-        throw 'Not finite'
+        throw "Not finite";
       }
     } catch (e) {
       best60 = undefined;
     }
-    
+
     if (best60 != undefined && result.wpm < best60 - best60 * 0.25) {
-      console.log('returning');
+      console.log("returning");
       return;
     } else {
       //increment
-      console.log('checking');
-      db.collection(`users/${uid}/bananas`).doc('bananas').get().then(docRef => {
-        let data = docRef.data();
-        if (data === undefined) {
-          //create doc
-          db.collection(`users/${uid}/bananas`).doc('bananas')
-            .set({
-              t60bananas: 1,
-            }, { merge: true });
-        } else {
-          //increment
-          db.collection(`users/${uid}/bananas`).doc('bananas')
-            .set({
-              t60bananas: admin.firestore.FieldValue.increment(1),
-            }, { merge: true });
-        }
-      })
+      console.log("checking");
+      db.collection(`users/${uid}/bananas`)
+        .doc("bananas")
+        .get()
+        .then((docRef) => {
+          let data = docRef.data();
+          if (data === undefined) {
+            //create doc
+            db.collection(`users/${uid}/bananas`).doc("bananas").set(
+              {
+                t60bananas: 1,
+              },
+              { merge: true }
+            );
+          } else {
+            //increment
+            db.collection(`users/${uid}/bananas`)
+              .doc("bananas")
+              .set(
+                {
+                  t60bananas: admin.firestore.FieldValue.increment(1),
+                },
+                { merge: true }
+              );
+          }
+        });
     }
   } catch (e) {
-    console.log('something went wrong when trying to increment bananas ' + e.message);
+    console.log(
+      "something went wrong when trying to increment bananas " + e.message
+    );
   }
 }
 

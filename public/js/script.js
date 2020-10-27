@@ -4631,16 +4631,16 @@ $(document).keypress(function (event) {
 $(document).keydown((event) => {
   keypressStats.duration.current = performance.now();
   // if ($(".pageTest").hasClass("active")) {
-    try {
-      if (
-        !config.capsLockBackspace &&
-        event.originalEvent.getModifierState("CapsLock")
-      ) {
-        showCapsWarning();
-      } else {
-        hideCapsWarning();
-      }
-    } catch (e) {}
+  try {
+    if (
+      !config.capsLockBackspace &&
+      event.originalEvent.getModifierState("CapsLock")
+    ) {
+      showCapsWarning();
+    } else {
+      hideCapsWarning();
+    }
+  } catch (e) {}
   // }
 });
 
