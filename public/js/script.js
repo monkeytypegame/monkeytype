@@ -4711,8 +4711,8 @@ $(document).keydown((event) => {
 
   //tab
   if (
-    (event["keyCode"] == 9 && !config.swapEscAndTab) ||
-    (event["keyCode"] == 27 && config.swapEscAndTab)
+    (event.key == "Tab" && !config.swapEscAndTab) ||
+    (event.key == "Escape" && config.swapEscAndTab)
   ) {
     if (
       !event.ctrlKey &&
@@ -4753,7 +4753,7 @@ $(document).keydown((event) => {
   //only for the typing test
   if ($("#wordsInput").is(":focus")) {
     const isBackspace =
-      event["keyCode"] === 8 ||
+      event.key === "Backspace" ||
       (config.capsLockBackspace && event.key === "CapsLock");
     if (isBackspace) {
       event.preventDefault();
@@ -4804,7 +4804,7 @@ $(document).keydown((event) => {
       updateCaretPosition();
     }
     //space
-    if (event["keyCode"] == 32 || event.key === " ") {
+    if (event.key === " ") {
       if (!testActive) return;
       if (currentInput == "") return;
       event.preventDefault();
