@@ -1,6 +1,7 @@
 {
   "name": "monkeytype",
   "version": "1.5.3",
+  "license": "GPL-3.0",
   "scripts": {
     "start": "firebase serve",
     "postinstall": "cd functions && npm install"
