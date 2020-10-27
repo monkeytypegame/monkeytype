@@ -4629,7 +4629,7 @@ $(document).keypress(function (event) {
 
 $(document).keydown((event) => {
   keypressStats.duration.current = performance.now();
-  if ($(".pageTest").hasClass("active")) {
+  // if ($(".pageTest").hasClass("active")) {
     try {
       if (
         !config.capsLockBackspace &&
@@ -4640,7 +4640,7 @@ $(document).keydown((event) => {
         hideCapsWarning();
       }
     } catch (e) {}
-  }
+  // }
 });
 
 $(document).keyup((event) => {
