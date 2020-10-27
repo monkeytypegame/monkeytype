@@ -4518,6 +4518,7 @@ $(document).keydown(function (event) {
       "Meta",
       "Alt",
       "AltGraph",
+      "Dead",
       "CapsLock",
       "Backspace",
       "Enter",
