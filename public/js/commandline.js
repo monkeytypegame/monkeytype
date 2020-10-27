@@ -1510,7 +1510,7 @@ if (Object.keys(layouts).length > 0) {
       id: "changeLayout" + capitalizeFirstLetter(layout),
       display: layout.replace(/_/g, " "),
       exec: () => {
-        changeLayout(layout);
+        changeSavedLayout(layout);
         restartTest();
         saveConfigToCookie();
       },
