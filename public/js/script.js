@@ -612,7 +612,6 @@ function emulateLayout(event) {
     event.key = newKey;
     event.code = "Key" + newKey.toUpperCase();
   }
-  if (event.key === " " || event.key === "Enter") return event;
   if (config.layout === "default") {
     //override the caps lock modifier for the default layout if needed
     if (config.capsLockBackspace && isASCIILetter(event.key)) {
@@ -1504,26 +1503,27 @@ function updateCaretPosition() {
         : currentLetterPosLeft - $(currentLetter).width() + caret.width() / 2;
     }
 
-    let duration = 0;
-
-    if (config.smoothCaret) {
-      duration = 100;
-      // if (Math.round(caret[0].offsetTop) != Math.round(newTop)) {
-      //   caret.css("top", newTop);
-      //   duration = 10;
-      // }
-    }
-
     let smoothlinescroll = $("#words .smoothScroller").height();
     if (smoothlinescroll === undefined) smoothlinescroll = 0;
 
-    caret.stop(true, true).animate(
-      {
-        top: newTop - smoothlinescroll,
-        left: newLeft,
-      },
-      duration
-    );
+
+    if (config.smoothCaret) {
+      caret.stop(true, false).animate(
+        {
+          top: newTop - smoothlinescroll,
+          left: newLeft,
+        },
+        100
+      );
+    } else {
+      caret.stop(true, true).animate(
+        {
+          top: newTop - smoothlinescroll,
+          left: newLeft,
+        },
+        0
+      );
+    }
 
     if (config.showAllLines) {
       let browserHeight = window.innerHeight;
@@ -4505,13 +4505,35 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
 });
 
 //keypresses for the test, using different method to be more responsive
-$(document).keypress(function (event) {
-  event = emulateLayout(event);
+$(document).keydown(function (event) {
   if (!$("#wordsInput").is(":focus")) return;
-  if (event["keyCode"] == 13) return;
-  if (event["keyCode"] == 32) return;
-  if (event["keyCode"] == 27) return;
-  if (event.key == "ContextMenu") return;
+  if (
+    [
+      "Tab",
+      " ",
+      "ContextMenu",
+      "Escape",
+      "Shift",
+      "Control",
+      "Meta",
+      "Alt",
+      "CapsLock",
+      "Backspace",
+      "Enter",
+      "PageUp",
+      "PageDown",
+      "Home",
+      "ArrowUp",
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowDown",
+      undefined
+    ].includes(event.key)
+  ) return;
+  if (/F\d+/.test(event.key)) return;
+  if (/Numpad/.test(event.key)) return;
+  event = emulateLayout(event);
+
   //start the test
   if (currentInput == "" && inputHistory.length == 0 && !testActive) {
     startTest();
