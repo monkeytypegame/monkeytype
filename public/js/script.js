@@ -358,6 +358,7 @@ function activateFunbox(funbox, mode) {
   if (funbox !== "layoutfluid" || mode !== "script") {
     if (config.layout !== config.savedLayout) {
       changeLayout(config.savedLayout);
+      settingsGroups.layout.updateButton();
     }
   }
   updateTestModesNotice();
@@ -4630,16 +4631,16 @@ $(document).keypress(function (event) {
 $(document).keydown((event) => {
   keypressStats.duration.current = performance.now();
   // if ($(".pageTest").hasClass("active")) {
-    try {
-      if (
-        !config.capsLockBackspace &&
-        event.originalEvent.getModifierState("CapsLock")
-      ) {
-        showCapsWarning();
-      } else {
-        hideCapsWarning();
-      }
-    } catch (e) {}
+  try {
+    if (
+      !config.capsLockBackspace &&
+      event.originalEvent.getModifierState("CapsLock")
+    ) {
+      showCapsWarning();
+    } else {
+      hideCapsWarning();
+    }
+  } catch (e) {}
   // }
 });
 

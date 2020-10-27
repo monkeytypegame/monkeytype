@@ -167,7 +167,7 @@ function applyConfig(configObj) {
     changeWordCount(configObj.words, true);
     changeLanguage(configObj.language, true);
     setCapsLockBackspace(configObj.capsLockBackspace, true);
-    changeLayout(configObj.savedLayout, true);
+    changeSavedLayout(configObj.savedLayout, true);
     changeFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
@@ -1179,6 +1179,14 @@ function changeLayout(layout, nosave) {
   config.layout = layout;
   updateTestModesNotice();
   if (!nosave) saveConfigToCookie();
+}
+
+function changeSavedLayout(layout, nosave) {
+  if (layout == null || layout == undefined) {
+    layout = "qwerty";
+  }
+  config.savedLayout = layout;
+  changeLayout(layout, nosave);
 }
 
 function changeKeymapMode(mode, nosave) {
