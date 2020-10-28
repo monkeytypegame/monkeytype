@@ -1362,7 +1362,7 @@ function flashPressedKeymapKey(key, correct) {
   }
 
   try {
-    if (correct) {
+    if (correct || config.blindMode) {
       $(key)
         .stop(true, true)
         .css({
@@ -1622,7 +1622,7 @@ function countChars() {
 }
 
 function calculateStats() {
-  let testSeconds = roundTo2((testEnd - testStart) / 1000);
+  let testSeconds = (testEnd - testStart) / 1000;
 
   // if (config.mode == "words" && config.difficulty == "normal") {
   //   if (inputHistory.length != wordsList.length) return;
@@ -3460,6 +3460,15 @@ function updateTestModesNotice() {
     );
   }
 
+  if (config.language === "english_1k" || config.language === "english_10k") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${config.language.replace(
+        "_",
+        " "
+      )}</div>`
+    );
+  }
+
   if (config.difficulty === "expert") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsDifficulty"><i class="fas fa-star-half-alt"></i>expert</div>`
@@ -4517,7 +4526,6 @@ $(document).keydown(function (event) {
       "Meta",
       "Alt",
       "AltGraph",
-      "Dead",
       "CapsLock",
       "Backspace",
       "Enter",
@@ -4528,6 +4536,19 @@ $(document).keydown(function (event) {
       "ArrowLeft",
       "ArrowRight",
       "ArrowDown",
+      "OS",
+      "Insert",
+      "Home",
+      "Undefined",
+      "Control",
+      "Fn",
+      "FnLock",
+      "Hyper",
+      "NumLock",
+      "ScrollLock",
+      "Symbol",
+      "SymbolLock",
+      "Super",
       undefined,
     ].includes(event.key)
   )
@@ -4542,6 +4563,17 @@ $(document).keydown(function (event) {
   } else {
     if (!testActive) return;
   }
+
+  if (event.key === "Dead") {
+    playClickSound();
+    $(
+      document.querySelector("#words .word.active").querySelectorAll("letter")[
+        currentInput.length
+      ]
+    ).toggleClass("dead");
+    return;
+  }
+
   let thisCharCorrect;
 
   let nextCharInWord = wordsList[currentWordIndex].substring(
@@ -4642,6 +4674,13 @@ $(document).keydown(function (event) {
   } else {
     activeWordJumped = false;
   }
+
+  if (activeWordJumped) {
+    currentInput = currentInput.slice(0, -1);
+    compareInput(!config.blindMode);
+    activeWordJumped = false;
+  }
+
   // console.timeEnd("offcheck2");
 
   if (config.keymapMode === "react") {
