@@ -1518,6 +1518,16 @@ key {
   user-select: none;
   padding-bottom: 1em;
 
+  letter{
+    border-bottom-style: solid;
+    border-bottom-width: .05em;
+    border-bottom-color: transparent;
+    &.dead{
+      border-bottom-width: .05em;
+      border-bottom-color: var(--sub-color);
+    }
+  }
+
   /* a little hack for right-to-left languages */
   &.rightToLeftTest {
     flex-direction: row-reverse;
@@ -1540,6 +1550,10 @@ key {
     .word {
       color: var(--text-color);
 
+      & letter.dead{
+        border-bottom-color: var(--sub-color) !important;
+      }
+
       & letter.correct {
         color: var(--sub-color);
       }
@@ -1557,6 +1571,11 @@ key {
 
   &.colorfulMode {
     .word {
+
+      & letter.dead{
+        border-bottom-color: var(--main-color) !important;
+      }
+
       & letter.correct {
         color: var(--main-color);
       }
@@ -1583,6 +1602,10 @@ key {
   &.flipped.colorfulMode {
     .word {
       color: var(--main-color);
+
+      & letter.dead{
+        border-bottom-color: var(--sub-color) !important;
+      }
 
       & letter.correct {
         color: var(--sub-color);

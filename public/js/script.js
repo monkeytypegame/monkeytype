@@ -1623,7 +1623,7 @@ function countChars() {
 }
 
 function calculateStats() {
-  let testSeconds = roundTo2((testEnd - testStart) / 1000);
+  let testSeconds = (testEnd - testStart) / 1000;
 
   // if (config.mode == "words" && config.difficulty == "normal") {
   //   if (inputHistory.length != wordsList.length) return;
@@ -4518,7 +4518,6 @@ $(document).keydown(function (event) {
       "Meta",
       "Alt",
       "AltGraph",
-      "Dead",
       "CapsLock",
       "Backspace",
       "Enter",
@@ -4542,6 +4541,13 @@ $(document).keydown(function (event) {
   } else {
     if (!testActive) return;
   }
+
+  if (event.key === "Dead") {
+    playClickSound();
+    $(document.querySelector("#words .word.active").querySelectorAll("letter")[currentInput.length]).toggleClass('dead');
+    return;
+  }
+
   let thisCharCorrect;
 
   let nextCharInWord = wordsList[currentWordIndex].substring(
