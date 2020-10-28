@@ -2266,6 +2266,15 @@ function showResult(difficultyFailed = false) {
         console.log("Analytics unavailable");
       }
     }
+    mp_testFinished({
+      wpm: completedEvent.wpm,
+      raw: completedEvent.raw,
+      accuracy: completedEvent.acc,
+      consistency: completedEvent.consistency,
+      duration: completedEvent.testDuration,
+      invalid: testInvalid,
+      failed: difficultyFailed
+    })
   }
 
   if (firebase.auth().currentUser != null) {
@@ -2476,23 +2485,25 @@ function startTest() {
         if (
           MP.room.testStats === undefined ||
           Object.keys(MP.room.testStats) === 0
-        )
-          return;
-        Object.keys(MP.room.testStats).forEach((socketId) => {
-          $(`.tribePlayers [socketId=${socketId}] .wpm`).text(
-            MP.room.testStats[socketId].wpm
-          );
-          $(`.tribePlayers [socketId=${socketId}] .acc`).text(
-            MP.room.testStats[socketId].acc
-          );
-          $(`.tribePlayers [socketId=${socketId}] .bar`).animate(
-            {
-              width: MP.room.testStats[socketId].progress + "%",
-            },
-            1000,
-            "linear"
-          );
-        });
+        ) {
+          
+        } else {
+          Object.keys(MP.room.testStats).forEach((socketId) => {
+            $(`.tribePlayers [socketId=${socketId}] .wpm`).text(
+              MP.room.testStats[socketId].wpm
+            );
+            $(`.tribePlayers [socketId=${socketId}] .acc`).text(
+              MP.room.testStats[socketId].acc
+            );
+            $(`.tribePlayers [socketId=${socketId}] .bar`).animate(
+              {
+                width: MP.room.testStats[socketId].progress + "%",
+              },
+              1000,
+              "linear"
+            );
+          });
+        }
       }
 
       // console.time("livewpm");
