@@ -22,6 +22,11 @@ function mp_refreshUserList() {
   MP.room.users.forEach(user => {
     let crown = '';
     if (user.isLeader) {
+
+      if (user.socketId === MP.socket.id) {
+        MP.room.isLeader = true;
+      }
+
       crown = '<i class="fas fa-star"></i>';
     }
     $(".pageTribe .lobby .userlist .list").append(`
@@ -33,7 +38,8 @@ function mp_refreshUserList() {
 function mp_resetLobby(){
   $(".pageTribe .lobby .userlist .list").empty();
   $(".pageTribe .lobby .chat .messages").empty();
-  $(".pageTribe .lobby .inviteLink").text('');
+  $(".pageTribe .lobby .inviteLink .code .text").text('');
+  $(".pageTribe .lobby .inviteLink .link").text('');
 }
 
 function mp_applyRoomConfig(cfg) {
@@ -93,7 +99,21 @@ function mp_syncConfig() {
 
 function mp_joinRoomByCode(code) {
   code = "room_" + code;
-  MP.socket.emit("mp_room_join",{roomId:code});
+  MP.socket.emit("mp_room_join", { roomId: code });
+  $(".pageTribe .prelobby #joinByCode input").val('');
+  
+  $(".pageTribe .prelobby #joinByCode .customInput").html(`
+    <span class="byte">--</span>
+    /
+    <span class="byte">--</span>
+    /
+    <span class="byte">--</span>
+  `);
+  
+}
+
+function mp_startTest() {
+  MP.socket.emit('mp_room_test_start');
 }
 
 function mp_sendTestProgress(wpm, acc, progress) {
@@ -402,6 +422,7 @@ MP.socket.on('mp_room_test_countdown', data => {
 })
 
 MP.socket.on('mp_room_test_init', data => {
+  MP.room.testStats = {};
   Math.seedrandom(data.seed);
   mp_refreshTestUserList();
   changePage('');
@@ -544,5 +565,5 @@ $(".pageTribe .lobby .lobbyButtons .leaveRoomButton").click(e => {
 })
 
 $(".pageTribe .lobby .lobbyButtons .startTestButton").click(e => {
-  MP.socket.emit('mp_room_test_start');
+  mp_startTest();
 })

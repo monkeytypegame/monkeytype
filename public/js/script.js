@@ -1645,6 +1645,23 @@ function showResult(difficultyFailed = false) {
   let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
   let afkSecondsPercent = roundTo2((afkseconds / testtime) * 100);
 
+
+  if (MP.state >= 10) {
+    $('.pageTest #nextTestButton').addClass('hidden');
+    $('.pageTest #restartTestButtonWithSameWordset').addClass('hidden');
+    $('.pageTest #goBackToLobbyButton').removeClass('hidden');
+    $('.pageTest #practiseMissedWordsButton').addClass('hidden');
+    if (MP.room.isLeader) {
+      $('.pageTest #nextTestButton').removeClass('hidden');
+    }
+  } else {
+    $('.pageTest #nextTestButton').removeClass('hidden');
+    $('.pageTest #restartTestButtonWithSameWordset').removeClass('hidden');
+    $('.pageTest #goBackToLobbyButton').addClass('hidden');
+    $('.pageTest #practiseMissedWordsButton').removeClass('hidden');
+  }
+
+
   $("#result #resultWordsHistory").addClass("hidden");
 
   if (config.alwaysShowDecimalPlaces) {
@@ -2481,31 +2498,6 @@ function startTest() {
         updateTimer();
       }
 
-      if (MP.state > 20) {
-        if (
-          MP.room.testStats === undefined ||
-          Object.keys(MP.room.testStats) === 0
-        ) {
-          
-        } else {
-          Object.keys(MP.room.testStats).forEach((socketId) => {
-            $(`.tribePlayers [socketId=${socketId}] .wpm`).text(
-              MP.room.testStats[socketId].wpm
-            );
-            $(`.tribePlayers [socketId=${socketId}] .acc`).text(
-              MP.room.testStats[socketId].acc
-            );
-            $(`.tribePlayers [socketId=${socketId}] .bar`).animate(
-              {
-                width: MP.room.testStats[socketId].progress + "%",
-              },
-              1000,
-              "linear"
-            );
-          });
-        }
-      }
-
       // console.time("livewpm");
       // let wpm = liveWPM();
       // updateLiveWpm(wpm);
@@ -2608,6 +2600,32 @@ function startTest() {
           return;
         }
       }
+
+      if (MP.state > 20) {
+        if (
+          MP.room.testStats === undefined ||
+          Object.keys(MP.room.testStats) === 0
+        ) {
+          
+        } else {
+          Object.keys(MP.room.testStats).forEach((socketId) => {
+            $(`.tribePlayers [socketId=${socketId}] .wpm`).text(
+              MP.room.testStats[socketId].wpm
+            );
+            $(`.tribePlayers [socketId=${socketId}] .acc`).text(
+              MP.room.testStats[socketId].acc
+            );
+            $(`.tribePlayers [socketId=${socketId}] .bar`).stop(true,true).animate(
+              {
+                width: MP.room.testStats[socketId].progress + "%",
+              },
+              250,
+              "linear"
+            );
+          });
+        }
+      }
+
       // console.log('step');
       loop(expectedStepEnd + stepIntervalMS);
     }, delay);
@@ -2904,19 +2922,23 @@ function changePage(page) {
       hideSignOutButton();
     }
   } else if (page == "tribe") {
-    pageTransition = true;
-    restartTest();
-    swapElements(activePage, $(".page.pageTribe"), 250, () => {
-      showTestConfig();
-      pageTransition = false;
-      history.pushState("tribe", null, "tribe");
-      $(".page.pageTribe").addClass("active");
-      if (!MP.socket.connected) {
-        if (MP.state === -1) {
-          mp_init();
+    if (MP.state === 20 || MP.state === 21) {
+      changePage('test');
+    } else {
+      pageTransition = true;
+      restartTest();
+      swapElements(activePage, $(".page.pageTribe"), 250, () => {
+        showTestConfig();
+        pageTransition = false;
+        history.pushState("tribe", null, "tribe");
+        $(".page.pageTribe").addClass("active");
+        if (!MP.socket.connected) {
+          if (MP.state === -1) {
+            mp_init();
+          }
         }
-      }
-    });
+      });
+    }
   }
 }
 
@@ -4229,9 +4251,20 @@ $(document).on("keypress", "#restartTestButton", (event) => {
   }
 });
 
+
 $(document.body).on("click", "#restartTestButton", (event) => {
   manualRestart = true;
   restartTest();
+});
+
+
+$(document).on("keypress", "#goBackToLobbyButton", (event) => {
+  changePage('tribe');
+});
+
+
+$(document.body).on("click", "#goBackToLobbyButton", (event) => {
+  changePage('tribe');
 });
 
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
@@ -4262,13 +4295,21 @@ $(document.body).on("click", "#practiseMissedWordsButton", (event) => {
 
 $(document).on("keypress", "#nextTestButton", (event) => {
   if (event.keyCode == 13) {
-    restartTest();
+    if (MP.state >= 10) {
+      mp_startTest();
+    } else {
+      restartTest();
+    }
   }
 });
 
 $(document.body).on("click", "#nextTestButton", (event) => {
   manualRestart = true;
-  restartTest();
+  if (MP.state >= 10) {
+    mp_startTest();
+  } else {
+    restartTest();
+  }
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
