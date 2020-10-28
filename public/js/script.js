@@ -208,7 +208,6 @@ const generatePairingCode = firebase
 const saveLbMemory = firebase.functions().httpsCallable("saveLbMemory");
 const unlinkDiscord = firebase.functions().httpsCallable("unlinkDiscord");
 
-
 function refreshThemeColorObject() {
   let st = getComputedStyle(document.body);
 
@@ -414,11 +413,13 @@ function initWords() {
       success: function (data) {
         hideBackgroundLoader();
         quotes = data;
-        quotes.groups.forEach((qg,i) => {
+        quotes.groups.forEach((qg, i) => {
           let lower = qg[0];
           let upper = qg[1];
-          quotes.groups[i] = quotes.quotes.filter(q => q.length >= lower && q.length <= upper);
-        })
+          quotes.groups[i] = quotes.quotes.filter(
+            (q) => q.length >= lower && q.length <= upper
+          );
+        });
         quotes.quotes = [];
       },
     });
@@ -526,16 +527,21 @@ function initWords() {
       wordsList.push(randomWord);
     }
   } else if (config.mode == "quote") {
-
     let group = config.quoteLength;
 
     if (config.quoteLength === -1) {
       group = Math.floor(Math.random() * quotes.groups.length);
     }
 
-    rq = quotes.groups[group][Math.floor(Math.random() * quotes.groups[group].length)];
+    rq =
+      quotes.groups[group][
+        Math.floor(Math.random() * quotes.groups[group].length)
+      ];
     if (randomQuote != null && rq.id === randomQuote.id) {
-      rq = quotes.groups[group][Math.floor(Math.random() * quotes.groups[group].length)];
+      rq =
+        quotes.groups[group][
+          Math.floor(Math.random() * quotes.groups[group].length)
+        ];
     }
     randomQuote = rq;
     let w = rq.text.trim().split(" ");
@@ -930,7 +936,11 @@ function compareInput(showError) {
         if (currentWord[i] == undefined) {
           ret += '<letter class="incorrect extra">' + input[i] + "</letter>";
         } else {
-          ret += '<letter class="incorrect">' + currentWord[i] + (config.indicateTypos ? `<hint>${input[i]}</hint>` : '') + "</letter>";
+          ret +=
+            '<letter class="incorrect">' +
+            currentWord[i] +
+            (config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
+            "</letter>";
         }
       }
     }
@@ -2041,7 +2051,8 @@ function showResult(difficultyFailed = false) {
                   if (
                     config.mode === "time" &&
                     (mode2 == "15" || mode2 == "60") &&
-                    dbSnapshot !== null) {
+                    dbSnapshot !== null
+                  ) {
                     const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
                     const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
                     const lbRightIcon = `<i class="fas fa-angle-right"></i>`;
@@ -2052,7 +2063,9 @@ function showResult(difficultyFailed = false) {
                     const glbMemory =
                       dbSnapshot.lbMemory[config.mode + mode2].global;
                     let dontShowGlobalDiff =
-                      glbMemory == null || glbMemory === -1 || glb === -1 ? true : false;
+                      glbMemory == null || glbMemory === -1 || glb === -1
+                        ? true
+                        : false;
                     let globalLbDiff = null;
                     if (glb === null) {
                       globalLbString = "global: not found";
@@ -2107,7 +2120,9 @@ function showResult(difficultyFailed = false) {
                     const dlbMemory =
                       dbSnapshot.lbMemory[config.mode + mode2].daily;
                     let dontShowDailyDiff =
-                      dlbMemory == null || dlbMemory === -1 || dlb === -1 ? true : false;
+                      dlbMemory == null || dlbMemory === -1 || dlb === -1
+                        ? true
+                        : false;
                     let dailyLbDiff = null;
                     if (dlb === null) {
                       dailyLbString = "daily: not found";
@@ -2214,7 +2229,7 @@ function showResult(difficultyFailed = false) {
                       config.difficulty,
                       stats.wpm,
                       stats.acc,
-                      stats.wpmRaw,
+                      stats.wpmRaw
                     );
                   } else if (e.data.resultCode === 1) {
                     if (localPb) {
@@ -2263,14 +2278,14 @@ function showResult(difficultyFailed = false) {
   let testType = "";
 
   if (config.mode === "quote") {
-    let qlen = '';
+    let qlen = "";
     if (config.quoteLength === 0) {
       qlen = "short ";
-    }else if (config.quoteLength === 1) {
+    } else if (config.quoteLength === 1) {
       qlen = "medium ";
-    }else if (config.quoteLength === 2) {
+    } else if (config.quoteLength === 2) {
       qlen = "long ";
-    }else if (config.quoteLength === 3) {
+    } else if (config.quoteLength === 3) {
       qlen = "thicc ";
     }
     testType += qlen + config.mode;
@@ -2443,10 +2458,9 @@ function startTest() {
     },
   };
   try {
-    if (config.paceCaret !== "off") movePaceCaret(performance.now() + (paceCaret.spc * 1000));
-  } catch (e) {
-    
-  }
+    if (config.paceCaret !== "off")
+      movePaceCaret(performance.now() + paceCaret.spc * 1000);
+  } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
   const stepIntervalMS = 1000;
   (function loop(expectedStepEnd) {
@@ -2457,6 +2471,30 @@ function startTest() {
       if (config.mode === "time") {
         updateTimer();
       }
+
+      if (MP.state > 20) {
+        if (
+          MP.room.testStats === undefined ||
+          Object.keys(MP.room.testStats) === 0
+        )
+          return;
+        Object.keys(MP.room.testStats).forEach((socketId) => {
+          $(`.tribePlayers [socketId=${socketId}] .wpm`).text(
+            MP.room.testStats[socketId].wpm
+          );
+          $(`.tribePlayers [socketId=${socketId}] .acc`).text(
+            MP.room.testStats[socketId].acc
+          );
+          $(`.tribePlayers [socketId=${socketId}] .bar`).animate(
+            {
+              width: MP.room.testStats[socketId].progress + "%",
+            },
+            1000,
+            "linear"
+          );
+        });
+      }
+
       // console.time("livewpm");
       // let wpm = liveWPM();
       // updateLiveWpm(wpm);
@@ -2468,7 +2506,11 @@ function startTest() {
       wpmHistory.push(wpmAndRaw.wpm);
       rawHistory.push(wpmAndRaw.raw);
 
-      let acc = Math.round((accuracyStats.correct / (accuracyStats.correct + accuracyStats.incorrect)) * 100);
+      let acc = Math.round(
+        (accuracyStats.correct /
+          (accuracyStats.correct + accuracyStats.incorrect)) *
+          100
+      );
 
       let progress = 0;
 
@@ -2600,7 +2642,7 @@ function restartTest(withSameWordset = false, nosave = false, tribe = false) {
   hideTimer();
   bailout = false;
   paceCaret = null;
-  if(paceCaret !== null) clearTimeout(paceCaret.timeout);
+  if (paceCaret !== null) clearTimeout(paceCaret.timeout);
   $("#showWordHistoryButton").removeClass("loaded");
   keypressPerSecond = [];
   lastSecondNotRound = false;
@@ -2768,15 +2810,15 @@ function changeCustomText() {
 
 function cleanTypographySymbols(textToClean) {
   var specials = {
-    '“': '"', // &ldquo;	&#8220;
-    '”': '"', // &rdquo;	&#8221;
-    '’': "'", // &lsquo;	&#8216;
-    '‘': "'", // &rsquo;	&#8217;
-    ',': ",", // &sbquo;	&#8218;
-    '—': "-", // &mdash;  &#8212;
-    '…': "..."// &hellip; &#8230; 
-  }
-  return textToClean.replace(/[“”’‘—,…]/g, (char) => specials[char] || '');
+    "“": '"', // &ldquo;	&#8220;
+    "”": '"', // &rdquo;	&#8221;
+    "’": "'", // &lsquo;	&#8216;
+    "‘": "'", // &rsquo;	&#8217;
+    ",": ",", // &sbquo;	&#8218;
+    "—": "-", // &mdash;  &#8212;
+    "…": "...", // &hellip; &#8230;
+  };
+  return textToClean.replace(/[“”’‘—,…]/g, (char) => specials[char] || "");
 }
 
 function changePage(page) {
@@ -2966,16 +3008,14 @@ function liveWpmAndRaw() {
   let testNow = Date.now();
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
-  let raw = Math.round(
-    ((chars + spaces) * (60 / testSeconds)) / 5
-  );
+  let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
   return {
     wpm: wpm,
     raw: raw,
   };
 }
 
-function updateLiveWpm(wpm,raw) {
+function updateLiveWpm(wpm, raw) {
   if (!testActive || !config.showLiveWpm) {
     hideLiveWpm();
   } else {
@@ -3094,10 +3134,10 @@ function accountIconLoading(truefalse) {
     $("#top #menu .account .icon").html(
       '<i class="fas fa-fw fa-spin fa-circle-notch"></i>'
     );
-    $("#top #menu .account").css('opacity',1);
+    $("#top #menu .account").css("opacity", 1);
   } else {
     $("#top #menu .account .icon").html('<i class="fas fa-fw fa-user"></i>');
-    $("#top #menu .account").css('opacity',1);
+    $("#top #menu .account").css("opacity", 1);
   }
 }
 
@@ -3333,7 +3373,9 @@ function updateTestModesNotice() {
 
   if (config.paceCaret !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${config.paceCaret === "pb" ? "pb" : config.paceCaretCustomSpeed+" wpm"} pace</div>`
+      `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
+        config.paceCaret === "pb" ? "pb" : config.paceCaretCustomSpeed + " wpm"
+      } pace</div>`
     );
   }
 
@@ -3574,8 +3616,8 @@ $("#customTextPopup .button").click((e) => {
   text = text.trim();
   text = text.replace(/[\n\r\t ]/gm, " ");
   text = text.replace(/ +/gm, " ");
-  if($("#customTextPopup .typographyCheck input").prop("checked")) {
-    text = cleanTypographySymbols(text)
+  if ($("#customTextPopup .typographyCheck input").prop("checked")) {
+    text = cleanTypographySymbols(text);
   }
   text = text.split(" ");
   // if (text.length >= 10000) {
@@ -3656,7 +3698,6 @@ function playErrorSound() {
 }
 
 async function initPaceCaret(nosave = false) {
-
   let mode2 = "";
   if (config.mode === "time") {
     mode2 = config.time;
@@ -3676,7 +3717,7 @@ async function initPaceCaret(nosave = false) {
       config.language,
       config.difficulty
     );
-  } else if(config.paceCaret === "custom") {
+  } else if (config.paceCaret === "custom") {
     wpm = config.paceCaretCustomSpeed;
   }
 
@@ -3702,7 +3743,7 @@ async function initPaceCaret(nosave = false) {
   };
 }
 
-// function movePaceCaret() { 
+// function movePaceCaret() {
 //   if (paceCaret === null) {
 //     return;
 //   }
@@ -3713,8 +3754,6 @@ async function initPaceCaret(nosave = false) {
 //     let currentMove = 0;
 //     let newCurrentWord = paceCaret.currentWordIndex;
 //     let newCurrentLetter = paceCaret.currentLetterIndex;
-
-   
 
 //     while (currentMove < paceCaret.cps) {
 //       let currentWordLen;
@@ -3824,7 +3863,10 @@ function movePaceCaret(expectedStepEnd) {
   }
   try {
     paceCaret.currentLetterIndex++;
-    if  (paceCaret.currentLetterIndex >= wordsList[paceCaret.currentWordIndex].length) {
+    if (
+      paceCaret.currentLetterIndex >=
+      wordsList[paceCaret.currentWordIndex].length
+    ) {
       //go to the next word
       paceCaret.currentLetterIndex = -1;
       paceCaret.currentWordIndex++;
@@ -3837,17 +3879,19 @@ function movePaceCaret(expectedStepEnd) {
           paceCaret.currentLetterIndex--;
           if (paceCaret.currentLetterIndex <= -2) {
             //go to the previous word
-            paceCaret.currentLetterIndex = wordsList[paceCaret.currentWordIndex - 1].length - 1;
+            paceCaret.currentLetterIndex =
+              wordsList[paceCaret.currentWordIndex - 1].length - 1;
             paceCaret.currentWordIndex--;
           }
           paceCaret.correction++;
         }
-
-
       } else if (paceCaret.correction > 0) {
         while (paceCaret.correction > 0) {
           paceCaret.currentLetterIndex++;
-          if (paceCaret.currentLetterIndex >= wordsList[paceCaret.currentWordIndex].length) {
+          if (
+            paceCaret.currentLetterIndex >=
+            wordsList[paceCaret.currentWordIndex].length
+          ) {
             //go to the next word
             paceCaret.currentLetterIndex = -1;
             paceCaret.currentWordIndex++;
@@ -3863,7 +3907,7 @@ function movePaceCaret(expectedStepEnd) {
     return;
   }
 
-  try{
+  try {
     let caret = $("#paceCaret");
     let currentLetter;
     let newTop;
@@ -3872,17 +3916,17 @@ function movePaceCaret(expectedStepEnd) {
       if (paceCaret.currentLetterIndex === -1) {
         currentLetter = document
           .querySelectorAll("#words .word")
-        [
-          paceCaret.currentWordIndex -
-          (currentWordIndex - currentWordElementIndex)
-        ].querySelectorAll("letter")[0];
+          [
+            paceCaret.currentWordIndex -
+              (currentWordIndex - currentWordElementIndex)
+          ].querySelectorAll("letter")[0];
       } else {
         currentLetter = document
           .querySelectorAll("#words .word")
-        [
-          paceCaret.currentWordIndex -
-          (currentWordIndex - currentWordElementIndex)
-        ].querySelectorAll("letter")[paceCaret.currentLetterIndex];
+          [
+            paceCaret.currentWordIndex -
+              (currentWordIndex - currentWordElementIndex)
+          ].querySelectorAll("letter")[paceCaret.currentLetterIndex];
       }
       newTop = currentLetter.offsetTop - $(currentLetter).height() / 4;
       newLeft;
@@ -3890,11 +3934,13 @@ function movePaceCaret(expectedStepEnd) {
         newLeft = currentLetter.offsetLeft;
       } else {
         newLeft =
-        currentLetter.offsetLeft + $(currentLetter).width() - caret.width() / 2;
+          currentLetter.offsetLeft +
+          $(currentLetter).width() -
+          caret.width() / 2;
       }
-      caret.removeClass('hidden');
+      caret.removeClass("hidden");
     } catch (e) {
-      caret.addClass('hidden');
+      caret.addClass("hidden");
     }
 
     let smoothlinescroll = $("#words .smoothScroller").height();
@@ -3922,10 +3968,10 @@ function movePaceCaret(expectedStepEnd) {
         },
         0,
         "linear"
-      )
+      );
     }
     paceCaret.timeout = setTimeout(() => {
-      movePaceCaret(expectedStepEnd + (paceCaret.spc * 1000));
+      movePaceCaret(expectedStepEnd + paceCaret.spc * 1000);
     }, duration);
   } catch (e) {
     // $("#paceCaret").animate({ opacity: 0 }, 250, () => {
@@ -4302,13 +4348,13 @@ $(document).mousemove(function (event) {
   }
 });
 
-$(document).on('click', "#testModesNotice .text-button", (event) => {
+$(document).on("click", "#testModesNotice .text-button", (event) => {
   let commands = eval($(event.currentTarget).attr("commands"));
   if (commands !== undefined) {
     currentCommands.push(commands);
     showCommandLine();
   }
-})
+});
 
 //keypresses for the test, using different method to be more responsive
 $(document).keypress(function (event) {
@@ -4645,9 +4691,13 @@ $(document).keydown((event) => {
                   $("#words .smoothScroller").remove();
                 }
               );
-              $("#paceCaret").animate({
-                top: document.querySelector("#paceCaret").offsetTop - wordHeight,
-              },125);
+              $("#paceCaret").animate(
+                {
+                  top:
+                    document.querySelector("#paceCaret").offsetTop - wordHeight,
+                },
+                125
+              );
               $("#words").animate(
                 {
                   marginTop: `-${wordHeight}px`,
@@ -4667,7 +4717,8 @@ $(document).keydown((event) => {
               toHide.forEach((el) => el.remove());
               currentWordElementIndex -= toHide.length;
               $("#paceCaret").css({
-                top: document.querySelector("#paceCaret").offsetTop - wordHeight,
+                top:
+                  document.querySelector("#paceCaret").offsetTop - wordHeight,
               });
             }
             // if (config.smoothLineScroll) {
@@ -4716,7 +4767,11 @@ $(document).keydown((event) => {
       //   .setAttribute("input", currentInput);
       if (currentWord == currentInput) {
         //correct word
-        if (paceCaret !== null && paceCaret.wordsStatus[currentWordIndex] === true && !config.blindMode) {
+        if (
+          paceCaret !== null &&
+          paceCaret.wordsStatus[currentWordIndex] === true &&
+          !config.blindMode
+        ) {
           paceCaret.wordsStatus[currentWordIndex] = undefined;
           paceCaret.correction -= currentWord.length + 1;
         }
@@ -4732,7 +4787,11 @@ $(document).keydown((event) => {
         playClickSound();
       } else {
         //incorrect word
-        if (paceCaret !== null && paceCaret.wordsStatus[currentWordIndex] === undefined && !config.blindMode) {
+        if (
+          paceCaret !== null &&
+          paceCaret.wordsStatus[currentWordIndex] === undefined &&
+          !config.blindMode
+        ) {
           paceCaret.wordsStatus[currentWordIndex] = true;
           paceCaret.correction += currentWord.length + 1;
         }
@@ -4775,10 +4834,7 @@ $(document).keydown((event) => {
         currentInput = "";
         currentWordIndex++;
         currentWordElementIndex++;
-        if (
-          config.difficulty == "expert" ||
-          config.difficulty == "master"
-        ) {
+        if (config.difficulty == "expert" || config.difficulty == "master") {
           correctedHistory.push(currentCorrected);
           currentCorrected = "";
           //submitted last word incorrect and failed test
@@ -4791,7 +4847,7 @@ $(document).keydown((event) => {
           restartCount++;
           // }
           return;
-        }else if (currentWordIndex == wordsList.length) {
+        } else if (currentWordIndex == wordsList.length) {
           //submitted last word that is incorrect
           lastSecondNotRound = true;
           showResult();
@@ -4882,7 +4938,7 @@ $(document).ready(() => {
   updateFavicon(32, 14);
   $("body").css("transition", ".25s");
   manualRestart = true;
-  restartTest(false,true);
+  restartTest(false, true);
   if (config.quickTab) {
     $("#restartTestButton").addClass("hidden");
   }
@@ -4912,7 +4968,6 @@ $(document).ready(() => {
         history.replaceState("/", null, "/");
       } else if (window.location.pathname !== "/") {
         if (/\/tribe_.+/.test(window.location.pathname)) {
-
         } else {
           // let page = window.location.pathname.replace("/", "");
           // changePage(page);
