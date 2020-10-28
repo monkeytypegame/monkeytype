@@ -1,2 +1,8 @@
 *.min.js
 layouts.js
+english_quotes.json
+chartjs-plugin-*.js
+themes/*
+sound/*
+languages/*
+funbox/*
