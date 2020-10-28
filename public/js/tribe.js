@@ -9,7 +9,8 @@ let MP = {
 //10 - lobby
 //20 - test about to start
 //21 - test active
-//29 - test finished, result 
+//28 - leader finished
+//29 - everybody finished 
 
 function mp_init() {
   $(".pageTribe .preloader .text").text('Connecting to Tribe');
@@ -54,7 +55,10 @@ function mp_applyRoomConfig(cfg) {
 
 function mp_checkIfCanChangeConfig() {
   if (MP.state >= 10) {
-    if (MP.room.isLeader) {
+    if (MP.state >= 20) {
+      showNotification("You can't change settings during the test", 3000);
+      return false;
+    }else if (MP.room.isLeader) {
       return true;
     } else {
       showNotification("Only the leader can change this setting", 3000);
@@ -172,8 +176,6 @@ function mp_refreshConfig() {
     `);
   }
   
-  
-  
   $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Language" data-balloon-pos="up">
     <i class="fas fa-globe-americas"></i>${MP.room.config.language}
@@ -254,6 +256,10 @@ function mp_refreshConfig() {
     `);
   }
 
+}
+
+function mp_testFinished(result) {
+  MP.socket.emit('mp_room_test_finished', {result: result})
 }
 
 MP.socket.on('connect', (f) => {
@@ -387,6 +393,7 @@ MP.socket.on('mp_system_message', data => {
 MP.socket.on('mp_room_test_start', data => {
   // changePage('');
   // mp_testCountdown();
+  startTest();
   showNotification('test starting');
 })
 
@@ -408,15 +415,20 @@ MP.socket.on('mp_room_state_update', data => {
 
 MP.socket.on('mp_room_test_progress_update', data => {
   if (data.length === 0) return;
-  Object.keys(data.stats).forEach(socketId => {
-    $(`.tribePlayers [socketId=${socketId}] .wpm`).text(data.stats[socketId].wpm);
-    $(`.tribePlayers [socketId=${socketId}] .acc`).text(data.stats[socketId].acc);
-    $(`.tribePlayers [socketId=${socketId}] .bar`).animate({
-      "width":
-        data.stats[socketId].progress + "%"
-    },1000,"linear");
-  })
+  MP.room.testStats = data.stats;
+  if (data.instant) {
+    Object.keys(data.stats).forEach(socketId => {
+      $(`.tribePlayers [socketId=${socketId}] .wpm`).text(data.stats[socketId].wpm);
+      $(`.tribePlayers [socketId=${socketId}] .acc`).text(data.stats[socketId].acc);
+      $(`.tribePlayers [socketId=${socketId}] .bar`).animate({
+        "width":
+          data.stats[socketId].progress + "%"
+      }, 1000, "linear");
+    })
+  }
 })
+
+
 
 $(".pageTribe #createPrivateRoom").click(f => {
   activateFunbox("none");
