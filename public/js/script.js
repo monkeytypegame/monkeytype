@@ -1362,7 +1362,7 @@ function flashPressedKeymapKey(key, correct) {
   }
 
   try {
-    if (correct) {
+    if (correct || config.blindMode) {
       $(key)
         .stop(true, true)
         .css({
