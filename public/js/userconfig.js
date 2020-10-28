@@ -265,7 +265,7 @@ function togglePlaySoundOnError() {
 
 //difficulty
 function setDifficulty(diff, nosave, mp = false) {
-  if (!mp_checkIfCanChangeConfig() && !mp) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
   if (
@@ -302,7 +302,7 @@ function toggleBlindMode() {
 }
 
 function setBlindMode(blind, nosave, mp = false) {
-  if (!mp_checkIfCanChangeConfig() && !mp) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
   if (blind == undefined) {
@@ -344,7 +344,7 @@ function setBlindMode(blind, nosave, mp = false) {
 // }
 
 function setStopOnError(soe, nosave, mp = false) {
-  if (!mp_checkIfCanChangeConfig() && !mp) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
   if (soe == undefined || soe === true || soe === false) {
@@ -659,7 +659,7 @@ function toggleKeyTips() {
 
 //mode
 function changeTimeConfig(time, nosave, mp = false) {
-  if (!mp_checkIfCanChangeConfig() && !mp) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
   if (time !== null && !isNaN(time) && time > 0) {
@@ -682,7 +682,7 @@ function changeTimeConfig(time, nosave, mp = false) {
 
 //quote length
 function changeQuoteLength(len, nosave, mp = false) {
-  if (!mp_checkIfCanChangeConfig() && !mp) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
   if (len !== null && !isNaN(len) && len >= -1 && len <= 3) {
@@ -690,7 +690,7 @@ function changeQuoteLength(len, nosave, mp = false) {
     len = 1;
   }
   len = parseInt(len);
-  changeMode("quote", nosave);
+  changeMode("quote", nosave, mp);
   config.quoteLength = len;
   $("#top .config .quoteLength .text-button").removeClass("active");
   $("#top .config .quoteLength .text-button[quoteLength='" + len + "']").addClass(
@@ -701,7 +701,7 @@ function changeQuoteLength(len, nosave, mp = false) {
 }
 
 function changeWordCount(wordCount, nosave, mp = false) {
-  if (!mp_checkIfCanChangeConfig() && !mp) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
   if (wordCount !== null && !isNaN(wordCount) && wordCount > 0) {
@@ -865,7 +865,7 @@ function toggleFreedomMode() {
 }
 
 function setConfidenceMode(cm, nosave, mp = false) {
-  if (!mp_checkIfCanChangeConfig() && !mp) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
   if (cm == undefined) {
@@ -1074,7 +1074,7 @@ function updateFavicon(size, curveSize) {
 }
 
 function changeLanguage(language, nosave, mp = false) {
-  if (!mp_checkIfCanChangeConfig() && !mp) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
   if (language == null || language == undefined) {

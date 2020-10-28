@@ -283,7 +283,7 @@ function copyResultToClipboard() {
 }
 
 function activateFunbox(funbox, mode, mp = false) {
-  if (!mp_checkIfCanChangeConfig() && !mp) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
   if (testActive || resultVisible) {
@@ -2943,7 +2943,7 @@ function changePage(page) {
 }
 
 function changeMode(mode, nosave, mp = false) {
-  if (!mp_checkIfCanChangeConfig() && !mp) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
   config.mode = mode;
@@ -2987,7 +2987,7 @@ function changeMode(mode, nosave, mp = false) {
     $("#top .config .numbersMode").addClass("hidden");
     $("#result .stats .source").removeClass("hidden");
     $("#top .config .quoteLength").removeClass("hidden");
-    changeLanguage("english", nosave);
+    changeLanguage("english", nosave, mp);
   }
   mp_syncConfig();
   if (!nosave) saveConfigToCookie();

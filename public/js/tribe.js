@@ -59,7 +59,7 @@ function mp_applyRoomConfig(cfg) {
   setConfidenceMode(cfg.confidenceMode, true, true);
 }
 
-function mp_checkIfCanChangeConfig() {
+function mp_checkIfCanChangeConfig(mp) {
   if (MP.state >= 10) {
     if (MP.state >= 20) {
       showNotification("You can't change settings during the test", 3000);
@@ -67,6 +67,7 @@ function mp_checkIfCanChangeConfig() {
     }else if (MP.room.isLeader) {
       return true;
     } else {
+      if (mp) return true;
       showNotification("Only the leader can change this setting", 3000);
       return false;
     }
@@ -389,6 +390,7 @@ MP.socket.on('mp_room_user_left', data => {
 MP.socket.on('mp_room_config_update', data => {
   MP.room.config = data.newConfig;
   mp_refreshConfig();
+  if(!MP.room.isLeader) mp_applyRoomConfig(MP.room.config);
 })
 
 MP.socket.on('mp_chat_message', data => {
