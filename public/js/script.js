@@ -4528,6 +4528,7 @@ $(document).keydown(function (event) {
       "ArrowLeft",
       "ArrowRight",
       "ArrowDown",
+      "OS",
       undefined
     ].includes(event.key)
   ) return;
