@@ -3461,6 +3461,12 @@ function updateTestModesNotice() {
     );
   }
 
+  if (config.language === "english_1k" || config.language === "english_10k") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${config.language.replace("_", " ")}</div>`
+    );
+  }
+
   if (config.difficulty === "expert") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsDifficulty"><i class="fas fa-star-half-alt"></i>expert</div>`
