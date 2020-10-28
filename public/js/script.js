@@ -1506,7 +1506,6 @@ function updateCaretPosition() {
     let smoothlinescroll = $("#words .smoothScroller").height();
     if (smoothlinescroll === undefined) smoothlinescroll = 0;
 
-
     if (config.smoothCaret) {
       caret.stop(true, false).animate(
         {
@@ -3463,7 +3462,10 @@ function updateTestModesNotice() {
 
   if (config.language === "english_1k" || config.language === "english_10k") {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${config.language.replace("_", " ")}</div>`
+      `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${config.language.replace(
+        "_",
+        " "
+      )}</div>`
     );
   }
 
@@ -4547,9 +4549,10 @@ $(document).keydown(function (event) {
       "Symbol",
       "SymbolLock",
       "Super",
-      undefined
+      undefined,
     ].includes(event.key)
-  ) return;
+  )
+    return;
   if (/F\d+/.test(event.key)) return;
   if (/Numpad/.test(event.key)) return;
   event = emulateLayout(event);
@@ -4563,7 +4566,11 @@ $(document).keydown(function (event) {
 
   if (event.key === "Dead") {
     playClickSound();
-    $(document.querySelector("#words .word.active").querySelectorAll("letter")[currentInput.length]).toggleClass('dead');
+    $(
+      document.querySelector("#words .word.active").querySelectorAll("letter")[
+        currentInput.length
+      ]
+    ).toggleClass("dead");
     return;
   }
 
