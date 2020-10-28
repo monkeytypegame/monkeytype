@@ -1506,7 +1506,6 @@ function updateCaretPosition() {
     let smoothlinescroll = $("#words .smoothScroller").height();
     if (smoothlinescroll === undefined) smoothlinescroll = 0;
 
-
     if (config.smoothCaret) {
       caret.stop(true, false).animate(
         {
@@ -4529,9 +4528,10 @@ $(document).keydown(function (event) {
       "ArrowLeft",
       "ArrowRight",
       "ArrowDown",
-      undefined
+      undefined,
     ].includes(event.key)
-  ) return;
+  )
+    return;
   if (/F\d+/.test(event.key)) return;
   if (/Numpad/.test(event.key)) return;
   event = emulateLayout(event);
