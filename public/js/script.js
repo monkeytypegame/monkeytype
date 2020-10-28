@@ -4529,6 +4529,18 @@ $(document).keydown(function (event) {
       "ArrowRight",
       "ArrowDown",
       "OS",
+      "Insert",
+      "Home",
+      "Undefined",
+      "Control",
+      "Fn",
+      "FnLock",
+      "Hyper",
+      "NumLock",
+      "ScrollLock",
+      "Symbol",
+      "SymbolLock",
+      "Super",
       undefined
     ].includes(event.key)
   ) return;
