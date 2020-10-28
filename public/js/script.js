@@ -4667,6 +4667,13 @@ $(document).keydown(function (event) {
   } else {
     activeWordJumped = false;
   }
+
+  if (activeWordJumped) {
+    currentInput = currentInput.slice(0, -1);
+    compareInput(!config.blindMode);
+    activeWordJumped = false;
+  }
+
   // console.timeEnd("offcheck2");
 
   if (config.keymapMode === "react") {
