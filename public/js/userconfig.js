@@ -67,6 +67,7 @@ let defaultConfig = {
   chartStyle: "line",
   minWpm: "off",
   minWpmCustomSpeed: 100,
+  highlightMode: "letter",
 };
 
 let cookieConfig = null;
@@ -212,6 +213,7 @@ function applyConfig(configObj) {
     setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
     changeMode(configObj.mode, true);
+    setHighlightMode(configObj.highlightMode, true);
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
     //   configObj.resultFilters !== null &&
@@ -687,6 +689,14 @@ function toggleShowLiveWpm() {
   //   config.keymapMode = "off";
   // }
   saveConfigToCookie();
+}
+
+function setHighlightMode(mode, nosave) {
+  if (mode == null || mode == undefined) {
+    mode = "letter";
+  }
+  config.highlightMode = mode;
+  if (!nosave) saveConfigToCookie();
 }
 
 function setTimerStyle(style, nosave) {

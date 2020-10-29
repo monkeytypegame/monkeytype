@@ -889,6 +889,11 @@ function showWords() {
 function updateActiveElement() {
   let active = document.querySelector("#words .active");
   if (active !== null) {
+    if (config.highlightMode == "word") {
+      active.querySelectorAll("letter").forEach((e) => {
+        e.classList.remove("correct");
+      });
+    }
     active.classList.remove("active");
   }
   // $("#words .word").removeClass("active");
@@ -904,6 +909,11 @@ function updateActiveElement() {
 
     // activeWordTop = $("#words .word.active").position().top;
     activeWordTop = document.querySelector("#words .active").offsetTop;
+    if (config.highlightMode == "word") {
+      activeWord.querySelectorAll("letter").forEach((e) => {
+        e.classList.add("correct");
+      });
+    }
     // updateHighlightedKeymapKey();
   } catch (e) {}
   toggleScriptFunbox(wordsList[currentWordIndex]);
@@ -921,72 +931,83 @@ function compareInput(showError) {
   // }
   let ret = "";
 
-  for (let i = 0; i < input.length; i++) {
-    let charCorrect;
-    if (currentWord[i] == input[i]) {
-      charCorrect = true;
-    } else {
-      charCorrect = false;
+  if (config.highlightMode == "word") {
+    let correctSoFar = false;
+    if (currentWord.slice(0, input.length) == input) {
+      // this is when input so far is correct
+      correctSoFar = true;
     }
-
-    try {
-      if (config.language === "russian" && charCorrect === false) {
-        if (
-          (currentWord[i].toLowerCase() === "е" &&
-            input[i].toLowerCase() === "ё") ||
-          (currentWord[i].toLowerCase() === "ё" &&
-            input[i].toLowerCase() === "е")
-        ) {
-          charCorrect = true;
-        }
-      }
-    } catch (e) {}
-
-    if (charCorrect) {
-      ret += '<letter class="correct">' + currentWord[i] + "</letter>";
-      // $(letterElems[i]).removeClass('incorrect').addClass('correct');
-    } else {
-      if (config.difficulty == "master") {
-        if (!resultVisible) {
-          inputHistory.push(currentInput);
-          correctedHistory.push(currentCorrected);
-          document
-            .querySelector("#words .word.active")
-            .setAttribute("input", currentInput.replace(/'/g, "'"));
-          lastSecondNotRound = true;
-          showResult(true);
-        }
-        let testNow = Date.now();
-        let testSeconds = roundTo2((testNow - testStart) / 1000);
-        incompleteTestSeconds += testSeconds;
-        restartCount++;
-      }
-      if (!showError) {
-        if (currentWord[i] == undefined) {
-          // ret += '<letter class="correct">' + input[i] + "</letter>";
-        } else {
-          ret += '<letter class="correct">' + currentWord[i] + "</letter>";
-        }
+    let classString = correctSoFar ? "correct" : "incorrect";
+    for (let i = 0; i < currentWord.length; i++) {
+      ret += `<letter class="${classString}">` + currentWord[i] + `</letter>`;
+    }
+  } else {
+    for (let i = 0; i < input.length; i++) {
+      let charCorrect;
+      if (currentWord[i] == input[i]) {
+        charCorrect = true;
       } else {
-        if (currentWord[i] == undefined) {
-          ret += '<letter class="incorrect extra">' + input[i] + "</letter>";
+        charCorrect = false;
+      }
+
+      try {
+        if (config.language === "russian" && charCorrect === false) {
+          if (
+            (currentWord[i].toLowerCase() === "е" &&
+              input[i].toLowerCase() === "ё") ||
+            (currentWord[i].toLowerCase() === "ё" &&
+              input[i].toLowerCase() === "е")
+          ) {
+            charCorrect = true;
+          }
+        }
+      } catch (e) {}
+
+      if (charCorrect) {
+        ret += '<letter class="correct">' + currentWord[i] + "</letter>";
+        // $(letterElems[i]).removeClass('incorrect').addClass('correct');
+      } else {
+        if (config.difficulty == "master") {
+          if (!resultVisible) {
+            inputHistory.push(currentInput);
+            correctedHistory.push(currentCorrected);
+            document
+              .querySelector("#words .word.active")
+              .setAttribute("input", currentInput.replace(/'/g, "'"));
+            lastSecondNotRound = true;
+            showResult(true);
+          }
+          let testNow = Date.now();
+          let testSeconds = roundTo2((testNow - testStart) / 1000);
+          incompleteTestSeconds += testSeconds;
+          restartCount++;
+        }
+        if (!showError) {
+          if (currentWord[i] == undefined) {
+            // ret += '<letter class="correct">' + input[i] + "</letter>";
+          } else {
+            ret += '<letter class="correct">' + currentWord[i] + "</letter>";
+          }
         } else {
-          ret +=
-            '<letter class="incorrect">' +
-            currentWord[i] +
-            (config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
-            "</letter>";
+          if (currentWord[i] == undefined) {
+            ret += '<letter class="incorrect extra">' + input[i] + "</letter>";
+          } else {
+            ret +=
+              '<letter class="incorrect">' +
+              currentWord[i] +
+              (config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
+              "</letter>";
+          }
         }
       }
     }
-  }
 
-  if (input.length < currentWord.length) {
-    for (let i = input.length; i < currentWord.length; i++) {
-      ret += "<letter>" + currentWord[i] + "</letter>";
+    if (input.length < currentWord.length) {
+      for (let i = input.length; i < currentWord.length; i++) {
+        ret += "<letter>" + currentWord[i] + "</letter>";
+      }
     }
   }
-
   wordAtIndex.innerHTML = ret;
 
   let lastindex = currentWordIndex;

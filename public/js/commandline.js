@@ -373,6 +373,15 @@ let commands = {
       },
     },
     {
+      id: "changeHighlightMode",
+      display: "Change highlight mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsHighlightMode);
+        showCommandLine();
+      },
+    },
+    {
       id: "changeTheme",
       display: "Change theme...",
       subgroup: true,
@@ -920,6 +929,26 @@ let commandsKeymapStyle = {
       display: "split matrix",
       exec: () => {
         changeKeymapStyle("split_matrix");
+      },
+    },
+  ],
+};
+
+let commandsHighlightMode = {
+  title: "Change highlight mode...",
+  list: [
+    {
+      id: "setHighlightModeLetter",
+      display: "letter",
+      exec: () => {
+        setHighlightMode("letter");
+      },
+    },
+    {
+      id: "setHighlightModeWord",
+      display: "word",
+      exec: () => {
+        setHighlightMode("word");
       },
     },
   ],
