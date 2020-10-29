@@ -4555,6 +4555,8 @@ $(document).keydown(function (event) {
     return;
   if (/F\d+/.test(event.key)) return;
   if (/Numpad/.test(event.key)) return;
+  if (/KeyVolume/.test(event.key)) return;
+  if (/AudioVolume/.test(event.key)) return;
   event = emulateLayout(event);
 
   //start the test
