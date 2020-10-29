@@ -4658,6 +4658,10 @@ $(document).keydown(function (event) {
     }
   }
 
+  if (currentInput.length === 1 && currentWordIndex === 0) {
+    activeWordTop = document.querySelector("#words .active").offsetTop;
+  }
+
   if (currentInput.length < wordsList[currentWordIndex].length + 20)
     currentInput += event["key"];
   setFocus(true);
@@ -4675,7 +4679,7 @@ $(document).keydown(function (event) {
     activeWordJumped = false;
   }
 
-  if (activeWordJumped) {
+  if (activeWordJumped && currentInput.length > 1) {
     currentInput = currentInput.slice(0, -1);
     compareInput(!config.blindMode);
     activeWordJumped = false;
