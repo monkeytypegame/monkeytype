@@ -1569,23 +1569,6 @@
                 </div>
               </div>
             </div>
-            <div class="section quickEnd">
-              <h1>quick end</h1>
-              <div class="text">
-                This only applies to the words mode - when enabled, the test
-                will end as soon as the last word has been typed, even if it's
-                incorrect. When disabled, you need to manually confirm the last
-                incorrect entry with a space.
-              </div>
-              <div class="buttons">
-                <div class="button off" tabindex="0" onclick="this.blur();">
-                  off
-                </div>
-                <div class="button on" tabindex="0" onclick="this.blur();">
-                  on
-                </div>
-              </div>
-            </div>
             <!-- <div class="section readAheadMode">
               <h1>read ahead mode</h1>
               <div class="text">
@@ -1775,6 +1758,23 @@
                 </div>
               </div>
             </div>
+            <div class="section quickEnd">
+              <h1>quick end</h1>
+              <div class="text">
+                This only applies to the words mode - when enabled, the test
+                will end as soon as the last word has been typed, even if it's
+                incorrect. When disabled, you need to manually confirm the last
+                incorrect entry with a space.
+              </div>
+              <div class="buttons">
+                <div class="button off" tabindex="0" onclick="this.blur();">
+                  off
+                </div>
+                <div class="button on" tabindex="0" onclick="this.blur();">
+                  on
+                </div>
+              </div>
+            </div>
             <div class="section indicateTypos" section="">
               <h1>indicate typos</h1>
               <div class="text">Show typos underneath the letters</div>
@@ -1887,11 +1887,11 @@
             <div class="sectionSpacer"></div>
           </div>
 
-          <div class="sectionGroupTitle" group="appearance">
-            appearance
+          <div class="sectionGroupTitle" group="caret">
+            caret
             <i class="fas fa-chevron-down"></i>
           </div>
-          <div class="settingsGroup appearance">
+          <div class="settingsGroup caret">
             <div class="section smoothCaret" section="">
               <h1>smooth caret</h1>
               <div class="text">
@@ -2042,6 +2042,14 @@
                 </div>
               </div>
             </div>
+            <div class="sectionSpacer"></div>
+          </div>
+
+          <div class="sectionGroupTitle" group="appearance">
+            appearance
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <div class="settingsGroup appearance">
             <div class="section timerStyle" section="">
               <h1>timer/progress style</h1>
               <div class="text">
@@ -2696,6 +2704,7 @@
                 </div>
               </div>
             </div>
+            <div class="sectionSpacer"></div>
           </div>
         </div>
 
