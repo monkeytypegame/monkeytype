@@ -4570,10 +4570,12 @@ $(document).keydown(function (event) {
       "Symbol",
       "SymbolLock",
       "Super",
+      "Unidentified",
       undefined,
     ].includes(event.key)
   )
     return;
+  if (event.key.length > 1) return;
   if (/F\d+/.test(event.key)) return;
   if (/Numpad/.test(event.key)) return;
   if (/Volume/.test(event.key)) return;
