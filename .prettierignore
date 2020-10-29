@@ -2,7 +2,8 @@
 layouts.js
 english_quotes.json
 chartjs-plugin-*.js
-themes/*
 sound/*
-languages/*
-funbox/*
+node_modules
+css/balloon.css
+css/fa.css
+css/style.min.css
