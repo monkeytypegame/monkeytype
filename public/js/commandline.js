@@ -275,6 +275,13 @@ let commands = {
       },
     },
     {
+      id: "toggleAlwaysShowCPM",
+      display: "Toggle always show CPM",
+      exec: () => {
+        toggleAlwaysShowCPM();
+      },
+    },
+    {
       id: "toggleSwapEscAndTab",
       display: "Toggle swap esc and tab",
       exec: () => {
@@ -949,6 +956,26 @@ let commandsHighlightMode = {
       display: "word",
       exec: () => {
         setHighlightMode("word");
+      },
+    },
+  ],
+};
+
+let commandsAlwaysShowCPM = {
+  title: "Toggle always show cpm...",
+  list: [
+    {
+      id: "setAlwaysShowCPMTrue",
+      display: true,
+      exec: () => {
+        setAlwaysShowCPM(true);
+      },
+    },
+    {
+      id: "setAlwaysShowCPMFalse",
+      display: false,
+      exec: () => {
+        setHighlightMode(false);
       },
     },
   ],

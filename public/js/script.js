@@ -1650,6 +1650,7 @@ function calculateStats() {
   // }
   let chars = countChars();
   // let testNow = Date.now();
+
   let wpm = roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
@@ -1741,8 +1742,22 @@ function showResult(difficultyFailed = false) {
   $("#result #resultWordsHistory").addClass("hidden");
 
   if (config.alwaysShowDecimalPlaces) {
-    $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm));
-    $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
+    if (config.alwaysShowCPM == false) {
+      $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm));
+      $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
+      $("#result .stats .wpm .bottom").attr(
+        "aria-label",
+        roundTo2(stats.wpm * 5) + " cpm"
+      );
+    } else {
+      $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm * 5));
+      $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw * 5));
+      $("#result .stats .wpm .bottom").attr(
+        "aria-label",
+        roundTo2(stats.wpm) + " wpm"
+      );
+    }
+
     $("#result .stats .acc .bottom").text(roundTo2(stats.acc) + "%");
     // $("#result .stats .time .bottom").text(roundTo2(testtime) + "s");
     let time = roundTo2(testtime) + "s";
@@ -1750,10 +1765,7 @@ function showResult(difficultyFailed = false) {
       time = secondsToString(roundTo2(testtime));
     }
     $("#result .stats .time .bottom .text").text(time);
-    $("#result .stats .wpm .bottom").attr(
-      "aria-label",
-      roundTo2(stats.wpm * 5) + " cpm"
-    );
+
     $("#result .stats .raw .bottom").removeAttr("aria-label");
     $("#result .stats .acc .bottom").removeAttr("aria-label");
     $("#result .stats .time .bottom").attr(
@@ -1761,13 +1773,25 @@ function showResult(difficultyFailed = false) {
       `${afkseconds}s afk ${afkSecondsPercent}%`
     );
   } else {
-    $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
-    $("#result .stats .wpm .bottom").attr(
-      "aria-label",
-      stats.wpm + ` (${roundTo2(stats.wpm * 5)} cpm)`
-    );
-    $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
-    $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
+    //not showing decimal places
+    if (config.alwaysShowCPM == false) {
+      $("#result .stats .wpm .bottom").attr(
+        "aria-label",
+        stats.wpm + ` (${roundTo2(stats.wpm * 5)} cpm)`
+      );
+      $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
+      $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
+      $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
+    } else {
+      $("#result .stats .wpm .bottom").attr(
+        "aria-label",
+        stats.wpm + ` (${roundTo2(stats.wpm)} wpm)`
+      );
+      $("#result .stats .wpm .bottom").text(Math.round(stats.wpm * 5));
+      $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw * 5));
+      $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw * 5);
+    }
+
     $("#result .stats .acc .bottom").text(Math.floor(stats.acc) + "%");
     $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
     let time = Math.round(testtime) + "s";
@@ -3117,6 +3141,9 @@ function updateLiveWpm(wpm, raw) {
   let number = wpm;
   if (config.blindMode) {
     number = raw;
+  }
+  if (config.alwaysShowCPM) {
+    number = Math.round(number * 5);
   }
   document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = number;
   document.querySelector("#liveWpm").innerHTML = number;

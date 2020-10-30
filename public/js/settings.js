@@ -253,6 +253,10 @@ settingsGroups.alwaysShowDecimalPlaces = new SettingsGroup(
   "alwaysShowDecimalPlaces",
   setAlwaysShowDecimalPlaces
 );
+settingsGroups.alwaysShowCPM = new SettingsGroup(
+  "alwaysShowCPM",
+  setAlwaysShowCPM
+);
 
 fillSettingsPage();
 
