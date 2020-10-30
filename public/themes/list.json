@@ -5,6 +5,11 @@
     "textColor": "#eee"
   },
   {
+    "name": "dark_magic_girl",
+    "bgColor": "#091f2c",
+    "textColor": "#a288d9"
+  },
+  {
     "name": "8008",
     "bgColor": "#333a45",
     "textColor": "#f44c7f"
@@ -53,6 +58,11 @@
     "name": "oblivion",
     "bgColor": "#313231",
     "textColor": "#a5a096"
+  },
+  {
+    "name": "magic_girl",
+    "bgColor": "#ffffff",
+    "textColor": "#00ac8c"
   },
   {
     "name": "metropolis",
