@@ -534,6 +534,7 @@ function toggleFavouriteTheme(themename) {
   }
   saveConfigToCookie();
   refreshThemeButtons();
+  showFavouriteThemesAtTheTop();
 }
 
 function showAccountSettingsSection() {

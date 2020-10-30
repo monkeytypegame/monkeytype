@@ -1456,6 +1456,39 @@ getThemesList().then((themes) => {
   });
 });
 
+function showFavouriteThemesAtTheTop() {
+  if (config.favThemes.length > 0) {
+    commandsThemes.list = [];
+    config.favThemes.forEach((theme) => {
+      commandsThemes.list.push({
+        id: "changeTheme" + capitalizeFirstLetter(theme),
+        display: theme.replace(/_/g, " "),
+        hover: () => {
+          previewTheme(theme);
+        },
+        exec: () => {
+          setTheme(theme);
+        },
+      });
+    });
+    getThemesList().then((themes) => {
+      themes.forEach((theme) => {
+        if (config.favThemes.includes(theme.name)) return;
+        commandsThemes.list.push({
+          id: "changeTheme" + capitalizeFirstLetter(theme.name),
+          display: theme.name.replace(/_/g, " "),
+          hover: () => {
+            previewTheme(theme.name);
+          },
+          exec: () => {
+            setTheme(theme.name);
+          },
+        });
+      });
+    });
+  }
+}
+
 let commandsFonts = {
   title: "Change font...",
   list: [],

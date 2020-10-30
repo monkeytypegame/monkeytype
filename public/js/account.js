@@ -265,6 +265,9 @@ firebase.auth().onAuthStateChanged(function (user) {
     // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
+
+    showFavouriteThemesAtTheTop();
+
     if (verifyUserWhenLoggedIn !== null) {
       showNotification("Verifying", 1000);
       verifyUserWhenLoggedIn.uid = user.uid;
