@@ -4381,22 +4381,28 @@ $(document.body).on("click", "#restartTestButton", (event) => {
   restartTest();
 });
 
+function initPractiseMissedWords() {
+  let currentMode = config.mode;
+  changeMode("custom");
+  let newCustomText = [];
+  Object.keys(missedWords).forEach((missedWord) => {
+    for (let i = 0; i < missedWords[missedWord]; i++) {
+      newCustomText.push(missedWord);
+    }
+  });
+  customText = newCustomText;
+  customTextIsRandom = true;
+  customTextWordCount = 50;
+  let mode = modeBeforePractise === null ? currentMode : modeBeforePractise;
+  modeBeforePractise = null;
+  restartTest();
+  modeBeforePractise = mode;
+}
+
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
   if (event.keyCode == 13) {
     if (Object.keys(missedWords).length > 0) {
-      let currentMode = config.mode;
-      changeMode("custom");
-      let newCustomText = [];
-      Object.keys(missedWords).forEach((missedWord) => {
-        for (let i = 0; i < missedWords[missedWord]; i++) {
-          newCustomText.push(missedWord);
-        }
-      });
-      customText = newCustomText;
-      customTextIsRandom = true;
-      customTextWordCount = 50;
-      restartTest();
-      modeBeforePractise = currentMode;
+      initPractiseMissedWords();
     } else {
       showNotification("You haven't missed any words.", 2000);
     }
@@ -4405,19 +4411,7 @@ $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
 
 $(document.body).on("click", "#practiseMissedWordsButton", (event) => {
   if (Object.keys(missedWords).length > 0) {
-    let currentMode = config.mode;
-    changeMode("custom");
-    let newCustomText = [];
-    Object.keys(missedWords).forEach((missedWord) => {
-      for (let i = 0; i < missedWords[missedWord]; i++) {
-        newCustomText.push(missedWord);
-      }
-    });
-    customText = newCustomText;
-    customTextIsRandom = true;
-    customTextWordCount = 50;
-    restartTest();
-    modeBeforePractise = currentMode;
+    initPractiseMissedWords();
   } else {
     showNotification("You haven't missed any words.", 2000);
   }
