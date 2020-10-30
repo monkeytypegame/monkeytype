@@ -662,7 +662,6 @@ function emulateLayout(event) {
     "KeyL",
     "Semicolon",
     "Quote",
-    "IntlBackslash",
     "KeyZ",
     "KeyX",
     "KeyC",
@@ -674,6 +673,7 @@ function emulateLayout(event) {
     "Period",
     "Slash",
     "Space",
+    "IntlBackslash",
   ];
   const layoutMap = layouts[config.layout];
 
