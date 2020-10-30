@@ -1589,7 +1589,7 @@ if (Object.keys(layouts).length > 0) {
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       commandsKeymapLayouts.list.push({
-        id: "changeLayout" + capitalizeFirstLetter(layout),
+        id: "changeKeymapLayout" + capitalizeFirstLetter(layout),
         display: layout.replace("_", " "),
         exec: () => {
           changeKeymapLayout(layout);
