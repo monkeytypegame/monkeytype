@@ -68,6 +68,7 @@ let defaultConfig = {
   minWpm: "off",
   minWpmCustomSpeed: 100,
   highlightMode: "letter",
+  alwaysShowCPM: false,
 };
 
 let cookieConfig = null;
@@ -213,6 +214,7 @@ function applyConfig(configObj) {
     setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
+    setAlwaysShowCPM(config.alwaysShowCPM, true);
     changeMode(configObj.mode, true);
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -425,6 +427,19 @@ function setAlwaysShowDecimalPlaces(val, nosave) {
     val = false;
   }
   config.alwaysShowDecimalPlaces = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleAlwaysShowCPM() {
+  config.alwaysShowCPM = !config.alwaysShowCPM;
+  saveConfigToCookie();
+}
+
+function setAlwaysShowCPM(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.alwaysShowCPM = val;
   if (!nosave) saveConfigToCookie();
 }
 
