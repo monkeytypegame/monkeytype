@@ -675,7 +675,7 @@ function emulateLayout(event) {
     "Slash",
     "Space",
   ];
-  const layoutMap = layouts[config.layout];
+  const layoutMap = layouts[config.layout].keys;
 
   let mapIndex;
   for (let i = 0; i < keyEventCodes.length; i++) {

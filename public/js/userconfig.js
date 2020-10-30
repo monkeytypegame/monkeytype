@@ -212,8 +212,8 @@ function applyConfig(configObj) {
     setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
     setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
-    changeMode(configObj.mode, true);
     setHighlightMode(configObj.highlightMode, true);
+    changeMode(configObj.mode, true);
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
     //   configObj.resultFilters !== null &&
@@ -1260,6 +1260,33 @@ function changeKeymapStyle(style, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
+// function toggleISOKeymap() {
+//   val = !config.isoKeymap;
+//   if (val == undefined) {
+//     val = false;
+//   }
+//   config.isoKeymap = val;
+//   updateKeymapBottomRow();
+//   saveConfigToCookie();
+// }
+
+// function setISOKeymap(val, nosave) {
+//   if (val == undefined) {
+//     val = false;
+//   }
+//   config.isoKeymap = val;
+//   updateKeymapBottomRow();
+//   if (!nosave) saveConfigToCookie();
+// }
+
+function keymapShowIsoKey(tf) {
+  if (tf) {
+    $(".keymap .r4 .keymap-key.first").removeClass("hidden-key");
+  } else {
+    $(".keymap .r4 .keymap-key.first").addClass("hidden-key");
+  }
+}
+
 function changeKeymapLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
@@ -1270,62 +1297,73 @@ function changeKeymapLayout(layout, nosave) {
   //   console.log(x);
   // });
   try {
-    var toReplace = layouts[layout].slice(13, 47);
-    var _ = toReplace.splice(12, 1);
+    if (layouts[layout].keymapShowTopRow) {
+      $(".keymap .r1").removeClass("hidden");
+    } else {
+      $(".keymap .r1").addClass("hidden");
+    }
+
+    $($(".keymap .r5 .keymap-key .letter")[0]).text(layout);
+
+    keymapShowIsoKey(layouts[layout].iso);
+
+    var toReplace = layouts[layout].keys.slice(1, 48);
+    // var _ = toReplace.splice(12, 1);
     var count = 0;
 
     $(".keymap .letter")
       .map(function () {
-        if (
-          !this.parentElement.classList.contains("hidden-key") &&
-          !this.classList.contains("hidden-key")
-        ) {
-          if (count < toReplace.length) {
-            var key = toReplace[count].charAt(0);
-            this.innerHTML = key;
+        // if (
+        //   !this.parentElement.classList.contains("hidden-key") &&
+        //   !this.classList.contains("hidden-key")
+        // ) {
 
-            switch (key) {
-              case "\\":
-              case "|":
-                this.parentElement.id = "KeyBackslash";
-                break;
-              case "}":
-              case "]":
-                this.parentElement.id = "KeyRightBracket";
-                break;
-              case "{":
-              case "[":
-                this.parentElement.id = "KeyLeftBracket";
-                break;
-              case '"':
-              case "'":
-                this.parentElement.id = "KeyQuote";
-                break;
-              case ":":
-              case ";":
-                this.parentElement.id = "KeySemicolon";
-                break;
-              case "<":
-              case ",":
-                this.parentElement.id = "KeyComma";
-                break;
-              case ">":
-              case ".":
-                this.parentElement.id = "KeyPeriod";
-                break;
-              case "?":
-              case "/":
-                this.parentElement.id = "KeySlash";
-                break;
-              case "":
-                this.parentElement.id = "KeySpace";
-                break;
-              default:
-                this.parentElement.id = `Key${key.toUpperCase()}`;
-            }
+        if (count < toReplace.length) {
+          var key = toReplace[count].charAt(0);
+          this.innerHTML = key;
+
+          switch (key) {
+            case "\\":
+            case "|":
+              this.parentElement.id = "KeyBackslash";
+              break;
+            case "}":
+            case "]":
+              this.parentElement.id = "KeyRightBracket";
+              break;
+            case "{":
+            case "[":
+              this.parentElement.id = "KeyLeftBracket";
+              break;
+            case '"':
+            case "'":
+              this.parentElement.id = "KeyQuote";
+              break;
+            case ":":
+            case ";":
+              this.parentElement.id = "KeySemicolon";
+              break;
+            case "<":
+            case ",":
+              this.parentElement.id = "KeyComma";
+              break;
+            case ">":
+            case ".":
+              this.parentElement.id = "KeyPeriod";
+              break;
+            case "?":
+            case "/":
+              this.parentElement.id = "KeySlash";
+              break;
+            case "":
+              this.parentElement.id = "KeySpace";
+              break;
+            default:
+              this.parentElement.id = `Key${key.toUpperCase()}`;
           }
-          count++;
         }
+        count++;
+        // }
       })
       .get();
   } catch (e) {
