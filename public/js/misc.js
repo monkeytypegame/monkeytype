@@ -485,3 +485,111 @@ function toggleFullscreen(elem) {
     }
   }
 }
+
+let simplePopups = {};
+
+class SimplePopup {
+  constructor(
+    id,
+    type,
+    title,
+    inputPlaceholder = "",
+    inputVal = "",
+    text = "",
+    buttonText = "Confirm",
+    execFn
+  ) {
+    this.id = id;
+    this.type = type;
+    this.execFn = execFn;
+    this.title = title;
+    this.inputPlaceholder = inputPlaceholder;
+    this.inputVal = inputVal;
+    this.text = text;
+    this.wrapper = $("#simplePopupWrapper");
+    this.element = $("#simplePopup");
+    this.buttonText = buttonText;
+  }
+  #reset() {
+    this.element.html(`
+    <div class="title"></div>
+    <input>
+    <div class="text"></div>
+    <div class="button"></div>`);
+  }
+
+  #init() {
+    let el = this.element;
+    el.find("input").val("");
+    if (el.attr("popupId") !== this.id) {
+      this.#reset();
+      el.attr("popupId", this.id);
+      el.find(".title").text(this.title);
+      el.find(".text").text(this.text);
+
+      if (this.type === "number") {
+        el.find("input").removeClass("hidden");
+        el.find("input").attr("placeholder", this.inputPlaceholder);
+        el.find("input").attr("min", 1);
+        el.find("input").val(this.inputVal);
+      } else {
+        el.find("input").addClass("hidden");
+      }
+
+      el.find(".button").text(this.buttonText);
+    }
+  }
+
+  exec() {
+    this.execFn($("#simplePopup").find("input").val());
+    this.hide();
+  }
+
+  show() {
+    this.#init();
+    this.wrapper
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 125);
+  }
+
+  hide() {
+    this.wrapper
+      .stop(true, true)
+      .css("opacity", 1)
+      .removeClass("hidden")
+      .animate({ opacity: 0 }, 125, () => {
+        this.wrapper.addClass("hidden");
+      });
+  }
+}
+
+$("#simplePopupWrapper").click((e) => {
+  if ($(e.target).attr("id") === "simplePopupWrapper") {
+    $("#simplePopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .removeClass("hidden")
+      .animate({ opacity: 0 }, 125, () => {
+        $("#simplePopupWrapper").addClass("hidden");
+      });
+  }
+});
+
+$(document).on("click", "#simplePopupWrapper .button", (e) => {
+  let id = $("#simplePopup").attr("popupId");
+  simplePopups[id].exec();
+});
+
+// simplePopups.testPop = new SimplePopup(
+//   'testPop',
+//   'number',
+//   'This is a test',
+//   'Number',
+//   1,
+//   'Test popup that i made to test the class',
+//   'Go',
+//   (a) => {
+//     console.log(a);
+// });

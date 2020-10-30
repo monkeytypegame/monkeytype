@@ -57,6 +57,10 @@
     </div>
     <div class="notification">Signed in</div>
 
+    <div id="simplePopupWrapper" class="hidden">
+      <div id="simplePopup" popupId=""></div>
+    </div>
+
     <div id="settingsImportWrapper" class="hidden">
       <div id="settingsImport" action="">
         <input type="text" />
@@ -2725,6 +2729,40 @@
                   onclick="this.blur();"
                 >
                   reset
+                </div>
+              </div>
+            </div>
+            <div class="section updateAccountEmail">
+              <h1>update account email</h1>
+              <div class="text">
+                In case you misspell it or get a new address.
+              </div>
+              <div class="buttons">
+                <div
+                  class="button off danger"
+                  id="updateAccountEmail"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  update email
+                </div>
+              </div>
+            </div>
+            <div class="section deleteAccount">
+              <h1>delete account</h1>
+              <div class="text">
+                This can't be undone! Also, if you want to delete your account
+                because of a very high 'custom mode' result, you can use filters
+                on the account page to hide those results.
+              </div>
+              <div class="buttons">
+                <div
+                  class="button off danger"
+                  id="deleteAccount"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  delete account
                 </div>
               </div>
             </div>
