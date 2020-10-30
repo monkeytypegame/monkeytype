@@ -510,7 +510,7 @@ class SimplePopup {
     this.element = $("#simplePopup");
     this.buttonText = buttonText;
   }
-  #reset() {
+  reset() {
     this.element.html(`
     <div class="title"></div>
     <input>
@@ -518,11 +518,11 @@ class SimplePopup {
     <div class="button"></div>`);
   }
 
-  #init() {
+  init() {
     let el = this.element;
     el.find("input").val("");
     if (el.attr("popupId") !== this.id) {
-      this.#reset();
+      this.reset();
       el.attr("popupId", this.id);
       el.find(".title").text(this.title);
       el.find(".text").text(this.text);
@@ -546,7 +546,7 @@ class SimplePopup {
   }
 
   show() {
-    this.#init();
+    this.init();
     this.wrapper
       .stop(true, true)
       .css("opacity", 0)
