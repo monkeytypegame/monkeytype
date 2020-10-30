@@ -1318,7 +1318,7 @@ function changeKeymapLayout(layout, nosave) {
       $(".keymap .r1").addClass("hidden");
     }
 
-    $($(".keymap .r5 .keymap-key .letter")[0]).text(layout);
+    $($(".keymap .r5 .keymap-key .letter")[0]).text(layout.replace(/_/g, " "));
 
     keymapShowIsoKey(layouts[layout].iso);
 
