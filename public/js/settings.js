@@ -239,6 +239,10 @@ settingsGroups.paceCaretStyle = new SettingsGroup(
   setPaceCaretStyle
 );
 settingsGroups.timerStyle = new SettingsGroup("timerStyle", setTimerStyle);
+settingsGroups.highlighteMode = new SettingsGroup(
+  "highlightMode",
+  setHighlightMode
+);
 settingsGroups.timerOpacity = new SettingsGroup(
   "timerOpacity",
   setTimerOpacity
