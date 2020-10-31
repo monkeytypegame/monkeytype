@@ -50,6 +50,16 @@ const layouts = {
             " "
         ],
     },
+    colemak_dh_matrix: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "qQ", "wW", "fF", "pP", "bB", "jJ", "lL", "uU", "yY", ";:", "[{", "]}", "\\|",
+            "aA", "rR", "sS", "tT", "gG", "mM", "nN", "eE", "iI", "oO", "'\"",
+            "\\|", "zZ", "xX", "cC", "dD", "vV", "kK", "hH", ",<", ".>", "/?",
+            " "
+        ],
+    },
     colemak_dh_iso: {
         keymapShowTopRow: false,
         iso: true,

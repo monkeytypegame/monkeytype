@@ -3079,17 +3079,35 @@ key {
   &.matrix {
     .r1,
     .r2,
-    .r3,
+    .r3 {
+      display: flex;
+      justify-content: left;
+      margin-left: 5.51rem;
+    }
+
+    .r1 {
+      margin-left: 5.8rem;
+    }
+
     .r4 {
       display: flex;
       justify-content: left;
-      margin-left: 4.51rem;
+      margin-left: 3.26rem;
     }
     .r5 {
-      grid-template-columns: 6.9fr 4.6fr 6.9fr;
+      grid-template-columns: 4fr 6fr 5fr;
+      margin-left: 1.25rem;
     }
 
-    .row {
+    .r1 {
+      :nth-child(12) {
+        opacity: 0;
+      }
+    }
+
+    .r1,
+    .r2,
+    .r3 {
       :nth-child(13) {
         opacity: 0;
       }
@@ -3153,13 +3171,30 @@ key {
     .r4 {
       display: flex;
       justify-content: left;
-      margin-left: 4.51rem;
+      margin-left: 7.8rem;
     }
+
+    .r4 {
+      margin-left: 5.5rem;
+    }
+
     .r5 {
       grid-template-columns: 6fr 2fr 1fr 2fr 6fr;
     }
 
-    .row {
+    #KeySpace2 {
+      opacity: 1;
+    }
+
+    .r1 {
+      :nth-child(12) {
+        opacity: 0;
+      }
+    }
+
+    .r1,
+    .r2,
+    .r3 {
       :nth-child(13) {
         opacity: 0;
       }
