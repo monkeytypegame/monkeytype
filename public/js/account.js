@@ -270,7 +270,7 @@ firebase.auth().onAuthStateChanged(function (user) {
 
     let text = "Account created on " + user.metadata.creationTime;
 
-    const date1 = new Date(text);
+    const date1 = new Date(user.metadata.creationTime);
     const date2 = new Date();
     const diffTime = Math.abs(date2 - date1);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
