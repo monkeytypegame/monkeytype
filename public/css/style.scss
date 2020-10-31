@@ -3127,25 +3127,24 @@ key {
     .r1 {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
-      opacity: 0;
     }
 
     .r2 {
       display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
+      grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.5fr;
     }
 
     .r3 {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 3fr;
     }
 
     .r4 {
       display: grid;
-      grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.5fr;
+      grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 4.75fr;
     }
     .r5 {
-      grid-template-columns: 5fr 3.5fr 1fr 3.5fr 5fr;
+      grid-template-columns: 4fr 3.5fr 1fr 3.5fr 6fr;
     }
     #KeySpace2 {
       opacity: 1;
