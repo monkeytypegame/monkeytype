@@ -69,7 +69,7 @@ let defaultConfig = {
   minWpmCustomSpeed: 100,
   highlightMode: "letter",
   alwaysShowCPM: false,
-  enableAds: false,
+  enableAds: "off",
 };
 
 let cookieConfig = null;
@@ -225,17 +225,61 @@ function applyConfig(configObj) {
     //   accountFilters = configObj.resultFilters;
     // }
     // config = configObj;
+
     try {
       setEnableAds(configObj.enableAds, true);
-      if (config.enableAds) {
-        $("#ad").removeClass("hidden");
+      if (config.enableAds === "on") {
+        $("#ad1").removeClass("hidden");
+        $("#ad1")
+          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- Horizontal Ad -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:850px;height:90px"
+             data-ad-client="ca-pub-7261919841327810"
+             data-ad-slot="2225821478"></ins>`);
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      } else if (config.enableAds === "max") {
+        $("#ad1").removeClass("hidden");
+        $("#ad2").removeClass("hidden");
+        $("#ad3").removeClass("hidden");
+        $("#ad1").html(`<script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+      ></script>
+      <!-- Horizontal Ad -->
+      <ins
+        class="adsbygoogle"
+        style="display: inline-block; width: 1000px; height: 90px"
+        data-ad-client="ca-pub-7261919841327810"
+        data-ad-slot="2225821478"
+      ></ins>`);
+        $("#ad2")
+          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- Vertical 1 -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:160px;height:600px"
+             data-ad-client="ca-pub-7261919841327810"
+             data-ad-slot="6376286644"></ins>`);
+        $("#ad3")
+          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- Vertical 2 -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:160px;height:600px"
+             data-ad-client="ca-pub-7261919841327810"
+             data-ad-slot="1159796595"></ins>`);
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        (adsbygoogle = window.adsbygoogle || []).push({});
         (adsbygoogle = window.adsbygoogle || []).push({});
       } else {
-        $("#ad").remove();
+        $("#ad1").remove();
+        $("#ad2").remove();
+        $("#ad3").remove();
       }
     } catch (e) {
       console.log("error initialising ads " + e.message);
-      $("#ad").remove();
+      $("#ad1").remove();
+      $("#ad2").remove();
+      $("#ad3").remove();
     }
   }
   Object.keys(defaultConfig).forEach((configKey) => {
@@ -590,8 +634,8 @@ function setQuickEnd(qe, nosave) {
 }
 
 function setEnableAds(val, nosave) {
-  if (val == undefined) {
-    val = false;
+  if (val == undefined || val === true || val === false) {
+    val = "off";
   }
   config.enableAds = val;
   if (!nosave) saveConfigToCookie();
