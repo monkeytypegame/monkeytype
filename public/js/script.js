@@ -1740,7 +1740,7 @@ function showResult(difficultyFailed = false) {
 
   if (config.alwaysShowDecimalPlaces) {
     if (config.alwaysShowCPM == false) {
-      $("#result .stats .wpm .top").text("wpm");
+      $("#result .stats .wpm .top .text").text("wpm");
       $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm));
       $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
       $("#result .stats .wpm .bottom").attr(
@@ -1748,7 +1748,7 @@ function showResult(difficultyFailed = false) {
         roundTo2(stats.wpm * 5) + " cpm"
       );
     } else {
-      $("#result .stats .wpm .top").text("cpm");
+      $("#result .stats .wpm .top .text").text("cpm");
       $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm * 5));
       $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw * 5));
       $("#result .stats .wpm .bottom").attr(
@@ -1774,7 +1774,7 @@ function showResult(difficultyFailed = false) {
   } else {
     //not showing decimal places
     if (config.alwaysShowCPM == false) {
-      $("#result .stats .wpm .top").text("wpm");
+      $("#result .stats .wpm .top .text").text("wpm");
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
         stats.wpm + ` (${roundTo2(stats.wpm * 5)} cpm)`
@@ -1783,7 +1783,7 @@ function showResult(difficultyFailed = false) {
       $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
       $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
     } else {
-      $("#result .stats .wpm .top").text("cpm");
+      $("#result .stats .wpm .top .text").text("cpm");
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
         stats.wpm + ` (${roundTo2(stats.wpm)} wpm)`
