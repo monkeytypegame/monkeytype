@@ -228,6 +228,7 @@ function applyConfig(configObj) {
     try {
       setEnableAds(configObj.enableAds, true);
       if (config.enableAds) {
+        $("#ad").removeClass("hidden");
         (adsbygoogle = window.adsbygoogle || []).push({});
       } else {
         $("#ad").remove();
