@@ -2497,6 +2497,11 @@ key {
       text-align: center;
     }
 
+    &.createdDate {
+      text-align: center;
+      color: var(--sub-color);
+    }
+
     &.history {
       .loadMoreButton {
         background: rgba(0, 0, 0, 0.1);

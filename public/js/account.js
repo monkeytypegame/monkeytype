@@ -268,6 +268,17 @@ firebase.auth().onAuthStateChanged(function (user) {
 
     showFavouriteThemesAtTheTop();
 
+    let text = "Account created on " + user.metadata.creationTime;
+
+    const date1 = new Date(text);
+    const date2 = new Date();
+    const diffTime = Math.abs(date2 - date1);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    text += ` (${diffDays} days ago)`;
+
+    $(".pageAccount .group.createdDate").text(text);
+
     if (verifyUserWhenLoggedIn !== null) {
       showNotification("Verifying", 1000);
       verifyUserWhenLoggedIn.uid = user.uid;
