@@ -69,6 +69,7 @@ let defaultConfig = {
   minWpmCustomSpeed: 100,
   highlightMode: "letter",
   alwaysShowCPM: false,
+  enableAds: false,
 };
 
 let cookieConfig = null;
@@ -214,7 +215,7 @@ function applyConfig(configObj) {
     setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
-    setAlwaysShowCPM(config.alwaysShowCPM, true);
+    setAlwaysShowCPM(configObj.alwaysShowCPM, true);
     changeMode(configObj.mode, true);
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -224,6 +225,17 @@ function applyConfig(configObj) {
     //   accountFilters = configObj.resultFilters;
     // }
     // config = configObj;
+    try {
+      setEnableAds(configObj.enableAds, true);
+      if (config.enableAds) {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      } else {
+        $("#ad").remove();
+      }
+    } catch (e) {
+      console.log("error initialising ads " + e.message);
+      $("#ad").remove();
+    }
   }
   Object.keys(defaultConfig).forEach((configKey) => {
     if (config[configKey] == undefined) {
@@ -573,6 +585,14 @@ function setQuickEnd(qe, nosave) {
     qe = false;
   }
   config.quickEnd = qe;
+  if (!nosave) saveConfigToCookie();
+}
+
+function setEnableAds(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.enableAds = val;
   if (!nosave) saveConfigToCookie();
 }
 

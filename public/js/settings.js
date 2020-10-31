@@ -142,6 +142,7 @@ settingsGroups.indicateTypos = new SettingsGroup(
 );
 settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
 settingsGroups.quickEnd = new SettingsGroup("quickEnd", setQuickEnd);
+settingsGroups.enableAds = new SettingsGroup("enableAds", setEnableAds);
 // settingsGroups.readAheadMode = new SettingsGroup(
 //   "readAheadMode",
 //   setReadAheadMode
