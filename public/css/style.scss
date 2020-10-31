@@ -1219,6 +1219,9 @@ key {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 1rem;
+    a {
+      text-decoration: none;
+    }
     .left {
       text-align: left;
     }
