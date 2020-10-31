@@ -3047,7 +3047,7 @@ key {
 
 .r1 {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 0fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 
 .r2 {
@@ -3090,29 +3090,15 @@ key {
     .r1,
     .r2,
     .r3 {
-      display: flex;
-      justify-content: left;
-      margin-left: 5.51rem;
-    }
-
-    .r1 {
-      margin-left: 5.8rem;
+      grid-template-columns: 1.125fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
     .r4 {
-      display: flex;
-      justify-content: left;
-      margin-left: 3.26rem;
-    }
-    .r5 {
-      grid-template-columns: 4fr 6fr 5fr;
-      margin-left: 1.25rem;
+      grid-template-columns: 0fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
-    .r1 {
-      :nth-child(12) {
-        opacity: 0;
-      }
+    .r5 {
+      grid-template-columns: 3.25fr 5fr 2fr 1fr;
     }
 
     .r1,
@@ -3134,27 +3120,28 @@ key {
     .keymap-stagger-split-spacer {
       display: block;
     }
+
     .r1 {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
     }
 
     .r2 {
       display: grid;
-      grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2.5fr;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
     .r3 {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 3fr;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1.5fr;
     }
 
     .r4 {
       display: grid;
-      grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 4.75fr;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 2fr;
     }
     .r5 {
-      grid-template-columns: 4fr 3.5fr 1fr 3.5fr 6fr;
+      grid-template-columns: 5fr 3fr 1fr 3fr 4.5fr;
     }
     #KeySpace2 {
       opacity: 1;
@@ -3176,21 +3163,17 @@ key {
     }
     .r1,
     .r2,
-    .r3,
-    .r4 {
-      display: flex;
-      justify-content: left;
-      margin-left: 7.8rem;
+    .r3 {
+      grid-template-columns: 1.125fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
     .r4 {
-      margin-left: 5.5rem;
+      grid-template-columns: 0fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     }
 
     .r5 {
-      grid-template-columns: 6fr 2fr 1fr 2fr 6fr;
+      grid-template-columns: 4.225fr 2fr 1fr 2fr 3fr;
     }
-
     #KeySpace2 {
       opacity: 1;
     }
