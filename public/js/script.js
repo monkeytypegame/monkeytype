@@ -273,14 +273,16 @@ function copyResultToClipboard() {
               showNotification("Copied to clipboard", 1000);
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
-              $(".pageTest .loginTip").removeClass("hidden");
+              if (firebase.auth().currentUser == null)
+                $(".pageTest .loginTip").removeClass("hidden");
             })
             .catch((f) => {
               $(".notification").removeClass("hidden");
               showNotification("Error saving image to clipboard", 2000);
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
-              $(".pageTest .loginTip").removeClass("hidden");
+              if (firebase.auth().currentUser == null)
+                $(".pageTest .loginTip").removeClass("hidden");
             });
         });
       });
@@ -289,7 +291,8 @@ function copyResultToClipboard() {
       showNotification("Error creating image", 2000);
       $(".pageTest .ssWatermark").addClass("hidden");
       $(".pageTest .buttons").removeClass("hidden");
-      $(".pageTest .loginTip").removeClass("hidden");
+      if (firebase.auth().currentUser == null)
+        $(".pageTest .loginTip").removeClass("hidden");
     }
   }
 }
