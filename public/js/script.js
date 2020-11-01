@@ -3075,7 +3075,7 @@ function changeMode(mode, nosave) {
     $("#top .config .numbersMode").addClass("hidden");
     $("#result .stats .source").removeClass("hidden");
     $("#top .config .quoteLength").removeClass("hidden");
-    changeLanguage("english", nosave);
+    // changeLanguage("english", nosave);
   }
   if (!nosave) saveConfigToCookie();
 }
