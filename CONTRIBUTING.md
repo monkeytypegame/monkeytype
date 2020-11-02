@@ -38,7 +38,7 @@
 ## Building and Running
 
 1. Run `npm install` in the project root directory to install dependencies.
-1. Run `npm run start:dev` to start a local dev server on port 5000. It will watch for changes and rebuild when you edit files in `src/` or `static/`. Use ctrl+c to stop it.
+1. Run `npm run start:dev` to start a local dev server on port 5000. It will watch for changes and rebuild when you edit files in `src/` or `public/`. Use ctrl+c to stop it.
    - Run `firebase use default` if you run into any errors for this.
 
 ## Standards and Conventions

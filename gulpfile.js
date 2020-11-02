@@ -20,27 +20,27 @@ const gulpSrc = [
 ];
 
 task("cat", function () {
-  return src(gulpSrc).pipe(concat("monkeytype.js")).pipe(dest("./public/js"));
+  return src(gulpSrc).pipe(concat("monkeytype.js")).pipe(dest("./dist/js"));
 });
 
 task("sass", function () {
   return src("./src/sass/*.scss")
     .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
-    .pipe(dest("public/css"));
+    .pipe(dest("dist/css"));
 });
 
-task("dist", function () {
-  return src("./static/**/*").pipe(dest("./public/"));
+task("static", function () {
+  return src("./public/**/*").pipe(dest("./dist/"));
 });
 
 task("clean", function () {
-  return src("./public/", { allowEmpty: true }).pipe(vinylPaths(del));
+  return src("./dist/", { allowEmpty: true }).pipe(vinylPaths(del));
 });
 
-task("build", series("dist", "sass", "cat"));
+task("build", series("static", "sass", "cat"));
 
 task("watch", function () {
-  watch(["./static/**/*", "./src/**/*"], series("build"));
+  watch(["./public/**/*", "./src/**/*"], series("build"));
 });
 
 task("rebuild", series("clean", "build"));
