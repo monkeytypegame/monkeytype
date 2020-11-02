@@ -531,7 +531,12 @@ class SimplePopup {
         el.find("input").removeClass("hidden");
         el.find("input").attr("placeholder", this.inputPlaceholder);
         el.find("input").attr("min", 1);
+        el.find("input").attr("type", "number");
         el.find("input").val(this.inputVal);
+      } else if (this.type === "text") {
+        el.find("input").removeClass("hidden");
+        el.find("input").attr("placeholder", this.inputPlaceholder);
+        el.find("input").attr("type", "text");
       } else {
         el.find("input").addClass("hidden");
       }
@@ -551,7 +556,9 @@ class SimplePopup {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 125);
+      .animate({ opacity: 1 }, 125, () => {
+        $("#simplePopup").find("input").focus();
+      });
   }
 
   hide() {
@@ -582,14 +589,44 @@ $(document).on("click", "#simplePopupWrapper .button", (e) => {
   simplePopups[id].exec();
 });
 
-// simplePopups.testPop = new SimplePopup(
-//   'testPop',
-//   'number',
-//   'This is a test',
-//   'Number',
-//   1,
-//   'Test popup that i made to test the class',
-//   'Go',
-//   (a) => {
-//     console.log(a);
-// });
+$(document).on("keyup", "#simplePopupWrapper input", (e) => {
+  if (e.key === "Enter") {
+    let id = $("#simplePopup").attr("popupId");
+    simplePopups[id].exec();
+  }
+});
+
+simplePopups.updateEmail = new SimplePopup(
+  "updateEmail",
+  "text",
+  "Update Email",
+  "New email",
+  "",
+  "Don't mess this one up or you won't be able to login!",
+  "Update",
+  (input) => {
+    try {
+      showBackgroundLoader();
+      let currentUser = firebase.auth().currentUser;
+      updateEmail({
+        uid: currentUser.uid,
+        previousEmail: currentUser.email,
+        newEmail: input,
+      }).then((data) => {
+        hideBackgroundLoader();
+        if (data.data.resultCode === 1) {
+          showNotification("Email updated", 2000);
+        } else if (data.data.resultCode === -1) {
+          showNotification("Previous email doesn't match", 2000);
+        } else {
+          showNotification(
+            "Something went wrong: " + JSON.stringify(data.data),
+            7000
+          );
+        }
+      });
+    } catch (e) {
+      showNotification("Something went wrong: " + e, 5000);
+    }
+  }
+);

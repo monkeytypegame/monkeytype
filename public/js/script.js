@@ -215,6 +215,7 @@ const saveLbMemory = firebase.functions().httpsCallable("saveLbMemory");
 const unlinkDiscord = firebase.functions().httpsCallable("unlinkDiscord");
 const verifyUser = firebase.functions().httpsCallable("verifyUser");
 const reserveName = firebase.functions().httpsCallable("reserveDisplayName");
+const updateEmail = firebase.functions().httpsCallable("updateEmail");
 
 function refreshThemeColorObject() {
   let st = getComputedStyle(document.body);

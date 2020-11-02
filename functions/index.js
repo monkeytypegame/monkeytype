@@ -1170,6 +1170,30 @@ exports.testCompleted = functions
     }
   });
 
+exports.updateEmail = functions.https.onCall(async (request, response) => {
+  try {
+    let previousEmail = await admin.auth().getUser(request.uid);
+
+    if (previousEmail.email !== request.previousEmail) {
+      return { resultCode: -1 };
+    } else {
+      await admin.auth().updateUser(request.uid, {
+        email: request.newEmail,
+        emailVerified: false,
+      });
+      return {
+        resultCode: 1,
+      };
+    }
+  } catch (e) {
+    console.error(`error updating email for ${request.uid} - ${e}`);
+    return {
+      resultCode: -999,
+      message: e.message,
+    };
+  }
+});
+
 function updateDiscordRole(discordId, wpm) {
   db.collection("bot-commands").add({
     command: "updateRole",
