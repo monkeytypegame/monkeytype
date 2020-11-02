@@ -5,19 +5,17 @@
 - NodeJS v10
 - Firebase
 
-## Project Setup
+## Prerequisite - Firebase Setup
 
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
 
    - The project name doesn't really matter, but just name it `monkeytype`.
    - Google Analytics is not necessary.
 
-2. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
-3. Run `firebase login` on your terminal to log in to the same google account as you just used to create the project.
-4. Git clone this project.
-5. Run `npm install`
-6. Compile `public/css/style.scss` to `public/css/style.min.css` as [described below](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md#standards--conventions)
-7. Rename `.firebaserc_example` to `.firebaserc` and change the project name of default to the firebase project id you just created.
+1. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
+1. Run `firebase login` on your terminal to log in to the same google account as you just used to create the project.
+1. Git clone this project.
+1. Rename `.firebaserc_example` to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -31,37 +29,21 @@
 
    - Run `firebase projects:list` to find your firebase project id.
 
-8. Generate a Firebase Admin private key
+1. Generate a Firebase Admin private key
 
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` in the `functions/` directory
 
-9. Run `npm start` to start a local server on port 5000. Use ctrl+c to stop it.
+## Building and Running
+
+1. Run `npm install` in the project root directory to install dependencies.
+1. Run `npm run start:dev` to start a local dev server on port 5000. It will watch for changes and rebuild when you edit files in `src/` or `static/`. Use ctrl+c to stop it.
    - Run `firebase use default` if you run into any errors for this.
 
-## Standards & Conventions
+## Standards and Conventions
 
-1. Use a SCSS compiler, and make sure that a `style.min.css` file is generated in the same directory as the `style.scss`. For VSCode I recommend `Easy Sass` extension by Wojciech Sura. After installing it, to configure it:
-
-   - Navigate to the VSCode settings, `Extensions` section and find `Easy Sass configuration`
-   - Under the `Formats` group click `edit in settings.json`
-   - Make sure this the code looks like this:
-
-   ```json
-   "easysass.formats": [
-       {
-           "format": "compressed",
-           "extension": ".min.css"
-       }
-   ],
-   ```
-
-   _This will make sure that only a minified file is generated._
-
-   -Finally, using the command palete (`ctrl/cmd + shift + p`), use the `Compile all SCSS/SASS files in the project` option. You only need to do this once. After this the files will be compiled on save.
-
-2. Install [Prettier](https://prettier.io/docs/en/install.html). Its a code formatter, and it will make sure that we avoid any whitespace or formatting issues when merging code.
+1. Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically run every time you `git commit` (if you've followed the above instructions properly).
 
 ## Questions
 
