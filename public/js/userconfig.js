@@ -96,7 +96,7 @@ async function saveConfigToCookie(noDbCheck = false) {
     path: "/",
   });
   restartCount = 0;
-  if (!noDbCheck) saveConfigToDB();
+  if (!noDbCheck) await saveConfigToDB();
 }
 
 async function saveConfigToDB() {
@@ -638,7 +638,10 @@ function setEnableAds(val, nosave) {
     val = "off";
   }
   config.enableAds = val;
-  if (!nosave) saveConfigToCookie();
+  if (!nosave)
+    saveConfigToCookie().then(() => {
+      setTimeout(location.reload(), 500);
+    });
 }
 
 //flip colors
