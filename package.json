@@ -2,6 +2,7 @@
   "name": "monkeytype",
   "version": "1.5.3",
   "license": "GPL-3.0",
+  "private": true,
   "scripts": {
     "build": "npx gulp rebuild",
     "start": "npm run build && firebase serve",
