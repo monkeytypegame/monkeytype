@@ -831,7 +831,7 @@ function changeTimeConfig(time, nosave) {
     time = 15;
   }
   time = parseInt(time);
-  changeMode("time", nosave);
+  if (!nosave) changeMode("time", nosave);
   config.time = time;
   $("#top .config .time .text-button").removeClass("active");
   if (![15, 30, 60, 120].includes(time)) {
@@ -865,7 +865,7 @@ function changeWordCount(wordCount, nosave) {
     wordCount = 10;
   }
   wordCount = parseInt(wordCount);
-  changeMode("words", nosave);
+  if (!nosave) changeMode("words", nosave);
   config.words = wordCount;
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
