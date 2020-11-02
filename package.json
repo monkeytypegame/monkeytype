@@ -3,8 +3,9 @@
   "version": "1.5.3",
   "license": "GPL-3.0",
   "scripts": {
-    "start": "npx gulp rebuild && firebase serve",
-    "start:dev": "npx gulp rebuild && concurrently --kill-others \"npx gulp watch\" \"firebase serve\"",
+    "build": "npx gulp rebuild",
+    "start": "npm run build && firebase serve",
+    "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve\"",
     "postinstall": "cd functions && npm install"
   },
   "engines": {
