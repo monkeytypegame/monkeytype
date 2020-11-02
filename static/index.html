@@ -2744,7 +2744,10 @@
                 <h1>enable ads</h1>
                 <div class="text">
                   If you wish to support me without directly donating you can
-                  enable ads that will be visible at the bottom of the screen
+                  enable ads that will be visible at the bottom of the screen.
+                  Sellout mode also shows ads on both sides of the screen.
+                  <br />
+                  <br />
                   (changes will take effect after a refresh).
                 </div>
                 <div class="buttons">
@@ -2791,7 +2794,7 @@
                   </div>
                 </div>
               </div>
-              <div class="section updateAccountEmail hidden">
+              <div class="section updateAccountEmail">
                 <h1>update account email</h1>
                 <div class="text">
                   In case you misspell it or get a new address.
@@ -2801,7 +2804,7 @@
                     class="button off danger"
                     id="updateAccountEmail"
                     tabindex="0"
-                    onclick="this.blur();"
+                    onclick="this.blur();simplePopups.updateEmail.show();"
                   >
                     update email
                   </div>

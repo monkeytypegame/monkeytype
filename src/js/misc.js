@@ -493,8 +493,7 @@ class SimplePopup {
     id,
     type,
     title,
-    inputPlaceholder = "",
-    inputVal = "",
+    inputs = [],
     text = "",
     buttonText = "Confirm",
     execFn
@@ -503,8 +502,7 @@ class SimplePopup {
     this.type = type;
     this.execFn = execFn;
     this.title = title;
-    this.inputPlaceholder = inputPlaceholder;
-    this.inputVal = inputVal;
+    this.inputs = inputs;
     this.text = text;
     this.wrapper = $("#simplePopupWrapper");
     this.element = $("#simplePopup");
@@ -513,7 +511,7 @@ class SimplePopup {
   reset() {
     this.element.html(`
     <div class="title"></div>
-    <input>
+    <form class="inputs"></form>
     <div class="text"></div>
     <div class="button"></div>`);
   }
@@ -527,21 +525,40 @@ class SimplePopup {
       el.find(".title").text(this.title);
       el.find(".text").text(this.text);
 
-      if (this.type === "number") {
-        el.find("input").removeClass("hidden");
-        el.find("input").attr("placeholder", this.inputPlaceholder);
-        el.find("input").attr("min", 1);
-        el.find("input").val(this.inputVal);
-      } else {
-        el.find("input").addClass("hidden");
-      }
+      this.initInputs();
 
       el.find(".button").text(this.buttonText);
     }
   }
 
+  initInputs() {
+    let el = this.element;
+    if (this.inputs.length > 0) {
+      if (this.type === "number") {
+        this.inputs.forEach((input) => {
+          el.find(".inputs").append(`
+        <input type="number" min="1" val="${input.initVal}" placeholder="${input.placeholder}" required>
+        `);
+        });
+      } else if (this.type === "text") {
+        this.inputs.forEach((input) => {
+          el.find(".inputs").append(`
+        <input type="text" val="${input.initVal}" placeholder="${input.placeholder}" required>
+        `);
+        });
+      }
+      el.find(".inputs").removeClass("hidden");
+    } else {
+      el.find(".inputs").addClass("hidden");
+    }
+  }
+
   exec() {
-    this.execFn($("#simplePopup").find("input").val());
+    let vals = [];
+    $.each($("#simplePopup input"), (index, el) => {
+      vals.push($(el).val());
+    });
+    this.execFn(...vals);
     this.hide();
   }
 
@@ -551,7 +568,9 @@ class SimplePopup {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 125);
+      .animate({ opacity: 1 }, 125, () => {
+        $($("#simplePopup").find("input")[0]).focus();
+      });
   }
 
   hide() {
@@ -582,14 +601,54 @@ $(document).on("click", "#simplePopupWrapper .button", (e) => {
   simplePopups[id].exec();
 });
 
-// simplePopups.testPop = new SimplePopup(
-//   'testPop',
-//   'number',
-//   'This is a test',
-//   'Number',
-//   1,
-//   'Test popup that i made to test the class',
-//   'Go',
-//   (a) => {
-//     console.log(a);
-// });
+$(document).on("keyup", "#simplePopupWrapper input", (e) => {
+  if (e.key === "Enter") {
+    let id = $("#simplePopup").attr("popupId");
+    simplePopups[id].exec();
+  }
+});
+
+simplePopups.updateEmail = new SimplePopup(
+  "updateEmail",
+  "text",
+  "Update Email",
+  [
+    {
+      placeholder: "Current email",
+      initVal: "",
+    },
+    {
+      placeholder: "New email",
+      initVal: "",
+    },
+  ],
+  "Don't mess this one up or you won't be able to login!",
+  "Update",
+  (previousEmail, newEmail) => {
+    try {
+      showBackgroundLoader();
+      updateEmail({
+        uid: firebase.auth().currentUser.uid,
+        previousEmail: previousEmail,
+        newEmail: newEmail,
+      }).then((data) => {
+        hideBackgroundLoader();
+        if (data.data.resultCode === 1) {
+          showNotification("Email updated", 2000);
+          setTimeout(() => {
+            signOut();
+          }, 1000);
+        } else if (data.data.resultCode === -1) {
+          showNotification("Current email doesn't match", 2000);
+        } else {
+          showNotification(
+            "Something went wrong: " + JSON.stringify(data.data),
+            7000
+          );
+        }
+      });
+    } catch (e) {
+      showNotification("Something went wrong: " + e, 5000);
+    }
+  }
+);

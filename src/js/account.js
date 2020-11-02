@@ -1504,9 +1504,11 @@ $(
     config.resultFilters.date.all = true;
   } else if ($(e.target).hasClass("noFilters")) {
     Object.keys(config.resultFilters).forEach((group) => {
-      Object.keys(config.resultFilters[group]).forEach((filter) => {
-        config.resultFilters[group][filter] = false;
-      });
+      if (group !== "date") {
+        Object.keys(config.resultFilters[group]).forEach((filter) => {
+          config.resultFilters[group][filter] = false;
+        });
+      }
     });
   } else {
     if (e.shiftKey) {
