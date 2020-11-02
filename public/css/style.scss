@@ -481,6 +481,11 @@ a:hover {
       color: var(--sub-color);
     }
 
+    .inputs {
+      display: grid;
+      gap: 1rem;
+    }
+
     .text {
       font-size: 1rem;
       color: var(--text-color);

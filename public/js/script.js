@@ -4815,7 +4815,8 @@ $(document).keydown((event) => {
       config.quickTab &&
       !$(".pageLogin").hasClass("active") &&
       !resultCalculating &&
-      $("#commandLineWrapper").hasClass("hidden")
+      $("#commandLineWrapper").hasClass("hidden") &&
+      $("#simplePopupWrapper").hasClass("hidden")
     ) {
       event.preventDefault();
       if ($(".pageTest").hasClass("active")) {
