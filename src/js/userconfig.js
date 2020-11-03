@@ -115,6 +115,7 @@ async function saveConfigToDB() {
             4000
           );
         }
+        return;
       }
     );
   }

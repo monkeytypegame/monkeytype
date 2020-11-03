@@ -27,7 +27,9 @@ If you encounter a bug, or have a feature request - send me a message on Reddit,
 # credits
 
 Montydrei for the name suggestion
+
 Everyone who provided valuable feedback on the original reddit post for the prototype of this website
+
 Contributors that have helped with implementing various features, adding themes and more.
 
 # support
