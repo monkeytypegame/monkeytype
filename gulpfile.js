@@ -37,10 +37,10 @@ task("clean", function () {
   return src("./dist/", { allowEmpty: true }).pipe(vinylPaths(del));
 });
 
-task("build", series("static", "sass", "cat"));
+task("compile", series("static", "sass", "cat"));
 
 task("watch", function () {
-  watch(["./public/**/*", "./src/**/*"], series("build"));
+  watch(["./public/**/*", "./src/**/*"], series("compile"));
 });
 
-task("rebuild", series("clean", "build"));
+task("build", series("clean", "compile"));

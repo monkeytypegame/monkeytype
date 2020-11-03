@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
-    "build": "npx gulp rebuild",
+    "build": "npx gulp build",
     "start": "npm run build && firebase serve",
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve\"",
     "postinstall": "cd functions && npm install"
