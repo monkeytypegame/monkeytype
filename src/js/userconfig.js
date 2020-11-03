@@ -238,7 +238,8 @@ function applyConfig(configObj) {
              style="display:inline-block;width:850px;height:90px"
              data-ad-client="ca-pub-7261919841327810"
              data-ad-slot="2225821478"></ins>`);
-        (adsbygoogle = window.adsbygoogle || []).push({});
+        const adsbygoogle = window.adsbygoogle || [];
+        adsbygoogle.push({});
       } else if (config.enableAds === "max") {
         $("#ad1").removeClass("hidden");
         $("#ad2").removeClass("hidden");
@@ -268,9 +269,10 @@ function applyConfig(configObj) {
              style="display:inline-block;width:160px;height:600px"
              data-ad-client="ca-pub-7261919841327810"
              data-ad-slot="1159796595"></ins>`);
-        (adsbygoogle = window.adsbygoogle || []).push({});
-        (adsbygoogle = window.adsbygoogle || []).push({});
-        (adsbygoogle = window.adsbygoogle || []).push({});
+        const adsbygoogle = window.adsbygoogle || [];
+        adsbygoogle.push({});
+        adsbygoogle.push({});
+        adsbygoogle.push({});
       } else {
         $("#ad1").remove();
         $("#ad2").remove();

@@ -22,7 +22,15 @@ const gulpSrc = [
 
 let eslintConfig = {
   parser: "babel-eslint",
-  globals: ["jQuery", "$", "firebase", "moment"],
+  globals: [
+    "jQuery",
+    "$",
+    "firebase",
+    "moment",
+    "html2canvas",
+    "ClipboardItem",
+    "Chart",
+  ],
   envs: ["es6", "browser", "node"],
   rules: {
     "constructor-super": "error",
@@ -40,7 +48,7 @@ let eslintConfig = {
     "no-delete-var": "error",
     "no-dupe-args": "error",
     "no-dupe-class-members": "error",
-    "no-dupe-else-if": "error",
+    "no-dupe-else-if": "warn",
     "no-dupe-keys": "error",
     "no-duplicate-case": "error",
     "no-empty": "warn",
@@ -76,6 +84,7 @@ let eslintConfig = {
     "no-unsafe-negation": "error",
     "no-unused-labels": "error",
     "no-unused-vars": "warn",
+    "no-use-before-define": "warn",
     "no-useless-catch": "error",
     "no-useless-escape": "error",
     "no-with": "error",

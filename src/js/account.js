@@ -656,7 +656,6 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
             beginAtZero: true,
             min: 0,
             autoSkip: true,
-            stepSize: 1,
             autoSkipPadding: 40,
             stepSize: 10,
           },
@@ -674,7 +673,6 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
             beginAtZero: true,
             min: 0,
             autoSkip: true,
-            stepSize: 1,
             autoSkipPadding: 40,
             stepSize: 10,
           },
@@ -1265,7 +1263,8 @@ function showActiveFilters() {
     if (aboveChartDisplay[group].all) {
       ret += "all";
     } else {
-      allall = false;
+      //TODO: is this used?
+      //allall = false;
       if (group === "tags") {
         ret += aboveChartDisplay.tags.array
           .map((id) => {

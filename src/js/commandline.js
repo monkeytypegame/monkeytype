@@ -1855,7 +1855,7 @@ function hideCommandLine() {
   focusWords();
 }
 
-function showCommandLine() {
+let showCommandLine = () => {
   setFocus(false);
   $("#commandLine").removeClass("hidden");
   $("#commandInput").addClass("hidden");
@@ -1874,7 +1874,7 @@ function showCommandLine() {
   $("#commandLine input").val("");
   updateSuggestedCommands();
   $("#commandLine input").focus();
-}
+};
 
 function showCommandInput(command, placeholder) {
   $("#commandLineWrapper").removeClass("hidden");

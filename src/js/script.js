@@ -9,6 +9,7 @@ let time = 0;
 let timer = null;
 let testActive = false;
 let testStart, testEnd;
+let testInvalid = false;
 let wpmHistory = [];
 let rawHistory = [];
 let restartCount = 0;
@@ -3718,7 +3719,8 @@ function tagsEdit() {
           updateResultEditTagsPanelButtons();
           updateSettingsPage();
           updateFilterTags();
-          updateActiveTags();
+          //TODO: is this used?
+          //updateActiveTags();
         } else if (status < -1) {
           showNotification("Unknown error", 3000);
         }
