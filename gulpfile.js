@@ -22,7 +22,6 @@ const gulpSrc = [
 
 let eslintConfig = {
   parser: "babel-eslint",
-  extends: "eslint:recommended",
   globals: ["jQuery", "$", "firebase", "moment"],
   envs: ["es6", "browser", "node"],
   rules: {
