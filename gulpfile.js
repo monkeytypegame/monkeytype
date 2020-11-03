@@ -20,37 +20,6 @@ const gulpSrc = [
   "./src/js/script.js",
 ];
 
-task("cat", function () {
-  return src(gulpSrc)
-    .pipe(concat("monkeytype.js"))
-    .pipe(eslint(eslintConfig))
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError())
-    .pipe(dest("./dist/js"));
-});
-
-task("sass", function () {
-  return src("./src/sass/*.scss")
-    .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
-    .pipe(dest("dist/css"));
-});
-
-task("static", function () {
-  return src("./public/**/*").pipe(dest("./dist/"));
-});
-
-task("clean", function () {
-  return src("./dist/", { allowEmpty: true }).pipe(vinylPaths(del));
-});
-
-task("compile", series("static", "sass", "cat"));
-
-task("watch", function () {
-  watch(["./public/**/*", "./src/**/*"], series("compile"));
-});
-
-task("build", series("clean", "compile"));
-
 let eslintConfig = {
   parser: "babel-eslint",
   extends: "eslint:recommended",
@@ -116,3 +85,34 @@ let eslintConfig = {
     "valid-typeof": "error",
   },
 };
+
+task("cat", function () {
+  return src(gulpSrc)
+    .pipe(concat("monkeytype.js"))
+    .pipe(eslint(eslintConfig))
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
+    .pipe(dest("./dist/js"));
+});
+
+task("sass", function () {
+  return src("./src/sass/*.scss")
+    .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
+    .pipe(dest("dist/css"));
+});
+
+task("static", function () {
+  return src("./public/**/*").pipe(dest("./dist/"));
+});
+
+task("clean", function () {
+  return src("./dist/", { allowEmpty: true }).pipe(vinylPaths(del));
+});
+
+task("compile", series("static", "sass", "cat"));
+
+task("watch", function () {
+  watch(["./public/**/*", "./src/**/*"], series("compile"));
+});
+
+task("build", series("clean", "compile"));
