@@ -359,7 +359,7 @@ function setFavThemes(themes, nosave) {
 
 //blind mode
 function toggleBlindMode() {
-  blind = !config.blindMode;
+  let blind = !config.blindMode;
   if (blind == undefined) {
     blind = false;
   }
@@ -595,7 +595,7 @@ function setSingleListCommandLine(option, nosave) {
 
 //show all lines
 function toggleShowAllLines() {
-  sal = !config.showAllLines;
+  let sal = !config.showAllLines;
   if (sal == undefined) {
     sal = false;
   }
@@ -617,7 +617,7 @@ function setShowAllLines(sal, nosave) {
 
 //quickend
 function toggleQuickEnd() {
-  qe = !config.quickEnd;
+  let qe = !config.quickEnd;
   if (qe == undefined) {
     qe = false;
   }
@@ -1045,7 +1045,7 @@ function setConfidenceMode(cm, nosave) {
 }
 
 function toggleIndicateTypos() {
-  it = !config.indicateTypos;
+  let it = !config.indicateTypos;
   if (it == undefined) {
     it = false;
   }
@@ -1151,7 +1151,7 @@ function setCustomThemeColors(colors, nosave) {
 }
 
 function applyCustomThemeColors() {
-  array = config.customThemeColors;
+  const array = config.customThemeColors;
 
   if (config.customTheme === true) {
     $(".current-theme").text("custom");

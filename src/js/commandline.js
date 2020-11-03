@@ -9,7 +9,7 @@ function addChildCommands(
   if (commandItem.subgroup) {
     try {
       commandItem.exec();
-      currentCommandsIndex = currentCommands.length - 1;
+      const currentCommandsIndex = currentCommands.length - 1;
       currentCommands[currentCommandsIndex].list.forEach((cmd) =>
         addChildCommands(unifiedCommands, cmd, commandItemDisplay)
       );
@@ -23,8 +23,8 @@ function addChildCommands(
 }
 
 function generateSingleListOfCommands() {
-  allCommands = [];
-  oldShowCommandLine = showCommandLine;
+  const allCommands = [];
+  const oldShowCommandLine = showCommandLine;
   showCommandLine = () => {};
   commands.list.forEach((c) => addChildCommands(allCommands, c));
   showCommandLine = oldShowCommandLine;
@@ -957,26 +957,6 @@ let commandsHighlightMode = {
   ],
 };
 
-let commandsAlwaysShowCPM = {
-  title: "Toggle always show cpm...",
-  list: [
-    {
-      id: "setAlwaysShowCPMTrue",
-      display: true,
-      exec: () => {
-        setAlwaysShowCPM(true);
-      },
-    },
-    {
-      id: "setAlwaysShowCPMFalse",
-      display: false,
-      exec: () => {
-        setHighlightMode(false);
-      },
-    },
-  ],
-};
-
 let commandsTimerStyle = {
   title: "Change timer/progress style...",
   list: [
@@ -1684,7 +1664,8 @@ $("#commandInput input").keydown((e) => {
       if (obj.id == command) {
         obj.exec(value);
         if (obj.subgroup !== null && obj.subgroup !== undefined) {
-          subgroup = obj.subgroup;
+          //TODO: what is this for?
+          // subgroup = obj.subgroup;
         }
       }
     });

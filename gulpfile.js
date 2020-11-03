@@ -54,7 +54,7 @@ task("rebuild", series("clean", "build"));
 let eslintConfig = {
   parser: "babel-eslint",
   extends: "eslint:recommended",
-  globals: ["jQuery", "$", "firebase"],
+  globals: ["jQuery", "$", "firebase", "moment"],
   envs: ["es6", "browser", "node"],
   rules: {
     "constructor-super": "error",
