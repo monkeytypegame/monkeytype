@@ -639,10 +639,7 @@ function setEnableAds(val, nosave) {
     val = "off";
   }
   config.enableAds = val;
-  if (!nosave)
-    saveConfigToCookie().then(() => {
-      setTimeout(location.reload(), 500);
-    });
+  if (!nosave) saveConfigToCookie();
 }
 
 //flip colors
