@@ -80,3 +80,4 @@ functions/serviceAccountKey_live_copy.json
 
 #generated files
 dist/
+public/
