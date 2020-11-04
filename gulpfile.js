@@ -110,7 +110,7 @@ task("sass", function () {
 });
 
 task("static", function () {
-  return src("./public/**/*").pipe(dest("./dist/"));
+  return src("./static/**/*").pipe(dest("./dist/"));
 });
 
 task("clean", function () {
@@ -120,7 +120,7 @@ task("clean", function () {
 task("compile", series("static", "sass", "cat"));
 
 task("watch", function () {
-  watch(["./public/**/*", "./src/**/*"], series("compile"));
+  watch(["./static/**/*", "./src/**/*"], series("compile"));
 });
 
 task("build", series("clean", "compile"));

@@ -306,6 +306,15 @@ let commands = {
       },
     },
     {
+      id: "setEnableAds",
+      display: "Set enable ads...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsEnableAds);
+        showCommandLine();
+      },
+    },
+    {
       id: "togglePresetCustomTheme",
       display: "Toggle preset/custom theme",
       exec: () => {
@@ -749,6 +758,36 @@ let commandsDifficulty = {
       display: "Master",
       exec: () => {
         setDifficulty("master");
+      },
+    },
+  ],
+};
+
+let commandsEnableAds = {
+  title: "Set enable ads...",
+  list: [
+    {
+      id: "setEnableAdsOff",
+      display: "off",
+      exec: () => {
+        setEnableAds("off");
+        showNotification("Don't forget to refresh the page!", 3000);
+      },
+    },
+    {
+      id: "setEnableAdsOn",
+      display: "on",
+      exec: () => {
+        setEnableAds("on");
+        showNotification("Don't forget to refresh the page!", 3000);
+      },
+    },
+    {
+      id: "setEnableMax",
+      display: "Sellout",
+      exec: () => {
+        setEnableAds("max");
+        showNotification("Don't forget to refresh the page!", 3000);
       },
     },
   ],

@@ -1773,7 +1773,6 @@ function showResult(difficultyFailed = false) {
       time = secondsToString(roundTo2(testtime));
     }
     $("#result .stats .time .bottom .text").text(time);
-
     $("#result .stats .raw .bottom").removeAttr("aria-label");
     $("#result .stats .acc .bottom").removeAttr("aria-label");
     $("#result .stats .time .bottom").attr(
@@ -1795,7 +1794,7 @@ function showResult(difficultyFailed = false) {
       $("#result .stats .wpm .top .text").text("cpm");
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        stats.wpm + ` (${roundTo2(stats.wpm)} wpm)`
+        stats.wpm * 5 + ` (${roundTo2(stats.wpm)} wpm)`
       );
       $("#result .stats .wpm .bottom").text(Math.round(stats.wpm * 5));
       $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw * 5));
