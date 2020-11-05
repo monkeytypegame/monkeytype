@@ -2026,6 +2026,12 @@ function showResult(difficultyFailed = false) {
       keypressStats.duration.array = "toolong";
     }
 
+    // REMOVE THIS WHEN MULTI LANGUAGE QUOTES ARE ADDED
+    let lang = config.language;
+    if (config.mode === "quote") {
+      lang = "english";
+    }
+
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
@@ -2038,7 +2044,7 @@ function showResult(difficultyFailed = false) {
       punctuation: config.punctuation,
       numbers: config.numbers,
       timestamp: Date.now(),
-      language: config.language,
+      language: lang,
       restartCount: restartCount,
       incompleteTestSeconds: incompleteTestSeconds,
       difficulty: config.difficulty,
@@ -3078,7 +3084,7 @@ function changeMode(mode, nosave) {
     $("#top .config .numbersMode").addClass("hidden");
     $("#result .stats .source").removeClass("hidden");
     $("#top .config .quoteLength").removeClass("hidden");
-    changeLanguage("english", nosave);
+    // changeLanguage("english", nosave);
   }
   if (!nosave) saveConfigToCookie();
 }
