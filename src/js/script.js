@@ -939,6 +939,9 @@ function compareInput(showError) {
       correctSoFar = true;
     }
     let classString = correctSoFar ? "correct" : "incorrect";
+    if (config.blindMode) {
+      classString = "correct";
+    }
     for (let i = 0; i < currentWord.length; i++) {
       ret += `<letter class="${classString}">` + currentWord[i] + `</letter>`;
     }
