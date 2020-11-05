@@ -1824,7 +1824,7 @@ function loadMoreLines() {
     } else if (result.chartData === "toolong") {
       icons += `<span class="hoverChartButton" aria-label="Chart history is not available for long tests" data-balloon-pos="up"><i class="fas fa-chart-line"></i></span>`;
     } else {
-      icons += `<span class="hoverChartButton" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
+      icons += `<span class="hoverChartButton" aria-label="View graph" data-balloon-pos="up" filteredResultsId="${i}" style="opacity: 1"><i class="fas fa-chart-line"></i></span>`;
     }
 
     let tagNames = "";
