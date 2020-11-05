@@ -4233,7 +4233,7 @@ function updateKeytips() {
 
 function applyMode2Popup() {
   let mode = $("#customMode2Popup").attr("mode");
-  let val = $("#customMode2Popup input").val();
+  let val = parseInt($("#customMode2Popup input").val());
 
   if (mode == "time") {
     if (val !== null && !isNaN(val) && val >= 0) {
