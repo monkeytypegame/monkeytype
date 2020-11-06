@@ -269,7 +269,7 @@ async function fillSettingsPage() {
     languages.forEach((language) => {
       langEl.append(
         `<div class="language button" language='${language}'>${language.replace(
-          "_",
+          /_/g,
           " "
         )}</div>`
       );
@@ -280,18 +280,21 @@ async function fillSettingsPage() {
   Object.keys(layouts).forEach((layout) => {
     layoutEl.append(
       `<div class="layout button" layout='${layout}'>${layout.replace(
-        "_",
+        /_/g,
         " "
       )}</div>`
     );
   });
 
   let keymapEl = $(".pageSettings .section.keymapLayout .buttons").empty();
+  keymapEl.append(
+    `<div class="layout button" keymapLayout='overrideSync'>override sync</div>`
+  );
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       keymapEl.append(
         `<div class="layout button" keymapLayout='${layout}'>${layout.replace(
-          "_",
+          /_/g,
           " "
         )}</div>`
       );

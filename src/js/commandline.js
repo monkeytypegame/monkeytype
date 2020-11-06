@@ -1665,15 +1665,22 @@ let commandsKeymapLayouts = {
 
 if (Object.keys(layouts).length > 0) {
   commandsKeymapLayouts.list = [];
+  commandsKeymapLayouts.list.push({
+    id: "changeKeymapLayoutOverrideSync",
+    display: "override sync",
+    exec: () => {
+      changeKeymapLayout("overrideSync");
+      restartTest();
+    },
+  });
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       commandsKeymapLayouts.list.push({
         id: "changeKeymapLayout" + capitalizeFirstLetter(layout),
-        display: layout.replace("_", " "),
+        display: layout.replace(/_/g, " "),
         exec: () => {
           changeKeymapLayout(layout);
           restartTest();
-          saveConfigToCookie();
         },
       });
     }

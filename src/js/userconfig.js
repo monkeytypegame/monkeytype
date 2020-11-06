@@ -1272,6 +1272,9 @@ function changeLayout(layout, nosave) {
   }
   config.layout = layout;
   updateTestModesNotice();
+  if (config.keymapLayout === "overrideSync") {
+    refreshKeymapKeys(config.keymapLayout);
+  }
   if (!nosave) saveConfigToCookie();
 }
 
@@ -1376,22 +1379,40 @@ function changeKeymapLayout(layout, nosave) {
     layout = "qwerty";
   }
   config.keymapLayout = layout;
+  refreshKeymapKeys(layout);
   if (!nosave) saveConfigToCookie();
   // layouts[layout].forEach((x) => {
   //   console.log(x);
   // });
+  // console.log(all.join());
+}
+
+function refreshKeymapKeys(layout) {
   try {
-    if (layouts[layout].keymapShowTopRow) {
+    let lts = layouts[layout]; //layout to show
+    let layoutString = layout;
+    if (config.keymapLayout === "overrideSync") {
+      if (config.layout === "default") {
+        lts = layouts["qwerty"];
+        layoutString = "default";
+      } else {
+        lts = layouts[config.layout];
+        layoutString = config.layout;
+      }
+    }
+
+    if (lts.keymapShowTopRow) {
       $(".keymap .r1").removeClass("hidden");
     } else {
       $(".keymap .r1").addClass("hidden");
     }
 
-    $($(".keymap .r5 .keymap-key .letter")[0]).text(layout.replace(/_/g, " "));
+    $($(".keymap .r5 .keymap-key .letter")[0]).text(
+      layoutString.replace(/_/g, " ")
+    );
+    keymapShowIsoKey(lts.iso);
 
-    keymapShowIsoKey(layouts[layout].iso);
-
-    var toReplace = layouts[layout].keys.slice(1, 48);
+    var toReplace = lts.keys.slice(1, 48);
     // var _ = toReplace.splice(12, 1);
     var count = 0;
 
@@ -1456,7 +1477,6 @@ function changeKeymapLayout(layout, nosave) {
     );
     changeKeymapLayout("qwerty", true);
   }
-  // console.log(all.join());
 }
 
 function changeFontSize(fontSize, nosave) {
