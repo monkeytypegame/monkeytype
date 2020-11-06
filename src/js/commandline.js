@@ -652,6 +652,13 @@ let commandsKeymapMode = {
       },
     },
     {
+      id: "setKeymapModeStatic",
+      display: "static",
+      exec: () => {
+        changeKeymapMode("static");
+      },
+    },
+    {
       id: "setKeymapModeNext",
       display: "next",
       exec: () => {
