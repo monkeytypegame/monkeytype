@@ -174,13 +174,13 @@ function applyConfig(configObj) {
     setCustomThemeColors(configObj.customThemeColors, true);
     setQuickTabMode(configObj.quickTab, true);
     setKeyTips(configObj.showKeyTips, true);
-    changeTimeConfig(configObj.time, true);
-    changeQuoteLength(configObj.quoteLength, true);
-    changeWordCount(configObj.words, true);
-    changeLanguage(configObj.language, true);
+    setTimeConfig(configObj.time, true);
+    setQuoteLength(configObj.quoteLength, true);
+    setWordCount(configObj.words, true);
+    setLanguage(configObj.language, true);
     setCapsLockBackspace(configObj.capsLockBackspace, true);
-    changeSavedLayout(configObj.savedLayout, true);
-    changeFontSize(configObj.fontSize, true);
+    setSavedLayout(configObj.savedLayout, true);
+    setFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
     setPaceCaretStyle(configObj.paceCaretStyle, true);
@@ -195,9 +195,9 @@ function applyConfig(configObj) {
     setTimerStyle(configObj.timerStyle, true);
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
-    changeKeymapMode(configObj.keymapMode, true);
-    changeKeymapStyle(configObj.keymapStyle, true);
-    changeKeymapLayout(configObj.keymapLayout, true);
+    setKeymapMode(configObj.keymapMode, true);
+    setKeymapStyle(configObj.keymapStyle, true);
+    setKeymapLayout(configObj.keymapLayout, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
@@ -225,7 +225,7 @@ function applyConfig(configObj) {
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
     setAlwaysShowCPM(configObj.alwaysShowCPM, true);
-    changeMode(configObj.mode, true);
+    setMode(configObj.mode, true);
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
     //   configObj.resultFilters !== null &&
@@ -796,7 +796,7 @@ function setTimerColor(color, nosave) {
     color = "black";
   }
   config.timerColor = color;
-  changeTimerColor(color);
+  setTimerColor(color);
   if (!nosave) saveConfigToCookie();
 }
 function setTimerOpacity(opacity, nosave) {
@@ -829,13 +829,13 @@ function toggleKeyTips() {
 }
 
 //mode
-function changeTimeConfig(time, nosave) {
+function setTimeConfig(time, nosave) {
   if (time !== null && !isNaN(time) && time >= 0) {
   } else {
     time = 15;
   }
   time = parseInt(time);
-  if (!nosave) changeMode("time", nosave);
+  if (!nosave) setMode("time", nosave);
   config.time = time;
   $("#top .config .time .text-button").removeClass("active");
   if (![15, 30, 60, 120].includes(time)) {
@@ -848,13 +848,13 @@ function changeTimeConfig(time, nosave) {
 }
 
 //quote length
-function changeQuoteLength(len, nosave) {
+function setQuoteLength(len, nosave) {
   if (len !== null && !isNaN(len) && len >= -1 && len <= 3) {
   } else {
     len = 1;
   }
   len = parseInt(len);
-  if (!nosave) changeMode("quote", nosave);
+  if (!nosave) setMode("quote", nosave);
   config.quoteLength = len;
   $("#top .config .quoteLength .text-button").removeClass("active");
   $(
@@ -863,13 +863,13 @@ function changeQuoteLength(len, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function changeWordCount(wordCount, nosave) {
+function setWordCount(wordCount, nosave) {
   if (wordCount !== null && !isNaN(wordCount) && wordCount >= 0) {
   } else {
     wordCount = 10;
   }
   wordCount = parseInt(wordCount);
-  if (!nosave) changeMode("words", nosave);
+  if (!nosave) setMode("words", nosave);
   config.words = wordCount;
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
@@ -1239,7 +1239,7 @@ function updateFavicon(size, curveSize) {
   $("#favicon").attr("href", canvas.toDataURL("image/png"));
 }
 
-function changeLanguage(language, nosave) {
+function setLanguage(language, nosave) {
   if (language == null || language == undefined) {
     language = "english";
   }
@@ -1266,7 +1266,7 @@ function toggleCapsLockBackspace() {
   setCapsLockBackspace(!config.capsLockBackspace, false);
 }
 
-function changeLayout(layout, nosave) {
+function setLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
@@ -1278,15 +1278,15 @@ function changeLayout(layout, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function changeSavedLayout(layout, nosave) {
+function setSavedLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
   config.savedLayout = layout;
-  changeLayout(layout, nosave);
+  setLayout(layout, nosave);
 }
 
-function changeKeymapMode(mode, nosave) {
+function setKeymapMode(mode, nosave) {
   if (mode == null || mode == undefined) {
     mode = "off";
   }
@@ -1301,7 +1301,7 @@ function changeKeymapMode(mode, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function changeKeymapStyle(style, nosave) {
+function setKeymapStyle(style, nosave) {
   $(".keymap").removeClass("matrix");
   $(".keymap").removeClass("split");
   $(".keymap").removeClass("split_matrix");
@@ -1374,7 +1374,7 @@ function keymapShowIsoKey(tf) {
   }
 }
 
-function changeKeymapLayout(layout, nosave) {
+function setKeymapLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
@@ -1475,11 +1475,11 @@ function refreshKeymapKeys(layout) {
     console.log(
       "something went wrong when changing layout, resettings: " + e.message
     );
-    changeKeymapLayout("qwerty", true);
+    setKeymapLayout("qwerty", true);
   }
 }
 
-function changeFontSize(fontSize, nosave) {
+function setFontSize(fontSize, nosave) {
   if (fontSize == null || fontSize == undefined) {
     fontSize = 1;
   }

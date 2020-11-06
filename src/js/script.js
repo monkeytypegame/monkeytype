@@ -331,7 +331,7 @@ function activateFunbox(funbox, mode) {
     }
 
     if (funbox === "simon_says") {
-      changeKeymapMode("next");
+      setKeymapMode("next");
       settingsGroups.keymapMode.updateButton();
       restartTest();
     }
@@ -343,16 +343,16 @@ function activateFunbox(funbox, mode) {
       restartTest();
     } else if (funbox === "layoutfluid") {
       config.keymapMode = "on";
-      changeKeymapMode("next");
+      setKeymapMode("next");
       settingsGroups.keymapMode.updateButton();
       config.savedLayout = config.layout;
-      changeLayout("qwerty");
+      setLayout("qwerty");
       settingsGroups.layout.updateButton();
-      changeKeymapLayout("qwerty");
+      setKeymapLayout("qwerty");
       settingsGroups.keymapLayout.updateButton();
       restartTest();
     } else if (funbox === "memory") {
-      changeMode("words");
+      setMode("words");
       setShowAllLines(true, true);
       restartTest(false, true);
     }
@@ -361,7 +361,7 @@ function activateFunbox(funbox, mode) {
 
   if (funbox !== "layoutfluid" || mode !== "script") {
     if (config.layout !== config.savedLayout) {
-      changeLayout(config.savedLayout);
+      setLayout(config.savedLayout);
       settingsGroups.layout.updateButton();
     }
   }
@@ -1115,7 +1115,7 @@ function hideTimer() {
   );
 }
 
-function changeTimerColor(color) {
+function setTimerColor(color) {
   $("#timer").removeClass("timerSub");
   $("#timer").removeClass("timerText");
   $("#timer").removeClass("timerMain");
@@ -2673,8 +2673,8 @@ function startTest() {
         if (config.layout !== layouts[index] && layouts[index] !== undefined) {
           showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
         }
-        changeLayout(layouts[index]);
-        changeKeymapLayout(layouts[index]);
+        setLayout(layouts[index]);
+        setKeymapLayout(layouts[index]);
         updateHighlightedKeymapKey();
         settingsGroups.layout.updateButton();
       }
@@ -2759,7 +2759,7 @@ function restartTest(withSameWordset = false, nosave = false) {
 
   if (modeBeforePractise !== null && !withSameWordset) {
     showNotification("Reverting to previous settings.", 1500);
-    changeMode(modeBeforePractise);
+    setMode(modeBeforePractise);
     modeBeforePractise = null;
   }
 
@@ -2862,9 +2862,9 @@ function restartTest(withSameWordset = false, nosave = false) {
       document.querySelector("#liveWpm").innerHTML = "0";
 
       if (activeFunBox === "layoutfluid") {
-        changeLayout("qwerty");
+        setLayout("qwerty");
         settingsGroups.layout.updateButton();
-        changeKeymapLayout("qwerty");
+        setKeymapLayout("qwerty");
         settingsGroups.keymapLayout.updateButton();
         updateHighlightedKeymapKey();
       }
@@ -2932,14 +2932,14 @@ function focusWords() {
   }
 }
 
-function changeCustomText() {
+function setCustomText() {
   customText = prompt("Custom text").trim();
   customText = customText.replace(/[\n\r\t ]/gm, " ");
   customText = customText.replace(/ +/gm, " ");
   customText = customText.split(" ");
   if (customText.length >= 10000) {
     showNotification("Custom text cannot be longer than 10000 words.", 4000);
-    changeMode("time");
+    setMode("time");
     customText = "The quick brown fox jumped over the lazy dog".split(" ");
   }
   // initWords();
@@ -3035,7 +3035,7 @@ function changePage(page) {
   }
 }
 
-function changeMode(mode, nosave) {
+function setMode(mode, nosave) {
   if (mode !== "words" && activeFunBox === "memory") {
     showNotification("Memory funbox can only be used with words mode.");
     return;
@@ -4237,7 +4237,7 @@ function applyMode2Popup() {
 
   if (mode == "time") {
     if (val !== null && !isNaN(val) && val >= 0) {
-      changeTimeConfig(val);
+      setTimeConfig(val);
       manualRestart = true;
       restartTest();
       if (val >= 1800) {
@@ -4253,7 +4253,7 @@ function applyMode2Popup() {
     }
   } else if (mode == "words") {
     if (val !== null && !isNaN(val) && val >= 0) {
-      changeWordCount(val);
+      setWordCount(val);
       manualRestart = true;
       restartTest();
       if (val > 2000) {
@@ -4281,7 +4281,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   if (wrd == "custom") {
     //   let newWrd = prompt("Custom word amount");
     //   if (newWrd !== null && !isNaN(newWrd) && newWrd > 0 && newWrd <= 10000) {
-    //     changeWordCount(newWrd);
+    //     setWordCount(newWrd);
     //     if (newWrd > 2000) {
     //       showNotification(
     //         "Very long tests can cause performance issues or crash the website on some machines!",
@@ -4296,7 +4296,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
     //   }
     showCustomMode2Popup("words");
   } else {
-    changeWordCount(wrd);
+    setWordCount(wrd);
     manualRestart = true;
     restartTest();
   }
@@ -4307,7 +4307,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
   if (mode == "custom") {
     //   let newTime = prompt("Custom time in seconds");
     //   if (newTime !== null && !isNaN(newTime) && newTime > 0 && newTime <= 3600) {
-    //     changeTimeConfig(newTime);
+    //     setTimeConfig(newTime);
     //     if (newTime >= 1800) {
     //       showNotification(
     //         "Very long tests can cause performance issues or crash the website on some machines!",
@@ -4319,7 +4319,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
     //   }
     showCustomMode2Popup("time");
   } else {
-    changeTimeConfig(mode);
+    setTimeConfig(mode);
     manualRestart = true;
 
     restartTest();
@@ -4328,7 +4328,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len = $(e.currentTarget).attr("quoteLength");
-  changeQuoteLength(len);
+  setQuoteLength(len);
   manualRestart = true;
   restartTest();
 });
@@ -4360,7 +4360,7 @@ $("#wordsWrapper").on("click", (e) => {
 $(document).on("click", "#top .config .mode .text-button", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   mode = $(e.currentTarget).attr("mode");
-  changeMode(mode);
+  setMode(mode);
   manualRestart = true;
   restartTest();
 });
@@ -4426,7 +4426,7 @@ $(document.body).on("click", "#restartTestButton", (event) => {
 
 function initPractiseMissedWords() {
   let currentMode = config.mode;
-  changeMode("custom");
+  setMode("custom");
   let newCustomText = [];
   Object.keys(missedWords).forEach((missedWord) => {
     for (let i = 0; i < missedWords[missedWord]; i++) {
@@ -5039,8 +5039,8 @@ $(document).keydown((event) => {
         if (config.layout !== layouts[index] && layouts[index] !== undefined) {
           showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
         }
-        changeLayout(layouts[index]);
-        changeKeymapLayout(layouts[index]);
+        setLayout(layouts[index]);
+        setKeymapLayout(layouts[index]);
         updateHighlightedKeymapKey();
         settingsGroups.layout.updateButton();
       }

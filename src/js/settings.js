@@ -87,7 +87,7 @@ settingsGroups.showTimerProgress = new SettingsGroup(
 );
 settingsGroups.keymapMode = new SettingsGroup(
   "keymapMode",
-  changeKeymapMode,
+  setKeymapMode,
   () => {
     settingsGroups.showLiveWpm.updateButton();
   },
@@ -101,13 +101,10 @@ settingsGroups.keymapMode = new SettingsGroup(
     }
   }
 );
-settingsGroups.keymapMatrix = new SettingsGroup(
-  "keymapStyle",
-  changeKeymapStyle
-);
+settingsGroups.keymapMatrix = new SettingsGroup("keymapStyle", setKeymapStyle);
 settingsGroups.keymapLayout = new SettingsGroup(
   "keymapLayout",
-  changeKeymapLayout
+  setKeymapLayout
 );
 settingsGroups.showKeyTips = new SettingsGroup(
   "showKeyTips",
@@ -230,9 +227,9 @@ settingsGroups.capsLockBackspace = new SettingsGroup(
   "capsLockBackspace",
   setCapsLockBackspace
 );
-settingsGroups.layout = new SettingsGroup("layout", changeSavedLayout);
-settingsGroups.language = new SettingsGroup("language", changeLanguage);
-settingsGroups.fontSize = new SettingsGroup("fontSize", changeFontSize);
+settingsGroups.layout = new SettingsGroup("layout", setSavedLayout);
+settingsGroups.language = new SettingsGroup("language", setLanguage);
+settingsGroups.fontSize = new SettingsGroup("fontSize", setFontSize);
 settingsGroups.pageWidth = new SettingsGroup("pageWidth", setPageWidth);
 settingsGroups.caretStyle = new SettingsGroup("caretStyle", setCaretStyle);
 settingsGroups.paceCaretStyle = new SettingsGroup(
