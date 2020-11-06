@@ -91,7 +91,7 @@ async function saveConfigToCookie(noDbCheck = false) {
   // showNotification('saving to cookie',1000);
   let d = new Date();
   d.setFullYear(d.getFullYear() + 1);
-  $.cookie("config", null);
+  // $.cookie("config", null);
   $.cookie("config", JSON.stringify(config), {
     expires: d,
     path: "/",
