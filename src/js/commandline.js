@@ -214,6 +214,13 @@ let commands = {
         toggleIndicateTypos();
       },
     },
+    {
+      id: "toggleHideExtraLetters",
+      display: "Toggle hide extra letters",
+      exec: () => {
+        toggleHideExtraLetters();
+      },
+    },
     // {
     //   id: "toggleReadAheadMode",
     //   display: "Toggle read ahead mode",

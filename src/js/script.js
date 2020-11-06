@@ -994,7 +994,10 @@ function compareInput(showError) {
           }
         } else {
           if (currentWord[i] == undefined) {
-            ret += '<letter class="incorrect extra">' + input[i] + "</letter>";
+            if (!config.hideExtraLetters) {
+              ret +=
+                '<letter class="incorrect extra">' + input[i] + "</letter>";
+            }
           } else {
             ret +=
               '<letter class="incorrect">' +

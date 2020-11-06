@@ -70,6 +70,7 @@ let defaultConfig = {
   highlightMode: "letter",
   alwaysShowCPM: false,
   enableAds: "off",
+  hideExtraLetters: false,
 };
 
 let cookieConfig = null;
@@ -225,6 +226,7 @@ function applyConfig(configObj) {
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
     setAlwaysShowCPM(configObj.alwaysShowCPM, true);
+    setHideExtraLetters(configObj.hideExtraLetters, true);
     setMode(configObj.mode, true);
     config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
@@ -781,6 +783,22 @@ function setHighlightMode(mode, nosave) {
   }
   config.highlightMode = mode;
   if (!nosave) saveConfigToCookie();
+}
+
+function setHideExtraLetters(val, nosave) {
+  if (val == null || val == undefined) {
+    val = false;
+  }
+  config.hideExtraLetters = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleHideExtraLetters() {
+  config.hideExtraLetters = !config.hideExtraLetters;
+  // if (config.keymapMode !== "off") {
+  //   config.keymapMode = "off";
+  // }
+  saveConfigToCookie();
 }
 
 function setTimerStyle(style, nosave) {
