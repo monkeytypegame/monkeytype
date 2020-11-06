@@ -3016,6 +3016,13 @@ key {
     }
   }
 
+  &#KeySpace {
+    &:hover {
+      cursor: pointer;
+      color: var(--main-color);
+    }
+  }
+
   &#KeySpace,
   &#KeySpace2 {
     width: 100%;

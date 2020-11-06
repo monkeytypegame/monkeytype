@@ -5213,6 +5213,11 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   showCommandLine();
 });
 
+$(document).on("click", ".keymap .r5 #KeySpace", (e) => {
+  currentCommands.push(commandsKeymapLayouts);
+  showCommandLine();
+});
+
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
   $(".wordInputAfter").remove();
 });
