@@ -5240,6 +5240,14 @@ $(document).ready(() => {
           theme = theme.split(",");
           config.customThemeColors = theme;
           showNotification("Custom theme applied", 1000);
+          let save = [];
+          $.each(
+            $(".pageSettings .section.customTheme [type='color']"),
+            (index, element) => {
+              save.push($(element).attr("value"));
+            }
+          );
+          setCustomThemeColors(save);
         } catch (e) {
           showNotification(
             "Something went wrong. Reverting to default custom colors.",
