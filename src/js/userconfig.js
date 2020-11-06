@@ -149,17 +149,25 @@ function saveActiveTagsToCookie() {
 }
 
 function loadConfigFromCookie() {
+  console.log("loading cookie config");
   let newConfig = $.cookie("config");
   if (newConfig !== undefined) {
     newConfig = JSON.parse(newConfig);
     applyConfig(newConfig);
+    console.log("applying cookie config");
     cookieConfig = newConfig;
     saveConfigToCookie(true);
+    console.log("saving cookie config");
   }
   restartTest(false, true);
 }
 
 function applyConfig(configObj) {
+  Object.keys(defaultConfig).forEach((configKey) => {
+    if (configObj[configKey] === undefined) {
+      configObj[configKey] = defaultConfig[configKey];
+    }
+  });
   if (configObj && configObj != null && configObj != "null") {
     setTheme(configObj.theme, true);
     setCustomTheme(configObj.customTheme, true);
@@ -283,11 +291,6 @@ function applyConfig(configObj) {
       $("#ad3").remove();
     }
   }
-  Object.keys(defaultConfig).forEach((configKey) => {
-    if (config[configKey] == undefined) {
-      config[configKey] = defaultConfig[configKey];
-    }
-  });
   updateTestModesNotice();
 }
 
@@ -1284,12 +1287,12 @@ function changeKeymapMode(mode, nosave) {
   if (mode == null || mode == undefined) {
     mode = "off";
   }
-  if (mode === "react") {
-    $(".active-key").removeClass("active-key");
-  }
-  if (mode === "next") {
-    $(".keymap-key").attr("style", "");
-  }
+  // if (mode === "react" ||) {
+  $(".active-key").removeClass("active-key");
+  // }
+  // if (mode === "next") {
+  $(".keymap-key").attr("style", "");
+  // }
   config.keymapMode = mode;
   if (!nosave) restartTest(false, nosave);
   if (!nosave) saveConfigToCookie();
