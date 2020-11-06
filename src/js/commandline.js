@@ -289,6 +289,13 @@ let commands = {
       },
     },
     {
+      id: "toggleStartGraphsAtZero",
+      display: "Toggle start graphs at zero",
+      exec: () => {
+        toggleStartGraphsAtZero();
+      },
+    },
+    {
       id: "toggleSwapEscAndTab",
       display: "Toggle swap esc and tab",
       exec: () => {

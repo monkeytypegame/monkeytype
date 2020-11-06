@@ -227,8 +227,8 @@ function applyConfig(configObj) {
     setHighlightMode(configObj.highlightMode, true);
     setAlwaysShowCPM(configObj.alwaysShowCPM, true);
     setHideExtraLetters(configObj.hideExtraLetters, true);
+    setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setMode(configObj.mode, true);
-    config.startGraphsAtZero = configObj.startGraphsAtZero;
     // if (
     //   configObj.resultFilters !== null &&
     //   configObj.resultFilters !== undefined
@@ -911,6 +911,11 @@ function toggleSmoothCaret() {
 }
 
 //startgraphsatzero
+function toggleStartGraphsAtZero() {
+  config.startGraphsAtZero = !config.startGraphsAtZero;
+  saveConfigToCookie();
+}
+
 function setStartGraphsAtZero(mode, nosave) {
   config.startGraphsAtZero = mode;
   if (!nosave) saveConfigToCookie();
