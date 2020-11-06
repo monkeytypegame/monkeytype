@@ -423,5 +423,15 @@
     "name": "drowning",
     "bgColor": "#191826",
     "textColor": "#4a6fb5"
+  },
+  {
+    "name": "iceberg_dark",
+    "bgColor": "#161821",
+    "textColor": "#c6c8d1"
+  },
+  {
+    "name": "iceberg_light",
+    "bgColor": "#e8e9ec",
+    "textColor": "#33374c"
   }
 ]
