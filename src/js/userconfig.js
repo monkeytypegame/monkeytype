@@ -814,7 +814,40 @@ function setTimerColor(color, nosave) {
     color = "black";
   }
   config.timerColor = color;
-  setTimerColor(color);
+
+  $("#timer").removeClass("timerSub");
+  $("#timer").removeClass("timerText");
+  $("#timer").removeClass("timerMain");
+
+  $("#timerNumber").removeClass("timerSub");
+  $("#timerNumber").removeClass("timerText");
+  $("#timerNumber").removeClass("timerMain");
+
+  $("#liveWpm").removeClass("timerSub");
+  $("#liveWpm").removeClass("timerText");
+  $("#liveWpm").removeClass("timerMain");
+
+  $("#miniTimerAndLiveWpm").removeClass("timerSub");
+  $("#miniTimerAndLiveWpm").removeClass("timerText");
+  $("#miniTimerAndLiveWpm").removeClass("timerMain");
+
+  if (color === "main") {
+    $("#timer").addClass("timerMain");
+    $("#timerNumber").addClass("timerMain");
+    $("#liveWpm").addClass("timerMain");
+    $("#miniTimerAndLiveWpm").addClass("timerMain");
+  } else if (color === "sub") {
+    $("#timer").addClass("timerSub");
+    $("#timerNumber").addClass("timerSub");
+    $("#liveWpm").addClass("timerSub");
+    $("#miniTimerAndLiveWpm").addClass("timerSub");
+  } else if (color === "text") {
+    $("#timer").addClass("timerText");
+    $("#timerNumber").addClass("timerText");
+    $("#liveWpm").addClass("timerText");
+    $("#miniTimerAndLiveWpm").addClass("timerText");
+  }
+
   if (!nosave) saveConfigToCookie();
 }
 function setTimerOpacity(opacity, nosave) {
