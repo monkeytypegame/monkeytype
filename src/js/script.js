@@ -4949,7 +4949,7 @@ $(document).keydown(function (event) {
   )
     return;
   if (event.key === " ") {
-    if (config.difficulty !== "normal") {
+    if (config.difficulty !== "normal" || config.strictSpace) {
       if (dontInsertSpace) {
         dontInsertSpace = false;
         return;

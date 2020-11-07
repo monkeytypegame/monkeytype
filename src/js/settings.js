@@ -125,6 +125,7 @@ settingsGroups.freedomMode = new SettingsGroup(
     settingsGroups.confidenceMode.updateButton();
   }
 );
+settingsGroups.strictSpace = new SettingsGroup("strictSpace", setStrictSpace);
 settingsGroups.confidenceMode = new SettingsGroup(
   "confidenceMode",
   setConfidenceMode,
@@ -136,6 +137,10 @@ settingsGroups.confidenceMode = new SettingsGroup(
 settingsGroups.indicateTypos = new SettingsGroup(
   "indicateTypos",
   setIndicateTypos
+);
+settingsGroups.hideExtraLetters = new SettingsGroup(
+  "hideExtraLetters",
+  setHideExtraLetters
 );
 settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
 settingsGroups.quickEnd = new SettingsGroup("quickEnd", setQuickEnd);

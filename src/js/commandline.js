@@ -201,6 +201,13 @@ let commands = {
       },
     },
     {
+      id: "toggleStrictSpace",
+      display: "Toggle strict space",
+      exec: () => {
+        toggleStrictSpace();
+      },
+    },
+    {
       id: "toggleBlindMode",
       display: "Toggle blind mode",
       exec: () => {

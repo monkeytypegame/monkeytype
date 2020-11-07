@@ -71,6 +71,7 @@ let defaultConfig = {
   alwaysShowCPM: false,
   enableAds: "off",
   hideExtraLetters: false,
+  strictSpace: false,
 };
 
 let cookieConfig = null;
@@ -676,6 +677,20 @@ function setColorfulMode(extra, nosave) {
 function toggleColorfulMode() {
   config.colorfulMode = !config.colorfulMode;
   applyColorfulMode(config.colorfulMode);
+  saveConfigToCookie();
+}
+
+//strict space
+function setStrictSpace(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.strictSpace = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleStrictSpace() {
+  config.strictSpace = !config.strictSpace;
   saveConfigToCookie();
 }
 
