@@ -3783,7 +3783,7 @@ $("#customTextPopup .button").click((e) => {
   text = text.split(" ");
   // if (text.length >= 10000) {
   //   showNotification("Custom text cannot be longer than 10000 words.", 4000);
-  //   changeMode("time");
+  //   setMode("time");
   //   text = "The quick brown fox jumped over the lazy dog".split(" ");
   // } else {
   customText = text;
@@ -4334,7 +4334,7 @@ $("#wordsWrapper").on("click", (e) => {
 $(document).on("click", "#top .config .mode .text-button", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = $(e.currentTarget).attr("mode");
-  changeMode(mode);
+  setMode(mode);
   manualRestart = true;
   restartTest();
 });
