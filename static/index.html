@@ -1437,8 +1437,25 @@
               <key>esc</key>
               )
             </div>
-
-            <div class="sectionGroupTitle hidden" group="account">
+            <!-- <div class="sectionGroupTitle">quick navigation</div> -->
+            <div class="settingsGroup quickNav">
+              <div class="links">
+                <a href="#group_account">account</a>
+                <a href="#group_behavior">behavior</a>
+                <a href="#group_input">input</a>
+                <a href="#group_sound">sound</a>
+                <a href="#group_caret">caret</a>
+                <a href="#group_appearance">appearance</a>
+                <a href="#group_theme">theme</a>
+                <a href="#group_hideElements">hide elements</a>
+                <a href="#group_dangerZone">danger zone</a>
+              </div>
+            </div>
+            <div
+              id="group_account"
+              class="sectionGroupTitle hidden"
+              group="account"
+            >
               account
               <i class="fas fa-chevron-down"></i>
             </div>
@@ -1505,7 +1522,11 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div class="sectionGroupTitle" group="behaviour">
+            <div
+              id="group_behavior"
+              class="sectionGroupTitle"
+              group="behaviour"
+            >
               behaviour
               <i class="fas fa-chevron-down"></i>
             </div>
@@ -1680,7 +1701,7 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div class="sectionGroupTitle" group="input">
+            <div id="group_input" class="sectionGroupTitle" group="input">
               input
               <i class="fas fa-chevron-down"></i>
             </div>
@@ -1689,6 +1710,21 @@
                 <h1>freedom mode</h1>
                 <div class="text">
                   Allows you to delete any word, even if it was typed correctly.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section strictSpace">
+                <h1>strict space</h1>
+                <div class="text">
+                  Pressing space at the beginning of a word will insert a space
+                  character when this mode is enabled.
                 </div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">
@@ -1797,6 +1833,22 @@
                   </div>
                 </div>
               </div>
+              <div class="section hideExtraLetters" section="">
+                <h1>hide extra letters</h1>
+                <div class="text">
+                  Hides extra letters. This will completely avoid words jumping
+                  lines (due to changing width), but might feel a bit confusing
+                  when you press a key and nothing happens.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
               <div class="section swapEscAndTab" section="">
                 <h1>swap esc and tab</h1>
                 <div class="text">
@@ -1830,7 +1882,7 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div class="sectionGroupTitle" group="sound">
+            <div id="group_sound" class="sectionGroupTitle" group="sound">
               sound
               <i class="fas fa-chevron-down"></i>
             </div>
@@ -1901,7 +1953,7 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div class="sectionGroupTitle" group="caret">
+            <div id="group_caret" class="sectionGroupTitle" group="caret">
               caret
               <i class="fas fa-chevron-down"></i>
             </div>
@@ -2059,7 +2111,11 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div class="sectionGroupTitle" group="appearance">
+            <div
+              id="group_appearance"
+              class="sectionGroupTitle"
+              group="appearance"
+            >
               appearance
               <i class="fas fa-chevron-down"></i>
             </div>
@@ -2295,6 +2351,14 @@
                   </div>
                   <div
                     class="button"
+                    keymapMode="static"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    static
+                  </div>
+                  <div
+                    class="button"
                     keymapMode="react"
                     tabindex="0"
                     onclick="this.blur();"
@@ -2453,7 +2517,7 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div class="sectionGroupTitle" group="theme">
+            <div id="group_theme" class="sectionGroupTitle" group="theme">
               theme
               <i class="fas fa-chevron-down"></i>
             </div>
@@ -2646,7 +2710,11 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div class="sectionGroupTitle" group="hideElements">
+            <div
+              id="group_hideElements"
+              class="sectionGroupTitle"
+              group="hideElements"
+            >
               hide elements
               <i class="fas fa-chevron-down"></i>
             </div>
@@ -2713,7 +2781,11 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div class="sectionGroupTitle" group="dangerZone">
+            <div
+              id="group_dangerZone"
+              class="sectionGroupTitle"
+              group="dangerZone"
+            >
               danger zone
               <i class="fas fa-chevron-down"></i>
             </div>

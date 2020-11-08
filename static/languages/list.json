@@ -17,10 +17,15 @@
   "czech",
   "slovak",
   "dutch",
+  "danish",
   "hungarian",
+  "hungarian_2.5k",
   "norwegian",
   "hebrew",
   "icelandic_1k",
   "romanian",
-  "finnish"
+  "finnish",
+  "persian",
+  "kazakh",
+  "vietnamese"
 ]

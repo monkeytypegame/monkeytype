@@ -70,6 +70,8 @@ let defaultConfig = {
   highlightMode: "letter",
   alwaysShowCPM: false,
   enableAds: "off",
+  hideExtraLetters: false,
+  strictSpace: false,
 };
 
 let cookieConfig = null;
@@ -90,7 +92,7 @@ async function saveConfigToCookie(noDbCheck = false) {
   // showNotification('saving to cookie',1000);
   let d = new Date();
   d.setFullYear(d.getFullYear() + 1);
-  $.cookie("config", null);
+  // $.cookie("config", null);
   $.cookie("config", JSON.stringify(config), {
     expires: d,
     path: "/",
@@ -149,30 +151,38 @@ function saveActiveTagsToCookie() {
 }
 
 function loadConfigFromCookie() {
+  console.log("loading cookie config");
   let newConfig = $.cookie("config");
   if (newConfig !== undefined) {
     newConfig = JSON.parse(newConfig);
     applyConfig(newConfig);
+    console.log("applying cookie config");
     cookieConfig = newConfig;
     saveConfigToCookie(true);
+    console.log("saving cookie config");
   }
   restartTest(false, true);
 }
 
 function applyConfig(configObj) {
+  Object.keys(defaultConfig).forEach((configKey) => {
+    if (configObj[configKey] === undefined) {
+      configObj[configKey] = defaultConfig[configKey];
+    }
+  });
   if (configObj && configObj != null && configObj != "null") {
     setTheme(configObj.theme, true);
     setCustomTheme(configObj.customTheme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
     setQuickTabMode(configObj.quickTab, true);
     setKeyTips(configObj.showKeyTips, true);
-    changeTimeConfig(configObj.time, true);
-    changeQuoteLength(configObj.quoteLength, true);
-    changeWordCount(configObj.words, true);
-    changeLanguage(configObj.language, true);
+    setTimeConfig(configObj.time, true);
+    setQuoteLength(configObj.quoteLength, true);
+    setWordCount(configObj.words, true);
+    setLanguage(configObj.language, true);
     setCapsLockBackspace(configObj.capsLockBackspace, true);
-    changeSavedLayout(configObj.savedLayout, true);
-    changeFontSize(configObj.fontSize, true);
+    setSavedLayout(configObj.savedLayout, true);
+    setFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
     setPaceCaretStyle(configObj.paceCaretStyle, true);
@@ -187,9 +197,9 @@ function applyConfig(configObj) {
     setTimerStyle(configObj.timerStyle, true);
     setTimerColor(configObj.timerColor, true);
     setTimerOpacity(configObj.timerOpacity, true);
-    changeKeymapMode(configObj.keymapMode, true);
-    changeKeymapStyle(configObj.keymapStyle, true);
-    changeKeymapLayout(configObj.keymapLayout, true);
+    setKeymapMode(configObj.keymapMode, true);
+    setKeymapStyle(configObj.keymapStyle, true);
+    setKeymapLayout(configObj.keymapLayout, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
@@ -217,8 +227,9 @@ function applyConfig(configObj) {
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
     setAlwaysShowCPM(configObj.alwaysShowCPM, true);
-    changeMode(configObj.mode, true);
-    config.startGraphsAtZero = configObj.startGraphsAtZero;
+    setHideExtraLetters(configObj.hideExtraLetters, true);
+    setStartGraphsAtZero(configObj.startGraphsAtZero, true);
+    setMode(configObj.mode, true);
     // if (
     //   configObj.resultFilters !== null &&
     //   configObj.resultFilters !== undefined
@@ -285,11 +296,6 @@ function applyConfig(configObj) {
       $("#ad3").remove();
     }
   }
-  Object.keys(defaultConfig).forEach((configKey) => {
-    if (config[configKey] == undefined) {
-      config[configKey] = defaultConfig[configKey];
-    }
-  });
   updateTestModesNotice();
 }
 
@@ -676,6 +682,20 @@ function toggleColorfulMode() {
   saveConfigToCookie();
 }
 
+//strict space
+function setStrictSpace(val, nosave) {
+  if (val == undefined) {
+    val = false;
+  }
+  config.strictSpace = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleStrictSpace() {
+  config.strictSpace = !config.strictSpace;
+  saveConfigToCookie();
+}
+
 function setPageWidth(val, nosave) {
   if (val == null || val == undefined) {
     val = "100";
@@ -782,6 +802,22 @@ function setHighlightMode(mode, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
+function setHideExtraLetters(val, nosave) {
+  if (val == null || val == undefined) {
+    val = false;
+  }
+  config.hideExtraLetters = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleHideExtraLetters() {
+  config.hideExtraLetters = !config.hideExtraLetters;
+  // if (config.keymapMode !== "off") {
+  //   config.keymapMode = "off";
+  // }
+  saveConfigToCookie();
+}
+
 function setTimerStyle(style, nosave) {
   if (style == null || style == undefined) {
     style = "bar";
@@ -795,7 +831,40 @@ function setTimerColor(color, nosave) {
     color = "black";
   }
   config.timerColor = color;
-  changeTimerColor(color);
+
+  $("#timer").removeClass("timerSub");
+  $("#timer").removeClass("timerText");
+  $("#timer").removeClass("timerMain");
+
+  $("#timerNumber").removeClass("timerSub");
+  $("#timerNumber").removeClass("timerText");
+  $("#timerNumber").removeClass("timerMain");
+
+  $("#liveWpm").removeClass("timerSub");
+  $("#liveWpm").removeClass("timerText");
+  $("#liveWpm").removeClass("timerMain");
+
+  $("#miniTimerAndLiveWpm").removeClass("timerSub");
+  $("#miniTimerAndLiveWpm").removeClass("timerText");
+  $("#miniTimerAndLiveWpm").removeClass("timerMain");
+
+  if (color === "main") {
+    $("#timer").addClass("timerMain");
+    $("#timerNumber").addClass("timerMain");
+    $("#liveWpm").addClass("timerMain");
+    $("#miniTimerAndLiveWpm").addClass("timerMain");
+  } else if (color === "sub") {
+    $("#timer").addClass("timerSub");
+    $("#timerNumber").addClass("timerSub");
+    $("#liveWpm").addClass("timerSub");
+    $("#miniTimerAndLiveWpm").addClass("timerSub");
+  } else if (color === "text") {
+    $("#timer").addClass("timerText");
+    $("#timerNumber").addClass("timerText");
+    $("#liveWpm").addClass("timerText");
+    $("#miniTimerAndLiveWpm").addClass("timerText");
+  }
+
   if (!nosave) saveConfigToCookie();
 }
 function setTimerOpacity(opacity, nosave) {
@@ -828,13 +897,13 @@ function toggleKeyTips() {
 }
 
 //mode
-function changeTimeConfig(time, nosave) {
+function setTimeConfig(time, nosave) {
   if (time !== null && !isNaN(time) && time >= 0) {
   } else {
     time = 15;
   }
   time = parseInt(time);
-  if (!nosave) changeMode("time", nosave);
+  if (!nosave) setMode("time", nosave);
   config.time = time;
   $("#top .config .time .text-button").removeClass("active");
   if (![15, 30, 60, 120].includes(time)) {
@@ -847,13 +916,13 @@ function changeTimeConfig(time, nosave) {
 }
 
 //quote length
-function changeQuoteLength(len, nosave) {
+function setQuoteLength(len, nosave) {
   if (len !== null && !isNaN(len) && len >= -1 && len <= 3) {
   } else {
     len = 1;
   }
   len = parseInt(len);
-  if (!nosave) changeMode("quote", nosave);
+  if (!nosave) setMode("quote", nosave);
   config.quoteLength = len;
   $("#top .config .quoteLength .text-button").removeClass("active");
   $(
@@ -862,13 +931,13 @@ function changeQuoteLength(len, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function changeWordCount(wordCount, nosave) {
+function setWordCount(wordCount, nosave) {
   if (wordCount !== null && !isNaN(wordCount) && wordCount >= 0) {
   } else {
     wordCount = 10;
   }
   wordCount = parseInt(wordCount);
-  if (!nosave) changeMode("words", nosave);
+  if (!nosave) setMode("words", nosave);
   config.words = wordCount;
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
@@ -892,6 +961,11 @@ function toggleSmoothCaret() {
 }
 
 //startgraphsatzero
+function toggleStartGraphsAtZero() {
+  config.startGraphsAtZero = !config.startGraphsAtZero;
+  saveConfigToCookie();
+}
+
 function setStartGraphsAtZero(mode, nosave) {
   config.startGraphsAtZero = mode;
   if (!nosave) saveConfigToCookie();
@@ -1238,7 +1312,7 @@ function updateFavicon(size, curveSize) {
   $("#favicon").attr("href", canvas.toDataURL("image/png"));
 }
 
-function changeLanguage(language, nosave) {
+function setLanguage(language, nosave) {
   if (language == null || language == undefined) {
     language = "english";
   }
@@ -1265,39 +1339,42 @@ function toggleCapsLockBackspace() {
   setCapsLockBackspace(!config.capsLockBackspace, false);
 }
 
-function changeLayout(layout, nosave) {
+function setLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
   config.layout = layout;
   updateTestModesNotice();
+  if (config.keymapLayout === "overrideSync") {
+    refreshKeymapKeys(config.keymapLayout);
+  }
   if (!nosave) saveConfigToCookie();
 }
 
-function changeSavedLayout(layout, nosave) {
+function setSavedLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
   config.savedLayout = layout;
-  changeLayout(layout, nosave);
+  setLayout(layout, nosave);
 }
 
-function changeKeymapMode(mode, nosave) {
+function setKeymapMode(mode, nosave) {
   if (mode == null || mode == undefined) {
     mode = "off";
   }
-  if (mode === "react") {
-    $(".active-key").removeClass("active-key");
-  }
-  if (mode === "next") {
-    $(".keymap-key").attr("style", "");
-  }
+  // if (mode === "react" ||) {
+  $(".active-key").removeClass("active-key");
+  // }
+  // if (mode === "next") {
+  $(".keymap-key").attr("style", "");
+  // }
   config.keymapMode = mode;
   if (!nosave) restartTest(false, nosave);
   if (!nosave) saveConfigToCookie();
 }
 
-function changeKeymapStyle(style, nosave) {
+function setKeymapStyle(style, nosave) {
   $(".keymap").removeClass("matrix");
   $(".keymap").removeClass("split");
   $(".keymap").removeClass("split_matrix");
@@ -1370,27 +1447,45 @@ function keymapShowIsoKey(tf) {
   }
 }
 
-function changeKeymapLayout(layout, nosave) {
+function setKeymapLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
   config.keymapLayout = layout;
+  refreshKeymapKeys(layout);
   if (!nosave) saveConfigToCookie();
   // layouts[layout].forEach((x) => {
   //   console.log(x);
   // });
+  // console.log(all.join());
+}
+
+function refreshKeymapKeys(layout) {
   try {
-    if (layouts[layout].keymapShowTopRow) {
+    let lts = layouts[layout]; //layout to show
+    let layoutString = layout;
+    if (config.keymapLayout === "overrideSync") {
+      if (config.layout === "default") {
+        lts = layouts["qwerty"];
+        layoutString = "default";
+      } else {
+        lts = layouts[config.layout];
+        layoutString = config.layout;
+      }
+    }
+
+    if (lts.keymapShowTopRow) {
       $(".keymap .r1").removeClass("hidden");
     } else {
       $(".keymap .r1").addClass("hidden");
     }
 
-    $($(".keymap .r5 .keymap-key .letter")[0]).text(layout.replace(/_/g, " "));
+    $($(".keymap .r5 .keymap-key .letter")[0]).text(
+      layoutString.replace(/_/g, " ")
+    );
+    keymapShowIsoKey(lts.iso);
 
-    keymapShowIsoKey(layouts[layout].iso);
-
-    var toReplace = layouts[layout].keys.slice(1, 48);
+    var toReplace = lts.keys.slice(1, 48);
     // var _ = toReplace.splice(12, 1);
     var count = 0;
 
@@ -1453,12 +1548,11 @@ function changeKeymapLayout(layout, nosave) {
     console.log(
       "something went wrong when changing layout, resettings: " + e.message
     );
-    changeKeymapLayout("qwerty", true);
+    setKeymapLayout("qwerty", true);
   }
-  // console.log(all.join());
 }
 
-function changeFontSize(fontSize, nosave) {
+function setFontSize(fontSize, nosave) {
   if (fontSize == null || fontSize == undefined) {
     fontSize = 1;
   }

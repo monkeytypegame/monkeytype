@@ -197,6 +197,13 @@ let commands = {
       },
     },
     {
+      id: "toggleStrictSpace",
+      display: "Toggle strict space",
+      exec: () => {
+        toggleStrictSpace();
+      },
+    },
+    {
       id: "toggleBlindMode",
       display: "Toggle blind mode",
       exec: () => {
@@ -208,6 +215,13 @@ let commands = {
       display: "Toggle indicate typos",
       exec: () => {
         toggleIndicateTypos();
+      },
+    },
+    {
+      id: "toggleHideExtraLetters",
+      display: "Toggle hide extra letters",
+      exec: () => {
+        toggleHideExtraLetters();
       },
     },
     // {
@@ -275,6 +289,13 @@ let commands = {
       display: "Toggle always show CPM",
       exec: () => {
         toggleAlwaysShowCPM();
+      },
+    },
+    {
+      id: "toggleStartGraphsAtZero",
+      display: "Toggle start graphs at zero",
+      exec: () => {
+        toggleStartGraphsAtZero();
       },
     },
     {
@@ -644,21 +665,28 @@ let commandsKeymapMode = {
       id: "setKeymapModeOff",
       display: "off",
       exec: () => {
-        changeKeymapMode("off");
+        setKeymapMode("off");
+      },
+    },
+    {
+      id: "setKeymapModeStatic",
+      display: "static",
+      exec: () => {
+        setKeymapMode("static");
       },
     },
     {
       id: "setKeymapModeNext",
       display: "next",
       exec: () => {
-        changeKeymapMode("next");
+        setKeymapMode("next");
       },
     },
     {
       id: "setKeymapModeReact",
       display: "react",
       exec: () => {
-        changeKeymapMode("react");
+        setKeymapMode("react");
       },
     },
   ],
@@ -949,28 +977,28 @@ let commandsKeymapStyle = {
       id: "setKeymapStyleStaggered",
       display: "staggered",
       exec: () => {
-        changeKeymapStyle("staggered");
+        setKeymapStyle("staggered");
       },
     },
     {
       id: "setKeymapStyleMatrix",
       display: "matrix",
       exec: () => {
-        changeKeymapStyle("matrix");
+        setKeymapStyle("matrix");
       },
     },
     {
       id: "setKeymapStyleSplit",
       display: "split",
       exec: () => {
-        changeKeymapStyle("split");
+        setKeymapStyle("split");
       },
     },
     {
       id: "setKeymapStyleSplitMatrix",
       display: "split matrix",
       exec: () => {
-        changeKeymapStyle("split_matrix");
+        setKeymapStyle("split_matrix");
       },
     },
   ],
@@ -1118,7 +1146,7 @@ let commandsWordCount = {
       id: "changeWordCount10",
       display: "10",
       exec: () => {
-        changeWordCount("10");
+        setWordCount("10");
         restartTest();
       },
     },
@@ -1126,7 +1154,7 @@ let commandsWordCount = {
       id: "changeWordCount25",
       display: "25",
       exec: () => {
-        changeWordCount("25");
+        setWordCount("25");
         restartTest();
       },
     },
@@ -1134,7 +1162,7 @@ let commandsWordCount = {
       id: "changeWordCount50",
       display: "50",
       exec: () => {
-        changeWordCount("50");
+        setWordCount("50");
         restartTest();
       },
     },
@@ -1142,7 +1170,7 @@ let commandsWordCount = {
       id: "changeWordCount100",
       display: "100",
       exec: () => {
-        changeWordCount("100");
+        setWordCount("100");
         restartTest();
       },
     },
@@ -1150,7 +1178,7 @@ let commandsWordCount = {
       id: "changeWordCount200",
       display: "200",
       exec: () => {
-        changeWordCount("200");
+        setWordCount("200");
         restartTest();
       },
     },
@@ -1159,7 +1187,7 @@ let commandsWordCount = {
       display: "custom...",
       input: true,
       exec: (input) => {
-        changeWordCount(input);
+        setWordCount(input);
         restartTest();
       },
     },
@@ -1173,7 +1201,7 @@ let commandsQuoteLengthConfig = {
       id: "changeQuoteLengthAll",
       display: "all",
       exec: () => {
-        changeQuoteLength(-1);
+        setQuoteLength(-1);
         restartTest();
       },
     },
@@ -1181,7 +1209,7 @@ let commandsQuoteLengthConfig = {
       id: "changeQuoteLengthShort",
       display: "short",
       exec: () => {
-        changeQuoteLength(0);
+        setQuoteLength(0);
         restartTest();
       },
     },
@@ -1189,7 +1217,7 @@ let commandsQuoteLengthConfig = {
       id: "changeQuoteLengthMedium",
       display: "medium",
       exec: () => {
-        changeQuoteLength(1);
+        setQuoteLength(1);
         restartTest();
       },
     },
@@ -1197,7 +1225,7 @@ let commandsQuoteLengthConfig = {
       id: "changeQuoteLengthLong",
       display: "long",
       exec: () => {
-        changeQuoteLength(2);
+        setQuoteLength(2);
         restartTest();
       },
     },
@@ -1205,7 +1233,7 @@ let commandsQuoteLengthConfig = {
       id: "changeQuoteLengthThicc",
       display: "thicc",
       exec: () => {
-        changeQuoteLength(3);
+        setQuoteLength(3);
         restartTest();
       },
     },
@@ -1219,7 +1247,7 @@ let commandsMode = {
       id: "changeModeTime",
       display: "time",
       exec: () => {
-        changeMode("time");
+        setMode("time");
         restartTest();
       },
     },
@@ -1227,7 +1255,7 @@ let commandsMode = {
       id: "changeModeWords",
       display: "words",
       exec: () => {
-        changeMode("words");
+        setMode("words");
         restartTest();
       },
     },
@@ -1235,7 +1263,7 @@ let commandsMode = {
       id: "changeModeQuote",
       display: "quote",
       exec: () => {
-        changeMode("quote");
+        setMode("quote");
         restartTest();
       },
     },
@@ -1243,7 +1271,7 @@ let commandsMode = {
       id: "changeModeCustom",
       display: "custom",
       exec: () => {
-        changeMode("custom");
+        setMode("custom");
         restartTest();
       },
     },
@@ -1256,7 +1284,7 @@ let commandsTimeConfig = {
       id: "changeTimeConfig15",
       display: "15",
       exec: () => {
-        changeTimeConfig("15");
+        setTimeConfig("15");
         restartTest();
       },
     },
@@ -1264,7 +1292,7 @@ let commandsTimeConfig = {
       id: "changeTimeConfig30",
       display: "30",
       exec: () => {
-        changeTimeConfig("30");
+        setTimeConfig("30");
         restartTest();
       },
     },
@@ -1272,7 +1300,7 @@ let commandsTimeConfig = {
       id: "changeTimeConfig60",
       display: "60",
       exec: () => {
-        changeTimeConfig("60");
+        setTimeConfig("60");
         restartTest();
       },
     },
@@ -1280,7 +1308,7 @@ let commandsTimeConfig = {
       id: "changeTimeConfig120",
       display: "120",
       exec: () => {
-        changeTimeConfig("120");
+        setTimeConfig("120");
         restartTest();
       },
     },
@@ -1289,7 +1317,7 @@ let commandsTimeConfig = {
       display: "custom...",
       input: true,
       exec: (input) => {
-        changeTimeConfig(input);
+        setTimeConfig(input);
         restartTest();
       },
     },
@@ -1357,7 +1385,7 @@ let commandsFontSize = {
       id: "changeFontSize1",
       display: "1x",
       exec: () => {
-        changeFontSize(1);
+        setFontSize(1);
         restartTest();
       },
     },
@@ -1365,7 +1393,7 @@ let commandsFontSize = {
       id: "changeFontSize125",
       display: "1.25x",
       exec: () => {
-        changeFontSize(125);
+        setFontSize(125);
         restartTest();
       },
     },
@@ -1373,7 +1401,7 @@ let commandsFontSize = {
       id: "changeFontSize15",
       display: "1.5x",
       exec: () => {
-        changeFontSize(15);
+        setFontSize(15);
         restartTest();
       },
     },
@@ -1381,7 +1409,7 @@ let commandsFontSize = {
       id: "changeFontSize2",
       display: "2x",
       exec: () => {
-        changeFontSize(2);
+        setFontSize(2);
         restartTest();
       },
     },
@@ -1389,7 +1417,7 @@ let commandsFontSize = {
       id: "changeFontSize3",
       display: "3x",
       exec: () => {
-        changeFontSize(3);
+        setFontSize(3);
         restartTest();
       },
     },
@@ -1577,7 +1605,7 @@ getLanguageList().then((languages) => {
       id: "changeLanguage" + capitalizeFirstLetter(language),
       display: language.replace(/_/g, " "),
       exec: () => {
-        changeLanguage(language);
+        setLanguage(language);
         restartTest();
         saveConfigToCookie();
       },
@@ -1614,7 +1642,7 @@ if (Object.keys(layouts).length > 0) {
       id: "changeLayout" + capitalizeFirstLetter(layout),
       display: layout.replace(/_/g, " "),
       exec: () => {
-        changeSavedLayout(layout);
+        setSavedLayout(layout);
         restartTest();
         saveConfigToCookie();
       },
@@ -1634,15 +1662,22 @@ let commandsKeymapLayouts = {
 
 if (Object.keys(layouts).length > 0) {
   commandsKeymapLayouts.list = [];
+  commandsKeymapLayouts.list.push({
+    id: "changeKeymapLayoutOverrideSync",
+    display: "override sync",
+    exec: () => {
+      setKeymapLayout("overrideSync");
+      restartTest();
+    },
+  });
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       commandsKeymapLayouts.list.push({
         id: "changeKeymapLayout" + capitalizeFirstLetter(layout),
-        display: layout.replace("_", " "),
+        display: layout.replace(/_/g, " "),
         exec: () => {
-          changeKeymapLayout(layout);
+          setKeymapLayout(layout);
           restartTest();
-          saveConfigToCookie();
         },
       });
     }

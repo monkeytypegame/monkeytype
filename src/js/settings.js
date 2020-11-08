@@ -87,7 +87,7 @@ settingsGroups.showTimerProgress = new SettingsGroup(
 );
 settingsGroups.keymapMode = new SettingsGroup(
   "keymapMode",
-  changeKeymapMode,
+  setKeymapMode,
   () => {
     settingsGroups.showLiveWpm.updateButton();
   },
@@ -101,13 +101,10 @@ settingsGroups.keymapMode = new SettingsGroup(
     }
   }
 );
-settingsGroups.keymapMatrix = new SettingsGroup(
-  "keymapStyle",
-  changeKeymapStyle
-);
+settingsGroups.keymapMatrix = new SettingsGroup("keymapStyle", setKeymapStyle);
 settingsGroups.keymapLayout = new SettingsGroup(
   "keymapLayout",
-  changeKeymapLayout
+  setKeymapLayout
 );
 settingsGroups.showKeyTips = new SettingsGroup(
   "showKeyTips",
@@ -128,6 +125,7 @@ settingsGroups.freedomMode = new SettingsGroup(
     settingsGroups.confidenceMode.updateButton();
   }
 );
+settingsGroups.strictSpace = new SettingsGroup("strictSpace", setStrictSpace);
 settingsGroups.confidenceMode = new SettingsGroup(
   "confidenceMode",
   setConfidenceMode,
@@ -139,6 +137,10 @@ settingsGroups.confidenceMode = new SettingsGroup(
 settingsGroups.indicateTypos = new SettingsGroup(
   "indicateTypos",
   setIndicateTypos
+);
+settingsGroups.hideExtraLetters = new SettingsGroup(
+  "hideExtraLetters",
+  setHideExtraLetters
 );
 settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
 settingsGroups.quickEnd = new SettingsGroup("quickEnd", setQuickEnd);
@@ -230,9 +232,9 @@ settingsGroups.capsLockBackspace = new SettingsGroup(
   "capsLockBackspace",
   setCapsLockBackspace
 );
-settingsGroups.layout = new SettingsGroup("layout", changeSavedLayout);
-settingsGroups.language = new SettingsGroup("language", changeLanguage);
-settingsGroups.fontSize = new SettingsGroup("fontSize", changeFontSize);
+settingsGroups.layout = new SettingsGroup("layout", setSavedLayout);
+settingsGroups.language = new SettingsGroup("language", setLanguage);
+settingsGroups.fontSize = new SettingsGroup("fontSize", setFontSize);
 settingsGroups.pageWidth = new SettingsGroup("pageWidth", setPageWidth);
 settingsGroups.caretStyle = new SettingsGroup("caretStyle", setCaretStyle);
 settingsGroups.paceCaretStyle = new SettingsGroup(
@@ -269,7 +271,7 @@ async function fillSettingsPage() {
     languages.forEach((language) => {
       langEl.append(
         `<div class="language button" language='${language}'>${language.replace(
-          "_",
+          /_/g,
           " "
         )}</div>`
       );
@@ -280,18 +282,21 @@ async function fillSettingsPage() {
   Object.keys(layouts).forEach((layout) => {
     layoutEl.append(
       `<div class="layout button" layout='${layout}'>${layout.replace(
-        "_",
+        /_/g,
         " "
       )}</div>`
     );
   });
 
   let keymapEl = $(".pageSettings .section.keymapLayout .buttons").empty();
+  keymapEl.append(
+    `<div class="layout button" keymapLayout='overrideSync'>override sync</div>`
+  );
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       keymapEl.append(
         `<div class="layout button" keymapLayout='${layout}'>${layout.replace(
-          "_",
+          /_/g,
           " "
         )}</div>`
       );
