@@ -200,13 +200,13 @@ function signUp() {
                 .catch(function (error) {
                   // An error happened.
                   $(".pageLogin .preloader").addClass("hidden");
+                  console.error(error);
                 });
             });
         })
         .catch(function (error) {
           // Handle Errors here.
           $(".pageLogin .register .button").removeClass("disabled");
-          var errorCode = error.code;
           var errorMessage = error.message;
           showNotification(errorMessage, 5000);
           $(".pageLogin .preloader").addClass("hidden");
@@ -681,7 +681,6 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
             beginAtZero: true,
             min: 0,
             autoSkip: true,
-            stepSize: 1,
             autoSkipPadding: 40,
             stepSize: 10,
           },
@@ -699,7 +698,6 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
             beginAtZero: true,
             min: 0,
             autoSkip: true,
-            stepSize: 1,
             autoSkipPadding: 40,
             stepSize: 10,
           },
@@ -1290,7 +1288,8 @@ function showActiveFilters() {
     if (aboveChartDisplay[group].all) {
       ret += "all";
     } else {
-      allall = false;
+      //TODO: is this used?
+      //allall = false;
       if (group === "tags") {
         ret += aboveChartDisplay.tags.array
           .map((id) => {
@@ -1788,7 +1787,7 @@ let visibleTableLines = 0;
 function loadMoreLines() {
   if (filteredResults == [] || filteredResults.length == 0) return;
   for (let i = visibleTableLines; i < visibleTableLines + 10; i++) {
-    result = filteredResults[i];
+    const result = filteredResults[i];
     if (result == undefined) continue;
     let withpunc = "";
     // if (result.punctuation) {
@@ -1936,7 +1935,7 @@ function refreshGlobalStats() {
     let tm = Math.floor((dbSnapshot.globalStats.time % 3600) / 60);
     let ts = Math.floor((dbSnapshot.globalStats.time % 3600) % 60);
     $(".pageAccount .globalTimeTyping .val").text(`
-      
+
       ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
       ts < 10 ? "0" + ts : ts
     }
@@ -1964,7 +1963,8 @@ function refreshAccountPage() {
 
     let chartData = [];
     let wpmChartData = [];
-    let rawChartData = [];
+    //TODO: is this used?
+    //let rawChartData = [];
     let accChartData = [];
     visibleTableLines = 0;
 
@@ -1995,7 +1995,8 @@ function refreshAccountPage() {
     let totalCons10 = 0;
     let consCount = 0;
 
-    let dailyActivityDays = [];
+    //TODO: is this used?
+    //let dailyActivityDays = [];
     let activityChartData = {};
 
     filteredResults = [];
@@ -2390,7 +2391,7 @@ function refreshAccountPage() {
     let tm = Math.floor((totalSeconds % 3600) / 60);
     let ts = Math.floor((totalSeconds % 3600) % 60);
     $(".pageAccount .timeTotal .val").text(`
-      
+
       ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
       ts < 10 ? "0" + ts : ts
     }
@@ -2402,7 +2403,7 @@ function refreshAccountPage() {
     let tfm = Math.floor((totalSecondsFiltered % 3600) / 60);
     let tfs = Math.floor((totalSecondsFiltered % 3600) % 60);
     $(".pageAccount .timeTotalFiltered .val").text(`
-      
+
     ${tfh < 10 ? "0" + tfh : tfh}:${tfm < 10 ? "0" + tfm : tfm}:${
       tfs < 10 ? "0" + tfs : tfs
     }
@@ -2525,7 +2526,7 @@ function refreshAccountPage() {
         // cont();
         showActiveFilters();
       } else {
-        setTimeout((f) => {
+        setTimeout(() => {
           changePage("");
         }, 500);
         // console.log("something went wrong");

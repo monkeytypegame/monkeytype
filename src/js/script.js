@@ -9,6 +9,7 @@ let time = 0;
 let timer = null;
 let testActive = false;
 let testStart, testEnd;
+let testInvalid = false;
 let wpmHistory = [];
 let rawHistory = [];
 let restartCount = 0;
@@ -499,9 +500,9 @@ async function initWords() {
       wordset = customText;
     }
     for (let i = 0; i < wordsBound; i++) {
-      randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-      previousWord = wordsList[i - 1];
-      previousWord2 = wordsList[i - 2];
+      let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+      const previousWord = wordsList[i - 1];
+      const previousWord2 = wordsList[i - 2];
       if (config.mode == "custom" && customTextIsRandom) {
         randomWord = wordset[Math.floor(Math.random() * wordset.length)];
       } else if (config.mode == "custom" && !customTextIsRandom) {
@@ -558,7 +559,7 @@ async function initWords() {
       group = Math.floor(Math.random() * quotes.groups.length);
     }
 
-    rq =
+    let rq =
       quotes.groups[group][
         Math.floor(Math.random() * quotes.groups[group].length)
       ];
@@ -771,9 +772,11 @@ function addWord() {
         };
   const wordset = language.words;
   let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  previousWord = wordsList[wordsList.length - 1];
-  previousWordStripped = previousWord.replace(/[.?!":\-,]/g, "").toLowerCase();
-  previousWord2Stripped = wordsList[wordsList.length - 2]
+  const previousWord = wordsList[wordsList.length - 1];
+  const previousWordStripped = previousWord
+    .replace(/[.?!":\-,]/g, "")
+    .toLowerCase();
+  const previousWord2Stripped = wordsList[wordsList.length - 2]
     .replace(/[.?!":\-,]/g, "")
     .toLowerCase();
 
@@ -872,7 +875,7 @@ function showWords() {
   if (activeFunBox === "memory") {
     memoryFunboxInterval = clearInterval(memoryFunboxInterval);
     memoryFunboxTimer = Math.round(Math.pow(wordsList.length, 1.2));
-    memoryFunboxInterval = setInterval((fn) => {
+    memoryFunboxInterval = setInterval(() => {
       memoryFunboxTimer -= 1;
       showNotification(memoryFunboxTimer);
       if (memoryFunboxTimer < 0) {
@@ -1303,12 +1306,13 @@ function flashPressedKeymapKey(key, correct) {
   //   border-color: var(--sub-color);
   // }
 
-  let errorColor;
-  if (config.colorfulMode) {
-    errorColor = themeColors.colorfulError;
-  } else {
-    errorColor = themeColors.error;
-  }
+  // TODO: is this used?
+  // let errorColor;
+  // if (config.colorfulMode) {
+  //   errorColor = themeColors.colorfulError;
+  // } else {
+  //   errorColor = themeColors.error;
+  // }
 
   switch (key) {
     case "\\":
@@ -1405,44 +1409,45 @@ function updateHighlightedKeymapKey() {
       .toString()
       .toUpperCase();
 
+    let highlightKey;
     switch (currentKey) {
       case "\\":
       case "|":
-        var highlightKey = "#KeyBackslash";
+        highlightKey = "#KeyBackslash";
         break;
       case "}":
       case "]":
-        var highlightKey = "#KeyRightBracket";
+        highlightKey = "#KeyRightBracket";
         break;
       case "{":
       case "[":
-        var highlightKey = "#KeyLeftBracket";
+        highlightKey = "#KeyLeftBracket";
         break;
       case '"':
       case "'":
-        var highlightKey = "#KeyQuote";
+        highlightKey = "#KeyQuote";
         break;
       case ":":
       case ";":
-        var highlightKey = "#KeySemicolon";
+        highlightKey = "#KeySemicolon";
         break;
       case "<":
       case ",":
-        var highlightKey = "#KeyComma";
+        highlightKey = "#KeyComma";
         break;
       case ">":
       case ".":
-        var highlightKey = "#KeyPeriod";
+        highlightKey = "#KeyPeriod";
         break;
       case "?":
       case "/":
-        var highlightKey = "#KeySlash";
+        highlightKey = "#KeySlash";
         break;
       case "":
-        var highlightKey = "#KeySpace";
+        highlightKey = "#KeySpace";
         break;
       default:
-        var highlightKey = `#Key${currentKey}`;
+        highlightKey = `#Key${currentKey}`;
     }
 
     $(highlightKey).addClass("active-key");
@@ -1784,14 +1789,15 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .time .bottom .afk").text(afkSecondsPercent + "% afk");
   }
 
-  let correctcharpercent = roundTo2(
-    ((stats.correctChars + stats.correctSpaces) /
-      (stats.correctChars +
-        stats.correctSpaces +
-        stats.incorrectChars +
-        stats.extraChars)) *
-      100
-  );
+  // TODO: is this used?
+  // let correctcharpercent = roundTo2(
+  //   ((stats.correctChars + stats.correctSpaces) /
+  //     (stats.correctChars +
+  //       stats.correctSpaces +
+  //       stats.incorrectChars +
+  //       stats.extraChars)) *
+  //     100
+  // );
   $("#result .stats .key .bottom").text(testtime + "s");
   // $("#result .stats .key .bottom").attr("aria-label", `Correct, incorrect, missed and extra \n ${correctcharpercent}%`);
   $("#words").removeClass("blurred");
@@ -3279,7 +3285,7 @@ async function loadWordsHistory() {
     let input = inputHistory[i];
     let wordEl = "";
     try {
-      if (input === "") throw Exception;
+      if (input === "") throw new Error("empty input word");
       if (correctedHistory[i] !== undefined && correctedHistory[i] !== "") {
         wordEl = `<div class='word' input="${correctedHistory[i]
           .replace(/"/g, "&quot;")
@@ -3565,7 +3571,7 @@ function updateTestModesNotice() {
     );
   }
 
-  tagsString = "";
+  let tagsString = "";
   // $.each($('.pageSettings .section.tags .tagsList .tag'), (index, tag) => {
   //     if($(tag).children('.active').attr('active') === 'true'){
   //         tagsString += $(tag).children('.title').text() + ', ';
@@ -3688,7 +3694,8 @@ function tagsEdit() {
           updateResultEditTagsPanelButtons();
           updateSettingsPage();
           updateFilterTags();
-          updateActiveTags();
+          //TODO: is this used?
+          //updateActiveTags();
         } else if (status < -1) {
           showNotification("Unknown error", 3000);
         }
@@ -4244,7 +4251,7 @@ $(document).on("click", "#top .logo", (e) => {
 });
 
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
-  wrd = $(e.currentTarget).attr("wordCount");
+  const wrd = $(e.currentTarget).attr("wordCount");
   if (wrd == "custom") {
     //   let newWrd = prompt("Custom word amount");
     //   if (newWrd !== null && !isNaN(newWrd) && newWrd > 0 && newWrd <= 10000) {
@@ -4326,8 +4333,8 @@ $("#wordsWrapper").on("click", (e) => {
 
 $(document).on("click", "#top .config .mode .text-button", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
-  mode = $(e.currentTarget).attr("mode");
-  setMode(mode);
+  const mode = $(e.currentTarget).attr("mode");
+  changeMode(mode);
   manualRestart = true;
   restartTest();
 });
@@ -4337,7 +4344,7 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
   if ($(e.currentTarget).hasClass("leaderboards")) {
     showLeaderboards();
   } else {
-    href = $(e.currentTarget).attr("href");
+    const href = $(e.currentTarget).attr("href");
     manualRestart = true;
     changePage(href.replace("/", ""));
   }

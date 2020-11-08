@@ -70,28 +70,22 @@ async function db_getUserSnapshot() {
         // console.log('getting data from db!');
         let data = res.data();
         if (data === undefined) return;
-        try {
-          if (data.personalBests !== undefined) {
-            snap.personalBests = data.personalBests;
-          }
-          snap.discordId = data.discordId;
-          snap.pairingCode =
-            data.discordPairingCode == null
-              ? undefined
-              : data.discordPairingCode;
-          snap.config = data.config;
-          snap.favouriteThemes =
-            data.favouriteThemes === undefined ? [] : data.favouriteThemes;
-          snap.globalStats = {
-            time: data.timeTyping,
-            started: data.startedTests,
-            completed: data.completedTests,
-          };
-          if (data.lbMemory !== undefined) {
-            snap.lbMemory = data.lbMemory;
-          }
-        } catch (e) {
-          throw e;
+        if (data.personalBests !== undefined) {
+          snap.personalBests = data.personalBests;
+        }
+        snap.discordId = data.discordId;
+        snap.pairingCode =
+          data.discordPairingCode == null ? undefined : data.discordPairingCode;
+        snap.config = data.config;
+        snap.favouriteThemes =
+          data.favouriteThemes === undefined ? [] : data.favouriteThemes;
+        snap.globalStats = {
+          time: data.timeTyping,
+          started: data.startedTests,
+          completed: data.completedTests,
+        };
+        if (data.lbMemory !== undefined) {
+          snap.lbMemory = data.lbMemory;
         }
       })
       .catch((e) => {
@@ -119,7 +113,6 @@ async function db_getUserResults() {
         .get()
         .then((data) => {
           dbSnapshot.results = [];
-          let len = data.docs.length;
           data.docs.forEach((doc, index) => {
             let result = doc.data();
             result.id = doc.id;
@@ -266,7 +259,6 @@ async function db_saveLocalPB(
     }
   }
 
-  let retval;
   if (dbSnapshot == null) {
     // await db_getUserResults().then(data => {
     //     retval = cont();

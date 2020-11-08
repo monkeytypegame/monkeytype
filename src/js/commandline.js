@@ -1,7 +1,3 @@
-function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
 function addChildCommands(
   unifiedCommands,
   commandItem,
@@ -13,7 +9,7 @@ function addChildCommands(
   if (commandItem.subgroup) {
     try {
       commandItem.exec();
-      currentCommandsIndex = currentCommands.length - 1;
+      const currentCommandsIndex = currentCommands.length - 1;
       currentCommands[currentCommandsIndex].list.forEach((cmd) =>
         addChildCommands(unifiedCommands, cmd, commandItemDisplay)
       );
@@ -27,8 +23,8 @@ function addChildCommands(
 }
 
 function generateSingleListOfCommands() {
-  allCommands = [];
-  oldShowCommandLine = showCommandLine;
+  const allCommands = [];
+  const oldShowCommandLine = showCommandLine;
   showCommandLine = () => {};
   commands.list.forEach((c) => addChildCommands(allCommands, c));
   showCommandLine = oldShowCommandLine;
@@ -1028,26 +1024,6 @@ let commandsHighlightMode = {
   ],
 };
 
-let commandsAlwaysShowCPM = {
-  title: "Toggle always show cpm...",
-  list: [
-    {
-      id: "setAlwaysShowCPMTrue",
-      display: true,
-      exec: () => {
-        setAlwaysShowCPM(true);
-      },
-    },
-    {
-      id: "setAlwaysShowCPMFalse",
-      display: false,
-      exec: () => {
-        setHighlightMode(false);
-      },
-    },
-  ],
-};
-
 let commandsTimerStyle = {
   title: "Change timer/progress style...",
   list: [
@@ -1762,7 +1738,8 @@ $("#commandInput input").keydown((e) => {
       if (obj.id == command) {
         obj.exec(value);
         if (obj.subgroup !== null && obj.subgroup !== undefined) {
-          subgroup = obj.subgroup;
+          //TODO: what is this for?
+          // subgroup = obj.subgroup;
         }
       }
     });
@@ -1952,7 +1929,7 @@ function hideCommandLine() {
   focusWords();
 }
 
-function showCommandLine() {
+let showCommandLine = () => {
   setFocus(false);
   $("#commandLine").removeClass("hidden");
   $("#commandInput").addClass("hidden");
@@ -1971,7 +1948,7 @@ function showCommandLine() {
   $("#commandLine input").val("");
   updateSuggestedCommands();
   $("#commandLine input").focus();
-}
+};
 
 function showCommandInput(command, placeholder) {
   $("#commandLineWrapper").removeClass("hidden");

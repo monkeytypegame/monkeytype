@@ -561,7 +561,7 @@ function refreshTagsSettingsSection() {
     dbSnapshot.tags.forEach((tag) => {
       if (tag.active === true) {
         tagsEl.append(`
-          
+
               <div class="tag" id="${tag.id}">
                   <div class="active" active="true">
                       <i class="fas fa-check-square"></i>
@@ -570,11 +570,11 @@ function refreshTagsSettingsSection() {
                   <div class="editButton"><i class="fas fa-pen"></i></div>
                   <div class="removeButton"><i class="fas fa-trash"></i></div>
               </div>
-          
+
             `);
       } else {
         tagsEl.append(`
-          
+
               <div class="tag" id="${tag.id}">
                   <div class="active" active="false">
                       <i class="fas fa-square"></i>
@@ -583,7 +583,7 @@ function refreshTagsSettingsSection() {
                   <div class="editButton"><i class="fas fa-pen"></i></div>
                   <div class="removeButton"><i class="fas fa-trash"></i></div>
               </div>
-          
+
             `);
       }
     });
@@ -874,7 +874,7 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
     document.documentElement.style.setProperty(e, "");
   });
 
-  setTimeout((fn) => {
+  setTimeout(() => {
     refreshThemeColorObject();
     colorVars.forEach((colorName) => {
       let color;

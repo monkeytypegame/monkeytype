@@ -249,7 +249,8 @@ function applyConfig(configObj) {
              style="display:inline-block;width:850px;height:90px"
              data-ad-client="ca-pub-7261919841327810"
              data-ad-slot="2225821478"></ins>`);
-        (adsbygoogle = window.adsbygoogle || []).push({});
+        const adsbygoogle = window.adsbygoogle || [];
+        adsbygoogle.push({});
       } else if (config.enableAds === "max") {
         $("#ad1").removeClass("hidden");
         $("#ad2").removeClass("hidden");
@@ -279,9 +280,10 @@ function applyConfig(configObj) {
              style="display:inline-block;width:160px;height:600px"
              data-ad-client="ca-pub-7261919841327810"
              data-ad-slot="1159796595"></ins>`);
-        (adsbygoogle = window.adsbygoogle || []).push({});
-        (adsbygoogle = window.adsbygoogle || []).push({});
-        (adsbygoogle = window.adsbygoogle || []).push({});
+        const adsbygoogle = window.adsbygoogle || [];
+        adsbygoogle.push({});
+        adsbygoogle.push({});
+        adsbygoogle.push({});
       } else {
         $("#ad1").remove();
         $("#ad2").remove();
@@ -366,7 +368,7 @@ function setFavThemes(themes, nosave) {
 
 //blind mode
 function toggleBlindMode() {
-  blind = !config.blindMode;
+  let blind = !config.blindMode;
   if (blind == undefined) {
     blind = false;
   }
@@ -602,7 +604,7 @@ function setSingleListCommandLine(option, nosave) {
 
 //show all lines
 function toggleShowAllLines() {
-  sal = !config.showAllLines;
+  let sal = !config.showAllLines;
   if (sal == undefined) {
     sal = false;
   }
@@ -624,7 +626,7 @@ function setShowAllLines(sal, nosave) {
 
 //quickend
 function toggleQuickEnd() {
-  qe = !config.quickEnd;
+  let qe = !config.quickEnd;
   if (qe == undefined) {
     qe = false;
   }
@@ -1117,7 +1119,7 @@ function setConfidenceMode(cm, nosave) {
 }
 
 function toggleIndicateTypos() {
-  it = !config.indicateTypos;
+  let it = !config.indicateTypos;
   if (it == undefined) {
     it = false;
   }
@@ -1223,7 +1225,7 @@ function setCustomThemeColors(colors, nosave) {
 }
 
 function applyCustomThemeColors() {
-  array = config.customThemeColors;
+  const array = config.customThemeColors;
 
   if (config.customTheme === true) {
     $(".current-theme").text("custom");

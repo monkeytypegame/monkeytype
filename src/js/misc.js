@@ -2,9 +2,9 @@ let themesList = null;
 async function getThemesList() {
   if (themesList == null) {
     return $.getJSON("themes/list.json", function (data) {
-      list = data.sort(function (a, b) {
-        nameA = a.name.toLowerCase();
-        nameB = b.name.toLowerCase();
+      const list = data.sort(function (a, b) {
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
         if (nameA > nameB) return 1;
         return 0;
@@ -23,7 +23,7 @@ async function getSortedThemesList() {
     if (themesList == null) {
       await getThemesList();
     }
-    sorted = themesList.sort((a, b) => {
+    const sorted = themesList.sort((a, b) => {
       let b1 = hexToHSL(a.bgColor);
       let b2 = hexToHSL(b.bgColor);
       return b2.lgt - b1.lgt;
@@ -40,7 +40,8 @@ async function getFunboxList() {
   if (funboxList == null) {
     return $.getJSON("funbox/list.json", function (data) {
       funboxList = data.sort(function (a, b) {
-        (nameA = a.name.toLowerCase()), (nameB = b.name.toLowerCase());
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
         if (nameA > nameB) return 1;
         return 0;
@@ -57,7 +58,8 @@ async function getFontsList() {
   if (fontsList == null) {
     return $.getJSON("js/fonts.json", function (data) {
       fontsList = data.sort(function (a, b) {
-        (nameA = a.name.toLowerCase()), (nameB = b.name.toLowerCase());
+        const nameA = a.name.toLowerCase();
+        const nameB = b.name.toLowerCase();
         if (nameA < nameB) return -1;
         if (nameA > nameB) return 1;
         return 0;
@@ -345,9 +347,9 @@ function getGibberish() {
 }
 
 function secondsToString(sec) {
-  hours = Math.floor(sec / 3600);
-  minutes = Math.floor((sec % 3600) / 60);
-  seconds = roundTo2((sec % 3600) % 60);
+  const hours = Math.floor(sec / 3600);
+  const minutes = Math.floor((sec % 3600) / 60);
+  const seconds = roundTo2((sec % 3600) % 60);
   let hoursString;
   let minutesString;
   let secondsString;
@@ -368,7 +370,7 @@ function getNumbers(len) {
   let randLen = Math.floor(Math.random() * len) + 1;
   let ret = "";
   for (let i = 0; i < randLen; i++) {
-    randomNum = Math.floor(Math.random() * 10);
+    const randomNum = Math.floor(Math.random() * 10);
     ret += randomNum.toString();
   }
   return ret;
@@ -449,7 +451,7 @@ function findGetParameter(parameterName) {
 function objectToQueryString(obj) {
   var str = [];
   for (var p in obj)
-    if (obj.hasOwnProperty(p)) {
+    if (Object.prototype.hasOwnProperty.call(obj, p)) {
       str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
     }
   return str.join("&");
