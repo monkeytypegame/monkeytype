@@ -224,13 +224,6 @@ let commands = {
         toggleHideExtraLetters();
       },
     },
-    // {
-    //   id: "toggleReadAheadMode",
-    //   display: "Toggle read ahead mode",
-    //   exec: () => {
-    //     toggleReadAheadMode();
-    //   },
-    // },
     {
       id: "toggleQuickEnd",
       display: "Toggle quick end",
@@ -929,14 +922,6 @@ let commandsPaceCaret = {
         setPaceCaret("custom");
       },
     },
-    // {
-    //   id: "setPaceCaretCustomSpeed",
-    //   display: "Set custom speed...",
-    //   input: true,
-    //   exec: (input) => {
-    //     console.log(input);
-    //   },
-    // },
   ],
 };
 
@@ -959,14 +944,6 @@ let commandsMinWpm = {
         setMinWpm("custom");
       },
     },
-    // {
-    //   id: "setPaceCaretCustomSpeed",
-    //   display: "Set custom speed...",
-    //   input: true,
-    //   exec: (input) => {
-    //     console.log(input);
-    //   },
-    // },
   ],
 };
 
@@ -1596,11 +1573,9 @@ let commandsLanguages = {
   ],
 };
 
-// if (getLanguageList().length > 0) {
 commandsLanguages.list = [];
 getLanguageList().then((languages) => {
   languages.forEach((language) => {
-    // if (language === "english_10k") return;
     commandsLanguages.list.push({
       id: "changeLanguage" + capitalizeFirstLetter(language),
       display: language.replace(/_/g, " "),
@@ -1611,19 +1586,7 @@ getLanguageList().then((languages) => {
       },
     });
   });
-  // if (language === "english_expanded") {
-  //   commandsLanguages.list.push({
-  //     id: "changeLanguageEnglish10k",
-  //     display: "english 10k",
-  //     exec: () => {
-  //       changeLanguage("english_10k");
-  //       restartTest();
-  //       saveConfigToCookie();
-  //     },
-  //   });
-  // }
 });
-// }
 
 let commandsLayouts = {
   title: "Change layout...",
@@ -2040,7 +2003,4 @@ function displayFoundCommands() {
     } catch (e) {}
   }
   $("#commandLine .listTitle").remove();
-  // if(currentCommands.title != ''){
-  //   $("#commandLine .suggestions").before("<div class='listTitle'>"+currentCommands.title+"</div>");
-  // }
 }

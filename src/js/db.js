@@ -22,37 +22,11 @@ async function db_getUserSnapshot() {
       },
     },
   };
-  // await db.collection('results')
-  //     .orderBy('timestamp', 'desc')
-  //     .where('uid', '==', user.uid)
-  //     .get()
-  //     .then(data => {
-  //         // console.log('getting data from db!');
-  //         data.docs.forEach(doc => {
-  //             ret.push(doc.data());
-  //         })
-  //     })
   try {
-    // await db
-    //   .collection(`users/${user.uid}/results/`)
-    //   .orderBy("timestamp", "desc")
-    //   .get()
-    //   .then((data) => {
-    //     // console.log('getting data from db!');
-    //     data.docs.forEach((doc) => {
-    //       let result = doc.data();
-    //       result.id = doc.id;
-    //       snap.results.push(result);
-    //     });
-    //   })
-    //   .catch((e) => {
-    //     throw e;
-    //   });
     await db
       .collection(`users/${user.uid}/tags/`)
       .get()
       .then((data) => {
-        // console.log('getting data from db!');
         data.docs.forEach((doc) => {
           let tag = doc.data();
           tag.id = doc.id;
@@ -67,7 +41,6 @@ async function db_getUserSnapshot() {
       .doc(user.uid)
       .get()
       .then((res) => {
-        // console.log('getting data from db!');
         let data = res.data();
         if (data === undefined) return;
         if (data.personalBests !== undefined) {
@@ -157,9 +130,6 @@ async function db_getUserHighestWpm(
 
   let retval;
   if (dbSnapshot == null || dbSnapshot.results === undefined) {
-    // await db_getUserResults().then(data => {
-    //     retval = cont();
-    // });
     retval = 0;
   } else {
     retval = cont();
@@ -188,9 +158,6 @@ async function db_getLocalPB(mode, mode2, punctuation, language, difficulty) {
 
   let retval;
   if (dbSnapshot == null) {
-    // await db_getUserResults().then(data => {
-    //     retval = cont();
-    // });
   } else {
     retval = cont();
   }
@@ -260,9 +227,6 @@ async function db_saveLocalPB(
   }
 
   if (dbSnapshot == null) {
-    // await db_getUserResults().then(data => {
-    //     retval = cont();
-    // });
   } else {
     cont();
   }

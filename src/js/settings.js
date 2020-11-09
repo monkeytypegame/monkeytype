@@ -145,10 +145,6 @@ settingsGroups.hideExtraLetters = new SettingsGroup(
 settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
 settingsGroups.quickEnd = new SettingsGroup("quickEnd", setQuickEnd);
 settingsGroups.enableAds = new SettingsGroup("enableAds", setEnableAds);
-// settingsGroups.readAheadMode = new SettingsGroup(
-//   "readAheadMode",
-//   setReadAheadMode
-// );
 settingsGroups.alwaysShowWordsHistory = new SettingsGroup(
   "alwaysShowWordsHistory",
   setAlwaysShowWordsHistory
@@ -193,9 +189,7 @@ settingsGroups.playSoundOnClick = new SettingsGroup(
   "playSoundOnClick",
   setPlaySoundOnClick,
   () => {
-    if (config.playSoundOnClick !== "off")
-      // clickSounds[config.playSoundOnClick][0].sounds[0].play();
-      playClickSound();
+    if (config.playSoundOnClick !== "off") playClickSound();
   }
 );
 settingsGroups.showAllLines = new SettingsGroup(
@@ -497,8 +491,6 @@ $("#customThemeShare .button").click((e) => {
 });
 
 $("#shareCustomThemeButton").click((e) => {
-  // showCustomThemeShare();
-
   if (e.shiftKey) {
     showCustomThemeShare();
   } else {
