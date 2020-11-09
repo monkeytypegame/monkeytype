@@ -872,7 +872,14 @@ function showWords() {
     updateHighlightedKeymapKey();
   }
 
+  updateActiveElement();
+  updateCaretPosition();
+}
+
+$("#restartTestButton, #startTestButton").on("click", function () {
+  console.log("click");
   if (activeFunBox === "memory") {
+    console.log("activate timer", window.location.pathname);
     memoryFunboxInterval = clearInterval(memoryFunboxInterval);
     memoryFunboxTimer = Math.round(Math.pow(wordsList.length, 1.2));
     memoryFunboxInterval = setInterval(() => {
@@ -885,10 +892,18 @@ function showWords() {
       }
     }, 1000);
   }
+});
 
-  updateActiveElement();
-  updateCaretPosition();
-}
+(function (history) {
+  var pushState = history.pushState;
+  history.pushState = function (state) {
+    if (activeFunBox === "memory" && state !== "/") {
+      memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+      memoryFunboxTimer = null;
+    }
+    return pushState.apply(history, arguments);
+  };
+})(window.history);
 
 function updateActiveElement() {
   let active = document.querySelector("#words .active");
