@@ -627,10 +627,12 @@ let commands = {
       id: "practiceMissedWords",
       display: "Practice missed words",
       exec: () => {
-        if (Object.keys(missedWords).length > 0) {
-          initPractiseMissedWords();
-        } else {
-          showNotification("You haven't missed any words.", 2000);
+        if (resultVisible) {
+          if (Object.keys(missedWords).length > 0) {
+            initPractiseMissedWords();
+          } else {
+            showNotification("You haven't missed any words.", 2000);
+          }
         }
       },
     },
