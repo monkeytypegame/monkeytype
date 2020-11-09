@@ -877,9 +877,7 @@ function showWords() {
 }
 
 $("#restartTestButton, #startTestButton").on("click", function () {
-  console.log("click");
   if (activeFunBox === "memory") {
-    console.log("activate timer", window.location.pathname);
     memoryFunboxInterval = clearInterval(memoryFunboxInterval);
     memoryFunboxTimer = Math.round(Math.pow(wordsList.length, 1.2));
     memoryFunboxInterval = setInterval(() => {
