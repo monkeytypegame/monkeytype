@@ -229,6 +229,7 @@ function applyConfig(configObj) {
     setAlwaysShowCPM(configObj.alwaysShowCPM, true);
     setHideExtraLetters(configObj.hideExtraLetters, true);
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
+    setStrictSpace(configObj.strictSpace, true);
     setMode(configObj.mode, true);
     // if (
     //   configObj.resultFilters !== null &&
