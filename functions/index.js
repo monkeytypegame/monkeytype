@@ -1003,6 +1003,10 @@ exports.testCompleted = functions
             }
           }
 
+          //yeet the key data
+          obj.keySpacing = null;
+          obj.keyDuration = null;
+
           return db
             .collection(`users/${request.uid}/results`)
             .add(obj)
