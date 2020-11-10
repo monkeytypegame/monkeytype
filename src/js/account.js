@@ -1486,7 +1486,11 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   } else {
     config.resultFilters.numbers.off = true;
   }
-  config.resultFilters.language[config.language] = true;
+  if (config.mode === "quote" && /english.*/.test(config.language)) {
+    config.resultFilters.language["english"] = true;
+  } else {
+    config.resultFilters.language[config.language] = true;
+  }
   config.resultFilters.funbox[activeFunBox] = true;
   config.resultFilters.tags.none = true;
   dbSnapshot.tags.forEach((tag) => {
