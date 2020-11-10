@@ -941,6 +941,23 @@ function compareInput(showError) {
       // this is when input so far is correct
       correctSoFar = true;
     }
+    if (!correctSoFar) {
+      if (config.difficulty == "master") {
+        if (!resultVisible) {
+          inputHistory.push(currentInput);
+          correctedHistory.push(currentCorrected);
+          document
+            .querySelector("#words .word.active")
+            .setAttribute("input", currentInput.replace(/'/g, "'"));
+          lastSecondNotRound = true;
+          showResult(true);
+        }
+        let testNow = Date.now();
+        let testSeconds = roundTo2((testNow - testStart) / 1000);
+        incompleteTestSeconds += testSeconds;
+        restartCount++;
+      }
+    }
     let classString = correctSoFar ? "correct" : "incorrect";
     if (config.blindMode) {
       classString = "correct";
