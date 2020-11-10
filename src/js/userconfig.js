@@ -31,7 +31,6 @@ let defaultConfig = {
   difficulty: "normal",
   blindMode: false,
   quickEnd: false,
-  // readAheadMode: false,
   caretStyle: "default",
   paceCaretStyle: "default",
   flipTestColors: false,
@@ -86,13 +85,10 @@ let configChangedBeforeDb = false;
 //cookies
 async function saveConfigToCookie(noDbCheck = false) {
   if (!dbConfigLoaded && !noDbCheck) {
-    // console.log('config changed before db loaded!');
     configChangedBeforeDb = true;
   }
-  // showNotification('saving to cookie',1000);
   let d = new Date();
   d.setFullYear(d.getFullYear() + 1);
-  // $.cookie("config", null);
   $.cookie("config", JSON.stringify(config), {
     expires: d,
     path: "/",
@@ -103,14 +99,11 @@ async function saveConfigToCookie(noDbCheck = false) {
 
 async function saveConfigToDB() {
   if (firebase.auth().currentUser !== null) {
-    // showNotification('saving to db',1000);
     accountIconLoading(true);
     saveConfig({ uid: firebase.auth().currentUser.uid, obj: config }).then(
       (d) => {
-        // console.log(d.data);
         accountIconLoading(false);
         if (d.data.returnCode === 1) {
-          // showNotification('config saved to db',1000);
         } else {
           showNotification(
             `Error saving config to DB! ${d.data.message}`,
@@ -189,7 +182,6 @@ function applyConfig(configObj) {
     setDifficulty(configObj.difficulty, true);
     setBlindMode(configObj.blindMode, true);
     setQuickEnd(configObj.quickEnd, true);
-    // setReadAheadMode(configObj.readAheadMode, true);
     setFlipTestColors(configObj.flipTestColors, true);
     setColorfulMode(configObj.colorfulMode, true);
     setConfidenceMode(configObj.confidenceMode, true);
@@ -231,13 +223,6 @@ function applyConfig(configObj) {
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setStrictSpace(configObj.strictSpace, true);
     setMode(configObj.mode, true);
-    // if (
-    //   configObj.resultFilters !== null &&
-    //   configObj.resultFilters !== undefined
-    // ) {
-    //   accountFilters = configObj.resultFilters;
-    // }
-    // config = configObj;
 
     try {
       setEnableAds(configObj.enableAds, true);
@@ -441,35 +426,6 @@ function setChartStyle(chartStyle, nosave) {
   updateChartStyle();
   if (!nosave) saveConfigToCookie();
 }
-
-//read ahead mode
-// function toggleReadAheadMode() {
-//   config.readAheadMode = !config.readAheadMode;
-//   applyReadAheadMode(config.readAheadMode);
-//   updateTestModesNotice();
-//   saveConfigToCookie();
-// }
-
-// function setReadAheadMode(readAhead, nosave) {
-//   if (readAhead == undefined) {
-//     readAhead = false;
-//   }
-//   config.readAheadMode = readAhead;
-//   applyReadAheadMode(readAhead);
-//   updateTestModesNotice();
-//   if (!nosave) saveConfigToCookie();
-// }
-
-//stoponerror
-// function toggleStopOnError() {
-//   soe = !config.stopOnError;
-//   if (soe == undefined) {
-//     soe = false;
-//   }
-//   config.stopOnError = soe;
-//   updateTestModesNotice();
-//   saveConfigToCookie();
-// }
 
 function setStopOnError(soe, nosave) {
   if (soe == undefined || soe === true || soe === false) {
@@ -781,17 +737,11 @@ function setShowLiveWpm(live, nosave) {
     live = false;
   }
   config.showLiveWpm = live;
-  // if (config.keymapMode !== "off") {
-  //   config.keymapMode = "off";
-  // }
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleShowLiveWpm() {
   config.showLiveWpm = !config.showLiveWpm;
-  // if (config.keymapMode !== "off") {
-  //   config.keymapMode = "off";
-  // }
   saveConfigToCookie();
 }
 
@@ -813,9 +763,6 @@ function setHideExtraLetters(val, nosave) {
 
 function toggleHideExtraLetters() {
   config.hideExtraLetters = !config.hideExtraLetters;
-  // if (config.keymapMode !== "off") {
-  //   config.keymapMode = "off";
-  // }
   saveConfigToCookie();
 }
 
@@ -972,11 +919,6 @@ function setStartGraphsAtZero(mode, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-// function toggleSmoothCaret() {
-//   config.smoothCaret = !config.smoothCaret;
-//   saveConfigToCookie();
-// }
-
 //linescroll
 function setSmoothLineScroll(mode, nosave) {
   config.smoothLineScroll = mode;
@@ -992,14 +934,12 @@ function toggleSmoothLineScroll() {
 function setQuickTabMode(mode, nosave) {
   config.quickTab = mode;
   if (!config.quickTab) {
-    // $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
     $("#restartTestButton").removeClass("hidden");
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
       .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
       <key>esc</key> - command line`);
   } else {
-    // $("#restartTestButton").remove();
     $("#restartTestButton").addClass("hidden");
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
       <key>esc</key> - command line`);
@@ -1010,14 +950,12 @@ function setQuickTabMode(mode, nosave) {
 function toggleQuickTabMode() {
   config.quickTab = !config.quickTab;
   if (!config.quickTab) {
-    // $(".pageTest").append('<div id="restartTestButton" class="" tabindex="0"><i class="fas fa-redo-alt"></i></div>');
     $("#restartTestButton").removeClass("hidden");
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
       .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
       <key>esc</key> - command line`);
   } else {
-    // $("#restartTestButton").remove();
     $("#restartTestButton").addClass("hidden");
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
       <key>esc</key> - command line`);
@@ -1072,7 +1010,6 @@ function previewFontFamily(font) {
     font = "Roboto_Mono";
   }
   document.documentElement.style.setProperty("--font", font.replace(/_/g, " "));
-  // if (!nosave) saveConfigToCookie();
 }
 
 //font family
@@ -1206,14 +1143,8 @@ function setRandomTheme(val, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-// function toggleRandomTheme() {
-//   config.randomTheme = !config.randomTheme;
-//   saveConfigToCookie();
-// }
-
 function setCustomTheme(boolean, nosave) {
   if (boolean !== undefined) config.customTheme = boolean;
-  // setCustomThemeColors(config.customThemeColors, nosave);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -1252,8 +1183,6 @@ function togglePresetCustomTheme() {
   if (config.customTheme) {
     setCustomTheme(false);
     applyCustomThemeColors();
-    // $('[tabContent="custom"]').removeClass("reveal");
-    // $('[tabContent="preset"]').addClass("reveal");
     swapElements(
       $('.pageSettings [tabContent="custom"]'),
       $('.pageSettings [tabContent="preset"]'),
@@ -1267,8 +1196,6 @@ function togglePresetCustomTheme() {
       $('.pageSettings [tabContent="custom"]'),
       250
     );
-    // $('[tabContent="preset"]').removeClass("reveal");
-    // $('[tabContent="custom"]').addClass("reveal");
   }
   $(".keymap-key").attr("style", "");
 }
@@ -1309,7 +1236,6 @@ function updateFavicon(size, curveSize) {
   ctx.textAlign = "center";
   ctx.fillStyle = maincolor;
   ctx.fillText("mt", size / 2 + size / 32, (size / 3) * 2.1);
-  // document.body.appendChild(canvas);
   $("#favicon").attr("href", canvas.toDataURL("image/png"));
 }
 
@@ -1364,12 +1290,8 @@ function setKeymapMode(mode, nosave) {
   if (mode == null || mode == undefined) {
     mode = "off";
   }
-  // if (mode === "react" ||) {
   $(".active-key").removeClass("active-key");
-  // }
-  // if (mode === "next") {
   $(".keymap-key").attr("style", "");
-  // }
   config.keymapMode = mode;
   if (!nosave) restartTest(false, nosave);
   if (!nosave) saveConfigToCookie();
@@ -1391,54 +1313,9 @@ function setKeymapStyle(style, nosave) {
   } else if (style === "split_matrix") {
     $(".keymap").addClass("split_matrix");
   }
-  // if (style === "staggered") {
-  //   $(".keymap .keymap-split-spacer").addClass("hidden");
-  //   $(".keymap .r1, .r2, .r3, .r4").removeClass("matrix");
-  //   $(".keymap .r5").removeClass("matrixSpace");
-  //   $(".keymap #KeyLeftBracket").removeClass("hide-key");
-  //   $(".keymap #KeyRightBracket").removeClass("hide-key");
-  //   $(".keymap #KeyQuote").removeClass("hide-key");
-  // }
-  // if (style === "split") {
-  //   $(".keymap .keymap-split-spacer").removeClass("hidden");
-  //   $(".keymap .r1, .keymap .r2, .keymap .r3, .keymap .r4").removeClass(
-  //     "matrix"
-  //   );
-  //   $(".keymap .r5").removeClass("splitSpace");
-  //   $(".keymap #KeyLeftBracket").removeClass("hide-key");
-  //   $(".keymap #KeyRightBracket").removeClass("hide-key");
-  //   $(".keymap #KeyQuote").removeClass("hide-key");
-  // }
-  // if (style === "matrix") {
-  //   $(".keymap .keymap-split-spacer").addClass("hidden");
-  //   $(".keymap .r1, .keymap .r2, .keymap .r3, .keymap .r4").addClass("matrix");
-  //   $(".keymap .r5").addClass("matrixSpace");
-  //   $(".keymap #KeyLeftBracket").addClass("hide-key");
-  //   $(".keymap #KeyRightBracket").addClass("hide-key");
-  //   $(".keymap #KeyQuote").addClass("hide-key");
-  // }
   config.keymapStyle = style;
   if (!nosave) saveConfigToCookie();
 }
-
-// function toggleISOKeymap() {
-//   val = !config.isoKeymap;
-//   if (val == undefined) {
-//     val = false;
-//   }
-//   config.isoKeymap = val;
-//   updateKeymapBottomRow();
-//   saveConfigToCookie();
-// }
-
-// function setISOKeymap(val, nosave) {
-//   if (val == undefined) {
-//     val = false;
-//   }
-//   config.isoKeymap = val;
-//   updateKeymapBottomRow();
-//   if (!nosave) saveConfigToCookie();
-// }
 
 function keymapShowIsoKey(tf) {
   if (tf) {
@@ -1455,10 +1332,6 @@ function setKeymapLayout(layout, nosave) {
   config.keymapLayout = layout;
   refreshKeymapKeys(layout);
   if (!nosave) saveConfigToCookie();
-  // layouts[layout].forEach((x) => {
-  //   console.log(x);
-  // });
-  // console.log(all.join());
 }
 
 function refreshKeymapKeys(layout) {
@@ -1487,16 +1360,10 @@ function refreshKeymapKeys(layout) {
     keymapShowIsoKey(lts.iso);
 
     var toReplace = lts.keys.slice(1, 48);
-    // var _ = toReplace.splice(12, 1);
     var count = 0;
 
     $(".keymap .letter")
       .map(function () {
-        // if (
-        //   !this.parentElement.classList.contains("hidden-key") &&
-        //   !this.classList.contains("hidden-key")
-        // ) {
-
         if (count < toReplace.length) {
           var key = toReplace[count].charAt(0);
           this.innerHTML = key;
@@ -1557,7 +1424,6 @@ function setFontSize(fontSize, nosave) {
   if (fontSize == null || fontSize == undefined) {
     fontSize = 1;
   }
-  // $("#words").stop(true, true).animate({ opacity: 0 }, 125, e => {
   config.fontSize = fontSize;
   $("#words").removeClass("size125");
   $("#caret, #paceCaret").removeClass("size125");
@@ -1591,6 +1457,4 @@ function setFontSize(fontSize, nosave) {
     $("#miniTimerAndLiveWpm").addClass("size3");
   }
   if (!nosave) saveConfigToCookie();
-  // restartTest();
-  // });
 }

@@ -262,7 +262,6 @@ firebase.auth().onAuthStateChanged(function (user) {
     var isAnonymous = user.isAnonymous;
     var uid = user.uid;
     var providerData = user.providerData;
-    // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
 
@@ -307,14 +306,6 @@ firebase.auth().onAuthStateChanged(function (user) {
     setCustomTheme(true);
     setCustomThemeInputs();
     applyCustomThemeColors();
-    // let save = [];
-    // $.each(
-    //   $(".pageSettings .section.customTheme [type='color']"),
-    //   (index, element) => {
-    //     save.push($(element).attr("value"));
-    //   }
-    // );
-    // setCustomThemeColors(save);
   }
 });
 
@@ -329,7 +320,6 @@ function getAccountDataAndInit() {
         if (cookieConfig === null) {
           accountIconLoading(false);
           applyConfig(dbSnapshot.config);
-          // showNotification('Applying db config',3000);
           updateSettingsPage();
           saveConfigToCookie(true);
           restartTest(false, true);
@@ -431,11 +421,6 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
         data: [],
         borderColor: "#f44336",
         borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(244,67,54,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
         trendlineLinear: {
           style: "rgba(255,105,180, .8)",
           lineStyle: "dotted",
@@ -528,10 +513,6 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
     },
     responsive: true,
     maintainAspectRatio: false,
-    // tooltips: {
-    //   mode: 'index',
-    //   intersect: false,
-    // },
     hover: {
       mode: "nearest",
       intersect: false,
@@ -725,7 +706,6 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
       {
         label: "wpm",
         data: [],
-        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
         borderColor: "rgba(125, 125, 125, 1)",
         borderWidth: 2,
         yAxisID: "wpm",
@@ -735,7 +715,6 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
       {
         label: "raw",
         data: [],
-        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
         borderColor: "rgba(125, 125, 125, 1)",
         borderWidth: 2,
         yAxisID: "raw",
@@ -745,13 +724,11 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
       {
         label: "errors",
         data: [],
-        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
         borderColor: "rgba(255, 125, 125, 1)",
         pointBackgroundColor: "rgba(255, 125, 125, 1)",
         borderWidth: 2,
         order: 1,
         yAxisID: "error",
-        // barPercentage: 0.1,
         maxBarThickness: 10,
         type: "scatter",
         pointStyle: "crossRot",
@@ -783,10 +760,6 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
     },
     responsive: true,
     maintainAspectRatio: false,
-    // hover: {
-    //   mode: 'x',
-    //   intersect: false
-    // },
     scales: {
       xAxes: [
         {
@@ -987,10 +960,6 @@ $(document).on("click", ".pageAccount .hoverChartBg", (event) => {
   hideHoverChart();
 });
 
-// $(document).on("mouseleave", ".pageAccount .hoverChartButton", (event) => {
-//   hideHoverChart();
-// });
-
 let defaultAccountFilters = {
   difficulty: {
     normal: true,
@@ -1094,7 +1063,6 @@ function updateFilterTags() {
       "hidden"
     );
   }
-  // showActiveFilters();
 }
 
 function toggleFilter(group, filter) {
@@ -1110,117 +1078,7 @@ function setFilter(group, filter, set) {
   config.resultFilters[group][filter] = set;
 }
 
-// function toggleFilterButton(filter) {
-//   const element = $(
-//     `.pageAccount .content .filterButtons .button[filter=${filter}]`
-//   );
-//   if (element.hasClass("active")) {
-//     //disable that filter
-
-//     if (filter == "all" || filter == "none") {
-//       return;
-//     } else if (filter == "mode_words") {
-//       // $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
-//       //   let f = $(obj).attr('filter')
-//       //   disableFilterButton(f)
-//       // })
-//     } else if (filter == "mode_time") {
-//       // $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
-//       //   let f = $(obj).attr('filter')
-//       //   disableFilterButton(f)
-//       // })
-//     } else if (filter == "punc_off") {
-//       enableFilterButton("punc_on");
-//     } else if (filter == "punc_on") {
-//       enableFilterButton("punc_off");
-//     }
-//     disableFilterButton(filter);
-//     disableFilterButton("all");
-//   } else {
-//     //enable that filter
-//     disableFilterButton("none");
-
-//     if (filter == "all") {
-//       $.each(
-//         $(`.pageAccount .content .filterButtons .button`),
-//         (index, obj) => {
-//           let f = $(obj).attr("filter");
-//           if (
-//             f != "none" &&
-//             f != "date_month" &&
-//             f != "date_week" &&
-//             f != "date_day"
-//           ) {
-//             enableFilterButton(f);
-//           }
-//         }
-//       );
-//     } else if (filter == "none") {
-//       disableFilterButton("all");
-//       $.each(
-//         $(`.pageAccount .content .filterButtons .button`),
-//         (index, obj) => {
-//           let f = $(obj).attr("filter");
-//           if (f != "none") {
-//             disableFilterButton(f);
-//           }
-//         }
-//       );
-//     } else if (
-//       filter == "date_all" ||
-//       filter == "date_month" ||
-//       filter == "date_week" ||
-//       filter == "date_day"
-//     ) {
-//       disableFilterButton("date_all");
-//       disableFilterButton("date_month");
-//       disableFilterButton("date_week");
-//       disableFilterButton("date_day");
-//       enableFilterButton(filter);
-//     }
-//     // else if(filter == "mode_words"){
-//     //   $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
-//     //     let f = $(obj).attr('filter');
-//     //     enableFilterButton(f);
-//     //   })
-//     // }else if(filter == "mode_time"){
-//     //   $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
-//     //     let f = $(obj).attr('filter');
-//     //     enableFilterButton(f);
-//     //   })
-//     // }else if(['10','25','50','100','200'].includes(filter)){
-//     //   enableFilterButton('words');
-//     // }else if(['15','30','60','120'].includes(filter)){
-//     //   enableFilterButton('time');
-//     // }
-
-//     enableFilterButton(filter);
-//   }
-//   showActiveFilters();
-// }
-
-// function disableFilterButton(filter) {
-//   const element = $(
-//     `.pageAccount .content .filterButtons .button[filter=${filter}]`
-//   );
-//   element.removeClass("active");
-// }
-
-// function enableFilterButton(filter) {
-//   const element = $(
-//     `.pageAccount .content .filterButtons .button[filter=${filter}]`
-//   );
-//   element.addClass("active");
-// }
-
 function showActiveFilters() {
-  // activeFilters = [];
-  // $.each($(".pageAccount .filterButtons .button"), (i, obj) => {
-  //   if ($(obj).hasClass("active")) {
-  //     activeFilters.push($(obj).attr("filter"));
-  //   }
-  // });
-
   let aboveChartDisplay = {};
 
   Object.keys(config.resultFilters).forEach((group) => {
@@ -1288,8 +1146,6 @@ function showActiveFilters() {
     if (aboveChartDisplay[group].all) {
       ret += "all";
     } else {
-      //TODO: is this used?
-      //allall = false;
       if (group === "tags") {
         ret += aboveChartDisplay.tags.array
           .map((id) => {
@@ -1352,77 +1208,6 @@ function showActiveFilters() {
 
   //tags
   chartString += addText("tags");
-  // chartString += `<div class="spacer"></div>`;
-
-  // let allall = true;
-  // let count = 0;
-  // Object.keys(aboveChartDisplay).forEach((group) => {
-  //   count++;
-  //   if (group === "time" && !aboveChartDisplay.mode.array.includes("time"))
-  //     return;
-  //   if (group === "words" && !aboveChartDisplay.mode.array.includes("words"))
-  //     return;
-
-  //   if (aboveChartDisplay[group].array.length > 0) {
-  //     chartString += "<div class='group'>";
-  //     if (group == "difficulty") {
-  //       chartString += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
-  //     } else if (group == "mode") {
-  //       chartString += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
-  //     } else if (group == "punctuation") {
-  //       chartString += `<span aria-label="Punctuation" data-balloon-pos="up"><span class="punc" style="font-weight: 900;
-  //       width: 1.25rem;
-  //       text-align: center;
-  //       display: inline-block;
-  //       letter-spacing: -.1rem;">!?</span>`;
-  //     } else if (group == "numbers") {
-  //       chartString += `<span aria-label="Numbers" data-balloon-pos="up"><span class="numbers" style="font-weight: 900;
-  //         width: 1.25rem;
-  //         text-align: center;
-  //         margin-right: .1rem;
-  //         display: inline-block;
-  //         letter-spacing: -.1rem;">15</span>`;
-  //     } else if (group == "words") {
-  //       chartString += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
-  //     } else if (group == "time") {
-  //       chartString += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
-  //     } else if (group == "date") {
-  //       chartString += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
-  //     } else if (group == "tags") {
-  //       chartString += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
-  //     } else if (group == "language") {
-  //       chartString += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
-  //     } else if (group == "funbox") {
-  //       chartString += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
-  //     }
-
-  //     if (aboveChartDisplay[group].all) {
-  //       chartString += "all";
-  //     } else {
-  //       allall = false;
-  //       if (group === "tags") {
-  //         chartString += aboveChartDisplay.tags.array
-  //           .map((id) => {
-  //             if (id == "none") return id;
-  //             let name = dbSnapshot.tags.filter((t) => t.id == id)[0];
-  //             if (name !== undefined) {
-  //               return dbSnapshot.tags.filter((t) => t.id == id)[0].name;
-  //             }
-  //           })
-  //           .join(", ");
-  //       } else {
-  //         chartString += aboveChartDisplay[group].array
-  //           .join(", ")
-  //           .replace(/_/g, " ");
-  //       }
-  //     }
-  //     chartString += "</span></div>";
-  //     if (Object.keys(aboveChartDisplay).length !== count)
-  //       chartString += `<div class="spacer"></div>`;
-  //   }
-  // });
-
-  // if (allall) chartString = `<i class="fas fa-fw fa-filter"></i>all`;
 
   $(".pageAccount .group.chart .above").html(chartString);
 
@@ -1518,7 +1303,6 @@ $(
 ).click(".button", (e) => {
   const filter = $(e.target).attr("filter");
   const group = $(e.target).parents(".buttons").attr("group");
-  // toggleFilterButton(filter);
   if ($(e.target).hasClass("allFilters")) {
     Object.keys(config.resultFilters).forEach((group) => {
       Object.keys(config.resultFilters[group]).forEach((filter) => {
@@ -1794,12 +1578,6 @@ function loadMoreLines() {
     const result = filteredResults[i];
     if (result == undefined) continue;
     let withpunc = "";
-    // if (result.punctuation) {
-    //   withpunc = '<br>punctuation';
-    // }
-    // if (result.blindMode) {
-    //   withpunc = '<br>blind';
-    // }
     let diff = result.difficulty;
     if (diff == undefined) {
       diff = "normal";
@@ -1867,10 +1645,6 @@ function loadMoreLines() {
       });
       tagNames = tagNames.substring(0, tagNames.length - 2);
     }
-
-    // if(tagNames !== ""){
-    //   icons += `<span aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
-    // }
 
     let restags;
     if (result.tags === undefined) {
@@ -1967,8 +1741,6 @@ function refreshAccountPage() {
 
     let chartData = [];
     let wpmChartData = [];
-    //TODO: is this used?
-    //let rawChartData = [];
     let accChartData = [];
     visibleTableLines = 0;
 
@@ -1999,8 +1771,6 @@ function refreshAccountPage() {
     let totalCons10 = 0;
     let consCount = 0;
 
-    //TODO: is this used?
-    //let dailyActivityDays = [];
     let activityChartData = {};
 
     filteredResults = [];
@@ -2024,16 +1794,13 @@ function refreshAccountPage() {
       }
       totalSeconds += tt;
 
-      // console.log(result);
       //apply filters
       try {
         let resdiff = result.difficulty;
         if (resdiff == undefined) {
           resdiff = "normal";
         }
-        // if (!activeFilters.includes("difficulty_" + resdiff)) return;
         if (!config.resultFilters.difficulty[resdiff]) return;
-        // if (!activeFilters.includes("mode_" + result.mode)) return;
         if (!config.resultFilters.mode[result.mode]) return;
 
         if (result.mode == "time") {
@@ -2041,18 +1808,14 @@ function refreshAccountPage() {
           if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
             timefilter = result.mode2;
           }
-          // if (!activeFilters.includes(timefilter)) return;
           if (!config.resultFilters.time[timefilter]) return;
         } else if (result.mode == "words") {
           let wordfilter = "custom";
           if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
             wordfilter = result.mode2;
           }
-          // if (!activeFilters.includes(wordfilter)) return;
           if (!config.resultFilters.words[wordfilter]) return;
         }
-
-        // if (!activeFilters.includes("lang_" + result.language)) return;
 
         let langFilter = config.resultFilters.language[result.language];
 
@@ -2069,7 +1832,6 @@ function refreshAccountPage() {
           puncfilter = "on";
         }
         if (!config.resultFilters.punctuation[puncfilter]) return;
-        // if (!activeFilters.includes(puncfilter)) return;
 
         let numfilter = "off";
         if (result.numbers) {
@@ -2078,10 +1840,8 @@ function refreshAccountPage() {
         if (!config.resultFilters.numbers[numfilter]) return;
 
         if (result.funbox === "none" || result.funbox === undefined) {
-          // if (!activeFilters.includes("funbox_none")) return;
           if (!config.resultFilters.funbox.none) return;
         } else {
-          // if (!activeFilters.includes("funbox_" + result.funbox)) return;
           if (!config.resultFilters.funbox[result.funbox]) return;
         }
 
@@ -2090,7 +1850,6 @@ function refreshAccountPage() {
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
           if (dbSnapshot.tags.length > 0) {
-            // if (activeFilters.includes("tag_notag")) tagHide = false;
             if (config.resultFilters.tags.none) tagHide = false;
           } else {
             tagHide = false;
@@ -2104,7 +1863,6 @@ function refreshAccountPage() {
             //check if tag is valid
             if (validTags.includes(tag)) {
               //tag valid, check if filter is on
-              // if (activeFilters.includes("tag_" + tag)) tagHide = false;
               if (config.resultFilters.tags[tag]) tagHide = false;
             } else {
               //tag not found in valid tags, meaning probably deleted
@@ -2118,15 +1876,6 @@ function refreshAccountPage() {
         let timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
 
         let datehide = true;
-
-        // if (
-        //   activeFilters.includes("date_all") ||
-        //   (activeFilters.includes("date_day") && timeSinceTest <= 86400) ||
-        //   (activeFilters.includes("date_week") && timeSinceTest <= 604800) ||
-        //   (activeFilters.includes("date_month") && timeSinceTest <= 18144000)
-        // ) {
-        //   datehide = false;
-        // }
 
         if (
           config.resultFilters.date.all ||
@@ -2303,8 +2052,6 @@ function refreshAccountPage() {
       lastTimestamp = date;
     });
 
-    // console.log(activityChartData);
-
     activityChart.options.scales.xAxes[0].ticks.minor.fontColor =
       themeColors.sub;
     activityChart.options.scales.yAxes[0].ticks.minor.fontColor =
@@ -2324,7 +2071,6 @@ function refreshAccountPage() {
     activityChart.options.scales.yAxes[1].scaleLabel.fontColor =
       themeColors.sub;
     activityChart.data.datasets[1].borderColor = themeColors.sub;
-    // activityChart.data.datasets[1].backgroundColor = themeColors.main;
     activityChart.data.datasets[1].data = activityChartData_avgWpm;
 
     activityChart.options.legend.labels.fontColor = themeColors.sub;
@@ -2388,9 +2134,6 @@ function refreshAccountPage() {
       $(".pageAccount .triplegroup.stats").removeClass("hidden");
     }
 
-    // moment
-    //   .utc(moment.duration(totalSeconds, "seconds").asMilliseconds())
-    //   .format("HH:mm:ss")
     let th = Math.floor(totalSeconds / 3600);
     let tm = Math.floor((totalSeconds % 3600) / 60);
     let ts = Math.floor((totalSeconds % 3600) % 60);
@@ -2400,9 +2143,6 @@ function refreshAccountPage() {
       ts < 10 ? "0" + ts : ts
     }
     `);
-    //moment
-    // .utc(moment.duration(totalSecondsFiltered, "seconds").asMilliseconds())
-    // .format("HH:mm:ss")
     let tfh = Math.floor(totalSecondsFiltered / 3600);
     let tfm = Math.floor((totalSecondsFiltered % 3600) / 60);
     let tfs = Math.floor((totalSecondsFiltered % 3600) % 60);
@@ -2435,9 +2175,6 @@ function refreshAccountPage() {
       Math.round(totalAcc10 / last10) + "%"
     );
 
-    // console.log(totalCons10);
-    // console.log(last10);
-
     if (totalCons == 0 || totalCons == undefined) {
       $(".pageAccount .avgCons .val").text("-");
       $(".pageAccount .avgCons10 .val").text("-");
@@ -2462,31 +2199,6 @@ function refreshAccountPage() {
       (testRestarts / testCount).toFixed(1)
     );
 
-    // if(testCount == 0){
-    //   $('.pageAccount .group.chart').fadeOut(125);
-    //   $('.pageAccount .triplegroup.stats').fadeOut(125);
-    //   $('.pageAccount .group.history').fadeOut(125);
-    // }else{
-    //   $('.pageAccount .group.chart').fadeIn(125);
-    //   $('.pageAccount .triplegroup.stats').fadeIn(125);
-    //   $('.pageAccount .group.history').fadeIn(125);
-    // }
-
-    // let favMode = testModes.words10;
-    // let favModeName = 'words10';
-    // $.each(testModes, (key, mode) => {
-    //   if (mode.length > favMode.length) {
-    //     favMode = mode;
-    //     favModeName = key;
-    //   }
-    // })
-    // if (favModeName == 'words10' && testModes.words10.length == 0) {
-    //   //new user
-    //   $(".pageAccount .favouriteTest .val").text(`-`);
-    // } else {
-    //   $(".pageAccount .favouriteTest .val").text(`${favModeName} (${Math.floor((favMode.length/testCount) * 100)}%)`);
-    // }
-
     if (resultHistoryChart.data.datasets[0].data.length > 0) {
       resultHistoryChart.options.plugins.trendlineLinear = true;
     } else {
@@ -2507,7 +2219,6 @@ function refreshAccountPage() {
 
     let wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
 
-    // let slope = calculateSlope(trend);
     let plus = wpmChangePerHour > 0 ? "+" : "";
 
     $(".pageAccount .group.chart .below .text").text(
@@ -2527,13 +2238,11 @@ function refreshAccountPage() {
   } else if (dbSnapshot.results === undefined) {
     db_getUserResults().then((d) => {
       if (d) {
-        // cont();
         showActiveFilters();
       } else {
         setTimeout(() => {
           changePage("");
         }, 500);
-        // console.log("something went wrong");
       }
     });
   } else {
@@ -2621,13 +2330,6 @@ function updateActiveResultEditTagsPanelButtons(active) {
     } else {
       $(obj).removeClass("active");
     }
-    // active.forEach(activetagid => {
-    //   if(activetagid === tagid){
-    //     $(obj).addClass('active');
-    //   }else{
-    //     $(obj).removeClass('active');
-    //   }
-    // })
   });
 }
 
@@ -2701,8 +2403,6 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
           "no tags"
         );
       }
-
-      // refreshAccountPage();
     } else {
       showNotification("Error updating tags", 3000);
     }

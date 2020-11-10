@@ -40,36 +40,7 @@ function updateLeaderboards() {
     `#leaderboardsWrapper .buttons .button[board=${currentLeaderboard}]`
   ).addClass("active");
 
-  // $(
-  //   `#leaderboardsWrapper .leaderboardMode .button[mode=${currentLeaderboard.mode}]`
-  // ).addClass("active");
-
-  // $("#leaderboardsWrapper .leaderboardWords .button").removeClass("active");
-  // $(
-  //   `#leaderboardsWrapper .leaderboardWords .button[words=${currentLeaderboard.words}]`
-  // ).addClass("active");
-
-  // $("#leaderboardsWrapper .leaderboardTime .button").removeClass("active");
-  // $(
-  //   `#leaderboardsWrapper .leaderboardTime .button[time=${currentLeaderboard.time}]`
-  // ).addClass("active");
-
   let boardinfo = currentLeaderboard.split("_");
-
-  // if (boardinfo[0] === "time") {
-  //   $("#leaderboardsWrapper .leaderboardWords").addClass("hidden");
-  //   $("#leaderboardsWrapper .leaderboardTime").removeClass("hidden");
-  // } else if (currentLeaderboard.mode === "words") {
-  //   $("#leaderboardsWrapper .leaderboardWords").removeClass("hidden");
-  //   $("#leaderboardsWrapper .leaderboardTime").addClass("hidden");
-  // }
-
-  // let mode2;
-  // if (currentLeaderboard.mode === "words") {
-  //   mode2 = currentLeaderboard.words;
-  // } else if (currentLeaderboard.mode === "time") {
-  //   mode2 = currentLeaderboard.time;
-  // }
 
   let uid = null;
   if (firebase.auth().currentUser !== null) {
@@ -260,13 +231,3 @@ $("#leaderboardsWrapper .buttons .button").click((e) => {
   currentLeaderboard = $(e.target).attr("board");
   updateLeaderboards();
 });
-
-// $("#leaderboardsWrapper .leaderboardWords .button").click((e) => {
-//   currentLeaderboard.words = $(e.target).attr("words");
-//   updateLeaderboards();
-// });
-
-// $("#leaderboardsWrapper .leaderboardTime .button").click((e) => {
-//   currentLeaderboard.time = $(e.target).attr("time");
-//   updateLeaderboards();
-// });
