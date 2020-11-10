@@ -614,6 +614,46 @@ let commands = {
         window.open("https://discord.gg/monkeytype");
       },
     },
+    {
+      id: "repeatTest",
+      display: "Repeat test",
+      exec: () => {
+        if (resultVisible) {
+          restartTest(true);
+        }
+      },
+    },
+    {
+      id: "practiceMissedWords",
+      display: "Practice missed words",
+      exec: () => {
+        if (resultVisible) {
+          if (Object.keys(missedWords).length > 0) {
+            initPractiseMissedWords();
+          } else {
+            showNotification("You haven't missed any words.", 2000);
+          }
+        }
+      },
+    },
+    {
+      id: "toggleWordHistory",
+      display: "Toggle word history",
+      exec: () => {
+        if (resultVisible) {
+          toggleResultWordsDisplay();
+        }
+      },
+    },
+    {
+      id: "saveScreenshot",
+      display: "Save screenshot",
+      exec: () => {
+        if (resultVisible) {
+          copyResultToClipboard();
+        }
+      },
+    },
   ],
 };
 
