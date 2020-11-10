@@ -4659,9 +4659,9 @@ $(document).keydown((event) => {
       if (!config.showAllLines || config.mode == "time") {
         // let currentTop = Math.floor($($("#words .word")[currentWordIndex]).position().top);
         // let nextTop = Math.floor($($("#words .word")[currentWordIndex + 1]).position().top);
-        if (config.stopOnError != "off") {
-          if (currentWord !== currentInput) return;
-        }
+        // if (config.stopOnError != "off") {
+        //   if (currentWord !== currentInput) return;
+        // }
 
         let currentTop = Math.floor(
           document.querySelectorAll("#words .word")[currentWordElementIndex]
