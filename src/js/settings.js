@@ -818,7 +818,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
   $target.addClass("active");
   setCustomThemeInputs();
   if ($target.attr("tab") == "preset") {
-    setCustomTheme(false, true);
+    setCustomTheme(false);
     applyCustomThemeColors();
     swapElements(
       $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
@@ -826,7 +826,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
       250
     );
   } else {
-    setCustomTheme(true, true);
+    setCustomTheme(true);
     applyCustomThemeColors();
     swapElements(
       $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),

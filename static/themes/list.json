@@ -433,5 +433,10 @@
     "name": "iceberg_light",
     "bgColor": "#e8e9ec",
     "textColor": "#33374c"
+  },
+  {
+    "name": "onedark",
+    "bgColor": "#2f343f",
+    "textColor": "#98c379"
   }
 ]

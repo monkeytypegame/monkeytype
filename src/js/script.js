@@ -866,6 +866,11 @@ function showWords() {
     updateHighlightedKeymapKey();
   }
 
+  updateActiveElement();
+  updateCaretPosition();
+}
+
+$("#restartTestButton, #startTestButton").on("click", function () {
   if (activeFunBox === "memory") {
     memoryFunboxInterval = clearInterval(memoryFunboxInterval);
     memoryFunboxTimer = Math.round(Math.pow(wordsList.length, 1.2));
@@ -879,10 +884,18 @@ function showWords() {
       }
     }, 1000);
   }
+});
 
-  updateActiveElement();
-  updateCaretPosition();
-}
+(function (history) {
+  var pushState = history.pushState;
+  history.pushState = function (state) {
+    if (activeFunBox === "memory" && state !== "/") {
+      memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+      memoryFunboxTimer = null;
+    }
+    return pushState.apply(history, arguments);
+  };
+})(window.history);
 
 function updateActiveElement() {
   let active = document.querySelector("#words .active");
@@ -923,6 +936,23 @@ function compareInput(showError) {
     if (currentWord.slice(0, input.length) == input) {
       // this is when input so far is correct
       correctSoFar = true;
+    }
+    if (!correctSoFar) {
+      if (config.difficulty == "master") {
+        if (!resultVisible) {
+          inputHistory.push(currentInput);
+          correctedHistory.push(currentCorrected);
+          document
+            .querySelector("#words .word.active")
+            .setAttribute("input", currentInput.replace(/'/g, "'"));
+          lastSecondNotRound = true;
+          showResult(true);
+        }
+        let testNow = Date.now();
+        let testSeconds = roundTo2((testNow - testStart) / 1000);
+        incompleteTestSeconds += testSeconds;
+        restartCount++;
+      }
     }
     let classString = correctSoFar ? "correct" : "incorrect";
     if (config.blindMode) {
@@ -4238,9 +4268,6 @@ $(document).keydown((event) => {
       event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
       if (!config.showAllLines || config.mode == "time") {
-        if (config.stopOnError != "off") {
-          if (currentWord !== currentInput) return;
-        }
 
         let currentTop = Math.floor(
           document.querySelectorAll("#words .word")[currentWordElementIndex]

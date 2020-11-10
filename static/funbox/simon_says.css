@@ -3,5 +3,5 @@
 } */
 
 #words .word {
-  color: var(--bg-color) !important;
+  color: transparent !important;
 }
