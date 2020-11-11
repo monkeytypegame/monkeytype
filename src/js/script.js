@@ -1866,8 +1866,12 @@ function showResult(difficultyFailed = false) {
   );
 
   if (!config.startGraphsAtZero) {
-    wpmOverTimeChart.options.scales.yAxes[0].ticks.min = minChartVal;
-    wpmOverTimeChart.options.scales.yAxes[1].ticks.min = minChartVal;
+    wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.min(
+      ...wpmHistory
+    );
+    wpmOverTimeChart.options.scales.yAxes[1].ticks.min = Math.min(
+      ...wpmHistory
+    );
   } else {
     wpmOverTimeChart.options.scales.yAxes[0].ticks.min = 0;
     wpmOverTimeChart.options.scales.yAxes[1].ticks.min = 0;
@@ -4268,7 +4272,6 @@ $(document).keydown((event) => {
       event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
       if (!config.showAllLines || config.mode == "time") {
-
         let currentTop = Math.floor(
           document.querySelectorAll("#words .word")[currentWordElementIndex]
             .offsetTop
