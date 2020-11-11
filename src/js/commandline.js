@@ -654,6 +654,19 @@ let commands = {
         }
       },
     },
+    {
+      id: "changeCustomModeText",
+      display: "Change custom text",
+      exec: () => {
+        if (config.mode === "custom") {
+          showCustomTextPopup();
+          setTimeout(() => {
+            // Workaround to focus textarea since hideCommandLine() will focus test words
+            $("#customTextPopup textarea").focus();
+          }, 150);
+        }
+      },
+    },
   ],
 };
 
