@@ -552,6 +552,15 @@ function setAlwaysShowWordsHistory(val, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
+function toggleAlwaysShowWordsHistory() {
+  let val = !config.alwaysShowWordsHistory;
+  if (val == undefined) {
+    val = false;
+  }
+  config.alwaysShowWordsHistory = val;
+  saveConfigToCookie();
+}
+
 //single list command line
 function setSingleListCommandLine(option, nosave) {
   if (!option) option = "manual";

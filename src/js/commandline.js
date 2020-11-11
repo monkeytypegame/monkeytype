@@ -211,6 +211,13 @@ let commands = {
       },
     },
     {
+      id: "toggleAlwaysShowWordsHistory",
+      display: "Toggle always show words history",
+      exec: () => {
+        toggleAlwaysShowWordsHistory();
+      },
+    },
+    {
       id: "toggleIndicateTypos",
       display: "Toggle indicate typos",
       exec: () => {
