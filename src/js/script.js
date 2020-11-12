@@ -4542,6 +4542,7 @@ $(document).keydown(function (event) {
   if (/Numpad/.test(event.key)) return;
   if (/Volume/.test(event.key)) return;
   if (event.ctrlKey) return;
+  if (event.metaKey) return;
   event = emulateLayout(event);
 
   //start the test
