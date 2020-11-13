@@ -1907,7 +1907,7 @@ function showResult(difficultyFailed = false) {
   } else {
     let activeTags = [];
     try {
-      dbSnapshot.tags.forEach((tag) => {
+      db_getSnapshot().tags.forEach((tag) => {
         if (tag.active === true) {
           activeTags.push(tag.id);
         }
@@ -2073,24 +2073,27 @@ function showResult(difficultyFailed = false) {
                   if (e.data.resultCode === 2) {
                     completedEvent.isPb = true;
                   }
-                  if (dbSnapshot !== null && dbSnapshot.results !== undefined) {
-                    dbSnapshot.results.unshift(completedEvent);
-                    if (dbSnapshot.globalStats.time == undefined) {
-                      dbSnapshot.globalStats.time =
+                  if (
+                    db_getSnapshot() !== null &&
+                    db_getSnapshot().results !== undefined
+                  ) {
+                    db_getSnapshot().results.unshift(completedEvent);
+                    if (db_getSnapshot().globalStats.time == undefined) {
+                      db_getSnapshot().globalStats.time =
                         testtime + completedEvent.incompleteTestSeconds;
                     } else {
-                      dbSnapshot.globalStats.time +=
+                      db_getSnapshot().globalStats.time +=
                         testtime + completedEvent.incompleteTestSeconds;
                     }
-                    if (dbSnapshot.globalStats.started == undefined) {
-                      dbSnapshot.globalStats.started = restartCount + 1;
+                    if (db_getSnapshot().globalStats.started == undefined) {
+                      db_getSnapshot().globalStats.started = restartCount + 1;
                     } else {
-                      dbSnapshot.globalStats.started += restartCount + 1;
+                      db_getSnapshot().globalStats.started += restartCount + 1;
                     }
-                    if (dbSnapshot.globalStats.completed == undefined) {
-                      dbSnapshot.globalStats.completed = 1;
+                    if (db_getSnapshot().globalStats.completed == undefined) {
+                      db_getSnapshot().globalStats.completed = 1;
                     } else {
-                      dbSnapshot.globalStats.completed += 1;
+                      db_getSnapshot().globalStats.completed += 1;
                     }
                   }
                   try {
@@ -2104,7 +2107,7 @@ function showResult(difficultyFailed = false) {
                   if (
                     config.mode === "time" &&
                     (mode2 == "15" || mode2 == "60") &&
-                    dbSnapshot !== null
+                    db_getSnapshot() !== null
                   ) {
                     const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
                     const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
@@ -2113,8 +2116,9 @@ function showResult(difficultyFailed = false) {
                     //global
                     let globalLbString = "";
                     const glb = e.data.globalLeaderboard;
-                    const glbMemory =
-                      dbSnapshot.lbMemory[config.mode + mode2].global;
+                    const glbMemory = db_getSnapshot().lbMemory[
+                      config.mode + mode2
+                    ].global;
                     let dontShowGlobalDiff =
                       glbMemory == null || glbMemory === -1 ? true : false;
                     let globalLbDiff = null;
@@ -2169,8 +2173,9 @@ function showResult(difficultyFailed = false) {
                     //daily
                     let dailyLbString = "";
                     const dlb = e.data.dailyLeaderboard;
-                    const dlbMemory =
-                      dbSnapshot.lbMemory[config.mode + mode2].daily;
+                    const dlbMemory = db_getSnapshot().lbMemory[
+                      config.mode + mode2
+                    ].daily;
                     let dontShowDailyDiff =
                       dlbMemory == null || dlbMemory === -1 ? true : false;
                     let dailyLbDiff = null;
@@ -2226,7 +2231,7 @@ function showResult(difficultyFailed = false) {
 
                     saveLbMemory({
                       uid: firebase.auth().currentUser.uid,
-                      obj: dbSnapshot.lbMemory,
+                      obj: db_getSnapshot().lbMemory,
                     }).then((d) => {
                       if (d.data.returnCode === 1) {
                       } else {
@@ -2399,7 +2404,7 @@ function showResult(difficultyFailed = false) {
 
   let tagsText = "";
   try {
-    dbSnapshot.tags.forEach((tag) => {
+    db_getSnapshot().tags.forEach((tag) => {
       if (tag.active === true) {
         tagsText += "<br>" + tag.name;
       }
@@ -3351,7 +3356,7 @@ function updateTestModesNotice() {
 
   let tagsString = "";
   try {
-    dbSnapshot.tags.forEach((tag) => {
+    db_getSnapshot().tags.forEach((tag) => {
       if (tag.active === true) {
         tagsString += tag.name + ", ";
       }
@@ -3412,7 +3417,7 @@ function tagsEdit() {
         let status = e.data.resultCode;
         if (status === 1) {
           showNotification("Tag added", 2000);
-          dbSnapshot.tags.push({
+          db_getSnapshot().tags.push({
             name: inputVal,
             id: e.data.id,
           });
@@ -3437,7 +3442,7 @@ function tagsEdit() {
       let status = e.data.resultCode;
       if (status === 1) {
         showNotification("Tag updated", 2000);
-        dbSnapshot.tags.forEach((tag) => {
+        db_getSnapshot().tags.forEach((tag) => {
           if (tag.id === tagid) {
             tag.name = inputVal;
           }
@@ -3459,9 +3464,9 @@ function tagsEdit() {
         let status = e.data.resultCode;
         if (status === 1) {
           showNotification("Tag removed", 2000);
-          dbSnapshot.tags.forEach((tag, index) => {
+          db_getSnapshot().tags.forEach((tag, index) => {
             if (tag.id === tagid) {
-              dbSnapshot.tags.splice(index, 1);
+              db_getSnapshot().tags.splice(index, 1);
             }
           });
           updateResultEditTagsPanelButtons();

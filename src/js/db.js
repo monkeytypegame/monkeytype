@@ -3,7 +3,15 @@ db.settings({ experimentalForceLongPolling: true });
 
 let dbSnapshot = null;
 
-async function db_getUserSnapshot() {
+export function db_getSnapshot() {
+  return dbSnapshot;
+}
+
+export function db_setSnapshot(newSnapshot) {
+  dbSnapshot = newSnapshot;
+}
+
+export async function db_getUserSnapshot() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
   let snap = {
@@ -71,7 +79,7 @@ async function db_getUserSnapshot() {
   return dbSnapshot;
 }
 
-async function db_getUserResults() {
+export async function db_getUserResults() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
   if (dbSnapshot === null) return false;
@@ -103,7 +111,7 @@ async function db_getUserResults() {
   }
 }
 
-async function db_getUserHighestWpm(
+export async function db_getUserHighestWpm(
   mode,
   mode2,
   punctuation,
@@ -137,7 +145,13 @@ async function db_getUserHighestWpm(
   return retval;
 }
 
-async function db_getLocalPB(mode, mode2, punctuation, language, difficulty) {
+export async function db_getLocalPB(
+  mode,
+  mode2,
+  punctuation,
+  language,
+  difficulty
+) {
   function cont() {
     let ret = 0;
     try {
@@ -164,7 +178,7 @@ async function db_getLocalPB(mode, mode2, punctuation, language, difficulty) {
   return retval;
 }
 
-async function db_saveLocalPB(
+export async function db_saveLocalPB(
   mode,
   mode2,
   punctuation,
