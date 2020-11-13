@@ -1,3 +1,5 @@
+//this file should be concatenated at the top of the legacy js files
+
 import {
   db_getSnapshot,
   db_setSnapshot,

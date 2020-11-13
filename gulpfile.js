@@ -101,6 +101,7 @@ const globalSrc = [
   "./src/js/settings.js",
   "./src/js/account.js",
   "./src/js/script.js",
+  "./src/js/exports.js",
 ];
 
 //concatenates and lints legacy js files and writes the output to dist/gen/index.js
