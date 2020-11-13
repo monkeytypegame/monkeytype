@@ -19,7 +19,6 @@ let eslintConfig = {
     "moment",
     "html2canvas",
     "ClipboardItem",
-    "Chart",
   ],
   envs: ["es6", "browser", "node"],
   rules: {
