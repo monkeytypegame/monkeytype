@@ -214,6 +214,17 @@ const layouts = {
             " "
         ]
     },
+    bepo: {
+        keymapShowTopRow: false,
+        iso: true,
+        keys: [
+            "$#", "\"1", "«2", "»3", "(4", ")5", "@6", "+7", "-8", "/9", "*0", "=°", "%`",
+            "bB", "éÉ", "pP", "oO", "èÈ", "^!", "vV", "dD", "lL", "jJ", "zZ", "wW", "mM",
+            "aA", "uU", "iI", "eE", ",;", "cC", "tT", "sS", "rR", "sS", "nN",
+            "êÊ", "àÀ", "yY", "xX", ".:", "kK", "’?", "qQ", "gG", "hH", "fF",
+            "  "
+        ]
+    },
     alpha: {
         keymapShowTopRow: false,
         keys: [
