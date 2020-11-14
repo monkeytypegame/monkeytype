@@ -1006,6 +1006,10 @@ exports.testCompleted = functions
           //yeet the key data
           obj.keySpacing = null;
           obj.keyDuration = null;
+          obj.keyDurationStats.average = roundTo2(obj.keyDurationStats.average);
+          obj.keyDurationStats.sd = roundTo2(obj.keyDurationStats.sd);
+          obj.keySpacingStats.average = roundTo2(obj.keySpacingStats.average);
+          obj.keySpacingStats.sd = roundTo2(obj.keySpacingStats.sd);
 
           return db
             .collection(`users/${request.uid}/results`)
