@@ -1877,16 +1877,21 @@ function showResult(difficultyFailed = false) {
     wpmOverTimeChart.options.scales.yAxes[1].ticks.min = 0;
   }
 
-  let errorsNoZero = [];
+  // let errorsNoZero = [];
 
+  // for (let i = 0; i < errorsPerSecond.length; i++) {
+  //   errorsNoZero.push({
+  //     x: i + 1,
+  //     y: errorsPerSecond[i].count,
+  //   });
+  // }
+
+  let errorsArray = [];
   for (let i = 0; i < errorsPerSecond.length; i++) {
-    errorsNoZero.push({
-      x: i + 1,
-      y: errorsPerSecond[i].count,
-    });
+    errorsArray.push(errorsPerSecond[i].count);
   }
 
-  wpmOverTimeChart.data.datasets[2].data = errorsNoZero;
+  wpmOverTimeChart.data.datasets[2].data = errorsArray;
 
   let kps = keypressPerSecond.slice(Math.max(keypressPerSecond.length - 5, 0));
 
@@ -1917,7 +1922,7 @@ function showResult(difficultyFailed = false) {
     let chartData = {
       wpm: wpmHistory,
       raw: rawWpmPerSecond,
-      err: errorsNoZero,
+      err: errorsArray,
     };
 
     if (testtime > 122) {
@@ -4868,12 +4873,12 @@ let wpmOverTimeChart = new Chart(ctx, {
         radius: function (context) {
           var index = context.dataIndex;
           var value = context.dataset.data[index];
-          return value.y <= 0 ? 0 : 3;
+          return value <= 0 ? 0 : 3;
         },
         pointHoverRadius: function (context) {
           var index = context.dataIndex;
           var value = context.dataset.data[index];
-          return value.y <= 0 ? 0 : 5;
+          return value <= 0 ? 0 : 5;
         },
       },
     ],

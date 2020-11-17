@@ -735,12 +735,12 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
         radius: function (context) {
           var index = context.dataIndex;
           var value = context.dataset.data[index];
-          return value.y <= 0 ? 0 : 3;
+          return value <= 0 ? 0 : 3;
         },
         pointHoverRadius: function (context) {
           var index = context.dataIndex;
           var value = context.dataset.data[index];
-          return value.y <= 0 ? 0 : 5;
+          return value <= 0 ? 0 : 5;
         },
       },
     ],
