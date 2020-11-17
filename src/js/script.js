@@ -733,6 +733,14 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
   ) {
     //1% chance to add a dash
     word = "-";
+  } else if (
+    Math.random() < 0.01 &&
+    getLastChar(previousWord) != "," &&
+    getLastChar(previousWord) != "." &&
+    getLastChar(previousWord) != ";"
+  ) {
+    //1% chance to add semicolon
+    word = word + ";";
   } else if (Math.random() < 0.2 && getLastChar(previousWord) != ",") {
     //2% chance to add a comma
     word += ",";
