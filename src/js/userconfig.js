@@ -301,7 +301,6 @@ function loadActiveTagsFromCookie() {
     } catch (e) {
       newTags = {};
     }
-    newTags = JSON.parse(newTags);
     newTags.forEach((ntag) => {
       toggleTag(ntag, true);
     });
