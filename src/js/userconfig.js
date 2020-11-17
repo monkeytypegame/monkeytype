@@ -149,8 +149,12 @@ function loadConfigFromCookie() {
   console.log("loading cookie config");
   // let newConfig = $.cookie("config");
   let newConfig = getCookie("config");
-  if (newConfig !== undefined) {
-    newConfig = JSON.parse(newConfig);
+  if (newConfig !== undefined && newConfig !== "") {
+    try {
+      newConfig = JSON.parse(newConfig);
+    } catch (e) {
+      newConfig = {};
+    }
     applyConfig(newConfig);
     console.log("applying cookie config");
     cookieConfig = newConfig;
@@ -292,6 +296,11 @@ function loadActiveTagsFromCookie() {
   // let newTags = $.cookie("activeTags");
   let newTags = getCookie("activeTags");
   if (newTags !== undefined && newTags !== "") {
+    try {
+      newTags = JSON.parse(newTags);
+    } catch (e) {
+      newTags = {};
+    }
     newTags = JSON.parse(newTags);
     newTags.forEach((ntag) => {
       toggleTag(ntag, true);
