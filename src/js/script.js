@@ -733,6 +733,14 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
   ) {
     //1% chance to add a dash
     word = "-";
+  } else if (
+    Math.random() < 0.01 &&
+    getLastChar(previousWord) != "," &&
+    getLastChar(previousWord) != "." &&
+    getLastChar(previousWord) != ";"
+  ) {
+    //1% chance to add semicolon
+    word = word + ";";
   } else if (Math.random() < 0.2 && getLastChar(previousWord) != ",") {
     //2% chance to add a comma
     word += ",";
@@ -1424,9 +1432,13 @@ function updateCaretPosition() {
     currentLetterIndex = 0;
   }
   try {
-    let currentLetter = document
+    let currentWordNodeList = document
       .querySelector("#words .active")
-      .querySelectorAll("letter")[currentLetterIndex];
+      .querySelectorAll("letter");
+    let currentLetter = currentWordNodeList[currentLetterIndex];
+    if (inputLen > currentWordNodeList.length) {
+      currentLetter = currentWordNodeList[currentWordNodeList.length - 1];
+    }
 
     if ($(currentLetter).length == 0) return;
     const isLanguageLeftToRight = currentLanguage.leftToRight;
@@ -1877,16 +1889,21 @@ function showResult(difficultyFailed = false) {
     wpmOverTimeChart.options.scales.yAxes[1].ticks.min = 0;
   }
 
-  let errorsNoZero = [];
+  // let errorsNoZero = [];
 
+  // for (let i = 0; i < errorsPerSecond.length; i++) {
+  //   errorsNoZero.push({
+  //     x: i + 1,
+  //     y: errorsPerSecond[i].count,
+  //   });
+  // }
+
+  let errorsArray = [];
   for (let i = 0; i < errorsPerSecond.length; i++) {
-    errorsNoZero.push({
-      x: i + 1,
-      y: errorsPerSecond[i].count,
-    });
+    errorsArray.push(errorsPerSecond[i].count);
   }
 
-  wpmOverTimeChart.data.datasets[2].data = errorsNoZero;
+  wpmOverTimeChart.data.datasets[2].data = errorsArray;
 
   let kps = keypressPerSecond.slice(Math.max(keypressPerSecond.length - 5, 0));
 
@@ -1917,7 +1934,7 @@ function showResult(difficultyFailed = false) {
     let chartData = {
       wpm: wpmHistory,
       raw: rawWpmPerSecond,
-      err: errorsNoZero,
+      err: errorsArray,
     };
 
     if (testtime > 122) {
@@ -4868,12 +4885,12 @@ let wpmOverTimeChart = new Chart(ctx, {
         radius: function (context) {
           var index = context.dataIndex;
           var value = context.dataset.data[index];
-          return value.y <= 0 ? 0 : 3;
+          return value <= 0 ? 0 : 3;
         },
         pointHoverRadius: function (context) {
           var index = context.dataIndex;
           var value = context.dataset.data[index];
-          return value.y <= 0 ? 0 : 5;
+          return value <= 0 ? 0 : 5;
         },
       },
     ],
