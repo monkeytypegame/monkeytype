@@ -1,8 +1,6 @@
 // this file should be concatenated at the top of the legacy js files
 
-// this refuses to work with ES6 syntax, TODO
-var $, jQuery;
-$ = jQuery = require("jquery");
+import $ from "jquery";
 import "jquery-color";
 import "jquery-easing";
 import "jquery.cookie";
