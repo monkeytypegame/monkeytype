@@ -1,13 +1,20 @@
 // this file should be concatenated at the top of the legacy js files
 
+// this refuses to work with ES6 syntax, TODO
+var $, jQuery;
+$ = jQuery = require("jquery");
+import "jquery-color";
+import "jquery-easing";
+import "jquery.cookie";
+
 import Chart from "chart.js";
 import chartTrendline from "chartjs-plugin-trendline";
 import chartAnnotation from "chartjs-plugin-annotation";
-
-import moment from "moment";
-
 Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
+
+import moment from "moment";
+import html2canvas from "html2canvas";
 
 import {
   db_getSnapshot,

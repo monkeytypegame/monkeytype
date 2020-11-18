@@ -12,7 +12,7 @@ sass.compiler = require("dart-sass");
 
 let eslintConfig = {
   parser: "babel-eslint",
-  globals: ["jQuery", "$", "firebase", "html2canvas", "ClipboardItem"],
+  globals: ["firebase", "ClipboardItem"],
   envs: ["es6", "browser", "node"],
   rules: {
     "constructor-super": "error",
