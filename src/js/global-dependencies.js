@@ -1,8 +1,10 @@
-//this file should be concatenated at the top of the legacy js files
+// this file should be concatenated at the top of the legacy js files
 
 import Chart from "chart.js";
 import chartTrendline from "chartjs-plugin-trendline";
 import chartAnnotation from "chartjs-plugin-annotation";
+
+import moment from "moment";
 
 Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
