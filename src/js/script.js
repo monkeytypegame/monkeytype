@@ -1424,9 +1424,13 @@ function updateCaretPosition() {
     currentLetterIndex = 0;
   }
   try {
-    let currentLetter = document
+    let currentWordNodeList = document
       .querySelector("#words .active")
-      .querySelectorAll("letter")[currentLetterIndex];
+      .querySelectorAll("letter");
+    let currentLetter = currentWordNodeList[currentLetterIndex];
+    if (inputLen > currentWordNodeList.length) {
+      currentLetter = currentWordNodeList[currentWordNodeList.length - 1];
+    }
 
     if ($(currentLetter).length == 0) return;
     const isLanguageLeftToRight = currentLanguage.leftToRight;
