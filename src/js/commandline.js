@@ -580,31 +580,26 @@ let commands = {
               id: "bailOutForSure",
               display: "Yes, I am sure",
               exec: () => {
-                if (
-                  (config.mode === "custom" &&
-                    customTextIsRandom &&
-                    customTextWordCount >= 5000) ||
-                  (config.mode === "custom" &&
-                    !customTextIsRandom &&
-                    customText.length >= 5000) ||
-                  (config.mode === "words" && config.words >= 5000) ||
-                  config.words === 0 ||
-                  (config.mode === "time" &&
-                    (config.time >= 3600 || config.time === 0))
-                ) {
-                  bailout = true;
-                  showResult();
-                } else {
-                  showNotification(
-                    "You can only bailout out of test longer than 3600 seconds / 5000 words.",
-                    5000
-                  );
-                }
+                bailout = true;
+                showResult();
               },
             },
           ],
         });
         showCommandLine();
+      },
+      available: () => {
+        return (
+          (config.mode === "custom" &&
+            customTextIsRandom &&
+            customTextWordCount >= 5000) ||
+          (config.mode === "custom" &&
+            !customTextIsRandom &&
+            customText.length >= 5000) ||
+          (config.mode === "words" && config.words >= 5000) ||
+          config.words === 0 ||
+          (config.mode === "time" && (config.time >= 3600 || config.time === 0))
+        );
       },
     },
     {
@@ -618,53 +613,51 @@ let commands = {
       id: "repeatTest",
       display: "Repeat test",
       exec: () => {
-        if (resultVisible) {
-          restartTest(true);
-        }
+        restartTest(true);
+      },
+      available: () => {
+        return resultVisible;
       },
     },
     {
       id: "practiceMissedWords",
       display: "Practice missed words",
       exec: () => {
-        if (resultVisible) {
-          if (Object.keys(missedWords).length > 0) {
-            initPractiseMissedWords();
-          } else {
-            showNotification("You haven't missed any words.", 2000);
-          }
-        }
+        initPractiseMissedWords();
+      },
+      available: () => {
+        return resultVisible && Object.keys(missedWords).length > 0;
       },
     },
     {
       id: "toggleWordHistory",
       display: "Toggle word history",
       exec: () => {
-        if (resultVisible) {
-          toggleResultWordsDisplay();
-        }
+        toggleResultWordsDisplay();
+      },
+      available: () => {
+        return resultVisible;
       },
     },
     {
       id: "saveScreenshot",
       display: "Save screenshot",
       exec: () => {
-        if (resultVisible) {
-          copyResultToClipboard();
-        }
+        copyResultToClipboard();
+      },
+      available: () => {
+        return resultVisible;
       },
     },
     {
       id: "changeCustomModeText",
       display: "Change custom text",
       exec: () => {
-        if (config.mode === "custom") {
-          showCustomTextPopup();
-          setTimeout(() => {
-            // Workaround to focus textarea since hideCommandLine() will focus test words
-            $("#customTextPopup textarea").focus();
-          }, 150);
-        }
+        showCustomTextPopup();
+        setTimeout(() => {
+          // Workaround to focus textarea since hideCommandLine() will focus test words
+          $("#customTextPopup textarea").focus();
+        }, 150);
       },
     },
   ],
@@ -2036,7 +2029,7 @@ function displayFoundCommands() {
   $("#commandLine .suggestions").empty();
   let list = currentCommands[currentCommands.length - 1];
   $.each(list.list, (index, obj) => {
-    if (obj.found) {
+    if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
       $("#commandLine .suggestions").append(
         '<div class="entry" command="' + obj.id + '">' + obj.display + "</div>"
       );
