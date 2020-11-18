@@ -829,358 +829,347 @@ async function incrementTimeSpentTyping(uid, res, userData) {
   }
 }
 
-exports.testCompleted = functions
-  .runWith({ timeoutSeconds: 540, memory: "2GB" })
-  .https.onRequest(async (request, response) => {
-    response.set("Access-Control-Allow-Origin", "*");
-    if (request.method === "OPTIONS") {
-      // Send response to OPTIONS requests
-      response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-      response.set(
-        "Access-Control-Allow-Headers",
-        "Authorization,Content-Type"
-      );
-      response.set("Access-Control-Max-Age", "3600");
-      response.status(204).send("");
-      return;
-    }
-    request = request.body.data;
-    if (request === undefined) {
+exports.testCompleted = functions.https.onRequest(async (request, response) => {
+  response.set("Access-Control-Allow-Origin", "*");
+  if (request.method === "OPTIONS") {
+    // Send response to OPTIONS requests
+    response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    response.set("Access-Control-Allow-Headers", "Authorization,Content-Type");
+    response.set("Access-Control-Max-Age", "3600");
+    response.status(204).send("");
+    return;
+  }
+  request = request.body.data;
+  if (request === undefined) {
+    response.status(200).send({ data: { resultCode: -999 } });
+    return;
+  }
+  try {
+    if (request.uid === undefined || request.obj === undefined) {
+      console.error(`error saving result for - missing input`);
       response.status(200).send({ data: { resultCode: -999 } });
       return;
     }
-    try {
-      if (request.uid === undefined || request.obj === undefined) {
-        console.error(`error saving result for - missing input`);
-        response.status(200).send({ data: { resultCode: -999 } });
-        return;
-      }
 
-      let obj = request.obj;
+    let obj = request.obj;
 
-      function verifyValue(val) {
-        let errCount = 0;
-        if (Array.isArray(val)) {
-          //array
-          val.forEach((val2) => {
-            errCount += verifyValue(val2);
-          });
-        } else if (typeof val === "object" && !Array.isArray(val)) {
-          //object
-          Object.keys(val).forEach((valkey) => {
-            errCount += verifyValue(val[valkey]);
-          });
-        } else {
-          if (!/^[0-9a-zA-Z._]+$/.test(val)) errCount++;
-        }
-        return errCount;
-      }
-
-      let errCount = verifyValue(obj);
-      // console.log(errCount);
-      if (errCount > 0) {
-        console.error(
-          `error saving result for ${
-            request.uid
-          } error count ${errCount} - bad input - ${JSON.stringify(
-            request.obj
-          )}`
-        );
-        response.status(200).send({ data: { resultCode: -1 } });
-        return;
-      }
-
-      if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
-        response.status(200).send({ data: { resultCode: -1 } });
-        return;
-      }
-
-      if (!validateResult(obj)) {
-        if (
-          obj.bailedOut &&
-          ((obj.mode === "time" && obj.mode2 >= 3600) ||
-            (obj.mode === "words" && obj.mode2 >= 5000) ||
-            obj.mode === "custom")
-        ) {
-          //dont give an error
-        } else {
-          response.status(200).send({ data: { resultCode: -4 } });
-          return;
-        }
-      }
-
-      let keySpacing = null;
-      let keyDuration = null;
-
-      try {
-        keySpacing = {
-          average:
-            obj.keySpacing.reduce(
-              (previous, current) => (current += previous)
-            ) / obj.keySpacing.length,
-          sd: stdDev(obj.keySpacing),
-        };
-
-        keyDuration = {
-          average:
-            obj.keyDuration.reduce(
-              (previous, current) => (current += previous)
-            ) / obj.keyDuration.length,
-          sd: stdDev(obj.keyDuration),
-        };
-      } catch (e) {
-        console.error(
-          `cant verify key spacing or duration for user ${request.uid}! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
-        );
-      }
-
-      obj.keySpacingStats = keySpacing;
-      obj.keyDurationStats = keyDuration;
-
-      if (obj.mode == "time" && (obj.mode2 == 15 || obj.mode2 == 60)) {
+    function verifyValue(val) {
+      let errCount = 0;
+      if (Array.isArray(val)) {
+        //array
+        val.forEach((val2) => {
+          errCount += verifyValue(val2);
+        });
+      } else if (typeof val === "object" && !Array.isArray(val)) {
+        //object
+        Object.keys(val).forEach((valkey) => {
+          errCount += verifyValue(val[valkey]);
+        });
       } else {
-        obj.keySpacing = "removed";
-        obj.keyDuration = "removed";
+        if (!/^[0-9a-zA-Z._]+$/.test(val)) errCount++;
       }
+      return errCount;
+    }
 
-      emailVerified = await admin
-        .auth()
-        .getUser(request.uid)
-        .then((user) => {
-          return user.emailVerified;
-        });
-
-      return db
-        .collection("users")
-        .doc(request.uid)
-        .get()
-        .then((ret) => {
-          let userdata = ret.data();
-          let name = userdata.name === undefined ? false : userdata.name;
-          let banned = userdata.banned === undefined ? false : userdata.banned;
-          let verified = userdata.verified;
-          request.obj.name = name;
-
-          //check keyspacing and duration here
-          if (obj.mode === "time" && obj.wpm > 130 && obj.testDuration < 122) {
-            if (verified === false || verified === undefined) {
-              if (keySpacing !== null && keyDuration !== null) {
-                if (
-                  keySpacing.sd <= 15 ||
-                  keyDuration.sd <= 10 ||
-                  keyDuration.average < 15 ||
-                  (obj.wpm > 200 && obj.consistency < 70)
-                ) {
-                  console.error(
-                    `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
-                      obj.acc
-                    }) ${request.uid} ${name} - spacing ${JSON.stringify(
-                      keySpacing
-                    )} duration ${JSON.stringify(keyDuration)}`
-                  );
-                  response.status(200).send({ data: { resultCode: -2 } });
-                  return;
-                }
-                if (
-                  (keySpacing.sd > 15 && keySpacing.sd <= 25) ||
-                  (keyDuration.sd > 10 && keyDuration.sd <= 15) ||
-                  (keyDuration.average > 15 && keyDuration.average <= 20)
-                ) {
-                  console.error(
-                    `very close to bot detected threshold by user (${obj.wpm} ${
-                      obj.rawWpm
-                    } ${obj.acc}) ${
-                      request.uid
-                    } ${name} - spacing ${JSON.stringify(
-                      keySpacing
-                    )} duration ${JSON.stringify(keyDuration)}`
-                  );
-                }
-              } else {
-                response.status(200).send({ data: { resultCode: -3 } });
-                return;
-              }
-            }
-          }
-
-          //yeet the key data
-          obj.keySpacing = null;
-          obj.keyDuration = null;
-          try {
-            obj.keyDurationStats.average = roundTo2(
-              obj.keyDurationStats.average
-            );
-            obj.keyDurationStats.sd = roundTo2(obj.keyDurationStats.sd);
-            obj.keySpacingStats.average = roundTo2(obj.keySpacingStats.average);
-            obj.keySpacingStats.sd = roundTo2(obj.keySpacingStats.sd);
-          } catch (e) {}
-
-          return db
-            .collection(`users/${request.uid}/results`)
-            .add(obj)
-            .then((e) => {
-              let createdDocId = e.id;
-              return Promise.all([
-                checkLeaderboards(
-                  request.obj,
-                  "global",
-                  banned,
-                  name,
-                  verified,
-                  emailVerified
-                ),
-                checkLeaderboards(
-                  request.obj,
-                  "daily",
-                  banned,
-                  name,
-                  verified,
-                  emailVerified
-                ),
-                checkIfPB(request.uid, request.obj, userdata),
-              ])
-                .then(async (values) => {
-                  let globallb = values[0].insertedAt;
-                  let dailylb = values[1].insertedAt;
-                  let ispb = values[2];
-                  // console.log(values);
-
-                  if (obj.mode === "time" && String(obj.mode2) === "60") {
-                    incrementT60Bananas(request.uid, obj, userdata);
-                  }
-
-                  incrementTestCounter(request.uid, userdata);
-                  incrementStartedTestCounter(
-                    request.uid,
-                    obj.restartCount + 1,
-                    userdata
-                  );
-                  incrementTimeSpentTyping(request.uid, obj, userdata);
-
-                  let usr =
-                    userdata.discordId !== undefined
-                      ? userdata.discordId
-                      : userdata.name;
-
-                  if (
-                    globallb !== null &&
-                    globallb.insertedAt >= 0 &&
-                    globallb.insertedAt <= 9 &&
-                    globallb.newBest
-                  ) {
-                    let lbstring = `${obj.mode} ${obj.mode2} global`;
-                    console.log(
-                      `sending command to the bot to announce lb update ${
-                        userdata.discordId
-                      } ${globallb + 1} ${lbstring} ${obj.wpm}`
-                    );
-
-                    announceLbUpdate(
-                      usr,
-                      globallb.insertedAt + 1,
-                      lbstring,
-                      obj.wpm,
-                      obj.rawWpm,
-                      obj.acc
-                    );
-                  }
-
-                  let returnobj = {
-                    resultCode: null,
-                    globalLeaderboard: globallb,
-                    dailyLeaderboard: dailylb,
-                    lbBanned: banned,
-                    name: name,
-                    createdId: createdDocId,
-                    needsToVerify: values[0].needsToVerify,
-                    needsToVerifyEmail: values[0].needsToVerifyEmail,
-                  };
-
-                  if (ispb) {
-                    let logobj = request.obj;
-                    logobj.keySpacing = "removed";
-                    logobj.keyDuration = "removed";
-                    console.log(
-                      `saved result for ${
-                        request.uid
-                      } (new PB) - ${JSON.stringify(logobj)}`
-                    );
-                    await db
-                      .collection(`users/${request.uid}/results/`)
-                      .doc(createdDocId)
-                      .update({ isPb: true });
-                    if (
-                      obj.mode === "time" &&
-                      String(obj.mode2) === "60" &&
-                      userdata.discordId !== null &&
-                      userdata.discordId !== undefined
-                    ) {
-                      if (verified !== false) {
-                        console.log(
-                          `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
-                        );
-                        updateDiscordRole(
-                          userdata.discordId,
-                          Math.round(obj.wpm)
-                        );
-                      }
-                    }
-                    returnobj.resultCode = 2;
-                  } else {
-                    let logobj = request.obj;
-                    logobj.keySpacing = "removed";
-                    logobj.keyDuration = "removed";
-                    console.log(
-                      `saved result for ${request.uid} - ${JSON.stringify(
-                        logobj
-                      )}`
-                    );
-                    returnobj.resultCode = 1;
-                  }
-                  response.status(200).send({ data: returnobj });
-                  return;
-                })
-                .catch((e) => {
-                  console.error(
-                    `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
-                  );
-                  response
-                    .status(200)
-                    .send({ data: { resultCode: -999, message: e.message } });
-                  return;
-                });
-            })
-            .catch((e) => {
-              console.error(
-                `error saving result when adding result to the db for ${request.uid} - ${e.message}`
-              );
-              response
-                .status(200)
-                .send({ data: { resultCode: -999, message: e.message } });
-              return;
-            });
-        })
-        .catch((e) => {
-          console.error(
-            `error saving result when getting user data for ${request.uid} - ${e.message}`
-          );
-          response
-            .status(200)
-            .send({ data: { resultCode: -999, message: e.message } });
-          return;
-        });
-    } catch (e) {
+    let errCount = verifyValue(obj);
+    // console.log(errCount);
+    if (errCount > 0) {
       console.error(
-        `error saving result for ${request.uid} - ${JSON.stringify(
-          request.obj
-        )} - ${e}`
+        `error saving result for ${
+          request.uid
+        } error count ${errCount} - bad input - ${JSON.stringify(request.obj)}`
       );
-      response
-        .status(200)
-        .send({ data: { resultCode: -999, message: e.message } });
+      response.status(200).send({ data: { resultCode: -1 } });
       return;
     }
-  });
+
+    if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
+      response.status(200).send({ data: { resultCode: -1 } });
+      return;
+    }
+
+    if (!validateResult(obj)) {
+      if (
+        obj.bailedOut &&
+        ((obj.mode === "time" && obj.mode2 >= 3600) ||
+          (obj.mode === "words" && obj.mode2 >= 5000) ||
+          obj.mode === "custom")
+      ) {
+        //dont give an error
+      } else {
+        response.status(200).send({ data: { resultCode: -4 } });
+        return;
+      }
+    }
+
+    let keySpacing = null;
+    let keyDuration = null;
+
+    try {
+      keySpacing = {
+        average:
+          obj.keySpacing.reduce((previous, current) => (current += previous)) /
+          obj.keySpacing.length,
+        sd: stdDev(obj.keySpacing),
+      };
+
+      keyDuration = {
+        average:
+          obj.keyDuration.reduce((previous, current) => (current += previous)) /
+          obj.keyDuration.length,
+        sd: stdDev(obj.keyDuration),
+      };
+    } catch (e) {
+      console.error(
+        `cant verify key spacing or duration for user ${request.uid}! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
+      );
+    }
+
+    obj.keySpacingStats = keySpacing;
+    obj.keyDurationStats = keyDuration;
+
+    if (obj.mode == "time" && (obj.mode2 == 15 || obj.mode2 == 60)) {
+    } else {
+      obj.keySpacing = "removed";
+      obj.keyDuration = "removed";
+    }
+
+    emailVerified = await admin
+      .auth()
+      .getUser(request.uid)
+      .then((user) => {
+        return user.emailVerified;
+      });
+
+    return db
+      .collection("users")
+      .doc(request.uid)
+      .get()
+      .then((ret) => {
+        let userdata = ret.data();
+        let name = userdata.name === undefined ? false : userdata.name;
+        let banned = userdata.banned === undefined ? false : userdata.banned;
+        let verified = userdata.verified;
+        request.obj.name = name;
+
+        //check keyspacing and duration here
+        if (obj.mode === "time" && obj.wpm > 130 && obj.testDuration < 122) {
+          if (verified === false || verified === undefined) {
+            if (keySpacing !== null && keyDuration !== null) {
+              if (
+                keySpacing.sd <= 15 ||
+                keyDuration.sd <= 10 ||
+                keyDuration.average < 15 ||
+                (obj.wpm > 200 && obj.consistency < 70)
+              ) {
+                console.error(
+                  `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
+                    obj.acc
+                  }) ${request.uid} ${name} - spacing ${JSON.stringify(
+                    keySpacing
+                  )} duration ${JSON.stringify(keyDuration)}`
+                );
+                response.status(200).send({ data: { resultCode: -2 } });
+                return;
+              }
+              if (
+                (keySpacing.sd > 15 && keySpacing.sd <= 25) ||
+                (keyDuration.sd > 10 && keyDuration.sd <= 15) ||
+                (keyDuration.average > 15 && keyDuration.average <= 20)
+              ) {
+                console.error(
+                  `very close to bot detected threshold by user (${obj.wpm} ${
+                    obj.rawWpm
+                  } ${obj.acc}) ${
+                    request.uid
+                  } ${name} - spacing ${JSON.stringify(
+                    keySpacing
+                  )} duration ${JSON.stringify(keyDuration)}`
+                );
+              }
+            } else {
+              response.status(200).send({ data: { resultCode: -3 } });
+              return;
+            }
+          }
+        }
+
+        //yeet the key data
+        obj.keySpacing = null;
+        obj.keyDuration = null;
+        try {
+          obj.keyDurationStats.average = roundTo2(obj.keyDurationStats.average);
+          obj.keyDurationStats.sd = roundTo2(obj.keyDurationStats.sd);
+          obj.keySpacingStats.average = roundTo2(obj.keySpacingStats.average);
+          obj.keySpacingStats.sd = roundTo2(obj.keySpacingStats.sd);
+        } catch (e) {}
+
+        return db
+          .collection(`users/${request.uid}/results`)
+          .add(obj)
+          .then((e) => {
+            let createdDocId = e.id;
+            return Promise.all([
+              checkLeaderboards(
+                request.obj,
+                "global",
+                banned,
+                name,
+                verified,
+                emailVerified
+              ),
+              checkLeaderboards(
+                request.obj,
+                "daily",
+                banned,
+                name,
+                verified,
+                emailVerified
+              ),
+              checkIfPB(request.uid, request.obj, userdata),
+            ])
+              .then(async (values) => {
+                let globallb = values[0].insertedAt;
+                let dailylb = values[1].insertedAt;
+                let ispb = values[2];
+                // console.log(values);
+
+                if (obj.mode === "time" && String(obj.mode2) === "60") {
+                  incrementT60Bananas(request.uid, obj, userdata);
+                }
+
+                incrementTestCounter(request.uid, userdata);
+                incrementStartedTestCounter(
+                  request.uid,
+                  obj.restartCount + 1,
+                  userdata
+                );
+                incrementTimeSpentTyping(request.uid, obj, userdata);
+
+                let usr =
+                  userdata.discordId !== undefined
+                    ? userdata.discordId
+                    : userdata.name;
+
+                if (
+                  globallb !== null &&
+                  globallb.insertedAt >= 0 &&
+                  globallb.insertedAt <= 9 &&
+                  globallb.newBest
+                ) {
+                  let lbstring = `${obj.mode} ${obj.mode2} global`;
+                  console.log(
+                    `sending command to the bot to announce lb update ${
+                      userdata.discordId
+                    } ${globallb + 1} ${lbstring} ${obj.wpm}`
+                  );
+
+                  announceLbUpdate(
+                    usr,
+                    globallb.insertedAt + 1,
+                    lbstring,
+                    obj.wpm,
+                    obj.rawWpm,
+                    obj.acc
+                  );
+                }
+
+                let returnobj = {
+                  resultCode: null,
+                  globalLeaderboard: globallb,
+                  dailyLeaderboard: dailylb,
+                  lbBanned: banned,
+                  name: name,
+                  createdId: createdDocId,
+                  needsToVerify: values[0].needsToVerify,
+                  needsToVerifyEmail: values[0].needsToVerifyEmail,
+                };
+
+                if (ispb) {
+                  let logobj = request.obj;
+                  logobj.keySpacing = "removed";
+                  logobj.keyDuration = "removed";
+                  console.log(
+                    `saved result for ${
+                      request.uid
+                    } (new PB) - ${JSON.stringify(logobj)}`
+                  );
+                  await db
+                    .collection(`users/${request.uid}/results/`)
+                    .doc(createdDocId)
+                    .update({ isPb: true });
+                  if (
+                    obj.mode === "time" &&
+                    String(obj.mode2) === "60" &&
+                    userdata.discordId !== null &&
+                    userdata.discordId !== undefined
+                  ) {
+                    if (verified !== false) {
+                      console.log(
+                        `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                      );
+                      updateDiscordRole(
+                        userdata.discordId,
+                        Math.round(obj.wpm)
+                      );
+                    }
+                  }
+                  returnobj.resultCode = 2;
+                } else {
+                  let logobj = request.obj;
+                  logobj.keySpacing = "removed";
+                  logobj.keyDuration = "removed";
+                  console.log(
+                    `saved result for ${request.uid} - ${JSON.stringify(
+                      logobj
+                    )}`
+                  );
+                  returnobj.resultCode = 1;
+                }
+                response.status(200).send({ data: returnobj });
+                return;
+              })
+              .catch((e) => {
+                console.error(
+                  `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
+                );
+                response
+                  .status(200)
+                  .send({ data: { resultCode: -999, message: e.message } });
+                return;
+              });
+          })
+          .catch((e) => {
+            console.error(
+              `error saving result when adding result to the db for ${request.uid} - ${e.message}`
+            );
+            response
+              .status(200)
+              .send({ data: { resultCode: -999, message: e.message } });
+            return;
+          });
+      })
+      .catch((e) => {
+        console.error(
+          `error saving result when getting user data for ${request.uid} - ${e.message}`
+        );
+        response
+          .status(200)
+          .send({ data: { resultCode: -999, message: e.message } });
+        return;
+      });
+  } catch (e) {
+    console.error(
+      `error saving result for ${request.uid} - ${JSON.stringify(
+        request.obj
+      )} - ${e}`
+    );
+    response
+      .status(200)
+      .send({ data: { resultCode: -999, message: e.message } });
+    return;
+  }
+});
 
 exports.updateEmail = functions.https.onCall(async (request, response) => {
   try {
