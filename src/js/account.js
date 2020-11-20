@@ -160,7 +160,7 @@ function signUp() {
                 console.log("Analytics unavailable");
               }
               $(".pageLogin .preloader").addClass("hidden");
-              dbSnapshot = {
+              db_setSnapshot({
                 results: [],
                 personalBests: {},
                 tags: [],
@@ -169,14 +169,14 @@ function signUp() {
                   started: undefined,
                   completed: undefined,
                 },
-              };
+              });
               if (notSignedInLastResult !== null) {
                 notSignedInLastResult.uid = usr.uid;
                 testCompleted({
                   uid: usr.uid,
                   obj: notSignedInLastResult,
                 });
-                dbSnapshot.results.push(notSignedInLastResult);
+                db_getSnapshot().results.push(notSignedInLastResult);
                 config.resultFilters = defaultAccountFilters;
               }
               changePage("account");
@@ -225,7 +225,7 @@ function signOut() {
       hideAccountSettingsSection();
       updateAccountLoginButton();
       changePage("login");
-      dbSnapshot = null;
+      db_setSnapshot(null);
     })
     .catch(function (error) {
       showNotification(error.message, 5000);
@@ -262,7 +262,6 @@ firebase.auth().onAuthStateChanged(function (user) {
     var isAnonymous = user.isAnonymous;
     var uid = user.uid;
     var providerData = user.providerData;
-    // showNotification('Signed in', 1000);
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
 
@@ -285,7 +284,7 @@ firebase.auth().onAuthStateChanged(function (user) {
       verifyUser(verifyUserWhenLoggedIn).then((data) => {
         showNotification(data.data.message, 3000);
         if (data.data.status === 1) {
-          dbSnapshot.discordId = data.data.did;
+          db_getSnapshot().discordId = data.data.did;
           updateDiscordSettingsSection();
         }
       });
@@ -307,33 +306,24 @@ firebase.auth().onAuthStateChanged(function (user) {
     setCustomTheme(true);
     setCustomThemeInputs();
     applyCustomThemeColors();
-    // let save = [];
-    // $.each(
-    //   $(".pageSettings .section.customTheme [type='color']"),
-    //   (index, element) => {
-    //     save.push($(element).attr("value"));
-    //   }
-    // );
-    // setCustomThemeColors(save);
   }
 });
 
 function getAccountDataAndInit() {
   db_getUserSnapshot()
     .then((e) => {
-      if (dbSnapshot === null) {
+      if (db_getSnapshot() === null) {
         throw "Missing db snapshot. Client likely could not connect to the backend.";
       }
       initPaceCaret(true);
       if (!configChangedBeforeDb) {
         if (cookieConfig === null) {
           accountIconLoading(false);
-          applyConfig(dbSnapshot.config);
-          // showNotification('Applying db config',3000);
+          applyConfig(db_getSnapshot().config);
           updateSettingsPage();
           saveConfigToCookie(true);
           restartTest(false, true);
-        } else if (dbSnapshot.config !== undefined) {
+        } else if (db_getSnapshot().config !== undefined) {
           let configsDifferent = false;
           Object.keys(config).forEach((key) => {
             if (!configsDifferent) {
@@ -341,18 +331,22 @@ function getAccountDataAndInit() {
                 if (key !== "resultFilters") {
                   if (Array.isArray(config[key])) {
                     config[key].forEach((arrval, index) => {
-                      if (arrval != dbSnapshot.config[key][index]) {
+                      if (arrval != db_getSnapshot().config[key][index]) {
                         configsDifferent = true;
                         console.log(
-                          `.config is different: ${arrval} != ${dbSnapshot.config[key][index]}`
+                          `.config is different: ${arrval} != ${
+                            db_getSnapshot().config[key][index]
+                          }`
                         );
                       }
                     });
                   } else {
-                    if (config[key] != dbSnapshot.config[key]) {
+                    if (config[key] != db_getSnapshot().config[key]) {
                       configsDifferent = true;
                       console.log(
-                        `..config is different ${key}: ${config[key]} != ${dbSnapshot.config[key]}`
+                        `..config is different ${key}: ${config[key]} != ${
+                          db_getSnapshot().config[key]
+                        }`
                       );
                     }
                   }
@@ -367,7 +361,7 @@ function getAccountDataAndInit() {
           if (configsDifferent) {
             console.log("applying config from db");
             accountIconLoading(false);
-            config = dbSnapshot.config;
+            config = db_getSnapshot().config;
             applyConfig(config);
             updateSettingsPage();
             saveConfigToCookie(true);
@@ -385,12 +379,12 @@ function getAccountDataAndInit() {
           config.resultFilters.difficulty === undefined
         ) {
           if (
-            dbSnapshot.config.resultFilters == null ||
-            dbSnapshot.config.resultFilters.difficulty === undefined
+            db_getSnapshot().config.resultFilters == null ||
+            db_getSnapshot().config.resultFilters.difficulty === undefined
           ) {
             config.resultFilters = defaultAccountFilters;
           } else {
-            config.resultFilters = dbSnapshot.config.resultFilters;
+            config.resultFilters = db_getSnapshot().config.resultFilters;
           }
         }
       } catch (e) {
@@ -431,11 +425,6 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
         data: [],
         borderColor: "#f44336",
         borderWidth: 2,
-        // trendlineLinear: {
-        //   style: "rgba(244,67,54,.25)",
-        //   lineStyle: "solid",
-        //   width: 1
-        // }
         trendlineLinear: {
           style: "rgba(255,105,180, .8)",
           lineStyle: "dotted",
@@ -528,10 +517,6 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
     },
     responsive: true,
     maintainAspectRatio: false,
-    // tooltips: {
-    //   mode: 'index',
-    //   intersect: false,
-    // },
     hover: {
       mode: "nearest",
       intersect: false,
@@ -725,7 +710,6 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
       {
         label: "wpm",
         data: [],
-        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
         borderColor: "rgba(125, 125, 125, 1)",
         borderWidth: 2,
         yAxisID: "wpm",
@@ -735,7 +719,6 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
       {
         label: "raw",
         data: [],
-        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
         borderColor: "rgba(125, 125, 125, 1)",
         borderWidth: 2,
         yAxisID: "raw",
@@ -745,25 +728,23 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
       {
         label: "errors",
         data: [],
-        // backgroundColor: 'rgba(255, 255, 255, 0.25)',
         borderColor: "rgba(255, 125, 125, 1)",
         pointBackgroundColor: "rgba(255, 125, 125, 1)",
         borderWidth: 2,
         order: 1,
         yAxisID: "error",
-        // barPercentage: 0.1,
         maxBarThickness: 10,
         type: "scatter",
         pointStyle: "crossRot",
         radius: function (context) {
           var index = context.dataIndex;
           var value = context.dataset.data[index];
-          return value.y <= 0 ? 0 : 3;
+          return value <= 0 ? 0 : 3;
         },
         pointHoverRadius: function (context) {
           var index = context.dataIndex;
           var value = context.dataset.data[index];
-          return value.y <= 0 ? 0 : 5;
+          return value <= 0 ? 0 : 5;
         },
       },
     ],
@@ -783,10 +764,6 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
     },
     responsive: true,
     maintainAspectRatio: false,
-    // hover: {
-    //   mode: 'x',
-    //   intersect: false
-    // },
     scales: {
       xAxes: [
         {
@@ -987,10 +964,6 @@ $(document).on("click", ".pageAccount .hoverChartBg", (event) => {
   hideHoverChart();
 });
 
-// $(document).on("mouseleave", ".pageAccount .hoverChartButton", (event) => {
-//   hideHoverChart();
-// });
-
 let defaultAccountFilters = {
   difficulty: {
     normal: true,
@@ -1076,14 +1049,14 @@ function updateFilterTags() {
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
   ).empty();
-  if (dbSnapshot.tags.length > 0) {
+  if (db_getSnapshot().tags.length > 0) {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
-    dbSnapshot.tags.forEach((tag) => {
+    db_getSnapshot().tags.forEach((tag) => {
       defaultAccountFilters.tags[tag.id] = true;
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
@@ -1094,7 +1067,6 @@ function updateFilterTags() {
       "hidden"
     );
   }
-  // showActiveFilters();
 }
 
 function toggleFilter(group, filter) {
@@ -1110,117 +1082,7 @@ function setFilter(group, filter, set) {
   config.resultFilters[group][filter] = set;
 }
 
-// function toggleFilterButton(filter) {
-//   const element = $(
-//     `.pageAccount .content .filterButtons .button[filter=${filter}]`
-//   );
-//   if (element.hasClass("active")) {
-//     //disable that filter
-
-//     if (filter == "all" || filter == "none") {
-//       return;
-//     } else if (filter == "mode_words") {
-//       // $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
-//       //   let f = $(obj).attr('filter')
-//       //   disableFilterButton(f)
-//       // })
-//     } else if (filter == "mode_time") {
-//       // $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
-//       //   let f = $(obj).attr('filter')
-//       //   disableFilterButton(f)
-//       // })
-//     } else if (filter == "punc_off") {
-//       enableFilterButton("punc_on");
-//     } else if (filter == "punc_on") {
-//       enableFilterButton("punc_off");
-//     }
-//     disableFilterButton(filter);
-//     disableFilterButton("all");
-//   } else {
-//     //enable that filter
-//     disableFilterButton("none");
-
-//     if (filter == "all") {
-//       $.each(
-//         $(`.pageAccount .content .filterButtons .button`),
-//         (index, obj) => {
-//           let f = $(obj).attr("filter");
-//           if (
-//             f != "none" &&
-//             f != "date_month" &&
-//             f != "date_week" &&
-//             f != "date_day"
-//           ) {
-//             enableFilterButton(f);
-//           }
-//         }
-//       );
-//     } else if (filter == "none") {
-//       disableFilterButton("all");
-//       $.each(
-//         $(`.pageAccount .content .filterButtons .button`),
-//         (index, obj) => {
-//           let f = $(obj).attr("filter");
-//           if (f != "none") {
-//             disableFilterButton(f);
-//           }
-//         }
-//       );
-//     } else if (
-//       filter == "date_all" ||
-//       filter == "date_month" ||
-//       filter == "date_week" ||
-//       filter == "date_day"
-//     ) {
-//       disableFilterButton("date_all");
-//       disableFilterButton("date_month");
-//       disableFilterButton("date_week");
-//       disableFilterButton("date_day");
-//       enableFilterButton(filter);
-//     }
-//     // else if(filter == "mode_words"){
-//     //   $.each($(`.pageAccount .content .filterButtons .buttons.wordsFilter .button`),(index,obj)=>{
-//     //     let f = $(obj).attr('filter');
-//     //     enableFilterButton(f);
-//     //   })
-//     // }else if(filter == "mode_time"){
-//     //   $.each($(`.pageAccount .content .filterButtons .buttons.timeFilter .button`),(index,obj)=>{
-//     //     let f = $(obj).attr('filter');
-//     //     enableFilterButton(f);
-//     //   })
-//     // }else if(['10','25','50','100','200'].includes(filter)){
-//     //   enableFilterButton('words');
-//     // }else if(['15','30','60','120'].includes(filter)){
-//     //   enableFilterButton('time');
-//     // }
-
-//     enableFilterButton(filter);
-//   }
-//   showActiveFilters();
-// }
-
-// function disableFilterButton(filter) {
-//   const element = $(
-//     `.pageAccount .content .filterButtons .button[filter=${filter}]`
-//   );
-//   element.removeClass("active");
-// }
-
-// function enableFilterButton(filter) {
-//   const element = $(
-//     `.pageAccount .content .filterButtons .button[filter=${filter}]`
-//   );
-//   element.addClass("active");
-// }
-
 function showActiveFilters() {
-  // activeFilters = [];
-  // $.each($(".pageAccount .filterButtons .button"), (i, obj) => {
-  //   if ($(obj).hasClass("active")) {
-  //     activeFilters.push($(obj).attr("filter"));
-  //   }
-  // });
-
   let aboveChartDisplay = {};
 
   Object.keys(config.resultFilters).forEach((group) => {
@@ -1288,15 +1150,13 @@ function showActiveFilters() {
     if (aboveChartDisplay[group].all) {
       ret += "all";
     } else {
-      //TODO: is this used?
-      //allall = false;
       if (group === "tags") {
         ret += aboveChartDisplay.tags.array
           .map((id) => {
             if (id == "none") return id;
-            let name = dbSnapshot.tags.filter((t) => t.id == id)[0];
+            let name = db_getSnapshot().tags.filter((t) => t.id == id)[0];
             if (name !== undefined) {
-              return dbSnapshot.tags.filter((t) => t.id == id)[0].name;
+              return db_getSnapshot().tags.filter((t) => t.id == id)[0].name;
             }
           })
           .join(", ");
@@ -1352,77 +1212,6 @@ function showActiveFilters() {
 
   //tags
   chartString += addText("tags");
-  // chartString += `<div class="spacer"></div>`;
-
-  // let allall = true;
-  // let count = 0;
-  // Object.keys(aboveChartDisplay).forEach((group) => {
-  //   count++;
-  //   if (group === "time" && !aboveChartDisplay.mode.array.includes("time"))
-  //     return;
-  //   if (group === "words" && !aboveChartDisplay.mode.array.includes("words"))
-  //     return;
-
-  //   if (aboveChartDisplay[group].array.length > 0) {
-  //     chartString += "<div class='group'>";
-  //     if (group == "difficulty") {
-  //       chartString += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
-  //     } else if (group == "mode") {
-  //       chartString += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
-  //     } else if (group == "punctuation") {
-  //       chartString += `<span aria-label="Punctuation" data-balloon-pos="up"><span class="punc" style="font-weight: 900;
-  //       width: 1.25rem;
-  //       text-align: center;
-  //       display: inline-block;
-  //       letter-spacing: -.1rem;">!?</span>`;
-  //     } else if (group == "numbers") {
-  //       chartString += `<span aria-label="Numbers" data-balloon-pos="up"><span class="numbers" style="font-weight: 900;
-  //         width: 1.25rem;
-  //         text-align: center;
-  //         margin-right: .1rem;
-  //         display: inline-block;
-  //         letter-spacing: -.1rem;">15</span>`;
-  //     } else if (group == "words") {
-  //       chartString += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
-  //     } else if (group == "time") {
-  //       chartString += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
-  //     } else if (group == "date") {
-  //       chartString += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
-  //     } else if (group == "tags") {
-  //       chartString += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
-  //     } else if (group == "language") {
-  //       chartString += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
-  //     } else if (group == "funbox") {
-  //       chartString += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
-  //     }
-
-  //     if (aboveChartDisplay[group].all) {
-  //       chartString += "all";
-  //     } else {
-  //       allall = false;
-  //       if (group === "tags") {
-  //         chartString += aboveChartDisplay.tags.array
-  //           .map((id) => {
-  //             if (id == "none") return id;
-  //             let name = dbSnapshot.tags.filter((t) => t.id == id)[0];
-  //             if (name !== undefined) {
-  //               return dbSnapshot.tags.filter((t) => t.id == id)[0].name;
-  //             }
-  //           })
-  //           .join(", ");
-  //       } else {
-  //         chartString += aboveChartDisplay[group].array
-  //           .join(", ")
-  //           .replace(/_/g, " ");
-  //       }
-  //     }
-  //     chartString += "</span></div>";
-  //     if (Object.keys(aboveChartDisplay).length !== count)
-  //       chartString += `<div class="spacer"></div>`;
-  //   }
-  // });
-
-  // if (allall) chartString = `<i class="fas fa-fw fa-filter"></i>all`;
 
   $(".pageAccount .group.chart .above").html(chartString);
 
@@ -1486,10 +1275,14 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   } else {
     config.resultFilters.numbers.off = true;
   }
-  config.resultFilters.language[config.language] = true;
+  if (config.mode === "quote" && /english.*/.test(config.language)) {
+    config.resultFilters.language["english"] = true;
+  } else {
+    config.resultFilters.language[config.language] = true;
+  }
   config.resultFilters.funbox[activeFunBox] = true;
   config.resultFilters.tags.none = true;
-  dbSnapshot.tags.forEach((tag) => {
+  db_getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
       config.resultFilters.tags.none = false;
       config.resultFilters.tags[tag.id] = true;
@@ -1514,7 +1307,6 @@ $(
 ).click(".button", (e) => {
   const filter = $(e.target).attr("filter");
   const group = $(e.target).parents(".buttons").attr("group");
-  // toggleFilterButton(filter);
   if ($(e.target).hasClass("allFilters")) {
     Object.keys(config.resultFilters).forEach((group) => {
       Object.keys(config.resultFilters[group]).forEach((filter) => {
@@ -1610,7 +1402,7 @@ function fillPbTables() {
   </tr>
   `);
 
-  const pb = dbSnapshot.personalBests;
+  const pb = db_getSnapshot().personalBests;
   let pbData;
   let text;
 
@@ -1790,12 +1582,6 @@ function loadMoreLines() {
     const result = filteredResults[i];
     if (result == undefined) continue;
     let withpunc = "";
-    // if (result.punctuation) {
-    //   withpunc = '<br>punctuation';
-    // }
-    // if (result.blindMode) {
-    //   withpunc = '<br>blind';
-    // }
     let diff = result.difficulty;
     if (diff == undefined) {
       diff = "normal";
@@ -1855,7 +1641,7 @@ function loadMoreLines() {
 
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
-        dbSnapshot.tags.forEach((snaptag) => {
+        db_getSnapshot().tags.forEach((snaptag) => {
           if (tag === snaptag.id) {
             tagNames += snaptag.name + ", ";
           }
@@ -1863,10 +1649,6 @@ function loadMoreLines() {
       });
       tagNames = tagNames.substring(0, tagNames.length - 2);
     }
-
-    // if(tagNames !== ""){
-    //   icons += `<span aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
-    // }
 
     let restags;
     if (result.tags === undefined) {
@@ -1930,10 +1712,10 @@ function clearGlobalStats() {
 }
 
 function refreshGlobalStats() {
-  if (dbSnapshot.globalStats.time != undefined) {
-    let th = Math.floor(dbSnapshot.globalStats.time / 3600);
-    let tm = Math.floor((dbSnapshot.globalStats.time % 3600) / 60);
-    let ts = Math.floor((dbSnapshot.globalStats.time % 3600) % 60);
+  if (db_getSnapshot().globalStats.time != undefined) {
+    let th = Math.floor(db_getSnapshot().globalStats.time / 3600);
+    let tm = Math.floor((db_getSnapshot().globalStats.time % 3600) / 60);
+    let ts = Math.floor((db_getSnapshot().globalStats.time % 3600) % 60);
     $(".pageAccount .globalTimeTyping .val").text(`
 
       ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
@@ -1941,14 +1723,14 @@ function refreshGlobalStats() {
     }
   `);
   }
-  if (dbSnapshot.globalStats.started != undefined) {
+  if (db_getSnapshot().globalStats.started != undefined) {
     $(".pageAccount .globalTestsStarted .val").text(
-      dbSnapshot.globalStats.started
+      db_getSnapshot().globalStats.started
     );
   }
-  if (dbSnapshot.globalStats.completed != undefined) {
+  if (db_getSnapshot().globalStats.completed != undefined) {
     $(".pageAccount .globalTestsCompleted .val").text(
-      dbSnapshot.globalStats.completed
+      db_getSnapshot().globalStats.completed
     );
   }
 }
@@ -1963,8 +1745,6 @@ function refreshAccountPage() {
 
     let chartData = [];
     let wpmChartData = [];
-    //TODO: is this used?
-    //let rawChartData = [];
     let accChartData = [];
     visibleTableLines = 0;
 
@@ -1995,13 +1775,11 @@ function refreshAccountPage() {
     let totalCons10 = 0;
     let consCount = 0;
 
-    //TODO: is this used?
-    //let dailyActivityDays = [];
     let activityChartData = {};
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    dbSnapshot.results.forEach((result) => {
+    db_getSnapshot().results.forEach((result) => {
       let tt = 0;
       if (result.testDuration == undefined) {
         //test finished before testDuration field was introduced - estimate
@@ -2020,16 +1798,13 @@ function refreshAccountPage() {
       }
       totalSeconds += tt;
 
-      // console.log(result);
       //apply filters
       try {
         let resdiff = result.difficulty;
         if (resdiff == undefined) {
           resdiff = "normal";
         }
-        // if (!activeFilters.includes("difficulty_" + resdiff)) return;
         if (!config.resultFilters.difficulty[resdiff]) return;
-        // if (!activeFilters.includes("mode_" + result.mode)) return;
         if (!config.resultFilters.mode[result.mode]) return;
 
         if (result.mode == "time") {
@@ -2037,18 +1812,14 @@ function refreshAccountPage() {
           if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
             timefilter = result.mode2;
           }
-          // if (!activeFilters.includes(timefilter)) return;
           if (!config.resultFilters.time[timefilter]) return;
         } else if (result.mode == "words") {
           let wordfilter = "custom";
           if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
             wordfilter = result.mode2;
           }
-          // if (!activeFilters.includes(wordfilter)) return;
           if (!config.resultFilters.words[wordfilter]) return;
         }
-
-        // if (!activeFilters.includes("lang_" + result.language)) return;
 
         let langFilter = config.resultFilters.language[result.language];
 
@@ -2065,7 +1836,6 @@ function refreshAccountPage() {
           puncfilter = "on";
         }
         if (!config.resultFilters.punctuation[puncfilter]) return;
-        // if (!activeFilters.includes(puncfilter)) return;
 
         let numfilter = "off";
         if (result.numbers) {
@@ -2074,10 +1844,8 @@ function refreshAccountPage() {
         if (!config.resultFilters.numbers[numfilter]) return;
 
         if (result.funbox === "none" || result.funbox === undefined) {
-          // if (!activeFilters.includes("funbox_none")) return;
           if (!config.resultFilters.funbox.none) return;
         } else {
-          // if (!activeFilters.includes("funbox_" + result.funbox)) return;
           if (!config.resultFilters.funbox[result.funbox]) return;
         }
 
@@ -2085,22 +1853,20 @@ function refreshAccountPage() {
 
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
-          if (dbSnapshot.tags.length > 0) {
-            // if (activeFilters.includes("tag_notag")) tagHide = false;
+          if (db_getSnapshot().tags.length > 0) {
             if (config.resultFilters.tags.none) tagHide = false;
           } else {
             tagHide = false;
           }
         } else {
           //tags exist
-          let validTags = dbSnapshot.tags.map((t) => t.id);
+          let validTags = db_getSnapshot().tags.map((t) => t.id);
           result.tags.forEach((tag) => {
             //check if i even need to check tags anymore
             if (!tagHide) return;
             //check if tag is valid
             if (validTags.includes(tag)) {
               //tag valid, check if filter is on
-              // if (activeFilters.includes("tag_" + tag)) tagHide = false;
               if (config.resultFilters.tags[tag]) tagHide = false;
             } else {
               //tag not found in valid tags, meaning probably deleted
@@ -2114,15 +1880,6 @@ function refreshAccountPage() {
         let timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
 
         let datehide = true;
-
-        // if (
-        //   activeFilters.includes("date_all") ||
-        //   (activeFilters.includes("date_day") && timeSinceTest <= 86400) ||
-        //   (activeFilters.includes("date_week") && timeSinceTest <= 604800) ||
-        //   (activeFilters.includes("date_month") && timeSinceTest <= 18144000)
-        // ) {
-        //   datehide = false;
-        // }
 
         if (
           config.resultFilters.date.all ||
@@ -2299,8 +2056,6 @@ function refreshAccountPage() {
       lastTimestamp = date;
     });
 
-    // console.log(activityChartData);
-
     activityChart.options.scales.xAxes[0].ticks.minor.fontColor =
       themeColors.sub;
     activityChart.options.scales.yAxes[0].ticks.minor.fontColor =
@@ -2320,7 +2075,6 @@ function refreshAccountPage() {
     activityChart.options.scales.yAxes[1].scaleLabel.fontColor =
       themeColors.sub;
     activityChart.data.datasets[1].borderColor = themeColors.sub;
-    // activityChart.data.datasets[1].backgroundColor = themeColors.main;
     activityChart.data.datasets[1].data = activityChartData_avgWpm;
 
     activityChart.options.legend.labels.fontColor = themeColors.sub;
@@ -2384,9 +2138,6 @@ function refreshAccountPage() {
       $(".pageAccount .triplegroup.stats").removeClass("hidden");
     }
 
-    // moment
-    //   .utc(moment.duration(totalSeconds, "seconds").asMilliseconds())
-    //   .format("HH:mm:ss")
     let th = Math.floor(totalSeconds / 3600);
     let tm = Math.floor((totalSeconds % 3600) / 60);
     let ts = Math.floor((totalSeconds % 3600) % 60);
@@ -2396,9 +2147,6 @@ function refreshAccountPage() {
       ts < 10 ? "0" + ts : ts
     }
     `);
-    //moment
-    // .utc(moment.duration(totalSecondsFiltered, "seconds").asMilliseconds())
-    // .format("HH:mm:ss")
     let tfh = Math.floor(totalSecondsFiltered / 3600);
     let tfm = Math.floor((totalSecondsFiltered % 3600) / 60);
     let tfs = Math.floor((totalSecondsFiltered % 3600) % 60);
@@ -2431,9 +2179,6 @@ function refreshAccountPage() {
       Math.round(totalAcc10 / last10) + "%"
     );
 
-    // console.log(totalCons10);
-    // console.log(last10);
-
     if (totalCons == 0 || totalCons == undefined) {
       $(".pageAccount .avgCons .val").text("-");
       $(".pageAccount .avgCons10 .val").text("-");
@@ -2458,31 +2203,6 @@ function refreshAccountPage() {
       (testRestarts / testCount).toFixed(1)
     );
 
-    // if(testCount == 0){
-    //   $('.pageAccount .group.chart').fadeOut(125);
-    //   $('.pageAccount .triplegroup.stats').fadeOut(125);
-    //   $('.pageAccount .group.history').fadeOut(125);
-    // }else{
-    //   $('.pageAccount .group.chart').fadeIn(125);
-    //   $('.pageAccount .triplegroup.stats').fadeIn(125);
-    //   $('.pageAccount .group.history').fadeIn(125);
-    // }
-
-    // let favMode = testModes.words10;
-    // let favModeName = 'words10';
-    // $.each(testModes, (key, mode) => {
-    //   if (mode.length > favMode.length) {
-    //     favMode = mode;
-    //     favModeName = key;
-    //   }
-    // })
-    // if (favModeName == 'words10' && testModes.words10.length == 0) {
-    //   //new user
-    //   $(".pageAccount .favouriteTest .val").text(`-`);
-    // } else {
-    //   $(".pageAccount .favouriteTest .val").text(`${favModeName} (${Math.floor((favMode.length/testCount) * 100)}%)`);
-    // }
-
     if (resultHistoryChart.data.datasets[0].data.length > 0) {
       resultHistoryChart.options.plugins.trendlineLinear = true;
     } else {
@@ -2503,7 +2223,6 @@ function refreshAccountPage() {
 
     let wpmChangePerHour = wpmChange * (3600 / totalSecondsFiltered);
 
-    // let slope = calculateSlope(trend);
     let plus = wpmChangePerHour > 0 ? "+" : "";
 
     $(".pageAccount .group.chart .below .text").text(
@@ -2517,19 +2236,17 @@ function refreshAccountPage() {
 
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
-  if (dbSnapshot === null) {
+  if (db_getSnapshot() === null) {
     showNotification(`Missing account data. Please refresh.`, 5000);
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
-  } else if (dbSnapshot.results === undefined) {
+  } else if (db_getSnapshot().results === undefined) {
     db_getUserResults().then((d) => {
       if (d) {
-        // cont();
         showActiveFilters();
       } else {
         setTimeout(() => {
           changePage("");
         }, 500);
-        // console.log("something went wrong");
       }
     });
   } else {
@@ -2579,7 +2296,7 @@ $(".pageAccount .toggleChartStyle").click((params) => {
 });
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
-  if (dbSnapshot.tags.length > 0) {
+  if (db_getSnapshot().tags.length > 0) {
     let resultid = $(f.target).parents("span").attr("resultid");
     let tags = $(f.target).parents("span").attr("tags");
     $("#resultEditTagsPanel").attr("resultid", resultid);
@@ -2601,7 +2318,7 @@ $("#resultEditTagsPanelWrapper").click((e) => {
 
 function updateResultEditTagsPanelButtons() {
   $("#resultEditTagsPanel .buttons").empty();
-  dbSnapshot.tags.forEach((tag) => {
+  db_getSnapshot().tags.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
       `<div class="button tag" tagid="${tag.id}">${tag.name}</div>`
     );
@@ -2617,13 +2334,6 @@ function updateActiveResultEditTagsPanelButtons(active) {
     } else {
       $(obj).removeClass("active");
     }
-    // active.forEach(activetagid => {
-    //   if(activetagid === tagid){
-    //     $(obj).addClass('active');
-    //   }else{
-    //     $(obj).removeClass('active');
-    //   }
-    // })
   });
 }
 
@@ -2648,7 +2358,7 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
     hideBackgroundLoader();
     if (r.data.resultCode === 1) {
       showNotification("Tags updated.", 3000);
-      dbSnapshot.results.forEach((result) => {
+      db_getSnapshot().results.forEach((result) => {
         if (result.id === resultid) {
           result.tags = newtags;
         }
@@ -2658,7 +2368,7 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
 
       if (newtags.length > 0) {
         newtags.forEach((tag) => {
-          dbSnapshot.tags.forEach((snaptag) => {
+          db_getSnapshot().tags.forEach((snaptag) => {
             if (tag === snaptag.id) {
               tagNames += snaptag.name + ", ";
             }
@@ -2697,8 +2407,6 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
           "no tags"
         );
       }
-
-      // refreshAccountPage();
     } else {
       showNotification("Error updating tags", 3000);
     }
@@ -2706,5 +2414,5 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
 });
 
 function updateLbMemory(mode, mode2, type, value) {
-  dbSnapshot.lbMemory[mode + mode2][type] = value;
+  db_getSnapshot().lbMemory[mode + mode2][type] = value;
 }

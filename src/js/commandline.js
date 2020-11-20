@@ -211,6 +211,13 @@ let commands = {
       },
     },
     {
+      id: "toggleAlwaysShowWordsHistory",
+      display: "Toggle always show words history",
+      exec: () => {
+        toggleAlwaysShowWordsHistory();
+      },
+    },
+    {
       id: "toggleIndicateTypos",
       display: "Toggle indicate typos",
       exec: () => {
@@ -224,13 +231,6 @@ let commands = {
         toggleHideExtraLetters();
       },
     },
-    // {
-    //   id: "toggleReadAheadMode",
-    //   display: "Toggle read ahead mode",
-    //   exec: () => {
-    //     toggleReadAheadMode();
-    //   },
-    // },
     {
       id: "toggleQuickEnd",
       display: "Toggle quick end",
@@ -575,36 +575,27 @@ let commands = {
               exec: () => {
                 hideCommandLine();
               },
+              available: () => {
+                return canBailOut();
+              },
             },
             {
               id: "bailOutForSure",
               display: "Yes, I am sure",
               exec: () => {
-                if (
-                  (config.mode === "custom" &&
-                    customTextIsRandom &&
-                    customTextWordCount >= 5000) ||
-                  (config.mode === "custom" &&
-                    !customTextIsRandom &&
-                    customText.length >= 5000) ||
-                  (config.mode === "words" && config.words >= 5000) ||
-                  config.words === 0 ||
-                  (config.mode === "time" &&
-                    (config.time >= 3600 || config.time === 0))
-                ) {
-                  bailout = true;
-                  showResult();
-                } else {
-                  showNotification(
-                    "You can only bailout out of test longer than 3600 seconds / 5000 words.",
-                    5000
-                  );
-                }
+                bailout = true;
+                showResult();
+              },
+              available: () => {
+                return canBailOut();
               },
             },
           ],
         });
         showCommandLine();
+      },
+      available: () => {
+        return canBailOut();
       },
     },
     {
@@ -612,6 +603,57 @@ let commands = {
       display: "Join the Discord server",
       exec: () => {
         window.open("https://discord.gg/monkeytype");
+      },
+    },
+    {
+      id: "repeatTest",
+      display: "Repeat test",
+      exec: () => {
+        restartTest(true);
+      },
+      available: () => {
+        return resultVisible;
+      },
+    },
+    {
+      id: "practiceMissedWords",
+      display: "Practice missed words",
+      exec: () => {
+        initPractiseMissedWords();
+      },
+      available: () => {
+        return resultVisible && Object.keys(missedWords).length > 0;
+      },
+    },
+    {
+      id: "toggleWordHistory",
+      display: "Toggle word history",
+      exec: () => {
+        toggleResultWordsDisplay();
+      },
+      available: () => {
+        return resultVisible;
+      },
+    },
+    {
+      id: "saveScreenshot",
+      display: "Save screenshot",
+      exec: () => {
+        copyResultToClipboard();
+      },
+      available: () => {
+        return resultVisible;
+      },
+    },
+    {
+      id: "changeCustomModeText",
+      display: "Change custom text",
+      exec: () => {
+        showCustomTextPopup();
+        setTimeout(() => {
+          // Workaround to focus textarea since hideCommandLine() will focus test words
+          $("#customTextPopup textarea").focus();
+        }, 150);
       },
     },
   ],
@@ -929,14 +971,6 @@ let commandsPaceCaret = {
         setPaceCaret("custom");
       },
     },
-    // {
-    //   id: "setPaceCaretCustomSpeed",
-    //   display: "Set custom speed...",
-    //   input: true,
-    //   exec: (input) => {
-    //     console.log(input);
-    //   },
-    // },
   ],
 };
 
@@ -959,14 +993,6 @@ let commandsMinWpm = {
         setMinWpm("custom");
       },
     },
-    // {
-    //   id: "setPaceCaretCustomSpeed",
-    //   display: "Set custom speed...",
-    //   input: true,
-    //   exec: (input) => {
-    //     console.log(input);
-    //   },
-    // },
   ],
 };
 
@@ -1430,14 +1456,14 @@ let commandsTags = {
 };
 
 function updateCommandsTagsList() {
-  if (dbSnapshot.tags.length > 0) {
+  if (db_getSnapshot().tags.length > 0) {
     commandsTags.list = [];
 
     commandsTags.list.push({
       id: "clearTags",
       display: "Clear tags",
       exec: () => {
-        dbSnapshot.tags.forEach((tag) => {
+        db_getSnapshot().tags.forEach((tag) => {
           tag.active = false;
         });
         updateTestModesNotice();
@@ -1445,7 +1471,7 @@ function updateCommandsTagsList() {
       },
     });
 
-    dbSnapshot.tags.forEach((tag) => {
+    db_getSnapshot().tags.forEach((tag) => {
       let dis = tag.name;
 
       if (tag.active === true) {
@@ -1596,11 +1622,9 @@ let commandsLanguages = {
   ],
 };
 
-// if (getLanguageList().length > 0) {
 commandsLanguages.list = [];
 getLanguageList().then((languages) => {
   languages.forEach((language) => {
-    // if (language === "english_10k") return;
     commandsLanguages.list.push({
       id: "changeLanguage" + capitalizeFirstLetter(language),
       display: language.replace(/_/g, " "),
@@ -1611,19 +1635,7 @@ getLanguageList().then((languages) => {
       },
     });
   });
-  // if (language === "english_expanded") {
-  //   commandsLanguages.list.push({
-  //     id: "changeLanguageEnglish10k",
-  //     display: "english 10k",
-  //     exec: () => {
-  //       changeLanguage("english_10k");
-  //       restartTest();
-  //       saveConfigToCookie();
-  //     },
-  //   });
-  // }
 });
-// }
 
 let commandsLayouts = {
   title: "Change layout...",
@@ -2013,7 +2025,7 @@ function displayFoundCommands() {
   $("#commandLine .suggestions").empty();
   let list = currentCommands[currentCommands.length - 1];
   $.each(list.list, (index, obj) => {
-    if (obj.found) {
+    if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
       $("#commandLine .suggestions").append(
         '<div class="entry" command="' + obj.id + '">' + obj.display + "</div>"
       );
@@ -2040,7 +2052,4 @@ function displayFoundCommands() {
     } catch (e) {}
   }
   $("#commandLine .listTitle").remove();
-  // if(currentCommands.title != ''){
-  //   $("#commandLine .suggestions").before("<div class='listTitle'>"+currentCommands.title+"</div>");
-  // }
 }

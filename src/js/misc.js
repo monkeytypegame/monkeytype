@@ -105,6 +105,29 @@ async function getLanguage(lang) {
   }
 }
 
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+  var expires = "expires=" + d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(";");
+  for (var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == " ") {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
 function smooth(arr, windowSize, getter = (value) => value, setter) {
   const get = getter;
   const result = [];
@@ -486,6 +509,20 @@ function toggleFullscreen(elem) {
       document.webkitExitFullscreen();
     }
   }
+}
+
+function canBailOut() {
+  return (
+    (config.mode === "custom" &&
+      customTextIsRandom &&
+      customTextWordCount >= 5000) ||
+    (config.mode === "custom" &&
+      !customTextIsRandom &&
+      customText.length >= 5000) ||
+    (config.mode === "words" && config.words >= 5000) ||
+    config.words === 0 ||
+    (config.mode === "time" && (config.time >= 3600 || config.time === 0))
+  );
 }
 
 let simplePopups = {};

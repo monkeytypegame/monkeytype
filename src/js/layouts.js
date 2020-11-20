@@ -82,6 +82,17 @@ const layouts = {
             " "
         ],
     },
+    qwertz: {
+        keymapShowTopRow: false,
+        iso: true,
+        keys: [
+            "^°", "1!", "2\"", "3§", "4$", "5%", "6&", "7/", "8(", "9)", "0=", "ß?", "´`",
+            "qQ", "wW", "eE", "rR", "tT", "zZ", "uU", "iI", "oO", "pP", "üÜ", "+*", "'#",
+            "aA", "sS", "dD", "fF", "gG", "hH", "jJ", "kK", "lL", "öÖ", "äÄ",
+            "<>", "yY", "xX", "cC", "vV", "bB", "nN", "mM", ",;", ".:", "-_",
+            " "
+        ]
+    },
     workman: {
         keymapShowTopRow: false,
         keys: [
@@ -202,5 +213,26 @@ const layouts = {
             "<>", "wW", "xX", "cC", "vV", "bB", "nN", ",?", ";.", ":/", "!§",
             " "
         ]
-    }
+    },
+    bepo: {
+        keymapShowTopRow: false,
+        iso: true,
+        keys: [
+            "$#", "\"1", "«2", "»3", "(4", ")5", "@6", "+7", "-8", "/9", "*0", "=°", "%`",
+            "bB", "éÉ", "pP", "oO", "èÈ", "^!", "vV", "dD", "lL", "jJ", "zZ", "wW", "mM",
+            "aA", "uU", "iI", "eE", ",;", "cC", "tT", "sS", "rR", "sS", "nN",
+            "êÊ", "àÀ", "yY", "xX", ".:", "kK", "’?", "qQ", "gG", "hH", "fF",
+            "  "
+        ]
+    },
+    alpha: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "aA", "bB", "cC", "dD", "eE", "fF", "gG", "hH", "iI", "jJ", "[{", "]}", "\\|",
+            "kK", "lL", "mM", "nN", "oO", "pP", "qQ", "rR", "sS", ";:", "'\"",
+            "\\|", "tT", "uU", "vV", "wW", "xX", "yY", "zZ", ",<", ".>", "/?",
+            " "
+        ]
+    },
 }

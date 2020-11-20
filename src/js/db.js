@@ -3,7 +3,15 @@ db.settings({ experimentalForceLongPolling: true });
 
 let dbSnapshot = null;
 
-async function db_getUserSnapshot() {
+export function db_getSnapshot() {
+  return dbSnapshot;
+}
+
+export function db_setSnapshot(newSnapshot) {
+  dbSnapshot = newSnapshot;
+}
+
+export async function db_getUserSnapshot() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
   let snap = {
@@ -22,37 +30,11 @@ async function db_getUserSnapshot() {
       },
     },
   };
-  // await db.collection('results')
-  //     .orderBy('timestamp', 'desc')
-  //     .where('uid', '==', user.uid)
-  //     .get()
-  //     .then(data => {
-  //         // console.log('getting data from db!');
-  //         data.docs.forEach(doc => {
-  //             ret.push(doc.data());
-  //         })
-  //     })
   try {
-    // await db
-    //   .collection(`users/${user.uid}/results/`)
-    //   .orderBy("timestamp", "desc")
-    //   .get()
-    //   .then((data) => {
-    //     // console.log('getting data from db!');
-    //     data.docs.forEach((doc) => {
-    //       let result = doc.data();
-    //       result.id = doc.id;
-    //       snap.results.push(result);
-    //     });
-    //   })
-    //   .catch((e) => {
-    //     throw e;
-    //   });
     await db
       .collection(`users/${user.uid}/tags/`)
       .get()
       .then((data) => {
-        // console.log('getting data from db!');
         data.docs.forEach((doc) => {
           let tag = doc.data();
           tag.id = doc.id;
@@ -67,7 +49,6 @@ async function db_getUserSnapshot() {
       .doc(user.uid)
       .get()
       .then((res) => {
-        // console.log('getting data from db!');
         let data = res.data();
         if (data === undefined) return;
         if (data.personalBests !== undefined) {
@@ -98,7 +79,7 @@ async function db_getUserSnapshot() {
   return dbSnapshot;
 }
 
-async function db_getUserResults() {
+export async function db_getUserResults() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
   if (dbSnapshot === null) return false;
@@ -130,7 +111,7 @@ async function db_getUserResults() {
   }
 }
 
-async function db_getUserHighestWpm(
+export async function db_getUserHighestWpm(
   mode,
   mode2,
   punctuation,
@@ -157,9 +138,6 @@ async function db_getUserHighestWpm(
 
   let retval;
   if (dbSnapshot == null || dbSnapshot.results === undefined) {
-    // await db_getUserResults().then(data => {
-    //     retval = cont();
-    // });
     retval = 0;
   } else {
     retval = cont();
@@ -167,7 +145,13 @@ async function db_getUserHighestWpm(
   return retval;
 }
 
-async function db_getLocalPB(mode, mode2, punctuation, language, difficulty) {
+export async function db_getLocalPB(
+  mode,
+  mode2,
+  punctuation,
+  language,
+  difficulty
+) {
   function cont() {
     let ret = 0;
     try {
@@ -188,16 +172,13 @@ async function db_getLocalPB(mode, mode2, punctuation, language, difficulty) {
 
   let retval;
   if (dbSnapshot == null) {
-    // await db_getUserResults().then(data => {
-    //     retval = cont();
-    // });
   } else {
     retval = cont();
   }
   return retval;
 }
 
-async function db_saveLocalPB(
+export async function db_saveLocalPB(
   mode,
   mode2,
   punctuation,
@@ -260,9 +241,6 @@ async function db_saveLocalPB(
   }
 
   if (dbSnapshot == null) {
-    // await db_getUserResults().then(data => {
-    //     retval = cont();
-    // });
   } else {
     cont();
   }

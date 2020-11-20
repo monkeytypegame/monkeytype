@@ -145,10 +145,6 @@ settingsGroups.hideExtraLetters = new SettingsGroup(
 settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
 settingsGroups.quickEnd = new SettingsGroup("quickEnd", setQuickEnd);
 settingsGroups.enableAds = new SettingsGroup("enableAds", setEnableAds);
-// settingsGroups.readAheadMode = new SettingsGroup(
-//   "readAheadMode",
-//   setReadAheadMode
-// );
 settingsGroups.alwaysShowWordsHistory = new SettingsGroup(
   "alwaysShowWordsHistory",
   setAlwaysShowWordsHistory
@@ -193,9 +189,7 @@ settingsGroups.playSoundOnClick = new SettingsGroup(
   "playSoundOnClick",
   setPlaySoundOnClick,
   () => {
-    if (config.playSoundOnClick !== "off")
-      // clickSounds[config.playSoundOnClick][0].sounds[0].play();
-      playClickSound();
+    if (config.playSoundOnClick !== "off") playClickSound();
   }
 );
 settingsGroups.showAllLines = new SettingsGroup(
@@ -497,8 +491,6 @@ $("#customThemeShare .button").click((e) => {
 });
 
 $("#shareCustomThemeButton").click((e) => {
-  // showCustomThemeShare();
-
   if (e.shiftKey) {
     showCustomThemeShare();
   } else {
@@ -556,9 +548,9 @@ function hideAccountSettingsSection() {
 }
 
 function refreshTagsSettingsSection() {
-  if (firebase.auth().currentUser !== null && dbSnapshot !== null) {
+  if (firebase.auth().currentUser !== null && db_getSnapshot() !== null) {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
-    dbSnapshot.tags.forEach((tag) => {
+    db_getSnapshot().tags.forEach((tag) => {
       if (tag.active === true) {
         tagsEl.append(`
 
@@ -626,7 +618,7 @@ function setCustomThemeInputs() {
 }
 
 function showActiveTags() {
-  dbSnapshot.tags.forEach((tag) => {
+  db_getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
       $(
         `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
@@ -640,7 +632,7 @@ function showActiveTags() {
 }
 
 function toggleTag(tagid, nosave = false) {
-  dbSnapshot.tags.forEach((tag) => {
+  db_getSnapshot().tags.forEach((tag) => {
     if (tag.id === tagid) {
       if (tag.active === undefined) {
         tag.active = true;
@@ -658,10 +650,10 @@ function updateDiscordSettingsSection() {
   if (firebase.auth().currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
-    if (dbSnapshot == null) return;
+    if (db_getSnapshot() == null) return;
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
-    if (dbSnapshot.discordId == undefined) {
+    if (db_getSnapshot().discordId == undefined) {
       //show button
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
@@ -727,7 +719,7 @@ $(
     .then((ret) => {
       hideBackgroundLoader();
       if (ret.data.status === 1 || ret.data.status === 2) {
-        dbSnapshot.pairingCode = ret.data.pairingCode;
+        db_getSnapshot().pairingCode = ret.data.pairingCode;
         $(".pageSettings .section.discordIntegration .code .bottom").text(
           ret.data.pairingCode
         );
@@ -751,7 +743,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
         hideBackgroundLoader();
         console.log(ret);
         if (ret.data.status === 1) {
-          dbSnapshot.discordId = null;
+          db_getSnapshot().discordId = null;
           showNotification("Accounts unlinked", 2000);
           updateDiscordSettingsSection();
         } else {
@@ -826,7 +818,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
   $target.addClass("active");
   setCustomThemeInputs();
   if ($target.attr("tab") == "preset") {
-    setCustomTheme(false, true);
+    setCustomTheme(false);
     applyCustomThemeColors();
     swapElements(
       $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
@@ -834,7 +826,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
       250
     );
   } else {
-    setCustomTheme(true, true);
+    setCustomTheme(true);
     applyCustomThemeColors();
     swapElements(
       $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
