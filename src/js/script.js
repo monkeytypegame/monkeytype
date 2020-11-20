@@ -355,6 +355,7 @@ function activateFunbox(funbox, mode) {
       setMode("words");
       setShowAllLines(true, true);
       restartTest(false, true);
+      setKeymapMode("react");
     }
     activeFunBox = funbox;
   }
@@ -603,6 +604,7 @@ function emulateLayout(event) {
     if (isCapsLockHeld) return isASCIILetter(newKeyPreview) !== event.shiftKey;
     return event.shiftKey;
   }
+
   function replaceEventKey(event, keyCode) {
     const newKey = String.fromCharCode(keyCode);
     event.keyCode = keyCode;
@@ -1634,6 +1636,7 @@ function showCrown() {
     );
 }
 let resultCalculating = false;
+
 function showResult(difficultyFailed = false) {
   resultCalculating = true;
   resultVisible = true;
