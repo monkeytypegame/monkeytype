@@ -355,7 +355,9 @@ function activateFunbox(funbox, mode) {
       setMode("words");
       setShowAllLines(true, true);
       restartTest(false, true);
-      setKeymapMode("react");
+      if (config.keymapMode === "next") {
+        setKeymapMode("react");
+      }
     }
     activeFunBox = funbox;
   }
@@ -893,6 +895,10 @@ $("#restartTestButton, #startTestButton").on("click", function () {
         $("#wordsWrapper").addClass("hidden");
       }
     }, 1000);
+
+    if (config.keymapMode === "next") {
+      setKeymapMode("react");
+    }
   }
 });
 
