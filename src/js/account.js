@@ -232,24 +232,13 @@ function signOut() {
     });
 }
 
-function sendVerificationEmail() {
-  let cu = firebase.auth().currentUser;
-  cu.sendEmailVerification()
-    .then((e) => {
-      showNotification("Email sent to " + cu.email, 4000);
-    })
-    .catch((e) => {
-      showNotification("Error: " + e.message, 3000);
-      console.error(e.message);
-    });
-}
-
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     // User is signed in.
+    $(".pageAccount .content p.accountVerificatinNotice").remove();
     if (user.emailVerified === false) {
       $(".pageAccount .content").prepend(
-        `<p style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
+        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
       );
     }
     updateAccountLoginButton();
