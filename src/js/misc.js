@@ -128,6 +128,22 @@ function getCookie(cname) {
   return "";
 }
 
+function sendVerificationEmail() {
+  showBackgroundLoader();
+  let cu = firebase.auth().currentUser;
+  cu.sendEmailVerification()
+    .then((e) => {
+      hideBackgroundLoader();
+      showNotification("Email sent to " + cu.email, 4000);
+    })
+    .catch((e) => {
+      hideBackgroundLoader();
+      showNotification("Error: " + e.message, 3000);
+      console.error(e.message);
+    });
+}
+window.sendVerificationEmail = sendVerificationEmail;
+
 function smooth(arr, windowSize, getter = (value) => value, setter) {
   const get = getter;
   const result = [];
