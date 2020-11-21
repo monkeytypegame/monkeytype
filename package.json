@@ -42,6 +42,9 @@
     }
   },
   "dependencies": {
-    "@babel/runtime": "^7.12.5"
+    "@babel/runtime": "^7.12.5",
+    "chart.js": "^2.9.4",
+    "chartjs-plugin-annotation": "^0.5.7",
+    "chartjs-plugin-trendline": "^0.2.2"
   }
 }
