@@ -4777,7 +4777,7 @@ if (window.location.hostname === "localhost") {
 manualRestart = true;
 loadConfigFromCookie();
 getReleasesFromGitHub();
-getPatreonNames();
+// getPatreonNames();
 
 $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   if (resultVisible) {
