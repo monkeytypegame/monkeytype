@@ -964,7 +964,7 @@ function compareInput(showError) {
           lastSecondNotRound = true;
           showResult(true);
         }
-        let testNow = Date.now();
+        let testNow = performance.now();
         let testSeconds = roundTo2((testNow - testStart) / 1000);
         incompleteTestSeconds += testSeconds;
         restartCount++;
@@ -1012,7 +1012,7 @@ function compareInput(showError) {
             lastSecondNotRound = true;
             showResult(true);
           }
-          let testNow = Date.now();
+          let testNow = performance.now();
           let testSeconds = roundTo2((testNow - testStart) / 1000);
           incompleteTestSeconds += testSeconds;
           restartCount++;
@@ -1646,7 +1646,7 @@ let resultCalculating = false;
 function showResult(difficultyFailed = false) {
   resultCalculating = true;
   resultVisible = true;
-  testEnd = Date.now();
+  testEnd = performance.now();
   testActive = false;
   setFocus(false);
   hideCaret();
@@ -2490,7 +2490,7 @@ function startTest() {
     console.log("Analytics unavailable");
   }
   testActive = true;
-  testStart = Date.now();
+  testStart = performance.now();
   restartTimer();
   showTimer();
   $("#liveWpm").text("0");
@@ -2521,7 +2521,7 @@ function startTest() {
   //use a recursive self-adjusting timer to avoid time drift
   const stepIntervalMS = 1000;
   (function loop(expectedStepEnd) {
-    const delay = expectedStepEnd - Date.now();
+    const delay = expectedStepEnd - performance.now();
     timer = setTimeout(function () {
       time++;
       if (config.mode === "time") {
@@ -2942,7 +2942,7 @@ function liveWpmAndRaw() {
     correctWordChars += currentInput.length;
   }
   chars += currentInput.length;
-  let testNow = Date.now();
+  let testNow = performance.now();
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
   let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
@@ -4028,7 +4028,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
         customText.length < 1000)
     ) {
       if (testActive) {
-        let testNow = Date.now();
+        let testNow = performance.now();
         let testSeconds = roundTo2((testNow - testStart) / 1000);
         incompleteTestSeconds += testSeconds;
         restartCount++;
@@ -4228,7 +4228,7 @@ $(document).keydown((event) => {
             customText.length < 1000)
         ) {
           if (testActive) {
-            let testNow = Date.now();
+            let testNow = performance.now();
             let testSeconds = roundTo2((testNow - testStart) / 1000);
             incompleteTestSeconds += testSeconds;
             restartCount++;
@@ -4456,7 +4456,7 @@ $(document).keydown((event) => {
             correctedHistory.push(currentCorrected);
             lastSecondNotRound = true;
             showResult(true);
-            let testNow = Date.now();
+            let testNow = performance.now();
             let testSeconds = roundTo2((testNow - testStart) / 1000);
             incompleteTestSeconds += testSeconds;
             restartCount++;
@@ -4475,7 +4475,7 @@ $(document).keydown((event) => {
           //submitted last word incorrect and failed test
           lastSecondNotRound = true;
           showResult(true);
-          let testNow = Date.now();
+          let testNow = performance.now();
           let testSeconds = roundTo2((testNow - testStart) / 1000);
           incompleteTestSeconds += testSeconds;
           restartCount++;
@@ -4666,7 +4666,7 @@ $(document).keydown(function (event) {
       correctedHistory.push(currentCorrected);
       lastSecondNotRound = true;
       showResult(true);
-      let testNow = Date.now();
+      let testNow = performance.now();
       let testSeconds = roundTo2((testNow - testStart) / 1000);
       incompleteTestSeconds += testSeconds;
       restartCount++;
@@ -4777,7 +4777,7 @@ if (window.location.hostname === "localhost") {
 manualRestart = true;
 loadConfigFromCookie();
 getReleasesFromGitHub();
-getPatreonNames();
+// getPatreonNames();
 
 $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   if (resultVisible) {
