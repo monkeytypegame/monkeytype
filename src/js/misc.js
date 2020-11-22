@@ -244,18 +244,18 @@ function getReleasesFromGitHub() {
   );
 }
 
-function getPatreonNames() {
-  let namesel = $(".pageAbout .section .supporters");
-  firebase
-    .functions()
-    .httpsCallable("getPatreons")()
-    .then((data) => {
-      let names = data.data;
-      names.forEach((name) => {
-        namesel.append(`<div>${name}</div>`);
-      });
-    });
-}
+// function getPatreonNames() {
+//   let namesel = $(".pageAbout .section .supporters");
+//   firebase
+//     .functions()
+//     .httpsCallable("getPatreons")()
+//     .then((data) => {
+//       let names = data.data;
+//       names.forEach((name) => {
+//         namesel.append(`<div>${name}</div>`);
+//       });
+//     });
+// }
 
 function getLastChar(word) {
   return word.charAt(word.length - 1);
