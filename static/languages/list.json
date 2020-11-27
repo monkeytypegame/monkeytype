@@ -7,6 +7,7 @@
   "french",
   "arabic",
   "russian",
+  "russian_1k",
   "portuguese",
   "indonesian",
   "german",
@@ -29,6 +30,7 @@
   "kazakh",
   "vietnamese",
   "vietnamese_1k",
+  "vietnamese_5k",
   "python",
   "c"
 ]
