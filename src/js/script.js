@@ -740,20 +740,6 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
   ) {
     //1% chance to add parentheses
     word = `(${word})`;
-  } else if (
-    Math.random() < 0.01 &&
-    getLastChar(previousWord) != "," &&
-    getLastChar(previousWord) != "."
-  ) {
-    //1% chance to add braces
-    word = `{${word}}`;
-  } else if (
-    Math.random() < 0.01 &&
-    getLastChar(previousWord) != "," &&
-    getLastChar(previousWord) != "."
-  ) {
-    //1% chance to add brackets
-    word = `[${word}]`;
   } else if (Math.random() < 0.01) {
     //1% chance to add a colon
     word = word + ":";
