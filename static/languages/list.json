@@ -36,6 +36,7 @@
   "vietnamese_5k",
   "lojban_gismu",
   "lojban_cmavo",
-  "python",
-  "c"
+  "code_python",
+  "code_c",
+  "code_javascript"
 ]
