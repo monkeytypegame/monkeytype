@@ -6,7 +6,9 @@
   "spanish_1k",
   "french",
   "arabic",
+  "mongolian",
   "russian",
+  "russian_1k",
   "portuguese",
   "indonesian",
   "german",
@@ -18,6 +20,8 @@
   "slovak",
   "dutch",
   "danish",
+  "danish_1k",
+  "danish_10k",
   "hungarian",
   "hungarian_2.5k",
   "norwegian",
@@ -29,7 +33,9 @@
   "kazakh",
   "vietnamese",
   "vietnamese_1k",
-  "python",
+  "vietnamese_5k",
   "lojban_gismu",
-  "lojban_cmavo"
+  "lojban_cmavo",
+  "python",
+  "c"
 ]
