@@ -542,7 +542,7 @@ function canBailOut() {
 }
 
 let simplePopups = {};
-
+window.simplePopups = simplePopups;
 class SimplePopup {
   constructor(
     id,
