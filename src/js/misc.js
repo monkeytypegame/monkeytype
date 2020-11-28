@@ -103,8 +103,6 @@ export async function getLanguage(lang) {
   } catch (e) {
     console.error(`error getting language`);
     console.error(e);
-    //TODO: set config language to english
-    //config.language = "english";
     showNotification(`Error getting language: ${e.message}`, 4000);
     await $.getJSON(`languages/english.json`, function (data) {
       currentLanguage = data;

@@ -413,6 +413,9 @@ async function initWords() {
   currentInput = "";
 
   let language = await Misc.getLanguage(config.language);
+  if (language && language.name !== config.language) {
+    config.language = "english";
+  }
 
   if (config.mode === "quote" && quotes === null) {
     showBackgroundLoader();
