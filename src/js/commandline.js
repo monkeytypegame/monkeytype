@@ -1,3 +1,17 @@
+function canBailOut() {
+  return (
+    (config.mode === "custom" &&
+      customTextIsRandom &&
+      customTextWordCount >= 5000) ||
+    (config.mode === "custom" &&
+      !customTextIsRandom &&
+      customText.length >= 5000) ||
+    (config.mode === "words" && config.words >= 5000) ||
+    config.words === 0 ||
+    (config.mode === "time" && (config.time >= 3600 || config.time === 0))
+  );
+}
+
 function addChildCommands(
   unifiedCommands,
   commandItem,
@@ -557,7 +571,7 @@ let commands = {
       id: "toggleFullscreen",
       display: "Toggle Fullscreen",
       exec: () => {
-        toggleFullscreen();
+        Misc.toggleFullscreen();
       },
     },
     {
@@ -841,7 +855,7 @@ let commandsEnableAds = {
       display: "off",
       exec: () => {
         setEnableAds("off");
-        showNotification("Don't forget to refresh the page!", 3000);
+        Misc.showNotification("Don't forget to refresh the page!", 3000);
       },
     },
     {
@@ -849,7 +863,7 @@ let commandsEnableAds = {
       display: "on",
       exec: () => {
         setEnableAds("on");
-        showNotification("Don't forget to refresh the page!", 3000);
+        Misc.showNotification("Don't forget to refresh the page!", 3000);
       },
     },
     {
@@ -857,7 +871,7 @@ let commandsEnableAds = {
       display: "Sellout",
       exec: () => {
         setEnableAds("max");
-        showNotification("Don't forget to refresh the page!", 3000);
+        Misc.showNotification("Don't forget to refresh the page!", 3000);
       },
     },
   ],
@@ -1510,10 +1524,10 @@ function updateCommandsTagsList() {
   }
 }
 
-getThemesList().then((themes) => {
+Misc.getThemesList().then((themes) => {
   themes.forEach((theme) => {
     commandsThemes.list.push({
-      id: "changeTheme" + capitalizeFirstLetter(theme.name),
+      id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
       display: theme.name.replace(/_/g, " "),
       hover: () => {
         previewTheme(theme.name);
@@ -1530,7 +1544,7 @@ function showFavouriteThemesAtTheTop() {
     commandsThemes.list = [];
     config.favThemes.forEach((theme) => {
       commandsThemes.list.push({
-        id: "changeTheme" + capitalizeFirstLetter(theme),
+        id: "changeTheme" + Misc.capitalizeFirstLetter(theme),
         display: theme.replace(/_/g, " "),
         hover: () => {
           previewTheme(theme);
@@ -1540,11 +1554,11 @@ function showFavouriteThemesAtTheTop() {
         },
       });
     });
-    getThemesList().then((themes) => {
+    Misc.getThemesList().then((themes) => {
       themes.forEach((theme) => {
         if (config.favThemes.includes(theme.name)) return;
         commandsThemes.list.push({
-          id: "changeTheme" + capitalizeFirstLetter(theme.name),
+          id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
           display: theme.name.replace(/_/g, " "),
           hover: () => {
             previewTheme(theme.name);
@@ -1563,7 +1577,7 @@ let commandsFonts = {
   list: [],
 };
 
-getFontsList().then((fonts) => {
+Misc.getFontsList().then((fonts) => {
   fonts.forEach((font) => {
     commandsFonts.list.push({
       id: "changeFont" + font.name.replace(/ /g, "_"),
@@ -1593,7 +1607,7 @@ let commandsFunbox = {
   ],
 };
 
-getFunboxList().then((funboxes) => {
+Misc.getFunboxList().then((funboxes) => {
   funboxes.forEach((funbox) => {
     commandsFunbox.list.push({
       id: "changeFunbox" + funbox.name,
@@ -1623,10 +1637,10 @@ let commandsLanguages = {
 };
 
 commandsLanguages.list = [];
-getLanguageList().then((languages) => {
+Misc.getLanguageList().then((languages) => {
   languages.forEach((language) => {
     commandsLanguages.list.push({
-      id: "changeLanguage" + capitalizeFirstLetter(language),
+      id: "changeLanguage" + Misc.capitalizeFirstLetter(language),
       display: language.replace(/_/g, " "),
       exec: () => {
         setLanguage(language);
@@ -1651,7 +1665,7 @@ if (Object.keys(layouts).length > 0) {
   commandsLayouts.list = [];
   Object.keys(layouts).forEach((layout) => {
     commandsLayouts.list.push({
-      id: "changeLayout" + capitalizeFirstLetter(layout),
+      id: "changeLayout" + Misc.capitalizeFirstLetter(layout),
       display: layout.replace(/_/g, " "),
       exec: () => {
         setSavedLayout(layout);
@@ -1685,7 +1699,7 @@ if (Object.keys(layouts).length > 0) {
   Object.keys(layouts).forEach((layout) => {
     if (layout.toString() != "default") {
       commandsKeymapLayouts.list.push({
-        id: "changeKeymapLayout" + capitalizeFirstLetter(layout),
+        id: "changeKeymapLayout" + Misc.capitalizeFirstLetter(layout),
         display: layout.replace(/_/g, " "),
         exec: () => {
           setKeymapLayout(layout);

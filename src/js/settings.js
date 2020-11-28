@@ -261,7 +261,7 @@ async function fillSettingsPage() {
   refreshThemeButtons();
 
   let langEl = $(".pageSettings .section.language .buttons").empty();
-  getLanguageList().then((languages) => {
+  Misc.getLanguageList().then((languages) => {
     languages.forEach((language) => {
       langEl.append(
         `<div class="language button" language='${language}'>${language.replace(
@@ -299,7 +299,7 @@ async function fillSettingsPage() {
 
   let funboxEl = $(".pageSettings .section.funbox .buttons").empty();
   funboxEl.append(`<div class="funbox button" funbox='none'>none</div>`);
-  getFunboxList().then((funboxModes) => {
+  Misc.getFunboxList().then((funboxModes) => {
     funboxModes.forEach((funbox) => {
       if (funbox.name === "mirror") {
         funboxEl.append(
@@ -325,7 +325,7 @@ async function fillSettingsPage() {
   });
 
   let fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
-  getFontsList().then((fonts) => {
+  Misc.getFontsList().then((fonts) => {
     fonts.forEach((font) => {
       fontsEl.append(
         `<div class="button" style="font-family:${
@@ -350,7 +350,7 @@ function refreshThemeButtons() {
     activeThemeName = randomTheme;
   }
 
-  getSortedThemesList().then((themes) => {
+  Misc.getSortedThemesList().then((themes) => {
     //first show favourites
     if (config.favThemes.length > 0) {
       favThemesEl.css({ paddingBottom: "1rem" });
@@ -456,7 +456,7 @@ function hideCustomThemeShare() {
         $("#customThemeShareWrapper input").val()
       );
     } catch (e) {
-      showNotification(
+      Misc.showNotification(
         "Something went wrong. Reverting to default custom colors.",
         3000
       );
@@ -503,13 +503,14 @@ $("#shareCustomThemeButton").click((e) => {
     );
 
     let url =
-      "https://monkeytype.com?" + objectToQueryString({ customTheme: share });
+      "https://monkeytype.com?" +
+      Misc.objectToQueryString({ customTheme: share });
     navigator.clipboard.writeText(url).then(
       function () {
-        showNotification("URL Copied to clipboard", 2000);
+        Misc.showNotification("URL Copied to clipboard", 2000);
       },
       function (err) {
-        showNotification(
+        Misc.showNotification(
           "Something went wrong when copying the URL: " + err,
           5000
         );
@@ -715,7 +716,7 @@ $(
   ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
 ).click((e) => {
   showBackgroundLoader();
-  generatePairingCode({ uid: firebase.auth().currentUser.uid })
+  CloudFunctions.generatePairingCode({ uid: firebase.auth().currentUser.uid })
     .then((ret) => {
       hideBackgroundLoader();
       if (ret.data.status === 1 || ret.data.status === 2) {
@@ -731,7 +732,7 @@ $(
     })
     .catch((e) => {
       hideBackgroundLoader();
-      showNotification("Something went wrong. Error: " + e.message, 4000);
+      Misc.showNotification("Something went wrong. Error: " + e.message, 4000);
     });
 });
 
@@ -739,15 +740,20 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   (e) => {
     if (confirm("Are you sure?")) {
       showBackgroundLoader();
-      unlinkDiscord({ uid: firebase.auth().currentUser.uid }).then((ret) => {
+      CloudFunctions.unlinkDiscord({
+        uid: firebase.auth().currentUser.uid,
+      }).then((ret) => {
         hideBackgroundLoader();
         console.log(ret);
         if (ret.data.status === 1) {
           db_getSnapshot().discordId = null;
-          showNotification("Accounts unlinked", 2000);
+          Misc.showNotification("Accounts unlinked", 2000);
           updateDiscordSettingsSection();
         } else {
-          showNotification("Something went wrong: " + ret.data.message, 5000);
+          Misc.showNotification(
+            "Something went wrong: " + ret.data.message,
+            5000
+          );
           updateDiscordSettingsSection();
         }
       });
@@ -857,7 +863,7 @@ $(".pageSettings .saveCustomThemeButton").click((e) => {
     }
   );
   setCustomThemeColors(save);
-  showNotification("Custom theme colors saved", 1000);
+  Misc.showNotification("Custom theme colors saved", 1000);
 });
 
 $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
@@ -909,10 +915,10 @@ $("#exportSettingsButton").click((e) => {
   let configJSON = JSON.stringify(config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
-      showNotification("JSON Copied to clipboard", 2000);
+      Misc.showNotification("JSON Copied to clipboard", 2000);
     },
     function (err) {
-      showNotification(
+      Misc.showNotification(
         "Something went wrong when copying the settings JSON: " + err,
         5000
       );
@@ -940,7 +946,7 @@ function hideSettingsImport() {
       try {
         applyConfig(JSON.parse($("#settingsImportWrapper input").val()));
       } catch (e) {
-        showNotification(
+        Misc.showNotification(
           "An error occured while importing settings: " + e,
           5000
         );
