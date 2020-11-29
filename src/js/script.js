@@ -843,14 +843,15 @@ function addWord() {
 function showWords() {
   $("#words").empty();
 
+  let wordsHTML = "";
   for (let i = 0; i < wordsList.length; i++) {
-    let w = "<div class='word'>";
+    wordsHTML += "<div class='word'>";
     for (let c = 0; c < wordsList[i].length; c++) {
-      w += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+      wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
     }
-    w += "</div>";
-    $("#words").append(w);
+    wordsHTML += "</div>";
   }
+  $("#words").html(wordsHTML);
 
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word")).outerHeight(true);
