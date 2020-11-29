@@ -3106,6 +3106,7 @@ function toggleResultWordsDisplay() {
 
 async function loadWordsHistory() {
   $("#resultWordsHistory .words").empty();
+  let wordsHTML = "";
   for (let i = 0; i < inputHistory.length + 2; i++) {
     let input = inputHistory[i];
     let wordEl = "";
@@ -3216,8 +3217,9 @@ async function loadWordsHistory() {
         wordEl += "</div>";
       } catch (e) {}
     }
-    $("#resultWordsHistory .words").append(wordEl);
+    wordsHTML += wordEl;
   }
+  $("#resultWordsHistory .words").html(wordsHTML);
   $("#showWordHistoryButton").addClass("loaded");
   return true;
 }
