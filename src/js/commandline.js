@@ -1769,8 +1769,11 @@ $("#commandInput input").keydown((e) => {
 
 $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
-    "active"
+    "activeKeyboard"
   );
+  if (isPreviewingTheme) {
+    previewTheme(config.theme, false);
+  }
   let hoverId = $(e.target).attr("command");
   try {
     let list = currentCommands[currentCommands.length - 1];
