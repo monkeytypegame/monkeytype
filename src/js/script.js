@@ -4260,6 +4260,11 @@ $(document).keydown((event) => {
     }
   }
 
+  //blocking firefox from going back in history with backspace
+  if (event.key === "Backspace") {
+    event.preventDefault();
+  }
+
   //only for the typing test
   if ($("#wordsInput").is(":focus")) {
     const isBackspace =
