@@ -726,6 +726,20 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
   ) {
     //1% chance to add quotes
     word = `"${word}"`;
+  } else if (
+    Math.random() < 0.01 &&
+    getLastChar(previousWord) != "," &&
+    getLastChar(previousWord) != "."
+  ) {
+    //1% chance to add single quotes
+    word = `'${word}'`;
+  } else if (
+    Math.random() < 0.01 &&
+    getLastChar(previousWord) != "," &&
+    getLastChar(previousWord) != "."
+  ) {
+    //1% chance to add parentheses
+    word = `(${word})`;
   } else if (Math.random() < 0.01) {
     //1% chance to add a colon
     word = word + ":";
@@ -843,14 +857,15 @@ function addWord() {
 function showWords() {
   $("#words").empty();
 
+  let wordsHTML = "";
   for (let i = 0; i < wordsList.length; i++) {
-    let w = "<div class='word'>";
+    wordsHTML += "<div class='word'>";
     for (let c = 0; c < wordsList[i].length; c++) {
-      w += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+      wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
     }
-    w += "</div>";
-    $("#words").append(w);
+    wordsHTML += "</div>";
   }
+  $("#words").html(wordsHTML);
 
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word")).outerHeight(true);
@@ -3105,6 +3120,7 @@ function toggleResultWordsDisplay() {
 
 async function loadWordsHistory() {
   $("#resultWordsHistory .words").empty();
+  let wordsHTML = "";
   for (let i = 0; i < inputHistory.length + 2; i++) {
     let input = inputHistory[i];
     let wordEl = "";
@@ -3215,8 +3231,9 @@ async function loadWordsHistory() {
         wordEl += "</div>";
       } catch (e) {}
     }
-    $("#resultWordsHistory .words").append(wordEl);
+    wordsHTML += wordEl;
   }
+  $("#resultWordsHistory .words").html(wordsHTML);
   $("#showWordHistoryButton").addClass("loaded");
   return true;
 }
