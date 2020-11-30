@@ -4262,7 +4262,14 @@ $(document).keydown((event) => {
 
   //blocking firefox from going back in history with backspace
   if (event.key === "Backspace") {
-    event.preventDefault();
+    let t = /INPUT|SELECT|TEXTAREA/i;
+    if (
+      !t.test(event.target.tagName) ||
+      event.target.disabled ||
+      event.target.readOnly
+    ) {
+      event.preventDefault();
+    }
   }
 
   //only for the typing test
