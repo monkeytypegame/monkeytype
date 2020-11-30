@@ -1769,8 +1769,11 @@ $("#commandInput input").keydown((e) => {
 
 $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
-    "active"
+    "activeKeyboard"
   );
+  if (isPreviewingTheme) {
+    previewTheme(config.theme, false);
+  }
   let hoverId = $(e.target).attr("command");
   try {
     let list = currentCommands[currentCommands.length - 1];
@@ -2023,14 +2026,15 @@ function updateSuggestedCommands() {
 
 function displayFoundCommands() {
   $("#commandLine .suggestions").empty();
+  let commandsHTML = "";
   let list = currentCommands[currentCommands.length - 1];
   $.each(list.list, (index, obj) => {
     if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
-      $("#commandLine .suggestions").append(
-        '<div class="entry" command="' + obj.id + '">' + obj.display + "</div>"
-      );
+      commandsHTML +=
+        '<div class="entry" command="' + obj.id + '">' + obj.display + "</div>";
     }
   });
+  $("#commandLine .suggestions").html(commandsHTML);
   if ($("#commandLine .suggestions .entry").length == 0) {
     $("#commandLine .separator").css({ height: 0, margin: 0 });
   } else {
