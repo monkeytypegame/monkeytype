@@ -4727,7 +4727,10 @@ $(document).keydown(function (event) {
   activeWordTopBeforeJump = activeWordTop;
   compareInput(!config.blindMode);
 
-  if (currentInput.length === wordsList[currentWordIndex].length) {
+  if (
+    activeFunBox === "no_space" &&
+    currentInput.length === wordsList[currentWordIndex].length
+  ) {
     jQuery.event.trigger({
       type: "keydown",
       which: " ".charCodeAt(0),
