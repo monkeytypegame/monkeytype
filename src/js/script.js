@@ -1737,7 +1737,7 @@ function showResult(difficultyFailed = false) {
       $("#result .stats .wpm .top .text").text("cpm");
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        stats.wpm * 5 + ` (${roundTo2(stats.wpm)} wpm)`
+        roundTo2(stats.wpm * 5) + ` (${roundTo2(stats.wpm)} wpm)`
       );
       $("#result .stats .wpm .bottom").text(Math.round(stats.wpm * 5));
       $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw * 5));
