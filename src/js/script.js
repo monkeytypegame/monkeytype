@@ -203,21 +203,6 @@ let customTextIsRandom = false;
 let customTextWordCount = 1;
 let randomQuote = null;
 
-const testCompleted = firebase.functions().httpsCallable("testCompleted");
-const addTag = firebase.functions().httpsCallable("addTag");
-const editTag = firebase.functions().httpsCallable("editTag");
-const removeTag = firebase.functions().httpsCallable("removeTag");
-const updateResultTags = firebase.functions().httpsCallable("updateResultTags");
-const saveConfig = firebase.functions().httpsCallable("saveConfig");
-const generatePairingCode = firebase
-  .functions()
-  .httpsCallable("generatePairingCode");
-const saveLbMemory = firebase.functions().httpsCallable("saveLbMemory");
-const unlinkDiscord = firebase.functions().httpsCallable("unlinkDiscord");
-const verifyUser = firebase.functions().httpsCallable("verifyUser");
-const reserveName = firebase.functions().httpsCallable("reserveDisplayName");
-const updateEmail = firebase.functions().httpsCallable("updateEmail");
-
 function refreshThemeColorObject() {
   let st = getComputedStyle(document.body);
 
@@ -240,7 +225,10 @@ function refreshThemeColorObject() {
 
 function copyResultToClipboard() {
   if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
-    showNotification("Sorry, this feature is not supported in Firefox", 4000);
+    Misc.showNotification(
+      "Sorry, this feature is not supported in Firefox",
+      4000
+    );
   } else {
     $(".pageTest .ssWatermark").removeClass("hidden");
     $(".pageTest .buttons").addClass("hidden");
@@ -271,7 +259,7 @@ function copyResultToClipboard() {
             ])
             .then((f) => {
               $(".notification").removeClass("hidden");
-              showNotification("Copied to clipboard", 1000);
+              Misc.showNotification("Copied to clipboard", 1000);
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
               if (firebase.auth().currentUser == null)
@@ -279,7 +267,7 @@ function copyResultToClipboard() {
             })
             .catch((f) => {
               $(".notification").removeClass("hidden");
-              showNotification("Error saving image to clipboard", 2000);
+              Misc.showNotification("Error saving image to clipboard", 2000);
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
               if (firebase.auth().currentUser == null)
@@ -289,7 +277,7 @@ function copyResultToClipboard() {
       });
     } catch (e) {
       $(".notification").removeClass("hidden");
-      showNotification("Error creating image", 2000);
+      Misc.showNotification("Error creating image", 2000);
       $(".pageTest .ssWatermark").addClass("hidden");
       $(".pageTest .buttons").removeClass("hidden");
       if (firebase.auth().currentUser == null)
@@ -300,15 +288,15 @@ function copyResultToClipboard() {
 
 function activateFunbox(funbox, mode) {
   if (testActive || resultVisible) {
-    showNotification(
+    Misc.showNotification(
       "You can only change the funbox before starting a test.",
       4000
     );
     return false;
   }
-  if (currentLanguage.ligatures) {
+  if (Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
-      showNotification(
+      Misc.showNotification(
         "Current language does not support this funbox mode",
         3000
       );
@@ -428,7 +416,10 @@ async function initWords() {
   currentCorrected = "";
   currentInput = "";
 
-  let language = await getLanguage(config.language);
+  let language = await Misc.getLanguage(config.language);
+  if (language && language.name !== config.language) {
+    config.language = "english";
+  }
 
   if (config.mode === "quote" && quotes === null) {
     showBackgroundLoader();
@@ -530,16 +521,16 @@ async function initWords() {
         }
         randomWord = randomcaseword;
       } else if (activeFunBox === "gibberish") {
-        randomWord = getGibberish();
+        randomWord = Misc.getGibberish();
       } else if (activeFunBox === "58008") {
         setToggleSettings(false, true);
-        randomWord = getNumbers(7);
+        randomWord = Misc.getNumbers(7);
       } else if (activeFunBox === "specials") {
         setToggleSettings(false, true);
-        randomWord = getSpecials();
+        randomWord = Misc.getSpecials();
       } else if (activeFunBox === "ascii") {
         setToggleSettings(false, true);
-        randomWord = getASCII();
+        randomWord = Misc.getASCII();
       }
 
       if (config.punctuation && config.mode != "custom") {
@@ -547,7 +538,7 @@ async function initWords() {
       }
       if (config.numbers && config.mode != "custom") {
         if (Math.random() < 0.1) {
-          randomWord = getNumbers(4);
+          randomWord = Misc.getNumbers(4);
         }
       }
 
@@ -607,7 +598,8 @@ function emulateLayout(event) {
   function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
     if (config.capsLockBackspace) return event.shiftKey;
     const isCapsLockHeld = event.originalEvent.getModifierState("CapsLock");
-    if (isCapsLockHeld) return isASCIILetter(newKeyPreview) !== event.shiftKey;
+    if (isCapsLockHeld)
+      return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
     return event.shiftKey;
   }
 
@@ -624,8 +616,8 @@ function emulateLayout(event) {
 
   try {
     if (config.layout === "default") {
-      //override the caps lock modifier for the default layout if needed
-      if (config.capsLockBackspace && isASCIILetter(newEvent.key)) {
+    //override the caps lock modifier for the default layout if needed
+      if (config.capsLockBackspace && Misc.isASCIILetter(newEvent.key)) {
         replaceEventKey(
           newEvent,
           newEvent.shiftKey
@@ -709,16 +701,16 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
 
   if (
     index == 0 ||
-    getLastChar(previousWord) == "." ||
-    getLastChar(previousWord) == "?" ||
-    getLastChar(previousWord) == "!"
+    Misc.getLastChar(previousWord) == "." ||
+    Misc.getLastChar(previousWord) == "?" ||
+    Misc.getLastChar(previousWord) == "!"
   ) {
     //always capitalise the first word or if there was a dot
-    word = capitalizeFirstLetter(word);
+    word = Misc.capitalizeFirstLetter(word);
   } else if (
     //10% chance to end a sentence
     (Math.random() < 0.1 &&
-      getLastChar(previousWord) != "." &&
+      Misc.getLastChar(previousWord) != "." &&
       index != maxindex - 2) ||
     index == maxindex - 1
   ) {
@@ -732,8 +724,8 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     }
   } else if (
     Math.random() < 0.01 &&
-    getLastChar(previousWord) != "," &&
-    getLastChar(previousWord) != "."
+    Misc.getLastChar(previousWord) != "," &&
+    Misc.getLastChar(previousWord) != "."
   ) {
     //1% chance to add quotes
     word = `"${word}"`;
@@ -756,21 +748,21 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     word = word + ":";
   } else if (
     Math.random() < 0.01 &&
-    getLastChar(previousWord) != "," &&
-    getLastChar(previousWord) != "." &&
+    Misc.getLastChar(previousWord) != "," &&
+    Misc.getLastChar(previousWord) != "." &&
     previousWord != "-"
   ) {
     //1% chance to add a dash
     word = "-";
   } else if (
     Math.random() < 0.01 &&
-    getLastChar(previousWord) != "," &&
-    getLastChar(previousWord) != "." &&
-    getLastChar(previousWord) != ";"
+    Misc.getLastChar(previousWord) != "," &&
+    Misc.getLastChar(previousWord) != "." &&
+    Misc.getLastChar(previousWord) != ";"
   ) {
     //1% chance to add semicolon
     word = word + ";";
-  } else if (Math.random() < 0.2 && getLastChar(previousWord) != ",") {
+  } else if (Math.random() < 0.2 && Misc.getLastChar(previousWord) != ",") {
     //2% chance to add a comma
     word += ",";
   }
@@ -795,10 +787,10 @@ function addWord() {
     return;
   const language =
     config.mode !== "custom"
-      ? currentLanguage
+      ? Misc.getCurrentLanguage()
       : {
           //borrow the direction of the current language
-          leftToRight: currentLanguage.leftToRight,
+          leftToRight: Misc.getCurrentLanguage().leftToRight,
           words: customText,
         };
   const wordset = language.words;
@@ -837,13 +829,13 @@ function addWord() {
     }
     randomWord = randomcaseword;
   } else if (activeFunBox === "gibberish") {
-    randomWord = getGibberish();
+    randomWord = Misc.getGibberish();
   } else if (activeFunBox === "58008") {
-    randomWord = getNumbers(7);
+    randomWord = Misc.getNumbers(7);
   } else if (activeFunBox === "specials") {
-    randomWord = getSpecials();
+    randomWord = Misc.getSpecials();
   } else if (activeFunBox === "ascii") {
-    randomWord = getASCII();
+    randomWord = Misc.getASCII();
   }
 
   if (config.punctuation && config.mode != "custom") {
@@ -851,7 +843,7 @@ function addWord() {
   }
   if (config.numbers && config.mode != "custom") {
     if (Math.random() < 0.1) {
-      randomWord = getNumbers(4);
+      randomWord = Misc.getNumbers(4);
     }
   }
 
@@ -914,7 +906,7 @@ $("#restartTestButton, #startTestButton").on("click", function () {
     memoryFunboxTimer = Math.round(Math.pow(wordsList.length, 1.2));
     memoryFunboxInterval = setInterval(() => {
       memoryFunboxTimer -= 1;
-      showNotification(memoryFunboxTimer);
+      Misc.showNotification(memoryFunboxTimer);
       if (memoryFunboxTimer < 0) {
         memoryFunboxInterval = clearInterval(memoryFunboxInterval);
         memoryFunboxTimer = null;
@@ -991,7 +983,7 @@ function compareInput(showError) {
           showResult(true);
         }
         let testNow = performance.now();
-        let testSeconds = roundTo2((testNow - testStart) / 1000);
+        let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
         incompleteTestSeconds += testSeconds;
         restartCount++;
       }
@@ -1045,7 +1037,7 @@ function compareInput(showError) {
             showResult(true);
           }
           let testNow = performance.now();
-          let testSeconds = roundTo2((testNow - testStart) / 1000);
+          let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
           incompleteTestSeconds += testSeconds;
           restartCount++;
         }
@@ -1198,15 +1190,15 @@ function updateTimer() {
           "linear"
         );
     } else if (config.timerStyle === "text") {
-      let displayTime = secondsToString(config.time - time);
+      let displayTime = Misc.secondsToString(config.time - time);
       if (config.time === 0) {
-        displayTime = secondsToString(time);
+        displayTime = Misc.secondsToString(time);
       }
       $("#timerNumber").html("<div>" + displayTime + "</div>");
     } else if (config.timerStyle === "mini") {
-      let displayTime = secondsToString(config.time - time);
+      let displayTime = Misc.secondsToString(config.time - time);
       if (config.time === 0) {
-        displayTime = secondsToString(time);
+        displayTime = Misc.secondsToString(time);
       }
       $("#miniTimerAndLiveWpm .time").html(displayTime);
     }
@@ -1481,7 +1473,7 @@ function updateCaretPosition() {
     }
 
     if ($(currentLetter).length == 0) return;
-    const isLanguageLeftToRight = currentLanguage.leftToRight;
+    const isLanguageLeftToRight = Misc.getCurrentLanguage().leftToRight;
     let currentLetterPosLeft = isLanguageLeftToRight
       ? currentLetter.offsetLeft
       : currentLetter.offsetLeft + $(currentLetter).width();
@@ -1622,10 +1614,10 @@ function countChars() {
 function calculateStats() {
   let testSeconds = (testEnd - testStart) / 1000;
   let chars = countChars();
-  let wpm = roundTo2(
+  let wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
-  let wpmraw = roundTo2(
+  let wpmraw = Misc.roundTo2(
     ((chars.allCorrectChars +
       chars.spaces +
       chars.incorrectChars +
@@ -1633,7 +1625,7 @@ function calculateStats() {
       (60 / testSeconds)) /
       5
   );
-  let acc = roundTo2(
+  let acc = Misc.roundTo2(
     (accuracyStats.correct /
       (accuracyStats.correct + accuracyStats.incorrect)) *
       100
@@ -1704,33 +1696,33 @@ function showResult(difficultyFailed = false) {
   clearTimeout(timer);
   let testtime = stats.time;
   let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
-  let afkSecondsPercent = roundTo2((afkseconds / testtime) * 100);
+  let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
 
   $("#result #resultWordsHistory").addClass("hidden");
 
   if (config.alwaysShowDecimalPlaces) {
     if (config.alwaysShowCPM == false) {
       $("#result .stats .wpm .top .text").text("wpm");
-      $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm));
-      $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw));
+      $("#result .stats .wpm .bottom").text(Misc.roundTo2(stats.wpm));
+      $("#result .stats .raw .bottom").text(Misc.roundTo2(stats.wpmRaw));
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        roundTo2(stats.wpm * 5) + " cpm"
+        Misc.roundTo2(stats.wpm * 5) + " cpm"
       );
     } else {
       $("#result .stats .wpm .top .text").text("cpm");
-      $("#result .stats .wpm .bottom").text(roundTo2(stats.wpm * 5));
-      $("#result .stats .raw .bottom").text(roundTo2(stats.wpmRaw * 5));
+      $("#result .stats .wpm .bottom").text(Misc.roundTo2(stats.wpm * 5));
+      $("#result .stats .raw .bottom").text(Misc.roundTo2(stats.wpmRaw * 5));
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        roundTo2(stats.wpm) + " wpm"
+        Misc.roundTo2(stats.wpm) + " wpm"
       );
     }
 
-    $("#result .stats .acc .bottom").text(roundTo2(stats.acc) + "%");
-    let time = roundTo2(testtime) + "s";
+    $("#result .stats .acc .bottom").text(Misc.roundTo2(stats.acc) + "%");
+    let time = Misc.roundTo2(testtime) + "s";
     if (testtime > 61) {
-      time = secondsToString(roundTo2(testtime));
+      time = Misc.secondsToString(Misc.roundTo2(testtime));
     }
     $("#result .stats .time .bottom .text").text(time);
     $("#result .stats .raw .bottom").removeAttr("aria-label");
@@ -1745,7 +1737,7 @@ function showResult(difficultyFailed = false) {
       $("#result .stats .wpm .top .text").text("wpm");
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        stats.wpm + ` (${roundTo2(stats.wpm * 5)} cpm)`
+        stats.wpm + ` (${Misc.roundTo2(stats.wpm * 5)} cpm)`
       );
       $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
       $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
@@ -1754,7 +1746,7 @@ function showResult(difficultyFailed = false) {
       $("#result .stats .wpm .top .text").text("cpm");
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        roundTo2(stats.wpm * 5) + ` (${roundTo2(stats.wpm)} wpm)`
+        Misc.roundTo2(stats.wpm * 5) + ` (${Misc.roundTo2(stats.wpm)} wpm)`
       );
       $("#result .stats .wpm .bottom").text(Math.round(stats.wpm * 5));
       $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw * 5));
@@ -1765,12 +1757,12 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .acc .bottom").attr("aria-label", stats.acc + "%");
     let time = Math.round(testtime) + "s";
     if (testtime > 61) {
-      time = secondsToString(Math.round(testtime));
+      time = Misc.secondsToString(Math.round(testtime));
     }
     $("#result .stats .time .bottom .text").text(time);
     $("#result .stats .time .bottom").attr(
       "aria-label",
-      `${roundTo2(testtime)}s (${afkseconds}s afk ${afkSecondsPercent}%)`
+      `${Misc.roundTo2(testtime)}s (${afkseconds}s afk ${afkSecondsPercent}%)`
     );
   }
   $("#result .stats .time .bottom .afk").text("");
@@ -1835,7 +1827,7 @@ function showResult(difficultyFailed = false) {
   let labels = [];
   for (let i = 1; i <= wpmHistory.length; i++) {
     if (lastSecondNotRound && i === wpmHistory.length) {
-      labels.push(roundTo2(testtime).toString());
+      labels.push(Misc.roundTo2(testtime).toString());
     } else {
       labels.push(i.toString());
     }
@@ -1864,15 +1856,16 @@ function showResult(difficultyFailed = false) {
     Math.round((f.count / 5) * 60)
   );
 
-  let rawWpmPerSecond = smooth(rawWpmPerSecondRaw, 1);
+  let rawWpmPerSecond = Misc.smooth(rawWpmPerSecondRaw, 1);
 
-  let stddev = stdDev(rawWpmPerSecondRaw);
-  let avg = mean(rawWpmPerSecondRaw);
+  let stddev = Misc.stdDev(rawWpmPerSecondRaw);
+  let avg = Misc.mean(rawWpmPerSecondRaw);
 
-  let consistency = roundTo2(kogasa(stddev / avg));
-  let keyConsistency = roundTo2(
-    kogasa(
-      stdDev(keypressStats.spacing.array) / mean(keypressStats.spacing.array)
+  let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
+  let keyConsistency = Misc.roundTo2(
+    Misc.kogasa(
+      Misc.stdDev(keypressStats.spacing.array) /
+        Misc.mean(keypressStats.spacing.array)
     )
   );
 
@@ -1881,7 +1874,9 @@ function showResult(difficultyFailed = false) {
   }
 
   if (config.alwaysShowDecimalPlaces) {
-    $("#result .stats .consistency .bottom").text(roundTo2(consistency) + "%");
+    $("#result .stats .consistency .bottom").text(
+      Misc.roundTo2(consistency) + "%"
+    );
     $("#result .stats .consistency .bottom").attr(
       "aria-label",
       `${keyConsistency}% key`
@@ -1957,11 +1952,11 @@ function showResult(difficultyFailed = false) {
   if (bailout) afkDetected = false;
 
   if (difficultyFailed) {
-    showNotification("Test failed", 2000);
+    Misc.showNotification("Test failed", 2000);
   } else if (afkDetected) {
-    showNotification("Test invalid - AFK detected", 2000);
+    Misc.showNotification("Test invalid - AFK detected", 2000);
   } else if (sameWordset) {
-    showNotification("Test invalid - repeated", 2000);
+    Misc.showNotification("Test invalid - repeated", 2000);
   } else {
     let activeTags = [];
     try {
@@ -2067,7 +2062,7 @@ function showResult(difficultyFailed = false) {
                 showCrown();
                 $("#result .stats .wpm .crown").attr(
                   "aria-label",
-                  "+" + roundTo2(pbDiff)
+                  "+" + Misc.roundTo2(pbDiff)
                 );
               }
               localPb = true;
@@ -2089,39 +2084,39 @@ function showResult(difficultyFailed = false) {
             }
             $("#result .stats .leaderboards").removeClass("hidden");
             $("#result .stats .leaderboards .bottom").html("checking...");
-            testCompleted({
+            CloudFunctions.testCompleted({
               uid: firebase.auth().currentUser.uid,
               obj: completedEvent,
             })
               .then((e) => {
                 accountIconLoading(false);
                 if (e.data == null) {
-                  showNotification(
+                  Misc.showNotification(
                     "Unexpected response from the server.",
                     4000
                   );
                   return;
                 }
                 if (e.data.resultCode === -1) {
-                  showNotification("Could not save result", 3000);
+                  Misc.showNotification("Could not save result", 3000);
                 } else if (e.data.resultCode === -2) {
-                  showNotification(
+                  Misc.showNotification(
                     "Possible bot detected. Result not saved.",
                     4000
                   );
                 } else if (e.data.resultCode === -3) {
-                  showNotification(
+                  Misc.showNotification(
                     "Could not verify keypress stats. Result not saved.",
                     4000
                   );
                 } else if (e.data.resultCode === -4) {
-                  showNotification(
+                  Misc.showNotification(
                     "Result data does not make sense. Result not saved.",
                     4000
                   );
                 } else if (e.data.resultCode === -999) {
                   console.error("internal error: " + e.data.message);
-                  showNotification(
+                  Misc.showNotification(
                     "Internal error. Result might not be saved. " +
                       e.data.message,
                     6000
@@ -2202,7 +2197,7 @@ function showResult(difficultyFailed = false) {
                           "global",
                           glb.insertedAt
                         );
-                        let str = getPositionString(glb.insertedAt + 1);
+                        let str = Misc.getPositionString(glb.insertedAt + 1);
                         globalLbString = `global: ${str}`;
                       } else {
                         globalLbDiff = glbMemory - glb.foundAt;
@@ -2212,7 +2207,7 @@ function showResult(difficultyFailed = false) {
                           "global",
                           glb.foundAt
                         );
-                        let str = getPositionString(glb.foundAt + 1);
+                        let str = Misc.getPositionString(glb.foundAt + 1);
                         globalLbString = `global: ${str}`;
                       }
                     }
@@ -2258,7 +2253,7 @@ function showResult(difficultyFailed = false) {
                           "daily",
                           dlb.insertedAt
                         );
-                        let str = getPositionString(dlb.insertedAt + 1);
+                        let str = Misc.getPositionString(dlb.insertedAt + 1);
                         dailyLbString = `daily: ${str}`;
                       } else {
                         dailyLbDiff = dlbMemory - dlb.foundAt;
@@ -2268,7 +2263,7 @@ function showResult(difficultyFailed = false) {
                           "daily",
                           dlb.foundAt
                         );
-                        let str = getPositionString(dlb.foundAt + 1);
+                        let str = Misc.getPositionString(dlb.foundAt + 1);
                         dailyLbString = `daily: ${str}`;
                       }
                     }
@@ -2287,13 +2282,13 @@ function showResult(difficultyFailed = false) {
                       globalLbString + "<br>" + dailyLbString
                     );
 
-                    saveLbMemory({
+                    CloudFunctions.saveLbMemory({
                       uid: firebase.auth().currentUser.uid,
                       obj: db_getSnapshot().lbMemory,
                     }).then((d) => {
                       if (d.data.returnCode === 1) {
                       } else {
-                        showNotification(
+                        Misc.showNotification(
                           `Error saving lb memory ${d.data.message}`,
                           4000
                         );
@@ -2343,7 +2338,7 @@ function showResult(difficultyFailed = false) {
                     );
                   } else if (e.data.resultCode === 1) {
                     if (localPb) {
-                      showNotification(
+                      Misc.showNotification(
                         "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
                         15000
                       );
@@ -2353,7 +2348,7 @@ function showResult(difficultyFailed = false) {
               })
               .catch((e) => {
                 console.error(e);
-                showNotification("Could not save result. " + e, 5000);
+                Misc.showNotification("Could not save result. " + e, 5000);
               });
           });
         });
@@ -2366,7 +2361,7 @@ function showResult(difficultyFailed = false) {
         notSignedInLastResult = completedEvent;
       }
     } else {
-      showNotification("Test invalid", 3000);
+      Misc.showNotification("Test invalid", 3000);
       testInvalid = true;
       try {
         firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
@@ -2573,23 +2568,23 @@ function startTest() {
           time == Math.floor(config.time / 3) - 3 ||
           time == (config.time / 3) * 2 - 3
         ) {
-          showNotification("3", 1000);
+          Misc.showNotification("3", 1000);
         }
         if (
           time == Math.floor(config.time / 3) - 2 ||
           time == Math.floor(config.time / 3) * 2 - 2
         ) {
-          showNotification("2", 1000);
+          Misc.showNotification("2", 1000);
         }
         if (
           time == Math.floor(config.time / 3) - 1 ||
           time == Math.floor(config.time / 3) * 2 - 1
         ) {
-          showNotification("1", 1000);
+          Misc.showNotification("1", 1000);
         }
 
         if (config.layout !== layouts[index] && layouts[index] !== undefined) {
-          showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+          Misc.showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
         }
         setLayout(layouts[index]);
         setKeymapLayout(layouts[index]);
@@ -2650,7 +2645,7 @@ function restartTest(withSameWordset = false, nosave = false) {
         customText.length < 1000)
     ) {
     } else {
-      showNotification(
+      Misc.showNotification(
         "Restart disabled for long tests. Use your mouse to confirm.",
         4000
       );
@@ -2659,7 +2654,7 @@ function restartTest(withSameWordset = false, nosave = false) {
   }
 
   if (modeBeforePractise !== null && !withSameWordset) {
-    showNotification("Reverting to previous settings.", 1500);
+    Misc.showNotification("Reverting to previous settings.", 1500);
     setMode(modeBeforePractise);
     modeBeforePractise = null;
   }
@@ -2720,7 +2715,7 @@ function restartTest(withSameWordset = false, nosave = false) {
       !config.customTheme
     ) {
       randomiseTheme();
-      showNotification(config.theme.replace(/_/g, " "), 1500);
+      Misc.showNotification(config.theme.replace(/_/g, " "), 1500);
     }
   }
   resultVisible = false;
@@ -2806,7 +2801,10 @@ function setCustomText() {
   customText = customText.replace(/ +/gm, " ");
   customText = customText.split(" ");
   if (customText.length >= 10000) {
-    showNotification("Custom text cannot be longer than 10000 words.", 4000);
+    Misc.showNotification(
+      "Custom text cannot be longer than 10000 words.",
+      4000
+    );
     setMode("time");
     customText = "The quick brown fox jumped over the lazy dog".split(" ");
   }
@@ -2904,7 +2902,7 @@ function changePage(page) {
 
 function setMode(mode, nosave) {
   if (mode !== "words" && activeFunBox === "memory") {
-    showNotification("Memory funbox can only be used with words mode.");
+    Misc.showNotification("Memory funbox can only be used with words mode.");
     return;
   }
 
@@ -3323,14 +3321,6 @@ function hideEditTags() {
   }
 }
 
-function showBackgroundLoader() {
-  $("#backgroundLoader").stop(true, true).fadeIn(125);
-}
-
-function hideBackgroundLoader() {
-  $("#backgroundLoader").stop(true, true).fadeOut(125);
-}
-
 function updateTestModesNotice() {
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
@@ -3471,29 +3461,30 @@ function tagsEdit() {
   hideEditTags();
   if (action === "add") {
     showBackgroundLoader();
-    addTag({ uid: firebase.auth().currentUser.uid, name: inputVal }).then(
-      (e) => {
-        hideBackgroundLoader();
-        let status = e.data.resultCode;
-        if (status === 1) {
-          showNotification("Tag added", 2000);
-          db_getSnapshot().tags.push({
-            name: inputVal,
-            id: e.data.id,
-          });
-          updateResultEditTagsPanelButtons();
-          updateSettingsPage();
-          updateFilterTags();
-        } else if (status === -1) {
-          showNotification("Invalid tag name", 3000);
-        } else if (status < -1) {
-          showNotification("Unknown error", 3000);
-        }
+    CloudFunctions.addTag({
+      uid: firebase.auth().currentUser.uid,
+      name: inputVal,
+    }).then((e) => {
+      hideBackgroundLoader();
+      let status = e.data.resultCode;
+      if (status === 1) {
+        Misc.showNotification("Tag added", 2000);
+        db_getSnapshot().tags.push({
+          name: inputVal,
+          id: e.data.id,
+        });
+        updateResultEditTagsPanelButtons();
+        updateSettingsPage();
+        updateFilterTags();
+      } else if (status === -1) {
+        Misc.showNotification("Invalid tag name", 3000);
+      } else if (status < -1) {
+        Misc.showNotification("Unknown error", 3000);
       }
-    );
+    });
   } else if (action === "edit") {
     showBackgroundLoader();
-    editTag({
+    CloudFunctions.editTag({
       uid: firebase.auth().currentUser.uid,
       name: inputVal,
       tagid: tagid,
@@ -3501,7 +3492,7 @@ function tagsEdit() {
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if (status === 1) {
-        showNotification("Tag updated", 2000);
+        Misc.showNotification("Tag updated", 2000);
         db_getSnapshot().tags.forEach((tag) => {
           if (tag.id === tagid) {
             tag.name = inputVal;
@@ -3511,32 +3502,33 @@ function tagsEdit() {
         updateSettingsPage();
         updateFilterTags();
       } else if (status === -1) {
-        showNotification("Invalid tag name", 3000);
+        Misc.showNotification("Invalid tag name", 3000);
       } else if (status < -1) {
-        showNotification("Unknown error", 3000);
+        Misc.showNotification("Unknown error", 3000);
       }
     });
   } else if (action === "remove") {
     showBackgroundLoader();
-    removeTag({ uid: firebase.auth().currentUser.uid, tagid: tagid }).then(
-      (e) => {
-        hideBackgroundLoader();
-        let status = e.data.resultCode;
-        if (status === 1) {
-          showNotification("Tag removed", 2000);
-          db_getSnapshot().tags.forEach((tag, index) => {
-            if (tag.id === tagid) {
-              db_getSnapshot().tags.splice(index, 1);
-            }
-          });
-          updateResultEditTagsPanelButtons();
-          updateSettingsPage();
-          updateFilterTags();
-        } else if (status < -1) {
-          showNotification("Unknown error", 3000);
-        }
+    CloudFunctions.removeTag({
+      uid: firebase.auth().currentUser.uid,
+      tagid: tagid,
+    }).then((e) => {
+      hideBackgroundLoader();
+      let status = e.data.resultCode;
+      if (status === 1) {
+        Misc.showNotification("Tag removed", 2000);
+        db_getSnapshot().tags.forEach((tag, index) => {
+          if (tag.id === tagid) {
+            db_getSnapshot().tags.splice(index, 1);
+          }
+        });
+        updateResultEditTagsPanelButtons();
+        updateSettingsPage();
+        updateFilterTags();
+      } else if (status < -1) {
+        Misc.showNotification("Unknown error", 3000);
       }
-    );
+    });
   }
 }
 
@@ -3925,15 +3917,15 @@ function applyMode2Popup() {
       manualRestart = true;
       restartTest();
       if (val >= 1800) {
-        showNotification("Stay safe and take breaks!", 3000);
+        Misc.showNotification("Stay safe and take breaks!", 3000);
       } else if (val == 0) {
-        showNotification(
+        Misc.showNotification(
           "Infinite time! Make sure to use Bail Out from the command line to save your result.",
           5000
         );
       }
     } else {
-      showNotification("Custom time must be at least 1", 3000);
+      Misc.showNotification("Custom time must be at least 1", 3000);
     }
   } else if (mode == "words") {
     if (val !== null && !isNaN(val) && val >= 0) {
@@ -3941,15 +3933,15 @@ function applyMode2Popup() {
       manualRestart = true;
       restartTest();
       if (val > 2000) {
-        showNotification("Stay safe and take breaks!", 3000);
+        Misc.showNotification("Stay safe and take breaks!", 3000);
       } else if (val == 0) {
-        showNotification(
+        Misc.showNotification(
           "Infinite words! Make sure to use Bail Out from the command line to save your result.",
           5000
         );
       }
     } else {
-      showNotification("Custom word amount must be at least 1", 3000);
+      Misc.showNotification("Custom word amount must be at least 1", 3000);
     }
   }
 
@@ -4063,13 +4055,13 @@ $(document).on("keypress", "#restartTestButton", (event) => {
     ) {
       if (testActive) {
         let testNow = performance.now();
-        let testSeconds = roundTo2((testNow - testStart) / 1000);
+        let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
         incompleteTestSeconds += testSeconds;
         restartCount++;
       }
       restartTest();
     } else {
-      showNotification("Quick restart disabled for long tests", 2000);
+      Misc.showNotification("Quick restart disabled for long tests", 2000);
     }
   }
 });
@@ -4102,7 +4094,7 @@ $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
     if (Object.keys(missedWords).length > 0) {
       initPractiseMissedWords();
     } else {
-      showNotification("You haven't missed any words.", 2000);
+      Misc.showNotification("You haven't missed any words.", 2000);
     }
   }
 });
@@ -4111,7 +4103,7 @@ $(document.body).on("click", "#practiseMissedWordsButton", (event) => {
   if (Object.keys(missedWords).length > 0) {
     initPractiseMissedWords();
   } else {
-    showNotification("You haven't missed any words.", 2000);
+    Misc.showNotification("You haven't missed any words.", 2000);
   }
 });
 
@@ -4263,13 +4255,13 @@ $(document).keydown((event) => {
         ) {
           if (testActive) {
             let testNow = performance.now();
-            let testSeconds = roundTo2((testNow - testStart) / 1000);
+            let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
             incompleteTestSeconds += testSeconds;
             restartCount++;
           }
           restartTest();
         } else {
-          showNotification("Quick restart disabled for long tests", 2000);
+          Misc.showNotification("Quick restart disabled for long tests", 2000);
         }
       } else {
         changePage("test");
@@ -4357,7 +4349,7 @@ $(document).keydown((event) => {
         let outof = wordsList.length;
         index = Math.floor((inputHistory.length + 1) / (outof / 3));
         if (config.layout !== layouts[index] && layouts[index] !== undefined) {
-          showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+          Misc.showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
         }
         setLayout(layouts[index]);
         setKeymapLayout(layouts[index]);
@@ -4421,7 +4413,7 @@ $(document).keydown((event) => {
             lastSecondNotRound = true;
             showResult(true);
             let testNow = performance.now();
-            let testSeconds = roundTo2((testNow - testStart) / 1000);
+            let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
             incompleteTestSeconds += testSeconds;
             restartCount++;
             return;
@@ -4440,7 +4432,7 @@ $(document).keydown((event) => {
           lastSecondNotRound = true;
           showResult(true);
           let testNow = performance.now();
-          let testSeconds = roundTo2((testNow - testStart) / 1000);
+          let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
           incompleteTestSeconds += testSeconds;
           restartCount++;
           return;
@@ -4720,7 +4712,7 @@ $(document).keydown(function (event) {
       lastSecondNotRound = true;
       showResult(true);
       let testNow = performance.now();
-      let testSeconds = roundTo2((testNow - testStart) / 1000);
+      let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
       incompleteTestSeconds += testSeconds;
       restartCount++;
       return;
@@ -4828,7 +4820,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
 
 if (window.location.hostname === "localhost") {
   window.onerror = function (error) {
-    this.showNotification(error, 3000);
+    Misc.showNotification(error, 3000);
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
@@ -4840,7 +4832,7 @@ if (window.location.hostname === "localhost") {
 
 manualRestart = true;
 loadConfigFromCookie();
-getReleasesFromGitHub();
+Misc.getReleasesFromGitHub();
 // getPatreonNames();
 
 $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
@@ -4912,9 +4904,9 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
     await navigator.clipboard.writeText(
       wordsList.slice(0, inputHistory.length).join(" ")
     );
-    showNotification("Copied to clipboard", 1000);
+    Misc.showNotification("Copied to clipboard", 1000);
   } catch (e) {
-    showNotification("Could not copy to clipboard: " + e, 5000);
+    Misc.showNotification("Could not copy to clipboard: " + e, 5000);
   }
 });
 

@@ -38,11 +38,11 @@ $(".pageLogin #forgotPasswordButton").click((e) => {
       .sendPasswordResetEmail(email)
       .then(function () {
         // Email sent.
-        showNotification("Email sent", 2000);
+        Misc.showNotification("Email sent", 2000);
       })
       .catch(function (error) {
         // An error happened.
-        showNotification(error.message, 5000);
+        Misc.showNotification(error.message, 5000);
       });
   }
 });
@@ -73,7 +73,7 @@ function signIn() {
             changePage("test");
           })
           .catch(function (error) {
-            showNotification(error.message, 5000);
+            Misc.showNotification(error.message, 5000);
             $(".pageLogin .preloader").addClass("hidden");
           });
       });
@@ -90,7 +90,7 @@ function signIn() {
             changePage("test");
           })
           .catch(function (error) {
-            showNotification(error.message, 5000);
+            Misc.showNotification(error.message, 5000);
             $(".pageLogin .preloader").addClass("hidden");
           });
       });
@@ -108,22 +108,20 @@ function signUp() {
   let passwordVerify = $(".pageLogin .register input")[3].value;
 
   if (password != passwordVerify) {
-    showNotification("Passwords do not match", 3000);
+    Misc.showNotification("Passwords do not match", 3000);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .register .button").removeClass("disabled");
     return;
   }
 
-  const namecheck = firebase.functions().httpsCallable("checkNameAvailability");
-
-  namecheck({ name: nname }).then((d) => {
+  CloudFunctions.namecheck({ name: nname }).then((d) => {
     if (d.data === -1) {
-      showNotification("Name unavailable", 3000);
+      Misc.showNotification("Name unavailable", 3000);
       $(".pageLogin .preloader").addClass("hidden");
       $(".pageLogin .register .button").removeClass("disabled");
       return;
     } else if (d.data === -2) {
-      showNotification(
+      Misc.showNotification(
         "Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
         8000
       );
@@ -149,10 +147,10 @@ function signUp() {
                 .collection("users")
                 .doc(usr.uid)
                 .set({ name: nname }, { merge: true });
-              reserveName({ name: nname, uid: usr.uid });
+              CloudFunctions.reserveName({ name: nname, uid: usr.uid });
               usr.sendEmailVerification();
               clearGlobalStats();
-              showNotification("Account created", 2000);
+              Misc.showNotification("Account created", 2000);
               $("#menu .icon-button.account .text").text(nname);
               try {
                 firebase.analytics().logEvent("accountCreated", usr.uid);
@@ -172,7 +170,7 @@ function signUp() {
               });
               if (notSignedInLastResult !== null) {
                 notSignedInLastResult.uid = usr.uid;
-                testCompleted({
+                CloudFunctions.testCompleted({
                   uid: usr.uid,
                   obj: notSignedInLastResult,
                 });
@@ -191,7 +189,7 @@ function signUp() {
                 .delete()
                 .then(function () {
                   // User deleted.
-                  showNotification(
+                  Misc.showNotification(
                     "An error occured. Account not created.",
                     2000
                   );
@@ -208,7 +206,7 @@ function signUp() {
           // Handle Errors here.
           $(".pageLogin .register .button").removeClass("disabled");
           var errorMessage = error.message;
-          showNotification(errorMessage, 5000);
+          Misc.showNotification(errorMessage, 5000);
           $(".pageLogin .preloader").addClass("hidden");
         });
     }
@@ -220,7 +218,7 @@ function signOut() {
     .auth()
     .signOut()
     .then(function () {
-      showNotification("Signed out", 2000);
+      Misc.showNotification("Signed out", 2000);
       clearGlobalStats();
       hideAccountSettingsSection();
       updateAccountLoginButton();
@@ -228,7 +226,7 @@ function signOut() {
       db_setSnapshot(null);
     })
     .catch(function (error) {
-      showNotification(error.message, 5000);
+      Misc.showNotification(error.message, 5000);
     });
 }
 
@@ -268,10 +266,10 @@ firebase.auth().onAuthStateChanged(function (user) {
     $(".pageAccount .group.createdDate").text(text);
 
     if (verifyUserWhenLoggedIn !== null) {
-      showNotification("Verifying", 1000);
+      Misc.showNotification("Verifying", 1000);
       verifyUserWhenLoggedIn.uid = user.uid;
-      verifyUser(verifyUserWhenLoggedIn).then((data) => {
-        showNotification(data.data.message, 3000);
+      CloudFunctions.verifyUser(verifyUserWhenLoggedIn).then((data) => {
+        Misc.showNotification(data.data.message, 3000);
         if (data.data.status === 1) {
           db_getSnapshot().discordId = data.data.did;
           updateDiscordSettingsSection();
@@ -279,14 +277,14 @@ firebase.auth().onAuthStateChanged(function (user) {
       });
     }
   }
-  let theme = findGetParameter("customTheme");
+  let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {
     try {
       theme = theme.split(",");
       config.customThemeColors = theme;
-      showNotification("Custom theme applied.", 1000);
+      Misc.showNotification("Custom theme applied.", 1000);
     } catch (e) {
-      showNotification(
+      Misc.showNotification(
         "Something went wrong. Reverting to default custom colors.",
         3000
       );
@@ -393,7 +391,7 @@ function getAccountDataAndInit() {
     .catch((e) => {
       accountIconLoading(false);
       console.error(e);
-      showNotification(
+      Misc.showNotification(
         "Error downloading user data. Refresh to try again. If error persists contact Miodec.",
         5000
       );
@@ -1003,7 +1001,7 @@ let defaultAccountFilters = {
   },
 };
 
-getLanguageList().then((languages) => {
+Misc.getLanguageList().then((languages) => {
   languages.forEach((language) => {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
@@ -1020,7 +1018,7 @@ getLanguageList().then((languages) => {
 $(
   ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
 ).append(`<div class="button" filter="none">none</div>`);
-getFunboxList().then((funboxModes) => {
+Misc.getFunboxList().then((funboxModes) => {
   funboxModes.forEach((funbox) => {
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
@@ -1883,7 +1881,7 @@ function refreshAccountPage() {
 
         filteredResults.push(result);
       } catch (e) {
-        showNotification(
+        Misc.showNotification(
           "Something went wrong when filtering. Resetting filters.",
           5000
         );
@@ -2038,7 +2036,7 @@ function refreshAccountPage() {
       });
       activityChartData_avgWpm.push({
         x: parseInt(date),
-        y: roundTo2(
+        y: Misc.roundTo2(
           activityChartData[date].totalWpm / activityChartData[date].amount
         ),
       });
@@ -2206,7 +2204,7 @@ function refreshAccountPage() {
 
     let wpmPoints = filteredResults.map((r) => r.wpm).reverse();
 
-    let trend = findLineByLeastSquares(wpmPoints);
+    let trend = Misc.findLineByLeastSquares(wpmPoints);
 
     let wpmChange = trend[1][1] - trend[0][1];
 
@@ -2216,7 +2214,7 @@ function refreshAccountPage() {
 
     $(".pageAccount .group.chart .below .text").text(
       `Speed change per hour spent typing: ${
-        plus + roundTo2(wpmChangePerHour)
+        plus + Misc.roundTo2(wpmChangePerHour)
       } wpm.`
     );
 
@@ -2226,7 +2224,7 @@ function refreshAccountPage() {
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
   if (db_getSnapshot() === null) {
-    showNotification(`Missing account data. Please refresh.`, 5000);
+    Misc.showNotification(`Missing account data. Please refresh.`, 5000);
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
   } else if (db_getSnapshot().results === undefined) {
     db_getUserResults().then((d) => {
@@ -2244,7 +2242,7 @@ function refreshAccountPage() {
       cont();
     } catch (e) {
       console.error(e);
-      showNotification(`Something went wrong: ${e}`, 5000);
+      Misc.showNotification(`Something went wrong: ${e}`, 5000);
     }
   }
 }
@@ -2339,14 +2337,14 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
   });
   showBackgroundLoader();
   hideResultEditTagsPanel();
-  updateResultTags({
+  CloudFunctions.updateResultTags({
     uid: firebase.auth().currentUser.uid,
     tags: newtags,
     resultid: resultid,
   }).then((r) => {
     hideBackgroundLoader();
     if (r.data.resultCode === 1) {
-      showNotification("Tags updated.", 3000);
+      Misc.showNotification("Tags updated.", 3000);
       db_getSnapshot().results.forEach((result) => {
         if (result.id === resultid) {
           result.tags = newtags;
@@ -2397,7 +2395,7 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
         );
       }
     } else {
-      showNotification("Error updating tags", 3000);
+      Misc.showNotification("Error updating tags", 3000);
     }
   });
 });

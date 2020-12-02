@@ -16,3 +16,7 @@ import {
   db_getLocalPB,
   db_saveLocalPB,
 } from "./db";
+
+import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
+import * as Misc from "./misc";
+import * as CloudFunctions from "./cloud-functions";
