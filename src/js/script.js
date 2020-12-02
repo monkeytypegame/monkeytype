@@ -619,82 +619,89 @@ function emulateLayout(event) {
     event.key = newKey;
     event.code = "Key" + newKey.toUpperCase();
   }
-  if (config.layout === "default") {
-    //override the caps lock modifier for the default layout if needed
-    if (config.capsLockBackspace && isASCIILetter(event.key)) {
-      replaceEventKey(
-        event,
-        event.shiftKey
-          ? event.key.toUpperCase().charCodeAt(0)
-          : event.key.toLowerCase().charCodeAt(0)
-      );
+
+  let newEvent = event;
+
+  try {
+    if (config.layout === "default") {
+      //override the caps lock modifier for the default layout if needed
+      if (config.capsLockBackspace && isASCIILetter(newEvent.key)) {
+        replaceEventKey(
+          newEvent,
+          newEvent.shiftKey
+            ? newEvent.key.toUpperCase().charCodeAt(0)
+            : newEvent.key.toLowerCase().charCodeAt(0)
+        );
+      }
+      return newEvent;
     }
+    const keyEventCodes = [
+      "Backquote",
+      "Digit1",
+      "Digit2",
+      "Digit3",
+      "Digit4",
+      "Digit5",
+      "Digit6",
+      "Digit7",
+      "Digit8",
+      "Digit9",
+      "Digit0",
+      "Minus",
+      "Equal",
+      "KeyQ",
+      "KeyW",
+      "KeyE",
+      "KeyR",
+      "KeyT",
+      "KeyY",
+      "KeyU",
+      "KeyI",
+      "KeyO",
+      "KeyP",
+      "BracketLeft",
+      "BracketRight",
+      "Backslash",
+      "KeyA",
+      "KeyS",
+      "KeyD",
+      "KeyF",
+      "KeyG",
+      "KeyH",
+      "KeyJ",
+      "KeyK",
+      "KeyL",
+      "Semicolon",
+      "Quote",
+      "IntlBackslash",
+      "KeyZ",
+      "KeyX",
+      "KeyC",
+      "KeyV",
+      "KeyB",
+      "KeyN",
+      "KeyM",
+      "Comma",
+      "Period",
+      "Slash",
+      "Space",
+    ];
+    const layoutMap = layouts[config.layout].keys;
+
+    let mapIndex;
+    for (let i = 0; i < keyEventCodes.length; i++) {
+      if (newEvent.code == keyEventCodes[i]) {
+        mapIndex = i;
+      }
+    }
+    const newKeyPreview = layoutMap[mapIndex][0];
+    const shift = emulatedLayoutShouldShiftKey(newEvent, newKeyPreview) ? 1 : 0;
+    const newKey = layoutMap[mapIndex][shift];
+    replaceEventKey(newEvent, newKey.charCodeAt(0));
+  } catch (e) {
     return event;
   }
-  const keyEventCodes = [
-    "Backquote",
-    "Digit1",
-    "Digit2",
-    "Digit3",
-    "Digit4",
-    "Digit5",
-    "Digit6",
-    "Digit7",
-    "Digit8",
-    "Digit9",
-    "Digit0",
-    "Minus",
-    "Equal",
-    "KeyQ",
-    "KeyW",
-    "KeyE",
-    "KeyR",
-    "KeyT",
-    "KeyY",
-    "KeyU",
-    "KeyI",
-    "KeyO",
-    "KeyP",
-    "BracketLeft",
-    "BracketRight",
-    "Backslash",
-    "KeyA",
-    "KeyS",
-    "KeyD",
-    "KeyF",
-    "KeyG",
-    "KeyH",
-    "KeyJ",
-    "KeyK",
-    "KeyL",
-    "Semicolon",
-    "Quote",
-    "IntlBackslash",
-    "KeyZ",
-    "KeyX",
-    "KeyC",
-    "KeyV",
-    "KeyB",
-    "KeyN",
-    "KeyM",
-    "Comma",
-    "Period",
-    "Slash",
-    "Space",
-  ];
-  const layoutMap = layouts[config.layout].keys;
-
-  let mapIndex;
-  for (let i = 0; i < keyEventCodes.length; i++) {
-    if (event.code == keyEventCodes[i]) {
-      mapIndex = i;
-    }
-  }
-  const newKeyPreview = layoutMap[mapIndex][0];
-  const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
-  const newKey = layoutMap[mapIndex][shift];
-  replaceEventKey(event, newKey.charCodeAt(0));
-  return event;
+  return newEvent;
 }
 
 function punctuateWord(previousWord, currentWord, index, maxindex) {
