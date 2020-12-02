@@ -996,6 +996,12 @@ function compareInput(showError) {
     for (let i = 0; i < currentWord.length; i++) {
       ret += `<letter class="${classString}">` + currentWord[i] + `</letter>`;
     }
+    if (currentInput.length > currentWord.length && !config.hideExtraLetters) {
+      for (let i = currentWord.length; i < currentInput.length; i++) {
+        ret +=
+          `<letter class="${classString}">` + currentInput[i] + `</letter>`;
+      }
+    }
   } else {
     for (let i = 0; i < input.length; i++) {
       let charCorrect;
