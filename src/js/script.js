@@ -4331,91 +4331,6 @@ $(document).keydown((event) => {
       if (currentInput === "") return;
       event.preventDefault();
       let currentWord = wordsList[currentWordIndex];
-      if (!config.showAllLines || config.mode == "time") {
-        let currentTop = Math.floor(
-          document.querySelectorAll("#words .word")[currentWordElementIndex]
-            .offsetTop
-        );
-        let nextTop;
-        try {
-          nextTop = Math.floor(
-            document.querySelectorAll("#words .word")[
-              currentWordElementIndex + 1
-            ].offsetTop
-          );
-        } catch (e) {
-          nextTop = 0;
-        }
-
-        if ((nextTop > currentTop || activeWordJumped) && !lineTransition) {
-          //last word of the line
-          if (currentTestLine > 0) {
-            let hideBound = currentTop;
-            if (activeWordJumped) {
-              hideBound = activeWordTopBeforeJump;
-            }
-            activeWordJumped = false;
-
-            let toHide = [];
-            let wordElements = $("#words .word");
-            for (let i = 0; i < currentWordElementIndex + 1; i++) {
-              if ($(wordElements[i]).hasClass("hidden")) continue;
-              let forWordTop = Math.floor(wordElements[i].offsetTop);
-              if (forWordTop < hideBound - 10) {
-                toHide.push($($("#words .word")[i]));
-              }
-            }
-            const wordHeight = $(document.querySelector(".word")).outerHeight(
-              true
-            );
-            if (config.smoothLineScroll && toHide.length > 0) {
-              lineTransition = true;
-              $("#words").prepend(
-                `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
-              );
-              $("#words .smoothScroller").animate(
-                {
-                  height: 0,
-                },
-                125,
-                () => {
-                  $("#words .smoothScroller").remove();
-                }
-              );
-              $("#paceCaret").animate(
-                {
-                  top:
-                    document.querySelector("#paceCaret").offsetTop - wordHeight,
-                },
-                125
-              );
-              $("#words").animate(
-                {
-                  marginTop: `-${wordHeight}px`,
-                },
-                125,
-                () => {
-                  activeWordTop = document.querySelector("#words .active")
-                    .offsetTop;
-
-                  currentWordElementIndex -= toHide.length;
-                  lineTransition = false;
-                  toHide.forEach((el) => el.remove());
-                  $("#words").css("marginTop", "0");
-                }
-              );
-            } else {
-              toHide.forEach((el) => el.remove());
-              currentWordElementIndex -= toHide.length;
-              $("#paceCaret").css({
-                top:
-                  document.querySelector("#paceCaret").offsetTop - wordHeight,
-              });
-            }
-          }
-          currentTestLine++;
-        }
-      } //end of line wrap
       if (activeFunBox === "layoutfluid" && config.mode !== "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];
         let index = 0;
@@ -4520,8 +4435,97 @@ $(document).keydown((event) => {
         currentKeypress.count++;
         currentKeypress.words.push(currentWordIndex);
       }
+
       correctedHistory.push(currentCorrected);
       currentCorrected = "";
+
+      if (!config.showAllLines || config.mode == "time") {
+        let currentTop = Math.floor(
+          document.querySelectorAll("#words .word")[currentWordElementIndex - 1]
+            .offsetTop
+        );
+        let nextTop;
+        try {
+          nextTop = Math.floor(
+            document.querySelectorAll("#words .word")[currentWordElementIndex]
+              .offsetTop
+          );
+        } catch (e) {
+          nextTop = 0;
+        }
+
+        if ((nextTop > currentTop || activeWordJumped) && !lineTransition) {
+          //last word of the line
+          if (currentTestLine > 0) {
+            let hideBound = currentTop;
+            if (activeWordJumped) {
+              hideBound = activeWordTopBeforeJump;
+            }
+            activeWordJumped = false;
+
+            let toHide = [];
+            let wordElements = $("#words .word");
+            for (let i = 0; i < currentWordElementIndex; i++) {
+              if ($(wordElements[i]).hasClass("hidden")) continue;
+              let forWordTop = Math.floor(wordElements[i].offsetTop);
+              if (forWordTop < hideBound - 10) {
+                toHide.push($($("#words .word")[i]));
+              }
+            }
+            const wordHeight = $(document.querySelector(".word")).outerHeight(
+              true
+            );
+            if (config.smoothLineScroll && toHide.length > 0) {
+              lineTransition = true;
+              $("#words").prepend(
+                `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
+              );
+              $("#words .smoothScroller").animate(
+                {
+                  height: 0,
+                },
+                125,
+                () => {
+                  $("#words .smoothScroller").remove();
+                }
+              );
+              $("#paceCaret").animate(
+                {
+                  top:
+                    document.querySelector("#paceCaret").offsetTop - wordHeight,
+                },
+                125
+              );
+              $("#words").animate(
+                {
+                  marginTop: `-${wordHeight}px`,
+                },
+                125,
+                () => {
+                  activeWordTop = document.querySelector("#words .active")
+                    .offsetTop;
+
+                  currentWordElementIndex -= toHide.length;
+                  lineTransition = false;
+                  toHide.forEach((el) => el.remove());
+                  $("#words").css("marginTop", "0");
+                }
+              );
+            } else {
+              toHide.forEach((el) => el.remove());
+              currentWordElementIndex -= toHide.length;
+              $("#paceCaret").css({
+                top:
+                  document.querySelector("#paceCaret").offsetTop - wordHeight,
+              });
+            }
+          }
+          currentTestLine++;
+        }
+      } //end of line wrap
+
+      updateCaretPosition();
+
       if (config.keymapMode === "react") {
         flashPressedKeymapKey(event.code, true);
       } else if (config.keymapMode === "next") {
