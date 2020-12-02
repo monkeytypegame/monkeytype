@@ -1867,6 +1867,12 @@ key {
   margin: 0.75rem;
 }
 
+#words.nospace {
+  .word {
+    margin: 0.5rem 0;
+  }
+}
+
 .word.error {
   /*   margin-bottom: 1px; */
   border-bottom: 2px solid var(--error-color);

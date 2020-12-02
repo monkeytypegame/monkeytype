@@ -322,6 +322,7 @@ function activateFunbox(funbox, mode) {
     memoryFunboxInterval = clearInterval(memoryFunboxInterval);
     memoryFunboxTimer = null;
     $("#wordsWrapper").removeClass("hidden");
+    $("#words").removeClass("nospace");
   }
 
   if (mode === "style") {
@@ -358,6 +359,9 @@ function activateFunbox(funbox, mode) {
       if (config.keymapMode === "next") {
         setKeymapMode("react");
       }
+    } else if (funbox === "no_space") {
+      $("#words").addClass("nospace");
+      restartTest(false, true);
     }
     activeFunBox = funbox;
   }
@@ -4302,6 +4306,9 @@ $(document).keydown((event) => {
           } else {
             currentInput = inputHistory.pop();
             currentCorrected = correctedHistory.pop();
+            if (activeFunBox === "no_space") {
+              currentInput = currentInput.substring(0, currentInput.length - 1);
+            }
           }
           currentWordIndex--;
           currentWordElementIndex--;
@@ -4719,6 +4726,14 @@ $(document).keydown(function (event) {
   stopCaretAnimation();
   activeWordTopBeforeJump = activeWordTop;
   compareInput(!config.blindMode);
+
+  if (currentInput.length === wordsList[currentWordIndex].length) {
+    jQuery.event.trigger({
+      type: "keydown",
+      which: " ".charCodeAt(0),
+      key: " ",
+    });
+  }
 
   let newActiveTop = document.querySelector("#words .word.active").offsetTop;
   if (activeWordTopBeforeJump < newActiveTop && !lineTransition) {
