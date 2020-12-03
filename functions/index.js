@@ -941,6 +941,11 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
         return user.emailVerified;
       });
 
+    if (obj.funbox === "nospace") {
+      response.status(200).send({ data: { resultCode: -1 } });
+      return;
+    }
+
     return db
       .collection("users")
       .doc(request.uid)
