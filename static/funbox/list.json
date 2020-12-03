@@ -85,7 +85,7 @@
     "info": "Test your memory. Remember the words and type them blind."
   },
   {
-    "name": "no_space",
+    "name": "nospace",
     "type": "script",
     "info": "Whoneedsspacesanyway?"
   }

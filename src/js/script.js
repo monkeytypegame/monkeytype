@@ -347,7 +347,7 @@ function activateFunbox(funbox, mode) {
       if (config.keymapMode === "next") {
         setKeymapMode("react");
       }
-    } else if (funbox === "no_space") {
+    } else if (funbox === "nospace") {
       $("#words").addClass("nospace");
       restartTest(false, true);
     }
@@ -4311,7 +4311,7 @@ $(document).keydown((event) => {
           } else {
             currentInput = inputHistory.pop();
             currentCorrected = correctedHistory.pop();
-            if (activeFunBox === "no_space") {
+            if (activeFunBox === "nospace") {
               currentInput = currentInput.substring(0, currentInput.length - 1);
             }
           }
@@ -4733,7 +4733,7 @@ $(document).keydown(function (event) {
   compareInput(!config.blindMode);
 
   if (
-    activeFunBox === "no_space" &&
+    activeFunBox === "nospace" &&
     currentInput.length === wordsList[currentWordIndex].length
   ) {
     jQuery.event.trigger({
