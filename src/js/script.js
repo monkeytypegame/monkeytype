@@ -616,7 +616,7 @@ function emulateLayout(event) {
 
   try {
     if (config.layout === "default") {
-    //override the caps lock modifier for the default layout if needed
+      //override the caps lock modifier for the default layout if needed
       if (config.capsLockBackspace && Misc.isASCIILetter(newEvent.key)) {
         replaceEventKey(
           newEvent,
@@ -731,15 +731,15 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     word = `"${word}"`;
   } else if (
     Math.random() < 0.01 &&
-    getLastChar(previousWord) != "," &&
-    getLastChar(previousWord) != "."
+    Misc.getLastChar(previousWord) != "," &&
+    Misc.getLastChar(previousWord) != "."
   ) {
     //1% chance to add single quotes
     word = `'${word}'`;
   } else if (
     Math.random() < 0.01 &&
-    getLastChar(previousWord) != "," &&
-    getLastChar(previousWord) != "."
+    Misc.getLastChar(previousWord) != "," &&
+    Misc.getLastChar(previousWord) != "."
   ) {
     //1% chance to add parentheses
     word = `(${word})`;
