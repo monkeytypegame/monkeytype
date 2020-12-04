@@ -4764,7 +4764,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
 
 if (window.location.hostname === "localhost") {
   window.onerror = function (error) {
-    this.showNotification(error, 3000);
+    showNotification(error, 3000);
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
