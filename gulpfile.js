@@ -78,13 +78,18 @@ let eslintConfig = {
 
 //refactored files, which should be es6 modules
 //once all files are moved here, then can we use a bundler to its full potential
-const refactoredSrc = ["./src/js/db.js"];
+const refactoredSrc = [
+  "./src/js/db.js",
+  "./src/js/dom-util.js",
+  "./src/js/cloud-functions.js",
+  "./src/js/misc.js",
+];
 
 //legacy files
 //the order of files is important
 const globalSrc = [
   "./src/js/global-dependencies.js",
-  "./src/js/misc.js",
+  "./src/js/simple-popups.js",
   "./src/js/words.js",
   "./src/js/layouts.js",
   "./src/js/userconfig.js",

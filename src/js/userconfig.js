@@ -93,7 +93,7 @@ async function saveConfigToCookie(noDbCheck = false) {
   //   expires: d,
   //   path: "/",
   // });
-  setCookie("config", JSON.stringify(config), 365);
+  Misc.setCookie("config", JSON.stringify(config), 365);
   restartCount = 0;
   if (!noDbCheck) await saveConfigToDB();
 }
@@ -101,19 +101,20 @@ async function saveConfigToCookie(noDbCheck = false) {
 async function saveConfigToDB() {
   if (firebase.auth().currentUser !== null) {
     accountIconLoading(true);
-    saveConfig({ uid: firebase.auth().currentUser.uid, obj: config }).then(
-      (d) => {
-        accountIconLoading(false);
-        if (d.data.returnCode === 1) {
-        } else {
-          showNotification(
-            `Error saving config to DB! ${d.data.message}`,
-            4000
-          );
-        }
-        return;
+    CloudFunctions.saveConfig({
+      uid: firebase.auth().currentUser.uid,
+      obj: config,
+    }).then((d) => {
+      accountIconLoading(false);
+      if (d.data.returnCode === 1) {
+      } else {
+        Misc.showNotification(
+          `Error saving config to DB! ${d.data.message}`,
+          4000
+        );
       }
-    );
+      return;
+    });
   }
 }
 
@@ -141,14 +142,14 @@ function saveActiveTagsToCookie() {
     //   expires: d,
     //   path: "/",
     // });
-    setCookie("activeTags", JSON.stringify(tags), 365);
+    Misc.setCookie("activeTags", JSON.stringify(tags), 365);
   } catch (e) {}
 }
 
 function loadConfigFromCookie() {
   console.log("loading cookie config");
   // let newConfig = $.cookie("config");
-  let newConfig = getCookie("config");
+  let newConfig = Misc.getCookie("config");
   if (newConfig !== undefined && newConfig !== "") {
     try {
       newConfig = JSON.parse(newConfig);
@@ -294,7 +295,7 @@ function applyConfig(configObj) {
 
 function loadActiveTagsFromCookie() {
   // let newTags = $.cookie("activeTags");
-  let newTags = getCookie("activeTags");
+  let newTags = Misc.getCookie("activeTags");
   if (newTags !== undefined && newTags !== "") {
     try {
       newTags = JSON.parse(newTags);
@@ -1144,13 +1145,20 @@ function setTheme(name, nosave) {
 
 let randomTheme = null;
 function randomiseTheme() {
-  var randomList = themesList.map((t) => {
-    return t.name;
+  // var randomList = Misc.getThemesList().map((t) => {
+  //   return t.name;
+  // });
+  var randomList;
+  Misc.getThemesList().then((themes) => {
+    randomList = themes.map((t) => {
+      return t.name;
+    });
+
+    if (config.randomTheme === "fav" && config.favThemes.length > 0)
+      randomList = config.favThemes;
+    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
+    setTheme(randomTheme, true);
   });
-  if (config.randomTheme === "fav" && config.favThemes.length > 0)
-    randomList = config.favThemes;
-  randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
-  setTheme(randomTheme, true);
 }
 
 function setRandomTheme(val, nosave) {
