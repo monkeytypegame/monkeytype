@@ -1,5 +1,3 @@
-import { $ } from "jquery";
-
 export function showBackgroundLoader() {
   $("#backgroundLoader").stop(true, true).fadeIn(125);
 }

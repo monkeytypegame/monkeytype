@@ -1,6 +1,4 @@
 import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
-import { $, moment } from "jquery";
-
 let themesList = null;
 export async function getThemesList() {
   if (themesList == null) {
