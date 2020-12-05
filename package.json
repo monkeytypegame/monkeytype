@@ -11,6 +11,9 @@
     "deploy:live:functions": "npm run build && firebase deploy -P live --only functions",
     "deploy:live": "npm run build && firebase deploy -P live"
   },
+  "engines": {
+    "node": "10"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.3",
     "@babel/plugin-transform-runtime": "^7.12.1",
@@ -42,12 +45,6 @@
     "@babel/runtime": "^7.12.5",
     "chart.js": "^2.9.4",
     "chartjs-plugin-annotation": "^0.5.7",
-    "chartjs-plugin-trendline": "^0.2.2",
-    "html2canvas": "^1.0.0-rc.7",
-    "jquery": "^3.5.1",
-    "jquery-color": "^2.2.0",
-    "jquery-easing": "0.0.1",
-    "jquery.cookie": "^1.4.1",
-    "moment": "^2.29.1"
+    "chartjs-plugin-trendline": "^0.2.2"
   }
 }
