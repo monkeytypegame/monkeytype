@@ -725,14 +725,16 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
   } else if (
     Math.random() < 0.01 &&
     Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "."
+    Misc.getLastChar(previousWord) != "." &&
+    config.language.split("_")[0] !== "russian"
   ) {
     //1% chance to add quotes
     word = `"${word}"`;
   } else if (
     Math.random() < 0.01 &&
     Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "."
+    Misc.getLastChar(previousWord) != "." &&
+    config.language.split("_")[0] !== "russian"
   ) {
     //1% chance to add single quotes
     word = `'${word}'`;
