@@ -1145,13 +1145,20 @@ function setTheme(name, nosave) {
 
 let randomTheme = null;
 function randomiseTheme() {
-  var randomList = Misc.getThemesList().map((t) => {
-    return t.name;
+  // var randomList = Misc.getThemesList().map((t) => {
+  //   return t.name;
+  // });
+  var randomList;
+  Misc.getThemesList().then((themes) => {
+    randomList = themes.map((t) => {
+      return t.name;
+    });
+
+    if (config.randomTheme === "fav" && config.favThemes.length > 0)
+      randomList = config.favThemes;
+    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
+    setTheme(randomTheme, true);
   });
-  if (config.randomTheme === "fav" && config.favThemes.length > 0)
-    randomList = config.favThemes;
-  randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
-  setTheme(randomTheme, true);
 }
 
 function setRandomTheme(val, nosave) {

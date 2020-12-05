@@ -83,10 +83,5 @@
     "name": "memory",
     "type": "script",
     "info": "Test your memory. Remember the words and type them blind."
-  },
-  {
-    "name": "no_space",
-    "type": "script",
-    "info": "Whoneedsspacesanyway?"
   }
 ]

@@ -1,5 +1,4 @@
 import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
-
 let themesList = null;
 export async function getThemesList() {
   if (themesList == null) {

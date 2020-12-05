@@ -347,7 +347,7 @@ function activateFunbox(funbox, mode) {
       if (config.keymapMode === "next") {
         setKeymapMode("react");
       }
-    } else if (funbox === "no_space") {
+    } else if (funbox === "nospace") {
       $("#words").addClass("nospace");
       restartTest(false, true);
     }
@@ -616,7 +616,7 @@ function emulateLayout(event) {
 
   try {
     if (config.layout === "default") {
-    //override the caps lock modifier for the default layout if needed
+      //override the caps lock modifier for the default layout if needed
       if (config.capsLockBackspace && Misc.isASCIILetter(newEvent.key)) {
         replaceEventKey(
           newEvent,
@@ -725,21 +725,23 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
   } else if (
     Math.random() < 0.01 &&
     Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "."
+    Misc.getLastChar(previousWord) != "." &&
+    config.language.split("_")[0] !== "russian"
   ) {
     //1% chance to add quotes
     word = `"${word}"`;
   } else if (
     Math.random() < 0.01 &&
-    getLastChar(previousWord) != "," &&
-    getLastChar(previousWord) != "."
+    Misc.getLastChar(previousWord) != "," &&
+    Misc.getLastChar(previousWord) != "." &&
+    config.language.split("_")[0] !== "russian"
   ) {
     //1% chance to add single quotes
     word = `'${word}'`;
   } else if (
     Math.random() < 0.01 &&
-    getLastChar(previousWord) != "," &&
-    getLastChar(previousWord) != "."
+    Misc.getLastChar(previousWord) != "," &&
+    Misc.getLastChar(previousWord) != "."
   ) {
     //1% chance to add parentheses
     word = `(${word})`;
@@ -984,7 +986,8 @@ function compareInput(showError) {
         }
         let testNow = performance.now();
         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-        incompleteTestSeconds += testSeconds;
+        let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+        incompleteTestSeconds += testSeconds - afkseconds;
         restartCount++;
       }
     }
@@ -1038,7 +1041,8 @@ function compareInput(showError) {
           }
           let testNow = performance.now();
           let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          incompleteTestSeconds += testSeconds;
+          let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+          incompleteTestSeconds += testSeconds - afkseconds;
           restartCount++;
         }
         if (!showError) {
@@ -2002,6 +2006,7 @@ function showResult(difficultyFailed = false) {
       incompleteTestSeconds: incompleteTestSeconds,
       difficulty: config.difficulty,
       testDuration: testtime,
+      afkDuration: afkseconds,
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTags,
@@ -2133,10 +2138,14 @@ function showResult(difficultyFailed = false) {
                     db_getSnapshot().results.unshift(completedEvent);
                     if (db_getSnapshot().globalStats.time == undefined) {
                       db_getSnapshot().globalStats.time =
-                        testtime + completedEvent.incompleteTestSeconds;
+                        testtime +
+                        completedEvent.incompleteTestSeconds -
+                        afkseconds;
                     } else {
                       db_getSnapshot().globalStats.time +=
-                        testtime + completedEvent.incompleteTestSeconds;
+                        testtime +
+                        completedEvent.incompleteTestSeconds -
+                        afkseconds;
                     }
                     if (db_getSnapshot().globalStats.started == undefined) {
                       db_getSnapshot().globalStats.started = restartCount + 1;
@@ -2323,6 +2332,7 @@ function showResult(difficultyFailed = false) {
 
                   if (e.data.resultCode === 2) {
                     //new pb
+                    showCrown();
                     if (!localPb) {
                     }
                     db_saveLocalPB(
@@ -2337,12 +2347,13 @@ function showResult(difficultyFailed = false) {
                       consistency
                     );
                   } else if (e.data.resultCode === 1) {
-                    if (localPb) {
-                      Misc.showNotification(
-                        "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
-                        15000
-                      );
-                    }
+                    hideCrown();
+                    // if (localPb) {
+                    //   Misc.showNotification(
+                    //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
+                    //     15000
+                    //   );
+                    // }
                   }
                 }
               })
@@ -4056,7 +4067,8 @@ $(document).on("keypress", "#restartTestButton", (event) => {
       if (testActive) {
         let testNow = performance.now();
         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-        incompleteTestSeconds += testSeconds;
+        let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+        incompleteTestSeconds += testSeconds - afkseconds;
         restartCount++;
       }
       restartTest();
@@ -4256,7 +4268,9 @@ $(document).keydown((event) => {
           if (testActive) {
             let testNow = performance.now();
             let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-            incompleteTestSeconds += testSeconds;
+            let afkseconds = keypressPerSecond.filter((x) => x.count == 0)
+              .length;
+            incompleteTestSeconds += testSeconds - afkseconds;
             restartCount++;
           }
           restartTest();
@@ -4311,7 +4325,7 @@ $(document).keydown((event) => {
           } else {
             currentInput = inputHistory.pop();
             currentCorrected = correctedHistory.pop();
-            if (activeFunBox === "no_space") {
+            if (activeFunBox === "nospace") {
               currentInput = currentInput.substring(0, currentInput.length - 1);
             }
           }
@@ -4414,7 +4428,9 @@ $(document).keydown((event) => {
             showResult(true);
             let testNow = performance.now();
             let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-            incompleteTestSeconds += testSeconds;
+            let afkseconds = keypressPerSecond.filter((x) => x.count == 0)
+              .length;
+            incompleteTestSeconds += testSeconds - afkseconds;
             restartCount++;
             return;
           }
@@ -4433,7 +4449,8 @@ $(document).keydown((event) => {
           showResult(true);
           let testNow = performance.now();
           let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          incompleteTestSeconds += testSeconds;
+          let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+          incompleteTestSeconds += testSeconds - afkseconds;
           restartCount++;
           return;
         } else if (currentWordIndex == wordsList.length) {
@@ -4713,7 +4730,8 @@ $(document).keydown(function (event) {
       showResult(true);
       let testNow = performance.now();
       let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-      incompleteTestSeconds += testSeconds;
+      let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+      incompleteTestSeconds += testSeconds - afkseconds;
       restartCount++;
       return;
     } else {
@@ -4733,10 +4751,10 @@ $(document).keydown(function (event) {
   compareInput(!config.blindMode);
 
   if (
-    activeFunBox === "no_space" &&
+    activeFunBox === "nospace" &&
     currentInput.length === wordsList[currentWordIndex].length
   ) {
-    jQuery.event.trigger({
+    $.event.trigger({
       type: "keydown",
       which: " ".charCodeAt(0),
       key: " ",
