@@ -438,5 +438,10 @@
     "name": "onedark",
     "bgColor": "#2f343f",
     "textColor": "#98c379"
+  },
+  {
+    "name": "darling",
+    "bgColor": "#fec8cd",
+    "textColor": "#ffffff"
   }
 ]
