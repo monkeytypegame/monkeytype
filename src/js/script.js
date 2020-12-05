@@ -2325,6 +2325,7 @@ function showResult(difficultyFailed = false) {
 
                   if (e.data.resultCode === 2) {
                     //new pb
+                    showCrown();
                     if (!localPb) {
                     }
                     db_saveLocalPB(
@@ -2339,12 +2340,13 @@ function showResult(difficultyFailed = false) {
                       consistency
                     );
                   } else if (e.data.resultCode === 1) {
-                    if (localPb) {
-                      Misc.showNotification(
-                        "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
-                        15000
-                      );
-                    }
+                    hideCrown();
+                    // if (localPb) {
+                    //   Misc.showNotification(
+                    //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
+                    //     15000
+                    //   );
+                    // }
                   }
                 }
               })
@@ -4823,7 +4825,6 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
 if (window.location.hostname === "localhost") {
   window.onerror = function (error) {
     Misc.showNotification(error, 3000);
-
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
