@@ -809,18 +809,23 @@ async function incrementTimeSpentTyping(uid, res, userData) {
           timeTyping: admin.firestore.FieldValue.increment(timeSum),
         });
     } else {
+      let afk = res.afkDuration;
+      if (afk == undefined) {
+        afk = 0;
+      }
+
       db.collection("users")
         .doc(uid)
         .update({
           timeTyping: admin.firestore.FieldValue.increment(
-            res.testDuration + res.incompleteTestSeconds
+            res.testDuration + res.incompleteTestSeconds - afk
           ),
         });
       db.collection("public")
         .doc("stats")
         .update({
           timeTyping: admin.firestore.FieldValue.increment(
-            res.testDuration + res.incompleteTestSeconds
+            res.testDuration + res.incompleteTestSeconds - afk
           ),
         });
     }

@@ -986,7 +986,8 @@ function compareInput(showError) {
         }
         let testNow = performance.now();
         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-        incompleteTestSeconds += testSeconds;
+        let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+        incompleteTestSeconds += testSeconds - afkseconds;
         restartCount++;
       }
     }
@@ -1040,7 +1041,8 @@ function compareInput(showError) {
           }
           let testNow = performance.now();
           let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          incompleteTestSeconds += testSeconds;
+          let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+          incompleteTestSeconds += testSeconds - afkseconds;
           restartCount++;
         }
         if (!showError) {
@@ -2004,6 +2006,7 @@ function showResult(difficultyFailed = false) {
       incompleteTestSeconds: incompleteTestSeconds,
       difficulty: config.difficulty,
       testDuration: testtime,
+      afkDuration: afkseconds,
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTags,
@@ -2135,10 +2138,14 @@ function showResult(difficultyFailed = false) {
                     db_getSnapshot().results.unshift(completedEvent);
                     if (db_getSnapshot().globalStats.time == undefined) {
                       db_getSnapshot().globalStats.time =
-                        testtime + completedEvent.incompleteTestSeconds;
+                        testtime +
+                        completedEvent.incompleteTestSeconds -
+                        afkseconds;
                     } else {
                       db_getSnapshot().globalStats.time +=
-                        testtime + completedEvent.incompleteTestSeconds;
+                        testtime +
+                        completedEvent.incompleteTestSeconds -
+                        afkseconds;
                     }
                     if (db_getSnapshot().globalStats.started == undefined) {
                       db_getSnapshot().globalStats.started = restartCount + 1;
@@ -4060,7 +4067,8 @@ $(document).on("keypress", "#restartTestButton", (event) => {
       if (testActive) {
         let testNow = performance.now();
         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-        incompleteTestSeconds += testSeconds;
+        let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+        incompleteTestSeconds += testSeconds - afkseconds;
         restartCount++;
       }
       restartTest();
@@ -4260,7 +4268,9 @@ $(document).keydown((event) => {
           if (testActive) {
             let testNow = performance.now();
             let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-            incompleteTestSeconds += testSeconds;
+            let afkseconds = keypressPerSecond.filter((x) => x.count == 0)
+              .length;
+            incompleteTestSeconds += testSeconds - afkseconds;
             restartCount++;
           }
           restartTest();
@@ -4418,7 +4428,9 @@ $(document).keydown((event) => {
             showResult(true);
             let testNow = performance.now();
             let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-            incompleteTestSeconds += testSeconds;
+            let afkseconds = keypressPerSecond.filter((x) => x.count == 0)
+              .length;
+            incompleteTestSeconds += testSeconds - afkseconds;
             restartCount++;
             return;
           }
@@ -4437,7 +4449,8 @@ $(document).keydown((event) => {
           showResult(true);
           let testNow = performance.now();
           let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          incompleteTestSeconds += testSeconds;
+          let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+          incompleteTestSeconds += testSeconds - afkseconds;
           restartCount++;
           return;
         } else if (currentWordIndex == wordsList.length) {
@@ -4717,7 +4730,8 @@ $(document).keydown(function (event) {
       showResult(true);
       let testNow = performance.now();
       let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-      incompleteTestSeconds += testSeconds;
+      let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+      incompleteTestSeconds += testSeconds - afkseconds;
       restartCount++;
       return;
     } else {
