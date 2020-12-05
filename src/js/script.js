@@ -4740,7 +4740,7 @@ $(document).keydown(function (event) {
     activeFunBox === "nospace" &&
     currentInput.length === wordsList[currentWordIndex].length
   ) {
-    jQuery.event.trigger({
+    $.event.trigger({
       type: "keydown",
       which: " ".charCodeAt(0),
       key: " ",
