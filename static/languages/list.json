@@ -35,6 +35,8 @@
   ,"icelandic_1k"
   ,"romanian"
   ,"finnish"
+  ,"finnish_1k"
+  ,"finnish_10k"
   ,"persian"
   ,"kazakh"
   ,"vietnamese"
@@ -44,6 +46,7 @@
   ,"lojban_cmavo"
   ,"code_python"
   ,"code_c"
+  ,"code_csharp"
   ,"code_javascript"
   ,"code_html"
 ]
