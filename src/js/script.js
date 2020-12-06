@@ -711,6 +711,7 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     //10% chance to end a sentence
     (Math.random() < 0.1 &&
       Misc.getLastChar(previousWord) != "." &&
+      Misc.getLastChar(previousWord) != "," &&
       index != maxindex - 2) ||
     index == maxindex - 1
   ) {
@@ -718,9 +719,17 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     if (rand <= 0.8) {
       word += ".";
     } else if (rand > 0.8 && rand < 0.9) {
-      word += "?";
+      if (config.language.split("_")[0] == "french") {
+        word = "?";
+      } else {
+        word += "?";
+      }
     } else {
-      word += "!";
+      if (config.language.split("_")[0] == "french") {
+        word = "!";
+      } else {
+        word += "!";
+      }
     }
   } else if (
     Math.random() < 0.01 &&
@@ -747,7 +756,11 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     word = `(${word})`;
   } else if (Math.random() < 0.01) {
     //1% chance to add a colon
-    word = word + ":";
+    if (config.language.split("_")[0] == "french") {
+      word = ":";
+    } else {
+      word += ":";
+    }
   } else if (
     Math.random() < 0.01 &&
     Misc.getLastChar(previousWord) != "," &&
@@ -763,7 +776,11 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     Misc.getLastChar(previousWord) != ";"
   ) {
     //1% chance to add semicolon
-    word = word + ";";
+    if (config.language.split("_")[0] == "french") {
+      word = ";";
+    } else {
+      word += ";";
+    }
   } else if (Math.random() < 0.2 && Misc.getLastChar(previousWord) != ",") {
     //2% chance to add a comma
     word += ",";
