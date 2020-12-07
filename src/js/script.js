@@ -1621,6 +1621,10 @@ function countChars() {
       spaces++;
     }
   }
+  if (activeFunBox === "nospace") {
+    spaces = 0;
+    correctspaces = 0;
+  }
   return {
     spaces: spaces,
     correctWordChars: correctWordChars,
