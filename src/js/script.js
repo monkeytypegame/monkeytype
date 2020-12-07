@@ -3014,6 +3014,9 @@ function liveWpmAndRaw() {
   if (wordsList[currentWordIndex] === currentInput) {
     correctWordChars += currentInput.length;
   }
+  if (activeFunBox === "nospace") {
+    spaces = 0;
+  }
   chars += currentInput.length;
   let testNow = performance.now();
   let testSeconds = (testNow - testStart) / 1000;
