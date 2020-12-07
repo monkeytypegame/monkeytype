@@ -71,6 +71,8 @@ let defaultConfig = {
   enableAds: "off",
   hideExtraLetters: false,
   strictSpace: false,
+  minAcc: "off",
+  minAccCustom: 90,
 };
 
 let cookieConfig = null;
@@ -223,6 +225,8 @@ function applyConfig(configObj) {
     setChartStyle(configObj.chartStyle, true);
     setMinWpm(configObj.minWpm, true);
     setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
+    setMinAcc(configObj.minAcc, true);
+    setMinAccCustom(configObj.minAccCustom, true);
     setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
@@ -553,6 +557,24 @@ function setMinWpmCustomSpeed(val, nosave) {
     val = 100;
   }
   config.minWpmCustomSpeed = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+//min acc
+function setMinAcc(min, nosave) {
+  if (min == undefined) {
+    min = "off";
+  }
+  config.minAcc = min;
+  updateTestModesNotice();
+  if (!nosave) saveConfigToCookie();
+}
+
+function setMinAccCustom(val, nosave) {
+  if (val == undefined || Number.isNaN(parseInt(val))) {
+    val = 90;
+  }
+  config.minAccCustom = val;
   if (!nosave) saveConfigToCookie();
 }
 

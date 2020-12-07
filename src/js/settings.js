@@ -218,6 +218,13 @@ settingsGroups.minWpm = new SettingsGroup("minWpm", setMinWpm, () => {
     );
   }
 });
+settingsGroups.minAcc = new SettingsGroup("minAcc", setMinAcc, () => {
+  if (config.minAcc === "custom") {
+    $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
+  } else {
+    $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
+  }
+});
 settingsGroups.smoothLineScroll = new SettingsGroup(
   "smoothLineScroll",
   setSmoothLineScroll
@@ -424,6 +431,15 @@ function updateSettingsPage() {
     $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
       "hidden"
     );
+  }
+
+  if (config.minAcc === "custom") {
+    $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
+    $(".pageSettings .section.minAcc input.customMinAcc").val(
+      config.minAccCustom
+    );
+  } else {
+    $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
   }
 }
 
@@ -689,6 +705,16 @@ $(document).on(
   (e) => {
     setMinWpmCustomSpeed(
       parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val())
+    );
+  }
+);
+
+$(document).on(
+  "focusout",
+  ".pageSettings .section.minAcc input.customMinAcc",
+  (e) => {
+    setMinAccCustom(
+      parseInt($(".pageSettings .section.minAcc input.customMinAcc").val())
     );
   }
 );

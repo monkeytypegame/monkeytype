@@ -271,6 +271,15 @@ let commands = {
       },
     },
     {
+      id: "changePaceCaret",
+      display: "Change min accuracy mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsMinAcc);
+        showCommandLine();
+      },
+    },
+    {
       id: "togglePlaySoundOnError",
       display: "Toggle play sound on error",
       exec: () => {
@@ -1005,6 +1014,28 @@ let commandsMinWpm = {
       exec: (input) => {
         setMinWpmCustomSpeed(input);
         setMinWpm("custom");
+      },
+    },
+  ],
+};
+
+let commandsMinAcc = {
+  title: "Change min accuracy mode...",
+  list: [
+    {
+      id: "setMinAccOff",
+      display: "off",
+      exec: () => {
+        setMinAcc("off");
+      },
+    },
+    {
+      id: "setMinAccCustom",
+      display: "custom...",
+      input: true,
+      exec: (input) => {
+        setMinAccCustom(input);
+        setMinAcc("custom");
       },
     },
   ],

@@ -2635,10 +2635,18 @@ function startTest() {
         count: 0,
         words: [],
       };
+      console.time();
+      let acc = Misc.roundTo2(
+        (accuracyStats.correct /
+          (accuracyStats.correct + accuracyStats.incorrect)) *
+          100
+      );
+      console.timeEnd();
       if (
-        config.minWpm === "custom" &&
-        wpmAndRaw.wpm < parseInt(config.minWpmCustomSpeed) &&
-        currentWordIndex > 3
+        (config.minWpm === "custom" &&
+          wpmAndRaw.wpm < parseInt(config.minWpmCustomSpeed) &&
+          currentWordIndex > 3) ||
+        (config.minAcc === "custom" && acc < parseInt(config.minAccCustom))
       ) {
         clearTimeout(timer);
         hideCaret();
@@ -3403,6 +3411,12 @@ function updateTestModesNotice() {
   if (config.minWpm !== "off") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsMinWpm"><i class="fas fa-bomb"></i>min ${config.minWpmCustomSpeed} wpm</div>`
+    );
+  }
+
+  if (config.minAcc !== "off") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsMinAcc"><i class="fas fa-bomb"></i>min ${config.minAccCustom}% acc</div>`
     );
   }
 
@@ -4885,11 +4899,15 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
 });
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
-  if (config.customTheme) {
+  if (e.shiftKey) {
     togglePresetCustomTheme();
+  } else {
+    if (config.customTheme) {
+      togglePresetCustomTheme();
+    }
+    currentCommands.push(commandsThemes);
+    showCommandLine();
   }
-  currentCommands.push(commandsThemes);
-  showCommandLine();
 });
 
 $(document).on("click", ".keymap .r5 #KeySpace", (e) => {
