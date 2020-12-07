@@ -449,7 +449,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           let resultData =
             data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
           if (tooltipItem.datasetIndex !== 0) {
-            return `acc: ${resultData.y}%`;
+            return `acc: ${100 - resultData.y}%`;
           }
           let label =
             `${data.datasets[tooltipItem.datasetIndex].label}: ${
@@ -552,7 +552,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           position: "right",
           scaleLabel: {
             display: true,
-            labelString: "Accuracy",
+            labelString: "Error rate (100 - accuracy)",
             fontFamily: "Roboto Mono",
           },
           gridLines: {
@@ -1977,7 +1977,7 @@ function refreshAccountPage() {
 
       accChartData.push({
         x: result.timestamp,
-        y: result.acc,
+        y: 100 - result.acc,
       });
 
       if (result.wpm > topWpm) {
@@ -2095,20 +2095,20 @@ function refreshAccountPage() {
 
     resultHistoryChart.options.scales.yAxes[0].ticks.max =
       Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
-    resultHistoryChart.options.scales.yAxes[1].ticks.max = Math.ceil(
-      maxAccuracyChartVal
-    );
+    // resultHistoryChart.options.scales.yAxes[1].ticks.max = Math.ceil(
+    //   maxAccuracyChartVal
+    // );
 
     if (!config.startGraphsAtZero) {
       resultHistoryChart.options.scales.yAxes[0].ticks.min = Math.floor(
         minWpmChartVal
       );
-      resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.floor(
-        minAccuracyChartVal
-      );
+      // resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.floor(
+      //   minAccuracyChartVal
+      // );
     } else {
       resultHistoryChart.options.scales.yAxes[0].ticks.min = 0;
-      resultHistoryChart.options.scales.yAxes[1].ticks.min = 0;
+      // resultHistoryChart.options.scales.yAxes[1].ticks.min = 0;
     }
 
     if (chartData == [] || chartData.length == 0) {
