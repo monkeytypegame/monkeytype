@@ -377,6 +377,18 @@ function getAccountDataAndInit() {
       } catch (e) {
         config.resultFilters = defaultAccountFilters;
       }
+      if (
+        Object.keys(config.resultFilters.language).length !==
+        Object.keys(defaultAccountFilters.language).length
+      ) {
+        config.resultFilters.language = defaultAccountFilters.language;
+      }
+      if (
+        Object.keys(config.resultFilters.funbox).length !==
+        Object.keys(defaultAccountFilters.funbox).length
+      ) {
+        config.resultFilters.funbox = defaultAccountFilters.funbox;
+      }
       if ($(".pageLogin").hasClass("active")) {
         changePage("account");
       }
