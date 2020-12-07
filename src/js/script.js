@@ -2633,7 +2633,7 @@ function startTest() {
       if (
         config.minWpm === "custom" &&
         wpmAndRaw.wpm < parseInt(config.minWpmCustomSpeed) &&
-        currentWordIndex > 0
+        currentWordIndex > 3
       ) {
         clearTimeout(timer);
         hideCaret();
