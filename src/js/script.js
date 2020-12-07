@@ -2632,7 +2632,8 @@ function startTest() {
       };
       if (
         config.minWpm === "custom" &&
-        wpmAndRaw.wpm < parseInt(config.minWpmCustomSpeed)
+        wpmAndRaw.wpm < parseInt(config.minWpmCustomSpeed) &&
+        currentWordIndex > 0
       ) {
         clearTimeout(timer);
         hideCaret();
