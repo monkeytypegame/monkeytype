@@ -349,6 +349,7 @@ function activateFunbox(funbox, mode) {
       }
     } else if (funbox === "nospace") {
       $("#words").addClass("nospace");
+      setHighlightMode("letter", true);
       restartTest(false, true);
     }
     activeFunBox = funbox;

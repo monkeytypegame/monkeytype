@@ -768,6 +768,10 @@ function toggleShowLiveWpm() {
 }
 
 function setHighlightMode(mode, nosave) {
+  if (activeFunBox === "nospace" && mode === "word") {
+    Misc.showNotification("Can't use word highlight with nospace funbox", 3000);
+    return;
+  }
   if (mode == null || mode == undefined) {
     mode = "letter";
   }
