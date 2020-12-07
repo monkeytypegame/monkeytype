@@ -317,6 +317,9 @@ exports.checkNameAvailability = functions.https.onCall(
 
 function checkIfPB(uid, obj, userdata) {
   let pbs = null;
+  if (obj.funbox !== "none") {
+    return false;
+  }
   try {
     pbs = userdata.personalBests;
     if (pbs === undefined) {
@@ -1865,6 +1868,11 @@ async function checkLeaderboards(
   // };
   //
   try {
+    if (resultObj.funbox !== "none") {
+      return {
+        insertedAt: null,
+      };
+    }
     if (emailVerified === false)
       return {
         insertedAt: null,
