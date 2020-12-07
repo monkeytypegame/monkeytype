@@ -4281,6 +4281,9 @@ $(document).keydown((event) => {
     (event.key == "Tab" && !config.swapEscAndTab) ||
     (event.key == "Escape" && config.swapEscAndTab)
   ) {
+    if (resultCalculating) {
+      event.preventDefault();
+    }
     if (
       !event.ctrlKey &&
       config.quickTab &&
