@@ -221,6 +221,7 @@ function refreshThemeColorObject() {
   themeColors.colorfulErrorExtra = st
     .getPropertyValue("--colorful-error-extra-color")
     .replace(" ", "");
+  updateChartColors();
 }
 
 function copyResultToClipboard() {

@@ -1121,6 +1121,66 @@ function setIndicateTypos(it, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
+function updateChartColors() {
+  hoverChart.options.scales.xAxes[0].ticks.minor.fontColor = themeColors.sub;
+  hoverChart.options.scales.xAxes[0].scaleLabel.fontColor = themeColors.sub;
+  hoverChart.options.scales.yAxes[0].ticks.minor.fontColor = themeColors.sub;
+  hoverChart.options.scales.yAxes[2].ticks.minor.fontColor = themeColors.sub;
+  hoverChart.options.scales.yAxes[0].scaleLabel.fontColor = themeColors.sub;
+  hoverChart.options.scales.yAxes[2].scaleLabel.fontColor = themeColors.sub;
+
+  hoverChart.data.datasets[0].borderColor = themeColors.main;
+  hoverChart.data.datasets[0].pointBackgroundColor = themeColors.main;
+  hoverChart.data.datasets[1].borderColor = themeColors.sub;
+  hoverChart.data.datasets[1].pointBackgroundColor = themeColors.sub;
+
+  hoverChart.options.annotation.annotations[0].borderColor = themeColors.sub;
+  hoverChart.options.annotation.annotations[0].label.backgroundColor =
+    themeColors.sub;
+  hoverChart.options.annotation.annotations[0].label.fontColor = themeColors.bg;
+
+  activityChart.options.legend.labels.fontColor = themeColors.sub;
+
+  activityChart.options.scales.xAxes[0].ticks.minor.fontColor = themeColors.sub;
+  activityChart.options.scales.yAxes[0].ticks.minor.fontColor = themeColors.sub;
+  activityChart.options.scales.yAxes[0].scaleLabel.fontColor = themeColors.sub;
+  activityChart.data.datasets[0].borderColor = themeColors.main;
+  activityChart.data.datasets[0].backgroundColor = themeColors.main;
+
+  activityChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
+
+  activityChart.options.scales.yAxes[1].ticks.minor.fontColor = themeColors.sub;
+  activityChart.options.scales.yAxes[1].scaleLabel.fontColor = themeColors.sub;
+  activityChart.data.datasets[1].borderColor = themeColors.sub;
+
+  activityChart.options.legend.labels.fontColor = themeColors.sub;
+
+  resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor =
+    themeColors.sub;
+  resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor =
+    themeColors.sub;
+  resultHistoryChart.options.scales.yAxes[0].scaleLabel.fontColor =
+    themeColors.sub;
+  resultHistoryChart.options.scales.yAxes[1].ticks.minor.fontColor =
+    themeColors.sub;
+  resultHistoryChart.options.scales.yAxes[1].scaleLabel.fontColor =
+    themeColors.sub;
+  resultHistoryChart.data.datasets[0].borderColor = themeColors.main;
+  resultHistoryChart.data.datasets[1].borderColor = themeColors.sub;
+
+  resultHistoryChart.options.legend.labels.fontColor = themeColors.sub;
+  resultHistoryChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
+  wpmOverTimeChart.data.datasets[0].borderColor = themeColors.main;
+  wpmOverTimeChart.data.datasets[0].pointBackgroundColor = themeColors.main;
+  wpmOverTimeChart.data.datasets[1].borderColor = themeColors.sub;
+  wpmOverTimeChart.data.datasets[1].pointBackgroundColor = themeColors.sub;
+
+  hoverChart.update();
+  wpmOverTimeChart.update();
+  resultHistoryChart.update();
+  activityChart.update();
+}
+
 function previewTheme(name, setIsPreviewingVar = true) {
   if (
     (testActive || resultVisible) &&

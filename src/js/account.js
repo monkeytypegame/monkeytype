@@ -2055,6 +2055,11 @@ function refreshAccountPage() {
       lastTimestamp = date;
     });
 
+    activityChart.data.datasets[0].data = activityChartData_amount;
+    activityChart.data.datasets[1].data = activityChartData_avgWpm;
+
+    activityChart.options.legend.labels.fontColor = themeColors.sub;
+
     activityChart.options.scales.xAxes[0].ticks.minor.fontColor =
       themeColors.sub;
     activityChart.options.scales.yAxes[0].ticks.minor.fontColor =
@@ -2064,17 +2069,13 @@ function refreshAccountPage() {
     activityChart.data.datasets[0].borderColor = themeColors.main;
     activityChart.data.datasets[0].backgroundColor = themeColors.main;
 
-    activityChart.options.legend.labels.fontColor = themeColors.sub;
     activityChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
-
-    activityChart.data.datasets[0].data = activityChartData_amount;
 
     activityChart.options.scales.yAxes[1].ticks.minor.fontColor =
       themeColors.sub;
     activityChart.options.scales.yAxes[1].scaleLabel.fontColor =
       themeColors.sub;
     activityChart.data.datasets[1].borderColor = themeColors.sub;
-    activityChart.data.datasets[1].data = activityChartData_avgWpm;
 
     activityChart.options.legend.labels.fontColor = themeColors.sub;
 
