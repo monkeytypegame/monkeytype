@@ -445,12 +445,12 @@
     "textColor": "#ffffff"
   },
   {
-    "name": "repose dark",
+    "name": "repose_dark",
     "bgColor": "#2f3338",
     "textColor": "#d6d2bc"
   },
   {
-    "name": "repose light",
+    "name": "repose_light",
     "bgColor": "#efead0",
     "textColor": "#333538"
   }
