@@ -104,7 +104,7 @@
   ,{
     "name": "rapGod",
     "type": "script",
-    "parameters": ["rapod.txt",null,null],
+    "parameters": ["rapgod.txt",null,null],
     "message": "Minimum 85wpm and 90% accuracy required."
   }
   ,{
