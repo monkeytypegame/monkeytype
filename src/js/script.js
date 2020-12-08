@@ -2642,13 +2642,11 @@ function startTest() {
         count: 0,
         words: [],
       };
-      console.time();
       let acc = Misc.roundTo2(
         (accuracyStats.correct /
           (accuracyStats.correct + accuracyStats.incorrect)) *
           100
       );
-      console.timeEnd();
       if (
         (config.minWpm === "custom" &&
           wpmAndRaw.wpm < parseInt(config.minWpmCustomSpeed) &&
