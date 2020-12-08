@@ -5027,7 +5027,7 @@ async function setupChallenge(challengeName) {
     } else if (challenge.type === "script") {
       let scriptdata = await fetch("/challenges/" + challenge.parameters[0]);
       scriptdata = await scriptdata.text();
-      text = scriptdata.trim();
+      let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
       customText = text.split(" ");
