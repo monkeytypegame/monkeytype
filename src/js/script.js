@@ -287,7 +287,7 @@ function copyResultToClipboard() {
   }
 }
 
-function activateFunbox(funbox, mode) {
+async function activateFunbox(funbox, mode) {
   if (testActive || resultVisible) {
     Misc.showNotification(
       "You can only change the funbox before starting a test.",
@@ -312,6 +312,11 @@ function activateFunbox(funbox, mode) {
     memoryFunboxTimer = null;
     $("#wordsWrapper").removeClass("hidden");
     $("#words").removeClass("nospace");
+  }
+
+  if (mode === null || mode === undefined) {
+    let list = await Misc.getFunboxList();
+    mode = list.filter((f) => f.name === funbox)[0].type;
   }
 
   if (mode === "style") {
@@ -4982,6 +4987,74 @@ window.addEventListener("keydown", function (e) {
     e.preventDefault();
   }
 });
+
+async function setupChallenge(challengeName) {
+  let list = await Misc.getChallengeList();
+  let challenge = list.filter((c) => c.name === challengeName)[0];
+  let notitext;
+  try {
+    if (challenge === undefined) {
+      throw "Challenge not found";
+    }
+    if (challenge.type === "customTime") {
+      setTimeConfig(challenge.parameters[0], true);
+      setMode("time", true);
+      if (challenge.name === "englishMaster") {
+        setLanguage("english_10k", true);
+        setNumbers(true, true);
+        setPunctuation(true, true);
+      }
+    }
+    if (challenge.type === "customWords") {
+      setWordCount(challenge.parameters[0], true);
+      setMode("words", true);
+    } else if (challenge.type === "customText") {
+      customText = challenge.parameters[0];
+      customTextIsRandom = challenge.parameters[1];
+      customTextWordCount = challenge.parameters[2];
+      setMode("custom", true);
+    } else if (challenge.type === "script") {
+      let scriptdata = await fetch("/challenges/" + challenge.parameters[0]);
+      scriptdata = await scriptdata.text();
+      customText = scriptdata.split(" ");
+      customTextIsRandom = false;
+      setMode("custom", true);
+      if (challenge.parameters[1] != null) {
+        setTheme(challenge.parameters[1]);
+      }
+      if (challenge.parameters[2] != null) {
+        activateFunbox(challenge.parameters[2]);
+      }
+    } else if (challenge.type === "accuracy") {
+      setTimeConfig(0, true);
+      setMode("time", true);
+      setDifficulty("master", true);
+    } else if (challenge.type === "funbox") {
+      activateFunbox(challenge.parameters[0]);
+      if (challenge.parameters[1] === "words") {
+        setWordCount(challenge.parameters[2], true);
+      } else if (challenge.parameters[1] === "time") {
+        setTimeConfig(challenge.parameters[2], true);
+      }
+      setMode(challenge.parameters[1], true);
+      if (challenge.parameters[3] !== undefined) {
+        setDifficulty(challenge.parameters[3], true);
+      }
+    }
+    manualRestart = true;
+    restartTest(false, true);
+    notitext = challenge.message;
+    if (notitext === undefined) {
+      Misc.showNotification(`Challenge '${challengeName}' loaded.`, 3000);
+    } else {
+      Misc.showNotification("Challenge loaded. " + notitext, 5000);
+    }
+  } catch (e) {
+    Misc.showNotification("Something went wrong: " + e, 5000);
+    console.log(e);
+  }
+  // Misc.showNotification("Challenge loaded", 2000);
+}
 
 let ctx = $("#wpmChart");
 let wpmOverTimeChart = new Chart(ctx, {

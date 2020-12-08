@@ -84,6 +84,18 @@ export async function getLanguageList() {
   }
 }
 
+let challengeList = null;
+export async function getChallengeList() {
+  if (challengeList == null) {
+    return $.getJSON("challenges/list.json", function (data) {
+      challengeList = data;
+      return challengeList;
+    });
+  } else {
+    return challengeList;
+  }
+}
+
 let currentLanguage = null;
 
 export function getCurrentLanguage() {

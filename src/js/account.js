@@ -294,6 +294,12 @@ firebase.auth().onAuthStateChanged(function (user) {
     setCustomThemeInputs();
     applyCustomThemeColors();
   }
+  if (/challenge_.+/g.test(window.location.pathname)) {
+    let challengeName = window.location.pathname.split("_")[1];
+    setTimeout(() => {
+      setupChallenge(challengeName);
+    }, 1000);
+  }
 });
 
 function getAccountDataAndInit() {
