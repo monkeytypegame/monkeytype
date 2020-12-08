@@ -5017,7 +5017,7 @@ async function setupChallenge(challengeName) {
       setMode("words", true);
       setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
-      customText = challenge.parameters[0];
+      customText = challenge.parameters[0].split(" ");
       customTextIsRandom = challenge.parameters[1];
       customTextWordCount = challenge.parameters[2];
       setMode("custom", true);
