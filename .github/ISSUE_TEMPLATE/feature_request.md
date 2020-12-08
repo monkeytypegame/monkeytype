@@ -1,11 +1,11 @@
 ---
 name: Feature request
-about: PLEASE USE GITHUB DISCUSSIONS
+about: Please use GitHub Discussions: https://github.com/Miodec/monkeytype/discussions
 title: ''
 labels: ''
 assignees: ''
 
 ---
 
-PLEASE USE GITHUB DISCUSSIONS
+Please use GitHub Discussions:
 https://github.com/Miodec/monkeytype/discussions
