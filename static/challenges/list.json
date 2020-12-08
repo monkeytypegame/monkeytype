@@ -10,6 +10,26 @@
     "parameters": [7200]
   }
   ,{
+    "name": "quad",
+    "type": "customTime",
+    "parameters": [14400]
+  }
+  ,{
+    "name": "8Ball",
+    "type": "customTime",
+    "parameters": [28800]
+  }
+  ,{
+    "name": "theBig12",
+    "type": "customTime",
+    "parameters": [43200]
+  }
+  ,{
+    "name": "1Day",
+    "type": "customTime",
+    "parameters": [86400]
+  }
+  ,{
     "name": "trueSimp",
     "type": "customText",
     "parameters": [["miodec"],true,10000]
@@ -52,12 +72,66 @@
   ,{
     "name": "accuracy",
     "type": "accuracy",
-    "parameters": []
+    "parameters": [],
+    "message": "Minimum 60wpm and 100% accuracy required."
   }
   ,{
     "name": "inAGalaxyFarFarAway",
     "type": "script",
-    "parameters": ["inAGalaxyFarFarAway.txt",null,"space_balls"]
+    "parameters": ["episode4.txt",null,"space_balls"]
+  }
+  ,{
+    "name": "whosYourDaddy",
+    "type": "script",
+    "parameters": ["episode5.txt",null,"space_balls"]
+  }
+  ,{
+    "name": "itsATrap",
+    "type": "script",
+    "parameters": ["episode6.txt",null,"space_balls"]
+  }
+  ,{
+    "name": "jolly",
+    "type": "script",
+    "parameters": ["jolly.txt",null,null],
+    "message": "Minimum 70wpm required."
+  }
+  ,{
+    "name": "gottaCatchEmAll",
+    "type": "script",
+    "parameters": ["pokemon.txt",null,null]
+  }
+  ,{
+    "name": "rapGod",
+    "type": "script",
+    "parameters": ["rapod.txt",null,null],
+    "message": "Minimum 85wpm and 90% accuracy required."
+  }
+  ,{
+    "name": "littleChef",
+    "type": "script",
+    "parameters": ["littlechef.txt",null,null]
+  }
+  ,{
+    "name": "crosstalk",
+    "type": "script",
+    "parameters": ["crosstalk.txt",null,null]
+  }
+  ,{
+    "name": "bees",
+    "type": "script",
+    "parameters": ["bees.txt",null,null]
+  }
+  ,{
+    "name": "navySeal",
+    "type": "script",
+    "parameters": ["navyseal.txt",null,null],
+    "message": "Minimum 60wpm and 100% accuracy required."
+  }
+  ,{
+    "name": "getOffMySwamp",
+    "type": "script",
+    "parameters": ["shrek.txt",null,null]
   }
   ,{
     "name": "beLikeWater",
