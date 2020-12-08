@@ -4267,6 +4267,9 @@ $(document).mousemove(function (event) {
 $(document).on("click", "#testModesNotice .text-button", (event) => {
   let commands = eval($(event.currentTarget).attr("commands"));
   if (commands !== undefined) {
+    if ($(event.currentTarget).attr("commands") === "commandsTags") {
+      updateCommandsTagsList();
+    }
     currentCommands.push(commands);
     showCommandLine();
   }
