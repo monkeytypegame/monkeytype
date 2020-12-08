@@ -306,19 +306,20 @@ async function activateFunbox(funbox, mode) {
     }
   }
   $("#funBoxTheme").attr("href", ``);
-  if (funbox === "none") {
-    activeFunBox = "none";
-    memoryFunboxInterval = clearInterval(memoryFunboxInterval);
-    memoryFunboxTimer = null;
-    $("#wordsWrapper").removeClass("hidden");
-    $("#words").removeClass("nospace");
-  }
+  $("#words").removeClass("nospace");
+  // if (funbox === "none") {
+  activeFunBox = "none";
+  memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+  memoryFunboxTimer = null;
+  $("#wordsWrapper").removeClass("hidden");
+  // }
 
   if (mode === null || mode === undefined) {
     let list = await Misc.getFunboxList();
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
 
+  manualRestart = true;
   if (mode === "style") {
     if (funbox != undefined) {
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
@@ -2693,11 +2694,13 @@ function restartTest(withSameWordset = false, nosave = false) {
         customText.length < 1000)
     ) {
     } else {
-      Misc.showNotification(
-        "Restart disabled for long tests. Use your mouse to confirm.",
-        4000
-      );
-      return;
+      if (testActive) {
+        Misc.showNotification(
+          "Restart disabled for long tests. Use your mouse to confirm.",
+          4000
+        );
+        return;
+      }
     }
   }
 
@@ -4962,6 +4965,8 @@ $(document).ready(() => {
         }
       } else if (window.location.pathname === "/account") {
         history.replaceState("/", null, "/");
+      } else if (/challenge_.+/g.test(window.location.pathname)) {
+        //do nothing
       } else if (window.location.pathname !== "/") {
         let page = window.location.pathname.replace("/", "");
         changePage(page);
@@ -5002,6 +5007,7 @@ async function setupChallenge(challengeName) {
     if (challenge.type === "customTime") {
       setTimeConfig(challenge.parameters[0], true);
       setMode("time", true);
+      setDifficulty("normal", true);
       if (challenge.name === "englishMaster") {
         setLanguage("english_10k", true);
         setNumbers(true, true);
@@ -5011,17 +5017,20 @@ async function setupChallenge(challengeName) {
     if (challenge.type === "customWords") {
       setWordCount(challenge.parameters[0], true);
       setMode("words", true);
+      setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
       customText = challenge.parameters[0];
       customTextIsRandom = challenge.parameters[1];
       customTextWordCount = challenge.parameters[2];
       setMode("custom", true);
+      setDifficulty("normal", true);
     } else if (challenge.type === "script") {
       let scriptdata = await fetch("/challenges/" + challenge.parameters[0]);
       scriptdata = await scriptdata.text();
       customText = scriptdata.split(" ");
       customTextIsRandom = false;
       setMode("custom", true);
+      setDifficulty("normal", true);
       if (challenge.parameters[1] != null) {
         setTheme(challenge.parameters[1]);
       }
@@ -5034,6 +5043,7 @@ async function setupChallenge(challengeName) {
       setDifficulty("master", true);
     } else if (challenge.type === "funbox") {
       activateFunbox(challenge.parameters[0]);
+      setDifficulty("normal", true);
       if (challenge.parameters[1] === "words") {
         setWordCount(challenge.parameters[2], true);
       } else if (challenge.parameters[1] === "time") {
