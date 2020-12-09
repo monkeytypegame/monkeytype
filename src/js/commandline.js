@@ -189,6 +189,14 @@ let commands = {
       },
     },
     {
+      id: "toggleShowLiveAcc",
+      display: "Toggle live accuracy display",
+      exec: () => {
+        toggleShowLiveAcc();
+        saveConfigToCookie();
+      },
+    },
+    {
       id: "toggleTimerBar",
       display: "Toggle timer display",
       exec: () => {

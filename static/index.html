@@ -953,6 +953,7 @@
               <div id="miniTimerAndLiveWpm">
                 <div class="time hidden">1:00</div>
                 <div class="wpm">60</div>
+                <div class="acc">100%</div>
               </div>
               <div class="outOfFocusWarning hidden">
                 <i class="fas fa-mouse-pointer"></i>
@@ -961,7 +962,6 @@
               <div id="wordsWrapper">
                 <div id="words" class="size15"></div>
               </div>
-              <div id="liveWpm">123</div>
               <div class="keymap hidden">
                 <div class="row r1">
                   <div></div>
@@ -1135,6 +1135,10 @@
                     <span class="letter"></span>
                   </div>
                 </div>
+              </div>
+              <div id="largeLiveWpmAndAcc">
+                <div id="liveWpm">123</div>
+                <div id="liveAcc">100%%</div>
               </div>
               <div
                 id="restartTestButton"
@@ -2824,6 +2828,21 @@
                 <h1>live wpm</h1>
                 <div class="text">
                   Displays a live WPM speed during the test. Updates once every
+                  second.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
+              <div class="section showLiveAcc">
+                <h1>live accuracy</h1>
+                <div class="text">
+                  Displays live accuracy during the test. Updates once every
                   second.
                 </div>
                 <div class="buttons">

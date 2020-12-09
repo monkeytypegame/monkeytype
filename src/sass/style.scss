@@ -802,22 +802,41 @@ a:hover {
   z-index: -1;
 }
 
-#liveWpm,
-#timerNumber {
-  position: relative;
+#largeLiveWpmAndAcc {
   font-size: 10rem;
   color: black;
-  opacity: 0;
   width: 100%;
   left: 0;
   text-align: center;
   z-index: -1;
   height: 0;
-  transition: 0.25s;
   line-height: 0;
+  top: 5rem;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 5rem;
+}
+
+#liveWpm {
+  opacity: 0;
+}
+
+#liveAcc {
+  opacity: 0;
 }
 
 #timerNumber {
+  transition: 0.25s;
+  height: 0;
+  line-height: 0;
+  z-index: -1;
+  text-align: center;
+  left: 0;
+  width: 100%;
+  position: relative;
+  font-size: 10rem;
+  opacity: 0;
   width: 0;
   height: 0;
   margin: 0 auto;
@@ -827,7 +846,7 @@ a:hover {
   transition: none;
 }
 
-#liveWpm.timerMain,
+#largeLiveWpmAndAcc.timerMain,
 #timerNumber.timerMain {
   color: var(--main-color);
 }
@@ -836,7 +855,7 @@ a:hover {
   background: var(--main-color);
 }
 
-#liveWpm.timerSub,
+#largeLiveWpmAndAcc.timerSub,
 #timerNumber.timerSub {
   color: var(--sub-color);
 }
@@ -845,7 +864,7 @@ a:hover {
   background: var(--sub-color);
 }
 
-#liveWpm.timerText,
+#largeLiveWpmAndAcc.timerText,
 #timerNumber.timerText {
   color: var(--text-color);
 }
@@ -854,13 +873,13 @@ a:hover {
   background: var(--text-color);
 }
 
-#liveWpm {
-  top: 6rem;
+// #liveWpm {
+//   top: 6rem;
 
-  &.lower {
-    top: 15rem;
-  }
-}
+//   &.lower {
+//     top: 15rem;
+//   }
+// }
 
 #centerContent {
   max-width: 1000px;
@@ -1758,11 +1777,12 @@ key {
       }
 
       .wpm {
-        transition: 0.125s;
+        margin-right: 2rem;
       }
 
       .time,
-      .wpm {
+      .wpm,
+      .acc {
         opacity: 0;
       }
 

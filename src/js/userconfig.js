@@ -73,6 +73,7 @@ let defaultConfig = {
   strictSpace: false,
   minAcc: "off",
   minAccCustom: 90,
+  showLiveAcc: true,
 };
 
 let cookieConfig = null;
@@ -206,6 +207,7 @@ function applyConfig(configObj) {
     setSmoothCaret(configObj.smoothCaret, true);
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setShowLiveWpm(configObj.showLiveWpm, true);
+    setShowLiveAcc(configObj.showLiveAcc, true);
     setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
@@ -789,6 +791,19 @@ function toggleShowLiveWpm() {
   saveConfigToCookie();
 }
 
+function setShowLiveAcc(live, nosave) {
+  if (live == null || live == undefined) {
+    live = false;
+  }
+  config.showLiveAcc = live;
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleShowLiveAcc() {
+  config.showLiveAcc = !config.showLiveAcc;
+  saveConfigToCookie();
+}
+
 function setHighlightMode(mode, nosave) {
   if (activeFunBox === "nospace" && mode === "word") {
     Misc.showNotification("Can't use word highlight with nospace funbox", 3000);
@@ -836,9 +851,9 @@ function setTimerColor(color, nosave) {
   $("#timerNumber").removeClass("timerText");
   $("#timerNumber").removeClass("timerMain");
 
-  $("#liveWpm").removeClass("timerSub");
-  $("#liveWpm").removeClass("timerText");
-  $("#liveWpm").removeClass("timerMain");
+  $("#largeLiveWpmAndAcc").removeClass("timerSub");
+  $("#largeLiveWpmAndAcc").removeClass("timerText");
+  $("#largeLiveWpmAndAcc").removeClass("timerMain");
 
   $("#miniTimerAndLiveWpm").removeClass("timerSub");
   $("#miniTimerAndLiveWpm").removeClass("timerText");
@@ -847,17 +862,17 @@ function setTimerColor(color, nosave) {
   if (color === "main") {
     $("#timer").addClass("timerMain");
     $("#timerNumber").addClass("timerMain");
-    $("#liveWpm").addClass("timerMain");
+    $("#largeLiveWpmAndAcc").addClass("timerMain");
     $("#miniTimerAndLiveWpm").addClass("timerMain");
   } else if (color === "sub") {
     $("#timer").addClass("timerSub");
     $("#timerNumber").addClass("timerSub");
-    $("#liveWpm").addClass("timerSub");
+    $("#largeLiveWpmAndAcc").addClass("timerSub");
     $("#miniTimerAndLiveWpm").addClass("timerSub");
   } else if (color === "text") {
     $("#timer").addClass("timerText");
     $("#timerNumber").addClass("timerText");
-    $("#liveWpm").addClass("timerText");
+    $("#largeLiveWpmAndAcc").addClass("timerText");
     $("#miniTimerAndLiveWpm").addClass("timerText");
   }
 

@@ -81,6 +81,7 @@ settingsGroups.showLiveWpm = new SettingsGroup(
     settingsGroups.keymapMode.updateButton();
   }
 );
+settingsGroups.showLiveAcc = new SettingsGroup("showLiveAcc", setShowLiveAcc);
 settingsGroups.showTimerProgress = new SettingsGroup(
   "showTimerProgress",
   setShowTimerProgress

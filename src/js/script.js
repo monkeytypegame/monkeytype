@@ -1326,12 +1326,12 @@ function startCaretAnimation() {
 
 function hideKeymap() {
   $(".keymap").addClass("hidden");
-  $("#liveWpm").removeClass("lower");
+  // $("#liveWpm").removeClass("lower");
 }
 
 function showKeymap() {
   $(".keymap").removeClass("hidden");
-  $("#liveWpm").addClass("lower");
+  // $("#liveWpm").addClass("lower");
 }
 
 function flashPressedKeymapKey(key, correct) {
@@ -1709,6 +1709,7 @@ function showResult(difficultyFailed = false) {
   setFocus(false);
   hideCaret();
   hideLiveWpm();
+  hideLiveAcc();
   hideTimer();
   hideKeymap();
   testInvalid = false;
@@ -2563,6 +2564,7 @@ function startTest() {
   showTimer();
   $("#liveWpm").text("0");
   showLiveWpm();
+  showLiveAcc();
   updateTimer();
   clearTimeout(timer);
   keypressStats = {
@@ -2599,6 +2601,14 @@ function startTest() {
       updateLiveWpm(wpmAndRaw.wpm, wpmAndRaw.raw);
       wpmHistory.push(wpmAndRaw.wpm);
       rawHistory.push(wpmAndRaw.raw);
+
+      let acc = Misc.roundTo2(
+        (accuracyStats.correct /
+          (accuracyStats.correct + accuracyStats.incorrect)) *
+          100
+      );
+
+      updateLiveAcc(acc);
 
       if (activeFunBox === "layoutfluid" && config.mode === "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];
@@ -2643,11 +2653,6 @@ function startTest() {
         count: 0,
         words: [],
       };
-      let acc = Misc.roundTo2(
-        (accuracyStats.correct /
-          (accuracyStats.correct + accuracyStats.incorrect)) *
-          100
-      );
       if (
         (config.minWpm === "custom" &&
           wpmAndRaw.wpm < parseInt(config.minWpmCustomSpeed) &&
@@ -2721,6 +2726,7 @@ function restartTest(withSameWordset = false, nosave = false) {
   hideCaret();
   testActive = false;
   hideLiveWpm();
+  hideLiveAcc();
   hideTimer();
   bailout = false;
   paceCaret = null;
@@ -3052,19 +3058,108 @@ function updateLiveWpm(wpm, raw) {
   document.querySelector("#liveWpm").innerHTML = number;
 }
 
+function updateLiveAcc(acc) {
+  if (!testActive || !config.showLiveAcc) {
+    hideLiveAcc();
+  } else {
+    showLiveAcc();
+  }
+  let number = Math.floor(acc);
+  if (config.blindMode) {
+    number = 100;
+  }
+  document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = number + "%";
+  document.querySelector("#liveAcc").innerHTML = number + "%";
+}
+
 function showLiveWpm() {
   if (!config.showLiveWpm) return;
   if (!testActive) return;
   if (config.timerStyle === "mini") {
-    $("#miniTimerAndLiveWpm .wpm").css("opacity", config.timerOpacity);
+    // $("#miniTimerAndLiveWpm .wpm").css("opacity", config.timerOpacity);
+    $("#miniTimerAndLiveWpm .wpm").removeClass("hidden").animate(
+      {
+        opacity: config.timerOpacity,
+      },
+      125
+    );
   } else {
-    $("#liveWpm").css("opacity", config.timerOpacity);
+    // $("#liveWpm").css("opacity", config.timerOpacity);
+    $("#liveWpm").removeClass("hidden").animate(
+      {
+        opacity: config.timerOpacity,
+      },
+      125
+    );
   }
 }
 
 function hideLiveWpm() {
-  $("#liveWpm").css("opacity", 0);
-  $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
+  // $("#liveWpm").css("opacity", 0);
+  // $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
+  $("#liveWpm").animate(
+    {
+      opacity: config.timerOpacity,
+    },
+    125,
+    () => {
+      $("#liveWpm").addClass("hidden");
+    }
+  );
+  $("#miniTimerAndLiveWpm .wpm").animate(
+    {
+      opacity: config.timerOpacity,
+    },
+    125,
+    () => {
+      $("#miniTimerAndLiveWpm .wpm").addClass("hidden");
+    }
+  );
+}
+
+function showLiveAcc() {
+  if (!config.showLiveAcc) return;
+  if (!testActive) return;
+  if (config.timerStyle === "mini") {
+    // $("#miniTimerAndLiveWpm .wpm").css("opacity", config.timerOpacity);
+    $("#miniTimerAndLiveWpm .acc").removeClass("hidden").animate(
+      {
+        opacity: config.timerOpacity,
+      },
+      125
+    );
+  } else {
+    // $("#liveWpm").css("opacity", config.timerOpacity);
+    $("#liveAcc").removeClass("hidden").animate(
+      {
+        opacity: config.timerOpacity,
+      },
+      125
+    );
+  }
+}
+
+function hideLiveAcc() {
+  // $("#liveWpm").css("opacity", 0);
+  // $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
+  $("#liveAcc").animate(
+    {
+      opacity: config.timerOpacity,
+    },
+    125,
+    () => {
+      $("#liveAcc").addClass("hidden");
+    }
+  );
+  $("#miniTimerAndLiveWpm .acc").animate(
+    {
+      opacity: config.timerOpacity,
+    },
+    125,
+    () => {
+      $("#miniTimerAndLiveWpm .acc").addClass("hidden");
+    }
+  );
 }
 
 function swapElements(
