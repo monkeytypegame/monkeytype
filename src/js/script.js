@@ -1335,6 +1335,7 @@ function showKeymap() {
 }
 
 function flashPressedKeymapKey(key, correct) {
+  if (key == undefined) return;
   switch (key) {
     case "\\":
     case "|":
