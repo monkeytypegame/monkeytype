@@ -73,7 +73,7 @@ let defaultConfig = {
   strictSpace: false,
   minAcc: "off",
   minAccCustom: 90,
-  showLiveAcc: true,
+  showLiveAcc: false,
 };
 
 let cookieConfig = null;
