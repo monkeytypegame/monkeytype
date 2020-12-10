@@ -469,7 +469,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           if (tooltipItem.datasetIndex !== 0) {
             return `error rate: ${Misc.roundTo2(
               resultData.y
-            )}%\nacc: ${Misc.roundTo(100 - resultData.y)}%`;
+            )}%\nacc: ${Misc.roundTo2(100 - resultData.y)}%`;
           }
           let label =
             `${data.datasets[tooltipItem.datasetIndex].label}: ${
