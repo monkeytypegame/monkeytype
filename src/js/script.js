@@ -716,7 +716,6 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     //always capitalise the first word or if there was a dot
     word = Misc.capitalizeFirstLetter(word);
   } else if (
-    //10% chance to end a sentence
     (Math.random() < 0.1 &&
       Misc.getLastChar(previousWord) != "." &&
       Misc.getLastChar(previousWord) != "," &&
@@ -745,7 +744,6 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     Misc.getLastChar(previousWord) != "." &&
     config.language.split("_")[0] !== "russian"
   ) {
-    //1% chance to add quotes
     word = `"${word}"`;
   } else if (
     Math.random() < 0.01 &&
@@ -753,14 +751,12 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     Misc.getLastChar(previousWord) != "." &&
     config.language.split("_")[0] !== "russian"
   ) {
-    //1% chance to add single quotes
     word = `'${word}'`;
   } else if (
     Math.random() < 0.01 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "."
   ) {
-    //1% chance to add parentheses
     if (config.language.split("_")[0] == "code") {
       let r = Math.random();
       if (r < 0.25) {
@@ -776,7 +772,6 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
       word = `(${word})`;
     }
   } else if (Math.random() < 0.01) {
-    //1% chance to add a colon
     if (config.language.split("_")[0] == "french") {
       word = ":";
     } else {
@@ -788,7 +783,6 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     Misc.getLastChar(previousWord) != "." &&
     previousWord != "-"
   ) {
-    //1% chance to add a dash
     word = "-";
   } else if (
     Math.random() < 0.01 &&
@@ -796,15 +790,17 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     Misc.getLastChar(previousWord) != "." &&
     Misc.getLastChar(previousWord) != ";"
   ) {
-    //1% chance to add semicolon
     if (config.language.split("_")[0] == "french") {
       word = ";";
     } else {
       word += ";";
     }
   } else if (Math.random() < 0.2 && Misc.getLastChar(previousWord) != ",") {
-    //2% chance to add a comma
     word += ",";
+  } else if (Math.random() < 0.25 && config.language.split("_")[0] == "code") {
+    let specials = ["{", "}", "[", "]", "(", ")", ";", "=", "%", "/"];
+
+    word = specials[Math.floor(Math.random() * 10)];
   }
   return word;
 }
