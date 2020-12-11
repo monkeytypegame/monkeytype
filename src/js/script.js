@@ -761,7 +761,20 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     Misc.getLastChar(previousWord) != "."
   ) {
     //1% chance to add parentheses
-    word = `(${word})`;
+    if (config.language.split("_")[0] == "code") {
+      let r = Math.random();
+      if (r < 0.25) {
+        word = `(${word})`;
+      } else if (r < 0.5) {
+        word = `{${word}}`;
+      } else if (r < 0.75) {
+        word = `[${word}]`;
+      } else {
+        word = `<${word}>`;
+      }
+    } else {
+      word = `(${word})`;
+    }
   } else if (Math.random() < 0.01) {
     //1% chance to add a colon
     if (config.language.split("_")[0] == "french") {
@@ -4540,7 +4553,9 @@ $(document).keydown((event) => {
         updateCaretPosition();
         currentKeypress.count++;
         currentKeypress.words.push(currentWordIndex);
-        playClickSound();
+        if (activeFunBox !== "nospace") {
+          playClickSound();
+        }
       } else {
         //incorrect word
         if (
@@ -4551,10 +4566,12 @@ $(document).keydown((event) => {
           paceCaret.wordsStatus[currentWordIndex] = true;
           paceCaret.correction += currentWord.length + 1;
         }
-        if (!config.playSoundOnError || config.blindMode) {
-          playClickSound();
-        } else {
-          playErrorSound();
+        if (activeFunBox !== "nospace") {
+          if (!config.playSoundOnError || config.blindMode) {
+            playClickSound();
+          } else {
+            playErrorSound();
+          }
         }
         accuracyStats.incorrect++;
         let cil = currentInput.length;
