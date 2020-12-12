@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Did you make sure to clear cache before opening an issue?**
-Sometimes your browser has old files cached and the bug you are experiencing might be already fixed, or a side effect of a new update. If you've already tried that, please delete this section.
+Sometimes your browser has old files cached and the bug you are experiencing might be already fixed, or a side effect of a new update. If you've already tried that, please delete this section. If you don't know how to do that, this website should help: https://clear-my-cache.com/
 
 
 **Describe the bug**
