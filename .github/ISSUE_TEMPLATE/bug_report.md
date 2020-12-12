@@ -2,10 +2,14 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
+
+**Did you make sure to clear cache before opening an issue?**
+Sometimes your browser has old files cached and the bug you are experiencing might be already fixed, or a side effect of a new update. If you've already tried that, please delete this section.
+
 
 **Describe the bug**
 A clear and concise description of what the bug is.
