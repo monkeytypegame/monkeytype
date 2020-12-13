@@ -452,6 +452,67 @@ function checkIfPB(uid, obj, userdata) {
   }
 }
 
+async function checkIfTagPB(uid, obj) {
+  if (obj.tags.length === 0) {
+    return [];
+  }
+  let dbtags = [];
+  let restags = obj.tags;
+  try {
+    let snap = await db.collection(`users/${uid}/tags`).get();
+    snap.forEach((doc) => {
+      if (restags.includes(doc.id)) {
+        let data = doc.data();
+        data.id = doc.id;
+        dbtags.push(data);
+      }
+    });
+  } catch (e) {
+    return [];
+  }
+  let wpm = obj.wpm;
+  let ret = [];
+  for (let i = 0; i < dbtags.length; i++) {
+    let dbtag = dbtags[i];
+    if (dbtag.pb === undefined || dbtag.pb < wpm) {
+      //no pb found, meaning this one is a pb
+      await db.collection(`users/${uid}/tags`).doc(dbtag.id).update({
+        pb: wpm,
+      });
+      ret.push(dbtag.id);
+    }
+  }
+  return ret;
+}
+
+exports.clearTagPb = functions.https.onCall((request, response) => {
+  try {
+    return db
+      .collection(`users/${request.uid}/tags`)
+      .doc(request.tagid)
+      .update({
+        pb: 0,
+      })
+      .then((e) => {
+        return {
+          resultCode: 1,
+        };
+      })
+      .catch((e) => {
+        console.error(
+          `error deleting tag pb for user ${request.uid}: ${e.message}`
+        );
+        return {
+          resultCode: -999,
+          message: e.message,
+        };
+      });
+  } catch (e) {
+    console.error(`error deleting tag pb for ${request.uid} - ${e}`);
+    return { resultCode: -999 };
+  }
+});
+
 function stdDev(array) {
   const n = array.length;
   const mean = array.reduce((a, b) => a + b) / n;
@@ -1040,11 +1101,13 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
                 emailVerified
               ),
               checkIfPB(request.uid, request.obj, userdata),
+              checkIfTagPB(request.uid, request.obj),
             ])
               .then(async (values) => {
                 let globallb = values[0].insertedAt;
                 let dailylb = values[1].insertedAt;
                 let ispb = values[2];
+                let tagPbs = values[3];
                 // console.log(values);
 
                 if (obj.mode === "time" && String(obj.mode2) === "60") {
@@ -1096,6 +1159,7 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
                   createdId: createdDocId,
                   needsToVerify: values[0].needsToVerify,
                   needsToVerifyEmail: values[0].needsToVerifyEmail,
+                  tagPbs: tagPbs,
                 };
 
                 if (ispb) {

@@ -26,3 +26,4 @@ export const namecheck = firebase
 export const getLeaderboard = firebase
   .functions()
   .httpsCallable("getLeaderboard");
+export const clearTagPb = firebase.functions().httpsCallable("clearTagPb");
