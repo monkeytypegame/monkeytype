@@ -15,6 +15,8 @@ import {
   db_getUserHighestWpm,
   db_getLocalPB,
   db_saveLocalPB,
+  db_getLocalTagPB,
+  db_saveLocalTagPB,
 } from "./db";
 
 import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
