@@ -245,3 +245,40 @@ export async function db_saveLocalPB(
     cont();
   }
 }
+
+export async function db_getLocalTagPB(tagId) {
+  function cont() {
+    let ret = 0;
+    try {
+      ret = dbSnapshot.tags.filter((t) => t.id === tagId)[0].pb;
+      if (ret == undefined) {
+        ret = 0;
+      }
+      return ret;
+    } catch (e) {
+      return ret;
+    }
+  }
+
+  let retval;
+  if (dbSnapshot == null) {
+  } else {
+    retval = cont();
+  }
+  return retval;
+}
+
+export async function db_saveLocalTagPB(tagId, wpm) {
+  function cont() {
+    dbSnapshot.tags.forEach((tag) => {
+      if (tag.id === tagId) {
+        tag.pb = wpm;
+      }
+    });
+  }
+
+  if (dbSnapshot == null) {
+  } else {
+    cont();
+  }
+}
