@@ -317,49 +317,47 @@ function getAccountDataAndInit() {
           saveConfigToCookie(true);
           restartTest(false, true);
         } else if (db_getSnapshot().config !== undefined) {
-          let configsDifferent = false;
-          Object.keys(config).forEach((key) => {
-            if (!configsDifferent) {
-              try {
-                if (key !== "resultFilters") {
-                  if (Array.isArray(config[key])) {
-                    config[key].forEach((arrval, index) => {
-                      if (arrval != db_getSnapshot().config[key][index]) {
-                        configsDifferent = true;
-                        console.log(
-                          `.config is different: ${arrval} != ${
-                            db_getSnapshot().config[key][index]
-                          }`
-                        );
-                      }
-                    });
-                  } else {
-                    if (config[key] != db_getSnapshot().config[key]) {
-                      configsDifferent = true;
-                      console.log(
-                        `..config is different ${key}: ${config[key]} != ${
-                          db_getSnapshot().config[key]
-                        }`
-                      );
-                    }
-                  }
-                }
-              } catch (e) {
-                console.log(e);
-                configsDifferent = true;
-                console.log(`...config is different: ${e.message}`);
-              }
-            }
-          });
-          if (configsDifferent) {
-            console.log("applying config from db");
-            accountIconLoading(false);
-            config = db_getSnapshot().config;
-            applyConfig(config);
-            updateSettingsPage();
-            saveConfigToCookie(true);
-            restartTest(false, true);
-          }
+          // let configsDifferent = false;
+          // Object.keys(config).forEach((key) => {
+          //   if (!configsDifferent) {
+          //     try {
+          //       if (key !== "resultFilters") {
+          //         if (Array.isArray(config[key])) {
+          //           config[key].forEach((arrval, index) => {
+          //             if (arrval != db_getSnapshot().config[key][index]) {
+          //               configsDifferent = true;
+          //               console.log(
+          //                 `.config is different: ${arrval} != ${db_getSnapshot().config[key][index]
+          //                 }`
+          //               );
+          //             }
+          //           });
+          //         } else {
+          //           if (config[key] != db_getSnapshot().config[key]) {
+          //             configsDifferent = true;
+          //             console.log(
+          //               `..config is different ${key}: ${config[key]} != ${db_getSnapshot().config[key]
+          //               }`
+          //             );
+          //           }
+          //         }
+          //       }
+          //     } catch (e) {
+          //       console.log(e);
+          //       configsDifferent = true;
+          //       console.log(`...config is different: ${e.message}`);
+          //     }
+          //   }
+          // });
+          // if (configsDifferent) {
+          //   console.log("applying config from db");
+          //   accountIconLoading(false);
+          //   config = db_getSnapshot().config;
+          //   applyConfig(config);
+          //   updateSettingsPage();
+          //   saveConfigToCookie(true);
+          //   restartTest(false, true);
+          // }
         }
         dbConfigLoaded = true;
       } else {
