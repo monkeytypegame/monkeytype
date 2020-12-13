@@ -1122,9 +1122,9 @@ function compareInput(showError) {
     currentCorrected = "";
     //last character typed, show result
     if (!resultVisible) {
-      if (keypressPerSecond.length === 0) {
-        keypressPerSecond.push(currentKeypress);
-      }
+      // if (keypressPerSecond.length === 0) {
+      //   keypressPerSecond.push(currentKeypress);
+      // }
       lastSecondNotRound = true;
       showResult();
     }
@@ -1711,6 +1711,12 @@ function showCrown() {
 let resultCalculating = false;
 
 function showResult(difficultyFailed = false) {
+  console.log(keypressPerSecond);
+  console.log(errorsPerSecond);
+  console.log(wpmHistory);
+  console.log(rawHistory);
+  console.log("-");
+
   resultCalculating = true;
   resultVisible = true;
   testEnd = performance.now();
@@ -1895,6 +1901,11 @@ function showResult(difficultyFailed = false) {
     themeColors.sub;
 
   wpmOverTimeChart.data.labels = labels;
+
+  console.log(keypressPerSecond);
+  console.log(errorsPerSecond);
+  console.log(wpmHistory);
+  console.log(rawHistory);
 
   let rawWpmPerSecondRaw = keypressPerSecond.map((f) =>
     Math.round((f.count / 5) * 60)
