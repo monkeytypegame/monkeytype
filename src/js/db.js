@@ -94,7 +94,7 @@ export async function db_getUserResults() {
         .get()
         .then((data) => {
           dbSnapshot.results = [];
-          data.docs.forEach((doc, index) => {
+          data.docs.forEach((doc) => {
             let result = doc.data();
             result.id = doc.id;
             dbSnapshot.results.push(result);
@@ -172,6 +172,7 @@ export async function db_getLocalPB(
 
   let retval;
   if (dbSnapshot == null) {
+    retval = 0;
   } else {
     retval = cont();
   }
@@ -240,8 +241,7 @@ export async function db_saveLocalPB(
     }
   }
 
-  if (dbSnapshot == null) {
-  } else {
+  if (dbSnapshot != null) {
     cont();
   }
 }
