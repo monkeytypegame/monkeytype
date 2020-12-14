@@ -313,7 +313,6 @@ function getAccountDataAndInit() {
       if (db_getSnapshot() === null) {
         throw "Missing db snapshot. Client likely could not connect to the backend.";
       }
-      initPaceCaret(true);
       if (!configChangedBeforeDb) {
         if (cookieConfig === null) {
           accountIconLoading(false);
@@ -367,6 +366,10 @@ function getAccountDataAndInit() {
         dbConfigLoaded = true;
       } else {
         accountIconLoading(false);
+      }
+      if (config.paceCaret === "pb") {
+        // initPaceCaret(true);
+        $("#paceCaret").addClass("hidden");
       }
       try {
         if (
