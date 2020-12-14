@@ -147,7 +147,7 @@ function signUp() {
                 .collection("users")
                 .doc(usr.uid)
                 .set({ name: nname }, { merge: true });
-              CloudFunctions.reserveName({ name: nname, uid: usr.uid }).throw(
+              CloudFunctions.reserveName({ name: nname, uid: usr.uid }).catch(
                 (e) => {
                   console.error("Could not reserve name " + e);
                   throw "Could not reserve name";
