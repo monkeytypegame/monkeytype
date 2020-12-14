@@ -106,15 +106,24 @@ function isUsernameValid(name) {
 
 exports.reserveDisplayName = functions.https.onCall(
   async (request, response) => {
-    let udata = await db.collection("users").doc(request.uid).get();
-    udata = udata.data();
-    if (request.name.toLowerCase() === udata.name.toLowerCase()) {
-      db.collection("takenNames").doc(request.name.toLowerCase()).set(
-        {
-          taken: true,
-        },
-        { merge: true }
-      );
+    try {
+      let udata = await db.collection("users").doc(request.uid).get();
+      udata = udata.data();
+      if (request.name.toLowerCase() === udata.name.toLowerCase()) {
+        db.collection("takenNames").doc(request.name.toLowerCase()).set(
+          {
+            taken: true,
+          },
+          { merge: true }
+        );
+        console.log(`Reserved name ${request.name}`);
+      } else {
+        console.error(
+          `Could not reserve name. ${request.name.toLowerCase()} != ${udata.name.toLowerCase()}`
+        );
+      }
+    } catch (e) {
+      console.error(`Could not reserve name. ${e}`);
     }
   }
 );
