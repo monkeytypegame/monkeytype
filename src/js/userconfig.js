@@ -169,6 +169,11 @@ function loadConfigFromCookie() {
 }
 
 function applyConfig(configObj) {
+  if (configObj == null || configObj == undefined) {
+    Misc.showNotification("Could not apply config", 1000);
+    console.error("configobj is null or undefined");
+    return;
+  }
   Object.keys(defaultConfig).forEach((configKey) => {
     if (configObj[configKey] === undefined) {
       configObj[configKey] = defaultConfig[configKey];
