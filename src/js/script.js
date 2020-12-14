@@ -2838,7 +2838,9 @@ function restartTest(withSameWordset = false, nosave = false) {
         hideKeymap();
       }
       document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = "0";
+      document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = "100%";
       document.querySelector("#liveWpm").innerHTML = "0";
+      document.querySelector("#liveAcc").innerHTML = "100%";
 
       if (activeFunBox === "layoutfluid") {
         setLayout("qwerty");
