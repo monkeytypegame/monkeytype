@@ -810,8 +810,11 @@ function toggleShowLiveAcc() {
 }
 
 function setHighlightMode(mode, nosave) {
-  if (activeFunBox === "nospace" && mode === "word") {
-    Misc.showNotification("Can't use word highlight with nospace funbox", 3000);
+  if (
+    mode === "word" &&
+    (activeFunBox === "nospace" || activeFunBox === "read_ahead")
+  ) {
+    Misc.showNotification("Can't use word highlight with this funbox", 3000);
     return;
   }
   if (mode == null || mode == undefined) {

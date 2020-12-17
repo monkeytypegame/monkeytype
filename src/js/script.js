@@ -20,6 +20,7 @@ let lineTransition = false;
 let keypressPerSecond = [];
 let currentKeypress = {
   count: 0,
+  mod: 0,
   words: [],
 };
 let errorsPerSecond = [];
@@ -329,6 +330,11 @@ async function activateFunbox(funbox, mode) {
     if (funbox === "simon_says") {
       setKeymapMode("next");
       settingsGroups.keymapMode.updateButton();
+      restartTest();
+    }
+
+    if (funbox === "read_ahead") {
+      setHighlightMode("letter", true);
       restartTest();
     }
   } else if (mode === "script") {
@@ -1020,7 +1026,9 @@ function compareInput(showError) {
         }
         let testNow = performance.now();
         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-        let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+        let afkseconds = keypressPerSecond.filter(
+          (x) => x.count == 0 && x.mod == 0
+        ).length;
         incompleteTestSeconds += testSeconds - afkseconds;
         restartCount++;
       }
@@ -1075,7 +1083,9 @@ function compareInput(showError) {
           }
           let testNow = performance.now();
           let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+          let afkseconds = keypressPerSecond.filter(
+            (x) => x.count == 0 && x.mod == 0
+          ).length;
           incompleteTestSeconds += testSeconds - afkseconds;
           restartCount++;
         }
@@ -1143,15 +1153,19 @@ function showTimer() {
       {
         opacity: op,
       },
-      250
+      125
     );
   } else if (config.timerStyle === "text") {
-    $("#timerNumber").stop(true, true).removeClass("hidden").animate(
-      {
-        opacity: op,
-      },
-      250
-    );
+    $("#timerNumber")
+      .stop(true, true)
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: op,
+        },
+        125
+      );
   } else if (config.timerStyle === "mini") {
     if (op > 0) {
       $("#miniTimerAndLiveWpm .time")
@@ -1161,7 +1175,7 @@ function showTimer() {
           {
             opacity: op,
           },
-          250
+          125
         );
     }
   }
@@ -1711,12 +1725,6 @@ function showCrown() {
 let resultCalculating = false;
 
 function showResult(difficultyFailed = false) {
-  console.log(keypressPerSecond);
-  console.log(errorsPerSecond);
-  console.log(wpmHistory);
-  console.log(rawHistory);
-  console.log("-");
-
   resultCalculating = true;
   resultVisible = true;
   testEnd = performance.now();
@@ -1745,8 +1753,11 @@ function showResult(difficultyFailed = false) {
   }
   clearTimeout(timer);
   let testtime = stats.time;
-  let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+  let afkseconds = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0)
+    .length;
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
+
+  wpmOverTimeChart.options.annotation.annotations = [];
 
   $("#result #resultWordsHistory").addClass("hidden");
 
@@ -1864,6 +1875,7 @@ function showResult(difficultyFailed = false) {
     rawHistory.push(wpmAndRaw.raw);
     keypressPerSecond.push(currentKeypress);
     currentKeypress = {
+      mod: 0,
       count: 0,
       words: [],
     };
@@ -1901,11 +1913,6 @@ function showResult(difficultyFailed = false) {
     themeColors.sub;
 
   wpmOverTimeChart.data.labels = labels;
-
-  console.log(keypressPerSecond);
-  console.log(errorsPerSecond);
-  console.log(wpmHistory);
-  console.log(rawHistory);
 
   let rawWpmPerSecondRaw = keypressPerSecond.map((f) =>
     Math.round((f.count / 5) * 60)
@@ -1952,13 +1959,6 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.data.datasets[1].borderColor = themeColors.sub;
   wpmOverTimeChart.data.datasets[1].pointBackgroundColor = themeColors.sub;
   wpmOverTimeChart.data.datasets[1].data = rawWpmPerSecond;
-
-  wpmOverTimeChart.options.annotation.annotations[0].borderColor =
-    themeColors.sub;
-  wpmOverTimeChart.options.annotation.annotations[0].label.backgroundColor =
-    themeColors.sub;
-  wpmOverTimeChart.options.annotation.annotations[0].label.fontColor =
-    themeColors.bg;
 
   let maxChartVal = Math.max(
     ...[Math.max(...rawWpmPerSecond), Math.max(...wpmHistory)]
@@ -2126,9 +2126,29 @@ function showResult(difficultyFailed = false) {
               localPb = true;
             }
             if (lpb > 0) {
-              wpmOverTimeChart.options.annotation.annotations[0].value = lpb;
-              wpmOverTimeChart.options.annotation.annotations[0].label.content =
-                "PB: " + lpb;
+              wpmOverTimeChart.options.annotation.annotations.push({
+                enabled: false,
+                type: "line",
+                mode: "horizontal",
+                scaleID: "wpm",
+                value: lpb,
+                borderColor: themeColors.sub,
+                borderWidth: 1,
+                borderDash: [2, 2],
+                label: {
+                  backgroundColor: themeColors.sub,
+                  fontFamily: "Roboto Mono",
+                  fontSize: 11,
+                  fontStyle: "normal",
+                  fontColor: themeColors.bg,
+                  xPadding: 6,
+                  yPadding: 6,
+                  cornerRadius: 3,
+                  position: "center",
+                  enabled: true,
+                  content: `PB: ${lpb}`,
+                },
+              });
               if (maxChartVal >= lpb - 15 && maxChartVal <= lpb + 15) {
                 maxChartVal = lpb + 15;
               }
@@ -2165,6 +2185,30 @@ function showResult(difficultyFailed = false) {
                   "+" + Misc.roundTo2(stats.wpm - tpb)
                 );
                 console.log("new pb for tag " + tag.name);
+              } else {
+                wpmOverTimeChart.options.annotation.annotations.push({
+                  enabled: false,
+                  type: "line",
+                  mode: "horizontal",
+                  scaleID: "wpm",
+                  value: tpb,
+                  borderColor: themeColors.sub,
+                  borderWidth: 1,
+                  borderDash: [2, 2],
+                  label: {
+                    backgroundColor: themeColors.sub,
+                    fontFamily: "Roboto Mono",
+                    fontSize: 11,
+                    fontStyle: "normal",
+                    fontColor: themeColors.bg,
+                    xPadding: 6,
+                    yPadding: 6,
+                    cornerRadius: 3,
+                    position: "center",
+                    enabled: true,
+                    content: `${tag.name} PB: ${tpb}`,
+                  },
+                });
               }
             });
 
@@ -2676,6 +2720,7 @@ function startTest() {
 
       keypressPerSecond.push(currentKeypress);
       currentKeypress = {
+        mod: 0,
         count: 0,
         words: [],
       };
@@ -2766,6 +2811,7 @@ function restartTest(withSameWordset = false, nosave = false) {
   keypressPerSecond = [];
   lastSecondNotRound = false;
   currentKeypress = {
+    mod: 0,
     count: 0,
     words: [],
   };
@@ -2869,7 +2915,6 @@ function restartTest(withSameWordset = false, nosave = false) {
             hideCrown();
             clearTimeout(timer);
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
-            wpmOverTimeChart.options.annotation.annotations[0].value = "-30";
             wpmOverTimeChart.update();
             updateTestModesNotice();
           }
@@ -3051,13 +3096,13 @@ function liveWpmAndRaw() {
       //the word is correct
       //+1 for space
       correctWordChars += wordsList[i].length;
-      if (i < inputHistory.length - 1) {
+      if (i < inputHistory.length) {
         spaces++;
       }
     }
     chars += inputHistory[i].length;
   }
-  if (wordsList[currentWordIndex] === currentInput) {
+  if (wordsList[currentWordIndex] == currentInput) {
     correctWordChars += currentInput.length;
   }
   if (activeFunBox === "nospace") {
@@ -3110,15 +3155,20 @@ function showLiveWpm() {
   if (!testActive) return;
   if (config.timerStyle === "mini") {
     // $("#miniTimerAndLiveWpm .wpm").css("opacity", config.timerOpacity);
-    $("#miniTimerAndLiveWpm .wpm").removeClass("hidden").animate(
-      {
-        opacity: config.timerOpacity,
-      },
-      125
-    );
+    if (!$("#miniTimerAndLiveWpm .wpm").hasClass("hidden")) return;
+    $("#miniTimerAndLiveWpm .wpm")
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: config.timerOpacity,
+        },
+        125
+      );
   } else {
     // $("#liveWpm").css("opacity", config.timerOpacity);
-    $("#liveWpm").removeClass("hidden").animate(
+    if (!$("#liveWpm").hasClass("hidden")) return;
+    $("#liveWpm").removeClass("hidden").css("opacity", 0).animate(
       {
         opacity: config.timerOpacity,
       },
@@ -3155,15 +3205,20 @@ function showLiveAcc() {
   if (!testActive) return;
   if (config.timerStyle === "mini") {
     // $("#miniTimerAndLiveWpm .wpm").css("opacity", config.timerOpacity);
-    $("#miniTimerAndLiveWpm .acc").removeClass("hidden").animate(
-      {
-        opacity: config.timerOpacity,
-      },
-      125
-    );
+    if (!$("#miniTimerAndLiveWpm .acc").hasClass("hidden")) return;
+    $("#miniTimerAndLiveWpm .acc")
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: config.timerOpacity,
+        },
+        125
+      );
   } else {
     // $("#liveWpm").css("opacity", config.timerOpacity);
-    $("#liveAcc").removeClass("hidden").animate(
+    if (!$("#liveAcc").hasClass("hidden")) return;
+    $("#liveAcc").removeClass("hidden").css("opacity", 0).animate(
       {
         opacity: config.timerOpacity,
       },
@@ -4243,10 +4298,13 @@ $(document).on("keypress", "#restartTestButton", (event) => {
       if (testActive) {
         let testNow = performance.now();
         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-        let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+        let afkseconds = keypressPerSecond.filter(
+          (x) => x.count == 0 && x.mod == 0
+        ).length;
         incompleteTestSeconds += testSeconds - afkseconds;
         restartCount++;
       }
+      if (resultCalculating) return;
       restartTest();
     } else {
       Misc.showNotification("Quick restart disabled for long tests", 2000);
@@ -4256,6 +4314,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
 
 $(document.body).on("click", "#restartTestButton", (event) => {
   manualRestart = true;
+  if (resultCalculating) return;
   restartTest();
 });
 
@@ -4418,6 +4477,8 @@ $(document).keydown((event) => {
     keypressStats.spacing.current = now;
   }
 
+  Monkey.type();
+
   //tab
   if (
     (event.key == "Tab" && !config.swapEscAndTab) ||
@@ -4450,8 +4511,9 @@ $(document).keydown((event) => {
           if (testActive) {
             let testNow = performance.now();
             let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-            let afkseconds = keypressPerSecond.filter((x) => x.count == 0)
-              .length;
+            let afkseconds = keypressPerSecond.filter(
+              (x) => x.count == 0 && x.mod == 0
+            ).length;
             incompleteTestSeconds += testSeconds - afkseconds;
             restartCount++;
           }
@@ -4534,7 +4596,10 @@ $(document).keydown((event) => {
       updateCaretPosition();
     }
     //space
-    if (event.key === " ") {
+    if (
+      event.key === " " ||
+      (activeFunBox == "58008" && event.key === "Enter")
+    ) {
       if (!testActive) return;
       if (currentInput === "") return;
       event.preventDefault();
@@ -4614,8 +4679,9 @@ $(document).keydown((event) => {
             showResult(true);
             let testNow = performance.now();
             let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-            let afkseconds = keypressPerSecond.filter((x) => x.count == 0)
-              .length;
+            let afkseconds = keypressPerSecond.filter(
+              (x) => x.count == 0 && x.mod == 0
+            ).length;
             incompleteTestSeconds += testSeconds - afkseconds;
             restartCount++;
             return;
@@ -4635,7 +4701,9 @@ $(document).keydown((event) => {
           showResult(true);
           let testNow = performance.now();
           let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+          let afkseconds = keypressPerSecond.filter(
+            (x) => x.count == 0 && x.mod == 0
+          ).length;
           incompleteTestSeconds += testSeconds - afkseconds;
           restartCount++;
           return;
@@ -4803,8 +4871,10 @@ $(document).keydown(function (event) {
       "Unidentified",
       undefined,
     ].includes(event.key)
-  )
+  ) {
+    currentKeypress.mod++;
     return;
+  }
   if (event.key === " ") {
     if (config.difficulty !== "normal" || config.strictSpace) {
       if (dontInsertSpace) {
@@ -4916,7 +4986,9 @@ $(document).keydown(function (event) {
       showResult(true);
       let testNow = performance.now();
       let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-      let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+      let afkseconds = keypressPerSecond.filter(
+        (x) => x.count == 0 && x.mod == 0
+      ).length;
       incompleteTestSeconds += testSeconds - afkseconds;
       restartCount++;
       return;
@@ -4990,6 +5062,7 @@ $(document).keyup((event) => {
     keypressStats.duration.array.push(diff);
   }
   keypressStats.duration.current = now;
+  Monkey.stop();
 });
 
 window.addEventListener("beforeunload", (event) => {
@@ -5362,50 +5435,7 @@ let wpmOverTimeChart = new Chart(ctx, {
       ],
     },
     annotation: {
-      annotations: [
-        {
-          enabled: false,
-          type: "line",
-          mode: "horizontal",
-          scaleID: "wpm",
-          value: "-30",
-          borderColor: "red",
-          borderWidth: 1,
-          borderDash: [2, 2],
-          label: {
-            // Background color of label, default below
-            backgroundColor: "blue",
-            fontFamily: "Roboto Mono",
-
-            // Font size of text, inherits from global
-            fontSize: 11,
-
-            // Font style of text, default below
-            fontStyle: "normal",
-
-            // Font color of text, default below
-            fontColor: "#fff",
-
-            // Padding of label to add left/right, default below
-            xPadding: 6,
-
-            // Padding of label to add top/bottom, default below
-            yPadding: 6,
-
-            // Radius of label rectangle, default below
-            cornerRadius: 3,
-
-            // Anchor position of label on line, can be one of: top, bottom, left, right, center. Default below.
-            position: "center",
-
-            // Whether the label is enabled and should be displayed
-            enabled: true,
-
-            // Text to display in label - default is null. Provide an array to display values on a new line
-            content: "PB",
-          },
-        },
-      ],
+      annotations: [],
     },
   },
 });
