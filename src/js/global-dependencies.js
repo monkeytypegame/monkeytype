@@ -22,4 +22,5 @@ import {
 import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
 import * as Misc from "./misc";
 import * as CloudFunctions from "./cloud-functions";
+import layouts from "./layouts";
 import * as Monkey from "./monkey";
