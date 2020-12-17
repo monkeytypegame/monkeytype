@@ -4463,6 +4463,10 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
   }
 });
 
+$(document).on("click", "#commandLineMobileButton", (event) => {
+  showCommandLine();
+});
+
 let dontInsertSpace = false;
 
 //handle keyboard events

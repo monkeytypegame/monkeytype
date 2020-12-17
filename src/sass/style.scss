@@ -1248,6 +1248,7 @@ key {
 }
 
 #bottom {
+  position: relative;
   text-align: center;
   line-height: 1rem;
   font-size: 0.75rem;
@@ -2898,6 +2899,24 @@ key {
   }
 }
 
+#commandLineMobileButton {
+  display: none;
+  top: -5rem;
+  left: 0;
+  position: absolute;
+  font-size: 1.5rem;
+  width: 4rem;
+  height: 4rem;
+  text-align: center;
+  line-height: 4rem;
+  background: var(--main-color);
+  border-radius: 99rem;
+  z-index: 99;
+  cursor: pointer;
+  color: var(--bg-color);
+  transition: 0.25s;
+}
+
 @media only screen and (max-width: 1050px) {
   #centerContent {
     .pageSettings .section.themes .buttons,
@@ -3291,5 +3310,11 @@ key {
         opacity: 0;
       }
     }
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  #commandLineMobileButton {
+    display: block;
   }
 }
