@@ -1122,9 +1122,9 @@ function compareInput(showError) {
     currentCorrected = "";
     //last character typed, show result
     if (!resultVisible) {
-      if (keypressPerSecond.length === 0) {
-        keypressPerSecond.push(currentKeypress);
-      }
+      // if (keypressPerSecond.length === 0) {
+      //   keypressPerSecond.push(currentKeypress);
+      // }
       lastSecondNotRound = true;
       showResult();
     }
@@ -1711,6 +1711,12 @@ function showCrown() {
 let resultCalculating = false;
 
 function showResult(difficultyFailed = false) {
+  console.log(keypressPerSecond);
+  console.log(errorsPerSecond);
+  console.log(wpmHistory);
+  console.log(rawHistory);
+  console.log("-");
+
   resultCalculating = true;
   resultVisible = true;
   testEnd = performance.now();
@@ -1896,6 +1902,11 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.data.labels = labels;
 
+  console.log(keypressPerSecond);
+  console.log(errorsPerSecond);
+  console.log(wpmHistory);
+  console.log(rawHistory);
+
   let rawWpmPerSecondRaw = keypressPerSecond.map((f) =>
     Math.round((f.count / 5) * 60)
   );
@@ -2003,10 +2014,12 @@ function showResult(difficultyFailed = false) {
     Misc.showNotification("Test invalid - repeated", 2000);
   } else {
     let activeTags = [];
+    let activeTagsIds = [];
     try {
       db_getSnapshot().tags.forEach((tag) => {
         if (tag.active === true) {
-          activeTags.push(tag.id);
+          activeTags.push(tag);
+          activeTagsIds.push(tag.id);
         }
       });
     } catch (e) {}
@@ -2049,7 +2062,7 @@ function showResult(difficultyFailed = false) {
       afkDuration: afkseconds,
       blindMode: config.blindMode,
       theme: config.theme,
-      tags: activeTags,
+      tags: activeTagsIds,
       keySpacing: keypressStats.spacing.array,
       keyDuration: keypressStats.duration.array,
       consistency: consistency,
@@ -2129,6 +2142,32 @@ function showResult(difficultyFailed = false) {
             }
             $("#result .stats .leaderboards").removeClass("hidden");
             $("#result .stats .leaderboards .bottom").html("checking...");
+
+            if (activeTags.length == 0) {
+              $("#result .stats .tags").addClass("hidden");
+            } else {
+              $("#result .stats .tags").removeClass("hidden");
+            }
+            $("#result .stats .tags .bottom").text("");
+            activeTags.forEach(async (tag) => {
+              let tpb = await db_getLocalTagPB(tag.id);
+              $("#result .stats .tags .bottom").append(`
+                <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
+              `);
+              if (tpb < stats.wpm) {
+                //new pb for that tag
+                db_saveLocalTagPB(tag.id, stats.wpm);
+                $(
+                  `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
+                ).removeClass("hidden");
+                $(`#result .stats .tags .bottom div[tagid="${tag.id}"]`).attr(
+                  "aria-label",
+                  "+" + Misc.roundTo2(stats.wpm - tpb)
+                );
+                console.log("new pb for tag " + tag.name);
+              }
+            });
+
             CloudFunctions.testCompleted({
               uid: firebase.auth().currentUser.uid,
               obj: completedEvent,
@@ -2506,23 +2545,6 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .info .bottom").html(otherText);
   }
 
-  let tagsText = "";
-  try {
-    db_getSnapshot().tags.forEach((tag) => {
-      if (tag.active === true) {
-        tagsText += "<br>" + tag.name;
-      }
-    });
-  } catch (e) {}
-
-  if (tagsText == "") {
-    $("#result .stats .tags").addClass("hidden");
-  } else {
-    $("#result .stats .tags").removeClass("hidden");
-    tagsText = tagsText.substring(4);
-    $("#result .stats .tags .bottom").html(tagsText);
-  }
-
   if (
     $("#result .stats .tags").hasClass("hidden") &&
     $("#result .stats .info").hasClass("hidden")
@@ -2816,7 +2838,9 @@ function restartTest(withSameWordset = false, nosave = false) {
         hideKeymap();
       }
       document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = "0";
+      document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = "100%";
       document.querySelector("#liveWpm").innerHTML = "0";
+      document.querySelector("#liveAcc").innerHTML = "100%";
 
       if (activeFunBox === "layoutfluid") {
         setLayout("qwerty");
@@ -4394,6 +4418,8 @@ $(document).keydown((event) => {
     keypressStats.spacing.current = now;
   }
 
+  Monkey.type();
+
   //tab
   if (
     (event.key == "Tab" && !config.swapEscAndTab) ||
@@ -4966,6 +4992,7 @@ $(document).keyup((event) => {
     keypressStats.duration.array.push(diff);
   }
   keypressStats.duration.current = now;
+  Monkey.stop();
 });
 
 window.addEventListener("beforeunload", (event) => {

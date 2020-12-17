@@ -7,8 +7,10 @@ class SimplePopup {
     inputs = [],
     text = "",
     buttonText = "Confirm",
-    execFn
+    execFn,
+    beforeShowFn
   ) {
+    this.parameters = [];
     this.id = id;
     this.type = type;
     this.execFn = execFn;
@@ -18,6 +20,7 @@ class SimplePopup {
     this.wrapper = $("#simplePopupWrapper");
     this.element = $("#simplePopup");
     this.buttonText = buttonText;
+    this.beforeShowFn = beforeShowFn;
   }
   reset() {
     this.element.html(`
@@ -30,16 +33,16 @@ class SimplePopup {
   init() {
     let el = this.element;
     el.find("input").val("");
-    if (el.attr("popupId") !== this.id) {
-      this.reset();
-      el.attr("popupId", this.id);
-      el.find(".title").text(this.title);
-      el.find(".text").text(this.text);
+    // if (el.attr("popupId") !== this.id) {
+    this.reset();
+    el.attr("popupId", this.id);
+    el.find(".title").text(this.title);
+    el.find(".text").text(this.text);
 
-      this.initInputs();
+    this.initInputs();
 
-      el.find(".button").text(this.buttonText);
-    }
+    el.find(".button").text(this.buttonText);
+    // }
   }
 
   initInputs() {
@@ -73,7 +76,9 @@ class SimplePopup {
     this.hide();
   }
 
-  show() {
+  show(parameters) {
+    this.parameters = parameters;
+    this.beforeShowFn();
     this.init();
     this.wrapper
       .stop(true, true)
@@ -161,5 +166,54 @@ simplePopups.updateEmail = new SimplePopup(
     } catch (e) {
       Misc.showNotification("Something went wrong: " + e, 5000);
     }
+  },
+  () => {}
+);
+
+simplePopups.clearTagPb = new SimplePopup(
+  "clearTagPb",
+  "text",
+  "Clear Tag PB",
+  [],
+  `Are you sure you want to clear this tags PB?`,
+  "Clear",
+  () => {
+    let tagid = eval("this.parameters[0]");
+    showBackgroundLoader();
+    CloudFunctions.clearTagPb({
+      uid: firebase.auth().currentUser.uid,
+      tagid: tagid,
+    })
+      .then((res) => {
+        hideBackgroundLoader();
+        if (res.data.resultCode === 1) {
+          let tag = db_getSnapshot().tags.filter((t) => t.id === tagid)[0];
+          tag.pb = 0;
+          $(
+            `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
+          ).attr("aria-label", "No PB found");
+          Misc.showNotification("Tag PB cleared.", 1000);
+        } else {
+          console.error(res.data.message);
+          Misc.showNotification(
+            "Something went wrong: " + res.data.message,
+            5000
+          );
+        }
+      })
+      .catch((e) => {
+        hideBackgroundLoader();
+        console.error(e);
+        Misc.showNotification(
+          "Something went wrong while clearing tag pb " + e,
+          5000
+        );
+      });
+    // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
+  },
+  () => {
+    eval(
+      "this.text = `Are you sure you want to clear PB for tag ${eval('this.parameters[1]')}?`"
+    );
   }
 );

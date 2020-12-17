@@ -569,6 +569,11 @@ function refreshTagsSettingsSection() {
   if (firebase.auth().currentUser !== null && db_getSnapshot() !== null) {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     db_getSnapshot().tags.forEach((tag) => {
+      let tagPbString = "No PB found";
+      let balloon = "";
+      if (tag.pb != undefined && tag.pb > 0) {
+        tagPbString = `PB: ${tag.pb}`;
+      }
       if (tag.active === true) {
         tagsEl.append(`
 
@@ -578,6 +583,7 @@ function refreshTagsSettingsSection() {
                   </div>
                   <div class="title">${tag.name}</div>
                   <div class="editButton"><i class="fas fa-pen"></i></div>
+                  <div class="clearPbButton" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
                   <div class="removeButton"><i class="fas fa-trash"></i></div>
               </div>
 
@@ -591,6 +597,7 @@ function refreshTagsSettingsSection() {
                   </div>
                   <div class="title">${tag.name}</div>
                   <div class="editButton"><i class="fas fa-pen"></i></div>
+                  <div class="clearPbButton" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
                   <div class="removeButton"><i class="fas fa-trash"></i></div>
               </div>
 
@@ -811,6 +818,17 @@ $(document).on(
 $(document).on("click", ".pageSettings .section.tags .addTagButton", (e) => {
   showEditTags("add");
 });
+
+$(document).on(
+  "click",
+  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
+  (e) => {
+    let target = e.currentTarget;
+    let tagid = $(target).parent(".tag").attr("id");
+    let tagname = $(target).siblings(".title")[0].innerHTML;
+    simplePopups.clearTagPb.show([tagid, tagname]);
+  }
+);
 
 $(document).on(
   "click",

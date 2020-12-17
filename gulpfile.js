@@ -91,6 +91,7 @@ const refactoredSrc = [
   "./src/js/cloud-functions.js",
   "./src/js/misc.js",
   "./src/js/layouts.js",
+  "./src/js/monkey.js",
 ];
 
 //legacy files

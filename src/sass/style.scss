@@ -1455,6 +1455,10 @@ key {
       }
     }
 
+    .tags .bottom .fas {
+      margin-left: 0.5rem;
+    }
+
     .wpm {
       grid-area: wpm;
 
@@ -2246,7 +2250,7 @@ key {
         .tag {
           display: grid;
           display: grid;
-          grid-template-columns: auto 1fr auto auto;
+          grid-template-columns: auto 1fr auto auto auto;
           color: var(--text-color);
 
           .title {
@@ -2254,6 +2258,7 @@ key {
           }
 
           .editButton,
+          .clearPbButton,
           .removeButton,
           .active {
             display: grid;
@@ -3084,6 +3089,29 @@ key {
 .hidden-key,
 .hide-key {
   opacity: 0;
+}
+
+#monkey {
+  width: 308px;
+  height: 0;
+  margin: 0 auto;
+  div {
+    height: 200px;
+    width: 308px;
+    position: fixed;
+  }
+  .up {
+    background-image: url("../m3.png");
+  }
+  .left {
+    background-image: url("../m1.png");
+  }
+  .right {
+    background-image: url("../m2.png");
+  }
+  .both {
+    background-image: url("../m4.png");
+  }
 }
 
 .keymap {
