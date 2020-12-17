@@ -4557,7 +4557,10 @@ $(document).keydown((event) => {
       updateCaretPosition();
     }
     //space
-    if (event.key === " ") {
+    if (
+      event.key === " " ||
+      (activeFunBox == "58008" && event.key === "Enter")
+    ) {
       if (!testActive) return;
       if (currentInput === "") return;
       event.preventDefault();
