@@ -1262,7 +1262,7 @@ key {
 
   .leftright {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
     a {
       text-decoration: none;
