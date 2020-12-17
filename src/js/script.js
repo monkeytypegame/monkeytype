@@ -1725,12 +1725,6 @@ function showCrown() {
 let resultCalculating = false;
 
 function showResult(difficultyFailed = false) {
-  console.log(keypressPerSecond);
-  console.log(errorsPerSecond);
-  console.log(wpmHistory);
-  console.log(rawHistory);
-  console.log("-");
-
   resultCalculating = true;
   resultVisible = true;
   testEnd = performance.now();
@@ -1762,6 +1756,8 @@ function showResult(difficultyFailed = false) {
   let afkseconds = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0)
     .length;
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
+
+  wpmOverTimeChart.options.annotation.annotations = [];
 
   $("#result #resultWordsHistory").addClass("hidden");
 
@@ -1964,13 +1960,6 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.data.datasets[1].pointBackgroundColor = themeColors.sub;
   wpmOverTimeChart.data.datasets[1].data = rawWpmPerSecond;
 
-  wpmOverTimeChart.options.annotation.annotations[0].borderColor =
-    themeColors.sub;
-  wpmOverTimeChart.options.annotation.annotations[0].label.backgroundColor =
-    themeColors.sub;
-  wpmOverTimeChart.options.annotation.annotations[0].label.fontColor =
-    themeColors.bg;
-
   let maxChartVal = Math.max(
     ...[Math.max(...rawWpmPerSecond), Math.max(...wpmHistory)]
   );
@@ -2137,9 +2126,29 @@ function showResult(difficultyFailed = false) {
               localPb = true;
             }
             if (lpb > 0) {
-              wpmOverTimeChart.options.annotation.annotations[0].value = lpb;
-              wpmOverTimeChart.options.annotation.annotations[0].label.content =
-                "PB: " + lpb;
+              wpmOverTimeChart.options.annotation.annotations.push({
+                enabled: false,
+                type: "line",
+                mode: "horizontal",
+                scaleID: "wpm",
+                value: lpb,
+                borderColor: themeColors.sub,
+                borderWidth: 1,
+                borderDash: [2, 2],
+                label: {
+                  backgroundColor: themeColors.sub,
+                  fontFamily: "Roboto Mono",
+                  fontSize: 11,
+                  fontStyle: "normal",
+                  fontColor: themeColors.bg,
+                  xPadding: 6,
+                  yPadding: 6,
+                  cornerRadius: 3,
+                  position: "center",
+                  enabled: true,
+                  content: `PB: ${lpb}`,
+                },
+              });
               if (maxChartVal >= lpb - 15 && maxChartVal <= lpb + 15) {
                 maxChartVal = lpb + 15;
               }
@@ -2176,6 +2185,30 @@ function showResult(difficultyFailed = false) {
                   "+" + Misc.roundTo2(stats.wpm - tpb)
                 );
                 console.log("new pb for tag " + tag.name);
+              } else {
+                wpmOverTimeChart.options.annotation.annotations.push({
+                  enabled: false,
+                  type: "line",
+                  mode: "horizontal",
+                  scaleID: "wpm",
+                  value: tpb,
+                  borderColor: themeColors.sub,
+                  borderWidth: 1,
+                  borderDash: [2, 2],
+                  label: {
+                    backgroundColor: themeColors.sub,
+                    fontFamily: "Roboto Mono",
+                    fontSize: 11,
+                    fontStyle: "normal",
+                    fontColor: themeColors.bg,
+                    xPadding: 6,
+                    yPadding: 6,
+                    cornerRadius: 3,
+                    position: "center",
+                    enabled: true,
+                    content: `${tag.name} PB: ${tpb}`,
+                  },
+                });
               }
             });
 
@@ -2882,7 +2915,6 @@ function restartTest(withSameWordset = false, nosave = false) {
             hideCrown();
             clearTimeout(timer);
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
-            wpmOverTimeChart.options.annotation.annotations[0].value = "-30";
             wpmOverTimeChart.update();
             updateTestModesNotice();
           }
@@ -5403,50 +5435,7 @@ let wpmOverTimeChart = new Chart(ctx, {
       ],
     },
     annotation: {
-      annotations: [
-        {
-          enabled: false,
-          type: "line",
-          mode: "horizontal",
-          scaleID: "wpm",
-          value: "-30",
-          borderColor: "red",
-          borderWidth: 1,
-          borderDash: [2, 2],
-          label: {
-            // Background color of label, default below
-            backgroundColor: "blue",
-            fontFamily: "Roboto Mono",
-
-            // Font size of text, inherits from global
-            fontSize: 11,
-
-            // Font style of text, default below
-            fontStyle: "normal",
-
-            // Font color of text, default below
-            fontColor: "#fff",
-
-            // Padding of label to add left/right, default below
-            xPadding: 6,
-
-            // Padding of label to add top/bottom, default below
-            yPadding: 6,
-
-            // Radius of label rectangle, default below
-            cornerRadius: 3,
-
-            // Anchor position of label on line, can be one of: top, bottom, left, right, center. Default below.
-            position: "center",
-
-            // Whether the label is enabled and should be displayed
-            enabled: true,
-
-            // Text to display in label - default is null. Provide an array to display values on a new line
-            content: "PB",
-          },
-        },
-      ],
+      annotations: [],
     },
   },
 });
