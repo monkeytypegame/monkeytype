@@ -3096,13 +3096,13 @@ function liveWpmAndRaw() {
       //the word is correct
       //+1 for space
       correctWordChars += wordsList[i].length;
-      if (i < inputHistory.length - 1) {
+      if (i < inputHistory.length) {
         spaces++;
       }
     }
     chars += inputHistory[i].length;
   }
-  if (wordsList[currentWordIndex] === currentInput) {
+  if (wordsList[currentWordIndex] == currentInput) {
     correctWordChars += currentInput.length;
   }
   if (activeFunBox === "nospace") {
