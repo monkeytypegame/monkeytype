@@ -3091,6 +3091,29 @@ key {
   opacity: 0;
 }
 
+#monkey {
+  width: 308px;
+  height: 0;
+  margin: 0 auto;
+  div {
+    height: 200px;
+    width: 308px;
+    position: fixed;
+  }
+  .up {
+    background-image: url("../m3.png");
+  }
+  .left {
+    background-image: url("../m1.png");
+  }
+  .right {
+    background-image: url("../m2.png");
+  }
+  .both {
+    background-image: url("../m4.png");
+  }
+}
+
 .keymap {
   .keymap-split-spacer,
   .keymap-stagger-split-spacer,

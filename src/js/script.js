@@ -4418,6 +4418,8 @@ $(document).keydown((event) => {
     keypressStats.spacing.current = now;
   }
 
+  Monkey.type();
+
   //tab
   if (
     (event.key == "Tab" && !config.swapEscAndTab) ||
@@ -4990,6 +4992,7 @@ $(document).keyup((event) => {
     keypressStats.duration.array.push(diff);
   }
   keypressStats.duration.current = now;
+  Monkey.stop();
 });
 
 window.addEventListener("beforeunload", (event) => {

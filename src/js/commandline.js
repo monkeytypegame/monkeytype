@@ -687,6 +687,14 @@ let commands = {
         }, 150);
       },
     },
+    {
+      id: "toggleMonkey",
+      display: "Toggle Monkey",
+      visible: false,
+      exec: () => {
+        $("#monkey").toggleClass("hidden");
+      },
+    },
   ],
 };
 
