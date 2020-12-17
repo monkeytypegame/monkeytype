@@ -2848,7 +2848,6 @@ function restartTest(withSameWordset = false, nosave = false) {
       !config.customTheme
     ) {
       randomiseTheme();
-      Misc.showNotification(config.theme.replace(/_/g, " "), 1500);
     }
   }
   resultVisible = false;

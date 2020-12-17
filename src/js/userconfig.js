@@ -1267,6 +1267,7 @@ function randomiseTheme() {
       randomList = config.favThemes;
     randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
     setTheme(randomTheme, true);
+    Misc.showNotification(randomTheme.replace(/_/g, " "), 1500);
   });
 }
 
