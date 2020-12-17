@@ -1143,15 +1143,19 @@ function showTimer() {
       {
         opacity: op,
       },
-      250
+      125
     );
   } else if (config.timerStyle === "text") {
-    $("#timerNumber").stop(true, true).removeClass("hidden").animate(
-      {
-        opacity: op,
-      },
-      250
-    );
+    $("#timerNumber")
+      .stop(true, true)
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: op,
+        },
+        125
+      );
   } else if (config.timerStyle === "mini") {
     if (op > 0) {
       $("#miniTimerAndLiveWpm .time")
@@ -1161,7 +1165,7 @@ function showTimer() {
           {
             opacity: op,
           },
-          250
+          125
         );
     }
   }
@@ -3110,15 +3114,20 @@ function showLiveWpm() {
   if (!testActive) return;
   if (config.timerStyle === "mini") {
     // $("#miniTimerAndLiveWpm .wpm").css("opacity", config.timerOpacity);
-    $("#miniTimerAndLiveWpm .wpm").removeClass("hidden").animate(
-      {
-        opacity: config.timerOpacity,
-      },
-      125
-    );
+    if (!$("#miniTimerAndLiveWpm .wpm").hasClass("hidden")) return;
+    $("#miniTimerAndLiveWpm .wpm")
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: config.timerOpacity,
+        },
+        125
+      );
   } else {
     // $("#liveWpm").css("opacity", config.timerOpacity);
-    $("#liveWpm").removeClass("hidden").animate(
+    if (!$("#liveWpm").hasClass("hidden")) return;
+    $("#liveWpm").removeClass("hidden").css("opacity", 0).animate(
       {
         opacity: config.timerOpacity,
       },
@@ -3155,15 +3164,20 @@ function showLiveAcc() {
   if (!testActive) return;
   if (config.timerStyle === "mini") {
     // $("#miniTimerAndLiveWpm .wpm").css("opacity", config.timerOpacity);
-    $("#miniTimerAndLiveWpm .acc").removeClass("hidden").animate(
-      {
-        opacity: config.timerOpacity,
-      },
-      125
-    );
+    if (!$("#miniTimerAndLiveWpm .acc").hasClass("hidden")) return;
+    $("#miniTimerAndLiveWpm .acc")
+      .removeClass("hidden")
+      .css("opacity", 0)
+      .animate(
+        {
+          opacity: config.timerOpacity,
+        },
+        125
+      );
   } else {
     // $("#liveWpm").css("opacity", config.timerOpacity);
-    $("#liveAcc").removeClass("hidden").animate(
+    if (!$("#liveAcc").hasClass("hidden")) return;
+    $("#liveAcc").removeClass("hidden").css("opacity", 0).animate(
       {
         opacity: config.timerOpacity,
       },
