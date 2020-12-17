@@ -90,6 +90,7 @@ const refactoredSrc = [
   "./src/js/dom-util.js",
   "./src/js/cloud-functions.js",
   "./src/js/misc.js",
+  "./src/js/layouts.js",
   "./src/js/monkey.js",
 ];
 
@@ -99,7 +100,6 @@ const globalSrc = [
   "./src/js/global-dependencies.js",
   "./src/js/simple-popups.js",
   "./src/js/words.js",
-  "./src/js/layouts.js",
   "./src/js/userconfig.js",
   "./src/js/commandline.js",
   "./src/js/leaderboards.js",
