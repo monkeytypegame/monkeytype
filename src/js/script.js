@@ -4261,6 +4261,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
         incompleteTestSeconds += testSeconds - afkseconds;
         restartCount++;
       }
+      if (resultCalculating) return;
       restartTest();
     } else {
       Misc.showNotification("Quick restart disabled for long tests", 2000);
@@ -4270,6 +4271,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
 
 $(document.body).on("click", "#restartTestButton", (event) => {
   manualRestart = true;
+  if (resultCalculating) return;
   restartTest();
 });
 
