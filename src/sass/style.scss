@@ -2977,6 +2977,17 @@ key {
     }
   }
 
+  #result {
+    .buttons {
+      grid-template-rows: 1fr 1fr;
+      #nextTestButton {
+        grid-column: 1/5;
+        width: 100%;
+        text-align: center;
+      }
+    }
+  }
+
   #commandLine,
   #commandLineInput {
     width: 400px !important;
@@ -3034,6 +3045,16 @@ key {
   }
   #centerContent {
     padding: 1rem;
+  }
+  #result {
+    .buttons {
+      grid-template-rows: 1fr 1fr 1fr;
+      #nextTestButton {
+        grid-column: 1/3;
+        width: 100%;
+        text-align: center;
+      }
+    }
   }
 }
 
