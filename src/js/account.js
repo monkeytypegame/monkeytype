@@ -368,8 +368,9 @@ function getAccountDataAndInit() {
         accountIconLoading(false);
       }
       if (config.paceCaret === "pb") {
-        // initPaceCaret(true);
-        $("#paceCaret").addClass("hidden");
+        if (!testActive) {
+          initPaceCaret(true);
+        }
       }
       try {
         if (
