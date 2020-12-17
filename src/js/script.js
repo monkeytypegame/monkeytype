@@ -331,6 +331,11 @@ async function activateFunbox(funbox, mode) {
       settingsGroups.keymapMode.updateButton();
       restartTest();
     }
+
+    if (funbox === "read_ahead") {
+      setHighlightMode("letter", true);
+      restartTest();
+    }
   } else if (mode === "script") {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
