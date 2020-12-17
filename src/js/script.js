@@ -20,6 +20,7 @@ let lineTransition = false;
 let keypressPerSecond = [];
 let currentKeypress = {
   count: 0,
+  mod: 0,
   words: [],
 };
 let errorsPerSecond = [];
@@ -1025,7 +1026,9 @@ function compareInput(showError) {
         }
         let testNow = performance.now();
         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-        let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+        let afkseconds = keypressPerSecond.filter(
+          (x) => x.count == 0 && x.mod == 0
+        ).length;
         incompleteTestSeconds += testSeconds - afkseconds;
         restartCount++;
       }
@@ -1080,7 +1083,9 @@ function compareInput(showError) {
           }
           let testNow = performance.now();
           let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+          let afkseconds = keypressPerSecond.filter(
+            (x) => x.count == 0 && x.mod == 0
+          ).length;
           incompleteTestSeconds += testSeconds - afkseconds;
           restartCount++;
         }
@@ -1754,7 +1759,8 @@ function showResult(difficultyFailed = false) {
   }
   clearTimeout(timer);
   let testtime = stats.time;
-  let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+  let afkseconds = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0)
+    .length;
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
 
   $("#result #resultWordsHistory").addClass("hidden");
@@ -1873,6 +1879,7 @@ function showResult(difficultyFailed = false) {
     rawHistory.push(wpmAndRaw.raw);
     keypressPerSecond.push(currentKeypress);
     currentKeypress = {
+      mod: 0,
       count: 0,
       words: [],
     };
@@ -1910,11 +1917,6 @@ function showResult(difficultyFailed = false) {
     themeColors.sub;
 
   wpmOverTimeChart.data.labels = labels;
-
-  console.log(keypressPerSecond);
-  console.log(errorsPerSecond);
-  console.log(wpmHistory);
-  console.log(rawHistory);
 
   let rawWpmPerSecondRaw = keypressPerSecond.map((f) =>
     Math.round((f.count / 5) * 60)
@@ -2685,6 +2687,7 @@ function startTest() {
 
       keypressPerSecond.push(currentKeypress);
       currentKeypress = {
+        mod: 0,
         count: 0,
         words: [],
       };
@@ -2775,6 +2778,7 @@ function restartTest(withSameWordset = false, nosave = false) {
   keypressPerSecond = [];
   lastSecondNotRound = false;
   currentKeypress = {
+    mod: 0,
     count: 0,
     words: [],
   };
@@ -4262,7 +4266,9 @@ $(document).on("keypress", "#restartTestButton", (event) => {
       if (testActive) {
         let testNow = performance.now();
         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-        let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+        let afkseconds = keypressPerSecond.filter(
+          (x) => x.count == 0 && x.mod == 0
+        ).length;
         incompleteTestSeconds += testSeconds - afkseconds;
         restartCount++;
       }
@@ -4473,8 +4479,9 @@ $(document).keydown((event) => {
           if (testActive) {
             let testNow = performance.now();
             let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-            let afkseconds = keypressPerSecond.filter((x) => x.count == 0)
-              .length;
+            let afkseconds = keypressPerSecond.filter(
+              (x) => x.count == 0 && x.mod == 0
+            ).length;
             incompleteTestSeconds += testSeconds - afkseconds;
             restartCount++;
           }
@@ -4640,8 +4647,9 @@ $(document).keydown((event) => {
             showResult(true);
             let testNow = performance.now();
             let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-            let afkseconds = keypressPerSecond.filter((x) => x.count == 0)
-              .length;
+            let afkseconds = keypressPerSecond.filter(
+              (x) => x.count == 0 && x.mod == 0
+            ).length;
             incompleteTestSeconds += testSeconds - afkseconds;
             restartCount++;
             return;
@@ -4661,7 +4669,9 @@ $(document).keydown((event) => {
           showResult(true);
           let testNow = performance.now();
           let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+          let afkseconds = keypressPerSecond.filter(
+            (x) => x.count == 0 && x.mod == 0
+          ).length;
           incompleteTestSeconds += testSeconds - afkseconds;
           restartCount++;
           return;
@@ -4829,8 +4839,10 @@ $(document).keydown(function (event) {
       "Unidentified",
       undefined,
     ].includes(event.key)
-  )
+  ) {
+    currentKeypress.mod++;
     return;
+  }
   if (event.key === " ") {
     if (config.difficulty !== "normal" || config.strictSpace) {
       if (dontInsertSpace) {
@@ -4942,7 +4954,9 @@ $(document).keydown(function (event) {
       showResult(true);
       let testNow = performance.now();
       let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-      let afkseconds = keypressPerSecond.filter((x) => x.count == 0).length;
+      let afkseconds = keypressPerSecond.filter(
+        (x) => x.count == 0 && x.mod == 0
+      ).length;
       incompleteTestSeconds += testSeconds - afkseconds;
       restartCount++;
       return;
