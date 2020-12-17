@@ -138,6 +138,24 @@ a:hover {
   color: var(--main-color);
 }
 
+.merchBanner {
+  background-color: var(--main-color);
+  padding: 0.5rem;
+  text-align: center;
+  color: var(--bg-color);
+  a:hover {
+    color: var(--bg-color);
+  }
+  .closeButton {
+    transition: 0.25s;
+    margin-left: 1rem;
+    &:hover {
+      color: var(--text-color);
+      cursor: pointer;
+    }
+  }
+}
+
 .notification {
   position: fixed;
   background: var(--main-color);
@@ -827,6 +845,7 @@ a:hover {
 }
 
 #timerNumber {
+  pointer-events: none;
   transition: 0.25s;
   height: 0;
   color: black;

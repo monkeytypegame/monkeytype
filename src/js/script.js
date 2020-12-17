@@ -5150,6 +5150,11 @@ $(document).ready(() => {
   if (config.quickTab) {
     $("#restartTestButton").addClass("hidden");
   }
+  if (!Misc.getCookie("merchbannerclosed")) {
+    $(".merchBanner").removeClass("hidden");
+  } else {
+    $(".merchBanner").remove();
+  }
   $("#centerContent")
     .css("opacity", "0")
     .removeClass("hidden")
@@ -5179,6 +5184,20 @@ $(document).ready(() => {
 
 $(".scrollToTopButton").click((event) => {
   window.scrollTo(0, 0);
+});
+
+$(".merchBanner a").click((event) => {
+  $(".merchBanner").remove();
+  Misc.setCookie("merchbannerclosed", true, 365);
+});
+
+$(".merchBanner .fas").click((event) => {
+  $(".merchBanner").remove();
+  Misc.setCookie("merchbannerclosed", true, 365);
+  Misc.showNotification(
+    "Won't remind you anymore :) Thanks for continued support <3",
+    2500
+  );
 });
 
 $(".pageTest #copyWordsListButton").click(async (event) => {
