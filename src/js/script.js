@@ -4405,6 +4405,41 @@ $(document.body).on("click", "#versionHistoryWrapper", (event) => {
     });
 });
 
+$(document.body).on("click", "#supportMeButton", (event) => {
+  $("#supportMeWrapper")
+    .css("opacity", 0)
+    .removeClass("hidden")
+    .animate({ opacity: 1 }, 125);
+});
+
+$(document.body).on("click", "#supportMeWrapper", (event) => {
+  $("#supportMeWrapper")
+    .css("opacity", 1)
+    .animate({ opacity: 0 }, 125, () => {
+      $("#supportMeWrapper").addClass("hidden");
+    });
+});
+
+
+$(document.body).on("click", "#supportMeWrapper .button.ads", (event) => {
+  currentCommands.push(commandsEnableAds);
+  showCommandLine();
+  $("#supportMeWrapper")
+    .css("opacity", 1)
+    .animate({ opacity: 0 }, 125, () => {
+      $("#supportMeWrapper").addClass("hidden");
+    });
+});
+
+$(document.body).on("click", "#supportMeWrapper a.button", (event) => {
+  $("#supportMeWrapper")
+    .css("opacity", 1)
+    .animate({ opacity: 0 }, 125, () => {
+      $("#supportMeWrapper").addClass("hidden");
+    });
+});
+
+
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
 });
