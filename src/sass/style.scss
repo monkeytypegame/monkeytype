@@ -707,7 +707,7 @@ a:hover {
     border-radius: var(--roundness);
     padding: 2rem;
     display: grid;
-    grid-template-rows: 2rem auto auto;
+    grid-template-rows: auto auto auto;
     gap: 2rem;
     @extend .ffscroll;
 
@@ -729,6 +729,7 @@ a:hover {
       .button{
         display: block;
         width: 100%;
+        height: 100%;
         padding: 2rem 0;
         display: grid;
         gap: 1rem;
@@ -3004,6 +3005,17 @@ key {
       grid-template-rows: 1fr 1fr;
     }
   }
+  #supportMe {
+    width: 90vw !important;
+    .buttons{
+      .button{
+        .icon{
+          font-size: 3rem !important;
+          line-height: 3rem !important;
+        }
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 800px) {
@@ -3054,6 +3066,21 @@ key {
         grid-column: 1/5;
         width: 100%;
         text-align: center;
+      }
+    }
+  }
+
+  #supportMe {
+    width: 80vw !important;
+    .buttons{
+      grid-template-columns: none !important;
+      .button{
+        grid-template-columns: auto auto;
+        align-items: center;
+        .icon{
+          font-size: 2rem !important;
+          line-height: 2rem !important;
+        }
       }
     }
   }
