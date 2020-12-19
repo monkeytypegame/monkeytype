@@ -2808,6 +2808,7 @@ function restartTest(withSameWordset = false, nosave = false) {
   paceCaret = null;
   if (paceCaret !== null) clearTimeout(paceCaret.timeout);
   $("#showWordHistoryButton").removeClass("loaded");
+  focusWords();
   keypressPerSecond = [];
   lastSecondNotRound = false;
   currentKeypress = {
