@@ -4421,7 +4421,6 @@ $(document.body).on("click", "#supportMeWrapper", (event) => {
     });
 });
 
-
 $(document.body).on("click", "#supportMeWrapper .button.ads", (event) => {
   currentCommands.push(commandsEnableAds);
   showCommandLine();
@@ -4439,7 +4438,6 @@ $(document.body).on("click", "#supportMeWrapper a.button", (event) => {
       $("#supportMeWrapper").addClass("hidden");
     });
 });
-
 
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
@@ -5176,9 +5174,9 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
     togglePresetCustomTheme();
   } else {
-    if (config.customTheme) {
-      togglePresetCustomTheme();
-    }
+    // if (config.customTheme) {
+    //   togglePresetCustomTheme();
+    // }
     currentCommands.push(commandsThemes);
     showCommandLine();
   }

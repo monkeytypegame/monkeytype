@@ -1213,6 +1213,7 @@ function previewTheme(name, setIsPreviewingVar = true) {
   if (resultVisible && (name === "nausea" || name === "round_round_baby"))
     return;
   isPreviewingTheme = setIsPreviewingVar;
+  clearCustomTheme();
   $("#currentTheme").attr("href", `themes/${name}.css`);
   setTimeout(() => {
     refreshThemeColorObject();
@@ -1243,7 +1244,8 @@ function setTheme(name, nosave) {
     console.log("Analytics unavailable");
   }
   setCustomTheme(false, true);
-  applyCustomThemeColors();
+  clearCustomTheme();
+  // applyCustomThemeColors();
   setTimeout(() => {
     $(".keymap-key").attr("style", "");
     refreshThemeColorObject();
@@ -1300,22 +1302,26 @@ function applyCustomThemeColors() {
 
   if (config.customTheme === true) {
     $(".current-theme").text("custom");
-    previewTheme("serika_dark");
+    previewTheme("serika_dark", false);
     colorVars.forEach((e, index) => {
       document.documentElement.style.setProperty(e, array[index]);
     });
   } else {
     $(".current-theme").text(config.theme.replace("_", " "));
     previewTheme(config.theme);
-    colorVars.forEach((e) => {
-      document.documentElement.style.setProperty(e, "");
-    });
+    clearCustomTheme();
   }
   setTimeout(() => {
     refreshThemeColorObject();
     updateFavicon(32, 14);
     $(".keymap-key").attr("style", "");
   }, 500);
+}
+
+function clearCustomTheme() {
+  colorVars.forEach((e) => {
+    document.documentElement.style.setProperty(e, "");
+  });
 }
 
 function togglePresetCustomTheme() {

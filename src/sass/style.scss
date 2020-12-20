@@ -711,22 +711,22 @@ a:hover {
     gap: 2rem;
     @extend .ffscroll;
 
-    .title{
+    .title {
       font-size: 2rem;
       line-height: 2rem;
       color: var(--main-color);
     }
 
-    .text{
+    .text {
       color: var(--text-color);
     }
 
-    .buttons{
+    .buttons {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 1rem;
 
-      .button{
+      .button {
         display: block;
         width: 100%;
         height: 100%;
@@ -734,19 +734,18 @@ a:hover {
         display: grid;
         gap: 1rem;
         text-decoration: none;
-        .text{
-          transform: .25s;
+        .text {
+          transform: 0.25s;
         }
-        &:hover .text{
+        &:hover .text {
           color: var(--bg-color);
         }
-        .icon{
+        .icon {
           font-size: 5rem;
           line-height: 5rem;
         }
       }
     }
-
   }
 }
 
@@ -1316,7 +1315,7 @@ key {
   line-height: 1rem;
   font-size: 0.75rem;
   color: var(--sub-color);
-  transition: 0.25s;
+  // transition: 0.25s;
   padding: 0 5px;
 
   // margin-bottom: 2rem;
@@ -1324,9 +1323,9 @@ key {
     margin-bottom: 1rem;
   }
 
-  #supportMeButton{
-    transition: .25s;
-    &:hover{
+  #supportMeButton {
+    transition: 0.25s;
+    &:hover {
       color: var(--main-color);
       cursor: pointer;
     }
@@ -3007,9 +3006,9 @@ key {
   }
   #supportMe {
     width: 90vw !important;
-    .buttons{
-      .button{
-        .icon{
+    .buttons {
+      .button {
+        .icon {
           font-size: 3rem !important;
           line-height: 3rem !important;
         }
@@ -3072,12 +3071,12 @@ key {
 
   #supportMe {
     width: 80vw !important;
-    .buttons{
+    .buttons {
       grid-template-columns: none !important;
-      .button{
+      .button {
         grid-template-columns: auto auto;
         align-items: center;
-        .icon{
+        .icon {
           font-size: 2rem !important;
           line-height: 2rem !important;
         }
