@@ -1123,7 +1123,9 @@ function compareInput(showError) {
 
   if (
     (currentWord == input ||
-      (config.quickEnd && currentWord.length == input.length)) &&
+      (config.quickEnd &&
+        currentWord.length == input.length &&
+        config.stopOnError == "off")) &&
     lastindex == wordsList.length - 1
   ) {
     inputHistory.push(input);
@@ -4875,7 +4877,11 @@ $(document).keydown(function (event) {
   let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   let wordsFocused = $("#wordsInput").is(":focus");
 
-  if (pageTestActive && !commandLineVisible) {
+  let modePopupVisible =
+    !$("#customTextPopupWrapper").hasClass("hidden") ||
+    !$("#customMode2PopupWrapper").hasClass("hidden");
+
+  if (pageTestActive && !commandLineVisible && !modePopupVisible) {
     if (!wordsFocused) {
       focusWords();
       return;
