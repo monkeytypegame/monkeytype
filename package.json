@@ -7,8 +7,8 @@
     "postinstall": "cd functions && npm install",
     "build": "npx gulp build",
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve\"",
-    "deploy:live:hosting": "npm run build && firebase deploy -P live --only hosting",
-    "deploy:live:functions": "npm run build && firebase deploy -P live --only functions",
+    "deploy:live:hosting": "npm run build && firebase deploy -P monkey-type --only hosting",
+    "deploy:live:functions": "npm run build && firebase deploy -P monkey-type --only functions",
     "deploy:live": "npm run build && firebase deploy -P live"
   },
   "engines": {

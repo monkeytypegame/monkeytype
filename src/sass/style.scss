@@ -687,6 +687,69 @@ a:hover {
   }
 }
 
+#supportMeWrapper {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 0;
+
+  #supportMe {
+    width: 900px;
+    // height: 400px;
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 2rem;
+    @extend .ffscroll;
+
+    .title{
+      font-size: 2rem;
+      line-height: 2rem;
+      color: var(--main-color);
+    }
+
+    .text{
+      color: var(--text-color);
+    }
+
+    .buttons{
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 1rem;
+
+      .button{
+        display: block;
+        width: 100%;
+        height: 100%;
+        padding: 2rem 0;
+        display: grid;
+        gap: 1rem;
+        text-decoration: none;
+        .text{
+          transform: .25s;
+        }
+        &:hover .text{
+          color: var(--bg-color);
+        }
+        .icon{
+          font-size: 5rem;
+          line-height: 5rem;
+        }
+      }
+    }
+
+  }
+}
+
 #commandLineWrapper {
   width: 100%;
   height: 100%;
@@ -1259,6 +1322,14 @@ key {
   // margin-bottom: 2rem;
   .keyTips {
     margin-bottom: 1rem;
+  }
+
+  #supportMeButton{
+    transition: .25s;
+    &:hover{
+      color: var(--main-color);
+      cursor: pointer;
+    }
   }
 
   .leftright {
@@ -2934,6 +3005,17 @@ key {
       grid-template-rows: 1fr 1fr;
     }
   }
+  #supportMe {
+    width: 90vw !important;
+    .buttons{
+      .button{
+        .icon{
+          font-size: 3rem !important;
+          line-height: 3rem !important;
+        }
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 800px) {
@@ -2984,6 +3066,21 @@ key {
         grid-column: 1/5;
         width: 100%;
         text-align: center;
+      }
+    }
+  }
+
+  #supportMe {
+    width: 80vw !important;
+    .buttons{
+      grid-template-columns: none !important;
+      .button{
+        grid-template-columns: auto auto;
+        align-items: center;
+        .icon{
+          font-size: 2rem !important;
+          line-height: 2rem !important;
+        }
       }
     }
   }
