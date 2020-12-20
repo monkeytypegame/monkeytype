@@ -4837,7 +4837,20 @@ $(document).keydown((event) => {
 
 //keypresses for the test, using different method to be more responsive
 $(document).keydown(function (event) {
-  if (!$("#wordsInput").is(":focus")) return;
+  let pageTestActive = !$(".pageTest").hasClass("hidden");
+  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
+  let wordsFocused = $("#wordsInput").is(":focus");
+
+  if (pageTestActive && !commandLineVisible) {
+    if (!wordsFocused) {
+      focusWords();
+      return;
+    }
+  } else {
+    return;
+  }
+
+  // if (!$("#wordsInput").is(":focus")) return;
   if (
     [
       "Tab",
