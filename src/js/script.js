@@ -1097,8 +1097,11 @@ function compareInput(showError) {
         } else {
           if (currentWord[i] == undefined) {
             if (!config.hideExtraLetters) {
-              ret +=
-                '<letter class="incorrect extra">' + input[i] + "</letter>";
+              let letter = input[i];
+              if (letter == " ") {
+                letter = "_";
+              }
+              ret += `<letter class="incorrect extra">${letter}</letter>`;
             }
           } else {
             ret +=
@@ -4620,7 +4623,20 @@ $(document).keydown((event) => {
       } else {
         if (config.confidenceMode === "max") return;
         if (event["ctrlKey"] || event["altKey"]) {
-          currentInput = "";
+          let split = currentInput.split(" ");
+          if (split[split.length - 1] == "") {
+            split.pop();
+          }
+          let addspace = false;
+          if (split.length > 1) {
+            addspace = true;
+          }
+          split.pop();
+          currentInput = split.join(" ");
+
+          if (addspace) {
+            currentInput += " ";
+          }
         } else {
           currentInput = currentInput.substring(0, currentInput.length - 1);
         }
@@ -4724,6 +4740,11 @@ $(document).keydown((event) => {
             incompleteTestSeconds += testSeconds - afkseconds;
             restartCount++;
             return;
+          }
+          if (config.stopOnError == "word") {
+            currentInput += " ";
+            compareInput(true);
+            updateCaretPosition();
           }
           return;
         }
