@@ -4082,7 +4082,7 @@ $("#customMode2PopupWrapper").click((e) => {
   }
 });
 
-$("#customMode2Popup input").keypress(() => {
+$("#customMode2Popup input").keypress((e) => {
   if (e.keyCode == 13) {
     applyMode2Popup();
   }
@@ -4649,6 +4649,8 @@ function handleBackspace(event) {
       if (addspace) {
         currentInput += " ";
       }
+    } else if(event.metaKey){
+      currentInput = "";
     } else {
       currentInput = currentInput.substring(0, currentInput.length - 1);
     }
