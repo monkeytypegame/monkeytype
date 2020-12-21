@@ -4649,6 +4649,8 @@ function handleBackspace(event) {
       if (addspace) {
         currentInput += " ";
       }
+    } else if(event.metaKey){
+      currentInput = "";
     } else {
       currentInput = currentInput.substring(0, currentInput.length - 1);
     }
