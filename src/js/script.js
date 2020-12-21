@@ -5036,11 +5036,6 @@ function handleAlpha(event) {
     updateHighlightedKeymapKey();
   }
 
-  if (!thisCharCorrect && config.difficulty == "master") {
-    failTest();
-    return;
-  }
-
   if (config.stopOnError == "letter" && !thisCharCorrect) {
     return;
   }
@@ -5053,6 +5048,11 @@ function handleAlpha(event) {
   //max length of the input is 20
   if (currentInput.length < wordsList[currentWordIndex].length + 20) {
     currentInput += event["key"];
+  }
+
+  if (!thisCharCorrect && config.difficulty == "master") {
+    failTest();
+    return;
   }
 
   activeWordTopBeforeJump = activeWordTop;
