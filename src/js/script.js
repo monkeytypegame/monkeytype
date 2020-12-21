@@ -4531,7 +4531,7 @@ $(document).keydown(function (event) {
     !$("#customTextPopupWrapper").hasClass("hidden") ||
     !$("#customMode2PopupWrapper").hasClass("hidden");
   if (pageTestActive && !commandLineVisible && !modePopupVisible) {
-    if (!wordsFocused) {
+    if (!wordsFocused && event.key !== "Enter" && event.key !== "Space") {
       focusWords();
       return;
     }
