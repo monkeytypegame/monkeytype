@@ -270,7 +270,7 @@ let commands = {
       },
     },
     {
-      id: "changePaceCaret",
+      id: "changeMinWpm",
       display: "Change min wpm mode...",
       subgroup: true,
       exec: () => {
@@ -279,7 +279,7 @@ let commands = {
       },
     },
     {
-      id: "changePaceCaret",
+      id: "changeMinAcc",
       display: "Change min accuracy mode...",
       subgroup: true,
       exec: () => {
