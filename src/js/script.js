@@ -4468,8 +4468,18 @@ $(document).on("click", "#commandLineMobileButton", (event) => {
 
 let dontInsertSpace = false;
 
-//handle keyboard events
-$(document).keydown((event) => {
+$(document).keyup((event) => {
+  if (resultVisible) return;
+  let now = performance.now();
+  let diff = Math.abs(keypressStats.duration.current - now);
+  if (keypressStats.duration.current !== -1) {
+    keypressStats.duration.array.push(diff);
+  }
+  keypressStats.duration.current = now;
+  Monkey.stop();
+});
+
+$(document).keydown(function (event) {
   if (!resultVisible) {
     let now = performance.now();
     let diff = Math.abs(keypressStats.spacing.current - now);
@@ -4486,47 +4496,7 @@ $(document).keydown((event) => {
     (event.key == "Tab" && !config.swapEscAndTab) ||
     (event.key == "Escape" && config.swapEscAndTab)
   ) {
-    if (resultCalculating) {
-      event.preventDefault();
-    }
-    if (
-      !event.ctrlKey &&
-      config.quickTab &&
-      !$(".pageLogin").hasClass("active") &&
-      !resultCalculating &&
-      $("#commandLineWrapper").hasClass("hidden") &&
-      $("#simplePopupWrapper").hasClass("hidden")
-    ) {
-      event.preventDefault();
-      if ($(".pageTest").hasClass("active")) {
-        if (
-          (config.mode === "words" && config.words < 1000) ||
-          (config.mode === "time" && config.time < 3600) ||
-          config.mode === "quote" ||
-          (config.mode === "custom" &&
-            customTextIsRandom &&
-            customTextWordCount < 1000) ||
-          (config.mode === "custom" &&
-            !customTextIsRandom &&
-            customText.length < 1000)
-        ) {
-          if (testActive) {
-            let testNow = performance.now();
-            let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-            let afkseconds = keypressPerSecond.filter(
-              (x) => x.count == 0 && x.mod == 0
-            ).length;
-            incompleteTestSeconds += testSeconds - afkseconds;
-            restartCount++;
-          }
-          restartTest();
-        } else {
-          Misc.showNotification("Quick restart disabled for long tests", 2000);
-        }
-      } else {
-        changePage("test");
-      }
-    }
+    handleTab(event);
   }
 
   //blocking firefox from going back in history with backspace
@@ -4541,298 +4511,18 @@ $(document).keydown((event) => {
     }
   }
 
-  //only for the typing test
-  if ($("#wordsInput").is(":focus")) {
-    const isBackspace =
-      event.key === "Backspace" ||
-      (config.capsLockBackspace && event.key === "CapsLock");
-    if (isBackspace) {
-      event.preventDefault();
-      if (!testActive) return;
-      if (
-        currentInput == "" &&
-        inputHistory.length > 0 &&
-        currentWordElementIndex > 0
-      ) {
-        if (
-          (inputHistory[currentWordIndex - 1] ==
-            wordsList[currentWordIndex - 1] &&
-            !config.freedomMode) ||
-          $($(".word")[currentWordIndex - 1]).hasClass("hidden")
-        ) {
-          return;
-        } else {
-          if (config.confidenceMode === "on" || config.confidenceMode === "max")
-            return;
-          if (event["ctrlKey"] || event["altKey"]) {
-            currentInput = "";
-            inputHistory.pop();
-            correctedHistory.pop();
-          } else {
-            currentInput = inputHistory.pop();
-            currentCorrected = correctedHistory.pop();
-            if (activeFunBox === "nospace") {
-              currentInput = currentInput.substring(0, currentInput.length - 1);
-            }
-          }
-          currentWordIndex--;
-          currentWordElementIndex--;
-          updateActiveElement();
-          updateWordElement(!config.blindMode);
-        }
-      } else {
-        if (config.confidenceMode === "max") return;
-        if (event["ctrlKey"] || event["altKey"]) {
-          let split = currentInput.replace(/ +/g, " ").split(" ");
-          if (split[split.length - 1] == "") {
-            split.pop();
-          }
-          let addspace = false;
-          if (split.length > 1) {
-            addspace = true;
-          }
-          split.pop();
-          currentInput = split.join(" ");
-
-          if (addspace) {
-            currentInput += " ";
-          }
-        } else {
-          currentInput = currentInput.substring(0, currentInput.length - 1);
-        }
-        updateWordElement(!config.blindMode);
-      }
-      playClickSound();
-      if (config.keymapMode === "react") {
-        flashPressedKeymapKey(event.code, true);
-      } else if (config.keymapMode === "next") {
-        updateHighlightedKeymapKey();
-      }
-      updateCaretPosition();
-    }
-    //space
+  keypressStats.duration.current = performance.now();
+  try {
     if (
-      event.key === " " ||
-      (activeFunBox == "58008" && event.key === "Enter")
+      !config.capsLockBackspace &&
+      event.originalEvent.getModifierState("CapsLock")
     ) {
-      if (!testActive) return;
-      if (currentInput === "") return;
-      event.preventDefault();
-      let currentWord = wordsList[currentWordIndex];
-      if (activeFunBox === "layoutfluid" && config.mode !== "time") {
-        const layouts = ["qwerty", "dvorak", "colemak"];
-        let index = 0;
-        let outof = wordsList.length;
-        index = Math.floor((inputHistory.length + 1) / (outof / 3));
-        if (config.layout !== layouts[index] && layouts[index] !== undefined) {
-          Misc.showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
-        }
-        setLayout(layouts[index]);
-        setKeymapLayout(layouts[index]);
-        updateHighlightedKeymapKey();
-        settingsGroups.layout.updateButton();
-      }
-      if (config.blindMode) $("#words .word.active letter").addClass("correct");
-      dontInsertSpace = true;
-      if (currentWord == currentInput) {
-        //correct word
-        if (
-          paceCaret !== null &&
-          paceCaret.wordsStatus[currentWordIndex] === true &&
-          !config.blindMode
-        ) {
-          paceCaret.wordsStatus[currentWordIndex] = undefined;
-          paceCaret.correction -= currentWord.length + 1;
-        }
-        accuracyStats.correct++;
-        inputHistory.push(currentInput);
-        currentInput = "";
-        currentWordIndex++;
-        currentWordElementIndex++;
-        updateActiveElement();
-        updateCaretPosition();
-        currentKeypress.count++;
-        currentKeypress.words.push(currentWordIndex);
-        if (activeFunBox !== "nospace") {
-          playClickSound();
-        }
-      } else {
-        //incorrect word
-        if (
-          paceCaret !== null &&
-          paceCaret.wordsStatus[currentWordIndex] === undefined &&
-          !config.blindMode
-        ) {
-          paceCaret.wordsStatus[currentWordIndex] = true;
-          paceCaret.correction += currentWord.length + 1;
-        }
-        if (activeFunBox !== "nospace") {
-          if (!config.playSoundOnError || config.blindMode) {
-            playClickSound();
-          } else {
-            playErrorSound();
-          }
-        }
-        accuracyStats.incorrect++;
-        let cil = currentInput.length;
-        if (cil < wordsList[currentWordIndex].length) {
-          if (cil >= currentCorrected.length) {
-            currentCorrected += "_";
-          } else {
-            currentCorrected =
-              currentCorrected.substring(0, cil) +
-              "_" +
-              currentCorrected.substring(cil + 1);
-          }
-        }
-        if (config.stopOnError != "off") {
-          if (config.difficulty == "expert" || config.difficulty == "master") {
-            //failed due to diff when pressing space
-            failTest();
-            return;
-          }
-          if (config.stopOnError == "word") {
-            currentInput += " ";
-            updateWordElement(true);
-            updateCaretPosition();
-          }
-          return;
-        }
-        inputHistory.push(currentInput);
-        highlightBadWord(currentWordElementIndex, !config.blindMode);
-        currentInput = "";
-        currentWordIndex++;
-        currentWordElementIndex++;
-        updateActiveElement();
-        updateCaretPosition();
-        currentKeypress.count++;
-        currentKeypress.words.push(currentWordIndex);
-        if (config.difficulty == "expert" || config.difficulty == "master") {
-          failTest();
-          return;
-        } else if (currentWordIndex == wordsList.length) {
-          //submitted last word that is incorrect
-          lastSecondNotRound = true;
-          showResult();
-          return;
-        }
-      }
-
-      correctedHistory.push(currentCorrected);
-      currentCorrected = "";
-
-      if (!config.showAllLines || config.mode == "time") {
-        let currentTop = Math.floor(
-          document.querySelectorAll("#words .word")[currentWordElementIndex - 1]
-            .offsetTop
-        );
-        let nextTop;
-        try {
-          nextTop = Math.floor(
-            document.querySelectorAll("#words .word")[currentWordElementIndex]
-              .offsetTop
-          );
-        } catch (e) {
-          nextTop = 0;
-        }
-
-        if ((nextTop > currentTop || activeWordJumped) && !lineTransition) {
-          //last word of the line
-          if (currentTestLine > 0) {
-            let hideBound = currentTop;
-            if (activeWordJumped) {
-              hideBound = activeWordTopBeforeJump;
-            }
-            activeWordJumped = false;
-
-            let toHide = [];
-            let wordElements = $("#words .word");
-            for (let i = 0; i < currentWordElementIndex; i++) {
-              if ($(wordElements[i]).hasClass("hidden")) continue;
-              let forWordTop = Math.floor(wordElements[i].offsetTop);
-              if (forWordTop < hideBound - 10) {
-                toHide.push($($("#words .word")[i]));
-              }
-            }
-            const wordHeight = $(document.querySelector(".word")).outerHeight(
-              true
-            );
-            if (config.smoothLineScroll && toHide.length > 0) {
-              lineTransition = true;
-              $("#words").prepend(
-                `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
-              );
-              $("#words .smoothScroller").animate(
-                {
-                  height: 0,
-                },
-                125,
-                () => {
-                  $("#words .smoothScroller").remove();
-                }
-              );
-              $("#paceCaret").animate(
-                {
-                  top:
-                    document.querySelector("#paceCaret").offsetTop - wordHeight,
-                },
-                125
-              );
-              $("#words").animate(
-                {
-                  marginTop: `-${wordHeight}px`,
-                },
-                125,
-                () => {
-                  activeWordTop = document.querySelector("#words .active")
-                    .offsetTop;
-
-                  currentWordElementIndex -= toHide.length;
-                  lineTransition = false;
-                  toHide.forEach((el) => el.remove());
-                  $("#words").css("marginTop", "0");
-                }
-              );
-            } else {
-              toHide.forEach((el) => el.remove());
-              currentWordElementIndex -= toHide.length;
-              $("#paceCaret").css({
-                top:
-                  document.querySelector("#paceCaret").offsetTop - wordHeight,
-              });
-            }
-          }
-          currentTestLine++;
-        }
-      } //end of line wrap
-
-      updateCaretPosition();
-
-      if (config.keymapMode === "react") {
-        flashPressedKeymapKey(event.code, true);
-      } else if (config.keymapMode === "next") {
-        updateHighlightedKeymapKey();
-      }
-      if (
-        config.mode === "words" ||
-        config.mode === "custom" ||
-        config.mode === "quote"
-      ) {
-        updateTimer();
-      }
-      if (
-        config.mode == "time" ||
-        config.mode == "words" ||
-        config.mode == "custom"
-      ) {
-        addWord();
-      }
+      showCapsWarning();
+    } else {
+      hideCapsWarning();
     }
-  }
-});
+  } catch {}
 
-//keypresses for the test, using different method to be more responsive
-$(document).keydown(function (event) {
   //autofocus
   let pageTestActive = !$(".pageTest").hasClass("hidden");
   let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
@@ -4849,6 +4539,342 @@ $(document).keydown(function (event) {
     return;
   }
 
+  //backspace
+  const isBackspace =
+    event.key === "Backspace" ||
+    (config.capsLockBackspace && event.key === "CapsLock");
+  if (isBackspace) {
+    handleBackspace(event);
+  }
+
+  //space
+  if (event.key === " " || (activeFunBox == "58008" && event.key === "Enter")) {
+    handleSpace(event);
+  }
+
+  handleAlpha(event);
+});
+
+function handleTab(event) {
+  if (resultCalculating) {
+    event.preventDefault();
+  }
+  if (
+    !event.ctrlKey &&
+    config.quickTab &&
+    !$(".pageLogin").hasClass("active") &&
+    !resultCalculating &&
+    $("#commandLineWrapper").hasClass("hidden") &&
+    $("#simplePopupWrapper").hasClass("hidden")
+  ) {
+    event.preventDefault();
+    if ($(".pageTest").hasClass("active")) {
+      if (
+        (config.mode === "words" && config.words < 1000) ||
+        (config.mode === "time" && config.time < 3600) ||
+        config.mode === "quote" ||
+        (config.mode === "custom" &&
+          customTextIsRandom &&
+          customTextWordCount < 1000) ||
+        (config.mode === "custom" &&
+          !customTextIsRandom &&
+          customText.length < 1000)
+      ) {
+        if (testActive) {
+          let testNow = performance.now();
+          let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
+          let afkseconds = keypressPerSecond.filter(
+            (x) => x.count == 0 && x.mod == 0
+          ).length;
+          incompleteTestSeconds += testSeconds - afkseconds;
+          restartCount++;
+        }
+        restartTest();
+      } else {
+        Misc.showNotification("Quick restart disabled for long tests", 2000);
+      }
+    } else {
+      changePage("test");
+    }
+  }
+}
+
+function handleBackspace(event) {
+  event.preventDefault();
+  if (!testActive) return;
+  if (
+    currentInput == "" &&
+    inputHistory.length > 0 &&
+    currentWordElementIndex > 0
+  ) {
+    if (
+      (inputHistory[currentWordIndex - 1] == wordsList[currentWordIndex - 1] &&
+        !config.freedomMode) ||
+      $($(".word")[currentWordIndex - 1]).hasClass("hidden")
+    ) {
+      return;
+    } else {
+      if (config.confidenceMode === "on" || config.confidenceMode === "max")
+        return;
+      if (event["ctrlKey"] || event["altKey"]) {
+        currentInput = "";
+        inputHistory.pop();
+        correctedHistory.pop();
+      } else {
+        currentInput = inputHistory.pop();
+        currentCorrected = correctedHistory.pop();
+        if (activeFunBox === "nospace") {
+          currentInput = currentInput.substring(0, currentInput.length - 1);
+        }
+      }
+      currentWordIndex--;
+      currentWordElementIndex--;
+      updateActiveElement();
+      updateWordElement(!config.blindMode);
+    }
+  } else {
+    if (config.confidenceMode === "max") return;
+    if (event["ctrlKey"] || event["altKey"]) {
+      let split = currentInput.replace(/ +/g, " ").split(" ");
+      if (split[split.length - 1] == "") {
+        split.pop();
+      }
+      let addspace = false;
+      if (split.length > 1) {
+        addspace = true;
+      }
+      split.pop();
+      currentInput = split.join(" ");
+
+      if (addspace) {
+        currentInput += " ";
+      }
+    } else {
+      currentInput = currentInput.substring(0, currentInput.length - 1);
+    }
+    updateWordElement(!config.blindMode);
+  }
+  playClickSound();
+  if (config.keymapMode === "react") {
+    flashPressedKeymapKey(event.code, true);
+  } else if (config.keymapMode === "next") {
+    updateHighlightedKeymapKey();
+  }
+  updateCaretPosition();
+}
+
+function handleSpace(event) {
+  if (!testActive) return;
+  if (currentInput === "") return;
+  event.preventDefault();
+  let currentWord = wordsList[currentWordIndex];
+  if (activeFunBox === "layoutfluid" && config.mode !== "time") {
+    const layouts = ["qwerty", "dvorak", "colemak"];
+    let index = 0;
+    let outof = wordsList.length;
+    index = Math.floor((inputHistory.length + 1) / (outof / 3));
+    if (config.layout !== layouts[index] && layouts[index] !== undefined) {
+      Misc.showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+    }
+    setLayout(layouts[index]);
+    setKeymapLayout(layouts[index]);
+    updateHighlightedKeymapKey();
+    settingsGroups.layout.updateButton();
+  }
+  if (config.blindMode) $("#words .word.active letter").addClass("correct");
+  dontInsertSpace = true;
+  if (currentWord == currentInput) {
+    //correct word
+    if (
+      paceCaret !== null &&
+      paceCaret.wordsStatus[currentWordIndex] === true &&
+      !config.blindMode
+    ) {
+      paceCaret.wordsStatus[currentWordIndex] = undefined;
+      paceCaret.correction -= currentWord.length + 1;
+    }
+    accuracyStats.correct++;
+    inputHistory.push(currentInput);
+    currentInput = "";
+    currentWordIndex++;
+    currentWordElementIndex++;
+    updateActiveElement();
+    updateCaretPosition();
+    currentKeypress.count++;
+    currentKeypress.words.push(currentWordIndex);
+    if (activeFunBox !== "nospace") {
+      playClickSound();
+    }
+  } else {
+    //incorrect word
+    if (
+      paceCaret !== null &&
+      paceCaret.wordsStatus[currentWordIndex] === undefined &&
+      !config.blindMode
+    ) {
+      paceCaret.wordsStatus[currentWordIndex] = true;
+      paceCaret.correction += currentWord.length + 1;
+    }
+    if (activeFunBox !== "nospace") {
+      if (!config.playSoundOnError || config.blindMode) {
+        playClickSound();
+      } else {
+        playErrorSound();
+      }
+    }
+    accuracyStats.incorrect++;
+    let cil = currentInput.length;
+    if (cil < wordsList[currentWordIndex].length) {
+      if (cil >= currentCorrected.length) {
+        currentCorrected += "_";
+      } else {
+        currentCorrected =
+          currentCorrected.substring(0, cil) +
+          "_" +
+          currentCorrected.substring(cil + 1);
+      }
+    }
+    if (config.stopOnError != "off") {
+      if (config.difficulty == "expert" || config.difficulty == "master") {
+        //failed due to diff when pressing space
+        failTest();
+        return;
+      }
+      if (config.stopOnError == "word") {
+        currentInput += " ";
+        updateWordElement(true);
+        updateCaretPosition();
+      }
+      return;
+    }
+    inputHistory.push(currentInput);
+    highlightBadWord(currentWordElementIndex, !config.blindMode);
+    currentInput = "";
+    currentWordIndex++;
+    currentWordElementIndex++;
+    updateActiveElement();
+    updateCaretPosition();
+    currentKeypress.count++;
+    currentKeypress.words.push(currentWordIndex);
+    if (config.difficulty == "expert" || config.difficulty == "master") {
+      failTest();
+      return;
+    } else if (currentWordIndex == wordsList.length) {
+      //submitted last word that is incorrect
+      lastSecondNotRound = true;
+      showResult();
+      return;
+    }
+  }
+
+  correctedHistory.push(currentCorrected);
+  currentCorrected = "";
+
+  if (!config.showAllLines || config.mode == "time") {
+    let currentTop = Math.floor(
+      document.querySelectorAll("#words .word")[currentWordElementIndex - 1]
+        .offsetTop
+    );
+    let nextTop;
+    try {
+      nextTop = Math.floor(
+        document.querySelectorAll("#words .word")[currentWordElementIndex]
+          .offsetTop
+      );
+    } catch (e) {
+      nextTop = 0;
+    }
+
+    if ((nextTop > currentTop || activeWordJumped) && !lineTransition) {
+      //last word of the line
+      if (currentTestLine > 0) {
+        let hideBound = currentTop;
+        if (activeWordJumped) {
+          hideBound = activeWordTopBeforeJump;
+        }
+        activeWordJumped = false;
+
+        let toHide = [];
+        let wordElements = $("#words .word");
+        for (let i = 0; i < currentWordElementIndex; i++) {
+          if ($(wordElements[i]).hasClass("hidden")) continue;
+          let forWordTop = Math.floor(wordElements[i].offsetTop);
+          if (forWordTop < hideBound - 10) {
+            toHide.push($($("#words .word")[i]));
+          }
+        }
+        const wordHeight = $(document.querySelector(".word")).outerHeight(true);
+        if (config.smoothLineScroll && toHide.length > 0) {
+          lineTransition = true;
+          $("#words").prepend(
+            `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
+          );
+          $("#words .smoothScroller").animate(
+            {
+              height: 0,
+            },
+            125,
+            () => {
+              $("#words .smoothScroller").remove();
+            }
+          );
+          $("#paceCaret").animate(
+            {
+              top: document.querySelector("#paceCaret").offsetTop - wordHeight,
+            },
+            125
+          );
+          $("#words").animate(
+            {
+              marginTop: `-${wordHeight}px`,
+            },
+            125,
+            () => {
+              activeWordTop = document.querySelector("#words .active")
+                .offsetTop;
+
+              currentWordElementIndex -= toHide.length;
+              lineTransition = false;
+              toHide.forEach((el) => el.remove());
+              $("#words").css("marginTop", "0");
+            }
+          );
+        } else {
+          toHide.forEach((el) => el.remove());
+          currentWordElementIndex -= toHide.length;
+          $("#paceCaret").css({
+            top: document.querySelector("#paceCaret").offsetTop - wordHeight,
+          });
+        }
+      }
+      currentTestLine++;
+    }
+  } //end of line wrap
+
+  updateCaretPosition();
+
+  if (config.keymapMode === "react") {
+    flashPressedKeymapKey(event.code, true);
+  } else if (config.keymapMode === "next") {
+    updateHighlightedKeymapKey();
+  }
+  if (
+    config.mode === "words" ||
+    config.mode === "custom" ||
+    config.mode === "quote"
+  ) {
+    updateTimer();
+  }
+  if (
+    config.mode == "time" ||
+    config.mode == "words" ||
+    config.mode == "custom"
+  ) {
+    addWord();
+  }
+}
+
+function handleAlpha(event) {
   if (
     [
       "Tab",
@@ -5076,32 +5102,7 @@ $(document).keydown(function (event) {
   }
 
   updateCaretPosition();
-});
-
-$(document).keydown((event) => {
-  keypressStats.duration.current = performance.now();
-  try {
-    if (
-      !config.capsLockBackspace &&
-      event.originalEvent.getModifierState("CapsLock")
-    ) {
-      showCapsWarning();
-    } else {
-      hideCapsWarning();
-    }
-  } catch (e) {}
-});
-
-$(document).keyup((event) => {
-  if (resultVisible) return;
-  let now = performance.now();
-  let diff = Math.abs(keypressStats.duration.current - now);
-  if (keypressStats.duration.current !== -1) {
-    keypressStats.duration.array.push(diff);
-  }
-  keypressStats.duration.current = now;
-  Monkey.stop();
-});
+}
 
 window.addEventListener("beforeunload", (event) => {
   // Cancel the event as stated by the standard.
