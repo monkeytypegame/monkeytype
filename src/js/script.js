@@ -4531,7 +4531,7 @@ $(document).keydown(function (event) {
     !$("#customTextPopupWrapper").hasClass("hidden") ||
     !$("#customMode2PopupWrapper").hasClass("hidden");
   if (pageTestActive && !commandLineVisible && !modePopupVisible) {
-    if (!wordsFocused && event.key !== "Enter" && event.key !== "Space") {
+    if (!wordsFocused && event.key !== "Enter") {
       focusWords();
       return;
     }
@@ -4649,7 +4649,7 @@ function handleBackspace(event) {
       if (addspace) {
         currentInput += " ";
       }
-    } else if(event.metaKey){
+    } else if (event.metaKey) {
       currentInput = "";
     } else {
       currentInput = currentInput.substring(0, currentInput.length - 1);
