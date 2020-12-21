@@ -5029,13 +5029,6 @@ function handleAlpha(event) {
   currentKeypress.count++;
   currentKeypress.words.push(currentWordIndex);
 
-  //keymap
-  if (config.keymapMode === "react") {
-    flashPressedKeymapKey(event.key, thisCharCorrect);
-  } else if (config.keymapMode === "next") {
-    updateHighlightedKeymapKey();
-  }
-
   if (config.stopOnError == "letter" && !thisCharCorrect) {
     return;
   }
@@ -5053,6 +5046,13 @@ function handleAlpha(event) {
   if (!thisCharCorrect && config.difficulty == "master") {
     failTest();
     return;
+  }
+
+  //keymap
+  if (config.keymapMode === "react") {
+    flashPressedKeymapKey(event.key, thisCharCorrect);
+  } else if (config.keymapMode === "next") {
+    updateHighlightedKeymapKey();
   }
 
   activeWordTopBeforeJump = activeWordTop;
