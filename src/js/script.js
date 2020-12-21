@@ -4082,7 +4082,7 @@ $("#customMode2PopupWrapper").click((e) => {
   }
 });
 
-$("#customMode2Popup input").keypress(() => {
+$("#customMode2Popup input").keypress((e) => {
   if (e.keyCode == 13) {
     applyMode2Popup();
   }
