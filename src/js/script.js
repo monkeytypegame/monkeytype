@@ -999,7 +999,7 @@ function updateActiveElement() {
   toggleScriptFunbox(wordsList[currentWordIndex]);
 }
 
-function compareInput(showError) {
+function updateWordElement(showError) {
   let input = currentInput;
   let wordAtIndex;
   let currentWord;
@@ -4578,7 +4578,7 @@ $(document).keydown((event) => {
           currentWordIndex--;
           currentWordElementIndex--;
           updateActiveElement();
-          compareInput(!config.blindMode);
+          updateWordElement(!config.blindMode);
         }
       } else {
         if (config.confidenceMode === "max") return;
@@ -4600,7 +4600,7 @@ $(document).keydown((event) => {
         } else {
           currentInput = currentInput.substring(0, currentInput.length - 1);
         }
-        compareInput(!config.blindMode);
+        updateWordElement(!config.blindMode);
       }
       playClickSound();
       if (config.keymapMode === "react") {
@@ -4693,7 +4693,7 @@ $(document).keydown((event) => {
           }
           if (config.stopOnError == "word") {
             currentInput += " ";
-            compareInput(true);
+            updateWordElement(true);
             updateCaretPosition();
           }
           return;
@@ -4833,14 +4833,13 @@ $(document).keydown((event) => {
 
 //keypresses for the test, using different method to be more responsive
 $(document).keydown(function (event) {
+  //autofocus
   let pageTestActive = !$(".pageTest").hasClass("hidden");
   let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   let wordsFocused = $("#wordsInput").is(":focus");
-
   let modePopupVisible =
     !$("#customTextPopupWrapper").hasClass("hidden") ||
     !$("#customMode2PopupWrapper").hasClass("hidden");
-
   if (pageTestActive && !commandLineVisible && !modePopupVisible) {
     if (!wordsFocused) {
       focusWords();
@@ -4850,7 +4849,6 @@ $(document).keydown(function (event) {
     return;
   }
 
-  // if (!$("#wordsInput").is(":focus")) return;
   if (
     [
       "Tab",
@@ -4891,6 +4889,9 @@ $(document).keydown(function (event) {
     currentKeypress.mod++;
     return;
   }
+
+  //insert space for expert and master or strict space,
+  //otherwise dont do anything
   if (event.key === " ") {
     if (config.difficulty !== "normal" || config.strictSpace) {
       if (dontInsertSpace) {
@@ -4917,6 +4918,10 @@ $(document).keydown(function (event) {
     if (!testActive) return;
   }
 
+  setFocus(true);
+  stopCaretAnimation();
+
+  //show dead keys
   if (event.key === "Dead") {
     playClickSound();
     $(
@@ -4927,13 +4932,12 @@ $(document).keydown(function (event) {
     return;
   }
 
+  //check if the char typed was correct
   let thisCharCorrect;
-
   let nextCharInWord = wordsList[currentWordIndex].substring(
     currentInput.length,
     currentInput.length + 1
   );
-
   if (
     config.language === "russian" &&
     (event["key"].toLowerCase() == "e" || event["key"].toLowerCase() == "ё")
@@ -4968,6 +4972,7 @@ $(document).keydown(function (event) {
     accuracyStats.correct++;
     thisCharCorrect = true;
   }
+
   if (thisCharCorrect) {
     playClickSound();
   } else {
@@ -4977,6 +4982,8 @@ $(document).keydown(function (event) {
       playErrorSound();
     }
   }
+
+  //update current corrected verison. if its empty then add the current key. if its not then replace the last character with the currently pressed one / add it
   if (currentCorrected === "") {
     currentCorrected = currentInput + event["key"];
   } else {
@@ -4990,9 +4997,11 @@ $(document).keydown(function (event) {
         currentCorrected.substring(cil + 1);
     }
   }
+
   currentKeypress.count++;
   currentKeypress.words.push(currentWordIndex);
 
+  //keymap
   if (config.keymapMode === "react") {
     flashPressedKeymapKey(event.key, thisCharCorrect);
   } else if (config.keymapMode === "next") {
@@ -5008,18 +5017,20 @@ $(document).keydown(function (event) {
     return;
   }
 
+  //update the active word top, but only once
   if (currentInput.length === 1 && currentWordIndex === 0) {
     activeWordTop = document.querySelector("#words .active").offsetTop;
   }
 
+  //max length of the input is 20
   if (currentInput.length < wordsList[currentWordIndex].length + 20) {
     currentInput += event["key"];
   }
-  setFocus(true);
-  stopCaretAnimation();
-  activeWordTopBeforeJump = activeWordTop;
-  compareInput(!config.blindMode);
 
+  activeWordTopBeforeJump = activeWordTop;
+  updateWordElement(!config.blindMode);
+
+  //auto stop the test if the last word is correct
   let currentWord = wordsList[currentWordIndex];
   let lastindex = currentWordIndex;
   if (
@@ -5037,6 +5048,7 @@ $(document).keydown(function (event) {
     showResult();
   }
 
+  //simulate space press in nospace funbox
   if (
     activeFunBox === "nospace" &&
     currentInput.length === wordsList[currentWordIndex].length
@@ -5048,6 +5060,7 @@ $(document).keydown(function (event) {
     });
   }
 
+  //check if the word jumped
   let newActiveTop = document.querySelector("#words .word.active").offsetTop;
   if (activeWordTopBeforeJump < newActiveTop && !lineTransition) {
     activeWordJumped = true;
@@ -5055,9 +5068,10 @@ $(document).keydown(function (event) {
     activeWordJumped = false;
   }
 
+  //stop the word jump by slicing off the last character, update word again
   if (activeWordJumped && currentInput.length > 1) {
     currentInput = currentInput.slice(0, -1);
-    compareInput(!config.blindMode);
+    updateWordElement(!config.blindMode);
     activeWordJumped = false;
   }
 
