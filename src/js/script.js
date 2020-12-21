@@ -3445,7 +3445,7 @@ async function loadWordsHistory() {
           wordEl += "<letter>" + wordsList[i][c] + "</letter>";
         }
         wordEl += "</div>";
-      } catch (e) {}
+      } catch {}
     }
     wordsHTML += wordEl;
   }
@@ -3497,7 +3497,7 @@ function showEditTags(action, id, name) {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
+      .animate({ opacity: 1 }, 100, () => {
         $("#tagsWrapper #tagsEdit input").focus();
       });
   }
@@ -3515,7 +3515,7 @@ function hideEditTags() {
           opacity: 0,
         },
         100,
-        (e) => {
+        () => {
           $("#tagsWrapper").addClass("hidden");
         }
       );
@@ -3627,7 +3627,7 @@ function updateTestModesNotice() {
         )}</div>`
       );
     }
-  } catch (e) {}
+  } catch {}
 
   if (anim) {
     $(".pageTest #testModesNotice")
@@ -3638,7 +3638,7 @@ function updateTestModesNotice() {
           opacity: 1,
         },
         125,
-        (e) => {
+        () => {
           $(".pageTest #testModesNotice").css("transition", ".125s");
         }
       );
@@ -3651,7 +3651,7 @@ $("#tagsWrapper").click((e) => {
   }
 });
 
-$("#tagsWrapper #tagsEdit .button").click((e) => {
+$("#tagsWrapper #tagsEdit .button").click(() => {
   tagsEdit();
 });
 
@@ -3762,7 +3762,7 @@ function showCustomTextPopup() {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
+      .animate({ opacity: 1 }, 100, () => {
         $("#customTextPopup textarea").val(customText.join(" "));
         $("#customTextPopup .wordcount input").val(customTextWordCount);
         $("#customTextPopup textarea").focus();
@@ -3793,7 +3793,7 @@ $("#customTextPopupWrapper").mousedown((e) => {
   }
 });
 
-$("#customTextPopup .inputs .check input").change((e) => {
+$("#customTextPopup .inputs .check input").change(() => {
   if ($("#customTextPopup .check input").prop("checked")) {
     $("#customTextPopup .inputs .wordcount").removeClass("hidden");
   } else {
@@ -3807,7 +3807,7 @@ $("#customTextPopup textarea").keypress((e) => {
   }
 });
 
-$("#customTextPopup .button").click((e) => {
+$("#customTextPopup .button").click(() => {
   let text = $("#customTextPopup textarea").val();
   text = text.trim();
   text = text.replace(/[\n\r\t ]/gm, " ");
@@ -3880,7 +3880,7 @@ function playErrorSound() {
   errorSound.play();
 }
 
-async function initPaceCaret(nosave = false) {
+async function initPaceCaret() {
   let mode2 = "";
   if (config.mode === "time") {
     mode2 = config.time;
@@ -4082,13 +4082,13 @@ $("#customMode2PopupWrapper").click((e) => {
   }
 });
 
-$("#customMode2Popup input").keypress((e) => {
+$("#customMode2Popup input").keypress(() => {
   if (e.keyCode == 13) {
     applyMode2Popup();
   }
 });
 
-$("#customMode2Popup .button").click((e) => {
+$("#customMode2Popup .button").click(() => {
   applyMode2Popup();
 });
 
@@ -4189,25 +4189,25 @@ $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   restartTest();
 });
 
-$(document).on("click", "#top .config .customText .text-button", (e) => {
+$(document).on("click", "#top .config .customText .text-button", () => {
   showCustomTextPopup();
 });
 
-$(document).on("click", "#top .config .punctuationMode .text-button", (e) => {
+$(document).on("click", "#top .config .punctuationMode .text-button", () => {
   togglePunctuation();
   manualRestart = true;
 
   restartTest();
 });
 
-$(document).on("click", "#top .config .numbersMode .text-button", (e) => {
+$(document).on("click", "#top .config .numbersMode .text-button", () => {
   toggleNumbers();
   manualRestart = true;
 
   restartTest();
 });
 
-$("#wordsWrapper").on("click", (e) => {
+$("#wordsWrapper").on("click", () => {
   focusWords();
 });
 
@@ -4277,7 +4277,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#restartTestButton", (event) => {
+$(document.body).on("click", "#restartTestButton", () => {
   manualRestart = true;
   if (resultCalculating) return;
   restartTest();
@@ -4311,7 +4311,7 @@ $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#practiseMissedWordsButton", (event) => {
+$(document.body).on("click", "#practiseMissedWordsButton", () => {
   if (Object.keys(missedWords).length > 0) {
     initPractiseMissedWords();
   } else {
@@ -4325,7 +4325,7 @@ $(document).on("keypress", "#nextTestButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#nextTestButton", (event) => {
+$(document.body).on("click", "#nextTestButton", () => {
   manualRestart = true;
   restartTest();
 });
@@ -4336,11 +4336,11 @@ $(document).on("keypress", "#showWordHistoryButton", (event) => {
   }
 });
 
-$(document.body).on("click", "#showWordHistoryButton", (event) => {
+$(document.body).on("click", "#showWordHistoryButton", () => {
   toggleResultWordsDisplay();
 });
 
-$(document.body).on("click", "#restartTestButtonWithSameWordset", (event) => {
+$(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
   manualRestart = true;
 
   restartTest(true);
@@ -4352,18 +4352,18 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
   }
 });
 
-$(document.body).on("click", "#copyResultToClipboardButton", (event) => {
+$(document.body).on("click", "#copyResultToClipboardButton", () => {
   copyResultToClipboard();
 });
 
-$(document.body).on("click", ".version", (event) => {
+$(document.body).on("click", ".version", () => {
   $("#versionHistoryWrapper")
     .css("opacity", 0)
     .removeClass("hidden")
     .animate({ opacity: 1 }, 125);
 });
 
-$(document.body).on("click", "#versionHistoryWrapper", (event) => {
+$(document.body).on("click", "#versionHistoryWrapper", () => {
   $("#versionHistoryWrapper")
     .css("opacity", 1)
     .animate({ opacity: 0 }, 125, () => {
@@ -4371,14 +4371,14 @@ $(document.body).on("click", "#versionHistoryWrapper", (event) => {
     });
 });
 
-$(document.body).on("click", "#supportMeButton", (event) => {
+$(document.body).on("click", "#supportMeButton", () => {
   $("#supportMeWrapper")
     .css("opacity", 0)
     .removeClass("hidden")
     .animate({ opacity: 1 }, 125);
 });
 
-$(document.body).on("click", "#supportMeWrapper", (event) => {
+$(document.body).on("click", "#supportMeWrapper", () => {
   $("#supportMeWrapper")
     .css("opacity", 1)
     .animate({ opacity: 0 }, 125, () => {
@@ -4386,7 +4386,7 @@ $(document.body).on("click", "#supportMeWrapper", (event) => {
     });
 });
 
-$(document.body).on("click", "#supportMeWrapper .button.ads", (event) => {
+$(document.body).on("click", "#supportMeWrapper .button.ads", () => {
   currentCommands.push(commandsEnableAds);
   showCommandLine();
   $("#supportMeWrapper")
@@ -4396,7 +4396,7 @@ $(document.body).on("click", "#supportMeWrapper .button.ads", (event) => {
     });
 });
 
-$(document.body).on("click", "#supportMeWrapper a.button", (event) => {
+$(document.body).on("click", "#supportMeWrapper a.button", () => {
   $("#supportMeWrapper")
     .css("opacity", 1)
     .animate({ opacity: 0 }, 125, () => {
@@ -4417,7 +4417,7 @@ function clearTimeouts(timeouts) {
   });
 }
 
-$("#wordsInput").on("focus", (event) => {
+$("#wordsInput").on("focus", () => {
   if (!resultVisible && config.showOutOfFocusWarning) {
     $("#words").css("transition", "none").removeClass("blurred");
     $(".outOfFocusWarning").addClass("hidden");
@@ -4426,7 +4426,7 @@ $("#wordsInput").on("focus", (event) => {
   showCaret();
 });
 
-$("#wordsInput").on("focusout", (event) => {
+$("#wordsInput").on("focusout", () => {
   if (!resultVisible && config.showOutOfFocusWarning) {
     outOfFocusTimeouts.push(
       setTimeout(() => {
@@ -4462,13 +4462,13 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
   }
 });
 
-$(document).on("click", "#commandLineMobileButton", (event) => {
+$(document).on("click", "#commandLineMobileButton", () => {
   showCommandLine();
 });
 
 let dontInsertSpace = false;
 
-$(document).keyup((event) => {
+$(document).keyup(() => {
   if (resultVisible) return;
   let now = performance.now();
   let diff = Math.abs(keypressStats.duration.current - now);
