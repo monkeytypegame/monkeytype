@@ -83,3 +83,8 @@ functions/serviceAccountKey_live_copy.json
 
 #generated files
 dist/
+
+#cloudflare y
+.cloudflareKey.txt
+.cloudflareKey_copy.txt
+purgeCfCache.sh
