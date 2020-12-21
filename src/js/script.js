@@ -1013,26 +1013,13 @@ function compareInput(showError) {
       // this is when input so far is correct
       correctSoFar = true;
     }
-    if (!correctSoFar) {
-      if (config.difficulty == "master") {
-        if (!resultVisible) {
-          inputHistory.push(currentInput);
-          correctedHistory.push(currentCorrected);
-          document
-            .querySelector("#words .word.active")
-            .setAttribute("input", currentInput.replace(/'/g, "'"));
-          lastSecondNotRound = true;
-          showResult(true);
-        }
-        let testNow = performance.now();
-        let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-        let afkseconds = keypressPerSecond.filter(
-          (x) => x.count == 0 && x.mod == 0
-        ).length;
-        incompleteTestSeconds += testSeconds - afkseconds;
-        restartCount++;
-      }
-    }
+    // if (!correctSoFar) {
+    //   if (config.difficulty == "master") {
+    //     if (!resultVisible) {
+    //       failTest();
+    //     }
+    //   }
+    // }
     let classString = correctSoFar ? "correct" : "incorrect";
     if (config.blindMode) {
       classString = "correct";
@@ -1071,24 +1058,11 @@ function compareInput(showError) {
       if (charCorrect) {
         ret += '<letter class="correct">' + currentWord[i] + "</letter>";
       } else {
-        if (config.difficulty == "master") {
-          if (!resultVisible) {
-            inputHistory.push(currentInput);
-            correctedHistory.push(currentCorrected);
-            document
-              .querySelector("#words .word.active")
-              .setAttribute("input", currentInput.replace(/'/g, "'"));
-            lastSecondNotRound = true;
-            showResult(true);
-          }
-          let testNow = performance.now();
-          let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          let afkseconds = keypressPerSecond.filter(
-            (x) => x.count == 0 && x.mod == 0
-          ).length;
-          incompleteTestSeconds += testSeconds - afkseconds;
-          restartCount++;
-        }
+        // if (config.difficulty == "master") {
+        //   if (!resultVisible) {
+        //     failTest();
+        //   }
+        // }
         if (!showError) {
           if (currentWord[i] == undefined) {
           } else {
@@ -1121,29 +1095,6 @@ function compareInput(showError) {
     }
   }
   wordAtIndex.innerHTML = ret;
-
-  let lastindex = currentWordIndex;
-
-  if (
-    (currentWord == input ||
-      (config.quickEnd &&
-        currentWord.length == input.length &&
-        config.stopOnError == "off")) &&
-    lastindex == wordsList.length - 1
-  ) {
-    inputHistory.push(input);
-    currentInput = "";
-    correctedHistory.push(currentCorrected);
-    currentCorrected = "";
-    //last character typed, show result
-    if (!resultVisible) {
-      // if (keypressPerSecond.length === 0) {
-      //   keypressPerSecond.push(currentKeypress);
-      // }
-      lastSecondNotRound = true;
-      showResult();
-    }
-  }
 }
 
 function highlightBadWord(index, showError) {
@@ -1727,8 +1678,21 @@ function showCrown() {
       "easeOutCubic"
     );
 }
-let resultCalculating = false;
 
+function failTest() {
+  inputHistory.push(currentInput);
+  correctedHistory.push(currentCorrected);
+  lastSecondNotRound = true;
+  showResult(true);
+  let testNow = performance.now();
+  let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
+  let afkseconds = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0)
+    .length;
+  incompleteTestSeconds += testSeconds - afkseconds;
+  restartCount++;
+}
+
+let resultCalculating = false;
 function showResult(difficultyFailed = false) {
   resultCalculating = true;
   resultVisible = true;
@@ -2741,11 +2705,7 @@ function startTest() {
         (config.minAcc === "custom" && acc < parseInt(config.minAccCustom))
       ) {
         clearTimeout(timer);
-        hideCaret();
-        testActive = false;
-        inputHistory.push(currentInput);
-        correctedHistory.push(currentCorrected);
-        showResult(true);
+        failTest();
         return;
       }
       if (config.mode == "time") {
@@ -4623,7 +4583,7 @@ $(document).keydown((event) => {
       } else {
         if (config.confidenceMode === "max") return;
         if (event["ctrlKey"] || event["altKey"]) {
-          let split = currentInput.split(" ");
+          let split = currentInput.replace(/ +/g, " ").split(" ");
           if (split[split.length - 1] == "") {
             split.pop();
           }
@@ -4728,17 +4688,7 @@ $(document).keydown((event) => {
         if (config.stopOnError != "off") {
           if (config.difficulty == "expert" || config.difficulty == "master") {
             //failed due to diff when pressing space
-            inputHistory.push(currentInput);
-            correctedHistory.push(currentCorrected);
-            lastSecondNotRound = true;
-            showResult(true);
-            let testNow = performance.now();
-            let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-            let afkseconds = keypressPerSecond.filter(
-              (x) => x.count == 0 && x.mod == 0
-            ).length;
-            incompleteTestSeconds += testSeconds - afkseconds;
-            restartCount++;
+            failTest();
             return;
           }
           if (config.stopOnError == "word") {
@@ -4753,19 +4703,12 @@ $(document).keydown((event) => {
         currentInput = "";
         currentWordIndex++;
         currentWordElementIndex++;
+        updateActiveElement();
+        updateCaretPosition();
+        currentKeypress.count++;
+        currentKeypress.words.push(currentWordIndex);
         if (config.difficulty == "expert" || config.difficulty == "master") {
-          correctedHistory.push(currentCorrected);
-          currentCorrected = "";
-          //submitted last word incorrect and failed test
-          lastSecondNotRound = true;
-          showResult(true);
-          let testNow = performance.now();
-          let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          let afkseconds = keypressPerSecond.filter(
-            (x) => x.count == 0 && x.mod == 0
-          ).length;
-          incompleteTestSeconds += testSeconds - afkseconds;
-          restartCount++;
+          failTest();
           return;
         } else if (currentWordIndex == wordsList.length) {
           //submitted last word that is incorrect
@@ -4773,10 +4716,6 @@ $(document).keydown((event) => {
           showResult();
           return;
         }
-        updateActiveElement();
-        updateCaretPosition();
-        currentKeypress.count++;
-        currentKeypress.words.push(currentWordIndex);
       }
 
       correctedHistory.push(currentCorrected);
@@ -5054,36 +4993,49 @@ $(document).keydown(function (event) {
   currentKeypress.count++;
   currentKeypress.words.push(currentWordIndex);
 
+  if (config.keymapMode === "react") {
+    flashPressedKeymapKey(event.key, thisCharCorrect);
+  } else if (config.keymapMode === "next") {
+    updateHighlightedKeymapKey();
+  }
+
+  if (!thisCharCorrect && config.difficulty == "master") {
+    failTest();
+    return;
+  }
+
   if (config.stopOnError == "letter" && !thisCharCorrect) {
-    if (config.difficulty == "master") {
-      //failed due to master diff when pressing a key
-      inputHistory.push(currentInput);
-      correctedHistory.push(currentCorrected);
-      lastSecondNotRound = true;
-      showResult(true);
-      let testNow = performance.now();
-      let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-      let afkseconds = keypressPerSecond.filter(
-        (x) => x.count == 0 && x.mod == 0
-      ).length;
-      incompleteTestSeconds += testSeconds - afkseconds;
-      restartCount++;
-      return;
-    } else {
-      return;
-    }
+    return;
   }
 
   if (currentInput.length === 1 && currentWordIndex === 0) {
     activeWordTop = document.querySelector("#words .active").offsetTop;
   }
 
-  if (currentInput.length < wordsList[currentWordIndex].length + 20)
+  if (currentInput.length < wordsList[currentWordIndex].length + 20) {
     currentInput += event["key"];
+  }
   setFocus(true);
   stopCaretAnimation();
   activeWordTopBeforeJump = activeWordTop;
   compareInput(!config.blindMode);
+
+  let currentWord = wordsList[currentWordIndex];
+  let lastindex = currentWordIndex;
+  if (
+    (currentWord == currentInput ||
+      (config.quickEnd &&
+        currentWord.length == currentInput.length &&
+        config.stopOnError == "off")) &&
+    lastindex == wordsList.length - 1
+  ) {
+    inputHistory.push(currentInput);
+    currentInput = "";
+    correctedHistory.push(currentCorrected);
+    currentCorrected = "";
+    lastSecondNotRound = true;
+    showResult();
+  }
 
   if (
     activeFunBox === "nospace" &&
@@ -5109,11 +5061,6 @@ $(document).keydown(function (event) {
     activeWordJumped = false;
   }
 
-  if (config.keymapMode === "react") {
-    flashPressedKeymapKey(event.key, thisCharCorrect);
-  } else if (config.keymapMode === "next") {
-    updateHighlightedKeymapKey();
-  }
   updateCaretPosition();
 });
 
