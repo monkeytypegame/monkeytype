@@ -1008,29 +1008,31 @@ function updateWordElement(showError) {
   let ret = "";
 
   if (config.highlightMode == "word") {
+    //only for word highlight
+
     let correctSoFar = false;
     if (currentWord.slice(0, input.length) == input) {
       // this is when input so far is correct
       correctSoFar = true;
     }
-    // if (!correctSoFar) {
-    //   if (config.difficulty == "master") {
-    //     if (!resultVisible) {
-    //       failTest();
-    //     }
-    //   }
-    // }
     let classString = correctSoFar ? "correct" : "incorrect";
     if (config.blindMode) {
       classString = "correct";
     }
+
+    //show letters in the current word
     for (let i = 0; i < currentWord.length; i++) {
       ret += `<letter class="${classString}">` + currentWord[i] + `</letter>`;
     }
+
+    //show any extra letters if hide extra letters is disabled
     if (currentInput.length > currentWord.length && !config.hideExtraLetters) {
       for (let i = currentWord.length; i < currentInput.length; i++) {
-        ret +=
-          `<letter class="${classString}">` + currentInput[i] + `</letter>`;
+        let letter = currentInput[i];
+        if (letter == " ") {
+          letter = "_";
+        }
+        ret += `<letter class="${classString}">${letter}</letter>`;
       }
     }
   } else {
