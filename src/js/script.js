@@ -47,6 +47,7 @@ let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
 let memoryFunboxTimer = null;
 let memoryFunboxInterval = null;
+let lastTextBoxContentSize = 0;
 
 let themeColors = {
   bg: "#323437",
@@ -4444,6 +4445,19 @@ $("#wordsInput").keypress((event) => {
   event.preventDefault();
 });
 
+$("#wordsInput").on("input", (event) => {
+  if (
+    event.target.value.length <= lastTextBoxContentSize &&
+    event.target.value.length != 0
+  ) {
+    checkCharCorrect(event.target.value);
+    $("#wordsInput").val("");
+    lastTextBoxContentSize = 0;
+  } else {
+    lastTextBoxContentSize = event.target.value.length;
+  }
+});
+
 let outOfFocusTimeouts = [];
 
 function clearTimeouts(timeouts) {
@@ -4997,7 +5011,10 @@ function handleAlpha(event) {
     return;
   }
 
-  //check if the char typed was correct
+  checkCharCorrect(event.key);
+}
+
+function checkCharCorrect(char) {
   let thisCharCorrect;
   let nextCharInWord = wordsList[currentWordIndex].substring(
     currentInput.length,
@@ -5005,7 +5022,7 @@ function handleAlpha(event) {
   );
   if (
     config.language === "russian" &&
-    (event["key"].toLowerCase() == "e" || event["key"].toLowerCase() == "ё")
+    (char.toLowerCase() == "e" || char.toLowerCase() == "ё")
   ) {
     if (
       nextCharInWord.toLowerCase() == "e" ||
@@ -5016,7 +5033,7 @@ function handleAlpha(event) {
       thisCharCorrect = false;
     }
   } else {
-    if (nextCharInWord == event["key"]) {
+    if (nextCharInWord == char) {
       thisCharCorrect = true;
     } else {
       thisCharCorrect = false;
@@ -5050,15 +5067,15 @@ function handleAlpha(event) {
 
   //update current corrected verison. if its empty then add the current key. if its not then replace the last character with the currently pressed one / add it
   if (currentCorrected === "") {
-    currentCorrected = currentInput + event["key"];
+    currentCorrected = currentInput + char;
   } else {
     let cil = currentInput.length;
     if (cil >= currentCorrected.length) {
-      currentCorrected += event["key"];
+      currentCorrected += char;
     } else if (!thisCharCorrect) {
       currentCorrected =
         currentCorrected.substring(0, cil) +
-        event["key"] +
+        char +
         currentCorrected.substring(cil + 1);
     }
   }
@@ -5077,7 +5094,7 @@ function handleAlpha(event) {
 
   //max length of the input is 20
   if (currentInput.length < wordsList[currentWordIndex].length + 20) {
-    currentInput += event["key"];
+    currentInput += char;
   }
 
   if (!thisCharCorrect && config.difficulty == "master") {
@@ -5087,7 +5104,7 @@ function handleAlpha(event) {
 
   //keymap
   if (config.keymapMode === "react") {
-    flashPressedKeymapKey(event.key, thisCharCorrect);
+    flashPressedKeymapKey(char, thisCharCorrect);
   } else if (config.keymapMode === "next") {
     updateHighlightedKeymapKey();
   }
