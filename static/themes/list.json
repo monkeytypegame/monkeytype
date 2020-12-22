@@ -160,6 +160,11 @@
     "textColor": "#79a617"
   },
   {
+    "name": "lavender",
+    "bgColor": "#ada6c2",
+    "textColor": "#e4e3e9"
+  },
+  {
     "name": "taro",
     "bgColor": "#b3baff",
     "textColor": "#130f1a"
