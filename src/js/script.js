@@ -4535,7 +4535,7 @@ $(document).keydown(function (event) {
   if (pageTestActive && !commandLineVisible && !modePopupVisible) {
     if (!wordsFocused && event.key !== "Enter") {
       focusWords();
-      return;
+      if (config.showOutOfFocusWarning) return;
     }
   } else {
     return;
