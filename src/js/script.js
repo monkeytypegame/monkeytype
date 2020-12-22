@@ -4936,6 +4936,7 @@ function handleAlpha(event) {
   if (/Numpad/.test(event.key)) return;
   if (/Volume/.test(event.key)) return;
   if (event.ctrlKey) return;
+  if (event.altKey) return;
   if (event.metaKey) return;
   event = emulateLayout(event);
 
