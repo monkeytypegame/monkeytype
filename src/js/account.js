@@ -372,36 +372,36 @@ function getAccountDataAndInit() {
           initPaceCaret(true);
         }
       }
-      try {
-        if (
-          config.resultFilters === undefined ||
-          config.resultFilters === null ||
-          config.resultFilters.difficulty === undefined
-        ) {
-          if (
-            db_getSnapshot().config.resultFilters == null ||
-            db_getSnapshot().config.resultFilters.difficulty === undefined
-          ) {
-            config.resultFilters = defaultAccountFilters;
-          } else {
-            config.resultFilters = db_getSnapshot().config.resultFilters;
-          }
-        }
-      } catch (e) {
-        config.resultFilters = defaultAccountFilters;
-      }
-      if (
-        Object.keys(config.resultFilters.language).length !==
-        Object.keys(defaultAccountFilters.language).length
-      ) {
-        config.resultFilters.language = defaultAccountFilters.language;
-      }
-      if (
-        Object.keys(config.resultFilters.funbox).length !==
-        Object.keys(defaultAccountFilters.funbox).length
-      ) {
-        config.resultFilters.funbox = defaultAccountFilters.funbox;
-      }
+      // try {
+      //   if (
+      //     config.resultFilters === undefined ||
+      //     config.resultFilters === null ||
+      //     config.resultFilters.difficulty === undefined
+      //   ) {
+      //     if (
+      //       db_getSnapshot().config.resultFilters == null ||
+      //       db_getSnapshot().config.resultFilters.difficulty === undefined
+      //     ) {
+      //       config.resultFilters = defaultAccountFilters;
+      //     } else {
+      //       config.resultFilters = db_getSnapshot().config.resultFilters;
+      //     }
+      //   }
+      // } catch (e) {
+      //   config.resultFilters = defaultAccountFilters;
+      // }
+      // if (
+      //   Object.keys(config.resultFilters.language).length !==
+      //   Object.keys(defaultAccountFilters.language).length
+      // ) {
+      //   config.resultFilters.language = defaultAccountFilters.language;
+      // }
+      // if (
+      //   Object.keys(config.resultFilters.funbox).length !==
+      //   Object.keys(defaultAccountFilters.funbox).length
+      // ) {
+      //   config.resultFilters.funbox = defaultAccountFilters.funbox;
+      // }
       if ($(".pageLogin").hasClass("active")) {
         changePage("account");
       }
@@ -410,6 +410,7 @@ function getAccountDataAndInit() {
       updateFilterTags();
       updateCommandsTagsList();
       loadActiveTagsFromCookie();
+      loadResultFiltersFromCookie();
       updateResultEditTagsPanelButtons();
       showAccountSettingsSection();
     })
@@ -1019,6 +1020,12 @@ let defaultAccountFilters = {
     120: true,
     custom: true,
   },
+  quoteLength: {
+    short: true,
+    medium: true,
+    long: true,
+    thicc: true,
+  },
   punctuation: {
     on: true,
     off: true,
@@ -1098,12 +1105,23 @@ function updateFilterTags() {
 }
 
 function toggleFilter(group, filter) {
-  if (group === "date") {
-    Object.keys(config.resultFilters.date).forEach((date) => {
-      setFilter("date", date, false);
-    });
+  try {
+    if (group === "date") {
+      Object.keys(config.resultFilters.date).forEach((date) => {
+        setFilter("date", date, false);
+      });
+    }
+    config.resultFilters[group][filter] = !config.resultFilters[group][filter];
+    saveResultFiltersToCookie();
+  } catch (e) {
+    Misc.showNotification(
+      "Something went wrong toggling filter. Reverting to defaults",
+      3000
+    );
+    config.resultFilters = defaultAccountFilters;
+    saveResultFiltersToCookie();
+    showActiveFilters();
   }
-  config.resultFilters[group][filter] = !config.resultFilters[group][filter];
 }
 
 function setFilter(group, filter, set) {
@@ -1276,7 +1294,7 @@ $(".pageAccount .topFilters .button.allFilters").click((e) => {
   });
   config.resultFilters.date.all = true;
   showActiveFilters();
-  saveConfigToCookie();
+  saveResultFiltersToCookie();
 });
 
 $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
@@ -1320,7 +1338,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   config.resultFilters.date.all = true;
 
   showActiveFilters();
-  saveConfigToCookie();
+  saveResultFiltersToCookie();
 });
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
@@ -1365,7 +1383,7 @@ $(
     }
   }
   showActiveFilters();
-  saveConfigToCookie();
+  saveResultFiltersToCookie();
 });
 
 function fillPbTables() {
@@ -1849,6 +1867,21 @@ function refreshAccountPage() {
           if (!config.resultFilters.words[wordfilter]) return;
         }
 
+        if (result.quoteLength != null) {
+          let filter = null;
+          if (result.quoteLength === 0) {
+            filter = "short";
+          } else if (result.quoteLength === 1) {
+            filter = "medium";
+          } else if (result.quoteLength === 2) {
+            filter = "long";
+          } else if (result.quoteLength === 3) {
+            filter = "thicc";
+          }
+          if (filter !== null && !config.resultFilters.quoteLength[filter])
+            return;
+        }
+
         let langFilter = config.resultFilters.language[result.language];
 
         if (
@@ -1926,8 +1959,10 @@ function refreshAccountPage() {
           "Something went wrong when filtering. Resetting filters.",
           5000
         );
+        console.error(e);
         config.resultFilters = defaultAccountFilters;
-        saveConfigToCookie();
+        saveResultFiltersToCookie();
+        showActiveFilters();
       }
 
       //filters done

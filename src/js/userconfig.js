@@ -96,7 +96,9 @@ async function saveConfigToCookie(noDbCheck = false) {
   //   expires: d,
   //   path: "/",
   // });
-  Misc.setCookie("config", JSON.stringify(config), 365);
+  let save = config;
+  delete save.resultFilters;
+  Misc.setCookie("config", JSON.stringify(save), 365);
   restartCount = 0;
   if (!noDbCheck) await saveConfigToDB();
 }
@@ -317,6 +319,27 @@ function loadActiveTagsFromCookie() {
       toggleTag(ntag, true);
     });
     saveActiveTagsToCookie();
+  }
+}
+
+function saveResultFiltersToCookie() {
+  Misc.setCookie("resultFilters", JSON.stringify(config.resultFilters), 365);
+}
+
+function loadResultFiltersFromCookie() {
+  // let newTags = $.cookie("activeTags");
+  try {
+    let newResultFilters = Misc.getCookie("resultFilters");
+    if (newResultFilters !== undefined && newResultFilters !== "") {
+      config.resultFilters = JSON.parse(newResultFilters);
+      saveResultFiltersToCookie();
+    } else {
+      config.resultFilters = defaultAccountFilters;
+      saveResultFiltersToCookie();
+    }
+  } catch {
+    config.resultFilters = defaultAccountFilters;
+    saveResultFiltersToCookie();
   }
 }
 

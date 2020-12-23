@@ -446,9 +446,14 @@ async function initWords() {
         quotes.groups.forEach((qg, i) => {
           let lower = qg[0];
           let upper = qg[1];
-          quotes.groups[i] = quotes.quotes.filter(
-            (q) => q.length >= lower && q.length <= upper
-          );
+          quotes.groups[i] = quotes.quotes.filter((q) => {
+            if (q.length >= lower && q.length <= upper) {
+              q.group = i;
+              return true;
+            } else {
+              return false;
+            }
+          });
         });
         quotes.quotes = [];
       },
@@ -2013,6 +2018,11 @@ function showResult(difficultyFailed = false) {
       lang = "english";
     }
 
+    let quoteLength = null;
+    if (config.mode === "quote") {
+      quoteLength = randomQuote.group;
+    }
+
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
@@ -2022,6 +2032,7 @@ function showResult(difficultyFailed = false) {
       acc: stats.acc,
       mode: config.mode,
       mode2: mode2,
+      quoteLength: quoteLength,
       punctuation: config.punctuation,
       numbers: config.numbers,
       timestamp: Date.now(),
