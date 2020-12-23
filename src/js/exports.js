@@ -6,3 +6,4 @@ global.sendVerificationEmail = Misc.sendVerificationEmail;
 
 //these exports are just for debugging in the browser
 global.snapshot = db_getSnapshot;
+global.config = config;
