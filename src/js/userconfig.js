@@ -995,11 +995,21 @@ function setWordCount(wordCount, nosave) {
 function setSmoothCaret(mode, nosave) {
   config.smoothCaret = mode;
   if (!nosave) saveConfigToCookie();
+  if (mode) {
+    $("#caret").css("animation-name", "caretFlashSmooth");
+  } else {
+    $("#caret").css("animation-name", "caretFlashHard");
+  }
 }
 
 function toggleSmoothCaret() {
   config.smoothCaret = !config.smoothCaret;
   saveConfigToCookie();
+  if (config.smoothCaret) {
+    $("#caret").css("animation-name", "caretFlashSmooth");
+  } else {
+    $("#caret").css("animation-name", "caretFlashHard");
+  }
 }
 
 //startgraphsatzero

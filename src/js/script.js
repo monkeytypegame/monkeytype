@@ -1305,7 +1305,11 @@ function stopCaretAnimation() {
 
 function startCaretAnimation() {
   if (caretAnimating === false) {
-    $("#caret").css("animation-name", "caretFlash");
+    if (config.smoothCaret) {
+      $("#caret").css("animation-name", "caretFlashSmooth");
+    } else {
+      $("#caret").css("animation-name", "caretFlashHard");
+    }
     caretAnimating = true;
   }
 }

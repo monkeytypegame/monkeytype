@@ -995,7 +995,7 @@ a:hover {
 #caret {
   height: 1.5rem;
   background: var(--caret-color);
-  animation-name: caretFlash;
+  animation-name: caretFlashSmooth;
   /* animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955); */
   animation-iteration-count: infinite;
   animation-duration: 1s;
@@ -1080,13 +1080,25 @@ a:hover {
   }
 }
 
-@keyframes caretFlash {
+@keyframes caretFlashSmooth {
   0%,
   100% {
     opacity: 0;
   }
 
   50% {
+    opacity: 1;
+  }
+}
+
+@keyframes caretFlashHard {
+  0%,
+  50% {
+    opacity: 0;
+  }
+
+  51%,
+  100% {
     opacity: 1;
   }
 }
