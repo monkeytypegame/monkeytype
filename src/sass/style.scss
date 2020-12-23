@@ -703,6 +703,8 @@ a:hover {
   #supportMe {
     width: 900px;
     // height: 400px;
+    overflow-y: scroll;
+    max-height: 100%;
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
