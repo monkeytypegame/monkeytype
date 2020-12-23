@@ -129,26 +129,6 @@ function resetConfig() {
   saveConfigToCookie();
 }
 
-function saveActiveTagsToCookie() {
-  let tags = [];
-
-  try {
-    db_getSnapshot().tags.forEach((tag) => {
-      if (tag.active === true) {
-        tags.push(tag.id);
-      }
-    });
-    // let d = new Date();
-    // d.setFullYear(d.getFullYear() + 1);
-    // $.cookie("activeTags", null);
-    // $.cookie("activeTags", JSON.stringify(tags), {
-    //   expires: d,
-    //   path: "/",
-    // });
-    Misc.setCookie("activeTags", JSON.stringify(tags), 365);
-  } catch (e) {}
-}
-
 function loadConfigFromCookie() {
   console.log("loading cookie config");
   // let newConfig = $.cookie("config");
@@ -302,6 +282,26 @@ function applyConfig(configObj) {
     }
   }
   updateTestModesNotice();
+}
+
+function saveActiveTagsToCookie() {
+  let tags = [];
+
+  try {
+    db_getSnapshot().tags.forEach((tag) => {
+      if (tag.active === true) {
+        tags.push(tag.id);
+      }
+    });
+    // let d = new Date();
+    // d.setFullYear(d.getFullYear() + 1);
+    // $.cookie("activeTags", null);
+    // $.cookie("activeTags", JSON.stringify(tags), {
+    //   expires: d,
+    //   path: "/",
+    // });
+    Misc.setCookie("activeTags", JSON.stringify(tags), 365);
+  } catch (e) {}
 }
 
 function loadActiveTagsFromCookie() {
