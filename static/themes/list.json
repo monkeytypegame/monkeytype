@@ -458,5 +458,10 @@
     "name": "repose_light",
     "bgColor": "#efead0",
     "textColor": "#333538"
+  },
+  {
+    "name": "horizon",
+    "bgColor": "#1C1E26",
+    "textColor": "#c4a88a"
   }
 ]
