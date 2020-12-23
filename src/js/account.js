@@ -598,7 +598,7 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
     datasets: [
       {
         yAxisID: "count",
-        label: "Tests Completed",
+        label: "Seconds",
         data: [],
         trendlineLinear: {
           style: "rgba(255,105,180, .8)",
@@ -628,6 +628,20 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
               tooltipItem[0].index
             ];
           return moment(resultData.x).format("DD MMM YYYY");
+        },
+        beforeLabel: function (tooltipItem, data) {
+          let resultData =
+            data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+          if (tooltipItem.datasetIndex === 0) {
+            return `Time Typing: ${Misc.secondsToString(
+              resultData.y
+            )}\nTests Completed: ${resultData.amount}`;
+          } else if (tooltipItem.datasetIndex === 1) {
+            return `Average Wpm: ${Misc.roundTo2(resultData.y)}`;
+          }
+        },
+        label: function (tooltipItem, data) {
+          return;
         },
       },
     },
@@ -686,7 +700,7 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
           display: true,
           scaleLabel: {
             display: true,
-            labelString: "Tests Completed",
+            labelString: "Time Typing",
             fontFamily: "Roboto Mono",
           },
         },
@@ -1928,10 +1942,13 @@ function refreshAccountPage() {
 
       if (Object.keys(activityChartData).includes(String(resultDate))) {
         activityChartData[resultDate].amount++;
+        activityChartData[resultDate].time +=
+          result.testDuration + result.incompleteTestSeconds;
         activityChartData[resultDate].totalWpm += result.wpm;
       } else {
         activityChartData[resultDate] = {
           amount: 1,
+          time: result.testDuration + result.incompleteTestSeconds,
           totalWpm: result.wpm,
         };
       }
@@ -2029,6 +2046,7 @@ function refreshAccountPage() {
     thisDate = thisDate.getTime();
 
     let activityChartData_amount = [];
+    let activityChartData_time = [];
     let activityChartData_avgWpm = [];
     let lastTimestamp = 0;
     Object.keys(activityChartData).forEach((date) => {
@@ -2061,6 +2079,11 @@ function refreshAccountPage() {
         x: parseInt(date),
         y: activityChartData[date].amount,
       });
+      activityChartData_time.push({
+        x: parseInt(date),
+        y: Misc.roundTo2(activityChartData[date].time),
+        amount: activityChartData[date].amount,
+      });
       activityChartData_avgWpm.push({
         x: parseInt(date),
         y: Misc.roundTo2(
@@ -2070,7 +2093,7 @@ function refreshAccountPage() {
       lastTimestamp = date;
     });
 
-    activityChart.data.datasets[0].data = activityChartData_amount;
+    activityChart.data.datasets[0].data = activityChartData_time;
     activityChart.data.datasets[1].data = activityChartData_avgWpm;
 
     activityChart.options.legend.labels.fontColor = themeColors.sub;
