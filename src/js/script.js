@@ -47,7 +47,7 @@ let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
 let memoryFunboxTimer = null;
 let memoryFunboxInterval = null;
-let lastTextBoxContentSize = 0;
+let deadMode = false;
 
 let themeColors = {
   bg: "#323437",
@@ -4446,15 +4446,10 @@ $("#wordsInput").keypress((event) => {
 });
 
 $("#wordsInput").on("input", (event) => {
-  if (
-    event.target.value.length <= lastTextBoxContentSize &&
-    event.target.value.length != 0
-  ) {
-    checkCharCorrect(event.target.value);
+  if (checkCharCorrect(event.target.value)) {
+    deadMode = false;
+    applyChar(event.target.value, true);
     $("#wordsInput").val("");
-    lastTextBoxContentSize = 0;
-  } else {
-    lastTextBoxContentSize = event.target.value.length;
   }
 });
 
@@ -4600,6 +4595,28 @@ $(document).keydown(function (event) {
   //space
   if (event.key === " " || (activeFunBox == "58008" && event.key === "Enter")) {
     handleSpace(event);
+  }
+
+  if (["Escape", " ", "Backspace"].includes(event.key)) {
+    deadMode = false;
+    $("#wordsInput").val("");
+    return;
+  }
+
+  // Dead: Deadkey on Firefox
+  // Ctrl + Shift + Process: unicode code on Firefox
+  console.log(event.ctrlKey, event.shiftKey, event.key);
+  if (
+    event.key == "Dead" ||
+    (event.key === "Process" && event.ctrlKey && event.shiftKey)
+  ) {
+    deadMode = true;
+    $(
+      document.querySelector("#words .word.active").querySelectorAll("letter")[
+        currentInput.length
+      ]
+    ).addClass("dead");
+    return;
   }
 
   handleAlpha(event);
@@ -5000,18 +5017,14 @@ function handleAlpha(event) {
   setFocus(true);
   stopCaretAnimation();
 
-  //show dead keys
-  if (event.key === "Dead") {
-    playClickSound();
-    $(
-      document.querySelector("#words .word.active").querySelectorAll("letter")[
-        currentInput.length
-      ]
-    ).toggleClass("dead");
-    return;
+  if (deadMode) {
+    if (checkCharCorrect(event.key)) {
+      applyChar(event.key, true);
+      deadMode = false;
+    }
+  } else {
+    applyChar(event.key, checkCharCorrect(event.key));
   }
-
-  checkCharCorrect(event.key);
 }
 
 function checkCharCorrect(char) {
@@ -5039,12 +5052,14 @@ function checkCharCorrect(char) {
       thisCharCorrect = false;
     }
   }
+  return thisCharCorrect;
+}
 
+function applyChar(char, thisCharCorrect) {
   if (!thisCharCorrect) {
     accuracyStats.incorrect++;
     currentError.count++;
     currentError.words.push(currentWordIndex);
-    thisCharCorrect = false;
     if (!Object.keys(missedWords).includes(wordsList[currentWordIndex])) {
       missedWords[wordsList[currentWordIndex]] = 1;
     } else {
@@ -5052,7 +5067,6 @@ function checkCharCorrect(char) {
     }
   } else {
     accuracyStats.correct++;
-    thisCharCorrect = true;
   }
 
   if (thisCharCorrect) {
