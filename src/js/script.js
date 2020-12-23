@@ -2022,7 +2022,7 @@ function showResult(difficultyFailed = false) {
       lang = "english";
     }
 
-    let quoteLength = null;
+    let quoteLength = -1;
     if (config.mode === "quote") {
       quoteLength = randomQuote.group;
     }
