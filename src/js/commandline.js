@@ -1988,6 +1988,7 @@ function triggerCommand(command) {
 }
 
 function hideCommandLine() {
+  previewFontFamily(config.fontFamily);
   $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 1)
