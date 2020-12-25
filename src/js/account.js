@@ -1310,6 +1310,10 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
     config.resultFilters.time[config.time] = true;
   } else if (config.mode === "words") {
     config.resultFilters.words[config.words] = true;
+  } else if (config.mode === "quote"){
+    Object.keys(config.resultFilters.quoteLength).forEach((ql) => {
+      config.resultFilters.quoteLength[ql] = true;
+    });
   }
   if (config.punctuation) {
     config.resultFilters.punctuation.on = true;
