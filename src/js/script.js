@@ -1731,6 +1731,10 @@ function showResult(difficultyFailed = false) {
       correctSpaces: 0,
     };
   }
+  let inf = false;
+  if (stats.wpm >= 1000) {
+    inf = true;
+  }
   clearTimeout(timer);
   let testtime = stats.time;
   let afkseconds = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0)
@@ -1744,7 +1748,11 @@ function showResult(difficultyFailed = false) {
   if (config.alwaysShowDecimalPlaces) {
     if (config.alwaysShowCPM == false) {
       $("#result .stats .wpm .top .text").text("wpm");
-      $("#result .stats .wpm .bottom").text(Misc.roundTo2(stats.wpm));
+      if (inf) {
+        $("#result .stats .wpm .bottom").text("Infinite");
+      } else {
+        $("#result .stats .wpm .bottom").text(Misc.roundTo2(stats.wpm));
+      }
       $("#result .stats .raw .bottom").text(Misc.roundTo2(stats.wpmRaw));
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
@@ -1752,7 +1760,11 @@ function showResult(difficultyFailed = false) {
       );
     } else {
       $("#result .stats .wpm .top .text").text("cpm");
-      $("#result .stats .wpm .bottom").text(Misc.roundTo2(stats.wpm * 5));
+      if (inf) {
+        $("#result .stats .wpm .bottom").text("Infinite");
+      } else {
+        $("#result .stats .wpm .bottom").text(Misc.roundTo2(stats.wpm * 5));
+      }
       $("#result .stats .raw .bottom").text(Misc.roundTo2(stats.wpmRaw * 5));
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
@@ -1780,7 +1792,11 @@ function showResult(difficultyFailed = false) {
         "aria-label",
         stats.wpm + ` (${Misc.roundTo2(stats.wpm * 5)} cpm)`
       );
-      $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
+      if (inf) {
+        $("#result .stats .wpm .bottom").text("Infinite");
+      } else {
+        $("#result .stats .wpm .bottom").text(Math.round(stats.wpm));
+      }
       $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw));
       $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw);
     } else {
@@ -1789,7 +1805,11 @@ function showResult(difficultyFailed = false) {
         "aria-label",
         Misc.roundTo2(stats.wpm * 5) + ` (${Misc.roundTo2(stats.wpm)} wpm)`
       );
-      $("#result .stats .wpm .bottom").text(Math.round(stats.wpm * 5));
+      if (inf) {
+        $("#result .stats .wpm .bottom").text("Infinite");
+      } else {
+        $("#result .stats .wpm .bottom").text(Math.round(stats.wpm * 5));
+      }
       $("#result .stats .raw .bottom").text(Math.round(stats.wpmRaw * 5));
       $("#result .stats .raw .bottom").attr("aria-label", stats.wpmRaw * 5);
     }
