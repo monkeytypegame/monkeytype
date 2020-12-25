@@ -463,5 +463,10 @@
     "name": "horizon",
     "bgColor": "#1C1E26",
     "textColor": "#c4a88a"
+  },
+  {
+    "name": "rudy",
+    "bgColor": "#1a2b3e",
+    "textColor": "#af8f5c"
   }
 ]
