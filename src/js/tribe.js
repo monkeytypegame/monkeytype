@@ -1,6 +1,9 @@
 let MP = {
   state: -1,
-  socket: io("localhost:3000", { autoConnect: false, reconnectionAttempts: 3 }),
+  socket: io("http://localhost:3000", {
+    autoConnect: false,
+    reconnectionAttempts: 3,
+  }),
   reconnectionAttempts: 0,
 };
 
@@ -282,6 +285,32 @@ function mp_testFinished(result) {
   MP.socket.emit("mp_room_test_finished", { result: result });
 }
 
+function showCountdown() {
+  $("#tribeCountdownWrapper").removeClass("hidden");
+}
+
+function hideCountdown() {
+  $("#tribeCountdownWrapper").addClass("hidden");
+}
+
+function updateCountdown(text) {
+  $("#tribeCountdownWrapper #tribeCountdown").text(text);
+}
+
+function fadeoutCountdown() {
+  $("#tribeCountdownWrapper")
+    .css("opacity", 1)
+    .animate(
+      {
+        opacity: 0,
+      },
+      1000,
+      () => {
+        $("#tribeCountdownWrapper").addClass("hidden").css("opacity", 1);
+      }
+    );
+}
+
 MP.socket.on("connect", (f) => {
   MP.state = 1;
   MP.reconnectionAttempts = 0;
@@ -426,25 +455,48 @@ MP.socket.on("mp_system_message", (data) => {
 MP.socket.on("mp_room_test_start", (data) => {
   // changePage('');
   // mp_testCountdown();
-  startTest();
-  Misc.showNotification("test starting");
+  // startTest();
+  setTimeout(() => {
+    if (!testActive) {
+      startTest();
+    }
+  }, 500);
+  // Misc.showNotification("test starting");
+  updateCountdown("Go");
+  fadeoutCountdown();
 });
 
 MP.socket.on("mp_room_test_countdown", (data) => {
-  Misc.showNotification(`countdown ${data.val}`);
+  updateCountdown(data.val);
+  // Misc.showNotification(`countdown ${data.val}`);
 });
 
 MP.socket.on("mp_room_test_init", (data) => {
   MP.room.testStats = {};
-  Math.seedrandom(data.seed);
+  seedrandom(data.seed);
   mp_refreshTestUserList();
   changePage("");
   restartTest(false, true, true);
+  showCountdown();
 });
 
 MP.socket.on("mp_room_state_update", (data) => {
   MP.state = data.newState;
   console.log(`state changed to ${data.newState}`);
+});
+
+MP.socket.on("mp_room_user_test_progress_update", (data) => {
+  $(`.tribePlayers [socketId=${data.socketId}] .wpm`).text(data.stats.wpm);
+  $(`.tribePlayers [socketId=${data.socketId}] .acc`).text(
+    Math.floor(data.stats.acc) + "%"
+  );
+  $(`.tribePlayers [socketId=${data.socketId}] .bar`).animate(
+    {
+      width: data.stats.progress + "%",
+    },
+    1000,
+    "linear"
+  );
 });
 
 MP.socket.on("mp_room_test_progress_update", (data) => {

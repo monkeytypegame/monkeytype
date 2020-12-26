@@ -852,6 +852,16 @@
               </div>
             </div>
             <div
+              class="icon-button"
+              tabindex="2"
+              href="/tribe"
+              onclick="this.blur();"
+            >
+              <div class="icon">
+                <i class="fas fa-satellite-dish"></i>
+              </div>
+            </div>
+            <div
               class="icon-button view-about"
               tabindex="2"
               href="/about"
@@ -1004,6 +1014,7 @@
                 Caps Lock
               </div>
               <div id="testModesNotice"></div>
+              <table class="tribePlayers hidden"></table>
               <div id="caret" class="default size15"></div>
               <div id="paceCaret" class="default size15 hidden"></div>
               <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
@@ -1021,6 +1032,9 @@
               </div>
               <div id="wordsWrapper">
                 <div id="words" class="size15"></div>
+              </div>
+              <div id="tribeCountdownWrapper" class="hidden">
+                <div id="tribeCountdown">Go</div>
               </div>
               <div class="keymap hidden">
                 <div class="row r1">
@@ -3536,6 +3550,102 @@
               </div>
             </div>
           </div>
+
+          <div class="page pageTribe hidden">
+            <div class="preloader">
+              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              <div class="text">Waiting for login</div>
+            </div>
+
+            <div class="prelobby hidden">
+              <div class="welcome">
+                Welcome to
+                <span style="color: var(--main-color)">Tribe</span>
+                .
+              </div>
+              <div class="matchmaking">
+                <!-- <div id="joinRandomRoom" class="button">Join random room</div> -->
+                <div class="title">matchmaking</div>
+                <div class="buttons">
+                  <div id="matchmake15" class="button">
+                    <i class="fas fa-clock"></i>
+                    Time 15
+                  </div>
+                  <div id="matchmake60" class="button">
+                    <i class="fas fa-clock"></i>
+                    Time 60
+                  </div>
+                  <div id="matchmakeQuote" class="button">
+                    <i class="fas fa-quote-right"></i>
+                    Quotes
+                  </div>
+                </div>
+                <span style="text-align: center; color: var(--sub-color)">
+                  Coming soon...
+                </span>
+              </div>
+              <div class="privateRooms">
+                <div class="title">private rooms</div>
+                <div id="createPrivateRoom" class="button">
+                  <i class="fas fa-users"></i>
+                  Create room
+                </div>
+                <div id="joinByCode">
+                  <div class="customInput">
+                    <span class="byte">--</span>
+                    /
+                    <span class="byte">--</span>
+                    /
+                    <span class="byte">--</span>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Code"
+                    maxlength="6"
+                    class=""
+                  />
+                  <div class="button">
+                    <i class="fas fa-chevron-right"></i>
+                    Join room
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lobby hidden">
+              <div class="currentSettings">
+                <div class="title">current settings</div>
+                <div class="groups"></div>
+              </div>
+              <div class="lobbyButtons">
+                <div class="button startTestButton">
+                  <i class="fas fa-keyboard"></i>
+                  Start test
+                </div>
+                <div class="button leaveRoomButton">
+                  <i class="fas fa-door-open"></i>
+                  Leave room
+                </div>
+              </div>
+              <div class="chat">
+                <div class="title">chat</div>
+                <div class="messages"></div>
+                <div class="input">
+                  <input type="text" placeholder="Send a message" />
+                </div>
+              </div>
+              <div class="userlist">
+                <div class="title">users</div>
+                <div class="list"></div>
+              </div>
+              <div class="inviteLink">
+                <div class="code">
+                  <div class="title">room code</div>
+                  <div class="text"></div>
+                </div>
+                <div class="link"></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div id="bottom">
           <div id="commandLineMobileButton">
@@ -3610,6 +3720,16 @@
             </div>
           </div>
         </div>
+        <div
+          id="ad1"
+          class="hidden"
+          style="
+            display: flex;
+            justify-content: center;
+            width: 1px;
+            justify-self: center;
+          "
+        ></div>
       </div>
       <div id="ad3" class="hidden"></div>
     </div>
@@ -3632,5 +3752,6 @@
   <script src="js/jquery.cookie-1.4.1.min.js"></script>
   <script src="js/moment.min.js"></script>
   <script src="js/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
   <script src="js/monkeytype.js"></script>
 </html>

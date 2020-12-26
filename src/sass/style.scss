@@ -2062,6 +2062,24 @@ key {
 .pageTest {
   position: relative;
 
+  #tribeCountdownWrapper {
+    width: 100%;
+    height: 0;
+    display: flex;
+    justify-content: center;
+    #tribeCountdown {
+      z-index: 999;
+      width: 7rem;
+      height: 5rem;
+      font-size: 3rem;
+      color: var(--bg-color);
+      background-color: var(--main-color);
+      border-radius: var(--roundness);
+      line-height: 5rem;
+      text-align: center;
+    }
+  }
+
   .ssWatermark {
     font-size: 1.25rem;
     color: var(--sub-color);
@@ -2069,47 +2087,46 @@ key {
     text-align: right;
   }
 
-  .tribePlayers{
+  .tribePlayers {
     // display: grid;
     // gap: 0.5rem;
     margin-bottom: 1rem;
-    .player{
-      .name{
+    .player {
+      .name {
         color: var(--sub-color);
       }
-      .progress{
+      .progress {
         width: 100%;
         padding: 0 1rem;
-        .barBg{
+        .barBg {
           width: 100%;
-          height: .25rem;
+          height: 0.25rem;
           background: rgba(0, 0, 0, 0.1);
           border-radius: var(--roundness);
-          .bar{
-            height: .25rem;
+          .bar {
+            height: 0.25rem;
             background: var(--sub-color);
             left: 0;
             border-radius: var(--roundness);
           }
         }
       }
-      .stats{
+      .stats {
         text-align: right;
         grid-template-columns: auto auto;
         color: var(--sub-color);
         display: flex;
         justify-content: flex-end;
         min-width: 90px;
-        .acc{
+        .acc {
           margin-left: 1rem;
         }
       }
     }
-    .player.me .barBg .bar{
+    .player.me .barBg .bar {
       background: var(--main-color);
     }
   }
-  
 }
 
 .pageLogin {
@@ -2611,7 +2628,7 @@ key {
   }
 }
 
-.pageTribe{
+.pageTribe {
   display: grid;
   gap: 1rem;
   .preloader {
@@ -2620,167 +2637,169 @@ key {
     display: grid;
     justify-items: center;
     gap: 1rem;
-    .text{
+    .text {
       font-size: 1rem;
       color: var(--sub-color);
     }
   }
-  .prelobby{
+  .prelobby {
     display: grid;
-    grid-template-areas: "welcome welcome"
-                         "mm priv";
+    grid-template-areas:
+      "welcome welcome"
+      "mm priv";
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
-    .welcome{
+    .welcome {
       font-size: 2rem;
       color: var(--text-color);
     }
-    .matchmaking{
+    .matchmaking {
       grid-area: mm;
       display: grid;
       gap: 1rem;
-      .title{
+      .title {
         color: var(--sub-color);
       }
-      .buttons{
+      .buttons {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
         gap: 1rem;
-        .button{
+        .button {
           padding: 2rem 0;
         }
       }
     }
-    .privateRooms{
+    .privateRooms {
       grid-area: priv;
       display: grid;
       gap: 1rem;
-      .title{
+      .title {
         color: var(--sub-color);
       }
-      #createPrivateRoom{
+      #createPrivateRoom {
         padding: 2rem 0;
       }
     }
-    #joinByCode{
+    #joinByCode {
       display: grid;
       grid-auto-flow: column;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
-      .button{
-        padding: .7rem;
+      .button {
+        padding: 0.7rem;
       }
-      input{
+      input {
         position: absolute;
         opacity: 0;
       }
-      .customInput{
+      .customInput {
         color: var(--sub-color);
         display: flex;
         justify-content: center;
         align-items: center;
         font-size: 1.5rem;
-        .byte{
-          transition: .125s;
-          &.focused{
+        .byte {
+          transition: 0.125s;
+          &.focused {
             color: var(--main-color);
           }
         }
       }
     }
   }
-  .lobby{
+  .lobby {
     display: grid;
-    grid-template-areas: "currentsettings lobbyButtons"
-                         "chat userlist"
-                         "inviteLink inviteLink";
+    grid-template-areas:
+      "currentsettings lobbyButtons"
+      "chat userlist"
+      "inviteLink inviteLink";
     gap: 2rem;
     grid-template-columns: 3fr 1fr;
-    .title{
+    .title {
       color: var(--sub-color);
     }
-    .lobbyButtons{
+    .lobbyButtons {
       grid-area: lobbyButtons;
       display: flex;
       flex-direction: column;
       gap: 1rem;
       justify-content: center;
-      .startTestButton{
+      .startTestButton {
         background: var(--main-color);
         color: var(--bg-color);
-        &:hover{
+        &:hover {
           background: var(--text-color);
         }
       }
     }
-    .currentSettings{
+    .currentSettings {
       grid-area: currentsettings;
-      .groups{
+      .groups {
         display: grid;
         // grid-auto-flow: column;
         justify-items: center;
         grid-template-columns: 1fr 1fr 1fr 1fr;
-        .group{
-          padding: .5rem;
+        .group {
+          padding: 0.5rem;
           color: var(--text-color);
-          .fas,.far{
-            margin-right: .5rem;
+          .fas,
+          .far {
+            margin-right: 0.5rem;
             color: var(--main-color);
           }
         }
       }
     }
-    .chat{
+    .chat {
       grid-area: chat;
       gap: 1rem;
-      .messages{
+      .messages {
         height: 200px;
         overflow-y: scroll;
-        .systemMessage{
+        .systemMessage {
           color: var(--sub-color);
         }
-        .message{
+        .message {
           display: flex;
-          gap: .5rem;
+          gap: 0.5rem;
           color: var(--text-color);
-          .author{
+          .author {
             color: var(--main-color);
           }
         }
       }
-      .input input{
+      .input input {
         width: 100%;
       }
     }
-    .inviteLink{
+    .inviteLink {
       grid-area: inviteLink;
       text-align: center;
       color: var(--sub-color);
-      .title{
+      .title {
         line-height: 1rem;
         font-size: 1rem;
       }
-      .text{
+      .text {
         font-size: 2rem;
         line-height: 2rem;
         color: var(--main-color);
         cursor: pointer;
       }
-      .link{
+      .link {
         font-size: 0.75rem;
         cursor: pointer;
       }
     }
-    .userlist{
+    .userlist {
       grid-area: userlist;
     }
   }
-
 }
 
 .pageAccount {
   display: grid;
-  gap: 1rem; 
+  gap: 1rem;
 
   .content {
     display: grid;
