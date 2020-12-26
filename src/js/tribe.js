@@ -56,7 +56,7 @@ function mp_applyRoomConfig(cfg) {
   setDifficulty(cfg.difficulty, true, true);
   setBlindMode(cfg.blindMode, true, true);
   setLanguage(cfg.language, true, true);
-  activateFunbox(cfg.funbox, true, true);
+  activateFunbox(cfg.funbox, null, true);
   setStopOnError(cfg.stopOnError, true, true);
   setConfidenceMode(cfg.confidenceMode, true, true);
 }
