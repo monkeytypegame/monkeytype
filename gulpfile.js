@@ -19,6 +19,7 @@ let eslintConfig = {
     "moment",
     "html2canvas",
     "ClipboardItem",
+    "io",
   ],
   envs: ["es6", "browser", "node"],
   rules: {

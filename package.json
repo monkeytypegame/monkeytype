@@ -46,6 +46,7 @@
     "chart.js": "^2.9.4",
     "chartjs-plugin-annotation": "^0.5.7",
     "chartjs-plugin-trendline": "^0.2.2",
+    "seedrandom": "^3.0.5",
     "socket.io-client": "^3.0.4"
   }
 }
