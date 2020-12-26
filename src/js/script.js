@@ -4684,6 +4684,8 @@ $(document).keydown(function (event) {
     return;
   }
 
+  if (MP.state >= 10 && MP.state <= 20) return;
+
   //backspace
   const isBackspace =
     event.key === "Backspace" ||
