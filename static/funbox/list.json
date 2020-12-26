@@ -1,0 +1,98 @@
+[
+  {
+    "name": "nausea",
+    "type": "style",
+    "info": "I think I'm gonna be sick."
+  },
+  {
+    "name": "round_round_baby",
+    "type": "style",
+    "info": "...right round, like a record baby. Right, round round round."
+  },
+  {
+    "name": "simon_says",
+    "type": "style",
+    "info": "Type what simon says."
+  },
+  {
+    "name": "mirror",
+    "type": "style",
+    "info": "Everything is mirrored!"
+  },
+  {
+    "name": "tts",
+    "type": "script",
+    "info": "Listen closely."
+  },
+  {
+    "name": "choo_choo",
+    "type": "style",
+    "info": "All the letters are spinning!"
+  },
+  {
+    "name": "rAnDoMcAsE",
+    "type": "script",
+    "info": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is."
+  },
+  {
+    "name": "layoutfluid",
+    "type": "script",
+    "info": "Switch between QWERTY, Dvorak and Colemak after a third of the test."
+  },
+  {
+    "name": "earthquake",
+    "type": "style",
+    "info": "Everybody get down! The words are shaking!"
+  },
+  {
+    "name": "space_balls",
+    "type": "style",
+    "info": "In a galaxy far far away."
+  },
+  {
+    "name": "gibberish",
+    "type": "script",
+    "info": "Anvbuefl dizzs eoos alsb?"
+  },
+  {
+    "name": "58008",
+    "type": "script",
+    "info": "A special mode for accountants."
+  },
+  {
+    "name": "ascii",
+    "type": "script",
+    "info": "Where was the ampersand again?. Only ASCII characters."
+  },
+  {
+    "name": "specials",
+    "type": "script",
+    "info": "!@#$%^&*. Only special characters."
+  },
+  {
+    "name": "plus_one",
+    "type": "script",
+    "info": "React quickly! Only one future word is visible."
+  },
+  {
+    "name": "read_ahead",
+    "type": "style",
+    "info": "Current and the next word is invisible!"
+  },
+  {
+    "name": "read_ahead_easy",
+    "type": "style",
+    "info": "Only the current word is invisible."
+  },
+  {
+    "name": "memory",
+    "type": "script",
+    "info": "Test your memory. Remember the words and type them blind."
+  },
+  {
+    "name": "nospace",
+    "type": "script",
+    "info": "Whoneedsspacesanyway?"
+  }
+]
+
