@@ -1,6 +1,6 @@
 let MP = {
   state: -1,
-  socket: io("http://localhost:3000", {
+  socket: io("http://52.14.235.93:3001", {
     autoConnect: false,
     reconnectionAttempts: 3,
   }),
@@ -156,6 +156,26 @@ function mp_refreshTestUserList() {
     `);
   });
   $(".tribePlayers").removeClass("hidden");
+
+  $(".tribeResult tbody").empty();
+  MP.room.users.forEach((user) => {
+    let me = "";
+    if (user.socketId === MP.socket.id) {
+      me = " me";
+    }
+    $(".tribeResult").append(`
+    <tr class="player ${me}" socketId="${user.socketId}">
+      <td class="name">${user.name}</td>
+      <td class="wpm">-</td>
+      <td class="acc">-</td>
+      <td class="raw">-</td>
+      <td class="char">-</td>
+      <td class="con">-</td>
+      <td class="pos">-</td>
+    </tr>
+    `);
+  });
+  $(".tribeResult").removeClass("hidden");
 }
 
 function mp_refreshConfig() {
@@ -490,6 +510,10 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
   $(`.tribePlayers [socketId=${data.socketId}] .acc`).text(
     Math.floor(data.stats.acc) + "%"
   );
+  $(`.tribeResult [socketId=${data.socketId}] .wpm`).text(data.stats.wpm);
+  $(`.tribeResult [socketId=${data.socketId}] .acc`).text(
+    Math.floor(data.stats.acc) + "%"
+  );
   $(`.tribePlayers [socketId=${data.socketId}] .bar`).animate(
     {
       width: data.stats.progress + "%",
@@ -499,26 +523,20 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
   );
 });
 
-MP.socket.on("mp_room_test_progress_update", (data) => {
-  if (data.length === 0) return;
-  MP.room.testStats = data.stats;
-  if (data.instant) {
-    Object.keys(data.stats).forEach((socketId) => {
-      $(`.tribePlayers [socketId=${socketId}] .wpm`).text(
-        data.stats[socketId].wpm
-      );
-      $(`.tribePlayers [socketId=${socketId}] .acc`).text(
-        data.stats[socketId].acc
-      );
-      $(`.tribePlayers [socketId=${socketId}] .bar`).animate(
-        {
-          width: data.stats[socketId].progress + "%",
-        },
-        1000,
-        "linear"
-      );
-    });
-  }
+MP.socket.on("mp_room_user_finished", (data) => {
+  $(`.tribeResult [socketId=${data.socketId}] .wpm`).text(data.result.wpm);
+  $(`.tribeResult [socketId=${data.socketId}] .acc`).text(
+    data.result.acc + "%"
+  );
+  $(`.tribeResult [socketId=${data.socketId}] .raw`).text(data.result.raw);
+  $(`.tribeResult [socketId=${data.socketId}] .char`).text(data.result.char);
+  $(`.tribeResult [socketId=${data.socketId}] .con`).text(data.result.con);
+});
+
+MP.socket.on("mp_room_winner", (data) => {
+  $(`.tribeResult [socketId=${data.socketId}] .pos`).text(
+    "1st " + data.official
+  );
 });
 
 $(".pageTribe #createPrivateRoom").click((f) => {

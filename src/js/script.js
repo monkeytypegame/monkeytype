@@ -2529,9 +2529,10 @@ function showResult(difficultyFailed = false) {
     }
     mp_testFinished({
       wpm: completedEvent.wpm,
-      raw: completedEvent.raw,
-      accuracy: completedEvent.acc,
-      consistency: completedEvent.consistency,
+      acc: completedEvent.acc,
+      raw: completedEvent.rawWpm,
+      char: `${completedEvent.correctChars}/${completedEvent.incorrectChars}/${stats.extraChars}/${stats.missedChars}`,
+      con: completedEvent.consistency,
       duration: completedEvent.testDuration,
       invalid: testInvalid,
       failed: difficultyFailed,

@@ -1405,6 +1405,7 @@ key {
   align-items: center;
   grid-template-columns: auto 1fr;
   grid-template-areas:
+    "tribe tribe"
     "stats chart"
     "morestats morestats";
   // "wordsHistory wordsHistory"
@@ -1463,6 +1464,20 @@ key {
     color: var(--sub-color);
     // grid-area: login;
     grid-column: 1/3;
+  }
+
+  .tribeResult {
+    grid-area: tribe;
+    thead {
+      color: var(--sub-color);
+      font-size: 0.75rem;
+    }
+    tbody tr {
+      color: var(--text-color);
+      &.me {
+        color: var(--main-color);
+      }
+    }
   }
 
   .stats {

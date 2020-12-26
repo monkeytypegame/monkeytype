@@ -9,7 +9,8 @@
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve\"",
     "deploy:live:hosting": "npm run build && firebase deploy -P monkey-type --only hosting",
     "deploy:live:functions": "npm run build && firebase deploy -P monkey-type --only functions",
-    "deploy:live": "npm run build && firebase deploy -P live"
+    "deploy:live": "npm run build && firebase deploy -P live",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting"
   },
   "engines": {
     "node": "10"
