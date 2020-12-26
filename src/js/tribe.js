@@ -1,8 +1,8 @@
 let MP = {
   state: -1,
-  socket: io('localhost:3000', { autoConnect: false, reconnectionAttempts: 3 }),
+  socket: io("localhost:3000", { autoConnect: false, reconnectionAttempts: 3 }),
   reconnectionAttempts: 0,
-}
+};
 
 //-1 - disconnected
 //1 - connected
@@ -10,19 +10,18 @@ let MP = {
 //20 - test about to start
 //21 - test active
 //28 - leader finished
-//29 - everybody finished 
+//29 - everybody finished
 
 function mp_init() {
-  $(".pageTribe .preloader .text").text('Connecting to Tribe');
+  $(".pageTribe .preloader .text").text("Connecting to Tribe");
   MP.socket.connect();
 }
 
 function mp_refreshUserList() {
   $(".pageTribe .lobby .userlist .list").empty();
-  MP.room.users.forEach(user => {
-    let crown = '';
+  MP.room.users.forEach((user) => {
+    let crown = "";
     if (user.isLeader) {
-
       if (user.socketId === MP.socket.id) {
         MP.room.isLeader = true;
       }
@@ -31,29 +30,29 @@ function mp_refreshUserList() {
     }
     $(".pageTribe .lobby .userlist .list").append(`
     <div class='user'>${user.name} ${crown}</div>
-    `)
-  })
+    `);
+  });
 }
 
-function mp_resetLobby(){
+function mp_resetLobby() {
   $(".pageTribe .lobby .userlist .list").empty();
   $(".pageTribe .lobby .chat .messages").empty();
-  $(".pageTribe .lobby .inviteLink .code .text").text('');
-  $(".pageTribe .lobby .inviteLink .link").text('');
+  $(".pageTribe .lobby .inviteLink .code .text").text("");
+  $(".pageTribe .lobby .inviteLink .link").text("");
 }
 
 function mp_applyRoomConfig(cfg) {
-  changeMode(cfg.mode, true, true);
+  setMode(cfg.mode, true, true);
   if (cfg.mode === "time") {
-    changeTimeConfig(cfg.mode2, true, true);
+    setTimeConfig(cfg.mode2, true, true);
   } else if (cfg.mode === "words") {
-    changeWordCount(cfg.mode2, true, true);
+    setWordCount(cfg.mode2, true, true);
   } else if (cfg.mode === "quote") {
-    changeQuoteLength(cfg.mode2, true, true);
+    setQuoteLength(cfg.mode2, true, true);
   }
   setDifficulty(cfg.difficulty, true, true);
   setBlindMode(cfg.blindMode, true, true);
-  changeLanguage(cfg.language, true, true);
+  setLanguage(cfg.language, true, true);
   activateFunbox(cfg.funbox, true, true);
   setStopOnError(cfg.stopOnError, true, true);
   setConfidenceMode(cfg.confidenceMode, true, true);
@@ -62,13 +61,13 @@ function mp_applyRoomConfig(cfg) {
 function mp_checkIfCanChangeConfig(mp) {
   if (MP.state >= 10) {
     if (MP.state >= 20) {
-      showNotification("You can't change settings during the test", 3000);
+      Misc.showNotification("You can't change settings during the test", 3000);
       return false;
-    }else if (MP.room.isLeader) {
+    } else if (MP.room.isLeader) {
       return true;
     } else {
       if (mp) return true;
-      showNotification("Only the leader can change this setting", 3000);
+      Misc.showNotification("Only the leader can change this setting", 3000);
       return false;
     }
   } else {
@@ -94,15 +93,16 @@ function mp_syncConfig() {
       language: config.language,
       funbox: activeFunBox,
       stopOnError: config.stopOnError,
-      confidenceMode: config.confidenceMode
-  }});
+      confidenceMode: config.confidenceMode,
+    },
+  });
 }
 
 function mp_joinRoomByCode(code) {
   code = "room_" + code;
   MP.socket.emit("mp_room_join", { roomId: code });
-  $(".pageTribe .prelobby #joinByCode input").val('');
-  
+  $(".pageTribe .prelobby #joinByCode input").val("");
+
   $(".pageTribe .prelobby #joinByCode .customInput").html(`
     <span class="byte">--</span>
     /
@@ -110,31 +110,32 @@ function mp_joinRoomByCode(code) {
     /
     <span class="byte">--</span>
   `);
-  
 }
 
 function mp_startTest() {
-  MP.socket.emit('mp_room_test_start');
+  MP.socket.emit("mp_room_test_start");
 }
 
 function mp_sendTestProgress(wpm, acc, progress) {
-  MP.socket.emit('mp_room_test_progress_update', {
-    socketId: MP.socket.id,
-    roomId: MP.room.id,
-    stats: {
-      wpm: wpm,
-      acc: acc,
-      progress: progress
-    }
-  })
+  if (MP.state > 20) {
+    MP.socket.emit("mp_room_test_progress_update", {
+      socketId: MP.socket.id,
+      roomId: MP.room.id,
+      stats: {
+        wpm: wpm,
+        acc: acc,
+        progress: progress,
+      },
+    });
+  }
 }
 
 function mp_refreshTestUserList() {
   $(".tribePlayers").empty();
-  MP.room.users.forEach(user => {
-    let me = '';
+  MP.room.users.forEach((user) => {
+    let me = "";
     if (user.socketId === MP.socket.id) {
-      me = ' me';
+      me = " me";
     }
     $(".tribePlayers").append(`
     <tr class="player ${me}" socketId="${user.socketId}">
@@ -149,9 +150,9 @@ function mp_refreshTestUserList() {
         <div class="acc">-</div>
       </td>
     </tr>
-    `)
-  })
-  $(".tribePlayers").removeClass('hidden');
+    `);
+  });
+  $(".tribePlayers").removeClass("hidden");
 }
 
 function mp_refreshConfig() {
@@ -163,7 +164,7 @@ function mp_refreshConfig() {
     <i class="fas fa-bars"></i>${MP.room.config.mode}
     </div>
     `);
-  
+
   if (MP.room.config.mode === "time") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Time" data-balloon-pos="up">
@@ -177,13 +178,12 @@ function mp_refreshConfig() {
     </div>
     `);
   } else if (MP.room.config.mode === "quote") {
-
     let qstring = "all";
     let num = MP.room.config.mode2;
     if (num == 0) {
       qstring = "short";
     } else if (num == 1) {
-      qstring = "medium";  
+      qstring = "medium";
     } else if (num == 2) {
       qstring = "long";
     } else if (num == 3) {
@@ -196,7 +196,7 @@ function mp_refreshConfig() {
     </div>
     `);
   }
-  
+
   $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Language" data-balloon-pos="up">
     <i class="fas fa-globe-americas"></i>${MP.room.config.language}
@@ -215,7 +215,7 @@ function mp_refreshConfig() {
     <i class="fas fa-star-half-alt"></i>expert
     </div>
     `);
-  } else if (MP.room.config.difficulty === "master"){
+  } else if (MP.room.config.difficulty === "master") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Difficulty" data-balloon-pos="up">
     <i class="fas fa-star"></i>master
@@ -255,7 +255,7 @@ function mp_refreshConfig() {
     <i class="fas fa-backspace"></i>confidence
     </div>
     `);
-  } else if (MP.room.config.confidenceMode === "max"){
+  } else if (MP.room.config.confidenceMode === "max") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Confidence mode" data-balloon-pos="up">
     <i class="fas fa-backspace"></i>max
@@ -276,51 +276,50 @@ function mp_refreshConfig() {
     </div>
     `);
   }
-
 }
 
 function mp_testFinished(result) {
-  MP.socket.emit('mp_room_test_finished', {result: result})
+  MP.socket.emit("mp_room_test_finished", { result: result });
 }
 
-MP.socket.on('connect', (f) => {
+MP.socket.on("connect", (f) => {
   MP.state = 1;
   MP.reconnectionAttempts = 0;
-  showNotification('Connected to Tribe', 1000);
+  Misc.showNotification("Connected to Tribe", 1000);
   let name = "Guest";
   if (firebase.auth().currentUser !== null) {
-    name = firebase.auth().currentUser.displayName
+    name = firebase.auth().currentUser.displayName;
   }
   MP.id = MP.socket.id;
   MP.name = name;
   MP.socket.emit("mp_system_name_set", { name: name });
-  $(".pageTribe .lobby div").removeClass('hidden');
-  $(".pageTribe .prelobby div").removeClass('hidden');
+  $(".pageTribe .lobby div").removeClass("hidden");
+  $(".pageTribe .prelobby div").removeClass("hidden");
   setTimeout(() => {
-  if (MP.autoJoin) {
-    MP.socket.emit("mp_room_join", { roomId: MP.autoJoin });
-    MP.autoJoin = undefined;
-    swapElements($(".pageTribe .preloader"), $(".pageTribe .lobby"), 250);
-  } else {
-    swapElements($(".pageTribe .preloader"), $(".pageTribe .prelobby"), 250);
+    if (MP.autoJoin) {
+      MP.socket.emit("mp_room_join", { roomId: MP.autoJoin });
+      MP.autoJoin = undefined;
+      swapElements($(".pageTribe .preloader"), $(".pageTribe .lobby"), 250);
+    } else {
+      swapElements($(".pageTribe .preloader"), $(".pageTribe .prelobby"), 250);
     }
-  },250)
-})
+  }, 250);
+});
 
-MP.socket.on('disconnect', (f) => {
+MP.socket.on("disconnect", (f) => {
   MP.state = -1;
   MP.room = undefined;
-  showNotification('Disconnected from Tribe', 1000);
+  Misc.showNotification("Disconnected from Tribe", 1000);
   mp_resetLobby();
   $(".pageTribe div").addClass("hidden");
-  $('.pageTribe .preloader').removeClass('hidden').css('opacity',1);
+  $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
   $(".pageTribe .preloader").html(`
   <i class="fas fa-fw fa-times"></i>
             <div class="text">Disconnected from tribe</div>
             `);
-})
+});
 
-MP.socket.on('connect_failed', (f) => {
+MP.socket.on("connect_failed", (f) => {
   MP.state = -1;
   MP.reconnectionAttempts++;
   if (MP.reconnectionAttempts === 4) {
@@ -329,11 +328,11 @@ MP.socket.on('connect_failed', (f) => {
     <div class="text">Connection failed.</div>
             `);
   } else {
-    $(".pageTribe .preloader .text").text('Connection failed. Retrying');
+    $(".pageTribe .preloader .text").text("Connection failed. Retrying");
   }
-})
+});
 
-MP.socket.on('connect_error', (f) => {
+MP.socket.on("connect_error", (f) => {
   MP.state = -1;
   MP.reconnectionAttempts++;
   console.error(f);
@@ -343,59 +342,63 @@ MP.socket.on('connect_error', (f) => {
     <div class="text">Connection failed</div>
             `);
   } else {
-    $(".pageTribe .preloader .text").text('Connection error. Retrying');
-    showNotification('Tribe connection error: ' + f.message, 3000);
+    $(".pageTribe .preloader .text").text("Connection error. Retrying");
+    Misc.showNotification("Tribe connection error: " + f.message, 3000);
   }
-})
+});
 
-MP.socket.on('mp_room_joined', data => {
+MP.socket.on("mp_room_joined", (data) => {
   MP.room = data.room;
-  if (MP.room.users.filter(user => user.socketId === MP.socket.id)[0].isLeader) {
+  if (
+    MP.room.users.filter((user) => user.socketId === MP.socket.id)[0].isLeader
+  ) {
     MP.room.isLeader = true;
   }
   mp_refreshUserList();
   if (MP.state === 10) {
     //user is already in the room and somebody joined
-  } else if(MP.state === 1) {
+  } else if (MP.state === 1) {
     //user is in prelobby and joined a room
     mp_applyRoomConfig(MP.room.config);
     mp_refreshConfig();
     let link = "www.monkeytype.com/tribe" + MP.room.id.substring(4);
-    $(".pageTribe .lobby .inviteLink .code .text").text(MP.room.id.substring(5));
+    $(".pageTribe .lobby .inviteLink .code .text").text(
+      MP.room.id.substring(5)
+    );
     $(".pageTribe .lobby .inviteLink .link").text(link);
     swapElements($(".pageTribe .prelobby"), $(".pageTribe .lobby"), 250, () => {
       MP.state = 10;
       // $(".pageTribe .prelobby").addClass('hidden');
     });
     if (MP.room.isLeader) {
-      $(".pageTribe .lobby .startTestButton").removeClass('hidden');
+      $(".pageTribe .lobby .startTestButton").removeClass("hidden");
     } else {
-      $(".pageTribe .lobby .startTestButton").addClass('hidden');
+      $(".pageTribe .lobby .startTestButton").addClass("hidden");
     }
   }
-})
+});
 
-MP.socket.on('mp_room_leave', () => {
+MP.socket.on("mp_room_leave", () => {
   MP.state = 1;
   MP.room = undefined;
   mp_resetLobby();
-  swapElements($('.pageTribe .lobby'), $(".pageTribe .prelobby"), 250);
-})
+  swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
+});
 
-MP.socket.on('mp_room_user_left', data => {
+MP.socket.on("mp_room_user_left", (data) => {
   MP.room = data.room;
   mp_refreshUserList();
-})
+});
 
-MP.socket.on('mp_room_config_update', data => {
+MP.socket.on("mp_room_config_update", (data) => {
   MP.room.config = data.newConfig;
   mp_refreshConfig();
-  if(!MP.room.isLeader) mp_applyRoomConfig(MP.room.config);
-})
+  if (!MP.room.isLeader) mp_applyRoomConfig(MP.room.config);
+});
 
-MP.socket.on('mp_chat_message', data => {
+MP.socket.on("mp_chat_message", (data) => {
   let cls = "message";
-  let author = '';
+  let author = "";
   if (data.isSystem) {
     cls = "systemMessage";
   } else {
@@ -405,58 +408,71 @@ MP.socket.on('mp_chat_message', data => {
     <div class="${cls}">${author}${data.message}</div>
   `);
   let chatEl = $(".pageTribe .lobby .chat .messages");
-  chatEl.animate({ scrollTop: $($(".pageTribe .lobby .chat .message")[0]).outerHeight() * 2 * $(".pageTribe .lobby .chat .messages .message").length }, 0);
-})
+  chatEl.animate(
+    {
+      scrollTop:
+        $($(".pageTribe .lobby .chat .message")[0]).outerHeight() *
+        2 *
+        $(".pageTribe .lobby .chat .messages .message").length,
+    },
+    0
+  );
+});
 
-MP.socket.on('mp_system_message', data => {
-  showNotification(`Tribe: ${data.message}`,2000);
-})
+MP.socket.on("mp_system_message", (data) => {
+  Misc.showNotification(`Tribe: ${data.message}`, 2000);
+});
 
-MP.socket.on('mp_room_test_start', data => {
+MP.socket.on("mp_room_test_start", (data) => {
   // changePage('');
   // mp_testCountdown();
   startTest();
-  showNotification('test starting');
-})
+  Misc.showNotification("test starting");
+});
 
-MP.socket.on('mp_room_test_countdown', data => {
-  showNotification(`countdown ${data.val}`);
-})
+MP.socket.on("mp_room_test_countdown", (data) => {
+  Misc.showNotification(`countdown ${data.val}`);
+});
 
-MP.socket.on('mp_room_test_init', data => {
+MP.socket.on("mp_room_test_init", (data) => {
   MP.room.testStats = {};
   Math.seedrandom(data.seed);
   mp_refreshTestUserList();
-  changePage('');
+  changePage("");
   restartTest(false, true, true);
-})
+});
 
-MP.socket.on('mp_room_state_update', data => {
+MP.socket.on("mp_room_state_update", (data) => {
   MP.state = data.newState;
   console.log(`state changed to ${data.newState}`);
-})
+});
 
-MP.socket.on('mp_room_test_progress_update', data => {
+MP.socket.on("mp_room_test_progress_update", (data) => {
   if (data.length === 0) return;
   MP.room.testStats = data.stats;
   if (data.instant) {
-    Object.keys(data.stats).forEach(socketId => {
-      $(`.tribePlayers [socketId=${socketId}] .wpm`).text(data.stats[socketId].wpm);
-      $(`.tribePlayers [socketId=${socketId}] .acc`).text(data.stats[socketId].acc);
-      $(`.tribePlayers [socketId=${socketId}] .bar`).animate({
-        "width":
-          data.stats[socketId].progress + "%"
-      }, 1000, "linear");
-    })
+    Object.keys(data.stats).forEach((socketId) => {
+      $(`.tribePlayers [socketId=${socketId}] .wpm`).text(
+        data.stats[socketId].wpm
+      );
+      $(`.tribePlayers [socketId=${socketId}] .acc`).text(
+        data.stats[socketId].acc
+      );
+      $(`.tribePlayers [socketId=${socketId}] .bar`).animate(
+        {
+          width: data.stats[socketId].progress + "%",
+        },
+        1000,
+        "linear"
+      );
+    });
   }
-})
+});
 
-
-
-$(".pageTribe #createPrivateRoom").click(f => {
+$(".pageTribe #createPrivateRoom").click((f) => {
   activateFunbox("none");
-  changeLanguage("english");
-  changeMode("quote");
+  setLanguage("english");
+  setMode("quote");
   let mode2;
   if (config.mode === "time") {
     mode2 = config.time;
@@ -474,72 +490,73 @@ $(".pageTribe #createPrivateRoom").click(f => {
       language: config.language,
       funbox: activeFunBox,
       stopOnError: config.stopOnError,
-      confidenceMode: config.confidenceMode
-    }
+      confidenceMode: config.confidenceMode,
+    },
   });
-})
+});
 
-$(".pageTribe .lobby .chat .input input").keyup(e => {
+$(".pageTribe .lobby .chat .input input").keyup((e) => {
   if (e.keyCode === 13) {
     let msg = $(".pageTribe .lobby .chat .input input").val();
-    MP.socket.emit('mp_chat_message',
-      {
-        isSystem: false,
-        message: msg,
-        from: {
-          id: MP.socket.id,
-          name: MP.name
-        }
-      });
-    $(".pageTribe .lobby .chat .input input").val('');
+    MP.socket.emit("mp_chat_message", {
+      isSystem: false,
+      message: msg,
+      from: {
+        id: MP.socket.id,
+        name: MP.name,
+      },
+    });
+    $(".pageTribe .lobby .chat .input input").val("");
   }
-})
+});
 
-$(".pageTribe .lobby .inviteLink .text").click(async e => {
+$(".pageTribe .lobby .inviteLink .text").click(async (e) => {
   try {
     await navigator.clipboard.writeText(
       $(".pageTribe .lobby .inviteLink .text").text()
     );
-    showNotification("Code copied", 1000);
+    Misc.showNotification("Code copied", 1000);
   } catch (e) {
-    showNotification("Could not copy to clipboard: " + e, 5000);
+    Misc.showNotification("Could not copy to clipboard: " + e, 5000);
   }
-})
+});
 
-$(".pageTribe .lobby .inviteLink .link").click(async e => {
+$(".pageTribe .lobby .inviteLink .link").click(async (e) => {
   try {
     await navigator.clipboard.writeText(
       $(".pageTribe .lobby .inviteLink .link").text()
     );
-    showNotification("Link copied", 1000);
+    Misc.showNotification("Link copied", 1000);
   } catch (e) {
-    showNotification("Could not copy to clipboard: " + e, 5000);
+    Misc.showNotification("Could not copy to clipboard: " + e, 5000);
   }
-})
+});
 
-$(".pageTribe .prelobby #joinByCode .customInput").click(e => {
+$(".pageTribe .prelobby #joinByCode .customInput").click((e) => {
   $(".pageTribe .prelobby #joinByCode input").focus();
-})
+});
 
-$(".pageTribe .prelobby #joinByCode input").focus(e => {
-  $(".pageTribe .prelobby #joinByCode .customInput .byte").addClass('focused');
-})
+$(".pageTribe .prelobby #joinByCode input").focus((e) => {
+  $(".pageTribe .prelobby #joinByCode .customInput .byte").addClass("focused");
+});
 
-$(".pageTribe .prelobby #joinByCode input").focusout(e => {
-  $(".pageTribe .prelobby #joinByCode .customInput .byte").removeClass('focused');
-})
+$(".pageTribe .prelobby #joinByCode input").focusout((e) => {
+  $(".pageTribe .prelobby #joinByCode .customInput .byte").removeClass(
+    "focused"
+  );
+});
 
-$(".pageTribe .prelobby #joinByCode .button").click(e => {
+$(".pageTribe .prelobby #joinByCode .button").click((e) => {
   let code = $(".pageTribe .prelobby #joinByCode input").val();
   if (code.length !== 6) {
-    showNotification("Code required", 2000);
+    Misc.showNotification("Code required", 2000);
   } else {
     mp_joinRoomByCode(code);
   }
-})
+});
 
-$(".pageTribe .prelobby #joinByCode input").keyup(e => {
-  setTimeout(t => {
+$(".pageTribe .prelobby #joinByCode input").keyup((e) => {
+  setTimeout((t) => {
     // let t1 = "xx";
     // let t2 = "xx";
     // let t2 = "xx";
@@ -552,20 +569,26 @@ $(".pageTribe .prelobby #joinByCode input").keyup(e => {
     // }
     let code = [];
     for (let i = 0; i < 6; i++) {
-      let char = v[i] == undefined ? '-' : v[i];
+      let char = v[i] == undefined ? "-" : v[i];
       code.push(char);
     }
-    let text = code.join('');
-    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[0]).text(text.substring(0,2));
-    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[1]).text(text.substring(2,4));
-    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[2]).text(text.substring(4,6));
-  },0)
-})
+    let text = code.join("");
+    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[0]).text(
+      text.substring(0, 2)
+    );
+    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[1]).text(
+      text.substring(2, 4)
+    );
+    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[2]).text(
+      text.substring(4, 6)
+    );
+  }, 0);
+});
 
-$(".pageTribe .lobby .lobbyButtons .leaveRoomButton").click(e => {
-  MP.socket.emit('mp_room_leave');
-})
+$(".pageTribe .lobby .lobbyButtons .leaveRoomButton").click((e) => {
+  MP.socket.emit("mp_room_leave");
+});
 
-$(".pageTribe .lobby .lobbyButtons .startTestButton").click(e => {
+$(".pageTribe .lobby .lobbyButtons .startTestButton").click((e) => {
   mp_startTest();
-})
+});

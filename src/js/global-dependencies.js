@@ -4,6 +4,8 @@ import Chart from "chart.js";
 import chartTrendline from "chartjs-plugin-trendline";
 import chartAnnotation from "chartjs-plugin-annotation";
 
+import io from "socket.io-client";
+
 Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
 

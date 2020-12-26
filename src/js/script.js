@@ -908,12 +908,6 @@ function addWord() {
 }
 
 function showWords() {
-  //handle right-to-left languages
-  if (words[config.language].leftToRight) {
-    arrangeCharactersLeftToRight();
-  } else {
-    arrangeCharactersRightToLeft();
-  }
   $("#words").empty();
 
   let wordsHTML = "";
@@ -1752,22 +1746,20 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.options.annotation.annotations = [];
 
-
   if (MP.state >= 10) {
-    $('.pageTest #nextTestButton').addClass('hidden');
-    $('.pageTest #restartTestButtonWithSameWordset').addClass('hidden');
-    $('.pageTest #goBackToLobbyButton').removeClass('hidden');
-    $('.pageTest #practiseMissedWordsButton').addClass('hidden');
+    $(".pageTest #nextTestButton").addClass("hidden");
+    $(".pageTest #restartTestButtonWithSameWordset").addClass("hidden");
+    $(".pageTest #goBackToLobbyButton").removeClass("hidden");
+    $(".pageTest #practiseMissedWordsButton").addClass("hidden");
     if (MP.room.isLeader) {
-      $('.pageTest #nextTestButton').removeClass('hidden');
+      $(".pageTest #nextTestButton").removeClass("hidden");
     }
   } else {
-    $('.pageTest #nextTestButton').removeClass('hidden');
-    $('.pageTest #restartTestButtonWithSameWordset').removeClass('hidden');
-    $('.pageTest #goBackToLobbyButton').addClass('hidden');
-    $('.pageTest #practiseMissedWordsButton').removeClass('hidden');
+    $(".pageTest #nextTestButton").removeClass("hidden");
+    $(".pageTest #restartTestButtonWithSameWordset").removeClass("hidden");
+    $(".pageTest #goBackToLobbyButton").addClass("hidden");
+    $(".pageTest #practiseMissedWordsButton").removeClass("hidden");
   }
-
 
   $("#result #resultWordsHistory").addClass("hidden");
 
@@ -2542,8 +2534,8 @@ function showResult(difficultyFailed = false) {
       consistency: completedEvent.consistency,
       duration: completedEvent.testDuration,
       invalid: testInvalid,
-      failed: difficultyFailed
-    })
+      failed: difficultyFailed,
+    });
   }
 
   if (firebase.auth().currentUser != null) {
@@ -2812,7 +2804,6 @@ function startTest() {
           MP.room.testStats === undefined ||
           Object.keys(MP.room.testStats) === 0
         ) {
-          
         } else {
           Object.keys(MP.room.testStats).forEach((socketId) => {
             $(`.tribePlayers [socketId=${socketId}] .wpm`).text(
@@ -2821,13 +2812,15 @@ function startTest() {
             $(`.tribePlayers [socketId=${socketId}] .acc`).text(
               MP.room.testStats[socketId].acc
             );
-            $(`.tribePlayers [socketId=${socketId}] .bar`).stop(true,true).animate(
-              {
-                width: MP.room.testStats[socketId].progress + "%",
-              },
-              250,
-              "linear"
-            );
+            $(`.tribePlayers [socketId=${socketId}] .bar`)
+              .stop(true, true)
+              .animate(
+                {
+                  width: MP.room.testStats[socketId].progress + "%",
+                },
+                250,
+                "linear"
+              );
           });
         }
       }
@@ -3112,7 +3105,7 @@ function changePage(page) {
     }
   } else if (page == "tribe") {
     if (MP.state === 20 || MP.state === 21) {
-      changePage('test');
+      changePage("test");
     } else {
       pageTransition = true;
       restartTest();
@@ -4437,14 +4430,12 @@ function initPractiseMissedWords() {
   modeBeforePractise = mode;
 }
 
-
 $(document).on("keypress", "#goBackToLobbyButton", (event) => {
-  changePage('tribe');
+  changePage("tribe");
 });
 
-
 $(document.body).on("click", "#goBackToLobbyButton", (event) => {
-  changePage('tribe');
+  changePage("tribe");
 });
 
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {

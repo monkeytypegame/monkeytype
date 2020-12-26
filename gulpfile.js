@@ -99,6 +99,7 @@ const refactoredSrc = [
 const globalSrc = [
   "./src/js/global-dependencies.js",
   "./src/js/simple-popups.js",
+  "./src/js/tribe.js",
   "./src/js/words.js",
   "./src/js/userconfig.js",
   "./src/js/commandline.js",
