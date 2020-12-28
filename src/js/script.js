@@ -2420,18 +2420,18 @@ function showResult(difficultyFailed = false) {
                       globalLbString + "<br>" + dailyLbString
                     );
 
-                    CloudFunctions.saveLbMemory({
-                      uid: firebase.auth().currentUser.uid,
-                      obj: db_getSnapshot().lbMemory,
-                    }).then((d) => {
-                      if (d.data.returnCode === 1) {
-                      } else {
-                        Misc.showNotification(
-                          `Error saving lb memory ${d.data.message}`,
-                          4000
-                        );
-                      }
-                    });
+                    // CloudFunctions.saveLbMemory({
+                    //   uid: firebase.auth().currentUser.uid,
+                    //   obj: db_getSnapshot().lbMemory,
+                    // }).then((d) => {
+                    //   if (d.data.returnCode === 1) {
+                    //   } else {
+                    //     Misc.showNotification(
+                    //       `Error saving lb memory ${d.data.message}`,
+                    //       4000
+                    //     );
+                    //   }
+                    // });
                   }
                   if (
                     e.data.dailyLeaderboard === null &&
