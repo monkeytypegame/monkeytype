@@ -1,8 +1,9 @@
 let MP = {
   state: -1,
-  socket: io("http://52.14.235.93:3001", {
+  socket: io("https://52.14.235.93:2096", {
     autoConnect: false,
     reconnectionAttempts: 3,
+    secure: true,
   }),
   reconnectionAttempts: 0,
 };
