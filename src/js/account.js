@@ -1130,7 +1130,9 @@ function setFilter(group, filter, set) {
 
 function showActiveFilters() {
   let aboveChartDisplay = {};
-
+  if (config.resultFilters == undefined) {
+    loadResultFiltersFromCookie();
+  }
   Object.keys(config.resultFilters).forEach((group) => {
     aboveChartDisplay[group] = {
       all: true,
@@ -1310,7 +1312,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
     config.resultFilters.time[config.time] = true;
   } else if (config.mode === "words") {
     config.resultFilters.words[config.words] = true;
-  } else if (config.mode === "quote"){
+  } else if (config.mode === "quote") {
     Object.keys(config.resultFilters.quoteLength).forEach((ql) => {
       config.resultFilters.quoteLength[ql] = true;
     });
