@@ -741,6 +741,62 @@ function incrementT60Bananas(uid, result, userData) {
   }
 }
 
+async function incrementTypingStats(uid, userData, resultObj) {
+  try {
+    let newStarted;
+    let newCompleted;
+    let newTime;
+
+    let tt = 0;
+    let afk = resultObj.afkDuration;
+    if (afk == undefined) {
+      afk = 0;
+    }
+    tt = resultObj.testDuration + resultObj.incompleteTestSeconds - afk;
+
+    if (userData.startedTests === undefined) {
+      newStarted = resultObj.restartCount + 1;
+    } else {
+      newStarted = userData.startedTests + resultObj.restartCount + 1;
+    }
+    if (userData.completedTests === undefined) {
+      newCompleted = 1;
+    } else {
+      newCompleted = userData.completedTests + 1;
+    }
+    if (userData.timeTyping === undefined) {
+      newTime = tt;
+    } else {
+      newTime = userData.timeTyping + tt;
+    }
+    db.collection("users")
+      .doc(uid)
+      .update({
+        startedTests: newStarted,
+        completedTests: newCompleted,
+        timeTyping: roundTo2(newTime),
+      });
+    incrementPublicTypingStats(resultObj.restartCount + 1, 1, tt);
+  } catch (e) {
+    console.error(`Error while incrementing stats for user ${uid}: ${e}`);
+  }
+}
+
+async function incrementPublicTypingStats(started, completed, time) {
+  try {
+    time = roundTo2(time);
+    db.collection("public")
+      .doc("stats")
+      .update({
+        completedTests: admin.firestore.FieldValue.increment(completed),
+        startedTests: admin.firestore.FieldValue.increment(started),
+        timeTyping: admin.firestore.FieldValue.increment(time),
+      });
+  } catch (e) {
+    console.error(`Error while incrementing public stats: ${e}`);
+  }
+}
+
 async function incrementTestCounter(uid, userData) {
   try {
     if (userData.completedTests === undefined) {
@@ -1123,13 +1179,15 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
                   incrementT60Bananas(request.uid, obj, userdata);
                 }
 
-                incrementTestCounter(request.uid, userdata);
-                incrementStartedTestCounter(
-                  request.uid,
-                  obj.restartCount + 1,
-                  userdata
-                );
-                incrementTimeSpentTyping(request.uid, obj, userdata);
+                // incrementTestCounter(request.uid, userdata);
+                // incrementStartedTestCounter(
+                //   request.uid,
+                //   obj.restartCount + 1,
+                //   userdata
+                // );
+                // incrementTimeSpentTyping(request.uid, obj, userdata);
+
+                incrementTypingStats(request.uid, userdata, obj);
 
                 let usr =
                   userdata.discordId !== undefined
