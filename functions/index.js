@@ -741,7 +741,7 @@ function incrementT60Bananas(uid, result, userData) {
   }
 }
 
-async function incrementTypingStats(uid, userData, resultObj) {
+async function getIncrementedTypingStats(userData, resultObj) {
   try {
     let newStarted;
     let newCompleted;
@@ -769,17 +769,60 @@ async function incrementTypingStats(uid, userData, resultObj) {
     } else {
       newTime = userData.timeTyping + tt;
     }
-    db.collection("users")
-      .doc(uid)
-      .update({
-        startedTests: newStarted,
-        completedTests: newCompleted,
-        timeTyping: roundTo2(newTime),
-      });
+    // db.collection("users")
+    //   .doc(uid)
+    //   .update({
+    //     startedTests: newStarted,
+    //     completedTests: newCompleted,
+    //     timeTyping: roundTo2(newTime),
+    //   });
     incrementPublicTypingStats(resultObj.restartCount + 1, 1, tt);
+
+    return {
+      newStarted: newStarted,
+      newCompleted: newCompleted,
+      newTime: roundTo2(newTime),
+    };
   } catch (e) {
     console.error(`Error while incrementing stats for user ${uid}: ${e}`);
   }
+}
+
+async function getUpdatedLbMemory(userdata, mode, mode2, globallb, dailylb) {
+  let lbmemory = userdata.lbMemory;
+
+  if (lbmemory === undefined) {
+    lbmemory = {};
+  }
+
+  if (lbmemory[mode + mode2] === undefined) {
+    lbmemory[mode + mode2] = {
+      global: null,
+      daily: null,
+    };
+  }
+
+  if (globallb.insertedAt === -1) {
+    lbmemory[mode + mode2]["global"] = globallb.insertedAt;
+  } else if (globallb.insertedAt >= 0) {
+    if (globallb.newBest) {
+      lbmemory[mode + mode2]["global"] = globallb.insertedAt;
+    } else {
+      lbmemory[mode + mode2]["global"] = globallb.foundAt;
+    }
+  }
+
+  if (dailylb.insertedAt === -1) {
+    lbmemory[mode + mode2]["daily"] = dailylb.insertedAt;
+  } else if (dailylb.insertedAt >= 0) {
+    if (dailylb.newBest) {
+      lbmemory[mode + mode2]["daily"] = dailylb.insertedAt;
+    } else {
+      lbmemory[mode + mode2]["daily"] = dailylb.foundAt;
+    }
+  }
+
+  return lbmemory;
 }
 
 async function incrementPublicTypingStats(started, completed, time) {
@@ -1187,7 +1230,35 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
                 // );
                 // incrementTimeSpentTyping(request.uid, obj, userdata);
 
-                incrementTypingStats(request.uid, userdata, obj);
+                let newTypingStats = await getIncrementedTypingStats(
+                  userdata,
+                  obj
+                );
+
+                if (
+                  obj.mode === "time" &&
+                  (obj.mode2 == "15" || obj.mode2 == "60")
+                ) {
+                  let updatedLbMemory = await getUpdatedLbMemory(
+                    userdata,
+                    obj.mode,
+                    obj.mode2,
+                    globallb,
+                    dailylb
+                  );
+                  db.collection("users").doc(request.uid).update({
+                    startedTests: newTypingStats.newStarted,
+                    completedTests: newTypingStats.newCompleted,
+                    timeTyping: newTypingStats.newTime,
+                    lbMemory: updatedLbMemory,
+                  });
+                } else {
+                  db.collection("users").doc(request.uid).update({
+                    startedTests: newTypingStats.newStarted,
+                    completedTests: newTypingStats.newCompleted,
+                    timeTyping: newTypingStats.newTime,
+                  });
+                }
 
                 let usr =
                   userdata.discordId !== undefined
@@ -1565,51 +1636,51 @@ exports.saveConfig = functions.https.onCall((request, response) => {
   }
 });
 
-exports.saveLbMemory = functions.https.onCall((request, response) => {
-  try {
-    if (request.uid === undefined || request.obj === undefined) {
-      console.error(
-        `error saving lb memory for ${request.uid} - missing input`
-      );
-      return {
-        returnCode: -1,
-        message: "Missing input",
-      };
-    }
+// exports.saveLbMemory = functions.https.onCall((request, response) => {
+//   try {
+//     if (request.uid === undefined || request.obj === undefined) {
+//       console.error(
+//         `error saving lb memory for ${request.uid} - missing input`
+//       );
+//       return {
+//         returnCode: -1,
+//         message: "Missing input",
+//       };
+//     }
 
-    let obj = request.obj;
-    return db
-      .collection(`users`)
-      .doc(request.uid)
-      .set(
-        {
-          lbMemory: obj,
-        },
-        { merge: true }
-      )
-      .then((e) => {
-        return {
-          returnCode: 1,
-          message: "Saved",
-        };
-      })
-      .catch((e) => {
-        console.error(
-          `error saving lb memory to DB for ${request.uid} - ${e.message}`
-        );
-        return {
-          returnCode: -1,
-          message: e.message,
-        };
-      });
-  } catch (e) {
-    console.error(`error saving lb memory for ${request.uid} - ${e}`);
-    return {
-      resultCode: -999,
-      message: e,
-    };
-  }
-});
+//     let obj = request.obj;
+//     return db
+//       .collection(`users`)
+//       .doc(request.uid)
+//       .set(
+//         {
+//           lbMemory: obj,
+//         },
+//         { merge: true }
+//       )
+//       .then((e) => {
+//         return {
+//           returnCode: 1,
+//           message: "Saved",
+//         };
+//       })
+//       .catch((e) => {
+//         console.error(
+//           `error saving lb memory to DB for ${request.uid} - ${e.message}`
+//         );
+//         return {
+//           returnCode: -1,
+//           message: e.message,
+//         };
+//       });
+//   } catch (e) {
+//     console.error(`error saving lb memory for ${request.uid} - ${e}`);
+//     return {
+//       resultCode: -999,
+//       message: e,
+//     };
+//   }
+// });
 
 function generate(n) {
   var add = 1,
