@@ -4441,6 +4441,11 @@ $(document.body).on("click", "#supportMeWrapper a.button", () => {
     });
 });
 
+$(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
+  currentCommands.push(commandsEnableAds);
+  showCommandLine();
+});
+
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
 });

@@ -28,6 +28,10 @@ html {
   scrollbar-color: var(--sub-color) transparent;
 }
 
+a {
+  display: inline-block;
+}
+
 input {
   outline: none;
   border: none;
