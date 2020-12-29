@@ -1239,8 +1239,8 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
                   // obj.mode === "time" &&
                   // (obj.mode2 == "15" || obj.mode2 == "60") &&
                   // obj.language === "english"
-                  globallb != null &&
-                  dailylb != null
+                  globallb !== null &&
+                  dailylb !== null
                 ) {
                   let updatedLbMemory = await getUpdatedLbMemory(
                     userdata,
