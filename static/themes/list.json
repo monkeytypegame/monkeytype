@@ -186,6 +186,11 @@
   },
   {
     "name": "monokai",
+    "bgColor": "#2C2E34",
+    "textColor": "#E2E2E3"
+  },
+  {
+    "name": "sonokai",
     "bgColor": "#272822",
     "textColor": "#E6DB74"
   },
