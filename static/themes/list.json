@@ -186,13 +186,13 @@
   },
   {
     "name": "monokai",
-    "bgColor": "#2C2E34",
-    "textColor": "#E2E2E3"
+    "bgColor": "#272822",
+    "textColor": "#E6DB74"
   },
   {
     "name": "sonokai",
-    "bgColor": "#272822",
-    "textColor": "#E6DB74"
+    "bgColor": "#2C2E34",
+    "textColor": "#E2E2E3"
   },
   {
     "name": "camping",
