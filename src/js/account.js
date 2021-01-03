@@ -266,7 +266,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     const diffTime = Math.abs(date2 - date1);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    text += ` (${diffDays} days ago)`;
+    text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
 
     $(".pageAccount .group.createdDate").text(text);
 
