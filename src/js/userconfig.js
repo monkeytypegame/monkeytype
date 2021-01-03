@@ -334,11 +334,11 @@ function loadResultFiltersFromCookie() {
       config.resultFilters = JSON.parse(newResultFilters);
       saveResultFiltersToCookie();
     } else {
-      config.resultFilters = defaultAccountFilters;
+      config.resultFilters = defaultResultFilters;
       saveResultFiltersToCookie();
     }
   } catch {
-    config.resultFilters = defaultAccountFilters;
+    config.resultFilters = defaultResultFilters;
     saveResultFiltersToCookie();
   }
 }

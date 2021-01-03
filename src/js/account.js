@@ -180,7 +180,7 @@ function signUp() {
                   obj: notSignedInLastResult,
                 });
                 db_getSnapshot().results.push(notSignedInLastResult);
-                config.resultFilters = defaultAccountFilters;
+                config.resultFilters = defaultResultFilters;
               }
               changePage("account");
               usr.sendEmailVerification();
@@ -993,7 +993,7 @@ $(document).on("click", ".pageAccount .hoverChartBg", (event) => {
   hideHoverChart();
 });
 
-let defaultAccountFilters = {
+let defaultResultFilters = {
   difficulty: {
     normal: true,
     expert: true,
@@ -1059,7 +1059,7 @@ Misc.getLanguageList().then((languages) => {
         " "
       )}</div>`
     );
-    defaultAccountFilters.language[language] = true;
+    defaultResultFilters.language[language] = true;
   });
 });
 
@@ -1076,7 +1076,7 @@ Misc.getFunboxList().then((funboxModes) => {
         " "
       )}</div>`
     );
-    defaultAccountFilters.funbox[funbox.name] = true;
+    defaultResultFilters.funbox[funbox.name] = true;
   });
 });
 
@@ -1092,7 +1092,7 @@ function updateFilterTags() {
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
     db_getSnapshot().tags.forEach((tag) => {
-      defaultAccountFilters.tags[tag.id] = true;
+      defaultResultFilters.tags[tag.id] = true;
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
       ).append(`<div class="button" filter="${tag.id}">${tag.name}</div>`);
@@ -1118,7 +1118,9 @@ function toggleFilter(group, filter) {
       "Something went wrong toggling filter. Reverting to defaults",
       3000
     );
-    config.resultFilters = defaultAccountFilters;
+    console.log("toggling filter error");
+    console.error(e);
+    config.resultFilters = defaultResultFilters;
     saveResultFiltersToCookie();
     showActiveFilters();
   }
@@ -1965,8 +1967,9 @@ function refreshAccountPage() {
           "Something went wrong when filtering. Resetting filters.",
           5000
         );
+        console.log(result);
         console.error(e);
-        config.resultFilters = defaultAccountFilters;
+        config.resultFilters = defaultResultFilters;
         saveResultFiltersToCookie();
         showActiveFilters();
       }
