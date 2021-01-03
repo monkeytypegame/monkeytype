@@ -723,12 +723,13 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
   let word = currentWord;
 
   if (
-    index == 0 ||
-    Misc.getLastChar(previousWord) == "." ||
-    Misc.getLastChar(previousWord) == "?" ||
-    Misc.getLastChar(previousWord) == "!"
+    (index == 0 ||
+     Misc.getLastChar(previousWord) == "." ||
+     Misc.getLastChar(previousWord) == "?" ||
+     Misc.getLastChar(previousWord) == "!") &&
+    config.language.split("_")[0] != "code"
   ) {
-    //always capitalise the first word or if there was a dot
+    //always capitalise the first word or if there was a dot unless using a code alphabet
     word = Misc.capitalizeFirstLetter(word);
   } else if (
     (Math.random() < 0.1 &&
