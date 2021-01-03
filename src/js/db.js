@@ -270,8 +270,7 @@ export async function db_getLocalTagPB(tagId) {
   }
 
   let retval;
-  if (dbSnapshot == null) {
-  } else {
+  if (dbSnapshot != null) {
     retval = cont();
   }
   return retval;
@@ -286,8 +285,7 @@ export async function db_saveLocalTagPB(tagId, wpm) {
     });
   }
 
-  if (dbSnapshot == null) {
-  } else {
+  if (dbSnapshot != null) {
     cont();
   }
 }
