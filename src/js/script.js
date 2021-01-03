@@ -226,30 +226,25 @@ function refreshThemeColorObject() {
 }
 
 function copyResultToClipboard() {
-  if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
-    Misc.showNotification(
-      "Sorry, this feature is not supported in Firefox",
-      4000
-    );
-  } else {
-    $(".pageTest .ssWatermark").removeClass("hidden");
-    $(".pageTest .buttons").addClass("hidden");
-    let src = $("#middle");
-    var sourceX = src.position().left; /*X position from div#target*/
-    var sourceY = src.position().top; /*Y position from div#target*/
-    var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
-    var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
-    $(".notification").addClass("hidden");
-    $(".pageTest .loginTip").addClass("hidden");
-    try {
-      html2canvas(document.body, {
-        backgroundColor: themeColors.bg,
-        height: sourceHeight + 50,
-        width: sourceWidth + 50,
-        x: sourceX - 25,
-        y: sourceY - 25,
-      }).then(function (canvas) {
-        canvas.toBlob(function (blob) {
+  $(".pageTest .ssWatermark").removeClass("hidden");
+  $(".pageTest .buttons").addClass("hidden");
+  let src = $("#middle");
+  var sourceX = src.position().left; /*X position from div#target*/
+  var sourceY = src.position().top; /*Y position from div#target*/
+  var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
+  var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
+  $(".notification").addClass("hidden");
+  $(".pageTest .loginTip").addClass("hidden");
+  try {
+    html2canvas(document.body, {
+      backgroundColor: themeColors.bg,
+      height: sourceHeight + 50,
+      width: sourceWidth + 50,
+      x: sourceX - 25,
+      y: sourceY - 25,
+    }).then(function (canvas) {
+      canvas.toBlob(function (blob) {
+        try {
           navigator.clipboard
             .write([
               new ClipboardItem(
@@ -268,6 +263,7 @@ function copyResultToClipboard() {
                 $(".pageTest .loginTip").removeClass("hidden");
             })
             .catch((f) => {
+              open(URL.createObjectURL(blob))
               $(".notification").removeClass("hidden");
               Misc.showNotification("Error saving image to clipboard", 2000);
               $(".pageTest .ssWatermark").addClass("hidden");
@@ -275,16 +271,24 @@ function copyResultToClipboard() {
               if (firebase.auth().currentUser == null)
                 $(".pageTest .loginTip").removeClass("hidden");
             });
-        });
+          } catch(e) {
+            open(URL.createObjectURL(blob))
+            $(".notification").removeClass("hidden");
+            Misc.showNotification("Error saving image to clipboard", 2000);
+            $(".pageTest .ssWatermark").addClass("hidden");
+            $(".pageTest .buttons").removeClass("hidden");
+            if (firebase.auth().currentUser == null)
+              $(".pageTest .loginTip").removeClass("hidden");
+          }
       });
-    } catch (e) {
-      $(".notification").removeClass("hidden");
-      Misc.showNotification("Error creating image", 2000);
-      $(".pageTest .ssWatermark").addClass("hidden");
-      $(".pageTest .buttons").removeClass("hidden");
-      if (firebase.auth().currentUser == null)
-        $(".pageTest .loginTip").removeClass("hidden");
-    }
+    });
+  } catch (e) {
+    $(".notification").removeClass("hidden");
+    Misc.showNotification("Error creating image", 2000);
+    $(".pageTest .ssWatermark").addClass("hidden");
+    $(".pageTest .buttons").removeClass("hidden");
+    if (firebase.auth().currentUser == null)
+      $(".pageTest .loginTip").removeClass("hidden");
   }
 }
 
