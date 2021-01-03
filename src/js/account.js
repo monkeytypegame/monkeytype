@@ -180,7 +180,7 @@ function signUp() {
                   obj: notSignedInLastResult,
                 });
                 db_getSnapshot().results.push(notSignedInLastResult);
-                config.resultFilters = defaultResultFilters;
+                // ResultFilters.filters = defaultResultFilters;
               }
               changePage("account");
               usr.sendEmailVerification();
@@ -410,7 +410,7 @@ function getAccountDataAndInit() {
       updateFilterTags();
       updateCommandsTagsList();
       loadActiveTagsFromCookie();
-      loadResultFiltersFromCookie();
+      // loadResultFiltersFromCookie();
       updateResultEditTagsPanelButtons();
       showAccountSettingsSection();
     })
@@ -993,62 +993,6 @@ $(document).on("click", ".pageAccount .hoverChartBg", (event) => {
   hideHoverChart();
 });
 
-let defaultResultFilters = {
-  difficulty: {
-    normal: true,
-    expert: true,
-    master: true,
-  },
-  mode: {
-    words: true,
-    time: true,
-    quote: true,
-    custom: true,
-  },
-  words: {
-    10: true,
-    25: true,
-    50: true,
-    100: true,
-    200: true,
-    custom: true,
-  },
-  time: {
-    15: true,
-    30: true,
-    60: true,
-    120: true,
-    custom: true,
-  },
-  quoteLength: {
-    short: true,
-    medium: true,
-    long: true,
-    thicc: true,
-  },
-  punctuation: {
-    on: true,
-    off: true,
-  },
-  numbers: {
-    on: true,
-    off: true,
-  },
-  date: {
-    last_day: false,
-    last_week: false,
-    last_month: false,
-    all: true,
-  },
-  tags: {
-    none: true,
-  },
-  language: {},
-  funbox: {
-    none: true,
-  },
-};
-
 Misc.getLanguageList().then((languages) => {
   languages.forEach((language) => {
     $(
@@ -1059,7 +1003,6 @@ Misc.getLanguageList().then((languages) => {
         " "
       )}</div>`
     );
-    defaultResultFilters.language[language] = true;
   });
 });
 
@@ -1076,7 +1019,6 @@ Misc.getFunboxList().then((funboxModes) => {
         " "
       )}</div>`
     );
-    defaultResultFilters.funbox[funbox.name] = true;
   });
 });
 
@@ -1092,7 +1034,6 @@ function updateFilterTags() {
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
     db_getSnapshot().tags.forEach((tag) => {
-      defaultResultFilters.tags[tag.id] = true;
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
       ).append(`<div class="button" filter="${tag.id}">${tag.name}</div>`);
@@ -1107,12 +1048,14 @@ function updateFilterTags() {
 function toggleFilter(group, filter) {
   try {
     if (group === "date") {
-      Object.keys(config.resultFilters.date).forEach((date) => {
+      Object.keys(ResultFilters.filters.date).forEach((date) => {
         setFilter("date", date, false);
       });
     }
-    config.resultFilters[group][filter] = !config.resultFilters[group][filter];
-    saveResultFiltersToCookie();
+    ResultFilters.filters[group][filter] = !ResultFilters.filters[group][
+      filter
+    ];
+    ResultFilters.save();
   } catch (e) {
     Misc.showNotification(
       "Something went wrong toggling filter. Reverting to defaults",
@@ -1120,28 +1063,24 @@ function toggleFilter(group, filter) {
     );
     console.log("toggling filter error");
     console.error(e);
-    config.resultFilters = defaultResultFilters;
-    saveResultFiltersToCookie();
+    ResultFilters.reset();
     showActiveFilters();
   }
 }
 
 function setFilter(group, filter, set) {
-  config.resultFilters[group][filter] = set;
+  ResultFilters.filters[group][filter] = set;
 }
 
 function showActiveFilters() {
   let aboveChartDisplay = {};
-  if (config.resultFilters == undefined) {
-    loadResultFiltersFromCookie();
-  }
-  Object.keys(config.resultFilters).forEach((group) => {
+  Object.keys(ResultFilters.filters).forEach((group) => {
     aboveChartDisplay[group] = {
       all: true,
       array: [],
     };
-    Object.keys(config.resultFilters[group]).forEach((filter) => {
-      if (config.resultFilters[group][filter]) {
+    Object.keys(ResultFilters.filters[group]).forEach((filter) => {
+      if (ResultFilters.filters[group][filter]) {
         aboveChartDisplay[group].array.push(filter);
       } else {
         aboveChartDisplay[group].all = false;
@@ -1156,7 +1095,7 @@ function showActiveFilters() {
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
         );
       }
-      if (config.resultFilters[group][filter]) {
+      if (ResultFilters.filters[group][filter]) {
         buttonEl.addClass("active");
       } else {
         buttonEl.removeClass("active");
@@ -1287,66 +1226,66 @@ function hideChartPreloader() {
 }
 
 $(".pageAccount .topFilters .button.allFilters").click((e) => {
-  Object.keys(config.resultFilters).forEach((group) => {
-    Object.keys(config.resultFilters[group]).forEach((filter) => {
+  Object.keys(ResultFilters.filters).forEach((group) => {
+    Object.keys(ResultFilters.filters[group]).forEach((filter) => {
       if (group === "date") {
-        config.resultFilters[group][filter] = false;
+        ResultFilters.filters[group][filter] = false;
       } else {
-        config.resultFilters[group][filter] = true;
+        ResultFilters.filters[group][filter] = true;
       }
     });
   });
-  config.resultFilters.date.all = true;
+  ResultFilters.filters.date.all = true;
   showActiveFilters();
-  saveResultFiltersToCookie();
+  ResultFilters.save();
 });
 
 $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
-  Object.keys(config.resultFilters).forEach((group) => {
-    Object.keys(config.resultFilters[group]).forEach((filter) => {
-      config.resultFilters[group][filter] = false;
+  Object.keys(ResultFilters.filters).forEach((group) => {
+    Object.keys(ResultFilters.filters[group]).forEach((filter) => {
+      ResultFilters.filters[group][filter] = false;
     });
   });
 
-  config.resultFilters.difficulty[config.difficulty] = true;
-  config.resultFilters.mode[config.mode] = true;
+  ResultFilters.filters.difficulty[config.difficulty] = true;
+  ResultFilters.filters.mode[config.mode] = true;
   if (config.mode === "time") {
-    config.resultFilters.time[config.time] = true;
+    ResultFilters.filters.time[config.time] = true;
   } else if (config.mode === "words") {
-    config.resultFilters.words[config.words] = true;
+    ResultFilters.filters.words[config.words] = true;
   } else if (config.mode === "quote") {
-    Object.keys(config.resultFilters.quoteLength).forEach((ql) => {
-      config.resultFilters.quoteLength[ql] = true;
+    Object.keys(ResultFilters.filters.quoteLength).forEach((ql) => {
+      ResultFilters.filters.quoteLength[ql] = true;
     });
   }
   if (config.punctuation) {
-    config.resultFilters.punctuation.on = true;
+    ResultFilters.filters.punctuation.on = true;
   } else {
-    config.resultFilters.punctuation.off = true;
+    ResultFilters.filters.punctuation.off = true;
   }
   if (config.numbers) {
-    config.resultFilters.numbers.on = true;
+    ResultFilters.filters.numbers.on = true;
   } else {
-    config.resultFilters.numbers.off = true;
+    ResultFilters.filters.numbers.off = true;
   }
   if (config.mode === "quote" && /english.*/.test(config.language)) {
-    config.resultFilters.language["english"] = true;
+    ResultFilters.filters.language["english"] = true;
   } else {
-    config.resultFilters.language[config.language] = true;
+    ResultFilters.filters.language[config.language] = true;
   }
-  config.resultFilters.funbox[activeFunBox] = true;
-  config.resultFilters.tags.none = true;
+  ResultFilters.filters.funbox[activeFunBox] = true;
+  ResultFilters.filters.tags.none = true;
   db_getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
-      config.resultFilters.tags.none = false;
-      config.resultFilters.tags[tag.id] = true;
+      ResultFilters.filters.tags.none = false;
+      ResultFilters.filters.tags[tag.id] = true;
     }
   });
 
-  config.resultFilters.date.all = true;
+  ResultFilters.filters.date.all = true;
 
   showActiveFilters();
-  saveResultFiltersToCookie();
+  ResultFilters.save();
 });
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
@@ -1362,28 +1301,28 @@ $(
   const filter = $(e.target).attr("filter");
   const group = $(e.target).parents(".buttons").attr("group");
   if ($(e.target).hasClass("allFilters")) {
-    Object.keys(config.resultFilters).forEach((group) => {
-      Object.keys(config.resultFilters[group]).forEach((filter) => {
+    Object.keys(ResultFilters.filters).forEach((group) => {
+      Object.keys(ResultFilters.filters[group]).forEach((filter) => {
         if (group === "date") {
-          config.resultFilters[group][filter] = false;
+          ResultFilters.filters[group][filter] = false;
         } else {
-          config.resultFilters[group][filter] = true;
+          ResultFilters.filters[group][filter] = true;
         }
       });
     });
-    config.resultFilters.date.all = true;
+    ResultFilters.filters.date.all = true;
   } else if ($(e.target).hasClass("noFilters")) {
-    Object.keys(config.resultFilters).forEach((group) => {
+    Object.keys(ResultFilters.filters).forEach((group) => {
       if (group !== "date") {
-        Object.keys(config.resultFilters[group]).forEach((filter) => {
-          config.resultFilters[group][filter] = false;
+        Object.keys(ResultFilters.filters[group]).forEach((filter) => {
+          ResultFilters.filters[group][filter] = false;
         });
       }
     });
   } else {
     if (e.shiftKey) {
-      Object.keys(config.resultFilters[group]).forEach((filter) => {
-        config.resultFilters[group][filter] = false;
+      Object.keys(ResultFilters.filters[group]).forEach((filter) => {
+        ResultFilters.filters[group][filter] = false;
       });
       setFilter(group, filter, true);
     } else {
@@ -1391,7 +1330,7 @@ $(
     }
   }
   showActiveFilters();
-  saveResultFiltersToCookie();
+  ResultFilters.save();
 });
 
 function fillPbTables() {
@@ -1858,21 +1797,21 @@ function refreshAccountPage() {
         if (resdiff == undefined) {
           resdiff = "normal";
         }
-        if (!config.resultFilters.difficulty[resdiff]) return;
-        if (!config.resultFilters.mode[result.mode]) return;
+        if (!ResultFilters.filters.difficulty[resdiff]) return;
+        if (!ResultFilters.filters.mode[result.mode]) return;
 
         if (result.mode == "time") {
           let timefilter = "custom";
           if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
             timefilter = result.mode2;
           }
-          if (!config.resultFilters.time[timefilter]) return;
+          if (!ResultFilters.filters.time[timefilter]) return;
         } else if (result.mode == "words") {
           let wordfilter = "custom";
           if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
             wordfilter = result.mode2;
           }
-          if (!config.resultFilters.words[wordfilter]) return;
+          if (!ResultFilters.filters.words[wordfilter]) return;
         }
 
         if (result.quoteLength != null) {
@@ -1886,15 +1825,15 @@ function refreshAccountPage() {
           } else if (result.quoteLength === 3) {
             filter = "thicc";
           }
-          if (filter !== null && !config.resultFilters.quoteLength[filter])
+          if (filter !== null && !ResultFilters.filters.quoteLength[filter])
             return;
         }
 
-        let langFilter = config.resultFilters.language[result.language];
+        let langFilter = ResultFilters.filters.language[result.language];
 
         if (
           result.language === "english_expanded" &&
-          config.resultFilters.language.english_1k
+          ResultFilters.filters.language.english_1k
         ) {
           langFilter = true;
         }
@@ -1904,18 +1843,18 @@ function refreshAccountPage() {
         if (result.punctuation) {
           puncfilter = "on";
         }
-        if (!config.resultFilters.punctuation[puncfilter]) return;
+        if (!ResultFilters.filters.punctuation[puncfilter]) return;
 
         let numfilter = "off";
         if (result.numbers) {
           numfilter = "on";
         }
-        if (!config.resultFilters.numbers[numfilter]) return;
+        if (!ResultFilters.filters.numbers[numfilter]) return;
 
         if (result.funbox === "none" || result.funbox === undefined) {
-          if (!config.resultFilters.funbox.none) return;
+          if (!ResultFilters.filters.funbox.none) return;
         } else {
-          if (!config.resultFilters.funbox[result.funbox]) return;
+          if (!ResultFilters.filters.funbox[result.funbox]) return;
         }
 
         let tagHide = true;
@@ -1923,7 +1862,7 @@ function refreshAccountPage() {
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
           if (db_getSnapshot().tags.length > 0) {
-            if (config.resultFilters.tags.none) tagHide = false;
+            if (ResultFilters.filters.tags.none) tagHide = false;
           } else {
             tagHide = false;
           }
@@ -1936,10 +1875,10 @@ function refreshAccountPage() {
             //check if tag is valid
             if (validTags.includes(tag)) {
               //tag valid, check if filter is on
-              if (config.resultFilters.tags[tag]) tagHide = false;
+              if (ResultFilters.filters.tags[tag]) tagHide = false;
             } else {
               //tag not found in valid tags, meaning probably deleted
-              if (config.resultFilters.tags.none) tagHide = false;
+              if (ResultFilters.filters.tags.none) tagHide = false;
             }
           });
         }
@@ -1951,10 +1890,10 @@ function refreshAccountPage() {
         let datehide = true;
 
         if (
-          config.resultFilters.date.all ||
-          (config.resultFilters.date.last_day && timeSinceTest <= 86400) ||
-          (config.resultFilters.date.last_week && timeSinceTest <= 604800) ||
-          (config.resultFilters.date.last_month && timeSinceTest <= 2592000)
+          ResultFilters.filters.date.all ||
+          (ResultFilters.filters.date.last_day && timeSinceTest <= 86400) ||
+          (ResultFilters.filters.date.last_week && timeSinceTest <= 604800) ||
+          (ResultFilters.filters.date.last_month && timeSinceTest <= 2592000)
         ) {
           datehide = false;
         }
@@ -1969,8 +1908,7 @@ function refreshAccountPage() {
         );
         console.log(result);
         console.error(e);
-        config.resultFilters = defaultResultFilters;
-        saveResultFiltersToCookie();
+        ResultFilters.reset();
         showActiveFilters();
       }
 

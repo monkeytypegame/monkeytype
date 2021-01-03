@@ -1,3 +1,5 @@
+import { loadTags } from "./result-filters";
+
 const db = firebase.firestore();
 db.settings({ experimentalForceLongPolling: true });
 
@@ -85,6 +87,7 @@ export async function db_getUserSnapshot() {
   } catch (e) {
     console.error(e);
   }
+  loadTags(dbSnapshot.tags);
   return dbSnapshot;
 }
 

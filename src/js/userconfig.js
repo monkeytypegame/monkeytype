@@ -322,27 +322,6 @@ function loadActiveTagsFromCookie() {
   }
 }
 
-function saveResultFiltersToCookie() {
-  Misc.setCookie("resultFilters", JSON.stringify(config.resultFilters), 365);
-}
-
-function loadResultFiltersFromCookie() {
-  // let newTags = $.cookie("activeTags");
-  try {
-    let newResultFilters = Misc.getCookie("resultFilters");
-    if (newResultFilters !== undefined && newResultFilters !== "") {
-      config.resultFilters = JSON.parse(newResultFilters);
-      saveResultFiltersToCookie();
-    } else {
-      config.resultFilters = defaultResultFilters;
-      saveResultFiltersToCookie();
-    }
-  } catch {
-    config.resultFilters = defaultResultFilters;
-    saveResultFiltersToCookie();
-  }
-}
-
 function showTestConfig() {
   $("#top .config").removeClass("hidden").css("opacity", 1);
 }
