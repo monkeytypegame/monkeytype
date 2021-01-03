@@ -853,8 +853,9 @@ a:hover {
         }
 
         &.activeMouse {
-          color: var(--bg-color);
-          background: var(--main-color);
+          color: var(--text-color);
+          background: var(--sub-color);
+          cursor: pointer;
         }
 
         &.activeKeyboard {
@@ -862,11 +863,11 @@ a:hover {
           background: var(--main-color);
         }
 
-        &:hover {
-          color: var(--text-color);
-          background: var(--sub-color);
-          cursor: pointer;
-        }
+        // &:hover {
+        //   color: var(--text-color);
+        //   background: var(--sub-color);
+        //   cursor: pointer;
+        // }
       }
     }
   }

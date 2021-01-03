@@ -1758,6 +1758,10 @@ if (Object.keys(layouts).length > 0) {
 }
 
 $("#commandLine input").keyup((e) => {
+  commandLineMouseMode = false;
+  $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
+    "activeMouse"
+  );
   if (e.keyCode == 38 || e.keyCode == 40 || e.keyCode == 13 || e.code == "Tab")
     return;
   updateSuggestedCommands();
@@ -1828,7 +1832,33 @@ $("#commandInput input").keydown((e) => {
   return;
 });
 
+let commandLineMouseMode = false;
+
+$(document).on("mousemove", () => {
+  if (!commandLineMouseMode) commandLineMouseMode = true;
+});
+
+$(document).on(
+  "mouseenter",
+  "#commandLineWrapper #commandLine .suggestions .entry",
+  (e) => {
+    if (!commandLineMouseMode) return;
+    $(e.target).addClass("activeMouse");
+  }
+);
+
+$(document).on(
+  "mouseleave",
+  "#commandLineWrapper #commandLine .suggestions .entry",
+  (e) => {
+    if (!commandLineMouseMode) return;
+    $(e.target).removeClass("activeMouse");
+  }
+);
+
 $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
+  if (!commandLineMouseMode) return;
+  console.log("clearing keyboard active");
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeKeyboard"
   );
