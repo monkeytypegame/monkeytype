@@ -1,52 +1,3 @@
-$(".pageLogin .register input").keyup((e) => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  if (e.key == "Enter") {
-    signUp();
-  }
-});
-
-$(".pageLogin .register .button").click((e) => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  signUp();
-});
-
-$(".pageLogin .login input").keyup((e) => {
-  if (e.key == "Enter") {
-    configChangedBeforeDb = false;
-    signIn();
-  }
-});
-
-$(".pageLogin .login .button").click((e) => {
-  configChangedBeforeDb = false;
-  signIn();
-});
-
-$(".signOut").click((e) => {
-  signOut();
-});
-
-$(".pageAccount .loadMoreButton").click((e) => {
-  loadMoreLines();
-});
-
-$(".pageLogin #forgotPasswordButton").click((e) => {
-  let email = prompt("Email address");
-  if (email) {
-    firebase
-      .auth()
-      .sendPasswordResetEmail(email)
-      .then(function () {
-        // Email sent.
-        Misc.showNotification("Email sent", 2000);
-      })
-      .catch(function (error) {
-        // An error happened.
-        Misc.showNotification(error.message, 5000);
-      });
-  }
-});
-
 function showSignOutButton() {
   $(".signOut").removeClass("hidden").css("opacity", 1);
 }
@@ -2434,3 +2385,52 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
 function updateLbMemory(mode, mode2, type, value) {
   db_getSnapshot().lbMemory[mode + mode2][type] = value;
 }
+$(".pageLogin .register input").keyup((e) => {
+  if ($(".pageLogin .register .button").hasClass("disabled")) return;
+  if (e.key == "Enter") {
+    signUp();
+  }
+});
+
+$(".pageLogin .register .button").click((e) => {
+  if ($(".pageLogin .register .button").hasClass("disabled")) return;
+  signUp();
+});
+
+$(".pageLogin .login input").keyup((e) => {
+  if (e.key == "Enter") {
+    configChangedBeforeDb = false;
+    signIn();
+  }
+});
+
+$(".pageLogin .login .button").click((e) => {
+  configChangedBeforeDb = false;
+  signIn();
+});
+
+$(".signOut").click((e) => {
+  signOut();
+});
+
+$(".pageAccount .loadMoreButton").click((e) => {
+  loadMoreLines();
+});
+
+$(".pageLogin #forgotPasswordButton").click((e) => {
+  let email = prompt("Email address");
+  if (email) {
+    firebase
+      .auth()
+      .sendPasswordResetEmail(email)
+      .then(function () {
+        // Email sent.
+        Misc.showNotification("Email sent", 2000);
+      })
+      .catch(function (error) {
+        // An error happened.
+        Misc.showNotification(error.message, 5000);
+      });
+  }
+});
+

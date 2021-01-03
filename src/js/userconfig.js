@@ -150,142 +150,6 @@ function loadConfigFromCookie() {
   restartTest(false, true);
 }
 
-function applyConfig(configObj) {
-  if (configObj == null || configObj == undefined) {
-    Misc.showNotification("Could not apply config", 1000);
-    console.error("configobj is null or undefined");
-    return;
-  }
-  Object.keys(defaultConfig).forEach((configKey) => {
-    if (configObj[configKey] === undefined) {
-      configObj[configKey] = defaultConfig[configKey];
-    }
-  });
-  if (configObj && configObj != null && configObj != "null") {
-    setTheme(configObj.theme, true);
-    setCustomTheme(configObj.customTheme, true);
-    setCustomThemeColors(configObj.customThemeColors, true);
-    setQuickTabMode(configObj.quickTab, true);
-    setKeyTips(configObj.showKeyTips, true);
-    setTimeConfig(configObj.time, true);
-    setQuoteLength(configObj.quoteLength, true);
-    setWordCount(configObj.words, true);
-    setLanguage(configObj.language, true);
-    setCapsLockBackspace(configObj.capsLockBackspace, true);
-    setSavedLayout(configObj.savedLayout, true);
-    setFontSize(configObj.fontSize, true);
-    setFreedomMode(configObj.freedomMode, true);
-    setCaretStyle(configObj.caretStyle, true);
-    setPaceCaretStyle(configObj.paceCaretStyle, true);
-    setDifficulty(configObj.difficulty, true);
-    setBlindMode(configObj.blindMode, true);
-    setQuickEnd(configObj.quickEnd, true);
-    setFlipTestColors(configObj.flipTestColors, true);
-    setColorfulMode(configObj.colorfulMode, true);
-    setConfidenceMode(configObj.confidenceMode, true);
-    setIndicateTypos(configObj.indicateTypos, true);
-    setTimerStyle(configObj.timerStyle, true);
-    setTimerColor(configObj.timerColor, true);
-    setTimerOpacity(configObj.timerOpacity, true);
-    setKeymapMode(configObj.keymapMode, true);
-    setKeymapStyle(configObj.keymapStyle, true);
-    setKeymapLayout(configObj.keymapLayout, true);
-    setFontFamily(configObj.fontFamily, true);
-    setSmoothCaret(configObj.smoothCaret, true);
-    setSmoothLineScroll(configObj.smoothLineScroll, true);
-    setShowLiveWpm(configObj.showLiveWpm, true);
-    setShowLiveAcc(configObj.showLiveAcc, true);
-    setShowTimerProgress(configObj.showTimerProgress, true);
-    setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
-    setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
-    setSingleListCommandLine(configObj.singleListCommandLine, true);
-    setPlaySoundOnError(configObj.playSoundOnError, true);
-    setPlaySoundOnClick(configObj.playSoundOnClick, true);
-    setStopOnError(configObj.stopOnError, true);
-    setFavThemes(configObj.favThemes, true);
-    setRandomTheme(configObj.randomTheme, true);
-    setShowAllLines(configObj.showAllLines, true);
-    setSwapEscAndTab(configObj.swapEscAndTab, true);
-    setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
-    setPaceCaret(configObj.paceCaret, true);
-    setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
-    setPageWidth(configObj.pageWidth, true);
-    setChartAccuracy(configObj.chartAccuracy, true);
-    setChartStyle(configObj.chartStyle, true);
-    setMinWpm(configObj.minWpm, true);
-    setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
-    setMinAcc(configObj.minAcc, true);
-    setMinAccCustom(configObj.minAccCustom, true);
-    setNumbers(configObj.numbers, true);
-    setPunctuation(configObj.punctuation, true);
-    setHighlightMode(configObj.highlightMode, true);
-    setAlwaysShowCPM(configObj.alwaysShowCPM, true);
-    setHideExtraLetters(configObj.hideExtraLetters, true);
-    setStartGraphsAtZero(configObj.startGraphsAtZero, true);
-    setStrictSpace(configObj.strictSpace, true);
-    setMode(configObj.mode, true);
-
-    try {
-      setEnableAds(configObj.enableAds, true);
-      if (config.enableAds === "on") {
-        $("#ad1").removeClass("hidden");
-        $("#ad1")
-          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- Horizontal Ad -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:850px;height:90px"
-             data-ad-client="ca-pub-7261919841327810"
-             data-ad-slot="2225821478"></ins>`);
-        const adsbygoogle = window.adsbygoogle || [];
-        adsbygoogle.push({});
-      } else if (config.enableAds === "max") {
-        $("#ad1").removeClass("hidden");
-        $("#ad2").removeClass("hidden");
-        $("#ad3").removeClass("hidden");
-        $("#ad1").html(`<script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-      ></script>
-      <!-- Horizontal Ad -->
-      <ins
-        class="adsbygoogle"
-        style="display: inline-block; width: 1000px; height: 90px"
-        data-ad-client="ca-pub-7261919841327810"
-        data-ad-slot="2225821478"
-      ></ins>`);
-        $("#ad2")
-          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- Vertical 1 -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:160px;height:600px"
-             data-ad-client="ca-pub-7261919841327810"
-             data-ad-slot="6376286644"></ins>`);
-        $("#ad3")
-          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- Vertical 2 -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:160px;height:600px"
-             data-ad-client="ca-pub-7261919841327810"
-             data-ad-slot="1159796595"></ins>`);
-        const adsbygoogle = window.adsbygoogle || [];
-        adsbygoogle.push({});
-        adsbygoogle.push({});
-        adsbygoogle.push({});
-      } else {
-        $("#ad1").remove();
-        $("#ad2").remove();
-        $("#ad3").remove();
-      }
-    } catch (e) {
-      console.log("error initialising ads " + e.message);
-      $("#ad1").remove();
-      $("#ad2").remove();
-      $("#ad3").remove();
-    }
-  }
-  updateTestModesNotice();
-}
-
 function saveActiveTagsToCookie() {
   let tags = [];
 
@@ -1615,3 +1479,140 @@ function setFontSize(fontSize, nosave) {
   }
   if (!nosave) saveConfigToCookie();
 }
+
+function applyConfig(configObj) {
+  if (configObj == null || configObj == undefined) {
+    Misc.showNotification("Could not apply config", 1000);
+    console.error("configobj is null or undefined");
+    return;
+  }
+  Object.keys(defaultConfig).forEach((configKey) => {
+    if (configObj[configKey] === undefined) {
+      configObj[configKey] = defaultConfig[configKey];
+    }
+  });
+  if (configObj && configObj != null && configObj != "null") {
+    setTheme(configObj.theme, true);
+    setCustomTheme(configObj.customTheme, true);
+    setCustomThemeColors(configObj.customThemeColors, true);
+    setQuickTabMode(configObj.quickTab, true);
+    setKeyTips(configObj.showKeyTips, true);
+    setTimeConfig(configObj.time, true);
+    setQuoteLength(configObj.quoteLength, true);
+    setWordCount(configObj.words, true);
+    setLanguage(configObj.language, true);
+    setCapsLockBackspace(configObj.capsLockBackspace, true);
+    setSavedLayout(configObj.savedLayout, true);
+    setFontSize(configObj.fontSize, true);
+    setFreedomMode(configObj.freedomMode, true);
+    setCaretStyle(configObj.caretStyle, true);
+    setPaceCaretStyle(configObj.paceCaretStyle, true);
+    setDifficulty(configObj.difficulty, true);
+    setBlindMode(configObj.blindMode, true);
+    setQuickEnd(configObj.quickEnd, true);
+    setFlipTestColors(configObj.flipTestColors, true);
+    setColorfulMode(configObj.colorfulMode, true);
+    setConfidenceMode(configObj.confidenceMode, true);
+    setIndicateTypos(configObj.indicateTypos, true);
+    setTimerStyle(configObj.timerStyle, true);
+    setTimerColor(configObj.timerColor, true);
+    setTimerOpacity(configObj.timerOpacity, true);
+    setKeymapMode(configObj.keymapMode, true);
+    setKeymapStyle(configObj.keymapStyle, true);
+    setKeymapLayout(configObj.keymapLayout, true);
+    setFontFamily(configObj.fontFamily, true);
+    setSmoothCaret(configObj.smoothCaret, true);
+    setSmoothLineScroll(configObj.smoothLineScroll, true);
+    setShowLiveWpm(configObj.showLiveWpm, true);
+    setShowLiveAcc(configObj.showLiveAcc, true);
+    setShowTimerProgress(configObj.showTimerProgress, true);
+    setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
+    setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
+    setSingleListCommandLine(configObj.singleListCommandLine, true);
+    setPlaySoundOnError(configObj.playSoundOnError, true);
+    setPlaySoundOnClick(configObj.playSoundOnClick, true);
+    setStopOnError(configObj.stopOnError, true);
+    setFavThemes(configObj.favThemes, true);
+    setRandomTheme(configObj.randomTheme, true);
+    setShowAllLines(configObj.showAllLines, true);
+    setSwapEscAndTab(configObj.swapEscAndTab, true);
+    setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
+    setPaceCaret(configObj.paceCaret, true);
+    setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
+    setPageWidth(configObj.pageWidth, true);
+    setChartAccuracy(configObj.chartAccuracy, true);
+    setChartStyle(configObj.chartStyle, true);
+    setMinWpm(configObj.minWpm, true);
+    setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
+    setMinAcc(configObj.minAcc, true);
+    setMinAccCustom(configObj.minAccCustom, true);
+    setNumbers(configObj.numbers, true);
+    setPunctuation(configObj.punctuation, true);
+    setHighlightMode(configObj.highlightMode, true);
+    setAlwaysShowCPM(configObj.alwaysShowCPM, true);
+    setHideExtraLetters(configObj.hideExtraLetters, true);
+    setStartGraphsAtZero(configObj.startGraphsAtZero, true);
+    setStrictSpace(configObj.strictSpace, true);
+    setMode(configObj.mode, true);
+
+    try {
+      setEnableAds(configObj.enableAds, true);
+      if (config.enableAds === "on") {
+        $("#ad1").removeClass("hidden");
+        $("#ad1")
+          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- Horizontal Ad -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:850px;height:90px"
+             data-ad-client="ca-pub-7261919841327810"
+             data-ad-slot="2225821478"></ins>`);
+        const adsbygoogle = window.adsbygoogle || [];
+        adsbygoogle.push({});
+      } else if (config.enableAds === "max") {
+        $("#ad1").removeClass("hidden");
+        $("#ad2").removeClass("hidden");
+        $("#ad3").removeClass("hidden");
+        $("#ad1").html(`<script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+      ></script>
+      <!-- Horizontal Ad -->
+      <ins
+        class="adsbygoogle"
+        style="display: inline-block; width: 1000px; height: 90px"
+        data-ad-client="ca-pub-7261919841327810"
+        data-ad-slot="2225821478"
+      ></ins>`);
+        $("#ad2")
+          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- Vertical 1 -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:160px;height:600px"
+             data-ad-client="ca-pub-7261919841327810"
+             data-ad-slot="6376286644"></ins>`);
+        $("#ad3")
+          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- Vertical 2 -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:160px;height:600px"
+             data-ad-client="ca-pub-7261919841327810"
+             data-ad-slot="1159796595"></ins>`);
+        const adsbygoogle = window.adsbygoogle || [];
+        adsbygoogle.push({});
+        adsbygoogle.push({});
+        adsbygoogle.push({});
+      } else {
+        $("#ad1").remove();
+        $("#ad2").remove();
+        $("#ad3").remove();
+      }
+    } catch (e) {
+      console.log("error initialising ads " + e.message);
+      $("#ad1").remove();
+      $("#ad2").remove();
+      $("#ad3").remove();
+    }
+  }
+  updateTestModesNotice();
+}
+
