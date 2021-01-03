@@ -190,6 +190,11 @@
     "textColor": "#E6DB74"
   },
   {
+    "name": "sonokai",
+    "bgColor": "#2C2E34",
+    "textColor": "#E2E2E3"
+  },
+  {
     "name": "camping",
     "bgColor": "#faf1e4",
     "textColor": "#618c56"
