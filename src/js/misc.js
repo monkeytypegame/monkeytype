@@ -538,3 +538,27 @@ export function toggleFullscreen(elem) {
     }
   }
 }
+
+//credit: https://www.w3resource.com/javascript-exercises/javascript-string-exercise-32.php
+export function remove_non_ascii(str) {
+  if (str === null || str === "") return false;
+  else str = str.toString();
+
+  return str.replace(/[^\x20-\x7E]/g, "");
+}
+
+export function cleanTypographySymbols(textToClean) {
+  var specials = {
+    "“": '"', // &ldquo;	&#8220;
+    "”": '"', // &rdquo;	&#8221;
+    "’": "'", // &lsquo;	&#8216;
+    "‘": "'", // &rsquo;	&#8217;
+    ",": ",", // &sbquo;	&#8218;
+    "—": "-", // &mdash;  &#8212;
+    "…": "...", // &hellip; &#8230;
+    "«": "<<",
+    "»": ">>",
+    "–": "-",
+  };
+  return textToClean.replace(/[“”’‘—,…«»–]/g, (char) => specials[char] || "");
+}

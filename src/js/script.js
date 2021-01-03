@@ -2954,22 +2954,6 @@ function setCustomText() {
   }
 }
 
-function cleanTypographySymbols(textToClean) {
-  var specials = {
-    "“": '"', // &ldquo;	&#8220;
-    "”": '"', // &rdquo;	&#8221;
-    "’": "'", // &lsquo;	&#8216;
-    "‘": "'", // &rsquo;	&#8217;
-    ",": ",", // &sbquo;	&#8218;
-    "—": "-", // &mdash;  &#8212;
-    "…": "...", // &hellip; &#8230;
-    "«": "<<",
-    "»": ">>",
-    "–": "-",
-  };
-  return textToClean.replace(/[“”’‘—,…«»–]/g, (char) => specials[char] || "");
-}
-
 function changePage(page) {
   if (pageTransition) {
     return;
@@ -3858,8 +3842,9 @@ $("#customTextPopup .button").click(() => {
   text = text.replace(/[\n\r\t ]/gm, " ");
   text = text.replace(/ +/gm, " ");
   if ($("#customTextPopup .typographyCheck input").prop("checked")) {
-    text = cleanTypographySymbols(text);
+    text = Misc.cleanTypographySymbols(text);
   }
+  text = Misc.remove_non_ascii(text);
   text = text.split(" ");
   customText = text;
   customTextIsRandom = $("#customTextPopup .check input").prop("checked");
