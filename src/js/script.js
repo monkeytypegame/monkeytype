@@ -263,7 +263,7 @@ function copyResultToClipboard() {
                 $(".pageTest .loginTip").removeClass("hidden");
             })
             .catch((f) => {
-              open(URL.createObjectURL(blob))
+              open(URL.createObjectURL(blob));
               $(".notification").removeClass("hidden");
               Misc.showNotification("Error saving image to clipboard", 2000);
               $(".pageTest .ssWatermark").addClass("hidden");
@@ -271,15 +271,15 @@ function copyResultToClipboard() {
               if (firebase.auth().currentUser == null)
                 $(".pageTest .loginTip").removeClass("hidden");
             });
-          } catch(e) {
-            open(URL.createObjectURL(blob))
-            $(".notification").removeClass("hidden");
-            Misc.showNotification("Error saving image to clipboard", 2000);
-            $(".pageTest .ssWatermark").addClass("hidden");
-            $(".pageTest .buttons").removeClass("hidden");
-            if (firebase.auth().currentUser == null)
-              $(".pageTest .loginTip").removeClass("hidden");
-          }
+        } catch (e) {
+          open(URL.createObjectURL(blob));
+          $(".notification").removeClass("hidden");
+          Misc.showNotification("Error saving image to clipboard", 2000);
+          $(".pageTest .ssWatermark").addClass("hidden");
+          $(".pageTest .buttons").removeClass("hidden");
+          if (firebase.auth().currentUser == null)
+            $(".pageTest .loginTip").removeClass("hidden");
+        }
       });
     });
   } catch (e) {
@@ -724,9 +724,9 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
 
   if (
     (index == 0 ||
-     Misc.getLastChar(previousWord) == "." ||
-     Misc.getLastChar(previousWord) == "?" ||
-     Misc.getLastChar(previousWord) == "!") &&
+      Misc.getLastChar(previousWord) == "." ||
+      Misc.getLastChar(previousWord) == "?" ||
+      Misc.getLastChar(previousWord) == "!") &&
     config.language.split("_")[0] != "code"
   ) {
     //always capitalise the first word or if there was a dot unless using a code alphabet
@@ -2632,6 +2632,9 @@ function showResult(difficultyFailed = false) {
 }
 
 function startTest() {
+  if (pageTransition) {
+    return;
+  }
   if (!dbConfigLoaded) {
     configChangedBeforeDb = true;
   }
