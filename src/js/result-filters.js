@@ -1,6 +1,6 @@
 import * as Misc from "./misc";
 
-export let filters = defaultResultFilters;
+let filters = defaultResultFilters;
 
 let defaultResultFilters = {
   difficulty: {
@@ -71,6 +71,26 @@ Misc.getFunboxList().then((funboxModes) => {
     defaultResultFilters.funbox[funbox.name] = true;
   });
 });
+
+export function getFilters() {
+  return filters;
+}
+
+export function getGroup(group) {
+  return filters[group];
+}
+
+export function setFilter(group, filter, value) {
+  filters[group][filter] = value;
+}
+
+export function getFilter(group, filter) {
+  return filters[group][filter];
+}
+
+export function toggleFilter(group, filter) {
+  filters[group][filter] = !filters[group][filter];
+}
 
 export function loadTags(tags) {
   tags.forEach((tag) => {

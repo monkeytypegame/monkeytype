@@ -180,7 +180,6 @@ function signUp() {
                   obj: notSignedInLastResult,
                 });
                 db_getSnapshot().results.push(notSignedInLastResult);
-                // ResultFilters.filters = defaultResultFilters;
               }
               changePage("account");
               usr.sendEmailVerification();
@@ -410,7 +409,6 @@ function getAccountDataAndInit() {
       updateFilterTags();
       updateCommandsTagsList();
       loadActiveTagsFromCookie();
-      // loadResultFiltersFromCookie();
       updateResultEditTagsPanelButtons();
       showAccountSettingsSection();
     })
@@ -1048,13 +1046,11 @@ function updateFilterTags() {
 function toggleFilter(group, filter) {
   try {
     if (group === "date") {
-      Object.keys(ResultFilters.filters.date).forEach((date) => {
-        setFilter("date", date, false);
+      Object.keys(ResultFilters.getGroup("date")).forEach((date) => {
+        ResultFilters.setFilter("date", date, false);
       });
     }
-    ResultFilters.filters[group][filter] = !ResultFilters.filters[group][
-      filter
-    ];
+    ResultFilters.toggleFilter(group, filter);
     ResultFilters.save();
   } catch (e) {
     Misc.showNotification(
@@ -1068,19 +1064,15 @@ function toggleFilter(group, filter) {
   }
 }
 
-function setFilter(group, filter, set) {
-  ResultFilters.filters[group][filter] = set;
-}
-
 function showActiveFilters() {
   let aboveChartDisplay = {};
-  Object.keys(ResultFilters.filters).forEach((group) => {
+  Object.keys(ResultFilters.getFilters()).forEach((group) => {
     aboveChartDisplay[group] = {
       all: true,
       array: [],
     };
-    Object.keys(ResultFilters.filters[group]).forEach((filter) => {
-      if (ResultFilters.filters[group][filter]) {
+    Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
+      if (ResultFilters.getFilter(group, filter)) {
         aboveChartDisplay[group].array.push(filter);
       } else {
         aboveChartDisplay[group].all = false;
@@ -1095,7 +1087,7 @@ function showActiveFilters() {
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
         );
       }
-      if (ResultFilters.filters[group][filter]) {
+      if (ResultFilters.getFilter(group, filter)) {
         buttonEl.addClass("active");
       } else {
         buttonEl.removeClass("active");
@@ -1226,66 +1218,66 @@ function hideChartPreloader() {
 }
 
 $(".pageAccount .topFilters .button.allFilters").click((e) => {
-  Object.keys(ResultFilters.filters).forEach((group) => {
-    Object.keys(ResultFilters.filters[group]).forEach((filter) => {
+  Object.keys(ResultFilters.getFilters()).forEach((group) => {
+    Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
       if (group === "date") {
-        ResultFilters.filters[group][filter] = false;
+        ResultFilters.setFilter(group, filter, false);
       } else {
-        ResultFilters.filters[group][filter] = true;
+        ResultFilters.setFilter(group, filter, true);
       }
     });
   });
-  ResultFilters.filters.date.all = true;
+  ResultFilters.setFilter("date", "all", true);
   showActiveFilters();
   ResultFilters.save();
 });
 
 $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
-  Object.keys(ResultFilters.filters).forEach((group) => {
-    Object.keys(ResultFilters.filters[group]).forEach((filter) => {
-      ResultFilters.filters[group][filter] = false;
+  Object.keys(ResultFilters.getFilters()).forEach((group) => {
+    Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
+      ResultFilters.setFilter(group, filter, false);
     });
   });
 
-  ResultFilters.filters.difficulty[config.difficulty] = true;
-  ResultFilters.filters.mode[config.mode] = true;
+  ResultFilters.setFilter("difficulty", config.difficulty, true);
+  ResultFilters.setFilter("mode", config.mode, true);
   if (config.mode === "time") {
-    ResultFilters.filters.time[config.time] = true;
+    ResultFilters.setFilter("time", config.time, true);
   } else if (config.mode === "words") {
-    ResultFilters.filters.words[config.words] = true;
+    ResultFilters.setFilter("words", config.words, true);
   } else if (config.mode === "quote") {
-    Object.keys(ResultFilters.filters.quoteLength).forEach((ql) => {
-      ResultFilters.filters.quoteLength[ql] = true;
+    Object.keys(ResultFilters.getGroup("quoteLength")).forEach((ql) => {
+      ResultFilters.setFilter("quoteLength", ql, true);
     });
   }
   if (config.punctuation) {
-    ResultFilters.filters.punctuation.on = true;
+    ResultFilters.setFilter("punctuation", "on", true);
   } else {
-    ResultFilters.filters.punctuation.off = true;
+    ResultFilters.setFilter("punctuation", "off", true);
   }
   if (config.numbers) {
-    ResultFilters.filters.numbers.on = true;
+    ResultFilters.setFilter("numbers", "on", true);
   } else {
-    ResultFilters.filters.numbers.off = true;
+    ResultFilters.setFilter("numbers", "off", true);
   }
   if (config.mode === "quote" && /english.*/.test(config.language)) {
-    ResultFilters.filters.language["english"] = true;
+    ResultFilters.setFilter("language", "english", true);
   } else {
-    ResultFilters.filters.language[config.language] = true;
+    ResultFilters.setFilter("language", config.language, true);
   }
-  ResultFilters.filters.funbox[activeFunBox] = true;
-  ResultFilters.filters.tags.none = true;
+  ResultFilters.setFilter("funbox", activeFunBox, true);
+  ResultFilters.setFilter("tags", "none", true);
   db_getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
-      ResultFilters.filters.tags.none = false;
-      ResultFilters.filters.tags[tag.id] = true;
+      ResultFilters.setFilter("tags", "none", false);
+      ResultFilters.setFilter("tags", tag.id, true);
     }
   });
 
-  ResultFilters.filters.date.all = true;
-
+  ResultFilters.setFilter("date", "all", true);
   showActiveFilters();
   ResultFilters.save();
+  console.log(ResultFilters.getFilters());
 });
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
@@ -1301,30 +1293,30 @@ $(
   const filter = $(e.target).attr("filter");
   const group = $(e.target).parents(".buttons").attr("group");
   if ($(e.target).hasClass("allFilters")) {
-    Object.keys(ResultFilters.filters).forEach((group) => {
-      Object.keys(ResultFilters.filters[group]).forEach((filter) => {
+    Object.keys(ResultFilters.getFilters()).forEach((group) => {
+      Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
         if (group === "date") {
-          ResultFilters.filters[group][filter] = false;
+          ResultFilters.setFilter(group, filter, false);
         } else {
-          ResultFilters.filters[group][filter] = true;
+          ResultFilters.setFilter(group, filter, true);
         }
       });
     });
-    ResultFilters.filters.date.all = true;
+    ResultFilters.setFilter("date", "all", true);
   } else if ($(e.target).hasClass("noFilters")) {
-    Object.keys(ResultFilters.filters).forEach((group) => {
+    Object.keys(ResultFilters.getFilters()).forEach((group) => {
       if (group !== "date") {
-        Object.keys(ResultFilters.filters[group]).forEach((filter) => {
-          ResultFilters.filters[group][filter] = false;
+        Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
+          ResultFilters.setFilter(group, filter, false);
         });
       }
     });
   } else {
     if (e.shiftKey) {
-      Object.keys(ResultFilters.filters[group]).forEach((filter) => {
-        ResultFilters.filters[group][filter] = false;
+      Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
+        ResultFilters.setFilter(group, filter, false);
       });
-      setFilter(group, filter, true);
+      ResultFilters.setFilter(group, filter, true);
     } else {
       toggleFilter(group, filter);
     }
@@ -1797,21 +1789,21 @@ function refreshAccountPage() {
         if (resdiff == undefined) {
           resdiff = "normal";
         }
-        if (!ResultFilters.filters.difficulty[resdiff]) return;
-        if (!ResultFilters.filters.mode[result.mode]) return;
+        if (!ResultFilters.getFilter("difficulty", resdiff)) return;
+        if (!ResultFilters.getFilter("mode", result.mode)) return;
 
         if (result.mode == "time") {
           let timefilter = "custom";
           if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
             timefilter = result.mode2;
           }
-          if (!ResultFilters.filters.time[timefilter]) return;
+          if (!ResultFilters.getFilter("time", timefilter)) return;
         } else if (result.mode == "words") {
           let wordfilter = "custom";
           if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
             wordfilter = result.mode2;
           }
-          if (!ResultFilters.filters.words[wordfilter]) return;
+          if (!ResultFilters.getFilter("words", wordfilter)) return;
         }
 
         if (result.quoteLength != null) {
@@ -1825,15 +1817,18 @@ function refreshAccountPage() {
           } else if (result.quoteLength === 3) {
             filter = "thicc";
           }
-          if (filter !== null && !ResultFilters.filters.quoteLength[filter])
+          if (
+            filter !== null &&
+            !ResultFilters.getFilter("quoteLength", filter)
+          )
             return;
         }
 
-        let langFilter = ResultFilters.filters.language[result.language];
+        let langFilter = ResultFilters.getFilter("language", result.language);
 
         if (
           result.language === "english_expanded" &&
-          ResultFilters.filters.language.english_1k
+          ResultFilters.getFilter("language", "english_1k")
         ) {
           langFilter = true;
         }
@@ -1843,18 +1838,18 @@ function refreshAccountPage() {
         if (result.punctuation) {
           puncfilter = "on";
         }
-        if (!ResultFilters.filters.punctuation[puncfilter]) return;
+        if (!ResultFilters.getFilter("punctuation", puncfilter)) return;
 
         let numfilter = "off";
         if (result.numbers) {
           numfilter = "on";
         }
-        if (!ResultFilters.filters.numbers[numfilter]) return;
+        if (!ResultFilters.getFilter("numbers", numfilter)) return;
 
         if (result.funbox === "none" || result.funbox === undefined) {
-          if (!ResultFilters.filters.funbox.none) return;
+          if (!ResultFilters.getFilter("funbox", "none")) return;
         } else {
-          if (!ResultFilters.filters.funbox[result.funbox]) return;
+          if (!ResultFilters.getFilter("funbox", result.funbox)) return;
         }
 
         let tagHide = true;
@@ -1862,7 +1857,7 @@ function refreshAccountPage() {
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
           if (db_getSnapshot().tags.length > 0) {
-            if (ResultFilters.filters.tags.none) tagHide = false;
+            if (ResultFilters.getFilter("tags", "none")) tagHide = false;
           } else {
             tagHide = false;
           }
@@ -1875,10 +1870,10 @@ function refreshAccountPage() {
             //check if tag is valid
             if (validTags.includes(tag)) {
               //tag valid, check if filter is on
-              if (ResultFilters.filters.tags[tag]) tagHide = false;
+              if (ResultFilters.getFilter("tags", tag)) tagHide = false;
             } else {
               //tag not found in valid tags, meaning probably deleted
-              if (ResultFilters.filters.tags.none) tagHide = false;
+              if (ResultFilters.getFilter("tags", "none")) tagHide = false;
             }
           });
         }
@@ -1890,10 +1885,13 @@ function refreshAccountPage() {
         let datehide = true;
 
         if (
-          ResultFilters.filters.date.all ||
-          (ResultFilters.filters.date.last_day && timeSinceTest <= 86400) ||
-          (ResultFilters.filters.date.last_week && timeSinceTest <= 604800) ||
-          (ResultFilters.filters.date.last_month && timeSinceTest <= 2592000)
+          ResultFilters.getFilter("date", "all") ||
+          (ResultFilters.getFilter("date", "last_day") &&
+            timeSinceTest <= 86400) ||
+          (ResultFilters.getFilter("date", "last_week") &&
+            timeSinceTest <= 604800) ||
+          (ResultFilters.getFilter("date", "last_month") &&
+            timeSinceTest <= 2592000)
         ) {
           datehide = false;
         }
