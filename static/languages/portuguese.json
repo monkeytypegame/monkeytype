@@ -1,8 +1,8 @@
 {
-  "name": "portuguese_200",
-  "_comment": "Sourced from: "https://www.wordandphrase.info/port",
+  "name": "portuguese",
+  "_comment": "Sourced from: https://www.wordandphrase.info/port",
   "leftToRight": true,
-  "words": [    
+  "words": [
     "o",
     "de",
     "e",
@@ -203,5 +203,5 @@
     "abrir",
     "quase",
     "realizar"
-       ]
+  ]
 }
