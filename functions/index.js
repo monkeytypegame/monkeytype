@@ -1043,7 +1043,7 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
           errCount += verifyValue(val[valkey]);
         });
       } else {
-        if (!/^[0-9a-zA-Z._-]+$/.test(val)) errCount++;
+        if (!/^[0-9a-zA-Z._\-\+]+$/.test(val)) errCount++;
       }
       return errCount;
     }
