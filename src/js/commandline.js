@@ -2097,7 +2097,8 @@ function updateSuggestedCommands() {
       let foundcount = 0;
       $.each(inputVal, (index2, obj2) => {
         if (obj2 == "") return;
-        let re = new RegExp("\\b" + obj2, "g");
+        let escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+        let re = new RegExp("\\b" + escaped, "g");
         let res = obj.display.toLowerCase().match(re);
         if (res != null && res.length > 0) {
           foundcount++;
