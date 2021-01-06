@@ -3844,7 +3844,8 @@ $("#customTextPopup .button").click(() => {
   if ($("#customTextPopup .typographyCheck input").prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
-  text = Misc.remove_non_ascii(text);
+  // text = Misc.remove_non_ascii(text);
+  text = text.replace(/[\u2060]/g, "");
   text = text.split(" ");
   customText = text;
   customTextIsRandom = $("#customTextPopup .check input").prop("checked");
