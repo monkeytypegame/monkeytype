@@ -1770,22 +1770,13 @@ $("#commandLine input").keyup((e) => {
 $(document).ready((e) => {
   $(document).keydown((event) => {
     //escape
-    if (
-      (event.keyCode == 27 && !config.swapEscAndTab) ||
-      (event["keyCode"] == 9 && config.swapEscAndTab)
-    ) {
+    if (event.keyCode == 27 || (event.keyCode == 9 && config.swapEscAndTab)) {
       event.preventDefault();
       if (!$("#leaderboardsWrapper").hasClass("hidden")) {
         //maybe add more condition for closing other dialogs in the future as well
         event.preventDefault();
         hideLeaderboards();
-        return;
-      } else if ($("#commandLineWrapper").hasClass("hidden")) {
-        if (config.singleListCommandLine == "on")
-          useSingleListCommandLine(false);
-        else currentCommands = [commands];
-        showCommandLine();
-      } else {
+      } else if (!$("#commandLineWrapper").hasClass("hidden")) {
         if (currentCommands.length > 1) {
           currentCommands.pop();
           $("#commandLine").removeClass("allCommands");
@@ -1799,6 +1790,11 @@ $(document).ready((e) => {
         } else {
           setTheme(config.theme);
         }
+      } else if (event.keyCode == 9 || !config.swapEscAndTab) {
+        if (config.singleListCommandLine == "on")
+          useSingleListCommandLine(false);
+        else currentCommands = [commands];
+        showCommandLine();
       }
     }
   });
