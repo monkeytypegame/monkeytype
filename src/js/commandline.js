@@ -1777,26 +1777,27 @@ $(document).ready((e) => {
         event.preventDefault();
         hideLeaderboards();
         return;
-      } else if (event.keyCode == 9 || !config.swapEscAndTab) {
-        if ($("#commandLineWrapper").hasClass("hidden")) {
-          if (config.singleListCommandLine == "on")
-            useSingleListCommandLine(false);
-          else currentCommands = [commands];
+      } else if (
+        $("#commandLineWrapper").hasClass("hidden") &&
+        (event.keyCode == 9 || !config.swapEscAndTab)
+      ) {
+        if (config.singleListCommandLine == "on")
+          useSingleListCommandLine(false);
+        else currentCommands = [commands];
+        showCommandLine();
+      } else {
+        if (currentCommands.length > 1) {
+          currentCommands.pop();
+          $("#commandLine").removeClass("allCommands");
           showCommandLine();
         } else {
-          if (currentCommands.length > 1) {
-            currentCommands.pop();
-            $("#commandLine").removeClass("allCommands");
-            showCommandLine();
-          } else {
-            hideCommandLine();
-          }
-          setFontFamily(config.fontFamily, true);
-          if (config.customTheme === true) {
-            applyCustomThemeColors();
-          } else {
-            setTheme(config.theme);
-          }
+          hideCommandLine();
+        }
+        setFontFamily(config.fontFamily, true);
+        if (config.customTheme === true) {
+          applyCustomThemeColors();
+        } else {
+          setTheme(config.theme);
         }
       }
     }
