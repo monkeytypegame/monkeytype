@@ -4600,8 +4600,7 @@ function handleTab(event) {
     !$(".pageLogin").hasClass("active") &&
     !resultCalculating &&
     $("#commandLineWrapper").hasClass("hidden") &&
-    $("#simplePopupWrapper").hasClass("hidden") &&
-    $("#leaderboardsWrapper").hasClass("hidden")
+    $("#simplePopupWrapper").hasClass("hidden")
   ) {
     event.preventDefault();
     if ($(".pageTest").hasClass("active")) {
