@@ -449,13 +449,8 @@ function checkIfPB(uid, obj, userdata) {
   }
 
   if (toUpdate) {
-    return db
-      .collection("users")
-      .doc(uid)
-      .update({ personalBests: pbs })
-      .then((e) => {
-        return true;
-      });
+    db.collection("users").doc(uid).update({ personalBests: pbs });
+    return true;
   } else {
     return false;
   }
@@ -703,11 +698,11 @@ function incrementT60Bananas(uid, result, userData) {
     }
 
     if (best60 != undefined && result.wpm < best60 - best60 * 0.25) {
-      console.log("returning");
+      // console.log("returning");
       return;
     } else {
       //increment
-      console.log("checking");
+      // console.log("checking");
       db.collection(`users/${uid}/bananas`)
         .doc("bananas")
         .get()
@@ -1047,8 +1042,8 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       }
       return errCount;
     }
-
     let errCount = verifyValue(obj);
+
     // console.log(errCount);
     if (errCount > 0) {
       console.error(
@@ -1064,7 +1059,6 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       response.status(200).send({ data: { resultCode: -1 } });
       return;
     }
-
     if (!validateResult(obj)) {
       if (
         obj.bailedOut &&
@@ -1081,7 +1075,6 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
 
     let keySpacing = null;
     let keyDuration = null;
-
     try {
       keySpacing = {
         average:
@@ -1111,18 +1104,18 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       obj.keyDuration = "removed";
     }
 
-    emailVerified = await admin
-      .auth()
-      .getUser(request.uid)
-      .then((user) => {
-        return user.emailVerified;
-      });
+    // emailVerified = await admin
+    //   .auth()
+    //   .getUser(request.uid)
+    //   .then((user) => {
+    //     return user.emailVerified;
+    //   });
+    emailVerified = true;
 
     // if (obj.funbox === "nospace") {
     //   response.status(200).send({ data: { resultCode: -1 } });
     //   return;
     // }
-
     return db
       .collection("users")
       .doc(request.uid)
@@ -1186,180 +1179,164 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
           obj.keySpacingStats.sd = roundTo2(obj.keySpacingStats.sd);
         } catch (e) {}
 
-        return db
-          .collection(`users/${request.uid}/results`)
-          .add(obj)
-          .then((e) => {
-            let createdDocId = e.id;
-            return Promise.all([
-              checkLeaderboards(
-                request.obj,
-                "global",
-                banned,
-                name,
-                verified,
-                emailVerified
-              ),
-              checkLeaderboards(
-                request.obj,
-                "daily",
-                banned,
-                name,
-                verified,
-                emailVerified
-              ),
-              checkIfPB(request.uid, request.obj, userdata),
-              checkIfTagPB(request.uid, request.obj),
-            ])
-              .then(async (values) => {
-                let globallb = values[0].insertedAt;
-                let dailylb = values[1].insertedAt;
-                let ispb = values[2];
-                let tagPbs = values[3];
-                // console.log(values);
+        // return db
+        //   .collection(`users/${request.uid}/results`)
+        //   .add(obj)
+        //   .then((e) => {
 
-                if (obj.mode === "time" && String(obj.mode2) === "60") {
-                  incrementT60Bananas(request.uid, obj, userdata);
-                }
+        // let createdDocId = e.id;
+        return Promise.all([
+          checkLeaderboards(
+            request.obj,
+            "global",
+            banned,
+            name,
+            verified,
+            emailVerified
+          ),
+          checkLeaderboards(
+            request.obj,
+            "daily",
+            banned,
+            name,
+            verified,
+            emailVerified
+          ),
+          checkIfPB(request.uid, request.obj, userdata),
+          checkIfTagPB(request.uid, request.obj),
+          db.collection(`users/${request.uid}/results`).add(obj),
+        ])
+          .then(async (values) => {
+            let globallb = values[0].insertedAt;
+            let dailylb = values[1].insertedAt;
+            let ispb = values[2];
+            let tagPbs = values[3];
+            let createdDocId = values[4].id;
+            // console.log(values);
 
-                // incrementTestCounter(request.uid, userdata);
-                // incrementStartedTestCounter(
-                //   request.uid,
-                //   obj.restartCount + 1,
-                //   userdata
-                // );
-                // incrementTimeSpentTyping(request.uid, obj, userdata);
+            if (obj.mode === "time" && String(obj.mode2) === "60") {
+              incrementT60Bananas(request.uid, obj, userdata);
+            }
 
-                let newTypingStats = await getIncrementedTypingStats(
-                  userdata,
-                  obj
-                );
+            // incrementTestCounter(request.uid, userdata);
+            // incrementStartedTestCounter(
+            //   request.uid,
+            //   obj.restartCount + 1,
+            //   userdata
+            // );
+            // incrementTimeSpentTyping(request.uid, obj, userdata);
 
-                if (
-                  // obj.mode === "time" &&
-                  // (obj.mode2 == "15" || obj.mode2 == "60") &&
-                  // obj.language === "english"
-                  globallb !== null &&
-                  dailylb !== null
-                ) {
-                  let updatedLbMemory = await getUpdatedLbMemory(
-                    userdata,
-                    obj.mode,
-                    obj.mode2,
-                    globallb,
-                    dailylb
-                  );
-                  db.collection("users").doc(request.uid).update({
-                    startedTests: newTypingStats.newStarted,
-                    completedTests: newTypingStats.newCompleted,
-                    timeTyping: newTypingStats.newTime,
-                    lbMemory: updatedLbMemory,
-                  });
-                } else {
-                  db.collection("users").doc(request.uid).update({
-                    startedTests: newTypingStats.newStarted,
-                    completedTests: newTypingStats.newCompleted,
-                    timeTyping: newTypingStats.newTime,
-                  });
-                }
+            let newTypingStats = await getIncrementedTypingStats(userdata, obj);
 
-                let usr =
-                  userdata.discordId !== undefined
-                    ? userdata.discordId
-                    : userdata.name;
-
-                if (
-                  globallb !== null &&
-                  globallb.insertedAt >= 0 &&
-                  globallb.insertedAt <= 9 &&
-                  globallb.newBest
-                ) {
-                  let lbstring = `${obj.mode} ${obj.mode2} global`;
-                  console.log(
-                    `sending command to the bot to announce lb update ${
-                      userdata.discordId
-                    } ${globallb + 1} ${lbstring} ${obj.wpm}`
-                  );
-
-                  announceLbUpdate(
-                    usr,
-                    globallb.insertedAt + 1,
-                    lbstring,
-                    obj.wpm,
-                    obj.rawWpm,
-                    obj.acc
-                  );
-                }
-
-                let returnobj = {
-                  resultCode: null,
-                  globalLeaderboard: globallb,
-                  dailyLeaderboard: dailylb,
-                  lbBanned: banned,
-                  name: name,
-                  createdId: createdDocId,
-                  needsToVerify: values[0].needsToVerify,
-                  needsToVerifyEmail: values[0].needsToVerifyEmail,
-                  tagPbs: tagPbs,
-                };
-
-                if (ispb) {
-                  let logobj = request.obj;
-                  logobj.keySpacing = "removed";
-                  logobj.keyDuration = "removed";
-                  console.log(
-                    `saved result for ${
-                      request.uid
-                    } (new PB) - ${JSON.stringify(logobj)}`
-                  );
-                  await db
-                    .collection(`users/${request.uid}/results/`)
-                    .doc(createdDocId)
-                    .update({ isPb: true });
-                  if (
-                    obj.mode === "time" &&
-                    String(obj.mode2) === "60" &&
-                    userdata.discordId !== null &&
-                    userdata.discordId !== undefined
-                  ) {
-                    if (verified !== false) {
-                      console.log(
-                        `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
-                      );
-                      updateDiscordRole(
-                        userdata.discordId,
-                        Math.round(obj.wpm)
-                      );
-                    }
-                  }
-                  returnobj.resultCode = 2;
-                } else {
-                  let logobj = request.obj;
-                  logobj.keySpacing = "removed";
-                  logobj.keyDuration = "removed";
-                  console.log(
-                    `saved result for ${request.uid} - ${JSON.stringify(
-                      logobj
-                    )}`
-                  );
-                  returnobj.resultCode = 1;
-                }
-                response.status(200).send({ data: returnobj });
-                return;
-              })
-              .catch((e) => {
-                console.error(
-                  `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
-                );
-                response
-                  .status(200)
-                  .send({ data: { resultCode: -999, message: e.message } });
-                return;
+            if (
+              // obj.mode === "time" &&
+              // (obj.mode2 == "15" || obj.mode2 == "60") &&
+              // obj.language === "english"
+              globallb !== null &&
+              dailylb !== null
+            ) {
+              let updatedLbMemory = await getUpdatedLbMemory(
+                userdata,
+                obj.mode,
+                obj.mode2,
+                globallb,
+                dailylb
+              );
+              db.collection("users").doc(request.uid).update({
+                startedTests: newTypingStats.newStarted,
+                completedTests: newTypingStats.newCompleted,
+                timeTyping: newTypingStats.newTime,
+                lbMemory: updatedLbMemory,
               });
+            } else {
+              db.collection("users").doc(request.uid).update({
+                startedTests: newTypingStats.newStarted,
+                completedTests: newTypingStats.newCompleted,
+                timeTyping: newTypingStats.newTime,
+              });
+            }
+
+            let usr =
+              userdata.discordId !== undefined
+                ? userdata.discordId
+                : userdata.name;
+
+            if (
+              globallb !== null &&
+              globallb.insertedAt >= 0 &&
+              globallb.insertedAt <= 9 &&
+              globallb.newBest
+            ) {
+              let lbstring = `${obj.mode} ${obj.mode2} global`;
+              console.log(
+                `sending command to the bot to announce lb update ${
+                  userdata.discordId
+                } ${globallb + 1} ${lbstring} ${obj.wpm}`
+              );
+
+              announceLbUpdate(
+                usr,
+                globallb.insertedAt + 1,
+                lbstring,
+                obj.wpm,
+                obj.rawWpm,
+                obj.acc
+              );
+            }
+
+            let returnobj = {
+              resultCode: null,
+              globalLeaderboard: globallb,
+              dailyLeaderboard: dailylb,
+              lbBanned: banned,
+              name: name,
+              createdId: createdDocId,
+              needsToVerify: values[0].needsToVerify,
+              needsToVerifyEmail: values[0].needsToVerifyEmail,
+              tagPbs: tagPbs,
+            };
+            if (ispb) {
+              let logobj = request.obj;
+              logobj.keySpacing = "removed";
+              logobj.keyDuration = "removed";
+              console.log(
+                `saved result for ${request.uid} (new PB) - ${JSON.stringify(
+                  logobj
+                )}`
+              );
+              await db
+                .collection(`users/${request.uid}/results/`)
+                .doc(createdDocId)
+                .update({ isPb: true });
+              if (
+                obj.mode === "time" &&
+                String(obj.mode2) === "60" &&
+                userdata.discordId !== null &&
+                userdata.discordId !== undefined
+              ) {
+                if (verified !== false) {
+                  console.log(
+                    `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                  );
+                  updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
+                }
+              }
+              returnobj.resultCode = 2;
+            } else {
+              let logobj = request.obj;
+              logobj.keySpacing = "removed";
+              logobj.keyDuration = "removed";
+              console.log(
+                `saved result for ${request.uid} - ${JSON.stringify(logobj)}`
+              );
+              returnobj.resultCode = 1;
+            }
+            response.status(200).send({ data: returnobj });
+            return;
           })
           .catch((e) => {
             console.error(
-              `error saving result when adding result to the db for ${request.uid} - ${e.message}`
+              `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
             );
             response
               .status(200)
@@ -2126,7 +2103,7 @@ async function checkLeaderboards(
             mode2: String(resultObj.mode2),
             type: type,
           };
-          await t.set(
+          t.set(
             db
               .collection("leaderboards")
               .doc(
@@ -2156,7 +2133,7 @@ async function checkLeaderboards(
               resultObj.mode2
             } ${type} - ${JSON.stringify(lb.board)}`
           );
-          await t.update(db.collection("leaderboards").doc(docid), {
+          t.update(db.collection("leaderboards").doc(docid), {
             size: lb.size,
             type: lb.type,
             board: lb.board,
