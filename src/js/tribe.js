@@ -1,6 +1,6 @@
 let MP = {
   state: -1,
-  socket: io("https://52.14.235.93:2096", {
+  socket: io("https://tribe.monkeytype.com", {
     autoConnect: false,
     reconnectionAttempts: 3,
     secure: true,
