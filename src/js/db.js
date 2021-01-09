@@ -157,6 +157,41 @@ export async function db_getUserHighestWpm(
   return retval;
 }
 
+export async function db_getUserAverageWpm10(
+  mode,
+  punctuation,
+  language,
+  difficulty
+) {
+  function cont() {
+    let wpmSum = 0;
+    let count = 0;
+    dbSnapshot.results.forEach((result) => {
+      if (
+        result.mode == mode &&
+        result.punctuation == punctuation &&
+        result.language == language &&
+        result.difficulty == difficulty
+      ) {
+        wpmSum += result.wpm;
+        count++;
+        if (count >= 10) {
+          return Math.round(wpmSum / 10);
+        }
+      }
+    });
+    return Math.round(wpmSum / count);
+  }
+
+  let retval;
+  if (dbSnapshot == null || dbSnapshot.results === undefined) {
+    retval = 0;
+  } else {
+    retval = cont();
+  }
+  return retval;
+}
+
 export async function db_getLocalPB(
   mode,
   mode2,

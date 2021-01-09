@@ -1002,6 +1002,13 @@ let commandsPaceCaret = {
       },
     },
     {
+      id: "setPaceCaretAverage",
+      display: "average",
+      exec: () => {
+        setPaceCaret("average");
+      },
+    },
+    {
       id: "setPaceCaretCustom",
       display: "custom...",
       input: true,
