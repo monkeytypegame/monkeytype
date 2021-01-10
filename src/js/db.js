@@ -31,6 +31,11 @@ export async function db_getUserSnapshot() {
         daily: null,
       },
     },
+    globalStats: {
+      time: 0,
+      started: 0,
+      completed: 0,
+    },
   };
   try {
     await db
