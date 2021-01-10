@@ -3589,14 +3589,18 @@ function updateTestModesNotice() {
   }
 
   if (config.paceCaret !== "off") {
+    let speed = "";
+    try {
+      speed = ` (${Math.round(paceCaret.wpm)} wpm)`;
+    } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
         config.paceCaret === "average"
           ? "average"
           : config.paceCaret === "pb"
           ? "pb"
-          : config.paceCaretCustomSpeed + " wpm"
-      } pace</div>`
+          : "custom"
+      } pace${speed}</div>`
     );
   }
 
@@ -3936,12 +3940,24 @@ async function initPaceCaret() {
       config.difficulty
     );
   } else if (config.paceCaret === "average") {
+    let mode2 = "";
+    if (config.mode === "time") {
+      mode2 = config.time;
+    } else if (config.mode === "words") {
+      mode2 = config.words;
+    } else if (config.mode === "custom") {
+      mode2 = "custom";
+    } else if (config.mode === "quote") {
+      mode2 = randomQuote.id;
+    }
     wpm = await db_getUserAverageWpm10(
       config.mode,
+      mode2,
       config.punctuation,
       config.language,
       config.difficulty
     );
+    console.log("avg pace " + wpm);
   } else if (config.paceCaret === "custom") {
     wpm = config.paceCaretCustomSpeed;
   }
@@ -3955,9 +3971,8 @@ async function initPaceCaret() {
   let cps = characters / 60; //characters per step
   let spc = 60 / characters; //seconds per character
 
-  updateTestModesNotice();
-
   paceCaret = {
+    wpm: wpm,
     cps: cps,
     spc: spc,
     correction: 0,
@@ -3966,6 +3981,8 @@ async function initPaceCaret() {
     wordsStatus: {},
     timeout: null,
   };
+
+  updateTestModesNotice();
 }
 
 function movePaceCaret(expectedStepEnd) {
