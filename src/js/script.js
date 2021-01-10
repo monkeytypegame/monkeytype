@@ -3591,7 +3591,11 @@ function updateTestModesNotice() {
   if (config.paceCaret !== "off") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
-        config.paceCaret === "pb" ? "pb" : config.paceCaretCustomSpeed + " wpm"
+        config.paceCaret === "average"
+          ? "average"
+          : config.paceCaret === "pb"
+          ? "pb"
+          : config.paceCaretCustomSpeed + " wpm"
       } pace</div>`
     );
   }
@@ -3927,6 +3931,13 @@ async function initPaceCaret() {
     wpm = await db_getLocalPB(
       config.mode,
       mode2,
+      config.punctuation,
+      config.language,
+      config.difficulty
+    );
+  } else if (config.paceCaret === "average") {
+    wpm = await db_getUserAverageWpm10(
+      config.mode,
       config.punctuation,
       config.language,
       config.difficulty

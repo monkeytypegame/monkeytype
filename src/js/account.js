@@ -317,7 +317,7 @@ function getAccountDataAndInit() {
       } else {
         accountIconLoading(false);
       }
-      if (config.paceCaret === "pb") {
+      if (config.paceCaret === "pb" || config.paceCaret === "average") {
         if (!testActive) {
           initPaceCaret(true);
         }
@@ -2433,4 +2433,3 @@ $(".pageLogin #forgotPasswordButton").click((e) => {
       });
   }
 });
-
