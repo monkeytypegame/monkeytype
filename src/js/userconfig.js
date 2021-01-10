@@ -127,7 +127,7 @@ function resetConfig() {
   config = {
     ...defaultConfig,
   };
-  applyConfig();
+  applyConfig(config);
   saveConfigToCookie();
 }
 
@@ -1615,4 +1615,3 @@ function applyConfig(configObj) {
   }
   updateTestModesNotice();
 }
-
