@@ -166,7 +166,8 @@ export async function db_getUserAverageWpm10(
   function cont() {
     let wpmSum = 0;
     let count = 0;
-    dbSnapshot.results.forEach((result) => {
+    // You have to use every so you can break out of the loop
+    dbSnapshot.results.every((result) => {
       if (
         result.mode == mode &&
         result.punctuation == punctuation &&
@@ -175,20 +176,22 @@ export async function db_getUserAverageWpm10(
       ) {
         wpmSum += result.wpm;
         count++;
-        if (count >= 10) {
-          return Math.round(wpmSum / 10);
+        if (count < 10) {
+          return true;
         }
       }
     });
     return Math.round(wpmSum / count);
   }
 
-  let retval;
-  if (dbSnapshot == null || dbSnapshot.results === undefined) {
-    retval = 0;
-  } else {
-    retval = cont();
+  let retval = 0;
+
+  if (dbSnapshot == null) return retval;
+  var dbSnapshotValid = await db_getUserResults();
+  if (dbSnapshotValid === false) {
+    return retval;
   }
+  retval = cont();
   return retval;
 }
 

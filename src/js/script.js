@@ -3936,7 +3936,6 @@ async function initPaceCaret() {
       config.difficulty
     );
   } else if (config.paceCaret === "average") {
-    await db_getUserResults();
     wpm = await db_getUserAverageWpm10(
       config.mode,
       config.punctuation,
