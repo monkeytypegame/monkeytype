@@ -2683,6 +2683,7 @@ function startTest() {
     const delay = expectedStepEnd - performance.now();
     timer = setTimeout(function () {
       time++;
+      $(".pageTest #premidSecondsLeft").text(config.time - time);
       if (config.mode === "time") {
         updateTimer();
       }
@@ -2897,6 +2898,21 @@ function restartTest(withSameWordset = false, nosave = false) {
       document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = "100%";
       document.querySelector("#liveWpm").innerHTML = "0";
       document.querySelector("#liveAcc").innerHTML = "100%";
+
+      let mode2 = "";
+      if (config.mode === "time") {
+        mode2 = config.time;
+      } else if (config.mode === "words") {
+        mode2 = config.words;
+      } else if (config.mode === "custom") {
+        mode2 = "custom";
+      } else if (config.mode === "quote") {
+        mode2 = randomQuote.id;
+      }
+      $(".pageTest #premidTestMode").text(
+        `${config.mode} ${mode2} ${config.language}`
+      );
+      $(".pageTest #premidSecondsLeft").text(config.time);
 
       if (activeFunBox === "layoutfluid") {
         setLayout("qwerty");
