@@ -2909,8 +2909,12 @@ function restartTest(withSameWordset = false, nosave = false) {
       } else if (config.mode === "quote") {
         mode2 = randomQuote.id;
       }
+      let fbtext = "";
+      if (activeFunBox !== "none") {
+        fbtext = " " + activeFunBox;
+      }
       $(".pageTest #premidTestMode").text(
-        `${config.mode} ${mode2} ${config.language}`
+        `${config.mode} ${mode2} ${config.language}${fbtext}`
       );
       $(".pageTest #premidSecondsLeft").text(config.time);
 
