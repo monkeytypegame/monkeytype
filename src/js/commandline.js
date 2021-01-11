@@ -197,6 +197,15 @@ let commands = {
       },
     },
     {
+      id: "changeUpdateLiveStatOnKeypress",
+      display: "Change update live stats on keypress...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsUpdateLiveStatOnKeypress);
+        showCommandLine();
+      },
+    },
+    {
       id: "toggleTimerBar",
       display: "Toggle timer display",
       exec: () => {
@@ -1059,6 +1068,40 @@ let commandsMinAcc = {
       exec: (input) => {
         setMinAccCustom(input);
         setMinAcc("custom");
+      },
+    },
+  ],
+};
+
+let commandsUpdateLiveStatOnKeypress = {
+  title: "Change update live stats on keypress...",
+  list: [
+    {
+      id: "changeUpdateLiveStatOnKeypressOff",
+      display: "off",
+      exec: () => {
+        setUpdateLiveStatOnKeypress("off");
+      },
+    },
+    {
+      id: "changeUpdateLiveStatOnKeypressWpm",
+      display: "wpm",
+      exec: () => {
+        setUpdateLiveStatOnKeypress("wpm");
+      },
+    },
+    {
+      id: "changeUpdateLiveStatOnKeypressAcc",
+      display: "acc",
+      exec: () => {
+        setUpdateLiveStatOnKeypress("acc");
+      },
+    },
+    {
+      id: "changeUpdateLiveStatOnKeypressBoth",
+      display: "both",
+      exec: () => {
+        setUpdateLiveStatOnKeypress("both");
       },
     },
   ],

@@ -82,6 +82,10 @@ settingsGroups.showLiveWpm = new SettingsGroup(
   }
 );
 settingsGroups.showLiveAcc = new SettingsGroup("showLiveAcc", setShowLiveAcc);
+settingsGroups.updateLiveStatOnKeypress = new SettingsGroup(
+  "updateLiveStatOnKeypress",
+  setUpdateLiveStatOnKeypress
+);
 settingsGroups.showTimerProgress = new SettingsGroup(
   "showTimerProgress",
   setShowTimerProgress

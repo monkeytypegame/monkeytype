@@ -74,6 +74,7 @@ let defaultConfig = {
   minAcc: "off",
   minAccCustom: 90,
   showLiveAcc: false,
+  updateLiveStatOnKeypress: "off",
 };
 
 let cookieConfig = null;
@@ -673,6 +674,14 @@ function setShowLiveAcc(live, nosave) {
 function toggleShowLiveAcc() {
   config.showLiveAcc = !config.showLiveAcc;
   saveConfigToCookie();
+}
+
+function setUpdateLiveStatOnKeypress(stat, nosave) {
+  if (stat == null || stat == undefined || stat == true || stat == false) {
+    stat = "off";
+  }
+  config.updateLiveStatOnKeypress = stat;
+  if (!nosave) saveConfigToCookie();
 }
 
 function setHighlightMode(mode, nosave) {
@@ -1525,6 +1534,7 @@ function applyConfig(configObj) {
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setShowLiveWpm(configObj.showLiveWpm, true);
     setShowLiveAcc(configObj.showLiveAcc, true);
+    setUpdateLiveStatOnKeypress(configObj.updateLiveStatOnKeypress, true);
     setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);

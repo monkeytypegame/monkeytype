@@ -4617,6 +4617,27 @@ $(document).keydown(function (event) {
   }
 
   handleAlpha(event);
+
+  if (
+    config.updateLiveStatOnKeypress == "wpm" ||
+    config.updateLiveStatOnKeypress == "both"
+  ) {
+    let wpmAndRaw = liveWpmAndRaw();
+    updateLiveWpm(wpmAndRaw.wpm, wpmAndRaw.raw);
+  }
+
+  if (
+    config.updateLiveStatOnKeypress == "acc" ||
+    config.updateLiveStatOnKeypress == "both"
+  ) {
+    let acc = Misc.roundTo2(
+      (accuracyStats.correct /
+        (accuracyStats.correct + accuracyStats.incorrect)) *
+        100
+    );
+
+    updateLiveAcc(acc);
+  }
 });
 
 function handleTab(event) {
