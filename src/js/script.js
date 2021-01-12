@@ -1498,6 +1498,12 @@ function updateCaretPosition() {
     currentLetterIndex = 0;
   }
   try {
+    //insert temporary character so the caret will work in zen mode
+    let activeWordEmpty = $("#words .active").children().length == 0;
+    if (activeWordEmpty) {
+      $("#words .active").append('<letter style="opacity: 0;">_</letter>');
+    }
+
     let currentWordNodeList = document
       .querySelector("#words .active")
       .querySelectorAll("letter");
@@ -1506,7 +1512,7 @@ function updateCaretPosition() {
       currentLetter = currentWordNodeList[currentWordNodeList.length - 1];
     }
 
-    if ($(currentLetter).length == 0) return;
+    if (config.mode != "zen" && $(currentLetter).length == 0) return;
     const isLanguageLeftToRight = Misc.getCurrentLanguage().leftToRight;
     let currentLetterPosLeft = isLanguageLeftToRight
       ? currentLetter.offsetLeft
@@ -1560,6 +1566,9 @@ function updateCaretPosition() {
           behavior: "smooth",
         });
       }
+    }
+    if (activeWordEmpty) {
+      $("#words .active").children().remove();
     }
   } catch (e) {
     console.log("could not move caret: " + e.message);
