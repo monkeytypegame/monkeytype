@@ -601,7 +601,12 @@ async function initWords() {
   } else {
     $("#words").removeClass("withLigatures");
   }
-  showWords();
+  if (config.mode == "zen") {
+    // Creating an empty active word element for zen mode
+    $("#words").append('<div class="word active"></div>');
+  } else {
+    showWords();
+  }
 }
 
 function arrangeCharactersRightToLeft() {
@@ -2795,6 +2800,10 @@ function restartTest(withSameWordset = false, nosave = false) {
     }
   }
 
+  if (config.mode == "zen") {
+    $("#words").empty();
+  }
+
   if (modeBeforePractise !== null && !withSameWordset) {
     Misc.showNotification("Reverting to previous settings.", 1500);
     setMode(modeBeforePractise);
@@ -3097,6 +3106,14 @@ function setMode(mode, nosave) {
     $("#top .config .numbersMode").addClass("hidden");
     $("#result .stats .source").removeClass("hidden");
     $("#top .config .quoteLength").removeClass("hidden");
+  } else if (config.mode == "zen") {
+    $("#top .config .wordCount").addClass("hidden");
+    $("#top .config .time").addClass("hidden");
+    $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").addClass("hidden");
+    $("#top .config .numbersMode").addClass("hidden");
+    $("#top .config .quoteLength").addClass("hidden");
+    hideLiveWpm();
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -4234,6 +4251,70 @@ function applyMode2Popup() {
   hideCustomMode2Popup();
 }
 
+function lineJump(currentTop) {
+  //last word of the line
+  if (currentTestLine > 0) {
+    let hideBound = currentTop;
+    if (activeWordJumped) {
+      hideBound = activeWordTopBeforeJump;
+    }
+    activeWordJumped = false;
+
+    let toHide = [];
+    let wordElements = $("#words .word");
+    for (let i = 0; i < currentWordElementIndex; i++) {
+      if ($(wordElements[i]).hasClass("hidden")) continue;
+      let forWordTop = Math.floor(wordElements[i].offsetTop);
+      if (forWordTop < hideBound - 10) {
+        toHide.push($($("#words .word")[i]));
+      }
+    }
+    const wordHeight = $(document.querySelector(".word")).outerHeight(true);
+    if (config.smoothLineScroll && toHide.length > 0) {
+      lineTransition = true;
+      $("#words").prepend(
+        `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
+      );
+      $("#words .smoothScroller").animate(
+        {
+          height: 0,
+        },
+        125,
+        () => {
+          $("#words .smoothScroller").remove();
+        }
+      );
+      $("#paceCaret").animate(
+        {
+          top: document.querySelector("#paceCaret").offsetTop - wordHeight,
+        },
+        125
+      );
+      $("#words").animate(
+        {
+          marginTop: `-${wordHeight}px`,
+        },
+        125,
+        () => {
+          activeWordTop = document.querySelector("#words .active").offsetTop;
+
+          currentWordElementIndex -= toHide.length;
+          lineTransition = false;
+          toHide.forEach((el) => el.remove());
+          $("#words").css("marginTop", "0");
+        }
+      );
+    } else {
+      toHide.forEach((el) => el.remove());
+      currentWordElementIndex -= toHide.length;
+      $("#paceCaret").css({
+        top: document.querySelector("#paceCaret").offsetTop - wordHeight,
+      });
+    }
+  }
+  currentTestLine++;
+}
+
 $(document).on("click", "#top .logo", (e) => {
   changePage("test");
 });
@@ -4872,68 +4953,7 @@ function handleSpace(event) {
     }
 
     if ((nextTop > currentTop || activeWordJumped) && !lineTransition) {
-      //last word of the line
-      if (currentTestLine > 0) {
-        let hideBound = currentTop;
-        if (activeWordJumped) {
-          hideBound = activeWordTopBeforeJump;
-        }
-        activeWordJumped = false;
-
-        let toHide = [];
-        let wordElements = $("#words .word");
-        for (let i = 0; i < currentWordElementIndex; i++) {
-          if ($(wordElements[i]).hasClass("hidden")) continue;
-          let forWordTop = Math.floor(wordElements[i].offsetTop);
-          if (forWordTop < hideBound - 10) {
-            toHide.push($($("#words .word")[i]));
-          }
-        }
-        const wordHeight = $(document.querySelector(".word")).outerHeight(true);
-        if (config.smoothLineScroll && toHide.length > 0) {
-          lineTransition = true;
-          $("#words").prepend(
-            `<div class="smoothScroller" style="position: fixed;height:${wordHeight}px;width:100%"></div>`
-          );
-          $("#words .smoothScroller").animate(
-            {
-              height: 0,
-            },
-            125,
-            () => {
-              $("#words .smoothScroller").remove();
-            }
-          );
-          $("#paceCaret").animate(
-            {
-              top: document.querySelector("#paceCaret").offsetTop - wordHeight,
-            },
-            125
-          );
-          $("#words").animate(
-            {
-              marginTop: `-${wordHeight}px`,
-            },
-            125,
-            () => {
-              activeWordTop = document.querySelector("#words .active")
-                .offsetTop;
-
-              currentWordElementIndex -= toHide.length;
-              lineTransition = false;
-              toHide.forEach((el) => el.remove());
-              $("#words").css("marginTop", "0");
-            }
-          );
-        } else {
-          toHide.forEach((el) => el.remove());
-          currentWordElementIndex -= toHide.length;
-          $("#paceCaret").css({
-            top: document.querySelector("#paceCaret").offsetTop - wordHeight,
-          });
-        }
-      }
-      currentTestLine++;
+      lineJump(currentTop);
     }
   } //end of line wrap
 
@@ -5046,10 +5066,13 @@ function handleAlpha(event) {
 
   //check if the char typed was correct
   let thisCharCorrect;
-  let nextCharInWord = wordsList[currentWordIndex].substring(
-    currentInput.length,
-    currentInput.length + 1
-  );
+  let nextCharInWord;
+  if (config.mode != "zen") {
+    nextCharInWord = wordsList[currentWordIndex].substring(
+      currentInput.length,
+      currentInput.length + 1
+    );
+  }
   if (
     config.language === "russian" &&
     (event["key"].toLowerCase() == "e" || event["key"].toLowerCase() == "ё")
@@ -5062,6 +5085,8 @@ function handleAlpha(event) {
     } else {
       thisCharCorrect = false;
     }
+  } else if (config.mode == "zen") {
+    thisCharCorrect = true;
   } else {
     if (nextCharInWord == event["key"]) {
       thisCharCorrect = true;
@@ -5083,6 +5108,12 @@ function handleAlpha(event) {
   } else {
     accuracyStats.correct++;
     thisCharCorrect = true;
+    if (config.mode == "zen") {
+      //making the input visible to the user
+      $("#words .active").append(
+        `<letter class="correct">${event.key}</letter>`
+      );
+    }
   }
 
   if (thisCharCorrect) {
@@ -5122,8 +5153,11 @@ function handleAlpha(event) {
     activeWordTop = document.querySelector("#words .active").offsetTop;
   }
 
-  //max length of the input is 20
-  if (currentInput.length < wordsList[currentWordIndex].length + 20) {
+  //max length of the input is 20 unless in zen mode
+  if (
+    config.mode == "zen" ||
+    currentInput.length < wordsList[currentWordIndex].length + 20
+  ) {
     currentInput += event["key"];
   }
 
@@ -5140,24 +5174,26 @@ function handleAlpha(event) {
   }
 
   activeWordTopBeforeJump = activeWordTop;
-  updateWordElement(!config.blindMode);
+  if (config.mode != "zen") {
+    updateWordElement(!config.blindMode);
 
-  //auto stop the test if the last word is correct
-  let currentWord = wordsList[currentWordIndex];
-  let lastindex = currentWordIndex;
-  if (
-    (currentWord == currentInput ||
-      (config.quickEnd &&
-        currentWord.length == currentInput.length &&
-        config.stopOnError == "off")) &&
-    lastindex == wordsList.length - 1
-  ) {
-    inputHistory.push(currentInput);
-    currentInput = "";
-    correctedHistory.push(currentCorrected);
-    currentCorrected = "";
-    lastSecondNotRound = true;
-    showResult();
+    //auto stop the test if the last word is correct
+    let currentWord = wordsList[currentWordIndex];
+    let lastindex = currentWordIndex;
+    if (
+      (currentWord == currentInput ||
+        (config.quickEnd &&
+          currentWord.length == currentInput.length &&
+          config.stopOnError == "off")) &&
+      lastindex == wordsList.length - 1
+    ) {
+      inputHistory.push(currentInput);
+      currentInput = "";
+      correctedHistory.push(currentCorrected);
+      currentCorrected = "";
+      lastSecondNotRound = true;
+      showResult();
+    }
   }
 
   //simulate space press in nospace funbox
@@ -5182,9 +5218,17 @@ function handleAlpha(event) {
 
   //stop the word jump by slicing off the last character, update word again
   if (activeWordJumped && currentInput.length > 1) {
-    currentInput = currentInput.slice(0, -1);
-    updateWordElement(!config.blindMode);
-    activeWordJumped = false;
+    if (config.mode == "zen") {
+      let currentTop = Math.floor(
+        document.querySelectorAll("#words .word")[currentWordElementIndex - 1]
+          .offsetTop
+      );
+      lineJump(currentTop);
+    } else {
+      currentInput = currentInput.slice(0, -1);
+      updateWordElement(!config.blindMode);
+      activeWordJumped = false;
+    }
   }
 
   updateCaretPosition();
