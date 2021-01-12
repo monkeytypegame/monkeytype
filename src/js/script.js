@@ -45,6 +45,8 @@ let paceCaret = null;
 let missedWords = [];
 let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
+let punctuationBeforePractise = null;
+let numbersBeforePractise = null;
 let memoryFunboxTimer = null;
 let memoryFunboxInterval = null;
 
@@ -2798,7 +2800,11 @@ function restartTest(withSameWordset = false, nosave = false) {
   if (modeBeforePractise !== null && !withSameWordset) {
     Misc.showNotification("Reverting to previous settings.", 1500);
     setMode(modeBeforePractise);
+    setPunctuation(punctuationBeforePractise);
+    setNumbers(numbersBeforePractise);
     modeBeforePractise = null;
+    punctuationBeforePractise = null;
+    numbersBeforePractise = null;
   }
 
   manualRestart = false;
@@ -4363,7 +4369,13 @@ $(document.body).on("click", "#restartTestButton", () => {
 });
 
 function initPractiseMissedWords() {
-  let currentMode = config.mode;
+  let mode = modeBeforePractise === null ? config.mode : modeBeforePractise;
+  let punctuation =
+    punctuationBeforePractise === null
+      ? config.punctuation
+      : punctuationBeforePractise;
+  let numbers =
+    numbersBeforePractise === null ? config.numbers : numbersBeforePractise;
   setMode("custom");
   let newCustomText = [];
   Object.keys(missedWords).forEach((missedWord) => {
@@ -4374,10 +4386,14 @@ function initPractiseMissedWords() {
   customText = newCustomText;
   customTextIsRandom = true;
   customTextWordCount = 50;
-  let mode = modeBeforePractise === null ? currentMode : modeBeforePractise;
+
   modeBeforePractise = null;
+  punctuationBeforePractise = null;
+  numbersBeforePractise = null;
   restartTest();
   modeBeforePractise = mode;
+  punctuationBeforePractise = punctuation;
+  numbersBeforePractise = numbers;
 }
 
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
