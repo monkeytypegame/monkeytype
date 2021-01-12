@@ -473,5 +473,10 @@
     "name": "rudy",
     "bgColor": "#1a2b3e",
     "textColor": "#af8f5c"
+  },
+  {
+    "name": "stealth",
+    "bgColor": "#010203",
+    "textColor": "#383e42"
   }
 ]
