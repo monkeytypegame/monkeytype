@@ -988,9 +988,11 @@ $("#restartTestButton, #startTestButton").on("click", function () {
   };
 })(window.history);
 
-function updateActiveElement() {
+function updateActiveElement(backspace) {
   let active = document.querySelector("#words .active");
-  if (active !== null) {
+  if (config.mode == "zen" && backspace) {
+    active.remove();
+  } else if (active !== null) {
     if (config.highlightMode == "word") {
       active.querySelectorAll("letter").forEach((e) => {
         e.classList.remove("correct");
@@ -1015,6 +1017,8 @@ function updateActiveElement() {
 }
 
 function updateWordElement(showError) {
+  if (config.mode == "zen") return;
+
   let input = currentInput;
   let wordAtIndex;
   let currentWord;
@@ -4794,7 +4798,7 @@ function handleBackspace(event) {
       }
       currentWordIndex--;
       currentWordElementIndex--;
-      updateActiveElement();
+      updateActiveElement(true);
       updateWordElement(!config.blindMode);
     }
   } else {
@@ -4819,6 +4823,9 @@ function handleBackspace(event) {
     } else {
       currentInput = currentInput.substring(0, currentInput.length - 1);
     }
+    if (config.mode == "zen") {
+      $("#words .word.active").children().last().remove();
+    }
     updateWordElement(!config.blindMode);
   }
   playClickSound();
@@ -4834,6 +4841,12 @@ function handleSpace(event) {
   if (!testActive) return;
   if (currentInput === "") return;
   event.preventDefault();
+
+  if (config.mode == "zen") {
+    $("#words .word.active").removeClass("active");
+    $("#words").append("<div class='word active'></div>");
+  }
+
   let currentWord = wordsList[currentWordIndex];
   if (activeFunBox === "layoutfluid" && config.mode !== "time") {
     const layouts = ["qwerty", "dvorak", "colemak"];
@@ -4850,8 +4863,8 @@ function handleSpace(event) {
   }
   if (config.blindMode) $("#words .word.active letter").addClass("correct");
   dontInsertSpace = true;
-  if (currentWord == currentInput) {
-    //correct word
+  if (currentWord == currentInput || config.mode == "zen") {
+    //correct word or in zen mode
     if (
       paceCaret !== null &&
       paceCaret.wordsStatus[currentWordIndex] === true &&
@@ -5174,9 +5187,10 @@ function handleAlpha(event) {
   }
 
   activeWordTopBeforeJump = activeWordTop;
-  if (config.mode != "zen") {
-    updateWordElement(!config.blindMode);
+  updateWordElement(!config.blindMode);
 
+  if (config.mode != "zen") {
+    //not applicable to zen mode
     //auto stop the test if the last word is correct
     let currentWord = wordsList[currentWordIndex];
     let lastindex = currentWordIndex;
