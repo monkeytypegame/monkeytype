@@ -3147,11 +3147,17 @@ function liveWpmAndRaw() {
   let chars = 0;
   let correctWordChars = 0;
   let spaces = 0;
+  let newlineoffset = 0;
   for (let i = 0; i < inputHistory.length; i++) {
-    if (inputHistory[i] == wordsList[i]) {
+    let word = wordsList[i + newlineoffset];
+    if (word === "\n") {
+      newlineoffset++;
+      word = wordsList[i + newlineoffset];
+    }
+    if (inputHistory[i] == word) {
       //the word is correct
       //+1 for space
-      correctWordChars += wordsList[i].length;
+      correctWordChars += word.length;
       if (i < inputHistory.length) {
         spaces++;
       }
