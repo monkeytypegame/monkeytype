@@ -1,4 +1,4 @@
-Adding a language or a theme? Make sure to edit the `list.json` file as well, otherwise, it will not work!
+Adding a language or a theme? Make sure to edit the `_list.json` file as well, otherwise, it will not work!
 
 Please reference any issues related to your pull request.
 
