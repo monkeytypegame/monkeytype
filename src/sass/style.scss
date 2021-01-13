@@ -1699,6 +1699,10 @@ key {
   user-select: none;
   padding-bottom: 1em;
 
+  .newline{
+    width: inherit;
+  }
+
   letter {
     border-bottom-style: solid;
     border-bottom-width: 0.05em;
@@ -1952,6 +1956,7 @@ key {
   opacity: 1;
 }
 
+
 .word {
   margin: 0.25rem;
   color: var(--sub-color);
@@ -2038,6 +2043,10 @@ key {
 .word letter.corrected {
   color: var(--text-color);
   border-bottom: 2px dotted var(--main-color);
+}
+
+.word letter.extraCorrected {
+  border-right: 2px dotted var(--main-color);
 }
 
 .word letter.incorrect {
