@@ -105,7 +105,7 @@ export async function getFunboxList() {
 let fontsList = null;
 export async function getFontsList() {
   if (fontsList == null) {
-    return $.getJSON("js/fonts.json", function (data) {
+    return $.getJSON("fonts/_list.json", function (data) {
       fontsList = data.sort(function (a, b) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
