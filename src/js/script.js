@@ -441,28 +441,41 @@ async function initWords() {
     config.language = "english";
   }
 
-  if (config.mode === "quote" && quotes === null) {
+  if (config.mode === "quote" && (quotes === null || quotes.language !== config.language.replace(/_\d*k$/g,''))) {
+    if(config.language.split('_')[0] !== "code"){
+      setLanguage(config.language.replace(/_\d*k$/g,'').split('_')[0],true);
+    }
     showBackgroundLoader();
     $.ajax({
-      url: "quotes/english.json",
+      url: `quotes/${config.language.split("_")[0]}.json`,
       async: false,
       success: function (data) {
         hideBackgroundLoader();
-        quotes = data;
-        quotes.groups.forEach((qg, i) => {
-          let lower = qg[0];
-          let upper = qg[1];
-          quotes.groups[i] = quotes.quotes.filter((q) => {
-            if (q.length >= lower && q.length <= upper) {
-              q.group = i;
-              return true;
-            } else {
-              return false;
-            }
+        try{
+          quotes = data;
+          quotes.groups.forEach((qg, i) => {
+            let lower = qg[0];
+            let upper = qg[1];
+            quotes.groups[i] = quotes.quotes.filter((q) => {
+              if (q.length >= lower && q.length <= upper) {
+                q.group = i;
+                return true;
+              } else {
+                return false;
+              }
+            });
           });
-        });
-        quotes.quotes = [];
+          quotes.quotes = [];
+        }catch(e){
+          console.error(e);
+          Misc.showNotification(`No ${config.language.replace(/_\d*k$/g,'')} quotes found`,3000);
+          return;
+        }
       },
+      error: (e) => {
+        Misc.showNotification(`Error while loading ${config.language.replace(/_\d*k$/g,'')} quotes: ${e}`, 5000);
+        return;
+      }
     });
   }
 
