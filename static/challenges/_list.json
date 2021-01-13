@@ -1,0 +1,253 @@
+[
+  {
+    "name": "oneHourWarrior",
+    "type": "customTime",
+    "parameters": [3600]
+  }
+  ,{
+    "name": "doubleDown",
+    "type": "customTime",
+    "parameters": [7200]
+  }
+  ,{
+    "name": "quad",
+    "type": "customTime",
+    "parameters": [14400]
+  }
+  ,{
+    "name": "8Ball",
+    "type": "customTime",
+    "parameters": [28800]
+  }
+  ,{
+    "name": "theBig12",
+    "type": "customTime",
+    "parameters": [43200]
+  }
+  ,{
+    "name": "1Day",
+    "type": "customTime",
+    "parameters": [86400]
+  }
+  ,{
+    "name": "trueSimp",
+    "type": "customText",
+    "parameters": ["miodec",true,10000]
+  }
+  ,{
+    "name": "simp",
+    "type": "customText",
+    "parameters": ["miodec",true,1000]
+  }
+  ,{
+    "name": "antidiseWhat",
+    "type": "customText",
+    "parameters": ["antidisestablishmentarianism",true,1]
+  }
+  ,{
+    "name": "whatsThisWebsiteCalledAgain",
+    "type": "customText",
+    "parameters": ["monkeytype",true,1000]
+  }
+  ,{
+    "name": "developd",
+    "type": "customText",
+    "parameters": ["develop",true,1000]
+  }
+  ,{
+    "name": "slowAndSteady",
+    "type": "customTime",
+    "parameters": [300]
+  }
+  ,{
+    "name": "speedSpacer",
+    "type": "customText",
+    "parameters": ["a b c d e f g h i j k l m n o p q r s t u v w x y z",true,100]
+  }
+  ,{
+    "name": "iveGotThePower",
+    "type": "customText",
+    "parameters": ["power",true,10]
+  }
+  ,{
+    "name": "accuracy",
+    "type": "accuracy",
+    "parameters": [],
+    "message": "Minimum 60wpm and 100% accuracy required."
+  }
+  ,{
+    "name": "inAGalaxyFarFarAway",
+    "type": "script",
+    "parameters": ["episode4.txt",null,"space_balls"]
+  }
+  ,{
+    "name": "whosYourDaddy",
+    "type": "script",
+    "parameters": ["episode5.txt",null,"space_balls"]
+  }
+  ,{
+    "name": "itsATrap",
+    "type": "script",
+    "parameters": ["episode6.txt",null,"space_balls"]
+  }
+  ,{
+    "name": "jolly",
+    "type": "script",
+    "parameters": ["jolly.txt",null,null],
+    "message": "Minimum 70wpm required."
+  }
+  ,{
+    "name": "gottaCatchEmAll",
+    "type": "script",
+    "parameters": ["pokemon.txt",null,null]
+  }
+  ,{
+    "name": "rapGod",
+    "type": "script",
+    "parameters": ["rapgod.txt",null,null],
+    "message": "Minimum 85wpm and 90% accuracy required."
+  }
+  ,{
+    "name": "littleChef",
+    "type": "script",
+    "parameters": ["littlechef.txt",null,null]
+  }
+  ,{
+    "name": "crosstalk",
+    "type": "script",
+    "parameters": ["crosstalk.txt",null,null]
+  }
+  ,{
+    "name": "bees",
+    "type": "script",
+    "parameters": ["bees.txt",null,null]
+  }
+  ,{
+    "name": "navySeal",
+    "type": "script",
+    "parameters": ["navyseal.txt",null,null],
+    "message": "Minimum 60wpm and 100% accuracy required."
+  }
+  ,{
+    "name": "getOffMySwamp",
+    "type": "script",
+    "parameters": ["shrek.txt",null,null]
+  }
+  ,{
+    "name": "beLikeWater",
+    "type": "funbox",
+    "parameters": ["layoutfluid","time",60],
+    "message": "Remember: You need to achieve at least 50 wpm in each layout."
+  }
+  ,{
+    "name": "rollercoaster",
+    "type": "funbox",
+    "parameters": ["round_round_baby","time",3600]
+  }
+  ,{
+    "name": "oneHourMirror",
+    "type": "funbox",
+    "parameters": ["mirror","time",3600]
+  }
+  ,{
+    "name": "chooChoo",
+    "type": "funbox",
+    "parameters": ["choo_choo","time",3600]
+  }
+  ,{
+    "name": "mnemonist",
+    "type": "funbox",
+    "parameters": ["memory","words",25,"master"]
+  }
+  ,{
+    "name": "earfquake",
+    "type": "funbox",
+    "parameters": ["earthquake","time",3600]
+  }
+  ,{
+    "name": "simonSez",
+    "type": "funbox",
+    "parameters": ["simon_says","time",3600]
+  }
+  ,{
+    "name": "accountant",
+    "type": "funbox",
+    "parameters": ["58008","time",3600]
+  }
+  ,{
+    "name": "hidden",
+    "type": "funbox",
+    "parameters": ["read_ahead","time",60]
+  }
+  ,{
+    "name": "whatAreWordsAtThisPoint",
+    "type": "funbox",
+    "parameters": ["gibberish","time",3600]
+  }
+  ,{
+    "name": "specials",
+    "type": "funbox",
+    "parameters": ["specials","time",3600]
+  }
+  ,{
+    "name": "aeiou",
+    "type": "funbox",
+    "parameters": ["tts","time",3600]
+  }
+  ,{
+    "name": "asciiWarrior",
+    "type": "funbox",
+    "parameters": ["ascii","time",3600]
+  }
+  ,{
+    "name": "iKiNdAlIkEhOwInEfFiCiEnTqWeRtYiS",
+    "type": "funbox",
+    "parameters": ["randomcase","time",3600]
+  }
+  ,{
+    "name": "oneNauseousMonkey",
+    "type": "funbox",
+    "parameters": ["nausea","time",3600]
+  }
+  ,{
+    "name": "thumbWarrior",
+    "type": "customTime",
+    "parameters": [3600]
+  }
+  ,{
+    "name": "mouseWarrior",
+    "type": "customTime",
+    "parameters": [3600]
+  }
+  ,{
+    "name": "mobileWarrior",
+    "type": "customTime",
+    "parameters": [3600]
+  }
+  ,{
+    "name": "69",
+    "type": "customTime",
+    "parameters": [69],
+    "message": "You need to achieve 69 wpm, 69 raw, 69% accuracy and 69% consistency."
+  }
+  ,{
+    "name": "upsideDown",
+    "type": "customTime",
+    "parameters": [60]
+  }
+  ,{
+    "name": "oneArmedBandit",
+    "type": "customWords",
+    "parameters": [10000]
+  }
+  ,{
+    "name": "englishMaster",
+    "type": "customTime",
+    "parameters": [3600]
+  }
+  ,{
+    "name": "feetWarrior",
+    "type": "customTime",
+    "parameters": [3600]
+  }
+]

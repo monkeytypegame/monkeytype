@@ -1,0 +1,17 @@
+@keyframes woah {
+  0% {
+    transform: rotateZ(0deg);
+  }
+
+  50% {
+    transform: rotateZ(180deg);
+  }
+
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+
+letter {
+  animation: woah 2s infinite linear;
+}

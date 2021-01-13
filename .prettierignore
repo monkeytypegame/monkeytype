@@ -1,0 +1,10 @@
+*.min.js
+layouts.js
+english_quotes.json
+chartjs-plugin-*.js
+sound/*
+node_modules
+css/balloon.css
+css/fa.css
+css/style.min.css
+_list.json

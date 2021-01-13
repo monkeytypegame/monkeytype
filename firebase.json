@@ -1,20 +1,17 @@
 {
   "hosting": {
-    "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "/privacy-policy",
+        "destination": "/privacy-policy.html"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ],
-    "redirects": [{
-      "source": "/soon",
-      "destination": "/",
-      "type": 301
-    }],
-    "rewrites": [{
-      "source": "**",
-      "destination": "/index.html"
-    }],
     "cleanUrls": true,
     "trailingSlash": false
   }

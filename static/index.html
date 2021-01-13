@@ -1,0 +1,3658 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monkeytype</title>
+    <!-- <link rel="stylesheet" href="css/fa.css" /> -->
+    <link rel="stylesheet" href="css/balloon.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
+    <link rel="stylesheet" href="" id="funBoxTheme" />
+    <link id="favicon" rel="shortcut icon" href="fav.png" />
+    <link rel="shortcut icon" href="fav.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+      integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+      crossorigin="anonymous"
+    />
+    <meta name="name" content="Monkeytype" />
+    <meta name="image" content="https://monkeytype.com/mtsocial.png" />
+    <meta
+      name="description"
+      content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
+    />
+    <meta
+      name="keywords"
+      content="typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkeytypes, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
+    />
+    <meta name="author" content="Miodec" />
+    <meta property="og:title" content="Monkeytype" />
+    <meta property="og:url" content="https://monkeytype.com/" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:description"
+      content="A minimalistic, customisable typing website. Test yourself in various modes, track your progress and improve your typing speed."
+    />
+    <meta property="og:image" content="https://monkeytype.com/mtsocial.png" />
+    <meta name="theme-color" content="#e2b714" id="metaThemeColor" />
+    <meta name="twitter:title" content="Monkeytype" />
+    <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script
+      data-ad-client="ca-pub-7261919841327810"
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+    ></script>
+  </head>
+
+  <body>
+    <div id="backgroundLoader" style="display: none"></div>
+    <div
+      class="nameChangeMessage"
+      style="
+        background-color: var(--main-color);
+        padding: 0.5rem;
+        text-align: center;
+        color: var(--bg-color);
+        display: none;
+      "
+    >
+      Important information about your account. Please click this message.
+    </div>
+    <div
+      class="merchBanner hidden"
+      style="
+        background-color: var(--main-color);
+        padding: 0.5rem;
+        text-align: center;
+        color: var(--bg-color);
+      "
+    >
+      Check out our new merchandise over at
+      <a href="https://monkeytype.store" target="_blank">monkeytype.store</a>
+      . We've got some awesome designs for you.
+      <i class="fas closeButton fa-times"></i>
+    </div>
+    <div class="notification">Signed in</div>
+
+    <div id="simplePopupWrapper" class="hidden">
+      <div id="simplePopup" popupId=""></div>
+    </div>
+
+    <div id="settingsImportWrapper" class="hidden">
+      <div id="settingsImport" action="">
+        <input type="text" />
+        <div class="button">import settings</div>
+      </div>
+    </div>
+
+    <div id="customThemeShareWrapper" class="hidden">
+      <div id="customThemeShare" action="">
+        <input type="text" />
+        <div class="button">ok</div>
+      </div>
+    </div>
+    <div id="customTextPopupWrapper" class="hidden">
+      <div id="customTextPopup" action="">
+        <textarea class="textarea" placeholder="Custom text"></textarea>
+        <div class="inputs">
+          <label class="check">
+            <input type="checkbox" />
+            <div class="customTextRandomCheckbox"></div>
+            Random
+            <span>
+              Randomise the above words, and control how many words are
+              generated.
+            </span>
+          </label>
+          <label class="wordcount">
+            Word count
+            <input type="number" value="1" min="1" max="10000" />
+          </label>
+          <label class="typographyCheck">
+            <input type="checkbox" checked />
+            <div class="customTextTypographyCheckbox"></div>
+            Remove Fancy Typography
+            <span>
+              Standardises typography symbols (for example “ and ” become ")
+            </span>
+          </label>
+        </div>
+        <div class="button">ok</div>
+      </div>
+    </div>
+    <div id="customMode2PopupWrapper" class="hidden">
+      <div id="customMode2Popup" mode="">
+        <div class="title">Test length</div>
+        <input type="number" value="1" min="1" max="10000" />
+        <div class="tip">
+          You can start an infinite test by inputting 0. Then, to stop the test,
+          use the Bail Out feature (esc > Bail Out)
+        </div>
+        <div class="button">ok</div>
+      </div>
+    </div>
+    <div id="tagsWrapper" class="hidden">
+      <div id="tagsEdit" action="" tagid="">
+        <div class="title"></div>
+        <input type="text" />
+        <div class="button"><i class="fas fa-plus"></i></div>
+      </div>
+    </div>
+    <div id="resultEditTagsPanelWrapper" class="hidden">
+      <div id="resultEditTagsPanel" resultid="">
+        <div class="buttons"></div>
+        <div class="button confirmButton"><i class="fas fa-check"></i></div>
+      </div>
+    </div>
+    <div id="leaderboardsWrapper" class="hidden">
+      <div id="leaderboards">
+        <div class="mainTitle">Leaderboards</div>
+        <div class="buttons">
+          <div class="buttonGroup">
+            <div class="button active" board="time_15">time 15</div>
+            <div class="button" board="time_60">time 60</div>
+          </div>
+        </div>
+        <div class="tables">
+          <div class="titleAndTable">
+            <div class="title">Global</div>
+            <div class="globalTableWrapper">
+              <table class="global">
+                <thead>
+                  <tr>
+                    <td>#</td>
+                    <td>name</td>
+                    <td>wpm</td>
+                    <td>raw</td>
+                    <td>acc</td>
+                    <td>test</td>
+                    <td>date</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td>-</td>
+                    <td>You</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+          <div class="titleAndTable">
+            <div class="title">Daily</div>
+            <div class="subtitle">-</div>
+            <div class="dailyTableWrapper">
+              <table class="daily">
+                <thead>
+                  <tr>
+                    <td>#</td>
+                    <td>name</td>
+                    <td>wpm</td>
+                    <td>raw</td>
+                    <td>acc</td>
+                    <td>test</td>
+                    <td>date</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td>-</td>
+                    <td>You</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                      -
+                      <br />
+                      -
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="versionHistoryWrapper" class="hidden">
+      <div id="versionHistory">
+        <div class="tip">Click anywhere to dismiss</div>
+        <div class="releases">
+          <div class="release">
+            <div class="title">v1</div>
+            <div class="date">010101</div>
+            <div class="body">test</div>
+          </div>
+          <div class="release">
+            <div class="title">v2</div>
+            <div class="date">010101</div>
+            <div class="body">test</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="supportMeWrapper" class="hidden">
+      <div id="supportMe">
+        <div class="title">Support Monkeytype</div>
+        <div class="text">
+          Thank you so much for thinking about supporting this project. It would
+          not be possible without you and your continued support.
+          <i class="fas fa-heart"></i>
+        </div>
+        <div class="buttons">
+          <div class="button ads">
+            <div class="icon"><i class="fas fa-ad"></i></div>
+            <div class="text">Enable Ads</div>
+          </div>
+          <a
+            class="button"
+            href="https://www.paypal.me/jackbartnik"
+            target="_blank"
+          >
+            <div class="icon"><i class="fab fa-paypal"></i></div>
+            <div class="text">Donate</div>
+          </a>
+          <a
+            class="button"
+            href="https://www.patreon.com/monkeytype"
+            target="_blank"
+          >
+            <div class="icon"><i class="fab fa-patreon"></i></div>
+            <div class="text">
+              Become
+              <br />
+              a Patron
+            </div>
+          </a>
+          <a class="button" href="https://monkeytype.store" target="_blank">
+            <div class="icon"><i class="fas fa-tshirt"></i></div>
+            <div class="text">Buy Merch</div>
+          </a>
+        </div>
+        <div class="subtext">
+          FYI: Ads can be broken sometimes because Google keeps disabling them.
+          :|
+        </div>
+      </div>
+    </div>
+    <div id="commandLineWrapper" class="hidden">
+      <div id="commandLine">
+        <input type="text" class="input" placeholder="Type to search" />
+        <div class="separator hidden"></div>
+        <div class="listTitle">Title</div>
+        <div class="suggestions"></div>
+      </div>
+      <div id="commandInput" class="hidden">
+        <input type="text" class="input" placeholder="input" />
+      </div>
+    </div>
+    <div id="timerWrapper">
+      <div id="timer"></div>
+    </div>
+    <div style="display: flex; justify-content: space-around">
+      <div id="ad2" class="hidden"></div>
+      <div id="centerContent" class="hidden">
+        <div id="top">
+          <div class="logo">
+            <div class="top">monkey see</div>
+            <div class="bottom">monkeytype</div>
+          </div>
+          <div id="menu">
+            <div
+              id="startTestButton"
+              class="icon-button view-start"
+              tabindex="2"
+              href="/"
+              onclick="this.blur();"
+            >
+              <div class="icon">
+                <i class="fas fa-fw fa-keyboard"></i>
+              </div>
+            </div>
+            <div
+              class="icon-button leaderboards view-leaderboards"
+              tabindex="2"
+              onclick="this.blur();"
+            >
+              <div class="icon">
+                <i class="fas fa-fw fa-crown"></i>
+              </div>
+            </div>
+            <div
+              class="icon-button view-about"
+              tabindex="2"
+              href="/about"
+              onclick="this.blur();"
+            >
+              <div class="icon">
+                <i class="fas fa-fw fa-info"></i>
+              </div>
+            </div>
+            <!-- <a
+              class="icon-button discord"
+              tabindex="2"
+              href="https://discord.gg/yENzqcB"
+              onclick="this.blur();"
+              target="_blank"
+              style="text-decoration: none;"
+            >
+              <div class="icon">
+                <i class="fab fa-discord"></i>
+              </div>
+            </a> -->
+            <div
+              class="icon-button view-settings"
+              tabindex="2"
+              href="/settings"
+              onclick="this.blur();"
+            >
+              <div class="icon">
+                <i class="fas fa-fw fa-cog"></i>
+              </div>
+            </div>
+            <div
+              class="icon-button hidden account view-account"
+              tabindex="2"
+              href="/account"
+              onclick="this.blur();"
+            >
+              <div class="icon">
+                <i class="fas fa-fw fa-user"></i>
+              </div>
+              <div class="text"></div>
+            </div>
+            <div
+              class="icon-button login view-login"
+              tabindex="2"
+              href="/login"
+              onclick="this.blur();"
+            >
+              <div class="icon">
+                <i class="far fa-fw fa-user"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="config">
+            <div style="display: grid; grid-auto-flow: column">
+              <div class="group punctuationMode">
+                <!--           <div class="title">time</div> -->
+                <div class="buttons">
+                  <div class="text-button toggleButton" tabindex="2">
+                    punctuation
+                  </div>
+                </div>
+              </div>
+              <div class="group numbersMode">
+                <!--           <div class="title">time</div> -->
+                <div class="buttons">
+                  <div class="text-button toggleButton" tabindex="2">
+                    numbers
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="group mode">
+              <!--           <div class="title">mode</div> -->
+              <div class="buttons">
+                <div class="text-button active" mode="time" tabindex="2">
+                  time
+                </div>
+                <div class="text-button" mode="words" tabindex="2">words</div>
+                <div class="text-button" mode="quote" tabindex="2">quote</div>
+                <div class="text-button" mode="custom" tabindex="2">custom</div>
+              </div>
+            </div>
+            <div class="group wordCount hidden">
+              <!--           <div class="title">words</div> -->
+              <div class="buttons">
+                <div class="text-button" wordCount="10" tabindex="2">10</div>
+                <div class="text-button" wordCount="25" tabindex="2">25</div>
+                <div class="text-button active" wordCount="50" tabindex="2">
+                  50
+                </div>
+                <div class="text-button" wordCount="100" tabindex="2">100</div>
+                <div class="text-button" wordCount="custom" tabindex="2">
+                  <i class="fas fa-tools"></i>
+                </div>
+              </div>
+            </div>
+            <div class="group time">
+              <!--           <div class="title">time</div> -->
+              <div class="buttons">
+                <div class="text-button" timeConfig="15" tabindex="2">15</div>
+                <div class="text-button active" timeConfig="30" tabindex="2">
+                  30
+                </div>
+                <div class="text-button" timeConfig="60" tabindex="2">60</div>
+                <div class="text-button" timeConfig="120" tabindex="2">120</div>
+                <div class="text-button" timeConfig="custom" tabindex="2">
+                  <i class="fas fa-tools"></i>
+                </div>
+              </div>
+            </div>
+            <div class="group quoteLength hidden">
+              <!--           <div class="title">time</div> -->
+              <div class="buttons">
+                <div class="text-button" quoteLength="-1" tabindex="2">all</div>
+                <div class="text-button" quoteLength="0" tabindex="2">
+                  short
+                </div>
+                <div class="text-button active" quoteLength="1" tabindex="2">
+                  medium
+                </div>
+                <div class="text-button" quoteLength="2" tabindex="2">long</div>
+                <div class="text-button" quoteLength="3" tabindex="2">
+                  thicc
+                </div>
+              </div>
+            </div>
+            <div class="group customText hidden">
+              <!--           <div class="title">time</div> -->
+              <div class="buttons">
+                <div class="text-button">change</div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="signOut hidden"
+            style="grid-column: 3/4; grid-row: 1/2"
+            tabindex="0"
+          >
+            <i class="fas fa-sign-out-alt"></i>
+            sign out
+          </div>
+        </div>
+        <div id="middle">
+          <div class="page pageTest active">
+            <div id="typingTest">
+              <div id="capsWarning" class="hidden">
+                <i class="fas fa-lock"></i>
+                Caps Lock
+              </div>
+              <div id="testModesNotice"></div>
+              <div id="caret" class="default size15"></div>
+              <div id="paceCaret" class="default size15 hidden"></div>
+              <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
+              <div id="timerNumber">
+                <div>60</div>
+              </div>
+              <div id="miniTimerAndLiveWpm">
+                <div class="time hidden">1:00</div>
+                <div class="wpm">60</div>
+                <div class="acc">100%</div>
+              </div>
+              <div class="outOfFocusWarning hidden">
+                <i class="fas fa-mouse-pointer"></i>
+                Click or press any key to focus
+              </div>
+              <div id="wordsWrapper">
+                <div id="words" class="size15"></div>
+              </div>
+              <div class="keymap hidden">
+                <div class="row r1">
+                  <div></div>
+                  <div class="keymap-key" id="Key1">
+                    <span class="letter">1</span>
+                  </div>
+                  <div class="keymap-key" id="Key2">
+                    <span class="letter">2</span>
+                  </div>
+                  <div class="keymap-key" id="Key3">
+                    <span class="letter">3</span>
+                  </div>
+                  <div class="keymap-key" id="Key4">
+                    <span class="letter">4</span>
+                  </div>
+                  <div class="keymap-key" id="Key5">
+                    <span class="letter">5</span>
+                  </div>
+                  <div class="keymap-key" id="Key6">
+                    <span class="letter">6</span>
+                  </div>
+                  <div class="keymap-split-spacer"></div>
+                  <div class="keymap-key" id="Key7">
+                    <span class="letter">7</span>
+                  </div>
+                  <div class="keymap-key" id="Key8">
+                    <span class="letter">8</span>
+                  </div>
+                  <div class="keymap-key" id="Key9">
+                    <span class="letter">9</span>
+                  </div>
+                  <div class="keymap-key" id="Key0">
+                    <span class="letter">0</span>
+                  </div>
+                  <div class="keymap-key" id="Key-">
+                    <span class="letter">-</span>
+                  </div>
+                  <div class="keymap-key" id="Key=">
+                    <span class="letter">=</span>
+                  </div>
+                </div>
+                <div class="row r2">
+                  <div></div>
+                  <div class="keymap-key" id="KeyQ">
+                    <span class="letter">q</span>
+                  </div>
+                  <div class="keymap-key" id="KeyW">
+                    <span class="letter">w</span>
+                  </div>
+                  <div class="keymap-key" id="KeyE">
+                    <span class="letter">e</span>
+                  </div>
+                  <div class="keymap-key" id="KeyR">
+                    <span class="letter">r</span>
+                  </div>
+                  <div class="keymap-key" id="KeyT">
+                    <span class="letter">t</span>
+                  </div>
+                  <div class="keymap-split-spacer"></div>
+                  <div class="keymap-key" id="KeyY">
+                    <span class="letter">y</span>
+                  </div>
+                  <div class="keymap-key" id="KeyU">
+                    <span class="letter">u</span>
+                  </div>
+                  <div class="keymap-key" id="KeyI">
+                    <span class="letter">i</span>
+                  </div>
+                  <div class="keymap-key" id="KeyO">
+                    <span class="letter">o</span>
+                  </div>
+                  <div class="keymap-key" id="KeyP">
+                    <span class="letter">p</span>
+                  </div>
+                  <div class="keymap-key" id="KeyLeftBracket">
+                    <span class="letter">[</span>
+                  </div>
+                  <div class="keymap-key" id="KeyRightBracket">
+                    <span class="letter">]</span>
+                  </div>
+                  <div class="keymap-key hidden-key" id="Backslash">
+                    <span class="letter">\</span>
+                  </div>
+                </div>
+                <div class="row r3">
+                  <div></div>
+                  <div class="keymap-key" id="KeyA">
+                    <span class="letter">a</span>
+                  </div>
+                  <div class="keymap-key" id="KeyS">
+                    <span class="letter">s</span>
+                  </div>
+                  <div class="keymap-key" id="KeyD">
+                    <span class="letter">d</span>
+                  </div>
+                  <div class="keymap-key" id="KeyF">
+                    <span class="letter">f</span>
+                    <div class="bump"></div>
+                  </div>
+                  <div class="keymap-key" id="KeyG">
+                    <span class="letter">g</span>
+                  </div>
+                  <div class="keymap-split-spacer"></div>
+                  <div class="keymap-key" id="KeyH">
+                    <span class="letter">h</span>
+                  </div>
+                  <div class="keymap-key" id="KeyJ">
+                    <span class="letter">j</span>
+                    <div class="bump"></div>
+                  </div>
+                  <div class="keymap-key" id="KeyK">
+                    <span class="letter">k</span>
+                  </div>
+                  <div class="keymap-key" id="KeyL">
+                    <span class="letter">l</span>
+                  </div>
+                  <div class="keymap-key" id="KeySemicolon">
+                    <span class="letter">;</span>
+                  </div>
+                  <div class="keymap-key" id="KeyQuote">
+                    <span class="letter">'</span>
+                  </div>
+                </div>
+                <div class="row r4">
+                  <div></div>
+                  <div class="keymap-key first" id="KeyZ">
+                    <span class="letter">z</span>
+                  </div>
+                  <div class="keymap-key" id="KeyX">
+                    <span class="letter">x</span>
+                  </div>
+                  <div class="keymap-key" id="KeyC">
+                    <span class="letter">c</span>
+                  </div>
+                  <div class="keymap-key" id="KeyV">
+                    <span class="letter">v</span>
+                  </div>
+                  <div class="keymap-key" id="KeyB">
+                    <span class="letter">b</span>
+                  </div>
+                  <div class="keymap-key" id="KeyN">
+                    <span class="letter">n</span>
+                  </div>
+                  <div class="keymap-split-spacer"></div>
+                  <div class="keymap-key" id="KeyM">
+                    <span class="letter">m</span>
+                  </div>
+                  <div class="keymap-key" id="KeyComma">
+                    <span class="letter">,</span>
+                  </div>
+                  <div class="keymap-key" id="KeyPeriod">
+                    <span class="letter">.</span>
+                  </div>
+                  <div class="keymap-key" id="KeySlash">
+                    <span class="letter">/</span>
+                  </div>
+                  <div class="keymap-key last">
+                    <span class="letter"></span>
+                  </div>
+                </div>
+                <div class="row r5">
+                  <div></div>
+                  <div class="keymap-key key-split-space" id="KeySpace">
+                    <span class="letter"></span>
+                  </div>
+                  <div class="keymap-split-spacer"></div>
+                  <div class="keymap-key key-split-space" id="KeySpace2">
+                    <span class="letter"></span>
+                  </div>
+                  <div class="keymap-key hidden-key">
+                    <span class="letter"></span>
+                  </div>
+                </div>
+              </div>
+              <div id="largeLiveWpmAndAcc">
+                <div id="liveWpm" class="hidden">123</div>
+                <div id="liveAcc" class="hidden">100%%</div>
+              </div>
+              <div
+                id="restartTestButton"
+                aria-label="Restart test"
+                data-balloon-pos="down"
+                class=""
+                tabindex="0"
+                onclick="this.blur();"
+              >
+                <i class="fas fa-fw fa-redo-alt"></i>
+              </div>
+              <div id="monkey" class="hidden">
+                <div class="up"></div>
+                <div class="left hidden"></div>
+                <div class="right hidden"></div>
+                <div class="both hidden"></div>
+              </div>
+              <div id="premidTestMode" class="hidden"></div>
+              <div id="premidSecondsLeft" class="hidden"></div>
+            </div>
+            <div id="result" class="hidden">
+              <div class="stats">
+                <!-- <div class="info">words 10<br>punctuation</div> -->
+
+                <div class="group wpm">
+                  <div class="top">
+                    <div class="text">wpm</div>
+                    <div
+                      class="crown hidden"
+                      aria-label=""
+                      data-balloon-pos="up"
+                    >
+                      <i class="fas fa-crown"></i>
+                    </div>
+                  </div>
+                  <div class="bottom" aria-label="" data-balloon-pos="up">
+                    -
+                  </div>
+                </div>
+                <div class="group acc">
+                  <div class="top">acc</div>
+                  <div class="bottom" aria-label="" data-balloon-pos="up">
+                    -
+                  </div>
+                </div>
+              </div>
+              <div class="stats morestats">
+                <div class="group testType">
+                  <div class="top">test type</div>
+                  <div class="bottom">-</div>
+                  <div class="tags hidden" style="margin-top: 0.5rem">
+                    <div class="top">tags</div>
+                    <div class="bottom">-</div>
+                  </div>
+                </div>
+                <!-- <div class="group infoAndTags"> -->
+                <div class="group info">
+                  <div class="top">other</div>
+                  <div class="bottom">-</div>
+                </div>
+
+                <!-- </div> -->
+                <!-- <div class="subgroup"> -->
+                <div class="group raw">
+                  <div class="top">raw</div>
+                  <div class="bottom" aria-label="" data-balloon-pos="up">
+                    -
+                  </div>
+                </div>
+                <div class="group key">
+                  <div class="top">characters</div>
+                  <div
+                    class="bottom"
+                    aria-label="Correct, incorrect, extra and missed"
+                    data-balloon-break=""
+                    data-balloon-pos="up"
+                  >
+                    -
+                  </div>
+                </div>
+
+                <!-- </div> -->
+
+                <!-- <div class="subgroup"> -->
+                <div class="group flat consistency">
+                  <div class="top">consistency</div>
+                  <div class="bottom" aria-label="" data-balloon-pos="up">
+                    -
+                  </div>
+                </div>
+                <div class="group time">
+                  <div class="top">time</div>
+                  <div class="bottom" aria-label="" data-balloon-pos="up">
+                    <div class="text">-</div>
+                    <div class="afk"></div>
+                  </div>
+                </div>
+                <!-- </div> -->
+
+                <div class="group source hidden">
+                  <div class="top">source</div>
+                  <div class="bottom">-</div>
+                </div>
+
+                <div class="group leaderboards">
+                  <div class="top">leaderboards</div>
+                  <div class="bottom">-</div>
+                </div>
+              </div>
+              <div class="chart">
+                <!-- <div class="title">wpm over time</div> -->
+                <canvas id="wpmChart"></canvas>
+              </div>
+              <div id="resultWordsHistory" class="hidden">
+                <div class="title">
+                  input history
+                  <span
+                    id="copyWordsListButton"
+                    class="icon-button"
+                    aria-label="Copy words list"
+                    data-balloon-pos="up"
+                    style="display: inline-block"
+                  >
+                    <i class="fas fa-copy"></i>
+                  </span>
+                </div>
+                <div class="words"></div>
+              </div>
+              <div class="loginTip">
+                <a href="/login" tabindex="9">Sign in</a>
+                to save your results
+              </div>
+              <div class="ssWatermark hidden">monkeytype.com</div>
+              <div class="buttons">
+                <div
+                  id="nextTestButton"
+                  aria-label="Next test"
+                  data-balloon-pos="down"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="fas fa-fw fa-chevron-right"></i>
+                </div>
+                <div
+                  id="restartTestButtonWithSameWordset"
+                  aria-label="Repeat test"
+                  data-balloon-pos="down"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="fas fa-fw fa-sync-alt"></i>
+                </div>
+                <div
+                  id="practiseMissedWordsButton"
+                  aria-label="Practise missed words"
+                  data-balloon-pos="down"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="fas fa-fw fa-exclamation-triangle"></i>
+                </div>
+                <div
+                  id="showWordHistoryButton"
+                  aria-label="Toggle words history"
+                  data-balloon-pos="down"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="fas fa-fw fa-align-left"></i>
+                </div>
+                <div
+                  id="copyResultToClipboardButton"
+                  aria-label="Save screenshot"
+                  data-balloon-pos="down"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="far fa-fw fa-image"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="page pageAbout hidden">
+            <div class="section">
+              <h1>about</h1>
+              <p>
+                Monkeytype is a minimalistic typing test, featuring many test
+                modes, an account system to save your typing speed history and
+                user configurable features like themes, a smooth caret and more.
+              </p>
+            </div>
+            <div class="section">
+              <h1>word set</h1>
+              <p>
+                By default, the website uses the most common 200 words in the
+                english language to generate its tests. You can change to an
+                expanded set (1000 most common words) in the options, or change
+                the language entirely.
+              </p>
+            </div>
+            <div class="section">
+              <h1>keybinds</h1>
+              <p>
+                You can use
+                <key>tab</key>
+                and
+                <key>enter</key>
+                (or just
+                <key>tab</key>
+                if you have (
+                <a href="settings">quick tab mode enabled</a>
+                ) to restart the typing test. Open the command line by pressing
+                <key>esc</key>
+                - there you can access all the functionality you need without
+                touching your mouse.
+              </p>
+            </div>
+            <div class="section">
+              <h1>stats</h1>
+              <p>
+                wpm - total amount of characters in the correctly typed words
+                (including spaces), divided by 5 and normalised to 60 seconds.
+              </p>
+              <p>
+                raw wpm - calculated just like wpm, but also includes incorrect
+                words.
+              </p>
+              <p>acc - percentage of correctly pressed keys.</p>
+              <p>
+                char - correct characters / incorrect characters. Calculated
+                after the test has ended.
+              </p>
+              <p>
+                consistency - based on the variance of your raw wpm. Closer to
+                100% is better. Calculated using the coefficient of variation of
+                raw wpm and mapped onto a scale from 0 to 100.
+              </p>
+            </div>
+            <div class="section">
+              <h1>results screen</h1>
+              <p>
+                After completing a test you will be able to see your wpm, raw
+                wpm, accuracy, character stats, test length, leaderboards info
+                and test info. (you can hover over some values to get floating
+                point numbers). You can also see a graph of your wpm and raw
+                over the duration of the test. Remember that the wpm line is a
+                global average, while the raw wpm line is a local, momentary
+                value. (meaning if you stop, the value is 0)
+              </p>
+            </div>
+            <div class="section">
+              <h1>bug report or feature request</h1>
+              <p>
+                If you encounter a bug, or have a feature request - join the
+                <a href="https://discord.gg/yENzqcB" target="_blank">Discord</a>
+                server, send me a message on Reddit or create an issue on
+                <a href="https://github.com/Miodec/monkeytype" target="_blank">
+                  GitHub.
+                </a>
+              </p>
+            </div>
+            <div class="section">
+              <h1>support</h1>
+              <p>
+                If you wish to support this project, help pay for hosting and
+                fuel my caffeine addiction, you can
+                <a class="aboutEnableAds">enable ads,</a>
+                join the
+                <a href="https://www.patreon.com/monkeytype">Patreon,</a>
+                donate via
+                <a href="https://www.paypal.me/jackbartnik">PayPal</a>
+                or buy a
+                <a href="https://monkeytype.store">tshirt.</a>
+              </p>
+            </div>
+            <div class="section">
+              <h1>credits</h1>
+              <p>
+                <a href="https://www.reddit.com/user/montydrei" target="_blank">
+                  montydrei
+                </a>
+                - name suggestion
+              </p>
+              <p>
+                <a
+                  href="https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/"
+                  target="_blank"
+                >
+                  Everyone
+                </a>
+                who provided valuable feedback on the original reddit post for
+                the prototype of this website
+              </p>
+              <p>
+                <a
+                  href="https://github.com/Miodec/monkeytype/graphs/contributors"
+                >
+                  Contributors
+                </a>
+                on GitHub that have helped with implementing various features,
+                adding themes and more.
+              </p>
+            </div>
+            <div class="section">
+              <h1>supporters</h1>
+              <div class="supporters">
+                <div>Not Gate</div>
+                <div>Corey</div>
+                <div>Jashe</div>
+                <div>Nick</div>
+                <div>Eugeniu</div>
+                <div>Weedle</div>
+                <div>Jackson</div>
+                <div>Nicholas</div>
+                <div>Kenn</div>
+                <div>Kieren</div>
+                <div>Andrew</div>
+                <div>Stephen</div>
+                <div>Pulsing Penguin</div>
+                <div>Echo</div>
+                <div>Radik</div>
+                <div>John</div>
+                <div>Nick</div>
+                <div>Kevin</div>
+                <div>Luke</div>
+                <div>Neven</div>
+                <div>Typing anT</div>
+                <div>Jakob</div>
+                <div>Chris</div>
+                <div>Beat</div>
+                <div>Ed</div>
+                <div>Bryan</div>
+                <div>Guillaume</div>
+                <div>katsuu</div>
+                <div>Mauricio</div>
+                <div>Killian</div>
+                <div>Alexander</div>
+                <div>squarepy</div>
+                <div>AnalystBot</div>
+                <div>ze_or</div>
+                <div>Jiangtian Li</div>
+                <div>Dessle</div>
+                <div>Craig</div>
+                <div>Matt</div>
+                <div>Claudio</div>
+                <div>Maciej</div>
+                <div>Kieran</div>
+                <div>Stephan</div>
+                <div>Rotoscopic</div>
+                <div>Lawrence</div>
+                <div>Gwen</div>
+                <div>SuperNicii</div>
+                <div>Thomas</div>
+                <div>Gabriel</div>
+                <div>Sebastian</div>
+                <div>Nikolai</div>
+                <div>Sam</div>
+                <div>Ming</div>
+                <div>Ven Development</div>
+                <div>Ben</div>
+                <div>Uver</div>
+                <div>poopsey</div>
+                <div>Fruit</div>
+                <div>Robin</div>
+                <div>Sonicv6</div>
+                <div>Taran</div>
+              </div>
+            </div>
+          </div>
+          <div class="page pageSettings hidden">
+            <div class="scrollToTopButton">
+              <i class="fas fa-angle-double-up"></i>
+            </div>
+            <div class="tip">
+              tip: You can also change all these settings quickly using the
+              command line (
+              <key>esc</key>
+              )
+            </div>
+            <div style="text-align: center">
+              For testing purposes, account config synchronisation has been
+              temporarily disabled (only local config will be remembered). Sorry
+              for the inconvenience.
+            </div>
+            <!-- <div class="sectionGroupTitle">quick navigation</div> -->
+            <div class="settingsGroup quickNav">
+              <div class="links">
+                <a href="#group_account">account</a>
+                <a href="#group_behavior">behavior</a>
+                <a href="#group_input">input</a>
+                <a href="#group_sound">sound</a>
+                <a href="#group_caret">caret</a>
+                <a href="#group_appearance">appearance</a>
+                <a href="#group_theme">theme</a>
+                <a href="#group_hideElements">hide elements</a>
+                <a href="#group_dangerZone">danger zone</a>
+              </div>
+            </div>
+            <div
+              id="group_account"
+              class="sectionGroupTitle hidden"
+              group="account"
+            >
+              account
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="settingsGroup account hidden">
+              <div class="section tags">
+                <h1>tags</h1>
+                <div class="text">
+                  With tags, you can compare how fast you're typing in different
+                  situations. You can see your active tags above the test words.
+                  They will remain active until you deactivate them, or refresh
+                  the page.
+                </div>
+                <div class="tagsListAndButton">
+                  <div class="tagsList">
+                    <div class="tag" id="0">
+                      <div class="active">
+                        <i class="fas fa-check-square"></i>
+                      </div>
+                      <div class="title">staggered</div>
+                      <div class="editButton"><i class="fas fa-pen"></i></div>
+                      <div class="removeButton">
+                        <i class="fas fa-trash"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="addTagButton"><i class="fas fa-plus"></i></div>
+                </div>
+              </div>
+              <div class="section discordIntegration">
+                <h1>discord integration</h1>
+                <div class="text">
+                  When you connect your monkeytype account to your Discord
+                  account, you will be automatically assigned a new role every
+                  time you achieve a new personal best in a 60 second test.
+                  <br />
+                  <br />
+                  Don't pair your account before joining the Discord server, as
+                  it might result in the bot not being able to give you a role.
+                </div>
+                <div class="buttons">
+                  <a
+                    class="button"
+                    href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
+                    style="text-decoration: none"
+                  >
+                    Verify with Discord
+                  </a>
+                </div>
+                <div class="info hidden">
+                  <div>
+                    <i class="fas fa-check"></i>
+                    Your accounts are paired!
+                  </div>
+                  <div
+                    id="unlinkDiscordButton"
+                    class="text-button"
+                    aria-label="Unlink"
+                    data-balloon-pos="up"
+                  >
+                    <i class="fas fa-unlink" aria-hidden="true"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="sectionSpacer"></div>
+            </div>
+
+            <div
+              id="group_behavior"
+              class="sectionGroupTitle"
+              group="behaviour"
+            >
+              behaviour
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="settingsGroup behaviour">
+              <div class="section difficulty">
+                <h1>test difficulty</h1>
+                <div class="text">
+                  Normal is the classic type test experience. Expert fails the
+                  test if you submit (press space) an incorrect word. Master
+                  fails if you press a single incorrect key (meaning you have to
+                  achieve 100% accuracy).
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    difficulty="normal"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    normal
+                  </div>
+                  <div
+                    class="button"
+                    difficulty="expert"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    expert
+                  </div>
+                  <div
+                    class="button"
+                    difficulty="master"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    master
+                  </div>
+                </div>
+              </div>
+              <div class="section quickTab" id="quickTab">
+                <h1>quick tab mode</h1>
+                <div class="text">
+                  Press
+                  <key>tab</key>
+                  to quickly restart the test, or to quickly jump to the test
+                  page. This function disables tab navigation on the website.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+
+              <div class="section blindMode">
+                <h1>blind mode</h1>
+                <div class="text">
+                  No errors or incorrect words are highlighted. Helps you to
+                  focus on raw speed. If enabled, quick end is recommended.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    ⠀
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="section readAheadMode">
+                <h1>read ahead mode</h1>
+                <div class="text">
+                  When enabled, the active and immediately following test words
+                  will be hidden. Helps you practice reading ahead.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div> -->
+              <div class="section alwaysShowWordsHistory">
+                <h1>always show words history</h1>
+                <div class="text">
+                  This option will automatically show the words history at the
+                  end of the test. Can cause slight lag with a lot of words.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section singleListCommandLine">
+                <h1>single list command line</h1>
+                <div class="text">
+                  When enabled, it will show the command line with all commands
+                  in a single list instead of submenu arrangements. Selecting
+                  'manual' will expose all commands only after typing
+                  <key>></key>
+                  .
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    singleListCommandLine="manual"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    manual
+                  </div>
+                  <div
+                    class="button"
+                    singleListCommandLine="on"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section minWpm" section="">
+                <h1>min wpm</h1>
+                <div class="text">
+                  Automatically fails a test if your WPM falls below a
+                  threshold.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    minWpm="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    minWpm="custom"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    custom
+                  </div>
+                  <input
+                    type="number"
+                    step="1"
+                    class="customMinWpmSpeed"
+                    placeholder="wpm"
+                    min="0"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div class="section minAcc" section="">
+                <h1>min accuracy</h1>
+                <div class="text">
+                  Automatically fails a test if your accuracy falls below a
+                  threshold.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    minAcc="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    minAcc="custom"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    custom
+                  </div>
+                  <input
+                    type="number"
+                    step="1"
+                    class="customMinAcc"
+                    placeholder="acc"
+                    min="0"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div class="section language">
+                <h1>language</h1>
+                <div class="buttons"></div>
+              </div>
+              <div class="section funbox">
+                <h1>funbox</h1>
+                <div class="buttons"></div>
+              </div>
+              <div class="sectionSpacer"></div>
+            </div>
+
+            <div id="group_input" class="sectionGroupTitle" group="input">
+              input
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="settingsGroup input">
+              <div class="section freedomMode">
+                <h1>freedom mode</h1>
+                <div class="text">
+                  Allows you to delete any word, even if it was typed correctly.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section strictSpace">
+                <h1>strict space</h1>
+                <div class="text">
+                  Pressing space at the beginning of a word will insert a space
+                  character when this mode is enabled.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section stopOnError">
+                <h1>stop on error</h1>
+                <div class="text">
+                  Letter mode will stop input when pressing any incorrect
+                  letters. Word mode will not allow you to continue to the next
+                  word until you correct all mistakes.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    stopOnError="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    stopOnError="word"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    word
+                  </div>
+                  <div
+                    class="button"
+                    stopOnError="letter"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    letter
+                  </div>
+                </div>
+              </div>
+              <div class="section confidenceMode">
+                <h1>confidence mode</h1>
+                <div class="text">
+                  When enabled, you will not be able to go back to previous
+                  words to fix mistakes. When turned up to the max, you won't be
+                  able to backspace at all.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    confidenceMode="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+
+                  <div
+                    class="button"
+                    confidenceMode="on"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    on
+                  </div>
+                  <div
+                    class="button"
+                    confidenceMode="max"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    max
+                  </div>
+                </div>
+              </div>
+              <div class="section quickEnd">
+                <h1>quick end</h1>
+                <div class="text">
+                  This only applies to the words mode - when enabled, the test
+                  will end as soon as the last word has been typed, even if it's
+                  incorrect. When disabled, you need to manually confirm the
+                  last incorrect entry with a space.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section indicateTypos" section="">
+                <h1>indicate typos</h1>
+                <div class="text">Show typos underneath the letters</div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section hideExtraLetters" section="">
+                <h1>hide extra letters</h1>
+                <div class="text">
+                  Hides extra letters. This will completely avoid words jumping
+                  lines (due to changing width), but might feel a bit confusing
+                  when you press a key and nothing happens.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section swapEscAndTab" section="">
+                <h1>swap esc and tab</h1>
+                <div class="text">
+                  Swap the behaviour of tab and escape keys.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section capsLockBackspace">
+                <h1>caps lock backspace</h1>
+                <div class="text">Makes caps lock act like backspace.</div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section layout">
+                <h1>layout override</h1>
+                <div class="buttons"></div>
+              </div>
+              <div class="sectionSpacer"></div>
+            </div>
+
+            <div id="group_sound" class="sectionGroupTitle" group="sound">
+              sound
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="settingsGroup sound">
+              <div class="section playSoundOnClick">
+                <h1>play sound on click</h1>
+                <div class="text">
+                  Plays a short sound when you press a key.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    playSoundOnClick="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="1"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    1
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="2"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    2
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="3"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    3
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="4"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    4
+                  </div>
+                </div>
+              </div>
+              <div class="section playSoundOnError">
+                <h1>play sound on error</h1>
+                <div class="text">
+                  Plays a short sound if you press an incorrect key or press
+                  space too early.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="sectionSpacer"></div>
+            </div>
+
+            <div id="group_caret" class="sectionGroupTitle" group="caret">
+              caret
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="settingsGroup caret">
+              <div class="section smoothCaret" section="">
+                <h1>smooth caret</h1>
+                <div class="text">
+                  The caret will move smoothly between letters and words.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section caretStyle" section="">
+                <h1>caret style</h1>
+                <div class="text">
+                  Change the style of the caret during the test.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    caretStyle="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    caretStyle="default"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    |
+                  </div>
+                  <div
+                    class="button"
+                    caretStyle="block"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    ▮
+                  </div>
+                  <div
+                    class="button"
+                    caretStyle="outline"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    ▯
+                  </div>
+                  <div
+                    class="button"
+                    caretStyle="underline"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    _
+                  </div>
+                </div>
+              </div>
+              <div class="section paceCaret" section="">
+                <h1>pace caret</h1>
+                <div class="text">
+                  Displays a second caret that moves at constant speed.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    paceCaret="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    paceCaret="average"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    average
+                  </div>
+                  <div
+                    class="button"
+                    paceCaret="pb"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    pb
+                  </div>
+                  <div
+                    class="button"
+                    paceCaret="custom"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    custom
+                  </div>
+                  <input
+                    type="number"
+                    step="1"
+                    class="customPaceCaretSpeed"
+                    placeholder="wpm"
+                    min="0"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div class="section paceCaretStyle" section="">
+                <h1>pace caret style</h1>
+                <div class="text">
+                  Change the style of the pace caret during the test.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    paceCaretStyle="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    paceCaretStyle="default"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    |
+                  </div>
+                  <div
+                    class="button"
+                    paceCaretStyle="block"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    ▮
+                  </div>
+                  <div
+                    class="button"
+                    paceCaretStyle="outline"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    ▯
+                  </div>
+                  <div
+                    class="button"
+                    paceCaretStyle="underline"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    _
+                  </div>
+                </div>
+              </div>
+              <div class="sectionSpacer"></div>
+            </div>
+
+            <div
+              id="group_appearance"
+              class="sectionGroupTitle"
+              group="appearance"
+            >
+              appearance
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="settingsGroup appearance">
+              <div class="section timerStyle" section="">
+                <h1>timer/progress style</h1>
+                <div class="text">
+                  Change the style of the timer/progress during a timed test.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    timerStyle="bar"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    bar
+                  </div>
+                  <div
+                    class="button"
+                    timerStyle="text"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    text
+                  </div>
+                  <div
+                    class="button"
+                    timerStyle="mini"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    mini
+                  </div>
+                </div>
+              </div>
+              <div class="section timerColor" section="">
+                <h1>timer/progress color</h1>
+                <div class="text">
+                  Change the color of the timer/progress number/bar and live wpm
+                  number.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    timerColor="black"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    black
+                  </div>
+                  <div
+                    class="button"
+                    timerColor="sub"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    sub
+                  </div>
+                  <div
+                    class="button"
+                    timerColor="text"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    text
+                  </div>
+                  <div
+                    class="button"
+                    timerColor="main"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    main
+                  </div>
+                </div>
+              </div>
+              <div class="section timerOpacity" section="">
+                <h1>timer/progress opacity</h1>
+                <div class="text">
+                  Change the opacity of the timer/progress number/bar and live
+                  wpm number.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    timerOpacity="0.25"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    0.25
+                  </div>
+                  <div
+                    class="button"
+                    timerOpacity="0.5"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    0.5
+                  </div>
+                  <div
+                    class="button"
+                    timerOpacity="0.75"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    0.75
+                  </div>
+                  <div
+                    class="button"
+                    timerOpacity="1"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    1
+                  </div>
+                </div>
+              </div>
+              <div class="section highlightMode" section="">
+                <h1>highlight mode</h1>
+                <div class="text">
+                  Change what is highlighted during the test.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    highlightMode="letter"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    letter
+                  </div>
+                  <div
+                    class="button"
+                    highlightMode="word"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    word
+                  </div>
+                </div>
+              </div>
+              <div class="section smoothLineScroll">
+                <h1>smooth line scroll</h1>
+                <div class="text">
+                  When enabled, the line transition will be animated.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section showAllLines">
+                <h1>show all lines</h1>
+                <div class="text">
+                  When enabled, the website will show all lines for word, custom
+                  and quote mode tests - otherwise the lines will be limited to
+                  3, and will automatically scroll. Using this could cause the
+                  timer text and live wpm to not be visible.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section alwaysShowDecimalPlaces">
+                <h1>always show decimal places</h1>
+                <div class="text">
+                  Always shows decimal places for values on the result page,
+                  without the need to hover over the stats.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section alwaysShowCPM">
+                <h1>always show cpm</h1>
+                <div class="text">
+                  Always shows characters per minute calculation instead of the
+                  default words per minute calculation.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section startGraphsAtZero">
+                <h1>start graphs at zero</h1>
+                <div class="text">
+                  Force graph axis to always start at zero, no matter what the
+                  data is. Turning this off may exaggerate the value changes.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section keymapMode">
+                <h1>keymap</h1>
+                <div class="text">
+                  Displays your current layout while taking a test. React shows
+                  what you pressed and Next shows what you need to press next.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    keymapMode="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    keymapMode="static"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    static
+                  </div>
+                  <div
+                    class="button"
+                    keymapMode="react"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    react
+                  </div>
+                  <div
+                    class="button"
+                    keymapMode="next"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    next
+                  </div>
+                </div>
+              </div>
+              <div class="section keymapStyle">
+                <h1>keymap style</h1>
+                <!-- <div class="text">Displays the keymap in a different style.</div> -->
+                <div class="buttons">
+                  <div
+                    class="button"
+                    keymapStyle="staggered"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    staggered
+                  </div>
+                  <div
+                    class="button"
+                    keymapStyle="matrix"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    matrix
+                  </div>
+                  <div
+                    class="button"
+                    keymapStyle="split"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    split
+                  </div>
+                  <div
+                    class="button"
+                    keymapStyle="split_matrix"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    split matrix
+                  </div>
+                </div>
+              </div>
+              <div class="section keymapLayout">
+                <h1>keymap layout</h1>
+                <div class="buttons"></div>
+              </div>
+              <div class="section fontSize">
+                <h1>font size</h1>
+                <div class="text">Change the font size of the test words.</div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    fontsize="1"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    1
+                  </div>
+                  <div
+                    class="button"
+                    fontsize="125"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    1.25
+                  </div>
+                  <div
+                    class="button"
+                    fontsize="15"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    1.5
+                  </div>
+                  <div
+                    class="button"
+                    fontsize="2"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    2
+                  </div>
+                  <div
+                    class="button"
+                    fontsize="3"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    3
+                  </div>
+                </div>
+              </div>
+              <div class="section fontFamily">
+                <h1>font family</h1>
+                <!-- <div class="text">Change the font family for the site</div> -->
+                <div class="buttons"></div>
+              </div>
+              <div class="section pageWidth">
+                <h1>page width</h1>
+                <div class="text">Control the width of the content.</div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    pageWidth="100"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    100%
+                  </div>
+                  <div
+                    class="button"
+                    pageWidth="125"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    125%
+                  </div>
+                  <div
+                    class="button"
+                    pageWidth="150"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    150%
+                  </div>
+                  <div
+                    class="button"
+                    pageWidth="200"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    200%
+                  </div>
+                  <div
+                    class="button"
+                    pageWidth="max"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    Max
+                  </div>
+                </div>
+              </div>
+              <div class="sectionSpacer"></div>
+            </div>
+
+            <div id="group_theme" class="sectionGroupTitle" group="theme">
+              theme
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="settingsGroup theme">
+              <div class="section flipTestColors">
+                <h1>flip test colors</h1>
+                <div class="text">
+                  By default, typed text is brighter than the future text. When
+                  enabled, the colors will be flipped and the future text will
+                  be brighter than the already typed text.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section colorfulMode">
+                <h1>colorful mode</h1>
+                <div class="text">
+                  When enabled, the test words will use the main color, instead
+                  of the text color, making the website more colorful.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section randomTheme">
+                <h1>randomise theme</h1>
+                <div class="text">
+                  After completing a test, the theme will be set to a random
+                  one. The random themes are not saved to your config. If set to
+                  'fav' only favourite themes will be randomised.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    randomTheme="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    randomTheme="on"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    on
+                  </div>
+                  <div
+                    class="button"
+                    randomTheme="fav"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    fav
+                  </div>
+                </div>
+              </div>
+              <div class="section themes">
+                <h1>theme</h1>
+                <div class="tabs">
+                  <div
+                    class="button"
+                    tab="preset"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    preset
+                  </div>
+                  <div
+                    class="button"
+                    tab="custom"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    custom
+                  </div>
+                </div>
+                <!-- <div class='tabs'>
+                <button tab="preset" class="tab">preset</button>
+                <button tab="custom" class="tab">custom</button>
+              </div> -->
+                <div class="tabContainer">
+                  <div
+                    tabContent="custom"
+                    class="tabContent section customTheme hidden"
+                  >
+                    <label class="text">background</label>
+                    <span class="colorPicker">
+                      <label for="--bg-color">#000000</label>
+                      <input type="color" value="#000000" id="--bg-color" />
+                    </span>
+                    <label class="text">main</label>
+                    <span class="colorPicker">
+                      <label for="--main-color">#000000</label>
+                      <input type="color" value="#000000" id="--main-color" />
+                    </span>
+                    <label class="text">caret</label>
+                    <span class="colorPicker">
+                      <label for="--caret-color">#000000</label>
+                      <input type="color" value="#000000" id="--caret-color" />
+                    </span>
+                    <label class="text">sub</label>
+                    <span class="colorPicker">
+                      <label for="--sub-color">#000000</label>
+                      <input type="color" value="#000000" id="--sub-color" />
+                    </span>
+                    <label class="text">text</label>
+                    <span class="colorPicker">
+                      <label for="--text-color">#000000</label>
+                      <input type="color" value="#000000" id="--text-color" />
+                    </span>
+
+                    <span class="spacer"></span>
+
+                    <label class="text">error</label>
+                    <span class="colorPicker">
+                      <label for="--error-color">#000000</label>
+                      <input type="color" value="#000000" id="--error-color" />
+                    </span>
+                    <label class="text">extra error</label>
+                    <span class="colorPicker">
+                      <label for="--error-extra-color">#000000</label>
+                      <input
+                        type="color"
+                        value="#000000"
+                        id="--error-extra-color"
+                      />
+                    </span>
+
+                    <p>colorful mode</p>
+
+                    <label class="text">error</label>
+                    <span class="colorPicker">
+                      <!-- Change variable names here -->
+                      <label for="--colorful-error-color">#000000</label>
+                      <input
+                        type="color"
+                        value="#000000"
+                        id="--colorful-error-color"
+                      />
+                    </span>
+                    <label class="text">extra error</label>
+                    <span class="colorPicker">
+                      <!-- Change variable names here -->
+                      <label for="--colorful-error-extra-color">#000000</label>
+                      <input
+                        type="color"
+                        value="#000000"
+                        id="--colorful-error-extra-color"
+                      />
+                    </span>
+                    <!-- <div
+                      style="
+                        display: grid;
+                        gap: 2rem;
+                        grid-auto-flow: column;
+                        grid-column: 1/5;
+                      "
+                    > -->
+                    <div
+                      class="button"
+                      id="loadCustomColorsFromPreset"
+                      style="grid-column: 1/3"
+                    >
+                      load from preset
+                    </div>
+
+                    <div class="button" id="shareCustomThemeButton">share</div>
+                    <div class="button saveCustomThemeButton">save</div>
+                    <!-- </div> -->
+                  </div>
+                  <div tabContent="preset" class="tabContent">
+                    <div class="favThemes buttons"></div>
+                    <div class="allThemes buttons"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="sectionSpacer"></div>
+            </div>
+
+            <div
+              id="group_hideElements"
+              class="sectionGroupTitle"
+              group="hideElements"
+            >
+              hide elements
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="settingsGroup hideElements">
+              <div class="section showLiveWpm">
+                <h1>live wpm</h1>
+                <div class="text">
+                  Displays a live WPM speed during the test. Updates once every
+                  second.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
+              <div class="section showLiveAcc">
+                <h1>live accuracy</h1>
+                <div class="text">
+                  Displays live accuracy during the test. Updates once every
+                  second.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
+              <div class="section showTimerProgress">
+                <h1>timer/progress</h1>
+                <div class="text">
+                  Displays a live timer for timed tests and progress for
+                  words/custom tests.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
+              <div class="section showKeyTips">
+                <h1>key tips</h1>
+                <div class="text">
+                  Shows the keybind tips at the bottom of the page.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
+              <div class="section showOutOfFocusWarning">
+                <h1>out of focus warning</h1>
+                <div class="text">
+                  Shows an out of focus reminder after 1 second of being 'out of
+                  focus' (not being able to type).
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
+              <div class="sectionSpacer"></div>
+            </div>
+
+            <div
+              id="group_dangerZone"
+              class="sectionGroupTitle"
+              group="dangerZone"
+            >
+              danger zone
+              <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="settingsGroup dangerZone">
+              <div class="section importexportSettings">
+                <h1>import/export settings</h1>
+                <div class="text">Import or export the settings as JSON.</div>
+                <div class="buttons">
+                  <div
+                    class="button off"
+                    id="importSettingsButton"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    import
+                  </div>
+                  <div
+                    class="button off"
+                    id="exportSettingsButton"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    export
+                  </div>
+                </div>
+              </div>
+              <div class="section enableAds">
+                <h1>enable ads</h1>
+                <div class="text">
+                  If you wish to support me without directly donating you can
+                  enable ads that will be visible at the bottom of the screen.
+                  Sellout mode also shows ads on both sides of the screen.
+                  <br />
+                  <br />
+                  (changes will take effect after a refresh).
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    enableAds="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    enableAds="on"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    on
+                  </div>
+                  <div
+                    class="button"
+                    enableAds="max"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    sellout
+                  </div>
+                </div>
+              </div>
+              <div class="section resetSettings">
+                <h1>reset settings</h1>
+                <div class="text">
+                  Resets settings to the default (but doesn't touch your tags).
+                  Warning: you can't undo this action!
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button off danger"
+                    id="resetSettingsButton"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    reset
+                  </div>
+                </div>
+              </div>
+              <div class="section updateAccountEmail">
+                <h1>update account email</h1>
+                <div class="text">
+                  In case you misspell it or get a new address.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button off danger"
+                    id="updateAccountEmail"
+                    tabindex="0"
+                    onclick="this.blur();simplePopups.updateEmail.show();"
+                  >
+                    update email
+                  </div>
+                </div>
+              </div>
+              <div class="section deleteAccount hidden">
+                <h1>delete account</h1>
+                <div class="text">
+                  This can't be undone! Also, if you want to delete your account
+                  because of a very high 'custom mode' result, you can use
+                  filters on the account page to hide those results.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button off danger"
+                    id="deleteAccount"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    delete account
+                  </div>
+                </div>
+              </div>
+              <div class="sectionSpacer"></div>
+            </div>
+          </div>
+
+          <div class="page pageLogin hidden">
+            <div class="preloader hidden">
+              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+            </div>
+            <div class="register side">
+              <div class="title">register</div>
+              <form action="" autocomplete="off">
+                <input type="text" placeholder="username" />
+                <input type="text" placeholder="email" />
+                <input type="password" placeholder="password" />
+                <input type="password" placeholder="verify password" />
+                <div class="button">
+                  <i class="fas fa-user-plus"></i>
+                  Sign Up
+                </div>
+              </form>
+            </div>
+            <div class="login side">
+              <div class="title">login</div>
+              <div id="forgotPasswordButton">Forgot password?</div>
+              <form action="">
+                <input type="text" placeholder="email" autocomplete="email" />
+                <input
+                  type="password"
+                  placeholder="password"
+                  autocomplete="password"
+                />
+                <div>
+                  <label id="rememberMe">
+                    <input type="checkbox" checked />
+                    <div class="customCheckbox"></div>
+                    Remember me
+                  </label>
+                </div>
+                <div class="button">
+                  <i class="fas fa-sign-in-alt"></i>
+                  Sign In
+                </div>
+              </form>
+              <div
+                data-balloon-pos="up"
+                aria-label="The new domain seems to be triggering the Chrome's built in phishing detection.
+
+              Basically, since you used monkey-type a lot, when chrome sees that you've entered the same credentials to a veeeery similar domain, Chrome thinks that monkeytype.com is trying to steal your information for... monkey-type.com, and labels the website as Dangerous. (even though its pointing to the same server..)
+
+              I've tested with family members and friends who don't visit the site as often or at all, and the dangerous popup was not there. Also, Google's Safe Browsing scanner classifies monkeytype.com as safe, so this leads me to believe the 'dangerous' classification is happening locally.
+
+              I've contacted Google to get this sorted out - don't worry, the site is safe."
+                data-balloon-length="xlarge"
+                style="text-align: center; margin-top: 1rem; grid-column: 1/3"
+              >
+                Returning Chrome Users
+                <br />
+                Please read me
+              </div>
+            </div>
+          </div>
+
+          <div class="page pageAccount hidden">
+            <div class="scrollToTopButton">
+              <i class="fas fa-angle-double-up"></i>
+            </div>
+            <div class="preloader">
+              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+            </div>
+            <div class="content hidden">
+              <div class="hoverChartWrapper">
+                <canvas id="hoverChart"></canvas>
+              </div>
+              <div class="hoverChartBg"></div>
+              <div class="triplegroup">
+                <div class="group globalTestsStarted">
+                  <div class="title">tests started</div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group globalTestsCompleted">
+                  <div class="title">tests completed</div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group globalTimeTyping">
+                  <div class="title">time typing</div>
+                  <div class="val">-</div>
+                </div>
+              </div>
+              <div class="group createdDate">asd</div>
+              <div class="group">
+                <div class="title">personal bests</div>
+                <div style="display: grid; grid-auto-flow: column; gap: 1rem">
+                  <div class="titleAndTable timePbTable">
+                    <table width="100%">
+                      <thead>
+                        <tr>
+                          <td>time</td>
+                          <td>wpm</td>
+                          <td>raw</td>
+                          <td>accuracy</td>
+                          <td>consistency</td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>15</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        </tr>
+                        <tr>
+                          <td>30</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        </tr>
+                        <tr>
+                          <td>60</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        </tr>
+                        <tr>
+                          <td>120</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="titleAndTable wordsPbTable">
+                    <table width="100%">
+                      <thead>
+                        <tr>
+                          <td>words</td>
+                          <td>wpm</td>
+                          <td>raw</td>
+                          <td>accuracy</td>
+                          <td>consistency</td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>10</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        </tr>
+                        <tr>
+                          <td>25</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        </tr>
+                        <tr>
+                          <td>50</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        </tr>
+                        <tr>
+                          <td>100</td>
+                          <td>-</td>
+                          <td>-</td>
+                          <td>-</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="group topFilters">
+                <!-- <div
+                  class="button"
+                  id="currentConfigFilter"
+                  style="grid-column: 1/3;"
+                >
+                  set filters to current settings
+                </div> -->
+                <div class="buttonsAndTitle" style="grid-column: 1/3">
+                  <div class="title">filters</div>
+                  <div class="buttons">
+                    <div class="button allFilters">all</div>
+                    <div class="button currentConfigFilter">
+                      current settings
+                    </div>
+                    <div class="button toggleAdvancedFilters">advanced</div>
+                  </div>
+                </div>
+                <div
+                  class="buttonsAndTitle testDate"
+                  style="grid-column: 1/3; margin-top: 1rem"
+                >
+                  <!-- <div class="title">date</div> -->
+                  <div class="buttons filterGroup" group="date">
+                    <div class="button" filter="last_day">last day</div>
+                    <div class="button" filter="last_week">last week</div>
+                    <div class="button" filter="last_month">last month</div>
+                    <div class="button" filter="all">all time</div>
+                  </div>
+                </div>
+              </div>
+              <div class="group filterButtons" style="display: none">
+                <div class="buttonsAndTitle" style="grid-column: 1/3">
+                  <div class="title">advanced filters</div>
+                  <div class="buttons">
+                    <div class="button noFilters">clear filters</div>
+                  </div>
+                </div>
+                <div class="buttonsAndTitle" style="grid-column: 1/3">
+                  <div class="title">difficulty</div>
+                  <div class="buttons filterGroup" group="difficulty">
+                    <div class="button" filter="normal">normal</div>
+                    <div class="button" filter="expert">expert</div>
+                    <div class="button" filter="master">master</div>
+                  </div>
+                </div>
+                <div class="buttonsAndTitle">
+                  <div class="title">mode</div>
+                  <div class="buttons filterGroup" group="mode">
+                    <div class="button" filter="words">words</div>
+                    <div class="button" filter="time">time</div>
+                    <div class="button" filter="quote">quote</div>
+                    <div class="button" filter="custom">custom</div>
+                  </div>
+                </div>
+                <div class="buttonsAndTitle">
+                  <div class="title">quote length</div>
+                  <div class="buttons filterGroup" group="quoteLength">
+                    <div class="button" filter="short">short</div>
+                    <div class="button" filter="medium">medium</div>
+                    <div class="button" filter="long">long</div>
+                    <div class="button" filter="thicc">thicc</div>
+                  </div>
+                </div>
+                <div class="buttonsAndTitle">
+                  <div class="title">words</div>
+                  <div class="buttons filterGroup" group="words">
+                    <div class="button" filter="10">10</div>
+                    <div class="button" filter="25">25</div>
+                    <div class="button" filter="50">50</div>
+                    <div class="button" filter="100">100</div>
+                    <div class="button" filter="custom">custom</div>
+                  </div>
+                </div>
+                <div class="buttonsAndTitle">
+                  <div class="title">time</div>
+                  <div class="buttons filterGroup" group="time">
+                    <div class="button" filter="15">15</div>
+                    <div class="button" filter="30">30</div>
+                    <div class="button" filter="60">60</div>
+                    <div class="button" filter="120">120</div>
+                    <div class="button" filter="custom">custom</div>
+                  </div>
+                </div>
+                <div class="buttonsAndTitle">
+                  <div class="title">punctuation</div>
+                  <div class="buttons filterGroup" group="punctuation">
+                    <div class="button" filter="on">on</div>
+                    <div class="button" filter="off">off</div>
+                  </div>
+                </div>
+                <div class="buttonsAndTitle">
+                  <div class="title">numbers</div>
+                  <div class="buttons filterGroup" group="numbers">
+                    <div class="button" filter="on">on</div>
+                    <div class="button" filter="off">off</div>
+                  </div>
+                </div>
+                <div class="buttonsAndTitle tags" style="grid-column: 1/3">
+                  <div class="title">tags</div>
+                  <div class="buttons filterGroup" group="tags"></div>
+                </div>
+                <div class="buttonsAndTitle languages" style="grid-column: 1/3">
+                  <div class="title">language</div>
+                  <div class="buttons filterGroup" group="language"></div>
+                </div>
+                <div class="buttonsAndTitle funbox" style="grid-column: 1/3">
+                  <div class="title">funbox</div>
+                  <div class="buttons filterGroup" group="funbox"></div>
+                </div>
+              </div>
+              <div class="group noDataError hidden">
+                No data found. Check your filters.
+              </div>
+              <div class="group chart">
+                <!-- <div class="chartPreloader">
+                <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+              </div> -->
+                <div class="above"></div>
+                <div class="chart" style="height: 400px">
+                  <canvas id="resultHistoryChart"></canvas>
+                </div>
+                <div class="below">
+                  <div class="text"></div>
+                  <div class="buttons">
+                    <div class="toggleAccuracyOnChart button">
+                      <i class="fas fa-bullseye"></i>
+                      Toggle Accuracy
+                    </div>
+                    <div class="toggleChartStyle button">
+                      <i class="fas fa-chart-line"></i>
+                      Toggle Chart Style
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="group dailyActivityChart">
+                <div class="chart" style="height: 200px">
+                  <canvas id="activityChart"></canvas>
+                </div>
+              </div>
+              <div class="triplegroup stats">
+                <div class="group highestWpm">
+                  <div class="title">highest wpm</div>
+                  <div class="val">-</div>
+                  <div class="mode"></div>
+                </div>
+                <div class="group averageWpm">
+                  <div class="title">average wpm</div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group averageWpm10">
+                  <div class="title">
+                    average wpm
+                    <br />
+                    (last 10 tests)
+                  </div>
+                  <div class="val">-</div>
+                </div>
+
+                <div class="group highestRaw">
+                  <div class="title">highest raw wpm</div>
+                  <div class="val">-</div>
+                  <div class="mode"></div>
+                </div>
+                <div class="group averageRaw">
+                  <div class="title">average raw wpm</div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group averageRaw10">
+                  <div class="title">
+                    average raw wpm
+                    <br />
+                    (last 10 tests)
+                  </div>
+                  <div class="val">-</div>
+                </div>
+
+                <div class="group testsStarted">
+                  <div class="title">tests started</div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group testsCompleted">
+                  <div class="title">
+                    tests completed
+                    <span
+                      data-balloon-length="xlarge"
+                      aria-label="Due to the increasing number of results in the database, you can now only see your last 1000 results in detail. Total time spent typing, started and completed tests stats will still be up to date at the top of the page, above the filters."
+                      data-balloon-pos="up"
+                    >
+                      <i class="fas fa-question-circle"></i>
+                    </span>
+                  </div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group avgRestart">
+                  <div class="title">
+                    avg restarts
+                    <br />
+                    per completed test
+                  </div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group timeTotalFiltered">
+                  <div class="title">time typing</div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group avgAcc">
+                  <div class="title">avg accuracy</div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group avgAcc10">
+                  <div class="title">
+                    avg accuracy
+                    <br />
+                    (last 10 tests)
+                  </div>
+                  <div class="val">-</div>
+                </div>
+                <div></div>
+                <div class="group avgCons">
+                  <div class="title">avg consistency</div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group avgCons10">
+                  <div class="title">
+                    avg consistency
+                    <br />
+                    (last 10 tests)
+                  </div>
+                  <div class="val">-</div>
+                </div>
+                <!-- <div class="group favouriteTest">
+                <div class="title">favourite test</div>
+                <div class="val">words 10</div>
+              </div> -->
+              </div>
+              <div class="group history">
+                <!-- <div class="title">result history</div> -->
+                <table width="100%">
+                  <thead>
+                    <tr>
+                      <td></td>
+                      <td>wpm</td>
+                      <td>raw</td>
+                      <td>accuracy</td>
+                      <td>
+                        correct
+                        <br />
+                        chars
+                      </td>
+                      <td>
+                        incorrect
+                        <br />
+                        chars
+                      </td>
+                      <td>consistency</td>
+                      <td>mode</td>
+                      <!-- <td>punctuation</td> -->
+                      <td>info</td>
+                      <td>tags</td>
+                      <td>date</td>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+                <div class="loadMoreButton">load more</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="bottom">
+          <div id="commandLineMobileButton">
+            <i class="fas fa-terminal"></i>
+          </div>
+          <div class="keyTips">
+            <key>tab</key>
+            and
+            <key>enter</key>
+            - restart test
+            <br />
+            <key>esc</key>
+            - command line
+          </div>
+          <div class="leftright">
+            <div class="left">
+              <div>
+                <i class="far fa-fw fa-heart"></i>
+                Crafted by Miodec
+              </div>
+              <div>
+                <i class="fas fa-fw fa-code"></i>
+                Contribute on
+                <a href="https://github.com/Miodec/monkeytype" target="_blank">
+                  GitHub
+                </a>
+              </div>
+              <div>
+                <i class="fab fa-fw fa-discord"></i>
+                Join the
+                <a href="https://www.discord.gg/monkeytype" class="discordLink">
+                  Discord server
+                </a>
+              </div>
+              <div>
+                <i class="fas fa-fw fa-donate"></i>
+                <span id="supportMeButton">Support this project</span>
+                <!-- <a href="https://www.patreon.com/monkeytype">Patreon</a>
+                , via
+                <a href="https://www.paypal.me/jackbartnik" target="_blank">
+                  PayPal
+                </a>
+                or by
+                <a href="https://monkeytype.store" target="_blank">
+                  buying merch
+                </a> -->
+              </div>
+            </div>
+            <div class="right">
+              <div>
+                <i class="fas fa-palette"></i>
+                <span
+                  class="current-theme"
+                  aria-label="Shift-click to toggle custom theme"
+                  data-balloon-pos="left"
+                >
+                  serika dark
+                </span>
+              </div>
+              <div>
+                <i class="fas fa-code-branch"></i>
+                <span class="version">version</span>
+              </div>
+              <div>
+                <i class="fas fa-user-shield"></i>
+                <a href="privacy-policy.html">Privacy Policy</a>
+              </div>
+              <!-- <div>
+                <i class="fas fa-file"></i>
+                Terms & Conditions
+              </div> -->
+            </div>
+          </div>
+        </div>
+        <div
+          id="ad1"
+          class="hidden"
+          style="
+            display: flex;
+            justify-content: center;
+            width: 1px;
+            justify-self: center;
+          "
+        ></div>
+      </div>
+      <div id="ad3" class="hidden"></div>
+    </div>
+  </body>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="/__/firebase/8.0.2/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="/__/firebase/8.0.2/firebase-analytics.js"></script>
+  <script src="/__/firebase/8.0.2/firebase-auth.js"></script>
+  <script src="/__/firebase/8.0.2/firebase-firestore.js"></script>
+  <script src="/__/firebase/8.0.2/firebase-functions.js"></script>
+
+  <!-- Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
+  <script src="js/jquery-3.5.1.min.js"></script>
+  <script src="js/jquery.color.min.js"></script>
+  <script src="js/easing.js"></script>
+  <script src="js/jquery.cookie-1.4.1.min.js"></script>
+  <script src="js/moment.min.js"></script>
+  <script src="js/html2canvas.min.js"></script>
+  <script src="js/monkeytype.js"></script>
+</html>
