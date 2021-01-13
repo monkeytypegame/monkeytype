@@ -914,11 +914,15 @@ function showWords() {
 
   let wordsHTML = "";
   for (let i = 0; i < wordsList.length; i++) {
-    wordsHTML += "<div class='word'>";
-    for (let c = 0; c < wordsList[i].length; c++) {
-      wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+    if(wordsList[i] === "\n"){
+      wordsHTML += "<div class='newline'></div>";
+    }else{
+      wordsHTML += "<div class='word'>";
+      for (let c = 0; c < wordsList[i].length; c++) {
+        wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+      }
+      wordsHTML += "</div>";
     }
-    wordsHTML += "</div>";
   }
   $("#words").html(wordsHTML);
 
@@ -3366,8 +3370,14 @@ function toggleResultWordsDisplay() {
 async function loadWordsHistory() {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
+  let newlineoffset = 0;
   for (let i = 0; i < inputHistory.length + 2; i++) {
     let input = inputHistory[i];
+    let word = wordsList[i + newlineoffset];
+    if(word === "\n"){
+      newlineoffset++;
+      word = wordsList[i + newlineoffset];
+    }
     let wordEl = "";
     try {
       if (input === "") throw new Error("empty input word");
@@ -3382,33 +3392,33 @@ async function loadWordsHistory() {
       }
       if (i === inputHistory.length - 1) {
         //last word
-        let word = {
+        let wordstats = {
           correct: 0,
           incorrect: 0,
           missed: 0,
         };
-        for (let c = 0; c < wordsList[i].length; c++) {
+        for (let c = 0; c < word.length; c++) {
           if (c < inputHistory[i].length) {
             //on char that still has a word list pair
-            if (inputHistory[i][c] == wordsList[i][c]) {
-              word.correct++;
+            if (inputHistory[i][c] == word[c]) {
+              wordstats.correct++;
             } else {
-              word.incorrect++;
+              wordstats.incorrect++;
             }
           } else {
             //on char that is extra
-            word.missed++;
+            wordstats.missed++;
           }
         }
-        if (word.incorrect !== 0 || config.mode !== "time") {
-          if (input !== wordsList[i]) {
+        if (wordstats.incorrect !== 0 || config.mode !== "time") {
+          if (input !== word) {
             wordEl = `<div class='word error' input="${input
               .replace(/"/g, "&quot;")
               .replace(/ /g, "_")}">`;
           }
         }
       } else {
-        if (input !== wordsList[i]) {
+        if (input !== word) {
           wordEl = `<div class='word error' input="${input
             .replace(/"/g, "&quot;")
             .replace(/ /g, "_")}">`;
@@ -3416,12 +3426,12 @@ async function loadWordsHistory() {
       }
 
       let loop;
-      if (input.length > wordsList[i].length) {
+      if (input.length > word.length) {
         //input is longer - extra characters possible (loop over input)
         loop = input.length;
       } else {
         //input is shorter or equal (loop over word list)
-        loop = wordsList[i].length;
+        loop = word.length;
       }
 
       for (let c = 0; c < loop; c++) {
@@ -3439,26 +3449,26 @@ async function loadWordsHistory() {
         ) {
           extraCorrected = "extraCorrected";
         }
-        if (wordsList[i][c] !== undefined) {
-          if (input[c] === wordsList[i][c]) {
+        if (word[c] !== undefined) {
+          if (input[c] === word[c]) {
             if (correctedChar === input[c] || correctedChar === undefined) {
-              wordEl += `<letter class="correct ${extraCorrected}">${wordsList[i][c]}</letter>`;
+              wordEl += `<letter class="correct ${extraCorrected}">${word[c]}</letter>`;
             } else {
               wordEl +=
                 `<letter class="corrected ${extraCorrected}">` +
-                wordsList[i][c] +
+                word[c] +
                 "</letter>";
             }
           } else {
             if (input[c] === currentInput) {
               wordEl +=
-                "<letter class='correct'>" + wordsList[i][c] + "</letter>";
+                `<letter class='correct ${extraCorrected}'>` + word[c] + "</letter>";
             } else if (input[c] === undefined) {
-              wordEl += "<letter>" + wordsList[i][c] + "</letter>";
+              wordEl += "<letter>" + word[c] + "</letter>";
             } else {
               wordEl +=
                 `<letter class="incorrect ${extraCorrected}">` +
-                wordsList[i][c] +
+                word[c] +
                 "</letter>";
             }
           }
@@ -3470,8 +3480,8 @@ async function loadWordsHistory() {
     } catch (e) {
       try {
         wordEl = "<div class='word'>";
-        for (let c = 0; c < wordsList[i].length; c++) {
-          wordEl += "<letter>" + wordsList[i][c] + "</letter>";
+        for (let c = 0; c < word.length; c++) {
+          wordEl += "<letter>" + word[c] + "</letter>";
         }
         wordEl += "</div>";
       } catch {}
@@ -3792,7 +3802,9 @@ function showCustomTextPopup() {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        $("#customTextPopup textarea").val(customText.join(" "));
+        let newtext = customText.join(" ");
+        newtext = newtext.replace(/ \n /g,"\n");
+        $("#customTextPopup textarea").val(newtext);
         $("#customTextPopup .wordcount input").val(customTextWordCount);
         $("#customTextPopup textarea").focus();
       });
@@ -3839,8 +3851,12 @@ $("#customTextPopup textarea").keypress((e) => {
 $("#customTextPopup .button").click(() => {
   let text = $("#customTextPopup textarea").val();
   text = text.trim();
-  text = text.replace(/[\n\r\t ]/gm, " ");
+  text = text.replace(/[\r\t]/gm, " ");
   text = text.replace(/ +/gm, " ");
+  text = text.replace(/(\r\n)+/g,"\r\n");
+  text = text.replace(/(\n)+/g,"\n");
+  text = text.replace(/(\r)+/g,"\r");
+  text = text.replace(/( *(\r\n|\r|\n) *)/g," \n ");
   if ($("#customTextPopup .typographyCheck input").prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
@@ -4583,9 +4599,13 @@ $(document).keydown(function (event) {
     handleBackspace(event);
   }
 
-  //space
-  if (event.key === " " || (activeFunBox == "58008" && event.key === "Enter")) {
-    handleSpace(event);
+  if(event.key === "Enter" && activeFunBox === "58008"){
+    event.key = " ";
+  }
+
+  //space or enter
+  if (event.key === " " || event.key === "Enter"){
+    handleSpace(event, (event.key === "Enter" ? true : false));
   }
 
   handleAlpha(event);
@@ -4643,6 +4663,7 @@ function handleBackspace(event) {
     inputHistory.length > 0 &&
     currentWordElementIndex > 0
   ) {
+    //if nothing is inputted and its not the first word
     if (
       (inputHistory[currentWordIndex - 1] == wordsList[currentWordIndex - 1] &&
         !config.freedomMode) ||
@@ -4664,6 +4685,9 @@ function handleBackspace(event) {
         }
       }
       currentWordIndex--;
+      if(wordsList[currentWordIndex] === "\n"){
+        currentWordIndex--;
+      }
       currentWordElementIndex--;
       updateActiveElement();
       updateWordElement(!config.blindMode);
@@ -4701,9 +4725,12 @@ function handleBackspace(event) {
   updateCaretPosition();
 }
 
-function handleSpace(event) {
+function handleSpace(event, isEnter) {
   if (!testActive) return;
   if (currentInput === "") return;
+  let nextWord = wordsList[currentWordIndex + 1];
+  // if ((isEnter && nextWord !== "\n") && (isEnter && activeFunBox !== "58008")) return;
+  // if (!isEnter && nextWord === "\n") return;
   event.preventDefault();
   let currentWord = wordsList[currentWordIndex];
   if (activeFunBox === "layoutfluid" && config.mode !== "time") {
@@ -4721,7 +4748,8 @@ function handleSpace(event) {
   }
   if (config.blindMode) $("#words .word.active letter").addClass("correct");
   dontInsertSpace = true;
-  if (currentWord == currentInput) {
+  let correctSpaceEnter = ((isEnter && nextWord === "\n") || (!isEnter && nextWord !== "\n"));
+  if (currentWord == currentInput && correctSpaceEnter) {
     //correct word
     if (
       paceCaret !== null &&
@@ -4762,7 +4790,7 @@ function handleSpace(event) {
     }
     accuracyStats.incorrect++;
     let cil = currentInput.length;
-    if (cil < wordsList[currentWordIndex].length) {
+    // if (cil <= wordsList[currentWordIndex].length) {
       if (cil >= currentCorrected.length) {
         currentCorrected += "_";
       } else {
@@ -4771,14 +4799,14 @@ function handleSpace(event) {
           "_" +
           currentCorrected.substring(cil + 1);
       }
-    }
-    if (config.stopOnError != "off") {
+    // }
+    if (config.stopOnError != "off" || !correctSpaceEnter) {
       if (config.difficulty == "expert" || config.difficulty == "master") {
         //failed due to diff when pressing space
         failTest();
         return;
       }
-      if (config.stopOnError == "word") {
+      if (config.stopOnError == "word" || !correctSpaceEnter) {
         currentInput += " ";
         updateWordElement(true);
         updateCaretPosition();
@@ -4805,8 +4833,13 @@ function handleSpace(event) {
     }
   }
 
+
   correctedHistory.push(currentCorrected);
   currentCorrected = "";
+
+  if(nextWord === "\n"){
+    currentWordIndex++;
+  }
 
   if (!config.showAllLines || config.mode == "time") {
     let currentTop = Math.floor(
