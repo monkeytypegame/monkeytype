@@ -733,6 +733,11 @@ a:hover {
       color: var(--text-color);
     }
 
+    .subtext {
+      color: var(--sub-color);
+      font-size: 0.75rem;
+    }
+
     .buttons {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;

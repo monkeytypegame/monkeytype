@@ -45,6 +45,8 @@ let paceCaret = null;
 let missedWords = [];
 let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
+let punctuationBeforePractise = null;
+let numbersBeforePractise = null;
 let memoryFunboxTimer = null;
 let memoryFunboxInterval = null;
 
@@ -2687,6 +2689,7 @@ function startTest() {
     const delay = expectedStepEnd - performance.now();
     timer = setTimeout(function () {
       time++;
+      $(".pageTest #premidSecondsLeft").text(config.time - time);
       if (config.mode === "time") {
         updateTimer();
       }
@@ -2801,7 +2804,11 @@ function restartTest(withSameWordset = false, nosave = false) {
   if (modeBeforePractise !== null && !withSameWordset) {
     Misc.showNotification("Reverting to previous settings.", 1500);
     setMode(modeBeforePractise);
+    setPunctuation(punctuationBeforePractise);
+    setNumbers(numbersBeforePractise);
     modeBeforePractise = null;
+    punctuationBeforePractise = null;
+    numbersBeforePractise = null;
   }
 
   manualRestart = false;
@@ -2901,6 +2908,25 @@ function restartTest(withSameWordset = false, nosave = false) {
       document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = "100%";
       document.querySelector("#liveWpm").innerHTML = "0";
       document.querySelector("#liveAcc").innerHTML = "100%";
+
+      let mode2 = "";
+      if (config.mode === "time") {
+        mode2 = config.time;
+      } else if (config.mode === "words") {
+        mode2 = config.words;
+      } else if (config.mode === "custom") {
+        mode2 = "custom";
+      } else if (config.mode === "quote") {
+        mode2 = randomQuote.id;
+      }
+      let fbtext = "";
+      if (activeFunBox !== "none") {
+        fbtext = " " + activeFunBox;
+      }
+      $(".pageTest #premidTestMode").text(
+        `${config.mode} ${mode2} ${config.language}${fbtext}`
+      );
+      $(".pageTest #premidSecondsLeft").text(config.time);
 
       if (activeFunBox === "layoutfluid") {
         setLayout("qwerty");
@@ -3599,10 +3625,18 @@ function updateTestModesNotice() {
   }
 
   if (config.paceCaret !== "off") {
+    let speed = "";
+    try {
+      speed = ` (${Math.round(paceCaret.wpm)} wpm)`;
+    } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
-        config.paceCaret === "pb" ? "pb" : config.paceCaretCustomSpeed + " wpm"
-      } pace</div>`
+        config.paceCaret === "average"
+          ? "average"
+          : config.paceCaret === "pb"
+          ? "pb"
+          : "custom"
+      } pace${speed}</div>`
     );
   }
 
@@ -3947,6 +3981,25 @@ async function initPaceCaret() {
       config.language,
       config.difficulty
     );
+  } else if (config.paceCaret === "average") {
+    let mode2 = "";
+    if (config.mode === "time") {
+      mode2 = config.time;
+    } else if (config.mode === "words") {
+      mode2 = config.words;
+    } else if (config.mode === "custom") {
+      mode2 = "custom";
+    } else if (config.mode === "quote") {
+      mode2 = randomQuote.id;
+    }
+    wpm = await db_getUserAverageWpm10(
+      config.mode,
+      mode2,
+      config.punctuation,
+      config.language,
+      config.difficulty
+    );
+    console.log("avg pace " + wpm);
   } else if (config.paceCaret === "custom") {
     wpm = config.paceCaretCustomSpeed;
   }
@@ -3960,9 +4013,8 @@ async function initPaceCaret() {
   let cps = characters / 60; //characters per step
   let spc = 60 / characters; //seconds per character
 
-  updateTestModesNotice();
-
   paceCaret = {
+    wpm: wpm,
     cps: cps,
     spc: spc,
     correction: 0,
@@ -3971,6 +4023,8 @@ async function initPaceCaret() {
     wordsStatus: {},
     timeout: null,
   };
+
+  updateTestModesNotice();
 }
 
 function movePaceCaret(expectedStepEnd) {
@@ -4331,7 +4385,13 @@ $(document.body).on("click", "#restartTestButton", () => {
 });
 
 function initPractiseMissedWords() {
-  let currentMode = config.mode;
+  let mode = modeBeforePractise === null ? config.mode : modeBeforePractise;
+  let punctuation =
+    punctuationBeforePractise === null
+      ? config.punctuation
+      : punctuationBeforePractise;
+  let numbers =
+    numbersBeforePractise === null ? config.numbers : numbersBeforePractise;
   setMode("custom");
   let newCustomText = [];
   Object.keys(missedWords).forEach((missedWord) => {
@@ -4342,10 +4402,14 @@ function initPractiseMissedWords() {
   customText = newCustomText;
   customTextIsRandom = true;
   customTextWordCount = 50;
-  let mode = modeBeforePractise === null ? currentMode : modeBeforePractise;
+
   modeBeforePractise = null;
+  punctuationBeforePractise = null;
+  numbersBeforePractise = null;
   restartTest();
   modeBeforePractise = mode;
+  punctuationBeforePractise = punctuation;
+  numbersBeforePractise = numbers;
 }
 
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
@@ -5004,7 +5068,11 @@ function handleAlpha(event) {
   if (/F\d+/.test(event.key)) return;
   if (/Numpad/.test(event.key)) return;
   if (/Volume/.test(event.key)) return;
-  if (event.ctrlKey && !event.altKey) return;
+  if (
+    event.ctrlKey != event.altKey &&
+    (event.ctrlKey || /Linux/.test(window.navigator.platform))
+  )
+    return;
   if (event.metaKey) return;
   event = emulateLayout(event);
 

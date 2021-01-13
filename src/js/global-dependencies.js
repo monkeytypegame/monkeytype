@@ -14,6 +14,7 @@ import {
   db_getUserResults,
   db_getUserHighestWpm,
   db_getLocalPB,
+  db_getUserAverageWpm10,
   db_saveLocalPB,
   db_getLocalTagPB,
   db_saveLocalTagPB,

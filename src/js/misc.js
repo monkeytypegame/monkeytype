@@ -321,7 +321,11 @@ export function getReleasesFromGitHub() {
 // }
 
 export function getLastChar(word) {
-  return word.charAt(word.length - 1);
+  try {
+    return word.charAt(word.length - 1);
+  } catch {
+    return "";
+  }
 }
 
 export function capitalizeFirstLetter(str) {
