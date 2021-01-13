@@ -478,5 +478,10 @@
     "name": "stealth",
     "bgColor": "#010203",
     "textColor": "#383e42"
+  },
+  {
+    "name": "80s_after_dark",
+    "bgColor": "#1B1D36",
+    "textColor": "#FCA6D1"
   }
 ]
