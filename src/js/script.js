@@ -444,7 +444,7 @@ async function initWords() {
   if (config.mode === "quote" && quotes === null) {
     showBackgroundLoader();
     $.ajax({
-      url: "js/english_quotes.json",
+      url: "quotes/english.json",
       async: false,
       success: function (data) {
         hideBackgroundLoader();
