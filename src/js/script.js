@@ -441,9 +441,13 @@ async function initWords() {
     config.language = "english";
   }
 
-  if (config.mode === "quote" && (quotes === null || quotes.language !== config.language.replace(/_\d*k$/g,''))) {
-    if(config.language.split('_')[0] !== "code"){
-      setLanguage(config.language.replace(/_\d*k$/g,'').split('_')[0],true);
+  if (
+    config.mode === "quote" &&
+    (quotes === null ||
+      quotes.language !== config.language.replace(/_\d*k$/g, ""))
+  ) {
+    if (config.language.split("_")[0] !== "code") {
+      setLanguage(config.language.replace(/_\d*k$/g, "").split("_")[0], true);
     }
     showBackgroundLoader();
     $.ajax({
@@ -451,7 +455,7 @@ async function initWords() {
       async: false,
       success: function (data) {
         hideBackgroundLoader();
-        try{
+        try {
           quotes = data;
           quotes.groups.forEach((qg, i) => {
             let lower = qg[0];
@@ -466,16 +470,25 @@ async function initWords() {
             });
           });
           quotes.quotes = [];
-        }catch(e){
+        } catch (e) {
           console.error(e);
-          Misc.showNotification(`No ${config.language.replace(/_\d*k$/g,'')} quotes found`,3000);
+          Misc.showNotification(
+            `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
+            3000
+          );
           return;
         }
       },
       error: (e) => {
-        Misc.showNotification(`Error while loading ${config.language.replace(/_\d*k$/g,'')} quotes: ${e}`, 5000);
+        Misc.showNotification(
+          `Error while loading ${config.language.replace(
+            /_\d*k$/g,
+            ""
+          )} quotes: ${e}`,
+          5000
+        );
         return;
-      }
+      },
     });
   }
 
@@ -929,9 +942,9 @@ function showWords() {
 
   let wordsHTML = "";
   for (let i = 0; i < wordsList.length; i++) {
-    if(wordsList[i] === "\n"){
+    if (wordsList[i] === "\n") {
       wordsHTML += "<div class='newline'></div>";
-    }else{
+    } else {
       wordsHTML += "<div class='word'>";
       for (let c = 0; c < wordsList[i].length; c++) {
         wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
@@ -1584,24 +1597,30 @@ function countChars() {
   let missedChars = 0;
   let spaces = 0;
   let correctspaces = 0;
+  let newlineoffset = 0;
   for (let i = 0; i < inputHistory.length; i++) {
+    let word = wordsList[i + newlineoffset];
+    if (word === "\n") {
+      newlineoffset++;
+      word = wordsList[i + newlineoffset];
+    }
     if (inputHistory[i] === "") {
       //last word that was not started
       continue;
     }
-    if (inputHistory[i] == wordsList[i]) {
+    if (inputHistory[i] == word) {
       //the word is correct
-      correctWordChars += wordsList[i].length;
-      correctChars += wordsList[i].length;
+      correctWordChars += word.length;
+      correctChars += word.length;
       if (i < inputHistory.length - 1) {
         correctspaces++;
       }
-    } else if (inputHistory[i].length >= wordsList[i].length) {
+    } else if (inputHistory[i].length >= word.length) {
       //too many chars
       for (let c = 0; c < inputHistory[i].length; c++) {
-        if (c < wordsList[i].length) {
+        if (c < word.length) {
           //on char that still has a word list pair
-          if (inputHistory[i][c] == wordsList[i][c]) {
+          if (inputHistory[i][c] == word[c]) {
             correctChars++;
           } else {
             incorrectChars++;
@@ -1618,10 +1637,10 @@ function countChars() {
         incorrect: 0,
         missed: 0,
       };
-      for (let c = 0; c < wordsList[i].length; c++) {
+      for (let c = 0; c < word.length; c++) {
         if (c < inputHistory[i].length) {
           //on char that still has a word list pair
-          if (inputHistory[i][c] == wordsList[i][c]) {
+          if (inputHistory[i][c] == word[c]) {
             toAdd.correct++;
           } else {
             toAdd.incorrect++;
@@ -3413,7 +3432,7 @@ async function loadWordsHistory() {
   for (let i = 0; i < inputHistory.length + 2; i++) {
     let input = inputHistory[i];
     let word = wordsList[i + newlineoffset];
-    if(word === "\n"){
+    if (word === "\n") {
       newlineoffset++;
       word = wordsList[i + newlineoffset];
     }
@@ -3501,7 +3520,9 @@ async function loadWordsHistory() {
           } else {
             if (input[c] === currentInput) {
               wordEl +=
-                `<letter class='correct ${extraCorrected}'>` + word[c] + "</letter>";
+                `<letter class='correct ${extraCorrected}'>` +
+                word[c] +
+                "</letter>";
             } else if (input[c] === undefined) {
               wordEl += "<letter>" + word[c] + "</letter>";
             } else {
@@ -3850,7 +3871,7 @@ function showCustomTextPopup() {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         let newtext = customText.join(" ");
-        newtext = newtext.replace(/ \n /g,"\n");
+        newtext = newtext.replace(/ \n /g, "\n");
         $("#customTextPopup textarea").val(newtext);
         $("#customTextPopup .wordcount input").val(customTextWordCount);
         $("#customTextPopup textarea").focus();
@@ -3900,10 +3921,10 @@ $("#customTextPopup .button").click(() => {
   text = text.trim();
   text = text.replace(/[\r\t]/gm, " ");
   text = text.replace(/ +/gm, " ");
-  text = text.replace(/(\r\n)+/g,"\r\n");
-  text = text.replace(/(\n)+/g,"\n");
-  text = text.replace(/(\r)+/g,"\r");
-  text = text.replace(/( *(\r\n|\r|\n) *)/g," \n ");
+  text = text.replace(/(\r\n)+/g, "\r\n");
+  text = text.replace(/(\n)+/g, "\n");
+  text = text.replace(/(\r)+/g, "\r");
+  text = text.replace(/( *(\r\n|\r|\n) *)/g, " \n ");
   if ($("#customTextPopup .typographyCheck input").prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
@@ -4676,13 +4697,13 @@ $(document).keydown(function (event) {
     handleBackspace(event);
   }
 
-  if(event.key === "Enter" && activeFunBox === "58008"){
+  if (event.key === "Enter" && activeFunBox === "58008") {
     event.key = " ";
   }
 
   //space or enter
-  if ((event.key === " " || event.key === "Enter") && wordsFocused){
-    handleSpace(event, (event.key === "Enter" ? true : false));
+  if ((event.key === " " || event.key === "Enter") && wordsFocused) {
+    handleSpace(event, event.key === "Enter" ? true : false);
   }
 
   handleAlpha(event);
@@ -4762,7 +4783,7 @@ function handleBackspace(event) {
         }
       }
       currentWordIndex--;
-      if(wordsList[currentWordIndex] === "\n"){
+      if (wordsList[currentWordIndex] === "\n") {
         currentWordIndex--;
       }
       currentWordElementIndex--;
@@ -4825,7 +4846,8 @@ function handleSpace(event, isEnter) {
   }
   if (config.blindMode) $("#words .word.active letter").addClass("correct");
   dontInsertSpace = true;
-  let correctSpaceEnter = ((isEnter && nextWord === "\n") || (!isEnter && nextWord !== "\n"));
+  let correctSpaceEnter =
+    (isEnter && nextWord === "\n") || (!isEnter && nextWord !== "\n");
   if (currentWord == currentInput && correctSpaceEnter) {
     //correct word
     if (
@@ -4868,14 +4890,14 @@ function handleSpace(event, isEnter) {
     accuracyStats.incorrect++;
     let cil = currentInput.length;
     // if (cil <= wordsList[currentWordIndex].length) {
-      if (cil >= currentCorrected.length) {
-        currentCorrected += "_";
-      } else {
-        currentCorrected =
-          currentCorrected.substring(0, cil) +
-          "_" +
-          currentCorrected.substring(cil + 1);
-      }
+    if (cil >= currentCorrected.length) {
+      currentCorrected += "_";
+    } else {
+      currentCorrected =
+        currentCorrected.substring(0, cil) +
+        "_" +
+        currentCorrected.substring(cil + 1);
+    }
     // }
     if (config.stopOnError != "off" || !correctSpaceEnter) {
       if (config.difficulty == "expert" || config.difficulty == "master") {
@@ -4910,11 +4932,10 @@ function handleSpace(event, isEnter) {
     }
   }
 
-
   correctedHistory.push(currentCorrected);
   currentCorrected = "";
 
-  if(nextWord === "\n"){
+  if (nextWord === "\n") {
     currentWordIndex++;
   }
 
