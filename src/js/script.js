@@ -4681,8 +4681,11 @@ $(document).keydown(function (event) {
   }
 
   //space or enter
-  if (event.key === " " || event.key === "Enter"){
-    handleSpace(event, (event.key === "Enter" ? true : false));
+  if (
+    event.target.id !== "restartTestButton" &&
+    (event.key === " " || event.key === "Enter")
+  ) {
+    handleSpace(event, event.key === "Enter" ? true : false);
   }
 
   handleAlpha(event);
