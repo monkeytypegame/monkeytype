@@ -5035,7 +5035,11 @@ function handleAlpha(event) {
   if (/F\d+/.test(event.key)) return;
   if (/Numpad/.test(event.key)) return;
   if (/Volume/.test(event.key)) return;
-  if (event.ctrlKey && !event.altKey) return;
+  if (
+    event.ctrlKey != event.altKey &&
+    (event.ctrlKey || /Linux/.test(window.navigator.platform))
+  )
+    return;
   if (event.metaKey) return;
   event = emulateLayout(event);
 
