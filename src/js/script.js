@@ -4681,7 +4681,7 @@ $(document).keydown(function (event) {
   }
 
   //space or enter
-  if (event.key === " " || event.key === "Enter"){
+  if ((event.key === " " || event.key === "Enter") && wordsFocused){
     handleSpace(event, (event.key === "Enter" ? true : false));
   }
 
