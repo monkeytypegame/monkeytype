@@ -8,6 +8,12 @@
   ],
   "quotes": [
     { "text": "This is a quote", "source": "Miodec", "length": 15, "id": 1 },
-    { "text": "Another quote", "source": "Someone else", "length": 13, "id": 2 }
+    {
+      "text": "Another quote",
+      "source": "Someone else",
+      "length": 13,
+      "id": 2
+    },
+    { "text": "Another quote", "source": "Someone else", "length": 13, "id": 3 }
   ]
 }
