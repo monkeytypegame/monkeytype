@@ -1975,7 +1975,11 @@ key {
   }
 
   &.lastbeforenewline::after {
-    content: "¬";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 600;
+    content: "\f107";
+    margin-left: 0.5rem;
+    opacity: 0.25;
   }
 
   // transition: .25s;
