@@ -1704,7 +1704,7 @@ key {
   user-select: none;
   padding-bottom: 1em;
 
-  .newline{
+  .newline {
     width: inherit;
   }
 
@@ -1715,6 +1715,10 @@ key {
     &.dead {
       border-bottom-width: 0.05em;
       border-bottom-color: var(--sub-color);
+    }
+    &.tabChar {
+      margin: 0 0.25rem;
+      opacity: 0.2;
     }
   }
 
@@ -1961,7 +1965,6 @@ key {
   opacity: 1;
 }
 
-
 .word {
   margin: 0.25rem;
   color: var(--sub-color);
@@ -1973,6 +1976,14 @@ key {
   line-height: 1rem;
   letter {
     display: inline-block;
+  }
+
+  &.lastbeforenewline::after {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 600;
+    content: "\f107";
+    margin-left: 0.5rem;
+    opacity: 0.25;
   }
 
   // transition: .25s;

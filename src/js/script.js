@@ -49,6 +49,7 @@ let punctuationBeforePractise = null;
 let numbersBeforePractise = null;
 let memoryFunboxTimer = null;
 let memoryFunboxInterval = null;
+let textHasTab = false;
 
 let themeColors = {
   bg: "#323437",
@@ -441,9 +442,13 @@ async function initWords() {
     config.language = "english";
   }
 
-  if (config.mode === "quote" && (quotes === null || quotes.language !== config.language.replace(/_\d*k$/g,''))) {
-    if(config.language.split('_')[0] !== "code"){
-      setLanguage(config.language.replace(/_\d*k$/g,'').split('_')[0],true);
+  if (
+    config.mode === "quote" &&
+    (quotes === null ||
+      quotes.language !== config.language.replace(/_\d*k$/g, ""))
+  ) {
+    if (config.language.split("_")[0] !== "code") {
+      setLanguage(config.language.replace(/_\d*k$/g, "").split("_")[0], true);
     }
     showBackgroundLoader();
     $.ajax({
@@ -451,7 +456,7 @@ async function initWords() {
       async: false,
       success: function (data) {
         hideBackgroundLoader();
-        try{
+        try {
           quotes = data;
           quotes.groups.forEach((qg, i) => {
             let lower = qg[0];
@@ -466,16 +471,25 @@ async function initWords() {
             });
           });
           quotes.quotes = [];
-        }catch(e){
+        } catch (e) {
           console.error(e);
-          Misc.showNotification(`No ${config.language.replace(/_\d*k$/g,'')} quotes found`,3000);
+          Misc.showNotification(
+            `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
+            3000
+          );
           return;
         }
       },
       error: (e) => {
-        Misc.showNotification(`Error while loading ${config.language.replace(/_\d*k$/g,'')} quotes: ${e}`, 5000);
+        Misc.showNotification(
+          `Error while loading ${config.language.replace(
+            /_\d*k$/g,
+            ""
+          )} quotes: ${e}`,
+          5000
+        );
         return;
-      }
+      },
     });
   }
 
@@ -578,6 +592,10 @@ async function initWords() {
         if (Math.random() < 0.1) {
           randomWord = Misc.getNumbers(4);
         }
+      }
+
+      if (/\t/g.test(randomWord)) {
+        textHasTab = true;
       }
 
       wordsList.push(randomWord);
@@ -929,12 +947,22 @@ function showWords() {
 
   let wordsHTML = "";
   for (let i = 0; i < wordsList.length; i++) {
-    if(wordsList[i] === "\n"){
+    if (wordsList[i] === "\n") {
       wordsHTML += "<div class='newline'></div>";
-    }else{
-      wordsHTML += "<div class='word'>";
+    } else {
+      let newline = false;
+      try {
+        if (wordsList[i + 1] === "\n") newline = true;
+      } catch {
+        newline = false;
+      }
+      wordsHTML += `<div class='word ${newline ? "lastbeforenewline" : ""}'>`;
       for (let c = 0; c < wordsList[i].length; c++) {
-        wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+        if (wordsList[i].charAt(c) === "\t") {
+          wordsHTML += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        } else {
+          wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+        }
       }
       wordsHTML += "</div>";
     }
@@ -1086,8 +1114,15 @@ function updateWordElement(showError) {
         }
       } catch (e) {}
 
+      let currentLetter = currentWord[i];
+      let tabChar = "";
+      if (currentLetter === "\t") {
+        tabChar = "tabChar";
+        currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
+      }
+
       if (charCorrect) {
-        ret += '<letter class="correct">' + currentWord[i] + "</letter>";
+        ret += `<letter class="correct ${tabChar}">${currentLetter}</letter>`;
       } else {
         // if (config.difficulty == "master") {
         //   if (!resultVisible) {
@@ -1095,23 +1130,23 @@ function updateWordElement(showError) {
         //   }
         // }
         if (!showError) {
-          if (currentWord[i] == undefined) {
+          if (currentLetter == undefined) {
           } else {
-            ret += '<letter class="correct">' + currentWord[i] + "</letter>";
+            ret += `<letter class="correct ${tabChar}">${currentLetter}</letter>`;
           }
         } else {
-          if (currentWord[i] == undefined) {
+          if (currentLetter == undefined) {
             if (!config.hideExtraLetters) {
               let letter = input[i];
-              if (letter == " ") {
+              if (letter == " " || letter == "\t") {
                 letter = "_";
               }
-              ret += `<letter class="incorrect extra">${letter}</letter>`;
+              ret += `<letter class="incorrect extra ${tabChar}">${letter}</letter>`;
             }
           } else {
             ret +=
-              '<letter class="incorrect">' +
-              currentWord[i] +
+              '<letter class="incorrect ${tabChar}">' +
+              currentLetter +
               (config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
               "</letter>";
           }
@@ -1121,7 +1156,11 @@ function updateWordElement(showError) {
 
     if (input.length < currentWord.length) {
       for (let i = input.length; i < currentWord.length; i++) {
-        ret += "<letter>" + currentWord[i] + "</letter>";
+        if (currentWord[i] === "\t") {
+          ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        } else {
+          ret += "<letter>" + currentWord[i] + "</letter>";
+        }
       }
     }
   }
@@ -1584,24 +1623,30 @@ function countChars() {
   let missedChars = 0;
   let spaces = 0;
   let correctspaces = 0;
+  let newlineoffset = 0;
   for (let i = 0; i < inputHistory.length; i++) {
+    let word = wordsList[i + newlineoffset];
+    if (word === "\n") {
+      newlineoffset++;
+      word = wordsList[i + newlineoffset];
+    }
     if (inputHistory[i] === "") {
       //last word that was not started
       continue;
     }
-    if (inputHistory[i] == wordsList[i]) {
+    if (inputHistory[i] == word) {
       //the word is correct
-      correctWordChars += wordsList[i].length;
-      correctChars += wordsList[i].length;
+      correctWordChars += word.length;
+      correctChars += word.length;
       if (i < inputHistory.length - 1) {
         correctspaces++;
       }
-    } else if (inputHistory[i].length >= wordsList[i].length) {
+    } else if (inputHistory[i].length >= word.length) {
       //too many chars
       for (let c = 0; c < inputHistory[i].length; c++) {
-        if (c < wordsList[i].length) {
+        if (c < word.length) {
           //on char that still has a word list pair
-          if (inputHistory[i][c] == wordsList[i][c]) {
+          if (inputHistory[i][c] == word[c]) {
             correctChars++;
           } else {
             incorrectChars++;
@@ -1618,10 +1663,10 @@ function countChars() {
         incorrect: 0,
         missed: 0,
       };
-      for (let c = 0; c < wordsList[i].length; c++) {
+      for (let c = 0; c < word.length; c++) {
         if (c < inputHistory[i].length) {
           //on char that still has a word list pair
-          if (inputHistory[i][c] == wordsList[i][c]) {
+          if (inputHistory[i][c] == word[c]) {
             toAdd.correct++;
           } else {
             toAdd.incorrect++;
@@ -2896,6 +2941,7 @@ function restartTest(withSameWordset = false, nosave = false) {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         sameWordset = false;
+        textHasTab = false;
         await initWords();
         initPaceCaret(nosave);
       } else {
@@ -3128,11 +3174,17 @@ function liveWpmAndRaw() {
   let chars = 0;
   let correctWordChars = 0;
   let spaces = 0;
+  let newlineoffset = 0;
   for (let i = 0; i < inputHistory.length; i++) {
-    if (inputHistory[i] == wordsList[i]) {
+    let word = wordsList[i + newlineoffset];
+    if (word === "\n") {
+      newlineoffset++;
+      word = wordsList[i + newlineoffset];
+    }
+    if (inputHistory[i] == word) {
       //the word is correct
       //+1 for space
-      correctWordChars += wordsList[i].length;
+      correctWordChars += word.length;
       if (i < inputHistory.length) {
         spaces++;
       }
@@ -3413,7 +3465,7 @@ async function loadWordsHistory() {
   for (let i = 0; i < inputHistory.length + 2; i++) {
     let input = inputHistory[i];
     let word = wordsList[i + newlineoffset];
-    if(word === "\n"){
+    if (word === "\n") {
       newlineoffset++;
       word = wordsList[i + newlineoffset];
     }
@@ -3501,7 +3553,9 @@ async function loadWordsHistory() {
           } else {
             if (input[c] === currentInput) {
               wordEl +=
-                `<letter class='correct ${extraCorrected}'>` + word[c] + "</letter>";
+                `<letter class='correct ${extraCorrected}'>` +
+                word[c] +
+                "</letter>";
             } else if (input[c] === undefined) {
               wordEl += "<letter>" + word[c] + "</letter>";
             } else {
@@ -3609,6 +3663,12 @@ function updateTestModesNotice() {
   if (sameWordset) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" onClick="restartTest()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
+    );
+  }
+
+  if (textHasTab) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
     );
   }
 
@@ -3850,7 +3910,7 @@ function showCustomTextPopup() {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         let newtext = customText.join(" ");
-        newtext = newtext.replace(/ \n /g,"\n");
+        newtext = newtext.replace(/ \n /g, "\n");
         $("#customTextPopup textarea").val(newtext);
         $("#customTextPopup .wordcount input").val(customTextWordCount);
         $("#customTextPopup textarea").focus();
@@ -3898,12 +3958,13 @@ $("#customTextPopup textarea").keypress((e) => {
 $("#customTextPopup .button").click(() => {
   let text = $("#customTextPopup textarea").val();
   text = text.trim();
-  text = text.replace(/[\r\t]/gm, " ");
+  // text = text.replace(/[\r]/gm, " ");
+  text = text.replace(/\t/gm, "\t");
   text = text.replace(/ +/gm, " ");
-  text = text.replace(/(\r\n)+/g,"\r\n");
-  text = text.replace(/(\n)+/g,"\n");
-  text = text.replace(/(\r)+/g,"\r");
-  text = text.replace(/( *(\r\n|\r|\n) *)/g," \n ");
+  text = text.replace(/(\r\n)+/g, "\r\n");
+  text = text.replace(/(\n)+/g, "\n");
+  text = text.replace(/(\r)+/g, "\r");
+  text = text.replace(/( *(\r\n|\r|\n) *)/g, " \n ");
   if ($("#customTextPopup .typographyCheck input").prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
@@ -4620,16 +4681,31 @@ $(document).keydown(function (event) {
 
   Monkey.type();
 
+  //autofocus
+  let pageTestActive = !$(".pageTest").hasClass("hidden");
+  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
+  let wordsFocused = $("#wordsInput").is(":focus");
+  let modePopupVisible =
+    !$("#customTextPopupWrapper").hasClass("hidden") ||
+    !$("#customMode2PopupWrapper").hasClass("hidden");
+  if (pageTestActive && !commandLineVisible && !modePopupVisible) {
+    if (!wordsFocused && event.key !== "Enter") {
+      focusWords();
+      if (config.showOutOfFocusWarning) return;
+    }
+  }
+
   //tab
   if (
     (event.key == "Tab" && !config.swapEscAndTab) ||
     (event.key == "Escape" && config.swapEscAndTab)
   ) {
     handleTab(event);
+    // event.preventDefault();
   }
 
   //blocking firefox from going back in history with backspace
-  if (event.key === "Backspace") {
+  if (event.key === "Backspace" && wordsFocused) {
     let t = /INPUT|SELECT|TEXTAREA/i;
     if (
       !t.test(event.target.tagName) ||
@@ -4652,48 +4728,43 @@ $(document).keydown(function (event) {
     }
   } catch {}
 
-  //autofocus
-  let pageTestActive = !$(".pageTest").hasClass("hidden");
-  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
-  let wordsFocused = $("#wordsInput").is(":focus");
-  let modePopupVisible =
-    !$("#customTextPopupWrapper").hasClass("hidden") ||
-    !$("#customMode2PopupWrapper").hasClass("hidden");
-  if (pageTestActive && !commandLineVisible && !modePopupVisible) {
-    if (!wordsFocused && event.key !== "Enter") {
-      focusWords();
-      if (config.showOutOfFocusWarning) return;
-    }
-  } else {
-    return;
-  }
-
   //backspace
   const isBackspace =
     event.key === "Backspace" ||
     (config.capsLockBackspace && event.key === "CapsLock");
-  if (isBackspace) {
+  if (isBackspace && wordsFocused) {
     handleBackspace(event);
   }
 
-  if(event.key === "Enter" && activeFunBox === "58008"){
+  if (event.key === "Enter" && activeFunBox === "58008" && wordsFocused) {
     event.key = " ";
   }
 
   //space or enter
-  if ((event.key === " " || event.key === "Enter") && wordsFocused){
-    handleSpace(event, (event.key === "Enter" ? true : false));
+  if ((event.key === " " || event.key === "Enter") && wordsFocused) {
+    handleSpace(event, event.key === "Enter" ? true : false);
   }
 
-  handleAlpha(event);
+  if (wordsFocused) {
+    handleAlpha(event);
+  }
 });
 
 function handleTab(event) {
   if (resultCalculating) {
     event.preventDefault();
   }
-  if (
+  if ($("#customTextPopup .textarea").is(":focus")) {
+    event.preventDefault();
+    $("#customTextPopup .textarea").val(
+      $("#customTextPopup .textarea").val() + "\t"
+    );
+    return;
+  } else if (
     !event.ctrlKey &&
+    ((!event.shiftKey && !textHasTab) ||
+      (event.shiftKey && textHasTab) ||
+      resultVisible) &&
     config.quickTab &&
     !$(".pageLogin").hasClass("active") &&
     !resultCalculating &&
@@ -4729,6 +4800,14 @@ function handleTab(event) {
     } else {
       changePage("test");
     }
+  } else if (
+    !config.quickTab &&
+    textHasTab &&
+    event.shiftKey &&
+    !resultVisible
+  ) {
+    event.preventDefault();
+    $("#restartTestButton").focus();
   }
 }
 
@@ -4762,7 +4841,7 @@ function handleBackspace(event) {
         }
       }
       currentWordIndex--;
-      if(wordsList[currentWordIndex] === "\n"){
+      if (wordsList[currentWordIndex] === "\n") {
         currentWordIndex--;
       }
       currentWordElementIndex--;
@@ -4825,7 +4904,8 @@ function handleSpace(event, isEnter) {
   }
   if (config.blindMode) $("#words .word.active letter").addClass("correct");
   dontInsertSpace = true;
-  let correctSpaceEnter = ((isEnter && nextWord === "\n") || (!isEnter && nextWord !== "\n"));
+  let correctSpaceEnter =
+    (isEnter && nextWord === "\n") || (!isEnter && nextWord !== "\n");
   if (currentWord == currentInput && correctSpaceEnter) {
     //correct word
     if (
@@ -4868,14 +4948,14 @@ function handleSpace(event, isEnter) {
     accuracyStats.incorrect++;
     let cil = currentInput.length;
     // if (cil <= wordsList[currentWordIndex].length) {
-      if (cil >= currentCorrected.length) {
-        currentCorrected += "_";
-      } else {
-        currentCorrected =
-          currentCorrected.substring(0, cil) +
-          "_" +
-          currentCorrected.substring(cil + 1);
-      }
+    if (cil >= currentCorrected.length) {
+      currentCorrected += "_";
+    } else {
+      currentCorrected =
+        currentCorrected.substring(0, cil) +
+        "_" +
+        currentCorrected.substring(cil + 1);
+    }
     // }
     if (config.stopOnError != "off" || !correctSpaceEnter) {
       if (config.difficulty == "expert" || config.difficulty == "master") {
@@ -4910,11 +4990,10 @@ function handleSpace(event, isEnter) {
     }
   }
 
-
   correctedHistory.push(currentCorrected);
   currentCorrected = "";
 
-  if(nextWord === "\n"){
+  if (nextWord === "\n") {
     currentWordIndex++;
   }
 
@@ -5025,7 +5104,6 @@ function handleSpace(event, isEnter) {
 function handleAlpha(event) {
   if (
     [
-      "Tab",
       "ContextMenu",
       "Escape",
       "Shift",
@@ -5077,7 +5155,15 @@ function handleAlpha(event) {
     }
   }
 
-  if (event.key.length > 1) return;
+  if (event.key === "Tab") {
+    if (!textHasTab || (textHasTab && event.shiftKey)) {
+      return;
+    }
+    event.key = "\t";
+    event.preventDefault();
+  }
+
+  // if (event.key.length > 1) return;
   if (/F\d+/.test(event.key)) return;
   if (/Numpad/.test(event.key)) return;
   if (/Volume/.test(event.key)) return;
