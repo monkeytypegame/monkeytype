@@ -1,0 +1,12 @@
+{
+  "language": "test",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    { "text": "This is a quote", "source": "Miodec", "length": 15, "id": 1 }
+  ]
+}
