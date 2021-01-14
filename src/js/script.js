@@ -4764,9 +4764,23 @@ function handleTab(event) {
   }
   if ($("#customTextPopup .textarea").is(":focus")) {
     event.preventDefault();
-    $("#customTextPopup .textarea").val(
-      $("#customTextPopup .textarea").val() + "\t"
-    );
+
+    let area = $("#customTextPopup .textarea")[0];
+
+    var start = area.selectionStart;
+    var end = area.selectionEnd;
+
+    // set textarea value to: text before caret + tab + text after caret
+    area.value =
+      area.value.substring(0, start) + "\t" + area.value.substring(end);
+
+    // put caret at right position again
+    area.selectionStart = area.selectionEnd = start + 1;
+
+    // event.preventDefault();
+    // $("#customTextPopup .textarea").val(
+    //   $("#customTextPopup .textarea").val() + "\t"
+    // );
     return;
   } else if (
     !event.ctrlKey &&
