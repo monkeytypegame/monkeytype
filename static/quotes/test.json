@@ -20,6 +20,17 @@
       "length": 13,
       "id": 3
     },
-    { "text": "Another quote", "source": "Someone else", "length": 13, "id": 4 }
+    {
+      "text": "Another quote",
+      "source": "Someone else",
+      "length": 13,
+      "id": 4
+    },
+    {
+      "text": "This is a test quote",
+      "source": "miodec",
+      "length": 20,
+      "id": 5
+    }
   ]
 }
