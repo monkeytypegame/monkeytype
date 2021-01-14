@@ -2767,8 +2767,6 @@ function startTest() {
           100
       );
 
-      updateLiveAcc(acc);
-
       if (activeFunBox === "layoutfluid" && config.mode === "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];
         let index = 0;
@@ -4751,6 +4749,13 @@ $(document).keydown(function (event) {
   if (wordsFocused) {
     handleAlpha(event);
   }
+
+  let acc = Misc.roundTo2(
+    (accuracyStats.correct /
+      (accuracyStats.correct + accuracyStats.incorrect)) *
+      100
+  );
+  updateLiveAcc(acc);
 });
 
 function handleTab(event) {
