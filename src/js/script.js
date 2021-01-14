@@ -4746,7 +4746,7 @@ $(document).keydown(function (event) {
     handleSpace(event, false);
   }
 
-  if (wordsFocused) {
+  if (wordsFocused && !commandLineVisible) {
     handleAlpha(event);
   }
 
