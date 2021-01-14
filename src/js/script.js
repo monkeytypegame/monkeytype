@@ -4686,11 +4686,16 @@ $(document).keydown(function (event) {
   let modePopupVisible =
     !$("#customTextPopupWrapper").hasClass("hidden") ||
     !$("#customMode2PopupWrapper").hasClass("hidden");
-  if (pageTestActive && !commandLineVisible && !modePopupVisible) {
-    if (!wordsFocused && event.key !== "Enter") {
-      focusWords();
-      if (config.showOutOfFocusWarning) return;
-    }
+  if (
+    pageTestActive &&
+    !commandLineVisible &&
+    !modePopupVisible &&
+    !resultVisible &&
+    !wordsFocused &&
+    event.key !== "Enter"
+  ) {
+    focusWords();
+    if (config.showOutOfFocusWarning) return;
   }
 
   //tab
