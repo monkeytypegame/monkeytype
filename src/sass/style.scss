@@ -1716,7 +1716,8 @@ key {
       border-bottom-width: 0.05em;
       border-bottom-color: var(--sub-color);
     }
-    &.tabChar {
+    &.tabChar,
+    &.nlChar {
       margin: 0 0.25rem;
       opacity: 0.2;
     }

@@ -447,12 +447,12 @@ async function initWords() {
     (quotes === null ||
       quotes.language !== config.language.replace(/_\d*k$/g, ""))
   ) {
-    if (config.language.split("_")[0] !== "code") {
-      setLanguage(config.language.replace(/_\d*k$/g, "").split("_")[0], true);
-    }
+    // if (config.language.split("_")[0] !== "code") {
+    setLanguage(config.language.replace(/_\d*k$/g, ""), true);
+    // }
     showBackgroundLoader();
     $.ajax({
-      url: `quotes/${config.language.split("_")[0]}.json`,
+      url: `quotes/${config.language}.json`,
       async: false,
       success: function (data) {
         hideBackgroundLoader();
@@ -618,8 +618,13 @@ async function initWords() {
         ];
     }
     randomQuote = rq;
-    let w = rq.text.trim().split(" ");
+    randomQuote.text = randomQuote.text.replace(/ +/gm, " ");
+    randomQuote.text = randomQuote.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+    let w = randomQuote.text.trim().split(" ");
     for (let i = 0; i < w.length; i++) {
+      if (/\t/g.test(w[i])) {
+        textHasTab = true;
+      }
       wordsList.push(w[i]);
     }
   }
@@ -946,26 +951,22 @@ function showWords() {
   $("#words").empty();
 
   let wordsHTML = "";
+  let newlineafter = false;
   for (let i = 0; i < wordsList.length; i++) {
-    if (wordsList[i] === "\n") {
-      wordsHTML += "<div class='newline'></div>";
-    } else {
-      let newline = false;
-      try {
-        if (wordsList[i + 1] === "\n") newline = true;
-      } catch {
-        newline = false;
+    newlineafter = false;
+    wordsHTML += `<div class='word'>`;
+    for (let c = 0; c < wordsList[i].length; c++) {
+      if (wordsList[i].charAt(c) === "\t") {
+        wordsHTML += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+      } else if (wordsList[i].charAt(c) === "\n") {
+        newlineafter = true;
+        wordsHTML += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+      } else {
+        wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
       }
-      wordsHTML += `<div class='word ${newline ? "lastbeforenewline" : ""}'>`;
-      for (let c = 0; c < wordsList[i].length; c++) {
-        if (wordsList[i].charAt(c) === "\t") {
-          wordsHTML += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-        } else {
-          wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
-        }
-      }
-      wordsHTML += "</div>";
     }
+    wordsHTML += "</div>";
+    if (newlineafter) wordsHTML += "<div class='newline'></div>";
   }
   $("#words").html(wordsHTML);
 
@@ -1116,13 +1117,17 @@ function updateWordElement(showError) {
 
       let currentLetter = currentWord[i];
       let tabChar = "";
+      let nlChar = "";
       if (currentLetter === "\t") {
         tabChar = "tabChar";
         currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
+      } else if (currentLetter === "\n") {
+        nlChar = "nlChar";
+        currentLetter = `<i class="fas fa-angle-down"></i>`;
       }
 
       if (charCorrect) {
-        ret += `<letter class="correct ${tabChar}">${currentLetter}</letter>`;
+        ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
       } else {
         // if (config.difficulty == "master") {
         //   if (!resultVisible) {
@@ -1132,20 +1137,20 @@ function updateWordElement(showError) {
         if (!showError) {
           if (currentLetter == undefined) {
           } else {
-            ret += `<letter class="correct ${tabChar}">${currentLetter}</letter>`;
+            ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
           }
         } else {
           if (currentLetter == undefined) {
             if (!config.hideExtraLetters) {
               let letter = input[i];
-              if (letter == " " || letter == "\t") {
+              if (letter == " " || letter == "\t" || letter == "\n") {
                 letter = "_";
               }
-              ret += `<letter class="incorrect extra ${tabChar}">${letter}</letter>`;
+              ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
             }
           } else {
             ret +=
-              '<letter class="incorrect ${tabChar}">' +
+              `<letter class="incorrect ${tabChar}${nlChar}">` +
               currentLetter +
               (config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
               "</letter>";
@@ -1158,6 +1163,8 @@ function updateWordElement(showError) {
       for (let i = input.length; i < currentWord.length; i++) {
         if (currentWord[i] === "\t") {
           ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        } else if (currentWord[i] === "\n") {
+          ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
         } else {
           ret += "<letter>" + currentWord[i] + "</letter>";
         }
@@ -1623,13 +1630,8 @@ function countChars() {
   let missedChars = 0;
   let spaces = 0;
   let correctspaces = 0;
-  let newlineoffset = 0;
   for (let i = 0; i < inputHistory.length; i++) {
-    let word = wordsList[i + newlineoffset];
-    if (word === "\n") {
-      newlineoffset++;
-      word = wordsList[i + newlineoffset];
-    }
+    let word = wordsList[i];
     if (inputHistory[i] === "") {
       //last word that was not started
       continue;
@@ -1638,7 +1640,10 @@ function countChars() {
       //the word is correct
       correctWordChars += word.length;
       correctChars += word.length;
-      if (i < inputHistory.length - 1) {
+      if (
+        i < inputHistory.length - 1 &&
+        Misc.getLastChar(inputHistory[i]) !== "\n"
+      ) {
         correctspaces++;
       }
     } else if (inputHistory[i].length >= word.length) {
@@ -3174,18 +3179,16 @@ function liveWpmAndRaw() {
   let chars = 0;
   let correctWordChars = 0;
   let spaces = 0;
-  let newlineoffset = 0;
   for (let i = 0; i < inputHistory.length; i++) {
-    let word = wordsList[i + newlineoffset];
-    if (word === "\n") {
-      newlineoffset++;
-      word = wordsList[i + newlineoffset];
-    }
+    let word = wordsList[i];
     if (inputHistory[i] == word) {
       //the word is correct
       //+1 for space
       correctWordChars += word.length;
-      if (i < inputHistory.length) {
+      if (
+        i < inputHistory.length - 1 &&
+        Misc.getLastChar(inputHistory[i]) !== "\n"
+      ) {
         spaces++;
       }
     }
@@ -3461,14 +3464,9 @@ function toggleResultWordsDisplay() {
 async function loadWordsHistory() {
   $("#resultWordsHistory .words").empty();
   let wordsHTML = "";
-  let newlineoffset = 0;
   for (let i = 0; i < inputHistory.length + 2; i++) {
     let input = inputHistory[i];
-    let word = wordsList[i + newlineoffset];
-    if (word === "\n") {
-      newlineoffset++;
-      word = wordsList[i + newlineoffset];
-    }
+    let word = wordsList[i];
     let wordEl = "";
     try {
       if (input === "") throw new Error("empty input word");
@@ -3910,7 +3908,7 @@ function showCustomTextPopup() {
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         let newtext = customText.join(" ");
-        newtext = newtext.replace(/ \n /g, "\n");
+        newtext = newtext.replace(/\n /g, "\n");
         $("#customTextPopup textarea").val(newtext);
         $("#customTextPopup .wordcount input").val(customTextWordCount);
         $("#customTextPopup textarea").focus();
@@ -3961,10 +3959,10 @@ $("#customTextPopup .button").click(() => {
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\t/gm, "\t");
   text = text.replace(/ +/gm, " ");
-  text = text.replace(/(\r\n)+/g, "\r\n");
-  text = text.replace(/(\n)+/g, "\n");
-  text = text.replace(/(\r)+/g, "\r");
-  text = text.replace(/( *(\r\n|\r|\n) *)/g, " \n ");
+  // text = text.replace(/(\r\n)+/g, "\r\n");
+  // text = text.replace(/(\n)+/g, "\n");
+  // text = text.replace(/(\r)+/g, "\r");
+  text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
   if ($("#customTextPopup .typographyCheck input").prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
@@ -4741,8 +4739,8 @@ $(document).keydown(function (event) {
   }
 
   //space or enter
-  if ((event.key === " " || event.key === "Enter") && wordsFocused) {
-    handleSpace(event, event.key === "Enter" ? true : false);
+  if (event.key === " " && wordsFocused) {
+    handleSpace(event, false);
   }
 
   if (wordsFocused) {
@@ -4841,9 +4839,6 @@ function handleBackspace(event) {
         }
       }
       currentWordIndex--;
-      if (wordsList[currentWordIndex] === "\n") {
-        currentWordIndex--;
-      }
       currentWordElementIndex--;
       updateActiveElement();
       updateWordElement(!config.blindMode);
@@ -4904,9 +4899,7 @@ function handleSpace(event, isEnter) {
   }
   if (config.blindMode) $("#words .word.active letter").addClass("correct");
   dontInsertSpace = true;
-  let correctSpaceEnter =
-    (isEnter && nextWord === "\n") || (!isEnter && nextWord !== "\n");
-  if (currentWord == currentInput && correctSpaceEnter) {
+  if (currentWord == currentInput) {
     //correct word
     if (
       paceCaret !== null &&
@@ -4947,23 +4940,23 @@ function handleSpace(event, isEnter) {
     }
     accuracyStats.incorrect++;
     let cil = currentInput.length;
-    // if (cil <= wordsList[currentWordIndex].length) {
-    if (cil >= currentCorrected.length) {
-      currentCorrected += "_";
-    } else {
-      currentCorrected =
-        currentCorrected.substring(0, cil) +
-        "_" +
-        currentCorrected.substring(cil + 1);
+    if (cil <= wordsList[currentWordIndex].length) {
+      if (cil >= currentCorrected.length) {
+        currentCorrected += "_";
+      } else {
+        currentCorrected =
+          currentCorrected.substring(0, cil) +
+          "_" +
+          currentCorrected.substring(cil + 1);
+      }
     }
-    // }
-    if (config.stopOnError != "off" || !correctSpaceEnter) {
+    if (config.stopOnError != "off") {
       if (config.difficulty == "expert" || config.difficulty == "master") {
         //failed due to diff when pressing space
         failTest();
         return;
       }
-      if (config.stopOnError == "word" || !correctSpaceEnter) {
+      if (config.stopOnError == "word") {
         currentInput += " ";
         updateWordElement(true);
         updateCaretPosition();
@@ -4992,10 +4985,6 @@ function handleSpace(event, isEnter) {
 
   correctedHistory.push(currentCorrected);
   currentCorrected = "";
-
-  if (nextWord === "\n") {
-    currentWordIndex++;
-  }
 
   if (!config.showAllLines || config.mode == "time") {
     let currentTop = Math.floor(
@@ -5113,7 +5102,6 @@ function handleAlpha(event) {
       "AltGraph",
       "CapsLock",
       "Backspace",
-      "Enter",
       "PageUp",
       "PageDown",
       "Home",
@@ -5135,6 +5123,7 @@ function handleAlpha(event) {
       "SymbolLock",
       "Super",
       "Unidentified",
+      "Process",
       undefined,
     ].includes(event.key)
   ) {
@@ -5161,6 +5150,10 @@ function handleAlpha(event) {
     }
     event.key = "\t";
     event.preventDefault();
+  }
+
+  if (event.key === "Enter") {
+    event.key = "\n";
   }
 
   // if (event.key.length > 1) return;
@@ -5314,8 +5307,9 @@ function handleAlpha(event) {
 
   //simulate space press in nospace funbox
   if (
-    activeFunBox === "nospace" &&
-    currentInput.length === wordsList[currentWordIndex].length
+    (activeFunBox === "nospace" &&
+      currentInput.length === wordsList[currentWordIndex].length) ||
+    (event.key === "\n" && thisCharCorrect)
   ) {
     $.event.trigger({
       type: "keydown",
@@ -5393,7 +5387,11 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   if (resultVisible) {
     let input = $(e.currentTarget).attr("input");
     if (input != undefined)
-      $(e.currentTarget).append(`<div class="wordInputAfter">${input}</div>`);
+      $(e.currentTarget).append(
+        `<div class="wordInputAfter">${input
+          .replace(/\t/g, "_")
+          .replace(/\n/g, "_")}</div>`
+      );
   }
 });
 
