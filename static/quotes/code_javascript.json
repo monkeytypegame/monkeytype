@@ -1,0 +1,17 @@
+{
+  "language": "code_javascript",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "//a function that generates random gibberish at random length\n\nexport function getGibberish() {\n\tlet randLen = Math.floor(Math.random() * 7) + 1;\n\tlet ret = \"\";\n\tfor (let i = 0; i < randLen; i++) {\n\t\tret += String.fromCharCode(97 + Math.floor(Math.random() * 26));\n\t}\n\treturn ret;\n}",
+      "source": "Monkeytype Sourcecode",
+      "id": 1,
+      "length": 64
+    }
+  ]
+}
