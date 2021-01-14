@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -29694,6 +29706,18 @@
       "source": "Helplessly Hoping",
       "id": 5000,
       "length": 180
+    },
+    {
+      "text": "If you set your goals ridiculously high and it's a failure, you will fail above everyone else's success.",
+      "source": "James Cameron",
+      "length": 104,
+      "id": 5001
+    },
+    {
+      "text": "Life is what happens when you're busy making other plans.",
+      "source": "John Lennon",
+      "length": 57,
+      "id": 5002
     }
   ]
 }
