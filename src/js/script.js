@@ -49,6 +49,7 @@ let punctuationBeforePractise = null;
 let numbersBeforePractise = null;
 let memoryFunboxTimer = null;
 let memoryFunboxInterval = null;
+let textHasTab = false;
 
 let themeColors = {
   bg: "#323437",
@@ -593,6 +594,10 @@ async function initWords() {
         }
       }
 
+      if (/\t/g.test(randomWord)) {
+        textHasTab = true;
+      }
+
       wordsList.push(randomWord);
     }
   } else if (config.mode == "quote") {
@@ -953,7 +958,11 @@ function showWords() {
       }
       wordsHTML += `<div class='word ${newline ? "lastbeforenewline" : ""}'>`;
       for (let c = 0; c < wordsList[i].length; c++) {
-        wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+        if (wordsList[i].charAt(c) === "\t") {
+          wordsHTML += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        } else {
+          wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+        }
       }
       wordsHTML += "</div>";
     }
@@ -1105,8 +1114,15 @@ function updateWordElement(showError) {
         }
       } catch (e) {}
 
+      let currentLetter = currentWord[i];
+      let tabChar = "";
+      if (currentLetter === "\t") {
+        tabChar = "tabChar";
+        currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
+      }
+
       if (charCorrect) {
-        ret += '<letter class="correct">' + currentWord[i] + "</letter>";
+        ret += `<letter class="correct ${tabChar}">${currentLetter}</letter>`;
       } else {
         // if (config.difficulty == "master") {
         //   if (!resultVisible) {
@@ -1114,23 +1130,23 @@ function updateWordElement(showError) {
         //   }
         // }
         if (!showError) {
-          if (currentWord[i] == undefined) {
+          if (currentLetter == undefined) {
           } else {
-            ret += '<letter class="correct">' + currentWord[i] + "</letter>";
+            ret += `<letter class="correct ${tabChar}">${currentLetter}</letter>`;
           }
         } else {
-          if (currentWord[i] == undefined) {
+          if (currentLetter == undefined) {
             if (!config.hideExtraLetters) {
               let letter = input[i];
-              if (letter == " ") {
+              if (letter == " " || letter == "\t") {
                 letter = "_";
               }
-              ret += `<letter class="incorrect extra">${letter}</letter>`;
+              ret += `<letter class="incorrect extra ${tabChar}">${letter}</letter>`;
             }
           } else {
             ret +=
-              '<letter class="incorrect">' +
-              currentWord[i] +
+              '<letter class="incorrect ${tabChar}">' +
+              currentLetter +
               (config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
               "</letter>";
           }
@@ -1140,7 +1156,11 @@ function updateWordElement(showError) {
 
     if (input.length < currentWord.length) {
       for (let i = input.length; i < currentWord.length; i++) {
-        ret += "<letter>" + currentWord[i] + "</letter>";
+        if (currentWord[i] === "\t") {
+          ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        } else {
+          ret += "<letter>" + currentWord[i] + "</letter>";
+        }
       }
     }
   }
@@ -2921,6 +2941,7 @@ function restartTest(withSameWordset = false, nosave = false) {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         sameWordset = false;
+        textHasTab = false;
         await initWords();
         initPaceCaret(nosave);
       } else {
@@ -3645,6 +3666,12 @@ function updateTestModesNotice() {
     );
   }
 
+  if (textHasTab) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+    );
+  }
+
   if (config.language === "english_1k" || config.language === "english_10k") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${config.language.replace(
@@ -3931,7 +3958,8 @@ $("#customTextPopup textarea").keypress((e) => {
 $("#customTextPopup .button").click(() => {
   let text = $("#customTextPopup textarea").val();
   text = text.trim();
-  text = text.replace(/[\r\t]/gm, " ");
+  // text = text.replace(/[\r]/gm, " ");
+  text = text.replace(/\t/gm, "\t");
   text = text.replace(/ +/gm, " ");
   text = text.replace(/(\r\n)+/g, "\r\n");
   text = text.replace(/(\n)+/g, "\n");
@@ -4653,16 +4681,31 @@ $(document).keydown(function (event) {
 
   Monkey.type();
 
+  //autofocus
+  let pageTestActive = !$(".pageTest").hasClass("hidden");
+  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
+  let wordsFocused = $("#wordsInput").is(":focus");
+  let modePopupVisible =
+    !$("#customTextPopupWrapper").hasClass("hidden") ||
+    !$("#customMode2PopupWrapper").hasClass("hidden");
+  if (pageTestActive && !commandLineVisible && !modePopupVisible) {
+    if (!wordsFocused && event.key !== "Enter") {
+      focusWords();
+      if (config.showOutOfFocusWarning) return;
+    }
+  }
+
   //tab
   if (
     (event.key == "Tab" && !config.swapEscAndTab) ||
     (event.key == "Escape" && config.swapEscAndTab)
   ) {
     handleTab(event);
+    // event.preventDefault();
   }
 
   //blocking firefox from going back in history with backspace
-  if (event.key === "Backspace") {
+  if (event.key === "Backspace" && wordsFocused) {
     let t = /INPUT|SELECT|TEXTAREA/i;
     if (
       !t.test(event.target.tagName) ||
@@ -4685,31 +4728,15 @@ $(document).keydown(function (event) {
     }
   } catch {}
 
-  //autofocus
-  let pageTestActive = !$(".pageTest").hasClass("hidden");
-  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
-  let wordsFocused = $("#wordsInput").is(":focus");
-  let modePopupVisible =
-    !$("#customTextPopupWrapper").hasClass("hidden") ||
-    !$("#customMode2PopupWrapper").hasClass("hidden");
-  if (pageTestActive && !commandLineVisible && !modePopupVisible) {
-    if (!wordsFocused && event.key !== "Enter") {
-      focusWords();
-      if (config.showOutOfFocusWarning) return;
-    }
-  } else {
-    return;
-  }
-
   //backspace
   const isBackspace =
     event.key === "Backspace" ||
     (config.capsLockBackspace && event.key === "CapsLock");
-  if (isBackspace) {
+  if (isBackspace && wordsFocused) {
     handleBackspace(event);
   }
 
-  if (event.key === "Enter" && activeFunBox === "58008") {
+  if (event.key === "Enter" && activeFunBox === "58008" && wordsFocused) {
     event.key = " ";
   }
 
@@ -4718,15 +4745,26 @@ $(document).keydown(function (event) {
     handleSpace(event, event.key === "Enter" ? true : false);
   }
 
-  handleAlpha(event);
+  if (wordsFocused) {
+    handleAlpha(event);
+  }
 });
 
 function handleTab(event) {
   if (resultCalculating) {
     event.preventDefault();
   }
-  if (
+  if ($("#customTextPopup .textarea").is(":focus")) {
+    event.preventDefault();
+    $("#customTextPopup .textarea").val(
+      $("#customTextPopup .textarea").val() + "\t"
+    );
+    return;
+  } else if (
     !event.ctrlKey &&
+    ((!event.shiftKey && !textHasTab) ||
+      (event.shiftKey && textHasTab) ||
+      resultVisible) &&
     config.quickTab &&
     !$(".pageLogin").hasClass("active") &&
     !resultCalculating &&
@@ -4762,6 +4800,14 @@ function handleTab(event) {
     } else {
       changePage("test");
     }
+  } else if (
+    !config.quickTab &&
+    textHasTab &&
+    event.shiftKey &&
+    !resultVisible
+  ) {
+    event.preventDefault();
+    $("#restartTestButton").focus();
   }
 }
 
@@ -5058,7 +5104,6 @@ function handleSpace(event, isEnter) {
 function handleAlpha(event) {
   if (
     [
-      "Tab",
       "ContextMenu",
       "Escape",
       "Shift",
@@ -5110,7 +5155,15 @@ function handleAlpha(event) {
     }
   }
 
-  if (event.key.length > 1) return;
+  if (event.key === "Tab") {
+    if (!textHasTab || (textHasTab && event.shiftKey)) {
+      return;
+    }
+    event.key = "\t";
+    event.preventDefault();
+  }
+
+  // if (event.key.length > 1) return;
   if (/F\d+/.test(event.key)) return;
   if (/Numpad/.test(event.key)) return;
   if (/Volume/.test(event.key)) return;

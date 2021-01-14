@@ -1716,6 +1716,10 @@ key {
       border-bottom-width: 0.05em;
       border-bottom-color: var(--sub-color);
     }
+    &.tabChar {
+      margin: 0 0.25rem;
+      opacity: 0.2;
+    }
   }
 
   /* a little hack for right-to-left languages */
