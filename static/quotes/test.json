@@ -14,6 +14,12 @@
       "length": 13,
       "id": 2
     },
-    { "text": "Another quote", "source": "Someone else", "length": 13, "id": 3 }
+    {
+      "text": "Another quote",
+      "source": "Someone else",
+      "length": 13,
+      "id": 3
+    },
+    { "text": "Another quote", "source": "Someone else", "length": 13, "id": 4 }
   ]
 }
