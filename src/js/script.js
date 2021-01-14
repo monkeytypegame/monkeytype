@@ -945,7 +945,13 @@ function showWords() {
     if (wordsList[i] === "\n") {
       wordsHTML += "<div class='newline'></div>";
     } else {
-      wordsHTML += "<div class='word'>";
+      let newline = false;
+      try {
+        if (wordsList[i + 1] === "\n") newline = true;
+      } catch {
+        newline = false;
+      }
+      wordsHTML += `<div class='word ${newline ? "lastbeforenewline" : ""}'>`;
       for (let c = 0; c < wordsList[i].length; c++) {
         wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
       }

@@ -1704,7 +1704,7 @@ key {
   user-select: none;
   padding-bottom: 1em;
 
-  .newline{
+  .newline {
     width: inherit;
   }
 
@@ -1961,7 +1961,6 @@ key {
   opacity: 1;
 }
 
-
 .word {
   margin: 0.25rem;
   color: var(--sub-color);
@@ -1973,6 +1972,10 @@ key {
   line-height: 1rem;
   letter {
     display: inline-block;
+  }
+
+  &.lastbeforenewline::after {
+    content: "¬";
   }
 
   // transition: .25s;
