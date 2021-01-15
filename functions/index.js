@@ -135,14 +135,36 @@ exports.clearName = functions.auth.user().onDelete((user) => {
   db.collection("users").doc(user.uid).delete();
 });
 
-exports.checkNameAvailability = functions.https.onCall(
+exports.checkNameAvailability = functions.https.onRequest(
   async (request, response) => {
+    response.set("Access-Control-Allow-Origin", origin);
+    if (request.method === "OPTIONS") {
+      // Send response to OPTIONS requests
+      response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      response.set(
+        "Access-Control-Allow-Headers",
+        "Authorization,Content-Type"
+      );
+      response.set("Access-Control-Max-Age", "3600");
+      response.status(204).send("");
+      return;
+    }
+    request = request.body.data;
+
     // 1 - available
     // -1 - unavailable (taken)
     // -2 - not valid name
     // -999 - unknown error
     try {
-      if (!isUsernameValid(request.name)) return -2;
+      if (!isUsernameValid(request.name)) {
+        response.status(200).send({
+          data: {
+            resultCode: -2,
+            message: "Username is not valid",
+          },
+        });
+        return;
+      }
 
       let takendata = await db
         .collection("takenNames")
@@ -152,9 +174,21 @@ exports.checkNameAvailability = functions.https.onCall(
       takendata = takendata.data();
 
       if (takendata !== undefined && takendata.taken) {
-        return -1;
+        response.status(200).send({
+          data: {
+            resultCode: -1,
+            message: "Username is taken",
+          },
+        });
+        return;
       } else {
-        return 1;
+        response.status(200).send({
+          data: {
+            resultCode: 1,
+            message: "Username is available",
+          },
+        });
+        return;
       }
 
       // return getAllNames().then((data) => {
@@ -173,7 +207,13 @@ exports.checkNameAvailability = functions.https.onCall(
         `Error while checking name availability for ${request.name}:` +
           e.message
       );
-      return -999;
+      response.status(200).send({
+        data: {
+          resultCode: -999,
+          message: "Unexpected error: " + e,
+        },
+      });
+      return;
     }
   }
 );
