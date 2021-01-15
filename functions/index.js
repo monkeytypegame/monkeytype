@@ -1,9 +1,11 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 let key = "./serviceAccountKey.json";
+let origin = "http://localhost:5000";
 
 if (process.env.GCLOUD_PROJECT === "monkey-type") {
   key = "./serviceAccountKey_live.json";
+  origin = "https://monkeytype.com";
 }
 
 var serviceAccount = require(key);
@@ -591,14 +593,14 @@ function validateResult(result) {
 }
 
 exports.requestTest = functions.https.onRequest((request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Origin", origin);
   response.set("Access-Control-Allow-Headers", "*");
   response.set("Access-Control-Allow-Credentials", "true");
   response.status(200).send({ data: "test" });
 });
 
 exports.getPatreons = functions.https.onRequest(async (request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Origin", origin);
   response.set("Access-Control-Allow-Headers", "*");
   response.set("Access-Control-Allow-Credentials", "true");
   if (request.method === "OPTIONS") {
@@ -632,7 +634,7 @@ exports.getPatreons = functions.https.onRequest(async (request, response) => {
 });
 
 exports.verifyUser = functions.https.onRequest(async (request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Origin", origin);
   response.set("Access-Control-Allow-Headers", "*");
   response.set("Access-Control-Allow-Credentials", "true");
   if (request.method === "OPTIONS") {
@@ -1005,7 +1007,7 @@ async function incrementTimeSpentTyping(uid, res, userData) {
 }
 
 exports.testCompleted = functions.https.onRequest(async (request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Origin", origin);
   if (request.method === "OPTIONS") {
     // Send response to OPTIONS requests
     response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
@@ -1993,7 +1995,7 @@ class Leaderboard {
 //   });
 
 exports.unlinkDiscord = functions.https.onRequest((request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Origin", origin);
   if (request.method === "OPTIONS") {
     // Send response to OPTIONS requests
     response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
