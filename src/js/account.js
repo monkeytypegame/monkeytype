@@ -66,12 +66,12 @@ function signUp() {
   }
 
   CloudFunctions.namecheck({ name: nname }).then((d) => {
-    if (d.data === -1) {
+    if (d.data.resultCode === -1) {
       Misc.showNotification("Name unavailable", 3000);
       $(".pageLogin .preloader").addClass("hidden");
       $(".pageLogin .register .button").removeClass("disabled");
       return;
-    } else if (d.data === -2) {
+    } else if (d.data.resultCode === -2) {
       Misc.showNotification(
         "Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
         8000
@@ -79,7 +79,7 @@ function signUp() {
       $(".pageLogin .preloader").addClass("hidden");
       $(".pageLogin .register .button").removeClass("disabled");
       return;
-    } else if (d.data === 1) {
+    } else if (d.data.resultCode === 1) {
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
@@ -165,8 +165,11 @@ function signUp() {
           $(".pageLogin .preloader").addClass("hidden");
         });
     } else {
-      console.error(d);
-      Misc.showNotification("Name check timed out", 3000);
+      console.error(d.data.message);
+      Misc.showNotification(
+        "Something went wrong when checking name: " + d.data.message,
+        5000
+      );
     }
   });
 }
