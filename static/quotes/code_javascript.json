@@ -1,10 +1,22 @@
 {
   "language": "code_javascript",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -12,6 +24,12 @@
       "source": "Monkeytype Sourcecode",
       "id": 1,
       "length": 64
+    },
+    {
+      "text": "export function capitalizeFirstLetter(str) {\\n\\treturn str.charAt(0).toUpperCase() + str.slice(1);\\n}",
+      "source": "Monkeytype Sourcecode",
+      "length": 101,
+      "id": 2
     }
   ]
 }
