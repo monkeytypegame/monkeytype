@@ -164,6 +164,9 @@ function signUp() {
           Misc.showNotification(errorMessage, 5000);
           $(".pageLogin .preloader").addClass("hidden");
         });
+    } else {
+      console.error(d);
+      Misc.showNotification("Name check timed out", 3000);
     }
   });
 }
