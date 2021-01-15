@@ -167,7 +167,10 @@ exports.checkNameAvailability = functions.https.onCall(
       //   return available;
       // });
     } catch (e) {
-      console.log(e.message);
+      console.error(
+        `Error while checking name availability for ${request.name}:` +
+          e.message
+      );
       return -999;
     }
   }
