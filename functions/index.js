@@ -1055,7 +1055,13 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       return;
     }
 
-    if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
+    if (
+      obj.wpm <= 0 ||
+      obj.wpm > 350 ||
+      obj.acc < 50 ||
+      obj.acc > 100 ||
+      obj.consistency > 100
+    ) {
       response.status(200).send({ data: { resultCode: -1 } });
       return;
     }
