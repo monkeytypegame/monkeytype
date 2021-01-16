@@ -259,7 +259,7 @@ function copyResultToClipboard() {
             ])
             .then((f) => {
               $(".notification").removeClass("hidden");
-              Misc.showNotification("Copied to clipboard", 1000);
+              Notifications.add("Copied to clipboard", 1, 2);
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
               if (firebase.auth().currentUser == null)
@@ -268,7 +268,10 @@ function copyResultToClipboard() {
             .catch((f) => {
               open(URL.createObjectURL(blob));
               $(".notification").removeClass("hidden");
-              Misc.showNotification("Error saving image to clipboard", 2000);
+              Notifications.add(
+                "Error saving image to clipboard: " + f.message,
+                -1
+              );
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
               if (firebase.auth().currentUser == null)
@@ -277,7 +280,10 @@ function copyResultToClipboard() {
         } catch (e) {
           open(URL.createObjectURL(blob));
           $(".notification").removeClass("hidden");
-          Misc.showNotification("Error saving image to clipboard", 2000);
+          Notifications.add(
+            "Error saving image to clipboard: " + e.message,
+            -1
+          );
           $(".pageTest .ssWatermark").addClass("hidden");
           $(".pageTest .buttons").removeClass("hidden");
           if (firebase.auth().currentUser == null)
@@ -287,7 +293,7 @@ function copyResultToClipboard() {
     });
   } catch (e) {
     $(".notification").removeClass("hidden");
-    Misc.showNotification("Error creating image", 2000);
+    Notifications.add("Error creating image: " + e.message, -1);
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .buttons").removeClass("hidden");
     if (firebase.auth().currentUser == null)
@@ -297,17 +303,17 @@ function copyResultToClipboard() {
 
 async function activateFunbox(funbox, mode) {
   if (testActive || resultVisible) {
-    Misc.showNotification(
+    Notifications.add(
       "You can only change the funbox before starting a test.",
-      4000
+      0
     );
     return false;
   }
   if (Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
-      Misc.showNotification(
+      Notifications.add(
         "Current language does not support this funbox mode",
-        3000
+        0
       );
       activateFunbox("none", null);
       return;
@@ -473,20 +479,20 @@ async function initWords() {
           quotes.quotes = [];
         } catch (e) {
           console.error(e);
-          Misc.showNotification(
+          Notifications.add(
             `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
-            3000
+            0
           );
           return;
         }
       },
       error: (e) => {
-        Misc.showNotification(
+        Notifications.add(
           `Error while loading ${config.language.replace(
             /_\d*k$/g,
             ""
           )} quotes: ${e}`,
-          5000
+          -1
         );
         return;
       },
@@ -999,26 +1005,6 @@ function showWords() {
   updateActiveElement();
   updateCaretPosition();
 }
-
-$("#restartTestButton, #startTestButton").on("click", function () {
-  if (activeFunBox === "memory") {
-    memoryFunboxInterval = clearInterval(memoryFunboxInterval);
-    memoryFunboxTimer = Math.round(Math.pow(wordsList.length, 1.2));
-    memoryFunboxInterval = setInterval(() => {
-      memoryFunboxTimer -= 1;
-      Misc.showNotification(memoryFunboxTimer);
-      if (memoryFunboxTimer < 0) {
-        memoryFunboxInterval = clearInterval(memoryFunboxInterval);
-        memoryFunboxTimer = null;
-        $("#wordsWrapper").addClass("hidden");
-      }
-    }, 1000);
-
-    if (config.keymapMode === "next") {
-      setKeymapMode("react");
-    }
-  }
-});
 
 (function (history) {
   var pushState = history.pushState;
@@ -2081,11 +2067,11 @@ function showResult(difficultyFailed = false) {
   if (bailout) afkDetected = false;
 
   if (difficultyFailed) {
-    Misc.showNotification("Test failed", 2000);
+    Notifications.add("Test failed", 0);
   } else if (afkDetected) {
-    Misc.showNotification("Test invalid - AFK detected", 2000);
+    Notifications.add("Test invalid - AFK detected", 0);
   } else if (sameWordset) {
-    Misc.showNotification("Test invalid - repeated", 2000);
+    Notifications.add("Test invalid - repeated", 0);
   } else {
     let activeTags = [];
     let activeTagsIds = [];
@@ -2299,35 +2285,35 @@ function showResult(difficultyFailed = false) {
               .then((e) => {
                 accountIconLoading(false);
                 if (e.data == null) {
-                  Misc.showNotification(
-                    "Unexpected response from the server.",
-                    4000
+                  Notifications.add(
+                    "Unexpected response from the server: " + e.data,
+                    -1
                   );
                   return;
                 }
                 if (e.data.resultCode === -1) {
-                  Misc.showNotification("Could not save result", 3000);
+                  Notifications.add("Could not save result", -1);
                 } else if (e.data.resultCode === -2) {
-                  Misc.showNotification(
+                  Notifications.add(
                     "Possible bot detected. Result not saved.",
-                    4000
+                    -1
                   );
                 } else if (e.data.resultCode === -3) {
-                  Misc.showNotification(
+                  Notifications.add(
                     "Could not verify keypress stats. Result not saved.",
-                    4000
+                    -1
                   );
                 } else if (e.data.resultCode === -4) {
-                  Misc.showNotification(
+                  Notifications.add(
                     "Result data does not make sense. Result not saved.",
-                    4000
+                    -1
                   );
                 } else if (e.data.resultCode === -999) {
                   console.error("internal error: " + e.data.message);
-                  Misc.showNotification(
+                  Notifications.add(
                     "Internal error. Result might not be saved. " +
                       e.data.message,
-                    6000
+                    -1
                   );
                 } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                   completedEvent.id = e.data.createdId;
@@ -2500,7 +2486,7 @@ function showResult(difficultyFailed = false) {
                     // }).then((d) => {
                     //   if (d.data.returnCode === 1) {
                     //   } else {
-                    //     Misc.showNotification(
+                    //     Notifications.add(
                     //       `Error saving lb memory ${d.data.message}`,
                     //       4000
                     //     );
@@ -2552,7 +2538,7 @@ function showResult(difficultyFailed = false) {
                   } else if (e.data.resultCode === 1) {
                     hideCrown();
                     // if (localPb) {
-                    //   Misc.showNotification(
+                    //   Notifications.add(
                     //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
                     //     15000
                     //   );
@@ -2562,7 +2548,7 @@ function showResult(difficultyFailed = false) {
               })
               .catch((e) => {
                 console.error(e);
-                Misc.showNotification("Could not save result. " + e, 5000);
+                Notifications.add("Could not save result. " + e, -1);
               });
           });
         });
@@ -2575,7 +2561,7 @@ function showResult(difficultyFailed = false) {
         notSignedInLastResult = completedEvent;
       }
     } else {
-      Misc.showNotification("Test invalid", 3000);
+      Notifications.add("Test invalid", 0);
       testInvalid = true;
       try {
         firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
@@ -2776,23 +2762,23 @@ function startTest() {
           time == Math.floor(config.time / 3) - 3 ||
           time == (config.time / 3) * 2 - 3
         ) {
-          Misc.showNotification("3", 1000);
+          Notifications.add("3", 0, 1);
         }
         if (
           time == Math.floor(config.time / 3) - 2 ||
           time == Math.floor(config.time / 3) * 2 - 2
         ) {
-          Misc.showNotification("2", 1000);
+          Notifications.add("2", 0, 1);
         }
         if (
           time == Math.floor(config.time / 3) - 1 ||
           time == Math.floor(config.time / 3) * 2 - 1
         ) {
-          Misc.showNotification("1", 1000);
+          Notifications.add("1", 0, 1);
         }
 
         if (config.layout !== layouts[index] && layouts[index] !== undefined) {
-          Misc.showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+          Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
         }
         setLayout(layouts[index]);
         setKeymapLayout(layouts[index]);
@@ -2853,9 +2839,10 @@ function restartTest(withSameWordset = false, nosave = false) {
     ) {
     } else {
       if (testActive) {
-        Misc.showNotification(
+        Notifications.add(
           "Restart disabled for long tests. Use your mouse to confirm.",
-          4000
+          0,
+          4
         );
         return;
       }
@@ -2863,7 +2850,7 @@ function restartTest(withSameWordset = false, nosave = false) {
   }
 
   if (modeBeforePractise !== null && !withSameWordset) {
-    Misc.showNotification("Reverting to previous settings.", 1500);
+    Notifications.add("Reverting to previous settings.", 0);
     setMode(modeBeforePractise);
     setPunctuation(punctuationBeforePractise);
     setNumbers(numbersBeforePractise);
@@ -2971,6 +2958,28 @@ function restartTest(withSameWordset = false, nosave = false) {
       document.querySelector("#liveWpm").innerHTML = "0";
       document.querySelector("#liveAcc").innerHTML = "100%";
 
+      if (activeFunBox === "memory") {
+        memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+        memoryFunboxTimer = Math.round(Math.pow(wordsList.length, 1.2));
+        memoryFunboxInterval = setInterval(() => {
+          memoryFunboxTimer -= 1;
+          Notifications.add(
+            memoryFunboxTimer == 0 ? "Times up" : memoryFunboxTimer,
+            0,
+            1
+          );
+          if (memoryFunboxTimer <= 0) {
+            memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+            memoryFunboxTimer = null;
+            $("#wordsWrapper").addClass("hidden");
+          }
+        }, 1000);
+
+        if (config.keymapMode === "next") {
+          setKeymapMode("react");
+        }
+      }
+
       let mode2 = "";
       if (config.mode === "time") {
         mode2 = config.time;
@@ -3037,10 +3046,7 @@ function setCustomText() {
   customText = customText.replace(/ +/gm, " ");
   customText = customText.split(" ");
   if (customText.length >= 10000) {
-    Misc.showNotification(
-      "Custom text cannot be longer than 10000 words.",
-      4000
-    );
+    Notifications.add("Custom text cannot be longer than 10000 words.", 0);
     setMode("time");
     customText = "The quick brown fox jumped over the lazy dog".split(" ");
   }
@@ -3122,7 +3128,7 @@ function changePage(page) {
 
 function setMode(mode, nosave) {
   if (mode !== "words" && activeFunBox === "memory") {
-    Misc.showNotification("Memory funbox can only be used with words mode.");
+    Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
   }
 
@@ -3817,7 +3823,7 @@ function tagsEdit() {
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if (status === 1) {
-        Misc.showNotification("Tag added", 2000);
+        Notifications.add("Tag added", 1, 2);
         db_getSnapshot().tags.push({
           name: inputVal,
           id: e.data.id,
@@ -3826,9 +3832,9 @@ function tagsEdit() {
         updateSettingsPage();
         updateFilterTags();
       } else if (status === -1) {
-        Misc.showNotification("Invalid tag name", 3000);
+        Notifications.add("Invalid tag name", 0);
       } else if (status < -1) {
-        Misc.showNotification("Unknown error", 3000);
+        Notifications.add("Unknown error: " + e.data.message, -1);
       }
     });
   } else if (action === "edit") {
@@ -3841,7 +3847,7 @@ function tagsEdit() {
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if (status === 1) {
-        Misc.showNotification("Tag updated", 2000);
+        Notifications.add("Tag updated", 1);
         db_getSnapshot().tags.forEach((tag) => {
           if (tag.id === tagid) {
             tag.name = inputVal;
@@ -3851,9 +3857,9 @@ function tagsEdit() {
         updateSettingsPage();
         updateFilterTags();
       } else if (status === -1) {
-        Misc.showNotification("Invalid tag name", 3000);
+        Notifications.add("Invalid tag name", 0);
       } else if (status < -1) {
-        Misc.showNotification("Unknown error", 3000);
+        Notifications.add("Unknown error: " + e.data.message, -1);
       }
     });
   } else if (action === "remove") {
@@ -3865,7 +3871,7 @@ function tagsEdit() {
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if (status === 1) {
-        Misc.showNotification("Tag removed", 2000);
+        Notifications.add("Tag removed", 1);
         db_getSnapshot().tags.forEach((tag, index) => {
           if (tag.id === tagid) {
             db_getSnapshot().tags.splice(index, 1);
@@ -3875,7 +3881,7 @@ function tagsEdit() {
         updateSettingsPage();
         updateFilterTags();
       } else if (status < -1) {
-        Misc.showNotification("Unknown error", 3000);
+        Notifications.add("Unknown error: " + e.data.message, -1);
       }
     });
   }
@@ -4296,15 +4302,16 @@ function applyMode2Popup() {
       manualRestart = true;
       restartTest();
       if (val >= 1800) {
-        Misc.showNotification("Stay safe and take breaks!", 3000);
+        Notifications.add("Stay safe and take breaks!", 0);
       } else if (val == 0) {
-        Misc.showNotification(
+        Notifications.add(
           "Infinite time! Make sure to use Bail Out from the command line to save your result.",
-          5000
+          0,
+          7
         );
       }
     } else {
-      Misc.showNotification("Custom time must be at least 1", 3000);
+      Notifications.add("Custom time must be at least 1", 0);
     }
   } else if (mode == "words") {
     if (val !== null && !isNaN(val) && val >= 0) {
@@ -4312,15 +4319,16 @@ function applyMode2Popup() {
       manualRestart = true;
       restartTest();
       if (val > 2000) {
-        Misc.showNotification("Stay safe and take breaks!", 3000);
+        Notifications.add("Stay safe and take breaks!", 0);
       } else if (val == 0) {
-        Misc.showNotification(
+        Notifications.add(
           "Infinite words! Make sure to use Bail Out from the command line to save your result.",
-          5000
+          0,
+          7
         );
       }
     } else {
-      Misc.showNotification("Custom word amount must be at least 1", 3000);
+      Notifications.add("Custom word amount must be at least 1", 0);
     }
   }
 
@@ -4444,7 +4452,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
       if (resultCalculating) return;
       restartTest();
     } else {
-      Misc.showNotification("Quick restart disabled for long tests", 2000);
+      Notifications.add("Quick restart disabled for long tests", 0);
     }
   }
 });
@@ -4488,7 +4496,7 @@ $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
     if (Object.keys(missedWords).length > 0) {
       initPractiseMissedWords();
     } else {
-      Misc.showNotification("You haven't missed any words.", 2000);
+      Notifications.add("You haven't missed any words.", 0);
     }
   }
 });
@@ -4497,7 +4505,7 @@ $(document.body).on("click", "#practiseMissedWordsButton", () => {
   if (Object.keys(missedWords).length > 0) {
     initPractiseMissedWords();
   } else {
-    Misc.showNotification("You haven't missed any words.", 2000);
+    Notifications.add("You haven't missed any words.", 0);
   }
 });
 
@@ -4818,7 +4826,7 @@ function handleTab(event) {
         }
         restartTest();
       } else {
-        Misc.showNotification("Quick restart disabled for long tests", 2000);
+        Notifications.add("Quick restart disabled for long tests", 0);
       }
     } else {
       changePage("test");
@@ -4915,7 +4923,7 @@ function handleSpace(event, isEnter) {
     let outof = wordsList.length;
     index = Math.floor((inputHistory.length + 1) / (outof / 3));
     if (config.layout !== layouts[index] && layouts[index] !== undefined) {
-      Misc.showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+      Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
     }
     setLayout(layouts[index]);
     setKeymapLayout(layouts[index]);
@@ -5394,7 +5402,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
 
 if (window.location.hostname === "localhost") {
   window.onerror = function (error) {
-    Misc.showNotification(error, 3000);
+    Notifications.add(error, -1);
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
@@ -5496,9 +5504,10 @@ $(".merchBanner a").click((event) => {
 $(".merchBanner .fas").click((event) => {
   $(".merchBanner").remove();
   Misc.setCookie("merchbannerclosed", true, 365);
-  Misc.showNotification(
-    "Won't remind you anymore :) Thanks for continued support <3",
-    2500
+  Notifications.add(
+    "Won't remind you anymore. Thanks for continued support <3",
+    0,
+    5
   );
 });
 
@@ -5507,9 +5516,9 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
     await navigator.clipboard.writeText(
       wordsList.slice(0, inputHistory.length).join(" ")
     );
-    Misc.showNotification("Copied to clipboard", 1000);
+    Notifications.add("Copied to clipboard", 0, 2);
   } catch (e) {
-    Misc.showNotification("Could not copy to clipboard: " + e, 5000);
+    Notifications.add("Could not copy to clipboard: " + e, -1);
   }
 });
 
@@ -5585,15 +5594,13 @@ async function setupChallenge(challengeName) {
     restartTest(false, true);
     notitext = challenge.message;
     if (notitext === undefined) {
-      Misc.showNotification(`Challenge '${challengeName}' loaded.`, 3000);
+      Notifications.add(`Challenge '${challengeName}' loaded.`, 0);
     } else {
-      Misc.showNotification("Challenge loaded. " + notitext, 5000);
+      Notifications.add("Challenge loaded. " + notitext, 0);
     }
   } catch (e) {
-    Misc.showNotification("Something went wrong: " + e, 5000);
-    console.log(e);
+    Notifications.add("Something went wrong: " + e, -1);
   }
-  // Misc.showNotification("Challenge loaded", 2000);
 }
 
 let ctx = $("#wpmChart");

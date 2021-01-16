@@ -1477,12 +1477,12 @@ exports.addTag = functions.https.onCall((request, response) => {
           console.error(
             `error while creating tag for user ${request.uid}: ${e.message}`
           );
-          return { resultCode: -999 };
+          return { resultCode: -999, message: e.message };
         });
     }
   } catch (e) {
     console.error(`error adding tag for ${request.uid} - ${e}`);
-    return { resultCode: -999 };
+    return { resultCode: -999, message: e.message };
   }
 });
 
@@ -1507,12 +1507,12 @@ exports.editTag = functions.https.onCall((request, response) => {
           console.error(
             `error while updating tag for user ${request.uid}: ${e.message}`
           );
-          return { resultCode: -999 };
+          return { resultCode: -999, message: e.message };
         });
     }
   } catch (e) {
     console.error(`error updating tag for ${request.uid} - ${e}`);
-    return { resultCode: -999 };
+    return { resultCode: -999, message: e.message };
   }
 });
 
@@ -1573,7 +1573,7 @@ exports.updateResultTags = functions.https.onCall((request, response) => {
     }
   } catch (e) {
     console.error(`error updating tags by ${request.uid} - ${e}`);
-    return { resultCode: -999 };
+    return { resultCode: -999, message: e };
   }
 });
 

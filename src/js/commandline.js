@@ -880,7 +880,7 @@ let commandsEnableAds = {
       display: "off",
       exec: () => {
         setEnableAds("off");
-        Misc.showNotification("Don't forget to refresh the page!", 3000);
+        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -888,7 +888,7 @@ let commandsEnableAds = {
       display: "on",
       exec: () => {
         setEnableAds("on");
-        Misc.showNotification("Don't forget to refresh the page!", 3000);
+        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -896,7 +896,7 @@ let commandsEnableAds = {
       display: "Sellout",
       exec: () => {
         setEnableAds("max");
-        Misc.showNotification("Don't forget to refresh the page!", 3000);
+        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
   ],
