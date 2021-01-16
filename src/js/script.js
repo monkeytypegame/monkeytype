@@ -539,6 +539,15 @@ async function initWords() {
         wordsBound = customText.length;
       }
     }
+
+    if (
+      config.mode === "custom" &&
+      customTextIsRandom &&
+      customTextWordCount == 0
+    ) {
+      wordsBound = 100;
+    }
+
     if (config.mode === "words" && config.words === 0) {
       wordsBound = 100;
     }
@@ -875,7 +884,8 @@ function addWord() {
       config.words > 0) ||
     (config.mode === "custom" &&
       customTextIsRandom &&
-      wordsList.length >= customTextWordCount) ||
+      wordsList.length >= customTextWordCount &&
+      customTextWordCount != 0) ||
     (config.mode === "custom" &&
       !customTextIsRandom &&
       wordsList.length >= customText.length)
@@ -979,7 +989,11 @@ function showWords() {
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word")).outerHeight(true);
   const wordsHeight = $(document.querySelector("#words")).outerHeight(true);
-  if (config.showAllLines && config.mode != "time") {
+  if (
+    config.showAllLines &&
+    config.mode != "time" &&
+    !(customTextIsRandom && customTextWordCount == 0)
+  ) {
     $("#words").css("height", "auto");
     $("#wordsWrapper").css("height", "auto");
     let nh = wordHeight * 3;
@@ -2832,7 +2846,8 @@ function restartTest(withSameWordset = false, nosave = false) {
       config.mode === "quote" ||
       (config.mode === "custom" &&
         customTextIsRandom &&
-        customTextWordCount < 1000) ||
+        customTextWordCount < 1000 &&
+        customTextWordCount != 0) ||
       (config.mode === "custom" &&
         !customTextIsRandom &&
         customText.length < 1000)
@@ -3977,6 +3992,12 @@ $("#customTextPopup .button").click(() => {
   customText = text;
   customTextIsRandom = $("#customTextPopup .check input").prop("checked");
   customTextWordCount = $("#customTextPopup .wordcount input").val();
+  if (customTextWordCount == 0)
+    Notifications.add(
+      "Infinite words! Make sure to use Bail Out from the command line to save your result.",
+      0,
+      7
+    );
   manualRestart = true;
   restartTest();
   hideCustomTextPopup();
@@ -5019,7 +5040,11 @@ function handleSpace(event, isEnter) {
   correctedHistory.push(currentCorrected);
   currentCorrected = "";
 
-  if (!config.showAllLines || config.mode == "time") {
+  if (
+    !config.showAllLines ||
+    config.mode == "time" ||
+    (customTextIsRandom && customTextWordCount == 0)
+  ) {
     let currentTop = Math.floor(
       document.querySelectorAll("#words .word")[currentWordElementIndex - 1]
         .offsetTop
