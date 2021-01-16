@@ -202,9 +202,17 @@ function initClickSounds() {
   };
 }
 
-let customText = "The quick brown fox jumps over the lazy dog".split(" ");
-let customTextIsRandom = false;
-let customTextWordCount = 1;
+let customText = {
+  text: "The quick brown fox jumps over the lazy dog".split(" "),
+  isWordRandom: false,
+  isTimeRandom: false,
+  word: "",
+  time: "",
+};
+
+// let customText = "The quick brown fox jumps over the lazy dog".split(" ");
+// let customText.isWordRandom = false;
+// let customText.word = 1;
 let randomQuote = null;
 
 function refreshThemeColorObject() {
@@ -259,7 +267,7 @@ function copyResultToClipboard() {
             ])
             .then((f) => {
               $(".notification").removeClass("hidden");
-              Misc.showNotification("Copied to clipboard", 1000);
+              Notifications.add("Copied to clipboard", 1, 2);
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
               if (firebase.auth().currentUser == null)
@@ -268,7 +276,10 @@ function copyResultToClipboard() {
             .catch((f) => {
               open(URL.createObjectURL(blob));
               $(".notification").removeClass("hidden");
-              Misc.showNotification("Error saving image to clipboard", 2000);
+              Notifications.add(
+                "Error saving image to clipboard: " + f.message,
+                -1
+              );
               $(".pageTest .ssWatermark").addClass("hidden");
               $(".pageTest .buttons").removeClass("hidden");
               if (firebase.auth().currentUser == null)
@@ -277,7 +288,10 @@ function copyResultToClipboard() {
         } catch (e) {
           open(URL.createObjectURL(blob));
           $(".notification").removeClass("hidden");
-          Misc.showNotification("Error saving image to clipboard", 2000);
+          Notifications.add(
+            "Error saving image to clipboard: " + e.message,
+            -1
+          );
           $(".pageTest .ssWatermark").addClass("hidden");
           $(".pageTest .buttons").removeClass("hidden");
           if (firebase.auth().currentUser == null)
@@ -287,7 +301,7 @@ function copyResultToClipboard() {
     });
   } catch (e) {
     $(".notification").removeClass("hidden");
-    Misc.showNotification("Error creating image", 2000);
+    Notifications.add("Error creating image: " + e.message, -1);
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .buttons").removeClass("hidden");
     if (firebase.auth().currentUser == null)
@@ -297,17 +311,17 @@ function copyResultToClipboard() {
 
 async function activateFunbox(funbox, mode) {
   if (testActive || resultVisible) {
-    Misc.showNotification(
+    Notifications.add(
       "You can only change the funbox before starting a test.",
-      4000
+      0
     );
     return false;
   }
   if (Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
-      Misc.showNotification(
+      Notifications.add(
         "Current language does not support this funbox mode",
-        3000
+        0
       );
       activateFunbox("none", null);
       return;
@@ -473,20 +487,20 @@ async function initWords() {
           quotes.quotes = [];
         } catch (e) {
           console.error(e);
-          Misc.showNotification(
+          Notifications.add(
             `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
-            3000
+            0
           );
           return;
         }
       },
       error: (e) => {
-        Misc.showNotification(
+        Notifications.add(
           `Error while loading ${config.language.replace(
             /_\d*k$/g,
             ""
           )} quotes: ${e}`,
-          5000
+          -1
         );
         return;
       },
@@ -506,10 +520,12 @@ async function initWords() {
     let wordsBound = 100;
     if (config.showAllLines) {
       if (config.mode === "custom") {
-        if (customTextIsRandom) {
-          wordsBound = customTextWordCount;
+        if (customText.isWordRandom) {
+          wordsBound = customText.word;
+        } else if (customText.isTimeRandom) {
+          wordsBound = 100;
         } else {
-          wordsBound = customText.length;
+          wordsBound = customText.text.length;
         }
       } else if (config.mode != "time") {
         wordsBound = config.words;
@@ -520,19 +536,38 @@ async function initWords() {
       }
       if (
         config.mode == "custom" &&
-        customTextIsRandom &&
-        customTextWordCount < wordsBound
+        customText.isWordRandom &&
+        customText.word < wordsBound
       ) {
-        wordsBound = customTextWordCount;
+        wordsBound = customText.word;
       }
       if (
         config.mode == "custom" &&
-        !customTextIsRandom &&
-        customText.length < wordsBound
+        customText.isTimeRandom &&
+        customText.time < wordsBound
       ) {
-        wordsBound = customText.length;
+        wordsBound = 100;
+      }
+      if (
+        config.mode == "custom" &&
+        !customText.isWordRandom &&
+        customText.text.length < wordsBound
+      ) {
+        wordsBound = customText.text.length;
       }
     }
+
+    if (
+      (config.mode === "custom" &&
+        customText.isWordRandom &&
+        customText.word == 0) ||
+      (config.mode === "custom" &&
+        customText.isTimeRandom &&
+        customText.time == 0)
+    ) {
+      wordsBound = 100;
+    }
+
     if (config.mode === "words" && config.words === 0) {
       wordsBound = 100;
     }
@@ -541,16 +576,19 @@ async function initWords() {
     }
     let wordset = language.words;
     if (config.mode == "custom") {
-      wordset = customText;
+      wordset = customText.text;
     }
     for (let i = 0; i < wordsBound; i++) {
       let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
       const previousWord = wordsList[i - 1];
       const previousWord2 = wordsList[i - 2];
-      if (config.mode == "custom" && customTextIsRandom) {
+      if (
+        config.mode == "custom" &&
+        (customText.isWordRandom || customText.isTimeRandom)
+      ) {
         randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-      } else if (config.mode == "custom" && !customTextIsRandom) {
-        randomWord = customText[i];
+      } else if (config.mode == "custom" && !customText.isWordRandom) {
+        randomWord = customText.text[i];
       } else {
         while (
           randomWord == previousWord ||
@@ -585,10 +623,10 @@ async function initWords() {
         randomWord = Misc.getASCII();
       }
 
-      if (config.punctuation && config.mode != "custom") {
+      if (config.punctuation) {
         randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
       }
-      if (config.numbers && config.mode != "custom") {
+      if (config.numbers) {
         if (Math.random() < 0.1) {
           randomWord = Misc.getNumbers(4);
         }
@@ -868,11 +906,12 @@ function addWord() {
       wordsList.length >= config.words &&
       config.words > 0) ||
     (config.mode === "custom" &&
-      customTextIsRandom &&
-      wordsList.length >= customTextWordCount) ||
+      customText.isWordRandom &&
+      wordsList.length >= customText.word &&
+      customText.word != 0) ||
     (config.mode === "custom" &&
-      !customTextIsRandom &&
-      wordsList.length >= customText.length)
+      !customText.isWordRandom &&
+      wordsList.length >= customText.text.length)
   )
     return;
   const language =
@@ -881,7 +920,7 @@ function addWord() {
       : {
           //borrow the direction of the current language
           leftToRight: Misc.getCurrentLanguage().leftToRight,
-          words: customText,
+          words: customText.text,
         };
   const wordset = language.words;
   let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
@@ -893,10 +932,14 @@ function addWord() {
     .replace(/[.?!":\-,]/g, "")
     .toLowerCase();
 
-  if (config.mode === "custom" && customTextIsRandom && wordset.length < 3) {
+  if (
+    config.mode === "custom" &&
+    customText.isWordRandom &&
+    wordset.length < 3
+  ) {
     randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  } else if (config.mode == "custom" && !customTextIsRandom) {
-    randomWord = customText[wordsList.length];
+  } else if (config.mode == "custom" && !customText.isWordRandom) {
+    randomWord = customText.text[wordsList.length];
   } else {
     while (
       previousWordStripped == randomWord ||
@@ -973,7 +1016,12 @@ function showWords() {
   $("#wordsWrapper").removeClass("hidden");
   const wordHeight = $(document.querySelector(".word")).outerHeight(true);
   const wordsHeight = $(document.querySelector("#words")).outerHeight(true);
-  if (config.showAllLines && config.mode != "time") {
+  if (
+    config.showAllLines &&
+    config.mode != "time" &&
+    !(customText.isWordRandom && customText.word == 0) &&
+    !customText.isTimeRandom
+  ) {
     $("#words").css("height", "auto");
     $("#wordsWrapper").css("height", "auto");
     let nh = wordHeight * 3;
@@ -999,26 +1047,6 @@ function showWords() {
   updateActiveElement();
   updateCaretPosition();
 }
-
-$("#restartTestButton, #startTestButton").on("click", function () {
-  if (activeFunBox === "memory") {
-    memoryFunboxInterval = clearInterval(memoryFunboxInterval);
-    memoryFunboxTimer = Math.round(Math.pow(wordsList.length, 1.2));
-    memoryFunboxInterval = setInterval(() => {
-      memoryFunboxTimer -= 1;
-      Misc.showNotification(memoryFunboxTimer);
-      if (memoryFunboxTimer < 0) {
-        memoryFunboxInterval = clearInterval(memoryFunboxInterval);
-        memoryFunboxTimer = null;
-        $("#wordsWrapper").addClass("hidden");
-      }
-    }, 1000);
-
-    if (config.keymapMode === "next") {
-      setKeymapMode("react");
-    }
-  }
-});
 
 (function (history) {
   var pushState = history.pushState;
@@ -1262,9 +1290,16 @@ function restartTimer() {
 
 function updateTimer() {
   if (!config.showTimerProgress) return;
-  if (config.mode === "time") {
+  if (
+    config.mode === "time" ||
+    (config.mode === "custom" && customText.isTimeRandom)
+  ) {
+    let maxtime = config.time;
+    if (config.mode === "custom" && customText.isTimeRandom) {
+      maxtime = customText.time;
+    }
     if (config.timerStyle === "bar") {
-      let percent = 100 - ((time + 1) / config.time) * 100;
+      let percent = 100 - ((time + 1) / maxtime) * 100;
       $("#timer")
         .stop(true, true)
         .animate(
@@ -1275,14 +1310,14 @@ function updateTimer() {
           "linear"
         );
     } else if (config.timerStyle === "text") {
-      let displayTime = Misc.secondsToString(config.time - time);
-      if (config.time === 0) {
+      let displayTime = Misc.secondsToString(maxtime - time);
+      if (maxtime === 0) {
         displayTime = Misc.secondsToString(time);
       }
       $("#timerNumber").html("<div>" + displayTime + "</div>");
     } else if (config.timerStyle === "mini") {
-      let displayTime = Misc.secondsToString(config.time - time);
-      if (config.time === 0) {
+      let displayTime = Misc.secondsToString(maxtime - time);
+      if (maxtime === 0) {
         displayTime = Misc.secondsToString(time);
       }
       $("#miniTimerAndLiveWpm .time").html(displayTime);
@@ -1298,10 +1333,10 @@ function updateTimer() {
         outof = config.words;
       }
       if (config.mode === "custom") {
-        if (customTextIsRandom) {
-          outof = customTextWordCount;
+        if (customText.isWordRandom) {
+          outof = customText.word;
         } else {
-          outof = customText.length;
+          outof = customText.text.length;
         }
       }
       let percent = Math.floor(((currentWordIndex + 1) / outof) * 100);
@@ -1319,13 +1354,13 @@ function updateTimer() {
         outof = config.words;
       }
       if (config.mode === "custom") {
-        if (customTextIsRandom) {
-          outof = customTextWordCount;
+        if (customText.isWordRandom) {
+          outof = customText.word;
         } else {
-          outof = customText.length;
+          outof = customText.text.length;
         }
       }
-      if (config.words === 0) {
+      if (outof === 0) {
         $("#timerNumber").html("<div>" + `${inputHistory.length}` + "</div>");
       } else {
         $("#timerNumber").html(
@@ -1338,10 +1373,10 @@ function updateTimer() {
         outof = config.words;
       }
       if (config.mode === "custom") {
-        if (customTextIsRandom) {
-          outof = customTextWordCount;
+        if (customText.isWordRandom) {
+          outof = customText.word;
         } else {
-          outof = customText.length;
+          outof = customText.text.length;
         }
       }
       if (config.words === 0) {
@@ -2081,11 +2116,11 @@ function showResult(difficultyFailed = false) {
   if (bailout) afkDetected = false;
 
   if (difficultyFailed) {
-    Misc.showNotification("Test failed", 2000);
+    Notifications.add("Test failed", 0);
   } else if (afkDetected) {
-    Misc.showNotification("Test invalid - AFK detected", 2000);
+    Notifications.add("Test invalid - AFK detected", 0);
   } else if (sameWordset) {
-    Misc.showNotification("Test invalid - repeated", 2000);
+    Notifications.add("Test invalid - repeated", 0);
   } else {
     let activeTags = [];
     let activeTagsIds = [];
@@ -2299,35 +2334,35 @@ function showResult(difficultyFailed = false) {
               .then((e) => {
                 accountIconLoading(false);
                 if (e.data == null) {
-                  Misc.showNotification(
-                    "Unexpected response from the server.",
-                    4000
+                  Notifications.add(
+                    "Unexpected response from the server: " + e.data,
+                    -1
                   );
                   return;
                 }
                 if (e.data.resultCode === -1) {
-                  Misc.showNotification("Could not save result", 3000);
+                  Notifications.add("Could not save result", -1);
                 } else if (e.data.resultCode === -2) {
-                  Misc.showNotification(
+                  Notifications.add(
                     "Possible bot detected. Result not saved.",
-                    4000
+                    -1
                   );
                 } else if (e.data.resultCode === -3) {
-                  Misc.showNotification(
+                  Notifications.add(
                     "Could not verify keypress stats. Result not saved.",
-                    4000
+                    -1
                   );
                 } else if (e.data.resultCode === -4) {
-                  Misc.showNotification(
+                  Notifications.add(
                     "Result data does not make sense. Result not saved.",
-                    4000
+                    -1
                   );
                 } else if (e.data.resultCode === -999) {
                   console.error("internal error: " + e.data.message);
-                  Misc.showNotification(
+                  Notifications.add(
                     "Internal error. Result might not be saved. " +
                       e.data.message,
-                    6000
+                    -1
                   );
                 } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                   completedEvent.id = e.data.createdId;
@@ -2500,7 +2535,7 @@ function showResult(difficultyFailed = false) {
                     // }).then((d) => {
                     //   if (d.data.returnCode === 1) {
                     //   } else {
-                    //     Misc.showNotification(
+                    //     Notifications.add(
                     //       `Error saving lb memory ${d.data.message}`,
                     //       4000
                     //     );
@@ -2552,7 +2587,7 @@ function showResult(difficultyFailed = false) {
                   } else if (e.data.resultCode === 1) {
                     hideCrown();
                     // if (localPb) {
-                    //   Misc.showNotification(
+                    //   Notifications.add(
                     //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
                     //     15000
                     //   );
@@ -2562,7 +2597,7 @@ function showResult(difficultyFailed = false) {
               })
               .catch((e) => {
                 console.error(e);
-                Misc.showNotification("Could not save result. " + e, 5000);
+                Notifications.add("Could not save result. " + e, -1);
               });
           });
         });
@@ -2575,7 +2610,7 @@ function showResult(difficultyFailed = false) {
         notSignedInLastResult = completedEvent;
       }
     } else {
-      Misc.showNotification("Test invalid", 3000);
+      Notifications.add("Test invalid", 0);
       testInvalid = true;
       try {
         firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
@@ -2753,7 +2788,10 @@ function startTest() {
     timer = setTimeout(function () {
       time++;
       $(".pageTest #premidSecondsLeft").text(config.time - time);
-      if (config.mode === "time") {
+      if (
+        config.mode === "time" ||
+        (config.mode === "custom" && customText.isTimeRandom)
+      ) {
         updateTimer();
       }
       let wpmAndRaw = liveWpmAndRaw();
@@ -2776,23 +2814,23 @@ function startTest() {
           time == Math.floor(config.time / 3) - 3 ||
           time == (config.time / 3) * 2 - 3
         ) {
-          Misc.showNotification("3", 1000);
+          Notifications.add("3", 0, 1);
         }
         if (
           time == Math.floor(config.time / 3) - 2 ||
           time == Math.floor(config.time / 3) * 2 - 2
         ) {
-          Misc.showNotification("2", 1000);
+          Notifications.add("2", 0, 1);
         }
         if (
           time == Math.floor(config.time / 3) - 1 ||
           time == Math.floor(config.time / 3) * 2 - 1
         ) {
-          Misc.showNotification("1", 1000);
+          Notifications.add("1", 0, 1);
         }
 
         if (config.layout !== layouts[index] && layouts[index] !== undefined) {
-          Misc.showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+          Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
         }
         setLayout(layouts[index]);
         setKeymapLayout(layouts[index]);
@@ -2821,8 +2859,18 @@ function startTest() {
         failTest();
         return;
       }
-      if (config.mode == "time") {
-        if (time >= config.time && config.time !== 0) {
+      if (
+        config.mode == "time" ||
+        (config.mode === "custom" && customText.isTimeRandom)
+      ) {
+        if (
+          (time >= config.time &&
+            config.time !== 0 &&
+            config.mode === "time") ||
+          (time >= customText.time &&
+            customText.time !== 0 &&
+            config.mode === "custom")
+        ) {
           //times up
           clearTimeout(timer);
           hideCaret();
@@ -2845,17 +2893,22 @@ function restartTest(withSameWordset = false, nosave = false) {
       (config.mode === "time" && config.time < 3600 && config.time > 0) ||
       config.mode === "quote" ||
       (config.mode === "custom" &&
-        customTextIsRandom &&
-        customTextWordCount < 1000) ||
+        customText.isWordRandom &&
+        customText.word < 1000 &&
+        customText.word != 0) ||
       (config.mode === "custom" &&
-        !customTextIsRandom &&
-        customText.length < 1000)
+        customText.isTimeRandom &&
+        customText.time < 3600 &&
+        customText.time != 0) ||
+      (config.mode === "custom" &&
+        !customText.isWordRandom &&
+        customText.text.length < 1000)
     ) {
     } else {
       if (testActive) {
-        Misc.showNotification(
+        Notifications.add(
           "Restart disabled for long tests. Use your mouse to confirm.",
-          4000
+          0
         );
         return;
       }
@@ -2863,7 +2916,7 @@ function restartTest(withSameWordset = false, nosave = false) {
   }
 
   if (modeBeforePractise !== null && !withSameWordset) {
-    Misc.showNotification("Reverting to previous settings.", 1500);
+    Notifications.add("Reverting to previous settings.", 0);
     setMode(modeBeforePractise);
     setPunctuation(punctuationBeforePractise);
     setNumbers(numbersBeforePractise);
@@ -2971,6 +3024,28 @@ function restartTest(withSameWordset = false, nosave = false) {
       document.querySelector("#liveWpm").innerHTML = "0";
       document.querySelector("#liveAcc").innerHTML = "100%";
 
+      if (activeFunBox === "memory") {
+        memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+        memoryFunboxTimer = Math.round(Math.pow(wordsList.length, 1.2));
+        memoryFunboxInterval = setInterval(() => {
+          memoryFunboxTimer -= 1;
+          Notifications.add(
+            memoryFunboxTimer == 0 ? "Times up" : memoryFunboxTimer,
+            0,
+            1
+          );
+          if (memoryFunboxTimer <= 0) {
+            memoryFunboxInterval = clearInterval(memoryFunboxInterval);
+            memoryFunboxTimer = null;
+            $("#wordsWrapper").addClass("hidden");
+          }
+        }, 1000);
+
+        if (config.keymapMode === "next") {
+          setKeymapMode("react");
+        }
+      }
+
       let mode2 = "";
       if (config.mode === "time") {
         mode2 = config.time;
@@ -3032,17 +3107,14 @@ function focusWords() {
 }
 
 function setCustomText() {
-  customText = prompt("Custom text").trim();
-  customText = customText.replace(/[\n\r\t ]/gm, " ");
-  customText = customText.replace(/ +/gm, " ");
-  customText = customText.split(" ");
-  if (customText.length >= 10000) {
-    Misc.showNotification(
-      "Custom text cannot be longer than 10000 words.",
-      4000
-    );
+  customText.text = prompt("Custom text").trim();
+  customText.text = customText.text.replace(/[\n\r\t ]/gm, " ");
+  customText.text = customText.text.replace(/ +/gm, " ");
+  customText.text = customText.text.split(" ");
+  if (customText.text.text.length >= 10000) {
+    Notifications.add("Custom text cannot be longer than 10000 words.", 0);
     setMode("time");
-    customText = "The quick brown fox jumped over the lazy dog".split(" ");
+    customText.text = "The quick brown fox jumped over the lazy dog".split(" ");
   }
 }
 
@@ -3122,7 +3194,7 @@ function changePage(page) {
 
 function setMode(mode, nosave) {
   if (mode !== "words" && activeFunBox === "memory") {
-    Misc.showNotification("Memory funbox can only be used with words mode.");
+    Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
   }
 
@@ -3155,8 +3227,8 @@ function setMode(mode, nosave) {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").removeClass("hidden");
-    $("#top .config .punctuationMode").addClass("hidden");
-    $("#top .config .numbersMode").addClass("hidden");
+    $("#top .config .punctuationMode").removeClass("hidden");
+    $("#top .config .numbersMode").removeClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
     setPunctuation(false, true);
     setNumbers(false, true);
@@ -3817,7 +3889,7 @@ function tagsEdit() {
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if (status === 1) {
-        Misc.showNotification("Tag added", 2000);
+        Notifications.add("Tag added", 1, 2);
         db_getSnapshot().tags.push({
           name: inputVal,
           id: e.data.id,
@@ -3826,9 +3898,9 @@ function tagsEdit() {
         updateSettingsPage();
         updateFilterTags();
       } else if (status === -1) {
-        Misc.showNotification("Invalid tag name", 3000);
+        Notifications.add("Invalid tag name", 0);
       } else if (status < -1) {
-        Misc.showNotification("Unknown error", 3000);
+        Notifications.add("Unknown error: " + e.data.message, -1);
       }
     });
   } else if (action === "edit") {
@@ -3841,7 +3913,7 @@ function tagsEdit() {
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if (status === 1) {
-        Misc.showNotification("Tag updated", 2000);
+        Notifications.add("Tag updated", 1);
         db_getSnapshot().tags.forEach((tag) => {
           if (tag.id === tagid) {
             tag.name = inputVal;
@@ -3851,9 +3923,9 @@ function tagsEdit() {
         updateSettingsPage();
         updateFilterTags();
       } else if (status === -1) {
-        Misc.showNotification("Invalid tag name", 3000);
+        Notifications.add("Invalid tag name", 0);
       } else if (status < -1) {
-        Misc.showNotification("Unknown error", 3000);
+        Notifications.add("Unknown error: " + e.data.message, -1);
       }
     });
   } else if (action === "remove") {
@@ -3865,7 +3937,7 @@ function tagsEdit() {
       hideBackgroundLoader();
       let status = e.data.resultCode;
       if (status === 1) {
-        Misc.showNotification("Tag removed", 2000);
+        Notifications.add("Tag removed", 1);
         db_getSnapshot().tags.forEach((tag, index) => {
           if (tag.id === tagid) {
             db_getSnapshot().tags.splice(index, 1);
@@ -3875,7 +3947,7 @@ function tagsEdit() {
         updateSettingsPage();
         updateFilterTags();
       } else if (status < -1) {
-        Misc.showNotification("Unknown error", 3000);
+        Notifications.add("Unknown error: " + e.data.message, -1);
       }
     });
   }
@@ -3896,19 +3968,20 @@ function hideCapsWarning() {
 function showCustomTextPopup() {
   if ($("#customTextPopupWrapper").hasClass("hidden")) {
     if ($("#customTextPopup .check input").prop("checked")) {
-      $("#customTextPopup .inputs .wordcount").removeClass("hidden");
+      $("#customTextPopup .inputs .randomInputFields").removeClass("hidden");
     } else {
-      $("#customTextPopup .inputs .wordcount").addClass("hidden");
+      $("#customTextPopup .inputs .randomInputFields").addClass("hidden");
     }
     $("#customTextPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        let newtext = customText.join(" ");
+        let newtext = customText.text.join(" ");
         newtext = newtext.replace(/\n /g, "\n");
         $("#customTextPopup textarea").val(newtext);
-        $("#customTextPopup .wordcount input").val(customTextWordCount);
+        $("#customTextPopup .wordcount input").val(customText.word);
+        $("#customTextPopup .time input").val(customText.time);
         $("#customTextPopup textarea").focus();
       });
   }
@@ -3939,9 +4012,9 @@ $("#customTextPopupWrapper").mousedown((e) => {
 
 $("#customTextPopup .inputs .check input").change(() => {
   if ($("#customTextPopup .check input").prop("checked")) {
-    $("#customTextPopup .inputs .wordcount").removeClass("hidden");
+    $("#customTextPopup .inputs .randomInputFields").removeClass("hidden");
   } else {
-    $("#customTextPopup .inputs .wordcount").addClass("hidden");
+    $("#customTextPopup .inputs .randomInputFields").addClass("hidden");
   }
 });
 
@@ -3951,11 +4024,20 @@ $("#customTextPopup textarea").keypress((e) => {
   }
 });
 
+$("#customTextPopup .randomInputFields .wordcount input").keypress((e) => {
+  $("#customTextPopup .randomInputFields .time input").val("");
+});
+
+$("#customTextPopup .randomInputFields .time input").keypress((e) => {
+  $("#customTextPopup .randomInputFields .wordcount input").val("");
+});
+
 $("#customTextPopup .button").click(() => {
   let text = $("#customTextPopup textarea").val();
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
-  text = text.replace(/\t/gm, "\t");
+  text = text.replace(/\\\\t/gm, "\t");
+  text = text.replace(/\\\\n/gm, "\n");
   text = text.replace(/ +/gm, " ");
   // text = text.replace(/(\r\n)+/g, "\r\n");
   // text = text.replace(/(\n)+/g, "\n");
@@ -3967,9 +4049,46 @@ $("#customTextPopup .button").click(() => {
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
   text = text.split(" ");
-  customText = text;
-  customTextIsRandom = $("#customTextPopup .check input").prop("checked");
-  customTextWordCount = $("#customTextPopup .wordcount input").val();
+  customText.text = text;
+  customText.word = parseInt($("#customTextPopup .wordcount input").val());
+  customText.time = parseInt($("#customTextPopup .time input").val());
+
+  customText.isWordRandom =
+    $("#customTextPopup .check input").prop("checked") &&
+    !isNaN(customText.word);
+  customText.isTimeRandom =
+    $("#customTextPopup .check input").prop("checked") &&
+    !isNaN(customText.time);
+
+  if (isNaN(customText.word) && isNaN(customText.time)) {
+    Notifications.add(
+      "You need to specify word count or time in seconds to start a random custom test.",
+      0,
+      5
+    );
+    return;
+  }
+
+  if (!isNaN(customText.word) && !isNaN(customText.time)) {
+    Notifications.add(
+      "You need to pick between word count or time in seconds to start a random custom test.",
+      0,
+      5
+    );
+    return;
+  }
+
+  if (
+    (customText.isWordRandom && parseInt(customText.word) === 0) ||
+    (customText.isTimeRandom && parseInt(customText.time) === 0)
+  ) {
+    Notifications.add(
+      "Infinite words! Make sure to use Bail Out from the command line to save your result.",
+      0,
+      7
+    );
+  }
+
   manualRestart = true;
   restartTest();
   hideCustomTextPopup();
@@ -4295,15 +4414,16 @@ function applyMode2Popup() {
       manualRestart = true;
       restartTest();
       if (val >= 1800) {
-        Misc.showNotification("Stay safe and take breaks!", 3000);
+        Notifications.add("Stay safe and take breaks!", 0);
       } else if (val == 0) {
-        Misc.showNotification(
+        Notifications.add(
           "Infinite time! Make sure to use Bail Out from the command line to save your result.",
-          5000
+          0,
+          7
         );
       }
     } else {
-      Misc.showNotification("Custom time must be at least 1", 3000);
+      Notifications.add("Custom time must be at least 1", 0);
     }
   } else if (mode == "words") {
     if (val !== null && !isNaN(val) && val >= 0) {
@@ -4311,15 +4431,16 @@ function applyMode2Popup() {
       manualRestart = true;
       restartTest();
       if (val > 2000) {
-        Misc.showNotification("Stay safe and take breaks!", 3000);
+        Notifications.add("Stay safe and take breaks!", 0);
       } else if (val == 0) {
-        Misc.showNotification(
+        Notifications.add(
           "Infinite words! Make sure to use Bail Out from the command line to save your result.",
-          5000
+          0,
+          7
         );
       }
     } else {
-      Misc.showNotification("Custom word amount must be at least 1", 3000);
+      Notifications.add("Custom word amount must be at least 1", 0);
     }
   }
 
@@ -4425,11 +4546,14 @@ $(document).on("keypress", "#restartTestButton", (event) => {
       (config.mode === "time" && config.time < 3600) ||
       config.mode === "quote" ||
       (config.mode === "custom" &&
-        customTextIsRandom &&
-        customTextWordCount < 1000) ||
+        customText.isWordRandom &&
+        customText.word < 1000) ||
       (config.mode === "custom" &&
-        !customTextIsRandom &&
-        customText.length < 1000)
+        customText.isTimeRandom &&
+        customText.time < 3600) ||
+      (config.mode === "custom" &&
+        !customText.isWordRandom &&
+        customText.text.length < 1000)
     ) {
       if (testActive) {
         let testNow = performance.now();
@@ -4443,7 +4567,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
       if (resultCalculating) return;
       restartTest();
     } else {
-      Misc.showNotification("Quick restart disabled for long tests", 2000);
+      Notifications.add("Quick restart disabled for long tests", 0);
     }
   }
 });
@@ -4469,9 +4593,9 @@ function initPractiseMissedWords() {
       newCustomText.push(missedWord);
     }
   });
-  customText = newCustomText;
-  customTextIsRandom = true;
-  customTextWordCount = 50;
+  customText.text = newCustomText;
+  customText.isWordRandom = true;
+  customText.word = 50;
 
   modeBeforePractise = null;
   punctuationBeforePractise = null;
@@ -4487,7 +4611,7 @@ $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
     if (Object.keys(missedWords).length > 0) {
       initPractiseMissedWords();
     } else {
-      Misc.showNotification("You haven't missed any words.", 2000);
+      Notifications.add("You haven't missed any words.", 0);
     }
   }
 });
@@ -4496,7 +4620,7 @@ $(document.body).on("click", "#practiseMissedWordsButton", () => {
   if (Object.keys(missedWords).length > 0) {
     initPractiseMissedWords();
   } else {
-    Misc.showNotification("You haven't missed any words.", 2000);
+    Notifications.add("You haven't missed any words.", 0);
   }
 });
 
@@ -4800,11 +4924,14 @@ function handleTab(event) {
         (config.mode === "time" && config.time < 3600) ||
         config.mode === "quote" ||
         (config.mode === "custom" &&
-          customTextIsRandom &&
-          customTextWordCount < 1000) ||
+          customText.isWordRandom &&
+          customText.word < 1000) ||
         (config.mode === "custom" &&
-          !customTextIsRandom &&
-          customText.length < 1000)
+          customText.isTimeRandom &&
+          customText.time < 3600) ||
+        (config.mode === "custom" &&
+          !customText.isWordRandom &&
+          customText.text.length < 1000)
       ) {
         if (testActive) {
           let testNow = performance.now();
@@ -4817,7 +4944,7 @@ function handleTab(event) {
         }
         restartTest();
       } else {
-        Misc.showNotification("Quick restart disabled for long tests", 2000);
+        Notifications.add("Quick restart disabled for long tests", 0);
       }
     } else {
       changePage("test");
@@ -4914,7 +5041,7 @@ function handleSpace(event, isEnter) {
     let outof = wordsList.length;
     index = Math.floor((inputHistory.length + 1) / (outof / 3));
     if (config.layout !== layouts[index] && layouts[index] !== undefined) {
-      Misc.showNotification(`--- !!! ${layouts[index]} !!! ---`, 3000);
+      Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
     }
     setLayout(layouts[index]);
     setKeymapLayout(layouts[index]);
@@ -5010,7 +5137,12 @@ function handleSpace(event, isEnter) {
   correctedHistory.push(currentCorrected);
   currentCorrected = "";
 
-  if (!config.showAllLines || config.mode == "time") {
+  if (
+    !config.showAllLines ||
+    config.mode == "time" ||
+    (customText.isWordRandom && customText.word == 0) ||
+    customText.isTimeRandom
+  ) {
     let currentTop = Math.floor(
       document.querySelectorAll("#words .word")[currentWordElementIndex - 1]
         .offsetTop
@@ -5368,11 +5500,14 @@ window.addEventListener("beforeunload", (event) => {
     (config.mode === "time" && config.time < 3600) ||
     config.mode === "quote" ||
     (config.mode === "custom" &&
-      customTextIsRandom &&
-      customTextWordCount < 1000) ||
+      customText.isWordRandom &&
+      customText.word < 1000) ||
     (config.mode === "custom" &&
-      !customTextIsRandom &&
-      customText.length < 1000)
+      customText.isTimeRandom &&
+      customText.time < 1000) ||
+    (config.mode === "custom" &&
+      !customText.isWordRandom &&
+      customText.text.length < 1000)
   ) {
   } else {
     if (testActive) {
@@ -5393,7 +5528,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
 
 if (window.location.hostname === "localhost") {
   window.onerror = function (error) {
-    Misc.showNotification(error, 3000);
+    Notifications.add(error, -1);
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
@@ -5495,9 +5630,10 @@ $(".merchBanner a").click((event) => {
 $(".merchBanner .fas").click((event) => {
   $(".merchBanner").remove();
   Misc.setCookie("merchbannerclosed", true, 365);
-  Misc.showNotification(
-    "Won't remind you anymore :) Thanks for continued support <3",
-    2500
+  Notifications.add(
+    "Won't remind you anymore. Thanks for continued support <3",
+    0,
+    5
   );
 });
 
@@ -5506,9 +5642,9 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
     await navigator.clipboard.writeText(
       wordsList.slice(0, inputHistory.length).join(" ")
     );
-    Misc.showNotification("Copied to clipboard", 1000);
+    Notifications.add("Copied to clipboard", 0, 2);
   } catch (e) {
-    Misc.showNotification("Could not copy to clipboard: " + e, 5000);
+    Notifications.add("Could not copy to clipboard: " + e, -1);
   }
 });
 
@@ -5542,9 +5678,9 @@ async function setupChallenge(challengeName) {
       setMode("words", true);
       setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
-      customText = challenge.parameters[0].split(" ");
-      customTextIsRandom = challenge.parameters[1];
-      customTextWordCount = challenge.parameters[2];
+      customText.text = challenge.parameters[0].split(" ");
+      customText.isWordRandom = challenge.parameters[1];
+      customText.word = parseInt(challenge.parameters[2]);
       setMode("custom", true);
       setDifficulty("normal", true);
     } else if (challenge.type === "script") {
@@ -5553,8 +5689,8 @@ async function setupChallenge(challengeName) {
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
-      customText = text.split(" ");
-      customTextIsRandom = false;
+      customText.text = text.split(" ");
+      customText.isWordRandom = false;
       setMode("custom", true);
       setDifficulty("normal", true);
       if (challenge.parameters[1] != null) {
@@ -5584,15 +5720,13 @@ async function setupChallenge(challengeName) {
     restartTest(false, true);
     notitext = challenge.message;
     if (notitext === undefined) {
-      Misc.showNotification(`Challenge '${challengeName}' loaded.`, 3000);
+      Notifications.add(`Challenge '${challengeName}' loaded.`, 0);
     } else {
-      Misc.showNotification("Challenge loaded. " + notitext, 5000);
+      Notifications.add("Challenge loaded. " + notitext, 0);
     }
   } catch (e) {
-    Misc.showNotification("Something went wrong: " + e, 5000);
-    console.log(e);
+    Notifications.add("Something went wrong: " + e, -1);
   }
-  // Misc.showNotification("Challenge loaded", 2000);
 }
 
 let ctx = $("#wpmChart");
