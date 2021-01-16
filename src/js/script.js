@@ -623,10 +623,10 @@ async function initWords() {
         randomWord = Misc.getASCII();
       }
 
-      if (config.punctuation && config.mode != "custom") {
+      if (config.punctuation) {
         randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
       }
-      if (config.numbers && config.mode != "custom") {
+      if (config.numbers) {
         if (Math.random() < 0.1) {
           randomWord = Misc.getNumbers(4);
         }
@@ -3227,8 +3227,8 @@ function setMode(mode, nosave) {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").removeClass("hidden");
-    $("#top .config .punctuationMode").addClass("hidden");
-    $("#top .config .numbersMode").addClass("hidden");
+    $("#top .config .punctuationMode").removeClass("hidden");
+    $("#top .config .numbersMode").removeClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
     setPunctuation(false, true);
     setNumbers(false, true);
