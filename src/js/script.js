@@ -4024,6 +4024,14 @@ $("#customTextPopup textarea").keypress((e) => {
   }
 });
 
+$("#customTextPopup .randomInputFields .wordcount input").keypress((e) => {
+  $("#customTextPopup .randomInputFields .time input").val("");
+});
+
+$("#customTextPopup .randomInputFields .time input").keypress((e) => {
+  $("#customTextPopup .randomInputFields .wordcount input").val("");
+});
+
 $("#customTextPopup .button").click(() => {
   let text = $("#customTextPopup textarea").val();
   text = text.trim();
