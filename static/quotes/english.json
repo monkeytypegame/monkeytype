@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -30138,6 +30150,12 @@
       "source": "John Lennon",
       "length": 57,
       "id": 5074
+    },
+    {
+      "text": "There comes a time when the world gets quiet and the only thing left is your own heart. So you'd better learn the sound of it. Otherwise you'll never understand what it's saying.",
+      "source": "Sarah Dessen, Just Listen",
+      "length": 178,
+      "id": 5075
     }
   ]
 }
