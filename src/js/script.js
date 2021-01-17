@@ -2145,11 +2145,7 @@ function showResult(difficultyFailed = false) {
       keypressStats.duration.array = "toolong";
     }
 
-    // REMOVE THIS WHEN MULTI LANGUAGE QUOTES ARE ADDED
     let lang = config.language;
-    if (config.mode === "quote") {
-      lang = "english";
-    }
 
     let quoteLength = -1;
     if (config.mode === "quote") {
