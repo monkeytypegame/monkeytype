@@ -4091,7 +4091,11 @@ $("#customTextPopup .button").click(() => {
     $("#customTextPopup .check input").prop("checked") &&
     !isNaN(customText.time);
 
-  if (isNaN(customText.word) && isNaN(customText.time)) {
+  if (
+    isNaN(customText.word) &&
+    isNaN(customText.time) &&
+    (customText.isTimeRandom || customText.isWordRandom)
+  ) {
     Notifications.add(
       "You need to specify word count or time in seconds to start a random custom test.",
       0,
@@ -4100,7 +4104,11 @@ $("#customTextPopup .button").click(() => {
     return;
   }
 
-  if (!isNaN(customText.word) && !isNaN(customText.time)) {
+  if (
+    !isNaN(customText.word) &&
+    !isNaN(customText.time) &&
+    (customText.isTimeRandom || customText.isWordRandom)
+  ) {
     Notifications.add(
       "You need to pick between word count or time in seconds to start a random custom test.",
       0,
