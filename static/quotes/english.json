@@ -30432,6 +30432,12 @@
       "source": "Gosho Aoyama, Detective Conan",
       "length": 524,
       "id": 5121
+    },
+    {
+      "text": "In late June 1945, working at Los Alamos, Von Neumann completed a 101-page document titled \"First Draft of a Report on the EDVAC\". In his clear and penetrating way, he set forth an overview of the design of a digital computer that would feature stored-program operation. Von Neumann boldly drew comparisons between his electronic circuits and the brain's neurons, emphasizing that just as the brain relies on its memory, so the computer would depend on its programs. Goldstine soon was distributing copies to interested scientists. In time the \"First Draft\" would become one of the most influential papers in computer science.",
+      "source": "Maurice V. Wilkes, Computers Then And Now",
+      "length": 626,
+      "id": 5122
     }
   ]
 }
