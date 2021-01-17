@@ -471,6 +471,9 @@ async function initWords() {
       success: function (data) {
         hideBackgroundLoader();
         try {
+          if (data.quotes.length === 0) {
+            throw new Error("No quotes");
+          }
           quotes = data;
           quotes.groups.forEach((qg, i) => {
             let lower = qg[0];
@@ -643,6 +646,14 @@ async function initWords() {
 
     if (config.quoteLength === -1) {
       group = Math.floor(Math.random() * quotes.groups.length);
+      while (quotes.groups[group].length === 0) {
+        group = Math.floor(Math.random() * quotes.groups.length);
+      }
+    } else {
+      if (quotes.groups[group].length === 0) {
+        Notifications.add("No quotes found for selected quote length", 0);
+        return;
+      }
     }
 
     let rq =
