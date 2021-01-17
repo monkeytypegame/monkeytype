@@ -2284,14 +2284,33 @@ function showResult(difficultyFailed = false) {
               $("#result .stats .tags").removeClass("hidden");
             }
             $("#result .stats .tags .bottom").text("");
+            let annotationSide = "left";
             activeTags.forEach(async (tag) => {
-              let tpb = await db_getLocalTagPB(tag.id);
+              let tpb = await db_getLocalTagPB(
+                tag.id,
+                config.mode,
+                mode2,
+                config.punctuation,
+                config.language,
+                config.difficulty
+              );
               $("#result .stats .tags .bottom").append(`
                 <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
               `);
               if (tpb < stats.wpm) {
                 //new pb for that tag
-                db_saveLocalTagPB(tag.id, stats.wpm);
+                db_saveLocalTagPB(
+                  tag.id,
+                  config.mode,
+                  mode2,
+                  config.punctuation,
+                  config.language,
+                  config.difficulty,
+                  stats.wpm,
+                  stats.acc,
+                  stats.wpmRaw,
+                  consistency
+                );
                 $(
                   `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
                 ).removeClass("hidden");
@@ -2319,11 +2338,16 @@ function showResult(difficultyFailed = false) {
                     xPadding: 6,
                     yPadding: 6,
                     cornerRadius: 3,
-                    position: "center",
+                    position: annotationSide,
                     enabled: true,
                     content: `${tag.name} PB: ${tpb}`,
                   },
                 });
+                if (annotationSide === "left") {
+                  annotationSide = "right";
+                } else {
+                  annotationSide = "left";
+                }
               }
             });
 

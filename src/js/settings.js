@@ -584,7 +584,7 @@ function refreshTagsSettingsSection() {
                   </div>
                   <div class="title">${tag.name}</div>
                   <div class="editButton"><i class="fas fa-pen"></i></div>
-                  <div class="clearPbButton" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
+                  <div class="clearPbButton hidden" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
                   <div class="removeButton"><i class="fas fa-trash"></i></div>
               </div>
 
@@ -598,7 +598,7 @@ function refreshTagsSettingsSection() {
                   </div>
                   <div class="title">${tag.name}</div>
                   <div class="editButton"><i class="fas fa-pen"></i></div>
-                  <div class="clearPbButton" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
+                  <div class="clearPbButton hidden" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
                   <div class="removeButton"><i class="fas fa-trash"></i></div>
               </div>
 

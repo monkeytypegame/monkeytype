@@ -501,7 +501,7 @@ function checkIfPB(uid, obj, userdata) {
   }
 }
 
-async function checkIfTagPB(uid, obj) {
+async function checkIfTagPB(uid, obj, userdata) {
   if (obj.tags.length === 0) {
     return [];
   }
@@ -516,23 +516,151 @@ async function checkIfTagPB(uid, obj) {
         dbtags.push(data);
       }
     });
-  } catch (e) {
+  } catch {
     return [];
   }
-  let wpm = obj.wpm;
+
   let ret = [];
   for (let i = 0; i < dbtags.length; i++) {
-    let dbtag = dbtags[i];
-    if (dbtag.pb === undefined || dbtag.pb < wpm) {
-      //no pb found, meaning this one is a pb
-      await db.collection(`users/${uid}/tags`).doc(dbtag.id).update({
-        pb: wpm,
+    let pbs = null;
+    try {
+      pbs = dbtags[i].personalBests;
+      if (pbs === undefined) {
+        throw new Error("pb is undefined");
+      }
+    } catch (e) {
+      //undefined personal best = new personal best
+      db.collection(`users/${uid}/tags`)
+        .doc(dbtags[i].id)
+        .set(
+          {
+            personalBests: {
+              [obj.mode]: {
+                [obj.mode2]: [
+                  {
+                    language: obj.language,
+                    difficulty: obj.difficulty,
+                    punctuation: obj.punctuation,
+                    wpm: obj.wpm,
+                    acc: obj.acc,
+                    raw: obj.rawWpm,
+                    timestamp: Date.now(),
+                    consistency: obj.consistency,
+                  },
+                ],
+              },
+            },
+          },
+          { merge: true }
+        )
+        .then((e) => {
+          ret.push(dbtags[i].id);
+        });
+      continue;
+    }
+    let toUpdate = false;
+    let found = false;
+    try {
+      if (pbs[obj.mode][obj.mode2] === undefined) {
+        pbs[obj.mode][obj.mode2] = [];
+      }
+      pbs[obj.mode][obj.mode2].forEach((pb) => {
+        if (
+          pb.punctuation === obj.punctuation &&
+          pb.difficulty === obj.difficulty &&
+          pb.language === obj.language
+        ) {
+          //entry like this already exists, compare wpm
+          found = true;
+          if (pb.wpm < obj.wpm) {
+            //new pb
+            pb.wpm = obj.wpm;
+            pb.acc = obj.acc;
+            pb.raw = obj.rawWpm;
+            pb.timestamp = Date.now();
+            pb.consistency = obj.consistency;
+            toUpdate = true;
+          } else {
+            //no pb
+            return false;
+          }
+        }
       });
-      ret.push(dbtag.id);
+      //checked all pbs, nothing found - meaning this is a new pb
+      if (!found) {
+        pbs[obj.mode][obj.mode2].push({
+          language: obj.language,
+          difficulty: obj.difficulty,
+          punctuation: obj.punctuation,
+          wpm: obj.wpm,
+          acc: obj.acc,
+          raw: obj.rawWpm,
+          timestamp: Date.now(),
+          consistency: obj.consistency,
+        });
+        toUpdate = true;
+      }
+    } catch (e) {
+      // console.log(e);
+      pbs[obj.mode] = {};
+      pbs[obj.mode][obj.mode2] = [
+        {
+          language: obj.language,
+          difficulty: obj.difficulty,
+          punctuation: obj.punctuation,
+          wpm: obj.wpm,
+          acc: obj.acc,
+          raw: obj.rawWpm,
+          timestamp: Date.now(),
+          consistency: obj.consistency,
+        },
+      ];
+      toUpdate = true;
+    }
+
+    if (toUpdate) {
+      db.collection(`users/${uid}/tags`)
+        .doc(dbtags[i].id)
+        .update({ personalBests: pbs });
+      ret.push(dbtags[i].id);
     }
   }
   return ret;
 }
+
+//old
+// async function checkIfTagPB(uid, obj) {
+//   if (obj.tags.length === 0) {
+//     return [];
+//   }
+//   let dbtags = [];
+//   let restags = obj.tags;
+//   try {
+//     let snap = await db.collection(`users/${uid}/tags`).get();
+//     snap.forEach((doc) => {
+//       if (restags.includes(doc.id)) {
+//         let data = doc.data();
+//         data.id = doc.id;
+//         dbtags.push(data);
+//       }
+//     });
+//   } catch (e) {
+//     return [];
+//   }
+//   let wpm = obj.wpm;
+//   let ret = [];
+//   for (let i = 0; i < dbtags.length; i++) {
+//     let dbtag = dbtags[i];
+//     if (dbtag.pb === undefined || dbtag.pb < wpm) {
+//       //no pb found, meaning this one is a pb
+//       await db.collection(`users/${uid}/tags`).doc(dbtag.id).update({
+//         pb: wpm,
+//       });
+//       ret.push(dbtag.id);
+//     }
+//   }
+//   return ret;
+// }
 
 exports.clearTagPb = functions.https.onCall((request, response) => {
   try {

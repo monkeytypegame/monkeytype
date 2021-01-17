@@ -104,23 +104,20 @@ async function saveConfigToCookie(noDbCheck = false) {
 }
 
 async function saveConfigToDB() {
-  // if (firebase.auth().currentUser !== null) {
-  //   accountIconLoading(true);
-  //   CloudFunctions.saveConfig({
-  //     uid: firebase.auth().currentUser.uid,
-  //     obj: config,
-  //   }).then((d) => {
-  //     accountIconLoading(false);
-  //     if (d.data.returnCode === 1) {
-  //     } else {
-  //       Notifications.add(
-  //         `Error saving config to DB! ${d.data.message}`,
-  //         4000
-  //       );
-  //     }
-  //     return;
-  //   });
-  // }
+  if (firebase.auth().currentUser !== null) {
+    accountIconLoading(true);
+    CloudFunctions.saveConfig({
+      uid: firebase.auth().currentUser.uid,
+      obj: config,
+    }).then((d) => {
+      accountIconLoading(false);
+      if (d.data.returnCode === 1) {
+      } else {
+        Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
+      }
+      return;
+    });
+  }
 }
 
 function resetConfig() {
