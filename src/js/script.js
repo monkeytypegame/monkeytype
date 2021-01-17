@@ -5304,6 +5304,7 @@ function handleAlpha(event) {
       "Super",
       "Unidentified",
       "Process",
+      "Delete",
       undefined,
     ].includes(event.key)
   ) {
