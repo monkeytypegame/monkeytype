@@ -1,0 +1,29 @@
+{
+  "language": "code_c",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "asmlinkage __visible void __init __no_sanitize_address start_kernel(void)",
+      "source": "Linux Kernel Source Code",
+      "length": 73,
+      "id": 1
+    }
+  ]
+}
