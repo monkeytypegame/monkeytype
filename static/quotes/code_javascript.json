@@ -36,6 +36,12 @@
       "source": "Monkeytype Sourcecode",
       "length": 92,
       "id": 3
+    },
+    {
+      "text": "export default function App(props) {\\n\\treturn (\\n\\t\\t<div {...props}>\\n\\t\\t\\tHello World!\\n\\t\\t</div>\\n\\t);\\n}",
+      "source": "Basic React.js Example",
+      "length": 111,
+      "id": 4
     }
   ]
 }

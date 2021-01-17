@@ -1,0 +1,29 @@
+{
+  "language": "turkish",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "Kimse görmek istemeyenler kadar kör değildir.",
+      "source": "Jonathan Swift",
+      "length": 45,
+      "id": 1
+    }
+  ]
+}
