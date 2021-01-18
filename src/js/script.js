@@ -668,6 +668,10 @@ async function initWords() {
     }
     randomQuote = rq;
     randomQuote.text = randomQuote.text.replace(/ +/gm, " ");
+    randomQuote.text = randomQuote.text.replace(/\\\\t/gm, "\t");
+    randomQuote.text = randomQuote.text.replace(/\\\\n/gm, "\n");
+    randomQuote.text = randomQuote.text.replace(/\\t/gm, "\t");
+    randomQuote.text = randomQuote.text.replace(/\\n/gm, "\n");
     randomQuote.text = randomQuote.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
     let w = randomQuote.text.trim().split(" ");
     for (let i = 0; i < w.length; i++) {
