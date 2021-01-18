@@ -339,7 +339,7 @@ async function activateFunbox(funbox, mode, mp = false) {
   $("#wordsWrapper").removeClass("hidden");
   // }
 
-  if (mode === null || mode === undefined) {
+  if ((mode === null || mode === undefined) && funbox !== "none") {
     let list = await Misc.getFunboxList();
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
@@ -4946,6 +4946,8 @@ $(document).keyup(() => {
 });
 
 $(document).keydown(function (event) {
+  if (MP.state >= 10 && MP.state <= 20) return;
+
   if (!resultVisible) {
     let now = performance.now();
     let diff = Math.abs(keypressStats.spacing.current - now);
@@ -5008,24 +5010,6 @@ $(document).keydown(function (event) {
       hideCapsWarning();
     }
   } catch {}
-
-  //autofocus
-  let pageTestActive = !$(".pageTest").hasClass("hidden");
-  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
-  let wordsFocused = $("#wordsInput").is(":focus");
-  let modePopupVisible =
-    !$("#customTextPopupWrapper").hasClass("hidden") ||
-    !$("#customMode2PopupWrapper").hasClass("hidden");
-  if (pageTestActive && !commandLineVisible && !modePopupVisible) {
-    if (!wordsFocused && event.key !== "Enter") {
-      focusWords();
-      if (config.showOutOfFocusWarning) return;
-    }
-  } else {
-    return;
-  }
-
-  if (MP.state >= 10 && MP.state <= 20) return;
 
   //backspace
   const isBackspace =
