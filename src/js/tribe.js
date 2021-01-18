@@ -37,7 +37,9 @@ function mp_refreshUserList() {
       crown = '<i class="fas fa-star"></i>';
     }
     $(".pageTribe .lobby .userlist .list").append(`
-    <div class='user'>${user.name} ${crown}</div>
+    <div class='user ${user.socketId === MP.id ? "me" : ""}'>${
+      user.name
+    } ${crown}</div>
     `);
   });
 }
@@ -360,6 +362,10 @@ MP.socket.on("connect", (f) => {
   }, 250);
 });
 
+MP.socket.on("mp_update_name", (data) => {
+  MP.name = data.newName;
+});
+
 MP.socket.on("disconnect", (f) => {
   MP.state = -1;
   MP.room = undefined;
@@ -435,6 +441,7 @@ MP.socket.on("mp_room_joined", (data) => {
 MP.socket.on("mp_room_leave", () => {
   MP.state = 1;
   MP.room = undefined;
+  MP.name.replace(/\(\d\)$/g, "");
   mp_resetLobby();
   swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
 });
@@ -543,11 +550,15 @@ MP.socket.on("mp_room_winner", (data) => {
   data.sorted.forEach((sid) => {
     $(`.tribeResult [socketId=${sid.sid}] .pos`).html(
       `${pos}${Misc.getNumberSuffix(pos)} ${
-        data.official ? '<i class="fas fa-crown"></i>' : ""
+        data.official && pos == 1 ? '<i class="fas fa-crown"></i>' : ""
       }`
     );
     pos++;
   });
+});
+
+MP.socket.on("mp_room_back_to_lobby", (data) => {
+  swapElements($(".pageTest"), $(".pageTribe"), 250);
 });
 
 $(".pageTribe #createPrivateRoom").click((f) => {
@@ -672,4 +683,8 @@ $(".pageTribe .lobby .lobbyButtons .leaveRoomButton").click((e) => {
 
 $(".pageTribe .lobby .lobbyButtons .startTestButton").click((e) => {
   mp_startTest();
+});
+
+$(".pageTest #result #backToLobbyButton").click((e) => {
+  MP.socket.emit("mp_room_back_to_lobby");
 });
