@@ -1876,10 +1876,12 @@ function showResult(difficultyFailed = false) {
     $(".pageTest #goBackToLobbyButton").removeClass("hidden");
     $(".pageTest #practiseMissedWordsButton").addClass("hidden");
     if (MP.room.isLeader) {
+      $(".pageTest #backToLobbyButton").removeClass("hidden");
       $(".pageTest #nextTestButton").removeClass("hidden");
     }
   } else {
     $(".pageTest #nextTestButton").removeClass("hidden");
+    $(".pageTest #backToLobbyButton").addClass("hidden");
     $(".pageTest #restartTestButtonWithSameWordset").removeClass("hidden");
     $(".pageTest #goBackToLobbyButton").addClass("hidden");
     $(".pageTest #practiseMissedWordsButton").removeClass("hidden");
@@ -2879,7 +2881,7 @@ function startTest() {
         if (config.mode === "words") {
           outof = config.words;
         }
-        progress = Math.floor(((currentWordIndex + 1) / outof) * 100);
+        progress = Math.floor((currentWordIndex / (outof - 1)) * 100);
       }
 
       mp_sendTestProgress(wpmAndRaw.wpm, acc, progress);
