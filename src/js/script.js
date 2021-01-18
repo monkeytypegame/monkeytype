@@ -1588,10 +1588,10 @@ function countChars() {
       //last word that was not started
       continue;
     }
-    if (inputHistory[i] == wordsList[i]) {
+    if (config.mode == "zen" || inputHistory[i] == wordsList[i]) {
       //the word is correct
-      correctWordChars += wordsList[i].length;
-      correctChars += wordsList[i].length;
+      correctWordChars += inputHistory[i].length;
+      correctChars += inputHistory[i].length;
       if (i < inputHistory.length - 1) {
         correctspaces++;
       }
@@ -1651,7 +1651,8 @@ function countChars() {
     spaces: spaces,
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
-    incorrectChars: incorrectChars,
+    incorrectChars:
+      config.mode == "zen" ? accuracyStats.incorrect : incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
     correctSpaces: correctspaces,
@@ -1677,6 +1678,7 @@ function calculateStats() {
       (accuracyStats.correct + accuracyStats.incorrect)) *
       100
   );
+  console.log(acc);
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
@@ -3076,6 +3078,11 @@ function setMode(mode, nosave) {
     return;
   }
 
+  if (config.mode === "zen" && mode !== "zen") {
+    console.log("Toggling timer");
+    toggleShowTimerProgress();
+  }
+
   config.mode = mode;
   $("#top .config .mode .text-button").removeClass("active");
   $("#top .config .mode .text-button[mode='" + mode + "']").addClass("active");
@@ -3127,6 +3134,7 @@ function setMode(mode, nosave) {
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
     hideLiveWpm();
+    config.showTimerProgress = false;
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -3136,10 +3144,10 @@ function liveWpmAndRaw() {
   let correctWordChars = 0;
   let spaces = 0;
   for (let i = 0; i < inputHistory.length; i++) {
-    if (inputHistory[i] == wordsList[i]) {
+    if (config.mode == "zen" || inputHistory[i] == wordsList[i]) {
       //the word is correct
       //+1 for space
-      correctWordChars += wordsList[i].length;
+      correctWordChars += inputHistory[i].length;
       if (i < inputHistory.length) {
         spaces++;
       }
@@ -3437,10 +3445,11 @@ async function loadWordsHistory() {
           incorrect: 0,
           missed: 0,
         };
-        for (let c = 0; c < wordsList[i].length; c++) {
+        let length = config.mode == "zen" ? input.length : wordsList[i].length;
+        for (let c = 0; c < length; c++) {
           if (c < inputHistory[i].length) {
             //on char that still has a word list pair
-            if (inputHistory[i][c] == wordsList[i][c]) {
+            if (config.mode == "zen" || inputHistory[i][c] == wordsList[i][c]) {
               word.correct++;
             } else {
               word.incorrect++;
@@ -3451,14 +3460,14 @@ async function loadWordsHistory() {
           }
         }
         if (word.incorrect !== 0 || config.mode !== "time") {
-          if (input !== wordsList[i]) {
+          if (config.mode != "zen" && input !== wordsList[i]) {
             wordEl = `<div class='word error' input="${input
               .replace(/"/g, "&quot;")
               .replace(/ /g, "_")}">`;
           }
         }
       } else {
-        if (input !== wordsList[i]) {
+        if (config.mode != "zen" && input !== wordsList[i]) {
           wordEl = `<div class='word error' input="${input
             .replace(/"/g, "&quot;")
             .replace(/ /g, "_")}">`;
@@ -3466,7 +3475,7 @@ async function loadWordsHistory() {
       }
 
       let loop;
-      if (input.length > wordsList[i].length) {
+      if (config.mode == "zen" || input.length > wordsList[i].length) {
         //input is longer - extra characters possible (loop over input)
         loop = input.length;
       } else {
@@ -3489,14 +3498,14 @@ async function loadWordsHistory() {
         ) {
           extraCorrected = "extraCorrected";
         }
-        if (wordsList[i][c] !== undefined) {
-          if (input[c] === wordsList[i][c]) {
+        if (config.mode == "zen" || wordsList[i][c] !== undefined) {
+          if (config.mode == "zen" || input[c] === wordsList[i][c]) {
             if (correctedChar === input[c] || correctedChar === undefined) {
-              wordEl += `<letter class="correct ${extraCorrected}">${wordsList[i][c]}</letter>`;
+              wordEl += `<letter class="correct ${extraCorrected}">${input[c]}</letter>`;
             } else {
               wordEl +=
                 `<letter class="corrected ${extraCorrected}">` +
-                wordsList[i][c] +
+                input[c] +
                 "</letter>";
             }
           } else {
@@ -4834,6 +4843,7 @@ function handleBackspace(event) {
     }
     if (config.mode == "zen") {
       $("#words .word.active").children().last().remove();
+      accuracyStats.incorrect++;
     }
     updateWordElement(!config.blindMode);
   }
@@ -5395,9 +5405,12 @@ $(".merchBanner .fas").click((event) => {
 
 $(".pageTest #copyWordsListButton").click(async (event) => {
   try {
-    await navigator.clipboard.writeText(
-      wordsList.slice(0, inputHistory.length).join(" ")
-    );
+    let words;
+    if (config.mode == "zen") words = inputHistory.join(" ");
+    if (config.mode != "zen")
+      words = wordsList.slice(0, inputHistory.length).join(" ");
+
+    await navigator.clipboard.writeText(words);
     Misc.showNotification("Copied to clipboard", 1000);
   } catch (e) {
     Misc.showNotification("Could not copy to clipboard: " + e, 5000);

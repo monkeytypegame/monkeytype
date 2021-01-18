@@ -8,7 +8,8 @@ function canBailOut() {
       customText.length >= 5000) ||
     (config.mode === "words" && config.words >= 5000) ||
     config.words === 0 ||
-    (config.mode === "time" && (config.time >= 3600 || config.time === 0))
+    (config.mode === "time" && (config.time >= 3600 || config.time === 0)) ||
+    config.mode == "zen"
   );
 }
 
@@ -615,6 +616,10 @@ let commands = {
               display: "Yes, I am sure",
               exec: () => {
                 bailout = true;
+                if (config.mode == "zen" && currentInput.length != 0) {
+                  inputHistory.push(currentInput);
+                  correctedHistory.push(currentCorrected);
+                }
                 showResult();
               },
               available: () => {
@@ -1366,6 +1371,14 @@ let commandsMode = {
       display: "custom",
       exec: () => {
         setMode("custom");
+        restartTest();
+      },
+    },
+    {
+      id: "changeModeZen",
+      display: "zen",
+      exec: () => {
+        setMode("zen");
         restartTest();
       },
     },
