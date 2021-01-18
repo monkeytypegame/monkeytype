@@ -1,0 +1,17 @@
+{
+  "language": "spanish",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "La muerte no existe, la gente solo muere cuando la olvidan; si puedes recordarme siempre estaré contigo.",
+      "source": "Isabel Allende, Eva Luna",
+      "length": 104,
+      "id": 1
+    }
+  ]
+}

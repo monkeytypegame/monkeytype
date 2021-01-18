@@ -1,0 +1,17 @@
+{
+  "language": "code_c++",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "#include <bits/stdc++.h>\\nusing namespace std;\\nint main(){\\n\\tint len;\\n\\tcin >> len;\\n\\tvector <int> array(len);\\n\\tint sum = 0;\\n\\tfor(int i = 0; i < len; i++){\\n\\t\\tcin >> array[i];\\n\\t\\tsum += array[i];\\n\\t}\\n\\tcout << sum;\\n\\treturn 0;\\n}\\n",
+      "source": "Sum of array in C++",
+      "length": 246,
+      "id": 1
+    }
+  ]
+}

@@ -150,21 +150,21 @@ simplePopups.updateEmail = new SimplePopup(
       }).then((data) => {
         hideBackgroundLoader();
         if (data.data.resultCode === 1) {
-          Misc.showNotification("Email updated", 2000);
+          Notifications.add("Email updated", 0);
           setTimeout(() => {
             signOut();
           }, 1000);
         } else if (data.data.resultCode === -1) {
-          Misc.showNotification("Current email doesn't match", 2000);
+          Notifications.add("Current email doesn't match", 0);
         } else {
-          Misc.showNotification(
+          Notifications.add(
             "Something went wrong: " + JSON.stringify(data.data),
-            7000
+            -1
           );
         }
       });
     } catch (e) {
-      Misc.showNotification("Something went wrong: " + e, 5000);
+      Notifications.add("Something went wrong: " + e, -1);
     }
   },
   () => {}
@@ -192,21 +192,16 @@ simplePopups.clearTagPb = new SimplePopup(
           $(
             `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
           ).attr("aria-label", "No PB found");
-          Misc.showNotification("Tag PB cleared.", 1000);
+          Notifications.add("Tag PB cleared.", 0);
         } else {
-          console.error(res.data.message);
-          Misc.showNotification(
-            "Something went wrong: " + res.data.message,
-            5000
-          );
+          Notifications.add("Something went wrong: " + res.data.message, -1);
         }
       })
       .catch((e) => {
         hideBackgroundLoader();
-        console.error(e);
-        Misc.showNotification(
+        Notifications.add(
           "Something went wrong while clearing tag pb " + e,
-          5000
+          -1
         );
       });
     // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);

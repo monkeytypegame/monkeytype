@@ -22,7 +22,7 @@
    ```.firebaserc
     {
         "projects": {
-            "default": "your-firebase-project-id",
+            "default": "your-firebase-project-id"
         }
     }
    ```

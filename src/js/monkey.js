@@ -10,6 +10,19 @@ let last = "right";
 // 0 up
 // 1 down
 
+function update() {
+  if (!document.querySelector("#monkey").classList.contains("hidden")) {
+    Object.keys(elements).forEach((key) => {
+      elements[key].classList.add("hidden");
+    });
+
+    let id = left ? "1" : "0";
+    id += right ? "1" : "0";
+
+    elements[id].classList.remove("hidden");
+  }
+}
+
 export function type() {
   if (!left && last == "right") {
     left = true;
@@ -28,17 +41,4 @@ export function stop() {
     right = false;
   }
   update();
-}
-
-function update() {
-  if (!document.querySelector("#monkey").classList.contains("hidden")) {
-    Object.keys(elements).forEach((key) => {
-      elements[key].classList.add("hidden");
-    });
-
-    let id = left ? "1" : "0";
-    id += right ? "1" : "0";
-
-    elements[id].classList.remove("hidden");
-  }
 }

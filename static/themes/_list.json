@@ -190,6 +190,11 @@
     "textColor": "#E6DB74"
   },
   {
+    "name": "sonokai",
+    "bgColor": "#2C2E34",
+    "textColor": "#E2E2E3"
+  },
+  {
     "name": "camping",
     "bgColor": "#faf1e4",
     "textColor": "#618c56"
@@ -468,5 +473,10 @@
     "name": "rudy",
     "bgColor": "#1a2b3e",
     "textColor": "#af8f5c"
+  },
+  {
+    "name": "stealth",
+    "bgColor": "#010203",
+    "textColor": "#383e42"
   }
 ]

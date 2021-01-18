@@ -8,3 +8,4 @@ global.sendVerificationEmail = Misc.sendVerificationEmail;
 global.snapshot = db_getSnapshot;
 global.config = config;
 global.MP = MP;
+global.addnotif = Notifications.add;

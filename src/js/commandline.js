@@ -1,11 +1,15 @@
 function canBailOut() {
   return (
     (config.mode === "custom" &&
-      customTextIsRandom &&
-      customTextWordCount >= 5000) ||
+      customText.isWordRandom &&
+      customText.word >= 5000) ||
     (config.mode === "custom" &&
-      !customTextIsRandom &&
-      customText.length >= 5000) ||
+      !customText.isWordRandom &&
+      !customText.isTimeRandom &&
+      customText.text.length >= 5000) ||
+    (config.mode === "custom" &&
+      customText.isTimeRandom &&
+      customText.time >= 3600) ||
     (config.mode === "words" && config.words >= 5000) ||
     config.words === 0 ||
     (config.mode === "time" && (config.time >= 3600 || config.time === 0))
@@ -880,7 +884,7 @@ let commandsEnableAds = {
       display: "off",
       exec: () => {
         setEnableAds("off");
-        Misc.showNotification("Don't forget to refresh the page!", 3000);
+        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -888,7 +892,7 @@ let commandsEnableAds = {
       display: "on",
       exec: () => {
         setEnableAds("on");
-        Misc.showNotification("Don't forget to refresh the page!", 3000);
+        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -896,7 +900,7 @@ let commandsEnableAds = {
       display: "Sellout",
       exec: () => {
         setEnableAds("max");
-        Misc.showNotification("Don't forget to refresh the page!", 3000);
+        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
   ],
@@ -999,6 +1003,13 @@ let commandsPaceCaret = {
       display: "pb",
       exec: () => {
         setPaceCaret("pb");
+      },
+    },
+    {
+      id: "setPaceCaretAverage",
+      display: "average",
+      exec: () => {
+        setPaceCaret("average");
       },
     },
     {
@@ -1758,7 +1769,18 @@ if (Object.keys(layouts).length > 0) {
 }
 
 $("#commandLine input").keyup((e) => {
-  if (e.keyCode == 38 || e.keyCode == 40 || e.keyCode == 13 || e.code == "Tab")
+  commandLineMouseMode = false;
+  $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
+    "activeMouse"
+  );
+  if (
+    e.keyCode == 38 ||
+    e.keyCode == 40 ||
+    e.keyCode == 13 ||
+    e.code == "Tab" ||
+    e.code == "AltLeft" ||
+    (e.altKey && (e.keyCode == 74 || e.keyCode == 75))
+  )
     return;
   updateSuggestedCommands();
 });
@@ -1772,16 +1794,7 @@ $(document).ready((e) => {
         //maybe add more condition for closing other dialogs in the future as well
         event.preventDefault();
         hideLeaderboards();
-        return;
-      } else if (
-        $("#commandLineWrapper").hasClass("hidden") &&
-        (event.keyCode == 9 || !config.swapEscAndTab)
-      ) {
-        if (config.singleListCommandLine == "on")
-          useSingleListCommandLine(false);
-        else currentCommands = [commands];
-        showCommandLine();
-      } else {
+      } else if (!$("#commandLineWrapper").hasClass("hidden")) {
         if (currentCommands.length > 1) {
           currentCommands.pop();
           $("#commandLine").removeClass("allCommands");
@@ -1795,6 +1808,11 @@ $(document).ready((e) => {
         } else {
           setTheme(config.theme);
         }
+      } else if (event.keyCode == 9 || !config.swapEscAndTab) {
+        if (config.singleListCommandLine == "on")
+          useSingleListCommandLine(false);
+        else currentCommands = [commands];
+        showCommandLine();
       }
     }
   });
@@ -1828,7 +1846,33 @@ $("#commandInput input").keydown((e) => {
   return;
 });
 
+let commandLineMouseMode = false;
+
+$(document).on("mousemove", () => {
+  if (!commandLineMouseMode) commandLineMouseMode = true;
+});
+
+$(document).on(
+  "mouseenter",
+  "#commandLineWrapper #commandLine .suggestions .entry",
+  (e) => {
+    if (!commandLineMouseMode) return;
+    $(e.target).addClass("activeMouse");
+  }
+);
+
+$(document).on(
+  "mouseleave",
+  "#commandLineWrapper #commandLine .suggestions .entry",
+  (e) => {
+    if (!commandLineMouseMode) return;
+    $(e.target).removeClass("activeMouse");
+  }
+);
+
 $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
+  if (!commandLineMouseMode) return;
+  console.log("clearing keyboard active");
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeKeyboard"
   );
@@ -1893,7 +1937,12 @@ $(document).keydown((e) => {
       triggerCommand(command);
       return;
     }
-    if (e.keyCode == 38 || e.keyCode == 40 || e.code == "Tab") {
+    if (
+      e.keyCode == 38 ||
+      e.keyCode == 40 ||
+      e.code == "Tab" ||
+      (e.altKey && (e.keyCode == 74 || e.keyCode == 75))
+    ) {
       e.preventDefault();
       $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
         "mouseenter mouseleave"
@@ -1904,7 +1953,11 @@ $(document).keydown((e) => {
       $.each(entries, (index, obj) => {
         if ($(obj).hasClass("activeKeyboard")) activenum = index;
       });
-      if (e.keyCode == 38 || (e.code == "Tab" && e.shiftKey)) {
+      if (
+        e.keyCode == 38 ||
+        (e.code == "Tab" && e.shiftKey) ||
+        (e.altKey && e.keyCode == 75)
+      ) {
         entries.removeClass("activeKeyboard");
         if (activenum == 0) {
           $(entries[entries.length - 1]).addClass("activeKeyboard");
@@ -1914,7 +1967,11 @@ $(document).keydown((e) => {
           hoverId = $(entries[activenum]).attr("command");
         }
       }
-      if (e.keyCode == 40 || (e.code == "Tab" && !e.shiftKey)) {
+      if (
+        e.keyCode == 40 ||
+        (e.code == "Tab" && !e.shiftKey) ||
+        (e.altKey && e.keyCode == 74)
+      ) {
         entries.removeClass("activeKeyboard");
         if (activenum + 1 == entries.length) {
           $(entries[0]).addClass("activeKeyboard");
@@ -2068,7 +2125,8 @@ function updateSuggestedCommands() {
       let foundcount = 0;
       $.each(inputVal, (index2, obj2) => {
         if (obj2 == "") return;
-        let re = new RegExp("\\b" + obj2, "g");
+        let escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+        let re = new RegExp("\\b" + escaped, "g");
         let res = obj.display.toLowerCase().match(re);
         if (res != null && res.length > 0) {
           foundcount++;

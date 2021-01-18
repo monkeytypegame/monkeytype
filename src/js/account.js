@@ -1,52 +1,3 @@
-$(".pageLogin .register input").keyup((e) => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  if (e.key == "Enter") {
-    signUp();
-  }
-});
-
-$(".pageLogin .register .button").click((e) => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  signUp();
-});
-
-$(".pageLogin .login input").keyup((e) => {
-  if (e.key == "Enter") {
-    configChangedBeforeDb = false;
-    signIn();
-  }
-});
-
-$(".pageLogin .login .button").click((e) => {
-  configChangedBeforeDb = false;
-  signIn();
-});
-
-$(".signOut").click((e) => {
-  signOut();
-});
-
-$(".pageAccount .loadMoreButton").click((e) => {
-  loadMoreLines();
-});
-
-$(".pageLogin #forgotPasswordButton").click((e) => {
-  let email = prompt("Email address");
-  if (email) {
-    firebase
-      .auth()
-      .sendPasswordResetEmail(email)
-      .then(function () {
-        // Email sent.
-        Misc.showNotification("Email sent", 2000);
-      })
-      .catch(function (error) {
-        // An error happened.
-        Misc.showNotification(error.message, 5000);
-      });
-  }
-});
-
 function showSignOutButton() {
   $(".signOut").removeClass("hidden").css("opacity", 1);
 }
@@ -73,7 +24,7 @@ function signIn() {
             changePage("test");
           })
           .catch(function (error) {
-            Misc.showNotification(error.message, 5000);
+            Notifications.add(error.message, -1);
             $(".pageLogin .preloader").addClass("hidden");
           });
       });
@@ -90,7 +41,7 @@ function signIn() {
             changePage("test");
           })
           .catch(function (error) {
-            Misc.showNotification(error.message, 5000);
+            Notifications.add(error.message, -1);
             $(".pageLogin .preloader").addClass("hidden");
           });
       });
@@ -108,27 +59,27 @@ function signUp() {
   let passwordVerify = $(".pageLogin .register input")[3].value;
 
   if (password != passwordVerify) {
-    Misc.showNotification("Passwords do not match", 3000);
+    Notifications.add("Passwords do not match", 0, 3);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .register .button").removeClass("disabled");
     return;
   }
 
   CloudFunctions.namecheck({ name: nname }).then((d) => {
-    if (d.data === -1) {
-      Misc.showNotification("Name unavailable", 3000);
+    if (d.data.resultCode === -1) {
+      Notifications.add("Name unavailable", -1);
       $(".pageLogin .preloader").addClass("hidden");
       $(".pageLogin .register .button").removeClass("disabled");
       return;
-    } else if (d.data === -2) {
-      Misc.showNotification(
+    } else if (d.data.resultCode === -2) {
+      Notifications.add(
         "Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
-        8000
+        -1
       );
       $(".pageLogin .preloader").addClass("hidden");
       $(".pageLogin .register .button").removeClass("disabled");
       return;
-    } else if (d.data === 1) {
+    } else if (d.data.resultCode === 1) {
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
@@ -155,7 +106,7 @@ function signUp() {
               );
               usr.sendEmailVerification();
               clearGlobalStats();
-              Misc.showNotification("Account created", 2000);
+              Notifications.add("Account created", 1, 3);
               $("#menu .icon-button.account .text").text(nname);
               try {
                 firebase.analytics().logEvent("accountCreated", usr.uid);
@@ -180,7 +131,6 @@ function signUp() {
                   obj: notSignedInLastResult,
                 });
                 db_getSnapshot().results.push(notSignedInLastResult);
-                config.resultFilters = defaultAccountFilters;
               }
               changePage("account");
               usr.sendEmailVerification();
@@ -194,15 +144,19 @@ function signUp() {
                 .delete()
                 .then(function () {
                   // User deleted.
-                  Misc.showNotification(
-                    "An error occured. Account not created.",
-                    2000
+                  Notifications.add(
+                    "Account not created. " + error.message,
+                    -1
                   );
                   $(".pageLogin .preloader").addClass("hidden");
                 })
                 .catch(function (error) {
                   // An error happened.
                   $(".pageLogin .preloader").addClass("hidden");
+                  Notifications.add(
+                    "Something went wrong. " + error.message,
+                    -1
+                  );
                   console.error(error);
                 });
             });
@@ -210,10 +164,14 @@ function signUp() {
         .catch(function (error) {
           // Handle Errors here.
           $(".pageLogin .register .button").removeClass("disabled");
-          var errorMessage = error.message;
-          Misc.showNotification(errorMessage, 5000);
+          Notifications.add(error.message, -1);
           $(".pageLogin .preloader").addClass("hidden");
         });
+    } else {
+      Notifications.add(
+        "Something went wrong when checking name: " + d.data.message,
+        -1
+      );
     }
   });
 }
@@ -223,7 +181,7 @@ function signOut() {
     .auth()
     .signOut()
     .then(function () {
-      Misc.showNotification("Signed out", 2000);
+      Notifications.add("Signed out", 0, 2);
       clearGlobalStats();
       hideAccountSettingsSection();
       updateAccountLoginButton();
@@ -231,13 +189,13 @@ function signOut() {
       db_setSnapshot(null);
     })
     .catch(function (error) {
-      Misc.showNotification(error.message, 5000);
+      Notifications.add(error.message, -1);
     });
 }
 
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
-    console.log('user is logged in');
+    console.log("user is logged in");
     // User is signed in.
     $(".pageAccount .content p.accountVerificatinNotice").remove();
     if (user.emailVerified === false) {
@@ -267,18 +225,20 @@ firebase.auth().onAuthStateChanged(function (user) {
     const diffTime = Math.abs(date2 - date1);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    text += ` (${diffDays} days ago)`;
+    text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
 
     $(".pageAccount .group.createdDate").text(text);
 
     if (verifyUserWhenLoggedIn !== null) {
-      Misc.showNotification("Verifying", 1000);
+      Notifications.add("Verifying", 0, 3);
       verifyUserWhenLoggedIn.uid = user.uid;
       CloudFunctions.verifyUser(verifyUserWhenLoggedIn).then((data) => {
-        Misc.showNotification(data.data.message, 3000);
         if (data.data.status === 1) {
+          Notifications.add(data.data.message, 1);
           db_getSnapshot().discordId = data.data.did;
           updateDiscordSettingsSection();
+        } else {
+          Notifications.add(data.data.message, -1);
         }
       });
     }
@@ -288,11 +248,11 @@ firebase.auth().onAuthStateChanged(function (user) {
     try {
       theme = theme.split(",");
       config.customThemeColors = theme;
-      Misc.showNotification("Custom theme applied.", 1000);
+      Notifications.add("Custom theme applied.", 1);
     } catch (e) {
-      Misc.showNotification(
+      Notifications.add(
         "Something went wrong. Reverting to default custom colors.",
-        3000
+        0
       );
       config.customThemeColors = defaultConfig.customThemeColors;
     }
@@ -307,20 +267,20 @@ firebase.auth().onAuthStateChanged(function (user) {
     }, 1000);
   }
   // setTimeout(f => {
-    if (/\/tribe/.test(window.location.pathname)) {
-      if (/\/tribe_.+/.test(window.location.pathname)) {
-        let code = window.location.pathname.split('/')[1];
-        code = code.substring(5);
-        code = "room" + code;
-        MP.autoJoin = code;
-      }
-      changePage('tribe');
+  if (/\/tribe/.test(window.location.pathname)) {
+    if (/\/tribe_.+/.test(window.location.pathname)) {
+      let code = window.location.pathname.split("/")[1];
+      code = code.substring(5);
+      code = "room" + code;
+      MP.autoJoin = code;
     }
-    if (!MP.socket.connected && MP.autoJoin != undefined) {
-      if (MP.state === -1) {
-        mp_init();
-      }
+    changePage("tribe");
+  }
+  if (!MP.socket.connected && MP.autoJoin != undefined) {
+    if (MP.state === -1) {
+      mp_init();
     }
+  }
   // }, 250);
 });
 
@@ -384,7 +344,7 @@ function getAccountDataAndInit() {
       } else {
         accountIconLoading(false);
       }
-      if (config.paceCaret === "pb") {
+      if (config.paceCaret === "pb" || config.paceCaret === "average") {
         if (!testActive) {
           initPaceCaret(true);
         }
@@ -427,16 +387,15 @@ function getAccountDataAndInit() {
       updateFilterTags();
       updateCommandsTagsList();
       loadActiveTagsFromCookie();
-      loadResultFiltersFromCookie();
       updateResultEditTagsPanelButtons();
       showAccountSettingsSection();
     })
     .catch((e) => {
       accountIconLoading(false);
       console.error(e);
-      Misc.showNotification(
-        "Error downloading user data. Refresh to try again. If error persists contact Miodec.",
-        5000
+      Notifications.add(
+        "Error downloading user data - refresh to try again. Client likely could not connect to the backend, if error persists contact Miodec.",
+        -1
       );
       $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
       $("#top #menu .account").css("opacity", 1);
@@ -1010,62 +969,6 @@ $(document).on("click", ".pageAccount .hoverChartBg", (event) => {
   hideHoverChart();
 });
 
-let defaultAccountFilters = {
-  difficulty: {
-    normal: true,
-    expert: true,
-    master: true,
-  },
-  mode: {
-    words: true,
-    time: true,
-    quote: true,
-    custom: true,
-  },
-  words: {
-    10: true,
-    25: true,
-    50: true,
-    100: true,
-    200: true,
-    custom: true,
-  },
-  time: {
-    15: true,
-    30: true,
-    60: true,
-    120: true,
-    custom: true,
-  },
-  quoteLength: {
-    short: true,
-    medium: true,
-    long: true,
-    thicc: true,
-  },
-  punctuation: {
-    on: true,
-    off: true,
-  },
-  numbers: {
-    on: true,
-    off: true,
-  },
-  date: {
-    last_day: false,
-    last_week: false,
-    last_month: false,
-    all: true,
-  },
-  tags: {
-    none: true,
-  },
-  language: {},
-  funbox: {
-    none: true,
-  },
-};
-
 Misc.getLanguageList().then((languages) => {
   languages.forEach((language) => {
     $(
@@ -1076,7 +979,6 @@ Misc.getLanguageList().then((languages) => {
         " "
       )}</div>`
     );
-    defaultAccountFilters.language[language] = true;
   });
 });
 
@@ -1093,7 +995,6 @@ Misc.getFunboxList().then((funboxModes) => {
         " "
       )}</div>`
     );
-    defaultAccountFilters.funbox[funbox.name] = true;
   });
 });
 
@@ -1109,7 +1010,6 @@ function updateFilterTags() {
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
     db_getSnapshot().tags.forEach((tag) => {
-      defaultAccountFilters.tags[tag.id] = true;
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
       ).append(`<div class="button" filter="${tag.id}">${tag.name}</div>`);
@@ -1124,37 +1024,33 @@ function updateFilterTags() {
 function toggleFilter(group, filter) {
   try {
     if (group === "date") {
-      Object.keys(config.resultFilters.date).forEach((date) => {
-        setFilter("date", date, false);
+      Object.keys(ResultFilters.getGroup("date")).forEach((date) => {
+        ResultFilters.setFilter("date", date, false);
       });
     }
-    config.resultFilters[group][filter] = !config.resultFilters[group][filter];
-    saveResultFiltersToCookie();
+    ResultFilters.toggleFilter(group, filter);
+    ResultFilters.save();
   } catch (e) {
-    Misc.showNotification(
+    Notifications.add(
       "Something went wrong toggling filter. Reverting to defaults",
-      3000
+      0
     );
-    config.resultFilters = defaultAccountFilters;
-    saveResultFiltersToCookie();
+    console.log("toggling filter error");
+    console.error(e);
+    ResultFilters.reset();
     showActiveFilters();
   }
 }
 
-function setFilter(group, filter, set) {
-  config.resultFilters[group][filter] = set;
-}
-
 function showActiveFilters() {
   let aboveChartDisplay = {};
-
-  Object.keys(config.resultFilters).forEach((group) => {
+  Object.keys(ResultFilters.getFilters()).forEach((group) => {
     aboveChartDisplay[group] = {
       all: true,
       array: [],
     };
-    Object.keys(config.resultFilters[group]).forEach((filter) => {
-      if (config.resultFilters[group][filter]) {
+    Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
+      if (ResultFilters.getFilter(group, filter)) {
         aboveChartDisplay[group].array.push(filter);
       } else {
         aboveChartDisplay[group].all = false;
@@ -1169,7 +1065,7 @@ function showActiveFilters() {
           `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
         );
       }
-      if (config.resultFilters[group][filter]) {
+      if (ResultFilters.getFilter(group, filter)) {
         buttonEl.addClass("active");
       } else {
         buttonEl.removeClass("active");
@@ -1300,66 +1196,66 @@ function hideChartPreloader() {
 }
 
 $(".pageAccount .topFilters .button.allFilters").click((e) => {
-  Object.keys(config.resultFilters).forEach((group) => {
-    Object.keys(config.resultFilters[group]).forEach((filter) => {
+  Object.keys(ResultFilters.getFilters()).forEach((group) => {
+    Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
       if (group === "date") {
-        config.resultFilters[group][filter] = false;
+        ResultFilters.setFilter(group, filter, false);
       } else {
-        config.resultFilters[group][filter] = true;
+        ResultFilters.setFilter(group, filter, true);
       }
     });
   });
-  config.resultFilters.date.all = true;
+  ResultFilters.setFilter("date", "all", true);
   showActiveFilters();
-  saveResultFiltersToCookie();
+  ResultFilters.save();
 });
 
 $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
-  Object.keys(config.resultFilters).forEach((group) => {
-    Object.keys(config.resultFilters[group]).forEach((filter) => {
-      config.resultFilters[group][filter] = false;
+  Object.keys(ResultFilters.getFilters()).forEach((group) => {
+    Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
+      ResultFilters.setFilter(group, filter, false);
     });
   });
 
-  config.resultFilters.difficulty[config.difficulty] = true;
-  config.resultFilters.mode[config.mode] = true;
+  ResultFilters.setFilter("difficulty", config.difficulty, true);
+  ResultFilters.setFilter("mode", config.mode, true);
   if (config.mode === "time") {
-    config.resultFilters.time[config.time] = true;
+    ResultFilters.setFilter("time", config.time, true);
   } else if (config.mode === "words") {
-    config.resultFilters.words[config.words] = true;
-  } else if (config.mode === "quote"){
-    Object.keys(config.resultFilters.quoteLength).forEach((ql) => {
-      config.resultFilters.quoteLength[ql] = true;
+    ResultFilters.setFilter("words", config.words, true);
+  } else if (config.mode === "quote") {
+    Object.keys(ResultFilters.getGroup("quoteLength")).forEach((ql) => {
+      ResultFilters.setFilter("quoteLength", ql, true);
     });
   }
   if (config.punctuation) {
-    config.resultFilters.punctuation.on = true;
+    ResultFilters.setFilter("punctuation", "on", true);
   } else {
-    config.resultFilters.punctuation.off = true;
+    ResultFilters.setFilter("punctuation", "off", true);
   }
   if (config.numbers) {
-    config.resultFilters.numbers.on = true;
+    ResultFilters.setFilter("numbers", "on", true);
   } else {
-    config.resultFilters.numbers.off = true;
+    ResultFilters.setFilter("numbers", "off", true);
   }
   if (config.mode === "quote" && /english.*/.test(config.language)) {
-    config.resultFilters.language["english"] = true;
+    ResultFilters.setFilter("language", "english", true);
   } else {
-    config.resultFilters.language[config.language] = true;
+    ResultFilters.setFilter("language", config.language, true);
   }
-  config.resultFilters.funbox[activeFunBox] = true;
-  config.resultFilters.tags.none = true;
+  ResultFilters.setFilter("funbox", activeFunBox, true);
+  ResultFilters.setFilter("tags", "none", true);
   db_getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
-      config.resultFilters.tags.none = false;
-      config.resultFilters.tags[tag.id] = true;
+      ResultFilters.setFilter("tags", "none", false);
+      ResultFilters.setFilter("tags", tag.id, true);
     }
   });
 
-  config.resultFilters.date.all = true;
-
+  ResultFilters.setFilter("date", "all", true);
   showActiveFilters();
-  saveResultFiltersToCookie();
+  ResultFilters.save();
+  console.log(ResultFilters.getFilters());
 });
 
 $(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
@@ -1375,36 +1271,36 @@ $(
   const filter = $(e.target).attr("filter");
   const group = $(e.target).parents(".buttons").attr("group");
   if ($(e.target).hasClass("allFilters")) {
-    Object.keys(config.resultFilters).forEach((group) => {
-      Object.keys(config.resultFilters[group]).forEach((filter) => {
+    Object.keys(ResultFilters.getFilters()).forEach((group) => {
+      Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
         if (group === "date") {
-          config.resultFilters[group][filter] = false;
+          ResultFilters.setFilter(group, filter, false);
         } else {
-          config.resultFilters[group][filter] = true;
+          ResultFilters.setFilter(group, filter, true);
         }
       });
     });
-    config.resultFilters.date.all = true;
+    ResultFilters.setFilter("date", "all", true);
   } else if ($(e.target).hasClass("noFilters")) {
-    Object.keys(config.resultFilters).forEach((group) => {
+    Object.keys(ResultFilters.getFilters()).forEach((group) => {
       if (group !== "date") {
-        Object.keys(config.resultFilters[group]).forEach((filter) => {
-          config.resultFilters[group][filter] = false;
+        Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
+          ResultFilters.setFilter(group, filter, false);
         });
       }
     });
   } else {
     if (e.shiftKey) {
-      Object.keys(config.resultFilters[group]).forEach((filter) => {
-        config.resultFilters[group][filter] = false;
+      Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
+        ResultFilters.setFilter(group, filter, false);
       });
-      setFilter(group, filter, true);
+      ResultFilters.setFilter(group, filter, true);
     } else {
       toggleFilter(group, filter);
     }
   }
   showActiveFilters();
-  saveResultFiltersToCookie();
+  ResultFilters.save();
 });
 
 function fillPbTables() {
@@ -1871,21 +1767,21 @@ function refreshAccountPage() {
         if (resdiff == undefined) {
           resdiff = "normal";
         }
-        if (!config.resultFilters.difficulty[resdiff]) return;
-        if (!config.resultFilters.mode[result.mode]) return;
+        if (!ResultFilters.getFilter("difficulty", resdiff)) return;
+        if (!ResultFilters.getFilter("mode", result.mode)) return;
 
         if (result.mode == "time") {
           let timefilter = "custom";
           if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
             timefilter = result.mode2;
           }
-          if (!config.resultFilters.time[timefilter]) return;
+          if (!ResultFilters.getFilter("time", timefilter)) return;
         } else if (result.mode == "words") {
           let wordfilter = "custom";
           if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
             wordfilter = result.mode2;
           }
-          if (!config.resultFilters.words[wordfilter]) return;
+          if (!ResultFilters.getFilter("words", wordfilter)) return;
         }
 
         if (result.quoteLength != null) {
@@ -1899,15 +1795,18 @@ function refreshAccountPage() {
           } else if (result.quoteLength === 3) {
             filter = "thicc";
           }
-          if (filter !== null && !config.resultFilters.quoteLength[filter])
+          if (
+            filter !== null &&
+            !ResultFilters.getFilter("quoteLength", filter)
+          )
             return;
         }
 
-        let langFilter = config.resultFilters.language[result.language];
+        let langFilter = ResultFilters.getFilter("language", result.language);
 
         if (
           result.language === "english_expanded" &&
-          config.resultFilters.language.english_1k
+          ResultFilters.getFilter("language", "english_1k")
         ) {
           langFilter = true;
         }
@@ -1917,18 +1816,18 @@ function refreshAccountPage() {
         if (result.punctuation) {
           puncfilter = "on";
         }
-        if (!config.resultFilters.punctuation[puncfilter]) return;
+        if (!ResultFilters.getFilter("punctuation", puncfilter)) return;
 
         let numfilter = "off";
         if (result.numbers) {
           numfilter = "on";
         }
-        if (!config.resultFilters.numbers[numfilter]) return;
+        if (!ResultFilters.getFilter("numbers", numfilter)) return;
 
         if (result.funbox === "none" || result.funbox === undefined) {
-          if (!config.resultFilters.funbox.none) return;
+          if (!ResultFilters.getFilter("funbox", "none")) return;
         } else {
-          if (!config.resultFilters.funbox[result.funbox]) return;
+          if (!ResultFilters.getFilter("funbox", result.funbox)) return;
         }
 
         let tagHide = true;
@@ -1936,7 +1835,7 @@ function refreshAccountPage() {
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
           if (db_getSnapshot().tags.length > 0) {
-            if (config.resultFilters.tags.none) tagHide = false;
+            if (ResultFilters.getFilter("tags", "none")) tagHide = false;
           } else {
             tagHide = false;
           }
@@ -1949,10 +1848,10 @@ function refreshAccountPage() {
             //check if tag is valid
             if (validTags.includes(tag)) {
               //tag valid, check if filter is on
-              if (config.resultFilters.tags[tag]) tagHide = false;
+              if (ResultFilters.getFilter("tags", tag)) tagHide = false;
             } else {
               //tag not found in valid tags, meaning probably deleted
-              if (config.resultFilters.tags.none) tagHide = false;
+              if (ResultFilters.getFilter("tags", "none")) tagHide = false;
             }
           });
         }
@@ -1964,10 +1863,13 @@ function refreshAccountPage() {
         let datehide = true;
 
         if (
-          config.resultFilters.date.all ||
-          (config.resultFilters.date.last_day && timeSinceTest <= 86400) ||
-          (config.resultFilters.date.last_week && timeSinceTest <= 604800) ||
-          (config.resultFilters.date.last_month && timeSinceTest <= 2592000)
+          ResultFilters.getFilter("date", "all") ||
+          (ResultFilters.getFilter("date", "last_day") &&
+            timeSinceTest <= 86400) ||
+          (ResultFilters.getFilter("date", "last_week") &&
+            timeSinceTest <= 604800) ||
+          (ResultFilters.getFilter("date", "last_month") &&
+            timeSinceTest <= 2592000)
         ) {
           datehide = false;
         }
@@ -1976,13 +1878,13 @@ function refreshAccountPage() {
 
         filteredResults.push(result);
       } catch (e) {
-        Misc.showNotification(
+        Notifications.add(
           "Something went wrong when filtering. Resetting filters.",
-          5000
+          0
         );
+        console.log(result);
         console.error(e);
-        config.resultFilters = defaultAccountFilters;
-        saveResultFiltersToCookie();
+        ResultFilters.reset();
         showActiveFilters();
       }
 
@@ -2331,7 +2233,7 @@ function refreshAccountPage() {
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
   if (db_getSnapshot() === null) {
-    Misc.showNotification(`Missing account data. Please refresh.`, 5000);
+    Notifications.add(`Missing account data. Please refresh.`, -1);
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
   } else if (db_getSnapshot().results === undefined) {
     db_getUserResults().then((d) => {
@@ -2349,7 +2251,7 @@ function refreshAccountPage() {
       cont();
     } catch (e) {
       console.error(e);
-      Misc.showNotification(`Something went wrong: ${e}`, 5000);
+      Notifications.add(`Something went wrong: ${e}`, -1);
     }
   }
 }
@@ -2451,7 +2353,7 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
   }).then((r) => {
     hideBackgroundLoader();
     if (r.data.resultCode === 1) {
-      Misc.showNotification("Tags updated.", 3000);
+      Notifications.add("Tags updated.", 1, 2);
       db_getSnapshot().results.forEach((result) => {
         if (result.id === resultid) {
           result.tags = newtags;
@@ -2502,7 +2404,7 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
         );
       }
     } else {
-      Misc.showNotification("Error updating tags", 3000);
+      Notifications.add("Error updating tags: " + r.data.message, -1);
     }
   });
 });
@@ -2510,3 +2412,51 @@ $("#resultEditTagsPanel .confirmButton").click((f) => {
 function updateLbMemory(mode, mode2, type, value) {
   db_getSnapshot().lbMemory[mode + mode2][type] = value;
 }
+$(".pageLogin .register input").keyup((e) => {
+  if ($(".pageLogin .register .button").hasClass("disabled")) return;
+  if (e.key == "Enter") {
+    signUp();
+  }
+});
+
+$(".pageLogin .register .button").click((e) => {
+  if ($(".pageLogin .register .button").hasClass("disabled")) return;
+  signUp();
+});
+
+$(".pageLogin .login input").keyup((e) => {
+  if (e.key == "Enter") {
+    configChangedBeforeDb = false;
+    signIn();
+  }
+});
+
+$(".pageLogin .login .button").click((e) => {
+  configChangedBeforeDb = false;
+  signIn();
+});
+
+$(".signOut").click((e) => {
+  signOut();
+});
+
+$(".pageAccount .loadMoreButton").click((e) => {
+  loadMoreLines();
+});
+
+$(".pageLogin #forgotPasswordButton").click((e) => {
+  let email = prompt("Email address");
+  if (email) {
+    firebase
+      .auth()
+      .sendPasswordResetEmail(email)
+      .then(function () {
+        // Email sent.
+        Notifications.add("Email sent", 1, 2);
+      })
+      .catch(function (error) {
+        // An error happened.
+        Notifications.add(error.message, -1);
+      });
+  }
+});

@@ -1,6 +1,6 @@
 # monkeytype
 
-![](https://github.com/Miodec/monkeytype/blob/master/static/mtsocial.png?raw=true) 
+![](https://github.com/Miodec/monkeytype/blob/master/static/mtsocial.png?raw=true)
 <br />
 
 <img align="left" alt="JavaScript" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" />
@@ -41,7 +41,7 @@ Montydrei for the name suggestion
 
 Everyone who provided valuable feedback on the original reddit post for the prototype of this website
 
-Contributors that have helped with implementing various features, adding themes and more.
+Contributors that have helped with implementing various features, adding themes and more
 
 # support
 

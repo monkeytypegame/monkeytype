@@ -49,6 +49,9 @@
 
   <body>
     <div id="backgroundLoader" style="display: none"></div>
+    <div id="notificationCenter">
+      <div class="history"></div>
+    </div>
     <div
       class="nameChangeMessage"
       style="
@@ -107,10 +110,17 @@
               generated.
             </span>
           </label>
-          <label class="wordcount">
-            Word count
-            <input type="number" value="1" min="1" max="10000" />
-          </label>
+          <div class="randomInputFields hidden">
+            <label class="wordcount">
+              Word count
+              <input type="number" value="" min="1" max="10000" />
+            </label>
+            <div style="color: var(--sub-color)">or</div>
+            <label class="time">
+              Time
+              <input type="number" value="" min="1" max="10000" />
+            </label>
+          </div>
           <label class="typographyCheck">
             <input type="checkbox" checked />
             <div class="customTextTypographyCheckbox"></div>
@@ -806,6 +816,10 @@
             <div class="text">Buy Merch</div>
           </a>
         </div>
+        <div class="subtext">
+          FYI: Ads can be broken sometimes because Google keeps disabling them.
+          :|
+        </div>
       </div>
     </div>
     <div id="commandLineWrapper" class="hidden">
@@ -1211,8 +1225,8 @@
                 </div>
               </div>
               <div id="largeLiveWpmAndAcc">
-                <div id="liveWpm">123</div>
-                <div id="liveAcc">100%%</div>
+                <div id="liveWpm" class="hidden">123</div>
+                <div id="liveAcc" class="hidden">100%%</div>
               </div>
               <div
                 id="restartTestButton"
@@ -1230,6 +1244,8 @@
                 <div class="right hidden"></div>
                 <div class="both hidden"></div>
               </div>
+              <div id="premidTestMode" class="hidden"></div>
+              <div id="premidSecondsLeft" class="hidden"></div>
             </div>
             <div id="result" class="hidden">
               <table class="tribeResult">
@@ -1479,27 +1495,25 @@
               <h1>bug report or feature request</h1>
               <p>
                 If you encounter a bug, or have a feature request - join the
-                <a href="https://discord.gg/yENzqcB" target="_blank">
-                  Discord server
-                </a>
-                , send me a message on Reddit or create an issue on
+                <a href="https://discord.gg/yENzqcB" target="_blank">Discord</a>
+                server, send me a message on Reddit or create an issue on
                 <a href="https://github.com/Miodec/monkeytype" target="_blank">
-                  GitHub
+                  GitHub.
                 </a>
-                .
               </p>
             </div>
             <div class="section">
               <h1>support</h1>
               <p>
                 If you wish to support this project, help pay for hosting and
-                fuel my caffeine addiction, you can join the
-                <a href="https://www.patreon.com/monkeytype">Patreon</a>
-                , donate via
+                fuel my caffeine addiction, you can
+                <a class="aboutEnableAds">enable ads,</a>
+                join the
+                <a href="https://www.patreon.com/monkeytype">Patreon,</a>
+                donate via
                 <a href="https://www.paypal.me/jackbartnik">PayPal</a>
                 or buy a
-                <a href="https://monkeytype.store">tshirt</a>
-                .
+                <a href="https://monkeytype.store">tshirt.</a>
               </p>
             </div>
             <div class="section">
@@ -1606,11 +1620,6 @@
               <key>esc</key>
               )
             </div>
-            <div style="text-align: center">
-              For testing purposes, account config synchronisation has been
-              temporarily disabled (only local config will be remembered). Sorry
-              for the inconvenience.
-            </div>
             <!-- <div class="sectionGroupTitle">quick navigation</div> -->
             <div class="settingsGroup quickNav">
               <div class="links">
@@ -1672,7 +1681,7 @@
                 <div class="buttons">
                   <a
                     class="button"
-                    href="https://discord.com/api/oauth2/authorize?client_id=757704816532258856&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
+                    href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
                     style="text-decoration: none"
                   >
                     Verify with Discord
@@ -2240,6 +2249,14 @@
                     onclick="this.blur();"
                   >
                     off
+                  </div>
+                  <div
+                    class="button"
+                    paceCaret="average"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    average
                   </div>
                   <div
                     class="button"

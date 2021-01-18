@@ -217,7 +217,8 @@ function updateLeaderboards() {
       }
     })
     .catch((e) => {
-      Misc.showNotification("Something went wrong", 3000);
+      hideBackgroundLoader();
+      Notifications.add("Something went wrong: " + e.message, -1);
     });
 }
 
