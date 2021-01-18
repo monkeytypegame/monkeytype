@@ -1,10 +1,16 @@
 let MP = {
   state: -1,
-  socket: io("https://tribe.monkeytype.com", {
-    // socket: io("http://localhost:3000", {
-    autoConnect: false,
-    secure: true,
-  }),
+  socket: io(
+    window.location.hostname === "localhost"
+      ? "http://localhost:3000"
+      : "https://tribe.monkeytype.com",
+    {
+      // socket: io("http://localhost:3000", {
+      autoConnect: false,
+      secure: true,
+      reconnectionAttempts: 1,
+    }
+  ),
   reconnectionAttempts: 0,
   maxReconnectionAttempts: 1,
 };
@@ -373,20 +379,16 @@ MP.socket.on("disconnect", (f) => {
   mp_resetLobby();
   $(".pageTribe div").addClass("hidden");
   $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
-  $(".pageTribe .preloader .icon").html(
-    `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
-  );
-  $(".pageTribe .preloader .text").text(`Disconnected from tribe`);
+  $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+  $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
 });
 
 MP.socket.on("connect_failed", (f) => {
   MP.state = -1;
   MP.reconnectionAttempts++;
-  if (MP.reconnectionAttempts === MP.maxReconnectionAttempts) {
-    $(".pageTribe .preloader .icon").html(
-      `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
-    );
-    $(".pageTribe .preloader .text").text(`Disconnected from tribe`);
+  if (MP.reconnectionAttempts >= MP.maxReconnectionAttempts) {
+    $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+    $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
   } else {
     $(".pageTribe .preloader .text").text("Connection failed. Retrying");
   }
@@ -396,11 +398,9 @@ MP.socket.on("connect_error", (f) => {
   MP.state = -1;
   MP.reconnectionAttempts++;
   console.error(f);
-  if (MP.reconnectionAttempts === MP.maxReconnectionAttempts) {
-    $(".pageTribe .preloader .icon").html(
-      `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
-    );
-    $(".pageTribe .preloader .text").text(`Disconnected from tribe`);
+  if (MP.reconnectionAttempts >= MP.maxReconnectionAttempts) {
+    $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+    $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
   } else {
     $(".pageTribe .preloader .text").text("Connection error. Retrying");
     Notifications.add("Tribe connection error: " + f.message, -1);
@@ -421,7 +421,7 @@ MP.socket.on("mp_room_joined", (data) => {
     //user is in prelobby and joined a room
     mp_applyRoomConfig(MP.room.config);
     mp_refreshConfig();
-    let link = "www.monkeytype.com/tribe" + MP.room.id.substring(4);
+    let link = location.host + "/tribe" + MP.room.id.substring(4);
     $(".pageTribe .lobby .inviteLink .code .text").text(
       MP.room.id.substring(5)
     );
