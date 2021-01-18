@@ -1940,6 +1940,7 @@ key {
 #copyResultToClipboardButton,
 #restartTestButtonWithSameWordset,
 #nextTestButton,
+#backToLobbyButton,
 #practiseMissedWordsButton,
 #goBackToLobbyButton {
   position: relative;
@@ -2926,6 +2927,12 @@ key {
     }
     .userlist {
       grid-area: userlist;
+      .user {
+        color: var(--text-color);
+        &.me {
+          color: var(--main-color);
+        }
+      }
     }
   }
 }
