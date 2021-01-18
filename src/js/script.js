@@ -1872,6 +1872,7 @@ function showResult(difficultyFailed = false) {
 
   if (MP.state >= 10) {
     $(".pageTest #nextTestButton").addClass("hidden");
+    $(".pageTest #backToLobbyButton").addClass("hidden");
     $(".pageTest #restartTestButtonWithSameWordset").addClass("hidden");
     $(".pageTest #goBackToLobbyButton").removeClass("hidden");
     $(".pageTest #practiseMissedWordsButton").addClass("hidden");
