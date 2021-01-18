@@ -1,11 +1,12 @@
 let MP = {
   state: -1,
-  socket: io("https://tribe.monkeytype.com", {
+  // socket: io("https://tribe.monkeytype.com", {
+  socket: io("http://localhost:3000", {
     autoConnect: false,
-    reconnectionAttempts: 3,
     secure: true,
   }),
   reconnectionAttempts: 0,
+  maxReconnectionAttempts: 1,
 };
 
 //-1 - disconnected
@@ -17,6 +18,9 @@ let MP = {
 //29 - everybody finished
 
 function mp_init() {
+  $(".pageTribe .preloader .icon").html(
+    `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
+  );
   $(".pageTribe .preloader .text").text("Connecting to Tribe");
   MP.socket.connect();
 }
@@ -65,13 +69,13 @@ function mp_applyRoomConfig(cfg) {
 function mp_checkIfCanChangeConfig(mp) {
   if (MP.state >= 10) {
     if (MP.state >= 20) {
-      Misc.showNotification("You can't change settings during the test", 3000);
+      Notifications.add("You can't change settings during the test", 0);
       return false;
     } else if (MP.room.isLeader) {
       return true;
     } else {
       if (mp) return true;
-      Misc.showNotification("Only the leader can change this setting", 3000);
+      Notifications.add("Only the leader can change this setting", 0);
       return false;
     }
   } else {
@@ -164,7 +168,7 @@ function mp_refreshTestUserList() {
     if (user.socketId === MP.socket.id) {
       me = " me";
     }
-    $(".tribeResult").append(`
+    $(".tribeResult tbody").append(`
     <tr class="player ${me}" socketId="${user.socketId}">
       <td class="name">${user.name}</td>
       <td class="wpm">-</td>
@@ -335,7 +339,7 @@ function fadeoutCountdown() {
 MP.socket.on("connect", (f) => {
   MP.state = 1;
   MP.reconnectionAttempts = 0;
-  Misc.showNotification("Connected to Tribe", 1000);
+  Notifications.add("Connected to Tribe", 1);
   let name = "Guest";
   if (firebase.auth().currentUser !== null) {
     name = firebase.auth().currentUser.displayName;
@@ -359,24 +363,24 @@ MP.socket.on("connect", (f) => {
 MP.socket.on("disconnect", (f) => {
   MP.state = -1;
   MP.room = undefined;
-  Misc.showNotification("Disconnected from Tribe", 1000);
+  Notifications.add("Disconnected from Tribe", 0);
   mp_resetLobby();
   $(".pageTribe div").addClass("hidden");
   $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
-  $(".pageTribe .preloader").html(`
-  <i class="fas fa-fw fa-times"></i>
-            <div class="text">Disconnected from tribe</div>
-            `);
+  $(".pageTribe .preloader .icon").html(
+    `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
+  );
+  $(".pageTribe .preloader .text").text(`Disconnected from tribe`);
 });
 
 MP.socket.on("connect_failed", (f) => {
   MP.state = -1;
   MP.reconnectionAttempts++;
-  if (MP.reconnectionAttempts === 4) {
-    $(".pageTribe .preloader").html(`
-    <i class="fas fa-fw fa-times" aria-hidden="true"></i>
-    <div class="text">Connection failed.</div>
-            `);
+  if (MP.reconnectionAttempts === MP.maxReconnectionAttempts) {
+    $(".pageTribe .preloader .icon").html(
+      `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
+    );
+    $(".pageTribe .preloader .text").text(`Disconnected from tribe`);
   } else {
     $(".pageTribe .preloader .text").text("Connection failed. Retrying");
   }
@@ -386,14 +390,14 @@ MP.socket.on("connect_error", (f) => {
   MP.state = -1;
   MP.reconnectionAttempts++;
   console.error(f);
-  if (MP.reconnectionAttempts === 4) {
-    $(".pageTribe .preloader").html(`
-    <i class="fas fa-fw fa-times" aria-hidden="true"></i>
-    <div class="text">Connection failed</div>
-            `);
+  if (MP.reconnectionAttempts === MP.maxReconnectionAttempts) {
+    $(".pageTribe .preloader .icon").html(
+      `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
+    );
+    $(".pageTribe .preloader .text").text(`Disconnected from tribe`);
   } else {
     $(".pageTribe .preloader .text").text("Connection error. Retrying");
-    Misc.showNotification("Tribe connection error: " + f.message, 3000);
+    Notifications.add("Tribe connection error: " + f.message, -1);
   }
 });
 
@@ -470,7 +474,7 @@ MP.socket.on("mp_chat_message", (data) => {
 });
 
 MP.socket.on("mp_system_message", (data) => {
-  Misc.showNotification(`Tribe: ${data.message}`, 2000);
+  Notifications.add(`${data.message}`, data.level, undefined, "Tribe");
 });
 
 MP.socket.on("mp_room_test_start", (data) => {
@@ -482,19 +486,19 @@ MP.socket.on("mp_room_test_start", (data) => {
       startTest();
     }
   }, 500);
-  // Misc.showNotification("test starting");
+  // Notifications.add("test starting",0);
   updateCountdown("Go");
   fadeoutCountdown();
 });
 
 MP.socket.on("mp_room_test_countdown", (data) => {
   updateCountdown(data.val);
-  // Misc.showNotification(`countdown ${data.val}`);
+  // Notifications.add(`countdown ${data.val}`,0);
 });
 
 MP.socket.on("mp_room_test_init", (data) => {
   MP.room.testStats = {};
-  seedrandom(data.seed);
+  seedrandom(data.seed, { global: true });
   mp_refreshTestUserList();
   changePage("");
   restartTest(false, true, true);
@@ -535,9 +539,15 @@ MP.socket.on("mp_room_user_finished", (data) => {
 });
 
 MP.socket.on("mp_room_winner", (data) => {
-  $(`.tribeResult [socketId=${data.socketId}] .pos`).text(
-    "1st " + data.official
-  );
+  let pos = 1;
+  data.sorted.forEach((sid) => {
+    $(`.tribeResult [socketId=${sid.sid}] .pos`).html(
+      `${pos}${Misc.getNumberSuffix(pos)} ${
+        data.official ? '<i class="fas fa-crown"></i>' : ""
+      }`
+    );
+    pos++;
+  });
 });
 
 $(".pageTribe #createPrivateRoom").click((f) => {
@@ -586,9 +596,9 @@ $(".pageTribe .lobby .inviteLink .text").click(async (e) => {
     await navigator.clipboard.writeText(
       $(".pageTribe .lobby .inviteLink .text").text()
     );
-    Misc.showNotification("Code copied", 1000);
+    Notifications.add("Code copied", 1);
   } catch (e) {
-    Misc.showNotification("Could not copy to clipboard: " + e, 5000);
+    Notifications.add("Could not copy to clipboard: " + e, -1);
   }
 });
 
@@ -597,9 +607,9 @@ $(".pageTribe .lobby .inviteLink .link").click(async (e) => {
     await navigator.clipboard.writeText(
       $(".pageTribe .lobby .inviteLink .link").text()
     );
-    Misc.showNotification("Link copied", 1000);
+    Notifications.add("Link copied", 1);
   } catch (e) {
-    Misc.showNotification("Could not copy to clipboard: " + e, 5000);
+    Notifications.add("Could not copy to clipboard: " + e, -1);
   }
 });
 
@@ -620,7 +630,7 @@ $(".pageTribe .prelobby #joinByCode input").focusout((e) => {
 $(".pageTribe .prelobby #joinByCode .button").click((e) => {
   let code = $(".pageTribe .prelobby #joinByCode input").val();
   if (code.length !== 6) {
-    Misc.showNotification("Code required", 2000);
+    Notifications.add("Code required", 0);
   } else {
     mp_joinRoomByCode(code);
   }
