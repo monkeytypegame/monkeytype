@@ -1,7 +1,7 @@
 let MP = {
   state: -1,
-  // socket: io("https://tribe.monkeytype.com", {
-  socket: io("http://localhost:3000", {
+  socket: io("https://tribe.monkeytype.com", {
+    // socket: io("http://localhost:3000", {
     autoConnect: false,
     secure: true,
   }),
