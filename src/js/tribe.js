@@ -13,6 +13,8 @@ let MP = {
   ),
   reconnectionAttempts: 0,
   maxReconnectionAttempts: 1,
+  activePage: "preloader",
+  pageTransition: false,
 };
 
 //-1 - disconnected
@@ -29,6 +31,21 @@ function mp_init() {
   );
   $(".pageTribe .preloader .text").text("Connecting to Tribe");
   MP.socket.connect();
+}
+
+function mp_changeActiveSubpage(newPage) {
+  if (MP.pageTransition) return;
+  if (newPage === MP.activePage) return;
+  MP.pageTransition = true;
+  swapElements(
+    $(`.pageTribe .${MP.activePage}`),
+    $(`.pageTribe .${newPage}`),
+    250,
+    () => {
+      MP.pageTransition = false;
+      MP.activePage = newPage;
+    }
+  );
 }
 
 function mp_refreshUserList() {
@@ -355,15 +372,15 @@ MP.socket.on("connect", (f) => {
   MP.id = MP.socket.id;
   MP.name = name;
   MP.socket.emit("mp_system_name_set", { name: name });
-  $(".pageTribe .lobby div").removeClass("hidden");
-  $(".pageTribe .prelobby div").removeClass("hidden");
   setTimeout(() => {
     if (MP.autoJoin) {
       MP.socket.emit("mp_room_join", { roomId: MP.autoJoin });
       MP.autoJoin = undefined;
-      swapElements($(".pageTribe .preloader"), $(".pageTribe .lobby"), 250);
+      mp_changeActiveSubpage("lobby");
+      // swapElements($(".pageTribe .preloader"), $(".pageTribe .lobby"), 250);
     } else {
-      swapElements($(".pageTribe .preloader"), $(".pageTribe .prelobby"), 250);
+      // swapElements($(".pageTribe .preloader"), $(".pageTribe .prelobby"), 250);
+      mp_changeActiveSubpage("prelobby");
     }
   }, 250);
 });
@@ -377,20 +394,25 @@ MP.socket.on("disconnect", (f) => {
   MP.room = undefined;
   Notifications.add("Disconnected from Tribe", 0);
   mp_resetLobby();
-  $(".pageTribe div").addClass("hidden");
-  $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
-  $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-  $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
+  mp_changeActiveSubpage("preloader");
+  // $(".pageTribe .preloader div").removeClass("hidden");
+  // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
+  // $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+  // $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
 });
 
 MP.socket.on("connect_failed", (f) => {
   MP.state = -1;
+  mp_changeActiveSubpage("preloader");
+  // $(".pageTribe .preloader div").removeClass("hidden");
+  // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
   MP.reconnectionAttempts++;
   if (MP.reconnectionAttempts >= MP.maxReconnectionAttempts) {
     $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
     $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
   } else {
     $(".pageTribe .preloader .text").text("Connection failed. Retrying");
+    Notifications.add("Tribe connection error: " + f.message, -1);
   }
 });
 
@@ -398,6 +420,9 @@ MP.socket.on("connect_error", (f) => {
   MP.state = -1;
   MP.reconnectionAttempts++;
   console.error(f);
+  mp_changeActiveSubpage("preloader");
+  // $(".pageTribe .preloader div").removeClass("hidden");
+  // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
   if (MP.reconnectionAttempts >= MP.maxReconnectionAttempts) {
     $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
     $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
@@ -426,10 +451,12 @@ MP.socket.on("mp_room_joined", (data) => {
       MP.room.id.substring(5)
     );
     $(".pageTribe .lobby .inviteLink .link").text(link);
-    swapElements($(".pageTribe .prelobby"), $(".pageTribe .lobby"), 250, () => {
-      MP.state = 10;
-      // $(".pageTribe .prelobby").addClass('hidden');
-    });
+    mp_changeActiveSubpage("lobby");
+    MP.state = 10;
+    // swapElements($(".pageTribe .prelobby"), $(".pageTribe .lobby"), 250, () => {
+    //   MP.state = 10;
+    //   // $(".pageTribe .prelobby").addClass('hidden');
+    // });
     if (MP.room.isLeader) {
       $(".pageTribe .lobby .startTestButton").removeClass("hidden");
     } else {
@@ -443,11 +470,16 @@ MP.socket.on("mp_room_leave", () => {
   MP.room = undefined;
   MP.name.replace(/\(\d\)$/g, "");
   mp_resetLobby();
-  swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
+  mp_changeActiveSubpage("prelobby");
+  // swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
 });
 
 MP.socket.on("mp_room_user_left", (data) => {
   MP.room = data.room;
+  if (data.newLeader !== "" && data.newLeader === MP.id) {
+    MP.room.isLeader = true;
+    $(".pageTribe .lobby .lobbyButtons .startTestButton").removeClass("hidden");
+  }
   mp_refreshUserList();
 });
 
@@ -514,7 +546,7 @@ MP.socket.on("mp_room_test_init", (data) => {
 
 MP.socket.on("mp_room_state_update", (data) => {
   MP.state = data.newState;
-  console.log(`state changed to ${data.newState}`);
+  Notifications.add(`state changed to ${data.newState}`, 0);
 });
 
 MP.socket.on("mp_room_user_test_progress_update", (data) => {
@@ -542,7 +574,9 @@ MP.socket.on("mp_room_user_finished", (data) => {
   );
   $(`.tribeResult [socketId=${data.socketId}] .raw`).text(data.result.raw);
   $(`.tribeResult [socketId=${data.socketId}] .char`).text(data.result.char);
-  $(`.tribeResult [socketId=${data.socketId}] .con`).text(data.result.con);
+  $(`.tribeResult [socketId=${data.socketId}] .con`).text(
+    data.result.con + "%"
+  );
 });
 
 MP.socket.on("mp_room_winner", (data) => {
@@ -558,7 +592,7 @@ MP.socket.on("mp_room_winner", (data) => {
 });
 
 MP.socket.on("mp_room_back_to_lobby", (data) => {
-  swapElements($(".pageTest"), $(".pageTribe"), 250);
+  changePage("tribe");
 });
 
 $(".pageTribe #createPrivateRoom").click((f) => {
