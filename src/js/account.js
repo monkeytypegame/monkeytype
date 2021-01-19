@@ -216,6 +216,8 @@ firebase.auth().onAuthStateChanged(function (user) {
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
 
+    MP.name = displayName;
+
     showFavouriteThemesAtTheTop();
 
     let text = "Account created on " + user.metadata.creationTime;
