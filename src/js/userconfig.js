@@ -104,23 +104,20 @@ async function saveConfigToCookie(noDbCheck = false) {
 }
 
 async function saveConfigToDB() {
-  // if (firebase.auth().currentUser !== null) {
-  //   accountIconLoading(true);
-  //   CloudFunctions.saveConfig({
-  //     uid: firebase.auth().currentUser.uid,
-  //     obj: config,
-  //   }).then((d) => {
-  //     accountIconLoading(false);
-  //     if (d.data.returnCode === 1) {
-  //     } else {
-  //       Misc.showNotification(
-  //         `Error saving config to DB! ${d.data.message}`,
-  //         4000
-  //       );
-  //     }
-  //     return;
-  //   });
-  // }
+  if (firebase.auth().currentUser !== null) {
+    accountIconLoading(true);
+    CloudFunctions.saveConfig({
+      uid: firebase.auth().currentUser.uid,
+      obj: config,
+    }).then((d) => {
+      accountIconLoading(false);
+      if (d.data.returnCode === 1) {
+      } else {
+        Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
+      }
+      return;
+    });
+  }
 }
 
 function resetConfig() {
@@ -680,7 +677,7 @@ function setHighlightMode(mode, nosave) {
     mode === "word" &&
     (activeFunBox === "nospace" || activeFunBox === "read_ahead")
   ) {
-    Misc.showNotification("Can't use word highlight with this funbox", 3000);
+    Notifications.add("Can't use word highlight with this funbox", 0);
     return;
   }
   if (mode == null || mode == undefined) {
@@ -1145,7 +1142,7 @@ function randomiseTheme() {
       randomList = config.favThemes;
     randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
     setTheme(randomTheme, true);
-    Misc.showNotification(randomTheme.replace(/_/g, " "), 1500);
+    Notifications.add(randomTheme.replace(/_/g, " "), 0);
   });
 }
 
@@ -1482,8 +1479,7 @@ function setFontSize(fontSize, nosave) {
 
 function applyConfig(configObj) {
   if (configObj == null || configObj == undefined) {
-    Misc.showNotification("Could not apply config", 1000);
-    console.error("configobj is null or undefined");
+    Notifications.add("Could not apply config", -1);
     return;
   }
   Object.keys(defaultConfig).forEach((configKey) => {

@@ -1,9 +1,11 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 let key = "./serviceAccountKey.json";
+let origin = "http://localhost:5000";
 
 if (process.env.GCLOUD_PROJECT === "monkey-type") {
   key = "./serviceAccountKey_live.json";
+  origin = "https://monkeytype.com";
 }
 
 var serviceAccount = require(key);
@@ -133,14 +135,36 @@ exports.clearName = functions.auth.user().onDelete((user) => {
   db.collection("users").doc(user.uid).delete();
 });
 
-exports.checkNameAvailability = functions.https.onCall(
+exports.checkNameAvailability = functions.https.onRequest(
   async (request, response) => {
+    response.set("Access-Control-Allow-Origin", origin);
+    if (request.method === "OPTIONS") {
+      // Send response to OPTIONS requests
+      response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      response.set(
+        "Access-Control-Allow-Headers",
+        "Authorization,Content-Type"
+      );
+      response.set("Access-Control-Max-Age", "3600");
+      response.status(204).send("");
+      return;
+    }
+    request = request.body.data;
+
     // 1 - available
     // -1 - unavailable (taken)
     // -2 - not valid name
     // -999 - unknown error
     try {
-      if (!isUsernameValid(request.name)) return -2;
+      if (!isUsernameValid(request.name)) {
+        response.status(200).send({
+          data: {
+            resultCode: -2,
+            message: "Username is not valid",
+          },
+        });
+        return;
+      }
 
       let takendata = await db
         .collection("takenNames")
@@ -150,9 +174,21 @@ exports.checkNameAvailability = functions.https.onCall(
       takendata = takendata.data();
 
       if (takendata !== undefined && takendata.taken) {
-        return -1;
+        response.status(200).send({
+          data: {
+            resultCode: -1,
+            message: "Username is taken",
+          },
+        });
+        return;
       } else {
-        return 1;
+        response.status(200).send({
+          data: {
+            resultCode: 1,
+            message: "Username is available",
+          },
+        });
+        return;
       }
 
       // return getAllNames().then((data) => {
@@ -167,8 +203,17 @@ exports.checkNameAvailability = functions.https.onCall(
       //   return available;
       // });
     } catch (e) {
-      console.log(e.message);
-      return -999;
+      console.error(
+        `Error while checking name availability for ${request.name}:` +
+          e.message
+      );
+      response.status(200).send({
+        data: {
+          resultCode: -999,
+          message: "Unexpected error: " + e,
+        },
+      });
+      return;
     }
   }
 );
@@ -456,7 +501,7 @@ function checkIfPB(uid, obj, userdata) {
   }
 }
 
-async function checkIfTagPB(uid, obj) {
+async function checkIfTagPB(uid, obj, userdata) {
   if (obj.tags.length === 0) {
     return [];
   }
@@ -471,23 +516,151 @@ async function checkIfTagPB(uid, obj) {
         dbtags.push(data);
       }
     });
-  } catch (e) {
+  } catch {
     return [];
   }
-  let wpm = obj.wpm;
+
   let ret = [];
   for (let i = 0; i < dbtags.length; i++) {
-    let dbtag = dbtags[i];
-    if (dbtag.pb === undefined || dbtag.pb < wpm) {
-      //no pb found, meaning this one is a pb
-      await db.collection(`users/${uid}/tags`).doc(dbtag.id).update({
-        pb: wpm,
+    let pbs = null;
+    try {
+      pbs = dbtags[i].personalBests;
+      if (pbs === undefined) {
+        throw new Error("pb is undefined");
+      }
+    } catch (e) {
+      //undefined personal best = new personal best
+      db.collection(`users/${uid}/tags`)
+        .doc(dbtags[i].id)
+        .set(
+          {
+            personalBests: {
+              [obj.mode]: {
+                [obj.mode2]: [
+                  {
+                    language: obj.language,
+                    difficulty: obj.difficulty,
+                    punctuation: obj.punctuation,
+                    wpm: obj.wpm,
+                    acc: obj.acc,
+                    raw: obj.rawWpm,
+                    timestamp: Date.now(),
+                    consistency: obj.consistency,
+                  },
+                ],
+              },
+            },
+          },
+          { merge: true }
+        )
+        .then((e) => {
+          ret.push(dbtags[i].id);
+        });
+      continue;
+    }
+    let toUpdate = false;
+    let found = false;
+    try {
+      if (pbs[obj.mode][obj.mode2] === undefined) {
+        pbs[obj.mode][obj.mode2] = [];
+      }
+      pbs[obj.mode][obj.mode2].forEach((pb) => {
+        if (
+          pb.punctuation === obj.punctuation &&
+          pb.difficulty === obj.difficulty &&
+          pb.language === obj.language
+        ) {
+          //entry like this already exists, compare wpm
+          found = true;
+          if (pb.wpm < obj.wpm) {
+            //new pb
+            pb.wpm = obj.wpm;
+            pb.acc = obj.acc;
+            pb.raw = obj.rawWpm;
+            pb.timestamp = Date.now();
+            pb.consistency = obj.consistency;
+            toUpdate = true;
+          } else {
+            //no pb
+            return false;
+          }
+        }
       });
-      ret.push(dbtag.id);
+      //checked all pbs, nothing found - meaning this is a new pb
+      if (!found) {
+        pbs[obj.mode][obj.mode2].push({
+          language: obj.language,
+          difficulty: obj.difficulty,
+          punctuation: obj.punctuation,
+          wpm: obj.wpm,
+          acc: obj.acc,
+          raw: obj.rawWpm,
+          timestamp: Date.now(),
+          consistency: obj.consistency,
+        });
+        toUpdate = true;
+      }
+    } catch (e) {
+      // console.log(e);
+      pbs[obj.mode] = {};
+      pbs[obj.mode][obj.mode2] = [
+        {
+          language: obj.language,
+          difficulty: obj.difficulty,
+          punctuation: obj.punctuation,
+          wpm: obj.wpm,
+          acc: obj.acc,
+          raw: obj.rawWpm,
+          timestamp: Date.now(),
+          consistency: obj.consistency,
+        },
+      ];
+      toUpdate = true;
+    }
+
+    if (toUpdate) {
+      db.collection(`users/${uid}/tags`)
+        .doc(dbtags[i].id)
+        .update({ personalBests: pbs });
+      ret.push(dbtags[i].id);
     }
   }
   return ret;
 }
+
+//old
+// async function checkIfTagPB(uid, obj) {
+//   if (obj.tags.length === 0) {
+//     return [];
+//   }
+//   let dbtags = [];
+//   let restags = obj.tags;
+//   try {
+//     let snap = await db.collection(`users/${uid}/tags`).get();
+//     snap.forEach((doc) => {
+//       if (restags.includes(doc.id)) {
+//         let data = doc.data();
+//         data.id = doc.id;
+//         dbtags.push(data);
+//       }
+//     });
+//   } catch (e) {
+//     return [];
+//   }
+//   let wpm = obj.wpm;
+//   let ret = [];
+//   for (let i = 0; i < dbtags.length; i++) {
+//     let dbtag = dbtags[i];
+//     if (dbtag.pb === undefined || dbtag.pb < wpm) {
+//       //no pb found, meaning this one is a pb
+//       await db.collection(`users/${uid}/tags`).doc(dbtag.id).update({
+//         pb: wpm,
+//       });
+//       ret.push(dbtag.id);
+//     }
+//   }
+//   return ret;
+// }
 
 exports.clearTagPb = functions.https.onCall((request, response) => {
   try {
@@ -588,14 +761,14 @@ function validateResult(result) {
 }
 
 exports.requestTest = functions.https.onRequest((request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Origin", origin);
   response.set("Access-Control-Allow-Headers", "*");
   response.set("Access-Control-Allow-Credentials", "true");
   response.status(200).send({ data: "test" });
 });
 
 exports.getPatreons = functions.https.onRequest(async (request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Origin", origin);
   response.set("Access-Control-Allow-Headers", "*");
   response.set("Access-Control-Allow-Credentials", "true");
   if (request.method === "OPTIONS") {
@@ -629,7 +802,7 @@ exports.getPatreons = functions.https.onRequest(async (request, response) => {
 });
 
 exports.verifyUser = functions.https.onRequest(async (request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Origin", origin);
   response.set("Access-Control-Allow-Headers", "*");
   response.set("Access-Control-Allow-Credentials", "true");
   if (request.method === "OPTIONS") {
@@ -1002,7 +1175,7 @@ async function incrementTimeSpentTyping(uid, res, userData) {
 }
 
 exports.testCompleted = functions.https.onRequest(async (request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Origin", origin);
   if (request.method === "OPTIONS") {
     // Send response to OPTIONS requests
     response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
@@ -1055,7 +1228,13 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       return;
     }
 
-    if (obj.wpm <= 0 || obj.wpm > 350 || obj.acc < 50 || obj.acc > 100) {
+    if (
+      obj.wpm <= 0 ||
+      obj.wpm > 350 ||
+      obj.acc < 50 ||
+      obj.acc > 100 ||
+      obj.consistency > 100
+    ) {
       response.status(200).send({ data: { resultCode: -1 } });
       return;
     }
@@ -1426,12 +1605,12 @@ exports.addTag = functions.https.onCall((request, response) => {
           console.error(
             `error while creating tag for user ${request.uid}: ${e.message}`
           );
-          return { resultCode: -999 };
+          return { resultCode: -999, message: e.message };
         });
     }
   } catch (e) {
     console.error(`error adding tag for ${request.uid} - ${e}`);
-    return { resultCode: -999 };
+    return { resultCode: -999, message: e.message };
   }
 });
 
@@ -1456,12 +1635,12 @@ exports.editTag = functions.https.onCall((request, response) => {
           console.error(
             `error while updating tag for user ${request.uid}: ${e.message}`
           );
-          return { resultCode: -999 };
+          return { resultCode: -999, message: e.message };
         });
     }
   } catch (e) {
     console.error(`error updating tag for ${request.uid} - ${e}`);
-    return { resultCode: -999 };
+    return { resultCode: -999, message: e.message };
   }
 });
 
@@ -1522,7 +1701,7 @@ exports.updateResultTags = functions.https.onCall((request, response) => {
     }
   } catch (e) {
     console.error(`error updating tags by ${request.uid} - ${e}`);
-    return { resultCode: -999 };
+    return { resultCode: -999, message: e };
   }
 });
 
@@ -1984,7 +2163,7 @@ class Leaderboard {
 //   });
 
 exports.unlinkDiscord = functions.https.onRequest((request, response) => {
-  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Origin", origin);
   if (request.method === "OPTIONS") {
     // Send response to OPTIONS requests
     response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");

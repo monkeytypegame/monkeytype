@@ -50,7 +50,7 @@ function hexToHSL(H) {
 let themesList = null;
 export async function getThemesList() {
   if (themesList == null) {
-    return $.getJSON("themes/list.json", function (data) {
+    return $.getJSON("themes/_list.json", function (data) {
       const list = data.sort(function (a, b) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
@@ -87,7 +87,7 @@ export async function getSortedThemesList() {
 let funboxList = null;
 export async function getFunboxList() {
   if (funboxList == null) {
-    return $.getJSON("funbox/list.json", function (data) {
+    return $.getJSON("funbox/_list.json", function (data) {
       funboxList = data.sort(function (a, b) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
@@ -105,7 +105,7 @@ export async function getFunboxList() {
 let fontsList = null;
 export async function getFontsList() {
   if (fontsList == null) {
-    return $.getJSON("js/fonts.json", function (data) {
+    return $.getJSON("fonts/_list.json", function (data) {
       fontsList = data.sort(function (a, b) {
         const nameA = a.name.toLowerCase();
         const nameB = b.name.toLowerCase();
@@ -123,7 +123,7 @@ export async function getFontsList() {
 let languageList = null;
 export async function getLanguageList() {
   if (languageList == null) {
-    return $.getJSON("languages/list.json", function (data) {
+    return $.getJSON("languages/_list.json", function (data) {
       languageList = data;
       return languageList;
     });
@@ -135,7 +135,7 @@ export async function getLanguageList() {
 let challengeList = null;
 export async function getChallengeList() {
   if (challengeList == null) {
-    return $.getJSON("challenges/list.json", function (data) {
+    return $.getJSON("challenges/_list.json", function (data) {
       challengeList = data;
       return challengeList;
     });

@@ -473,9 +473,10 @@ function hideCustomThemeShare() {
         $("#customThemeShareWrapper input").val()
       );
     } catch (e) {
-      Misc.showNotification(
+      Notifications.add(
         "Something went wrong. Reverting to default custom colors.",
-        3000
+        0,
+        4
       );
       config.customThemeColors = defaultConfig.customThemeColors;
     }
@@ -524,12 +525,12 @@ $("#shareCustomThemeButton").click((e) => {
       Misc.objectToQueryString({ customTheme: share });
     navigator.clipboard.writeText(url).then(
       function () {
-        Misc.showNotification("URL Copied to clipboard", 2000);
+        Notifications.add("URL Copied to clipboard", 0);
       },
       function (err) {
-        Misc.showNotification(
+        Notifications.add(
           "Something went wrong when copying the URL: " + err,
-          5000
+          -1
         );
       }
     );
@@ -583,7 +584,7 @@ function refreshTagsSettingsSection() {
                   </div>
                   <div class="title">${tag.name}</div>
                   <div class="editButton"><i class="fas fa-pen"></i></div>
-                  <div class="clearPbButton" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
+                  <div class="clearPbButton hidden" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
                   <div class="removeButton"><i class="fas fa-trash"></i></div>
               </div>
 
@@ -597,7 +598,7 @@ function refreshTagsSettingsSection() {
                   </div>
                   <div class="title">${tag.name}</div>
                   <div class="editButton"><i class="fas fa-pen"></i></div>
-                  <div class="clearPbButton" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
+                  <div class="clearPbButton hidden" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
                   <div class="removeButton"><i class="fas fa-trash"></i></div>
               </div>
 
@@ -766,7 +767,7 @@ $(
     })
     .catch((e) => {
       hideBackgroundLoader();
-      Misc.showNotification("Something went wrong. Error: " + e.message, 4000);
+      Notifications.add("Something went wrong. Error: " + e.message, -1);
     });
 });
 
@@ -781,13 +782,10 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
         console.log(ret);
         if (ret.data.status === 1) {
           db_getSnapshot().discordId = null;
-          Misc.showNotification("Accounts unlinked", 2000);
+          Notifications.add("Accounts unlinked", 0);
           updateDiscordSettingsSection();
         } else {
-          Misc.showNotification(
-            "Something went wrong: " + ret.data.message,
-            5000
-          );
+          Notifications.add("Something went wrong: " + ret.data.message, -1);
           updateDiscordSettingsSection();
         }
       });
@@ -908,7 +906,7 @@ $(".pageSettings .saveCustomThemeButton").click((e) => {
     }
   );
   setCustomThemeColors(save);
-  Misc.showNotification("Custom theme colors saved", 1000);
+  Notifications.add("Custom theme colors saved", 0);
 });
 
 $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
@@ -960,12 +958,12 @@ $("#exportSettingsButton").click((e) => {
   let configJSON = JSON.stringify(config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
-      Misc.showNotification("JSON Copied to clipboard", 2000);
+      Notifications.add("JSON Copied to clipboard", 0);
     },
     function (err) {
-      Misc.showNotification(
+      Notifications.add(
         "Something went wrong when copying the settings JSON: " + err,
-        5000
+        -1
       );
     }
   );
@@ -991,9 +989,9 @@ function hideSettingsImport() {
       try {
         applyConfig(JSON.parse($("#settingsImportWrapper input").val()));
       } catch (e) {
-        Misc.showNotification(
+        Notifications.add(
           "An error occured while importing settings: " + e,
-          5000
+          -1
         );
       }
       saveConfigToCookie();

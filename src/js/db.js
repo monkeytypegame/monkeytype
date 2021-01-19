@@ -45,6 +45,9 @@ export async function db_getUserSnapshot() {
         data.docs.forEach((doc) => {
           let tag = doc.data();
           tag.id = doc.id;
+          if (tag.personalBests === undefined) {
+            tag.personalBests = {};
+          }
           snap.tags.push(tag);
         });
         snap.tags = snap.tags.sort((a, b) => {
@@ -305,14 +308,27 @@ export async function db_saveLocalPB(
   }
 }
 
-export async function db_getLocalTagPB(tagId) {
+export async function db_getLocalTagPB(
+  tagId,
+  mode,
+  mode2,
+  punctuation,
+  language,
+  difficulty
+) {
   function cont() {
     let ret = 0;
+    let filteredtag = dbSnapshot.tags.filter((t) => t.id === tagId)[0];
     try {
-      ret = dbSnapshot.tags.filter((t) => t.id === tagId)[0].pb;
-      if (ret == undefined) {
-        ret = 0;
-      }
+      filteredtag.personalBests[mode][mode2].forEach((pb) => {
+        if (
+          pb.punctuation == punctuation &&
+          pb.difficulty == difficulty &&
+          pb.language == language
+        ) {
+          ret = pb.wpm;
+        }
+      });
       return ret;
     } catch (e) {
       return ret;
@@ -320,22 +336,114 @@ export async function db_getLocalTagPB(tagId) {
   }
 
   let retval;
-  if (dbSnapshot != null) {
+  if (dbSnapshot == null) {
+    retval = 0;
+  } else {
     retval = cont();
   }
   return retval;
 }
 
-export async function db_saveLocalTagPB(tagId, wpm) {
+export async function db_saveLocalTagPB(
+  tagId,
+  mode,
+  mode2,
+  punctuation,
+  language,
+  difficulty,
+  wpm,
+  acc,
+  raw,
+  consistency
+) {
   function cont() {
-    dbSnapshot.tags.forEach((tag) => {
-      if (tag.id === tagId) {
-        tag.pb = wpm;
+    let filteredtag = dbSnapshot.tags.filter((t) => t.id === tagId)[0];
+    try {
+      let found = false;
+      if (filteredtag.personalBests[mode][mode2] === undefined) {
+        filteredtag.personalBests[mode][mode2] = [];
       }
-    });
+      filteredtag.personalBests[mode][mode2].forEach((pb) => {
+        if (
+          pb.punctuation == punctuation &&
+          pb.difficulty == difficulty &&
+          pb.language == language
+        ) {
+          found = true;
+          pb.wpm = wpm;
+          pb.acc = acc;
+          pb.raw = raw;
+          pb.timestamp = Date.now();
+          pb.consistency = consistency;
+        }
+      });
+      if (!found) {
+        //nothing found
+        filteredtag.personalBests[mode][mode2].push({
+          language: language,
+          difficulty: difficulty,
+          punctuation: punctuation,
+          wpm: wpm,
+          acc: acc,
+          raw: raw,
+          timestamp: Date.now(),
+          consistency: consistency,
+        });
+      }
+    } catch (e) {
+      //that mode or mode2 is not found
+      filteredtag.personalBests[mode] = {};
+      filteredtag.personalBests[mode][mode2] = [
+        {
+          language: language,
+          difficulty: difficulty,
+          punctuation: punctuation,
+          wpm: wpm,
+          acc: acc,
+          raw: raw,
+          timestamp: Date.now(),
+          consistency: consistency,
+        },
+      ];
+    }
   }
 
   if (dbSnapshot != null) {
     cont();
   }
 }
+
+// export async function db_getLocalTagPB(tagId) {
+//   function cont() {
+//     let ret = 0;
+//     try {
+//       ret = dbSnapshot.tags.filter((t) => t.id === tagId)[0].pb;
+//       if (ret == undefined) {
+//         ret = 0;
+//       }
+//       return ret;
+//     } catch (e) {
+//       return ret;
+//     }
+//   }
+
+//   let retval;
+//   if (dbSnapshot != null) {
+//     retval = cont();
+//   }
+//   return retval;
+// }
+
+// export async function db_saveLocalTagPB(tagId, wpm) {
+//   function cont() {
+//     dbSnapshot.tags.forEach((tag) => {
+//       if (tag.id === tagId) {
+//         tag.pb = wpm;
+//       }
+//     });
+//   }
+
+//   if (dbSnapshot != null) {
+//     cont();
+//   }
+// }

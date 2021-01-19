@@ -415,6 +415,13 @@ a:hover {
       justify-items: left;
     }
 
+    .randomInputFields {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      text-align: center;
+      align-items: center;
+    }
+
     .check {
       span {
         display: block;
@@ -693,6 +700,82 @@ a:hover {
           margin-bottom: 2rem;
         }
       }
+    }
+  }
+}
+
+#notificationCenter {
+  width: 350px;
+  z-index: 99999999;
+  display: grid;
+  gap: 1rem;
+  position: fixed;
+  right: 1rem;
+  top: 1rem;
+  .history {
+    display: grid;
+    gap: 1rem;
+  }
+  .notif {
+    .icon {
+      color: var(--bg-color);
+      opacity: 0.5;
+      padding: 1rem 1rem;
+      align-items: center;
+      display: grid;
+      font-size: 1.25rem;
+    }
+    .message {
+      padding: 1rem 1rem 1rem 0;
+      .title {
+        color: var(--bg-color);
+        font-size: 0.75em;
+        opacity: 0.5;
+        line-height: 0.75rem;
+      }
+    }
+
+    position: relative;
+    background: var(--sub-color);
+    color: var(--bg-color);
+    display: grid;
+    grid-template-columns: min-content auto min-content;
+    border-radius: var(--roundness);
+    border-width: 0.25rem;
+
+    &.bad {
+      background-color: var(--error-color);
+    }
+
+    &.good {
+      background-color: var(--main-color);
+    }
+
+    &:hover {
+      // opacity: .5;
+      // box-shadow: 0 0 20px rgba(0,0,0,.25);
+      cursor: pointer;
+      &::after {
+        opacity: 1;
+      }
+    }
+    &::after {
+      transition: 0.125s;
+      font-family: "Font Awesome 5 Free";
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      font-weight: 900;
+      content: "\f00d";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      color: var(--bg-color);
+      font-size: 2.5rem;
+      display: grid;
+      /* align-self: center; */
+      align-items: center;
+      text-align: center;
+      border-radius: var(--roundness);
     }
   }
 }
@@ -1704,6 +1787,10 @@ key {
   user-select: none;
   padding-bottom: 1em;
 
+  .newline {
+    width: inherit;
+  }
+
   letter {
     border-bottom-style: solid;
     border-bottom-width: 0.05em;
@@ -1711,6 +1798,11 @@ key {
     &.dead {
       border-bottom-width: 0.05em;
       border-bottom-color: var(--sub-color);
+    }
+    &.tabChar,
+    &.nlChar {
+      margin: 0 0.25rem;
+      opacity: 0.2;
     }
   }
 
@@ -1970,6 +2062,14 @@ key {
     display: inline-block;
   }
 
+  &.lastbeforenewline::after {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 600;
+    content: "\f107";
+    margin-left: 0.5rem;
+    opacity: 0.25;
+  }
+
   // transition: .25s;
   .wordInputAfter {
     opacity: 1;
@@ -2043,6 +2143,10 @@ key {
 .word letter.corrected {
   color: var(--text-color);
   border-bottom: 2px dotted var(--main-color);
+}
+
+.word letter.extraCorrected {
+  border-right: 2px dotted var(--main-color);
 }
 
 .word letter.incorrect {

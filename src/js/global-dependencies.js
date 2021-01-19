@@ -25,4 +25,5 @@ import * as Misc from "./misc";
 import * as CloudFunctions from "./cloud-functions";
 import layouts from "./layouts";
 import * as Monkey from "./monkey";
+import * as Notifications from "./notification-center";
 import * as ResultFilters from "./result-filters";
