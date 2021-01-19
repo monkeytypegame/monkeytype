@@ -717,7 +717,7 @@ $(".pageTribe .prelobby #joinByCode input").focusout((e) => {
 });
 
 $(".pageTribe .prelobby #joinByCode .button").click((e) => {
-  let code = $(".pageTribe .prelobby #joinByCode input").val();
+  let code = $(".pageTribe .prelobby #joinByCode input").val().toLowerCase();
   if (code.length !== 6) {
     Notifications.add("Code required", 0);
   } else {
