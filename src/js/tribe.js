@@ -531,7 +531,7 @@ MP.socket.on("mp_chat_message", (data) => {
           $(".pageTest #result .tribeResultChat .chat .messages .message")[0]
         ).outerHeight() *
         2 *
-        $(".pageTest #result .tribeResultChat .chat .messages").length,
+        $(".pageTest #result .tribeResultChat .chat .messages .message").length,
     },
     0
   );
