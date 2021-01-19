@@ -1876,6 +1876,7 @@ function showResult(difficultyFailed = false) {
     $(".pageTest #restartTestButtonWithSameWordset").addClass("hidden");
     $(".pageTest #goBackToLobbyButton").removeClass("hidden");
     $(".pageTest #practiseMissedWordsButton").addClass("hidden");
+    $(".pageTest #result .tribeResultChat").removeClass("hidden");
     if (MP.room.isLeader) {
       $(".pageTest #backToLobbyButton").removeClass("hidden");
       $(".pageTest #nextTestButton").removeClass("hidden");
@@ -1886,6 +1887,7 @@ function showResult(difficultyFailed = false) {
     $(".pageTest #restartTestButtonWithSameWordset").removeClass("hidden");
     $(".pageTest #goBackToLobbyButton").addClass("hidden");
     $(".pageTest #practiseMissedWordsButton").removeClass("hidden");
+    $(".pageTest #result .tribeResultChat").addClass("hidden");
   }
 
   $("#result #resultWordsHistory").addClass("hidden");
@@ -4949,8 +4951,6 @@ $(document).keyup(() => {
 });
 
 $(document).keydown(function (event) {
-  if (MP.state >= 10 && MP.state <= 20) return;
-
   if (!resultVisible) {
     let now = performance.now();
     let diff = Math.abs(keypressStats.spacing.current - now);
@@ -4979,6 +4979,11 @@ $(document).keydown(function (event) {
   ) {
     focusWords();
     if (config.showOutOfFocusWarning) return;
+  }
+
+  if (MP.state == 20) {
+    event.preventDefault();
+    return;
   }
 
   //tab
@@ -5114,10 +5119,14 @@ function handleTab(event) {
     !config.quickTab &&
     textHasTab &&
     event.shiftKey &&
-    !resultVisible
+    !resultVisible &&
+    MP.state < 20
   ) {
     event.preventDefault();
     $("#restartTestButton").focus();
+  } else if (MP.state >= 20) {
+    event.preventDefault();
+    return;
   }
 }
 

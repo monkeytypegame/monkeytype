@@ -1504,7 +1504,9 @@ key {
   grid-template-areas:
     "tribe tribe"
     "stats chart"
-    "morestats morestats";
+    "morestats morestats"
+    "buttons buttons"
+    "tribe-chat tribe-chat";
   // "wordsHistory wordsHistory"
   // "buttons buttons"
   // "login login"
@@ -1513,6 +1515,7 @@ key {
   .buttons {
     display: grid;
     grid-auto-flow: column;
+    grid-area: buttons;
     gap: 1rem;
     justify-content: center;
     // grid-area: buttons;
@@ -1575,6 +1578,10 @@ key {
         color: var(--main-color);
       }
     }
+  }
+
+  .tribeResultChat {
+    grid-area: tribe-chat;
   }
 
   .stats {
@@ -2762,6 +2769,50 @@ key {
   }
 }
 
+.pageTribe .lobby,
+.pageTest #result {
+  .tribeResultChat {
+    display: grid;
+    grid-template-areas: "chat userlist";
+    grid-template-columns: 3fr 1fr;
+    gap: 2rem;
+  }
+  .title {
+    color: var(--sub-color);
+  }
+  .chat {
+    grid-area: chat;
+    gap: 1rem;
+    .messages {
+      height: 200px;
+      overflow-y: scroll;
+      .systemMessage {
+        color: var(--sub-color);
+      }
+      .message {
+        display: flex;
+        gap: 0.5rem;
+        color: var(--text-color);
+        .author {
+          color: var(--main-color);
+        }
+      }
+    }
+    .input input {
+      width: 100%;
+    }
+  }
+  .userlist {
+    grid-area: userlist;
+    .user {
+      color: var(--text-color);
+      &.me {
+        color: var(--main-color);
+      }
+    }
+  }
+}
+
 .pageTribe {
   display: grid;
   gap: 1rem;
@@ -2884,28 +2935,6 @@ key {
         }
       }
     }
-    .chat {
-      grid-area: chat;
-      gap: 1rem;
-      .messages {
-        height: 200px;
-        overflow-y: scroll;
-        .systemMessage {
-          color: var(--sub-color);
-        }
-        .message {
-          display: flex;
-          gap: 0.5rem;
-          color: var(--text-color);
-          .author {
-            color: var(--main-color);
-          }
-        }
-      }
-      .input input {
-        width: 100%;
-      }
-    }
     .inviteLink {
       grid-area: inviteLink;
       text-align: center;
@@ -2923,15 +2952,6 @@ key {
       .link {
         font-size: 0.75rem;
         cursor: pointer;
-      }
-    }
-    .userlist {
-      grid-area: userlist;
-      .user {
-        color: var(--text-color);
-        &.me {
-          color: var(--main-color);
-        }
       }
     }
   }
