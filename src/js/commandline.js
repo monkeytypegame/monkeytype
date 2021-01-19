@@ -620,10 +620,6 @@ let commands = {
               display: "Yes, I am sure",
               exec: () => {
                 bailout = true;
-                if (config.mode == "zen" && currentInput.length != 0) {
-                  inputHistory.push(currentInput);
-                  correctedHistory.push(currentCorrected);
-                }
                 showResult();
               },
               available: () => {

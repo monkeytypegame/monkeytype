@@ -1233,7 +1233,7 @@ function highlightBadWord(index, showError) {
 
 function showTimer() {
   let op = config.showTimerProgress ? config.timerOpacity : 0;
-  if (config.timerStyle === "bar") {
+  if (config.mode != "zen" && config.timerStyle === "bar") {
     $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
       {
         opacity: op,
@@ -1251,7 +1251,7 @@ function showTimer() {
         },
         125
       );
-  } else if (config.timerStyle === "mini") {
+  } else if (config.mode == "zen" || config.timerStyle === "mini") {
     if (op > 0) {
       $("#miniTimerAndLiveWpm .time")
         .stop(true, true)
@@ -1408,6 +1408,12 @@ function updateTimer() {
       } else {
         $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}/${outof}`);
       }
+    }
+  } else if (config.mode == "zen") {
+    if (config.timerStyle === "text") {
+      $("#timerNumber").html("<div>" + `${inputHistory.length}` + "</div>");
+    } else {
+      $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}`);
     }
   }
 }
@@ -1797,7 +1803,6 @@ function calculateStats() {
       (accuracyStats.correct + accuracyStats.incorrect)) *
       100
   );
-  console.log(acc);
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
@@ -1849,6 +1854,11 @@ function failTest() {
 
 let resultCalculating = false;
 function showResult(difficultyFailed = false) {
+  if (config.mode == "zen" && currentInput.length != 0) {
+    inputHistory.push(currentInput);
+    correctedHistory.push(currentCorrected);
+  }
+
   resultCalculating = true;
   resultVisible = true;
   testEnd = performance.now();
@@ -3257,11 +3267,6 @@ function setMode(mode, nosave) {
     return;
   }
 
-  if (config.mode === "zen" && mode !== "zen") {
-    console.log("Toggling timer");
-    toggleShowTimerProgress();
-  }
-
   config.mode = mode;
   $("#top .config .mode .text-button").removeClass("active");
   $("#top .config .mode .text-button[mode='" + mode + "']").addClass("active");
@@ -3312,8 +3317,6 @@ function setMode(mode, nosave) {
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
-    hideLiveWpm();
-    config.showTimerProgress = false;
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -5330,7 +5333,8 @@ function handleSpace(event, isEnter) {
   if (
     config.mode === "words" ||
     config.mode === "custom" ||
-    config.mode === "quote"
+    config.mode === "quote" ||
+    config.mode === "zen"
   ) {
     updateTimer();
   }
@@ -5407,6 +5411,9 @@ function handleAlpha(event) {
   }
 
   if (event.key === "Enter") {
+    if (event.shiftKey && config.mode == "zen") {
+      showResult();
+    }
     event.key = "\n";
   }
 
