@@ -4797,12 +4797,20 @@ $(document.body).on("click", "#showWordHistoryButton", () => {
 });
 
 $(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
+  if (config.mode == "zen") {
+    Notifications.add("Repeat test disabled in zen mode");
+    return;
+  }
   manualRestart = true;
 
   restartTest(true);
 });
 
 $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
+  if (config.mode == "zen") {
+    Notifications.add("Repeat test disabled in zen mode");
+    return;
+  }
   if (event.keyCode == 13) {
     restartTest(true);
   }
