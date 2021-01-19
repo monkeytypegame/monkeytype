@@ -1,0 +1,29 @@
+{
+  "language": "swedish",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "Det är mycket nog, det, sade modern, liksom glad över att hon ändå inte haft alldeles fel. Därpå drog de sig allesammans in till det i kammarn framställda kaffet.",
+      "source": "Ivar Lo-Johansson, Kungsgatan",
+      "length": 162,
+      "id": 1
+    }
+  ]
+}
