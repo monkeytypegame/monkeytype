@@ -1836,6 +1836,7 @@ function showResult(difficultyFailed = false) {
   resultVisible = true;
   testEnd = performance.now();
   testActive = false;
+  clearTimeout(timer);
   setFocus(false);
   hideCaret();
   hideLiveWpm();
@@ -2676,16 +2677,6 @@ function showResult(difficultyFailed = false) {
         console.log("Analytics unavailable");
       }
     }
-    mp_testFinished({
-      wpm: completedEvent.wpm,
-      acc: completedEvent.acc,
-      raw: completedEvent.rawWpm,
-      char: `${completedEvent.correctChars}/${completedEvent.incorrectChars}/${stats.extraChars}/${stats.missedChars}`,
-      con: completedEvent.consistency,
-      duration: completedEvent.testDuration,
-      invalid: testInvalid,
-      failed: difficultyFailed,
-    });
   }
 
   if (firebase.auth().currentUser != null) {
@@ -2800,6 +2791,19 @@ function showResult(difficultyFailed = false) {
     if (config.alwaysShowWordsHistory) {
       toggleResultWordsDisplay();
     }
+  });
+
+  mp_testFinished({
+    wpm: stats.wpm,
+    acc: stats.acc,
+    raw: stats.wpmRaw,
+    char: `${stats.correctChars + stats.correctSpaces}/${
+      stats.incorrectChars
+    }/${stats.extraChars}/${stats.missedChars}`,
+    con: consistency,
+    duration: testtime,
+    invalid: testInvalid,
+    failed: difficultyFailed,
   });
 }
 
@@ -2966,31 +2970,31 @@ function startTest() {
         }
       }
 
-      if (MP.state > 20) {
-        if (
-          MP.room.testStats === undefined ||
-          Object.keys(MP.room.testStats) === 0
-        ) {
-        } else {
-          Object.keys(MP.room.testStats).forEach((socketId) => {
-            $(`.tribePlayers [socketId=${socketId}] .wpm`).text(
-              MP.room.testStats[socketId].wpm
-            );
-            $(`.tribePlayers [socketId=${socketId}] .acc`).text(
-              MP.room.testStats[socketId].acc
-            );
-            $(`.tribePlayers [socketId=${socketId}] .bar`)
-              .stop(true, true)
-              .animate(
-                {
-                  width: MP.room.testStats[socketId].progress + "%",
-                },
-                250,
-                "linear"
-              );
-          });
-        }
-      }
+      // if (MP.state > 20) {
+      //   if (
+      //     MP.room.testStats === undefined ||
+      //     Object.keys(MP.room.testStats) === 0
+      //   ) {
+      //   } else {
+      //     Object.keys(MP.room.testStats).forEach((socketId) => {
+      //       $(`.tribePlayers [socketId=${socketId}] .wpm`).text(
+      //         MP.room.testStats[socketId].wpm
+      //       );
+      //       $(`.tribePlayers [socketId=${socketId}] .acc`).text(
+      //         MP.room.testStats[socketId].acc
+      //       );
+      //       $(`.tribePlayers [socketId=${socketId}] .bar`)
+      //         .stop(true, true)
+      //         .animate(
+      //           {
+      //             width: MP.room.testStats[socketId].progress + "%",
+      //           },
+      //           250,
+      //           "linear"
+      //         );
+      //     });
+      //   }
+      // }
 
       // console.log('step');
       loop(expectedStepEnd + stepIntervalMS);
