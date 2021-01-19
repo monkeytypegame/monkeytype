@@ -489,6 +489,8 @@ MP.socket.on("mp_room_user_left", (data) => {
   if (data.newLeader !== "" && data.newLeader === MP.id) {
     MP.room.isLeader = true;
     $(".pageTribe .lobby .lobbyButtons .startTestButton").removeClass("hidden");
+    $(".pageTest #result #backToLobbyButton").removeClass("hidden");
+    $(".pageTest #result #nextTestButton").removeClass("hidden");
   }
   mp_refreshUserList();
 });
