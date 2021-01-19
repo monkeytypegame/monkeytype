@@ -206,10 +206,12 @@ function mp_refreshTestUserList() {
       <td class="name">${user.name}</td>
       <td class="wpm">-</td>
       <td class="acc">-</td>
-      <td class="raw">-</td>
-      <td class="con">-</td>
-      <td class="char">-</td>
-      <td class="pos">-</td>
+      <td class="progress" colspan="3">
+        <div class="barBg">
+          <div class="bar" style="width: 0%;"></div>
+        </div>
+      </td>
+      <td class="pos"><span class="num">-</span><i class="fas fa-crown" style="opacity:0"></i></td>
     </tr>
     `);
   });
@@ -454,7 +456,7 @@ MP.socket.on("mp_room_joined", (data) => {
     //user is in prelobby and joined a room
     mp_applyRoomConfig(MP.room.config);
     mp_refreshConfig();
-    let link = location.host + "/tribe" + MP.room.id.substring(4);
+    let link = location.origin + "/tribe" + MP.room.id.substring(4);
     $(".pageTribe .lobby .inviteLink .code .text").text(
       MP.room.id.substring(5)
     );
@@ -575,19 +577,38 @@ MP.socket.on("mp_room_state_update", (data) => {
 });
 
 MP.socket.on("mp_room_user_test_progress_update", (data) => {
-  $(`.tribePlayers [socketId=${data.socketId}] .wpm`).text(data.stats.wpm);
-  $(`.tribePlayers [socketId=${data.socketId}] .acc`).text(
+  $(`.tribePlayers .player[socketId=${data.socketId}] .wpm`).text(
+    data.stats.wpm
+  );
+  $(`.tribePlayers .player[socketId=${data.socketId}] .acc`).text(
     Math.floor(data.stats.acc) + "%"
   );
-  $(`.tribeResult [socketId=${data.socketId}] .wpm`).text(data.stats.wpm);
-  $(`.tribeResult [socketId=${data.socketId}] .acc`).text(
+  $(`.tribeResult .player[socketId=${data.socketId}] .wpm`).text(
+    data.stats.wpm
+  );
+  $(`.tribeResult .player[socketId=${data.socketId}] .acc`).text(
     Math.floor(data.stats.acc) + "%"
   );
-  $(`.tribePlayers [socketId=${data.socketId}] .bar`)
-    .stop(true, true)
+  $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
+    .stop(true, false)
     .animate(
       {
-        width: data.stats.progress + "%",
+        width:
+          config.mode === "time"
+            ? data.stats.wpmProgress
+            : data.stats.progress + "%",
+      },
+      1000,
+      "linear"
+    );
+  $(`.tribeResult .player[socketId=${data.socketId}] .bar`)
+    .stop(true, false)
+    .animate(
+      {
+        width:
+          config.mode === "time"
+            ? data.stats.wpmProgress
+            : data.stats.progress + "%",
       },
       1000,
       "linear"
@@ -595,25 +616,64 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
 });
 
 MP.socket.on("mp_room_user_finished", (data) => {
-  $(`.tribeResult [socketId=${data.socketId}] .wpm`).text(data.result.wpm);
-  $(`.tribeResult [socketId=${data.socketId}] .acc`).text(
+  $(`.tribeResult .player[socketId=${data.socketId}] .wpm`).text(
+    data.result.wpm
+  );
+  $(`.tribeResult .player[socketId=${data.socketId}] .acc`).text(
     data.result.acc + "%"
   );
-  $(`.tribeResult [socketId=${data.socketId}] .raw`).text(data.result.raw);
-  $(`.tribeResult [socketId=${data.socketId}] .char`).text(data.result.char);
-  $(`.tribeResult [socketId=${data.socketId}] .con`).text(
+  $(`.tribeResult .player[socketId=${data.socketId}] .progress`).remove();
+  $(`.tribeResult .player[socketId=${data.socketId}] .acc`).after(`
+    <td class="raw"></div>
+    <td class="con"></div>
+    <td class="char"></div>
+  `);
+  $(`.tribeResult .player[socketId=${data.socketId}] .raw`).text(
+    data.result.raw
+  );
+  $(`.tribeResult .player[socketId=${data.socketId}] .char`).text(
+    data.result.char
+  );
+  $(`.tribeResult .player[socketId=${data.socketId}] .con`).text(
     data.result.con + "%"
   );
+
+  if (config.mode !== "time") {
+    $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
+      .stop(true, false)
+      .animate(
+        {
+          width: "100%",
+        },
+        1000,
+        "linear"
+      );
+    $(`.tribeResult .player[socketId=${data.socketId}] .bar`)
+      .stop(true, false)
+      .animate(
+        {
+          width: "100%",
+        },
+        1000,
+        "linear"
+      );
+  }
 });
 
 MP.socket.on("mp_room_winner", (data) => {
   let pos = 1;
   data.sorted.forEach((sid) => {
-    $(`.tribeResult [socketId=${sid.sid}] .pos`).html(
-      `${pos}${Misc.getNumberSuffix(pos)} ${
-        data.official && pos == 1 ? '<i class="fas fa-crown"></i>' : ""
-      }`
+    $(`.tribeResult [socketId=${sid.sid}] .pos .num`).text(
+      `${pos}${Misc.getNumberSuffix(pos)}`
     );
+    if (data.official && pos == 1) {
+      $(`.tribeResult [socketId=${sid.sid}] .pos .fa-crown`).animate(
+        { opacity: 1 },
+        125
+      );
+    } else {
+      $(`.tribeResult [socketId=${sid.sid}] .pos .fa-crown`).css("opacity", 0);
+    }
     pos++;
   });
 });

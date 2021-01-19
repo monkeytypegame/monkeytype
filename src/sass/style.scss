@@ -1577,6 +1577,9 @@ key {
       &.me {
         color: var(--main-color);
       }
+      .pos .num {
+        margin-right: 0.5rem;
+      }
     }
   }
 
@@ -2228,6 +2231,38 @@ key {
     text-align: right;
   }
 
+  .tribeResult,
+  .tribePlayers {
+    td {
+      padding: 0 0.5rem;
+    }
+    tr td:first-child {
+      padding-left: 0;
+      padding-right: 0.5rem;
+    }
+    tr td:last-child {
+      padding-left: 0.5rem;
+      padding-right: 0;
+    }
+    .progress {
+      .barBg {
+        width: 100%;
+        height: 0.25rem;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: var(--roundness);
+        .bar {
+          height: 0.25rem;
+          background: var(--sub-color);
+          left: 0;
+          border-radius: var(--roundness);
+        }
+      }
+    }
+    .player.me .progress .barBg .bar {
+      background: var(--main-color);
+    }
+  }
+
   .tribePlayers {
     // display: grid;
     // gap: 0.5rem;
@@ -2238,19 +2273,6 @@ key {
       }
       .progress {
         width: 100%;
-        padding: 0 1rem;
-        .barBg {
-          width: 100%;
-          height: 0.25rem;
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: var(--roundness);
-          .bar {
-            height: 0.25rem;
-            background: var(--sub-color);
-            left: 0;
-            border-radius: var(--roundness);
-          }
-        }
       }
       .stats {
         text-align: right;
@@ -2263,9 +2285,6 @@ key {
           margin-left: 1rem;
         }
       }
-    }
-    .player.me .barBg .bar {
-      background: var(--main-color);
     }
   }
 }
