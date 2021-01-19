@@ -16,9 +16,9 @@
     "node": "10"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.3",
-    "@babel/plugin-transform-runtime": "^7.12.1",
-    "@babel/preset-env": "^7.12.1",
+    "@babel/core": "^7.12.10",
+    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
     "babel-eslint": "^10.1.0",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
@@ -30,7 +30,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-eslint": "^6.0.0",
     "gulp-sass": "^4.1.0",
-    "husky": "^4.3.0",
+    "husky": "^4.3.8",
     "prettier": "2.1.2",
     "pretty-quick": "^3.1.0",
     "vinyl-buffer": "^1.0.1",
@@ -48,6 +48,6 @@
     "chartjs-plugin-annotation": "^0.5.7",
     "chartjs-plugin-trendline": "^0.2.2",
     "seedrandom": "^3.0.5",
-    "socket.io-client": "^3.0.4"
+    "socket.io-client": "^3.1.0"
   }
 }
