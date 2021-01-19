@@ -158,7 +158,7 @@ function mp_startTest() {
 }
 
 function mp_sendTestProgress(wpm, acc, progress) {
-  if (MP.state > 20) {
+  if (MP.state == 21 && testActive) {
     MP.socket.emit("mp_room_test_progress_update", {
       socketId: MP.socket.id,
       roomId: MP.room.id,
