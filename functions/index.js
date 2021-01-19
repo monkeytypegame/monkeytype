@@ -1,7 +1,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 let key = "./serviceAccountKey.json";
-let origin = "http://localhost:5000";
+let origin = "*";
 
 if (process.env.GCLOUD_PROJECT === "monkey-type") {
   key = "./serviceAccountKey_live.json";
