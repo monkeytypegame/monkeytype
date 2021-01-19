@@ -3682,7 +3682,7 @@ async function loadWordsHistory() {
         ) {
           extraCorrected = "extraCorrected";
         }
-        if (config.mode == "zen" || wor[c] !== undefined) {
+        if (config.mode == "zen" || word[c] !== undefined) {
           if (config.mode == "zen" || input[c] === word[c]) {
             if (correctedChar === input[c] || correctedChar === undefined) {
               wordEl += `<letter class="correct ${extraCorrected}">${input[c]}</letter>`;
