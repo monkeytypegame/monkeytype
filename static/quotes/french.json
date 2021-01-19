@@ -1,0 +1,41 @@
+{
+  "language": "french",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "Si j'avais su t'aimer, avec des habitudes, des petits déjeuners, au lit des solitudes. Si j'avais su te dire, ce qui me fait mourir, de tant d'incertitudes. Si j'avais su t'aimer, comme on aime ce qu'on cache, comme on voudrait prier, pour que rien ne se détache.",
+      "source": "Chimène Badi - Si j'avais su t'aimer",
+      "length": 263,
+      "id": 1
+    },
+    {
+      "text": "Et si tu n'existais pas, dis-moi pourquoi j'existerais, pour traîner dans un monde sans toi, sans espoir et sans regret.",
+      "source": "Joe Dassin - Et si tu n'existais pas",
+      "length": 120,
+      "id": 2
+    },
+    {
+      "text": "Je suis malade, comme quand ma mère sortait le soir, et qu'elle me laissait seul avec, mon désespoir.",
+      "source": "Lara Fabian - Je suis malade.",
+      "length": 101,
+      "id": 3
+    }
+  ]
+}
