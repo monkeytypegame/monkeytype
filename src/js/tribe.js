@@ -168,7 +168,7 @@ function mp_startTest() {
 }
 
 function mp_sendTestProgress(wpm, acc, progress) {
-  if (MP.state == 21 && testActive) {
+  if (MP.state >= 21 && MP.state <= 28 && testActive) {
     MP.socket.emit("mp_room_test_progress_update", {
       socketId: MP.socket.id,
       roomId: MP.room.id,
@@ -617,7 +617,7 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
       {
         width:
           config.mode === "time"
-            ? data.stats.wpmProgress
+            ? data.stats.wpmProgress + "%"
             : data.stats.progress + "%",
       },
       1000,
@@ -629,7 +629,7 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
       {
         width:
           config.mode === "time"
-            ? data.stats.wpmProgress
+            ? data.stats.wpmProgress + "%"
             : data.stats.progress + "%",
       },
       1000,
