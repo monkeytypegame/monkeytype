@@ -3211,7 +3211,11 @@ function changePage(page) {
       showSignOutButton();
     }
   } else if (page == "login") {
-    if (firebase.auth().currentUser != null) {
+    /*if (firebase.auth().currentUser == null) {
+      changePage("login");
+    } else */ if (
+      firebase.auth().currentUser != null
+    ) {
       changePage("account");
     } else {
       pageTransition = true;
