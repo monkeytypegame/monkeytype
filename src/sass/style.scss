@@ -1567,27 +1567,40 @@ key {
   }
 
   .tribeResult {
+    display: grid;
+    gap: 1rem;
     grid-area: tribe;
-    thead {
-      color: var(--sub-color);
-      font-size: 0.75rem;
+    .timer {
+      text-align: center;
     }
-    tbody tr {
-      color: var(--text-color);
-      &.me {
-        color: var(--main-color);
+    table {
+      thead {
+        color: var(--sub-color);
+        font-size: 0.75rem;
       }
-      .crown {
-        width: 1px;
+      td {
+        text-align: right;
       }
-      .pos {
-        width: 1px;
-        .num {
-          margin-right: 0.5rem;
+      tr td:first-child {
+        text-align: left;
+      }
+      tbody tr {
+        color: var(--text-color);
+        &.me {
+          color: var(--main-color);
         }
-        .points {
-          opacity: 0.5;
-          font-size: 0.6rem;
+        .crown {
+          width: 1px;
+        }
+        .pos {
+          width: 1px;
+          .num {
+            margin-right: 0.5rem;
+          }
+          .points {
+            opacity: 0.5;
+            font-size: 0.6rem;
+          }
         }
       }
     }

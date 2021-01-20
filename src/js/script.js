@@ -2810,6 +2810,7 @@ function showResult(difficultyFailed = false, mp_outOfTime = false) {
     invalid: testInvalid,
     failed: difficultyFailed,
     outOfTime: mp_outOfTime,
+    afk: afkDetected,
   });
 }
 

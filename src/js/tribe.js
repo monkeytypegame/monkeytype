@@ -383,6 +383,18 @@ function fadeoutCountdown() {
     );
 }
 
+function showResultCountdown() {
+  $("#result .tribeResult .timer").animate({ opacity: 1 }, 125);
+}
+
+function hideResultCountdown() {
+  $("#result .tribeResult .timer").animate({ opacity: 0 }, 125);
+}
+
+function updateResultCountdown(text) {
+  $("#result .tribeResult .timer").text(text);
+}
+
 MP.socket.on("connect", (f) => {
   MP.state = 1;
   MP.reconnectionAttempts = 0;
@@ -592,11 +604,14 @@ MP.socket.on("mp_room_test_countdown", (data) => {
 });
 
 MP.socket.on("mp_room_finishTimer_countdown", (data) => {
+  showResultCountdown();
+  updateResultCountdown(`Time left for everyone to finish: ${data.val}s`);
   showCountdown();
   updateCountdown(data.val);
 });
 
 MP.socket.on("mp_room_finishTimer_over", (data) => {
+  hideResultCountdown();
   if (testActive) showResult(undefined, true);
 });
 
@@ -607,6 +622,7 @@ MP.socket.on("mp_room_test_init", (data) => {
   changePage("");
   restartTest(false, true, true);
   showCountdown();
+  hideResultCountdown();
 });
 
 MP.socket.on("mp_room_state_update", (data) => {
@@ -661,6 +677,9 @@ MP.socket.on("mp_room_user_finished", (data) => {
     data.result.acc + "%"
   );
   $(`.tribeResult table .player[socketId=${data.socketId}] .progress`).remove();
+  $(`.tribeResult table .player[socketId=${data.socketId}] .raw`).remove();
+  $(`.tribeResult table .player[socketId=${data.socketId}] .con`).remove();
+  $(`.tribeResult table .player[socketId=${data.socketId}] .char`).remove();
   $(`.tribeResult table .player[socketId=${data.socketId}] .acc`).after(`
     <td class="raw"></div>
     <td class="con"></div>
@@ -672,6 +691,8 @@ MP.socket.on("mp_room_user_finished", (data) => {
   let val = "";
   if (!data.result.invalid && !data.result.failed && !data.result.outOfTime) {
     val = data.result.char;
+  } else if (data.result.afk) {
+    val = "afk";
   } else if (data.result.invalid) {
     val = "invalid";
   } else if (data.result.failed) {
@@ -743,9 +764,9 @@ MP.socket.on("mp_room_back_to_lobby", (data) => {
 });
 
 $(".pageTribe #createPrivateRoom").click((f) => {
-  activateFunbox("none");
-  setLanguage("english");
-  setMode("quote");
+  // activateFunbox("none");
+  // setLanguage("english");
+  // setMode("quote");
   let mode2;
   if (config.mode === "time") {
     mode2 = config.time;
