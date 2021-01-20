@@ -216,7 +216,9 @@ firebase.auth().onAuthStateChanged(function (user) {
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
 
-    MP.name = displayName;
+    try {
+      MP.name = displayName;
+    } catch {}
 
     showFavouriteThemesAtTheTop();
 
