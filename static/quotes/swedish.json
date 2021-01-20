@@ -1,0 +1,149 @@
+{
+  "language": "swedish",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "Det är mycket nog, det, sade modern, liksom glad över att hon ändå inte haft alldeles fel. Därpå drog de sig allesammans in till det i kammarn framställda kaffet.",
+      "source": "Ivar Lo-Johansson, Kungsgatan",
+      "length": 162,
+      "id": 1
+    },
+    {
+      "text": "Grannarna började snart visa tecken till otålighet. Ensamma med modern ville de på något sätt markera, att de inte ämnade låta leka med sig. De tyckte hon började bli väl stolt över sin son.",
+      "source": "Ivar Lo-Johansson, Kungsgatan",
+      "length": 190,
+      "id": 2
+    },
+    {
+      "text": "En hög intelligensgrad förlänar ansiktet något rikt och moget, det är som om andens fetma stege i ansiktet, Minervas fetma.",
+      "source": "Edith Södergran, Dikter och aforismer",
+      "length": 123,
+      "id": 3
+    },
+    {
+      "text": "Uppför trädgårdsgången till prästgården kom en ung kvinna gående, långsamt som om hon bar på en börda, och en som hon inte var stolt över.",
+      "source": "Karin Boye, Ur funktion",
+      "length": 138,
+      "id": 4
+    },
+    {
+      "text": "Äntligen stod prästen i predikstolen. Församlingens huvuden lyftes. Så, där var han ändå! Det skulle inte bli mässfall denna söndagen såsom den förra och många söndagar förut.",
+      "source": "Selma Lagerlöf, Gösta Berlings saga",
+      "length": 175,
+      "id": 5
+    },
+    {
+      "text": "När de svärjande resa sig upp, är den onde borta, men hans gyllene löften sväva som glänsande kronor över kavaljerernas hjässor.",
+      "source": "Selma Lagerlöf, Gösta Berlings saga",
+      "length": 128,
+      "id": 6
+    },
+    {
+      "text": "Rockan är en ful fisk, och liknar ett däggdjur på undersidan. Den har läppar som en människa och de två sista fenorna äro riktiga lemmar som på ett foster.",
+      "source": "August Strindberg, En blå bok",
+      "length": 155,
+      "id": 7
+    },
+    {
+      "text": "Ingen hade lagt märke till något ovanligt med det gamla judiska paret. Ja, om de skulle vara ärliga, hade de inte ens tänkt på det. Efteråt var det så lätt att komma och säga, att det hade man sett och det, men skulle de vara ärliga, hade de ingenting alls sett.",
+      "source": "Ebba Lindqvist, Vägen till Jeriko",
+      "length": 262,
+      "id": 8
+    },
+    {
+      "text": "Det var för resten en ren slump, att de kommit tillsammans på tåget, och när väl den här resan var över, skulle de aldrig mera träffas.",
+      "source": "Ebba Lindqvist, Vägen till Jeriko",
+      "length": 135,
+      "id": 9
+    },
+    {
+      "text": "Där nere på gatan jamade hankatterna natten igenom och förtvivlade hyresgäster slängde alla möjliga tillhyggen efter dem, medan Susanne satt som den sköna i tornet: ingen kunde komma upp och själv värdigades hon inte komma ner.",
+      "source": "Ebba Lindqvist, Vägen till Jeriko",
+      "length": 227,
+      "id": 10
+    },
+    {
+      "text": "Hur man kan ha det invärtes. Det är för att jag super så mycket säger hon. Jag skulle inte dricka som jag gör tjatar hon bittida och sent. Varför jag inte reser hem till exempel utan sitter så här i ensamheten. Och det kan väl hända att det inte bara är hennes skuld, det erkänner jag.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 285,
+      "id": 11
+    },
+    {
+      "text": "När man tvivlar ibland, för det gör man ju. Undrar om det är nån mening med allt slitet. Dom djävla söndagskvällarna, dom är dom värsta. Då är det ingen som har nån direkt användning för en.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 190,
+      "id": 12
+    },
+    {
+      "text": "Det blev ett väldigt festande och det var slutet. Men det begrep jag ju inte förrän det var för sent. Där stod grabbarna med en grogg, det där gjorde du bra sa de, grattis grattis. Nu kan du behöva lite i kylarn sa de. Och jag var ju stark och spänstig och trodde inte på fan naturligtvis.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 289,
+      "id": 13
+    },
+    {
+      "text": "Här hände förra lördag natt att en yngre arbetare vid pappersbruket berövade sig själv livet - söndag morgon fanns han hängande död i ett redskapsskjul. Namnet på den olycklige, såsom jag hörde det strax innan jag gick till kyrkan, sade mig visserligen ingenting.",
+      "source": "Tage Aurell, Smärre berättelser",
+      "length": 263,
+      "id": 14
+    },
+    {
+      "text": "Äntligen händer det nånting. Det tar sig. Mer och mer. För nu har han fläktat undan röken och sett att det inte längre är bara papperet det brinner i, det börjar spraka och knastra i en gammal sockerlåda som står här.",
+      "source": "Tage Aurell, Skillingtryck",
+      "length": 217,
+      "id": 15
+    },
+    {
+      "text": "Man vet inte vad som är stort och vad som är litet, snart skall väl varenda förbannade simborgare in i tidningen verkar det som.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 128,
+      "id": 16
+    },
+    {
+      "text": "Han vet inte riktigt säkert vad han menar när han ser sig stå framför spegeln och linda in skallen i varv efter varv av en gasbinda han fann i skåpet. Han har inte mist handlaget sen han var sjukvårdssoldat, det blir en ganska prydlig och välsittande turban till sist.",
+      "source": "Tage Aurell, Skillingtryck",
+      "length": 268,
+      "id": 17
+    },
+    {
+      "text": "Men nu skall du höra. Hur djävligt konstigt livet kan vara. Ja det vet du nog du också att det kan vara så in i blågröna helvete konstigt. Hör på nu, gäspa inte för fan!",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 169,
+      "id": 18
+    },
+    {
+      "text": "Du super och du super och du super säger hon. Och det är klart att hon har rätt, jag säger inte annat, det gör jag inte. Men att få höra det jämt och ständigt är ju i alla fall ingen vidare hjälp, det måste du hålla med om.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 223,
+      "id": 19
+    },
+    {
+      "text": "Jag har ju en skvätt whisky också, jag får ingen knäck på det hela annars. Jag säger inget ont om gumman, hon är bra på många sätt, på alla sätt måste jag säga. Mycket bättre än jag, det tror jag det och tacka fan för det när man är så balanserad som hon.",
+      "source": "Tage Aurell, Samtal önskas med sovvagnskonduktören",
+      "length": 255,
+      "id": 20
+    },
+    {
+      "text": "Jag kände en bankkassör, som stal tjugutusen kronor bara därför att han en afton råkade komma i närmre beröring med en serveringsflicka.",
+      "source": "Hjalmar Bergman, Eros’ begravning",
+      "length": 136,
+      "id": 21
+    }
+  ]
+}
