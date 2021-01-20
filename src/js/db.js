@@ -84,9 +84,14 @@ export async function db_getUserSnapshot() {
           started: data.startedTests,
           completed: data.completedTests,
         };
-        if (data.lbMemory !== undefined) {
-          snap.lbMemory = data.lbMemory;
-        }
+        try {
+          if (data.lbMemory.time15 !== undefined) {
+            snap.lbMemory.time15 = data.lbMemory.time15;
+          }
+          if (data.lbMemory.time60 !== undefined) {
+            snap.lbMemory.time60 = data.lbMemory.time60;
+          }
+        } catch {}
       })
       .catch((e) => {
         throw e;

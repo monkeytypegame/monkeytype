@@ -963,7 +963,7 @@ async function getUpdatedLbMemory(userdata, mode, mode2, globallb, dailylb) {
     lbmemory = {};
   }
 
-  if (lbmemory[mode + mode2] === undefined) {
+  if (lbmemory[mode + mode2] == undefined) {
     lbmemory[mode + mode2] = {
       global: null,
       daily: null,
