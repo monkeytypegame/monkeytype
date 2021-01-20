@@ -206,13 +206,13 @@ function mp_refreshTestUserList() {
   });
   $(".tribePlayers").removeClass("hidden");
 
-  $(".tribeResult tbody").empty();
+  $(".tribeResult table tbody").empty();
   MP.room.users.forEach((user) => {
     let me = "";
     if (user.socketId === MP.socket.id) {
       me = " me";
     }
-    $(".tribeResult tbody").append(`
+    $(".tribeResult table tbody").append(`
     <tr class="player ${me}" socketId="${user.socketId}">
       <td class="name">${user.name}</td>
       <td class="wpm">-</td>
@@ -621,10 +621,10 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
   $(`.tribePlayers .player[socketId=${data.socketId}] .acc`).text(
     Math.floor(data.stats.acc) + "%"
   );
-  $(`.tribeResult .player[socketId=${data.socketId}] .wpm`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .wpm`).text(
     data.stats.wpm
   );
-  $(`.tribeResult .player[socketId=${data.socketId}] .acc`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .acc`).text(
     Math.floor(data.stats.acc) + "%"
   );
   $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
@@ -639,7 +639,7 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
       1000,
       "linear"
     );
-  $(`.tribeResult .player[socketId=${data.socketId}] .bar`)
+  $(`.tribeResult table .player[socketId=${data.socketId}] .bar`)
     .stop(true, false)
     .animate(
       {
@@ -654,19 +654,19 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
 });
 
 MP.socket.on("mp_room_user_finished", (data) => {
-  $(`.tribeResult .player[socketId=${data.socketId}] .wpm`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .wpm`).text(
     data.result.wpm
   );
-  $(`.tribeResult .player[socketId=${data.socketId}] .acc`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .acc`).text(
     data.result.acc + "%"
   );
-  $(`.tribeResult .player[socketId=${data.socketId}] .progress`).remove();
-  $(`.tribeResult .player[socketId=${data.socketId}] .acc`).after(`
+  $(`.tribeResult table .player[socketId=${data.socketId}] .progress`).remove();
+  $(`.tribeResult table .player[socketId=${data.socketId}] .acc`).after(`
     <td class="raw"></div>
     <td class="con"></div>
     <td class="char"></div>
   `);
-  $(`.tribeResult .player[socketId=${data.socketId}] .raw`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .raw`).text(
     data.result.raw
   );
   let val = "";
@@ -679,8 +679,8 @@ MP.socket.on("mp_room_user_finished", (data) => {
   } else if (data.result.outOfTime) {
     val = "out of time";
   }
-  $(`.tribeResult .player[socketId=${data.socketId}] .char`).text(val);
-  $(`.tribeResult .player[socketId=${data.socketId}] .con`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .char`).text(val);
+  $(`.tribeResult table .player[socketId=${data.socketId}] .con`).text(
     data.result.con + "%"
   );
 
@@ -694,7 +694,7 @@ MP.socket.on("mp_room_user_finished", (data) => {
         1000,
         "linear"
       );
-    $(`.tribeResult .player[socketId=${data.socketId}] .bar`)
+    $(`.tribeResult table .player[socketId=${data.socketId}] .bar`)
       .stop(true, false)
       .animate(
         {
@@ -709,16 +709,16 @@ MP.socket.on("mp_room_user_finished", (data) => {
 MP.socket.on("mp_room_winner", (data) => {
   let pos = 1;
   data.sorted.forEach((sid) => {
-    $(`.tribeResult [socketId=${sid.sid}] .pos .num`).text(
+    $(`.tribeResult table [socketId=${sid.sid}] .pos .num`).text(
       `${pos}${Misc.getNumberSuffix(pos)}`
     );
     if (data.official && pos == 1) {
-      $(`.tribeResult [socketId=${sid.sid}] .crown .fa-crown`).animate(
+      $(`.tribeResult table [socketId=${sid.sid}] .crown .fa-crown`).animate(
         { opacity: 1 },
         125
       );
     } else {
-      $(`.tribeResult [socketId=${sid.sid}] .crown .fa-crown`).css(
+      $(`.tribeResult table [socketId=${sid.sid}] .crown .fa-crown`).css(
         "opacity",
         0
       );
@@ -729,7 +729,7 @@ MP.socket.on("mp_room_winner", (data) => {
 
 MP.socket.on("mp_room_points", (data) => {
   data.users.forEach((user) => {
-    $(`.tribeResult [socketId=${user.sid}] .pos .points`).text(
+    $(`.tribeResult table [socketId=${user.sid}] .pos .points`).text(
       `+${user.newPoints}${user.newPoints == 1 ? "pt" : "pts"}`
     );
     MP.room.users.filter((u) => u.socketId == user.sid)[0].points =
