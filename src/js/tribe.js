@@ -52,23 +52,33 @@ function mp_refreshUserList() {
   $(".pageTribe .lobby .userlist .list").empty();
   $(".pageTest #result .tribeResultChat .userlist .list").empty();
   MP.room.users.forEach((user) => {
-    let crown = "";
+    let star = "";
     if (user.isLeader) {
       if (user.socketId === MP.socket.id) {
         MP.room.isLeader = true;
       }
 
-      crown = '<i class="fas fa-star"></i>';
+      star = '<i class="fas fa-star"></i>';
+    }
+    let pointsString;
+    if (user.points == undefined) {
+      pointsString = "";
+    } else {
+      pointsString = user.points + (user.points == 1 ? "pt" : "pts");
     }
     $(".pageTribe .lobby .userlist .list").append(`
-    <div class='user ${user.socketId === MP.id ? "me" : ""}'>${
+    <div class='user ${user.socketId === MP.id ? "me" : ""}'>
+    <div class='name'>${
       user.name
-    } ${crown}</div>
+    } ${star}</div><div class='points'>${pointsString}</div>
+    </div>
     `);
     $(".pageTest #result .tribeResultChat .userlist .list").append(`
-    <div class='user ${user.socketId === MP.id ? "me" : ""}'>${
+    <div class='user ${user.socketId === MP.id ? "me" : ""}'>
+    <div class='name'>${
       user.name
-    } ${crown}</div>
+    } ${star}</div><div class='points'>${pointsString}</div>
+    </div>
     `);
   });
 }
@@ -211,7 +221,8 @@ function mp_refreshTestUserList() {
           <div class="bar" style="width: 0%;"></div>
         </div>
       </td>
-      <td class="pos"><span class="num">-</span><i class="fas fa-crown" style="opacity:0"></i></td>
+      <td class="pos"><span class="num">-</span><span class="points"></span></td>
+      <td class="crown"><i class="fas fa-crown" style="opacity:0"></i></td>
     </tr>
     `);
   });
@@ -564,6 +575,15 @@ MP.socket.on("mp_room_test_countdown", (data) => {
   // Notifications.add(`countdown ${data.val}`,0);
 });
 
+MP.socket.on("mp_room_finishTimer_countdown", (data) => {
+  showCountdown();
+  updateCountdown(data.val);
+});
+
+MP.socket.on("mp_room_finishTimer_over", (data) => {
+  if (testActive) showResult(undefined, true);
+});
+
 MP.socket.on("mp_room_test_init", (data) => {
   MP.room.testStats = {};
   seedrandom(data.seed, { global: true });
@@ -575,7 +595,7 @@ MP.socket.on("mp_room_test_init", (data) => {
 
 MP.socket.on("mp_room_state_update", (data) => {
   MP.state = data.newState;
-  Notifications.add(`state changed to ${data.newState}`, 0);
+  // Notifications.add(`state changed to ${data.newState}`, 0);
 });
 
 MP.socket.on("mp_room_user_test_progress_update", (data) => {
@@ -633,9 +653,17 @@ MP.socket.on("mp_room_user_finished", (data) => {
   $(`.tribeResult .player[socketId=${data.socketId}] .raw`).text(
     data.result.raw
   );
-  $(`.tribeResult .player[socketId=${data.socketId}] .char`).text(
-    data.result.char
-  );
+  let val = "";
+  if (!data.result.invalid && !data.result.failed && !data.result.outOfTime) {
+    val = data.result.char;
+  } else if (data.result.invalid) {
+    val = "invalid";
+  } else if (data.result.failed) {
+    val = "failed";
+  } else if (data.result.outOfTime) {
+    val = "out of time";
+  }
+  $(`.tribeResult .player[socketId=${data.socketId}] .char`).text(val);
   $(`.tribeResult .player[socketId=${data.socketId}] .con`).text(
     data.result.con + "%"
   );
@@ -669,15 +697,29 @@ MP.socket.on("mp_room_winner", (data) => {
       `${pos}${Misc.getNumberSuffix(pos)}`
     );
     if (data.official && pos == 1) {
-      $(`.tribeResult [socketId=${sid.sid}] .pos .fa-crown`).animate(
+      $(`.tribeResult [socketId=${sid.sid}] .crown .fa-crown`).animate(
         { opacity: 1 },
         125
       );
     } else {
-      $(`.tribeResult [socketId=${sid.sid}] .pos .fa-crown`).css("opacity", 0);
+      $(`.tribeResult [socketId=${sid.sid}] .crown .fa-crown`).css(
+        "opacity",
+        0
+      );
     }
     pos++;
   });
+});
+
+MP.socket.on("mp_room_points", (data) => {
+  data.users.forEach((user) => {
+    $(`.tribeResult [socketId=${user.sid}] .pos .points`).text(
+      `+${user.newPoints}${user.newPoints == 1 ? "pt" : "pts"}`
+    );
+    MP.room.users.filter((u) => u.socketId == user.sid)[0].points =
+      user.totalPoints;
+  });
+  mp_refreshUserList();
 });
 
 MP.socket.on("mp_room_back_to_lobby", (data) => {
@@ -752,6 +794,22 @@ $(".pageTribe .lobby .inviteLink .text").click(async (e) => {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
 });
+
+$(".pageTribe .lobby .inviteLink .text").hover(async (e) => {
+  $(".pageTribe .lobby .inviteLink .text").css(
+    "color",
+    "#" + $(".pageTribe .lobby .inviteLink .text").text()
+  );
+});
+
+$(".pageTribe .lobby .inviteLink .text").hover(
+  function () {
+    $(this).css("color", "#" + $(".pageTribe .lobby .inviteLink .text").text());
+  },
+  function () {
+    $(this).css("color", "");
+  }
+);
 
 $(".pageTribe .lobby .inviteLink .link").click(async (e) => {
   try {

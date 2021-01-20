@@ -1577,8 +1577,18 @@ key {
       &.me {
         color: var(--main-color);
       }
-      .pos .num {
-        margin-right: 0.5rem;
+      .crown {
+        width: 1px;
+      }
+      .pos {
+        width: 1px;
+        .num {
+          margin-right: 0.5rem;
+        }
+        .points {
+          opacity: 0.5;
+          font-size: 0.6rem;
+        }
       }
     }
   }
@@ -2824,7 +2834,13 @@ key {
   .userlist {
     grid-area: userlist;
     .user {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       color: var(--text-color);
+      .points {
+        opacity: 0.5;
+      }
       &.me {
         color: var(--main-color);
       }
@@ -2967,6 +2983,7 @@ key {
         line-height: 2rem;
         color: var(--main-color);
         cursor: pointer;
+        transition: 0.25s;
       }
       .link {
         font-size: 0.75rem;

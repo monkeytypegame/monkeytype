@@ -1831,7 +1831,7 @@ function failTest() {
 }
 
 let resultCalculating = false;
-function showResult(difficultyFailed = false) {
+function showResult(difficultyFailed = false, mp_outOfTime = false) {
   resultCalculating = true;
   resultVisible = true;
   testEnd = performance.now();
@@ -2160,6 +2160,8 @@ function showResult(difficultyFailed = false) {
     Notifications.add("Test invalid - AFK detected", 0);
   } else if (sameWordset) {
     Notifications.add("Test invalid - repeated", 0);
+  } else if (mp_outOfTime) {
+    Notifications.add("Test failed - out of time", 0);
   } else {
     let activeTags = [];
     let activeTagsIds = [];
@@ -2742,6 +2744,9 @@ function showResult(difficultyFailed = false) {
   if (difficultyFailed) {
     otherText += "<br>failed";
   }
+  if (mp_outOfTime) {
+    otherText += "<br>out of time";
+  }
   if (afkDetected) {
     otherText += "<br>afk detected";
   }
@@ -2804,6 +2809,7 @@ function showResult(difficultyFailed = false) {
     duration: testtime,
     invalid: testInvalid,
     failed: difficultyFailed,
+    outOfTime: mp_outOfTime,
   });
 }
 
