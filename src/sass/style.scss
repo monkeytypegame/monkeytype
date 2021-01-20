@@ -1584,22 +1584,32 @@ key {
       tr td:first-child {
         text-align: left;
       }
+
       tbody tr {
         color: var(--text-color);
         &.me {
           color: var(--main-color);
         }
+        .progressAndGraph {
+          width: 25%;
+        }
+        .acc,
+        .con,
+        .other {
+          opacity: 0.5;
+        }
         .crown {
           width: 1px;
         }
         .pos {
-          width: 1px;
+          width: 5.6rem;
           .num {
             margin-right: 0.5rem;
           }
           .points {
             opacity: 0.5;
             font-size: 0.6rem;
+            vertical-align: super;
           }
         }
       }
@@ -2283,6 +2293,9 @@ key {
     }
     .player.me .progress .barBg .bar {
       background: var(--main-color);
+    }
+    .player.failed {
+      opacity: 0.25;
     }
   }
 

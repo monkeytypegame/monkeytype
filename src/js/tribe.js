@@ -215,11 +215,14 @@ function mp_refreshTestUserList() {
     $(".tribeResult table tbody").append(`
     <tr class="player ${me}" socketId="${user.socketId}">
       <td class="name">${user.name}</td>
-      <td class="wpm">-</td>
-      <td class="acc">-</td>
-      <td class="progress" colspan="3">
-        <div class="barBg">
-          <div class="bar" style="width: 0%;"></div>
+      <td><div class="wpm">-</div><div class="acc">-</div></td>
+      <td><div class="raw">-</div><div class="con">-</div></td>
+      <td><div class="char">-</div><div class="other">-</div></td>
+      <td class="progressAndGraph">
+        <div class="progress">
+          <div class="barBg">
+            <div class="bar" style="width: 0%;"></div>
+          </div>
         </div>
       </td>
       <td class="pos"><span class="num">-</span><span class="points"></span></td>
@@ -676,22 +679,20 @@ MP.socket.on("mp_room_user_finished", (data) => {
   $(`.tribeResult table .player[socketId=${data.socketId}] .acc`).text(
     data.result.acc + "%"
   );
-  $(`.tribeResult table .player[socketId=${data.socketId}] .progress`).remove();
-  $(`.tribeResult table .player[socketId=${data.socketId}] .raw`).remove();
-  $(`.tribeResult table .player[socketId=${data.socketId}] .con`).remove();
-  $(`.tribeResult table .player[socketId=${data.socketId}] .char`).remove();
-  $(`.tribeResult table .player[socketId=${data.socketId}] .acc`).after(`
-    <td class="raw"></div>
-    <td class="con"></div>
-    <td class="char"></div>
-  `);
+  // $(`.tribeResult table .player[socketId=${data.socketId}] .progress`).remove();
+  // $(`.tribeResult table .player[socketId=${data.socketId}] .raw`).remove();
+  // $(`.tribeResult table .player[socketId=${data.socketId}] .con`).remove();
+  // $(`.tribeResult table .player[socketId=${data.socketId}] .char`).remove();
+  // $(`.tribeResult table .player[socketId=${data.socketId}] .acc`).after(`
+  //   <td class="raw"></div>
+  //   <td class="con"></div>
+  //   <td class="char"></div>
+  // `);
   $(`.tribeResult table .player[socketId=${data.socketId}] .raw`).text(
     data.result.raw
   );
-  let val = "";
-  if (!data.result.invalid && !data.result.failed && !data.result.outOfTime) {
-    val = data.result.char;
-  } else if (data.result.afk) {
+  let val = "-";
+  if (data.result.afk) {
     val = "afk";
   } else if (data.result.invalid) {
     val = "invalid";
@@ -700,12 +701,20 @@ MP.socket.on("mp_room_user_finished", (data) => {
   } else if (data.result.outOfTime) {
     val = "out of time";
   }
-  $(`.tribeResult table .player[socketId=${data.socketId}] .char`).text(val);
+  $(`.tribeResult table .player[socketId=${data.socketId}] .other`).text(val);
+  $(`.tribeResult table .player[socketId=${data.socketId}] .char`).text(
+    data.result.char
+  );
   $(`.tribeResult table .player[socketId=${data.socketId}] .con`).text(
     data.result.con + "%"
   );
 
-  if (config.mode !== "time") {
+  if (data.result.failed || data.result.invalid) {
+    $(`.tribePlayers .player[socketId=${data.socketId}]`).addClass("failed");
+    $(`.tribeResult .player[socketId=${data.socketId}]`).addClass("failed");
+  }
+
+  if (config.mode !== "time" && !data.result.failed) {
     $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
       .stop(true, false)
       .animate(
@@ -729,6 +738,9 @@ MP.socket.on("mp_room_user_finished", (data) => {
 
 MP.socket.on("mp_room_winner", (data) => {
   let pos = 1;
+  if (data.official) {
+    hideResultCountdown();
+  }
   data.sorted.forEach((sid) => {
     $(`.tribeResult table [socketId=${sid.sid}] .pos .num`).text(
       `${pos}${Misc.getNumberSuffix(pos)}`
