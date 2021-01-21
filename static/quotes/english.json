@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -30536,7 +30524,7 @@
       "id": 5138
     },
     {
-      "text": "All the world's a stage, And all the men and women merely players.",
+      "text": "All the world's a stage, and all the men and women merely players.",
       "source": "William Shakespeare, As You Like It",
       "length": 66,
       "id": 5139
