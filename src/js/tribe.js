@@ -484,7 +484,7 @@ function updateAllGraphs(graphs, max) {
       graph.options.scales.yAxes[0].ticks.max = Math.round(max);
       graph.options.scales.yAxes[1].ticks.max = Math.round(max);
     }
-    graph.update();
+    graph.update({ duration: 0 });
   });
 }
 
@@ -517,9 +517,15 @@ function drawMinigraph(sid, result) {
   graph.data.datasets[1].borderColor = themeColors.sub;
   graph.data.datasets[1].pointBackgroundColor = themeColors.sub;
 
-  graph.update();
+  graph.update({ duration: 0 });
 
   graphs.push(graph);
+}
+
+function destroyAllGraphs(graphs) {
+  graphs.forEach((graph) => {
+    graph.destroy();
+  });
 }
 
 MP.socket.on("connect", (f) => {
@@ -756,6 +762,7 @@ MP.socket.on("mp_room_finishTimer_over", (data) => {
 MP.socket.on("mp_room_test_init", (data) => {
   mp_playSound("start");
   MP.room.testStats = {};
+  destroyAllGraphs();
   seedrandom(data.seed, { global: true });
   mp_refreshTestUserList();
   changePage("");
