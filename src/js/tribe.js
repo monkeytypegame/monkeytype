@@ -49,6 +49,9 @@ function mp_changeActiveSubpage(newPage) {
   if (MP.pageTransition) return;
   if (newPage === MP.activePage) return;
   MP.pageTransition = true;
+  if (newPage === "prelobby") {
+    MP.socket.emit("mp_get_online_stats");
+  }
   swapElements(
     $(`.pageTribe .${MP.activePage}`),
     $(`.pageTribe .${newPage}`),
@@ -458,6 +461,19 @@ MP.socket.on("connect", (f) => {
       mp_changeActiveSubpage("prelobby");
     }
   }, 250);
+});
+
+MP.socket.on("mp_update_online_stats", (data) => {
+  $(".pageTribe .prelobby .welcome .stats").empty();
+  $(".pageTribe .prelobby .welcome .stats").append(
+    `<div>Online <span class="num">${data.online}</span></div>`
+  );
+  $(".pageTribe .prelobby .welcome .stats").append(
+    `<div>Active Races <span class="num">${data.rooms}</span></div>`
+  );
+  $(".pageTribe .prelobby .welcome .stats").append(
+    `<div class="small">Version ${data.version}</div>`
+  );
 });
 
 MP.socket.on("mp_update_name", (data) => {

@@ -2906,8 +2906,26 @@ key {
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
     .welcome {
-      font-size: 2rem;
-      color: var(--text-color);
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      align-items: center;
+      grid-area: welcome;
+      .stats {
+        justify-self: right;
+        color: var(--sub-color);
+        text-align: right;
+        .num {
+          color: var(--text-color);
+        }
+        .small {
+          font-size: 0.65rem;
+          line-height: 1.25rem;
+        }
+      }
+      .text {
+        font-size: 2rem;
+        color: var(--text-color);
+      }
     }
     .matchmaking {
       grid-area: mm;
