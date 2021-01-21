@@ -168,6 +168,7 @@ function signUp() {
           $(".pageLogin .preloader").addClass("hidden");
         });
     } else {
+      $(".pageLogin .preloader").addClass("hidden");
       Notifications.add(
         "Something went wrong when checking name: " + d.data.message,
         -1
