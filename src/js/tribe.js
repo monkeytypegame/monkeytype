@@ -15,7 +15,7 @@ let MP = {
   maxReconnectionAttempts: 1,
   activePage: "preloader",
   pageTransition: false,
-  expectedVersion: "0.5.0",
+  expectedVersion: "0.5.1",
 };
 
 let tribeSounds = {
@@ -141,7 +141,7 @@ function mp_applyRoomConfig(cfg) {
 
 function mp_checkIfCanChangeConfig(mp) {
   if (MP.state >= 10) {
-    if (MP.state >= 20) {
+    if (MP.state >= 20 && MP.state < 29) {
       Notifications.add("You can't change settings during the test", 0);
       return false;
     } else if (MP.room.isLeader) {

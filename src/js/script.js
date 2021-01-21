@@ -313,7 +313,7 @@ async function activateFunbox(funbox, mode, mp = false) {
   if (!mp_checkIfCanChangeConfig(mp)) {
     return;
   }
-  if (testActive || resultVisible) {
+  if (testActive || (resultVisible && MP.state < 10)) {
     Notifications.add(
       "You can only change the funbox before starting a test.",
       0
