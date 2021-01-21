@@ -137,6 +137,7 @@ function mp_applyRoomConfig(cfg) {
   activateFunbox(cfg.funbox, null, true);
   setStopOnError(cfg.stopOnError, true, true);
   setConfidenceMode(cfg.confidenceMode, true, true);
+  customText = cfg.customText;
 }
 
 function mp_checkIfCanChangeConfig(mp) {
@@ -175,6 +176,7 @@ function mp_syncConfig() {
       funbox: activeFunBox,
       stopOnError: config.stopOnError,
       confidenceMode: config.confidenceMode,
+      customText: customText,
     },
   });
 }
@@ -987,6 +989,7 @@ $(".pageTribe #createPrivateRoom").click((f) => {
       funbox: activeFunBox,
       stopOnError: config.stopOnError,
       confidenceMode: config.confidenceMode,
+      customText: customText,
     },
   });
 });

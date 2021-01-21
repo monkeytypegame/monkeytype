@@ -4256,6 +4256,7 @@ $("#customTextPopup .button").click(() => {
   manualRestart = true;
   restartTest();
   hideCustomTextPopup();
+  mp_syncConfig();
 });
 
 function showCustomMode2Popup(mode) {
