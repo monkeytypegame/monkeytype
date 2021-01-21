@@ -15,7 +15,7 @@ let MP = {
   maxReconnectionAttempts: 1,
   activePage: "preloader",
   pageTransition: false,
-  expectedVersion: "0.5.1",
+  expectedVersion: "0.6.0",
 };
 
 let tribeSounds = {
@@ -197,13 +197,14 @@ function mp_startTest() {
   MP.socket.emit("mp_room_test_start");
 }
 
-function mp_sendTestProgress(wpm, acc, progress) {
+function mp_sendTestProgress(wpm, raw, acc, progress) {
   if (MP.state >= 21 && MP.state <= 28 && testActive) {
     MP.socket.emit("mp_room_test_progress_update", {
       socketId: MP.socket.id,
       roomId: MP.room.id,
       stats: {
         wpm: wpm,
+        raw: raw,
         acc: acc,
         progress: progress,
       },
@@ -273,6 +274,9 @@ function mp_refreshTestUserList() {
           <div class="barBg">
             <div class="bar" style="width: 0%;"></div>
           </div>
+        </div>
+        <div class="graph" style="height: 50px">
+          <canvas></canvas>
         </div>
       </td>
       <td class="pos"><span class="num">-</span><span class="points"></span></td>
@@ -472,6 +476,50 @@ function mp_scrollChat() {
     },
     0
   );
+}
+
+function updateAllGraphs(graphs, max) {
+  graphs.forEach((graph) => {
+    if (graph.options.scales.yAxes[0].ticks.max < Math.round(max)) {
+      graph.options.scales.yAxes[0].ticks.max = Math.round(max);
+      graph.options.scales.yAxes[1].ticks.max = Math.round(max);
+    }
+    graph.update();
+  });
+}
+
+function drawMinigraph(sid, result) {
+  let graphelem = $(
+    `.tribeResult table .player[socketId=${sid}] .graph canvas`
+  )[0];
+  let graph = new Chart(graphelem, miniChartSettings);
+
+  let labels = [];
+  for (let i = 1; i <= result.chartData.wpm.length; i++) {
+    labels.push(i);
+  }
+
+  let graphmaxval = Math.max(
+    Math.max(...result.chartData.wpm),
+    Math.max(...result.chartData.raw)
+  );
+
+  graph.data.labels = labels;
+  graph.data.datasets[0].data = result.chartData.wpm;
+  graph.data.datasets[1].data = result.chartData.raw;
+  graph.data.datasets[2].data = result.chartData.err;
+
+  graph.options.scales.yAxes[0].ticks.max = Math.round(graphmaxval);
+  graph.options.scales.yAxes[1].ticks.max = Math.round(graphmaxval);
+
+  graph.data.datasets[0].borderColor = themeColors.main;
+  graph.data.datasets[0].pointBackgroundColor = themeColors.main;
+  graph.data.datasets[1].borderColor = themeColors.sub;
+  graph.data.datasets[1].pointBackgroundColor = themeColors.sub;
+
+  graph.update();
+
+  graphs.push(graph);
 }
 
 MP.socket.on("connect", (f) => {
@@ -760,6 +808,8 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
     );
 });
 
+let graphs = [];
+
 MP.socket.on("mp_room_user_finished", (data) => {
   $(`.tribeResult`).removeClass("hidden");
   $(`.tribeResult table .player[socketId=${data.socketId}] .wpm .text`).text(
@@ -803,6 +853,12 @@ MP.socket.on("mp_room_user_finished", (data) => {
     $(`.tribeResult .player[socketId=${data.socketId}]`).addClass("failed");
   }
 
+  drawMinigraph(data.socketId, data.result);
+
+  $(`.tribeResult table .player[socketId=${data.socketId}] .progress`).addClass(
+    "hidden"
+  );
+
   if (config.mode !== "time" && !data.result.failed && !data.result.afk) {
     $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
       .stop(true, false)
@@ -829,6 +885,7 @@ MP.socket.on("mp_room_winner", (data) => {
   let pos = 1;
   if (data.official) {
     hideResultCountdown();
+    updateAllGraphs(graphs, data.maxRaw);
   }
   let userwon = false;
   data.sorted.forEach((sid) => {
@@ -1047,3 +1104,174 @@ $(".pageTribe .lobby .lobbyButtons .startTestButton").click((e) => {
 $(".pageTest #result #backToLobbyButton").click((e) => {
   MP.socket.emit("mp_room_back_to_lobby");
 });
+
+let miniChartSettings = {
+  type: "line",
+  data: {
+    labels: [1, 2, 3],
+    datasets: [
+      {
+        label: "wpm",
+        data: [100, 100, 100],
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 2,
+        yAxisID: "wpm",
+        order: 2,
+        radius: 2,
+      },
+      {
+        label: "raw",
+        data: [110, 110, 110],
+        borderColor: "rgba(125, 125, 125, 1)",
+        borderWidth: 2,
+        yAxisID: "raw",
+        order: 3,
+        radius: 2,
+      },
+      {
+        label: "errors",
+        data: [1, 0, 1],
+        borderColor: "rgba(255, 125, 125, 1)",
+        pointBackgroundColor: "rgba(255, 125, 125, 1)",
+        borderWidth: 2,
+        order: 1,
+        yAxisID: "error",
+        maxBarThickness: 10,
+        type: "scatter",
+        pointStyle: "crossRot",
+        radius: function (context) {
+          var index = context.dataIndex;
+          var value = context.dataset.data[index];
+          return value <= 0 ? 0 : 3;
+        },
+        pointHoverRadius: function (context) {
+          var index = context.dataIndex;
+          var value = context.dataset.data[index];
+          return value <= 0 ? 0 : 5;
+        },
+      },
+    ],
+  },
+  options: {
+    layout: {
+      padding: {
+        left: 5,
+        right: 5,
+        top: 5,
+        bottom: 5,
+      },
+    },
+    tooltips: {
+      titleFontFamily: "Roboto Mono",
+      bodyFontFamily: "Roboto Mono",
+      mode: "index",
+      intersect: false,
+      callbacks: {
+        afterLabel: function (ti, data) {
+          try {
+            $(".wordInputAfter").remove();
+
+            let wordsToHighlight =
+              keypressPerSecond[parseInt(ti.xLabel) - 1].words;
+
+            let unique = [...new Set(wordsToHighlight)];
+            unique.forEach((wordIndex) => {
+              let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
+              let input = wordEl.attr("input");
+              if (input != undefined)
+                wordEl.append(`<div class="wordInputAfter">${input}</div>`);
+            });
+          } catch (e) {}
+        },
+      },
+    },
+    legend: {
+      display: false,
+      labels: {
+        defaultFontFamily: "Roboto Mono",
+      },
+    },
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      xAxes: [
+        {
+          ticks: {
+            fontFamily: "Roboto Mono",
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          display: false,
+          scaleLabel: {
+            display: false,
+            labelString: "Seconds",
+            fontFamily: "Roboto Mono",
+          },
+        },
+      ],
+      yAxes: [
+        {
+          id: "wpm",
+          display: false,
+          scaleLabel: {
+            display: true,
+            labelString: "Words per Minute",
+            fontFamily: "Roboto Mono",
+          },
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            min: 0,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          gridLines: {
+            display: true,
+          },
+        },
+        {
+          id: "raw",
+          display: false,
+          scaleLabel: {
+            display: true,
+            labelString: "Raw Words per Minute",
+            fontFamily: "Roboto Mono",
+          },
+          ticks: {
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            min: 0,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          gridLines: {
+            display: false,
+          },
+        },
+        {
+          id: "error",
+          display: false,
+          position: "right",
+          scaleLabel: {
+            display: true,
+            labelString: "Errors",
+            fontFamily: "Roboto Mono",
+          },
+          ticks: {
+            precision: 0,
+            fontFamily: "Roboto Mono",
+            beginAtZero: true,
+            autoSkip: true,
+            autoSkipPadding: 40,
+          },
+          gridLines: {
+            display: false,
+          },
+        },
+      ],
+    },
+    annotation: {
+      annotations: [],
+    },
+  },
+};

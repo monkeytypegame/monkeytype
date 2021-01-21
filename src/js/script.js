@@ -2813,6 +2813,11 @@ function showResult(difficultyFailed = false, mp_outOfTime = false) {
     failed: difficultyFailed,
     outOfTime: mp_outOfTime,
     afk: afkDetected,
+    chartData: {
+      wpm: wpmHistory,
+      raw: rawWpmPerSecond,
+      err: errorsArray,
+    },
   });
 }
 
@@ -2900,7 +2905,7 @@ function startTest() {
         progress = Math.floor((currentWordIndex / (outof - 1)) * 100);
       }
 
-      mp_sendTestProgress(wpmAndRaw.wpm, acc, progress);
+      mp_sendTestProgress(wpmAndRaw.wpm, wpmAndRaw.raw, acc, progress);
 
       if (activeFunBox === "layoutfluid" && config.mode === "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];
@@ -5426,7 +5431,7 @@ function handleSpace(event, isEnter) {
     progress = Math.floor((currentWordIndex / (outof - 1)) * 100);
   }
 
-  mp_sendTestProgress(wpmAndRaw.wpm, acc, progress);
+  mp_sendTestProgress(wpmAndRaw.wpm, wpmAndRaw.raw, acc, progress);
 
   updateCaretPosition();
 
