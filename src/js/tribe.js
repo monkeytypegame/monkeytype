@@ -15,6 +15,7 @@ let MP = {
   maxReconnectionAttempts: 1,
   activePage: "preloader",
   pageTransition: false,
+  expectedVersion: "0.5.0",
 };
 
 let tribeSounds = {
@@ -111,6 +112,14 @@ function mp_resetLobby() {
   $(".pageTribe .lobby .chat .messages").empty();
   $(".pageTribe .lobby .inviteLink .code .text").text("");
   $(".pageTribe .lobby .inviteLink .link").text("");
+}
+
+function mp_resetRace() {
+  $(".pageTest .tribePlayers").empty().addClass("hidden");
+  hideCountdown();
+  hideResultCountdown();
+  $(".pageTest #result .tribeResult").addClass("hidden");
+  $(".pageTest #result .tribeResultChat").addClass("hidden");
 }
 
 function mp_applyRoomConfig(cfg) {
@@ -474,6 +483,13 @@ MP.socket.on("mp_update_online_stats", (data) => {
   $(".pageTribe .prelobby .welcome .stats").append(
     `<div class="small">Version ${data.version}</div>`
   );
+  if (data.version !== MP.expectedVersion) {
+    MP.socket.disconnect();
+    Notifications.add(
+      `Tribe version mismatch. Try refreshing or clearing cache. Expected version: ${MP.expectedVersion}, found version: ${data.version}`,
+      -1
+    );
+  }
 });
 
 MP.socket.on("mp_update_name", (data) => {
@@ -485,6 +501,9 @@ MP.socket.on("disconnect", (f) => {
   MP.room = undefined;
   Notifications.add("Disconnected from Tribe", 0);
   mp_resetLobby();
+  mp_changeActiveSubpage("preloader");
+  mp_resetLobby();
+  mp_resetRace();
   mp_changeActiveSubpage("preloader");
   // $(".pageTribe .preloader div").removeClass("hidden");
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
@@ -500,7 +519,9 @@ MP.socket.on("connect_failed", (f) => {
   MP.reconnectionAttempts++;
   if (MP.reconnectionAttempts >= MP.maxReconnectionAttempts) {
     $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-    $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
+    $(".pageTribe .preloader .text").text(
+      `Could not connect to Tribe server: ${f.message}`
+    );
   } else {
     $(".pageTribe .preloader .text").text("Connection failed. Retrying");
     Notifications.add("Tribe connection error: " + f.message, -1);
@@ -516,7 +537,9 @@ MP.socket.on("connect_error", (f) => {
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
   if (MP.reconnectionAttempts >= MP.maxReconnectionAttempts) {
     $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-    $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
+    $(".pageTribe .preloader .text").text(
+      `Could not connect to Tribe server: ${f.message}`
+    );
   } else {
     $(".pageTribe .preloader .text").text("Connection error. Retrying");
     Notifications.add("Tribe connection error: " + f.message, -1);
@@ -734,6 +757,7 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
 });
 
 MP.socket.on("mp_room_user_finished", (data) => {
+  $(`.tribeResult`).removeClass("hidden");
   $(`.tribeResult table .player[socketId=${data.socketId}] .wpm .text`).text(
     data.result.wpm
   );
