@@ -645,7 +645,7 @@ MP.socket.on("mp_room_test_start", (data) => {
 
 MP.socket.on("mp_room_test_countdown", (data) => {
   updateCountdown(data.val);
-  if (val <= 3) mp_playSound("cd");
+  if (data.val <= 3) mp_playSound("cd");
   // Notifications.add(`countdown ${data.val}`,0);
 });
 
