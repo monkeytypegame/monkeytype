@@ -25,8 +25,8 @@ let tribeSounds = {
   chat2: new Audio("../sound/tribe_ui/chat2.wav"),
   finish: new Audio("../sound/tribe_ui/finish.wav"),
   finish_win: new Audio("../sound/tribe_ui/finish_win.wav"),
-  cd: new Audio("../sound/tribe_ui/cd.wav"),
-  cd_go: new Audio("../sound/tribe_ui/cd_go.wav"),
+  cd: new Audio("../sound/tribe_ui/cd2.wav"),
+  cd_go: new Audio("../sound/tribe_ui/cd_go2.wav"),
 };
 
 //-1 - disconnected
@@ -654,6 +654,7 @@ MP.socket.on("mp_room_finishTimer_countdown", (data) => {
   updateResultCountdown(`Time left for everyone to finish: ${data.val}s`);
   showCountdown();
   updateCountdown(data.val);
+  if (data.val <= 3) mp_playSound("cd");
 });
 
 MP.socket.on("mp_room_finishTimer_over", (data) => {
