@@ -2794,6 +2794,7 @@ function showResult(difficultyFailed = false, mp_outOfTime = false) {
     resultCalculating = false;
     $("#words").empty();
     wpmOverTimeChart.resize();
+    mp_scrollChat();
     if (config.alwaysShowWordsHistory) {
       toggleResultWordsDisplay();
     }
@@ -3321,6 +3322,7 @@ function changePage(page) {
       pageTransition = true;
       restartTest();
       swapElements(activePage, $(".page.pageTribe"), 250, () => {
+        mp_scrollChat();
         showTestConfig();
         pageTransition = false;
         history.pushState("tribe", null, "tribe");

@@ -448,6 +448,32 @@ function updateResultCountdown(text) {
   $("#result .tribeResult .timer").text(text);
 }
 
+function mp_scrollChat() {
+  let chatEl = $(".pageTribe .lobby .chat .messages");
+  chatEl.animate(
+    {
+      scrollTop:
+        $($(".pageTribe .lobby .chat .message")[0]).outerHeight() *
+        2 *
+        $(".pageTribe .lobby .chat .messages .message").length,
+    },
+    0
+  );
+
+  let chatEl2 = $(".pageTest #result .tribeResultChat .chat .messages");
+  chatEl2.animate(
+    {
+      scrollTop:
+        $(
+          $(".pageTest #result .tribeResultChat .chat .messages .message")[0]
+        ).outerHeight() *
+        2 *
+        $(".pageTest #result .tribeResultChat .chat .messages .message").length,
+    },
+    0
+  );
+}
+
 MP.socket.on("connect", (f) => {
   MP.state = 1;
   MP.reconnectionAttempts = 0;
@@ -623,29 +649,7 @@ MP.socket.on("mp_chat_message", (data) => {
     <div class="${cls}">${author}${data.message}</div>
   `);
 
-  let chatEl = $(".pageTribe .lobby .chat .messages");
-  chatEl.animate(
-    {
-      scrollTop:
-        $($(".pageTribe .lobby .chat .message")[0]).outerHeight() *
-        2 *
-        $(".pageTribe .lobby .chat .messages .message").length,
-    },
-    0
-  );
-
-  let chatEl2 = $(".pageTest #result .tribeResultChat .chat .messages");
-  chatEl2.animate(
-    {
-      scrollTop:
-        $(
-          $(".pageTest #result .tribeResultChat .chat .messages .message")[0]
-        ).outerHeight() *
-        2 *
-        $(".pageTest #result .tribeResultChat .chat .messages .message").length,
-    },
-    0
-  );
+  mp_scrollChat();
 });
 
 $(".pageTest #result .tribeResultChat .chat .input input").keypress(() => {
