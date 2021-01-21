@@ -275,7 +275,7 @@ function mp_refreshTestUserList() {
             <div class="bar" style="width: 0%;"></div>
           </div>
         </div>
-        <div class="graph" style="height: 50px">
+        <div class="graph hidden" style="height: 50px">
           <canvas></canvas>
         </div>
       </td>
@@ -479,13 +479,17 @@ function mp_scrollChat() {
 }
 
 function updateAllGraphs(graphs, max) {
-  graphs.forEach((graph) => {
-    if (graph.options.scales.yAxes[0].ticks.max < Math.round(max)) {
-      graph.options.scales.yAxes[0].ticks.max = Math.round(max);
-      graph.options.scales.yAxes[1].ticks.max = Math.round(max);
-    }
-    graph.update({ duration: 0 });
-  });
+  try {
+    graphs.forEach((graph) => {
+      if (graph.options.scales.yAxes[0].ticks.max < Math.round(max)) {
+        graph.options.scales.yAxes[0].ticks.max = Math.round(max);
+        graph.options.scales.yAxes[1].ticks.max = Math.round(max);
+      }
+      graph.update({ duration: 0 });
+    });
+  } catch (e) {
+    console.error("Something went wrong while updating max graph values " + e);
+  }
 }
 
 function drawMinigraph(sid, result) {
@@ -862,8 +866,10 @@ MP.socket.on("mp_room_user_finished", (data) => {
 
   drawMinigraph(data.socketId, data.result);
 
-  $(`.tribeResult table .player[socketId=${data.socketId}] .progress`).addClass(
-    "hidden"
+  swapElements(
+    $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
+    $(`.tribeResult table .player[socketId=${data.socketId}] .graph`),
+    250
   );
 
   if (config.mode !== "time" && !data.result.failed && !data.result.afk) {
