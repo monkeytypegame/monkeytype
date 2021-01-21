@@ -1781,6 +1781,7 @@ function calculateStats() {
       (accuracyStats.correct + accuracyStats.incorrect)) *
       100
   );
+  if (isNaN(acc)) acc = 0;
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
