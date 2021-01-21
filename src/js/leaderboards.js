@@ -218,7 +218,7 @@ function updateLeaderboards() {
     })
     .catch((e) => {
       hideBackgroundLoader();
-      Notifications.add("Something went wrong: " + e.message, -1, 3);
+      Notifications.add("Something went wrong: " + e.message, -1);
     });
 }
 
