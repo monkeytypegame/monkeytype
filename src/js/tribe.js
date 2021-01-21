@@ -485,19 +485,13 @@ function updateAllGraphs(graphs, max) {
         graph.options.scales.yAxes[0].ticks.max = Math.round(max);
         graph.options.scales.yAxes[1].ticks.max = Math.round(max);
       }
-      graph.update({ duration: 0 });
     });
   } catch (e) {
     console.error("Something went wrong while updating max graph values " + e);
   }
 }
 
-function drawMinigraph(sid, result) {
-  let graphelem = $(
-    `.tribeResult table .player[socketId=${sid}] .graph canvas`
-  )[0];
-  let graph = new Chart(graphelem, miniChartSettings);
-
+function fillGraphDataAndUpdate(graph, result, sid) {
   let labels = [];
   for (let i = 1; i <= result.chartData.wpm.length; i++) {
     labels.push(i);
@@ -516,20 +510,34 @@ function drawMinigraph(sid, result) {
   graph.options.scales.yAxes[0].ticks.max = Math.round(graphmaxval);
   graph.options.scales.yAxes[1].ticks.max = Math.round(graphmaxval);
 
-  graph.data.datasets[0].borderColor = themeColors.main;
-  graph.data.datasets[0].pointBackgroundColor = themeColors.main;
+  if (sid == MP.socket.id) {
+    graph.data.datasets[0].borderColor = themeColors.main;
+    graph.data.datasets[0].pointBackgroundColor = themeColors.main;
+  } else {
+    graph.data.datasets[0].borderColor = themeColors.text;
+    graph.data.datasets[0].pointBackgroundColor = themeColors.text;
+  }
   graph.data.datasets[1].borderColor = themeColors.sub;
   graph.data.datasets[1].pointBackgroundColor = themeColors.sub;
 
   graph.update({ duration: 0 });
+}
+
+function drawMinigraph(sid, result) {
+  let graphelem = $(`.tribeResult .player[socketId='${sid}'] .graph canvas`)[0];
+  let graph = new Chart(graphelem, miniChartSettings);
+
+  fillGraphDataAndUpdate(graph, result, sid);
 
   graphs.push(graph);
 }
 
 function destroyAllGraphs(graphs) {
-  graphs.forEach((graph) => {
-    graph.destroy();
-  });
+  while (graphs.length > 0) {
+    let g = graphs.pop();
+    g.clear();
+    g.destroy();
+  }
 }
 
 MP.socket.on("connect", (f) => {
@@ -863,14 +871,16 @@ MP.socket.on("mp_room_user_finished", (data) => {
     $(`.tribePlayers .player[socketId=${data.socketId}]`).addClass("failed");
     $(`.tribeResult .player[socketId=${data.socketId}]`).addClass("failed");
   }
-
-  drawMinigraph(data.socketId, data.result);
-
-  swapElements(
-    $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
-    $(`.tribeResult table .player[socketId=${data.socketId}] .graph`),
-    250
-  );
+  $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
+    swapElements(
+      $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
+      $(`.tribeResult table .player[socketId=${data.socketId}] .graph`),
+      125,
+      () => {
+        drawMinigraph(data.socketId, data.result);
+        // $(`.tribeResult table .player[socketId=${data.socketId}] .graph`).css('opacity',0).animate({opacity:1},125);
+      }
+    );
 
   if (config.mode !== "time" && !data.result.failed && !data.result.afk) {
     $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
@@ -898,7 +908,7 @@ MP.socket.on("mp_room_winner", (data) => {
   let pos = 1;
   if (data.official) {
     hideResultCountdown();
-    updateAllGraphs(graphs, data.maxRaw);
+    // updateAllGraphs(graphs, data.maxRaw);
   }
   let userwon = false;
   data.sorted.forEach((sid) => {
