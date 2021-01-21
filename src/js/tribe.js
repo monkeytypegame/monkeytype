@@ -762,7 +762,7 @@ MP.socket.on("mp_room_finishTimer_over", (data) => {
 MP.socket.on("mp_room_test_init", (data) => {
   mp_playSound("start");
   MP.room.testStats = {};
-  destroyAllGraphs();
+  destroyAllGraphs(graphs);
   seedrandom(data.seed, { global: true });
   mp_refreshTestUserList();
   changePage("");
