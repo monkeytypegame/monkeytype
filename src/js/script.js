@@ -5405,6 +5405,27 @@ function handleSpace(event, isEnter) {
     }
   } //end of line wrap
 
+  let wpmAndRaw = liveWpmAndRaw();
+
+  let acc = Misc.roundTo2(
+    (accuracyStats.correct /
+      (accuracyStats.correct + accuracyStats.incorrect)) *
+      100
+  );
+
+  let progress = 0;
+  if (config.mode === "time") {
+    progress = 100 - ((time + 1) / config.time) * 100;
+  } else {
+    let outof = wordsList.length;
+    if (config.mode === "words") {
+      outof = config.words;
+    }
+    progress = Math.floor((currentWordIndex / (outof - 1)) * 100);
+  }
+
+  mp_sendTestProgress(wpmAndRaw.wpm, acc, progress);
+
   updateCaretPosition();
 
   if (config.keymapMode === "react") {

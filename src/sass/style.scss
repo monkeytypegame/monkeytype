@@ -1593,13 +1593,23 @@ key {
         .progressAndGraph {
           width: 25%;
         }
-        .acc,
-        .con,
-        .other {
+        .acc .text,
+        .con .text,
+        .other .text {
           opacity: 0.5;
         }
         .crown {
           width: 1px;
+        }
+        .text {
+          display: inline-block;
+        }
+        .miniCrown {
+          display: inline-block;
+          width: 0;
+          font-size: 0.5rem;
+          vertical-align: super;
+          opacity: 0;
         }
         .pos {
           width: 5.6rem;

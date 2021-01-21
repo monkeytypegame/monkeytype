@@ -17,6 +17,18 @@ let MP = {
   pageTransition: false,
 };
 
+let tribeSounds = {
+  join: new Audio("../sound/tribe_ui/join.wav"),
+  leave: new Audio("../sound/tribe_ui/leave.wav"),
+  start: new Audio("../sound/tribe_ui/start.wav"),
+  chat1: new Audio("../sound/tribe_ui/chat1.wav"),
+  chat2: new Audio("../sound/tribe_ui/chat2.wav"),
+  finish: new Audio("../sound/tribe_ui/finish.wav"),
+  finish_win: new Audio("../sound/tribe_ui/finish_win.wav"),
+  cd: new Audio("../sound/tribe_ui/cd.wav"),
+  cd_go: new Audio("../sound/tribe_ui/cd_go.wav"),
+};
+
 //-1 - disconnected
 //1 - connected
 //10 - lobby
@@ -82,6 +94,11 @@ function mp_refreshUserList() {
     </div>
     `);
   });
+}
+
+function mp_playSound(sound) {
+  tribeSounds[sound].currentTime = 0;
+  tribeSounds[sound].play();
 }
 
 function mp_resetLobby() {
@@ -215,9 +232,30 @@ function mp_refreshTestUserList() {
     $(".tribeResult table tbody").append(`
     <tr class="player ${me}" socketId="${user.socketId}">
       <td class="name">${user.name}</td>
-      <td><div class="wpm">-</div><div class="acc">-</div></td>
-      <td><div class="raw">-</div><div class="con">-</div></td>
-      <td><div class="char">-</div><div class="other">-</div></td>
+      <td>
+        <div class="wpm">
+          <div class="text">-</div>
+          <div class="miniCrown"><i class="fas fa-crown"></i></div>
+        </div>
+        <div class="acc">
+          <div class="text">-</div>
+          <div class="miniCrown"><i class="fas fa-crown"></i></div>
+        </div>
+      </td>
+      <td>
+        <div class="raw">
+          <div class="text">-</div>
+          <div class="miniCrown"><i class="fas fa-crown"></i></div>
+        </div>
+        <div class="con">
+          <div class="text">-</div>
+          <div class="miniCrown"><i class="fas fa-crown"></i></div>
+        </div>
+      </td>
+      <td>
+        <div class="char">-</div>
+        <div class="other">-</div>
+      </td>
       <td class="progressAndGraph">
         <div class="progress">
           <div class="barBg">
@@ -470,6 +508,7 @@ MP.socket.on("connect_error", (f) => {
 });
 
 MP.socket.on("mp_room_joined", (data) => {
+  mp_playSound("join");
   MP.room = data.room;
   if (
     MP.room.users.filter((user) => user.socketId === MP.socket.id)[0].isLeader
@@ -512,6 +551,7 @@ MP.socket.on("mp_room_leave", () => {
 });
 
 MP.socket.on("mp_room_user_left", (data) => {
+  mp_playSound("leave");
   MP.room = data.room;
   if (data.newLeader !== "" && data.newLeader === MP.id) {
     MP.room.isLeader = true;
@@ -529,6 +569,7 @@ MP.socket.on("mp_room_config_update", (data) => {
 });
 
 MP.socket.on("mp_chat_message", (data) => {
+  mp_playSound("chat2");
   let cls = "message";
   let author = "";
   if (data.isSystem) {
@@ -599,10 +640,12 @@ MP.socket.on("mp_room_test_start", (data) => {
   // Notifications.add("test starting",0);
   updateCountdown("Go");
   fadeoutCountdown();
+  mp_playSound("cd_go");
 });
 
 MP.socket.on("mp_room_test_countdown", (data) => {
   updateCountdown(data.val);
+  mp_playSound("cd");
   // Notifications.add(`countdown ${data.val}`,0);
 });
 
@@ -619,6 +662,7 @@ MP.socket.on("mp_room_finishTimer_over", (data) => {
 });
 
 MP.socket.on("mp_room_test_init", (data) => {
+  mp_playSound("start");
   MP.room.testStats = {};
   seedrandom(data.seed, { global: true });
   mp_refreshTestUserList();
@@ -640,10 +684,10 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
   $(`.tribePlayers .player[socketId=${data.socketId}] .acc`).text(
     Math.floor(data.stats.acc) + "%"
   );
-  $(`.tribeResult table .player[socketId=${data.socketId}] .wpm`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .wpm .text`).text(
     data.stats.wpm
   );
-  $(`.tribeResult table .player[socketId=${data.socketId}] .acc`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .acc .text`).text(
     Math.floor(data.stats.acc) + "%"
   );
   $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
@@ -673,10 +717,10 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
 });
 
 MP.socket.on("mp_room_user_finished", (data) => {
-  $(`.tribeResult table .player[socketId=${data.socketId}] .wpm`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .wpm .text`).text(
     data.result.wpm
   );
-  $(`.tribeResult table .player[socketId=${data.socketId}] .acc`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .acc .text`).text(
     data.result.acc + "%"
   );
   // $(`.tribeResult table .player[socketId=${data.socketId}] .progress`).remove();
@@ -688,7 +732,7 @@ MP.socket.on("mp_room_user_finished", (data) => {
   //   <td class="con"></div>
   //   <td class="char"></div>
   // `);
-  $(`.tribeResult table .player[socketId=${data.socketId}] .raw`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .raw .text`).text(
     data.result.raw
   );
   let val = "-";
@@ -705,16 +749,16 @@ MP.socket.on("mp_room_user_finished", (data) => {
   $(`.tribeResult table .player[socketId=${data.socketId}] .char`).text(
     data.result.char
   );
-  $(`.tribeResult table .player[socketId=${data.socketId}] .con`).text(
+  $(`.tribeResult table .player[socketId=${data.socketId}] .con .text`).text(
     data.result.con + "%"
   );
 
-  if (data.result.failed || data.result.invalid) {
+  if (data.result.failed || data.result.invalid || data.result.afk) {
     $(`.tribePlayers .player[socketId=${data.socketId}]`).addClass("failed");
     $(`.tribeResult .player[socketId=${data.socketId}]`).addClass("failed");
   }
 
-  if (config.mode !== "time" && !data.result.failed) {
+  if (config.mode !== "time" && !data.result.failed && !data.result.afk) {
     $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
       .stop(true, false)
       .animate(
@@ -741,11 +785,15 @@ MP.socket.on("mp_room_winner", (data) => {
   if (data.official) {
     hideResultCountdown();
   }
+  let userwon = false;
   data.sorted.forEach((sid) => {
     $(`.tribeResult table [socketId=${sid.sid}] .pos .num`).text(
       `${pos}${Misc.getNumberSuffix(pos)}`
     );
     if (data.official && pos == 1) {
+      if (sid.sid === MP.socket.id) {
+        userwon = true;
+      }
       $(`.tribeResult table [socketId=${sid.sid}] .crown .fa-crown`).animate(
         { opacity: 1 },
         125
@@ -757,6 +805,23 @@ MP.socket.on("mp_room_winner", (data) => {
       );
     }
     pos++;
+  });
+  if (userwon && data.official) {
+    mp_playSound("finish_win");
+  } else if (!userwon && data.official) {
+    mp_playSound("finish");
+  }
+});
+
+MP.socket.on("mp_room_miniCrowns", (data) => {
+  Object.keys(data.crowns).forEach((c) => {
+    let crown = data.crowns[c];
+    crown.sidList.forEach((sid) => {
+      $(`.tribeResult table [socketId=${sid}] .${c} .miniCrown`).animate(
+        { opacity: 0.5 },
+        125
+      );
+    });
   });
 });
 
