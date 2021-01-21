@@ -2451,9 +2451,13 @@ function showResult(difficultyFailed = false) {
                     //global
                     let globalLbString = "";
                     const glb = e.data.globalLeaderboard;
-                    const glbMemory = db_getSnapshot().lbMemory[
-                      config.mode + mode2
-                    ].global;
+                    let glbMemory;
+                    try {
+                      glbMemory = db_getSnapshot().lbMemory[config.mode + mode2]
+                        .global;
+                    } catch {
+                      glbMemory = null;
+                    }
                     let dontShowGlobalDiff =
                       glbMemory == null || glbMemory === -1 ? true : false;
                     let globalLbDiff = null;
@@ -2508,9 +2512,13 @@ function showResult(difficultyFailed = false) {
                     //daily
                     let dailyLbString = "";
                     const dlb = e.data.dailyLeaderboard;
-                    const dlbMemory = db_getSnapshot().lbMemory[
-                      config.mode + mode2
-                    ].daily;
+                    let dlbMemory;
+                    try {
+                      dlbMemory = db_getSnapshot().lbMemory[config.mode + mode2]
+                        .daily;
+                    } catch {
+                      dlbMemory = null;
+                    }
                     let dontShowDailyDiff =
                       dlbMemory == null || dlbMemory === -1 ? true : false;
                     let dailyLbDiff = null;
