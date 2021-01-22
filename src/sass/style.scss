@@ -1577,6 +1577,9 @@ key {
       thead {
         color: var(--sub-color);
         font-size: 0.75rem;
+        span {
+          opacity: 0.5;
+        }
       }
       td {
         text-align: right;
@@ -1626,7 +1629,10 @@ key {
           width: 4rem;
           .num {
             // margin-right: 0.5rem;
+            font-size: 1.4rem;
             display: block;
+            line-height: 1.4rem;
+            margin-top: 0.4rem;
           }
           .points {
             opacity: 0.5;

@@ -346,6 +346,10 @@ export function roundTo2(num) {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
+export function encodeHTML(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+}
+
 export function getNumberSuffix(num) {
   var j = num % 10,
     k = num % 100;

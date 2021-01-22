@@ -531,15 +531,16 @@ function drawMinigraph(sid, result) {
 
   fillGraphDataAndUpdate(graph, result, sid);
 
-  graphs.push(graph);
+  return graph;
 }
 
-function destroyAllGraphs(graphs) {
-  while (graphs.length > 0) {
-    let g = graphs.pop();
-    g.clear();
-    g.destroy();
-  }
+function destroyAllGraphs() {
+  Object.keys(MP.room.userGraphs).forEach((sid) => {
+    let userGraph = MP.room.userGraphs[sid];
+    userGraph.graph.clear();
+    userGraph.graph.destroy();
+    delete MP.room.userGraphs[sid];
+  });
 }
 
 MP.socket.on("connect", (f) => {
@@ -775,8 +776,9 @@ MP.socket.on("mp_room_finishTimer_over", (data) => {
 
 MP.socket.on("mp_room_test_init", (data) => {
   mp_playSound("start");
-  MP.room.testStats = {};
-  destroyAllGraphs(graphs);
+  MP.room.userGraphs = {};
+  MP.room.userFinished = false;
+  destroyAllGraphs();
   seedrandom(data.seed, { global: true });
   mp_refreshTestUserList();
   changePage("");
@@ -873,16 +875,43 @@ MP.socket.on("mp_room_user_finished", (data) => {
     $(`.tribePlayers .player[socketId=${data.socketId}]`).addClass("failed");
     $(`.tribeResult .player[socketId=${data.socketId}]`).addClass("failed");
   }
-  $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
-    swapElements(
-      $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
-      $(`.tribeResult table .player[socketId=${data.socketId}] .graph`),
-      125,
-      () => {
-        drawMinigraph(data.socketId, data.result);
-        // $(`.tribeResult table .player[socketId=${data.socketId}] .graph`).css('opacity',0).animate({opacity:1},125);
-      }
-    );
+
+  MP.room.userGraphs[data.socketId] = {
+    data: data.result,
+  };
+
+  swapElements(
+    $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
+    $(`.tribeResult table .player[socketId=${data.socketId}] .graph`),
+    125
+  );
+
+  setTimeout(() => {
+    if (data.socketId === MP.socket.id) {
+      MP.room.userFinished = true;
+
+      Object.keys(MP.room.userGraphs).forEach((sid) => {
+        let userGraph = MP.room.userGraphs[sid];
+        userGraph.graph = drawMinigraph(sid, userGraph.data);
+      });
+    } else if (MP.room.userFinished) {
+      MP.room.userGraphs[data.socketId].graph = drawMinigraph(
+        data.socketId,
+        data.result
+      );
+    }
+  }, 250);
+
+  // $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
+  //   swapElements(
+  //     $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
+  //     $(`.tribeResult table .player[socketId=${data.socketId}] .graph`),
+  //     125,
+  //     () => {
+  //       drawMinigraph(data.socketId, data.result);
+  //       // $(`.tribeResult table .player[socketId=${data.socketId}] .graph`).css('opacity',0).animate({opacity:1},125);
+  //     }
+  //   );
 
   if (config.mode !== "time" && !data.result.failed && !data.result.afk) {
     $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
@@ -997,6 +1026,7 @@ $(".pageTribe #createPrivateRoom").click((f) => {
 $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
   if (e.keyCode === 13) {
     let msg = $(".pageTest #result .tribeResultChat .chat .input input").val();
+    msg = Misc.encodeHTML(msg);
     if (msg === "") return;
     if (msg.length > 512) {
       Notifications.add("Message cannot be longer than 512 characters.", 0);
@@ -1018,6 +1048,7 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
 $(".pageTribe .lobby .chat .input input").keyup((e) => {
   if (e.keyCode === 13) {
     let msg = $(".pageTribe .lobby .chat .input input").val();
+    msg = Misc.encodeHTML(msg);
     if (msg === "") return;
     MP.socket.emit("mp_chat_message", {
       isSystem: false,
