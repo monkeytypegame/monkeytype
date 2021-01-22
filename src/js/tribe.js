@@ -247,6 +247,8 @@ function mp_refreshTestUserList() {
     $(".tribeResult table tbody").append(`
     <tr class="player ${me}" socketId="${user.socketId}">
       <td class="name">${user.name}</td>
+      <td class="pos"><span class="num">-</span><span class="points"></span></td>
+      <td class="crown"><i class="fas fa-crown" style="opacity:0"></i></td>
       <td>
         <div class="wpm">
           <div class="text">-</div>
@@ -281,8 +283,6 @@ function mp_refreshTestUserList() {
           <canvas></canvas>
         </div>
       </td>
-      <td class="pos"><span class="num">-</span><span class="points"></span></td>
-      <td class="crown"><i class="fas fa-crown" style="opacity:0"></i></td>
     </tr>
     `);
   });
@@ -998,6 +998,10 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
   if (e.keyCode === 13) {
     let msg = $(".pageTest #result .tribeResultChat .chat .input input").val();
     if (msg === "") return;
+    if (msg.length > 512) {
+      Notifications.add("Message cannot be longer than 512 characters.", 0);
+      return;
+    }
     MP.socket.emit("mp_chat_message", {
       isSystem: false,
       message: msg,
@@ -1140,26 +1144,26 @@ let miniChartSettings = {
         label: "wpm",
         data: [100, 100, 100],
         borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
+        borderWidth: 1,
         yAxisID: "wpm",
         order: 2,
-        radius: 2,
+        radius: 1,
       },
       {
         label: "raw",
         data: [110, 110, 110],
         borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
+        borderWidth: 1,
         yAxisID: "raw",
         order: 3,
-        radius: 2,
+        radius: 1,
       },
       {
         label: "errors",
         data: [1, 0, 1],
         borderColor: "rgba(255, 125, 125, 1)",
         pointBackgroundColor: "rgba(255, 125, 125, 1)",
-        borderWidth: 2,
+        borderWidth: 1,
         order: 1,
         yAxisID: "error",
         maxBarThickness: 10,
@@ -1168,12 +1172,12 @@ let miniChartSettings = {
         radius: function (context) {
           var index = context.dataIndex;
           var value = context.dataset.data[index];
-          return value <= 0 ? 0 : 3;
+          return value <= 0 ? 0 : 2;
         },
         pointHoverRadius: function (context) {
           var index = context.dataIndex;
           var value = context.dataset.data[index];
-          return value <= 0 ? 0 : 5;
+          return value <= 0 ? 0 : 3;
         },
       },
     ],

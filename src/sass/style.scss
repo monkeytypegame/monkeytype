@@ -2870,7 +2870,9 @@ key {
         display: flex;
         gap: 0.5rem;
         color: var(--text-color);
+        word-break: break-all;
         .author {
+          word-break: normal;
           color: var(--main-color);
         }
       }
