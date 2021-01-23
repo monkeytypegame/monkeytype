@@ -137,6 +137,16 @@ function mp_applyRoomConfig(cfg) {
   activateFunbox(cfg.funbox, null, true);
   setStopOnError(cfg.stopOnError, true, true);
   setConfidenceMode(cfg.confidenceMode, true, true);
+  setPunctuation(cfg.punctuation, true, true);
+  setNumbers(cfg.numbers, true, true);
+  if (cfg.minAcc != null) {
+    setMinAcc("custom", true, true);
+    setMinAccCustom(cfg.minAcc, true, true);
+  }
+  if (cfg.minWpm != null) {
+    setMinWpm("custom", true, true);
+    setMinWpmCustomSpeed(cfg.minAcc, true, true);
+  }
   customText = cfg.customText;
 }
 
@@ -177,6 +187,10 @@ function mp_syncConfig() {
       stopOnError: config.stopOnError,
       confidenceMode: config.confidenceMode,
       customText: customText,
+      punctuation: config.punctuation,
+      numbers: config.numbers,
+      minWpm: config.minWpm === "custom" ? config.minWpmCustomSpeed : null,
+      minAcc: config.minAcc === "custom" ? config.minAccCustom : null,
     },
   });
 }
@@ -327,6 +341,28 @@ function mp_refreshConfig() {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Quote length" data-balloon-pos="up">
     <i class="fas fa-quote-right"></i>${qstring}
+    </div>
+    `);
+  } else if (MP.room.config.mode === "custom") {
+    let t = "Custom settings:";
+
+    t += `\ntext length: ${customText.text.length}`;
+    if (customText.isTimeRandom || customText.isWordRandom) {
+      let r = "";
+      let n = "";
+      if (customText.isTimeRandom) {
+        r = "time";
+        n = customText.time;
+      } else if (customText.isWordRandom) {
+        r = "words";
+        n = customText.word;
+      }
+      t += `\nrandom: ${r} ${n}`;
+    }
+
+    $(".pageTribe .lobby .currentSettings .groups").append(`
+    <div class='group' aria-label="${t}" data-balloon-pos="up" data-balloon-break>
+    <i class="fas fa-tools"></i>custom
     </div>
     `);
   }
@@ -1019,6 +1055,10 @@ $(".pageTribe #createPrivateRoom").click((f) => {
       stopOnError: config.stopOnError,
       confidenceMode: config.confidenceMode,
       customText: customText,
+      punctuation: config.punctuation,
+      numbers: config.numbers,
+      minWpm: config.minWpm === "custom" ? config.minWpmCustomSpeed : null,
+      minAcc: config.minAcc === "custom" ? config.minAccCustom : null,
     },
   });
 });

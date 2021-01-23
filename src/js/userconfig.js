@@ -425,7 +425,10 @@ function setPaceCaretCustomSpeed(val, nosave) {
 }
 
 //min wpm
-function setMinWpm(minwpm, nosave) {
+function setMinWpm(minwpm, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
+    return;
+  }
   if (minwpm == undefined) {
     minwpm = "off";
   }
@@ -434,7 +437,10 @@ function setMinWpm(minwpm, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function setMinWpmCustomSpeed(val, nosave) {
+function setMinWpmCustomSpeed(val, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
+    return;
+  }
   if (val == undefined || Number.isNaN(parseInt(val))) {
     val = 100;
   }
@@ -443,7 +449,10 @@ function setMinWpmCustomSpeed(val, nosave) {
 }
 
 //min acc
-function setMinAcc(min, nosave) {
+function setMinAcc(min, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
+    return;
+  }
   if (min == undefined) {
     min = "off";
   }
@@ -452,7 +461,10 @@ function setMinAcc(min, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function setMinAccCustom(val, nosave) {
+function setMinAccCustom(val, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
+    return;
+  }
   if (val == undefined || Number.isNaN(parseInt(val))) {
     val = 90;
   }
@@ -932,7 +944,10 @@ function toggleQuickTabMode() {
 }
 
 //numbers
-function setNumbers(numb, nosave) {
+function setNumbers(numb, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
+    return;
+  }
   config.numbers = numb;
   if (!config.numbers) {
     $("#top .config .numbersMode .text-button").removeClass("active");
@@ -953,7 +968,10 @@ function toggleNumbers() {
 }
 
 //punctuation
-function setPunctuation(punc, nosave) {
+function setPunctuation(punc, nosave, mp = false) {
+  if (!mp_checkIfCanChangeConfig(mp)) {
+    return;
+  }
   config.punctuation = punc;
   if (!config.punctuation) {
     $("#top .config .punctuationMode .text-button").removeClass("active");
