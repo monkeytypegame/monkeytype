@@ -368,29 +368,33 @@ function mp_refreshConfig() {
   }
 
   $(".pageTribe .lobby .currentSettings .groups").append(`
-    <div class='group' aria-label="Language" data-balloon-pos="up">
-    <i class="fas fa-globe-americas"></i>${MP.room.config.language}
-    </div>
-    `);
-
-  $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Punctuation" data-balloon-pos="up">
-    <span class="numbers" style="font-weight: 900;
-        width: 1.25rem;
-        text-align: center;
-        margin-right: .1rem;
-        display: inline-block;
-        letter-spacing: -.1rem;">15</span>${MP.room.config.numbers}
+    <span class="punc" style="font-weight: 900;
+      color: var(--main-color);
+      width: 1.25rem;
+      text-align: center;
+      display: inline-block;
+      margin-right: .5rem;
+      letter-spacing: -.1rem;">!?</span>${MP.room.config.punctuation}
     </div>
     `);
 
   $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Numbers" data-balloon-pos="up">
-    <span class="punc" style="font-weight: 900;
-      width: 1.25rem;
-      text-align: center;
-      display: inline-block;
-      letter-spacing: -.1rem;">!?</span>${MP.room.config.punctuation}
+    <span class="numbers" style="font-weight: 900;
+        color: var(--main-color);
+        width: 1.25rem;
+        text-align: center;
+        margin-right: .1rem;
+        display: inline-block;
+        margin-right: .5rem;
+        letter-spacing: -.1rem;">15</span>${MP.room.config.numbers}
+    </div>
+    `);
+
+  $(".pageTribe .lobby .currentSettings .groups").append(`
+    <div class='group' aria-label="Language" data-balloon-pos="up">
+    <i class="fas fa-globe-americas"></i>${MP.room.config.language}
     </div>
     `);
 
@@ -471,7 +475,7 @@ function mp_refreshConfig() {
   $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Min Wpm" data-balloon-pos="up">
     <i class="fas fa-bomb"></i>${
-      MP.room.config.minWpm == null ? "off" : MP.room.config.minWpm
+      MP.room.config.minWpm == null ? "off" : MP.room.config.minWpm + "wpm"
     }
     </div>
     `);
@@ -479,7 +483,7 @@ function mp_refreshConfig() {
   $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Min Acc" data-balloon-pos="up">
     <i class="fas fa-bomb"></i>${
-      MP.room.config.minAcc == null ? "off" : MP.room.config.minAcc
+      MP.room.config.minAcc == null ? "off" : MP.room.config.minAcc + "%"
     }
     </div>
     `);
@@ -772,7 +776,10 @@ MP.socket.on("mp_room_user_left", (data) => {
 MP.socket.on("mp_room_config_update", (data) => {
   MP.room.config = data.newConfig;
   mp_refreshConfig();
-  if (!MP.room.isLeader) mp_applyRoomConfig(MP.room.config);
+  if (!MP.room.isLeader) {
+    Notifications.add("Config changed", 0, 1);
+    mp_applyRoomConfig(MP.room.config);
+  }
 });
 
 MP.socket.on("mp_chat_message", (data) => {
