@@ -2334,7 +2334,19 @@ key {
   .tribePlayers {
     // display: grid;
     // gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
+    &.size125 {
+      margin-bottom: 2.25rem;
+    }
+    &.size15 {
+      margin-bottom: 2.5rem;
+    }
+    &.size2 {
+      margin-bottom: 3rem;
+    }
+    &.size3 {
+      margin-bottom: 4rem;
+    }
     .player {
       .name {
         color: var(--sub-color);

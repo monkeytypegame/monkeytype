@@ -1493,12 +1493,13 @@ function setFontSize(fontSize, nosave) {
   }
   config.fontSize = fontSize;
   $("#words").removeClass("size125");
-  $("#caret, #paceCaret").removeClass("size125");
   $("#words").removeClass("size15");
-  $("#caret, #paceCaret").removeClass("size15");
   $("#words").removeClass("size2");
-  $("#caret, #paceCaret").removeClass("size2");
   $("#words").removeClass("size3");
+
+  $("#caret, #paceCaret").removeClass("size125");
+  $("#caret, #paceCaret").removeClass("size15");
+  $("#caret, #paceCaret").removeClass("size2");
   $("#caret, #paceCaret").removeClass("size3");
 
   $("#miniTimerAndLiveWpm").removeClass("size125");
@@ -1506,22 +1507,31 @@ function setFontSize(fontSize, nosave) {
   $("#miniTimerAndLiveWpm").removeClass("size2");
   $("#miniTimerAndLiveWpm").removeClass("size3");
 
+  $("#typingTest .tribePlayers").removeClass("size125");
+  $("#typingTest .tribePlayers").removeClass("size15");
+  $("#typingTest .tribePlayers").removeClass("size2");
+  $("#typingTest .tribePlayers").removeClass("size3");
+
   if (fontSize == 125) {
     $("#words").addClass("size125");
     $("#caret, #paceCaret").addClass("size125");
     $("#miniTimerAndLiveWpm").addClass("size125");
+    $("#typingTest .tribePlayers").addClass("size125");
   } else if (fontSize == 15) {
     $("#words").addClass("size15");
     $("#caret, #paceCaret").addClass("size15");
     $("#miniTimerAndLiveWpm").addClass("size15");
+    $("#typingTest .tribePlayers").addClass("size15");
   } else if (fontSize == 2) {
     $("#words").addClass("size2");
     $("#caret, #paceCaret").addClass("size2");
     $("#miniTimerAndLiveWpm").addClass("size2");
+    $("#typingTest .tribePlayers").addClass("size2");
   } else if (fontSize == 3) {
     $("#words").addClass("size3");
     $("#caret, #paceCaret").addClass("size3");
     $("#miniTimerAndLiveWpm").addClass("size3");
+    $("#typingTest .tribePlayers").addClass("size3");
   }
   if (!nosave) saveConfigToCookie();
 }
