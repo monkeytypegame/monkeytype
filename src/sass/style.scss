@@ -2978,6 +2978,7 @@ key {
       grid-area: mm;
       display: grid;
       gap: 1rem;
+      grid-template-rows: auto 1fr;
       .title {
         color: var(--sub-color);
       }
