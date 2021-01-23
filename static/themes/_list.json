@@ -483,5 +483,10 @@
     "name": "80s_after_dark",
     "bgColor": "#1B1D36",
     "textColor": "#FCA6D1"
+  },
+  {
+    "name": "arch",
+    "bgColor": "#0c0d11",
+    "textColor": "#f6f5f5"
   }
 ]
