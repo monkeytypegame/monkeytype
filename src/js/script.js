@@ -5738,11 +5738,13 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   );
 }
 
-// if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
-if (window.location.hostname === "localhost") {
+if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   window.onerror = function (error) {
     Notifications.add(error, -1);
   };
+}
+
+if (window.location.hostname === "localhost") {
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
   firebase.functions().useFunctionsEmulator("http://localhost:5001");
