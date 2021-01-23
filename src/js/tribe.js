@@ -15,7 +15,7 @@ let MP = {
   maxReconnectionAttempts: 1,
   activePage: "preloader",
   pageTransition: false,
-  expectedVersion: "0.6.2",
+  expectedVersion: "0.7.0",
 };
 
 let tribeSounds = {
@@ -660,7 +660,7 @@ MP.socket.on("mp_update_online_stats", (data) => {
   if (data.version !== MP.expectedVersion) {
     MP.socket.disconnect();
     Notifications.add(
-      `Tribe version mismatch. Try refreshing or clearing cache. Expected version: ${MP.expectedVersion}, found version: ${data.version}`,
+      `Tribe version mismatch. Try refreshing or clearing cache. Client version: ${MP.expectedVersion}, server version: ${data.version}`,
       -1
     );
   }
