@@ -673,8 +673,6 @@ MP.socket.on("disconnect", (f) => {
   MP.room = undefined;
   Notifications.add("Disconnected from Tribe", 0);
   mp_resetLobby();
-  mp_changeActiveSubpage("preloader");
-  mp_resetLobby();
   mp_resetRace();
   mp_changeActiveSubpage("preloader");
   // $(".pageTribe .preloader div").removeClass("hidden");
@@ -758,6 +756,8 @@ MP.socket.on("mp_room_leave", () => {
   MP.name.replace(/\(\d\)$/g, "");
   mp_resetLobby();
   mp_changeActiveSubpage("prelobby");
+  mp_resetLobby();
+  mp_resetRace();
   // swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
 });
 
@@ -1238,7 +1238,9 @@ $(".pageTribe .prelobby #joinByCode input").keyup((e) => {
   }, 0);
 });
 
-$(".pageTribe .lobby .lobbyButtons .leaveRoomButton").click((e) => {
+$(
+  ".pageTribe .lobby .lobbyButtons .leaveRoomButton, .pageTest #result .resultMpButtons .leaveRoomButton"
+).click((e) => {
   MP.socket.emit("mp_room_leave");
 });
 

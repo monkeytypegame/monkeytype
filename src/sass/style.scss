@@ -1570,8 +1570,12 @@ key {
     display: grid;
     gap: 1rem;
     grid-area: tribe;
-    .timer {
-      text-align: center;
+    .timerAndButtons {
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      .timer {
+        text-align: center;
+      }
     }
     table {
       thead {
