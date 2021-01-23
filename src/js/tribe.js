@@ -960,6 +960,7 @@ MP.socket.on("mp_room_user_finished", (data) => {
     $(`.tribeResult .player[socketId=${data.socketId}]`).addClass("failed");
   }
 
+  if (MP.room.userGraphs === undefined) MP.room.userGraphs = {};
   MP.room.userGraphs[data.socketId] = {
     data: data.result,
   };
