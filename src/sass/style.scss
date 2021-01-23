@@ -1596,6 +1596,9 @@ key {
         color: var(--text-color);
         &.me {
           color: var(--main-color);
+          .crown .glow {
+            box-shadow: 0 0 1rem 0.2rem var(--main-color);
+          }
         }
         .progressAndGraph {
           width: 25%;
@@ -1618,6 +1621,14 @@ key {
         }
         .crown {
           width: 1px;
+          .glow {
+            width: 5px;
+            height: 5px;
+            position: absolute;
+            margin-left: 0.45rem;
+            margin-top: -0.7rem;
+            box-shadow: 0 0 1rem 0.2rem var(--text-color);
+          }
         }
         .text {
           display: inline-block;

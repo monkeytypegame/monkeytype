@@ -210,6 +210,7 @@ function mp_joinRoomByCode(code) {
 }
 
 function mp_startTest() {
+  if (MP.room.newTestCooldown) return;
   MP.socket.emit("mp_room_test_start");
 }
 
@@ -1022,6 +1023,21 @@ MP.socket.on("mp_room_winner", (data) => {
   if (data.official) {
     hideResultCountdown();
     // updateAllGraphs(graphs, data.maxRaw);
+    MP.room.newTestCooldown = true;
+    $("#result #nextTestButton").html(
+      `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
+    );
+    $("#result #nextTestButton").attr(
+      "aria-label",
+      "Please wait for all players to view their result"
+    );
+    setTimeout(() => {
+      MP.room.newTestCooldown = false;
+      $("#result #nextTestButton").html(
+        `<i class="fas fa-fw fa-chevron-right"></i>`
+      );
+      $("#result #nextTestButton").attr("aria-label", "Next test");
+    }, 5000);
   }
   let userwon = false;
   data.sorted.forEach((sid) => {
@@ -1052,14 +1068,35 @@ MP.socket.on("mp_room_winner", (data) => {
 });
 
 MP.socket.on("mp_room_miniCrowns", (data) => {
+  let count = {};
   Object.keys(data.crowns).forEach((c) => {
     let crown = data.crowns[c];
     crown.sidList.forEach((sid) => {
+      if (count[sid] === undefined) {
+        count[sid] = 1;
+      } else {
+        count[sid]++;
+      }
       $(`.tribeResult table [socketId=${sid}] .${c} .miniCrown`).animate(
         { opacity: 0.5 },
         125
       );
     });
+  });
+  Object.keys(count).forEach((sid) => {
+    if (count[sid] === 4) {
+      $(`.tribeResult table [socketId=${sid}] .crown`).append(
+        `<div class="glow"></div>`
+      );
+      $(`.tribeResult table [socketId=${sid}] .crown`).attr(
+        "aria-label",
+        "Dominated"
+      );
+      $(`.tribeResult table [socketId=${sid}] .crown`).attr(
+        "data-balloon-pos",
+        "up"
+      );
+    }
   });
 });
 
