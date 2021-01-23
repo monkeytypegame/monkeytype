@@ -15,7 +15,7 @@ let MP = {
   maxReconnectionAttempts: 1,
   activePage: "preloader",
   pageTransition: false,
-  expectedVersion: "0.7.0",
+  expectedVersion: "0.7.1",
 };
 
 let tribeSounds = {
@@ -140,12 +140,12 @@ function mp_applyRoomConfig(cfg) {
   setPunctuation(cfg.punctuation, true, true);
   setNumbers(cfg.numbers, true, true);
   if (cfg.minAcc != null) {
-    setMinAcc("custom", true, true);
     setMinAccCustom(cfg.minAcc, true, true);
+    setMinAcc("custom", true, true);
   }
   if (cfg.minWpm != null) {
-    setMinWpm("custom", true, true);
     setMinWpmCustomSpeed(cfg.minAcc, true, true);
+    setMinWpm("custom", true, true);
   }
   customText = cfg.customText;
 }
@@ -659,6 +659,7 @@ MP.socket.on("mp_update_online_stats", (data) => {
   );
   if (data.version !== MP.expectedVersion) {
     MP.socket.disconnect();
+    mp_changeActiveSubpage("preloader");
     Notifications.add(
       `Tribe version mismatch. Try refreshing or clearing cache. Client version: ${MP.expectedVersion}, server version: ${data.version}`,
       -1

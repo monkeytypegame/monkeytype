@@ -5738,7 +5738,8 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   );
 }
 
-if (window.location.hostname === "localhost") {
+if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
+  // if (window.location.hostname === "localhost") {
   window.onerror = function (error) {
     Notifications.add(error, -1);
   };

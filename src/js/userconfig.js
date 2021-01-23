@@ -434,6 +434,7 @@ function setMinWpm(minwpm, nosave, mp = false) {
   }
   config.minWpm = minwpm;
   updateTestModesNotice();
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -445,6 +446,7 @@ function setMinWpmCustomSpeed(val, nosave, mp = false) {
     val = 100;
   }
   config.minWpmCustomSpeed = val;
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -458,6 +460,7 @@ function setMinAcc(min, nosave, mp = false) {
   }
   config.minAcc = min;
   updateTestModesNotice();
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -469,6 +472,7 @@ function setMinAccCustom(val, nosave, mp = false) {
     val = 90;
   }
   config.minAccCustom = val;
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -958,6 +962,7 @@ function setNumbers(numb, nosave, mp = false) {
   } else {
     $("#top .config .numbersMode .text-button").addClass("active");
   }
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -982,6 +987,7 @@ function setPunctuation(punc, nosave, mp = false) {
   } else {
     $("#top .config .punctuationMode .text-button").addClass("active");
   }
+  mp_syncConfig();
   if (!nosave) saveConfigToCookie();
 }
 
