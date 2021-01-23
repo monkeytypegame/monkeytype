@@ -142,10 +142,14 @@ function mp_applyRoomConfig(cfg) {
   if (cfg.minAcc != null) {
     setMinAccCustom(cfg.minAcc, true, true);
     setMinAcc("custom", true, true);
+  } else {
+    setMinAcc("off", true, true);
   }
   if (cfg.minWpm != null) {
     setMinWpmCustomSpeed(cfg.minAcc, true, true);
     setMinWpm("custom", true, true);
+  } else {
+    setMinWpm("off", true, true);
   }
   customText = cfg.customText;
 }
@@ -153,13 +157,13 @@ function mp_applyRoomConfig(cfg) {
 function mp_checkIfCanChangeConfig(mp) {
   if (MP.state >= 10) {
     if (MP.state >= 20 && MP.state < 29) {
-      Notifications.add("You can't change settings during the test", 0);
+      Notifications.add("You can't change settings during the test", 0, 1);
       return false;
     } else if (MP.room.isLeader) {
       return true;
     } else {
       if (mp) return true;
-      Notifications.add("Only the leader can change this setting", 0);
+      Notifications.add("Only the leader can change this setting", 0, 1);
       return false;
     }
   } else {
