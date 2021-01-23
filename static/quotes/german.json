@@ -420,6 +420,96 @@
       "source": "(German pangram)",
       "length": 64,
       "id": 67
+    },
+    {
+      "text": "Wir sind im hohen Grade durch Kunst und Wissenschaft kultiviert.",
+      "source": "Immanuel Kant",
+      "length": 64,
+      "id": 68
+    },
+    {
+      "text": "Der Körper ist das Grab der Seele.",
+      "source": "Platon",
+      "length": 34,
+      "id": 69
+    },
+    {
+      "text": "Vor den Richter gehen, heißt aber, auf Gerechtigkeit ausgehen; denn der Richter soll gewissermaßen die lebendige Gerechtigkeit sein.",
+      "source": "Aristoteles",
+      "length": 132,
+      "id": 70
+    },
+    {
+      "text": "Denn von den Extremen ist das eine mehr, das andere weniger fehlerhaft.",
+      "source": "Aristoteles",
+      "length": 71,
+      "id": 71
+    },
+    {
+      "text": "Das Ganze ist mehr als die Summe seiner Teile.",
+      "source": "Aristoteles",
+      "length": 46,
+      "id": 72
+    },
+    {
+      "text": "Alle Menschen streben von Natur aus nach Wissen.",
+      "source": "Aristoteles",
+      "length": 48,
+      "id": 73
+    },
+    {
+      "text": "Ich möchte meiner Heimat ein Geschenk machen, Pierre. Ich möchte das Element Polonium nennen.",
+      "source": "Marie Curie",
+      "length": 93,
+      "id": 74
+    },
+    {
+      "text": "Tage sind gleichsam Kinder der Zeit, weil der folgende Tag, mit dem was er enthält, das Erzeugnis des vorigen ist.",
+      "source": "Immanuel Kant",
+      "length": 114,
+      "id": 75
+    },
+    {
+      "text": "Ich bin mir meiner selbst bewusst, ist ein Gedanke, der schon ein zweifaches Ich enthält, das Ich als Subjekt, und das Ich als Objekt.",
+      "source": "Immanuel Kant",
+      "length": 134,
+      "id": 76
+    },
+    {
+      "text": "Ob aber der Mensch nun von Natur moralisch gut oder böse ist? Keines von beiden, denn er ist von Natur gar kein moralisches Wesen; er wird dieses nur, wenn seine Vernunft sich bis zu den Begriffen der Pflicht und des Gesetzes erhebt.",
+      "source": "Immanuel Kant",
+      "length": 233,
+      "id": 77
+    },
+    {
+      "text": "Man lernt das am gründlichsten, und behält das am besten, was man gleichsam aus sich selbst lernet. Nur wenige Menschen indessen sind das im Stande. Man nennt sie Autodidakten.",
+      "source": "Immanuel Kant",
+      "length": 176,
+      "id": 78
+    },
+    {
+      "text": "Durch Sprichwörter reden ist daher die Sprache des Pöbels, und beweiset den gänzlichen Mangel des Witzes im Umgange mit der feineren Welt.",
+      "source": "Immanuel Kant",
+      "length": 138,
+      "id": 79
+    },
+    {
+      "text": "Der Mensch ist das einzige Geschöpf, das erzogen werden muss.",
+      "source": "Immanuel Kant",
+      "length": 61,
+      "id": 80
+    },
+    {
+      "text": "Die Metaphysik hat zum eigentlichen Zwecke ihrer Nachforschung nur drei Ideen: Gott, Freiheit und Unsterblichkeit.",
+      "source": "Immanuel Kant",
+      "length": 114,
+      "id": 81
+    },
+    {
+      "text": "Verstand ist erhaben, Witz ist schön.",
+      "source": "Immanuel Kant",
+      "length": 37,
+      "id": 82
     }
   ]
 }
