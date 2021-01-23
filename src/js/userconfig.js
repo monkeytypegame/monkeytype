@@ -228,7 +228,7 @@ function setDifficulty(diff, nosave, mp = false) {
     diff = "normal";
   }
   config.difficulty = diff;
-  if (!nosave) restartTest(false, nosave);
+  if (!nosave) restartTest(false, nosave, mp);
   updateTestModesNotice();
   mp_syncConfig();
   if (!nosave) saveConfigToCookie();
@@ -820,7 +820,7 @@ function setTimeConfig(time, nosave, mp = false) {
     time = 15;
   }
   time = parseInt(time);
-  if (!nosave) setMode("time", nosave);
+  if (!nosave) setMode("time", nosave, mp);
   config.time = time;
   $("#top .config .time .text-button").removeClass("active");
   if (![15, 30, 60, 120].includes(time)) {
@@ -862,7 +862,7 @@ function setWordCount(wordCount, nosave, mp = false) {
     wordCount = 10;
   }
   wordCount = parseInt(wordCount);
-  if (!nosave) setMode("words", nosave);
+  if (!nosave) setMode("words", nosave, mp);
   config.words = wordCount;
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
