@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -31164,6 +31176,168 @@
       "source": "Bilbo Baggins, The Hobbit",
       "length": 480,
       "id": 5245
+    },
+    {
+      "text": "Here is my message to those beyond our borders. America has been tested and we have come out stronger for it. We will repair our alliances and engage with the world once again.",
+      "source": "President Joe Biden",
+      "length": 176,
+      "id": 5246
+    },
+    {
+      "text": "\"Then the prophecies of the old songs have turned out to be true, after a fashion!\" said Bilbo.\\n\"Of course!\" said Gandalf. \"And why should not they prove true? Surely you don't disbelieve the prophecies, because you had a hand in bringing them about yourself? You don't really suppose, do you, that all your adventures and escapes were managed by mere luck, just for your sole benefit? You are a very fine person, Mr. Baggins, and I am very fond of you; but you are only quite a little fellow in a wide world after all!\"\\n\"Thank goodness!\" said Bilbo laughing, and handed him the tobacco-jar.",
+      "source": "Bilbo Baggins and Gandalf, The Hobbit",
+      "length": 593,
+      "id": 5247
+    },
+    {
+      "text": "The air was full of all the night noises that, taken together, make one big silence.",
+      "source": "Rudyard Kipling, The Jungle Book",
+      "length": 84,
+      "id": 5248
+    },
+    {
+      "text": "Don't argue, my dear child, please don't argue! It's such a waste of precious time!",
+      "source": "Willy Wonka, Charlie and the Chocolate Factory",
+      "length": 83,
+      "id": 5249
+    },
+    {
+      "text": "Everybody knew Bagheera, and nobody cared to cross his path.",
+      "source": "Rudyard Kipling, The Jungle Book",
+      "length": 60,
+      "id": 5250
+    },
+    {
+      "text": "Ye have told me so often tonight that I am a man (though indeed I would have been a wolf with you to my life's end) that I feel your words are true.",
+      "source": "Mowgli, The Jungle Book",
+      "length": 148,
+      "id": 5251
+    },
+    {
+      "text": "Everything in this room is edible. Even I'm edible. But, that would be called cannibalism. It is looked down upon in most societies.",
+      "source": "Willy Wonka, Charlie and the Chocolate Factory",
+      "length": 132,
+      "id": 5252
+    },
+    {
+      "text": "Would I rather be feared or loved? Easy. Both. I want people to be afraid of how much they love me.",
+      "source": "The Office, US",
+      "length": 99,
+      "id": 5253
+    },
+    {
+      "text": "Well! I've often seen a cat without a grin, but a grin without a cat! It's the most curious thing I ever saw in all my life!",
+      "source": "Alice, Alice's Adventures in Wonderland",
+      "length": 124,
+      "id": 5254
+    },
+    {
+      "text": "We are all a great deal luckier than we realize, we usually get what we want - or near enough.",
+      "source": "Roald Dahl, Charlie and the Chocolate Factory",
+      "length": 94,
+      "id": 5255
+    },
+    {
+      "text": "Haste makes waste, so I rarely hurry. But if a ferret were about to dart up my dress, I'd run.",
+      "source": "Cheshire Cat, Alice's Adventures in Wonderland",
+      "length": 94,
+      "id": 5256
+    },
+    {
+      "text": "I don't see how he can ever finish, if he doesn't begin.",
+      "source": "Lewis Carroll, Alice's Adventures in Wonderland",
+      "length": 56,
+      "id": 5257
+    },
+    {
+      "text": "Rainbow drops - suck them and you can spit in six different colors.",
+      "source": "Willy Wonka, Charlie and the Chocolate Factory",
+      "length": 67,
+      "id": 5258
+    },
+    {
+      "text": "The best way to explain it is to do it.",
+      "source": "Dodo, Alice's Adventures in Wonderland",
+      "length": 39,
+      "id": 5259
+    },
+    {
+      "text": "Of course they're real people. They're Oompa-Loompas... Imported direct from Loompaland... And oh what a terrible country it is! Nothing but thick jungles infested by the most dangerous beasts in the world - hornswogglers and snozzwangers and those terrible wicked whangdoodles. A whangdoodle would eat ten Oompa-Loompas for breakfast and come galloping back for a second helping.",
+      "source": "Willy Wonka, Charlie and the Chocolate Factory",
+      "length": 380,
+      "id": 5260
+    },
+    {
+      "text": "One thought that grows in the abyss of time, fills up the vast space with matter and life. Free of the darkness that fetters the soul, find at the source the end of your goal.",
+      "source": "Epica \"Abyss of time\"",
+      "length": 175,
+      "id": 5261
+    },
+    {
+      "text": "There is something about very cold weather that gives one an enormous appetite. Most of us find ourselves beginning to crave rich steaming stews and hot apple pies and all kinds of delicious warming dishes.",
+      "source": "Roald Dahl, Charlie and the Chocolate Factory",
+      "length": 206,
+      "id": 5262
+    },
+    {
+      "text": "Sorrow hides well in your shell. A fellow man with hurt to spare. Dear one, here I am to share the fear. An act of kindness, without an amen. How's the heart, underneath the silence? How's the heart, drowning in the mire? Let us sound a human paean. Come in, the fire's warm. Burn the rope and dance some more.",
+      "source": "Nightwish \"How's the heart\"",
+      "length": 310,
+      "id": 5263
+    },
+    {
+      "text": "I went to a hunting party once, I didn't like it. Terrible people. They all started hunting me!",
+      "source": "Cheshire Cat, Alice's Adventures in Wonderland",
+      "length": 95,
+      "id": 5264
+    },
+    {
+      "text": "Oh, my sainted aunt! Don't mention that disgusting stuff in front of me! Do you know what breakfast cereal is made of? It's made of all those little curly wooden shavings you find in pencil sharpeners!",
+      "source": "Willy Wonka, Charlie and the Chocolate Factory",
+      "length": 201,
+      "id": 5265
+    },
+    {
+      "text": "Speak English! I don't know the meaning of half those long words, and, what's more, I don't believe you do either!",
+      "source": "Eaglet, Alice's Adventures in Wonderland",
+      "length": 114,
+      "id": 5266
+    },
+    {
+      "text": "The Duchess! The Duchess! Oh my dear paws! Oh my fur and whiskers! She'll get me executed, as sure as ferrets are ferrets!",
+      "source": "White Rabbit, Alice's Adventures in Wonderland",
+      "length": 122,
+      "id": 5267
+    },
+    {
+      "text": "I am not crazy; my reality is just different from yours.",
+      "source": "Cheshire Cat, Alice's Adventures in Wonderland",
+      "length": 56,
+      "id": 5268
+    },
+    {
+      "text": "Every adventure requires a first step.",
+      "source": "Cheshire Cat, Alice's Adventures in Wonderland",
+      "length": 38,
+      "id": 5269
+    },
+    {
+      "text": "Well, some go this way, and some go that way. But as for me, myself, personally, I prefer the shortcut.",
+      "source": "Cheshire Cat, Alice's Adventures in Wonderland",
+      "length": 103,
+      "id": 5270
+    },
+    {
+      "text": "Vogon poetry is of course, the third worst in the universe. The second worst is that of the Azgoths of Kria. During a recitation by their poet master Grunthos the Flatulent of his poem \"Ode to a Small Lump of Green Putty I Found in My Armpit One Midsummer Morning\" four of his audience died of internal hemorrhaging and the president of the Mid-Galactic Arts Nobbling Council survived by gnawing one of his own legs off. Grunthos was reported to have been \"disappointed\" by the poem's reception, and was about to embark on a reading of his 12-book epic entitled \"My Favorite Bathtime Gurgles\" when his own major intestine, in a desperate attempt to save humanity, leapt straight up through his neck and throttled his brain. The very worst poetry of all perished along with its creator, Paul Neil Milne Johnstone of Redbridge, in the destruction of the planet Earth. Vogon poetry is mild by comparison.",
+      "source": "Douglas Adams, The Hitchhiker's Guide to the Galaxy",
+      "length": 901,
+      "id": 5271
+    },
+    {
+      "text": "I've come up with a set of rules that describe our reactions to technologies:\\n1. Anything that is in the world when you're born is normal and ordinary and is just a natural part of the way the world works.\\n2. Anything that's invented between when you're fifteen and thirty-five is new and exciting and revolutionary and you can probably get a career in it.\\n3. Anything invented after you're thirty-five is against the natural order of things.",
+      "source": "Douglas Adams, The Salmon of Doubt",
+      "length": 445,
+      "id": 5272
     }
   ]
 }
