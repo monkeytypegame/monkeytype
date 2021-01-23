@@ -621,6 +621,7 @@ function destroyAllGraphs() {
 }
 
 MP.socket.on("connect", (f) => {
+  setTimerStyle("mini", true);
   MP.state = 1;
   MP.reconnectionAttempts = 0;
   Notifications.add("Connected to Tribe", 1);

@@ -728,6 +728,10 @@ function setTimerStyle(style, nosave) {
   if (style == null || style == undefined) {
     style = "bar";
   }
+  if (MP.state >= 10 && style != "mini") {
+    Notifications.add("You can only use the mini timer style in Tribe", 0);
+    return;
+  }
   config.timerStyle = style;
   if (!nosave) saveConfigToCookie();
 }
