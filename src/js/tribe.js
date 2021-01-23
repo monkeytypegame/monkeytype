@@ -373,6 +373,27 @@ function mp_refreshConfig() {
     </div>
     `);
 
+  $(".pageTribe .lobby .currentSettings .groups").append(`
+    <div class='group' aria-label="Punctuation" data-balloon-pos="up">
+    <span class="numbers" style="font-weight: 900;
+        width: 1.25rem;
+        text-align: center;
+        margin-right: .1rem;
+        display: inline-block;
+        letter-spacing: -.1rem;">15</span>${MP.room.config.numbers}
+    </div>
+    `);
+
+  $(".pageTribe .lobby .currentSettings .groups").append(`
+    <div class='group' aria-label="Numbers" data-balloon-pos="up">
+    <span class="punc" style="font-weight: 900;
+      width: 1.25rem;
+      text-align: center;
+      display: inline-block;
+      letter-spacing: -.1rem;">!?</span>${MP.room.config.punctuation}
+    </div>
+    `);
+
   if (MP.room.config.difficulty === "normal") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Difficulty" data-balloon-pos="up">
@@ -446,6 +467,22 @@ function mp_refreshConfig() {
     </div>
     `);
   }
+
+  $(".pageTribe .lobby .currentSettings .groups").append(`
+    <div class='group' aria-label="Min Wpm" data-balloon-pos="up">
+    <i class="fas fa-bomb"></i>${
+      MP.room.config.minWpm == null ? "off" : MP.room.config.minWpm
+    }
+    </div>
+    `);
+
+  $(".pageTribe .lobby .currentSettings .groups").append(`
+    <div class='group' aria-label="Min Acc" data-balloon-pos="up">
+    <i class="fas fa-bomb"></i>${
+      MP.room.config.minAcc == null ? "off" : MP.room.config.minAcc
+    }
+    </div>
+    `);
 }
 
 function mp_testFinished(result) {
