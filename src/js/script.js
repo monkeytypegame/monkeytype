@@ -5635,20 +5635,25 @@ $("#wpmChart").on("mouseleave", (e) => {
 });
 
 let mappedRoutes = {
-  '/': 'pageTest',
-  '/login' : 'pageLogin',
-  '/settings' : 'pageSettings',
-  '/about' : 'pageAbout',
-  '/account': 'pageAccount',
-}
+  "/": "pageTest",
+  "/login": "pageLogin",
+  "/settings": "pageSettings",
+  "/about": "pageAbout",
+  "/account": "pageAccount",
+};
 
 function handleInitialPageClasses(el) {
-    $(el).removeClass("hidden");
-    $(el).addClass("active");
+  $(el).removeClass("hidden");
+  $(el).addClass("active");
 }
 
 $(document).ready(() => {
-  handleInitialPageClasses($(".page." + mappedRoutes[window.location.pathname]));
+  handleInitialPageClasses(
+    $(".page." + mappedRoutes[window.location.pathname])
+  );
+  if (window.location.pathname === "/") {
+    $("#top .config").removeClass("hidden");
+  }
   updateFavicon(32, 14);
   $("body").css("transition", ".25s");
   if (config.quickTab) {
