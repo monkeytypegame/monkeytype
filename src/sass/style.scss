@@ -2900,6 +2900,8 @@ key {
         color: var(--sub-color);
       }
       .message {
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
         display: flex;
         gap: 0.5rem;
         color: var(--text-color);
