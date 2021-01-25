@@ -5634,7 +5634,21 @@ $("#wpmChart").on("mouseleave", (e) => {
   $(".wordInputAfter").remove();
 });
 
+let mappedRoutes = {
+  '/': 'pageTest',
+  '/login' : 'pageLogin',
+  '/settings' : 'pageSettings',
+  '/about' : 'pageAbout',
+  '/account': 'pageAccount',
+}
+
+function handleInitialPageClasses(el) {
+    $(el).removeClass("hidden");
+    $(el).addClass("active");
+}
+
 $(document).ready(() => {
+  handleInitialPageClasses($(".page." + mappedRoutes[window.location.pathname]));
   updateFavicon(32, 14);
   $("body").css("transition", ".25s");
   if (config.quickTab) {
