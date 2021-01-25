@@ -235,5 +235,15 @@ const layouts = {
             " "
         ]
     },
+    handsdown_alt: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "'\"", "gG", "hH", "mM", "zZ", "vV", "cC", "oO", "xX", "/?", "[{", "]}", "\\|",
+            "rR", "sS", "nN", "tT", "fF", "yY", "uU", "eE", "aA", "iI", ";:", 
+            "\\|", "jJ", "bB", "lL", "dD", "kK", "wW", "pP", "qQ", ",<", ".>",
+            " "
+        ]
+    },
 }
 export default layouts;

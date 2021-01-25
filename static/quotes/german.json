@@ -420,6 +420,264 @@
       "source": "(German pangram)",
       "length": 64,
       "id": 67
+    },
+    {
+      "text": "Wir sind im hohen Grade durch Kunst und Wissenschaft kultiviert.",
+      "source": "Immanuel Kant",
+      "length": 64,
+      "id": 68
+    },
+    {
+      "text": "Der Körper ist das Grab der Seele.",
+      "source": "Platon",
+      "length": 34,
+      "id": 69
+    },
+    {
+      "text": "Vor den Richter gehen, heißt aber, auf Gerechtigkeit ausgehen; denn der Richter soll gewissermaßen die lebendige Gerechtigkeit sein.",
+      "source": "Aristoteles",
+      "length": 132,
+      "id": 70
+    },
+    {
+      "text": "Denn von den Extremen ist das eine mehr, das andere weniger fehlerhaft.",
+      "source": "Aristoteles",
+      "length": 71,
+      "id": 71
+    },
+    {
+      "text": "Das Ganze ist mehr als die Summe seiner Teile.",
+      "source": "Aristoteles",
+      "length": 46,
+      "id": 72
+    },
+    {
+      "text": "Alle Menschen streben von Natur aus nach Wissen.",
+      "source": "Aristoteles",
+      "length": 48,
+      "id": 73
+    },
+    {
+      "text": "Ich möchte meiner Heimat ein Geschenk machen, Pierre. Ich möchte das Element Polonium nennen.",
+      "source": "Marie Curie",
+      "length": 93,
+      "id": 74
+    },
+    {
+      "text": "Tage sind gleichsam Kinder der Zeit, weil der folgende Tag, mit dem was er enthält, das Erzeugnis des vorigen ist.",
+      "source": "Immanuel Kant",
+      "length": 114,
+      "id": 75
+    },
+    {
+      "text": "Ich bin mir meiner selbst bewusst, ist ein Gedanke, der schon ein zweifaches Ich enthält, das Ich als Subjekt, und das Ich als Objekt.",
+      "source": "Immanuel Kant",
+      "length": 134,
+      "id": 76
+    },
+    {
+      "text": "Ob aber der Mensch nun von Natur moralisch gut oder böse ist? Keines von beiden, denn er ist von Natur gar kein moralisches Wesen; er wird dieses nur, wenn seine Vernunft sich bis zu den Begriffen der Pflicht und des Gesetzes erhebt.",
+      "source": "Immanuel Kant",
+      "length": 233,
+      "id": 77
+    },
+    {
+      "text": "Man lernt das am gründlichsten, und behält das am besten, was man gleichsam aus sich selbst lernet. Nur wenige Menschen indessen sind das im Stande. Man nennt sie Autodidakten.",
+      "source": "Immanuel Kant",
+      "length": 176,
+      "id": 78
+    },
+    {
+      "text": "Durch Sprichwörter reden ist daher die Sprache des Pöbels, und beweiset den gänzlichen Mangel des Witzes im Umgange mit der feineren Welt.",
+      "source": "Immanuel Kant",
+      "length": 138,
+      "id": 79
+    },
+    {
+      "text": "Der Mensch ist das einzige Geschöpf, das erzogen werden muss.",
+      "source": "Immanuel Kant",
+      "length": 61,
+      "id": 80
+    },
+    {
+      "text": "Die Metaphysik hat zum eigentlichen Zwecke ihrer Nachforschung nur drei Ideen: Gott, Freiheit und Unsterblichkeit.",
+      "source": "Immanuel Kant",
+      "length": 114,
+      "id": 81
+    },
+    {
+      "text": "Verstand ist erhaben, Witz ist schön.",
+      "source": "Immanuel Kant",
+      "length": 37,
+      "id": 82
+    },
+    {
+      "text": "Populär ist der Text nicht, aber bedeutend: Das Grundgesetz ist das wichtigste Dokument unseres demokratischen Selbstverständnisses und die freiheitlichste Verfassung, die Deutschland in seiner Geschichte je hatte. Dass unsere Verfassung Grundgesetz heißt, ist Ausdruck der Teilung Deutschlands nach dem Zweiten Weltkrieg. Der Begriff Grundgesetz betonte den offenen, provisorischen Charakter der Bestimmungen, an deren Formulierung mitzuwirken Vertretern der sowjetischen Besatzungszone damals versagt war. Darum wurde in einem eigenen Artikel 146 ausdrücklich festgelegt, dass dieses Provisorium seine Gültigkeit verliert, sobald eine vom gesamten deutschen Volk in freier Entscheidung beschlossene Verfassung vorlieg.t Das ursprünglich provisorisch gemeinte Grundgesetz ist heute, nach dem Beitritt der neuen Länder zur Bundesrepublik Deutschland 1990, die unbestrittene Grundlage der politischen Verfassung des Landes im Sinne einer freiheitlich-demokratischen Gesellschaft geworden.",
+      "source": "Grundgesetz: Geleitwort Prof. Dr. Norbert Lammert",
+      "length": 987,
+      "id": 83
+    },
+    {
+      "text": "Die Würde des Menschen ist unantastbar. Sie zu achten und zu schützen ist Verpflichtung aller staatlichen Gewalt.",
+      "source": "Grundgesetz Artikel 1.1",
+      "length": 113,
+      "id": 84
+    },
+    {
+      "text": "Jeder hat das Recht auf die freie Entfaltung seiner Persönlichkeit, soweit er nicht die Rechte anderer verletzt und nicht gegen die verfassungsmäßige Ordnung oder das Sittengesetz verstößt.",
+      "source": "Grundgesetz Artikel 2.1",
+      "length": 189,
+      "id": 85
+    },
+    {
+      "text": "Jeder hat das Recht auf Leben und körperliche Unversehrtheit. Die Freiheit der Person ist unverletzlich. In diese Rechte darf nur auf Grund eines Gesetzes eingegriffen werden.",
+      "source": "Grundgesetz Artikel 2.2",
+      "length": 175,
+      "id": 86
+    },
+    {
+      "text": "Alle Menschen sind vor dem Gesetz gleich.",
+      "source": "Grundgesetz Artikel 3.1",
+      "length": 41,
+      "id": 87
+    },
+    {
+      "text": "Die Freiheit des Glaubens, des Gewissens und die Freiheit des religiösen und weltanschaulichen Bekenntnisses sind unverletzlich.",
+      "source": "Grundgesetz Artikel 4.1",
+      "length": 128,
+      "id": 88
+    },
+    {
+      "text": "Jeder hat das Recht, seine Meinung in Wort, Schrift und Bild frei zu äußern und zu verbreiten und sich aus allgemein zugänglichen Quellen ungehindert zu unterrichten. Die Pressefreiheit und die Freiheit der Berichterstattung durch Rundfunk und Film werden gewährleistet. Eine Zensur findet nicht statt.",
+      "source": "Grundgesetz Artikel 5.1",
+      "length": 302,
+      "id": 89
+    },
+    {
+      "text": "Die meisten Menschen sehen das Problem der Liebe in erster Linie als das Problem, selbst geliebt zu werden, statt zu lieben und lieben zu können. Daher geht es für sie nur darum, wie man es erreicht, geliebt zu werden, wie man liebenswert wird. Um zu diesem Ziel zu gelangen, schlagen sie verschiedene Wege ein. Der eine, besonders von Männern verfolgte Weg ist der, so erfolgreich, so mächtig und reich zu sein, wie es die eigene gesellschaftliche Stellung möglich macht. Ein anderer, besonders von Frauen bevorzugter Weg ist der, durch Kosmetik, schöne Kleider und dergleichen möglichst attraktiv zu sein.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 607,
+      "id": 90
+    },
+    {
+      "text": "Ehe und Familie stehen unter dem besonderen Schutze der staatlichen Ordnung.",
+      "source": "Grundgesetz Artikel 6.1",
+      "length": 76,
+      "id": 91
+    },
+    {
+      "text": "Pflege und Erziehung sind das natürliche Recht der Eltern und die zuvörderst ihnen obliegende Pflicht.",
+      "source": "Grundgesetz Artikel 6.2",
+      "length": 102,
+      "id": 92
+    },
+    {
+      "text": "Gegen den Willen der Erziehungsberechtigten dürfen Kinder nur auf Grund eines Gesetzes von der Familie getrennt werden, wenn die Erziehungsberechtigten versagen oder wenn die Kinder aus anderen Gründen zu verwahrlosen drohen.",
+      "source": "Grundgesetz Artikel 6.3",
+      "length": 225,
+      "id": 93
+    },
+    {
+      "text": "Das gesamte Schulwesen steht unter der Aufsicht des Staates.",
+      "source": "Grundgesetz Artikel 7.1",
+      "length": 60,
+      "id": 94
+    },
+    {
+      "text": "Die Erziehungsberechtigten haben das Recht, über die Teilnahme des Kindes am Religionsunterricht zu bestimmen.",
+      "source": "Grundgesetz Artikel 7.2",
+      "length": 110,
+      "id": 95
+    },
+    {
+      "text": "Alle Deutschen haben das Recht, sich ohne Anmeldung oder Erlaubnis friedlich und ohne Waffen zu versammeln.",
+      "source": "Grundgesetz Artikel 8.1",
+      "length": 107,
+      "id": 96
+    },
+    {
+      "text": "Für Versammlungen unter freien Himmel kann dieses Recht durch Gesetz oder auf Grund eines Gesetzes beschränkt werden.",
+      "source": "Grundgesetz Artikel 8.2",
+      "length": 117,
+      "id": 97
+    },
+    {
+      "text": "Alle Deutschen haben das Recht, Vereine und Gesellschaften zu bilden.",
+      "source": "Grundgesetz Artikel 9.1",
+      "length": 69,
+      "id": 98
+    },
+    {
+      "text": "Der moderne Mensch ist sich selbst, seinen Mitmenschen und der Natur entfremdet.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 80,
+      "id": 99
+    },
+    {
+      "text": "Die menschlichen Beziehungen sind im Wesentlichen die von entfremdeten Automaten. Jeder glaubt sich dann in Sicherheit, wenn er möglichst dicht bei der Herde bleibt und sich in seinem Denken, Fühlen und Handeln nicht von den anderen unterscheidet.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 247,
+      "id": 100
+    },
+    {
+      "text": "Ohne Liebe könnte die Menschheit nicht einen Tag existieren.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 60,
+      "id": 101
+    },
+    {
+      "text": "Die Erfahrung dieses Abgetrenntseins erregt Angst, ja sie ist tatsächlich die Quelle aller Angst. Abgetrennt sein heißt abgeschnitten und ohne jede Möglichkeit, die eigenen Kräfte zu nutzen. Daher heißt abgetrennt sein hilflos sein, unfähig sein, die Welt - Dinge wie Menschen - mit eigenen Kräften zu erfassen; es heißt, dass die Welt über mich herfallen kann, ohne dass ich in der Lage bin, darauf zu reagieren. Daher ist das Abgetrenntsein eine Quelle intensiver Angst.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 472,
+      "id": 102
+    },
+    {
+      "text": "Der Mensch ist mit Vernunft ausgestattet; er ist Leben, das sich seiner selbst bewusst ist. Er besitzt ein Bewusstsein seiner selbst, seiner Mitmenschen, seiner Vergangenheit und der Möglichkeiten seiner Zukunft. Dieses Bewusstsein seiner Selbst als einer eigenständigen Größe, das Gewahrwerden dessen, dass er eine kurze Lebensspanne vor sich hat, dass er ohne seinen Willen geboren wurde und gegen seinen Willen sterben wird, dass er vor denen, die er liebt, sterben wird (oder sie vor ihm), dass er allein und abgesondert und den Kräften der Natur und der Gesellschaft hilflos ausgeliefert ist - all das macht seine abgesonderte, einsame Existenz zu einem unerträglichen Gefängnis.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 684,
+      "id": 103
+    },
+    {
+      "text": "Der Mensch kann nur vorwärtsschreiten, indem er seine Vernunft entwickelt, indem er eine neue, eine menschliche Harmonie findet anstelle der vormenschlichen Harmonie, die unwiederbringlich verloren ist.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 202,
+      "id": 104
+    },
+    {
+      "text": "Das Wesentliche an der Existenz des Menschen ist ja, dass er die Natur transzendiert hat, wenn er sie auch nie ganz verlässt. Er ist ein Teil von ihr und kann doch nicht in sie rückkehren, nachdem er sich einmal von ihr losgerissen hat.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 236,
+      "id": 105
+    },
+    {
+      "text": "Der dritte Irrtum, der zu der Annahme führt, das Lieben müsste nicht gelernt werden, beruht darauf, dass man das Anfangserlebnis \"sich zu verlieben\", mit dem permanenten Zustand \"zu lieben\" verwechselt. Wenn zwei Menschen, die einander fremd waren - wie wir uns das ja alle sind -, plötzlich die trennende Wand zwischen sich zusammenbrechen lassen, wenn sie sich eng verbunden, wenn sie sich eins fühlen, so ist dieser Augenblick des Einsseins eine der freudigsten, erregendsten Erfahrungen im Leben. Besonders herrlich und wundervoll ist er für Menschen, die bisher abgesondert, isoliert und ohne Liebe gelebt haben. Freilich ist diese Art Liebe ihrem Wesen nach nicht von Dauer.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 680,
+      "id": 106
+    },
+    {
+      "text": "Hinter der Einstellung, dass man nichts lernen müsse, um lieben zu können, steckt zweitens die Annahme, es gehe bei dem Problem der Liebe um ein Objekt und nicht um eine Fähigkeit. Viele Menschen meinen, zu lieben sei ganz einfach, schwierig sei es dagegen, den richtigen Partner zu finden, den man selbst lieben könne und von dem man geliebt werde.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 349,
+      "id": 107
+    },
+    {
+      "text": "Was in der Verfassung steht, ist eine Sache. Eine andere Sache ist die Frage, ob und wie die in ihr formulierten Werte auch verwirklicht werden. Doch darauf kommt es an. Unser Staat ist angewiesen darauf, dass die Idee der Menschenwürde, die Grundwerte der Freiheit, Gleichheit und Toleranz gelebt werden. Demokratie braucht Bürger, die sich einmischen, die Verantwortung übernehmen, die Engagement zeigen. Das Grundgesetz gibt uns die Freiheit, uns für die humane Gesellschaft, wie wir sie wollen, einzusetzen. Nutzen wir diese Freiheit, jeden Tag aufs Neue.",
+      "source": "Grundgesetz: Geleitwort Prof. Dr. Norbert Lammert",
+      "length": 559,
+      "id": 108
+    },
+    {
+      "text": "Das Briefgeheimnis sowie das Post- und Fernmeldegeheimnis sind unverletzlich.",
+      "source": "Grundgesetz Artikel 10.1",
+      "length": 77,
+      "id": 109
+    },
+    {
+      "text": "Die Wohnung ist unverletzlich.",
+      "source": "Grundgesetz Artikel 13.1",
+      "length": 30,
+      "id": 110
     }
   ]
 }
