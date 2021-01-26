@@ -5792,6 +5792,9 @@ async function setupChallenge(challengeName) {
     manualRestart = true;
     restartTest(false, true);
     notitext = challenge.message;
+    $("#top .config").removeClass("hidden");
+    $(".page.pageTest").removeClass("hidden");
+
     if (notitext === undefined) {
       Notifications.add(`Challenge '${challengeName}' loaded.`, 0);
     } else {
