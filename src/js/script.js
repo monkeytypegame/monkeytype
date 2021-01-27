@@ -1875,6 +1875,7 @@ function showResult(difficultyFailed = false, mp_outOfTime = false) {
   if (MP.state >= 10) {
     $(".pageTest #nextTestButton").addClass("hidden");
     $(".pageTest #backToLobbyButton").addClass("hidden");
+    $(".pageTest #readyButton").removeClass("hidden");
     $(".pageTest #restartTestButtonWithSameWordset").addClass("hidden");
     $(".pageTest #goBackToLobbyButton").removeClass("hidden");
     $(".pageTest #practiseMissedWordsButton").addClass("hidden");
@@ -1882,10 +1883,12 @@ function showResult(difficultyFailed = false, mp_outOfTime = false) {
     if (MP.room.isLeader) {
       $(".pageTest #backToLobbyButton").removeClass("hidden");
       $(".pageTest #nextTestButton").removeClass("hidden");
+      $(".pageTest #readyButton").addClass("hidden");
     }
   } else {
     $(".pageTest #nextTestButton").removeClass("hidden");
     $(".pageTest #backToLobbyButton").addClass("hidden");
+    $(".pageTest #readyButton").addClass("hidden");
     $(".pageTest #restartTestButtonWithSameWordset").removeClass("hidden");
     $(".pageTest #goBackToLobbyButton").addClass("hidden");
     $(".pageTest #practiseMissedWordsButton").removeClass("hidden");
@@ -3271,7 +3274,13 @@ function changePage(page) {
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
-    if (MP.state >= 20 && MP.state <= 29 && !MP.room.isTyping) return;
+    if (
+      MP.state >= 20 &&
+      MP.state <= 29 &&
+      !MP.room.isTyping &&
+      !MP.room.isReady
+    )
+      return;
     pageTransition = true;
     swapElements(activePage, $(".page.pageTest"), 250, () => {
       pageTransition = false;

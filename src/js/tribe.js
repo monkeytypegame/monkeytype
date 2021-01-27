@@ -58,6 +58,9 @@ function mp_changeActiveSubpage(newPage) {
     $(`.pageTribe .${newPage}`),
     250,
     () => {
+      if (newPage === "lobby") {
+        $(".pageTribe .lobby .chat .input input").focus();
+      }
       MP.pageTransition = false;
       MP.activePage = newPage;
     }
@@ -283,52 +286,58 @@ function mp_refreshTestUserList() {
 
   $(".tribeResult table tbody").empty();
   Object.keys(MP.room.users).forEach((sid) => {
-    let user = MP.room.users[sid];
-    let me = "";
-    if (sid === MP.socket.id) {
-      me = " me";
-    }
-    $(".tribeResult table tbody").append(`
-    <tr class="player ${me}" sid="${sid}">
-      <td class="name">${user.name}</td>
-      <td class="pos"><span class="num">-</span><span class="points"></span></td>
-      <td class="crown"><i class="fas fa-crown" style="opacity:0"></i></td>
-      <td>
-        <div class="wpm">
-          <div class="text">-</div>
-          <div class="miniCrown"><i class="fas fa-crown"></i></div>
-        </div>
-        <div class="acc">
-          <div class="text">-</div>
-          <div class="miniCrown"><i class="fas fa-crown"></i></div>
-        </div>
-      </td>
-      <td>
-        <div class="raw">
-          <div class="text">-</div>
-          <div class="miniCrown"><i class="fas fa-crown"></i></div>
-        </div>
-        <div class="con">
-          <div class="text">-</div>
-          <div class="miniCrown"><i class="fas fa-crown"></i></div>
-        </div>
-      </td>
-      <td>
-        <div class="char">-</div>
-        <div class="other">-</div>
-      </td>
-      <td class="progressAndGraph">
-        <div class="progress">
-          <div class="barBg">
-            <div class="bar" style="width: 0%;"></div>
+    if (
+      MP.room.users[sid].isTyping ||
+      MP.room.users[sid].isReady ||
+      MP.room.users[sid].isLeader
+    ) {
+      let user = MP.room.users[sid];
+      let me = "";
+      if (sid === MP.socket.id) {
+        me = " me";
+      }
+      $(".tribeResult table tbody").append(`
+      <tr class="player ${me}" sid="${sid}">
+        <td class="name">${user.name}</td>
+        <td class="pos"><span class="num">-</span><span class="points"></span></td>
+        <td class="crown"><i class="fas fa-crown" style="opacity:0"></i></td>
+        <td>
+          <div class="wpm">
+            <div class="text">-</div>
+            <div class="miniCrown"><i class="fas fa-crown"></i></div>
           </div>
-        </div>
-        <div class="graph hidden" style="height: 50px">
-          <canvas></canvas>
-        </div>
-      </td>
-    </tr>
-    `);
+          <div class="acc">
+            <div class="text">-</div>
+            <div class="miniCrown"><i class="fas fa-crown"></i></div>
+          </div>
+        </td>
+        <td>
+          <div class="raw">
+            <div class="text">-</div>
+            <div class="miniCrown"><i class="fas fa-crown"></i></div>
+          </div>
+          <div class="con">
+            <div class="text">-</div>
+            <div class="miniCrown"><i class="fas fa-crown"></i></div>
+          </div>
+        </td>
+        <td>
+          <div class="char">-</div>
+          <div class="other">-</div>
+        </td>
+        <td class="progressAndGraph">
+          <div class="progress">
+            <div class="barBg">
+              <div class="bar" style="width: 0%;"></div>
+            </div>
+          </div>
+          <div class="graph hidden" style="height: 50px">
+            <canvas></canvas>
+          </div>
+        </td>
+      </tr>
+      `);
+    }
   });
   $(".tribeResult").removeClass("hidden");
 }
@@ -808,6 +817,7 @@ MP.socket.on("mp_room_user_left", (data) => {
     $(".pageTribe .lobby .lobbyButtons .startTestButton").removeClass("hidden");
     $(".pageTribe .lobby .userReadyButton").addClass("hidden");
     $(".pageTest #result #backToLobbyButton").removeClass("hidden");
+    $(".pageTest #result #readyButton").addClass("hidden");
     $(".pageTest #result #nextTestButton").removeClass("hidden");
   }
   mp_refreshUserList();
@@ -899,7 +909,11 @@ MP.socket.on("mp_room_finishTimer_over", (data) => {
 
 MP.socket.on("mp_room_test_init", (data) => {
   mp_refreshTestUserList();
-  if (!MP.room.isReady && !MP.room.isLeader) return;
+  if (!MP.room.isReady && !MP.room.isLeader) {
+    changePage("tribe");
+    mp_changeActiveSubpage("lobby");
+    return;
+  }
   mp_playSound("start");
   MP.room.userGraphs = {};
   MP.room.userFinished = false;
@@ -1145,6 +1159,7 @@ MP.socket.on("mp_room_points", (data) => {
 });
 
 MP.socket.on("mp_room_back_to_lobby", (data) => {
+  $(".tribePlayers").addClass("hidden");
   changePage("tribe");
 });
 
@@ -1152,6 +1167,11 @@ MP.socket.on("mp_room_user_info_update", (data) => {
   Object.keys(data.values).forEach((bool) => {
     MP.room.users[data.sid][bool] = data.values[bool];
     if (data.sid === MP.socket.id) {
+      if (bool === "isReady" && !data.values[bool] && !MP.room.isLeader) {
+        $(".pageTribe .lobby .lobbyButtons .userReadyButton").removeClass(
+          "hidden"
+        );
+      }
       MP.room[bool] = data.values[bool];
     }
   });
@@ -1334,7 +1354,9 @@ $(".pageTribe .lobby .lobbyButtons .startTestButton").click((e) => {
   mp_startTest();
 });
 
-$(".pageTribe .lobby .lobbyButtons .userReadyButton").click((e) => {
+$(
+  ".pageTribe .lobby .lobbyButtons .userReadyButton, .pageTest #result #readyButton"
+).click((e) => {
   $(".pageTribe .lobby .lobbyButtons .userReadyButton").addClass("hidden");
   MP.socket.emit("mp_user_ready");
 });
