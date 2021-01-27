@@ -967,12 +967,16 @@ function setNumbers(numb, nosave, mp = false) {
 }
 
 function toggleNumbers() {
+  if (!mp_checkIfCanChangeConfig(false)) {
+    return;
+  }
   if (config.numbers) {
     $("#top .config .numbersMode .text-button").removeClass("active");
   } else {
     $("#top .config .numbersMode .text-button").addClass("active");
   }
   config.numbers = !config.numbers;
+  mp_syncConfig();
   saveConfigToCookie();
 }
 
@@ -992,12 +996,16 @@ function setPunctuation(punc, nosave, mp = false) {
 }
 
 function togglePunctuation() {
+  if (!mp_checkIfCanChangeConfig(false)) {
+    return;
+  }
   if (config.punctuation) {
     $("#top .config .punctuationMode .text-button").removeClass("active");
   } else {
     $("#top .config .punctuationMode .text-button").addClass("active");
   }
   config.punctuation = !config.punctuation;
+  mp_syncConfig();
   saveConfigToCookie();
 }
 
