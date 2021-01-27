@@ -652,17 +652,16 @@ MP.socket.on("connect", (f) => {
   MP.id = MP.socket.id;
   MP.name = name;
   MP.socket.emit("mp_system_name_set", { name: name });
+  mp_changeActiveSubpage("prelobby");
   setTimeout(() => {
     if (MP.autoJoin) {
       MP.socket.emit("mp_room_join", { roomId: MP.autoJoin });
       MP.autoJoin = undefined;
-      mp_changeActiveSubpage("lobby");
       // swapElements($(".pageTribe .preloader"), $(".pageTribe .lobby"), 250);
     } else {
       // swapElements($(".pageTribe .preloader"), $(".pageTribe .prelobby"), 250);
-      mp_changeActiveSubpage("prelobby");
     }
-  }, 250);
+  }, 500);
 });
 
 MP.socket.on("mp_update_online_stats", (data) => {
