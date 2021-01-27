@@ -2912,7 +2912,8 @@ function startTest() {
       mp_sendTestProgress(wpmAndRaw.wpm, wpmAndRaw.raw, acc, progress);
 
       if (
-        MP.state === 21 &&
+        MP.state >= 21 &&
+        MP.state <= 28 &&
         time >= 5 &&
         currentInput === "" &&
         inputHistory.length === 0
@@ -3270,6 +3271,7 @@ function changePage(page) {
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
+    if (MP.state >= 20 && MP.state <= 29 && !MP.room.isTyping) return;
     pageTransition = true;
     swapElements(activePage, $(".page.pageTest"), 250, () => {
       pageTransition = false;
