@@ -16,6 +16,7 @@ class Notification {
     this.customTitle = customTitle;
     this.customIcon = customIcon;
     this.id = id++;
+    return this;
   }
   //level
   //0 - notice
@@ -88,7 +89,13 @@ class Notification {
               }
             );
           $(`#notificationCenter .notif[id='${this.id}']`).click((e) => {
-            this.hide();
+            if (e.shiftKey) {
+              notificationHistory.forEach((n) => {
+                n.hide();
+              });
+            } else {
+              this.hide();
+            }
           });
         }
       );
@@ -125,7 +132,7 @@ class Notification {
 }
 
 export function add(message, level, duration, customTitle, customIcon) {
-  notificationHistory.push(
-    new Notification(message, level, duration, customTitle, customIcon).show()
-  );
+  let not = new Notification(message, level, duration, customTitle, customIcon);
+  not.show();
+  notificationHistory.push(not);
 }
