@@ -67,11 +67,17 @@ function mp_changeActiveSubpage(newPage) {
 function mp_refreshUserList() {
   $(".pageTribe .lobby .userlist .list").empty();
   $(".pageTest #result .tribeResultChat .userlist .list").empty();
-  let sortedUsers = MP.room.users.sort((a, b) => b.points - a.points);
+  let usersArray = [];
+  Object.keys(MP.room.users).forEach((sid) => {
+    let u = MP.room.users[sid];
+    u.sid = sid;
+    usersArray.push(u);
+  });
+  let sortedUsers = usersArray.sort((a, b) => b.points - a.points);
   sortedUsers.forEach((user) => {
     let star = "";
     if (user.isLeader) {
-      if (user.socketId === MP.socket.id) {
+      if (user.sid === MP.socket.id) {
         MP.room.isLeader = true;
       }
 
@@ -84,14 +90,14 @@ function mp_refreshUserList() {
       pointsString = user.points + (user.points == 1 ? "pt" : "pts");
     }
     $(".pageTribe .lobby .userlist .list").append(`
-    <div class='user ${user.socketId === MP.id ? "me" : ""}'>
+    <div class='user ${user.sid === MP.id ? "me" : ""}'>
     <div class='name'>${
       user.name
     } ${star}</div><div class='points'>${pointsString}</div>
     </div>
     `);
     $(".pageTest #result .tribeResultChat .userlist .list").append(`
-    <div class='user ${user.socketId === MP.id ? "me" : ""}'>
+    <div class='user ${user.sid === MP.id ? "me" : ""}'>
     <div class='name'>${
       user.name
     } ${star}</div><div class='points'>${pointsString}</div>
@@ -170,33 +176,39 @@ function mp_checkIfCanChangeConfig(mp) {
     return true;
   }
 }
-
+let syncConfigTimeout = null;
 function mp_syncConfig() {
-  let mode2;
-  if (config.mode === "time") {
-    mode2 = config.time;
-  } else if (config.mode === "words") {
-    mode2 = config.words;
-  } else if (config.mode === "quote") {
-    mode2 = config.quoteLength === undefined ? "-1" : config.quoteLength;
+  if (syncConfigTimeout === null) {
+    syncConfigTimeout = setTimeout(() => {
+      let mode2;
+      if (config.mode === "time") {
+        mode2 = config.time;
+      } else if (config.mode === "words") {
+        mode2 = config.words;
+      } else if (config.mode === "quote") {
+        mode2 = config.quoteLength === undefined ? "-1" : config.quoteLength;
+      }
+      MP.socket.emit("mp_room_config_update", {
+        config: {
+          mode: config.mode,
+          mode2: mode2,
+          difficulty: config.difficulty,
+          blindMode: config.blindMode,
+          language: config.language,
+          funbox: activeFunBox,
+          stopOnError: config.stopOnError,
+          confidenceMode: config.confidenceMode,
+          customText: customText,
+          punctuation: config.punctuation,
+          numbers: config.numbers,
+          minWpm: config.minWpm === "custom" ? config.minWpmCustomSpeed : null,
+          minAcc: config.minAcc === "custom" ? config.minAccCustom : null,
+        },
+      });
+      clearTimeout(syncConfigTimeout);
+      syncConfigTimeout = null;
+    }, 500);
   }
-  MP.socket.emit("mp_room_config_update", {
-    config: {
-      mode: config.mode,
-      mode2: mode2,
-      difficulty: config.difficulty,
-      blindMode: config.blindMode,
-      language: config.language,
-      funbox: activeFunBox,
-      stopOnError: config.stopOnError,
-      confidenceMode: config.confidenceMode,
-      customText: customText,
-      punctuation: config.punctuation,
-      numbers: config.numbers,
-      minWpm: config.minWpm === "custom" ? config.minWpmCustomSpeed : null,
-      minAcc: config.minAcc === "custom" ? config.minAccCustom : null,
-    },
-  });
 }
 
 function mp_joinRoomByCode(code) {
@@ -214,6 +226,7 @@ function mp_joinRoomByCode(code) {
 }
 
 function mp_startTest() {
+  if (syncConfigTimeout !== null) return;
   if (MP.room.newTestCooldown) return;
   MP.socket.emit("mp_room_test_start");
 }
@@ -221,7 +234,7 @@ function mp_startTest() {
 function mp_sendTestProgress(wpm, raw, acc, progress) {
   if (MP.state >= 21 && MP.state <= 28 && testActive) {
     MP.socket.emit("mp_room_test_progress_update", {
-      socketId: MP.socket.id,
+      sid: MP.socket.id,
       roomId: MP.room.id,
       stats: {
         wpm: wpm,
@@ -235,13 +248,14 @@ function mp_sendTestProgress(wpm, raw, acc, progress) {
 
 function mp_refreshTestUserList() {
   $(".tribePlayers").empty();
-  MP.room.users.forEach((user) => {
+  Object.keys(MP.room.users).forEach((sid) => {
+    let user = MP.room.users[sid];
     let me = "";
-    if (user.socketId === MP.socket.id) {
+    if (sid === MP.socket.id) {
       me = " me";
     }
     $(".tribePlayers").append(`
-    <tr class="player ${me}" socketId="${user.socketId}">
+    <tr class="player ${me}" sid="${sid}">
       <td class="name">${user.name}</td>
       <td class="progress">
         <div class="barBg">
@@ -258,13 +272,14 @@ function mp_refreshTestUserList() {
   $(".tribePlayers").removeClass("hidden");
 
   $(".tribeResult table tbody").empty();
-  MP.room.users.forEach((user) => {
+  Object.keys(MP.room.users).forEach((sid) => {
+    let user = MP.room.users[sid];
     let me = "";
-    if (user.socketId === MP.socket.id) {
+    if (sid === MP.socket.id) {
       me = " me";
     }
     $(".tribeResult table tbody").append(`
-    <tr class="player ${me}" socketId="${user.socketId}">
+    <tr class="player ${me}" sid="${sid}">
       <td class="name">${user.name}</td>
       <td class="pos"><span class="num">-</span><span class="points"></span></td>
       <td class="crown"><i class="fas fa-crown" style="opacity:0"></i></td>
@@ -608,7 +623,7 @@ function fillGraphDataAndUpdate(graph, result, sid) {
 }
 
 function drawMinigraph(sid, result) {
-  let graphelem = $(`.tribeResult .player[socketId='${sid}'] .graph canvas`)[0];
+  let graphelem = $(`.tribeResult .player[sid='${sid}'] .graph canvas`)[0];
   let graph = new Chart(graphelem, miniChartSettings);
 
   fillGraphDataAndUpdate(graph, result, sid);
@@ -726,9 +741,7 @@ MP.socket.on("connect_error", (f) => {
 MP.socket.on("mp_room_joined", (data) => {
   mp_playSound("join");
   MP.room = data.room;
-  if (
-    MP.room.users.filter((user) => user.socketId === MP.socket.id)[0].isLeader
-  ) {
+  if (MP.room.users[MP.socket.id].isLeader) {
     MP.room.isLeader = true;
   }
   mp_refreshUserList();
@@ -770,9 +783,10 @@ MP.socket.on("mp_room_leave", () => {
 
 MP.socket.on("mp_room_user_left", (data) => {
   mp_playSound("leave");
-  MP.room = data.room;
-  if (data.newLeader !== "" && data.newLeader === MP.id) {
+  delete MP.room.users[data.sid];
+  if (data.newLeader !== "" && data.newLeader === MP.socket.id) {
     MP.room.isLeader = true;
+    MP.room.users[MP.socket.id].isLeader = true;
     $(".pageTribe .lobby .lobbyButtons .startTestButton").removeClass("hidden");
     $(".pageTest #result #backToLobbyButton").removeClass("hidden");
     $(".pageTest #result #nextTestButton").removeClass("hidden");
@@ -784,7 +798,7 @@ MP.socket.on("mp_room_config_update", (data) => {
   MP.room.config = data.newConfig;
   mp_refreshConfig();
   if (!MP.room.isLeader) {
-    Notifications.add("Config changed", 0, 1);
+    Notifications.add("Config changed", 0, 2);
     mp_applyRoomConfig(MP.room.config);
   }
 });
@@ -881,19 +895,17 @@ MP.socket.on("mp_room_state_update", (data) => {
 });
 
 MP.socket.on("mp_room_user_test_progress_update", (data) => {
-  $(`.tribePlayers .player[socketId=${data.socketId}] .wpm`).text(
-    data.stats.wpm
-  );
-  $(`.tribePlayers .player[socketId=${data.socketId}] .acc`).text(
+  $(`.tribePlayers .player[sid=${data.sid}] .wpm`).text(data.stats.wpm);
+  $(`.tribePlayers .player[sid=${data.sid}] .acc`).text(
     Math.floor(data.stats.acc) + "%"
   );
-  $(`.tribeResult table .player[socketId=${data.socketId}] .wpm .text`).text(
+  $(`.tribeResult table .player[sid=${data.sid}] .wpm .text`).text(
     data.stats.wpm
   );
-  $(`.tribeResult table .player[socketId=${data.socketId}] .acc .text`).text(
+  $(`.tribeResult table .player[sid=${data.sid}] .acc .text`).text(
     Math.floor(data.stats.acc) + "%"
   );
-  $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
+  $(`.tribePlayers .player[sid=${data.sid}] .bar`)
     .stop(true, false)
     .animate(
       {
@@ -905,7 +917,7 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
       1000,
       "linear"
     );
-  $(`.tribeResult table .player[socketId=${data.socketId}] .bar`)
+  $(`.tribeResult table .player[sid=${data.sid}] .bar`)
     .stop(true, false)
     .animate(
       {
@@ -923,22 +935,22 @@ let graphs = [];
 
 MP.socket.on("mp_room_user_finished", (data) => {
   $(`.tribeResult`).removeClass("hidden");
-  $(`.tribeResult table .player[socketId=${data.socketId}] .wpm .text`).text(
+  $(`.tribeResult table .player[sid=${data.sid}] .wpm .text`).text(
     data.result.wpm
   );
-  $(`.tribeResult table .player[socketId=${data.socketId}] .acc .text`).text(
+  $(`.tribeResult table .player[sid=${data.sid}] .acc .text`).text(
     data.result.acc + "%"
   );
-  // $(`.tribeResult table .player[socketId=${data.socketId}] .progress`).remove();
-  // $(`.tribeResult table .player[socketId=${data.socketId}] .raw`).remove();
-  // $(`.tribeResult table .player[socketId=${data.socketId}] .con`).remove();
-  // $(`.tribeResult table .player[socketId=${data.socketId}] .char`).remove();
-  // $(`.tribeResult table .player[socketId=${data.socketId}] .acc`).after(`
+  // $(`.tribeResult table .player[sid=${data.sid}] .progress`).remove();
+  // $(`.tribeResult table .player[sid=${data.sid}] .raw`).remove();
+  // $(`.tribeResult table .player[sid=${data.sid}] .con`).remove();
+  // $(`.tribeResult table .player[sid=${data.sid}] .char`).remove();
+  // $(`.tribeResult table .player[sid=${data.sid}] .acc`).after(`
   //   <td class="raw"></div>
   //   <td class="con"></div>
   //   <td class="char"></div>
   // `);
-  $(`.tribeResult table .player[socketId=${data.socketId}] .raw .text`).text(
+  $(`.tribeResult table .player[sid=${data.sid}] .raw .text`).text(
     data.result.raw
   );
   let val = "-";
@@ -951,32 +963,30 @@ MP.socket.on("mp_room_user_finished", (data) => {
   } else if (data.result.outOfTime) {
     val = "out of time";
   }
-  $(`.tribeResult table .player[socketId=${data.socketId}] .other`).text(val);
-  $(`.tribeResult table .player[socketId=${data.socketId}] .char`).text(
-    data.result.char
-  );
-  $(`.tribeResult table .player[socketId=${data.socketId}] .con .text`).text(
+  $(`.tribeResult table .player[sid=${data.sid}] .other`).text(val);
+  $(`.tribeResult table .player[sid=${data.sid}] .char`).text(data.result.char);
+  $(`.tribeResult table .player[sid=${data.sid}] .con .text`).text(
     data.result.con + "%"
   );
 
   if (data.result.failed || data.result.invalid || data.result.afk) {
-    $(`.tribePlayers .player[socketId=${data.socketId}]`).addClass("failed");
-    $(`.tribeResult .player[socketId=${data.socketId}]`).addClass("failed");
+    $(`.tribePlayers .player[sid=${data.sid}]`).addClass("failed");
+    $(`.tribeResult .player[sid=${data.sid}]`).addClass("failed");
   }
 
   if (MP.room.userGraphs === undefined) MP.room.userGraphs = {};
-  MP.room.userGraphs[data.socketId] = {
+  MP.room.userGraphs[data.sid] = {
     data: data.result,
   };
 
   swapElements(
-    $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
-    $(`.tribeResult table .player[socketId=${data.socketId}] .graph`),
+    $(`.tribeResult table .player[sid=${data.sid}] .progress`),
+    $(`.tribeResult table .player[sid=${data.sid}] .graph`),
     125
   );
 
   setTimeout(() => {
-    if (data.socketId === MP.socket.id) {
+    if (data.sid === MP.socket.id) {
       MP.room.userFinished = true;
 
       Object.keys(MP.room.userGraphs).forEach((sid) => {
@@ -984,35 +994,30 @@ MP.socket.on("mp_room_user_finished", (data) => {
         userGraph.graph = drawMinigraph(sid, userGraph.data);
       });
     } else if (MP.room.userFinished) {
-      MP.room.userGraphs[data.socketId].graph = drawMinigraph(
-        data.socketId,
-        data.result
-      );
+      MP.room.userGraphs[data.sid].graph = drawMinigraph(data.sid, data.result);
     }
   }, 250);
 
-  // $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
+  // $(`.tribeResult table .player[sid=${data.sid}] .progress`),
   //   swapElements(
-  //     $(`.tribeResult table .player[socketId=${data.socketId}] .progress`),
-  //     $(`.tribeResult table .player[socketId=${data.socketId}] .graph`),
+  //     $(`.tribeResult table .player[sid=${data.sid}] .progress`),
+  //     $(`.tribeResult table .player[sid=${data.sid}] .graph`),
   //     125,
   //     () => {
-  //       drawMinigraph(data.socketId, data.result);
-  //       // $(`.tribeResult table .player[socketId=${data.socketId}] .graph`).css('opacity',0).animate({opacity:1},125);
+  //       drawMinigraph(data.sid, data.result);
+  //       // $(`.tribeResult table .player[sid=${data.sid}] .graph`).css('opacity',0).animate({opacity:1},125);
   //     }
   //   );
 
   if (config.mode !== "time" && !data.result.failed && !data.result.afk) {
-    $(`.tribePlayers .player[socketId=${data.socketId}] .bar`)
-      .stop(true, false)
-      .animate(
-        {
-          width: "100%",
-        },
-        1000,
-        "linear"
-      );
-    $(`.tribeResult table .player[socketId=${data.socketId}] .bar`)
+    $(`.tribePlayers .player[sid=${data.sid}] .bar`).stop(true, false).animate(
+      {
+        width: "100%",
+      },
+      1000,
+      "linear"
+    );
+    $(`.tribeResult table .player[sid=${data.sid}] .bar`)
       .stop(true, false)
       .animate(
         {
@@ -1047,19 +1052,19 @@ MP.socket.on("mp_room_winner", (data) => {
   }
   let userwon = false;
   data.sorted.forEach((sid) => {
-    $(`.tribeResult table [socketId=${sid.sid}] .pos .num`).text(
+    $(`.tribeResult table [sid=${sid.sid}] .pos .num`).text(
       `${pos}${Misc.getNumberSuffix(pos)}`
     );
     if (data.official && pos == 1) {
       if (sid.sid === MP.socket.id) {
         userwon = true;
       }
-      $(`.tribeResult table [socketId=${sid.sid}] .crown .fa-crown`).animate(
+      $(`.tribeResult table [sid=${sid.sid}] .crown .fa-crown`).animate(
         { opacity: 1 },
         125
       );
     } else {
-      $(`.tribeResult table [socketId=${sid.sid}] .crown .fa-crown`).css(
+      $(`.tribeResult table [sid=${sid.sid}] .crown .fa-crown`).css(
         "opacity",
         0
       );
@@ -1083,7 +1088,7 @@ MP.socket.on("mp_room_miniCrowns", (data) => {
       } else {
         count[sid]++;
       }
-      $(`.tribeResult table [socketId=${sid}] .${c} .miniCrown`).animate(
+      $(`.tribeResult table [sid=${sid}] .${c} .miniCrown`).animate(
         { opacity: 0.5 },
         125
       );
@@ -1091,14 +1096,14 @@ MP.socket.on("mp_room_miniCrowns", (data) => {
   });
   Object.keys(count).forEach((sid) => {
     if (count[sid] === 4) {
-      $(`.tribeResult table [socketId=${sid}] .crown`).append(
+      $(`.tribeResult table [sid=${sid}] .crown`).append(
         `<div class="glow"></div>`
       );
-      $(`.tribeResult table [socketId=${sid}] .crown`).attr(
+      $(`.tribeResult table [sid=${sid}] .crown`).attr(
         "aria-label",
         "Dominated"
       );
-      $(`.tribeResult table [socketId=${sid}] .crown`).attr(
+      $(`.tribeResult table [sid=${sid}] .crown`).attr(
         "data-balloon-pos",
         "up"
       );
@@ -1108,11 +1113,10 @@ MP.socket.on("mp_room_miniCrowns", (data) => {
 
 MP.socket.on("mp_room_points", (data) => {
   data.users.forEach((user) => {
-    $(`.tribeResult table [socketId=${user.sid}] .pos .points`).text(
+    $(`.tribeResult table [sid=${user.sid}] .pos .points`).text(
       `+${user.newPoints}${user.newPoints == 1 ? "pt" : "pts"}`
     );
-    MP.room.users.filter((u) => u.socketId == user.sid)[0].points =
-      user.totalPoints;
+    MP.room.users[user.sid].points = user.totalPoints;
   });
   mp_refreshUserList();
 });
@@ -1179,6 +1183,10 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
     let msg = $(".pageTribe .lobby .chat .input input").val();
     msg = Misc.encodeHTML(msg);
     if (msg === "") return;
+    if (msg.length > 512) {
+      Notifications.add("Message cannot be longer than 512 characters.", 0);
+      return;
+    }
     MP.socket.emit("mp_chat_message", {
       isSystem: false,
       message: msg,
