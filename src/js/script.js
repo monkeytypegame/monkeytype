@@ -707,8 +707,8 @@ function arrangeCharactersLeftToRight() {
 }
 
 function setToggleSettings(state, nosave) {
-  setPunctuation(state, nosave);
-  setNumbers(state, nosave);
+  setPunctuation(state, nosave, true);
+  setNumbers(state, nosave, true);
 }
 
 function emulateLayout(event) {
@@ -2872,6 +2872,10 @@ function startTest() {
   (function loop(expectedStepEnd) {
     const delay = expectedStepEnd - performance.now();
     timer = setTimeout(function () {
+      if (!testActive) {
+        clearTimeout(timer);
+        return;
+      }
       time++;
       $(".pageTest #premidSecondsLeft").text(config.time - time);
       if (
@@ -2906,6 +2910,15 @@ function startTest() {
       }
 
       mp_sendTestProgress(wpmAndRaw.wpm, wpmAndRaw.raw, acc, progress);
+
+      if (
+        MP.state === 21 &&
+        time >= 5 &&
+        currentInput === "" &&
+        inputHistory.length === 0
+      ) {
+        showResult();
+      }
 
       if (activeFunBox === "layoutfluid" && config.mode === "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];
