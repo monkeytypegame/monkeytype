@@ -5401,13 +5401,13 @@ function handleAlpha(event) {
   }
 
   if (config.language.split("_")[0] == "russian") {
-    if (event.key === "e" && nextCharInWord == "ё") {
-      event.key = "ё";
+    if ((event.key === "е" || event.key === "e") && nextCharInWord == "ё") {
+      event.key = nextCharInWord;
       thisCharCorrect = true;
     }
 
-    if (event.key === "ё" && nextCharInWord == "e") {
-      event.key = "e";
+    if (event.key === "ё" && (nextCharInWord == "е" || event.key === "e")) {
+      event.key = nextCharInWord;
       thisCharCorrect = true;
     }
   }
