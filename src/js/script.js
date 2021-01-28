@@ -5426,6 +5426,18 @@ function handleAlpha(event) {
     }
   }
 
+  if (event.key === "'" || event.key === "’") {
+    if (nextCharInWord == "'" || nextCharInWord == "’") {
+      thisCharCorrect = true;
+    }
+  }
+
+  if (event.key === '"' || event.key === "”") {
+    if (nextCharInWord == '"' || nextCharInWord == "”") {
+      thisCharCorrect = true;
+    }
+  }
+
   if (!thisCharCorrect) {
     accuracyStats.incorrect++;
     currentError.count++;
