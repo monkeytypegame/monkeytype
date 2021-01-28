@@ -5406,7 +5406,10 @@ function handleAlpha(event) {
       thisCharCorrect = true;
     }
 
-    if (event.key === "ё" && (nextCharInWord == "е" || event.key === "e")) {
+    if (
+      event.key === "ё" &&
+      (nextCharInWord == "е" || nextCharInWord === "e")
+    ) {
       event.key = nextCharInWord;
       thisCharCorrect = true;
     }
