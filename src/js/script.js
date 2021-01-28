@@ -1145,19 +1145,6 @@ function updateWordElement(showError) {
         charCorrect = false;
       }
 
-      try {
-        if (config.language === "russian" && charCorrect === false) {
-          if (
-            (currentWord[i].toLowerCase() === "е" &&
-              input[i].toLowerCase() === "ё") ||
-            (currentWord[i].toLowerCase() === "ё" &&
-              input[i].toLowerCase() === "е")
-          ) {
-            charCorrect = true;
-          }
-        }
-      } catch {}
-
       let currentLetter = currentWord[i];
       let tabChar = "";
       let nlChar = "";
@@ -5406,23 +5393,22 @@ function handleAlpha(event) {
     currentInput.length,
     currentInput.length + 1
   );
-  if (
-    config.language === "russian" &&
-    (event["key"].toLowerCase() == "e" || event["key"].toLowerCase() == "ё")
-  ) {
-    if (
-      nextCharInWord.toLowerCase() == "e" ||
-      nextCharInWord.toLowerCase() == "ё"
-    ) {
-      thisCharCorrect = true;
-    } else {
-      thisCharCorrect = false;
-    }
+
+  if (nextCharInWord == event["key"]) {
+    thisCharCorrect = true;
   } else {
-    if (nextCharInWord == event["key"]) {
+    thisCharCorrect = false;
+  }
+
+  if (config.language.split("_")[0] == "russian") {
+    if (event.key === "e" && nextCharInWord == "ё") {
+      event.key = "ё";
       thisCharCorrect = true;
-    } else {
-      thisCharCorrect = false;
+    }
+
+    if (event.key === "ё" && nextCharInWord == "e") {
+      event.key = "e";
+      thisCharCorrect = true;
     }
   }
 
