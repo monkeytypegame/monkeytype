@@ -245,5 +245,15 @@ const layouts = {
             " "
         ]
     },
+    typehack: {
+        keymapShowTopRow: false,
+        keys: [
+            "^~", "1!", "2@", "3#", "4$", "5%", "6&", "7`", "8(", "9)", "0=", "*+", "\\|",
+            "jJ", "gG", "hH", "pP", "fF", "qQ", "vV", "oO", "uU", ";:", "./", "[{", "]}",
+            "rR", "sS", "nN", "tT", "kK", "yY", "iI", "aA", "eE", "lL", "-?",
+            "zZ", "wW", "mM", "dD", "bB", "cC", "bB", ",<", "'\"", ".>", "xX",
+            " "
+        ],
+    },
 }
 export default layouts;
