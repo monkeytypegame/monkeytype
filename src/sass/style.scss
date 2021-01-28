@@ -717,6 +717,7 @@ a:hover {
     gap: 1rem;
   }
   .notif {
+    user-select: none;
     .icon {
       color: var(--bg-color);
       opacity: 0.5;
