@@ -5088,7 +5088,6 @@ function handleSpace(event, isEnter) {
     updateHighlightedKeymapKey();
     settingsGroups.layout.updateButton();
   }
-  if (config.blindMode) $("#words .word.active letter").addClass("correct");
   dontInsertSpace = true;
   if (currentWord == currentInput) {
     //correct word
@@ -5154,6 +5153,7 @@ function handleSpace(event, isEnter) {
       }
       return;
     }
+    if (config.blindMode) $("#words .word.active letter").addClass("correct");
     inputHistory.push(currentInput);
     highlightBadWord(currentWordElementIndex, !config.blindMode);
     currentInput = "";
