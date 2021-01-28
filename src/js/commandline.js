@@ -2046,6 +2046,7 @@ function triggerCommand(command) {
 
 function hideCommandLine() {
   previewFontFamily(config.fontFamily);
+  previewTheme(config.theme);
   $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 1)
