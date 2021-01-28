@@ -1156,7 +1156,7 @@ function updateWordElement(showError) {
             charCorrect = true;
           }
         }
-      } catch (e) {}
+      } catch {}
 
       let currentLetter = currentWord[i];
       let tabChar = "";
@@ -5426,16 +5426,24 @@ function handleAlpha(event) {
     }
   }
 
-  if (event.key === "'" || event.key === "’") {
-    if (nextCharInWord == "'" || nextCharInWord == "’") {
-      thisCharCorrect = true;
-    }
+  if (event.key === "’" && nextCharInWord == "'") {
+    event.key = "'";
+    thisCharCorrect = true;
   }
 
-  if (event.key === '"' || event.key === "”") {
-    if (nextCharInWord == '"' || nextCharInWord == "”") {
-      thisCharCorrect = true;
-    }
+  if (event.key === "'" && nextCharInWord == "’") {
+    event.key = "’";
+    thisCharCorrect = true;
+  }
+
+  if (event.key === "”" && nextCharInWord == '"') {
+    event.key = '"';
+    thisCharCorrect = true;
+  }
+
+  if (event.key === '"' && nextCharInWord == "”") {
+    event.key = "”";
+    thisCharCorrect = true;
   }
 
   if (!thisCharCorrect) {
