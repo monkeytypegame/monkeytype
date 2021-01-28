@@ -1882,7 +1882,7 @@ function showResult(difficultyFailed = false, mp_outOfTime = false) {
     $(".pageTest #result .tribeResultChat").removeClass("hidden");
     if (MP.room.isLeader) {
       $(".pageTest #backToLobbyButton").removeClass("hidden");
-      $(".pageTest #nextTestButton").removeClass("hidden");
+      // $(".pageTest #nextTestButton").removeClass("hidden");
       $(".pageTest #readyButton").addClass("hidden");
     }
   } else {

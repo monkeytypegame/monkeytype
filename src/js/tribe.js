@@ -818,7 +818,7 @@ MP.socket.on("mp_room_user_left", (data) => {
     $(".pageTribe .lobby .userReadyButton").addClass("hidden");
     $(".pageTest #result #backToLobbyButton").removeClass("hidden");
     $(".pageTest #result #readyButton").addClass("hidden");
-    $(".pageTest #result #nextTestButton").removeClass("hidden");
+    // $(".pageTest #result #nextTestButton").removeClass("hidden");
   }
   mp_refreshUserList();
 });
@@ -905,6 +905,18 @@ MP.socket.on("mp_room_finishTimer_countdown", (data) => {
 MP.socket.on("mp_room_finishTimer_over", (data) => {
   hideResultCountdown();
   if (testActive) showResult(undefined, true);
+});
+
+MP.socket.on("mp_room_readyResultTimer_countdown", (data) => {
+  showResultCountdown();
+  updateResultCountdown(`Time left for everyone to get ready: ${data.val}s`);
+});
+
+MP.socket.on("mp_room_readyResultTimer_over", (data) => {
+  hideResultCountdown();
+  if (MP.room.isLeader) {
+    $(".pageTest #nextTestButton").removeClass("hidden");
+  }
 });
 
 MP.socket.on("mp_room_test_init", (data) => {
@@ -1071,21 +1083,21 @@ MP.socket.on("mp_room_winner", (data) => {
   if (data.official) {
     hideResultCountdown();
     // updateAllGraphs(graphs, data.maxRaw);
-    MP.room.newTestCooldown = true;
-    $("#result #nextTestButton").html(
-      `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
-    );
-    $("#result #nextTestButton").attr(
-      "aria-label",
-      "Please wait for all players to view their result"
-    );
-    setTimeout(() => {
-      MP.room.newTestCooldown = false;
-      $("#result #nextTestButton").html(
-        `<i class="fas fa-fw fa-chevron-right"></i>`
-      );
-      $("#result #nextTestButton").attr("aria-label", "Next test");
-    }, 5000);
+    // MP.room.newTestCooldown = true;
+    // $("#result #nextTestButton").html(
+    //   `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
+    // );
+    // $("#result #nextTestButton").attr(
+    //   "aria-label",
+    //   "Please wait for all players to view their result"
+    // );
+    // setTimeout(() => {
+    //   MP.room.newTestCooldown = false;
+    //   $("#result #nextTestButton").html(
+    //     `<i class="fas fa-fw fa-chevron-right"></i>`
+    //   );
+    //   $("#result #nextTestButton").attr("aria-label", "Next test");
+    // }, 5000);
   }
   let userwon = false;
   data.sorted.forEach((sid) => {
