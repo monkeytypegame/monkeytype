@@ -7,4 +7,5 @@ global.sendVerificationEmail = Misc.sendVerificationEmail;
 //these exports are just for debugging in the browser
 global.snapshot = db_getSnapshot;
 global.config = config;
-global.addnotif = Notifications.add;
+// global.addnotif = Notifications.add;
+global.link = linkWithGoogle;

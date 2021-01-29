@@ -86,6 +86,18 @@ async function signInWithGoogle() {
   }
 }
 
+function linkWithGoogle() {
+  firebase
+    .auth()
+    .currentUser.linkWithPopup(gmailProvider)
+    .then(function (result) {
+      console.log(result);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
 let dontCheckUserName = false;
 
 function signUp() {
