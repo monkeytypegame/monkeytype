@@ -5,6 +5,10 @@ db.settings({ experimentalForceLongPolling: true });
 
 let dbSnapshot = null;
 
+export function db_updateName(uid, name) {
+  db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
+}
+
 export function db_getSnapshot() {
   return dbSnapshot;
 }

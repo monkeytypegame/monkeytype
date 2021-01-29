@@ -1,3 +1,7 @@
+import { db_updateName } from "./db";
+
+var gmailProvider = new firebase.auth.GoogleAuthProvider();
+
 function showSignOutButton() {
   $(".signOut").removeClass("hidden").css("opacity", 1);
 }
@@ -44,6 +48,40 @@ function signIn() {
             Notifications.add(error.message, -1);
             $(".pageLogin .preloader").addClass("hidden");
           });
+      });
+  }
+}
+
+async function signInWithGoogle() {
+  $(".pageLogin .preloader").removeClass("hidden");
+
+  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
+    //remember me
+    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    firebase
+      .auth()
+      .signInWithPopup(gmailProvider)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        Notifications.add(error.message, -1);
+        $(".pageLogin .preloader").addClass("hidden");
+      });
+  } else {
+    //dont remember
+    await firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.SESSION);
+    firebase
+      .auth()
+      .signInWithPopup(gmailProvider)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        Notifications.add(error.message, -1);
+        $(".pageLogin .preloader").addClass("hidden");
       });
   }
 }
@@ -270,9 +308,45 @@ firebase.auth().onAuthStateChanged(function (user) {
 
 function getAccountDataAndInit() {
   db_getUserSnapshot()
-    .then((e) => {
-      if (db_getSnapshot() === null) {
+    .then(async (e) => {
+      let snap = db_getSnapshot();
+      if (snap === null) {
         throw "Missing db snapshot. Client likely could not connect to the backend.";
+      }
+      let user = firebase.auth().currentUser;
+      if (snap.name === undefined) {
+        //verify username
+        if (Misc.isUsernameValid(user.displayName)) {
+          //valid, just update
+          snap.name = user.displayName;
+          db_setSnapshot(snap);
+          db_updateName(user.uid, user.displayName);
+        } else {
+          //invalid, get new
+          Notifications.add("Invalid name", 0);
+          let promptVal = null;
+          let cdnVal = undefined;
+
+          while (
+            promptVal === null ||
+            cdnVal === undefined ||
+            cdnVal.data.status < 0
+          ) {
+            promptVal = prompt(
+              "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
+            );
+            cdnVal = await CloudFunctions.changeDisplayName({
+              uid: user.uid,
+              name: promptVal,
+            });
+            if (cdnVal.data.status === 1) {
+              Notifications.add("Name updated", 1);
+              location.reload();
+            } else if (cdnVal.data.status < 0) {
+              Notifications.add(cdnVal.data.message, 0);
+            }
+          }
+        }
       }
       if (!configChangedBeforeDb) {
         if (cookieConfig === null) {
@@ -363,7 +437,10 @@ function getAccountDataAndInit() {
       // ) {
       //   config.resultFilters.funbox = defaultAccountFilters.funbox;
       // }
-      if ($(".pageLogin").hasClass("active")) {
+      if (
+        $(".pageLogin").hasClass("active") ||
+        window.location.pathname === "/account"
+      ) {
         changePage("account");
       }
       refreshThemeButtons();
@@ -2415,9 +2492,14 @@ $(".pageLogin .login input").keyup((e) => {
   }
 });
 
-$(".pageLogin .login .button").click((e) => {
+$(".pageLogin .login .button.signIn").click((e) => {
   configChangedBeforeDb = false;
   signIn();
+});
+
+$(".pageLogin .login .button.signInWithGoogle").click((e) => {
+  configChangedBeforeDb = false;
+  signInWithGoogle();
 });
 
 $(".signOut").click((e) => {

@@ -5690,9 +5690,10 @@ $(document).ready(() => {
           history.replaceState("/", null, "/");
         }
       } else if (window.location.pathname === "/account") {
-        history.replaceState("/", null, "/");
+        // history.replaceState("/", null, "/");
       } else if (/challenge_.+/g.test(window.location.pathname)) {
         //do nothing
+        // }
       } else if (window.location.pathname !== "/") {
         let page = window.location.pathname.replace("/", "");
         changePage(page);
