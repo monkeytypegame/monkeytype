@@ -1877,7 +1877,8 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
     "activeKeyboard"
   );
   if (isPreviewingTheme) {
-    previewTheme(config.theme, false);
+    applyCustomThemeColors();
+    // previewTheme(config.theme, false);
   }
   let hoverId = $(e.target).attr("command");
   try {
@@ -1909,7 +1910,8 @@ $("#commandLineWrapper").click((e) => {
 
 $(document).keydown((e) => {
   if (isPreviewingTheme) {
-    previewTheme(config.theme, false);
+    applyCustomThemeColors();
+    // previewTheme(config.theme, false);
   }
   if (!$("#commandLineWrapper").hasClass("hidden")) {
     $("#commandLine input").focus();
@@ -2046,7 +2048,7 @@ function triggerCommand(command) {
 
 function hideCommandLine() {
   previewFontFamily(config.fontFamily);
-  previewTheme(config.theme);
+  applyCustomThemeColors();
   $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 1)
