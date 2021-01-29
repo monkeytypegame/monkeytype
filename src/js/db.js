@@ -23,6 +23,7 @@ export async function db_getUserSnapshot() {
   let snap = {
     results: undefined,
     personalBests: {},
+    name: undefined,
     tags: [],
     favouriteThemes: [],
     lbMemory: {
@@ -77,6 +78,7 @@ export async function db_getUserSnapshot() {
         if (data.personalBests !== undefined) {
           snap.personalBests = data.personalBests;
         }
+        snap.name = data.name;
         snap.discordId = data.discordId;
         snap.pairingCode =
           data.discordPairingCode == null ? undefined : data.discordPairingCode;
