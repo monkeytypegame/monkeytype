@@ -323,7 +323,7 @@ function getAccountDataAndInit() {
           db_updateName(user.uid, user.displayName);
         } else {
           //invalid, get new
-          Notifications.add("Invalid name", 0);
+          // Notifications.add("Invalid name", 0);
           let promptVal = null;
           let cdnVal = undefined;
 
@@ -340,10 +340,10 @@ function getAccountDataAndInit() {
               name: promptVal,
             });
             if (cdnVal.data.status === 1) {
-              Notifications.add("Name updated", 1);
+              alert("Name updated", 1);
               location.reload();
             } else if (cdnVal.data.status < 0) {
-              Notifications.add(cdnVal.data.message, 0);
+              alert(cdnVal.data.message, 0);
             }
           }
         }

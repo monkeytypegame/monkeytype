@@ -150,7 +150,7 @@ exports.changeDisplayName = functions.https.onCall(
         await db
           .collection("users")
           .doc(request.uid)
-          .update({ name: request.name });
+          .set({ name: request.name }, { merge: true });
         await db.collection("takenNames").doc(request.name.toLowerCase()).set(
           {
             taken: true,
