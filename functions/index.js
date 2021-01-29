@@ -130,6 +130,44 @@ exports.reserveDisplayName = functions.https.onCall(
   }
 );
 
+exports.changeDisplayName = functions.https.onCall(
+  async (request, response) => {
+    try {
+      if (!isUsernameValid(request.name))
+        return { status: -1, message: "Name not valid" };
+      let taken = await db
+        .collection("takenNames")
+        .doc(request.name.toLowerCase())
+        .get();
+      taken = taken.data();
+      if (taken === undefined || taken.taken === false) {
+        //not taken
+        let oldname = admin.auth().getUser(request.uid);
+        oldname = (await oldname).displayName;
+        await admin
+          .auth()
+          .updateUser(request.uid, { displayName: request.name });
+        await db
+          .collection("users")
+          .doc(request.uid)
+          .update({ name: request.name });
+        await db.collection("takenNames").doc(request.name.toLowerCase()).set(
+          {
+            taken: true,
+          },
+          { merge: true }
+        );
+        await db.collection("takenNames").doc(oldname.toLowerCase()).delete();
+        return { status: 1, message: "Updated" };
+      } else {
+        return { status: -2, message: "Name taken." };
+      }
+    } catch (e) {
+      return { status: -999, message: "Error: " + e.message };
+    }
+  }
+);
+
 exports.clearName = functions.auth.user().onDelete((user) => {
   db.collection("takenNames").doc(user.displayName.toLowerCase()).delete();
   db.collection("users").doc(user.uid).delete();
