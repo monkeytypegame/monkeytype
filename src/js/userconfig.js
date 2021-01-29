@@ -1181,7 +1181,7 @@ function applyCustomThemeColors() {
     });
   } else {
     $(".current-theme").text(config.theme.replace("_", " "));
-    previewTheme(config.theme);
+    previewTheme(config.theme, false);
     clearCustomTheme();
   }
   setTimeout(() => {

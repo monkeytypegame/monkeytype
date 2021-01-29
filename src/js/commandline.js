@@ -1910,6 +1910,7 @@ $("#commandLineWrapper").click((e) => {
 
 $(document).keydown((e) => {
   if (isPreviewingTheme) {
+    console.log("applying theme");
     applyCustomThemeColors();
     // previewTheme(config.theme, false);
   }
