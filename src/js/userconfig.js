@@ -1551,63 +1551,72 @@ function applyConfig(configObj) {
     setStrictSpace(configObj.strictSpace, true);
     setMode(configObj.mode, true);
 
-    try {
-      setEnableAds(configObj.enableAds, true);
-      if (config.enableAds === "on") {
-        $("#ad1").removeClass("hidden");
-        $("#ad1")
-          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- Horizontal Ad -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:850px;height:90px"
-             data-ad-client="ca-pub-7261919841327810"
-             data-ad-slot="2225821478"></ins>`);
-        const adsbygoogle = window.adsbygoogle || [];
-        adsbygoogle.push({});
-      } else if (config.enableAds === "max") {
-        $("#ad1").removeClass("hidden");
-        $("#ad2").removeClass("hidden");
-        $("#ad3").removeClass("hidden");
-        $("#ad1").html(`<script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-      ></script>
-      <!-- Horizontal Ad -->
-      <ins
-        class="adsbygoogle"
-        style="display: inline-block; width: 1000px; height: 90px"
-        data-ad-client="ca-pub-7261919841327810"
-        data-ad-slot="2225821478"
-      ></ins>`);
-        $("#ad2")
-          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- Vertical 1 -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:160px;height:600px"
-             data-ad-client="ca-pub-7261919841327810"
-             data-ad-slot="6376286644"></ins>`);
-        $("#ad3")
-          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- Vertical 2 -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:160px;height:600px"
-             data-ad-client="ca-pub-7261919841327810"
-             data-ad-slot="1159796595"></ins>`);
-        const adsbygoogle = window.adsbygoogle || [];
-        adsbygoogle.push({});
-        adsbygoogle.push({});
-        adsbygoogle.push({});
-      } else {
-        $("#ad1").remove();
-        $("#ad2").remove();
-        $("#ad3").remove();
-      }
-    } catch (e) {
-      console.log("error initialising ads " + e.message);
-      $("#ad1").remove();
-      $("#ad2").remove();
-      $("#ad3").remove();
+    setEnableAds(configObj.enableAds, true);
+    if (config.enableAds != "off") {
+      Notifications.add(
+        "Ads are temporairly disabled due to moving to a different ad provider.",
+        0,
+        5
+      );
     }
+
+    // try {
+    //   setEnableAds(configObj.enableAds, true);
+    //   if (config.enableAds === "on") {
+    //     $("#ad1").removeClass("hidden");
+    //     $("#ad1")
+    //       .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    //     <!-- Horizontal Ad -->
+    //     <ins class="adsbygoogle"
+    //          style="display:inline-block;width:850px;height:90px"
+    //          data-ad-client="ca-pub-7261919841327810"
+    //          data-ad-slot="2225821478"></ins>`);
+    //     const adsbygoogle = window.adsbygoogle || [];
+    //     adsbygoogle.push({});
+    //   } else if (config.enableAds === "max") {
+    //     $("#ad1").removeClass("hidden");
+    //     $("#ad2").removeClass("hidden");
+    //     $("#ad3").removeClass("hidden");
+    //     $("#ad1").html(`<script
+    //     async
+    //     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+    //   ></script>
+    //   <!-- Horizontal Ad -->
+    //   <ins
+    //     class="adsbygoogle"
+    //     style="display: inline-block; width: 1000px; height: 90px"
+    //     data-ad-client="ca-pub-7261919841327810"
+    //     data-ad-slot="2225821478"
+    //   ></ins>`);
+    //     $("#ad2")
+    //       .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    //     <!-- Vertical 1 -->
+    //     <ins class="adsbygoogle"
+    //          style="display:inline-block;width:160px;height:600px"
+    //          data-ad-client="ca-pub-7261919841327810"
+    //          data-ad-slot="6376286644"></ins>`);
+    //     $("#ad3")
+    //       .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    //     <!-- Vertical 2 -->
+    //     <ins class="adsbygoogle"
+    //          style="display:inline-block;width:160px;height:600px"
+    //          data-ad-client="ca-pub-7261919841327810"
+    //          data-ad-slot="1159796595"></ins>`);
+    //     const adsbygoogle = window.adsbygoogle || [];
+    //     adsbygoogle.push({});
+    //     adsbygoogle.push({});
+    //     adsbygoogle.push({});
+    //   } else {
+    //     $("#ad1").remove();
+    //     $("#ad2").remove();
+    //     $("#ad3").remove();
+    //   }
+    // } catch (e) {
+    //   console.log("error initialising ads " + e.message);
+    //   $("#ad1").remove();
+    //   $("#ad2").remove();
+    //   $("#ad3").remove();
+    // }
   }
   updateTestModesNotice();
 }
