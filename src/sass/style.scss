@@ -3570,3 +3570,28 @@ key {
     display: block;
   }
 }
+
+#nitropay_ad_left,
+#nitropay_ad_right {
+  margin-top: 1rem;
+}
+
+// .adcontainer{
+//   position: relative;
+//   &>div{
+//     top: 0px;
+//     left: 0px;
+//     position: absolute;
+//   }
+//   .bg{
+//     background: var(--bg-color);
+//     color: var(--sub-color);
+//     display: grid;
+//     align-items: center;
+//     justify-content: center;
+//     height: 100%;
+//     width: 100%;
+//     font-size: .75rem;
+//     user-select: none;
+//   }
+// }

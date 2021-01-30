@@ -40,6 +40,15 @@
     <meta name="twitter:title" content="Monkeytype" />
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
+    <script type="text/javascript">
+      window["nitroAds"] = window["nitroAds"] || {
+        createAd: function () {
+          window.nitroAds.queue.push(["createAd", arguments]);
+        },
+        queue: [],
+      };
+    </script>
+    <script async src="https://s.nitropay.com/ads-693.js"></script>
   </head>
 
   <body>
@@ -832,7 +841,7 @@
       <div id="timer"></div>
     </div>
     <div style="display: flex; justify-content: space-around">
-      <div id="ad2" class="hidden"></div>
+      <div id="nitropay_ad_left" class="hidden"></div>
       <div id="centerContent" class="hidden">
         <div id="top">
           <div class="logo">
@@ -1446,6 +1455,7 @@
                 raw wpm and mapped onto a scale from 0 to 100.
               </p>
             </div>
+            <div id="nitropay_ad_about" class="hidden"></div>
             <div class="section">
               <h1>results screen</h1>
               <p>
@@ -1885,6 +1895,8 @@
               </div>
               <div class="sectionSpacer"></div>
             </div>
+
+            <div id="nitropay_ad_settings1" class="hidden"></div>
 
             <div id="group_input" class="sectionGroupTitle" group="input">
               input
@@ -2710,6 +2722,8 @@
               <div class="sectionSpacer"></div>
             </div>
 
+            <div id="nitropay_ad_settings2" class="hidden"></div>
+
             <div id="group_theme" class="sectionGroupTitle" group="theme">
               theme
               <i class="fas fa-chevron-down"></i>
@@ -3269,6 +3283,9 @@
                   </div>
                 </div>
               </div>
+
+              <div id="nitropay_ad_account" class="hidden"></div>
+
               <div class="group topFilters">
                 <!-- <div
                   class="button"
@@ -3613,18 +3630,24 @@
             </div>
           </div>
         </div>
-        <div
-          id="ad1"
-          class="hidden"
-          style="
-            display: flex;
-            justify-content: center;
-            width: 1px;
-            justify-self: center;
-          "
-        ></div>
+        <div class="footerads">
+          <div
+            id="nitropay_ad_footer"
+            style="display: flex; justify-content: center; justify-self: center"
+          ></div>
+          <div
+            id="nitropay_ad_footer2"
+            class="hidden"
+            style="display: flex; justify-content: center; justify-self: center"
+          ></div>
+          <div
+            id="nitropay_ad_footer3"
+            class="hidden"
+            style="display: flex; justify-content: center; justify-self: center"
+          ></div>
+        </div>
       </div>
-      <div id="ad3" class="hidden"></div>
+      <div id="nitropay_ad_right" class="hidden"></div>
     </div>
   </body>
   <!-- The core Firebase JS SDK is always required and must be listed first -->
