@@ -4818,7 +4818,9 @@ $(document).on("click", "#commandLineMobileButton", () => {
 
 let dontInsertSpace = false;
 
-$(document).keyup(() => {
+$(document).keyup((event) => {
+  if (!event.isTrusted) return;
+  
   if (resultVisible) return;
   let now = performance.now();
   let diff = Math.abs(keypressStats.duration.current - now);
@@ -4830,6 +4832,8 @@ $(document).keyup(() => {
 });
 
 $(document).keydown(function (event) {
+  if (!event.isTrusted) return;
+  
   if (!resultVisible) {
     let now = performance.now();
     let diff = Math.abs(keypressStats.spacing.current - now);
