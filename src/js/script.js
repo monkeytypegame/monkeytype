@@ -3770,10 +3770,12 @@ function updateTestModesNotice() {
     );
   }
 
-  if (config.language === "english_1k" || config.language === "english_10k") {
+  // /^[0-9a-zA-Z_.-]+$/.test(name);
+
+  if (/_\d+k$/g.test(config.language)) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${config.language.replace(
-        "_",
+        /_/g,
         " "
       )}</div>`
     );
