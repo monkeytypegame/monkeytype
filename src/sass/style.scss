@@ -2933,6 +2933,9 @@ key {
       justify-content: space-between;
       align-items: center;
       color: var(--text-color);
+      .fas {
+        margin-left: 0.25rem;
+      }
       .points {
         opacity: 0.5;
       }

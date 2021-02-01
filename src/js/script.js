@@ -4640,6 +4640,10 @@ $(document).on("click", "#top .logo", (e) => {
   changePage("test");
 });
 
+$(document).on("click", "#top .config .text-button", (e) => {
+  $(e.currentTarget).blur();
+});
+
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
   if (wrd == "custom") {

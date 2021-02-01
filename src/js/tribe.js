@@ -90,6 +90,9 @@ function mp_refreshUserList() {
     if (user.isReady) {
       icons += '<i class="fas fa-check"></i>';
     }
+    if (user.isTyping) {
+      icons += '<i class="fas fa-keyboard"></i>';
+    }
     let pointsString;
     if (user.points == undefined) {
       pointsString = "";
@@ -100,7 +103,7 @@ function mp_refreshUserList() {
     <div class='user ${user.sid === MP.id ? "me" : ""}'>
     <div class='name'>${
       user.name
-    } ${icons}</div><div class='points'>${pointsString}</div>
+    }${icons}</div><div class='points'>${pointsString}</div>
     </div>
     `);
     $(".pageTest #result .tribeResultChat .userlist .list").append(`
@@ -1199,8 +1202,12 @@ MP.socket.on("mp_room_points", (data) => {
 });
 
 MP.socket.on("mp_room_back_to_lobby", (data) => {
+  Object.keys(MP.room.users).forEach((sid) => {
+    MP.room.users[sid].isTyping = false;
+  });
   $(".tribePlayers").addClass("hidden");
   changePage("tribe");
+  mp_refreshUserList();
 });
 
 MP.socket.on("mp_room_user_info_update", (data) => {
