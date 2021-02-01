@@ -2908,9 +2908,17 @@ key {
         gap: 0.5rem;
         color: var(--text-color);
         word-break: break-all;
+        span.mention {
+          background: var(--text-color);
+          color: var(--bg-color);
+          padding: 0 0.25rem;
+        }
         .author {
           word-break: normal;
-          color: var(--main-color);
+          color: var(--sub-color);
+          &.me {
+            color: var(--main-color);
+          }
         }
       }
     }

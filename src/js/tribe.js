@@ -24,6 +24,7 @@ let tribeSounds = {
   start: new Audio("../sound/tribe_ui/start.wav"),
   chat1: new Audio("../sound/tribe_ui/chat1.wav"),
   chat2: new Audio("../sound/tribe_ui/chat2.wav"),
+  chat_mention: new Audio("../sound/tribe_ui/chat_mention.wav"),
   finish: new Audio("../sound/tribe_ui/finish.wav"),
   finish_win: new Audio("../sound/tribe_ui/finish_win.wav"),
   cd: new Audio("../sound/tribe_ui/cd2.wav"),
@@ -830,22 +831,42 @@ MP.socket.on("mp_room_config_update", (data) => {
     Notifications.add("Config changed", 0, 2);
     mp_applyRoomConfig(MP.room.config);
   }
+  Object.keys(MP.room.users).forEach((sid) => {
+    MP.room.users[sid].isReady = false;
+  });
+  if (!MP.room.isLeader) {
+    $(".pageTribe .lobby .userReadyButton").removeClass("hidden");
+  }
+  mp_refreshUserList();
 });
 
 MP.socket.on("mp_chat_message", (data) => {
-  mp_playSound("chat2");
+  let nameregex = new RegExp(MP.name, "i");
+  if (!data.isSystem && data.from.name != MP.name) {
+    if (nameregex.test(data.message)) {
+      mp_playSound("chat_mention");
+      data.message = data.message.replace(
+        nameregex,
+        `<span class='mention'>${MP.name}</span>`
+      );
+    } else {
+      mp_playSound("chat2");
+    }
+  }
   let cls = "message";
   let author = "";
   if (data.isSystem) {
     cls = "systemMessage";
   } else {
-    author = `<div class="author">${data.from.name}</div>`;
+    let me = "";
+    if (data.from.name == MP.name) me = " me";
+    author = `<div class="author ${me}">${data.from.name}:</div>`;
   }
   $(".pageTribe .lobby .chat .messages").append(`
-    <div class="${cls}">${author}${data.message}</div>
+    <div class="${cls}">${author}<div class="text">${data.message}</div></div>
   `);
   $(".pageTest #result .tribeResultChat .chat .messages").append(`
-    <div class="${cls}">${author}${data.message}</div>
+    <div class="${cls}">${author}<div class="text">${data.message}</div></div>
   `);
 
   mp_scrollChat();
