@@ -841,13 +841,18 @@ MP.socket.on("mp_room_config_update", (data) => {
 });
 
 MP.socket.on("mp_chat_message", (data) => {
-  let nameregex = new RegExp(MP.name, "i");
+  let nameregex;
+  if (data.isLeader) {
+    nameregex = new RegExp(MP.name + "|ready|everyone", "i");
+  } else {
+    nameregex = new RegExp(MP.name + "|ready", "i");
+  }
   if (!data.isSystem && data.from.name != MP.name) {
     if (nameregex.test(data.message)) {
       mp_playSound("chat_mention");
       data.message = data.message.replace(
         nameregex,
-        `<span class='mention'>${MP.name}</span>`
+        "<span class='mention'>$&</span>"
       );
     } else {
       mp_playSound("chat2");
@@ -1255,6 +1260,7 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
     }
     MP.socket.emit("mp_chat_message", {
       isSystem: false,
+      isLeader: MP.room.isLeader,
       message: msg,
       from: {
         id: MP.socket.id,
@@ -1277,6 +1283,7 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
     }
     MP.socket.emit("mp_chat_message", {
       isSystem: false,
+      isLeader: MP.room.isLeader,
       message: msg,
       from: {
         id: MP.socket.id,
