@@ -1881,7 +1881,7 @@ function showResult(difficultyFailed = false, mp_outOfTime = false) {
     $(".pageTest #practiseMissedWordsButton").addClass("hidden");
     $(".pageTest #result .tribeResultChat").removeClass("hidden");
     if (MP.room.isLeader) {
-      $(".pageTest #backToLobbyButton").removeClass("hidden");
+      // $(".pageTest #backToLobbyButton").removeClass("hidden");
       // $(".pageTest #nextTestButton").removeClass("hidden");
       $(".pageTest #readyButton").addClass("hidden");
     }
@@ -5116,6 +5116,10 @@ function handleTab(event) {
     //   $("#customTextPopup .textarea").val() + "\t"
     // );
     return;
+  } else if (MP.state > 10) {
+    if (MP.state < 28) {
+      event.preventDefault();
+    }
   } else if (
     !event.ctrlKey &&
     ((!event.shiftKey && !textHasTab) ||
@@ -5163,14 +5167,10 @@ function handleTab(event) {
     !config.quickTab &&
     textHasTab &&
     event.shiftKey &&
-    !resultVisible &&
-    MP.state < 20
+    !resultVisible
   ) {
     event.preventDefault();
     $("#restartTestButton").focus();
-  } else if (MP.state >= 20) {
-    event.preventDefault();
-    return;
   }
 }
 

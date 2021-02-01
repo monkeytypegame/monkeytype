@@ -937,6 +937,7 @@ MP.socket.on("mp_room_readyResultTimer_over", (data) => {
   hideResultCountdown();
   if (MP.room.isLeader) {
     $(".pageTest #nextTestButton").removeClass("hidden");
+    $(".pageTest #backToLobbyButton").removeClass("hidden");
   }
 });
 
@@ -956,6 +957,7 @@ MP.socket.on("mp_room_test_init", (data) => {
   restartTest(false, true, true);
   showCountdown();
   hideResultCountdown();
+  $(".pageTest #restartTestButton").addClass("hidden");
 });
 
 MP.socket.on("mp_room_state_update", (data) => {
@@ -1392,6 +1394,14 @@ $(
 ).click((e) => {
   $(".pageTribe .lobby .lobbyButtons .userReadyButton").addClass("hidden");
   MP.socket.emit("mp_user_ready");
+});
+
+$(
+  ".pageTribe .lobby .lobbyButtons .userReadyButton, .pageTest #result #readyButton"
+).on("keypress", "#nextTestButton", (event) => {
+  if (event.keyCode == 13) {
+    MP.socket.emit("mp_user_ready");
+  }
 });
 
 $(".pageTest #result #backToLobbyButton").click((e) => {
