@@ -646,12 +646,16 @@ function fillGraphDataAndUpdate(graph, result, sid) {
 }
 
 function drawMinigraph(sid, result) {
-  let graphelem = $(`.tribeResult .player[sid='${sid}'] .graph canvas`)[0];
-  let graph = new Chart(graphelem, miniChartSettings);
+  try {
+    let graphelem = $(`.tribeResult .player[sid='${sid}'] .graph canvas`)[0];
+    let graph = new Chart(graphelem, miniChartSettings);
 
-  fillGraphDataAndUpdate(graph, result, sid);
+    fillGraphDataAndUpdate(graph, result, sid);
 
-  return graph;
+    return graph;
+  } catch (e) {
+    Notifications.add("Error drawing mini graph: " + e.message, -1);
+  }
 }
 
 function destroyAllGraphs() {
