@@ -51,14 +51,15 @@ function mp_changeActiveSubpage(newPage) {
   if (MP.pageTransition) return;
   if (newPage === MP.activePage) return;
   MP.pageTransition = true;
-  if (newPage === "prelobby") {
-    MP.socket.emit("mp_get_online_stats");
-  }
+
   swapElements(
     $(`.pageTribe .${MP.activePage}`),
     $(`.pageTribe .${newPage}`),
     250,
     () => {
+      if (newPage === "prelobby") {
+        MP.socket.emit("mp_get_online_stats");
+      }
       if (newPage === "lobby") {
         $(".pageTribe .lobby .chat .input input").focus();
       }
@@ -703,12 +704,11 @@ MP.socket.on("mp_update_online_stats", (data) => {
     `<div class="small">Version ${data.version}</div>`
   );
   if (data.version !== MP.expectedVersion) {
-    MP.socket.disconnect();
-    mp_changeActiveSubpage("preloader");
     Notifications.add(
       `Tribe version mismatch. Try refreshing or clearing cache. Client version: ${MP.expectedVersion}, server version: ${data.version}`,
       -1
     );
+    MP.socket.disconnect();
   }
 });
 
