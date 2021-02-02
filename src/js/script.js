@@ -3274,13 +3274,6 @@ function changePage(page) {
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
-    if (
-      MP.state >= 20 &&
-      MP.state <= 29 &&
-      !MP.room.isTyping &&
-      !MP.room.isReady
-    )
-      return;
     pageTransition = true;
     swapElements(activePage, $(".page.pageTest"), 250, () => {
       pageTransition = false;
@@ -3288,6 +3281,13 @@ function changePage(page) {
       $(".page.pageTest").addClass("active");
       history.pushState("/", null, "/");
     });
+    if (
+      MP.state >= 20 &&
+      MP.state <= 29 &&
+      !MP.room.isTyping &&
+      !MP.room.isReady
+    )
+      return;
     showTestConfig();
     hideSignOutButton();
     restartCount = 0;
