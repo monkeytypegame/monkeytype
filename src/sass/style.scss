@@ -1136,6 +1136,7 @@ a:hover {
 
   &.outline {
     @extend #caret, .block;
+    animation-name: none;
     background: transparent;
     border: 1px solid var(--caret-color);
   }
