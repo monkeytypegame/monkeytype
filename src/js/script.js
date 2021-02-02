@@ -3760,7 +3760,7 @@ function updateTestModesNotice() {
 
   if (sameWordset) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" onClick="restartTest()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
+      `<div class="text-button" function="restartTest()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
     );
   }
 
@@ -3793,7 +3793,7 @@ function updateTestModesNotice() {
 
   if (config.blindMode) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" onClick="toggleBlindMode()"><i class="fas fa-eye-slash"></i>blind</div>`
+      `<div class="text-button" function="toggleBlindMode()"><i class="fas fa-eye-slash"></i>blind</div>`
     );
   }
 
@@ -4805,12 +4805,15 @@ $(document).mousemove(function (event) {
 
 $(document).on("click", "#testModesNotice .text-button", (event) => {
   let commands = eval($(event.currentTarget).attr("commands"));
+  let func = $(event.currentTarget).attr("function");
   if (commands !== undefined) {
     if ($(event.currentTarget).attr("commands") === "commandsTags") {
       updateCommandsTagsList();
     }
     currentCommands.push(commands);
     showCommandLine();
+  } else if (func != undefined) {
+    eval(func);
   }
 });
 
