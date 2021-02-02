@@ -130,6 +130,8 @@ function mp_resetLobby() {
   $(".pageTribe .lobby .inviteLink .link").text("");
   $(".pageTest .tribeResultChat .inviteLink .code .text").text("");
   $(".pageTest .tribeResultChat .inviteLink .link").text("");
+  $("#tribeCountdownWrapper .faint").addClass("hidden");
+  $("#tribeCountdownWrapper .withbg").addClass("hidden");
 }
 
 function mp_resetRace() {
@@ -538,30 +540,44 @@ function mp_testFinished(result) {
   MP.socket.emit("mp_room_test_finished", { result: result });
 }
 
-function showCountdown() {
-  $("#tribeCountdownWrapper").removeClass("hidden");
+function showCountdown(faint = false) {
+  if (faint) {
+    $("#tribeCountdownWrapper .faint").removeClass("hidden");
+  } else {
+    $("#tribeCountdownWrapper .withbg").removeClass("hidden");
+  }
 }
 
 function hideCountdown() {
-  $("#tribeCountdownWrapper").addClass("hidden");
+  $("#tribeCountdownWrapper .faint").addClass("hidden");
+  $("#tribeCountdownWrapper .withbg").addClass("hidden");
 }
 
 function updateCountdown(text) {
-  $("#tribeCountdownWrapper #tribeCountdown").text(text);
+  $("#tribeCountdownWrapper .number").text(text);
 }
 
 function fadeoutCountdown() {
-  $("#tribeCountdownWrapper")
-    .css("opacity", 1)
-    .animate(
-      {
-        opacity: 0,
-      },
-      1000,
-      () => {
-        $("#tribeCountdownWrapper").addClass("hidden").css("opacity", 1);
-      }
-    );
+  $("#tribeCountdownWrapper .faint").animate(
+    {
+      opacity: 0,
+    },
+    250,
+    () => {
+      $("#tribeCountdownWrapper .faint")
+        .addClass("hidden")
+        .css("opacity", 0.075);
+    }
+  );
+  $("#tribeCountdownWrapper .withbg").animate(
+    {
+      opacity: 0,
+    },
+    250,
+    () => {
+      $("#tribeCountdownWrapper .withbg").addClass("hidden").css("opacity", 1);
+    }
+  );
 }
 
 function showResultCountdown() {
@@ -960,7 +976,7 @@ MP.socket.on("mp_room_test_countdown", (data) => {
 MP.socket.on("mp_room_finishTimer_countdown", (data) => {
   showResultCountdown();
   updateResultCountdown(`Time left for everyone to finish: ${data.val}s`);
-  showCountdown();
+  showCountdown(true);
   updateCountdown(data.val);
   if (data.val <= 3) mp_playSound("cd");
 });
@@ -972,7 +988,7 @@ MP.socket.on("mp_room_finishTimer_over", (data) => {
 
 MP.socket.on("mp_room_readyResultTimer_countdown", (data) => {
   showResultCountdown();
-  updateResultCountdown(`Time left for everyone to get ready: ${data.val}s`);
+  updateResultCountdown(`Waiting for everyone to get ready: ${data.val}s`);
 });
 
 MP.socket.on("mp_room_readyResultTimer_over", (data) => {

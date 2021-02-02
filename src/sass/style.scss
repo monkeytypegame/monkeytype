@@ -2308,19 +2308,50 @@ key {
 
   #tribeCountdownWrapper {
     width: 100%;
-    height: 0;
-    display: flex;
-    justify-content: center;
-    #tribeCountdown {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 100%;
+    /* justify-content: center; */
+    position: absolute;
+    /* align-items: center; */
+    top: 1rem;
+    padding: 1rem 0;
+    user-select: none;
+    pointer-events: none;
+    .withbg,
+    .faint {
+      opacity: 1;
+      display: grid;
+      grid-template-columns: 100%;
+      grid-template-rows: 100%;
+      height: inherit;
+      justify-content: center;
+      align-items: center;
+      grid-column: 1/2;
+      grid-row: 1/2;
+    }
+    .faint {
+      opacity: 0.075;
+    }
+    .timerbg {
+      background: var(--bg-color);
+      opacity: 0.75;
+      width: 100%;
+      height: 100%;
+      grid-column: 1/2;
+      grid-row: 1/2;
+    }
+    .number {
       z-index: 999;
-      width: 7rem;
-      height: 5rem;
-      font-size: 3rem;
-      color: var(--bg-color);
-      background-color: var(--main-color);
+      font-size: 20rem;
+      color: var(--main-color);
       border-radius: var(--roundness);
-      line-height: 5rem;
       text-align: center;
+      /* opacity: .25; */
+      grid-column: 1/2;
+      grid-row: 1/2;
+      height: 0;
+      line-height: 0;
     }
   }
 
