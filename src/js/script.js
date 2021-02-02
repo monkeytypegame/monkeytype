@@ -4837,7 +4837,11 @@ $(document).keyup((event) => {
 });
 
 $(document).keydown(function (event) {
-  if (!event.originalEvent.isTrusted) return;
+  if (
+    !(activeFunBox == "nospace" && event.key == " ") &&
+    !event.originalEvent.isTrusted
+  )
+    return;
 
   if (!resultVisible) {
     let now = performance.now();
