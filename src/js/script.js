@@ -5655,6 +5655,7 @@ let mappedRoutes = {
   "/settings": "pageSettings",
   "/about": "pageAbout",
   "/account": "pageAccount",
+  "/verify": "pageTest",
 };
 
 function handleInitialPageClasses(el) {

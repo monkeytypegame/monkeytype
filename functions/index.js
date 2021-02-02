@@ -867,6 +867,23 @@ exports.verifyUser = functions.https.onRequest(async (request, response) => {
       .then((res) => res.json())
       .then(async (res2) => {
         let did = res2.id;
+
+        if (
+          (await db.collection("users").where("discordId", "==", did).get())
+            .docs.length > 0
+        ) {
+          response
+            .status(200)
+            .send({
+              data: {
+                status: -1,
+                message:
+                  "This Discord account is already paired to a different Monkeytype account",
+              },
+            });
+          return;
+        }
+
         await db.collection("users").doc(request.uid).update({
           discordId: did,
         });
