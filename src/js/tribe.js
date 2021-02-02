@@ -1126,7 +1126,7 @@ MP.socket.on("mp_room_user_finished", (data) => {
     } else if (MP.room.userFinished) {
       MP.room.userGraphs[data.sid].graph = drawMinigraph(data.sid, data.result);
     }
-  }, 250);
+  }, 500);
 
   // $(`.tribeResult table .player[sid=${data.sid}] .progress`),
   //   swapElements(
