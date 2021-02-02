@@ -670,23 +670,29 @@ function destroyAllGraphs() {
 }
 
 function mp_userReady() {
-  $(".pageTribe .lobby .lobbyButtons .userReadyButton").addClass("hidden");
-  $(".pageTest #result .resultMpButtons .userReadyButton").addClass("hidden");
-  $(".pageTest #result #readyButton").addClass("hidden");
+  $(".pageTribe .lobby .lobbyButtons .userReadyButton").addClass("disabled");
+  $(".pageTest #result .resultMpButtons .userReadyButton").addClass("disabled");
+  $(".pageTest #result #readyButton").addClass("disabled");
   MP.socket.emit("mp_user_ready");
 }
 
 function mp_resetReadyButtons() {
   if (!MP.room.isLeader && !MP.room.isReady) {
-    $(".pageTribe .lobby .lobbyButtons .userReadyButton").removeClass("hidden");
-    $(".pageTest #result .resultMpButtons .userReadyButton").removeClass(
-      "hidden"
+    $(".pageTribe .lobby .lobbyButtons .userReadyButton").removeClass(
+      "disabled"
     );
-    $(".pageTest #result #readyButton").removeClass("hidden");
+    $(".pageTest #result .resultMpButtons .userReadyButton").removeClass(
+      "disabled"
+    );
+    $(".pageTest #result #readyButton").removeClass("disabled");
   } else {
-    $(".pageTribe .lobby .lobbyButtons .userReadyButton").addClass("hidden");
-    $(".pageTest #result .resultMpButtons .userReadyButton").addClass("hidden");
-    $(".pageTest #result #readyButton").addClass("hidden");
+    let cls = "disabled";
+    if (MP.room.isLeader) {
+      cls = "hidden";
+    }
+    $(".pageTribe .lobby .lobbyButtons .userReadyButton").addClass(cls);
+    $(".pageTest #result .resultMpButtons .userReadyButton").addClass(cls);
+    $(".pageTest #result #readyButton").addClass(cls);
   }
 }
 

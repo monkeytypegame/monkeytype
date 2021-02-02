@@ -1584,10 +1584,15 @@ key {
           &:hover {
             background: var(--text-color);
           }
+          &.disabled {
+            pointer-events: none;
+            opacity: 0.1;
+          }
         }
       }
       .timer {
         text-align: center;
+        align-self: center;
       }
     }
     table {
@@ -2061,6 +2066,11 @@ key {
   &:focus {
     background: var(--sub-color);
   }
+}
+
+#readyButton.disabled {
+  pointer-events: none;
+  opacity: 0.1;
 }
 
 #restartTestButton {
@@ -3109,6 +3119,10 @@ key {
         color: var(--bg-color);
         &:hover {
           background: var(--text-color);
+        }
+        &.disabled {
+          pointer-events: none;
+          opacity: 0.1;
         }
       }
     }
