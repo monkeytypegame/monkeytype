@@ -3268,19 +3268,13 @@ function setCustomText() {
 
 function changePage(page) {
   if (pageTransition) {
+    Notifications.add("Not changing page, page transition true", 0, 0, "DEBUG");
     return;
   }
   let activePage = $(".page.active");
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
-    pageTransition = true;
-    swapElements(activePage, $(".page.pageTest"), 250, () => {
-      pageTransition = false;
-      focusWords();
-      $(".page.pageTest").addClass("active");
-      history.pushState("/", null, "/");
-    });
     if (
       MP.state >= 20 &&
       MP.state <= 29 &&
@@ -3288,6 +3282,13 @@ function changePage(page) {
       !MP.room.isReady
     )
       return;
+    pageTransition = true;
+    swapElements(activePage, $(".page.pageTest"), 250, () => {
+      pageTransition = false;
+      focusWords();
+      $(".page.pageTest").addClass("active");
+      history.pushState("/", null, "/");
+    });
     showTestConfig();
     hideSignOutButton();
     restartCount = 0;
@@ -3351,9 +3352,9 @@ function changePage(page) {
       pageTransition = true;
       restartTest();
       swapElements(activePage, $(".page.pageTribe"), 250, () => {
+        pageTransition = false;
         mp_scrollChat();
         showTestConfig();
-        pageTransition = false;
         history.pushState("tribe", null, "tribe");
         $(".page.pageTribe").addClass("active");
         if (!MP.socket.connected) {
