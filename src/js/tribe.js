@@ -15,7 +15,7 @@ let MP = {
   maxReconnectionAttempts: 1,
   activePage: "preloader",
   pageTransition: false,
-  expectedVersion: "0.7.8",
+  expectedVersion: "0.7.9",
 };
 
 let tribeSounds = {
