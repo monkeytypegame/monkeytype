@@ -817,7 +817,10 @@ MP.socket.on("mp_room_joined", (data) => {
   }
   if (MP.room.users[MP.socket.id].isLeader) {
     MP.room.isLeader = true;
+  } else {
+    MP.room.isLeader = false;
   }
+  mp_resetReadyButtons();
   mp_refreshUserList();
   if (MP.state === 10) {
     //user is already in the room and somebody joined
@@ -1004,6 +1007,12 @@ MP.socket.on("mp_room_test_init", (data) => {
   if (!MP.room.isReady && !MP.room.isLeader) {
     changePage("tribe");
     mp_changeActiveSubpage("lobby");
+    Notifications.add(
+      `Not joining race. isReady: ${MP.room.isReady}, isLeader: ${MP.room.isLeader}`,
+      0,
+      0,
+      "DEBUG"
+    );
     return;
   }
   mp_playSound("start");
