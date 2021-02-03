@@ -15,7 +15,7 @@ let MP = {
   maxReconnectionAttempts: 1,
   activePage: "preloader",
   pageTransition: false,
-  expectedVersion: "0.7.7",
+  expectedVersion: "0.7.8",
 };
 
 let tribeSounds = {
@@ -693,7 +693,7 @@ function mp_userReady() {
 }
 
 function mp_resetReadyButtons() {
-  if (!MP.room.isLeader && !MP.room.isReady) {
+  if (MP.room.isLeader === false && MP.room.isReady === false) {
     $(".pageTribe .lobby .lobbyButtons .userReadyButton").removeClass(
       "disabled"
     );
@@ -701,6 +701,11 @@ function mp_resetReadyButtons() {
       "disabled"
     );
     $(".pageTest #result #readyButton").removeClass("disabled");
+    $(".pageTribe .lobby .lobbyButtons .userReadyButton").removeClass("hidden");
+    $(".pageTest #result .resultMpButtons .userReadyButton").removeClass(
+      "hidden"
+    );
+    $(".pageTest #result #readyButton").removeClass("hidden");
   } else {
     let cls = "disabled";
     if (MP.room.isLeader) {
@@ -815,10 +820,15 @@ MP.socket.on("mp_room_joined", (data) => {
   } else {
     MP.room.users[data.sid] = { sid: data.sid, name: data.name };
   }
-  if (MP.room.users[MP.socket.id].isLeader) {
-    MP.room.isLeader = true;
-  } else {
-    MP.room.isLeader = false;
+  if (data.sid === MP.socket.id) {
+    let user = MP.room.users[MP.socket.id];
+    if (user.isLeader) {
+      MP.room.isLeader = true;
+    } else {
+      MP.room.isLeader = false;
+    }
+    MP.room.isReady = false;
+    MP.room.isTyping = false;
   }
   mp_resetReadyButtons();
   mp_refreshUserList();
@@ -1004,7 +1014,7 @@ MP.socket.on("mp_room_readyResultTimer_over", (data) => {
 
 MP.socket.on("mp_room_test_init", (data) => {
   mp_refreshTestUserList();
-  if (!MP.room.isReady && !MP.room.isLeader) {
+  if (MP.room.isReady !== true && MP.room.isLeader !== true) {
     changePage("tribe");
     mp_changeActiveSubpage("lobby");
     Notifications.add(
