@@ -243,6 +243,7 @@ function mp_joinRoomByCode(code) {
 function mp_startTest() {
   if (syncConfigTimeout !== null) return;
   if (MP.room.newTestCooldown) return;
+  MP.room.isReady = true;
   MP.socket.emit("mp_room_test_start");
 }
 

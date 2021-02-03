@@ -3279,7 +3279,8 @@ function changePage(page) {
       MP.state >= 20 &&
       MP.state <= 29 &&
       !MP.room.isTyping &&
-      !MP.room.isReady
+      !MP.room.isReady &&
+      !MP.room.isLeader
     )
       return;
     pageTransition = true;
