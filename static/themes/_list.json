@@ -490,17 +490,17 @@
     "textColor": "#f6f5f5"
   },
     {
-    "name": "rosé_pine",
+    "name": "rose_pine",
     "bgColor": "#1f1d27",
     "textColor": "#e0def4"
   },
     {
-    "name": "rosé_pine_moon",
+    "name": "rose_pine_moon",
     "bgColor": "#2a273f",
     "textColor": "#e0def4"
   },
     {
-    "name": "rosé_pine_dawn",
+    "name": "rose_pine_dawn",
     "bgColor": "#fffaf3",
     "textColor": "#575279"
   }
