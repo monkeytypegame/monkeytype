@@ -15,7 +15,7 @@ let MP = {
   maxReconnectionAttempts: 1,
   activePage: "preloader",
   pageTransition: false,
-  expectedVersion: "0.7.10",
+  expectedVersion: "0.7.11",
 };
 
 let tribeSounds = {
@@ -598,9 +598,9 @@ function mp_scrollChat() {
   chatEl.animate(
     {
       scrollTop:
-        $($(".pageTribe .lobby .chat .message")[0]).outerHeight() *
+        $($(".pageTribe .lobby .chat .messages div")[0]).outerHeight() *
         2 *
-        $(".pageTribe .lobby .chat .messages .message").length,
+        $(".pageTribe .lobby .chat .messages div").length,
     },
     0
   );
@@ -610,10 +610,10 @@ function mp_scrollChat() {
     {
       scrollTop:
         $(
-          $(".pageTest #result .tribeResultChat .chat .messages .message")[0]
+          $(".pageTest #result .tribeResultChat .chat .messages div")[0]
         ).outerHeight() *
         2 *
-        $(".pageTest #result .tribeResultChat .chat .messages .message").length,
+        $(".pageTest #result .tribeResultChat .chat .messages div").length,
     },
     0
   );
@@ -912,7 +912,7 @@ MP.socket.on("mp_chat_message", (data) => {
   if (data.isLeader) {
     nameregex = new RegExp(MP.name + "|ready|everyone", "i");
   } else {
-    nameregex = new RegExp(MP.name + "|ready", "i");
+    nameregex = new RegExp(MP.name, "i");
   }
   if (!data.isSystem && data.from.name != MP.name) {
     if (nameregex.test(data.message)) {
@@ -1031,6 +1031,8 @@ MP.socket.on("mp_room_test_init", (data) => {
   MP.room.userFinished = false;
   destroyAllGraphs();
   seedrandom(data.seed, { global: true });
+  console.log(`seed: ${data.seed}`);
+  console.log(`random: ${Math.random()}`);
   changePage("");
   restartTest(false, true, true);
   showCountdown();
@@ -1281,8 +1283,10 @@ MP.socket.on("mp_room_back_to_lobby", (data) => {
 });
 
 MP.socket.on("mp_room_user_info_update", (data) => {
+  let checkReady = false;
   Object.keys(data.values).forEach((bool) => {
     MP.room.users[data.sid][bool] = data.values[bool];
+    if (bool === "isReady" && data.values[bool]) checkReady = true;
     if (data.sid === MP.socket.id) {
       MP.room[bool] = data.values[bool];
       if (bool === "isReady" && !data.values[bool] && !MP.room.isLeader) {
@@ -1290,7 +1294,7 @@ MP.socket.on("mp_room_user_info_update", (data) => {
       }
     }
   });
-  if ((MP.state === 10 || MP.state === 29) && MP.room.isLeader) {
+  if (MP.room.isLeader && checkReady) {
     let everyoneReady = true;
     Object.keys(MP.room.users).forEach((sid) => {
       if (
@@ -1460,33 +1464,42 @@ $(".pageTribe .prelobby #joinByCode .button").click((e) => {
 });
 
 $(".pageTribe .prelobby #joinByCode input").keyup((e) => {
-  setTimeout((t) => {
-    // let t1 = "xx";
-    // let t2 = "xx";
-    // let t2 = "xx";
-    let v = $(".pageTribe .prelobby #joinByCode input").val();
-    // let text = `${v[0] == undefined ? 'x' : v[0]}`;
-    // let iv = 0;
-    // for (let i = 0; i < 8; i++){
-    //   text[i] = v[iv] == undefined ? 'x' : v[iv];
-    //   if(![2,5].includes(i)) iv++;
-    // }
-    let code = [];
-    for (let i = 0; i < 6; i++) {
-      let char = v[i] == undefined ? "-" : v[i];
-      code.push(char);
+  if (e.key === "Enter") {
+    let code = $(".pageTribe .prelobby #joinByCode input").val().toLowerCase();
+    if (code.length !== 6) {
+      Notifications.add("Code required", 0);
+    } else {
+      mp_joinRoomByCode(code);
     }
-    let text = code.join("");
-    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[0]).text(
-      text.substring(0, 2)
-    );
-    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[1]).text(
-      text.substring(2, 4)
-    );
-    $($(".pageTribe .prelobby #joinByCode .customInput .byte")[2]).text(
-      text.substring(4, 6)
-    );
-  }, 0);
+  } else {
+    setTimeout((t) => {
+      // let t1 = "xx";
+      // let t2 = "xx";
+      // let t2 = "xx";
+      let v = $(".pageTribe .prelobby #joinByCode input").val();
+      // let text = `${v[0] == undefined ? 'x' : v[0]}`;
+      // let iv = 0;
+      // for (let i = 0; i < 8; i++){
+      //   text[i] = v[iv] == undefined ? 'x' : v[iv];
+      //   if(![2,5].includes(i)) iv++;
+      // }
+      let code = [];
+      for (let i = 0; i < 6; i++) {
+        let char = v[i] == undefined ? "-" : v[i];
+        code.push(char);
+      }
+      let text = code.join("");
+      $($(".pageTribe .prelobby #joinByCode .customInput .byte")[0]).text(
+        text.substring(0, 2)
+      );
+      $($(".pageTribe .prelobby #joinByCode .customInput .byte")[1]).text(
+        text.substring(2, 4)
+      );
+      $($(".pageTribe .prelobby #joinByCode .customInput .byte")[2]).text(
+        text.substring(4, 6)
+      );
+    }, 0);
+  }
 });
 
 $(
@@ -1508,8 +1521,10 @@ $(
 });
 
 $(
-  ".pageTribe .lobby .lobbyButtons .userReadyButton, .pageTest #result #readyButton"
-).on("keypress", "#nextTestButton", (event) => {
+  `.pageTribe .lobby .lobbyButtons .userReadyButton,
+  .pageTest #result #readyButton,
+  .pageTest #result .resultMpButtons .userReadyButton`
+).on("keypress", (event) => {
   if (event.keyCode == 13) {
     mp_userReady();
   }
