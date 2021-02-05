@@ -74,6 +74,24 @@
   	  "vec![]",
   	  "HashMap",
   	  "String",
-  	  "String::from(\"monkeytype\")"
+	  "String::from(\"monkeytype\")",
+	  "collect::<Vec<i32>>()",
+	  "box",
+	  "lazy_static",
+	  "iter()",
+	  "filter(|x| x.is_ok())",
+	  "<'a>",
+	  "map",
+	  "BTreeMap",
+	  "VeqDeque",
+	  "LinkedList",
+	  "HashSet",
+	  "&'static",
+	  "..=",
+	  "?",
+	  "macro_rules!",
+	  "{:?}",
+	  "format!",
+	  "unwrap()"
   ]
 }

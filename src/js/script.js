@@ -4840,11 +4840,7 @@ $(document).keyup((event) => {
 });
 
 $(document).keydown(function (event) {
-  if (
-    !(activeFunBox == "nospace" && event.key == " ") &&
-    !event.originalEvent.isTrusted
-  )
-    return;
+  if (!(event.key == " ") && !event.originalEvent.isTrusted) return;
 
   if (!resultVisible) {
     let now = performance.now();

@@ -488,5 +488,20 @@
     "name": "arch",
     "bgColor": "#0c0d11",
     "textColor": "#f6f5f5"
+  },
+    {
+    "name": "rosé_pine",
+    "bgColor": "#1f1d27",
+    "textColor": "#e0def4"
+  },
+    {
+    "name": "rosé_pine_moon",
+    "bgColor": "#2a273f",
+    "textColor": "#e0def4"
+  },
+    {
+    "name": "rosé_pine_dawn",
+    "bgColor": "#fffaf3",
+    "textColor": "#575279"
   }
 ]
