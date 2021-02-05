@@ -1141,14 +1141,17 @@ MP.socket.on("mp_room_user_finished", (data) => {
     if (data.sid === MP.socket.id) {
       MP.room.userFinished = true;
 
-      Object.keys(MP.room.userGraphs).forEach((sid) => {
-        let userGraph = MP.room.userGraphs[sid];
-        userGraph.graph = drawMinigraph(sid, userGraph.data);
+      Object.keys(MP.room.userGraphs).forEachWithCallback((sid, i, next) => {
+        setTimeout(() => {
+          let userGraph = MP.room.userGraphs[sid];
+          userGraph.graph = drawMinigraph(sid, userGraph.data);
+          next();
+        }, 1);
       });
     } else if (MP.room.userFinished) {
       MP.room.userGraphs[data.sid].graph = drawMinigraph(data.sid, data.result);
     }
-  }, 500);
+  }, 250);
 
   // $(`.tribeResult table .player[sid=${data.sid}] .progress`),
   //   swapElements(
