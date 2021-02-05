@@ -563,7 +563,7 @@ function fadeoutCountdown() {
     {
       opacity: 0,
     },
-    250,
+    125,
     () => {
       $("#tribeCountdownWrapper .faint")
         .addClass("hidden")
@@ -574,7 +574,7 @@ function fadeoutCountdown() {
     {
       opacity: 0,
     },
-    250,
+    125,
     () => {
       $("#tribeCountdownWrapper .withbg").addClass("hidden").css("opacity", 1);
     }
@@ -974,7 +974,7 @@ MP.socket.on("mp_room_test_start", (data) => {
     }
   }, 500);
   // Notifications.add("test starting",0);
-  updateCountdown("Go");
+  updateCountdown("");
   fadeoutCountdown();
   mp_playSound("cd_go");
 });
@@ -984,6 +984,7 @@ MP.socket.on("mp_room_test_countdown", (data) => {
   focusWords();
   updateCountdown(data.val);
   if (data.val <= 3) mp_playSound("cd");
+  // if (data.val == 1) fadeoutCountdown()
   // Notifications.add(`countdown ${data.val}`,0);
 });
 
@@ -1537,6 +1538,16 @@ $(
 ).on("keypress", (event) => {
   if (event.keyCode == 13) {
     mp_userReady();
+  }
+});
+
+$(document).on("keypress", (e) => {
+  if ((MP.state === 10 || MP.state === 29) && e.key === "Enter" && e.shiftKey) {
+    if (MP.room.isLeader) {
+      mp_startTest();
+    } else {
+      mp_userReady();
+    }
   }
 });
 
