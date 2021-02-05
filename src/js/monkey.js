@@ -40,7 +40,6 @@ export function updateFastOpacity(num) {
   $("#monkey .fast").animate({ opacity: opacity }, 1000);
   let animDuration = mapRange(num, 100, 200, 0.5, 0.01);
   if (animDuration == 0.5) animDuration = 0;
-  console.log(num + " > " + animDuration);
   $("#monkey").css({ animationDuration: animDuration + "s" });
 }
 
