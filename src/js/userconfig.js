@@ -74,6 +74,7 @@ let defaultConfig = {
   minAcc: "off",
   minAccCustom: 90,
   showLiveAcc: false,
+  monkey: false,
 };
 
 let cookieConfig = null;
@@ -1272,6 +1273,29 @@ function setLanguage(language, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
+function toggleMonkey(nosave) {
+  config.monkey = !config.monkey;
+  if (config.monkey) {
+    $("#monkey").removeClass("hidden");
+  } else {
+    $("#monkey").addClass("hidden");
+  }
+  if (!nosave) saveConfigToCookie();
+}
+
+function setMonkey(monkey, nosave) {
+  if (monkey === null || monkey === undefined) {
+    monkey = false;
+  }
+  config.monkey = monkey;
+  if (config.monkey) {
+    $("#monkey").removeClass("hidden");
+  } else {
+    $("#monkey").addClass("hidden");
+  }
+  if (!nosave) saveConfigToCookie();
+}
+
 function setCapsLockBackspace(capsLockBackspace, nosave) {
   if (capsLockBackspace === null || capsLockBackspace === undefined) {
     capsLockBackspace = false;
@@ -1550,6 +1574,7 @@ function applyConfig(configObj) {
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setStrictSpace(configObj.strictSpace, true);
     setMode(configObj.mode, true);
+    setMonkey(configObj.monkey, true);
 
     try {
       setEnableAds(configObj.enableAds, true);

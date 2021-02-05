@@ -2828,6 +2828,7 @@ function startTest() {
       updateLiveWpm(wpmAndRaw.wpm, wpmAndRaw.raw);
       wpmHistory.push(wpmAndRaw.wpm);
       rawHistory.push(wpmAndRaw.raw);
+      Monkey.updateFastOpacity(wpmAndRaw.wpm);
 
       let acc = Misc.roundTo2(
         (accuracyStats.correct /
@@ -3024,6 +3025,8 @@ function restartTest(withSameWordset = false, nosave = false) {
     },
     125,
     async () => {
+      $("#monkey .fast").stop(true, true).css("opacity", 0);
+      $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         sameWordset = false;

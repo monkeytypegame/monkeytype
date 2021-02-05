@@ -3386,6 +3386,9 @@ key {
   width: 308px;
   height: 0;
   margin: 0 auto;
+  animation: shake;
+  animation-duration: 0s;
+  animation-iteration-count: infinite;
   div {
     height: 200px;
     width: 308px;
@@ -3402,6 +3405,32 @@ key {
   }
   .both {
     background-image: url("../m4.png");
+  }
+  .fast {
+    .up {
+      background-image: url("../m3_fast.png");
+    }
+    .left {
+      background-image: url("../m1_fast.png");
+    }
+    .right {
+      background-image: url("../m2_fast.png");
+    }
+    .both {
+      background-image: url("../m4_fast.png");
+    }
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(4px, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-4px, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(4px, 0) rotate(0deg);
   }
 }
 

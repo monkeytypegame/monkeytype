@@ -696,7 +696,7 @@ let commands = {
       display: "Toggle Monkey",
       visible: false,
       exec: () => {
-        $("#monkey").toggleClass("hidden");
+        toggleMonkey();
       },
     },
   ],
