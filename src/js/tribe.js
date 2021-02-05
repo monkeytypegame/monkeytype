@@ -1402,23 +1402,30 @@ $(
   }
 });
 
-$(
-  ".pageTribe .lobby .inviteLink .text, .pageTest .tribeResultChat .inviteLink .code .text"
-).hover(async (e) => {
-  $(
-    ".pageTribe .lobby .inviteLink .text, .pageTest .tribeResultChat .inviteLink .code .text"
-  ).css(
+$(".pageTribe .lobby .inviteLink .text").hover(async (e) => {
+  $(".pageTribe .lobby .inviteLink .text").css(
     "color",
-    "#" +
-      $(
-        ".pageTribe .lobby .inviteLink .text, .pageTest .tribeResultChat .inviteLink .code .text"
-      ).text()
+    "#" + $(".pageTribe .lobby .inviteLink .text").text()
   );
 });
 
-$(
-  ".pageTribe .lobby .inviteLink .text, .pageTest .tribeResultChat .inviteLink .code .text"
-).hover(
+$(".pageTest .tribeResultChat .inviteLink .code .text").hover(async (e) => {
+  $(".pageTest .tribeResultChat .inviteLink .code .text").css(
+    "color",
+    "#" + $(".pageTest .tribeResultChat .inviteLink .code .text").text()
+  );
+});
+
+$(".pageTest .tribeResultChat .inviteLink .code .text").hover(
+  function () {
+    $(this).css("color", "#" + $(".pageTribe .lobby .inviteLink .text").text());
+  },
+  function () {
+    $(this).css("color", "");
+  }
+);
+
+$(".pageTribe .lobby .inviteLink .text").hover(
   function () {
     $(this).css("color", "#" + $(".pageTribe .lobby .inviteLink .text").text());
   },
