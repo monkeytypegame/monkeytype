@@ -1559,13 +1559,15 @@ $(document).on(
   "click",
   ".pageTribe .lobby .currentSettings .groups .group",
   (e) => {
-    let commands = eval($(e.currentTarget).attr("commands"));
-    let func = $(e.currentTarget).attr("function");
-    if (commands != undefined) {
-      currentCommands.push(commands);
-      showCommandLine();
-    } else if (func != undefined) {
-      eval(func);
+    if (MP.room.isLeader) {
+      let commands = eval($(e.currentTarget).attr("commands"));
+      let func = $(e.currentTarget).attr("function");
+      if (commands != undefined) {
+        currentCommands.push(commands);
+        showCommandLine();
+      } else if (func != undefined) {
+        eval(func);
+      }
     }
   }
 );
