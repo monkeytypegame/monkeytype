@@ -503,5 +503,10 @@
     "name": "rose_pine_dawn",
     "bgColor": "#fffaf3",
     "textColor": "#575279"
-  }
+  },
+  {
+  "name": "copper",
+  "bgColor": "#442f29",
+  "textColor": "#e7e0de"
+}
 ]
