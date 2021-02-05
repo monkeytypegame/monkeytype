@@ -3356,6 +3356,7 @@ function changePage(page) {
         pageTransition = false;
         mp_scrollChat();
         showTestConfig();
+        $(".pageTribe .lobby .chat .input input").focus();
         history.pushState("tribe", null, "tribe");
         $(".page.pageTribe").addClass("active");
         if (!MP.socket.connected) {
