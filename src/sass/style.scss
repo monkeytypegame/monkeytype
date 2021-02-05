@@ -2989,7 +2989,7 @@ key {
         display: flex;
         gap: 0.5rem;
         color: var(--text-color);
-        word-break: break-all;
+        word-break: break-word;
         span.mention {
           background: var(--text-color);
           color: var(--bg-color);
