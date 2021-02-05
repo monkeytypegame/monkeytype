@@ -1479,7 +1479,7 @@ function setFontSize(fontSize, nosave) {
 
 function applyConfig(configObj) {
   if (configObj == null || configObj == undefined) {
-    Notifications.add("Could not apply config", -1);
+    Notifications.add("Could not apply config", -1, 3);
     return;
   }
   Object.keys(defaultConfig).forEach((configKey) => {
