@@ -2177,8 +2177,14 @@ function showResult(difficultyFailed = false) {
       cdata.textLen = customText.text.length;
       cdata.isWordRandom = customText.isWordRandom;
       cdata.isTimeRandom = customText.isTimeRandom;
-      cdata.word = customText.word !== "" ? customText.word : null;
-      cdata.time = customText.time !== "" ? customText.time : null;
+      cdata.word =
+        customText.word !== "" && !isNaN(customText.word)
+          ? customText.word
+          : null;
+      cdata.time =
+        customText.time !== "" && !isNaN(customText.time)
+          ? customText.time
+          : null;
     }
 
     let completedEvent = {
@@ -2329,7 +2335,7 @@ function showResult(difficultyFailed = false) {
               $("#result .stats .tags .bottom").append(`
                 <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
               `);
-              if (config.mode != "quote"){
+              if (config.mode != "quote") {
                 if (tpb < stats.wpm) {
                   //new pb for that tag
                   db_saveLocalTagPB(
