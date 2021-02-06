@@ -272,6 +272,7 @@ export async function db_saveLocalPB(
   raw,
   consistency
 ) {
+  if(mode == "quote") return;
   function cont() {
     try {
       let found = false;
@@ -376,6 +377,7 @@ export async function db_saveLocalTagPB(
   raw,
   consistency
 ) {
+  if(mode == "quote") return;
   function cont() {
     let filteredtag = dbSnapshot.tags.filter((t) => t.id === tagId)[0];
     try {

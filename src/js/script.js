@@ -2258,6 +2258,7 @@ function showResult(difficultyFailed = false) {
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
               dontShowCrown = true;
             }
+            if (config.mode == "quote") dontShowCrown = true;
             if (lpb < stats.wpm) {
               //new pb based on local
               pbDiff = Math.abs(stats.wpm - lpb);
@@ -2328,56 +2329,58 @@ function showResult(difficultyFailed = false) {
               $("#result .stats .tags .bottom").append(`
                 <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
               `);
-              if (tpb < stats.wpm) {
-                //new pb for that tag
-                db_saveLocalTagPB(
-                  tag.id,
-                  config.mode,
-                  mode2,
-                  config.punctuation,
-                  config.language,
-                  config.difficulty,
-                  stats.wpm,
-                  stats.acc,
-                  stats.wpmRaw,
-                  consistency
-                );
-                $(
-                  `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
-                ).removeClass("hidden");
-                $(`#result .stats .tags .bottom div[tagid="${tag.id}"]`).attr(
-                  "aria-label",
-                  "+" + Misc.roundTo2(stats.wpm - tpb)
-                );
-                console.log("new pb for tag " + tag.name);
-              } else {
-                wpmOverTimeChart.options.annotation.annotations.push({
-                  enabled: false,
-                  type: "line",
-                  mode: "horizontal",
-                  scaleID: "wpm",
-                  value: tpb,
-                  borderColor: themeColors.sub,
-                  borderWidth: 1,
-                  borderDash: [2, 2],
-                  label: {
-                    backgroundColor: themeColors.sub,
-                    fontFamily: "Roboto Mono",
-                    fontSize: 11,
-                    fontStyle: "normal",
-                    fontColor: themeColors.bg,
-                    xPadding: 6,
-                    yPadding: 6,
-                    cornerRadius: 3,
-                    position: annotationSide,
-                    enabled: true,
-                    content: `${tag.name} PB: ${tpb}`,
-                  },
-                });
-                if (annotationSide === "left") {
-                  annotationSide = "right";
+              if (config.mode != "quote"){
+                if (tpb < stats.wpm) {
+                  //new pb for that tag
+                  db_saveLocalTagPB(
+                    tag.id,
+                    config.mode,
+                    mode2,
+                    config.punctuation,
+                    config.language,
+                    config.difficulty,
+                    stats.wpm,
+                    stats.acc,
+                    stats.wpmRaw,
+                    consistency
+                  );
+                  $(
+                    `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
+                  ).removeClass("hidden");
+                  $(`#result .stats .tags .bottom div[tagid="${tag.id}"]`).attr(
+                    "aria-label",
+                    "+" + Misc.roundTo2(stats.wpm - tpb)
+                  );
+                  // console.log("new pb for tag " + tag.name);
                 } else {
-                  annotationSide = "left";
+                  wpmOverTimeChart.options.annotation.annotations.push({
+                    enabled: false,
+                    type: "line",
+                    mode: "horizontal",
+                    scaleID: "wpm",
+                    value: tpb,
+                    borderColor: themeColors.sub,
+                    borderWidth: 1,
+                    borderDash: [2, 2],
+                    label: {
+                      backgroundColor: themeColors.sub,
+                      fontFamily: "Roboto Mono",
+                      fontSize: 11,
+                      fontStyle: "normal",
+                      fontColor: themeColors.bg,
+                      xPadding: 6,
+                      yPadding: 6,
+                      cornerRadius: 3,
+                      position: annotationSide,
+                      enabled: true,
+                      content: `${tag.name} PB: ${tpb}`,
+                    },
+                  });
+                  if (annotationSide === "left") {
+                    annotationSide = "right";
+                  } else {
+                    annotationSide = "left";
+                  }
                 }
               }
             });
