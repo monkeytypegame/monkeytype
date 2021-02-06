@@ -409,6 +409,9 @@ exports.checkNameAvailability = functions.https.onRequest(
 
 function checkIfPB(uid, obj, userdata) {
   let pbs = null;
+  if (obj.mode == "quote") {
+    return false;
+  }
   if (obj.funbox !== "none") {
     return false;
   }
@@ -541,6 +544,9 @@ function checkIfPB(uid, obj, userdata) {
 
 async function checkIfTagPB(uid, obj, userdata) {
   if (obj.tags.length === 0) {
+    return [];
+  }
+  if (obj.mode == "quote") {
     return [];
   }
   let dbtags = [];
