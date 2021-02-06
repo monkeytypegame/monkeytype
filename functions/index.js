@@ -1468,7 +1468,7 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
             let dailylb = values[1].insertedAt;
             let ispb = values[2];
             let tagPbs = values[3];
-            let createdDocId = stripAndSave(request.uid, request.obj);
+            let createdDocId = await stripAndSave(request.uid, request.obj);
             createdDocId = createdDocId.id;
             // console.log(values);
 
