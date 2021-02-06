@@ -1462,14 +1462,14 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
           ),
           checkIfPB(request.uid, request.obj, userdata),
           checkIfTagPB(request.uid, request.obj),
-          stripAndSave(request.uid, request.obj),
         ])
           .then(async (values) => {
             let globallb = values[0].insertedAt;
             let dailylb = values[1].insertedAt;
             let ispb = values[2];
             let tagPbs = values[3];
-            let createdDocId = values[4].id;
+            let createdDocId = stripAndSave(request.uid, request.obj);
+            createdDocId = createdDocId.id;
             // console.log(values);
 
             if (obj.mode === "time" && String(obj.mode2) === "60") {
