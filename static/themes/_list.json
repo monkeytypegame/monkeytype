@@ -480,6 +480,11 @@
     "textColor": "#383e42"
   },
   {
+    "name": "gray_night",
+    "bgColor": "#1d1e20",
+    "textColor": "#d1d0c5"
+  },
+  {
     "name": "80s_after_dark",
     "bgColor": "#1B1D36",
     "textColor": "#FCA6D1"
