@@ -128,6 +128,15 @@ export async function db_getUserResults() {
           data.docs.forEach((doc) => {
             let result = doc.data();
             result.id = doc.id;
+
+            if (result.bailedOut === undefined) result.bailedOut = false;
+            if (result.blindMode === undefined) result.blindMode = false;
+            if (result.difficulty === undefined) result.difficulty = "normal";
+            if (result.funbox === undefined) result.funbox = "none";
+            if (result.language === undefined) result.language = "english";
+            if (result.numbers === undefined) result.numbers = false;
+            if (result.punctuation === undefined) result.punctuation = false;
+
             dbSnapshot.results.push(result);
           });
           return true;

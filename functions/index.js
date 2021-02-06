@@ -1456,7 +1456,7 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
           ),
           checkIfPB(request.uid, request.obj, userdata),
           checkIfTagPB(request.uid, request.obj),
-          db.collection(`users/${request.uid}/results`).add(obj),
+          stripAndSave(request.uid, request.obj),
         ])
           .then(async (values) => {
             let globallb = values[0].insertedAt;
@@ -1617,6 +1617,18 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
     return;
   }
 });
+
+async function stripAndSave(uid, obj) {
+  if (obj.bailedOut === false) delete obj.bailedOut;
+  if (obj.blindMode === false) delete obj.blindMode;
+  if (obj.difficulty === "normal") delete obj.difficulty;
+  if (obj.funbox === "none") delete obj.funbox;
+  if (obj.language === "english") delete obj.language;
+  if (obj.numbers === false) delete obj.numbers;
+  if (obj.punctuation === false) delete obj.punctuation;
+
+  return await db.collection(`users/${uid}/results`).add(obj);
+}
 
 exports.updateEmail = functions.https.onCall(async (request, response) => {
   try {
