@@ -2123,6 +2123,23 @@ function showResult(difficultyFailed = false) {
     Notifications.add("Test invalid - AFK detected", 0);
   } else if (sameWordset) {
     Notifications.add("Test invalid - repeated", 0);
+  } else if (
+    (config.mode === "time" && mode2 < 15) ||
+    (config.mode === "words" && mode2 < 10) ||
+    (config.mode === "custom" &&
+      !customText.isWordRandom &&
+      !customText.isTimeRandom &&
+      customText.text.length < 10) ||
+    (config.mode === "custom" &&
+      customText.isWordRandom &&
+      !customText.isTimeRandom &&
+      customText.word < 10) ||
+    (config.mode === "custom" &&
+      !customText.isWordRandom &&
+      customText.isTimeRandom &&
+      customText.time < 15)
+  ) {
+    Notifications.add("Test too short", 0);
   } else {
     let activeTags = [];
     let activeTagsIds = [];
@@ -2154,6 +2171,16 @@ function showResult(difficultyFailed = false) {
       quoteLength = randomQuote.group;
     }
 
+    let cdata = null;
+    if (config.mode === "custom") {
+      cdata = {};
+      cdata.textLen = customText.text.length;
+      cdata.isWordRandom = customText.isWordRandom;
+      cdata.isTimeRandom = customText.isTimeRandom;
+      cdata.word = customText.word !== "" ? customText.word : null;
+      cdata.time = customText.time !== "" ? customText.time : null;
+    }
+
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
@@ -2183,7 +2210,13 @@ function showResult(difficultyFailed = false) {
       funbox: activeFunBox,
       bailedOut: bailout,
       chartData: chartData,
+      customText: cdata,
     };
+
+    if (config.mode !== "custom") {
+      delete completedEvent.customText;
+    }
+
     if (
       config.difficulty == "normal" ||
       ((config.difficulty == "master" || config.difficulty == "expert") &&
@@ -2379,6 +2412,8 @@ function showResult(difficultyFailed = false) {
                     "Result data does not make sense. Result not saved.",
                     -1
                   );
+                } else if (e.data.resultCode === -5) {
+                  Notifications.add("Test too short. Result not saved.", -1);
                 } else if (e.data.resultCode === -999) {
                   console.error("internal error: " + e.data.message);
                   Notifications.add(

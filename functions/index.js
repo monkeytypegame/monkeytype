@@ -872,15 +872,13 @@ exports.verifyUser = functions.https.onRequest(async (request, response) => {
           (await db.collection("users").where("discordId", "==", did).get())
             .docs.length > 0
         ) {
-          response
-            .status(200)
-            .send({
-              data: {
-                status: -1,
-                message:
-                  "This Discord account is already paired to a different Monkeytype account",
-              },
-            });
+          response.status(200).send({
+            data: {
+              status: -1,
+              message:
+                "This Discord account is already paired to a different Monkeytype account",
+            },
+          });
           return;
         }
 
@@ -1255,7 +1253,8 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
 
     function verifyValue(val) {
       let errCount = 0;
-      if (Array.isArray(val)) {
+      if (val === null || val === undefined) {
+      } else if (Array.isArray(val)) {
         //array
         val.forEach((val2) => {
           errCount += verifyValue(val2);
@@ -1271,8 +1270,6 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       return errCount;
     }
     let errCount = verifyValue(obj);
-
-    // console.log(errCount);
     if (errCount > 0) {
       console.error(
         `error saving result for ${
@@ -1291,6 +1288,27 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       obj.consistency > 100
     ) {
       response.status(200).send({ data: { resultCode: -1 } });
+      return;
+    }
+    if (
+      (obj.mode === "time" && obj.mode2 < 15) ||
+      (obj.mode === "words" && obj.mode2 < 10) ||
+      (obj.mode === "custom" &&
+        !obj.customText.isWordRandom &&
+        !obj.customText.isTimeRandom &&
+        obj.customText.textLen < 10) ||
+      (obj.mode === "custom" &&
+        obj.customText.isWordRandom &&
+        !obj.customText.isTimeRandom &&
+        obj.customText.word < 10) ||
+      (obj.mode === "custom" &&
+        !obj.customText.isWordRandom &&
+        obj.customText.isTimeRandom &&
+        obj.customText.time < 15)
+    ) {
+      response
+        .status(200)
+        .send({ data: { resultCode: -5, message: "Test too short" } });
       return;
     }
     if (!validateResult(obj)) {
