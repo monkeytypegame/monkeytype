@@ -2117,6 +2117,8 @@ function showResult(difficultyFailed = false) {
 
   if (bailout) afkDetected = false;
 
+  $("#result .stats .tags").addClass("hidden");
+
   if (difficultyFailed) {
     Notifications.add("Test failed", 0);
   } else if (afkDetected) {
@@ -2177,8 +2179,14 @@ function showResult(difficultyFailed = false) {
       cdata.textLen = customText.text.length;
       cdata.isWordRandom = customText.isWordRandom;
       cdata.isTimeRandom = customText.isTimeRandom;
-      cdata.word = customText.word !== "" ? customText.word : null;
-      cdata.time = customText.time !== "" ? customText.time : null;
+      cdata.word =
+        customText.word !== "" && !isNaN(customText.word)
+          ? customText.word
+          : null;
+      cdata.time =
+        customText.time !== "" && !isNaN(customText.time)
+          ? customText.time
+          : null;
     }
 
     let completedEvent = {
@@ -2329,7 +2337,7 @@ function showResult(difficultyFailed = false) {
               $("#result .stats .tags .bottom").append(`
                 <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
               `);
-              if (config.mode != "quote"){
+              if (config.mode != "quote") {
                 if (tpb < stats.wpm) {
                   //new pb for that tag
                   db_saveLocalTagPB(
@@ -2805,7 +2813,7 @@ function showResult(difficultyFailed = false) {
 
 function startTest() {
   if (pageTransition) {
-    return;
+    return false;
   }
   if (!dbConfigLoaded) {
     configChangedBeforeDb = true;
@@ -2953,6 +2961,7 @@ function startTest() {
       loop(expectedStepEnd + stepIntervalMS);
     }, delay);
   })(testStart + stepIntervalMS);
+  return true;
 }
 
 function restartTest(withSameWordset = false, nosave = false) {
@@ -3056,13 +3065,14 @@ function restartTest(withSameWordset = false, nosave = false) {
     }
   }
   resultVisible = false;
-
+  pageTransition = true;
   el.stop(true, true).animate(
     {
       opacity: 0,
     },
     125,
     async () => {
+      pageTransition = false;
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
@@ -4907,6 +4917,7 @@ $(document).keydown(function (event) {
     event.key !== "Enter"
   ) {
     focusWords();
+    wordsFocused = true;
     if (config.showOutOfFocusWarning) return;
   }
 
@@ -4942,6 +4953,10 @@ $(document).keydown(function (event) {
       hideCapsWarning();
     }
   } catch {}
+
+  if (pageTransition) {
+    return;
+  }
 
   //backspace
   const isBackspace =
@@ -5371,6 +5386,8 @@ function handleAlpha(event) {
       "Unidentified",
       "Process",
       "Delete",
+      "KanjiMode",
+      "Pause",
       undefined,
     ].includes(event.key)
   ) {
@@ -5418,7 +5435,7 @@ function handleAlpha(event) {
 
   //start the test
   if (currentInput == "" && inputHistory.length == 0 && !testActive) {
-    startTest();
+    if (!startTest()) return;
   } else {
     if (!testActive) return;
   }

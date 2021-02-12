@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -30416,7 +30404,7 @@
       "id": 5118
     },
     {
-      "text": "There was a lot of time, but there was no money and no place to go.There were big hopes, but living every day was full of worry and when she walked down the streets everyone else looked like they were full of confidence and she looked really small.",
+      "text": "There was a lot of time, but there was no money and no place to go. There were big hopes, but living every day was full of worry and when she walked down the streets everyone else looked like they were full of confidence and she looked really small.",
       "source": "Reiko Saibara, Mainichi Kāsan",
       "length": 248,
       "id": 5119
