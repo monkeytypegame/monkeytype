@@ -5378,6 +5378,8 @@ function handleAlpha(event) {
       "Unidentified",
       "Process",
       "Delete",
+      "KanjiMode",
+      "Pause",
       undefined,
     ].includes(event.key)
   ) {
