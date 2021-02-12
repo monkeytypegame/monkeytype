@@ -4913,6 +4913,7 @@ $(document).keydown(function (event) {
     event.key !== "Enter"
   ) {
     focusWords();
+    wordsFocused = true;
     if (config.showOutOfFocusWarning) return;
   }
 
