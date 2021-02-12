@@ -2811,7 +2811,7 @@ function showResult(difficultyFailed = false) {
 
 function startTest() {
   if (pageTransition) {
-    return;
+    return false;
   }
   if (!dbConfigLoaded) {
     configChangedBeforeDb = true;
@@ -2959,6 +2959,7 @@ function startTest() {
       loop(expectedStepEnd + stepIntervalMS);
     }, delay);
   })(testStart + stepIntervalMS);
+  return true;
 }
 
 function restartTest(withSameWordset = false, nosave = false) {
@@ -3062,13 +3063,14 @@ function restartTest(withSameWordset = false, nosave = false) {
     }
   }
   resultVisible = false;
-
+  pageTransition = true;
   el.stop(true, true).animate(
     {
       opacity: 0,
     },
     125,
     async () => {
+      pageTransition = false;
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
@@ -4950,6 +4952,10 @@ $(document).keydown(function (event) {
     }
   } catch {}
 
+  if (pageTransition) {
+    return;
+  }
+
   //backspace
   const isBackspace =
     event.key === "Backspace" ||
@@ -5427,7 +5433,7 @@ function handleAlpha(event) {
 
   //start the test
   if (currentInput == "" && inputHistory.length == 0 && !testActive) {
-    startTest();
+    if (!startTest()) return;
   } else {
     if (!testActive) return;
   }
