@@ -1,0 +1,317 @@
+{
+  "language": "indonesian",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Keberhasilan bukanlah milik orang yang pintar. Keberhasilan adalah kepunyaan mereka yang senantiasa berusaha.",
+      "source": "B.J. Habibie",
+      "length": 109,
+      "id": 1
+    },
+    {
+      "text": "Saat suatu hubungan berakhir, bukan berarti 2 orang berhenti saling mencintai. Mereka hanya berhenti saling menyakiti.",
+      "source": "R. A. Kartini",
+      "length": 118,
+      "id": 2
+    },
+    {
+      "text": "Belajar tanpa berpikir itu tidaklah berguna, tapi berpikir tanpa belajar itu sangatlah berbahaya",
+      "source": "Ir. Soekarno",
+      "length": 97,
+      "id": 3
+    },
+    {
+      "text": "Habis gelap terbitlah terang.",
+      "source": "R. A. Kartini",
+      "length": 29,
+      "id": 4
+    },
+    {
+      "text": "Barang siapa ingin mutiara, harus berani terjun di lautan yang dalam",
+      "source": "Ir. Soekarno",
+      "length": 68,
+      "id": 5
+    },
+    {
+      "text": "Kurang cerdas dapat diperbaiki dengan belajar. Kurang cakap dapat dihilangkan dengan pengalaman. Namun tidak jujur itu sulit diperbaiki",
+      "source": "Mohammad Hatta",
+      "length": 136,
+      "id": 6
+    },
+    {
+      "text": "Filosofi meluaskan pandangan serta mempertajam pikiran.",
+      "source": "Mohammad Hatta",
+      "length": 55,
+      "id": 7
+    },
+    {
+      "text": "Saya rela pergi ke penjara, selama ada buku. Karena dengan buku saya bebas.",
+      "source": "Mohammad Hatta",
+      "length": 75,
+      "id": 8
+    },
+    {
+      "text": "Kejahatan akan menang bila orang yang benar tidak melakukan apa-apa.",
+      "source": "Jenderal Sudirman",
+      "length": 68,
+      "id": 9
+    },
+    {
+      "text": "Kadang kita terlalu sibuk memikirkan kesulitan-kesulitan sehingga kita tidak punya waktu untuk mensyukuri rahmat Tuhan.",
+      "source": "Jenderal Sudirman",
+      "length": 199,
+      "id": 10
+    },
+    {
+      "text": "Setiap orang menjadi guru, setiap rumah menjadi sekolah.",
+      "source": "Ki Hajar Dewantara",
+      "length": 56,
+      "id": 11
+    },
+    {
+      "text": "Teladan yang baik adalah khotbah yang jitu.",
+      "source": "K.H. Ahmad Dahlan",
+      "length": 43,
+      "id": 12
+    },
+    {
+      "text": "Sedangkan sebetulnya cara mendapatkan hasil itulah yang lebih penting daripada hasil sendiri.",
+      "source": "Tan Malaka",
+      "length": 93,
+      "id": 13
+    },
+    {
+      "text": "Siapa yang tidak bekerja tidak akan makan.",
+      "source": "Tan Malaka",
+      "length": 42,
+      "id": 14
+    },
+    {
+      "text": "Bukan kesulitan yang membuat kita takut, tapi sering ketakutanlah yang membuat jadi sulit. Jadi, jangan mudah menyerah.",
+      "source": "Joko Widodo, Presiden RI-7",
+      "length": 119,
+      "id": 15
+    },
+    {
+      "text": "Jangan takut untuk bekerja, jangan bekerja kalau takut.",
+      "source": "Susi Pudjiastuti",
+      "length": 55,
+      "id": 16
+    },
+    {
+      "text": "Beri aku 1.000 orang tua, niscaya akan kucabut semeru dari akarnya. Beri aku 10 pemuda niscaya akan kuguncangkan dunia.",
+      "source": "Ir. Soekarno",
+      "length": 119,
+      "id": 17
+    },
+    {
+      "text": "“Bangsa yang besar adalah bangsa yang menghormati jasa pahlawannya.",
+      "source": "Ir. Soekarno",
+      "length": 67,
+      "id": 18
+    },
+    {
+      "text": "Kami menggoyangkan langit, menggemparkan darat, dan menggelorakan samudera agar tidak jadi bangsa yang hidup hanya dari 2 ½ sen sehari. Bangsa yang kerja keras, bukan bangsa tempe, bukan bangsa kuli. Bangsa yang rela menderita demi pembelian cita-cita.",
+      "source": "Ir. Soekarno",
+      "length": 252,
+      "id": 19
+    },
+    {
+      "text": "Kurang cerdas dapat diperbaiki dengan belajar. Kurang cakap dapat dihilangkan dengan pengalaman. Namun tidak jujur itu sulit diperbaiki",
+      "source": "Mohammad Hatta",
+      "length": 136,
+      "id": 20
+    },
+    {
+      "text": "Untuk mencapai sesuatu, harus diperjuangkan dulu. Seperti mengambil buah kelapa, dan tidak menunggu saja seperti jatuh durian yang telah masak.",
+      "source": "Mohammad Natsir",
+      "length": 143,
+      "id": 21
+    },
+    {
+      "text": "Dalam menghadapi musuh, tak ada yang lebih mengena daripada senjata kasih sayang.",
+      "source": "Cut Nyak Dien",
+      "length": 81,
+      "id": 22
+    },
+    {
+      "text": "Jangan memperbanyak lawan, tetapi perbanyaklah kawan.",
+      "source": "Bung Tomo",
+      "length": 53,
+      "id": 23
+    },
+    {
+      "text": "Kita bangsa besar, kita bukan bangsa tempe. Kita tidak akan mengemis, kita tidak akan minta-minta, apalagi jika bantuan-bantuan itu diembel-embeli dengan syarat ini syarat itu! Lebih baik makan gaplek tetapi merdeka, daripada makan bestik tapi budak.",
+      "source": "Ir. Soekarno",
+      "length": 250,
+      "id": 24
+    },
+    {
+      "text": "Kurang cerdas dapat diperbaiki dengan belajar, kurang cakap dapat dihilangkan dengan pengalaman. Namun, tidak jujur sulit diperbaiki.",
+      "source": "Bung Hatta",
+      "length": 133,
+      "id": 25
+    },
+    {
+      "text": "Hidup memang ada pikiran tapi nggak usah banyak dipikirin lah. Katanya kalau orang banyak pikiran bakal banyak muncul penyakit. Jalanin aja. Rasa muda itu harus, tapi kalau umur itu kita nggak bisa dibendung, kalau semangat muda itu harus.",
+      "source": "Adam Jordan",
+      "length": 239,
+      "id": 26
+    },
+    {
+      "text": "Hidupmu akan jauh lebih bahagia dan tenang di saat kamu berdamai dengan dirimu sendiri. Terima kekuranganmu dan belajar ikhlas menerima keberhasilan orang lain. Maka hidupmu akan dirubah sepenuhnya oleh Tuhan.",
+      "source": "Yuanita Christiani",
+      "length": 209,
+      "id": 27
+    },
+    {
+      "text": "Karena kalo cepat puas lo akan berhenti pada satu titik. Lo harus terus belajar dan mengamati. Gue berhenti ketika dipanggil Tuhan. Selama itu belum terjadi gue akan terus proses belajar.",
+      "source": "Lukman Sardi",
+      "length": 187,
+      "id": 28
+    },
+    {
+      "text": "Pendidikan dan pengajaran di dalam Republik Indonesia harus berdasarkan kebudayaan dan kemasyarakatan bangsa Indonesia, menuju ke arah kebahagiaan batin serta keselamatan hidup lahir.",
+      "source": "Ki Hadjar Dewantara",
+      "length": 183,
+      "id": 29
+    },
+    {
+      "text": "Bila kaum muda yang telah belajar di sekolah dan menganggap dirinya terlalu tinggi dan pintar untuk melebur dengan masyarakat yang bekerja dengan cangkul dan hanya memiliki cita-cita yang sederhana, maka lebih baik pendidikan itu tidak diberikan sama sekali.",
+      "source": "Tan Malaka",
+      "length": 258,
+      "id": 30
+    },
+    {
+      "text": "Jangan Tuan terlalu percaya pada pendidikan sekolah. Seorang guru yang baik masih bisa melahirkan bandit-bandit yang sejahat-jahatnya, yang sama sekali tidak mengenal prinsip. Apalagi kalau guru itu sudah bandit pula pada dasarnya.",
+      "source": "Pramoedya Ananta Toer",
+      "length": 231,
+      "id": 31
+    },
+    {
+      "text": "Kamu calon konglomerat ya? kamu harus rajin belajar dan membaca, tapi jangan ditelan sendiri. berbagilah dengan teman-teman yang tak dapat pendidikan.",
+      "source": "Wiji Thukul",
+      "length": 150,
+      "id": 32
+    },
+    {
+      "text": "Kenapa tisue bermanfaat, karena cinta tak pernah kemarau.",
+      "source": "Sujiwo Tedjo",
+      "length": 57,
+      "id": 33
+    },
+    {
+      "text": "Cara dia ngelihat cinta akan berbeda semenjak patah hati itu.",
+      "source": "Raditya Dika",
+      "length": 61,
+      "id": 34
+    },
+    {
+      "text": "Cinta bukan mengajar kita lemah, tetapi membangkitkan kekuatan. Cinta bukan mengajar kita menghinakan diri, tetapi menghembuskan kegagahan. Cinta bukan melemahkan semangat, tetapi membangkitkan semangat.",
+      "source": "Buya Hamka",
+      "length": 203,
+      "id": 36
+    },
+    {
+      "text": "Hampa itu seperti langkah tak berjejak, senja tapi tak jingga, cinta tapi tak dianggap.",
+      "source": "Raditya Dika",
+      "length": 87,
+      "id": 37
+    },
+    {
+      "text": "Ketika Anda jatuh cinta, kebahagiaan akan membuat Anda sulit tertidur karena kenyataan lebih baik dibandingkan mimpi Anda.",
+      "source": " Dr.Suess",
+      "length": 122,
+      "id": 38
+    },
+    {
+      "text": "Cinta itu perang, yakni perang yang hebat dalam rohani manusia. Jika ia menang, akan didapati orang yang tulus ikhlas, luas pikiran, sabar dan tenang hati. Jika ia kalah, akan didapati orang yang putus asa, sesat, lemah hati, kecil perasaan dan bahkan kadang-kadang hilang kepercayaan pada diri sendiri.",
+      "source": "Buya Hamka",
+      "length": 303,
+      "id": 39
+    },
+    {
+      "text": "Cinta mengubah kekasaran menjadi kelembutan, mengubah orang tak berpendirian menjadi teguh berpendirian, mengubah pengecut menjadi pemberani, mengubah penderitaan menjadi kebahagiaan, dan cinta membawa perubahan-perubahan bagi siang dan malam.",
+      "source": "Rumi",
+      "length": 243,
+      "id": 40
+    },
+    {
+      "text": "Jangan kau bangunkan perempuan yang sedang dilanda cinta. Biarkan dia larut dalam mimpi manis, agar tak menangis saat menghadapi fakta yang ternyata pahit.",
+      "source": "Mark Twain",
+      "length": 155,
+      "id": 41
+    },
+    {
+      "text": "Cinta tidak berupa tatapan satu sama lain, tetapi memandang keluar bersama ke arah yang sama.",
+      "source": "B.J Habibie",
+      "length": 93,
+      "id": 42
+    },
+    {
+      "text": "Cinta bukan melepas tapi merelakan. Bukan memaksa tapi memperjuangkan. Bukan menyerah tapi mengikhlaskan. Bukan merantai tapi memberi sayap.",
+      "source": "Fiersa Besari",
+      "length": 140,
+      "id": 43
+    },
+    {
+      "text": "Jangan pernah jatuh cinta saat hujan. Karena ketika besok lusa kamu patah-hati, setiap kali hujan turun, kamu akan terkenang dengan kejadian menyakitkan itu. Saat orang lain bahagia menatap hujan, kamu justru nelangsa sedih melihat keluar jendela.",
+      "source": "Tere Liye",
+      "length": 247,
+      "id": 44
+    },
+    {
+      "text": "Aku ragu ada dan tiadaku. Namun cinta mengumumkan, Aku ada.",
+      "source": "M. Iqbal",
+      "length": 59,
+      "id": 45
+    },
+    {
+      "text": "Petani itu adalah seorang yang berkeyakinan baik, orang yang bermoral tinggi, dan memiliki cinta kepada kebebasan yang kokoh.",
+      "source": "Che Guevara",
+      "length": 125,
+      "id": 46
+    },
+    {
+      "text": "Inilah kenapa namanya jatuh cinta: kebanyakan orang terbang terlalu tinggi dan jatuh terlalu keras.",
+      "source": "Raditya Dika",
+      "length": 99,
+      "id": 47
+    },
+    {
+      "text": "Sudah ribuan perang kujalani nak, tapi belum satupun perangku menjadi agung karena membela cinta.",
+      "source": "Sujiwo Tedjo",
+      "length": 97,
+      "id": 48
+    },
+    {
+      "text": "Cinta itu burung yang indah, yang mengemis untuk ditangkap tapi menolak tuk dilukai.",
+      "source": "Khalil Gibran",
+      "length": 84,
+      "id": 49
+    },
+    {
+      "text": "Setiap orang pasti akan mengalami patah hati yang mengubah cara pandangnya terhadap cinta seumur hidupnya.",
+      "source": "Raditya Dika",
+      "length": 106,
+      "id": 50
+    },
+    {
+      "text": "Cinta itu adalah perasaan yang mesti ada pada tiap-tiap diri manusia, ia laksana setetes embun yang turun dari langit, bersih dan suci. Cuma tanahnyalah yang berlain-lainan menerimanya. Jika ia jatuh ke tanah yang tandus, tumbuhlah oleh kerana embun itu kedurjanaan, kedustaan, penipu, langkah serong dan lain-lain perkara yang tercela. Tetapi jika ia jatuh kepada tanah yang subur, di sana akan tumbuh kesuciaan hati, keikhlasan, setia budi pekerti yang tinggi dan lain-lain perangai yang terpuji.",
+      "source": "Buya Hamka",
+      "length": 498,
+      "id": 51
+    },
+    {
+      "text": "Tahukah kamu? Hal-hal kecil sering kali membunuh kita dengan cara yang lebih besar, pelan-pelan, dalam jangka waktu Yang panjang. Semua kebiasaan itu membuatku dihantam kehilangan. Tak usah kamu tanya bagaimana sesaknya. Kamu tahu bagaimana rasanya menjabarkan sedih, tidak akan cukup jika hanya dengan sekadar kata pedih. Kehilangan membuatku tak ingin mengenali diriku sendiri. Aku berusaha untuk menjadi orang lain. Aku mencoba menikmati hari-hari yang bukan diriku lagi. Sebab, menjadi diriku artinya aku sama sekali tidak bisa melepaskanmu.",
+      "source": "Buya Hamka",
+      "length": 543,
+      "id": 52
+    }
+  ]
+}
