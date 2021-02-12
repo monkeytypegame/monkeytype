@@ -2117,6 +2117,8 @@ function showResult(difficultyFailed = false) {
 
   if (bailout) afkDetected = false;
 
+  $("#result .stats .tags").addClass("hidden");
+
   if (difficultyFailed) {
     Notifications.add("Test failed", 0);
   } else if (afkDetected) {
