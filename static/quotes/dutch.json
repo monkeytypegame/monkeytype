@@ -1,0 +1,29 @@
+{
+  "language": "dutch",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "Je kunt beter struikelen op de goede weg, dan wandelen op de verkeerde weg.",
+      "source": "Visje",
+      "length": 75,
+      "id": 1
+    }
+  ]
+}
