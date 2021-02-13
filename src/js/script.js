@@ -692,12 +692,14 @@ async function initWords() {
   } else {
     $("#words").removeClass("withLigatures");
   }
-  if (config.mode == "zen") {
-    // Creating an empty active word element for zen mode
-    $("#words").append('<div class="word active"></div>');
-  } else {
-    showWords();
-  }
+  // if (config.mode == "zen") {
+  //   // Creating an empty active word element for zen mode
+  //   $("#words").append('<div class="word active"></div>');
+  //   $("#words").css("height", "auto");
+  //   $("#wordsWrapper").css("height", "auto");
+  // } else {
+  showWords();
+  // }
 }
 
 function arrangeCharactersRightToLeft() {
@@ -1015,22 +1017,28 @@ function showWords() {
 
   let wordsHTML = "";
   let newlineafter = false;
-  for (let i = 0; i < wordsList.length; i++) {
-    newlineafter = false;
-    wordsHTML += `<div class='word'>`;
-    for (let c = 0; c < wordsList[i].length; c++) {
-      if (wordsList[i].charAt(c) === "\t") {
-        wordsHTML += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-      } else if (wordsList[i].charAt(c) === "\n") {
-        newlineafter = true;
-        wordsHTML += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
-      } else {
-        wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+  if (config.mode !== "zen") {
+    for (let i = 0; i < wordsList.length; i++) {
+      newlineafter = false;
+      wordsHTML += `<div class='word'>`;
+      for (let c = 0; c < wordsList[i].length; c++) {
+        if (wordsList[i].charAt(c) === "\t") {
+          wordsHTML += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        } else if (wordsList[i].charAt(c) === "\n") {
+          newlineafter = true;
+          wordsHTML += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+        } else {
+          wordsHTML += "<letter>" + wordsList[i].charAt(c) + "</letter>";
+        }
       }
+      wordsHTML += "</div>";
+      if (newlineafter) wordsHTML += "<div class='newline'></div>";
     }
-    wordsHTML += "</div>";
-    if (newlineafter) wordsHTML += "<div class='newline'></div>";
+  } else {
+    wordsHTML =
+      '<div class="word">word height</div><div class="word active"></div>';
   }
+
   $("#words").html(wordsHTML);
 
   $("#wordsWrapper").removeClass("hidden");
@@ -1058,6 +1066,10 @@ function showWords() {
       .css("height", wordHeight * 3 + "px")
       .css("overflow", "hidden");
     $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
+  }
+
+  if (config.mode === "zen") {
+    $(document.querySelector(".word")).remove();
   }
 
   if (config.keymapMode === "next") {
@@ -5717,7 +5729,7 @@ function handleAlpha(event) {
         document.querySelectorAll("#words .word")[currentWordElementIndex - 1]
           .offsetTop
       );
-      lineJump(currentTop);
+      if (!config.showAllLines) lineJump(currentTop);
     } else {
       currentInput = currentInput.slice(0, -1);
       updateWordElement(!config.blindMode);
