@@ -2008,6 +2008,8 @@ function showResult(difficultyFailed = false) {
     mode2 = "custom";
   } else if (config.mode === "quote") {
     mode2 = randomQuote.id;
+  } else if (config.mode === "zen") {
+    mode2 = "zen";
   }
 
   if (lastSecondNotRound) {
@@ -2169,7 +2171,8 @@ function showResult(difficultyFailed = false) {
     (config.mode === "custom" &&
       !customText.isWordRandom &&
       customText.isTimeRandom &&
-      customText.time < 15)
+      customText.time < 15) ||
+    (config.mode === "zen" && testtime < 15)
   ) {
     Notifications.add("Test too short", 0);
   } else {
@@ -3010,7 +3013,8 @@ function restartTest(withSameWordset = false, nosave = false) {
         customText.time != 0) ||
       (config.mode === "custom" &&
         !customText.isWordRandom &&
-        customText.text.length < 1000)
+        customText.text.length < 1000) ||
+      config.mode === "zen"
     ) {
     } else {
       if (testActive) {
@@ -4752,7 +4756,8 @@ $(document).on("keypress", "#restartTestButton", (event) => {
         customText.time < 3600) ||
       (config.mode === "custom" &&
         !customText.isWordRandom &&
-        customText.text.length < 1000)
+        customText.text.length < 1000) ||
+      config.mode === "zen"
     ) {
       if (testActive) {
         let testNow = performance.now();
@@ -5150,7 +5155,8 @@ function handleTab(event) {
           customText.time < 3600) ||
         (config.mode === "custom" &&
           !customText.isWordRandom &&
-          customText.text.length < 1000)
+          customText.text.length < 1000) ||
+        config.mode === "zen"
       ) {
         if (testActive) {
           let testNow = performance.now();
