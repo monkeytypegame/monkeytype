@@ -5599,6 +5599,11 @@ function handleAlpha(event) {
     thisCharCorrect = true;
   }
 
+  if ((event.key === "–" || event.key === "—") && nextCharInWord == "-") {
+    event.key = "-";
+    thisCharCorrect = true;
+  }
+
   if (!thisCharCorrect) {
     accuracyStats.incorrect++;
     currentError.count++;
