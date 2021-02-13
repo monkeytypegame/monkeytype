@@ -1,6 +1,6 @@
 *.min.js
 layouts.js
-quotes/english.json
+quotes/*
 chartjs-plugin-*.js
 sound/*
 node_modules
