@@ -3867,6 +3867,12 @@ function updateTestModesNotice() {
     );
   }
 
+  if (config.mode === "zen") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
+    );
+  }
+
   // /^[0-9a-zA-Z_.-]+$/.test(name);
 
   if (/_\d+k$/g.test(config.language)) {
