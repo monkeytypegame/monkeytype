@@ -3009,34 +3009,66 @@ function startTest() {
   return true;
 }
 
-function restartTest(withSameWordset = false, nosave = false) {
+function restartTest(withSameWordset = false, nosave = false, event) {
+  // if (!manualRestart) {
+  //   if (
+  //     (config.mode === "words" && config.words < 1000 && config.words > 0) ||
+  //     (config.mode === "time" && config.time < 3600 && config.time > 0) ||
+  //     config.mode === "quote" ||
+  //     (config.mode === "custom" &&
+  //       customText.isWordRandom &&
+  //       customText.word < 1000 &&
+  //       customText.word != 0) ||
+  //     (config.mode === "custom" &&
+  //       customText.isTimeRandom &&
+  //       customText.time < 3600 &&
+  //       customText.time != 0) ||
+  //     (config.mode === "custom" &&
+  //       !customText.isWordRandom &&
+  //       customText.text.length < 1000)
+  //   ) {
+  //   } else {
+  //     if (testActive) {
+  //       Notifications.add(
+  //         "Restart disabled for long tests. Use your mouse to confirm.",
+  //         0
+  //       );
+  //       return;
+  //     }
+  //   }
+  // }
+  if (resultCalculating) return;
   if (!manualRestart) {
-    if (
-      (config.mode === "words" && config.words < 1000 && config.words > 0) ||
-      (config.mode === "time" && config.time < 3600 && config.time > 0) ||
-      config.mode === "quote" ||
-      (config.mode === "custom" &&
-        customText.isWordRandom &&
-        customText.word < 1000 &&
-        customText.word != 0) ||
-      (config.mode === "custom" &&
-        customText.isTimeRandom &&
-        customText.time < 3600 &&
-        customText.time != 0) ||
-      (config.mode === "custom" &&
-        !customText.isWordRandom &&
-        customText.text.length < 1000) ||
-      config.mode === "zen"
-    ) {
-    } else {
-      if (testActive) {
-        Notifications.add(
-          "Restart disabled for long tests. Use your mouse to confirm.",
-          0
-        );
+    if ((textHasTab && manualRestart) || !textHasTab) {
+      try {
+        event.preventDefault();
+      } catch {}
+      if (
+        Misc.canQuickRestart(
+          config.mode,
+          config.words,
+          config.time,
+          customText
+        ) ||
+        manualRestart
+      ) {
+      } else {
+        let message = "Use your mouse to confirm.";
+        if (config.quickTab)
+          message = "Press shift + tab or use your mouse to confirm.";
+        Notifications.add("Quick restart disabled. " + message, 0, 3);
         return;
       }
     }
+  }
+
+  if (testActive) {
+    let testNow = performance.now();
+    let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
+    let afkseconds = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0)
+      .length;
+    incompleteTestSeconds += testSeconds - afkseconds;
+    restartCount++;
   }
 
   if (config.mode == "zen") {
@@ -4762,35 +4794,7 @@ $(window).on("popstate", (e) => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 13) {
-    if (
-      (config.mode === "words" && config.words < 1000) ||
-      (config.mode === "time" && config.time < 3600) ||
-      config.mode === "quote" ||
-      (config.mode === "custom" &&
-        customText.isWordRandom &&
-        customText.word < 1000) ||
-      (config.mode === "custom" &&
-        customText.isTimeRandom &&
-        customText.time < 3600) ||
-      (config.mode === "custom" &&
-        !customText.isWordRandom &&
-        customText.text.length < 1000) ||
-      config.mode === "zen"
-    ) {
-      if (testActive) {
-        let testNow = performance.now();
-        let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-        let afkseconds = keypressPerSecond.filter(
-          (x) => x.count == 0 && x.mod == 0
-        ).length;
-        incompleteTestSeconds += testSeconds - afkseconds;
-        restartCount++;
-      }
-      if (resultCalculating) return;
-      restartTest();
-    } else {
-      Notifications.add("Quick restart disabled for long tests", 0);
-    }
+    restartTest();
   }
 });
 
@@ -5149,58 +5153,78 @@ function handleTab(event) {
     // );
     return;
   } else if (
-    !event.ctrlKey &&
-    ((!event.shiftKey && !textHasTab) ||
-      (event.shiftKey && textHasTab) ||
-      resultVisible) &&
-    config.quickTab &&
-    !$(".pageLogin").hasClass("active") &&
+    $(".pageTest").hasClass("active") &&
     !resultCalculating &&
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden")
   ) {
-    event.preventDefault();
-    if ($(".pageTest").hasClass("active")) {
-      if (
-        (config.mode === "words" && config.words < 1000) ||
-        (config.mode === "time" && config.time < 3600) ||
-        config.mode === "quote" ||
-        (config.mode === "custom" &&
-          customText.isWordRandom &&
-          customText.word < 1000) ||
-        (config.mode === "custom" &&
-          customText.isTimeRandom &&
-          customText.time < 3600) ||
-        (config.mode === "custom" &&
-          !customText.isWordRandom &&
-          customText.text.length < 1000) ||
-        config.mode === "zen"
-      ) {
-        if (testActive) {
-          let testNow = performance.now();
-          let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-          let afkseconds = keypressPerSecond.filter(
-            (x) => x.count == 0 && x.mod == 0
-          ).length;
-          incompleteTestSeconds += testSeconds - afkseconds;
-          restartCount++;
-        }
-        restartTest();
-      } else {
-        Notifications.add("Quick restart disabled for long tests", 0);
-      }
+    if (config.quickTab) {
+      if (event.shiftKey) manualRestart = true;
+      restartTest(false, false, event);
     } else {
-      changePage("test");
+      if ((textHasTab && event.shiftKey) || !textHasTab) {
+        event.preventDefault();
+        $("#restartTestButton").focus();
+      }
     }
-  } else if (
-    !config.quickTab &&
-    textHasTab &&
-    event.shiftKey &&
-    !resultVisible
-  ) {
-    event.preventDefault();
-    $("#restartTestButton").focus();
+  } else if (config.quickTab) {
+    changePage("test");
   }
+
+  // } else if (
+  //   !event.ctrlKey &&
+  //   (
+  //     (!event.shiftKey && !textHasTab) ||
+  //     (event.shiftKey && textHasTab) ||
+  //     resultVisible
+  //   ) &&
+  //   config.quickTab &&
+  //   !$(".pageLogin").hasClass("active") &&
+  //   !resultCalculating &&
+  //   $("#commandLineWrapper").hasClass("hidden") &&
+  //   $("#simplePopupWrapper").hasClass("hidden")
+  // ) {
+  //   event.preventDefault();
+  //   if ($(".pageTest").hasClass("active")) {
+  //     if (
+  //       (config.mode === "words" && config.words < 1000) ||
+  //       (config.mode === "time" && config.time < 3600) ||
+  //       config.mode === "quote" ||
+  //       (config.mode === "custom" &&
+  //         customText.isWordRandom &&
+  //         customText.word < 1000) ||
+  //       (config.mode === "custom" &&
+  //         customText.isTimeRandom &&
+  //         customText.time < 3600) ||
+  //       (config.mode === "custom" &&
+  //         !customText.isWordRandom &&
+  //         customText.text.length < 1000)
+  //     ) {
+  //       if (testActive) {
+  //         let testNow = performance.now();
+  //         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
+  //         let afkseconds = keypressPerSecond.filter(
+  //           (x) => x.count == 0 && x.mod == 0
+  //         ).length;
+  //         incompleteTestSeconds += testSeconds - afkseconds;
+  //         restartCount++;
+  //       }
+  //       restartTest();
+  //     } else {
+  //       Notifications.add("Quick restart disabled for long tests", 0);
+  //     }
+  //   } else {
+  //     changePage("test");
+  //   }
+  // } else if (
+  //   !config.quickTab &&
+  //   textHasTab &&
+  //   event.shiftKey &&
+  //   !resultVisible
+  // ) {
+  //   event.preventDefault();
+  //   $("#restartTestButton").focus();
+  // }
 }
 
 function handleBackspace(event) {
