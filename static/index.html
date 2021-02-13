@@ -40,11 +40,15 @@
     <meta name="twitter:title" content="Monkeytype" />
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <script
-      data-ad-client="ca-pub-7261919841327810"
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-    ></script>
+    <script type="text/javascript">
+      window["nitroAds"] = window["nitroAds"] || {
+        createAd: function () {
+          window.nitroAds.queue.push(["createAd", arguments]);
+        },
+        queue: [],
+      };
+    </script>
+    <script async src="https://s.nitropay.com/ads-693.js"></script>
   </head>
 
   <body>
@@ -816,10 +820,6 @@
             <div class="text">Buy Merch</div>
           </a>
         </div>
-        <div class="subtext">
-          FYI: Ads can be broken sometimes because Google keeps disabling them.
-          :|
-        </div>
       </div>
     </div>
     <div id="commandLineWrapper" class="hidden">
@@ -837,7 +837,7 @@
       <div id="timer"></div>
     </div>
     <div style="display: flex; justify-content: space-around">
-      <div id="ad2" class="hidden"></div>
+      <div id="nitropay_ad_left" class="hidden"></div>
       <div id="centerContent" class="hidden">
         <div id="top">
           <div class="logo">
@@ -920,7 +920,7 @@
             </div>
           </div>
 
-          <div class="config">
+          <div class="config hidden">
             <div style="display: grid; grid-auto-flow: column">
               <div class="group punctuationMode">
                 <!--           <div class="title">time</div> -->
@@ -1012,7 +1012,7 @@
           </div>
         </div>
         <div id="middle">
-          <div class="page pageTest active">
+          <div class="page pageTest hidden">
             <div id="typingTest">
               <div id="capsWarning" class="hidden">
                 <i class="fas fa-lock"></i>
@@ -1230,6 +1230,12 @@
                 <div class="left hidden"></div>
                 <div class="right hidden"></div>
                 <div class="both hidden"></div>
+                <div class="fast">
+                  <div class="up"></div>
+                  <div class="left hidden"></div>
+                  <div class="right hidden"></div>
+                  <div class="both hidden"></div>
+                </div>
               </div>
               <div id="premidTestMode" class="hidden"></div>
               <div id="premidSecondsLeft" class="hidden"></div>
@@ -1452,6 +1458,7 @@
                 raw wpm and mapped onto a scale from 0 to 100.
               </p>
             </div>
+            <div id="nitropay_ad_about" class="hidden"></div>
             <div class="section">
               <h1>results screen</h1>
               <p>
@@ -1530,7 +1537,7 @@
                 <div>Nicholas</div>
                 <div>Kenn</div>
                 <div>Kieren</div>
-                <div>Andrew</div>
+                <div>mweepigeon</div>
                 <div>Stephen</div>
                 <div>Pulsing Penguin</div>
                 <div>Echo</div>
@@ -1554,6 +1561,7 @@
                 <div>squarepy</div>
                 <div>AnalystBot</div>
                 <div>ze_or</div>
+                <div>Richard Blythin</div>
                 <div>Jiangtian Li</div>
                 <div>Dessle</div>
                 <div>Craig</div>
@@ -1565,13 +1573,15 @@
                 <div>Rotoscopic</div>
                 <div>Lawrence</div>
                 <div>Gwen</div>
-                <div>SuperNicii</div>
-                <div>Thomas</div>
+                <div>Nici</div>
+                <div>Thomas Pacheco</div>
                 <div>Gabriel</div>
                 <div>Sebastian</div>
                 <div>Nikolai</div>
                 <div>Sam</div>
                 <div>Ming</div>
+                <div>Draw</div>
+                <div>ESJvR</div>
                 <div>Ven Development</div>
                 <div>Ben</div>
                 <div>Uver</div>
@@ -1889,7 +1899,6 @@
               </div>
               <div class="sectionSpacer"></div>
             </div>
-
             <div id="group_input" class="sectionGroupTitle" group="input">
               input
               <i class="fas fa-chevron-down"></i>
@@ -2070,6 +2079,8 @@
               </div>
               <div class="sectionSpacer"></div>
             </div>
+
+            <div id="nitropay_ad_settings1" class="hidden"></div>
 
             <div id="group_sound" class="sectionGroupTitle" group="sound">
               sound
@@ -2714,6 +2725,8 @@
               <div class="sectionSpacer"></div>
             </div>
 
+            <div id="nitropay_ad_settings2" class="hidden"></div>
+
             <div id="group_theme" class="sectionGroupTitle" group="theme">
               theme
               <i class="fas fa-chevron-down"></i>
@@ -3150,27 +3163,16 @@
                     Remember me
                   </label>
                 </div>
-                <div class="button">
+                <div class="button signIn">
                   <i class="fas fa-sign-in-alt"></i>
                   Sign In
                 </div>
+                <div style="font-size: 0.75rem; text-align: center">or</div>
+                <div class="button signInWithGoogle">
+                  <i class="fab fa-google"></i>
+                  Google Sign In
+                </div>
               </form>
-              <div
-                data-balloon-pos="up"
-                aria-label="The new domain seems to be triggering the Chrome's built in phishing detection.
-
-              Basically, since you used monkey-type a lot, when chrome sees that you've entered the same credentials to a veeeery similar domain, Chrome thinks that monkeytype.com is trying to steal your information for... monkey-type.com, and labels the website as Dangerous. (even though its pointing to the same server..)
-
-              I've tested with family members and friends who don't visit the site as often or at all, and the dangerous popup was not there. Also, Google's Safe Browsing scanner classifies monkeytype.com as safe, so this leads me to believe the 'dangerous' classification is happening locally.
-
-              I've contacted Google to get this sorted out - don't worry, the site is safe."
-                data-balloon-length="xlarge"
-                style="text-align: center; margin-top: 1rem; grid-column: 1/3"
-              >
-                Returning Chrome Users
-                <br />
-                Please read me
-              </div>
             </div>
           </div>
 
@@ -3284,6 +3286,9 @@
                   </div>
                 </div>
               </div>
+
+              <div id="nitropay_ad_account" class="hidden"></div>
+
               <div class="group topFilters">
                 <!-- <div
                   class="button"
@@ -3628,18 +3633,24 @@
             </div>
           </div>
         </div>
-        <div
-          id="ad1"
-          class="hidden"
-          style="
-            display: flex;
-            justify-content: center;
-            width: 1px;
-            justify-self: center;
-          "
-        ></div>
+        <div class="footerads">
+          <div
+            id="nitropay_ad_footer"
+            style="display: flex; justify-content: center; justify-self: center"
+          ></div>
+          <div
+            id="nitropay_ad_footer2"
+            class="hidden"
+            style="display: flex; justify-content: center; justify-self: center"
+          ></div>
+          <div
+            id="nitropay_ad_footer3"
+            class="hidden"
+            style="display: flex; justify-content: center; justify-self: center"
+          ></div>
+        </div>
       </div>
-      <div id="ad3" class="hidden"></div>
+      <div id="nitropay_ad_right" class="hidden"></div>
     </div>
   </body>
   <!-- The core Firebase JS SDK is always required and must be listed first -->

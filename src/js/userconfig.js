@@ -74,6 +74,7 @@ let defaultConfig = {
   minAcc: "off",
   minAccCustom: 90,
   showLiveAcc: false,
+  monkey: false,
 };
 
 let cookieConfig = null;
@@ -1181,7 +1182,7 @@ function applyCustomThemeColors() {
     });
   } else {
     $(".current-theme").text(config.theme.replace("_", " "));
-    previewTheme(config.theme);
+    previewTheme(config.theme, false);
     clearCustomTheme();
   }
   setTimeout(() => {
@@ -1268,6 +1269,29 @@ function setLanguage(language, nosave) {
     });
   } catch (e) {
     console.log("Analytics unavailable");
+  }
+  if (!nosave) saveConfigToCookie();
+}
+
+function toggleMonkey(nosave) {
+  config.monkey = !config.monkey;
+  if (config.monkey) {
+    $("#monkey").removeClass("hidden");
+  } else {
+    $("#monkey").addClass("hidden");
+  }
+  if (!nosave) saveConfigToCookie();
+}
+
+function setMonkey(monkey, nosave) {
+  if (monkey === null || monkey === undefined) {
+    monkey = false;
+  }
+  config.monkey = monkey;
+  if (config.monkey) {
+    $("#monkey").removeClass("hidden");
+  } else {
+    $("#monkey").addClass("hidden");
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -1479,7 +1503,7 @@ function setFontSize(fontSize, nosave) {
 
 function applyConfig(configObj) {
   if (configObj == null || configObj == undefined) {
-    Notifications.add("Could not apply config", -1);
+    Notifications.add("Could not apply config", -1, 3);
     return;
   }
   Object.keys(defaultConfig).forEach((configKey) => {
@@ -1550,63 +1574,182 @@ function applyConfig(configObj) {
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setStrictSpace(configObj.strictSpace, true);
     setMode(configObj.mode, true);
+    setMonkey(configObj.monkey, true);
 
     try {
       setEnableAds(configObj.enableAds, true);
-      if (config.enableAds === "on") {
-        $("#ad1").removeClass("hidden");
-        $("#ad1")
-          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- Horizontal Ad -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:850px;height:90px"
-             data-ad-client="ca-pub-7261919841327810"
-             data-ad-slot="2225821478"></ins>`);
-        const adsbygoogle = window.adsbygoogle || [];
-        adsbygoogle.push({});
-      } else if (config.enableAds === "max") {
-        $("#ad1").removeClass("hidden");
-        $("#ad2").removeClass("hidden");
-        $("#ad3").removeClass("hidden");
-        $("#ad1").html(`<script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-      ></script>
-      <!-- Horizontal Ad -->
-      <ins
-        class="adsbygoogle"
-        style="display: inline-block; width: 1000px; height: 90px"
-        data-ad-client="ca-pub-7261919841327810"
-        data-ad-slot="2225821478"
-      ></ins>`);
-        $("#ad2")
-          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- Vertical 1 -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:160px;height:600px"
-             data-ad-client="ca-pub-7261919841327810"
-             data-ad-slot="6376286644"></ins>`);
-        $("#ad3")
-          .html(`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-        <!-- Vertical 2 -->
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:160px;height:600px"
-             data-ad-client="ca-pub-7261919841327810"
-             data-ad-slot="1159796595"></ins>`);
-        const adsbygoogle = window.adsbygoogle || [];
-        adsbygoogle.push({});
-        adsbygoogle.push({});
-        adsbygoogle.push({});
+      let addemo = false;
+      if (
+        firebase.app().options.projectId === "monkey-type-dev-67af4" ||
+        window.location.hostname === "localhost"
+      ) {
+        addemo = true;
+      }
+
+      if (config.enableAds === "max" || config.enableAds === "on") {
+        if (config.enableAds === "max") {
+          window["nitroAds"].createAd("nitropay_ad_left", {
+            refreshLimit: 10,
+            refreshTime: 30,
+            renderVisibleOnly: false,
+            refreshVisibleOnly: true,
+            sizes: [["160", "600"]],
+            report: {
+              enabled: true,
+              wording: "Report Ad",
+              position: "bottom-right",
+            },
+            mediaQuery: "(min-width: 1330px)",
+            demo: addemo,
+          });
+          $("#nitropay_ad_left").removeClass("hidden");
+
+          window["nitroAds"].createAd("nitropay_ad_right", {
+            refreshLimit: 10,
+            refreshTime: 30,
+            renderVisibleOnly: false,
+            refreshVisibleOnly: true,
+            sizes: [["160", "600"]],
+            report: {
+              enabled: true,
+              wording: "Report Ad",
+              position: "bottom-right",
+            },
+            mediaQuery: "(min-width: 1330px)",
+            demo: addemo,
+          });
+          $("#nitropay_ad_right").removeClass("hidden");
+        } else {
+          $("#nitropay_ad_left").remove();
+          $("#nitropay_ad_right").remove();
+        }
+
+        window["nitroAds"].createAd("nitropay_ad_footer", {
+          refreshLimit: 10,
+          refreshTime: 30,
+          renderVisibleOnly: false,
+          refreshVisibleOnly: true,
+          sizes: [["970", "90"]],
+          report: {
+            enabled: true,
+            wording: "Report Ad",
+            position: "bottom-right",
+          },
+          mediaQuery: "(min-width: 1025px)",
+          demo: addemo,
+        });
+        $("#nitropay_ad_footer").removeClass("hidden");
+
+        window["nitroAds"].createAd("nitropay_ad_footer2", {
+          refreshLimit: 10,
+          refreshTime: 30,
+          renderVisibleOnly: false,
+          refreshVisibleOnly: true,
+          sizes: [["728", "90"]],
+          report: {
+            enabled: true,
+            wording: "Report Ad",
+            position: "bottom-right",
+          },
+          mediaQuery: "(min-width: 730px) and (max-width: 1024px)",
+          demo: addemo,
+        });
+        $("#nitropay_ad_footer2").removeClass("hidden");
+
+        window["nitroAds"].createAd("nitropay_ad_footer3", {
+          refreshLimit: 10,
+          refreshTime: 30,
+          renderVisibleOnly: false,
+          refreshVisibleOnly: true,
+          sizes: [["320", "50"]],
+          report: {
+            enabled: true,
+            wording: "Report Ad",
+            position: "bottom-right",
+          },
+          mediaQuery: "(max-width: 730px)",
+          demo: addemo,
+        });
+        $("#nitropay_ad_footer3").removeClass("hidden");
+
+        window["nitroAds"].createAd("nitropay_ad_about", {
+          refreshLimit: 10,
+          refreshTime: 30,
+          renderVisibleOnly: false,
+          refreshVisibleOnly: true,
+          report: {
+            enabled: true,
+            wording: "Report Ad",
+            position: "bottom-right",
+          },
+          demo: addemo,
+        });
+        $("#nitropay_ad_about").removeClass("hidden");
+
+        window["nitroAds"].createAd("nitropay_ad_settings1", {
+          refreshLimit: 10,
+          refreshTime: 30,
+          renderVisibleOnly: false,
+          refreshVisibleOnly: true,
+          report: {
+            enabled: true,
+            wording: "Report Ad",
+            position: "bottom-right",
+          },
+          demo: addemo,
+        });
+        $("#nitropay_ad_settings1").removeClass("hidden");
+
+        window["nitroAds"].createAd("nitropay_ad_settings2", {
+          refreshLimit: 10,
+          refreshTime: 30,
+          renderVisibleOnly: false,
+          refreshVisibleOnly: true,
+          report: {
+            enabled: true,
+            wording: "Report Ad",
+            position: "bottom-right",
+          },
+          demo: addemo,
+        });
+        $("#nitropay_ad_settings2").removeClass("hidden");
+
+        window["nitroAds"].createAd("nitropay_ad_account", {
+          refreshLimit: 10,
+          refreshTime: 30,
+          renderVisibleOnly: false,
+          refreshVisibleOnly: true,
+          report: {
+            enabled: true,
+            wording: "Report Ad",
+            position: "bottom-right",
+          },
+          demo: addemo,
+        });
+        $("#nitropay_ad_account").removeClass("hidden");
       } else {
-        $("#ad1").remove();
-        $("#ad2").remove();
-        $("#ad3").remove();
+        $("#nitropay_ad_left").remove();
+        $("#nitropay_ad_right").remove();
+        $("#nitropay_ad_footer").remove();
+        $("#nitropay_ad_footer2").remove();
+        $("#nitropay_ad_footer3").remove();
+        $("#nitropay_ad_settings1").remove();
+        $("#nitropay_ad_settings2").remove();
+        $("#nitropay_ad_account").remove();
+        $("#nitropay_ad_about").remove();
       }
     } catch (e) {
+      Notifications.add("Error initialising ads: " + e.message);
       console.log("error initialising ads " + e.message);
-      $("#ad1").remove();
-      $("#ad2").remove();
-      $("#ad3").remove();
+      $("#nitropay_ad_left").remove();
+      $("#nitropay_ad_right").remove();
+      $("#nitropay_ad_footer").remove();
+      $("#nitropay_ad_footer2").remove();
+      $("#nitropay_ad_footer3").remove();
+      $("#nitropay_ad_settings1").remove();
+      $("#nitropay_ad_settings2").remove();
+      $("#nitropay_ad_account").remove();
+      $("#nitropay_ad_about").remove();
     }
   }
   updateTestModesNotice();

@@ -717,6 +717,7 @@ a:hover {
     gap: 1rem;
   }
   .notif {
+    user-select: none;
     .icon {
       color: var(--bg-color);
       opacity: 0.5;
@@ -1135,6 +1136,7 @@ a:hover {
 
   &.outline {
     @extend #caret, .block;
+    animation-name: none;
     background: transparent;
     border: 1px solid var(--caret-color);
   }
@@ -3384,6 +3386,9 @@ key {
   width: 308px;
   height: 0;
   margin: 0 auto;
+  animation: shake;
+  animation-duration: 0s;
+  animation-iteration-count: infinite;
   div {
     height: 200px;
     width: 308px;
@@ -3400,6 +3405,32 @@ key {
   }
   .both {
     background-image: url("../m4.png");
+  }
+  .fast {
+    .up {
+      background-image: url("../m3_fast.png");
+    }
+    .left {
+      background-image: url("../m1_fast.png");
+    }
+    .right {
+      background-image: url("../m2_fast.png");
+    }
+    .both {
+      background-image: url("../m4_fast.png");
+    }
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(4px, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate(-4px, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(4px, 0) rotate(0deg);
   }
 }
 
@@ -3569,3 +3600,28 @@ key {
     display: block;
   }
 }
+
+#nitropay_ad_left,
+#nitropay_ad_right {
+  margin-top: 1rem;
+}
+
+// .adcontainer{
+//   position: relative;
+//   &>div{
+//     top: 0px;
+//     left: 0px;
+//     position: absolute;
+//   }
+//   .bg{
+//     background: var(--bg-color);
+//     color: var(--sub-color);
+//     display: grid;
+//     align-items: center;
+//     justify-content: center;
+//     height: 100%;
+//     width: 100%;
+//     font-size: .75rem;
+//     user-select: none;
+//   }
+// }

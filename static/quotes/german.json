@@ -8,7 +8,7 @@
   ],
   "quotes": [
     {
-      "text": "\"Das Internet der Dinge\", sagte Ogarew, \"ist ein Thema, das uns hier ganz besonders beschäftigt. Denn mit dem Web 4.0 kommt das Internet überallhin. Von Autos über TV bis hin zu Kinderspielzeug. Heute schon gibt es fünfzehn Milliarden vernetzte Geräte. 2020 wird es fünfzig Milliarden geben. Da muss alles von vornherein sicher sein. So wie Microsoft das früher gemacht hat, geht es heute nicht mehr. Erst mal auf den Markt bringen und dann nachträglich das Feuer Löschen.\" Er lächelte durch seinen grauen Bart hindurch. \"Gott durfte das noch. Er sah, dass es gut war. Und als es doch nicht gut war, kam die Sintflut. So eine Art Neustart. Aber eine Sintflut kann sich das Internet der Dinge nicht erlauben.\"",
+      "text": "\"Das Internet der Dinge\", sagte Ogarew, \"ist ein Thema, das uns hier ganz besonders beschäftigt. Denn mit dem Web 4.0 kommt das Internet überallhin. Von Autos über TV bis hin zu Kinderspielzeug. Heute schon gibt es fünfzehn Milliarden vernetzte Geräte. 2020 wird es fünfzig Milliarden geben. Da muss alles von vornherein sicher sein. So wie Microsoft das früher gemacht hat, geht es heute nicht mehr. Erst mal auf den Markt bringen und dann nachträglich das Feuer löschen.\" Er lächelte durch seinen grauen Bart hindurch. \"Gott durfte das noch. Er sah, dass es gut war. Und als es doch nicht gut war, kam die Sintflut. So eine Art Neustart. Aber eine Sintflut kann sich das Internet der Dinge nicht erlauben.\"",
       "source": "Dark Web: Thriller, Veit Etzold",
       "length": 708,
       "id": 1
@@ -18,6 +18,654 @@
       "source": "Der Untergang/Downfall",
       "length": 867,
       "id": 2
+    },
+    {
+      "text": "Das Schönste, was wir erleben können, ist das Geheimnisvolle.",
+      "source": "Albert Einstein",
+      "length": 61,
+      "id": 3
+    },
+    {
+      "text": "Ist das Leben nicht hundert Mal zu kurz, sich in ihm zu langweilen?",
+      "source": "Friedrich Nietzsche",
+      "length": 67,
+      "id": 4
+    },
+    {
+      "text": "Die Welt ist viel zu gefährlich, um darin zu leben - nicht wegen der Menschen die Böses tun, sondern wegen der Menschen, die daneben stehen und sie gewähren lassen.",
+      "source": "Albert Einstein",
+      "length": 164,
+      "id": 5
+    },
+    {
+      "text": "Sich selbst zu kennen ist der Anfang aller Weisheit.",
+      "source": "Aristoteles",
+      "length": 52,
+      "id": 6
+    },
+    {
+      "text": "Ich fürchte den Tag, an dem die Technologie unsere Menschlichkeit überholt. Die Welt wird dann eine Generation von Idioten sein.",
+      "source": "Albert Einstein",
+      "length": 128,
+      "id": 7
+    },
+    {
+      "text": "Wer das Ziel kennt, kann entscheiden. Wer entscheidet, findet Ruhe. Wer Ruhe findet, ist sicher. Wer sicher ist, kann überlegen. Wer überlegt, kann verbessern.",
+      "source": "Konfuzius",
+      "length": 159,
+      "id": 8
+    },
+    {
+      "text": "Immer wenn ich verzweifelt war, fand ich Trost darin, dass die Liebe und die Wahrheit in der Geschichte immer gesiegt haben.",
+      "source": "Mahatma Gandhi",
+      "length": 124,
+      "id": 9
+    },
+    {
+      "text": "Die meisten Menschen sind nicht sie selbst. Ihre Gedanken sind die Gedanken eines anderen, ihr Leben ist eine Nachahmung, ihre Leidenschaft ein Zitat.",
+      "source": "Oscar Wilde",
+      "length": 150,
+      "id": 10
+    },
+    {
+      "text": "Man kann einen Menschen nichts lehren, man kann ihm nur helfen, es in sich selbst zu entdecken.",
+      "source": "Galileo Galilei",
+      "length": 95,
+      "id": 11
+    },
+    {
+      "text": "Was für eine Welt könnten wir bauen, wenn wir die Kräfte, die ein Krieg entfesselt, für den Aufbau einsetzten. Ein Zehntel der Energien, ein Bruchteil des Geldes wäre hinreichend, um den Menschen aller Länder zu einem menschenwürdigen Leben zu verhelfen.",
+      "source": "Albert Einstein",
+      "length": 254,
+      "id": 12
+    },
+    {
+      "text": "Denke lieber an das, was du hast, als an das, was dir fehlt! Suche von den Dingen, die du hast, die besten aus und bedenke dann, wie eifrig du nach ihnen gesucht haben würdest, wenn du sie nicht hättest.",
+      "source": "Mark Aurel",
+      "length": 203,
+      "id": 13
+    },
+    {
+      "text": "Wir denken selten an das, was wir haben, aber immer an das, was uns fehlt.",
+      "source": "Arthur Schopenhauer",
+      "length": 74,
+      "id": 14
+    },
+    {
+      "text": "Es ist ein großer Fehler zu denken, dass ein Mensch immer gleich ist. Ein Mensch ist nie lange derselbe. Er verändert sich ständig. Nicht einmal für eine halbe Stunde bleibt er derselbe.",
+      "source": "G. I. Gurdjieff",
+      "length": 186,
+      "id": 15
+    },
+    {
+      "text": "Paradox ist, dass man im Deutschen jemandem, dem man alles zutraut, nicht trauen kann.",
+      "source": "Manfred Rommel",
+      "length": 86,
+      "id": 16
+    },
+    {
+      "text": "Die schwierigste Turnübung ist immer noch, sich selbst auf den Arm zu nehmen.",
+      "source": "Curt Goetz",
+      "length": 77,
+      "id": 17
+    },
+    {
+      "text": "Es gibt keinen anderen Teufel als den, den wir in unserem eigenen Herzen haben.",
+      "source": "Hans Christian Andersen",
+      "length": 79,
+      "id": 18
+    },
+    {
+      "text": "Ich glaube, Gefahren warten nur auf jene, die nicht auf das Leben reagieren.",
+      "source": "Michail Gorbatschow",
+      "length": 76,
+      "id": 19
+    },
+    {
+      "text": "Die Jugend liebt heutzutage den Luxus. Sie hat schlechte Manieren, verachtet die Autorität, hat keinen Respekt vor älteren Leuten und quasselt, wo sie arbeiten sollte. Die jungen Leute stehen nicht mehr auf wenn ältere das Zimmer betreten. Sie widersprechen ihren Eltern, schwadronieren in der Gesellschaft, verschlingen bei Tische die Süßspeisen, legen die Beine übereinander und tyrannisieren ihre Lehrer.",
+      "source": "Sokrates",
+      "length": 406,
+      "id": 20
+    },
+    {
+      "text": "Das menschliche Gehirn ist eine großartige Sache. Es funktioniert vom Moment der Geburt an - bis zu dem Zeitpunkt, wo du aufstehst, um eine Rede zu halten.",
+      "source": "Mark Twain",
+      "length": 155,
+      "id": 21
+    },
+    {
+      "text": "Die Liebe besteht in der Kommunikation von beiden Seiten, nämlich darin, dass der Liebende dem Geliebten gibt und mitteilt, was er hat, oder von dem, was er hat oder kann; und genauso umgekehrt der Geliebte vom Liebenden.",
+      "source": "Ignatius von Loyola",
+      "length": 221,
+      "id": 22
+    },
+    {
+      "text": "Immer wenn du bemerkst, dass irgendeine Form von Negativität in dir entstanden ist, sieh das nicht als Versagen, sondern als ein hilfreiches Signal an, das dir sagt: \"Wache auf. Lasse den Verstand zurück. Sei gegenwärtig!\"",
+      "source": "Eckhart Tolle",
+      "length": 222,
+      "id": 23
+    },
+    {
+      "text": "Wenn die anderen glauben, man ist am Ende, so muss man erst richtig anfangen.",
+      "source": "Konrad Adenauer",
+      "length": 77,
+      "id": 24
+    },
+    {
+      "text": "Die meisten Menschen denken hauptsächlich über das nach, was die anderen Menschen über sie denken.",
+      "source": "Sean Connery",
+      "length": 98,
+      "id": 25
+    },
+    {
+      "text": "Wege entstehen dadurch, dass man sie geht.",
+      "source": "Franz Kafka",
+      "length": 42,
+      "id": 26
+    },
+    {
+      "text": "Wer etwas will, findet Wege. Wer etwas nicht will, findet Gründe.",
+      "source": "Dalai Lama",
+      "length": 65,
+      "id": 27
+    },
+    {
+      "text": "Die Menschen müssen begreifen, dass sie das gefährlichste Ungeziefer sind, das je die Erde bevölkert hat.",
+      "source": "Friedensreich Hundertwasser",
+      "length": 105,
+      "id": 28
+    },
+    {
+      "text": "Zwei Dinge verleihen der Seele am meisten Kraft: Vertrauen auf die Wahrheit und Vertrauen auf sich selbst.",
+      "source": "Seneca",
+      "length": 106,
+      "id": 29
+    },
+    {
+      "text": "Ordnung braucht nur der Dumme, das Genie beherrscht das Chaos.",
+      "source": "Albert Einstein",
+      "length": 62,
+      "id": 30
+    },
+    {
+      "text": "Ding Dong. Es klingelt. Ich gehe zur Tür, öffne und stehe einem Känguru gegenüber. Ich blinzle, kucke hinter mich, schaue die Treppe runter, dann die Treppe rauf. Kucke geradeaus. Das Känguru ist immer noch da. \"Hallo\", sagt das Känguru. Ohne den Kopf zu bewegen, kucke ich noch mal nach links, nach rechts, auf die Uhr und zum Schluss auf das Känguru. \"Hallo\", sage ich.",
+      "source": "Die Känguru-Chroniken, Marc-Uwe Kling",
+      "length": 371,
+      "id": 31
+    },
+    {
+      "text": "Das Recht muss nie der Politik, wohl aber die Politik jederzeit dem Recht angepasst werden.",
+      "source": "Immanuel Kant",
+      "length": 91,
+      "id": 32
+    },
+    {
+      "text": "Der Betrüger ist eigentlich ein Narr.",
+      "source": "Immanuel Kant",
+      "length": 37,
+      "id": 33
+    },
+    {
+      "text": "Der Mensch ist von Natur böse. Er tut das Gute nicht aus Neigung, sondern aus Sympathie und Ehre.",
+      "source": "Immanuel Kant",
+      "length": 97,
+      "id": 34
+    },
+    {
+      "text": "Der Mensch war nicht bestimmt, wie das Hausvieh, zu einer Herde, sondern, wie die Biene, zu einem Stock zu gehören.",
+      "source": "Immanuel Kant",
+      "length": 115,
+      "id": 35
+    },
+    {
+      "text": "Regellosigkeit ist zugleich Unvernunft.",
+      "source": "Immanuel Kant",
+      "length": 39,
+      "id": 36
+    },
+    {
+      "text": "Je mehr du gedacht, je mehr du getan hast, desto länger hast du gelebt.",
+      "source": "Immanuel Kant",
+      "length": 71,
+      "id": 37
+    },
+    {
+      "text": "Handle so, dass die Maxime deines Willens jederzeit zugleich als Prinzip einer allgemeinen Gesetzgebung gelten könne.",
+      "source": "Immanuel Kant",
+      "length": 117,
+      "id": 38
+    },
+    {
+      "text": "Der Mensch kann nur Mensch werden durch Erziehung.",
+      "source": "Immanuel Kant",
+      "length": 50,
+      "id": 39
+    },
+    {
+      "text": "Den Moralbegriff aber müssen wir von vornherein schon in uns tragen, um erkennen und urteilen zu können. Der Wahrheit kann ich allein in reiner Erinnerung innewerden und sie darin rein konstruieren; nie lässt sie sich auf eine andere Weise hören und lernen. \"Denn wenn Gott zum Menschen wirklich spräche, so kann dieser doch niemals wissen, dass es Gott sei, der zu ihm spricht.\"",
+      "source": "Immanuel Kant",
+      "length": 379,
+      "id": 40
+    },
+    {
+      "text": "Jede Lust ist ein Gut, weil sie uns vertrauter Natur ist, doch sollte nicht jede gewählt werden - ebenso wie jeder Schmerz ein Übel ist, dennoch nicht jeder immer vermieden werden sollte.",
+      "source": "Epikur",
+      "length": 187,
+      "id": 41
+    },
+    {
+      "text": "Das Kind soll spielen, es soll Erholungsstunden haben, aber es muss auch arbeiten lernen.",
+      "source": "Immanuel Kant",
+      "length": 89,
+      "id": 42
+    },
+    {
+      "text": "Es ist niemals zu spät, vernünftig und weise zu werden; es ist aber jederzeit schwer, wenn die Einsicht spät kommt, sie in Gang zu bringen.",
+      "source": "Immanuel Kant",
+      "length": 139,
+      "id": 43
+    },
+    {
+      "text": "Habe Mut, dich deines eigenen Verstandes zu bedienen.",
+      "source": "Immanuel Kant",
+      "length": 53,
+      "id": 44
+    },
+    {
+      "text": "Lasst uns ohne Vorurteil urteilen.",
+      "source": "Immanuel Kant",
+      "length": 34,
+      "id": 45
+    },
+    {
+      "text": "Wir sind nicht auf der Welt, um glücklich zu werden, sondern um unsere Pflicht zu erfüllen.",
+      "source": "Immanuel Kant",
+      "length": 91,
+      "id": 46
+    },
+    {
+      "text": "Es ist nichts beständig als die Unbeständigkeit.",
+      "source": "Immanuel Kant",
+      "length": 48,
+      "id": 47
+    },
+    {
+      "text": "Lobenswerte Eigenschaften nennen wir Tugenden.",
+      "source": "Aristoteles",
+      "length": 46,
+      "id": 48
+    },
+    {
+      "text": "Wer sich zum Wurm macht, kann nachher nicht klagen, wenn er mit Füßen getreten wird.",
+      "source": "Immanuel Kant",
+      "length": 84,
+      "id": 49
+    },
+    {
+      "text": "Den Guten nenne ich glücklich. Wer aber Unrecht tut, den nenne ich unglücklich.",
+      "source": "Platon",
+      "length": 79,
+      "id": 50
+    },
+    {
+      "text": "Das schauerlichste Übel also, der Tod, geht uns nichts an; denn solange wir existieren, ist der Tod nicht da, und wenn der Tod da ist, existieren wir nicht mehr.",
+      "source": "Epikur",
+      "length": 161,
+      "id": 51
+    },
+    {
+      "text": "Das Recht der Menschen muss heilig gehalten werden, der herrschenden Gewalt mag es auch noch so große Aufopferung kosten. Man kann hier nicht halbieren, und das Mittelding eines pragmatisch-bedingten Rechts (zwischen Recht und Nutzen) aussinnen, sondern alle Politik muss ihre Knie vor dem erstern beugen, kann aber dafür hoffen, ob zwar langsam, zu der Stufe zu gelangen, wo sie beharrlich glänzen wird.",
+      "source": "Immanuel Kant",
+      "length": 404,
+      "id": 52
+    },
+    {
+      "text": "Das Weib wird durch die Ehe frei; der Mann verliert dadurch seine Freiheit.",
+      "source": "Immanuel Kant",
+      "length": 75,
+      "id": 53
+    },
+    {
+      "text": "Alles, was die Natur selbst anordnet, ist zu irgendeiner Absicht gut. Die ganze Natur überhaupt ist eigentlich nichts anderes, als ein Zusammenhang von Erscheinungen nach Regeln; und es gibt überall keine Regellosigkeit.",
+      "source": "Immanuel Kant",
+      "length": 220,
+      "id": 54
+    },
+    {
+      "text": "Wir dürfen uns nicht einander lästig werden; die Welt ist groß genug für uns alle.",
+      "source": "Immanuel Kant",
+      "length": 82,
+      "id": 55
+    },
+    {
+      "text": "Der Ziellose erleidet sein Schicksal - der Zielbewusste gestaltet es.",
+      "source": "Immanuel Kant",
+      "length": 69,
+      "id": 56
+    },
+    {
+      "text": "Drei Dinge helfen, die Mühseligkeiten des Lebens zu tragen: Die Hoffnung, der Schlaf und das Lachen.",
+      "source": "Immanuel Kant",
+      "length": 100,
+      "id": 57
+    },
+    {
+      "text": "Faulheit: der Hang zur Ruhe ohne vorhergehende Arbeit.",
+      "source": "Immanuel Kant",
+      "length": 54,
+      "id": 58
+    },
+    {
+      "text": "\"Was will ich?\" fragt der Verstand. \"Worauf kommt es an?\" fragt die Urteilskraft. \"Was kommt heraus?\" fragt die Vernunft.",
+      "source": "Immanuel Kant",
+      "length": 121,
+      "id": 59
+    },
+    {
+      "text": "Mit dem Alter nimmt Urteilskraft zu und Genie ab.",
+      "source": "Immanuel Kant",
+      "length": 49,
+      "id": 60
+    },
+    {
+      "text": "Das Objekt der Mathematik ist leicht und einfältig, der Philosophie aber schwer und verwickelt.",
+      "source": "Immanuel Kant",
+      "length": 95,
+      "id": 61
+    },
+    {
+      "text": "Wenn man das Leben der meisten Menschen ansieht: so scheinet diese Kreatur geschaffen zu sein, um wie eine Pflanze Saft in sich zu ziehen und zu wachsen, sein Geschlecht fortzupflanzen, endlich alt zu werden, und zu sterben. Er erreicht unter allen Geschöpfen am wenigsten den Zweck seines Daseins, weil er seine vorzügliche Fähigkeiten zu solchen Absichten verbrauchet, die die übrigen Kreaturen mit weit minderen, und doch weit sicherer und anständiger, erreichen.",
+      "source": "Immanuel Kant",
+      "length": 466,
+      "id": 62
+    },
+    {
+      "text": "Es ist überall nichts in der Welt, ja überhaupt auch außer derselben zu denken möglich, was ohne Einschränkung für gut könnte gehalten werden, als allein ein guter Wille.",
+      "source": "Immanuel Kant",
+      "length": 170,
+      "id": 63
+    },
+    {
+      "text": "Das Erhabene rührt, das Schöne reizt.",
+      "source": "Immanuel Kant",
+      "length": 37,
+      "id": 64
+    },
+    {
+      "text": "Tiefe Einsamkeit ist erhaben, aber auf eine schreckliche Art.",
+      "source": "Immanuel Kant",
+      "length": 61,
+      "id": 65
+    },
+    {
+      "text": "In so ferne ist die Metaphysik eine Wissenschaft von den Grenzen der menschlichen Vernunft, und da ein kleines Land jederzeit viel Grenze hat, überhaupt auch mehr daran liegt, seine Besitzungen wohl zu erkennen und zu behaupten, als blindlings auf Eroberung auszugehen, so ist dieser Nutze der erwähnten Wissenschaft der unbekannteste und zugleich wichtigste, wie er denn auch nur ziemlich spät und nach langer Erfahrung erreichet wird.",
+      "source": "Immanuel Kant",
+      "length": 436,
+      "id": 66
+    },
+    {
+      "text": "Zwölf Boxkämpfer jagen Viktor quer über den großen Sylter Deich.",
+      "source": "(German pangram)",
+      "length": 64,
+      "id": 67
+    },
+    {
+      "text": "Wir sind im hohen Grade durch Kunst und Wissenschaft kultiviert.",
+      "source": "Immanuel Kant",
+      "length": 64,
+      "id": 68
+    },
+    {
+      "text": "Der Körper ist das Grab der Seele.",
+      "source": "Platon",
+      "length": 34,
+      "id": 69
+    },
+    {
+      "text": "Vor den Richter gehen, heißt aber, auf Gerechtigkeit ausgehen; denn der Richter soll gewissermaßen die lebendige Gerechtigkeit sein.",
+      "source": "Aristoteles",
+      "length": 132,
+      "id": 70
+    },
+    {
+      "text": "Denn von den Extremen ist das eine mehr, das andere weniger fehlerhaft.",
+      "source": "Aristoteles",
+      "length": 71,
+      "id": 71
+    },
+    {
+      "text": "Das Ganze ist mehr als die Summe seiner Teile.",
+      "source": "Aristoteles",
+      "length": 46,
+      "id": 72
+    },
+    {
+      "text": "Alle Menschen streben von Natur aus nach Wissen.",
+      "source": "Aristoteles",
+      "length": 48,
+      "id": 73
+    },
+    {
+      "text": "Ich möchte meiner Heimat ein Geschenk machen, Pierre. Ich möchte das Element Polonium nennen.",
+      "source": "Marie Curie",
+      "length": 93,
+      "id": 74
+    },
+    {
+      "text": "Tage sind gleichsam Kinder der Zeit, weil der folgende Tag, mit dem was er enthält, das Erzeugnis des vorigen ist.",
+      "source": "Immanuel Kant",
+      "length": 114,
+      "id": 75
+    },
+    {
+      "text": "Ich bin mir meiner selbst bewusst, ist ein Gedanke, der schon ein zweifaches Ich enthält, das Ich als Subjekt, und das Ich als Objekt.",
+      "source": "Immanuel Kant",
+      "length": 134,
+      "id": 76
+    },
+    {
+      "text": "Ob aber der Mensch nun von Natur moralisch gut oder böse ist? Keines von beiden, denn er ist von Natur gar kein moralisches Wesen; er wird dieses nur, wenn seine Vernunft sich bis zu den Begriffen der Pflicht und des Gesetzes erhebt.",
+      "source": "Immanuel Kant",
+      "length": 233,
+      "id": 77
+    },
+    {
+      "text": "Man lernt das am gründlichsten, und behält das am besten, was man gleichsam aus sich selbst lernet. Nur wenige Menschen indessen sind das im Stande. Man nennt sie Autodidakten.",
+      "source": "Immanuel Kant",
+      "length": 176,
+      "id": 78
+    },
+    {
+      "text": "Durch Sprichwörter reden ist daher die Sprache des Pöbels, und beweiset den gänzlichen Mangel des Witzes im Umgange mit der feineren Welt.",
+      "source": "Immanuel Kant",
+      "length": 138,
+      "id": 79
+    },
+    {
+      "text": "Der Mensch ist das einzige Geschöpf, das erzogen werden muss.",
+      "source": "Immanuel Kant",
+      "length": 61,
+      "id": 80
+    },
+    {
+      "text": "Die Metaphysik hat zum eigentlichen Zwecke ihrer Nachforschung nur drei Ideen: Gott, Freiheit und Unsterblichkeit.",
+      "source": "Immanuel Kant",
+      "length": 114,
+      "id": 81
+    },
+    {
+      "text": "Verstand ist erhaben, Witz ist schön.",
+      "source": "Immanuel Kant",
+      "length": 37,
+      "id": 82
+    },
+    {
+      "text": "Populär ist der Text nicht, aber bedeutend: Das Grundgesetz ist das wichtigste Dokument unseres demokratischen Selbstverständnisses und die freiheitlichste Verfassung, die Deutschland in seiner Geschichte je hatte. Dass unsere Verfassung Grundgesetz heißt, ist Ausdruck der Teilung Deutschlands nach dem Zweiten Weltkrieg. Der Begriff Grundgesetz betonte den offenen, provisorischen Charakter der Bestimmungen, an deren Formulierung mitzuwirken Vertretern der sowjetischen Besatzungszone damals versagt war. Darum wurde in einem eigenen Artikel 146 ausdrücklich festgelegt, dass dieses Provisorium seine Gültigkeit verliert, sobald eine vom gesamten deutschen Volk in freier Entscheidung beschlossene Verfassung vorlieg.t Das ursprünglich provisorisch gemeinte Grundgesetz ist heute, nach dem Beitritt der neuen Länder zur Bundesrepublik Deutschland 1990, die unbestrittene Grundlage der politischen Verfassung des Landes im Sinne einer freiheitlich-demokratischen Gesellschaft geworden.",
+      "source": "Grundgesetz: Geleitwort Prof. Dr. Norbert Lammert",
+      "length": 987,
+      "id": 83
+    },
+    {
+      "text": "Die Würde des Menschen ist unantastbar. Sie zu achten und zu schützen ist Verpflichtung aller staatlichen Gewalt.",
+      "source": "Grundgesetz Artikel 1.1",
+      "length": 113,
+      "id": 84
+    },
+    {
+      "text": "Jeder hat das Recht auf die freie Entfaltung seiner Persönlichkeit, soweit er nicht die Rechte anderer verletzt und nicht gegen die verfassungsmäßige Ordnung oder das Sittengesetz verstößt.",
+      "source": "Grundgesetz Artikel 2.1",
+      "length": 189,
+      "id": 85
+    },
+    {
+      "text": "Jeder hat das Recht auf Leben und körperliche Unversehrtheit. Die Freiheit der Person ist unverletzlich. In diese Rechte darf nur auf Grund eines Gesetzes eingegriffen werden.",
+      "source": "Grundgesetz Artikel 2.2",
+      "length": 175,
+      "id": 86
+    },
+    {
+      "text": "Alle Menschen sind vor dem Gesetz gleich.",
+      "source": "Grundgesetz Artikel 3.1",
+      "length": 41,
+      "id": 87
+    },
+    {
+      "text": "Die Freiheit des Glaubens, des Gewissens und die Freiheit des religiösen und weltanschaulichen Bekenntnisses sind unverletzlich.",
+      "source": "Grundgesetz Artikel 4.1",
+      "length": 128,
+      "id": 88
+    },
+    {
+      "text": "Jeder hat das Recht, seine Meinung in Wort, Schrift und Bild frei zu äußern und zu verbreiten und sich aus allgemein zugänglichen Quellen ungehindert zu unterrichten. Die Pressefreiheit und die Freiheit der Berichterstattung durch Rundfunk und Film werden gewährleistet. Eine Zensur findet nicht statt.",
+      "source": "Grundgesetz Artikel 5.1",
+      "length": 302,
+      "id": 89
+    },
+    {
+      "text": "Die meisten Menschen sehen das Problem der Liebe in erster Linie als das Problem, selbst geliebt zu werden, statt zu lieben und lieben zu können. Daher geht es für sie nur darum, wie man es erreicht, geliebt zu werden, wie man liebenswert wird. Um zu diesem Ziel zu gelangen, schlagen sie verschiedene Wege ein. Der eine, besonders von Männern verfolgte Weg ist der, so erfolgreich, so mächtig und reich zu sein, wie es die eigene gesellschaftliche Stellung möglich macht. Ein anderer, besonders von Frauen bevorzugter Weg ist der, durch Kosmetik, schöne Kleider und dergleichen möglichst attraktiv zu sein.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 607,
+      "id": 90
+    },
+    {
+      "text": "Ehe und Familie stehen unter dem besonderen Schutze der staatlichen Ordnung.",
+      "source": "Grundgesetz Artikel 6.1",
+      "length": 76,
+      "id": 91
+    },
+    {
+      "text": "Pflege und Erziehung sind das natürliche Recht der Eltern und die zuvörderst ihnen obliegende Pflicht.",
+      "source": "Grundgesetz Artikel 6.2",
+      "length": 102,
+      "id": 92
+    },
+    {
+      "text": "Gegen den Willen der Erziehungsberechtigten dürfen Kinder nur auf Grund eines Gesetzes von der Familie getrennt werden, wenn die Erziehungsberechtigten versagen oder wenn die Kinder aus anderen Gründen zu verwahrlosen drohen.",
+      "source": "Grundgesetz Artikel 6.3",
+      "length": 225,
+      "id": 93
+    },
+    {
+      "text": "Das gesamte Schulwesen steht unter der Aufsicht des Staates.",
+      "source": "Grundgesetz Artikel 7.1",
+      "length": 60,
+      "id": 94
+    },
+    {
+      "text": "Die Erziehungsberechtigten haben das Recht, über die Teilnahme des Kindes am Religionsunterricht zu bestimmen.",
+      "source": "Grundgesetz Artikel 7.2",
+      "length": 110,
+      "id": 95
+    },
+    {
+      "text": "Alle Deutschen haben das Recht, sich ohne Anmeldung oder Erlaubnis friedlich und ohne Waffen zu versammeln.",
+      "source": "Grundgesetz Artikel 8.1",
+      "length": 107,
+      "id": 96
+    },
+    {
+      "text": "Für Versammlungen unter freien Himmel kann dieses Recht durch Gesetz oder auf Grund eines Gesetzes beschränkt werden.",
+      "source": "Grundgesetz Artikel 8.2",
+      "length": 117,
+      "id": 97
+    },
+    {
+      "text": "Alle Deutschen haben das Recht, Vereine und Gesellschaften zu bilden.",
+      "source": "Grundgesetz Artikel 9.1",
+      "length": 69,
+      "id": 98
+    },
+    {
+      "text": "Der moderne Mensch ist sich selbst, seinen Mitmenschen und der Natur entfremdet.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 80,
+      "id": 99
+    },
+    {
+      "text": "Die menschlichen Beziehungen sind im Wesentlichen die von entfremdeten Automaten. Jeder glaubt sich dann in Sicherheit, wenn er möglichst dicht bei der Herde bleibt und sich in seinem Denken, Fühlen und Handeln nicht von den anderen unterscheidet.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 247,
+      "id": 100
+    },
+    {
+      "text": "Ohne Liebe könnte die Menschheit nicht einen Tag existieren.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 60,
+      "id": 101
+    },
+    {
+      "text": "Die Erfahrung dieses Abgetrenntseins erregt Angst, ja sie ist tatsächlich die Quelle aller Angst. Abgetrennt sein heißt abgeschnitten und ohne jede Möglichkeit, die eigenen Kräfte zu nutzen. Daher heißt abgetrennt sein hilflos sein, unfähig sein, die Welt - Dinge wie Menschen - mit eigenen Kräften zu erfassen; es heißt, dass die Welt über mich herfallen kann, ohne dass ich in der Lage bin, darauf zu reagieren. Daher ist das Abgetrenntsein eine Quelle intensiver Angst.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 472,
+      "id": 102
+    },
+    {
+      "text": "Der Mensch ist mit Vernunft ausgestattet; er ist Leben, das sich seiner selbst bewusst ist. Er besitzt ein Bewusstsein seiner selbst, seiner Mitmenschen, seiner Vergangenheit und der Möglichkeiten seiner Zukunft. Dieses Bewusstsein seiner Selbst als einer eigenständigen Größe, das Gewahrwerden dessen, dass er eine kurze Lebensspanne vor sich hat, dass er ohne seinen Willen geboren wurde und gegen seinen Willen sterben wird, dass er vor denen, die er liebt, sterben wird (oder sie vor ihm), dass er allein und abgesondert und den Kräften der Natur und der Gesellschaft hilflos ausgeliefert ist - all das macht seine abgesonderte, einsame Existenz zu einem unerträglichen Gefängnis.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 684,
+      "id": 103
+    },
+    {
+      "text": "Der Mensch kann nur vorwärtsschreiten, indem er seine Vernunft entwickelt, indem er eine neue, eine menschliche Harmonie findet anstelle der vormenschlichen Harmonie, die unwiederbringlich verloren ist.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 202,
+      "id": 104
+    },
+    {
+      "text": "Das Wesentliche an der Existenz des Menschen ist ja, dass er die Natur transzendiert hat, wenn er sie auch nie ganz verlässt. Er ist ein Teil von ihr und kann doch nicht in sie rückkehren, nachdem er sich einmal von ihr losgerissen hat.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 236,
+      "id": 105
+    },
+    {
+      "text": "Der dritte Irrtum, der zu der Annahme führt, das Lieben müsste nicht gelernt werden, beruht darauf, dass man das Anfangserlebnis \"sich zu verlieben\", mit dem permanenten Zustand \"zu lieben\" verwechselt. Wenn zwei Menschen, die einander fremd waren - wie wir uns das ja alle sind -, plötzlich die trennende Wand zwischen sich zusammenbrechen lassen, wenn sie sich eng verbunden, wenn sie sich eins fühlen, so ist dieser Augenblick des Einsseins eine der freudigsten, erregendsten Erfahrungen im Leben. Besonders herrlich und wundervoll ist er für Menschen, die bisher abgesondert, isoliert und ohne Liebe gelebt haben. Freilich ist diese Art Liebe ihrem Wesen nach nicht von Dauer.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 680,
+      "id": 106
+    },
+    {
+      "text": "Hinter der Einstellung, dass man nichts lernen müsse, um lieben zu können, steckt zweitens die Annahme, es gehe bei dem Problem der Liebe um ein Objekt und nicht um eine Fähigkeit. Viele Menschen meinen, zu lieben sei ganz einfach, schwierig sei es dagegen, den richtigen Partner zu finden, den man selbst lieben könne und von dem man geliebt werde.",
+      "source": "Erich Fromm: Die Kunst des Liebens",
+      "length": 349,
+      "id": 107
+    },
+    {
+      "text": "Was in der Verfassung steht, ist eine Sache. Eine andere Sache ist die Frage, ob und wie die in ihr formulierten Werte auch verwirklicht werden. Doch darauf kommt es an. Unser Staat ist angewiesen darauf, dass die Idee der Menschenwürde, die Grundwerte der Freiheit, Gleichheit und Toleranz gelebt werden. Demokratie braucht Bürger, die sich einmischen, die Verantwortung übernehmen, die Engagement zeigen. Das Grundgesetz gibt uns die Freiheit, uns für die humane Gesellschaft, wie wir sie wollen, einzusetzen. Nutzen wir diese Freiheit, jeden Tag aufs Neue.",
+      "source": "Grundgesetz: Geleitwort Prof. Dr. Norbert Lammert",
+      "length": 559,
+      "id": 108
+    },
+    {
+      "text": "Das Briefgeheimnis sowie das Post- und Fernmeldegeheimnis sind unverletzlich.",
+      "source": "Grundgesetz Artikel 10.1",
+      "length": 77,
+      "id": 109
+    },
+    {
+      "text": "Die Wohnung ist unverletzlich.",
+      "source": "Grundgesetz Artikel 13.1",
+      "length": 30,
+      "id": 110
     }
   ]
 }

@@ -1154,19 +1154,6 @@ function updateWordElement(showError) {
         charCorrect = false;
       }
 
-      try {
-        if (config.language === "russian" && charCorrect === false) {
-          if (
-            (currentWord[i].toLowerCase() === "е" &&
-              input[i].toLowerCase() === "ё") ||
-            (currentWord[i].toLowerCase() === "ё" &&
-              input[i].toLowerCase() === "е")
-          ) {
-            charCorrect = true;
-          }
-        }
-      } catch (e) {}
-
       let currentLetter = currentWord[i];
       let tabChar = "";
       let nlChar = "";
@@ -2160,12 +2147,31 @@ function showResult(difficultyFailed = false) {
 
   if (bailout) afkDetected = false;
 
+  $("#result .stats .tags").addClass("hidden");
+
   if (difficultyFailed) {
     Notifications.add("Test failed", 0);
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
   } else if (sameWordset) {
     Notifications.add("Test invalid - repeated", 0);
+  } else if (
+    (config.mode === "time" && mode2 < 15) ||
+    (config.mode === "words" && mode2 < 10) ||
+    (config.mode === "custom" &&
+      !customText.isWordRandom &&
+      !customText.isTimeRandom &&
+      customText.text.length < 10) ||
+    (config.mode === "custom" &&
+      customText.isWordRandom &&
+      !customText.isTimeRandom &&
+      customText.word < 10) ||
+    (config.mode === "custom" &&
+      !customText.isWordRandom &&
+      customText.isTimeRandom &&
+      customText.time < 15)
+  ) {
+    Notifications.add("Test too short", 0);
   } else {
     let activeTags = [];
     let activeTagsIds = [];
@@ -2197,6 +2203,22 @@ function showResult(difficultyFailed = false) {
       quoteLength = randomQuote.group;
     }
 
+    let cdata = null;
+    if (config.mode === "custom") {
+      cdata = {};
+      cdata.textLen = customText.text.length;
+      cdata.isWordRandom = customText.isWordRandom;
+      cdata.isTimeRandom = customText.isTimeRandom;
+      cdata.word =
+        customText.word !== "" && !isNaN(customText.word)
+          ? customText.word
+          : null;
+      cdata.time =
+        customText.time !== "" && !isNaN(customText.time)
+          ? customText.time
+          : null;
+    }
+
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
@@ -2226,7 +2248,13 @@ function showResult(difficultyFailed = false) {
       funbox: activeFunBox,
       bailedOut: bailout,
       chartData: chartData,
+      customText: cdata,
     };
+
+    if (config.mode !== "custom") {
+      delete completedEvent.customText;
+    }
+
     if (
       config.difficulty == "normal" ||
       ((config.difficulty == "master" || config.difficulty == "expert") &&
@@ -2268,6 +2296,7 @@ function showResult(difficultyFailed = false) {
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
               dontShowCrown = true;
             }
+            if (config.mode == "quote") dontShowCrown = true;
             if (lpb < stats.wpm) {
               //new pb based on local
               pbDiff = Math.abs(stats.wpm - lpb);
@@ -2338,56 +2367,58 @@ function showResult(difficultyFailed = false) {
               $("#result .stats .tags .bottom").append(`
                 <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
               `);
-              if (tpb < stats.wpm) {
-                //new pb for that tag
-                db_saveLocalTagPB(
-                  tag.id,
-                  config.mode,
-                  mode2,
-                  config.punctuation,
-                  config.language,
-                  config.difficulty,
-                  stats.wpm,
-                  stats.acc,
-                  stats.wpmRaw,
-                  consistency
-                );
-                $(
-                  `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
-                ).removeClass("hidden");
-                $(`#result .stats .tags .bottom div[tagid="${tag.id}"]`).attr(
-                  "aria-label",
-                  "+" + Misc.roundTo2(stats.wpm - tpb)
-                );
-                console.log("new pb for tag " + tag.name);
-              } else {
-                wpmOverTimeChart.options.annotation.annotations.push({
-                  enabled: false,
-                  type: "line",
-                  mode: "horizontal",
-                  scaleID: "wpm",
-                  value: tpb,
-                  borderColor: themeColors.sub,
-                  borderWidth: 1,
-                  borderDash: [2, 2],
-                  label: {
-                    backgroundColor: themeColors.sub,
-                    fontFamily: "Roboto Mono",
-                    fontSize: 11,
-                    fontStyle: "normal",
-                    fontColor: themeColors.bg,
-                    xPadding: 6,
-                    yPadding: 6,
-                    cornerRadius: 3,
-                    position: annotationSide,
-                    enabled: true,
-                    content: `${tag.name} PB: ${tpb}`,
-                  },
-                });
-                if (annotationSide === "left") {
-                  annotationSide = "right";
+              if (config.mode != "quote") {
+                if (tpb < stats.wpm) {
+                  //new pb for that tag
+                  db_saveLocalTagPB(
+                    tag.id,
+                    config.mode,
+                    mode2,
+                    config.punctuation,
+                    config.language,
+                    config.difficulty,
+                    stats.wpm,
+                    stats.acc,
+                    stats.wpmRaw,
+                    consistency
+                  );
+                  $(
+                    `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
+                  ).removeClass("hidden");
+                  $(`#result .stats .tags .bottom div[tagid="${tag.id}"]`).attr(
+                    "aria-label",
+                    "+" + Misc.roundTo2(stats.wpm - tpb)
+                  );
+                  // console.log("new pb for tag " + tag.name);
                 } else {
-                  annotationSide = "left";
+                  wpmOverTimeChart.options.annotation.annotations.push({
+                    enabled: false,
+                    type: "line",
+                    mode: "horizontal",
+                    scaleID: "wpm",
+                    value: tpb,
+                    borderColor: themeColors.sub,
+                    borderWidth: 1,
+                    borderDash: [2, 2],
+                    label: {
+                      backgroundColor: themeColors.sub,
+                      fontFamily: "Roboto Mono",
+                      fontSize: 11,
+                      fontStyle: "normal",
+                      fontColor: themeColors.bg,
+                      xPadding: 6,
+                      yPadding: 6,
+                      cornerRadius: 3,
+                      position: annotationSide,
+                      enabled: true,
+                      content: `${tag.name} PB: ${tpb}`,
+                    },
+                  });
+                  if (annotationSide === "left") {
+                    annotationSide = "right";
+                  } else {
+                    annotationSide = "left";
+                  }
                 }
               }
             });
@@ -2422,6 +2453,8 @@ function showResult(difficultyFailed = false) {
                     "Result data does not make sense. Result not saved.",
                     -1
                   );
+                } else if (e.data.resultCode === -5) {
+                  Notifications.add("Test too short. Result not saved.", -1);
                 } else if (e.data.resultCode === -999) {
                   console.error("internal error: " + e.data.message);
                   Notifications.add(
@@ -2481,9 +2514,13 @@ function showResult(difficultyFailed = false) {
                     //global
                     let globalLbString = "";
                     const glb = e.data.globalLeaderboard;
-                    const glbMemory = db_getSnapshot().lbMemory[
-                      config.mode + mode2
-                    ].global;
+                    let glbMemory;
+                    try {
+                      glbMemory = db_getSnapshot().lbMemory[config.mode + mode2]
+                        .global;
+                    } catch {
+                      glbMemory = null;
+                    }
                     let dontShowGlobalDiff =
                       glbMemory == null || glbMemory === -1 ? true : false;
                     let globalLbDiff = null;
@@ -2538,9 +2575,13 @@ function showResult(difficultyFailed = false) {
                     //daily
                     let dailyLbString = "";
                     const dlb = e.data.dailyLeaderboard;
-                    const dlbMemory = db_getSnapshot().lbMemory[
-                      config.mode + mode2
-                    ].daily;
+                    let dlbMemory;
+                    try {
+                      dlbMemory = db_getSnapshot().lbMemory[config.mode + mode2]
+                        .daily;
+                    } catch {
+                      dlbMemory = null;
+                    }
                     let dontShowDailyDiff =
                       dlbMemory == null || dlbMemory === -1 ? true : false;
                     let dailyLbDiff = null;
@@ -2802,7 +2843,7 @@ function showResult(difficultyFailed = false) {
 
 function startTest() {
   if (pageTransition) {
-    return;
+    return false;
   }
   if (!dbConfigLoaded) {
     configChangedBeforeDb = true;
@@ -2863,6 +2904,7 @@ function startTest() {
       updateLiveWpm(wpmAndRaw.wpm, wpmAndRaw.raw);
       wpmHistory.push(wpmAndRaw.wpm);
       rawHistory.push(wpmAndRaw.raw);
+      Monkey.updateFastOpacity(wpmAndRaw.wpm);
 
       let acc = Misc.roundTo2(
         (accuracyStats.correct /
@@ -2949,6 +2991,7 @@ function startTest() {
       loop(expectedStepEnd + stepIntervalMS);
     }, delay);
   })(testStart + stepIntervalMS);
+  return true;
 }
 
 function restartTest(withSameWordset = false, nosave = false) {
@@ -3056,13 +3099,16 @@ function restartTest(withSameWordset = false, nosave = false) {
     }
   }
   resultVisible = false;
-
+  pageTransition = true;
   el.stop(true, true).animate(
     {
       opacity: 0,
     },
     125,
     async () => {
+      pageTransition = false;
+      $("#monkey .fast").stop(true, true).css("opacity", 0);
+      $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         sameWordset = false;
@@ -3807,7 +3853,7 @@ function updateTestModesNotice() {
 
   if (sameWordset) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" onClick="restartTest()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
+      `<div class="text-button" function="restartTest()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
     );
   }
 
@@ -3817,10 +3863,12 @@ function updateTestModesNotice() {
     );
   }
 
-  if (config.language === "english_1k" || config.language === "english_10k") {
+  // /^[0-9a-zA-Z_.-]+$/.test(name);
+
+  if (/_\d+k$/g.test(config.language)) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${config.language.replace(
-        "_",
+        /_/g,
         " "
       )}</div>`
     );
@@ -3838,7 +3886,7 @@ function updateTestModesNotice() {
 
   if (config.blindMode) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" onClick="toggleBlindMode()"><i class="fas fa-eye-slash"></i>blind</div>`
+      `<div class="text-button" function="toggleBlindMode()"><i class="fas fa-eye-slash"></i>blind</div>`
     );
   }
 
@@ -4922,12 +4970,15 @@ $(document).mousemove(function (event) {
 
 $(document).on("click", "#testModesNotice .text-button", (event) => {
   let commands = eval($(event.currentTarget).attr("commands"));
+  let func = $(event.currentTarget).attr("function");
   if (commands !== undefined) {
     if ($(event.currentTarget).attr("commands") === "commandsTags") {
       updateCommandsTagsList();
     }
     currentCommands.push(commands);
     showCommandLine();
+  } else if (func != undefined) {
+    eval(func);
   }
 });
 
@@ -4937,7 +4988,9 @@ $(document).on("click", "#commandLineMobileButton", () => {
 
 let dontInsertSpace = false;
 
-$(document).keyup(() => {
+$(document).keyup((event) => {
+  if (!event.originalEvent.isTrusted) return;
+
   if (resultVisible) return;
   let now = performance.now();
   let diff = Math.abs(keypressStats.duration.current - now);
@@ -4949,6 +5002,8 @@ $(document).keyup(() => {
 });
 
 $(document).keydown(function (event) {
+  if (!(event.key == " ") && !event.originalEvent.isTrusted) return;
+
   if (!resultVisible) {
     let now = performance.now();
     let diff = Math.abs(keypressStats.spacing.current - now);
@@ -4976,6 +5031,7 @@ $(document).keydown(function (event) {
     event.key !== "Enter"
   ) {
     focusWords();
+    wordsFocused = true;
     if (config.showOutOfFocusWarning) return;
   }
 
@@ -5011,6 +5067,10 @@ $(document).keydown(function (event) {
       hideCapsWarning();
     }
   } catch {}
+
+  if (pageTransition) {
+    return;
+  }
 
   //backspace
   const isBackspace =
@@ -5217,7 +5277,6 @@ function handleSpace(event, isEnter) {
     updateHighlightedKeymapKey();
     settingsGroups.layout.updateButton();
   }
-  if (config.blindMode) $("#words .word.active letter").addClass("correct");
   dontInsertSpace = true;
   if (currentWord == currentInput || config.mode == "zen") {
     //correct word or in zen mode
@@ -5283,6 +5342,7 @@ function handleSpace(event, isEnter) {
       }
       return;
     }
+    if (config.blindMode) $("#words .word.active letter").addClass("correct");
     inputHistory.push(currentInput);
     highlightBadWord(currentWordElementIndex, !config.blindMode);
     currentInput = "";
@@ -5390,6 +5450,8 @@ function handleAlpha(event) {
       "Unidentified",
       "Process",
       "Delete",
+      "KanjiMode",
+      "Pause",
       undefined,
     ].includes(event.key)
   ) {
@@ -5440,7 +5502,7 @@ function handleAlpha(event) {
 
   //start the test
   if (currentInput == "" && inputHistory.length == 0 && !testActive) {
-    startTest();
+    if (!startTest()) return;
   } else {
     if (!testActive) return;
   }
@@ -5468,26 +5530,49 @@ function handleAlpha(event) {
       currentInput.length + 1
     );
   }
-  if (
-    config.language === "russian" &&
-    (event["key"].toLowerCase() == "e" || event["key"].toLowerCase() == "ё")
-  ) {
-    if (
-      nextCharInWord.toLowerCase() == "e" ||
-      nextCharInWord.toLowerCase() == "ё"
-    ) {
-      thisCharCorrect = true;
-    } else {
-      thisCharCorrect = false;
-    }
-  } else if (config.mode == "zen") {
+
+  if (nextCharInWord == event["key"]) {
     thisCharCorrect = true;
   } else {
-    if (nextCharInWord == event["key"]) {
+    thisCharCorrect = false;
+  }
+
+  if (config.language.split("_")[0] == "russian") {
+    if ((event.key === "е" || event.key === "e") && nextCharInWord == "ё") {
+      event.key = nextCharInWord;
       thisCharCorrect = true;
-    } else {
-      thisCharCorrect = false;
     }
+    if (
+      event.key === "ё" &&
+      (nextCharInWord == "е" || nextCharInWord === "e")
+    ) {
+      event.key = nextCharInWord;
+      thisCharCorrect = true;
+    }
+  }
+
+  if (config.mode == "zen") {
+    thisCharCorrect = true;
+  }
+
+  if (event.key === "’" && nextCharInWord == "'") {
+    event.key = "'";
+    thisCharCorrect = true;
+  }
+
+  if (event.key === "'" && nextCharInWord == "’") {
+    event.key = "’";
+    thisCharCorrect = true;
+  }
+
+  if (event.key === "”" && nextCharInWord == '"') {
+    event.key = '"';
+    thisCharCorrect = true;
+  }
+
+  if (event.key === '"' && nextCharInWord == "”") {
+    event.key = "”";
+    thisCharCorrect = true;
   }
 
   if (!thisCharCorrect) {
@@ -5718,7 +5803,27 @@ $("#wpmChart").on("mouseleave", (e) => {
   $(".wordInputAfter").remove();
 });
 
+let mappedRoutes = {
+  "/": "pageTest",
+  "/login": "pageLogin",
+  "/settings": "pageSettings",
+  "/about": "pageAbout",
+  "/account": "pageAccount",
+  "/verify": "pageTest",
+};
+
+function handleInitialPageClasses(el) {
+  $(el).removeClass("hidden");
+  $(el).addClass("active");
+}
+
 $(document).ready(() => {
+  handleInitialPageClasses(
+    $(".page." + mappedRoutes[window.location.pathname])
+  );
+  if (window.location.pathname === "/") {
+    $("#top .config").removeClass("hidden");
+  }
   updateFavicon(32, 14);
   $("body").css("transition", ".25s");
   if (config.quickTab) {
@@ -5746,9 +5851,10 @@ $(document).ready(() => {
           history.replaceState("/", null, "/");
         }
       } else if (window.location.pathname === "/account") {
-        history.replaceState("/", null, "/");
+        // history.replaceState("/", null, "/");
       } else if (/challenge_.+/g.test(window.location.pathname)) {
         //do nothing
+        // }
       } else if (window.location.pathname !== "/") {
         let page = window.location.pathname.replace("/", "");
         changePage(page);
@@ -5861,6 +5967,9 @@ async function setupChallenge(challengeName) {
     manualRestart = true;
     restartTest(false, true);
     notitext = challenge.message;
+    $("#top .config").removeClass("hidden");
+    $(".page.pageTest").removeClass("hidden");
+
     if (notitext === undefined) {
       Notifications.add(`Challenge '${challengeName}' loaded.`, 0);
     } else {

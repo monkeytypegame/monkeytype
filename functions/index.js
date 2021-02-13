@@ -130,6 +130,44 @@ exports.reserveDisplayName = functions.https.onCall(
   }
 );
 
+exports.changeDisplayName = functions.https.onCall(
+  async (request, response) => {
+    try {
+      if (!isUsernameValid(request.name))
+        return { status: -1, message: "Name not valid" };
+      let taken = await db
+        .collection("takenNames")
+        .doc(request.name.toLowerCase())
+        .get();
+      taken = taken.data();
+      if (taken === undefined || taken.taken === false) {
+        //not taken
+        let oldname = admin.auth().getUser(request.uid);
+        oldname = (await oldname).displayName;
+        await admin
+          .auth()
+          .updateUser(request.uid, { displayName: request.name });
+        await db
+          .collection("users")
+          .doc(request.uid)
+          .set({ name: request.name }, { merge: true });
+        await db.collection("takenNames").doc(request.name.toLowerCase()).set(
+          {
+            taken: true,
+          },
+          { merge: true }
+        );
+        await db.collection("takenNames").doc(oldname.toLowerCase()).delete();
+        return { status: 1, message: "Updated" };
+      } else {
+        return { status: -2, message: "Name taken." };
+      }
+    } catch (e) {
+      return { status: -999, message: "Error: " + e.message };
+    }
+  }
+);
+
 exports.clearName = functions.auth.user().onDelete((user) => {
   db.collection("takenNames").doc(user.displayName.toLowerCase()).delete();
   db.collection("users").doc(user.uid).delete();
@@ -371,6 +409,9 @@ exports.checkNameAvailability = functions.https.onRequest(
 
 function checkIfPB(uid, obj, userdata) {
   let pbs = null;
+  if (obj.mode == "quote") {
+    return false;
+  }
   if (obj.funbox !== "none") {
     return false;
   }
@@ -503,6 +544,9 @@ function checkIfPB(uid, obj, userdata) {
 
 async function checkIfTagPB(uid, obj, userdata) {
   if (obj.tags.length === 0) {
+    return [];
+  }
+  if (obj.mode == "quote") {
     return [];
   }
   let dbtags = [];
@@ -829,6 +873,21 @@ exports.verifyUser = functions.https.onRequest(async (request, response) => {
       .then((res) => res.json())
       .then(async (res2) => {
         let did = res2.id;
+
+        if (
+          (await db.collection("users").where("discordId", "==", did).get())
+            .docs.length > 0
+        ) {
+          response.status(200).send({
+            data: {
+              status: -1,
+              message:
+                "This Discord account is already paired to a different Monkeytype account",
+            },
+          });
+          return;
+        }
+
         await db.collection("users").doc(request.uid).update({
           discordId: did,
         });
@@ -963,7 +1022,7 @@ async function getUpdatedLbMemory(userdata, mode, mode2, globallb, dailylb) {
     lbmemory = {};
   }
 
-  if (lbmemory[mode + mode2] === undefined) {
+  if (lbmemory[mode + mode2] == undefined) {
     lbmemory[mode + mode2] = {
       global: null,
       daily: null,
@@ -1200,7 +1259,8 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
 
     function verifyValue(val) {
       let errCount = 0;
-      if (Array.isArray(val)) {
+      if (val === null || val === undefined) {
+      } else if (Array.isArray(val)) {
         //array
         val.forEach((val2) => {
           errCount += verifyValue(val2);
@@ -1216,8 +1276,6 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       return errCount;
     }
     let errCount = verifyValue(obj);
-
-    // console.log(errCount);
     if (errCount > 0) {
       console.error(
         `error saving result for ${
@@ -1236,6 +1294,30 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       obj.consistency > 100
     ) {
       response.status(200).send({ data: { resultCode: -1 } });
+      return;
+    }
+    if (
+      (obj.mode === "time" && obj.mode2 < 15) ||
+      (obj.mode === "words" && obj.mode2 < 10) ||
+      (obj.mode === "custom" &&
+        obj.customText !== undefined &&
+        !obj.customText.isWordRandom &&
+        !obj.customText.isTimeRandom &&
+        obj.customText.textLen < 10) ||
+      (obj.mode === "custom" &&
+        obj.customText !== undefined &&
+        obj.customText.isWordRandom &&
+        !obj.customText.isTimeRandom &&
+        obj.customText.word < 10) ||
+      (obj.mode === "custom" &&
+        obj.customText !== undefined &&
+        !obj.customText.isWordRandom &&
+        obj.customText.isTimeRandom &&
+        obj.customText.time < 15)
+    ) {
+      response
+        .status(200)
+        .send({ data: { resultCode: -5, message: "Test too short" } });
       return;
     }
     if (!validateResult(obj)) {
@@ -1383,14 +1465,14 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
           ),
           checkIfPB(request.uid, request.obj, userdata),
           checkIfTagPB(request.uid, request.obj),
-          db.collection(`users/${request.uid}/results`).add(obj),
         ])
           .then(async (values) => {
             let globallb = values[0].insertedAt;
             let dailylb = values[1].insertedAt;
             let ispb = values[2];
             let tagPbs = values[3];
-            let createdDocId = values[4].id;
+            let createdDocId = await stripAndSave(request.uid, request.obj);
+            createdDocId = createdDocId.id;
             // console.log(values);
 
             if (obj.mode === "time" && String(obj.mode2) === "60") {
@@ -1544,6 +1626,18 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
     return;
   }
 });
+
+async function stripAndSave(uid, obj) {
+  if (obj.bailedOut === false) delete obj.bailedOut;
+  if (obj.blindMode === false) delete obj.blindMode;
+  if (obj.difficulty === "normal") delete obj.difficulty;
+  if (obj.funbox === "none") delete obj.funbox;
+  if (obj.language === "english") delete obj.language;
+  if (obj.numbers === false) delete obj.numbers;
+  if (obj.punctuation === false) delete obj.punctuation;
+
+  return await db.collection(`users/${uid}/results`).add(obj);
+}
 
 exports.updateEmail = functions.https.onCall(async (request, response) => {
   try {

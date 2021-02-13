@@ -1,0 +1,17 @@
+{
+  "language": "slovak",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Naše aktivity priťahovali mladých ako magnet. Ako svetlo nočné motýle.",
+      "source": "Christian Picciolini",
+      "length": 71,
+      "id": 1
+    }
+  ]
+}

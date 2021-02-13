@@ -5,6 +5,10 @@ db.settings({ experimentalForceLongPolling: true });
 
 let dbSnapshot = null;
 
+export function db_updateName(uid, name) {
+  db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
+}
+
 export function db_getSnapshot() {
   return dbSnapshot;
 }
@@ -19,6 +23,7 @@ export async function db_getUserSnapshot() {
   let snap = {
     results: undefined,
     personalBests: {},
+    name: undefined,
     tags: [],
     favouriteThemes: [],
     lbMemory: {
@@ -73,6 +78,7 @@ export async function db_getUserSnapshot() {
         if (data.personalBests !== undefined) {
           snap.personalBests = data.personalBests;
         }
+        snap.name = data.name;
         snap.discordId = data.discordId;
         snap.pairingCode =
           data.discordPairingCode == null ? undefined : data.discordPairingCode;
@@ -84,9 +90,14 @@ export async function db_getUserSnapshot() {
           started: data.startedTests,
           completed: data.completedTests,
         };
-        if (data.lbMemory !== undefined) {
-          snap.lbMemory = data.lbMemory;
-        }
+        try {
+          if (data.lbMemory.time15 !== undefined) {
+            snap.lbMemory.time15 = data.lbMemory.time15;
+          }
+          if (data.lbMemory.time60 !== undefined) {
+            snap.lbMemory.time60 = data.lbMemory.time60;
+          }
+        } catch {}
       })
       .catch((e) => {
         throw e;
@@ -117,6 +128,15 @@ export async function db_getUserResults() {
           data.docs.forEach((doc) => {
             let result = doc.data();
             result.id = doc.id;
+
+            if (result.bailedOut === undefined) result.bailedOut = false;
+            if (result.blindMode === undefined) result.blindMode = false;
+            if (result.difficulty === undefined) result.difficulty = "normal";
+            if (result.funbox === undefined) result.funbox = "none";
+            if (result.language === undefined) result.language = "english";
+            if (result.numbers === undefined) result.numbers = false;
+            if (result.punctuation === undefined) result.punctuation = false;
+
             dbSnapshot.results.push(result);
           });
           return true;
@@ -252,6 +272,7 @@ export async function db_saveLocalPB(
   raw,
   consistency
 ) {
+  if (mode == "quote") return;
   function cont() {
     try {
       let found = false;
@@ -356,6 +377,7 @@ export async function db_saveLocalTagPB(
   raw,
   consistency
 ) {
+  if (mode == "quote") return;
   function cont() {
     let filteredtag = dbSnapshot.tags.filter((t) => t.id === tagId)[0];
     try {
