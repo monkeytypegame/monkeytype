@@ -1120,7 +1120,7 @@ function updateActiveElement(backspace) {
 }
 
 function updateWordElement(showError) {
-  if (config.mode == "zen") return;
+  // if (config.mode == "zen") return;
 
   let input = currentInput;
   let wordAtIndex;
@@ -1129,100 +1129,119 @@ function updateWordElement(showError) {
   currentWord = wordsList[currentWordIndex];
   let ret = "";
 
-  if (config.highlightMode == "word") {
-    //only for word highlight
+  let newlineafter = false;
 
-    let correctSoFar = false;
-    if (currentWord.slice(0, input.length) == input) {
-      // this is when input so far is correct
-      correctSoFar = true;
-    }
-    let classString = correctSoFar ? "correct" : "incorrect";
-    if (config.blindMode) {
-      classString = "correct";
-    }
-
-    //show letters in the current word
-    for (let i = 0; i < currentWord.length; i++) {
-      ret += `<letter class="${classString}">` + currentWord[i] + `</letter>`;
-    }
-
-    //show any extra letters if hide extra letters is disabled
-    if (currentInput.length > currentWord.length && !config.hideExtraLetters) {
-      for (let i = currentWord.length; i < currentInput.length; i++) {
-        let letter = currentInput[i];
-        if (letter == " ") {
-          letter = "_";
-        }
-        ret += `<letter class="${classString}">${letter}</letter>`;
+  if (config.mode === "zen") {
+    for (let i = 0; i < currentInput.length; i++) {
+      if (currentInput[i] === "\t") {
+        ret += `<letter class='tabChar correct'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+      } else if (currentInput[i] === "\n") {
+        newlineafter = true;
+        ret += `<letter class='nlChar correct'><i class="fas fa-angle-down"></i></letter>`;
+      } else {
+        ret += `<letter class="correct">` + currentInput[i] + `</letter>`;
       }
     }
   } else {
-    for (let i = 0; i < input.length; i++) {
-      let charCorrect;
-      if (currentWord[i] == input[i]) {
-        charCorrect = true;
-      } else {
-        charCorrect = false;
+    if (config.highlightMode == "word") {
+      //only for word highlight
+
+      let correctSoFar = false;
+      if (currentWord.slice(0, input.length) == input) {
+        // this is when input so far is correct
+        correctSoFar = true;
+      }
+      let classString = correctSoFar ? "correct" : "incorrect";
+      if (config.blindMode) {
+        classString = "correct";
       }
 
-      let currentLetter = currentWord[i];
-      let tabChar = "";
-      let nlChar = "";
-      if (currentLetter === "\t") {
-        tabChar = "tabChar";
-        currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
-      } else if (currentLetter === "\n") {
-        nlChar = "nlChar";
-        currentLetter = `<i class="fas fa-angle-down"></i>`;
+      //show letters in the current word
+      for (let i = 0; i < currentWord.length; i++) {
+        ret += `<letter class="${classString}">` + currentWord[i] + `</letter>`;
       }
 
-      if (charCorrect) {
-        ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
-      } else {
-        // if (config.difficulty == "master") {
-        //   if (!resultVisible) {
-        //     failTest();
-        //   }
-        // }
-        if (!showError) {
-          if (currentLetter == undefined) {
-          } else {
-            ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
+      //show any extra letters if hide extra letters is disabled
+      if (
+        currentInput.length > currentWord.length &&
+        !config.hideExtraLetters
+      ) {
+        for (let i = currentWord.length; i < currentInput.length; i++) {
+          let letter = currentInput[i];
+          if (letter == " ") {
+            letter = "_";
           }
+          ret += `<letter class="${classString}">${letter}</letter>`;
+        }
+      }
+    } else {
+      for (let i = 0; i < input.length; i++) {
+        let charCorrect;
+        if (currentWord[i] == input[i]) {
+          charCorrect = true;
         } else {
-          if (currentLetter == undefined) {
-            if (!config.hideExtraLetters) {
-              let letter = input[i];
-              if (letter == " " || letter == "\t" || letter == "\n") {
-                letter = "_";
-              }
-              ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
+          charCorrect = false;
+        }
+
+        let currentLetter = currentWord[i];
+        let tabChar = "";
+        let nlChar = "";
+        if (currentLetter === "\t") {
+          tabChar = "tabChar";
+          currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
+        } else if (currentLetter === "\n") {
+          nlChar = "nlChar";
+          currentLetter = `<i class="fas fa-angle-down"></i>`;
+        }
+
+        if (charCorrect) {
+          ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
+        } else {
+          // if (config.difficulty == "master") {
+          //   if (!resultVisible) {
+          //     failTest();
+          //   }
+          // }
+          if (!showError) {
+            if (currentLetter == undefined) {
+            } else {
+              ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
             }
           } else {
-            ret +=
-              `<letter class="incorrect ${tabChar}${nlChar}">` +
-              currentLetter +
-              (config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
-              "</letter>";
+            if (currentLetter == undefined) {
+              if (!config.hideExtraLetters) {
+                let letter = input[i];
+                if (letter == " " || letter == "\t" || letter == "\n") {
+                  letter = "_";
+                }
+                ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
+              }
+            } else {
+              ret +=
+                `<letter class="incorrect ${tabChar}${nlChar}">` +
+                currentLetter +
+                (config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
+                "</letter>";
+            }
           }
         }
       }
-    }
 
-    if (input.length < currentWord.length) {
-      for (let i = input.length; i < currentWord.length; i++) {
-        if (currentWord[i] === "\t") {
-          ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-        } else if (currentWord[i] === "\n") {
-          ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
-        } else {
-          ret += "<letter>" + currentWord[i] + "</letter>";
+      if (input.length < currentWord.length) {
+        for (let i = input.length; i < currentWord.length; i++) {
+          if (currentWord[i] === "\t") {
+            ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+          } else if (currentWord[i] === "\n") {
+            ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+          } else {
+            ret += "<letter>" + currentWord[i] + "</letter>";
+          }
         }
       }
     }
   }
   wordAtIndex.innerHTML = ret;
+  if (newlineafter) $("#words").append("<div class='newline'></div>");
 }
 
 function highlightBadWord(index, showError) {
@@ -3038,19 +3057,19 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   //   }
   // }
   if (resultCalculating) return;
-  if (!manualRestart) {
-    if ((textHasTab && manualRestart) || !textHasTab) {
+  if ($(".pageTest").hasClass("active") && !resultVisible) {
+    if (!manualRestart) {
+      // if ((textHasTab && manualRestart) || !textHasTab) {
+      if (textHasTab) {
+        try {
+          if (!event.shiftKey) return;
+        } catch {}
+      }
       try {
-        event.preventDefault();
+        if (config.mode !== "zen") event.preventDefault();
       } catch {}
       if (
-        Misc.canQuickRestart(
-          config.mode,
-          config.words,
-          config.time,
-          customText
-        ) ||
-        manualRestart
+        Misc.canQuickRestart(config.mode, config.words, config.time, customText)
       ) {
       } else {
         let message = "Use your mouse to confirm.";
@@ -3059,6 +3078,9 @@ function restartTest(withSameWordset = false, nosave = false, event) {
         Notifications.add("Quick restart disabled. " + message, 0, 3);
         return;
       }
+      // }else{
+      //   return;
+      // }
     }
   }
 
@@ -5159,10 +5181,18 @@ function handleTab(event) {
     $("#simplePopupWrapper").hasClass("hidden")
   ) {
     if (config.quickTab) {
-      if (event.shiftKey) manualRestart = true;
-      restartTest(false, false, event);
+      if (config.mode == "zen" && !event.shiftKey) {
+      } else {
+        if (event.shiftKey) manualRestart = true;
+        restartTest(false, false, event);
+      }
     } else {
-      if ((textHasTab && event.shiftKey) || !textHasTab) {
+      if (
+        !resultVisible &&
+        ((textHasTab && event.shiftKey) ||
+          (!textHasTab && config.mode !== "zen") ||
+          (config.mode === "zen" && event.shiftKey))
+      ) {
         event.preventDefault();
         $("#restartTestButton").focus();
       }
@@ -5282,10 +5312,6 @@ function handleBackspace(event) {
       currentInput = "";
     } else {
       currentInput = currentInput.substring(0, currentInput.length - 1);
-    }
-    if (config.mode == "zen") {
-      $("#words .word.active").children().last().remove();
-      accuracyStats.incorrect++;
     }
     updateWordElement(!config.blindMode);
   }
@@ -5521,7 +5547,10 @@ function handleAlpha(event) {
   }
 
   if (event.key === "Tab") {
-    if (!textHasTab || (textHasTab && event.shiftKey)) {
+    if (
+      config.mode !== "zen" &&
+      (!textHasTab || (textHasTab && event.shiftKey))
+    ) {
       return;
     }
     event.key = "\t";
