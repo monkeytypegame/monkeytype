@@ -5528,6 +5528,7 @@ function handleAlpha(event) {
       "Delete",
       "KanjiMode",
       "Pause",
+      "PrintScreen",
       undefined,
     ].includes(event.key)
   ) {
