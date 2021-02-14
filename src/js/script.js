@@ -3433,6 +3433,7 @@ function setMode(mode, nosave) {
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
+    setPaceCaret("off", true);
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -4561,6 +4562,7 @@ function resetPaceCaret() {
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
   }
+  if (config.mode === "zen") return;
 
   let caret = $("#paceCaret");
   let firstLetter = document
