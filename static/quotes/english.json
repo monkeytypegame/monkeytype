@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -31872,6 +31884,78 @@
       "source": "Chihayafuru",
       "length": 98,
       "id": 5363
+    },
+    {
+      "text": "When you find yourself wishing that a certain person was also here, that person is like family to you. Regardless of how long or how well you know them.",
+      "source": "Chihayafuru",
+      "length": 152,
+      "id": 5364
+    },
+    {
+      "text": "Frustrations will not last forever. Nobody can keep on going without some measure of reward.",
+      "source": "Chihayafuru",
+      "length": 92,
+      "id": 5365
+    },
+    {
+      "text": "Some people think the act of investing efforts, trying your best is more precious than the result. But for mentors as well as their pupils, that approach feels bitter. 'I did my best', 'the fight was close'... words like that blow past and die out like the wind. Only the result is a stone. The stone you can reach by doing your best.",
+      "source": "Chihayafuru",
+      "length": 332,
+      "id": 5366
+    },
+    {
+      "text": "Love is when it isn't fun to be with that person. It's when nothing goes the way you want. When you're not having fun... and yet you still want to be with that person.",
+      "source": "Chihayafuru",
+      "length": 165,
+      "id": 5367
+    },
+    {
+      "text": "I know that I'm not alone, but I want to be strong even when I am.",
+      "source": "Chihayafuru",
+      "length": 66,
+      "id": 5368
+    },
+    {
+      "text": "What I want to do most? Let's see... Just once, I really want to let loose and pee in my pants.",
+      "source": "Danshi Koukousei no Nichijou",
+      "length": 93,
+      "id": 5369
+    },
+    {
+      "text": "There is no reason to pretend to be cool. Let's show our lame sides. That's who we really are, after all.",
+      "source": "Danshi Koukousei no Nichijou",
+      "length": 105,
+      "id": 5370
+    },
+    {
+      "text": "Treasure the experience. Dreams fade away after you wake up.",
+      "source": "Your Name",
+      "length": 60,
+      "id": 5371
+    },
+    {
+      "text": "A wise person once said that you can never lose what you never had. But you can go into debt.",
+      "source": "Technoblade",
+      "length": 93,
+      "id": 5372
+    },
+    {
+      "text": "Sometimes, it lasts all night. I lie here and I listen to the shovels and the picks against that wall there. And I pray the sun will come up at the curtains before they break through. No, I don't pray - I hope. And sometimes, it happens. The sun beats them. But mostly the shovels beat the sun.",
+      "source": "Thomas Shelby, Peaky Blinders",
+      "length": 294,
+      "id": 5373
+    },
+    {
+      "text": "La-di-da-di, we like to party. We don't cause trouble, we don't bother nobody. We're just some men that's on the mic and when we rock up on the mic we rock the mic (Right). For all of y'all keeping y'all in health. Just to see you smile and enjoy yourself 'cause it's cool when you 'cause a cozy condition, that we create, 'cause that's our mission. So listen to what we say because this type of shit, it happens every day.",
+      "source": "Doug E. Fresh & The Get Fresh Crew ft. Slick Rick - La Di Da Di",
+      "length": 423,
+      "id": 5374
+    },
+    {
+      "text": "Some people think they can outsmart me. Maybe, maybe. I have yet to meet one that can outsmart bullet.",
+      "source": "Meet the Heavy",
+      "length": 102,
+      "id": 5375
     }
   ]
 }
