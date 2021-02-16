@@ -1,0 +1,41 @@
+{
+  "language": "italian",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura, ché la diritta via era smarrita.",
+      "source": "Dante Alighieri",
+      "length": 102,
+      "id": 1
+    },
+    {
+      "text": "Ma come posso penetrare nell'essenza del deserto? Ascolta il tuo cuore. Esso conosce tutte le cose, perché è originato dall'Anima del Mondo, e un giorno vi farà ritorno.",
+      "source": "Paolo Coelho - The Alchemist",
+      "length": 169,
+      "id": 2
+    },
+    {
+      "text": "Ora volerai, Fortunata. Respira. Senti la pioggia, E' acqua. Nella tua vita avrai molti motivi per essere felice, uno di questi si chiama acqua, un altro si chiama vento, un altro ancora si chiama sole e arriva sempre come ricompensa dopo la pioggia. Senti la pioggia. Apri le ali.",
+      "source": "Luis Sepúlveda",
+      "length": 281,
+      "id": 3
+    }
+  ]
+}
