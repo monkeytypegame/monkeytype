@@ -18,6 +18,7 @@ import {
   db_saveLocalPB,
   db_getLocalTagPB,
   db_saveLocalTagPB,
+  db_exportRawUserResults,
 } from "./db";
 
 import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";

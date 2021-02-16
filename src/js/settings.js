@@ -1020,6 +1020,25 @@ $("#settingsImportWrapper").click((e) => {
   }
 });
 
+$("#exportResultsButton").click((e) => {
+  db_exportRawUserResults().then((results) => {
+    const contents = JSON.stringify(results);
+    const filename = "monkeytype-export.json";
+
+    // Create and click element to download data as file.
+    var element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(contents)
+    );
+    element.setAttribute("download", filename);
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  });
+});
+
 $(".pageSettings .sectionGroupTitle").click((e) => {
   let group = $(e.currentTarget).attr("group");
   $(`.pageSettings .settingsGroup.${group}`)

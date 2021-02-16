@@ -153,6 +153,26 @@ export async function db_getUserResults() {
   }
 }
 
+export async function db_exportRawUserResults() {
+  let user = firebase.auth().currentUser;
+  if (user == null) return false;
+
+  try {
+    return await db
+      .collection(`users/${user.uid}/results/`)
+      .get()
+      .then((data) => {
+        return data.docs.map((doc) => doc.data());
+      })
+      .catch((e) => {
+        throw e;
+      });
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
 export async function db_getUserHighestWpm(
   mode,
   mode2,
