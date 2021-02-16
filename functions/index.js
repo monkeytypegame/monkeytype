@@ -407,6 +407,54 @@ exports.checkNameAvailability = functions.https.onRequest(
 //   }
 // );
 
+exports.removeSmallTestsAndQPB = functions.https.onCall(
+  async (request, response) => {
+    let uid = request.uid;
+
+    try {
+      let docs = await db
+        .collection(`users/${uid}/results`)
+        .where("mode", "==", "time")
+        .where("mode2", "<", 15)
+        .get();
+      docs.forEach(async (doc) => {
+        db.collection(`users/${uid}/results`).doc(doc.id).delete();
+      });
+      let docs2 = await db
+        .collection(`users/${uid}/results`)
+        .where("mode", "==", "words")
+        .where("mode2", "<", 10)
+        .get();
+      docs2.forEach(async (doc) => {
+        db.collection(`users/${uid}/results`).doc(doc.id).delete();
+      });
+      let docs3 = await db
+        .collection(`users/${uid}/results`)
+        .where("mode", "==", "custom")
+        .where("testDuration", "<", 10)
+        .get();
+      docs3.forEach(async (doc) => {
+        db.collection(`users/${uid}/results`).doc(doc.id).delete();
+      });
+      // console.log(`removing small tests for ${uid}: ${docs.size} time, ${docs2.size} words, ${docs3.size} custom`);
+      let userdata = await db.collection(`users`).doc(uid).get();
+      userdata = userdata.data();
+      try {
+        pbs = userdata.personalBests;
+        // console.log(`removing ${Object.keys(pbs.quote).length} quote pb`);
+        delete pbs.quote;
+        await db.collection("users").doc(uid).update({ personalBests: pbs });
+      } catch {}
+      db.collection("users")
+        .doc(uid)
+        .set({ refactored: true }, { merge: true });
+      console.log("removed small tests for " + uid);
+    } catch (e) {
+      console.log(`something went wrong for ${uid}: ${e.message}`);
+    }
+  }
+);
+
 function checkIfPB(uid, obj, userdata) {
   let pbs = null;
   if (obj.mode == "quote") {

@@ -360,6 +360,9 @@ function getAccountDataAndInit() {
           }
         }
       }
+      if (snap.refactored === false) {
+        CloudFunctions.removeSmallTests({ uid: user.uid });
+      }
       if (!configChangedBeforeDb) {
         if (cookieConfig === null) {
           accountIconLoading(false);

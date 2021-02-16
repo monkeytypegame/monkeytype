@@ -594,3 +594,20 @@ export function mapRange(x, in_min, in_max, out_min, out_max) {
   }
   return num;
 }
+
+export function canQuickRestart(mode, words, time, customText) {
+  if (
+    (mode === "words" && words < 1000) ||
+    (mode === "time" && time < 3600) ||
+    mode === "quote" ||
+    (mode === "custom" && customText.isWordRandom && customText.word < 1000) ||
+    (mode === "custom" && customText.isTimeRandom && customText.time < 3600) ||
+    (mode === "custom" &&
+      !customText.isWordRandom &&
+      customText.text.length < 1000)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}

@@ -12,7 +12,8 @@ function canBailOut() {
       customText.time >= 3600) ||
     (config.mode === "words" && config.words >= 5000) ||
     config.words === 0 ||
-    (config.mode === "time" && (config.time >= 3600 || config.time === 0))
+    (config.mode === "time" && (config.time >= 3600 || config.time === 0)) ||
+    config.mode == "zen"
   );
 }
 
@@ -1370,6 +1371,14 @@ let commandsMode = {
       display: "custom",
       exec: () => {
         setMode("custom");
+        restartTest();
+      },
+    },
+    {
+      id: "changeModeZen",
+      display: "zen",
+      exec: () => {
+        setMode("zen");
         restartTest();
       },
     },
