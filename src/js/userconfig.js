@@ -914,6 +914,9 @@ function toggleQuickTabMode() {
 
 //numbers
 function setNumbers(numb, nosave) {
+  if (config.mode === "quote") {
+    numb = false;
+  }
   config.numbers = numb;
   if (!config.numbers) {
     $("#top .config .numbersMode .text-button").removeClass("active");
@@ -924,17 +927,23 @@ function setNumbers(numb, nosave) {
 }
 
 function toggleNumbers() {
-  if (config.numbers) {
-    $("#top .config .numbersMode .text-button").removeClass("active");
-  } else {
-    $("#top .config .numbersMode .text-button").addClass("active");
-  }
   config.numbers = !config.numbers;
+  if (config.mode === "quote") {
+    config.numbers = false;
+  }
+  if (config.numbers) {
+    $("#top .config .numbersMode .text-button").addClass("active");
+  } else {
+    $("#top .config .numbersMode .text-button").removeClass("active");
+  }
   saveConfigToCookie();
 }
 
 //punctuation
 function setPunctuation(punc, nosave) {
+  if (config.mode === "quote") {
+    punc = false;
+  }
   config.punctuation = punc;
   if (!config.punctuation) {
     $("#top .config .punctuationMode .text-button").removeClass("active");
@@ -945,12 +954,15 @@ function setPunctuation(punc, nosave) {
 }
 
 function togglePunctuation() {
-  if (config.punctuation) {
-    $("#top .config .punctuationMode .text-button").removeClass("active");
-  } else {
-    $("#top .config .punctuationMode .text-button").addClass("active");
-  }
   config.punctuation = !config.punctuation;
+  if (config.mode === "quote") {
+    config.punctuation = false;
+  }
+  if (config.punctuation) {
+    $("#top .config .punctuationMode .text-button").addClass("active");
+  } else {
+    $("#top .config .punctuationMode .text-button").removeClass("active");
+  }
   saveConfigToCookie();
 }
 
