@@ -5568,6 +5568,14 @@ function handleAlpha(event) {
     if (event.shiftKey && config.mode == "zen") {
       showResult();
     }
+    if (
+      event.shiftKey &&
+      ((config.mode == "time" && config.time === 0) ||
+        (config.mode == "words" && config.words === 0))
+    ) {
+      bailout = true;
+      showResult();
+    }
     event.key = "\n";
   }
 
