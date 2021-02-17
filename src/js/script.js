@@ -3176,7 +3176,6 @@ function restartTest(withSameWordset = false, nosave = false, event) {
     },
     125,
     async () => {
-      pageTransition = false;
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
@@ -3279,6 +3278,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
             wpmOverTimeChart.update();
             updateTestModesNotice();
+            pageTransition = false;
           }
         );
     }
