@@ -1379,6 +1379,7 @@ let commandsMode = {
       display: "zen",
       exec: () => {
         setMode("zen");
+        manualRestart = true;
         restartTest();
       },
     },
