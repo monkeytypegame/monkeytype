@@ -399,10 +399,10 @@ function setPaceCaret(val, nosave) {
   if (val == undefined) {
     val = "off";
   }
-  if (config.mode === "zen" && val != "off") {
-    Notifications.add(`Can't use pace caret with zen mode.`, 0);
-    val = "off";
-  }
+  // if (config.mode === "zen" && val != "off") {
+  //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
+  //   val = "off";
+  // }
   config.paceCaret = val;
   updateTestModesNotice();
   initPaceCaret(nosave);

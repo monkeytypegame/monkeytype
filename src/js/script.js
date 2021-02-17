@@ -3433,7 +3433,10 @@ function setMode(mode, nosave) {
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
-    setPaceCaret("off", true);
+    if (config.paceCaret != "off") {
+      Notifications.add(`Pace caret will not work with zen mode.`, 0);
+    }
+    // setPaceCaret("off", true);
   }
   if (!nosave) saveConfigToCookie();
 }
