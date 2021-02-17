@@ -3390,6 +3390,8 @@ function setMode(mode, nosave) {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").removeClass("hidden");
     $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
     $("#top .config .numbersMode").removeClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
@@ -3397,6 +3399,8 @@ function setMode(mode, nosave) {
     $("#top .config .wordCount").removeClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
     $("#top .config .numbersMode").removeClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
@@ -3412,6 +3416,8 @@ function setMode(mode, nosave) {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").removeClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
     $("#top .config .numbersMode").removeClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
@@ -3422,8 +3428,10 @@ function setMode(mode, nosave) {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("hidden");
-    $("#top .config .numbersMode").addClass("hidden");
+    $("#top .config .punctuationMode").addClass("disabled");
+    $("#top .config .numbersMode").addClass("disabled");
+    $("#top .config .punctuationMode").removeClass("hidden");
+    $("#top .config .numbersMode").removeClass("hidden");
     $("#result .stats .source").removeClass("hidden");
     $("#top .config .quoteLength").removeClass("hidden");
   } else if (config.mode == "zen") {

@@ -1345,6 +1345,10 @@ a:hover {
         line-height: 0.7rem;
         display: flex;
       }
+      &.disabled {
+        pointer-events: none;
+        opacity: 0.25;
+      }
     }
 
     .punctuationMode {
