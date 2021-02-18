@@ -510,8 +510,6 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
     tooltips: {
       // Disable the on-canvas tooltip
       enabled: true,
-      titleFontFamily: "Roboto Mono",
-      bodyFontFamily: "Roboto Mono",
       intersect: false,
       custom: function (tooltip) {
         if (!tooltip) return;
@@ -578,7 +576,6 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
     legend: {
       display: false,
       labels: {
-        fontFamily: "Roboto Mono",
         fontColor: "#ffffff",
       },
     },
@@ -591,9 +588,7 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
     scales: {
       xAxes: [
         {
-          ticks: {
-            fontFamily: "Roboto Mono",
-          },
+          ticks: {},
           type: "time",
           bounds: "ticks",
           distribution: "series",
@@ -609,7 +604,6 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
         {
           id: "wpm",
           ticks: {
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             min: 0,
             stepSize: 10,
@@ -618,13 +612,11 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           scaleLabel: {
             display: true,
             labelString: "Words per Minute",
-            fontFamily: "Roboto Mono",
           },
         },
         {
           id: "acc",
           ticks: {
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             max: 100,
           },
@@ -633,7 +625,6 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
           scaleLabel: {
             display: true,
             labelString: "Error rate (100 - accuracy)",
-            fontFamily: "Roboto Mono",
           },
           gridLines: {
             display: false,
@@ -704,7 +695,6 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
     legend: {
       display: false,
       labels: {
-        fontFamily: "Roboto Mono",
         fontColor: "#ffffff",
       },
     },
@@ -718,7 +708,6 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
       xAxes: [
         {
           ticks: {
-            fontFamily: "Roboto Mono",
             autoSkip: true,
             autoSkipPadding: 40,
           },
@@ -743,7 +732,6 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
         {
           id: "count",
           ticks: {
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             min: 0,
             autoSkip: true,
@@ -754,13 +742,11 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
           scaleLabel: {
             display: true,
             labelString: "Time Typing",
-            fontFamily: "Roboto Mono",
           },
         },
         {
           id: "avgWpm",
           ticks: {
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             min: 0,
             autoSkip: true,
@@ -772,7 +758,6 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
           scaleLabel: {
             display: true,
             labelString: "Average Wpm",
-            fontFamily: "Roboto Mono",
           },
           gridLines: {
             display: false,
@@ -832,16 +817,12 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
   },
   options: {
     tooltips: {
-      titleFontFamily: "Roboto Mono",
-      bodyFontFamily: "Roboto Mono",
       mode: "index",
       intersect: false,
     },
     legend: {
       display: false,
-      labels: {
-        defaultFontFamily: "Roboto Mono",
-      },
+      labels: {},
     },
     responsive: true,
     maintainAspectRatio: false,
@@ -849,7 +830,6 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
       xAxes: [
         {
           ticks: {
-            fontFamily: "Roboto Mono",
             autoSkip: true,
             autoSkipPadding: 40,
           },
@@ -857,7 +837,6 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
           scaleLabel: {
             display: false,
             labelString: "Seconds",
-            fontFamily: "Roboto Mono",
           },
         },
       ],
@@ -868,10 +847,8 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
           scaleLabel: {
             display: true,
             labelString: "Words per Minute",
-            fontFamily: "Roboto Mono",
           },
           ticks: {
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             min: 0,
             autoSkip: true,
@@ -887,10 +864,8 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
           scaleLabel: {
             display: true,
             labelString: "Raw Words per Minute",
-            fontFamily: "Roboto Mono",
           },
           ticks: {
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             min: 0,
             autoSkip: true,
@@ -907,11 +882,9 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
           scaleLabel: {
             display: true,
             labelString: "Errors",
-            fontFamily: "Roboto Mono",
           },
           ticks: {
             precision: 0,
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             autoSkip: true,
             autoSkipPadding: 40,
@@ -936,7 +909,6 @@ let hoverChart = new Chart($(".pageAccount #hoverChart"), {
           label: {
             // Background color of label, default below
             backgroundColor: "blue",
-            fontFamily: "Roboto Mono",
 
             // Font size of text, inherits from global
             fontSize: 11,
