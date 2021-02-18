@@ -212,3 +212,30 @@ simplePopups.clearTagPb = new SimplePopup(
     );
   }
 );
+
+simplePopups.resetPersonalBests = new SimplePopup(
+  "resetPersonalBests",
+  "text",
+  "Reset Personal Bests",
+  [],
+  "Are you sure you want to reset all your personal bests?",
+  "Reset",
+  () => {
+    try {
+      showBackgroundLoader();
+
+      CloudFunctions.resetPersonalBests({
+        uid: firebase.auth().currentUser.uid,
+      }).then(() => {
+        hideBackgroundLoader();
+        Notifications.add("Personal bests removed, refreshing the page...", 0);
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
+      });
+    } catch (e) {
+      Notifications.add("Something went wrong: " + e, -1);
+    }
+  },
+  () => {}
+);
