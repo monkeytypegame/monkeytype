@@ -22,27 +22,34 @@ class SettingsGroup {
       "click",
       `.pageSettings .section.${this.configName} .button`,
       (e) => {
+        let target = $(e.currentTarget);
+        if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+          return;
         if (this.onOff) {
-          if ($(e.currentTarget).hasClass("on")) {
-            this.toggleFunction(true);
+          if (target.hasClass("on")) {
+            this.setValue(true);
           } else {
-            this.toggleFunction(false);
+            this.setValue(false);
           }
           this.updateButton();
           if (this.setCallback !== null) this.setCallback();
         } else {
-          let value = $(e.currentTarget).attr(configName);
-          let params = $(e.currentTarget).attr("params");
-          if (params === undefined) {
-            this.toggleFunction(value);
-          } else {
-            this.toggleFunction(value, ...params);
-          }
-          this.updateButton();
-          if (this.setCallback !== null) this.setCallback();
+          let value = target.attr(configName);
+          let params = target.attr("params");
+          this.setValue(value, params);
         }
       }
     );
+  }
+
+  setValue(value, params = undefined) {
+    if (params === undefined) {
+      this.toggleFunction(value);
+    } else {
+      this.toggleFunction(value, ...params);
+    }
+    this.updateButton();
+    if (this.setCallback !== null) this.setCallback();
   }
 
   updateButton() {
@@ -253,7 +260,20 @@ settingsGroups.timerOpacity = new SettingsGroup(
   setTimerOpacity
 );
 settingsGroups.timerColor = new SettingsGroup("timerColor", setTimerColor);
-settingsGroups.fontFamily = new SettingsGroup("fontFamily", setFontFamily);
+settingsGroups.fontFamily = new SettingsGroup(
+  "fontFamily",
+  setFontFamily,
+  null,
+  () => {
+    let customButton = $(".pageSettings .section.fontFamily .buttons .custom");
+    if ($(".pageSettings .section.fontFamily .buttons .active").length === 0) {
+      customButton.addClass("active");
+      customButton.text(`Custom (${config.fontFamily.replace(/_/g, " ")})`);
+    } else {
+      customButton.text("Custom");
+    }
+  }
+);
 settingsGroups.alwaysShowDecimalPlaces = new SettingsGroup(
   "alwaysShowDecimalPlaces",
   setAlwaysShowDecimalPlaces
@@ -268,14 +288,13 @@ fillSettingsPage();
 async function fillSettingsPage() {
   refreshThemeButtons();
 
-  let langEl = $(".pageSettings .section.language .buttons").empty();
-  Misc.getLanguageList().then((languages) => {
-    languages.forEach((language) => {
-      langEl.append(
-        `<div class="language button" language='${language}'>${language.replace(
-          /_/g,
-          " "
-        )}</div>`
+  let langGroupsEl = $(
+    ".pageSettings .section.languageGroups .buttons"
+  ).empty();
+  Misc.getLanguageGroups().then((groups) => {
+    groups.forEach((group) => {
+      langGroupsEl.append(
+        `<div class="languageGroup button" group='${group.name}'>${group.name}</div>`
       );
     });
   });
@@ -344,6 +363,13 @@ async function fillSettingsPage() {
         }</div>`
       );
     });
+    $(
+      '<div class="language button no-auto-handle custom" onclick="this.blur();">Custom</div>'
+    )
+      .on("click", () => {
+        simplePopups.applyCustomFont.show([]);
+      })
+      .appendTo(fontsEl);
   });
 }
 
@@ -401,6 +427,8 @@ function updateSettingsPage() {
   });
 
   refreshTagsSettingsSection();
+  // setActiveLanguageGroup();
+  setActiveLanguageGroup();
   setActiveFunboxButton();
   setActiveThemeButton();
   setActiveThemeTab();
@@ -618,6 +646,45 @@ function setActiveFunboxButton() {
   );
 }
 
+async function setActiveLanguageGroup(groupName, clicked = false) {
+  let currentGroup;
+  if (groupName === undefined) {
+    currentGroup = await Misc.findCurrentGroup(config.language);
+  } else {
+    let groups = await Misc.getLanguageGroups();
+    groups.forEach((g) => {
+      if (g.name === groupName) {
+        currentGroup = g;
+      }
+    });
+  }
+  $(`.pageSettings .section.languageGroups .button`).removeClass("active");
+  $(
+    `.pageSettings .section.languageGroups .button[group='${currentGroup.name}']`
+  ).addClass("active");
+
+  let langEl = $(".pageSettings .section.language .buttons").empty();
+  currentGroup.languages.forEach((language) => {
+    langEl.append(
+      `<div class="language button" language='${language}'>${language.replace(
+        /_/g,
+        " "
+      )}</div>`
+    );
+  });
+
+  if (clicked) {
+    $($(`.pageSettings .section.language .buttons .button`)[0]).addClass(
+      "active"
+    );
+    setLanguage(currentGroup.languages[0]);
+  } else {
+    $(
+      `.pageSettings .section.language .buttons .button[language=${config.language}]`
+    ).addClass("active");
+  }
+}
+
 function setActiveThemeButton() {
   $(`.pageSettings .section.themes .theme`).removeClass("active");
   $(`.pageSettings .section.themes .theme[theme=${config.theme}]`).addClass(
@@ -743,6 +810,15 @@ $(document).on(
   (e) => {
     let theme = $(e.currentTarget).parents(".theme.button").attr("theme");
     toggleFavouriteTheme(theme);
+  }
+);
+
+$(document).on(
+  "click",
+  ".pageSettings .section.languageGroups .button",
+  (e) => {
+    let group = $(e.currentTarget).attr("group");
+    setActiveLanguageGroup(group, true);
   }
 );
 

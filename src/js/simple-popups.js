@@ -25,7 +25,7 @@ class SimplePopup {
   reset() {
     this.element.html(`
     <div class="title"></div>
-    <form class="inputs"></form>
+    <div class="inputs"></div>
     <div class="text"></div>
     <div class="button"></div>`);
   }
@@ -119,6 +119,7 @@ $(document).on("click", "#simplePopupWrapper .button", (e) => {
 
 $(document).on("keyup", "#simplePopupWrapper input", (e) => {
   if (e.key === "Enter") {
+    e.preventDefault();
     let id = $("#simplePopup").attr("popupId");
     simplePopups[id].exec();
   }
@@ -211,6 +212,19 @@ simplePopups.clearTagPb = new SimplePopup(
       "this.text = `Are you sure you want to clear PB for tag ${eval('this.parameters[1]')}?`"
     );
   }
+);
+
+simplePopups.applyCustomFont = new SimplePopup(
+  "applyCustomFont",
+  "text",
+  "Custom font",
+  [{ placeholder: "Font name", initVal: "" }],
+  "Make sure you have the font installed on your computer before applying.",
+  "Apply",
+  (fontName) => {
+    settingsGroups.fontFamily.setValue(fontName.replace(/\s/g, "_"));
+  },
+  () => {}
 );
 
 simplePopups.resetPersonalBests = new SimplePopup(

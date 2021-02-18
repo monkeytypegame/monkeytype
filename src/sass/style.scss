@@ -1321,7 +1321,8 @@ a:hover {
     grid-area: config;
     justify-self: right;
     display: grid;
-    grid-auto-flow: row;
+    // grid-auto-flow: row;
+    grid-template-rows: 1fr 1fr 1fr;
     grid-gap: 0.2rem;
     // width: min-content;
     // width: -moz-min-content;
@@ -1343,6 +1344,10 @@ a:hover {
         font-size: 0.7rem;
         line-height: 0.7rem;
         display: flex;
+      }
+      &.disabled {
+        pointer-events: none;
+        opacity: 0.25;
       }
     }
 
@@ -2608,6 +2613,7 @@ key {
 
     &.themes,
     &.language,
+    &.languageGroups,
     &.layout,
     &.keymapLayout,
     &.fontFamily,

@@ -3176,7 +3176,6 @@ function restartTest(withSameWordset = false, nosave = false, event) {
     },
     125,
     async () => {
-      pageTransition = false;
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
@@ -3279,6 +3278,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
             wpmOverTimeChart.update();
             updateTestModesNotice();
+            pageTransition = false;
           }
         );
     }
@@ -3390,6 +3390,8 @@ function setMode(mode, nosave) {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").removeClass("hidden");
     $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
     $("#top .config .numbersMode").removeClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
@@ -3397,6 +3399,8 @@ function setMode(mode, nosave) {
     $("#top .config .wordCount").removeClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
     $("#top .config .numbersMode").removeClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
@@ -3412,6 +3416,8 @@ function setMode(mode, nosave) {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").removeClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
     $("#top .config .numbersMode").removeClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
@@ -3422,8 +3428,10 @@ function setMode(mode, nosave) {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("hidden");
-    $("#top .config .numbersMode").addClass("hidden");
+    $("#top .config .punctuationMode").addClass("disabled");
+    $("#top .config .numbersMode").addClass("disabled");
+    $("#top .config .punctuationMode").removeClass("hidden");
+    $("#top .config .numbersMode").removeClass("hidden");
     $("#result .stats .source").removeClass("hidden");
     $("#top .config .quoteLength").removeClass("hidden");
   } else if (config.mode == "zen") {
@@ -3433,7 +3441,10 @@ function setMode(mode, nosave) {
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
-    setPaceCaret("off", true);
+    if (config.paceCaret != "off") {
+      Notifications.add(`Pace caret will not work with zen mode.`, 0);
+    }
+    // setPaceCaret("off", true);
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -5529,6 +5540,7 @@ function handleAlpha(event) {
       "KanjiMode",
       "Pause",
       "PrintScreen",
+      "Clear",
       undefined,
     ].includes(event.key)
   ) {
@@ -5562,6 +5574,14 @@ function handleAlpha(event) {
 
   if (event.key === "Enter") {
     if (event.shiftKey && config.mode == "zen") {
+      showResult();
+    }
+    if (
+      event.shiftKey &&
+      ((config.mode == "time" && config.time === 0) ||
+        (config.mode == "words" && config.words === 0))
+    ) {
+      bailout = true;
       showResult();
     }
     event.key = "\n";

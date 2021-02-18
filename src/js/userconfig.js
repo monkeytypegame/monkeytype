@@ -399,10 +399,10 @@ function setPaceCaret(val, nosave) {
   if (val == undefined) {
     val = "off";
   }
-  if (config.mode === "zen" && val != "off") {
-    Notifications.add(`Can't use pace caret with zen mode.`, 0);
-    val = "off";
-  }
+  // if (config.mode === "zen" && val != "off") {
+  //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
+  //   val = "off";
+  // }
   config.paceCaret = val;
   updateTestModesNotice();
   initPaceCaret(nosave);
@@ -914,6 +914,9 @@ function toggleQuickTabMode() {
 
 //numbers
 function setNumbers(numb, nosave) {
+  if (config.mode === "quote") {
+    numb = false;
+  }
   config.numbers = numb;
   if (!config.numbers) {
     $("#top .config .numbersMode .text-button").removeClass("active");
@@ -924,17 +927,23 @@ function setNumbers(numb, nosave) {
 }
 
 function toggleNumbers() {
-  if (config.numbers) {
-    $("#top .config .numbersMode .text-button").removeClass("active");
-  } else {
-    $("#top .config .numbersMode .text-button").addClass("active");
-  }
   config.numbers = !config.numbers;
+  if (config.mode === "quote") {
+    config.numbers = false;
+  }
+  if (config.numbers) {
+    $("#top .config .numbersMode .text-button").addClass("active");
+  } else {
+    $("#top .config .numbersMode .text-button").removeClass("active");
+  }
   saveConfigToCookie();
 }
 
 //punctuation
 function setPunctuation(punc, nosave) {
+  if (config.mode === "quote") {
+    punc = false;
+  }
   config.punctuation = punc;
   if (!config.punctuation) {
     $("#top .config .punctuationMode .text-button").removeClass("active");
@@ -945,12 +954,15 @@ function setPunctuation(punc, nosave) {
 }
 
 function togglePunctuation() {
-  if (config.punctuation) {
-    $("#top .config .punctuationMode .text-button").removeClass("active");
-  } else {
-    $("#top .config .punctuationMode .text-button").addClass("active");
-  }
   config.punctuation = !config.punctuation;
+  if (config.mode === "quote") {
+    config.punctuation = false;
+  }
+  if (config.punctuation) {
+    $("#top .config .punctuationMode .text-button").addClass("active");
+  } else {
+    $("#top .config .punctuationMode .text-button").removeClass("active");
+  }
   saveConfigToCookie();
 }
 
@@ -1579,6 +1591,8 @@ function applyConfig(configObj) {
     setStrictSpace(configObj.strictSpace, true);
     setMode(configObj.mode, true);
     setMonkey(configObj.monkey, true);
+
+    setActiveLanguageGroup();
 
     try {
       setEnableAds(configObj.enableAds, true);

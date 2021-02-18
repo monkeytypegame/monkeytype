@@ -132,6 +132,31 @@ export async function getLanguageList() {
   }
 }
 
+let languageGroupList = null;
+export async function getLanguageGroups() {
+  if (languageGroupList == null) {
+    return $.getJSON("languages/_groups.json", function (data) {
+      languageGroupList = data;
+      return languageGroupList;
+    });
+  } else {
+    return languageGroupList;
+  }
+}
+
+export async function findCurrentGroup(language) {
+  let retgroup = undefined;
+  let groups = await getLanguageGroups();
+  groups.forEach((group) => {
+    if (retgroup === undefined) {
+      if (group.languages.includes(language)) {
+        retgroup = group;
+      }
+    }
+  });
+  return retgroup;
+}
+
 let challengeList = null;
 export async function getChallengeList() {
   if (challengeList == null) {
