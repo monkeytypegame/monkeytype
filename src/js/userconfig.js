@@ -1592,6 +1592,8 @@ function applyConfig(configObj) {
     setMode(configObj.mode, true);
     setMonkey(configObj.monkey, true);
 
+    setActiveLanguageGroup();
+
     try {
       setEnableAds(configObj.enableAds, true);
       let addemo = false;
