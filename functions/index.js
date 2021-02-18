@@ -455,6 +455,22 @@ exports.removeSmallTestsAndQPB = functions.https.onCall(
   }
 );
 
+exports.resetPersonalBests = functions.https.onCall(
+  async (request, response) => {
+    console.log("heyheyhey");
+    let uid = request.uid;
+
+    try {
+      var user = await db.collection("users").doc(uid);
+      await user.update({ personalBests: {} });
+    } catch (e) {
+      console.log(
+        `something went wrong when deleting personal bests for ${uid}: ${e.message}`
+      );
+    }
+  }
+);
+
 function checkIfPB(uid, obj, userdata) {
   let pbs = null;
   if (obj.mode == "quote") {
