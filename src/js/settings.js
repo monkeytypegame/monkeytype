@@ -22,27 +22,34 @@ class SettingsGroup {
       "click",
       `.pageSettings .section.${this.configName} .button`,
       (e) => {
+        let target = $(e.currentTarget);
+        if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
+          return;
         if (this.onOff) {
-          if ($(e.currentTarget).hasClass("on")) {
-            this.toggleFunction(true);
+          if (target.hasClass("on")) {
+            this.setValue(true);
           } else {
-            this.toggleFunction(false);
+            this.setValue(false);
           }
           this.updateButton();
           if (this.setCallback !== null) this.setCallback();
         } else {
-          let value = $(e.currentTarget).attr(configName);
-          let params = $(e.currentTarget).attr("params");
-          if (params === undefined) {
-            this.toggleFunction(value);
-          } else {
-            this.toggleFunction(value, ...params);
-          }
-          this.updateButton();
-          if (this.setCallback !== null) this.setCallback();
+          let value = target.attr(configName);
+          let params = target.attr("params");
+          this.setValue(value, params);
         }
       }
     );
+  }
+
+  setValue(value, params = undefined) {
+    if (params === undefined) {
+      this.toggleFunction(value);
+    } else {
+      this.toggleFunction(value, ...params);
+    }
+    this.updateButton();
+    if (this.setCallback !== null) this.setCallback();
   }
 
   updateButton() {
@@ -253,7 +260,20 @@ settingsGroups.timerOpacity = new SettingsGroup(
   setTimerOpacity
 );
 settingsGroups.timerColor = new SettingsGroup("timerColor", setTimerColor);
-settingsGroups.fontFamily = new SettingsGroup("fontFamily", setFontFamily);
+settingsGroups.fontFamily = new SettingsGroup(
+  "fontFamily",
+  setFontFamily,
+  null,
+  () => {
+    let customButton = $(".pageSettings .section.fontFamily .buttons .custom");
+    if ($(".pageSettings .section.fontFamily .buttons .active").length === 0) {
+      customButton.addClass("active");
+      customButton.text(`[Custom] (${config.fontFamily.replace(/_/g, " ")})`);
+    } else {
+      customButton.text("[Custom]");
+    }
+  }
+);
 settingsGroups.alwaysShowDecimalPlaces = new SettingsGroup(
   "alwaysShowDecimalPlaces",
   setAlwaysShowDecimalPlaces
@@ -344,6 +364,13 @@ async function fillSettingsPage() {
         }</div>`
       );
     });
+    $(
+      '<div class="language button no-auto-handle custom" onclick="this.blur();">[Custom]</div>'
+    )
+      .on("click", () => {
+        simplePopups.applyCustomFont.show([]);
+      })
+      .appendTo(fontsEl);
   });
 }
 
