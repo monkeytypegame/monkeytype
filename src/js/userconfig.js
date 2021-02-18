@@ -980,6 +980,7 @@ function setFontFamily(font, nosave) {
   }
   config.fontFamily = font;
   document.documentElement.style.setProperty("--font", font.replace(/_/g, " "));
+  Chart.defaults.global.defaultFontFamily = font.replace(/_/g, " ");
   if (!nosave) saveConfigToCookie();
 }
 
