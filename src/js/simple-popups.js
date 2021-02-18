@@ -240,12 +240,22 @@ simplePopups.resetPersonalBests = new SimplePopup(
 
       CloudFunctions.resetPersonalBests({
         uid: firebase.auth().currentUser.uid,
-      }).then(() => {
-        hideBackgroundLoader();
-        Notifications.add("Personal bests removed, refreshing the page...", 0);
-        setTimeout(() => {
-          location.reload();
-        }, 2000);
+      }).then((res) => {
+        if (res) {
+          hideBackgroundLoader();
+          Notifications.add(
+            "Personal bests removed, refreshing the page...",
+            0
+          );
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        } else {
+          Notifications.add(
+            "Something went wrong while removing personal bests...",
+            -1
+          );
+        }
       });
     } catch (e) {
       Notifications.add("Something went wrong: " + e, -1);
