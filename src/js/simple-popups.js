@@ -212,3 +212,16 @@ simplePopups.clearTagPb = new SimplePopup(
     );
   }
 );
+
+simplePopups.applyCustomFont = new SimplePopup(
+  "applyCustomFont",
+  "text",
+  "Custom font",
+  [{ placeholder: "Font name", initVal: "" }],
+  "Make sure you have the font installed on your computer before applying.",
+  "Apply",
+  (fontName) => {
+    settingsGroups.fontFamily.setValue(fontName.replace(/\s/g, "_"));
+  },
+  () => {}
+);
