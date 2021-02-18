@@ -2356,7 +2356,7 @@ function showResult(difficultyFailed = false) {
                 borderDash: [2, 2],
                 label: {
                   backgroundColor: themeColors.sub,
-                  fontFamily: "Roboto Mono",
+                  fontFamily: config.fontFamily.replace(/_/g, " "),
                   fontSize: 11,
                   fontStyle: "normal",
                   fontColor: themeColors.bg,
@@ -2436,7 +2436,6 @@ function showResult(difficultyFailed = false) {
                     borderDash: [2, 2],
                     label: {
                       backgroundColor: themeColors.sub,
-                      fontFamily: "Roboto Mono",
                       fontSize: 11,
                       fontStyle: "normal",
                       fontColor: themeColors.bg,
@@ -6135,8 +6134,6 @@ let wpmOverTimeChart = new Chart(ctx, {
   },
   options: {
     tooltips: {
-      titleFontFamily: "Roboto Mono",
-      bodyFontFamily: "Roboto Mono",
       mode: "index",
       intersect: false,
       callbacks: {
@@ -6160,9 +6157,7 @@ let wpmOverTimeChart = new Chart(ctx, {
     },
     legend: {
       display: false,
-      labels: {
-        defaultFontFamily: "Roboto Mono",
-      },
+      labels: {},
     },
     responsive: true,
     maintainAspectRatio: false,
@@ -6170,7 +6165,6 @@ let wpmOverTimeChart = new Chart(ctx, {
       xAxes: [
         {
           ticks: {
-            fontFamily: "Roboto Mono",
             autoSkip: true,
             autoSkipPadding: 40,
           },
@@ -6178,7 +6172,6 @@ let wpmOverTimeChart = new Chart(ctx, {
           scaleLabel: {
             display: false,
             labelString: "Seconds",
-            fontFamily: "Roboto Mono",
           },
         },
       ],
@@ -6189,10 +6182,8 @@ let wpmOverTimeChart = new Chart(ctx, {
           scaleLabel: {
             display: true,
             labelString: "Words per Minute",
-            fontFamily: "Roboto Mono",
           },
           ticks: {
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             min: 0,
             autoSkip: true,
@@ -6208,10 +6199,8 @@ let wpmOverTimeChart = new Chart(ctx, {
           scaleLabel: {
             display: true,
             labelString: "Raw Words per Minute",
-            fontFamily: "Roboto Mono",
           },
           ticks: {
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             min: 0,
             autoSkip: true,
@@ -6228,11 +6217,9 @@ let wpmOverTimeChart = new Chart(ctx, {
           scaleLabel: {
             display: true,
             labelString: "Errors",
-            fontFamily: "Roboto Mono",
           },
           ticks: {
             precision: 0,
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             autoSkip: true,
             autoSkipPadding: 40,
