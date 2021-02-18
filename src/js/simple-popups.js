@@ -25,7 +25,7 @@ class SimplePopup {
   reset() {
     this.element.html(`
     <div class="title"></div>
-    <form class="inputs"></form>
+    <div class="inputs"></div>
     <div class="text"></div>
     <div class="button"></div>`);
   }
@@ -119,6 +119,7 @@ $(document).on("click", "#simplePopupWrapper .button", (e) => {
 
 $(document).on("keyup", "#simplePopupWrapper input", (e) => {
   if (e.key === "Enter") {
+    e.preventDefault();
     let id = $("#simplePopup").attr("popupId");
     simplePopups[id].exec();
   }
