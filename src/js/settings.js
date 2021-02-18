@@ -268,9 +268,9 @@ settingsGroups.fontFamily = new SettingsGroup(
     let customButton = $(".pageSettings .section.fontFamily .buttons .custom");
     if ($(".pageSettings .section.fontFamily .buttons .active").length === 0) {
       customButton.addClass("active");
-      customButton.text(`[Custom] (${config.fontFamily.replace(/_/g, " ")})`);
+      customButton.text(`Custom (${config.fontFamily.replace(/_/g, " ")})`);
     } else {
-      customButton.text("[Custom]");
+      customButton.text("Custom");
     }
   }
 );
@@ -364,7 +364,7 @@ async function fillSettingsPage() {
       );
     });
     $(
-      '<div class="language button no-auto-handle custom" onclick="this.blur();">[Custom]</div>'
+      '<div class="language button no-auto-handle custom" onclick="this.blur();">Custom</div>'
     )
       .on("click", () => {
         simplePopups.applyCustomFont.show([]);
