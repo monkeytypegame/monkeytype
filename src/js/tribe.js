@@ -1233,7 +1233,7 @@ MP.socket.on("mp_room_user_finished", (data) => {
           let userGraph = MP.room.userGraphs[sid];
           userGraph.graph = drawMinigraph(sid, userGraph.data);
           next();
-        }, 1);
+        }, 50);
       });
     } else if (MP.room.userFinished) {
       MP.room.userGraphs[data.sid].graph = drawMinigraph(data.sid, data.result);
