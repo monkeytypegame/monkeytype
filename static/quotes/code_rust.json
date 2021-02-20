@@ -1,0 +1,1673 @@
+{
+  "language": "code_rust",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "id": 1,
+      "length": 24,
+      "source": "Print Hello World - programming-idioms.org",
+      "text": "println!(\"Hello World\");"
+    },
+    {
+      "id": 2,
+      "length": 37,
+      "source": "my_age - programming-idioms.org",
+      "text": "for _ in 0..10 { println!(\"Hello\"); }"
+    },
+    {
+      "id": 3,
+      "length": 35,
+      "source": "my_age - programming-idioms.org",
+      "text": "print!(\"{}\", \"Hello\\n\".repeat(10));"
+    },
+    {
+      "id": 4,
+      "length": 78,
+      "source": "Create a procedure - programming-idioms.org",
+      "text": "fn finish(name : &str) {\n\tprintln!(\"My job here is done. Goodbye {}\", name);\n}"
+    },
+    {
+      "id": 5,
+      "length": 37,
+      "source": "Create a function which returns the square of an integer - programming-idioms.org",
+      "text": "fn function(x : u32) -> u32 { x * x }"
+    },
+    {
+      "id": 6,
+      "length": 32,
+      "source": "Create a 2D Point data structure - programming-idioms.org",
+      "text": "struct Point { x: f64, y: f64, }"
+    },
+    {
+      "id": 7,
+      "length": 23,
+      "source": "Create a 2D Point data structure - programming-idioms.org",
+      "text": "struct Point(f64, f64);"
+    },
+    {
+      "id": 8,
+      "length": 37,
+      "source": "Iterate over list values - programming-idioms.org",
+      "text": "for x in items {\n\t\tdo_something(x);\n}"
+    },
+    {
+      "id": 9,
+      "length": 75,
+      "source": "Iterate over list indexes and values - programming-idioms.org",
+      "text": "for (i, x) in items.iter().enumerate() {\n\tprintln!(\"Item {} = {}\", i, x);\n}"
+    },
+    {
+      "id": 10,
+      "length": 100,
+      "source": "Initialize a new map (associative array) - programming-idioms.org",
+      "text": "use std::collections::BTreeMap;\nlet mut x = BTreeMap::new();\nx.insert(\"one\", 1);\nx.insert(\"two\", 2);"
+    },
+    {
+      "id": 11,
+      "length": 115,
+      "source": "Initialize a new map (associative array) - programming-idioms.org",
+      "text": "use std::collections::HashMap;\nlet x: HashMap<&str, i32> = [\n\t(\"one\", 1),\n\t(\"two\", 2),\n].iter().cloned().collect();"
+    },
+    {
+      "id": 12,
+      "length": 97,
+      "source": "Create a Binary Tree data structure - programming-idioms.org",
+      "text": "struct BinTree<T> {\n\tvalue: T,\n\tleft: Option<Box<BinTree<T>>>,\n\tright: Option<Box<BinTree<T>>>,\n}"
+    },
+    {
+      "id": 13,
+      "length": 102,
+      "source": "Shuffle a list - programming-idioms.org",
+      "text": "extern crate rand;\nuse rand::{Rng, StdRng};\nlet mut rng = StdRng::new().unwrap();\nrng.shuffle(&mut x);"
+    },
+    {
+      "id": 14,
+      "length": 98,
+      "source": "Shuffle a list - programming-idioms.org",
+      "text": "use rand::seq::SliceRandom;\nuse rand::thread_rng;\nlet mut rng = thread_rng();\nx.shuffle(&mut rng);"
+    },
+    {
+      "id": 15,
+      "length": 66,
+      "source": "Pick a random element from a list - programming-idioms.org",
+      "text": "use rand::{self, Rng};\nx[rand::thread_rng().gen_range(0, x.len())]"
+    },
+    {
+      "id": 16,
+      "length": 103,
+      "source": "Pick a random element from a list - programming-idioms.org",
+      "text": "use rand::seq::SliceRandom;\nlet mut rng = rand::thread_rng();\nlet choice = x.choose(&mut rng).unwrap();"
+    },
+    {
+      "id": 17,
+      "length": 18,
+      "source": "Check if list contains a value - programming-idioms.org",
+      "text": "list.contains(&x);"
+    },
+    {
+      "id": 18,
+      "length": 28,
+      "source": "Check if list contains a value - programming-idioms.org",
+      "text": "list.iter().any(|v| v == &x)"
+    },
+    {
+      "id": 19,
+      "length": 36,
+      "source": "Check if list contains a value - programming-idioms.org",
+      "text": "(&list).into_iter().any(|v| v == &x)"
+    },
+    {
+      "id": 20,
+      "length": 115,
+      "source": "Iterate over map keys and values - programming-idioms.org",
+      "text": "use std::collections::BTreeMap;\nfor (key, val) in &mymap {\n\tprintln!(\"Key={key}, Value={val}\", key=key, val=val);\n}"
+    },
+    {
+      "id": 21,
+      "length": 77,
+      "source": "Pick uniformly a random floating point number in [a..b) - programming-idioms.org",
+      "text": "extern crate rand;\nuse rand::{Rng, thread_rng};\nthread_rng().gen_range(a, b);"
+    },
+    {
+      "id": 22,
+      "length": 204,
+      "source": "Pick uniformly a random integer in [a..b] - programming-idioms.org",
+      "text": "extern crate rand;\nuse rand::distributions::{IndependentSample, Range};\nfn pick(a: i32, b: i32) -> i32 {\n\tlet between = Range::new(a, b);\n\tlet mut rng = rand::thread_rng();\n\tbetween.ind_sample(&mut rng)\n}"
+    },
+    {
+      "id": 23,
+      "length": 94,
+      "source": "Pick uniformly a random integer in [a..b] - programming-idioms.org",
+      "text": "use rand::distributions::Uniform;\nUniform::new_inclusive(a, b).sample(&mut rand::thread_rng())"
+    },
+    {
+      "id": 24,
+      "length": 56,
+      "source": "Create a Tree data structure - programming-idioms.org",
+      "text": "struct Node<T> {\n  value: T,\n  children: Vec<Node<T>>,\n}"
+    },
+    {
+      "id": 25,
+      "length": 273,
+      "source": "Depth-first traversing of a tree - programming-idioms.org",
+      "text": "pub struct Tree<V> {\n\tchildren: Vec<Tree<V>>,\n\tvalue: V\n}\nimpl<V> Tree<V> {\n\tpub fn dfs<F: Fn(&V)>(&self, f: F) {\n\t\tself.dfs_helper(&f);\n\t}\n\tfn dfs_helper<F: Fn(&V)>(&self, f: &F) {\n\t\t(f)(&self.value);\n\t\tfor child in &self.children {\n\t\t\tchild.dfs_helper(f)\n\t\t}\n\t}\n\t// ...\n}"
+    },
+    {
+      "id": 26,
+      "length": 46,
+      "source": "Reverse a list - programming-idioms.org",
+      "text": "let y: Vec<_> = x.into_iter().rev().collect();"
+    },
+    {
+      "id": 27,
+      "length": 12,
+      "source": "Reverse a list - programming-idioms.org",
+      "text": "x.reverse();"
+    },
+    {
+      "id": 28,
+      "length": 221,
+      "source": "Return two values - programming-idioms.org",
+      "text": "fn search<T: Eq>(m: &Vec<Vec<T>>, x: &T) -> Option<(usize, usize)> {\n\tfor (i, row) in m.iter().enumerate() {\n\t\tfor (j, column) in row.iter().enumerate() {\n\t\t\tif *column == *x {\n\t\t\t\treturn Some((i, j));\n\t\t\t}\n\t\t}\n\t}\n\tNone\n}"
+    },
+    {
+      "id": 29,
+      "length": 31,
+      "source": "Swap values - programming-idioms.org",
+      "text": "std::mem::swap(&mut a, &mut b);"
+    },
+    {
+      "id": 30,
+      "length": 20,
+      "source": "Swap values - programming-idioms.org",
+      "text": "let (a, b) = (b, a);"
+    },
+    {
+      "id": 31,
+      "length": 34,
+      "source": "Convert string to integer - programming-idioms.org",
+      "text": "let i = s.parse::<i32>().unwrap();"
+    },
+    {
+      "id": 32,
+      "length": 36,
+      "source": "Convert string to integer - programming-idioms.org",
+      "text": "let i: i32 = s.parse().unwrap_or(0);"
+    },
+    {
+      "id": 33,
+      "length": 66,
+      "source": "Convert string to integer - programming-idioms.org",
+      "text": "let i = match s.parse::<i32>() {\n  Ok(i) => i,\n  Err(_e) => -1,\n};"
+    },
+    {
+      "id": 34,
+      "length": 28,
+      "source": "Convert real number to string with 2 decimal places - programming-idioms.org",
+      "text": "let s = format!(\"{:.2}\", x);"
+    },
+    {
+      "id": 35,
+      "length": 13,
+      "source": "Assign to string the japanese word \u30cd\u30b3 - programming-idioms.org",
+      "text": "let s = \"\u30cd\u30b3\";"
+    },
+    {
+      "id": 36,
+      "length": 211,
+      "source": "Send a value to another thread - programming-idioms.org",
+      "text": "use std::thread;\nuse std::sync::mpsc::channel;\nlet (send, recv) = channel();\nthread::spawn(move || {\n\tloop {\n\t\tlet msg = recv.recv().unwrap();\n\t\tprintln!(\"Hello, {:?}\", msg);\n\t}  \n});\nsend.send(\"Alan\").unwrap();"
+    },
+    {
+      "id": 37,
+      "length": 37,
+      "source": "Create a 2-dimensional array - programming-idioms.org",
+      "text": "let mut x = vec![vec![0.0f64; N]; M];"
+    },
+    {
+      "id": 38,
+      "length": 27,
+      "source": "Create a 2-dimensional array - programming-idioms.org",
+      "text": "let mut x = [[0.0; N] ; M];"
+    },
+    {
+      "id": 39,
+      "length": 42,
+      "source": "Create a 3-dimensional array - programming-idioms.org",
+      "text": "let x = vec![vec![vec![0.0f64; P]; N]; M];"
+    },
+    {
+      "id": 40,
+      "length": 34,
+      "source": "Sort by a property - programming-idioms.org",
+      "text": "items.sort_by(|a,b|a.p.cmp(&b.p));"
+    },
+    {
+      "id": 41,
+      "length": 33,
+      "source": "Sort by a property - programming-idioms.org",
+      "text": "items.sort_by_key(|item| item.p);"
+    },
+    {
+      "id": 42,
+      "length": 15,
+      "source": "Remove item from list, by its index - programming-idioms.org",
+      "text": "items.remove(i)"
+    },
+    {
+      "id": 43,
+      "length": 145,
+      "source": "Parallelize execution of 1000 independent tasks - programming-idioms.org",
+      "text": "use std::thread;\nlet threads: Vec<_> = (0..1000).map(|i| {\n\t\tthread::spawn(move || f(i))\n}).collect();\nfor thread in threads {\n\t\tthread.join();\n}"
+    },
+    {
+      "id": 44,
+      "length": 81,
+      "source": "Parallelize execution of 1000 independent tasks - programming-idioms.org",
+      "text": "extern crate rayon;\nuse rayon::prelude::*;\n(0..1000).into_par_iter().for_each(f);"
+    },
+    {
+      "id": 45,
+      "length": 67,
+      "source": "Recursive factorial (simple) - programming-idioms.org",
+      "text": "fn f(n: u32) -> u32 {\n\tif n < 2 {\n\t\t1\n\t} else {\n\t\tn * f(n - 1)\n\t}\n}"
+    },
+    {
+      "id": 46,
+      "length": 96,
+      "source": "Recursive factorial (simple) - programming-idioms.org",
+      "text": "fn factorial(num: u64) -> u64 {\n\tmatch num {\n\t\t0 | 1 => 1,\n\t\t_ => factorial(num - 1) * num,\n\t}\n}"
+    },
+    {
+      "id": 47,
+      "length": 145,
+      "source": "Integer exponentiation by squaring - programming-idioms.org",
+      "text": "fn exp(x: u64, n: u64) -> u64 {\n\tmatch n {\n\t\t0 => 1,\n\t\t1 => x,\n\t\ti if i % 2 == 0 => exp(x * x, n / 2),\n\t\t_ => x * exp(x * x, (n - 1) / 2),\n\t}\t \n}"
+    },
+    {
+      "id": 48,
+      "length": 41,
+      "source": "Atomically read and update variable - programming-idioms.org",
+      "text": "let mut x = x.lock().unwrap();\n*x = f(x);"
+    },
+    {
+      "id": 49,
+      "length": 66,
+      "source": "Create a set of objects - programming-idioms.org",
+      "text": "use std::collections::HashSet;\nlet x: HashSet<T> = HashSet::new();"
+    },
+    {
+      "id": 50,
+      "length": 145,
+      "source": "First-class function : compose - programming-idioms.org",
+      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
+    },
+    {
+      "id": 51,
+      "length": 100,
+      "source": "First-class function : compose - programming-idioms.org",
+      "text": "fn compose<A, B, C>(f: impl Fn(A) -> B, g: impl Fn(B) -> C) -> impl Fn(A) -> C {\n\tmove |x| g(f(x))\n}"
+    },
+    {
+      "id": 52,
+      "length": 145,
+      "source": "First-class function : generic composition - programming-idioms.org",
+      "text": "fn compose<'a, A, B, C, G, F>(f: F, g: G) -> Box<Fn(A) -> C + 'a>\n\t\twhere F: 'a + Fn(A) -> B, G: 'a + Fn(B) -> C\n{\n\t\tBox::new(move |x| g(f(x)))\n}"
+    },
+    {
+      "id": 53,
+      "length": 100,
+      "source": "First-class function : generic composition - programming-idioms.org",
+      "text": "fn compose<A, B, C>(f: impl Fn(A) -> B, g: impl Fn(B) -> C) -> impl Fn(A) -> C {\n\tmove |x| g(f(x))\n}"
+    },
+    {
+      "id": 54,
+      "length": 71,
+      "source": "Currying - programming-idioms.org",
+      "text": "fn add(a: u32, b: u32) -> u32 {\n\ta + b\n}\nlet add5 = move |x| add(5, x);"
+    },
+    {
+      "id": 55,
+      "length": 148,
+      "source": "Extract a substring - programming-idioms.org",
+      "text": "extern crate unicode_segmentation;\nuse unicode_segmentation::UnicodeSegmentation;\nlet t = s.graphemes(true).skip(i).take(j - i).collect::<String>();"
+    },
+    {
+      "id": 56,
+      "length": 52,
+      "source": "Extract a substring - programming-idioms.org",
+      "text": "use substring::Substring;\nlet t = s.substring(i, j);"
+    },
+    {
+      "id": 57,
+      "length": 26,
+      "source": "Check if string contains a word - programming-idioms.org",
+      "text": "let ok = s.contains(word);"
+    },
+    {
+      "id": 58,
+      "length": 44,
+      "source": "Reverse a string - programming-idioms.org",
+      "text": "let t = s.chars().rev().collect::<String>();"
+    },
+    {
+      "id": 59,
+      "length": 42,
+      "source": "Reverse a string - programming-idioms.org",
+      "text": "let t: String = s.chars().rev().collect();"
+    },
+    {
+      "id": 60,
+      "length": 103,
+      "source": "Continue outer loop - programming-idioms.org",
+      "text": "outer: for va in &a {\n\tfor vb in &b {\n\t\tif va == vb {\n\t\t\tcontinue 'outer;\n\t\t}\n\t}\n\tprintln!(\"{}\", va);\n}"
+    },
+    {
+      "id": 61,
+      "length": 108,
+      "source": "Break outer loop - programming-idioms.org",
+      "text": "outer: for v in m {\n\t'inner: for i in v {\n\t\tif i < 0 {\n\t\t\tprintln!(\"Found {}\", i);\n\t\t\tbreak 'outer;\n\t\t}\n\t}\n}"
+    },
+    {
+      "id": 62,
+      "length": 15,
+      "source": "Insert element in list - programming-idioms.org",
+      "text": "s.insert(i, x);"
+    },
+    {
+      "id": 63,
+      "length": 69,
+      "source": "Pause execution for 5 seconds - programming-idioms.org",
+      "text": "use std::{thread, time};\nthread::sleep(time::Duration::from_secs(5));"
+    },
+    {
+      "id": 64,
+      "length": 60,
+      "source": "Extract beginning of string (prefix) - programming-idioms.org",
+      "text": "let t = s.char_indices().nth(5).map_or(s, |(i, _)| &s[..i]);"
+    },
+    {
+      "id": 65,
+      "length": 87,
+      "source": "Extract string suffix - programming-idioms.org",
+      "text": "let last5ch = s.chars().count() - 5;\nlet t: String = s.chars().skip(last5ch).collect();"
+    },
+    {
+      "id": 66,
+      "length": 31,
+      "source": "Multi-line string literal - programming-idioms.org",
+      "text": "let s = \"line 1\nline 2\nline 3\";"
+    },
+    {
+      "id": 67,
+      "length": 30,
+      "source": "Multi-line string literal - programming-idioms.org",
+      "text": "let s = r#\"Huey\nDewey\nLouie\"#;"
+    },
+    {
+      "id": 68,
+      "length": 51,
+      "source": "Split a space-separated string - programming-idioms.org",
+      "text": "let chunks:Vec<_> = s.split_whitespace().collect();"
+    },
+    {
+      "id": 69,
+      "length": 26,
+      "source": "Make an infinite loop - programming-idioms.org",
+      "text": "loop {\n\t\t// Do something\n}"
+    },
+    {
+      "id": 70,
+      "length": 49,
+      "source": "Check if map contains key - programming-idioms.org",
+      "text": "use std::collections::HashMap;\nm.contains_key(&k)"
+    },
+    {
+      "id": 71,
+      "length": 84,
+      "source": "Check if map contains value - programming-idioms.org",
+      "text": "use std::collections::BTreeMap;\nlet does_contain = m.values().any(|&val| *val == v);"
+    },
+    {
+      "id": 72,
+      "length": 21,
+      "source": "Join a list of strings - programming-idioms.org",
+      "text": "let y = x.join(\", \");"
+    },
+    {
+      "id": 73,
+      "length": 14,
+      "source": "Compute sum of integers - programming-idioms.org",
+      "text": "x.iter().sum()"
+    },
+    {
+      "id": 74,
+      "length": 30,
+      "source": "Compute sum of integers - programming-idioms.org",
+      "text": "let s = x.iter().sum::<i32>();"
+    },
+    {
+      "id": 75,
+      "length": 22,
+      "source": "Convert integer to string - programming-idioms.org",
+      "text": "let s = i.to_string();"
+    },
+    {
+      "id": 76,
+      "length": 24,
+      "source": "Convert integer to string - programming-idioms.org",
+      "text": "let s = format!(\"{}\",i);"
+    },
+    {
+      "id": 77,
+      "length": 129,
+      "source": "Launch 1000 parallel tasks and wait for completion - programming-idioms.org",
+      "text": "use std::thread;\nlet threads: Vec<_> = (0..1000).map(|i| thread::spawn(move || f(i))).collect();\nfor t in threads {\n\t\tt.join();\n}"
+    },
+    {
+      "id": 78,
+      "length": 45,
+      "source": "Filter list - programming-idioms.org",
+      "text": "let y: Vec<_> = x.iter().filter(p).collect();"
+    },
+    {
+      "id": 79,
+      "length": 139,
+      "source": "Extract file content to a string - programming-idioms.org",
+      "text": "use std::io::prelude::*;\nuse std::fs::File;\nlet mut file = File::open(f)?;\nlet mut lines = String::new();\nfile.read_to_string(&mut lines)?;"
+    },
+    {
+      "id": 80,
+      "length": 74,
+      "source": "Extract file content to a string - programming-idioms.org",
+      "text": "use std::fs;\nlet lines = fs::read_to_string(f).expect(\"Can't read file.\");"
+    },
+    {
+      "id": 81,
+      "length": 31,
+      "source": "Write to standard error stream - programming-idioms.org",
+      "text": "eprintln!(\"{} is negative\", x);"
+    },
+    {
+      "id": 82,
+      "length": 126,
+      "source": "Read command line argument - programming-idioms.org",
+      "text": "use std::env;\nlet first_arg = env::args().skip(1).next();\nlet fallback = \"\".to_owned();\nlet x = first_arg.unwrap_or(fallback);"
+    },
+    {
+      "id": 83,
+      "length": 39,
+      "source": "Get current date - programming-idioms.org",
+      "text": "extern crate time;\nlet d = time::now();"
+    },
+    {
+      "id": 84,
+      "length": 53,
+      "source": "Get current date - programming-idioms.org",
+      "text": "use std::time::SystemTime;\nlet d = SystemTime::now();"
+    },
+    {
+      "id": 85,
+      "length": 27,
+      "source": "Find substring position - programming-idioms.org",
+      "text": "let i = x.find(y).unwrap();"
+    },
+    {
+      "id": 86,
+      "length": 27,
+      "source": "Replace fragment of a string - programming-idioms.org",
+      "text": "let x2 = x.replace(&y, &z);"
+    },
+    {
+      "id": 87,
+      "length": 102,
+      "source": "Big integer : value 3 power 247 - programming-idioms.org",
+      "text": "extern crate num;\nuse num::bigint::ToBigInt;\nlet a = 3.to_bigint().unwrap();\nlet x = num::pow(a, 247);"
+    },
+    {
+      "id": 88,
+      "length": 37,
+      "source": "Format decimal number - programming-idioms.org",
+      "text": "let s = format!(\"{:.1}%\", 100.0 * x);"
+    },
+    {
+      "id": 89,
+      "length": 41,
+      "source": "Big integer exponentiation - programming-idioms.org",
+      "text": "extern crate num;\nlet z = num::pow(x, n);"
+    },
+    {
+      "id": 90,
+      "length": 267,
+      "source": "Binomial coefficient \"n choose k\" - programming-idioms.org",
+      "text": "extern crate num;\nuse num::bigint::BigInt;\nuse num::bigint::ToBigInt;\nuse num::traits::One;\nfn binom(n: u64, k: u64) -> BigInt {\n\tlet mut res = BigInt::one();\n\tfor i in 0..k {\n\t\tres = (res * (n - i).to_bigint().unwrap()) /\n\t\t\t  (i + 1).to_bigint().unwrap();\n\t}\n\tres\n}"
+    },
+    {
+      "id": 91,
+      "length": 27,
+      "source": "Create a bitset - programming-idioms.org",
+      "text": "let mut x = vec![false; n];"
+    },
+    {
+      "id": 92,
+      "length": 95,
+      "source": "Seed random generator - programming-idioms.org",
+      "text": "use rand::{Rng, SeedableRng, rngs::StdRng};\nlet s = 32;\nlet mut rng = StdRng::seed_from_u64(s);"
+    },
+    {
+      "id": 93,
+      "length": 233,
+      "source": "Use clock as random generator seed - programming-idioms.org",
+      "text": "use rand::{Rng, SeedableRng, rngs::StdRng};\nuse std::time::SystemTime;\nlet d = SystemTime::now()\n\t.duration_since(SystemTime::UNIX_EPOCH)\n\t.expect(\"Duration since UNIX_EPOCH failed\");\nlet mut rng = StdRng::seed_from_u64(d.as_secs());"
+    },
+    {
+      "id": 94,
+      "length": 80,
+      "source": "Echo program implementation - programming-idioms.org",
+      "text": "use std::env;\nprintln!(\"{}\", env::args().skip(1).collect::<Vec<_>>().join(\" \"));"
+    },
+    {
+      "id": 95,
+      "length": 79,
+      "source": "Echo program implementation - programming-idioms.org",
+      "text": "use itertools::Itertools;\nprintln!(\"{}\", std::env::args().skip(1).format(\" \"));"
+    },
+    {
+      "id": 96,
+      "length": 79,
+      "source": "Compute GCD - programming-idioms.org",
+      "text": "extern crate num;\nuse num::Integer;\nuse num::bigint::BigInt;\nlet x = a.gcd(&b);"
+    },
+    {
+      "id": 97,
+      "length": 79,
+      "source": "Compute LCM - programming-idioms.org",
+      "text": "extern crate num;\nuse num::Integer;\nuse num::bigint::BigInt;\nlet x = a.lcm(&b);"
+    },
+    {
+      "id": 98,
+      "length": 27,
+      "source": "Binary digits from an integer - programming-idioms.org",
+      "text": "let s = format!(\"{:b}\", x);"
+    },
+    {
+      "id": 99,
+      "length": 87,
+      "source": "Complex number - programming-idioms.org",
+      "text": "extern crate num;\nuse num::Complex;\nlet mut x = Complex::new(-2, 3);\nx *= Complex::i();"
+    },
+    {
+      "id": 100,
+      "length": 38,
+      "source": "\"do while\" loop - programming-idioms.org",
+      "text": "loop {\n\tdoStuff();\n\tif !c { break; }\n}"
+    },
+    {
+      "id": 101,
+      "length": 17,
+      "source": "Convert integer to floating point number - programming-idioms.org",
+      "text": "let y = x as f32;"
+    },
+    {
+      "id": 102,
+      "length": 17,
+      "source": "Truncate floating point number to integer - programming-idioms.org",
+      "text": "let y = x as i32;"
+    },
+    {
+      "id": 103,
+      "length": 25,
+      "source": "Round floating point number to integer - programming-idioms.org",
+      "text": "let y = x.round() as i64;"
+    },
+    {
+      "id": 104,
+      "length": 29,
+      "source": "Count substring occurrences - programming-idioms.org",
+      "text": "let c = s.matches(t).count();"
+    },
+    {
+      "id": 105,
+      "length": 76,
+      "source": "Regex with character repetition - programming-idioms.org",
+      "text": "extern crate regex;\nuse regex::Regex;\nlet r = Regex::new(r\"htt+p\").unwrap();"
+    },
+    {
+      "id": 106,
+      "length": 23,
+      "source": "Count bits set in integer binary representation - programming-idioms.org",
+      "text": "let c = i.count_ones();"
+    },
+    {
+      "id": 107,
+      "length": 83,
+      "source": "Check if integer addition will overflow - programming-idioms.org",
+      "text": "fn adding_will_overflow(x: usize, y: usize) -> bool {\n\tx.checked_add(y).is_none()\n}"
+    },
+    {
+      "id": 108,
+      "length": 81,
+      "source": "Check if integer multiplication will overflow - programming-idioms.org",
+      "text": "fn multiply_will_overflow(x: i64, y: i64) -> bool {\n\tx.checked_mul(y).is_none()\n}"
+    },
+    {
+      "id": 109,
+      "length": 22,
+      "source": "Stop program - programming-idioms.org",
+      "text": "std::process::exit(0);"
+    },
+    {
+      "id": 110,
+      "length": 47,
+      "source": "Allocate 1M bytes - programming-idioms.org",
+      "text": "let buf: Vec<u8> = Vec::with_capacity(1000000);"
+    },
+    {
+      "id": 111,
+      "length": 155,
+      "source": "Handle invalid argument - programming-idioms.org",
+      "text": "enum CustomError { InvalidAnswer }\nfn do_stuff(x: i32) -> Result<i32, CustomError> {\n\tif x != 42 {\n\t\tErr(CustomError::InvalidAnswer)\n\t} else {\n\t\tOk(x)\n\t}\n}"
+    },
+    {
+      "id": 112,
+      "length": 179,
+      "source": "Read-only outside - programming-idioms.org",
+      "text": "struct Foo {\n\tx: usize\n}\nimpl Foo {\n\tpub fn new(x: usize) -> Self {\n\t\tFoo { x }\n\t}\n\tpub fn x<'a>(&'a self) -> &'a usize {\n\t\t&self.x\n\t}\n\tpub fn bar(&mut self) {\n\t\tself.x += 1;\n\t}\n}"
+    },
+    {
+      "id": 113,
+      "length": 145,
+      "source": "Load JSON file into struct - programming-idioms.org",
+      "text": "#[macro_use] extern crate serde_derive;\nextern crate serde_json;\nuse std::fs::File;\nlet x = ::serde_json::from_reader(File::open(\"data.json\")?)?;"
+    },
+    {
+      "id": 114,
+      "length": 141,
+      "source": "Save object into JSON file - programming-idioms.org",
+      "text": "extern crate serde_json;\n#[macro_use] extern crate serde_derive;\nuse std::fs::File;\n::serde_json::to_writer(&File::create(\"data.json\")?, &x)?"
+    },
+    {
+      "id": 115,
+      "length": 34,
+      "source": "Pass a runnable procedure as parameter - programming-idioms.org",
+      "text": "fn control(f: impl Fn()) {\n\tf();\n}"
+    },
+    {
+      "id": 116,
+      "length": 133,
+      "source": "Print type of variable - programming-idioms.org",
+      "text": "#![feature(core_intrinsics)]\nfn type_of<T>(_: &T) -> &'static str {\n\tstd::intrinsics::type_name::<T>()\n}\nprintln!(\"{}\", type_of(&x));"
+    },
+    {
+      "id": 117,
+      "length": 47,
+      "source": "Get file size - programming-idioms.org",
+      "text": "use std::fs;\nlet x = fs::metadata(path)?.len();"
+    },
+    {
+      "id": 118,
+      "length": 31,
+      "source": "Get file size - programming-idioms.org",
+      "text": "let x = path.metadata()?.len();"
+    },
+    {
+      "id": 119,
+      "length": 30,
+      "source": "Check string prefix - programming-idioms.org",
+      "text": "let b = s.starts_with(prefix);"
+    },
+    {
+      "id": 120,
+      "length": 28,
+      "source": "Check string suffix - programming-idioms.org",
+      "text": "let b = s.ends_with(suffix);"
+    },
+    {
+      "id": 121,
+      "length": 90,
+      "source": "Epoch seconds to date object - programming-idioms.org",
+      "text": "extern crate chrono;\nuse chrono::prelude::*:\nlet d = NaiveDateTime::from_timestamp(ts, 0);"
+    },
+    {
+      "id": 122,
+      "length": 76,
+      "source": "Format date YYYY-MM-DD - programming-idioms.org",
+      "text": "extern crate chrono;\nuse chrono::prelude::*;\nUtc::today().format(\"%Y-%m-%d\")"
+    },
+    {
+      "id": 123,
+      "length": 116,
+      "source": "Sort by a comparator - programming-idioms.org",
+      "text": "fn main()\n{\n\tlet c = |a: &u32,b: &u32|a.cmp(b);\n\tlet mut v = vec![1,7,5,2,3];\n\tv.sort_by(c);\n\tprintln!(\"{:#?}\",v);\n}"
+    },
+    {
+      "id": 124,
+      "length": 17,
+      "source": "Sort by a comparator - programming-idioms.org",
+      "text": "items.sort_by(c);"
+    },
+    {
+      "id": 125,
+      "length": 128,
+      "source": "Load from HTTP GET request into a string - programming-idioms.org",
+      "text": "extern crate reqwest;\nuse reqwest::Client;\nlet client = Client::new();\nlet s = client.get(u).send().and_then(|res| res.text())?;"
+    },
+    {
+      "id": 126,
+      "length": 71,
+      "source": "Load from HTTP GET request into a string - programming-idioms.org",
+      "text": "[dependencies]\nureq = \"1.0\"\nlet s = ureq::get(u).call().into_string()?;"
+    },
+    {
+      "id": 127,
+      "length": 268,
+      "source": "Load from HTTP GET request into a file - programming-idioms.org",
+      "text": "extern crate reqwest;\nuse reqwest::Client;\nuse std::fs::File;\nlet client = Client::new();\nmatch client.get(&u).send() {\n\tOk(res) => {\n\t\tlet file = File::create(\"result.txt\")?;\n\t\t::std::io::copy(res, file)?;\n\t},\n\tErr(e) => eprintln!(\"failed to send request: {}\", e),\n};"
+    },
+    {
+      "id": 128,
+      "length": 245,
+      "source": "Current executable name - programming-idioms.org",
+      "text": "fn get_exec_name() -> Option<String> {\n\tstd::env::current_exe()\n\t\t.ok()\n\t\t.and_then(|pb| pb.file_name().map(|s| s.to_os_string()))\n\t\t.and_then(|s| s.into_string().ok())\n}\nfn main() -> () {\n\tlet s = get_exec_name().unwrap();\n\tprintln!(\"{}\", s);\n}"
+    },
+    {
+      "id": 129,
+      "length": 153,
+      "source": "Current executable name - programming-idioms.org",
+      "text": "let s = std::env::current_exe()\n\t.expect(\"Can't get the exec path\")\n\t.file_name()\n\t.expect(\"Can't get the exec name\")\n\t.to_string_lossy()\n\t.into_owned();"
+    },
+    {
+      "id": 130,
+      "length": 52,
+      "source": "Get program working directory - programming-idioms.org",
+      "text": "use std::env;\nlet dir = env::current_dir().unwrap();"
+    },
+    {
+      "id": 131,
+      "length": 182,
+      "source": "Get folder containing current program - programming-idioms.org",
+      "text": "let dir = std::env::current_exe()?\n\t.canonicalize()\n\t.expect(\"the current exe should exist\")\n\t.parent()\n\t.expect(\"the current exe should be a file\")\n\t.to_string_lossy()\n\t.to_owned();"
+    },
+    {
+      "id": 132,
+      "length": 35,
+      "source": "Number of bytes of a type - programming-idioms.org",
+      "text": "let n = ::std::mem::size_of::<T>();"
+    },
+    {
+      "id": 133,
+      "length": 32,
+      "source": "Check if string is blank - programming-idioms.org",
+      "text": "let blank = s.trim().is_empty();"
+    },
+    {
+      "id": 134,
+      "length": 126,
+      "source": "Launch other program - programming-idioms.org",
+      "text": "use std::process::Command;\nlet output = Command::new(\"x\")\n\t.args(&[\"a\", \"b\"])\n\t.spawn()\n\t.expect(\"failed to execute process\");"
+    },
+    {
+      "id": 135,
+      "length": 52,
+      "source": "Iterate over map entries, ordered by keys - programming-idioms.org",
+      "text": "for (k, x) in mymap {\n\tprintln!(\"({}, {})\", k, x);\n}"
+    },
+    {
+      "id": 136,
+      "length": 108,
+      "source": "Iterate over map entries, ordered by values - programming-idioms.org",
+      "text": "use itertools::Itertools;\nfor (k, x) in mymap.iter().sorted_by_key(|x| x.1) {\n\t\tprintln!(\"[{},{}]\", k, x);\n}"
+    },
+    {
+      "id": 137,
+      "length": 133,
+      "source": "Iterate over map entries, ordered by values - programming-idioms.org",
+      "text": "let mut items: Vec<_> = mymap.iter().collect();\nitems.sort_by_key(|item| item.1);\nfor (k, x) in items {\n\tprintln!(\"[{},{}]\", k, x);\n}"
+    },
+    {
+      "id": 138,
+      "length": 15,
+      "source": "Test deep equality - programming-idioms.org",
+      "text": "let b = x == y;"
+    },
+    {
+      "id": 139,
+      "length": 61,
+      "source": "Compare dates - programming-idioms.org",
+      "text": "extern crate chrono;\nuse chrono::prelude::*;\nlet b = d1 < d2;"
+    },
+    {
+      "id": 140,
+      "length": 23,
+      "source": "Remove occurrences of word from string - programming-idioms.org",
+      "text": "s2 = s1.replace(w, \"\");"
+    },
+    {
+      "id": 141,
+      "length": 33,
+      "source": "Remove occurrences of word from string - programming-idioms.org",
+      "text": "let s2 = str::replace(s1, w, \"\");"
+    },
+    {
+      "id": 142,
+      "length": 16,
+      "source": "Get list size - programming-idioms.org",
+      "text": "let n = x.len();"
+    },
+    {
+      "id": 143,
+      "length": 75,
+      "source": "List to set - programming-idioms.org",
+      "text": "use std::collections::HashSet;\nlet y: HashSet<_> = x.into_iter().collect();"
+    },
+    {
+      "id": 144,
+      "length": 20,
+      "source": "Deduplicate list - programming-idioms.org",
+      "text": "x.sort();\nx.dedup();"
+    },
+    {
+      "id": 145,
+      "length": 74,
+      "source": "Deduplicate list - programming-idioms.org",
+      "text": "use itertools::Itertools;\nlet dedup: Vec<_> = x.iter().unique().collect();"
+    },
+    {
+      "id": 146,
+      "length": 180,
+      "source": "Read integer from stdin - programming-idioms.org",
+      "text": "fn get_input() -> String {\n\tlet mut buffer = String::new();\n\tstd::io::stdin().read_line(&mut buffer).expect(\"Failed\");\n\tbuffer\n}\nlet n = get_input().trim().parse::<i64>().unwrap();"
+    },
+    {
+      "id": 147,
+      "length": 131,
+      "source": "Read integer from stdin - programming-idioms.org",
+      "text": "use std::io;\nlet mut input = String::new();\nio::stdin().read_line(&mut input).unwrap();\nlet n: i32 = input.trim().parse().unwrap();"
+    },
+    {
+      "id": 148,
+      "length": 211,
+      "source": "Read integer from stdin - programming-idioms.org",
+      "text": "use std::io::BufRead;\nlet n: i32 = std::io::stdin()\n\t.lock()\n\t.lines()\n\t.next()\n\t.expect(\"stdin should be available\")\n\t.expect(\"couldn't read from stdin\")\n\t.trim()\n\t.parse()\n\t.expect(\"input was not an integer\");"
+    },
+    {
+      "id": 149,
+      "length": 141,
+      "source": "UDP listen and read - programming-idioms.org",
+      "text": "use std::net::UdpSocket;\nlet mut b = [0 as u8; 1024];\nlet sock = UdpSocket::bind((\"localhost\", p)).unwrap();\nsock.recv_from(&mut b).unwrap();"
+    },
+    {
+      "id": 150,
+      "length": 46,
+      "source": "Declare enumeration - programming-idioms.org",
+      "text": "enum Suit {\n\tSpades, Hearts, Diamonds, Clubs\n}"
+    },
+    {
+      "id": 151,
+      "length": 22,
+      "source": "Assert condition - programming-idioms.org",
+      "text": "assert!(isConsistent);"
+    },
+    {
+      "id": 152,
+      "length": 34,
+      "source": "Binary search for a value in sorted array - programming-idioms.org",
+      "text": "a.binary_search(&x).unwrap_or(-1);"
+    },
+    {
+      "id": 153,
+      "length": 128,
+      "source": "Measure function call duration - programming-idioms.org",
+      "text": "use std::time::{Duration, Instant};\nlet start = Instant::now();\nfoo();\nlet duration = start.elapsed();\nprintln!(\"{}\", duration);"
+    },
+    {
+      "id": 154,
+      "length": 59,
+      "source": "Multiple return values - programming-idioms.org",
+      "text": "fn foo() -> (String, bool) {\n\t(String::from(\"bar\"), true)\n}"
+    },
+    {
+      "id": 155,
+      "length": 39,
+      "source": "Source code inclusion - programming-idioms.org",
+      "text": "fn main() {\n\tinclude!(\"foobody.txt\");\n}"
+    },
+    {
+      "id": 156,
+      "length": 312,
+      "source": "Breadth-first traversing of a tree - programming-idioms.org",
+      "text": "use std::collections::VecDeque;\nstruct Tree<V> {\n\tchildren: Vec<Tree<V>>,\n\tvalue: V\n}\nimpl<V> Tree<V> {\n\tfn bfs(&self, f: impl Fn(&V)) {\n\t\tlet mut q = VecDeque::new();\n\t\tq.push_back(self);\n\t\twhile let Some(t) = q.pop_front() {\n\t\t\t(f)(&t.value);\n\t\t\tfor child in &t.children {\n\t\t\t\tq.push_back(child);\n\t\t\t}\n\t\t}\n\t}\n}"
+    },
+    {
+      "id": 157,
+      "length": 497,
+      "source": "Breadth-first traversing in a graph - programming-idioms.org",
+      "text": "use std::rc::{Rc, Weak};\nuse std::cell::RefCell;\nstruct Vertex<V> {\n\t\tvalue: V,\n\t\tneighbours: Vec<Weak<RefCell<Vertex<V>>>>,\n}\n// ...\nfn bft(start: Rc<RefCell<Vertex<V>>>, f: impl Fn(&V)) {\n\t\tlet mut q = vec![start];\n\t\tlet mut i = 0;\n\t\twhile i < q.len() {\n\t\t\tlet v = Rc::clone(&q[i]);\n\t\t\ti += 1;\n\t\t\t(f)(&v.borrow().value);\n\t\t\tfor n in &v.borrow().neighbours {\n\t\t\t\tlet n = n.upgrade().expect(\"Invalid neighbour\");\n\t\t\t\tif q.iter().all(|v| v.as_ptr() != n.as_ptr()) {\n\t\t\t\t\tq.push(n);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n}"
+    },
+    {
+      "id": 158,
+      "length": 465,
+      "source": "Depth-first traversing in a graph - programming-idioms.org",
+      "text": "use std::rc::{Rc, Weak};\nuse std::cell::RefCell;\nstruct Vertex<V> {\n\t\tvalue: V,\n\t\tneighbours: Vec<Weak<RefCell<Vertex<V>>>>,\n}\n// ...\nfn dft_helper(start: Rc<RefCell<Vertex<V>>>, f: &impl Fn(&V), s: &mut Vec<*const Vertex<V>>) {\n\t\ts.push(start.as_ptr());\n\t\t(f)(&start.borrow().value);\n\t\tfor n in &start.borrow().neighbours {\n\t\t\t\tlet n = n.upgrade().expect(\"Invalid neighbor\");\n\t\t\t\tif s.iter().all(|&p| p != n.as_ptr()) {\n\t\t\t\t\t\tSelf::dft_helper(n, f, s);\n\t\t\t\t}\n\t\t}\n}"
+    },
+    {
+      "id": 159,
+      "length": 54,
+      "source": "Successive conditions - programming-idioms.org",
+      "text": "if c1 { f1() } else if c2 { f2() } else if c3 { f3() }"
+    },
+    {
+      "id": 160,
+      "length": 78,
+      "source": "Successive conditions - programming-idioms.org",
+      "text": "match true {\n\t_ if c1 => f1(),\n\t_ if c2 => f2(),\n\t_ if c3 => f3(),\n\t_ => (),\n}"
+    },
+    {
+      "id": 161,
+      "length": 87,
+      "source": "Measure duration of procedure execution - programming-idioms.org",
+      "text": "use std::time::Instant;\nlet start = Instant:now();\nf();\nlet duration = start.elapsed();"
+    },
+    {
+      "id": 162,
+      "length": 172,
+      "source": "Case-insensitive string contains - programming-idioms.org",
+      "text": "extern crate regex;\nuse regex::Regex;\nlet mut re = String::with_capacity(4 + word.len());\nre += \"(?i)\";\nre += word;\nlet re = Regex::new(&re).unwrap();\nok = re.is_match(&s);"
+    },
+    {
+      "id": 163,
+      "length": 144,
+      "source": "Case-insensitive string contains - programming-idioms.org",
+      "text": "extern crate regex;\nuse regex::RegexBuilder;\nlet re =\n\tRegexBuilder::new(word)\n\t.case_insensitive(true)\n\t.build().unwrap();\nok = re.is_match(s);"
+    },
+    {
+      "id": 164,
+      "length": 69,
+      "source": "Case-insensitive string contains - programming-idioms.org",
+      "text": "let ok = s.to_ascii_lowercase().contains(&word.to_ascii_lowercase());"
+    },
+    {
+      "id": 165,
+      "length": 26,
+      "source": "Create a new list - programming-idioms.org",
+      "text": "let items = vec![a, b, c];"
+    },
+    {
+      "id": 166,
+      "length": 54,
+      "source": "Remove item from list, by its value - programming-idioms.org",
+      "text": "if let Some(i) = items.first(&x) {\n\titems.remove(i);\n}"
+    },
+    {
+      "id": 167,
+      "length": 62,
+      "source": "Remove all occurrences of a value from a list - programming-idioms.org",
+      "text": "items = items.into_iter().filter(|&item| item != x).collect();"
+    },
+    {
+      "id": 168,
+      "length": 141,
+      "source": "Check if string contains only digits - programming-idioms.org",
+      "text": "let chars_are_numeric: Vec<bool> = s.chars()\n\t\t\t\t\t\t\t\t.map(|c|c.is_numeric())\n\t\t\t\t\t\t\t\t.collect();\nlet b = !chars_are_numeric.contains(&false);"
+    },
+    {
+      "id": 169,
+      "length": 40,
+      "source": "Check if string contains only digits - programming-idioms.org",
+      "text": "let b = s.chars().all(char::is_numeric);"
+    },
+    {
+      "id": 170,
+      "length": 144,
+      "source": "Create temp file - programming-idioms.org",
+      "text": "use tempdir::TempDir;\nuse std::fs::File;\nlet temp_dir = TempDir::new(\"prefix\")?;\nlet temp_file = File::open(temp_dir.path().join(\"file_name\"))?;"
+    },
+    {
+      "id": 171,
+      "length": 78,
+      "source": "Create temp directory - programming-idioms.org",
+      "text": "extern crate tempdir;\nuse tempdir::TempDir;\nlet tmp = TempDir::new(\"prefix\")?;"
+    },
+    {
+      "id": 172,
+      "length": 44,
+      "source": "Delete map entry - programming-idioms.org",
+      "text": "use std::collections::HashMap;\nm.remove(&k);"
+    },
+    {
+      "id": 173,
+      "length": 64,
+      "source": "Iterate in sequence over two lists - programming-idioms.org",
+      "text": "for i in item1.iter().chain(item2.iter()) {\n\tprint!(\"{} \", i);\n}"
+    },
+    {
+      "id": 174,
+      "length": 27,
+      "source": "Hexadecimal digits of an integer - programming-idioms.org",
+      "text": "let s = format!(\"{:X}\", x);"
+    },
+    {
+      "id": 175,
+      "length": 84,
+      "source": "Iterate alternatively over two lists - programming-idioms.org",
+      "text": "extern crate itertools;\nfor pair in izip!(item1, item2) {\n\tprintln!(\"{:?}\", pair);\n}"
+    },
+    {
+      "id": 176,
+      "length": 44,
+      "source": "Check if file exists - programming-idioms.org",
+      "text": "let _b = std::path::Path::new(_fp).exists();"
+    },
+    {
+      "id": 177,
+      "length": 91,
+      "source": "Print log line with datetime - programming-idioms.org",
+      "text": "eprintln!(\"[{}] {}\", humantime::format_rfc3339_seconds(std::time::SystemTime::now()), msg);"
+    },
+    {
+      "id": 178,
+      "length": 34,
+      "source": "Convert string to floating point number - programming-idioms.org",
+      "text": "let f = s.parse::<f32>().unwrap();"
+    },
+    {
+      "id": 179,
+      "length": 32,
+      "source": "Convert string to floating point number - programming-idioms.org",
+      "text": "let f: f32 = s.parse().unwrap();"
+    },
+    {
+      "id": 180,
+      "length": 47,
+      "source": "Remove all non-ASCII characters - programming-idioms.org",
+      "text": "let t = s.replace(|c: char| !c.is_ascii(), \"\");"
+    },
+    {
+      "id": 181,
+      "length": 63,
+      "source": "Remove all non-ASCII characters - programming-idioms.org",
+      "text": "let t = s.chars().filter(|c| c.is_ascii()).collect::<String>();"
+    },
+    {
+      "id": 182,
+      "length": 138,
+      "source": "Read list of integers from stdin - programming-idioms.org",
+      "text": "use std::io::stdin();\nlet in = stdin();\nlet lock = in.lock();\nlet nums = lock.lines()\n\t.map(|line| isize::from_str_radix(line.trim(), 10);"
+    },
+    {
+      "id": 183,
+      "length": 32,
+      "source": "Remove trailing slash - programming-idioms.org",
+      "text": "if p.ends_with('/') { p.pop(); }"
+    },
+    {
+      "id": 184,
+      "length": 98,
+      "source": "Remove string trailing path separator - programming-idioms.org",
+      "text": "let p = if ::std::path::is_separator(p.chars().last().unwrap()) {\n\t&p[0..p.len()-1]\n} else {\n\tp\n};"
+    },
+    {
+      "id": 185,
+      "length": 48,
+      "source": "Remove string trailing path separator - programming-idioms.org",
+      "text": "let p = p.strip_suffix(std::path::is_separator);"
+    },
+    {
+      "id": 186,
+      "length": 22,
+      "source": "Turn a character into a string - programming-idioms.org",
+      "text": "let s = c.to_string();"
+    },
+    {
+      "id": 187,
+      "length": 30,
+      "source": "Concatenate string with integer - programming-idioms.org",
+      "text": "let t = format!(\"{}{}\", s, i);"
+    },
+    {
+      "id": 188,
+      "length": 39,
+      "source": "Delete file - programming-idioms.org",
+      "text": "use std::fs;\nfs::remove_file(filepath);"
+    },
+    {
+      "id": 189,
+      "length": 28,
+      "source": "Format integer with zero-padding - programming-idioms.org",
+      "text": "let s = format!(\"{:03}\", i);"
+    },
+    {
+      "id": 190,
+      "length": 29,
+      "source": "Declare constant string - programming-idioms.org",
+      "text": "const PLANET: &str = \"Earth\";"
+    },
+    {
+      "id": 191,
+      "length": 129,
+      "source": "Random sublist - programming-idioms.org",
+      "text": "use rand::prelude::*;\nlet mut rng = &mut rand::thread_rng();\nlet y = x.choose_multiple(&mut rng, k).cloned().collect::<Vec<_>>();"
+    },
+    {
+      "id": 192,
+      "length": 47,
+      "source": "Trie - programming-idioms.org",
+      "text": "struct Trie {\n\tval: String,\n\tnodes: Vec<Trie>\n}"
+    },
+    {
+      "id": 193,
+      "length": 73,
+      "source": "Detect if 32-bit or 64-bit architecture - programming-idioms.org",
+      "text": "match std::mem::size_of::<&char>() {\n\t4 => f32(),\n\t8 => f64(),\n\t_ => {}\n}"
+    },
+    {
+      "id": 194,
+      "length": 71,
+      "source": "Multiply all the elements of a list - programming-idioms.org",
+      "text": "let elements = elements.into_iter().map(|x| c * x).collect::<Vec<_>>();"
+    },
+    {
+      "id": 195,
+      "length": 204,
+      "source": "Execute procedures depending on options - programming-idioms.org",
+      "text": "if let Some(arg) = ::std::env::args().nth(1) {\n\tif &arg == \"f\" {\n\t\tfox();\n\t} else if &arg = \"b\" {\n\t\tbat();\n\t} else {\n\t\teprintln!(\"invalid argument: {}\", arg),\n\t}\n} else {\n\teprintln!(\"missing argument\");\n}"
+    },
+    {
+      "id": 196,
+      "length": 194,
+      "source": "Execute procedures depending on options - programming-idioms.org",
+      "text": "if let Some(arg) = ::std::env::args().nth(1) {\n\tmatch arg.as_str() {\n\t\t\"f\" => fox(),\n\t\t\"b\" => box(),\n\t\t_ => eprintln!(\"invalid argument: {}\", arg),\n\t};\n} else {\n\teprintln!(\"missing argument\");\n}"
+    },
+    {
+      "id": 197,
+      "length": 71,
+      "source": "Print list elements by group of 2 - programming-idioms.org",
+      "text": "for pair in list.chunks(2) {\n\tprintln!(\"({}, {})\", pair[0], pair[1]);\n}"
+    },
+    {
+      "id": 198,
+      "length": 65,
+      "source": "Open URL in default browser - programming-idioms.org",
+      "text": "use webbrowser;\nwebbrowser::open(s).expect(\"failed to open URL\");"
+    },
+    {
+      "id": 199,
+      "length": 29,
+      "source": "Last element of list - programming-idioms.org",
+      "text": "let x = items[items.len()-1];"
+    },
+    {
+      "id": 200,
+      "length": 30,
+      "source": "Last element of list - programming-idioms.org",
+      "text": "let x = items.last().unwrap();"
+    },
+    {
+      "id": 201,
+      "length": 25,
+      "source": "Concatenate two lists - programming-idioms.org",
+      "text": "let ab = [a, b].concat();"
+    },
+    {
+      "id": 202,
+      "length": 32,
+      "source": "Trim prefix - programming-idioms.org",
+      "text": "let t = s.trim_start_matches(p);"
+    },
+    {
+      "id": 203,
+      "length": 57,
+      "source": "Trim prefix - programming-idioms.org",
+      "text": "let t = if s.starts_with(p) { &s[p.len()..] } else { s };"
+    },
+    {
+      "id": 204,
+      "length": 47,
+      "source": "Trim prefix - programming-idioms.org",
+      "text": "let t = s.strip_prefix(p).unwrap_or_else(|| s);"
+    },
+    {
+      "id": 205,
+      "length": 30,
+      "source": "Trim suffix - programming-idioms.org",
+      "text": "let t = s.trim_end_matches(w);"
+    },
+    {
+      "id": 206,
+      "length": 39,
+      "source": "Trim suffix - programming-idioms.org",
+      "text": "let t = s.strip_suffix(w).unwrap_or(s);"
+    },
+    {
+      "id": 207,
+      "length": 26,
+      "source": "String length - programming-idioms.org",
+      "text": "let n = s.chars().count();"
+    },
+    {
+      "id": 208,
+      "length": 20,
+      "source": "Get map size - programming-idioms.org",
+      "text": "let n = mymap.len();"
+    },
+    {
+      "id": 209,
+      "length": 9,
+      "source": "Add an element at the end of a list - programming-idioms.org",
+      "text": "s.push(x)"
+    },
+    {
+      "id": 210,
+      "length": 45,
+      "source": "Insert entry in map - programming-idioms.org",
+      "text": "use std::collection::HashMap;\nm.insert(k, v);"
+    },
+    {
+      "id": 211,
+      "length": 68,
+      "source": "Format a number with grouped thousands - programming-idioms.org",
+      "text": "use separator::Separatable;\nprintln!(\"{}\", 1000.separated_string());"
+    },
+    {
+      "id": 212,
+      "length": 147,
+      "source": "Make HTTP POST request - programming-idioms.org",
+      "text": "use reqwest;\nlet client = reqwest::blocking::Client::new();\nlet resp = client.post(\"http://httpbin.org/post\")\n\t.body(\"this is the body\")\n\t.send()?;"
+    },
+    {
+      "id": 213,
+      "length": 110,
+      "source": "Bytes to hex string - programming-idioms.org",
+      "text": "use hex::ToHex;\nlet mut s = String::with_capacity(2 * a.len());\na.write_hex(&mut s).expect(\"Failed to write\");"
+    },
+    {
+      "id": 214,
+      "length": 110,
+      "source": "Bytes to hex string - programming-idioms.org",
+      "text": "use core::fmt::Write;\nlet mut s = String::with_capacity(2 * n);\nfor byte in a {\n\twrite!(s, \"{:02X}\", byte)?;\n}"
+    },
+    {
+      "id": 215,
+      "length": 80,
+      "source": "Hex string to byte array - programming-idioms.org",
+      "text": "use hex::FromHex\nlet a: Vec<u8> = Vec::from_hex(s).expect(\"Invalid Hex String\");"
+    },
+    {
+      "id": 216,
+      "length": 185,
+      "source": "Check if point is inside rectangle - programming-idioms.org",
+      "text": "struct Rect {\n\tx1: i32,\n\tx2: i32,\n\ty1: i32,\n\ty2: i32,\n}\nimpl Rect {\n\tfn contains(&self, x: i32, y: i32) -> bool {\n\t\treturn self.x1 < x && x < self.x2 && self.y1 < y && y < self.y2;\n\t}\n}"
+    },
+    {
+      "id": 217,
+      "length": 178,
+      "source": "Get center of a rectangle - programming-idioms.org",
+      "text": "struct Rectangle {\n\tx1: f64,\n\ty1: f64,\n\tx2: f64,\n\ty2: f64,\n}\nimpl Rectangle {\n\tpub fn center(&self) -> (f64, f64) {\n\t\t\t((self.x1 + self.x2) / 2.0, (self.y1 + self.y2) / 2.0)\n\t}\n}"
+    },
+    {
+      "id": 218,
+      "length": 46,
+      "source": "List files in directory - programming-idioms.org",
+      "text": "use std::fs;\nlet x = fs::read_dir(d).unwrap();"
+    },
+    {
+      "id": 219,
+      "length": 61,
+      "source": "List files in directory - programming-idioms.org",
+      "text": "let x = std::fs::read_dir(d)?.collect::<Result<Vec<_>, _>()?;"
+    },
+    {
+      "id": 220,
+      "length": 168,
+      "source": "Quine program - programming-idioms.org",
+      "text": "fn main() {\n\tlet x = \"fn main() {\\n\tlet x = \";\n\tlet y = \"print!(\\\"{}{:?};\\n\tlet y = {:?};\\n\t{}\\\", x, x, y, y)\\n}\\n\";\n\tprint!(\"{}{:?};\n\tlet y = {:?};\n\t{}\", x, x, y, y)\n}"
+    },
+    {
+      "id": 221,
+      "length": 67,
+      "source": "Quine program - programming-idioms.org",
+      "text": "fn main(){print!(\"{},{0:?})}}\",\"fn main(){print!(\\\"{},{0:?})}}\\\"\")}"
+    },
+    {
+      "id": 222,
+      "length": 53,
+      "source": "Tomorrow - programming-idioms.org",
+      "text": "let t = chrono::Utc::now().date().succ().to_string();"
+    },
+    {
+      "id": 223,
+      "length": 84,
+      "source": "Execute function in 30 seconds - programming-idioms.org",
+      "text": "use std::time::Duration;\nuse std::thread::sleep;\nsleep(Duration::new(30, 0));\nf(42);"
+    },
+    {
+      "id": 224,
+      "length": 48,
+      "source": "Exit program cleanly - programming-idioms.org",
+      "text": "use std::process::exit;\nfn main() {\n  exit(0);\n}"
+    },
+    {
+      "id": 225,
+      "length": 63,
+      "source": "Filter and transform list - programming-idioms.org",
+      "text": "let y = x.iter()\n\t\t.filter(P)\n\t\t.map(T)\n\t\t.collect::<Vec<_>>();"
+    },
+    {
+      "id": 226,
+      "length": 246,
+      "source": "Call an external C function - programming-idioms.org",
+      "text": "extern \"C\" {\n\t/// # Safety\n\t///\n\t/// `a` must point to an array of at least size 10\n\tfn foo(a: *mut libc::c_double, n: libc::c_int);\n}\nlet mut a = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];\nlet n = 10;\nunsafe {\n\tfoo(a.as_mut_ptr(), n);\n}"
+    },
+    {
+      "id": 227,
+      "length": 42,
+      "source": "Check if any value in a list is larger than a limit - programming-idioms.org",
+      "text": "if a.iter().any(|&elem| elem > x) {\n\tf()\n}"
+    },
+    {
+      "id": 228,
+      "length": 115,
+      "source": "Declare a real variable with at least 20 digits - programming-idioms.org",
+      "text": "use rust_decimal::Decimal;\nuse std::str::FromStr;\nlet a = Decimal::from_str(\"1234567890.123456789012345\").unwrap();"
+    },
+    {
+      "id": 229,
+      "length": 82,
+      "source": "Pass a sub-array - programming-idioms.org",
+      "text": "fn foo(el: &mut i32) {\n\t*el = 42;\n}\na.iter_mut().take(m).step_by(2).for_each(foo);"
+    },
+    {
+      "id": 230,
+      "length": 129,
+      "source": "Get a list of lines from a file - programming-idioms.org",
+      "text": "use std::io::prelude::*;\nuse std::io::BufReader;\nlet lines = BufReader::new(File::open(path)?)\n\t\t.lines()\n\t\t.collect::<Vec<_>>();"
+    },
+    {
+      "id": 231,
+      "length": 35,
+      "source": "Abort program execution with error condition - programming-idioms.org",
+      "text": "use std::process;\nprocess::exit(x);"
+    },
+    {
+      "id": 232,
+      "length": 81,
+      "source": "Return hypotenuse - programming-idioms.org",
+      "text": "fn hypot(x:f64, y:f64)-> f64 {\n\tlet num = x.powi(2) + y.powi(2);\n\tnum.powf(0.5)\n}"
+    },
+    {
+      "id": 233,
+      "length": 52,
+      "source": "Sum of squares - programming-idioms.org",
+      "text": "let s = data.iter().map(|x| x.powi(2)).sum::<f32>();"
+    },
+    {
+      "id": 234,
+      "length": 109,
+      "source": "Get an environment variable - programming-idioms.org",
+      "text": "use std::env;\nlet foo;\nmatch env::var(\"FOO\") {\n\tOk(val) => foo = val,\n\tErr(_e) => foo = \"none\".to_string(),\n}"
+    },
+    {
+      "id": 235,
+      "length": 56,
+      "source": "Get an environment variable - programming-idioms.org",
+      "text": "let foo = env::var(\"FOO\").unwrap_or(\"none\".to_string());"
+    },
+    {
+      "id": 236,
+      "length": 99,
+      "source": "Get an environment variable - programming-idioms.org",
+      "text": "use std::env;\nlet foo = match env::var(\"FOO\") {\n\tOk(val) => val,\n\tErr(_e) => \"none\".to_string(),\n};"
+    },
+    {
+      "id": 237,
+      "length": 95,
+      "source": "Switch statement with strings - programming-idioms.org",
+      "text": "match str_ {\n\t\"foo\" => foo(),\n\t\"bar\" => bar(),\n\t\"baz\" => baz(),\n\t\"barfl\" => barfl(),\n\t_ => {}\n}"
+    },
+    {
+      "id": 238,
+      "length": 19,
+      "source": "Allocate a list that is automatically deallocated - programming-idioms.org",
+      "text": "let a = vec![0; n];"
+    },
+    {
+      "id": 239,
+      "length": 74,
+      "source": "Formula with arrays - programming-idioms.org",
+      "text": "for i in range 0..a.len() {\n\t\ta[i] = e*(a[i] + b[i] + c[i] + d[i].cos())\n}"
+    },
+    {
+      "id": 240,
+      "length": 131,
+      "source": "Type with automatic deep deallocation - programming-idioms.org",
+      "text": "struct T {\n\t\ts: String,\n\t\tn: Vec<usize>,\n}\nfn main() {\n\t\tlet v = T {\n\t\t\t\ts: \"Hello, world!\".into(),\n\t\t\t\tn: vec![1,4,9,16,25]\n\t\t};\n}"
+    },
+    {
+      "id": 241,
+      "length": 35,
+      "source": "Create folder - programming-idioms.org",
+      "text": "use std::fs;\nfs::create_dir(path)?;"
+    },
+    {
+      "id": 242,
+      "length": 60,
+      "source": "Check if folder exists - programming-idioms.org",
+      "text": "use std::path::Path;\nlet b: bool = Path::new(path).is_dir();"
+    },
+    {
+      "id": 243,
+      "length": 168,
+      "source": "Case-insensitive string compare - programming-idioms.org",
+      "text": "use itertools::Itertools;\nfor x in strings\n\t.iter()\n\t.combinations(2)\n\t.filter(|x| x[0].to_lowercase() == x[1].to_lowercase())\n{\n\tprintln!(\"{:?} == {:?}\", x[0], x[1])\n}"
+    },
+    {
+      "id": 244,
+      "length": 67,
+      "source": "Pad string on the right - programming-idioms.org",
+      "text": "use std::iter();\ns += &iter::repeat(c).take(m).collect::<String>();"
+    },
+    {
+      "id": 245,
+      "length": 451,
+      "source": "Pad string on the left - programming-idioms.org",
+      "text": "use unicode_width::{UnicodeWidthChar, UnicodeWidthStr};\nif let Some(columns_short) = m.checked_sub(s.width()) {\n\tlet padding_width = c\n\t\t.width()\n\t\t.filter(|n| *n > 0)\n\t\t.expect(\"padding character should be visible\");\n\t// Saturate the columns_short\n\tlet padding_needed = columns_short + padding_width - 1 / padding_width;\n\tlet mut t = String::with_capacity(s.len() + padding_needed);\n\tt.extend((0..padding_needed).map(|_| c)\n\tt.push_str(&s);\n\ts = t;\n}"
+    },
+    {
+      "id": 246,
+      "length": 138,
+      "source": "Pad a string on both sides - programming-idioms.org",
+      "text": "use std::iter;\nlet s2 = iter::repeat(c).take((m + 1) / 2).collect::<String>()\n\t\t+ &s\n\t\t+ &iter::repeat(c).take(m / 2).collect::<String>();"
+    },
+    {
+      "id": 247,
+      "length": 281,
+      "source": "Create a Zip archive - programming-idioms.org",
+      "text": "use zip::write::FileOptions;\nlet path = std::path::Path::new(_name);\nlet file = std::fs::File::create(&path).unwrap();\nlet mut zip = zip::ZipWriter::new(file); zip.start_file(\"readme.txt\", FileOptions::default())?;\t\t\t\t\t\t\t\t\t\t\t\t\t\t  \nzip.write_all(b\"Hello, World!\\n\")?;\nzip.finish()?;"
+    },
+    {
+      "id": 248,
+      "length": 340,
+      "source": "Create a Zip archive - programming-idioms.org",
+      "text": "use zip::write::FileOptions;\nfn zip(_name: &str, _list: Vec<&str>) -> zip::result::ZipResult<()>\n{\n\tlet path = std::path::Path::new(_name);\n\tlet file = std::fs::File::create(&path).unwrap();\n\tlet mut zip = zip::ZipWriter::new(file);\n\tfor i in _list.iter() {\n\t\tzip.start_file(i as &str, FileOptions::default())?;\n\t}\n\tzip.finish()?;\n\tOk(())\n}"
+    },
+    {
+      "id": 249,
+      "length": 188,
+      "source": "List intersection - programming-idioms.org",
+      "text": "use std::collections::HashSet;\nlet unique_a = a.iter().collect::<HashSet<_>>();\nlet unique_b = b.iter().collect::<HashSet<_>>();\nlet c = unique_a.intersection(&unique_b).collect<Vec<_>>();"
+    },
+    {
+      "id": 250,
+      "length": 164,
+      "source": "List intersection - programming-idioms.org",
+      "text": "use std::collections::HashSet;\nlet set_a: HashSet<_> = a.into_iter().collect();\nlet set_b: HashSet<_> = b.into_iter().collect();\nlet c = set_a.intersection(&set_b);"
+    },
+    {
+      "id": 251,
+      "length": 87,
+      "source": "Replace multiple spaces with single space - programming-idioms.org",
+      "text": "use regex::Regex;\nlet re = Regex::new(r\"\\s+\").unwrap();\nlet t = re.replace_all(s, \" \");"
+    },
+    {
+      "id": 252,
+      "length": 27,
+      "source": "Create a tuple value - programming-idioms.org",
+      "text": "let t = (2.5, \"hello\", -1);"
+    },
+    {
+      "id": 253,
+      "length": 63,
+      "source": "Remove all non-digits characters - programming-idioms.org",
+      "text": "let t: String = s.chars().filter(|c| c.is_digit(10)).collect();"
+    },
+    {
+      "id": 254,
+      "length": 118,
+      "source": "Find first index of an element in list - programming-idioms.org",
+      "text": "let opt_i = items.iter().position(|y| *y == x);\nlet i = match opt_i {\n   Some(index) => index as i32,\n   None => -1\n};"
+    },
+    {
+      "id": 255,
+      "length": 68,
+      "source": "Find first index of an element in list - programming-idioms.org",
+      "text": "let i = items.iter().position(|y| *y == x).map_or(-1, |n| n as i32);"
+    },
+    {
+      "id": 256,
+      "length": 160,
+      "source": "for else loop - programming-idioms.org",
+      "text": "let mut found = false;\nfor item in items {\n\tif item == &\"baz\" {\n\t\tprintln!(\"found it\");\n\t\tfound = true;\n\t\tbreak;\n\t}\n}\nif !found {\n\tprintln!(\"never found it\");\n}"
+    },
+    {
+      "id": 257,
+      "length": 101,
+      "source": "for else loop - programming-idioms.org",
+      "text": "if let None = items.iter().find(|&&item| item == \"rockstar programmer\") {\n\t\tprintln!(\"NotFound\");\n\t};"
+    },
+    {
+      "id": 258,
+      "length": 136,
+      "source": "for else loop - programming-idioms.org",
+      "text": "items\n\t.iter()\n\t.find(|&&item| item == \"rockstar programmer\")\n\t.or_else(|| {\n\t\tprintln!(\"NotFound\");\n\t\tSome(&\"rockstar programmer\")\n\t});"
+    },
+    {
+      "id": 259,
+      "length": 52,
+      "source": "Add element to the beginning of the list - programming-idioms.org",
+      "text": "use std::collections::VecDeque;\nitems.push_front(x);"
+    },
+    {
+      "id": 260,
+      "length": 112,
+      "source": "Declare and use an optional argument - programming-idioms.org",
+      "text": "fn f(x: Option<()>) {\n\tmatch x {\n\t\tSome(x) => println!(\"Present {}\", x),\n\t\tNone => println!(\"Not present\"),\n\t}\n}"
+    },
+    {
+      "id": 261,
+      "length": 12,
+      "source": "Delete last element from list - programming-idioms.org",
+      "text": "items.pop();"
+    },
+    {
+      "id": 262,
+      "length": 18,
+      "source": "Copy list - programming-idioms.org",
+      "text": "let y = x.clone();"
+    },
+    {
+      "id": 263,
+      "length": 41,
+      "source": "Copy a file - programming-idioms.org",
+      "text": "use std::fs;\nfs::copy(src, dst).unwrap();"
+    },
+    {
+      "id": 264,
+      "length": 44,
+      "source": "Test if bytes are a valid UTF-8 string - programming-idioms.org",
+      "text": "let b = std::str::from_utf8(&bytes).is_ok();"
+    },
+    {
+      "id": 265,
+      "length": 31,
+      "source": "Encode bytes to base64 - programming-idioms.org",
+      "text": "let b64txt = base64::encode(d);"
+    },
+    {
+      "id": 266,
+      "length": 39,
+      "source": "Decode base64 - programming-idioms.org",
+      "text": "let bytes = base64::decode(d).unwrap();"
+    },
+    {
+      "id": 267,
+      "length": 14,
+      "source": "Xor integers - programming-idioms.org",
+      "text": "let c = a ^ b;"
+    },
+    {
+      "id": 268,
+      "length": 62,
+      "source": "Xor byte arrays - programming-idioms.org",
+      "text": "let c: Vec<_> = a.iter().zip(b).map(|(x, y)| x ^ y).collect();"
+    },
+    {
+      "id": 269,
+      "length": 141,
+      "source": "Find first regular expression match - programming-idioms.org",
+      "text": "use regex::Regex;\nlet re = Regex::new(r\"\\b\\d\\d\\d\\b\").expect(\"failed to compile regex\");\nlet x = re.find(s).map(|x| x.as_str()).unwrap_or(\"\");"
+    },
+    {
+      "id": 270,
+      "length": 156,
+      "source": "Sort 2 lists together - programming-idioms.org",
+      "text": "let mut tmp: Vec<_> = a.iter().zip(b).collect();\ntmp.as_mut_slice().sort_by_key(|(&x, _y)| x);\nlet (aa, bb): (Vec<i32>, Vec<i32>) = tmp.into_iter().unzip();"
+    },
+    {
+      "id": 271,
+      "length": 39,
+      "source": "Yield priority to other threads - programming-idioms.org",
+      "text": "::std::thread::yield_now();\nbusywork();"
+    },
+    {
+      "id": 272,
+      "length": 59,
+      "source": "Iterate over a set - programming-idioms.org",
+      "text": "use std::collections::HashSet;\nfor item in &x {\n\tf(item);\n}"
+    },
+    {
+      "id": 273,
+      "length": 19,
+      "source": "Print list - programming-idioms.org",
+      "text": "println!(\"{:?}\", a)"
+    },
+    {
+      "id": 274,
+      "length": 20,
+      "source": "Print map - programming-idioms.org",
+      "text": "println!(\"{:?}\", m);"
+    },
+    {
+      "id": 275,
+      "length": 20,
+      "source": "Print value of custom type - programming-idioms.org",
+      "text": "println!(\"{:?}\", x);"
+    },
+    {
+      "id": 276,
+      "length": 35,
+      "source": "Declare and assign multiple variables - programming-idioms.org",
+      "text": "let (a, b, c) = (42, \"hello\", 5.0);"
+    },
+    {
+      "id": 277,
+      "length": 40,
+      "source": "Conditional assignment - programming-idioms.org",
+      "text": "x = if condition() { \"a\" } else { \"b\" };"
+    }
+  ]
+}
