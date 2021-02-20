@@ -1675,6 +1675,12 @@ $(document).on("click", "#tribeUserSettingsPopup .buttons .leader", (e) => {
   hideTribeUserSettingsPopup();
 });
 
+$(document).on("click", "#tribeUserSettingsPopup .buttons .ban", (e) => {
+  let sid = $("#tribeUserSettingsPopup").attr("sid");
+  MP.socket.emit("mp_room_ban_user", { sid: sid });
+  hideTribeUserSettingsPopup();
+});
+
 let miniChartSettings = {
   type: "line",
   data: {
