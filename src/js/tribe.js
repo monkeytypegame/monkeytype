@@ -86,14 +86,15 @@ function mp_refreshUserList() {
         MP.room.isLeader = true;
       }
 
-      icons += '<i class="fas fa-star"></i>';
+      icons += `<div class="icon active"><i class="fas fa-fw fa-star"></i></div>`;
+    } else {
+      icons += `<div class="icon ${
+        user.isReady ? "active" : ""
+      }"><i class="fas fa-fw fa-check"></i></div>`;
     }
-    if (user.isReady) {
-      icons += '<i class="fas fa-check"></i>';
-    }
-    if (user.isTyping) {
-      icons += '<i class="fas fa-keyboard"></i>';
-    }
+    icons += `<div class="icon ${
+      user.isTyping ? "active" : ""
+    }"><i class="fas fa-fw fa-keyboard"></i></div>`;
     let pointsString;
     if (user.points == undefined) {
       pointsString = "";
@@ -102,8 +103,22 @@ function mp_refreshUserList() {
     }
     $(".pageTribe .lobby .userlist .list").append(`
     <div class='user ${user.sid === MP.id ? "me" : ""}'>
-    <div class='name'>
-    ${user.name}${icons}</div><div class='points'>${pointsString}</div>
+    <div class="nameAndIcons">
+      <div class='icons'>
+      ${icons}
+      </div>
+      <div class='name'>
+      ${user.name}
+      </div>
+      ${
+        MP.room.isLeader && user.sid !== MP.id
+          ? `<div class='userSettings' sid='` +
+            user.sid +
+            `' aria-label="User settigns" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
+          : ``
+      }
+    </div>
+    <div class='points'>${pointsString}</div>
     </div>
     `);
     $(".pageTest #result .tribeResultChat .userlist .list").append(`
@@ -193,8 +208,10 @@ function mp_checkIfCanChangeConfig(mp) {
 }
 let syncConfigTimeout = null;
 function mp_syncConfig() {
+  setSettingsLoadingIndicator(true);
   if (syncConfigTimeout === null) {
     syncConfigTimeout = setTimeout(() => {
+      setSettingsLoadingIndicator(false);
       let mode2;
       if (config.mode === "time") {
         mode2 = config.time;
@@ -468,13 +485,13 @@ function mp_refreshConfig() {
 
   if (MP.room.config.blindMode) {
     $(".pageTribe .lobby .currentSettings .groups").append(`
-    <div class='group' aria-label="Blind mode" data-balloon-pos="up" function="toggleBlindMode">
+    <div class='group' aria-label="Blind mode" data-balloon-pos="up" function="toggleBlindMode()">
     <i class="fas fa-eye-slash"></i>blind
     </div>
     `);
   } else {
     $(".pageTribe .lobby .currentSettings .groups").append(`
-    <div class='group' aria-label="Blind mode" data-balloon-pos="up" function="toggleBlindMode">
+    <div class='group' aria-label="Blind mode" data-balloon-pos="up" function="toggleBlindMode()">
     <i class="fas fa-eye-slash"></i>off
     </div>
     `);
@@ -686,6 +703,18 @@ function destroyAllGraphs() {
   });
 }
 
+function setSettingsLoadingIndicator(truefalse) {
+  if (truefalse) {
+    $(".pageTribe .lobby .currentSettings .loadingIndicator").removeClass(
+      "hidden"
+    );
+  } else {
+    $(".pageTribe .lobby .currentSettings .loadingIndicator").addClass(
+      "hidden"
+    );
+  }
+}
+
 function mp_userReady() {
   $(".pageTribe .lobby .lobbyButtons .userReadyButton").addClass("disabled");
   $(".pageTest #result .resultMpButtons .userReadyButton").addClass("disabled");
@@ -716,6 +745,51 @@ function mp_resetReadyButtons() {
     $(".pageTest #result .resultMpButtons .userReadyButton").addClass(cls);
     $(".pageTest #result #readyButton").addClass(cls);
   }
+}
+
+function mp_resetLeaderButtons() {
+  if (MP.room.isLeader) {
+    $(".pageTribe .lobby .lobbyButtons .startTestButton").removeClass("hidden");
+    $(".pageTest #result #backToLobbyButton").removeClass("hidden");
+  } else {
+    $(".pageTribe .lobby .lobbyButtons .startTestButton").addClass("hidden");
+    $(".pageTest #result #backToLobbyButton").addClass("hidden");
+  }
+}
+
+function showTribeUserSettingsPopup() {
+  if ($("#tribeUserSettingsPopupWrapper").hasClass("hidden")) {
+    $("#tribeUserSettingsPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100);
+  }
+}
+
+function hideTribeUserSettingsPopup() {
+  if (!$("#tribeUserSettingsPopupWrapper").hasClass("hidden")) {
+    $("#tribeUserSettingsPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        100,
+        (e) => {
+          $("#tribeUserSettingsPopup").attr("sid", "");
+          $("#tribeUserSettingsPopupWrapper").addClass("hidden");
+        }
+      );
+  }
+}
+
+function updateTribeUserSettingsPopup(sid) {
+  $("#tribeUserSettingsPopup").attr("sid", sid);
+  $("#tribeUserSettingsPopup .title").text(
+    "User settings: " + MP.room.users[sid].name
+  );
 }
 
 MP.socket.on("connect", (f) => {
@@ -858,11 +932,7 @@ MP.socket.on("mp_room_joined", (data) => {
     //   // $(".pageTribe .prelobby").addClass('hidden');
     // });
     mp_resetReadyButtons();
-    if (MP.room.isLeader) {
-      $(".pageTribe .lobby .startTestButton").removeClass("hidden");
-    } else {
-      $(".pageTribe .lobby .startTestButton").addClass("hidden");
-    }
+    mp_resetLeaderButtons();
   }
 });
 
@@ -883,13 +953,25 @@ MP.socket.on("mp_room_user_left", (data) => {
   if (data.newLeader !== "" && data.newLeader === MP.socket.id) {
     MP.room.isLeader = true;
     MP.room.users[MP.socket.id].isLeader = true;
-    $(".pageTribe .lobby .lobbyButtons .startTestButton").removeClass("hidden");
-    $(".pageTest #result #backToLobbyButton").removeClass("hidden");
-
-    mp_resetReadyButtons();
-    // $(".pageTest #result #nextTestButton").removeClass("hidden");
   }
   mp_refreshUserList();
+  mp_resetLeaderButtons();
+  mp_resetReadyButtons();
+});
+
+MP.socket.on("mp_room_new_leader", (data) => {
+  MP.room.isLeader = false;
+  Object.keys(MP.room.users).forEach((u) => {
+    MP.room.users[u].isLeader = false;
+  });
+  MP.room.users[data.newLeader].isLeader = true;
+  if (data.newLeader !== "" && data.newLeader === MP.socket.id) {
+    MP.room.isLeader = true;
+    MP.room.users[MP.socket.id].isLeader = true;
+  }
+  mp_refreshUserList();
+  mp_resetLeaderButtons();
+  mp_resetReadyButtons();
 });
 
 MP.socket.on("mp_room_config_update", (data) => {
@@ -1571,6 +1653,27 @@ $(document).on(
     }
   }
 );
+
+$("#tribeUserSettingsPopupWrapper").click((e) => {
+  if ($(e.target).attr("id") === "tribeUserSettingsPopupWrapper") {
+    hideTribeUserSettingsPopup();
+  }
+});
+
+$(document).on(
+  "click",
+  ".pageTribe .lobby .userlist .user .userSettings",
+  (e) => {
+    updateTribeUserSettingsPopup($(e.currentTarget).attr("sid"));
+    showTribeUserSettingsPopup();
+  }
+);
+
+$(document).on("click", "#tribeUserSettingsPopup .buttons .leader", (e) => {
+  let sid = $("#tribeUserSettingsPopup").attr("sid");
+  MP.socket.emit("mp_room_new_leader", { sid: sid });
+  hideTribeUserSettingsPopup();
+});
 
 let miniChartSettings = {
   type: "line",

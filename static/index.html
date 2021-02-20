@@ -84,6 +84,22 @@
       <div id="simplePopup" popupId=""></div>
     </div>
 
+    <div id="tribeUserSettingsPopupWrapper" class="hidden">
+      <div id="tribeUserSettingsPopup" sid="">
+        <div class="title">User settings: Username</div>
+        <div class="buttons">
+          <div class="button leader">
+            <i class="fas fa-fw fa-star"></i>
+            Transfer leader
+          </div>
+          <div class="button ban">
+            <i class="fas fa-fw fa-hammer"></i>
+            Ban from room
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="settingsImportWrapper" class="hidden">
       <div id="settingsImport" action="">
         <input type="text" />
@@ -3737,7 +3753,12 @@
             <div class="lobby hidden">
               <table class="tribePlayers"></table>
               <div class="currentSettings">
-                <div class="title">current settings</div>
+                <div class="title">
+                  current settings
+                  <div class="loadingIndicator hidden">
+                    <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+                  </div>
+                </div>
                 <div class="groups"></div>
               </div>
               <div class="lobbyButtons">

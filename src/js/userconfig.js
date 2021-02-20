@@ -251,6 +251,7 @@ function toggleBlindMode() {
   }
   config.blindMode = blind;
   updateTestModesNotice();
+  mp_syncConfig();
   saveConfigToCookie();
 }
 
