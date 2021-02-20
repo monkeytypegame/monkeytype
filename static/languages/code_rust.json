@@ -83,7 +83,7 @@
     "<'a>",
     "map",
     "BTreeMap",
-    "VeqDeque",
+    "VecDeque",
     "LinkedList",
     "HashSet",
     "&'static",
