@@ -440,7 +440,9 @@ function mp_refreshConfig() {
       text-align: center;
       display: inline-block;
       margin-right: .5rem;
-      letter-spacing: -.1rem;">!?</span>${MP.room.config.punctuation}
+      letter-spacing: -.1rem;">!?</span>${
+        MP.room.config.punctuation ? "on" : "off"
+      }
     </div>
     `);
 
@@ -453,7 +455,9 @@ function mp_refreshConfig() {
         margin-right: .1rem;
         display: inline-block;
         margin-right: .5rem;
-        letter-spacing: -.1rem;">15</span>${MP.room.config.numbers}
+        letter-spacing: -.1rem;">15</span>${
+          MP.room.config.numbers ? "on" : "off"
+        }
     </div>
     `);
 
