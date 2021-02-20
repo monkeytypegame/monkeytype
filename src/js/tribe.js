@@ -123,9 +123,22 @@ function mp_refreshUserList() {
     `);
     $(".pageTest #result .tribeResultChat .userlist .list").append(`
     <div class='user ${user.sid === MP.id ? "me" : ""}'>
-    <div class='name'>${
-      user.name
-    }${icons}</div><div class='points'>${pointsString}</div>
+    <div class="nameAndIcons">
+      <div class='icons'>
+      ${icons}
+      </div>
+      <div class='name'>
+      ${user.name}
+      </div>
+      ${
+        MP.room.isLeader && user.sid !== MP.id
+          ? `<div class='userSettings' sid='` +
+            user.sid +
+            `' aria-label="User settigns" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
+          : ``
+      }
+    </div>
+    <div class='points'>${pointsString}</div>
     </div>
     `);
   });
