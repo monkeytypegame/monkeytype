@@ -17,6 +17,7 @@ let incompleteTestSeconds = 0;
 let currentTestLine = 0;
 let pageTransition = false;
 let lineTransition = false;
+let testRestarting = false;
 let keypressPerSecond = [];
 let currentKeypress = {
   count: 0,
@@ -3055,7 +3056,12 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   //     }
   //   }
   // }
-  if (resultCalculating) return;
+  if (testRestarting || resultCalculating) {
+    try {
+      event.preventDefault();
+    } catch {}
+    return;
+  }
   if ($(".pageTest").hasClass("active") && !resultVisible) {
     if (!manualRestart) {
       // if ((textHasTab && manualRestart) || !textHasTab) {
@@ -3169,6 +3175,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   }
   resultVisible = false;
   pageTransition = true;
+  testRestarting = true;
   el.stop(true, true).animate(
     {
       opacity: 0,
@@ -3271,6 +3278,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
           },
           125,
           () => {
+            testRestarting = false;
             resetPaceCaret();
             hideCrown();
             clearTimeout(timer);
@@ -5129,7 +5137,7 @@ $(document).keydown(function (event) {
     }
   } catch {}
 
-  if (pageTransition) {
+  if (testRestarting) {
     return;
   }
 
