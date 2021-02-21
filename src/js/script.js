@@ -3015,7 +3015,6 @@ function startTest() {
           //times up
           clearTimeout(timer);
           hideCaret();
-          testActive = false;
           inputHistory.push(currentInput);
           correctedHistory.push(currentCorrected);
           showResult();
