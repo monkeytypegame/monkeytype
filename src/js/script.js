@@ -1872,6 +1872,7 @@ function failTest() {
 
 let resultCalculating = false;
 function showResult(difficultyFailed = false) {
+  if (!testActive) return;
   if (config.mode == "zen" && currentInput.length != 0) {
     inputHistory.push(currentInput);
     correctedHistory.push(currentCorrected);
