@@ -1658,6 +1658,18 @@ Misc.getFontsList().then((fonts) => {
       },
     });
   });
+  commandsFonts.list.push({
+    id: "setFontFamilyCustom",
+    display: "custom...",
+    input: true,
+    hover: () => {
+      previewFontFamily(config.fontFamily);
+    },
+    exec: (name) => {
+      setFontFamily(name.replace(/\s/g, "_"));
+      settingsGroups.fontFamily.updateButton();
+    },
+  });
 });
 
 let commandsFunbox = {

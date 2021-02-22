@@ -975,7 +975,7 @@ function previewFontFamily(font) {
 
 //font family
 function setFontFamily(font, nosave) {
-  if (font == undefined) {
+  if (font == undefined || font === "") {
     font = "Roboto_Mono";
   }
   config.fontFamily = font;
