@@ -27,6 +27,7 @@ let tribeSounds = {
   chat_mention: new Audio("../sound/tribe_ui/chat_mention.wav"),
   finish: new Audio("../sound/tribe_ui/finish.wav"),
   finish_win: new Audio("../sound/tribe_ui/finish_win.wav"),
+  glow: new Audio("../sound/tribe_ui/glow.wav"),
   cd: new Audio("../sound/tribe_ui/cd2.wav"),
   cd_go: new Audio("../sound/tribe_ui/cd_go2.wav"),
 };
@@ -1362,6 +1363,9 @@ MP.socket.on("mp_room_miniCrowns", (data) => {
         "data-balloon-pos",
         "up"
       );
+      if (sid === MP.socket.id) {
+        mp_playSound("glow");
+      }
     }
   });
 });
