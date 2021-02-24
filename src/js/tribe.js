@@ -1,3 +1,5 @@
+const emoji = require("node-emoji");
+
 let MP = {
   state: -1,
   socket: io(
@@ -1544,6 +1546,7 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
 $(
   ".pageTribe .lobby .chat .input input, .pageTest #result .tribeResultChat .chat .input input"
 ).on("input", (e) => {
+  // e.currentTarget.value = emoji.emojify(e.currentTarget.value);
   if (e.currentTarget.value.length === 1) {
     //typing update
     mp_sendIsTypingUpdate(true);
