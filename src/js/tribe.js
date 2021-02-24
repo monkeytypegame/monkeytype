@@ -637,6 +637,7 @@ function mp_scrollChat() {
   if (scrollChat) {
     chatEl.scrollTop = chatEl.scrollHeight;
     chatEl2.scrollTop = chatEl2.scrollHeight;
+    scrollChat = true;
   }
 }
 
@@ -1501,6 +1502,7 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
       Notifications.add("Message cannot be longer than 512 characters.", 0);
       return;
     }
+    mp_sendIsTypingUpdate(false);
     MP.socket.emit("mp_chat_message", {
       isSystem: false,
       isLeader: MP.room.isLeader,
@@ -1556,6 +1558,7 @@ $(
 ).on("scroll", (e) => {
   let chatEl = $(".pageTribe .lobby .chat .messages")[0];
   scrollChat = chatEl.scrollHeight - chatEl.scrollTop === chatEl.clientHeight;
+  console.log(scrollChat);
 });
 
 $(
@@ -1762,6 +1765,25 @@ $(document).on("click", "#tribeUserSettingsPopup .buttons .ban", (e) => {
   let sid = $("#tribeUserSettingsPopup").attr("sid");
   MP.socket.emit("mp_room_ban_user", { sid: sid });
   hideTribeUserSettingsPopup();
+});
+
+$(document).on("keypress", (e) => {
+  if (
+    MP.state === 10 &&
+    !$(".pageTribe .lobby .chat .input input").is(":focus") &&
+    e.key === "/"
+  ) {
+    $(".pageTribe .lobby .chat .input input").focus();
+    e.preventDefault();
+  }
+  if (
+    MP.state >= 28 &&
+    !$(".pageTest #result .tribeResultChat .chat .input input").is(":focus") &&
+    e.key === "/"
+  ) {
+    $(".pageTest #result .tribeResultChat .chat .input input").focus();
+    e.preventDefault();
+  }
 });
 
 let miniChartSettings = {
