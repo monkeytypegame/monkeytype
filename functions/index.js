@@ -1362,8 +1362,10 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       return;
     }
     if (
-      (obj.mode === "time" && obj.mode2 < 15) ||
-      (obj.mode === "words" && obj.mode2 < 10) ||
+      (obj.mode === "time" && obj.mode2 < 15 && obj.mode2 > 0) ||
+      (obj.mode === "time" && obj.mode2 == 0 && obj.testDuration < 15) ||
+      (obj.mode === "words" && obj.mode2 < 10 && obj.mode2 > 0) ||
+      (obj.mode === "words" && obj.mode2 == 0 && obj.testDuration < 15) ||
       (obj.mode === "custom" &&
         obj.customText !== undefined &&
         !obj.customText.isWordRandom &&

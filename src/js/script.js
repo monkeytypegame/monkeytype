@@ -2191,8 +2191,10 @@ function showResult(difficultyFailed = false) {
   } else if (sameWordset) {
     Notifications.add("Test invalid - repeated", 0);
   } else if (
-    (config.mode === "time" && mode2 < 15) ||
-    (config.mode === "words" && mode2 < 10) ||
+    (config.mode === "time" && mode2 < 15 && mode2 > 0) ||
+    (config.mode === "time" && mode2 == 0 && testtime < 15) ||
+    (config.mode === "words" && mode2 < 10 && mode2 > 0) ||
+    (config.mode === "words" && mode2 == 0 && testtime < 15) ||
     (config.mode === "custom" &&
       !customText.isWordRandom &&
       !customText.isTimeRandom &&
