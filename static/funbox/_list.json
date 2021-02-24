@@ -85,6 +85,11 @@
     "info": "Only the current word is invisible."
   },
   {
+    "name": "read_ahead_hard",
+    "type": "style",
+    "info": "Current and the next two words are invisible."
+  },
+  {
     "name": "memory",
     "type": "script",
     "info": "Test your memory. Remember the words and type them blind."
