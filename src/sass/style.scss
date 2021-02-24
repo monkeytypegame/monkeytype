@@ -3040,6 +3040,15 @@ key {
     .input input {
       width: 100%;
     }
+    .whoIsTyping {
+      .who {
+        font-weight: 900;
+      }
+      height: 0.75rem;
+      font-size: 0.75rem;
+      padding: 0.25rem;
+      color: var(--sub-color);
+    }
   }
   .userlist {
     grid-area: userlist;

@@ -18,6 +18,8 @@ let MP = {
   expectedVersion: "0.8",
 };
 
+let scrollChat = true;
+
 let tribeSounds = {
   join: new Audio("../sound/tribe_ui/join.wav"),
   leave: new Audio("../sound/tribe_ui/leave.wav"),
@@ -629,29 +631,13 @@ function updateResultCountdown(text) {
 }
 
 function mp_scrollChat() {
-  let chatEl = $(".pageTribe .lobby .chat .messages");
-  chatEl.animate(
-    {
-      scrollTop:
-        $($(".pageTribe .lobby .chat .messages div")[0]).outerHeight() *
-        2 *
-        $(".pageTribe .lobby .chat .messages div").length,
-    },
-    0
-  );
+  let chatEl = $(".pageTribe .lobby .chat .messages")[0];
+  let chatEl2 = $(".pageTest #result .tribeResultChat .chat .messages")[0];
 
-  let chatEl2 = $(".pageTest #result .tribeResultChat .chat .messages");
-  chatEl2.animate(
-    {
-      scrollTop:
-        $(
-          $(".pageTest #result .tribeResultChat .chat .messages div")[0]
-        ).outerHeight() *
-        2 *
-        $(".pageTest #result .tribeResultChat .chat .messages div").length,
-    },
-    0
-  );
+  if (scrollChat) {
+    chatEl.scrollTop = chatEl.scrollHeight;
+    chatEl2.scrollTop = chatEl2.scrollHeight;
+  }
 }
 
 function updateAllGraphs(graphs, max) {
@@ -810,6 +796,51 @@ function updateTribeUserSettingsPopup(sid) {
   );
 }
 
+function mp_setName(name) {
+  MP.name = name;
+  MP.socket.emit("mp_system_name_set", { name: name });
+}
+
+function mp_sendIsTypingUpdate(truefalse) {
+  MP.socket.emit("mp_room_user_istypingupdate", {
+    sid: MP.socket.id,
+    typing: truefalse,
+    name: MP.name,
+  });
+}
+
+function mp_updateWhoIsTyping() {
+  let string = "";
+
+  let names = [];
+  Object.keys(MP.room.whoIsTyping).forEach((sid) => {
+    if (MP.room.whoIsTyping[sid].truefalse) {
+      names.push(MP.room.whoIsTyping[sid].name);
+    }
+  });
+  if (names.length > 0) {
+    for (let i = 0; i < names.length; i++) {
+      if (i === 0) {
+        string += `<span class="who">${names[i]}</span>`;
+      } else if (i === names.length - 1) {
+        string += ` and <span class="who">${names[i]}</span>`;
+      } else {
+        string += `, <span class="who">${names[i]}</span>`;
+      }
+    }
+    if (names.length == 1) {
+      string += " is typing...";
+    } else {
+      string += " are typing...";
+    }
+  } else {
+    string = " ";
+  }
+
+  $(".pageTribe .lobby .chat .whoIsTyping").html(string);
+  $(".pageTest #result .tribeResultChat .chat .whoIsTyping").html(string);
+}
+
 MP.socket.on("connect", (f) => {
   setTimerStyle("mini", true);
   MP.state = 1;
@@ -820,8 +851,7 @@ MP.socket.on("connect", (f) => {
     name = firebase.auth().currentUser.displayName;
   }
   MP.id = MP.socket.id;
-  MP.name = name;
-  MP.socket.emit("mp_system_name_set", { name: name });
+  mp_setName(name);
   mp_changeActiveSubpage("prelobby");
   setTimeout(() => {
     if (MP.autoJoin) {
@@ -832,6 +862,11 @@ MP.socket.on("connect", (f) => {
       // swapElements($(".pageTribe .preloader"), $(".pageTribe .prelobby"), 250);
     }
   }, 500);
+});
+
+MP.socket.on("mp_room_name_update", (data) => {
+  MP.room.users[data.sid].name = data.name;
+  mp_refreshUserList();
 });
 
 MP.socket.on("mp_update_online_stats", (data) => {
@@ -1044,6 +1079,13 @@ MP.socket.on("mp_chat_message", (data) => {
   mp_scrollChat();
 });
 
+MP.socket.on("mp_room_user_istypingupdate", (data) => {
+  if (MP.room.whoIsTyping === undefined) {
+    MP.room.whoIsTyping = {};
+  }
+  MP.room.whoIsTyping[data.sid] = { name: data.name, truefalse: data.typing };
+  mp_updateWhoIsTyping();
+});
 $(".pageTest #result .tribeResultChat .chat .input input").keypress(() => {
   setTimeout(() => {
     $(".pageTribe .lobby .chat .input input").val(
@@ -1482,6 +1524,7 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
       Notifications.add("Message cannot be longer than 512 characters.", 0);
       return;
     }
+    mp_sendIsTypingUpdate(false);
     MP.socket.emit("mp_chat_message", {
       isSystem: false,
       isLeader: MP.room.isLeader,
@@ -1494,6 +1537,25 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
     $(".pageTribe .lobby .chat .input input").val("");
     $(".pageTest #result .tribeResultChat .chat .input input").val("");
   }
+});
+
+$(
+  ".pageTribe .lobby .chat .input input, .pageTest #result .tribeResultChat .chat .input input"
+).on("input", (e) => {
+  if (e.currentTarget.value.length === 1) {
+    //typing update
+    mp_sendIsTypingUpdate(true);
+  } else if (e.currentTarget.value == "") {
+    //not typing update
+    mp_sendIsTypingUpdate(false);
+  }
+});
+
+$(
+  ".pageTribe .lobby .chat .messages, .pageTest #result .tribeResultChat .chat .messages"
+).on("scroll", (e) => {
+  let chatEl = $(".pageTribe .lobby .chat .messages")[0];
+  scrollChat = chatEl.scrollHeight - chatEl.scrollTop === chatEl.clientHeight;
 });
 
 $(

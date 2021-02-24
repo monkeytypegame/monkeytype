@@ -217,7 +217,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     $("#menu .icon-button.account .text").text(displayName);
 
     try {
-      MP.name = displayName;
+      mp_setName(displayName);
     } catch {}
 
     showFavouriteThemesAtTheTop();
