@@ -815,7 +815,7 @@ function mp_updateWhoIsTyping() {
 
   let names = [];
   Object.keys(MP.room.whoIsTyping).forEach((sid) => {
-    if (MP.room.whoIsTyping[sid].truefalse) {
+    if (MP.room.whoIsTyping[sid].truefalse && sid !== MP.socket.id) {
       names.push(MP.room.whoIsTyping[sid].name);
     }
   });
