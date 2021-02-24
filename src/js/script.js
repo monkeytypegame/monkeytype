@@ -355,7 +355,11 @@ async function activateFunbox(funbox, mode) {
       restartTest();
     }
 
-    if (funbox === "read_ahead" || funbox === "read_ahead_easy") {
+    if (
+      funbox === "read_ahead" ||
+      funbox === "read_ahead_easy" ||
+      funbox === "read_ahead_hard"
+    ) {
       setHighlightMode("letter", true);
       restartTest();
     }
