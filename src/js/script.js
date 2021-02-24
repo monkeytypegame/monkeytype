@@ -2438,6 +2438,7 @@ function showResult(difficultyFailed = false) {
                     borderDash: [2, 2],
                     label: {
                       backgroundColor: themeColors.sub,
+                      fontFamily: config.fontFamily.replace(/_/g, " "),
                       fontSize: 11,
                       fontStyle: "normal",
                       fontColor: themeColors.bg,
