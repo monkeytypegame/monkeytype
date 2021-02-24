@@ -5317,19 +5317,23 @@ function handleBackspace(event) {
   } else {
     if (config.confidenceMode === "max") return;
     if (event["ctrlKey"] || event["altKey"]) {
-      let split = currentInput.replace(/ +/g, " ").split(" ");
+      let limiter = " ";
+      if (currentInput.lastIndexOf("-") > currentInput.lastIndexOf(" "))
+        limiter = "-";
+
+      let split = currentInput.replace(/ +/g, " ").split(limiter);
       if (split[split.length - 1] == "") {
         split.pop();
       }
-      let addspace = false;
+      let addlimiter = false;
       if (split.length > 1) {
-        addspace = true;
+        addlimiter = true;
       }
       split.pop();
-      currentInput = split.join(" ");
+      currentInput = split.join(limiter);
 
-      if (addspace) {
-        currentInput += " ";
+      if (addlimiter) {
+        currentInput += limiter;
       }
     } else if (event.metaKey) {
       currentInput = "";
