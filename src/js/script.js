@@ -3392,6 +3392,7 @@ function changePage(page) {
 }
 
 function setMode(mode, nosave) {
+  if (testRestarting) return;
   if (mode !== "words" && activeFunBox === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
