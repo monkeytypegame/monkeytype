@@ -499,6 +499,7 @@ async function initWords() {
             `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
             0
           );
+          testRestarting = false;
           return;
         }
       },
