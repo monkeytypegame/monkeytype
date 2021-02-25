@@ -5560,6 +5560,7 @@ function handleAlpha(event) {
       "Pause",
       "PrintScreen",
       "Clear",
+      "End",
       undefined,
     ].includes(event.key)
   ) {
