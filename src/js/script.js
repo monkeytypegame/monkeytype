@@ -3212,6 +3212,9 @@ function restartTest(withSameWordset = false, nosave = false, event) {
         initPaceCaret();
         showWords();
       }
+      if (config.mode === "quote") {
+        sameWordset = false;
+      }
       if (config.keymapMode !== "off") {
         showKeymap();
       } else {
@@ -4928,11 +4931,7 @@ $(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
     return;
   }
   manualRestart = true;
-  if (config.mode === "quote") {
-    restartTest();
-  } else {
-    restartTest(true);
-  }
+  restartTest(true);
 });
 
 $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
@@ -4941,11 +4940,7 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
     return;
   }
   if (event.keyCode == 13) {
-    if (config.mode === "quote") {
-      restartTest();
-    } else {
-      restartTest(true);
-    }
+    restartTest(true);
   }
 });
 
