@@ -455,6 +455,23 @@ exports.removeSmallTestsAndQPB = functions.https.onCall(
   }
 );
 
+exports.resetPersonalBests = functions.https.onCall(
+  async (request, response) => {
+    let uid = request.uid;
+
+    try {
+      var user = await db.collection("users").doc(uid);
+      await user.update({ personalBests: {} });
+      return true;
+    } catch (e) {
+      console.log(
+        `something went wrong when deleting personal bests for ${uid}: ${e.message}`
+      );
+      return false;
+    }
+  }
+);
+
 function checkIfPB(uid, obj, userdata) {
   let pbs = null;
   if (obj.mode == "quote") {
@@ -1345,8 +1362,10 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       return;
     }
     if (
-      (obj.mode === "time" && obj.mode2 < 15) ||
-      (obj.mode === "words" && obj.mode2 < 10) ||
+      (obj.mode === "time" && obj.mode2 < 15 && obj.mode2 > 0) ||
+      (obj.mode === "time" && obj.mode2 == 0 && obj.testDuration < 15) ||
+      (obj.mode === "words" && obj.mode2 < 10 && obj.mode2 > 0) ||
+      (obj.mode === "words" && obj.mode2 == 0 && obj.testDuration < 15) ||
       (obj.mode === "custom" &&
         obj.customText !== undefined &&
         !obj.customText.isWordRandom &&

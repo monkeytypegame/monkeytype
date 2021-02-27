@@ -34,3 +34,6 @@ export const changeDisplayName = firebase
 export const removeSmallTests = firebase
   .functions()
   .httpsCallable("removeSmallTestsAndQPB");
+export const resetPersonalBests = firebase
+  .functions()
+  .httpsCallable("resetPersonalBests");

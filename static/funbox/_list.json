@@ -75,14 +75,19 @@
     "info": "React quickly! Only one future word is visible."
   },
   {
+    "name": "read_ahead_easy",
+    "type": "style",
+    "info": "Only the current word is invisible."
+  },
+  {
     "name": "read_ahead",
     "type": "style",
     "info": "Current and the next word is invisible!"
   },
   {
-    "name": "read_ahead_easy",
+    "name": "read_ahead_hard",
     "type": "style",
-    "info": "Only the current word is invisible."
+    "info": "Current and the next two words are invisible!"
   },
   {
     "name": "memory",

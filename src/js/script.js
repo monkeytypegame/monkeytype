@@ -17,6 +17,7 @@ let incompleteTestSeconds = 0;
 let currentTestLine = 0;
 let pageTransition = false;
 let lineTransition = false;
+let testRestarting = false;
 let keypressPerSecond = [];
 let currentKeypress = {
   count: 0,
@@ -354,7 +355,11 @@ async function activateFunbox(funbox, mode) {
       restartTest();
     }
 
-    if (funbox === "read_ahead" || funbox === "read_ahead_easy") {
+    if (
+      funbox === "read_ahead" ||
+      funbox === "read_ahead_easy" ||
+      funbox === "read_ahead_hard"
+    ) {
       setHighlightMode("letter", true);
       restartTest();
     }
@@ -494,6 +499,7 @@ async function initWords() {
             `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
             0
           );
+          testRestarting = false;
           return;
         }
       },
@@ -1872,6 +1878,7 @@ function failTest() {
 
 let resultCalculating = false;
 function showResult(difficultyFailed = false) {
+  if (!testActive) return;
   if (config.mode == "zen" && currentInput.length != 0) {
     inputHistory.push(currentInput);
     correctedHistory.push(currentCorrected);
@@ -2189,8 +2196,10 @@ function showResult(difficultyFailed = false) {
   } else if (sameWordset) {
     Notifications.add("Test invalid - repeated", 0);
   } else if (
-    (config.mode === "time" && mode2 < 15) ||
-    (config.mode === "words" && mode2 < 10) ||
+    (config.mode === "time" && mode2 < 15 && mode2 > 0) ||
+    (config.mode === "time" && mode2 == 0 && testtime < 15) ||
+    (config.mode === "words" && mode2 < 10 && mode2 > 0) ||
+    (config.mode === "words" && mode2 == 0 && testtime < 15) ||
     (config.mode === "custom" &&
       !customText.isWordRandom &&
       !customText.isTimeRandom &&
@@ -2356,7 +2365,7 @@ function showResult(difficultyFailed = false) {
                 borderDash: [2, 2],
                 label: {
                   backgroundColor: themeColors.sub,
-                  fontFamily: "Roboto Mono",
+                  fontFamily: config.fontFamily.replace(/_/g, " "),
                   fontSize: 11,
                   fontStyle: "normal",
                   fontColor: themeColors.bg,
@@ -2436,7 +2445,7 @@ function showResult(difficultyFailed = false) {
                     borderDash: [2, 2],
                     label: {
                       backgroundColor: themeColors.sub,
-                      fontFamily: "Roboto Mono",
+                      fontFamily: config.fontFamily.replace(/_/g, " "),
                       fontSize: 11,
                       fontStyle: "normal",
                       fontColor: themeColors.bg,
@@ -3015,7 +3024,6 @@ function startTest() {
           //times up
           clearTimeout(timer);
           hideCaret();
-          testActive = false;
           inputHistory.push(currentInput);
           correctedHistory.push(currentCorrected);
           showResult();
@@ -3056,7 +3064,12 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   //     }
   //   }
   // }
-  if (resultCalculating) return;
+  if (testRestarting || resultCalculating) {
+    try {
+      event.preventDefault();
+    } catch {}
+    return;
+  }
   if ($(".pageTest").hasClass("active") && !resultVisible) {
     if (!manualRestart) {
       // if ((textHasTab && manualRestart) || !textHasTab) {
@@ -3170,6 +3183,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   }
   resultVisible = false;
   pageTransition = true;
+  testRestarting = true;
   el.stop(true, true).animate(
     {
       opacity: 0,
@@ -3272,6 +3286,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
           },
           125,
           () => {
+            testRestarting = false;
             resetPaceCaret();
             hideCrown();
             clearTimeout(timer);
@@ -3378,6 +3393,7 @@ function changePage(page) {
 }
 
 function setMode(mode, nosave) {
+  if (testRestarting) return;
   if (mode !== "words" && activeFunBox === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
@@ -5130,7 +5146,7 @@ $(document).keydown(function (event) {
     }
   } catch {}
 
-  if (pageTransition) {
+  if (testRestarting) {
     return;
   }
 
@@ -5307,19 +5323,23 @@ function handleBackspace(event) {
   } else {
     if (config.confidenceMode === "max") return;
     if (event["ctrlKey"] || event["altKey"]) {
-      let split = currentInput.replace(/ +/g, " ").split(" ");
+      let limiter = " ";
+      if (currentInput.lastIndexOf("-") > currentInput.lastIndexOf(" "))
+        limiter = "-";
+
+      let split = currentInput.replace(/ +/g, " ").split(limiter);
       if (split[split.length - 1] == "") {
         split.pop();
       }
-      let addspace = false;
+      let addlimiter = false;
       if (split.length > 1) {
-        addspace = true;
+        addlimiter = true;
       }
       split.pop();
-      currentInput = split.join(" ");
+      currentInput = split.join(limiter);
 
-      if (addspace) {
-        currentInput += " ";
+      if (addlimiter) {
+        currentInput += limiter;
       }
     } else if (event.metaKey) {
       currentInput = "";
@@ -5541,6 +5561,7 @@ function handleAlpha(event) {
       "Pause",
       "PrintScreen",
       "Clear",
+      "End",
       undefined,
     ].includes(event.key)
   ) {
@@ -6135,8 +6156,6 @@ let wpmOverTimeChart = new Chart(ctx, {
   },
   options: {
     tooltips: {
-      titleFontFamily: "Roboto Mono",
-      bodyFontFamily: "Roboto Mono",
       mode: "index",
       intersect: false,
       callbacks: {
@@ -6160,9 +6179,7 @@ let wpmOverTimeChart = new Chart(ctx, {
     },
     legend: {
       display: false,
-      labels: {
-        defaultFontFamily: "Roboto Mono",
-      },
+      labels: {},
     },
     responsive: true,
     maintainAspectRatio: false,
@@ -6170,7 +6187,6 @@ let wpmOverTimeChart = new Chart(ctx, {
       xAxes: [
         {
           ticks: {
-            fontFamily: "Roboto Mono",
             autoSkip: true,
             autoSkipPadding: 40,
           },
@@ -6178,7 +6194,6 @@ let wpmOverTimeChart = new Chart(ctx, {
           scaleLabel: {
             display: false,
             labelString: "Seconds",
-            fontFamily: "Roboto Mono",
           },
         },
       ],
@@ -6189,10 +6204,8 @@ let wpmOverTimeChart = new Chart(ctx, {
           scaleLabel: {
             display: true,
             labelString: "Words per Minute",
-            fontFamily: "Roboto Mono",
           },
           ticks: {
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             min: 0,
             autoSkip: true,
@@ -6208,10 +6221,8 @@ let wpmOverTimeChart = new Chart(ctx, {
           scaleLabel: {
             display: true,
             labelString: "Raw Words per Minute",
-            fontFamily: "Roboto Mono",
           },
           ticks: {
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             min: 0,
             autoSkip: true,
@@ -6228,11 +6239,9 @@ let wpmOverTimeChart = new Chart(ctx, {
           scaleLabel: {
             display: true,
             labelString: "Errors",
-            fontFamily: "Roboto Mono",
           },
           ticks: {
             precision: 0,
-            fontFamily: "Roboto Mono",
             beginAtZero: true,
             autoSkip: true,
             autoSkipPadding: 40,

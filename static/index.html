@@ -795,12 +795,8 @@
             <div class="icon"><i class="fas fa-ad"></i></div>
             <div class="text">Enable Ads</div>
           </div>
-          <a
-            class="button"
-            href="https://www.paypal.me/jackbartnik"
-            target="_blank"
-          >
-            <div class="icon"><i class="fab fa-paypal"></i></div>
+          <a class="button" href="https://ko-fi.com/monkeytype" target="_blank">
+            <div class="icon"><i class="fas fa-donate"></i></div>
             <div class="text">Donate</div>
           </a>
           <a
@@ -1888,6 +1884,10 @@
                     value=""
                   />
                 </div>
+              </div>
+              <div class="section languageGroups">
+                <h1>language groups</h1>
+                <div class="buttons"></div>
               </div>
               <div class="section language">
                 <h1>language</h1>
@@ -3088,6 +3088,23 @@
                     onclick="this.blur();"
                   >
                     reset
+                  </div>
+                </div>
+              </div>
+              <div class="section resetPersonalBests">
+                <h1>reset personal bests</h1>
+                <div class="text">
+                  Resets all your personal bests (but doesn't delete any tests
+                  from your history). Warning: you can't undo this action!
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button off danger"
+                    id="resetPersonalBestsButton"
+                    tabindex="0"
+                    onclick="this.blur();simplePopups.resetPersonalBests.show();"
+                  >
+                    reset personal bests
                   </div>
                 </div>
               </div>
