@@ -1,10 +1,22 @@
 {
   "language": "spanish",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -90,6 +102,54 @@
       "source": "WIkipedia, Mecanografía",
       "length": 192,
       "id": 14
+    },
+    {
+      "text": "Quedan 45 minutos apenas, si es que ya ha empezado el segundo tiempo. 45 minutos. Pero ¿cómo es posible que tarden tanto en pasar 45 minutos? ¿Cómo puede ser que se transformen en una eternidad inacabable? La cosa es no mirar el reloj. No mirarlo nunca. Entonces, de pronto, cuando uno en un reflejo natural y entendible de animal urbano mira el cuadrante, ya han pasado 40 minutos o 43, no queda nada.",
+      "source": "Roberto Fontanarrosa, La Observación de los Pájaros",
+      "length": 402,
+      "id": 15
+    },
+    {
+      "text": "La verdad es que, aquí como en todo, Gorgias se debate entre la exposición de una doctrina propia y la crítica, por exageración y reducción al absurdo, de doctrinas ajenas. Es este último interés el que ocupa el primer lugar, el que domina, por así decirlo,el primer nivel de la exposición.",
+      "source": "Nuevos estudios de lingüística general y de teoría literaria",
+      "length": 291,
+      "id": 16
+    },
+    {
+      "text": "Una ciudad es una abstracción que nos concedemos para darle un nombre propio a una serie de lugares fragmentarios, inconexos, opacos, y la mayor parte del tiempo imaginarios y desiertos de nosotros.",
+      "source": "Juan José Saer, La mayor",
+      "length": 198,
+      "id": 17
+    },
+    {
+      "text": "Comí los alimentos del mundo. Mi mano tocó piedras de ciudades famosas y mi cuerpo, reducido ahora, pero sano y salvaje, atravesó calles más numerosas que las arrugas de un río. ¿Qué hombres no conocí? ¿Qué libros no he leído? ¿Qué ha de haber en el almacén de lo visible y de lo invisible que se me pueda vender como novedad?",
+      "source": "Juan José Saer, El poeta septuagenario",
+      "length": 326,
+      "id": 18
+    },
+    {
+      "text": "Somos como la vieja torre cuando saltan de sus ventanas golondrinas; somos como la vieja torre cuando cantan en sus campanas voces finas. Somos como la cama de un enfermo cuando alzándose en ella se ve el prado; somos como la cama de un enfermo que está viendo una estrella de acostado. Pero nuestro corazón con ilusiones como la torre es, que tiene sones, que tiene golondrinas, pero es vieja. Pero nuestro corazón siempre en desvelo, es cual lecho que puede ver el cielo, pero que lleva a uno que se queja.",
+      "source": "Enrique Banchs, Imagen",
+      "length": 509,
+      "id": 19
+    },
+    {
+      "text": "La señora Lefevre era una dama de pueblo. Era una viuda de esas medio campesinas, de cintas y sombreros aparatosos, que hablan con dureza y adoptan en público aires grandiosos; de esas que ocultan, bajo aspectos cómicos y expresivos, un alma de pretenciosa estúpida y esconden, bajo guantes de seda, sus inmensas manos rojas.",
+      "source": "Guy de Maupassant, Pierrot",
+      "length": 326,
+      "id": 20
+    },
+    {
+      "text": "Mal científico sería yo si afirmara que cada detalle que aquí presento quedará fijo para siempre, sin cambio alguno. Insisto solamente en que el esfuerzo por entender el lenguaje y su papel social vale la pena realizarlo, así como en que el enfoque objetivo y amplio lleva a una comprensión relativamente segura, si bien a la luz descubre siempre nuevos problemas que merecen especial atención.",
+      "source": "Morris Swadesh, El lenguaje y la vida humana",
+      "length": 395,
+      "id": 21
+    },
+    {
+      "text": "Con el paso del tiempo la idea original de Borel se fue refinando y desde los años 70 fue dada la vuelta para afirmar, en el coloquialmente conocido como \"Teorema de los infinitos monos\" o \"Teorema del mono infinito\", que si un número infinito de monos inmortales aporrean máquinas de escribir (o teclados de ordenador, no nos vamos a poner exigentes) durante toda la eternidad, alguno acabará escribiendo El Quijote.",
+      "source": "Manuel García, Conrado Miguel - Momentos estelares de la probabilidad y estadística",
+      "length": 417,
+      "id": 22
     }
   ]
 }
