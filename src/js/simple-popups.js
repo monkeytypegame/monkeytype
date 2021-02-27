@@ -222,6 +222,7 @@ simplePopups.applyCustomFont = new SimplePopup(
   "Make sure you have the font installed on your computer before applying.",
   "Apply",
   (fontName) => {
+    if (fontName === "") return;
     settingsGroups.fontFamily.setValue(fontName.replace(/\s/g, "_"));
   },
   () => {}

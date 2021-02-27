@@ -5895,7 +5895,13 @@ if (window.location.hostname === "localhost") {
 }
 
 manualRestart = true;
+
+let configLoadDone;
+let configLoadPromise = new Promise((v, x) => {
+  configLoadDone = v;
+});
 loadConfigFromCookie();
+configLoadDone();
 Misc.getReleasesFromGitHub();
 // getPatreonNames();
 
@@ -5993,6 +5999,7 @@ $(document).ready(() => {
         changePage(page);
       }
     });
+  settingsFillPromise.then(updateSettingsPage);
 });
 
 $(".scrollToTopButton").click((event) => {
