@@ -283,18 +283,22 @@ settingsGroups.alwaysShowCPM = new SettingsGroup(
   setAlwaysShowCPM
 );
 
-fillSettingsPage();
+let settingsFillPromise = fillSettingsPage();
 
 async function fillSettingsPage() {
+  await configLoadPromise;
   refreshThemeButtons();
 
   let langGroupsEl = $(
     ".pageSettings .section.languageGroups .buttons"
   ).empty();
+  let currentLanguageGroup = await Misc.findCurrentGroup(config.language);
   Misc.getLanguageGroups().then((groups) => {
     groups.forEach((group) => {
       langGroupsEl.append(
-        `<div class="languageGroup button" group='${group.name}'>${group.name}</div>`
+        `<div class="languageGroup button${
+          currentLanguageGroup === group.name ? " active" : ""
+        }" group='${group.name}'>${group.name}</div>`
       );
     });
   });
@@ -351,11 +355,15 @@ async function fillSettingsPage() {
     });
   });
 
+  let isCustomFont = true;
   let fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
   Misc.getFontsList().then((fonts) => {
     fonts.forEach((font) => {
+      if (config.fontFamily === font.name) isCustomFont = false;
       fontsEl.append(
-        `<div class="button" style="font-family:${
+        `<div class="button${
+          config.fontFamily === font.name ? " active" : ""
+        }" style="font-family:${
           font.display !== undefined ? font.display : font.name
         }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
         onclick="this.blur();">${
@@ -364,7 +372,12 @@ async function fillSettingsPage() {
       );
     });
     $(
-      '<div class="language button no-auto-handle custom" onclick="this.blur();">Custom</div>'
+      isCustomFont
+        ? `<div class="language button no-auto-handle custom active" onclick="this.blur();">Custom (${config.fontFamily.replace(
+            /_/g,
+            " "
+          )})</div>`
+        : '<div class="language button no-auto-handle custom" onclick="this.blur();">Custom</div>'
     )
       .on("click", () => {
         simplePopups.applyCustomFont.show([]);
