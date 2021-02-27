@@ -4928,8 +4928,11 @@ $(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
     return;
   }
   manualRestart = true;
-
-  restartTest(true);
+  if (config.mode === "quote") {
+    restartTest();
+  } else {
+    restartTest(true);
+  }
 });
 
 $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
@@ -4938,7 +4941,11 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
     return;
   }
   if (event.keyCode == 13) {
-    restartTest(true);
+    if (config.mode === "quote") {
+      restartTest();
+    } else {
+      restartTest(true);
+    }
   }
 });
 
