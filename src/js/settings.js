@@ -152,6 +152,10 @@ settingsGroups.hideExtraLetters = new SettingsGroup(
 );
 settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
 settingsGroups.quickEnd = new SettingsGroup("quickEnd", setQuickEnd);
+settingsGroups.repeatQuotes = new SettingsGroup(
+  "repeatQuotes",
+  setRepeatQuotes
+);
 settingsGroups.enableAds = new SettingsGroup("enableAds", setEnableAds);
 settingsGroups.alwaysShowWordsHistory = new SettingsGroup(
   "alwaysShowWordsHistory",

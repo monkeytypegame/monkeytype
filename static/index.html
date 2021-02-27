@@ -1746,6 +1746,37 @@
                 </div>
               </div>
 
+              <div class="section repeatQuotes" id="repeatQuotes">
+                <h1>repeat quotes</h1>
+                <div class="text">
+                  This setting changes the restarting behaviour when typing in
+                  quote mode. Changing it to 'typing' will repeat the quote if
+                  you restart while typing.
+                </div>
+                <!-- , and 'always' will always repeat the quote (you will need to press <key>shift + tab</key> to move on to the next quote). -->
+                <div class="buttons">
+                  <div
+                    class="button"
+                    repeatQuotes="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    repeatQuotes="typing"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    typing
+                  </div>
+                  <!-- <div class="button" repeatQuotes="always" tabindex="0" onclick="this.blur();">
+                    always
+                  </div> -->
+                </div>
+              </div>
+
               <div class="section blindMode">
                 <h1>blind mode</h1>
                 <div class="text">

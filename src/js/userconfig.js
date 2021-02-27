@@ -75,6 +75,7 @@ let defaultConfig = {
   minAccCustom: 90,
   showLiveAcc: false,
   monkey: false,
+  repeatQuotes: "off",
 };
 
 let cookieConfig = null;
@@ -523,6 +524,14 @@ function setEnableAds(val, nosave) {
     val = "off";
   }
   config.enableAds = val;
+  if (!nosave) saveConfigToCookie();
+}
+
+function setRepeatQuotes(val, nosave) {
+  if (val == undefined || val === true || val === false) {
+    val = "off";
+  }
+  config.repeatQuotes = val;
   if (!nosave) saveConfigToCookie();
 }
 

@@ -186,6 +186,15 @@ let commands = {
       },
     },
     {
+      id: "changeRepeatQuotes",
+      display: "Change repeat quotes...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsRepeatQuotes);
+        showCommandLine();
+      },
+    },
+    {
       id: "toggleShowLiveWpm",
       display: "Toggle live wpm display",
       exec: () => {
@@ -739,6 +748,26 @@ let commandsPageWidth = {
       display: "max",
       exec: () => {
         setPageWidth("max");
+      },
+    },
+  ],
+};
+
+let commandsRepeatQuotes = {
+  title: "Change repeat quotes...",
+  list: [
+    {
+      id: "setRepeatQuotesOff",
+      display: "off",
+      exec: () => {
+        setRepeatQuotes("off");
+      },
+    },
+    {
+      id: "setRepeatQuotesTyping",
+      display: "typing",
+      exec: () => {
+        setRepeatQuotes("typing");
       },
     },
   ],

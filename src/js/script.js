@@ -4848,14 +4848,30 @@ $(window).on("popstate", (e) => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 13) {
-    restartTest();
+    if (
+      testActive &&
+      config.repeatQuotes === "typing" &&
+      config.mode === "quote"
+    ) {
+      restartTest(true);
+    } else {
+      restartTest();
+    }
   }
 });
 
 $(document.body).on("click", "#restartTestButton", () => {
   manualRestart = true;
   if (resultCalculating) return;
-  restartTest();
+  if (
+    testActive &&
+    config.repeatQuotes === "typing" &&
+    config.mode === "quote"
+  ) {
+    restartTest(true);
+  } else {
+    restartTest();
+  }
 });
 
 function initPractiseMissedWords() {
@@ -5215,7 +5231,16 @@ function handleTab(event) {
       if (config.mode == "zen" && !event.shiftKey) {
       } else {
         if (event.shiftKey) manualRestart = true;
-        restartTest(false, false, event);
+
+        if (
+          testActive &&
+          config.repeatQuotes === "typing" &&
+          config.mode === "quote"
+        ) {
+          restartTest(true, false, event);
+        } else {
+          restartTest(false, false, event);
+        }
       }
     } else {
       if (
