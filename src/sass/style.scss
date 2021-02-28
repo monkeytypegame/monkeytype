@@ -528,6 +528,40 @@ a:hover {
   }
 }
 
+#tribeDiff {
+  text-align: right;
+  font-size: 1rem;
+  line-height: 1rem;
+  margin-top: -1.5rem;
+  color: var(--sub-color);
+  &.ahead {
+    color: var(--main-color);
+  }
+  &.behind {
+    color: var(--error-color);
+  }
+  &.size125 {
+    margin-top: -1.75rem;
+    font-size: 1.25rem;
+    line-height: 1.25rem;
+  }
+  &.size15 {
+    margin-top: -2rem;
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+  }
+  &.size2 {
+    margin-top: -2.5rem;
+    font-size: 2rem;
+    line-height: 2rem;
+  }
+  &.size3 {
+    margin-top: -3.5rem;
+    font-size: 3rem;
+    line-height: 3rem;
+  }
+}
+
 #tribeUserSettingsPopupWrapper {
   width: 100%;
   height: 100%;

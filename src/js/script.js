@@ -2913,6 +2913,7 @@ function startTest() {
       }
 
       mp_sendTestProgress(wpmAndRaw.wpm, wpmAndRaw.raw, acc, progress);
+      mp_updateTribeDiff(wpmAndRaw.wpm);
 
       if (
         MP.state >= 21 &&

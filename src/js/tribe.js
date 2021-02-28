@@ -844,6 +844,45 @@ function mp_updateWhoIsTyping() {
   $(".pageTest #result .tribeResultChat .chat .whoIsTyping").html(string);
 }
 
+function mp_updateTribeDiff(currentSpeed) {
+  if (MP.state >= 21 && MP.state <= 28 && testActive) {
+    let elem = $("#tribeDiff");
+    elem.removeClass("ahead");
+    elem.removeClass("behind");
+
+    let maxwpm = 0;
+    Object.keys(MP.room.userSpeeds).forEach((sid) => {
+      if (MP.room.userSpeeds[sid] > maxwpm) maxwpm = MP.room.userSpeeds[sid];
+    });
+
+    let diff = Math.round(maxwpm - currentSpeed);
+    if (diff == 0) {
+      elem.text("--");
+    } else if (diff > 0) {
+      elem.text("-" + diff);
+      elem.addClass("behind");
+    } else {
+      elem.addClass("ahead");
+      elem.text("+" + Math.abs(diff));
+    }
+  }
+}
+
+function mp_showHideTribeDiff(showhide) {
+  if (showhide) {
+    $("#tribeDiff").removeClass("hidden");
+  } else {
+    $("#tribeDiff").addClass("hidden");
+  }
+}
+
+function mp_resetTribeDiff() {
+  let elem = $("#tribeDiff");
+  elem.removeClass("ahead");
+  elem.removeClass("behind");
+  elem.text("--");
+}
+
 MP.socket.on("connect", (f) => {
   setTimerStyle("mini", true);
   MP.state = 1;
@@ -856,6 +895,7 @@ MP.socket.on("connect", (f) => {
   MP.id = MP.socket.id;
   mp_setName(name);
   mp_changeActiveSubpage("prelobby");
+  mp_showHideTribeDiff(true);
   setTimeout(() => {
     if (MP.autoJoin) {
       MP.socket.emit("mp_room_join", { roomId: MP.autoJoin });
@@ -903,6 +943,7 @@ MP.socket.on("disconnect", (f) => {
   mp_resetLobby();
   mp_resetRace();
   mp_changeActiveSubpage("preloader");
+  mp_showHideTribeDiff(false);
   // $(".pageTribe .preloader div").removeClass("hidden");
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
   // $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
@@ -1173,6 +1214,8 @@ MP.socket.on("mp_room_test_init", (data) => {
     return;
   }
   mp_playSound("start");
+  MP.room.userSpeeds = {};
+  mp_resetTribeDiff();
   MP.room.userGraphs = {};
   MP.room.userFinished = false;
   destroyAllGraphs();
@@ -1192,6 +1235,7 @@ MP.socket.on("mp_room_state_update", (data) => {
 });
 
 MP.socket.on("mp_room_user_test_progress_update", (data) => {
+  if (data.sid !== MP.socket.id) MP.room.userSpeeds[data.sid] = data.stats.wpm;
   $(`.tribePlayers .player[sid=${data.sid}] .wpm`).text(data.stats.wpm);
   $(`.tribePlayers .player[sid=${data.sid}] .acc`).text(
     Math.floor(data.stats.acc) + "%"
