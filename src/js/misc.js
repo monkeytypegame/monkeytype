@@ -120,6 +120,18 @@ export async function getFontsList() {
   }
 }
 
+let emojiList = null;
+export async function getEmojiList() {
+  if (emojiList == null) {
+    return $.getJSON("emoji/_list.json", function (data) {
+      emojiList = data;
+      return emojiList;
+    });
+  } else {
+    return emojiList;
+  }
+}
+
 let languageList = null;
 export async function getLanguageList() {
   if (languageList == null) {

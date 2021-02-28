@@ -1,4 +1,109 @@
 const emoji = require("node-emoji");
+const { getEmojiList } = require("./misc");
+
+class EmojiSuggestions {
+  constructor(jqelement) {
+    this.element = jqelement;
+    this.currentSuggestion = 0;
+    this.suggestionList = [];
+  }
+
+  async updateSuggestions(text) {
+    let emoji = await getEmojiList();
+    this.element.empty();
+    this.suggestionList = [];
+    let suggested = 0;
+
+    let reg = new RegExp("^" + text, "ig");
+    let found = emoji.filter((e) => reg.test(e.from));
+    found.forEach((emoji) => {
+      if (suggested > 5) return;
+      this.suggestionList.push(emoji);
+      suggested++;
+      if (emoji.type === "image") {
+        this.element.append(`
+        <div class="suggestion">
+          <div class="emoji" style="background-image: url('${emoji.to}')";></div>
+          <div class="text">:${emoji.from}:</div>
+        </div>
+        `);
+      } else if (emoji.type === "emoji") {
+        this.element.append(`
+        <div class="suggestion">
+          <div class="emoji">${emoji.to}</div>
+          <div class="text">:${emoji.from}:</div>
+        </div>
+        `);
+      }
+    });
+
+    reg = new RegExp("(?!^)" + text, "ig");
+    found = emoji.filter((e) => reg.test(e.from));
+    found.forEach((emoji) => {
+      if (suggested > 5) return;
+      this.suggestionList.push(emoji);
+      suggested++;
+      if (emoji.type === "image") {
+        this.element.append(`
+        <div class="suggestion">
+          <div class="emoji" style="background-image: url('${emoji.to}')";></div>
+          <div class="text">:${emoji.from}:</div>
+        </div>
+        `);
+      } else if (emoji.type === "emoji") {
+        this.element.append(`
+        <div class="suggestion">
+          <div class="emoji">${emoji.to}</div>
+          <div class="text">:${emoji.from}:</div>
+        </div>
+        `);
+      }
+    });
+
+    this.suggestionsCount = this.suggestionList.length;
+
+    this.updateActiveSuggestion();
+  }
+
+  updateActiveSuggestion() {
+    this.clampActive();
+    this.element.find(".suggestion").removeClass("active");
+    $(this.element.find(".suggestion")[this.currentSuggestion]).addClass(
+      "active"
+    );
+  }
+
+  clampActive() {
+    if (this.currentSuggestion <= -1) {
+      this.currentSuggestion = this.suggestionsCount - 1;
+    }
+    if (this.currentSuggestion >= this.suggestionsCount) {
+      this.currentSuggestion = 0;
+    }
+  }
+
+  getActive() {
+    return this.suggestionList[this.currentSuggestion];
+  }
+
+  moveActiveSuggestion(down) {
+    if (down) {
+      this.currentSuggestion++;
+    } else {
+      this.currentSuggestion--;
+    }
+    this.clampActive();
+    this.updateActiveSuggestion();
+  }
+
+  show() {
+    this.element.removeClass("hidden");
+  }
+
+  hide() {
+    this.element.addClass("hidden");
+  }
+}
 
 let MP = {
   state: -1,
@@ -21,6 +126,13 @@ let MP = {
 };
 
 let scrollChat = true;
+
+let lobbySuggestions = new EmojiSuggestions(
+  $(".pageTribe .lobby .chat .input .emojiSuggestion")
+);
+let resultSuggestions = new EmojiSuggestions(
+  $(".pageTest #result .tribeResultChat .chat .input .emojiSuggestion")
+);
 
 let tribeSounds = {
   join: new Audio("../sound/tribe_ui/join.wav"),
@@ -883,6 +995,24 @@ function mp_resetTribeDiff() {
   elem.text("--");
 }
 
+async function mp_insertImageEmoji(text) {
+  text = text.trim().split(" ");
+  let big = "";
+  if (text.length === 1) big = " big";
+  for (let i = 0; i < text.length; i++) {
+    if (/:.+:/g.test(text[i])) {
+      let emoji = await getEmojiList();
+      let result = emoji.filter((e) => e.from == text[i].replace(/:/g, ""));
+      if (result[0] !== undefined) {
+        text[
+          i
+        ] = `<div class="emoji ${big}" style="background-image: url('${result[0].to}')"></div>`;
+      }
+    }
+  }
+  return text.join(" ");
+}
+
 MP.socket.on("connect", (f) => {
   setTimerStyle("mini", true);
   MP.state = 1;
@@ -1086,7 +1216,7 @@ MP.socket.on("mp_room_config_update", (data) => {
   mp_refreshUserList();
 });
 
-MP.socket.on("mp_chat_message", (data) => {
+MP.socket.on("mp_chat_message", async (data) => {
   let nameregex;
   if (data.isLeader) {
     nameregex = new RegExp(MP.name + "|ready|everyone", "i");
@@ -1113,6 +1243,7 @@ MP.socket.on("mp_chat_message", (data) => {
     if (data.from.name == MP.name) me = " me";
     author = `<div class="author ${me}">${data.from.name}:</div>`;
   }
+  data.message = await mp_insertImageEmoji(data.message);
   $(".pageTribe .lobby .chat .messages").append(`
     <div class="${cls}">${author}<div class="text">${data.message}</div></div>
   `);
@@ -1137,12 +1268,102 @@ $(".pageTest #result .tribeResultChat .chat .input input").keypress(() => {
     );
   }, 1);
 });
-$(".pageTribe .lobby .chat .input input").keypress(() => {
+$(".pageTribe .lobby .chat .input input").keypress((e) => {
   setTimeout(() => {
     $(".pageTest #result .tribeResultChat .chat .input input").val(
       $(".pageTribe .lobby .chat .input input").val()
     );
   }, 1);
+});
+
+$(".pageTribe .lobby .chat .input input").keydown((e) => {
+  if (e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == "Tab") {
+    e.preventDefault();
+  }
+});
+
+$(".pageTribe .lobby .chat .input input").keyup((e) => {
+  if (e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == "Tab") {
+    e.preventDefault();
+  }
+
+  if (e.key == "ArrowUp") {
+    lobbySuggestions.moveActiveSuggestion(false);
+  } else if (e.key == "ArrowDown") {
+    lobbySuggestions.moveActiveSuggestion(true);
+  } else if (e.key == "Tab") {
+    let emoji = lobbySuggestions.getActive();
+    let split = $(".pageTribe .lobby .chat .input input").val().split(" ");
+    if (emoji.type === "image") {
+      split[split.length - 1] = `:${emoji.from}:`;
+    } else if (emoji.type === "emoji") {
+      split[split.length - 1] = `${emoji.to}`;
+    }
+    $(".pageTribe .lobby .chat .input input").val(split.join(" ") + " ");
+    lobbySuggestions.hide();
+  } else {
+    let split = $(".pageTribe .lobby .chat .input input").val().split(" ");
+    split = split[split.length - 1];
+    if (split.slice(0, 1) === ":") {
+      split = split.replace(/:/g, "");
+      if (split.length >= 2) {
+        lobbySuggestions.updateSuggestions(split);
+        lobbySuggestions.show();
+      } else {
+        lobbySuggestions.hide();
+      }
+    } else {
+      lobbySuggestions.hide();
+    }
+  }
+});
+
+$(".pageTest #result .tribeResultChat .chat .input input").keydown((e) => {
+  if (e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == "Tab") {
+    e.preventDefault();
+  }
+});
+
+$(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
+  if (e.key == "ArrowUp" || e.key == "ArrowDown" || e.key == "Tab") {
+    e.preventDefault();
+  }
+
+  if (e.key == "ArrowUp") {
+    resultSuggestions.moveActiveSuggestion(false);
+  } else if (e.key == "ArrowDown") {
+    resultSuggestions.moveActiveSuggestion(true);
+  } else if (e.key == "Tab") {
+    let emoji = resultSuggestions.getActive();
+    let split = $(".pageTest #result .tribeResultChat .chat .input input")
+      .val()
+      .split(" ");
+    if (emoji.type === "image") {
+      split[split.length - 1] = `:${emoji.from}:`;
+    } else if (emoji.type === "emoji") {
+      split[split.length - 1] = `${emoji.to}`;
+    }
+    $(".pageTest #result .tribeResultChat .chat .input input").val(
+      split.join(" ") + " "
+    );
+    resultSuggestions.hide();
+  } else {
+    let split = $(".pageTest #result .tribeResultChat .chat .input input")
+      .val()
+      .split(" ");
+    split = split[split.length - 1];
+    if (split.slice(0, 1) === ":") {
+      split = split.replace(/:/g, "");
+      if (split.length >= 2) {
+        resultSuggestions.updateSuggestions(split);
+        resultSuggestions.show();
+      } else {
+        resultSuggestions.hide();
+      }
+    } else {
+      resultSuggestions.hide();
+    }
+  }
 });
 
 MP.socket.on("mp_system_message", (data) => {
@@ -1223,6 +1444,11 @@ MP.socket.on("mp_room_test_init", (data) => {
   console.log(`seed: ${data.seed}`);
   console.log(`random: ${Math.random()}`);
   changePage("");
+  $(".pageTribe .lobby .chat .input input").val("");
+  $(".pageTest #result .tribeResultChat .chat .input input").val("");
+  lobbySuggestions.hide();
+  resultSuggestions.hide();
+  mp_sendIsTypingUpdate(false);
   restartTest(false, true, true);
   showCountdown();
   hideResultCountdown();
@@ -1235,7 +1461,10 @@ MP.socket.on("mp_room_state_update", (data) => {
 });
 
 MP.socket.on("mp_room_user_test_progress_update", (data) => {
-  if (data.sid !== MP.socket.id) MP.room.userSpeeds[data.sid] = data.stats.wpm;
+  if (MP.room.isTyping) {
+    if (data.sid !== MP.socket.id)
+      MP.room.userSpeeds[data.sid] = data.stats.wpm;
+  }
   $(`.tribePlayers .player[sid=${data.sid}] .wpm`).text(data.stats.wpm);
   $(`.tribePlayers .player[sid=${data.sid}] .acc`).text(
     Math.floor(data.stats.acc) + "%"
