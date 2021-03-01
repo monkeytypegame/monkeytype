@@ -866,11 +866,7 @@ function validateResult(result) {
     }
   }
 
-  let wpmbad = false;
-  result.wpm.forEach((w) => {
-    if (w > 400) wpmbad = true;
-  });
-  if (wpmbad) return false;
+  if (result.wpm.filter((w) => w > 400).length > 0) return false;
 
   if (result.consistency < 25) return false;
 
