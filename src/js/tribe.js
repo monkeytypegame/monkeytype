@@ -122,7 +122,7 @@ let MP = {
   maxReconnectionAttempts: 1,
   activePage: "preloader",
   pageTransition: false,
-  expectedVersion: "0.8.1",
+  expectedVersion: "0.8.2",
 };
 
 let scrollChat = true;
