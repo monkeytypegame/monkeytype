@@ -5124,7 +5124,7 @@ function handleTab(event) {
     //   $("#customTextPopup .textarea").val() + "\t"
     // );
     return;
-  } else if (MP.state > 10) {
+  } else if (MP.state >= 10) {
     if (MP.state < 28) {
       event.preventDefault();
     }
