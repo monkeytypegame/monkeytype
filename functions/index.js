@@ -866,7 +866,9 @@ function validateResult(result) {
     }
   }
 
-  if (result.wpm.filter((w) => w > 400).length > 0) return false;
+  if (result.chartData.wpm !== undefined) {
+    if (result.chartData.wpm.filter((w) => w > 400).length > 0) return false;
+  }
 
   if (result.consistency < 25) return false;
 
@@ -2041,6 +2043,9 @@ class Leaderboard {
             wpm: parseFloat(entry.wpm),
             raw: parseFloat(entry.raw),
             acc: parseFloat(entry.acc),
+            consistency: isNaN(parseInt(entry.consistency))
+              ? "-"
+              : parseInt(entry.consistency),
             mode: entry.mode,
             mode2: parseInt(entry.mode2),
             timestamp: entry.timestamp,
@@ -2117,6 +2122,9 @@ class Leaderboard {
                 wpm: parseFloat(a.wpm),
                 raw: parseFloat(a.rawWpm),
                 acc: parseFloat(a.acc),
+                consistency: isNaN(parseInt(a.consistency))
+                  ? "-"
+                  : parseInt(a.consistency),
                 mode: a.mode,
                 mode2: parseInt(a.mode2),
                 timestamp: a.timestamp,
@@ -2132,6 +2140,9 @@ class Leaderboard {
                 wpm: parseFloat(a.wpm),
                 raw: parseFloat(a.rawWpm),
                 acc: parseFloat(a.acc),
+                consistency: isNaN(parseInt(a.consistency))
+                  ? "-"
+                  : parseInt(a.consistency),
                 mode: a.mode,
                 mode2: parseInt(a.mode2),
                 timestamp: a.timestamp,
@@ -2148,6 +2159,9 @@ class Leaderboard {
               wpm: parseFloat(a.wpm),
               raw: parseFloat(a.rawWpm),
               acc: parseFloat(a.acc),
+              consistency: isNaN(parseInt(a.consistency))
+                ? "-"
+                : parseInt(a.consistency),
               mode: a.mode,
               mode2: parseInt(a.mode2),
               timestamp: a.timestamp,
@@ -2164,6 +2178,9 @@ class Leaderboard {
           wpm: parseFloat(a.wpm),
           raw: parseFloat(a.rawWpm),
           acc: parseFloat(a.acc),
+          consistency: isNaN(parseInt(a.consistency))
+            ? "-"
+            : parseInt(a.consistency),
           mode: a.mode,
           mode2: parseInt(a.mode2),
           timestamp: a.timestamp,

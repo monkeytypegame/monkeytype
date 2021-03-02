@@ -254,6 +254,14 @@ a:hover {
       margin-bottom: 2rem;
       font-size: 0.8rem;
 
+      .sub {
+        opacity: 0.5;
+      }
+
+      .alignRight {
+        text-align: right;
+      }
+
       .titleAndTable {
         display: grid;
 
@@ -287,7 +295,7 @@ a:hover {
         }
 
         td {
-          padding: 0.25rem 0.5rem;
+          padding: 0.5rem 0.5rem;
 
           &.me {
             color: var(--main-color);
@@ -305,6 +313,7 @@ a:hover {
             position: -webkit-sticky;
             position: sticky;
             top: 0;
+            z-index: 99;
           }
         }
 
@@ -325,6 +334,15 @@ a:hover {
             background: var(--bg-color);
             color: var(--sub-color);
             z-index: 4;
+          }
+        }
+
+        tr {
+          td:first-child {
+            padding-left: 1rem;
+          }
+          td:last-child {
+            padding-right: 1rem;
           }
         }
       }
