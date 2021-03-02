@@ -83,7 +83,11 @@ class EmojiSuggestions {
   }
 
   getActive() {
-    return this.suggestionList[this.currentSuggestion];
+    if (this.currentSuggestion === -1) {
+      return null;
+    } else {
+      return this.suggestionList[this.currentSuggestion];
+    }
   }
 
   moveActiveSuggestion(down) {
@@ -97,10 +101,12 @@ class EmojiSuggestions {
   }
 
   show() {
+    this.currentSuggestion = 0;
     this.element.removeClass("hidden");
   }
 
   hide() {
+    this.currentSuggestion = -1;
     this.element.addClass("hidden");
   }
 }
@@ -1293,14 +1299,16 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
     lobbySuggestions.moveActiveSuggestion(true);
   } else if (e.key == "Tab") {
     let emoji = lobbySuggestions.getActive();
-    let split = $(".pageTribe .lobby .chat .input input").val().split(" ");
-    if (emoji.type === "image") {
-      split[split.length - 1] = `:${emoji.from}:`;
-    } else if (emoji.type === "emoji") {
-      split[split.length - 1] = `${emoji.to}`;
+    if (emoji) {
+      let split = $(".pageTribe .lobby .chat .input input").val().split(" ");
+      if (emoji.type === "image") {
+        split[split.length - 1] = `:${emoji.from}:`;
+      } else if (emoji.type === "emoji") {
+        split[split.length - 1] = `${emoji.to}`;
+      }
+      $(".pageTribe .lobby .chat .input input").val(split.join(" ") + " ");
+      lobbySuggestions.hide();
     }
-    $(".pageTribe .lobby .chat .input input").val(split.join(" ") + " ");
-    lobbySuggestions.hide();
   } else {
     let split = $(".pageTribe .lobby .chat .input input").val().split(" ");
     split = split[split.length - 1];
@@ -1335,18 +1343,20 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
     resultSuggestions.moveActiveSuggestion(true);
   } else if (e.key == "Tab") {
     let emoji = resultSuggestions.getActive();
-    let split = $(".pageTest #result .tribeResultChat .chat .input input")
-      .val()
-      .split(" ");
-    if (emoji.type === "image") {
-      split[split.length - 1] = `:${emoji.from}:`;
-    } else if (emoji.type === "emoji") {
-      split[split.length - 1] = `${emoji.to}`;
+    if (emoji) {
+      let split = $(".pageTest #result .tribeResultChat .chat .input input")
+        .val()
+        .split(" ");
+      if (emoji.type === "image") {
+        split[split.length - 1] = `:${emoji.from}:`;
+      } else if (emoji.type === "emoji") {
+        split[split.length - 1] = `${emoji.to}`;
+      }
+      $(".pageTest #result .tribeResultChat .chat .input input").val(
+        split.join(" ") + " "
+      );
+      resultSuggestions.hide();
     }
-    $(".pageTest #result .tribeResultChat .chat .input input").val(
-      split.join(" ") + " "
-    );
-    resultSuggestions.hide();
   } else {
     let split = $(".pageTest #result .tribeResultChat .chat .input input")
       .val()
@@ -1829,12 +1839,16 @@ $(
   }
 });
 
-$(
-  ".pageTribe .lobby .chat .messages, .pageTest #result .tribeResultChat .chat .messages"
-).on("scroll", (e) => {
+$(".pageTest #result .tribeResultChat .chat .messages").on("scroll", (e) => {
+  let chatEl = $(".pageTest #result .tribeResultChat .chat .messages")[0];
+  scrollChat =
+    chatEl.scrollHeight - chatEl.scrollTop <= chatEl.clientHeight + 10;
+});
+
+$(".pageTribe .lobby .chat .messages").on("scroll", (e) => {
   let chatEl = $(".pageTribe .lobby .chat .messages")[0];
-  scrollChat = chatEl.scrollHeight - chatEl.scrollTop === chatEl.clientHeight;
-  console.log(scrollChat);
+  scrollChat =
+    chatEl.scrollHeight - chatEl.scrollTop <= chatEl.clientHeight + 10;
 });
 
 $(
