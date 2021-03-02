@@ -1,6 +1,3 @@
-const emoji = require("node-emoji");
-const { getEmojiList } = require("./misc");
-
 class EmojiSuggestions {
   constructor(jqelement) {
     this.element = jqelement;
@@ -9,7 +6,7 @@ class EmojiSuggestions {
   }
 
   async updateSuggestions(text) {
-    let emoji = await getEmojiList();
+    let emoji = await Misc.getEmojiList();
     this.element.empty();
     this.suggestionList = [];
     let suggested = 0;
@@ -1007,7 +1004,7 @@ async function mp_insertImageEmoji(text) {
   if (text.length === 1) big = " big";
   for (let i = 0; i < text.length; i++) {
     if (/:.+:/g.test(text[i])) {
-      let emoji = await getEmojiList();
+      let emoji = await Misc.getEmojiList();
       let result = emoji.filter((e) => e.from == text[i].replace(/:/g, ""));
       if (result[0] !== undefined) {
         text[
