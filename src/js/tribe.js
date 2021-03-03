@@ -1,4 +1,5 @@
 import InputSuggestions from "./input-suggestions";
+import * as MatchmakingStatus from "./tribe-mm-status";
 
 let MP = {
   state: -1,

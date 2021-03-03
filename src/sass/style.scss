@@ -190,6 +190,23 @@ a:hover {
   z-index: 9999;
 }
 
+#tribeMatchmakingStatus {
+  background: var(--bg-color);
+  position: fixed;
+  transform: translate(-50%);
+  left: 50%;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 var(--roundness) var(--roundness);
+  color: var(--sub-color);
+  font-size: 0.75rem;
+  .icon {
+    color: var(--main-color);
+    opacity: 0.5;
+  }
+}
+
 @keyframes loader {
   0% {
     width: 0;
