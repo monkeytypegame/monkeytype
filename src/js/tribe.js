@@ -1127,11 +1127,24 @@ MP.socket.on("mp_room_config_update", (data) => {
 });
 
 MP.socket.on("mp_chat_message", async (data) => {
+  data.message = data.message.trim();
   let nameregex;
   if (data.isLeader) {
-    nameregex = new RegExp("@" + MP.name + "|ready|@everyone", "i");
+    nameregex = new RegExp(
+      ` @${MP.name.replace(/[.()]/g, "\\$&")} |^@${MP.name.replace(
+        /[.()]/g,
+        "\\$&"
+      )}$|ready|@everyone`,
+      "i"
+    );
   } else {
-    nameregex = new RegExp("@" + MP.name, "i");
+    nameregex = new RegExp(
+      ` @${MP.name.replace(/[.()]/g, "\\$&")} |^@${MP.name.replace(
+        /[.()]/g,
+        "\\$&"
+      )}$`,
+      "i"
+    );
   }
   if (!data.isSystem && data.from.name != MP.name) {
     if (nameregex.test(data.message)) {
