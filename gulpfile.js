@@ -95,6 +95,7 @@ const refactoredSrc = [
   "./src/js/monkey.js",
   "./src/js/result-filters.js",
   "./src/js/notification-center.js",
+  "./src/js/input-suggestions.js",
 ];
 
 //legacy files

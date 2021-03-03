@@ -1,112 +1,4 @@
-class EmojiSuggestions {
-  constructor(jqelement) {
-    this.element = jqelement;
-    this.currentSuggestion = 0;
-    this.suggestionList = [];
-  }
-
-  async updateSuggestions(text) {
-    let emoji = await Misc.getEmojiList();
-    this.element.empty();
-    this.suggestionList = [];
-    let suggested = 0;
-
-    let reg = new RegExp("^" + text, "ig");
-    let found = emoji.filter((e) => reg.test(e.from));
-    found.forEach((emoji) => {
-      if (suggested > 5) return;
-      this.suggestionList.push(emoji);
-      suggested++;
-      if (emoji.type === "image") {
-        this.element.append(`
-        <div class="suggestion">
-          <div class="emoji" style="background-image: url('${emoji.to}')";></div>
-          <div class="text">:${emoji.from}:</div>
-        </div>
-        `);
-      } else if (emoji.type === "emoji") {
-        this.element.append(`
-        <div class="suggestion">
-          <div class="emoji">${emoji.to}</div>
-          <div class="text">:${emoji.from}:</div>
-        </div>
-        `);
-      }
-    });
-
-    reg = new RegExp("(?!^)" + text, "ig");
-    found = emoji.filter((e) => reg.test(e.from));
-    found.forEach((emoji) => {
-      if (suggested > 5) return;
-      this.suggestionList.push(emoji);
-      suggested++;
-      if (emoji.type === "image") {
-        this.element.append(`
-        <div class="suggestion">
-          <div class="emoji" style="background-image: url('${emoji.to}')";></div>
-          <div class="text">:${emoji.from}:</div>
-        </div>
-        `);
-      } else if (emoji.type === "emoji") {
-        this.element.append(`
-        <div class="suggestion">
-          <div class="emoji">${emoji.to}</div>
-          <div class="text">:${emoji.from}:</div>
-        </div>
-        `);
-      }
-    });
-
-    this.suggestionsCount = this.suggestionList.length;
-
-    this.updateActiveSuggestion();
-  }
-
-  updateActiveSuggestion() {
-    this.clampActive();
-    this.element.find(".suggestion").removeClass("active");
-    $(this.element.find(".suggestion")[this.currentSuggestion]).addClass(
-      "active"
-    );
-  }
-
-  clampActive() {
-    if (this.currentSuggestion <= -1) {
-      this.currentSuggestion = this.suggestionsCount - 1;
-    }
-    if (this.currentSuggestion >= this.suggestionsCount) {
-      this.currentSuggestion = 0;
-    }
-  }
-
-  getActive() {
-    if (this.currentSuggestion === -1) {
-      return null;
-    } else {
-      return this.suggestionList[this.currentSuggestion];
-    }
-  }
-
-  moveActiveSuggestion(down) {
-    if (down) {
-      this.currentSuggestion++;
-    } else {
-      this.currentSuggestion--;
-    }
-    this.clampActive();
-    this.updateActiveSuggestion();
-  }
-
-  show() {
-    this.currentSuggestion = 0;
-    this.element.removeClass("hidden");
-  }
-
-  hide() {
-    this.currentSuggestion = -1;
-    this.element.addClass("hidden");
-  }
-}
+import InputSuggestions from "./input-suggestions";
 
 let MP = {
   state: -1,
@@ -130,12 +22,21 @@ let MP = {
 
 let scrollChat = true;
 
-let lobbySuggestions = new EmojiSuggestions(
-  $(".pageTribe .lobby .chat .input .emojiSuggestion")
-);
-let resultSuggestions = new EmojiSuggestions(
-  $(".pageTest #result .tribeResultChat .chat .input .emojiSuggestion")
-);
+let lobbySuggestions;
+let resultSuggestions;
+
+Misc.getEmojiList().then((list) => {
+  lobbySuggestions = new InputSuggestions(
+    $(".pageTribe .lobby .chat .input .emojiSuggestion"),
+    list,
+    ["test", "miodec", "vastus"]
+  );
+  resultSuggestions = new InputSuggestions(
+    $(".pageTest #result .tribeResultChat .chat .input .emojiSuggestion"),
+    list,
+    []
+  );
+});
 
 let tribeSounds = {
   join: new Audio("../sound/tribe_ui/join.wav"),
@@ -193,11 +94,17 @@ function mp_refreshUserList() {
   $(".pageTribe .lobby .userlist .list").empty();
   $(".pageTest #result .tribeResultChat .userlist .list").empty();
   let usersArray = [];
+  let names = [];
   Object.keys(MP.room.users).forEach((sid) => {
     let u = MP.room.users[sid];
     u.sid = sid;
+    if (sid !== MP.socket.id) {
+      names.push(u.name);
+    }
     usersArray.push(u);
   });
+  lobbySuggestions.setNameList(names);
+  resultSuggestions.setNameList(names);
   let sortedUsers = usersArray.sort((a, b) => b.points - a.points);
   sortedUsers.forEach((user) => {
     let icons = "";
@@ -1222,9 +1129,9 @@ MP.socket.on("mp_room_config_update", (data) => {
 MP.socket.on("mp_chat_message", async (data) => {
   let nameregex;
   if (data.isLeader) {
-    nameregex = new RegExp(MP.name + "|ready|everyone", "i");
+    nameregex = new RegExp("@" + MP.name + "|ready|@everyone", "i");
   } else {
-    nameregex = new RegExp(MP.name, "i");
+    nameregex = new RegExp("@" + MP.name, "i");
   }
   if (!data.isSystem && data.from.name != MP.name) {
     if (nameregex.test(data.message)) {
@@ -1295,13 +1202,16 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
   } else if (e.key == "ArrowDown") {
     lobbySuggestions.moveActiveSuggestion(true);
   } else if (e.key == "Tab") {
-    let emoji = lobbySuggestions.getActive();
-    if (emoji) {
+    let active = lobbySuggestions.getActive();
+    if (active) {
       let split = $(".pageTribe .lobby .chat .input input").val().split(" ");
-      if (emoji.type === "image") {
-        split[split.length - 1] = `:${emoji.from}:`;
-      } else if (emoji.type === "emoji") {
-        split[split.length - 1] = `${emoji.to}`;
+      if (active.type === "image") {
+        split[split.length - 1] = `:${active.from}:`;
+      } else if (active.type === "emoji") {
+        split[split.length - 1] = `${active.to}`;
+      } else {
+        //its a name
+        split[split.length - 1] = `@${active}`;
       }
       $(".pageTribe .lobby .chat .input input").val(split.join(" ") + " ");
       lobbySuggestions.hide();
@@ -1312,7 +1222,15 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
     if (split.slice(0, 1) === ":") {
       split = split.replace(/:/g, "");
       if (split.length >= 2) {
-        lobbySuggestions.updateSuggestions(split);
+        lobbySuggestions.updateSuggestions("emoji", split);
+        lobbySuggestions.show();
+      } else {
+        lobbySuggestions.hide();
+      }
+    } else if (split.slice(0, 1) === "@") {
+      split = split.replace(/@/g, "");
+      if (split.length >= 0) {
+        lobbySuggestions.updateSuggestions("name", split);
         lobbySuggestions.show();
       } else {
         lobbySuggestions.hide();
@@ -1794,6 +1712,7 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
         name: MP.name,
       },
     });
+    resultSuggestions.hide();
     $(".pageTest #result .tribeResultChat .chat .input input").val("");
     $(".pageTribe .lobby .chat .input input").val("");
   }
@@ -1818,6 +1737,7 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
         name: MP.name,
       },
     });
+    lobbySuggestions.hide();
     $(".pageTribe .lobby .chat .input input").val("");
     $(".pageTest #result .tribeResultChat .chat .input input").val("");
   }
