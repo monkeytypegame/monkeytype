@@ -1086,6 +1086,11 @@ MP.socket.on("mp_room_leave", () => {
 
 MP.socket.on("mp_room_user_left", (data) => {
   mp_playSound("leave");
+  if (MP.room.whoIsTyping === undefined) {
+    MP.room.whoIsTyping = {};
+  }
+  MP.room.whoIsTyping[data.sid] = { name: data.name, truefalse: false };
+  mp_updateWhoIsTyping();
   delete MP.room.users[data.sid];
   if (data.newLeader !== "" && data.newLeader === MP.socket.id) {
     MP.room.isLeader = true;
