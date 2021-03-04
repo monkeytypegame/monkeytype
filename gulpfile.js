@@ -97,6 +97,7 @@ const refactoredSrc = [
   "./src/js/notification-center.js",
   "./src/js/input-suggestions.js",
   "./src/js/tribe-mm-status.js",
+  "./src/js/tribe-default-configs.js",
 ];
 
 //legacy files

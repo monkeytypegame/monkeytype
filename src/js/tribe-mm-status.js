@@ -8,10 +8,10 @@ export function hide() {
   el.addClass("hidden");
 }
 
-export function updateText(text) {
+export function setText(text) {
   el.find(".text").text(text);
 }
 
-export function updateIcon(html) {
+export function setIcon(html) {
   el.find(".icon").html(html);
 }

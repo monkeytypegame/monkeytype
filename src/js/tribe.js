@@ -1,5 +1,6 @@
 import InputSuggestions from "./input-suggestions";
 import * as MatchmakingStatus from "./tribe-mm-status";
+import TribeDefaultConfigs from "./tribe-default-configs";
 
 let MP = {
   state: -1,
@@ -55,6 +56,8 @@ let tribeSounds = {
 
 //-1 - disconnected
 //1 - connected
+//8 - looking for a public game
+//9 - in a public lobby waiting to fill
 //10 - lobby
 //20 - test about to start
 //21 - test active
@@ -228,15 +231,15 @@ function mp_applyRoomConfig(cfg) {
   } else {
     setMinWpm("off", true, true);
   }
-  customText = cfg.customText;
+  if (cfg.customText !== null) customText = cfg.customText;
 }
 
 function mp_checkIfCanChangeConfig(mp) {
-  if (MP.state >= 10) {
+  if (MP.state >= 8) {
     if (MP.state >= 20 && MP.state < 29) {
       Notifications.add("You can't change settings during the test", 0, 1);
       return false;
-    } else if (MP.room.isLeader) {
+    } else if (MP.room !== undefined && MP.room.isLeader) {
       return true;
     } else {
       if (mp) return true;
@@ -1027,50 +1030,58 @@ MP.socket.on("connect_error", (f) => {
 });
 
 MP.socket.on("mp_room_joined", (data) => {
-  mp_playSound("join");
   if (MP.room === undefined) {
     MP.room = data.room;
   } else {
     MP.room.users[data.sid] = { sid: data.sid, name: data.name };
   }
-  if (data.sid === MP.socket.id) {
-    let user = MP.room.users[MP.socket.id];
-    if (user.isLeader) {
-      MP.room.isLeader = true;
-    } else {
-      MP.room.isLeader = false;
+  if (data.room.private) {
+    mp_playSound("join");
+    if (data.sid === MP.socket.id) {
+      let user = MP.room.users[MP.socket.id];
+      if (user.isLeader) {
+        MP.room.isLeader = true;
+      } else {
+        MP.room.isLeader = false;
+      }
+      MP.room.isReady = false;
+      MP.room.isTyping = false;
     }
-    MP.room.isReady = false;
-    MP.room.isTyping = false;
-  }
-  mp_resetReadyButtons();
-  mp_refreshUserList();
-  if (MP.state === 10) {
-    //user is already in the room and somebody joined
-  } else if (MP.state === 1) {
-    //user is in prelobby and joined a room
-    mp_applyRoomConfig(MP.room.config);
-    mp_refreshConfig();
-    let link = location.origin + "/tribe" + MP.room.id.substring(4);
-    $(".pageTribe .lobby .inviteLink .code .text").text(
-      MP.room.id.substring(5)
-    );
-    $(".pageTribe .lobby .inviteLink .link").text(link);
-    $(".pageTest .tribeResultChat .inviteLink .code .text").text(
-      MP.room.id.substring(5)
-    );
-    $(".pageTest .tribeResultChat .inviteLink .link").text(link);
-    mp_changeActiveSubpage("lobby");
-    MP.state = data.room.state;
-    if (MP.state >= 20 && MP.state < 29) {
-      mp_refreshTestUserList();
-    }
-    // swapElements($(".pageTribe .prelobby"), $(".pageTribe .lobby"), 250, () => {
-    //   MP.state = 10;
-    //   // $(".pageTribe .prelobby").addClass('hidden');
-    // });
     mp_resetReadyButtons();
-    mp_resetLeaderButtons();
+    mp_refreshUserList();
+    if (MP.state === 10) {
+      //user is already in the room and somebody joined
+    } else if (MP.state === 1) {
+      //user is in prelobby and joined a room
+      mp_applyRoomConfig(MP.room.config);
+      mp_refreshConfig();
+      let link = location.origin + "/tribe" + MP.room.id.substring(4);
+      $(".pageTribe .lobby .inviteLink .code .text").text(
+        MP.room.id.substring(5)
+      );
+      $(".pageTribe .lobby .inviteLink .link").text(link);
+      $(".pageTest .tribeResultChat .inviteLink .code .text").text(
+        MP.room.id.substring(5)
+      );
+      $(".pageTest .tribeResultChat .inviteLink .link").text(link);
+      mp_changeActiveSubpage("lobby");
+      MP.state = data.room.state;
+      if (MP.state >= 20 && MP.state < 29) {
+        mp_refreshTestUserList();
+      }
+      // swapElements($(".pageTribe .prelobby"), $(".pageTribe .lobby"), 250, () => {
+      //   MP.state = 10;
+      //   // $(".pageTribe .prelobby").addClass('hidden');
+      // });
+      mp_resetReadyButtons();
+      mp_resetLeaderButtons();
+    }
+  } else {
+    MatchmakingStatus.setText(
+      `Waiting for more players to join (${
+        Object.keys(MP.room.users).length
+      }/5)...`
+    );
   }
 });
 
@@ -1086,20 +1097,29 @@ MP.socket.on("mp_room_leave", () => {
 });
 
 MP.socket.on("mp_room_user_left", (data) => {
-  mp_playSound("leave");
-  if (MP.room.whoIsTyping === undefined) {
-    MP.room.whoIsTyping = {};
+  if (MP.room.private) {
+    mp_playSound("leave");
+    if (MP.room.whoIsTyping === undefined) {
+      MP.room.whoIsTyping = {};
+    }
+    MP.room.whoIsTyping[data.sid] = { name: data.name, truefalse: false };
+    mp_updateWhoIsTyping();
+    delete MP.room.users[data.sid];
+    if (data.newLeader !== "" && data.newLeader === MP.socket.id) {
+      MP.room.isLeader = true;
+      MP.room.users[MP.socket.id].isLeader = true;
+    }
+    mp_refreshUserList();
+    mp_resetLeaderButtons();
+    mp_resetReadyButtons();
+  } else {
+    delete MP.room.users[data.sid];
+    MatchmakingStatus.setText(
+      `Waiting for more players to join (${
+        Object.keys(MP.room.users).length
+      }/5)...`
+    );
   }
-  MP.room.whoIsTyping[data.sid] = { name: data.name, truefalse: false };
-  mp_updateWhoIsTyping();
-  delete MP.room.users[data.sid];
-  if (data.newLeader !== "" && data.newLeader === MP.socket.id) {
-    MP.room.isLeader = true;
-    MP.room.users[MP.socket.id].isLeader = true;
-  }
-  mp_refreshUserList();
-  mp_resetLeaderButtons();
-  mp_resetReadyButtons();
 });
 
 MP.socket.on("mp_room_new_leader", (data) => {
@@ -1857,6 +1877,17 @@ $(".pageTribe .prelobby #joinByCode input").focusout((e) => {
   $(".pageTribe .prelobby #joinByCode .customInput .byte").removeClass(
     "focused"
   );
+});
+
+$(".pageTribe .prelobby .matchmaking .button").click((e) => {
+  let queue = $(e.currentTarget).attr("queue");
+  MatchmakingStatus.setText("Searching for a room...");
+  MatchmakingStatus.show();
+  MP.state = 8;
+  mp_applyRoomConfig(TribeDefaultConfigs[queue]);
+  setTimeout(() => {
+    MP.socket.emit("mp_room_join", { queue: queue });
+  }, 1000);
 });
 
 $(".pageTribe .prelobby #joinByCode .button").click((e) => {

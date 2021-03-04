@@ -1,0 +1,51 @@
+//0 - time 15
+//1 - time 60
+//2 - quotes
+
+export default [
+  {
+    mode: "time",
+    mode2: "15",
+    difficulty: "normal",
+    blindMode: false,
+    language: "english",
+    funbox: "none",
+    stopOnError: false,
+    confidenceMode: false,
+    customText: null,
+    punctuation: false,
+    numbers: false,
+    minWpm: null,
+    minAcc: null,
+  },
+  {
+    mode: "time",
+    mode2: "60",
+    difficulty: "normal",
+    blindMode: false,
+    language: "english",
+    funbox: "none",
+    stopOnError: false,
+    confidenceMode: false,
+    customText: null,
+    punctuation: false,
+    numbers: false,
+    minWpm: null,
+    minAcc: null,
+  },
+  {
+    mode: "quote",
+    mode2: -1,
+    difficulty: "normal",
+    blindMode: false,
+    language: "english",
+    funbox: "none",
+    stopOnError: "word",
+    confidenceMode: false,
+    customText: null,
+    punctuation: false,
+    numbers: false,
+    minWpm: null,
+    minAcc: null,
+  },
+];

@@ -201,6 +201,7 @@ a:hover {
   border-radius: 0 0 var(--roundness) var(--roundness);
   color: var(--sub-color);
   font-size: 0.75rem;
+  z-index: 9999;
   .icon {
     color: var(--main-color);
     opacity: 0.5;
