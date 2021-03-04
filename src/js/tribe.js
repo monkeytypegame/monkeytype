@@ -327,9 +327,11 @@ function mp_refreshTestUserList() {
   $(".tribePlayers").empty();
   Object.keys(MP.room.users).forEach((sid) => {
     if (
-      MP.room.users[sid].isTyping ||
-      MP.room.users[sid].isReady ||
-      MP.room.users[sid].isLeader
+      (MP.room.private &&
+        (MP.room.users[sid].isTyping ||
+          MP.room.users[sid].isReady ||
+          MP.room.users[sid].isLeader)) ||
+      !MP.room.private
     ) {
       let user = MP.room.users[sid];
       let me = "";
@@ -357,9 +359,11 @@ function mp_refreshTestUserList() {
   $(".tribeResult table tbody").empty();
   Object.keys(MP.room.users).forEach((sid) => {
     if (
-      MP.room.users[sid].isTyping ||
-      MP.room.users[sid].isReady ||
-      MP.room.users[sid].isLeader
+      (MP.room.private &&
+        (MP.room.users[sid].isTyping ||
+          MP.room.users[sid].isReady ||
+          MP.room.users[sid].isLeader)) ||
+      !MP.room.private
     ) {
       let user = MP.room.users[sid];
       let me = "";
@@ -988,6 +992,7 @@ MP.socket.on("disconnect", (f) => {
   mp_resetRace();
   mp_changeActiveSubpage("preloader");
   mp_showHideTribeDiff(false);
+  MatchmakingStatus.reset();
   // $(".pageTribe .preloader div").removeClass("hidden");
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
   // $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
@@ -1086,13 +1091,14 @@ MP.socket.on("mp_room_joined", (data) => {
 });
 
 MP.socket.on("mp_room_leave", () => {
+  let privateRoom = MP.room.private;
   MP.state = 1;
   MP.room = undefined;
   MP.name.replace(/\(\d\)$/g, "");
   mp_resetLobby();
   mp_changeActiveSubpage("prelobby");
   mp_resetLobby();
-  mp_resetRace();
+  if (privateRoom) mp_resetRace();
   // swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
 });
 
@@ -1203,6 +1209,16 @@ MP.socket.on("mp_chat_message", async (data) => {
   mp_scrollChat();
 });
 
+MP.socket.on("mp_update_mm_status", (data) => {
+  if (data.visible) {
+    MatchmakingStatus.show();
+  } else {
+    MatchmakingStatus.hide();
+  }
+  if (data.text !== undefined) MatchmakingStatus.setText(data.text);
+  if (data.text !== undefined) MatchmakingStatus.setText(data.text);
+});
+
 MP.socket.on("mp_room_user_istypingupdate", (data) => {
   if (MP.room.whoIsTyping === undefined) {
     MP.room.whoIsTyping = {};
@@ -1210,6 +1226,7 @@ MP.socket.on("mp_room_user_istypingupdate", (data) => {
   MP.room.whoIsTyping[data.sid] = { name: data.name, truefalse: data.typing };
   mp_updateWhoIsTyping();
 });
+
 $(".pageTest #result .tribeResultChat .chat .input input").keypress(() => {
   setTimeout(() => {
     $(".pageTribe .lobby .chat .input input").val(
@@ -1335,7 +1352,7 @@ MP.socket.on("mp_system_message", (data) => {
 });
 
 MP.socket.on("mp_room_test_start", (data) => {
-  if (!MP.room.isTyping) return;
+  if (MP.room.private && !MP.room.isTyping) return;
   // changePage('');
   // mp_testCountdown();
   // startTest();
@@ -1351,7 +1368,7 @@ MP.socket.on("mp_room_test_start", (data) => {
 });
 
 MP.socket.on("mp_room_test_countdown", (data) => {
-  if (!MP.room.isTyping) return;
+  if (MP.room.private && !MP.room.isTyping) return;
   focusWords();
   updateCountdown(data.val);
   if (data.val <= 3) mp_playSound("cd");
@@ -1387,7 +1404,11 @@ MP.socket.on("mp_room_readyResultTimer_over", (data) => {
 
 MP.socket.on("mp_room_test_init", (data) => {
   mp_refreshTestUserList();
-  if (MP.room.isReady !== true && MP.room.isLeader !== true) {
+  if (
+    MP.room.private &&
+    MP.room.isReady !== true &&
+    MP.room.isLeader !== true
+  ) {
     changePage("tribe");
     mp_changeActiveSubpage("lobby");
     Notifications.add(
@@ -1412,6 +1433,7 @@ MP.socket.on("mp_room_test_init", (data) => {
   $(".pageTest #result .tribeResultChat .chat .input input").val("");
   lobbySuggestions.hide();
   resultSuggestions.hide();
+  MatchmakingStatus.reset();
   mp_sendIsTypingUpdate(false);
   restartTest(false, true, true);
   showCountdown();
