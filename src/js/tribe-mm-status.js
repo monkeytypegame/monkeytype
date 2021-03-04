@@ -15,3 +15,9 @@ export function setText(text) {
 export function setIcon(html) {
   el.find(".icon").html(html);
 }
+
+export function reset() {
+  this.setText("Tribe mm status");
+  this.setIcon('<i class="fas fa-spin fa-circle-notch"></i>');
+  this.hide();
+}
