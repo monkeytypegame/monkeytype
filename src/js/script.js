@@ -34,7 +34,6 @@ let activeWordTopBeforeJump = 0;
 let activeWordTop = 0;
 let activeWordJumped = false;
 let sameWordset = false;
-let quotes = null;
 let focusState = false;
 let activeFunBox = "none";
 let manualRestart = false;
@@ -456,61 +455,6 @@ async function initWords() {
     config.language = "english";
   }
 
-  if (
-    config.mode === "quote" &&
-    (quotes === null ||
-      quotes.language !== config.language.replace(/_\d*k$/g, ""))
-  ) {
-    // if (config.language.split("_")[0] !== "code") {
-    setLanguage(config.language.replace(/_\d*k$/g, ""), true);
-    // }
-    showBackgroundLoader();
-    $.ajax({
-      url: `quotes/${config.language}.json`,
-      async: false,
-      success: function (data) {
-        hideBackgroundLoader();
-        try {
-          if (data.quotes.length === 0) {
-            throw new Error("No quotes");
-          }
-          quotes = data;
-          quotes.groups.forEach((qg, i) => {
-            let lower = qg[0];
-            let upper = qg[1];
-            quotes.groups[i] = quotes.quotes.filter((q) => {
-              if (q.length >= lower && q.length <= upper) {
-                q.group = i;
-                return true;
-              } else {
-                return false;
-              }
-            });
-          });
-          quotes.quotes = [];
-        } catch (e) {
-          console.error(e);
-          Notifications.add(
-            `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
-            0
-          );
-          testRestarting = false;
-          return;
-        }
-      },
-      error: (e) => {
-        Notifications.add(
-          `Error while loading ${config.language.replace(
-            /_\d*k$/g,
-            ""
-          )} quotes: ${e}`,
-          -1
-        );
-        return;
-      },
-    });
-  }
-
   if (!language) {
     config.language = "english";
     language = words[config.language];
@@ -643,6 +587,18 @@ async function initWords() {
       wordsList.push(randomWord);
     }
   } else if (config.mode == "quote") {
+    setLanguage(config.language.replace(/_\d*k$/g, ""), true);
+
+    let quotes = await Misc.getQuotes(config.language);
+
+    if (quotes.length === 0) {
+      Notifications.add(`No ${config.language} quotes found`, 0);
+      testRestarting = false;
+      setMode("words");
+      restartTest();
+      return;
+    }
+
     let group = config.quoteLength;
 
     if (config.quoteLength === -1) {
@@ -653,6 +609,7 @@ async function initWords() {
     } else {
       if (quotes.groups[group].length === 0) {
         Notifications.add("No quotes found for selected quote length", 0);
+        testRestarting = false;
         return;
       }
     }
