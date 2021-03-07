@@ -245,7 +245,7 @@ function copyResultToClipboard() {
   var sourceY = src.position().top; /*Y position from div#target*/
   var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
   var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
-  $(".notification").addClass("hidden");
+  $("#notificationCenter").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   try {
     html2canvas(document.body, {
@@ -257,38 +257,29 @@ function copyResultToClipboard() {
     }).then(function (canvas) {
       canvas.toBlob(function (blob) {
         try {
-          navigator.clipboard
-            .write([
-              new ClipboardItem(
-                Object.defineProperty({}, blob.type, {
-                  value: blob,
-                  enumerable: true,
-                })
-              ),
-            ])
-            .then((f) => {
-              $(".notification").removeClass("hidden");
-              Notifications.add("Copied to clipboard", 1, 2);
-              $(".pageTest .ssWatermark").addClass("hidden");
-              $(".pageTest .buttons").removeClass("hidden");
-              if (firebase.auth().currentUser == null)
-                $(".pageTest .loginTip").removeClass("hidden");
-            })
-            .catch((f) => {
-              open(URL.createObjectURL(blob));
-              $(".notification").removeClass("hidden");
-              Notifications.add(
-                "Error saving image to clipboard: " + f.message,
-                -1
-              );
-              $(".pageTest .ssWatermark").addClass("hidden");
-              $(".pageTest .buttons").removeClass("hidden");
-              if (firebase.auth().currentUser == null)
-                $(".pageTest .loginTip").removeClass("hidden");
-            });
+          if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
+            open(URL.createObjectURL(blob));
+          } else {
+            navigator.clipboard
+              .write([
+                new ClipboardItem(
+                  Object.defineProperty({}, blob.type, {
+                    value: blob,
+                    enumerable: true,
+                  })
+                ),
+              ])
+              .then((f) => {
+                $("#notificationCenter").removeClass("hidden");
+                Notifications.add("Copied to clipboard", 1, 2);
+                $(".pageTest .ssWatermark").addClass("hidden");
+                $(".pageTest .buttons").removeClass("hidden");
+                if (firebase.auth().currentUser == null)
+                  $(".pageTest .loginTip").removeClass("hidden");
+              });
+          }
         } catch (e) {
-          open(URL.createObjectURL(blob));
-          $(".notification").removeClass("hidden");
+          $("#notificationCenter").removeClass("hidden");
           Notifications.add(
             "Error saving image to clipboard: " + e.message,
             -1
@@ -301,7 +292,7 @@ function copyResultToClipboard() {
       });
     });
   } catch (e) {
-    $(".notification").removeClass("hidden");
+    $("#notificationCenter").removeClass("hidden");
     Notifications.add("Error creating image: " + e.message, -1);
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .buttons").removeClass("hidden");
