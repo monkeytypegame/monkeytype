@@ -246,6 +246,7 @@ function copyResultToClipboard() {
   var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
   var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
   $("#notificationCenter").addClass("hidden");
+  $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   try {
     html2canvas(document.body, {
@@ -271,6 +272,7 @@ function copyResultToClipboard() {
               ])
               .then((f) => {
                 $("#notificationCenter").removeClass("hidden");
+                $("#commandLineMobileButton").removeClass("hidden");
                 Notifications.add("Copied to clipboard", 1, 2);
                 $(".pageTest .ssWatermark").addClass("hidden");
                 $(".pageTest .buttons").removeClass("hidden");
@@ -280,6 +282,7 @@ function copyResultToClipboard() {
           }
         } catch (e) {
           $("#notificationCenter").removeClass("hidden");
+          $("#commandLineMobileButton").removeClass("hidden");
           Notifications.add(
             "Error saving image to clipboard: " + e.message,
             -1
@@ -293,6 +296,7 @@ function copyResultToClipboard() {
     });
   } catch (e) {
     $("#notificationCenter").removeClass("hidden");
+    $("#commandLineMobileButton").removeClass("hidden");
     Notifications.add("Error creating image: " + e.message, -1);
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .buttons").removeClass("hidden");
