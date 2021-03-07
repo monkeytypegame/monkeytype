@@ -1814,13 +1814,16 @@ function calculateStats() {
   let wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
   );
+  // let wpmraw = Misc.roundTo2(
+  //   ((chars.allCorrectChars +
+  //     chars.spaces +
+  //     chars.incorrectChars +
+  //     chars.extraChars) *
+  //     (60 / testSeconds)) /
+  //     5
+  // );
   let wpmraw = Misc.roundTo2(
-    ((chars.allCorrectChars +
-      chars.spaces +
-      chars.incorrectChars +
-      chars.extraChars) *
-      (60 / testSeconds)) /
-      5
+    rawHistory.reduce((a, b) => a + b, 0) / rawHistory.length
   );
   let acc = Misc.roundTo2(
     (accuracyStats.correct /
@@ -3497,7 +3500,8 @@ function liveWpmAndRaw() {
   let testNow = performance.now();
   let testSeconds = (testNow - testStart) / 1000;
   let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
-  let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
+  // let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
+  let raw = Math.round((currentKeypress.count * (60 / 1)) / 5);
   return {
     wpm: wpm,
     raw: raw,
