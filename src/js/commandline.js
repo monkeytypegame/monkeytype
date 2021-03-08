@@ -974,6 +974,14 @@ let commandsCaretStyle = {
         setCaretStyle("underline");
       },
     },
+    {
+      id: "setCaretStyleCarrot",
+      display: "carrot",
+      visible: false,
+      exec: () => {
+        setCaretStyle("carrot");
+      },
+    },
   ],
 };
 
