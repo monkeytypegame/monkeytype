@@ -828,18 +828,18 @@ function validateResult(result) {
     );
     return false;
   }
-  if (result.allChars != undefined) {
-    let raw = roundTo2((result.allChars * (60 / result.testDuration)) / 5);
-    if (
-      raw < result.rawWpm - result.rawWpm * 0.01 ||
-      raw > result.rawWpm + result.rawWpm * 0.01
-    ) {
-      console.error(
-        `Could not validate result for ${result.uid}. raw ${raw} != ${result.rawWpm}`
-      );
-      return false;
-    }
-  }
+  // if (result.allChars != undefined) {
+  //   let raw = roundTo2((result.allChars * (60 / result.testDuration)) / 5);
+  //   if (
+  //     raw < result.rawWpm - result.rawWpm * 0.01 ||
+  //     raw > result.rawWpm + result.rawWpm * 0.01
+  //   ) {
+  //     console.error(
+  //       `Could not validate result for ${result.uid}. raw ${raw} != ${result.rawWpm}`
+  //     );
+  //     return false;
+  //   }
+  // }
   if (result.mode === "time" && (result.mode2 === 15 || result.mode2 === 60)) {
     let keyPressTimeSum =
       result.keySpacing.reduce((total, val) => {
@@ -870,7 +870,7 @@ function validateResult(result) {
     if (result.chartData.wpm.filter((w) => w > 400).length > 0) return false;
   }
 
-  if (result.consistency < 10) return false;
+  if (result.wpm > 100 && result.consistency < 10) return false;
 
   return true;
 }
