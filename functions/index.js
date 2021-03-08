@@ -870,11 +870,7 @@ function validateResult(result) {
     if (result.chartData.wpm.filter((w) => w > 400).length > 0) return false;
   }
 
-  if (
-    (result.funbox === undefined || result.funbox === "none") &&
-    result.consistency < 10
-  )
-    return false;
+  if (result.wpm > 100 && result.consistency < 10) return false;
 
   return true;
 }
