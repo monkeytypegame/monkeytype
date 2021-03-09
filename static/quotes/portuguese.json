@@ -1,0 +1,35 @@
+{
+  "language": "portuguese",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "A mulher põe no mundo toda a poesia e toda a doçura.",
+      "source": "Alphonse Daudet",
+      "length": 52,
+      "id": 1
+    },
+    {
+      "text": "O homem é o único animal que não aprende nada sem ser ensinado: não sabe falar, nem caminhar, nem comer, enfim, não sabe fazer nada no estado natural, a não ser chorar.",
+      "source": "Plinio",
+      "length": 168,
+      "id": 2
+    }
+  ]
+}
