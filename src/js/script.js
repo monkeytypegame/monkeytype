@@ -470,7 +470,52 @@ async function initWords() {
     // if (config.language.split("_")[0] !== "code") {
     setLanguage(config.language.replace(/_\d*k$/g, ""), true);
     // }
-    quotes = Misc.getquotes(config.language);
+    showBackgroundLoader();
+    $.ajax({
+      url: `quotes/${config.language}.json`,
+      async: false,
+      success: function (data) {
+        hideBackgroundLoader();
+        try {
+          if (data.quotes.length === 0) {
+            throw new Error("No quotes");
+          }
+          quotes = data;
+          quotes.groups.forEach((qg, i) => {
+            let lower = qg[0];
+            let upper = qg[1];
+            quotes.groups[i] = quotes.quotes.filter((q) => {
+              if (q.length >= lower && q.length <= upper) {
+                q.group = i;
+                return true;
+              } else {
+                return false;
+              }
+            });
+          });
+          quotes.quotes = [];
+        } catch (e) {
+          console.error(e);
+          Notifications.add(
+            `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
+            0
+          );
+          testRestarting = false;
+          return;
+        }
+      },
+      error: (e) => {
+        Notifications.add(
+          `Error while loading ${config.language.replace(
+            /_\d*k$/g,
+            ""
+          )} quotes: ${e}`,
+          -1
+        );
+        return;
+      },
+    });
+  }
 
   if (!language) {
     config.language = "english";
