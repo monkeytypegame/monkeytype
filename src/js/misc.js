@@ -102,6 +102,61 @@ export async function getFunboxList() {
   }
 }
 
+let quotes = null;
+export async function getQuotes(language) {
+  if (quotes === null || quotes.language !== language.replace(/_\d*k$/g, "")) {
+    showBackgroundLoader();
+    try {
+      let data = await $.getJSON(`quotes/${language}.json`);
+      hideBackgroundLoader();
+      if (data.quotes === undefined || data.quotes.length === 0) {
+        quotes = {
+          quotes: [],
+          length: 0,
+        };
+        return quotes;
+      }
+      quotes = data;
+      quotes.length = data.quotes.length;
+      quotes.groups.forEach((qg, i) => {
+        let lower = qg[0];
+        let upper = qg[1];
+        quotes.groups[i] = quotes.quotes.filter((q) => {
+          if (q.length >= lower && q.length <= upper) {
+            q.group = i;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      });
+      quotes.quotes = [];
+      return quotes;
+    } catch {
+      hideBackgroundLoader();
+      quotes = {
+        quotes: [],
+        length: 0,
+      };
+      return quotes;
+    }
+
+    // error: (e) => {
+    //   Notifications.add(
+    //     `Error while loading ${language.replace(
+    //       /_\d*k$/g,
+    //       ""
+    //     )} quotes: ${e}`,
+    //     -1
+    //   );
+    //   quotes = [];
+    //   return quotes;
+    // },
+  } else {
+    return quotes;
+  }
+}
+
 let fontsList = null;
 export async function getFontsList() {
   if (fontsList == null) {

@@ -607,6 +607,7 @@ function setCaretStyle(caretStyle, nosave) {
   $("#caret").removeClass("underline");
   $("#caret").removeClass("outline");
   $("#caret").removeClass("block");
+  $("#caret").removeClass("carrot");
 
   if (caretStyle == "off") {
     $("#caret").addClass("off");
@@ -618,6 +619,8 @@ function setCaretStyle(caretStyle, nosave) {
     $("#caret").addClass("outline");
   } else if (caretStyle == "underline") {
     $("#caret").addClass("underline");
+  } else if (caretStyle == "carrot") {
+    $("#caret").addClass("carrot");
   }
   if (!nosave) saveConfigToCookie();
 }

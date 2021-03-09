@@ -34,7 +34,6 @@ let activeWordTopBeforeJump = 0;
 let activeWordTop = 0;
 let activeWordJumped = false;
 let sameWordset = false;
-let quotes = null;
 let selectedQuoteId = 1;
 let focusState = false;
 let activeFunBox = "none";
@@ -246,7 +245,8 @@ function copyResultToClipboard() {
   var sourceY = src.position().top; /*Y position from div#target*/
   var sourceWidth = src.width(); /*clientWidth/offsetWidth from div#target*/
   var sourceHeight = src.height(); /*clientHeight/offsetHeight from div#target*/
-  $(".notification").addClass("hidden");
+  $("#notificationCenter").addClass("hidden");
+  $("#commandLineMobileButton").addClass("hidden");
   $(".pageTest .loginTip").addClass("hidden");
   try {
     html2canvas(document.body, {
@@ -258,38 +258,31 @@ function copyResultToClipboard() {
     }).then(function (canvas) {
       canvas.toBlob(function (blob) {
         try {
-          navigator.clipboard
-            .write([
-              new ClipboardItem(
-                Object.defineProperty({}, blob.type, {
-                  value: blob,
-                  enumerable: true,
-                })
-              ),
-            ])
-            .then((f) => {
-              $(".notification").removeClass("hidden");
-              Notifications.add("Copied to clipboard", 1, 2);
-              $(".pageTest .ssWatermark").addClass("hidden");
-              $(".pageTest .buttons").removeClass("hidden");
-              if (firebase.auth().currentUser == null)
-                $(".pageTest .loginTip").removeClass("hidden");
-            })
-            .catch((f) => {
-              open(URL.createObjectURL(blob));
-              $(".notification").removeClass("hidden");
-              Notifications.add(
-                "Error saving image to clipboard: " + f.message,
-                -1
-              );
-              $(".pageTest .ssWatermark").addClass("hidden");
-              $(".pageTest .buttons").removeClass("hidden");
-              if (firebase.auth().currentUser == null)
-                $(".pageTest .loginTip").removeClass("hidden");
-            });
+          if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
+            open(URL.createObjectURL(blob));
+          } else {
+            navigator.clipboard
+              .write([
+                new ClipboardItem(
+                  Object.defineProperty({}, blob.type, {
+                    value: blob,
+                    enumerable: true,
+                  })
+                ),
+              ])
+              .then((f) => {
+                $("#notificationCenter").removeClass("hidden");
+                $("#commandLineMobileButton").removeClass("hidden");
+                Notifications.add("Copied to clipboard", 1, 2);
+                $(".pageTest .ssWatermark").addClass("hidden");
+                $(".pageTest .buttons").removeClass("hidden");
+                if (firebase.auth().currentUser == null)
+                  $(".pageTest .loginTip").removeClass("hidden");
+              });
+          }
         } catch (e) {
-          open(URL.createObjectURL(blob));
-          $(".notification").removeClass("hidden");
+          $("#notificationCenter").removeClass("hidden");
+          $("#commandLineMobileButton").removeClass("hidden");
           Notifications.add(
             "Error saving image to clipboard: " + e.message,
             -1
@@ -302,7 +295,8 @@ function copyResultToClipboard() {
       });
     });
   } catch (e) {
-    $(".notification").removeClass("hidden");
+    $("#notificationCenter").removeClass("hidden");
+    $("#commandLineMobileButton").removeClass("hidden");
     Notifications.add("Error creating image: " + e.message, -1);
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .buttons").removeClass("hidden");
@@ -462,61 +456,6 @@ async function initWords() {
     config.language = "english";
   }
 
-  if (
-    config.mode === "quote" &&
-    (quotes === null ||
-      quotes.language !== config.language.replace(/_\d*k$/g, ""))
-  ) {
-    // if (config.language.split("_")[0] !== "code") {
-    setLanguage(config.language.replace(/_\d*k$/g, ""), true);
-    // }
-    showBackgroundLoader();
-    $.ajax({
-      url: `quotes/${config.language}.json`,
-      async: false,
-      success: function (data) {
-        hideBackgroundLoader();
-        try {
-          if (data.quotes.length === 0) {
-            throw new Error("No quotes");
-          }
-          quotes = data;
-          quotes.groups.forEach((qg, i) => {
-            let lower = qg[0];
-            let upper = qg[1];
-            quotes.groups[i] = quotes.quotes.filter((q) => {
-              if (q.length >= lower && q.length <= upper) {
-                q.group = i;
-                return true;
-              } else {
-                return false;
-              }
-            });
-          });
-          quotes.quotes = [];
-        } catch (e) {
-          console.error(e);
-          Notifications.add(
-            `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
-            0
-          );
-          testRestarting = false;
-          return;
-        }
-      },
-      error: (e) => {
-        Notifications.add(
-          `Error while loading ${config.language.replace(
-            /_\d*k$/g,
-            ""
-          )} quotes: ${e}`,
-          -1
-        );
-        return;
-      },
-    });
-  }
-
   if (!language) {
     config.language = "english";
     language = words[config.language];
@@ -649,6 +588,17 @@ async function initWords() {
       wordsList.push(randomWord);
     }
   } else if (config.mode == "quote") {
+    setLanguage(config.language.replace(/_\d*k$/g, ""), true);
+
+    let quotes = await Misc.getQuotes(config.language);
+
+    if (quotes.length === 0) {
+      Notifications.add(`No ${config.language} quotes found`, 0);
+      testRestarting = false;
+      setMode("words");
+      restartTest();
+      return;
+    }
     let rq;
     if(config.quoteLength != -2){
     let group = config.quoteLength;
