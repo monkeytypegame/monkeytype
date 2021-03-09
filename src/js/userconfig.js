@@ -813,7 +813,7 @@ function setTimeConfig(time, nosave) {
 
 //quote length
 function setQuoteLength(len, nosave) {
-  if (len !== null && !isNaN(len) && len >= -1 && len <= 3) {
+  if (len !== null && !isNaN(len) && len >= -2 && len <= 3) {
   } else {
     len = 1;
   }

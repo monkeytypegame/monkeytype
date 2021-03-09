@@ -35,6 +35,7 @@ let activeWordTop = 0;
 let activeWordJumped = false;
 let sameWordset = false;
 let quotes = null;
+let selectedQuoteId = 1;
 let focusState = false;
 let activeFunBox = "none";
 let manualRestart = false;
@@ -469,52 +470,7 @@ async function initWords() {
     // if (config.language.split("_")[0] !== "code") {
     setLanguage(config.language.replace(/_\d*k$/g, ""), true);
     // }
-    showBackgroundLoader();
-    $.ajax({
-      url: `quotes/${config.language}.json`,
-      async: false,
-      success: function (data) {
-        hideBackgroundLoader();
-        try {
-          if (data.quotes.length === 0) {
-            throw new Error("No quotes");
-          }
-          quotes = data;
-          quotes.groups.forEach((qg, i) => {
-            let lower = qg[0];
-            let upper = qg[1];
-            quotes.groups[i] = quotes.quotes.filter((q) => {
-              if (q.length >= lower && q.length <= upper) {
-                q.group = i;
-                return true;
-              } else {
-                return false;
-              }
-            });
-          });
-          quotes.quotes = [];
-        } catch (e) {
-          console.error(e);
-          Notifications.add(
-            `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
-            0
-          );
-          testRestarting = false;
-          return;
-        }
-      },
-      error: (e) => {
-        Notifications.add(
-          `Error while loading ${config.language.replace(
-            /_\d*k$/g,
-            ""
-          )} quotes: ${e}`,
-          -1
-        );
-        return;
-      },
-    });
-  }
+    quotes = Misc.getquotes(config.language);
 
   if (!language) {
     config.language = "english";
@@ -648,30 +604,44 @@ async function initWords() {
       wordsList.push(randomWord);
     }
   } else if (config.mode == "quote") {
+    let rq;
+    if(config.quoteLength != -2){
     let group = config.quoteLength;
 
-    if (config.quoteLength === -1) {
-      group = Math.floor(Math.random() * quotes.groups.length);
-      while (quotes.groups[group].length === 0) {
+      if (config.quoteLength === -1) {
         group = Math.floor(Math.random() * quotes.groups.length);
+        while (quotes.groups[group].length === 0) {
+          group = Math.floor(Math.random() * quotes.groups.length);
+        }
+      } else {
+        if (quotes.groups[group].length === 0) {
+          Notifications.add("No quotes found for selected quote length", 0);
+          return;
+        }
       }
-    } else {
-      if (quotes.groups[group].length === 0) {
-        Notifications.add("No quotes found for selected quote length", 0);
-        return;
-      }
-    }
-
-    let rq =
-      quotes.groups[group][
-        Math.floor(Math.random() * quotes.groups[group].length)
-      ];
-    if (randomQuote != null && rq.id === randomQuote.id) {
-      rq =
+      
+        rq =
         quotes.groups[group][
           Math.floor(Math.random() * quotes.groups[group].length)
         ];
+      if (randomQuote != null && rq.id === randomQuote.id) {
+        rq =
+          quotes.groups[group][
+            Math.floor(Math.random() * quotes.groups[group].length)
+          ];
     }
+  } else {
+    quotes.groups.forEach(group => {
+      let filtered = group.filter( quote => quote.id == selectedQuoteId)
+      if(filtered.length > 0){
+        rq = filtered[0];
+        }
+    })
+    if(rq == undefined){
+      rq = quotes.groups[0][0];
+      Notifications.add("Quote Id Does Not Exist", 0);
+    }
+  }
     randomQuote = rq;
     randomQuote.text = randomQuote.text.replace(/ +/gm, " ");
     randomQuote.text = randomQuote.text.replace(/\\\\t/gm, "\t");
@@ -4338,18 +4308,33 @@ $("#customTextPopup .button").click(() => {
 
 function showCustomMode2Popup(mode) {
   if ($("#customMode2PopupWrapper").hasClass("hidden")) {
+    if (mode == "time") {
+      $("#customMode2Popup .title").text("Test length");
+      $("#customMode2Popup").attr("mode", "time");
+      $("#customMode2Popup .tip").removeClass("hidden");
+      $("#customMode2Popup .quoteSearchText").addClass("hidden");
+      $("#customMode2Popup .quoteSearchInput").addClass("hidden");
+      $("#customMode2Popup .quoteSearchResults").addClass("hidden");
+    } else if (mode == "words") {
+      $("#customMode2Popup .title").text("Word amount");
+      $("#customMode2Popup").attr("mode", "words");
+      $("#customMode2Popup .tip").removeClass("hidden");
+      $("#customMode2Popup .quoteSearchText").addClass("hidden");
+      $("#customMode2Popup .quoteSearchInput").addClass("hidden");
+      $("#customMode2Popup .quoteSearchResults").addClass("hidden");
+    }  else if (mode == "quote") {
+      $("#customMode2Popup .title").text("Quote ID");
+      $("#customMode2Popup").attr("mode", "quote");
+      $("#customMode2Popup .tip").addClass("hidden");
+      $("#customMode2Popup .quoteSearchText").removeClass("hidden");
+      $("#customMode2Popup .quoteSearchInput").removeClass("hidden");
+      $("#customMode2Popup .quoteSearchResults").removeClass("hidden");
+    }
     $("#customMode2PopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, (e) => {
-        if (mode == "time") {
-          $("#customMode2Popup .text").text("Test length");
-          $("#customMode2Popup").attr("mode", "time");
-        } else if (mode == "words") {
-          $("#customMode2Popup .text").text("Word amount");
-          $("#customMode2Popup").attr("mode", "words");
-        }
         $("#customMode2Popup input").focus().select();
       });
   }
@@ -4620,6 +4605,64 @@ $("#customMode2Popup input").keypress((e) => {
     applyMode2Popup();
   }
 });
+//Quote search
+$("#customMode2Popup .quoteSearchInput").keydown((e) => {
+  setTimeout(() => {
+    let previousSearches = document.getElementsByClassName("quoteSearchButton");
+    for ( let i = previousSearches.length; i--;){
+      previousSearches[i].remove();
+    }
+  }, 1);
+  setTimeout(() => {
+    $.ajax({
+      url: `quotes/${config.language}.json`,
+      async: false,
+      success: function (data) {
+        let quotes = data;
+        let searchText = document.getElementById("quoteSearchInput").value
+        let searchResult = 0;
+        quotes.quotes.forEach(quote => {
+          let quoteText = quote["text"];
+          let quoteSource = quote["source"];
+          let quoteId = quote["id"];
+          let quoteTextShort = quoteText;
+          let test1 = quoteText.toUpperCase().search(searchText.toUpperCase());
+          let test2 = quoteSource.toUpperCase().search(searchText.toUpperCase());
+          let test3 = quoteId.search(searchText);
+          let search = [];
+          if(quoteText.length > 50){
+            quoteTextShort = quoteText.substring(0, 50) + "...";
+          }
+          if (test1 != -1 || test2 != -1){
+            if (searchResult < 5){
+              search[searchResult] = document.createElement("div");
+              search[searchResult].classList.add("quoteSearchButton");
+              search[searchResult].classList.add("button");
+              search[searchResult].setAttribute("id", quote["id"]);
+              search[searchResult].innerHTML = quoteTextShort + " Id: " + quote["id"];
+              document.getElementById("quoteSearchResults").appendChild(search[searchResult]);
+              searchResult += 1;
+            } else {
+              searchResult += 1;
+            }
+          }
+        })
+        if(searchResult > 5){
+          document.getElementById("extraResults").innerHTML = "+" + (searchResult - 5) + " Other Results";
+        } else {
+          document.getElementById("extraResults").innerHTML = "";
+        }
+      }
+    })
+  }, 0.1) //arbitrarily v. small time as it's only to allow text to input before searching
+});
+//sets quote id to searched quote clicked
+$("#quoteSearchResults").click((e) => {
+  if($(e.target).hasClass("quoteSearchButton")){
+    document.getElementById("inputNumber").value = e.target.getAttribute("id");
+    applyMode2Popup();
+  }
+})
 
 $("#customMode2Popup .button").click(() => {
   applyMode2Popup();
@@ -4684,6 +4727,15 @@ function applyMode2Popup() {
       }
     } else {
       Notifications.add("Custom word amount must be at least 1", 0);
+    }
+  } else if (mode == "quote"){
+    if (val !== null && !isNaN(val) && val >= 0) {
+      setQuoteLength(-2);
+      selectedQuoteId = val;
+      manualRestart = true;
+      restartTest();
+    } else {
+      Notifications.add("Quote ID must be at least 1", 0);
     }
   }
 
@@ -4781,11 +4833,16 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
   }
 });
 
+
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len = $(e.currentTarget).attr("quoteLength");
-  setQuoteLength(len);
-  manualRestart = true;
-  restartTest();
+  if(len == -2){
+    showCustomMode2Popup("quote");
+  } else {
+    setQuoteLength(len);
+    manualRestart = true;
+    restartTest();
+  }
 });
 
 $(document).on("click", "#top .config .customText .text-button", () => {
