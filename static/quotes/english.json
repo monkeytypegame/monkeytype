@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -32070,6 +32082,102 @@
       "source": "Avatar: The Last Airbender",
       "length": 171,
       "id": 5396
+    },
+    {
+      "text": "Strangers passing in the street; by chance, two separate glances meet and I am you and what I see is me. And do I take you by the hand, and lead you through the land, and help me understand the best I can?",
+      "source": "Pink Floyd, Meddle - Echoes",
+      "length": 205,
+      "id": 5397
+    },
+    {
+      "text": "One and one and one is three",
+      "source": "The Beatles, Come Together",
+      "length": 28,
+      "id": 5398
+    },
+    {
+      "text": "He was swimming in a sea of other people's expectations. Men had drowned in seas like that.",
+      "source": "Robert Jordan, New Spring",
+      "length": 91,
+      "id": 5399
+    },
+    {
+      "text": "Dear Me 10 Years from now, If you still feel the need to listen to this again, then maybe something went wrong? Or did you change? Do you remember? What happened? Is life better, or worst? It's never too late to try and fix things. Right now, you're probably wondering how I felt when you wrote this. Well, right now, I guess I feel like I don't have a lot of control of my life, but it's exciting nonetheless. I'm smart and handsome, and I have goals to work toward. So.. me in 10 years from now, if you're reading this and you feel like things haven't changed, then just remember that it's never too late. The world around you must be different by now, but it doesn't mean you have to be. Stay positive, and keep doing your best.",
+      "source": "Faye Valentine, Cowboy Bebop",
+      "length": 731,
+      "id": 5400
+    },
+    {
+      "text": "I would burn the world and use my soul for tinder to hear her laugh again.",
+      "source": "Robert Jordan",
+      "length": 74,
+      "id": 5401
+    },
+    {
+      "text": "If the world is ending, a woman will want to fix her hair. If the world's ending, a woman will take the time to tell a man something he's done wrong.",
+      "source": "Robert Jordan, The Wheel of Time",
+      "length": 149,
+      "id": 5402
+    },
+    {
+      "text": "How do I take off a mask when it stops being a mask, when it's as much a part of me as I am?",
+      "source": "Mr. Robot",
+      "length": 92,
+      "id": 5403
+    },
+    {
+      "text": "I'm good at reading people. My secret? I look for the worst in them.",
+      "source": "Mr. Robot",
+      "length": 68,
+      "id": 5404
+    },
+    {
+      "text": "I do see the beauty in the rules, the invisible code of chaos hiding behind the menacing face of order.",
+      "source": "Mr. Robot",
+      "length": 103,
+      "id": 5405
+    },
+    {
+      "text": "Control can sometimes be an illusion. But sometimes you need illusions to gain control. Fantasy is an easy way to give meaning to the world. To cloak our harsh reality with escapist comfort. After all, isn't that why we surround ourselves with so many screens? So we can avoid seeing? So we can avoid each other? So we can avoid truth?",
+      "source": "Mr. Robot",
+      "length": 335,
+      "id": 5406
+    },
+    {
+      "text": "The world itself's just one big hoax. Spamming each other with our running commentary of bullshit, masquerading as insight, our social media faking as intimacy. Or is it that we voted for this? Not with our rigged elections, but with our things, our property, our money. I'm not saying anything new. We all know why we do this, not because Hunger Games books make us happy, but because we wanna be sedated. Because it's painful not to pretend, because we're cowards.",
+      "source": "Mr. Robot",
+      "length": 466,
+      "id": 5407
+    },
+    {
+      "text": "Hello friend. Hello friend? That's lame. Maybe I should give you a name. But that's a slippery slope, you're only in my head, we have to remember that. Shit, this actually happened, I'm talking to an imaginary person. What I'm about to tell you is top secret. A conspiracy bigger than all of us. There's a powerful group of people out there that are secretly running the world. I'm talking about the guys no one knows about, the ones that are invisible. The top 1% of the top 1%, the guys that play God without permission. And now I think they're following me.",
+      "source": "Mr. Robot",
+      "length": 560,
+      "id": 5408
+    },
+    {
+      "text": "You're the one constant in a sea of variables.",
+      "source": "Mr. Robot",
+      "length": 46,
+      "id": 5409
+    },
+    {
+      "text": "That's the thing about deletion. It's not always permanent. There are many reasons you want to recover a file you just deleted. Where you have that moment of panic where it hits you, where that thing you thought had no value suddenly becomes important. Where you suddenly find new purpose for it.",
+      "source": "Mr. Robot",
+      "length": 296,
+      "id": 5410
+    },
+    {
+      "text": "Give a man a gun and he can rob a bank, but give a man a bank and he can rob the world.",
+      "source": "Mr. Robot",
+      "length": 87,
+      "id": 5411
+    },
+    {
+      "text": "Don't mistake my generosity for generosity.",
+      "source": "Mr. Robot",
+      "length": 43,
+      "id": 5412
     }
   ]
 }

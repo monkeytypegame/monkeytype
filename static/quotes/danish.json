@@ -1,10 +1,22 @@
 {
   "language": "danish",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -144,6 +156,24 @@
       "source": "Blinkende lygter",
       "length": 43,
       "id": 23
+    },
+    {
+      "text": "Blishønen er en almindelig ynglefugl i søer og moser i Danmark. Den er let genkendelig med sin runde, sorte krop og sit hvide næb og store hvide pandeblis, der har givet den navn.",
+      "source": "DOFbasen, Blishøne",
+      "length": 179,
+      "id": 24
+    },
+    {
+      "text": "Med 1.500.000-2.000.000 par er bogfinken en af de mest almindelige ynglefugle i Danmark. Hannen har rødbrun krop, blågråt hoved og hvide vingebånd, mens hunnen er mere olivengrå i farverne. Den ligner gråspurvehunnen, men mangler dennes kraftige rygstriber. Bogfinkens sang, \"Det det det det ka jeg si' li så tit det ska vær'\", kan høres allerede i det tidlige forår.",
+      "source": "DOFbasen, Bogfinke",
+      "length": 367,
+      "id": 25
+    },
+    {
+      "text": "Så gik kejseren i processionen under den dejlige tronhimmel og alle mennesker på gaden og i vinduerne sagde: \"Gud hvor kejserens nye klæder er mageløse! hvilket dejligt slæb han har på kjolen! hvor den sidder velsignet!\" Ingen ville lade sig mærke med, at han intet så, for så havde han jo ikke duet i sit embede, eller været meget dum. Ingen af kejserens klæder havde gjort sådan lykke. \"Men han har jo ikke noget på,\" sagde et lille barn.",
+      "source": "H.C. Andersen, Kejserens nye klæder",
+      "length": 440,
+      "id": 26
     }
   ]
 }
