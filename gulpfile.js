@@ -94,6 +94,7 @@ const refactoredSrc = [
   "./src/js/monkey.js",
   "./src/js/result-filters.js",
   "./src/js/notification-center.js",
+  "./src/js/leaderboards.js",
 ];
 
 //legacy files
@@ -104,7 +105,6 @@ const globalSrc = [
   "./src/js/words.js",
   "./src/js/userconfig.js",
   "./src/js/commandline.js",
-  "./src/js/leaderboards.js",
   "./src/js/settings.js",
   "./src/js/account.js",
   "./src/js/script.js",

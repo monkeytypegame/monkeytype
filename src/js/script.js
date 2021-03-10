@@ -4773,7 +4773,7 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
 $(document).on("click", "#top #menu .icon-button", (e) => {
   if ($(e.currentTarget).hasClass("discord")) return;
   if ($(e.currentTarget).hasClass("leaderboards")) {
-    showLeaderboards();
+    Leaderboards.show();
   } else {
     const href = $(e.currentTarget).attr("href");
     manualRestart = true;
