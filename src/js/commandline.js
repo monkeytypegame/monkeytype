@@ -828,7 +828,7 @@ let commandsSoundOnClick = {
       display: "1",
       exec: () => {
         setPlaySoundOnClick("1");
-        playClickSound();
+        Sound.playClick(config.playSoundOnClick);
       },
     },
     {
@@ -836,7 +836,7 @@ let commandsSoundOnClick = {
       display: "2",
       exec: () => {
         setPlaySoundOnClick("2");
-        playClickSound();
+        Sound.playClick(config.playSoundOnClick);
       },
     },
     {
@@ -844,7 +844,7 @@ let commandsSoundOnClick = {
       display: "3",
       exec: () => {
         setPlaySoundOnClick("3");
-        playClickSound();
+        Sound.playClick(config.playSoundOnClick);
       },
     },
     {
@@ -852,7 +852,7 @@ let commandsSoundOnClick = {
       display: "4",
       exec: () => {
         setPlaySoundOnClick("4");
-        playClickSound();
+        Sound.playClick(config.playSoundOnClick);
       },
     },
   ],

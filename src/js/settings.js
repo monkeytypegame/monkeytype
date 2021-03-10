@@ -201,7 +201,8 @@ settingsGroups.playSoundOnClick = new SettingsGroup(
   "playSoundOnClick",
   setPlaySoundOnClick,
   () => {
-    if (config.playSoundOnClick !== "off") playClickSound();
+    if (config.playSoundOnClick !== "off")
+      Sound.playClick(config.playSoundOnClick);
   }
 );
 settingsGroups.showAllLines = new SettingsGroup(

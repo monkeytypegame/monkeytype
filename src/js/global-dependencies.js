@@ -28,3 +28,4 @@ import * as Monkey from "./monkey";
 import * as Notifications from "./notification-center";
 import * as ResultFilters from "./result-filters";
 import * as Leaderboards from "./leaderboards";
+import * as Sound from "./sound";

@@ -79,128 +79,7 @@ let keypressStats = {
   },
 };
 
-let errorSound = new Audio("../sound/error.wav");
-let clickSounds = null;
-
 let isPreviewingTheme = false;
-
-function initClickSounds() {
-  clickSounds = {
-    1: [
-      {
-        sounds: [
-          new Audio("../sound/click1/click1_1.wav"),
-          new Audio("../sound/click1/click1_1.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click1/click1_2.wav"),
-          new Audio("../sound/click1/click1_2.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click1/click1_3.wav"),
-          new Audio("../sound/click1/click1_3.wav"),
-        ],
-        counter: 0,
-      },
-    ],
-    2: [
-      {
-        sounds: [
-          new Audio("../sound/click2/click2_1.wav"),
-          new Audio("../sound/click2/click2_1.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click2/click2_2.wav"),
-          new Audio("../sound/click2/click2_2.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click2/click2_3.wav"),
-          new Audio("../sound/click2/click2_3.wav"),
-        ],
-        counter: 0,
-      },
-    ],
-    3: [
-      {
-        sounds: [
-          new Audio("../sound/click3/click3_1.wav"),
-          new Audio("../sound/click3/click3_1.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click3/click3_2.wav"),
-          new Audio("../sound/click3/click3_2.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click3/click3_3.wav"),
-          new Audio("../sound/click3/click3_3.wav"),
-        ],
-        counter: 0,
-      },
-    ],
-    4: [
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_1.wav"),
-          new Audio("../sound/click4/click4_1.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_2.wav"),
-          new Audio("../sound/click4/click4_2.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_3.wav"),
-          new Audio("../sound/click4/click4_3.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_4.wav"),
-          new Audio("../sound/click4/click4_4.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_5.wav"),
-          new Audio("../sound/click4/click4_5.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_6.wav"),
-          new Audio("../sound/click4/click4_6.wav"),
-        ],
-        counter: 0,
-      },
-    ],
-  };
-}
 
 let customText = {
   text: "The quick brown fox jumps over the lazy dog".split(" "),
@@ -4324,26 +4203,6 @@ function hideCustomMode2Popup() {
   }
 }
 
-function playClickSound() {
-  if (config.playSoundOnClick === "off") return;
-  if (clickSounds === null) initClickSounds();
-
-  let rand = Math.floor(
-    Math.random() * clickSounds[config.playSoundOnClick].length
-  );
-  let randomSound = clickSounds[config.playSoundOnClick][rand];
-  randomSound.counter++;
-  if (randomSound.counter === 2) randomSound.counter = 0;
-  randomSound.sounds[randomSound.counter].currentTime = 0;
-  randomSound.sounds[randomSound.counter].play();
-}
-
-function playErrorSound() {
-  if (!config.playSoundOnError) return;
-  errorSound.currentTime = 0;
-  errorSound.play();
-}
-
 async function initPaceCaret() {
   let mode2 = "";
   if (config.mode === "time") {
@@ -5328,7 +5187,7 @@ function handleBackspace(event) {
     }
     updateWordElement(!config.blindMode);
   }
-  playClickSound();
+  Sound.playClick(config.playSoundOnClick);
   if (config.keymapMode === "react") {
     flashPressedKeymapKey(event.code, true);
   } else if (config.keymapMode === "next") {
@@ -5385,7 +5244,7 @@ function handleSpace(event, isEnter) {
     currentKeypress.count++;
     currentKeypress.words.push(currentWordIndex);
     if (activeFunBox !== "nospace") {
-      playClickSound();
+      Sound.playClick(config.playSoundOnClick);
     }
   } else {
     //incorrect word
@@ -5399,9 +5258,9 @@ function handleSpace(event, isEnter) {
     }
     if (activeFunBox !== "nospace") {
       if (!config.playSoundOnError || config.blindMode) {
-        playClickSound();
+        Sound.playClick(config.playSoundOnClick);
       } else {
-        playErrorSound();
+        Sound.playError(config.playSoundOnError);
       }
     }
     accuracyStats.incorrect++;
@@ -5613,7 +5472,7 @@ function handleAlpha(event) {
 
   //show dead keys
   if (event.key === "Dead") {
-    playClickSound();
+    Sound.playClick(config.playSoundOnClick);
     $(
       document.querySelector("#words .word.active").querySelectorAll("letter")[
         currentInput.length
@@ -5703,12 +5562,12 @@ function handleAlpha(event) {
   }
 
   if (thisCharCorrect) {
-    playClickSound();
+    Sound.playClick(config.playSoundOnClick);
   } else {
     if (!config.playSoundOnError || config.blindMode) {
-      playClickSound();
+      Sound.playClick(config.playSoundOnClick);
     } else {
-      playErrorSound();
+      Sound.playError(config.playSoundOnError);
     }
   }
 
