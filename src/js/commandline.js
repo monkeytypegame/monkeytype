@@ -492,6 +492,7 @@ let commands = {
     {
       id: "changeFunbox",
       display: "Change funbox...",
+      alias: "fun box",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsFunbox);
@@ -1857,7 +1858,7 @@ $(document).ready((e) => {
       if (!$("#leaderboardsWrapper").hasClass("hidden")) {
         //maybe add more condition for closing other dialogs in the future as well
         event.preventDefault();
-        hideLeaderboards();
+        Leaderboards.hide();
       } else if (!$("#commandLineWrapper").hasClass("hidden")) {
         if (currentCommands.length > 1) {
           currentCommands.pop();
