@@ -457,7 +457,7 @@ async function initWords() {
 
   if (!language) {
     config.language = "english";
-    language = words[config.language];
+    language = await Misc.getLanguage(config.language);
   }
 
   if (
