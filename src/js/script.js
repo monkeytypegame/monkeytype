@@ -1,36 +1,41 @@
-//typing test
+//test logic
 let wordsList = [];
 let currentWordIndex = 0;
-let currentWordElementIndex = 0;
 let inputHistory = [];
 let correctedHistory = [];
 let currentCorrected = "";
 let currentInput = "";
-let currentTestLine = 0;
-let lineTransition = false;
-let testRestarting = false;
-let activeWordTopBeforeJump = 0;
-let activeWordTop = 0;
-let activeWordJumped = false;
 let sameWordset = false;
 let textHasTab = false;
-let caretAnimating = true;
 let randomQuote = null;
+let bailout = false;
+let manualRestart = false;
 
-//funbox
-let activeFunBox = "none";
-let memoryFunboxTimer = null;
-let memoryFunboxInterval = null;
+//test ui
+let currentWordElementIndex = 0;
+let resultVisible = false;
+let caretAnimating = true;
+let activeWordTop = 0;
+let activeWordJumped = false;
+let activeWordTopBeforeJump = 0;
+let testRestarting = false;
+let lineTransition = false;
+let currentTestLine = 0;
 
 //test timer
 let testActive = false;
 let time = 0;
 let timer = null;
 
+//funbox
+let activeFunBox = "none";
+let memoryFunboxTimer = null;
+let memoryFunboxInterval = null;
+
 //pace caret
 let paceCaret = null;
 
-//stats
+//test stats
 let testInvalid = false;
 let testStart, testEnd;
 let wpmHistory = [];
@@ -67,15 +72,14 @@ let keypressStats = {
 
 //ui
 let pageTransition = false;
-let resultVisible = false;
 let focusState = false;
-let manualRestart = false;
-let bailout = false;
 let notSignedInLastResult = null;
 let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
 let punctuationBeforePractise = null;
 let numbersBeforePractise = null;
+
+///
 
 let themeColors = {
   bg: "#323437",
