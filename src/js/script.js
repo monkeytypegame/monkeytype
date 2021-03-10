@@ -1,3 +1,4 @@
+//typing test
 let wordsList = [];
 let currentWordIndex = 0;
 let currentWordElementIndex = 0;
@@ -5,19 +6,36 @@ let inputHistory = [];
 let correctedHistory = [];
 let currentCorrected = "";
 let currentInput = "";
+let currentTestLine = 0;
+let lineTransition = false;
+let testRestarting = false;
+let activeWordTopBeforeJump = 0;
+let activeWordTop = 0;
+let activeWordJumped = false;
+let sameWordset = false;
+let textHasTab = false;
+let caretAnimating = true;
+
+//funbox
+let activeFunBox = "none";
+let memoryFunboxTimer = null;
+let memoryFunboxInterval = null;
+
+//test timer
+let testActive = false;
 let time = 0;
 let timer = null;
-let testActive = false;
-let testStart, testEnd;
+
+//pace caret
+let paceCaret = null;
+
+//stats
 let testInvalid = false;
+let testStart, testEnd;
 let wpmHistory = [];
 let rawHistory = [];
 let restartCount = 0;
 let incompleteTestSeconds = 0;
-let currentTestLine = 0;
-let pageTransition = false;
-let lineTransition = false;
-let testRestarting = false;
 let keypressPerSecond = [];
 let currentKeypress = {
   count: 0,
@@ -29,27 +47,20 @@ let currentError = {
   count: 0,
   words: [],
 };
+let lastSecondNotRound = false;
+let missedWords = [];
+
+//ui
+let pageTransition = false;
 let resultVisible = false;
-let activeWordTopBeforeJump = 0;
-let activeWordTop = 0;
-let activeWordJumped = false;
-let sameWordset = false;
 let focusState = false;
-let activeFunBox = "none";
 let manualRestart = false;
 let bailout = false;
 let notSignedInLastResult = null;
-let caretAnimating = true;
-let lastSecondNotRound = false;
-let paceCaret = null;
-let missedWords = [];
 let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
 let punctuationBeforePractise = null;
 let numbersBeforePractise = null;
-let memoryFunboxTimer = null;
-let memoryFunboxInterval = null;
-let textHasTab = false;
 
 let themeColors = {
   bg: "#323437",
