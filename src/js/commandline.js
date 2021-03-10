@@ -29,9 +29,10 @@ function addChildCommands(
     try {
       commandItem.exec();
       const currentCommandsIndex = currentCommands.length - 1;
-      currentCommands[currentCommandsIndex].list.forEach((cmd) =>
-        addChildCommands(unifiedCommands, cmd, commandItemDisplay)
-      );
+      currentCommands[currentCommandsIndex].list.forEach((cmd) => {
+        if (cmd.alias === undefined) cmd.alias = commandItem.alias;
+        addChildCommands(unifiedCommands, cmd, commandItemDisplay);
+      });
       currentCommands.pop();
     } catch (e) {}
   } else {
@@ -110,6 +111,7 @@ let commands = {
     {
       id: "changeWordCount",
       display: "Change word count...",
+      alias: "words",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsWordCount);
@@ -119,6 +121,7 @@ let commands = {
     {
       id: "changeQuoteLength",
       display: "Change quote length...",
+      alias: "quotes",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsQuoteLengthConfig);
@@ -573,6 +576,7 @@ let commands = {
     {
       id: "viewTypingPage",
       display: "View Typing Page",
+      alias: "start begin type test",
       exec: () => $("#top #menu .icon-button.view-start").click(),
     },
     {
@@ -593,6 +597,7 @@ let commands = {
     {
       id: "viewAccount",
       display: "View Account Page",
+      alias: "stats",
       exec: () =>
         $("#top #menu .icon-button.view-account").hasClass("hidden")
           ? $("#top #menu .icon-button.view-login").click()
@@ -2191,7 +2196,14 @@ function updateSuggestedCommands() {
         let escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
         let re = new RegExp("\\b" + escaped, "g");
         let res = obj.display.toLowerCase().match(re);
-        if (res != null && res.length > 0) {
+        let res2 = null;
+        if (obj.alias !== undefined) {
+          res2 = obj.alias.toLowerCase().match(re);
+        }
+        if (
+          (res != null && res.length > 0) ||
+          (res2 != null && res2.length > 0)
+        ) {
           foundcount++;
         } else {
           foundcount--;
