@@ -1,15 +1,15 @@
 function canBailOut() {
   return (
     (config.mode === "custom" &&
-      customText.isWordRandom &&
-      customText.word >= 5000) ||
+      CustomText.isWordRandom &&
+      CustomText.word >= 5000) ||
     (config.mode === "custom" &&
-      !customText.isWordRandom &&
-      !customText.isTimeRandom &&
-      customText.text.length >= 5000) ||
+      !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.text.length >= 5000) ||
     (config.mode === "custom" &&
-      customText.isTimeRandom &&
-      customText.time >= 3600) ||
+      CustomText.isTimeRandom &&
+      CustomText.time >= 3600) ||
     (config.mode === "words" && config.words >= 5000) ||
     config.words === 0 ||
     (config.mode === "time" && (config.time >= 3600 || config.time === 0)) ||
@@ -703,7 +703,7 @@ let commands = {
         showCustomTextPopup();
         setTimeout(() => {
           // Workaround to focus textarea since hideCommandLine() will focus test words
-          $("#customTextPopup textarea").focus();
+          $("#CustomTextPopup textarea").focus();
         }, 150);
       },
     },

@@ -81,17 +81,9 @@ let keypressStats = {
 
 let isPreviewingTheme = false;
 
-let customText = {
-  text: "The quick brown fox jumps over the lazy dog".split(" "),
-  isWordRandom: false,
-  isTimeRandom: false,
-  word: "",
-  time: "",
-};
-
-// let customText = "The quick brown fox jumps over the lazy dog".split(" ");
-// let customText.isWordRandom = false;
-// let customText.word = 1;
+// let CustomText = "The quick brown fox jumps over the lazy dog".split(" ");
+// let CustomText.isWordRandom = false;
+// let CustomText.word = 1;
 let randomQuote = null;
 
 function refreshThemeColorObject() {
@@ -347,12 +339,12 @@ async function initWords() {
     let wordsBound = 100;
     if (config.showAllLines) {
       if (config.mode === "custom") {
-        if (customText.isWordRandom) {
-          wordsBound = customText.word;
-        } else if (customText.isTimeRandom) {
+        if (CustomText.isWordRandom) {
+          wordsBound = CustomText.word;
+        } else if (CustomText.isTimeRandom) {
           wordsBound = 100;
         } else {
-          wordsBound = customText.text.length;
+          wordsBound = CustomText.text.length;
         }
       } else if (config.mode != "time") {
         wordsBound = config.words;
@@ -363,34 +355,34 @@ async function initWords() {
       }
       if (
         config.mode == "custom" &&
-        customText.isWordRandom &&
-        customText.word < wordsBound
+        CustomText.isWordRandom &&
+        CustomText.word < wordsBound
       ) {
-        wordsBound = customText.word;
+        wordsBound = CustomText.word;
       }
       if (
         config.mode == "custom" &&
-        customText.isTimeRandom &&
-        customText.time < wordsBound
+        CustomText.isTimeRandom &&
+        CustomText.time < wordsBound
       ) {
         wordsBound = 100;
       }
       if (
         config.mode == "custom" &&
-        !customText.isWordRandom &&
-        customText.text.length < wordsBound
+        !CustomText.isWordRandom &&
+        CustomText.text.length < wordsBound
       ) {
-        wordsBound = customText.text.length;
+        wordsBound = CustomText.text.length;
       }
     }
 
     if (
       (config.mode === "custom" &&
-        customText.isWordRandom &&
-        customText.word == 0) ||
+        CustomText.isWordRandom &&
+        CustomText.word == 0) ||
       (config.mode === "custom" &&
-        customText.isTimeRandom &&
-        customText.time == 0)
+        CustomText.isTimeRandom &&
+        CustomText.time == 0)
     ) {
       wordsBound = 100;
     }
@@ -403,7 +395,7 @@ async function initWords() {
     }
     let wordset = language.words;
     if (config.mode == "custom") {
-      wordset = customText.text;
+      wordset = CustomText.text;
     }
     for (let i = 0; i < wordsBound; i++) {
       let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
@@ -411,11 +403,11 @@ async function initWords() {
       const previousWord2 = wordsList[i - 2];
       if (
         config.mode == "custom" &&
-        (customText.isWordRandom || customText.isTimeRandom)
+        (CustomText.isWordRandom || CustomText.isTimeRandom)
       ) {
         randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-      } else if (config.mode == "custom" && !customText.isWordRandom) {
-        randomWord = customText.text[i];
+      } else if (config.mode == "custom" && !CustomText.isWordRandom) {
+        randomWord = CustomText.text[i];
       } else {
         while (
           randomWord == previousWord ||
@@ -781,12 +773,12 @@ function addWord() {
       wordsList.length >= config.words &&
       config.words > 0) ||
     (config.mode === "custom" &&
-      customText.isWordRandom &&
-      wordsList.length >= customText.word &&
-      customText.word != 0) ||
+      CustomText.isWordRandom &&
+      wordsList.length >= CustomText.word &&
+      CustomText.word != 0) ||
     (config.mode === "custom" &&
-      !customText.isWordRandom &&
-      wordsList.length >= customText.text.length)
+      !CustomText.isWordRandom &&
+      wordsList.length >= CustomText.text.length)
   )
     return;
   const language =
@@ -795,7 +787,7 @@ function addWord() {
       : {
           //borrow the direction of the current language
           leftToRight: Misc.getCurrentLanguage().leftToRight,
-          words: customText.text,
+          words: CustomText.text,
         };
   const wordset = language.words;
   let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
@@ -809,12 +801,12 @@ function addWord() {
 
   if (
     config.mode === "custom" &&
-    customText.isWordRandom &&
+    CustomText.isWordRandom &&
     wordset.length < 3
   ) {
     randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  } else if (config.mode == "custom" && !customText.isWordRandom) {
-    randomWord = customText.text[wordsList.length];
+  } else if (config.mode == "custom" && !CustomText.isWordRandom) {
+    randomWord = CustomText.text[wordsList.length];
   } else {
     while (
       previousWordStripped == randomWord ||
@@ -900,8 +892,8 @@ function showWords() {
   if (
     config.showAllLines &&
     config.mode != "time" &&
-    !(customText.isWordRandom && customText.word == 0) &&
-    !customText.isTimeRandom
+    !(CustomText.isWordRandom && CustomText.word == 0) &&
+    !CustomText.isTimeRandom
   ) {
     $("#words").css("height", "auto");
     $("#wordsWrapper").css("height", "auto");
@@ -1186,11 +1178,11 @@ function updateTimer() {
   if (!config.showTimerProgress) return;
   if (
     config.mode === "time" ||
-    (config.mode === "custom" && customText.isTimeRandom)
+    (config.mode === "custom" && CustomText.isTimeRandom)
   ) {
     let maxtime = config.time;
-    if (config.mode === "custom" && customText.isTimeRandom) {
-      maxtime = customText.time;
+    if (config.mode === "custom" && CustomText.isTimeRandom) {
+      maxtime = CustomText.time;
     }
     if (config.timerStyle === "bar") {
       let percent = 100 - ((time + 1) / maxtime) * 100;
@@ -1227,10 +1219,10 @@ function updateTimer() {
         outof = config.words;
       }
       if (config.mode === "custom") {
-        if (customText.isWordRandom) {
-          outof = customText.word;
+        if (CustomText.isWordRandom) {
+          outof = CustomText.word;
         } else {
-          outof = customText.text.length;
+          outof = CustomText.text.length;
         }
       }
       let percent = Math.floor(((currentWordIndex + 1) / outof) * 100);
@@ -1248,10 +1240,10 @@ function updateTimer() {
         outof = config.words;
       }
       if (config.mode === "custom") {
-        if (customText.isWordRandom) {
-          outof = customText.word;
+        if (CustomText.isWordRandom) {
+          outof = CustomText.word;
         } else {
-          outof = customText.text.length;
+          outof = CustomText.text.length;
         }
       }
       if (outof === 0) {
@@ -1267,10 +1259,10 @@ function updateTimer() {
         outof = config.words;
       }
       if (config.mode === "custom") {
-        if (customText.isWordRandom) {
-          outof = customText.word;
+        if (CustomText.isWordRandom) {
+          outof = CustomText.word;
         } else {
-          outof = customText.text.length;
+          outof = CustomText.text.length;
         }
       }
       if (config.words === 0) {
@@ -2042,17 +2034,17 @@ function showResult(difficultyFailed = false) {
     (config.mode === "words" && mode2 < 10 && mode2 > 0) ||
     (config.mode === "words" && mode2 == 0 && testtime < 15) ||
     (config.mode === "custom" &&
-      !customText.isWordRandom &&
-      !customText.isTimeRandom &&
-      customText.text.length < 10) ||
+      !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.text.length < 10) ||
     (config.mode === "custom" &&
-      customText.isWordRandom &&
-      !customText.isTimeRandom &&
-      customText.word < 10) ||
+      CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.word < 10) ||
     (config.mode === "custom" &&
-      !customText.isWordRandom &&
-      customText.isTimeRandom &&
-      customText.time < 15) ||
+      !CustomText.isWordRandom &&
+      CustomText.isTimeRandom &&
+      CustomText.time < 15) ||
     (config.mode === "zen" && testtime < 15)
   ) {
     Notifications.add("Test too short", 0);
@@ -2090,16 +2082,16 @@ function showResult(difficultyFailed = false) {
     let cdata = null;
     if (config.mode === "custom") {
       cdata = {};
-      cdata.textLen = customText.text.length;
-      cdata.isWordRandom = customText.isWordRandom;
-      cdata.isTimeRandom = customText.isTimeRandom;
+      cdata.textLen = CustomText.text.length;
+      cdata.isWordRandom = CustomText.isWordRandom;
+      cdata.isTimeRandom = CustomText.isTimeRandom;
       cdata.word =
-        customText.word !== "" && !isNaN(customText.word)
-          ? customText.word
+        CustomText.word !== "" && !isNaN(CustomText.word)
+          ? CustomText.word
           : null;
       cdata.time =
-        customText.time !== "" && !isNaN(customText.time)
-          ? customText.time
+        CustomText.time !== "" && !isNaN(CustomText.time)
+          ? CustomText.time
           : null;
     }
 
@@ -2132,11 +2124,11 @@ function showResult(difficultyFailed = false) {
       funbox: activeFunBox,
       bailedOut: bailout,
       chartData: chartData,
-      customText: cdata,
+      CustomText: cdata,
     };
 
     if (config.mode !== "custom") {
-      delete completedEvent.customText;
+      delete completedEvent.CustomText;
     }
 
     if (
@@ -2778,7 +2770,7 @@ function startTest() {
       $(".pageTest #premidSecondsLeft").text(config.time - time);
       if (
         config.mode === "time" ||
-        (config.mode === "custom" && customText.isTimeRandom)
+        (config.mode === "custom" && CustomText.isTimeRandom)
       ) {
         updateTimer();
       }
@@ -2850,14 +2842,14 @@ function startTest() {
       }
       if (
         config.mode == "time" ||
-        (config.mode === "custom" && customText.isTimeRandom)
+        (config.mode === "custom" && CustomText.isTimeRandom)
       ) {
         if (
           (time >= config.time &&
             config.time !== 0 &&
             config.mode === "time") ||
-          (time >= customText.time &&
-            customText.time !== 0 &&
+          (time >= CustomText.time &&
+            CustomText.time !== 0 &&
             config.mode === "custom")
         ) {
           //times up
@@ -2882,16 +2874,16 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   //     (config.mode === "time" && config.time < 3600 && config.time > 0) ||
   //     config.mode === "quote" ||
   //     (config.mode === "custom" &&
-  //       customText.isWordRandom &&
-  //       customText.word < 1000 &&
-  //       customText.word != 0) ||
+  //       CustomText.isWordRandom &&
+  //       CustomText.word < 1000 &&
+  //       CustomText.word != 0) ||
   //     (config.mode === "custom" &&
-  //       customText.isTimeRandom &&
-  //       customText.time < 3600 &&
-  //       customText.time != 0) ||
+  //       CustomText.isTimeRandom &&
+  //       CustomText.time < 3600 &&
+  //       CustomText.time != 0) ||
   //     (config.mode === "custom" &&
-  //       !customText.isWordRandom &&
-  //       customText.text.length < 1000)
+  //       !CustomText.isWordRandom &&
+  //       CustomText.text.length < 1000)
   //   ) {
   //   } else {
   //     if (testActive) {
@@ -2925,7 +2917,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
           config.mode,
           config.words,
           config.time,
-          customText
+          CustomText
         )
       ) {
         let message = "Use your mouse to confirm.";
@@ -3239,7 +3231,7 @@ function setMode(mode, nosave) {
   if (config.mode == "time") {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").removeClass("hidden");
-    $("#top .config .customText").addClass("hidden");
+    $("#top .config .CustomText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3248,7 +3240,7 @@ function setMode(mode, nosave) {
   } else if (config.mode == "words") {
     $("#top .config .wordCount").removeClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
+    $("#top .config .CustomText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3265,7 +3257,7 @@ function setMode(mode, nosave) {
     }
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").removeClass("hidden");
+    $("#top .config .CustomText").removeClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3277,7 +3269,7 @@ function setMode(mode, nosave) {
     setToggleSettings(false, nosave);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
+    $("#top .config .CustomText").addClass("hidden");
     $("#top .config .punctuationMode").addClass("disabled");
     $("#top .config .numbersMode").addClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3287,7 +3279,7 @@ function setMode(mode, nosave) {
   } else if (config.mode == "zen") {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
+    $("#top .config .CustomText").addClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
@@ -4029,30 +4021,30 @@ function hideCapsWarning() {
 }
 
 function showCustomTextPopup() {
-  if ($("#customTextPopupWrapper").hasClass("hidden")) {
-    if ($("#customTextPopup .check input").prop("checked")) {
-      $("#customTextPopup .inputs .randomInputFields").removeClass("hidden");
+  if ($("#CustomTextPopupWrapper").hasClass("hidden")) {
+    if ($("#CustomTextPopup .check input").prop("checked")) {
+      $("#CustomTextPopup .inputs .randomInputFields").removeClass("hidden");
     } else {
-      $("#customTextPopup .inputs .randomInputFields").addClass("hidden");
+      $("#CustomTextPopup .inputs .randomInputFields").addClass("hidden");
     }
-    $("#customTextPopupWrapper")
+    $("#CustomTextPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        let newtext = customText.text.join(" ");
+        let newtext = CustomText.text.join(" ");
         newtext = newtext.replace(/\n /g, "\n");
-        $("#customTextPopup textarea").val(newtext);
-        $("#customTextPopup .wordcount input").val(customText.word);
-        $("#customTextPopup .time input").val(customText.time);
-        $("#customTextPopup textarea").focus();
+        $("#CustomTextPopup textarea").val(newtext);
+        $("#CustomTextPopup .wordcount input").val(CustomText.word);
+        $("#CustomTextPopup .time input").val(CustomText.time);
+        $("#CustomTextPopup textarea").focus();
       });
   }
 }
 
 function hideCustomTextPopup() {
-  if (!$("#customTextPopupWrapper").hasClass("hidden")) {
-    $("#customTextPopupWrapper")
+  if (!$("#CustomTextPopupWrapper").hasClass("hidden")) {
+    $("#CustomTextPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
       .animate(
@@ -4061,42 +4053,42 @@ function hideCustomTextPopup() {
         },
         100,
         (e) => {
-          $("#customTextPopupWrapper").addClass("hidden");
+          $("#CustomTextPopupWrapper").addClass("hidden");
         }
       );
   }
 }
 
-$("#customTextPopupWrapper").mousedown((e) => {
-  if ($(e.target).attr("id") === "customTextPopupWrapper") {
+$("#CustomTextPopupWrapper").mousedown((e) => {
+  if ($(e.target).attr("id") === "CustomTextPopupWrapper") {
     hideCustomTextPopup();
   }
 });
 
-$("#customTextPopup .inputs .check input").change(() => {
-  if ($("#customTextPopup .check input").prop("checked")) {
-    $("#customTextPopup .inputs .randomInputFields").removeClass("hidden");
+$("#CustomTextPopup .inputs .check input").change(() => {
+  if ($("#CustomTextPopup .check input").prop("checked")) {
+    $("#CustomTextPopup .inputs .randomInputFields").removeClass("hidden");
   } else {
-    $("#customTextPopup .inputs .randomInputFields").addClass("hidden");
+    $("#CustomTextPopup .inputs .randomInputFields").addClass("hidden");
   }
 });
 
-$("#customTextPopup textarea").keypress((e) => {
+$("#CustomTextPopup textarea").keypress((e) => {
   if (e.code === "Enter" && e.ctrlKey) {
-    $("#customTextPopup .button").click();
+    $("#CustomTextPopup .button").click();
   }
 });
 
-$("#customTextPopup .randomInputFields .wordcount input").keypress((e) => {
-  $("#customTextPopup .randomInputFields .time input").val("");
+$("#CustomTextPopup .randomInputFields .wordcount input").keypress((e) => {
+  $("#CustomTextPopup .randomInputFields .time input").val("");
 });
 
-$("#customTextPopup .randomInputFields .time input").keypress((e) => {
-  $("#customTextPopup .randomInputFields .wordcount input").val("");
+$("#CustomTextPopup .randomInputFields .time input").keypress((e) => {
+  $("#CustomTextPopup .randomInputFields .wordcount input").val("");
 });
 
-$("#customTextPopup .button").click(() => {
-  let text = $("#customTextPopup textarea").val();
+$("#CustomTextPopup .button").click(() => {
+  let text = $("#CustomTextPopup textarea").val();
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
@@ -4108,27 +4100,29 @@ $("#customTextPopup .button").click(() => {
   // text = text.replace(/(\n)+/g, "\n");
   // text = text.replace(/(\r)+/g, "\r");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if ($("#customTextPopup .typographyCheck input").prop("checked")) {
+  if ($("#CustomTextPopup .typographyCheck input").prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
   text = text.split(" ");
-  customText.text = text;
-  customText.word = parseInt($("#customTextPopup .wordcount input").val());
-  customText.time = parseInt($("#customTextPopup .time input").val());
+  CustomText.setText(text);
+  CustomText.setWord(parseInt($("#CustomTextPopup .wordcount input").val()));
+  CustomText.setTime(parseInt($("#CustomTextPopup .time input").val()));
 
-  customText.isWordRandom =
-    $("#customTextPopup .check input").prop("checked") &&
-    !isNaN(customText.word);
-  customText.isTimeRandom =
-    $("#customTextPopup .check input").prop("checked") &&
-    !isNaN(customText.time);
+  CustomText.setIsWordRandom(
+    $("#CustomTextPopup .check input").prop("checked") &&
+      !isNaN(CustomText.word)
+  );
+  CustomText.setIsTimeRandom(
+    $("#CustomTextPopup .check input").prop("checked") &&
+      !isNaN(CustomText.time)
+  );
 
   if (
-    isNaN(customText.word) &&
-    isNaN(customText.time) &&
-    (customText.isTimeRandom || customText.isWordRandom)
+    isNaN(CustomText.word) &&
+    isNaN(CustomText.time) &&
+    (CustomText.isTimeRandom || CustomText.isWordRandom)
   ) {
     Notifications.add(
       "You need to specify word count or time in seconds to start a random custom test.",
@@ -4139,9 +4133,9 @@ $("#customTextPopup .button").click(() => {
   }
 
   if (
-    !isNaN(customText.word) &&
-    !isNaN(customText.time) &&
-    (customText.isTimeRandom || customText.isWordRandom)
+    !isNaN(CustomText.word) &&
+    !isNaN(CustomText.time) &&
+    (CustomText.isTimeRandom || CustomText.isWordRandom)
   ) {
     Notifications.add(
       "You need to pick between word count or time in seconds to start a random custom test.",
@@ -4152,8 +4146,8 @@ $("#customTextPopup .button").click(() => {
   }
 
   if (
-    (customText.isWordRandom && parseInt(customText.word) === 0) ||
-    (customText.isTimeRandom && parseInt(customText.time) === 0)
+    (CustomText.isWordRandom && parseInt(CustomText.word) === 0) ||
+    (CustomText.isTimeRandom && parseInt(CustomText.time) === 0)
   ) {
     Notifications.add(
       "Infinite words! Make sure to use Bail Out from the command line to save your result.",
@@ -4599,7 +4593,7 @@ $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   restartTest();
 });
 
-$(document).on("click", "#top .config .customText .text-button", () => {
+$(document).on("click", "#top .config .CustomText .text-button", () => {
   showCustomTextPopup();
 });
 
@@ -4700,9 +4694,9 @@ function initPractiseMissedWords() {
       newCustomText.push(missedWord);
     }
   });
-  customText.text = newCustomText;
-  customText.isWordRandom = true;
-  customText.word = 50;
+  CustomText.setText(newCustomText);
+  CustomText.setIsWordRandom(true);
+  CustomText.setWord(50);
 
   modeBeforePractise = null;
   punctuationBeforePractise = null;
@@ -4927,7 +4921,7 @@ $(document).keydown(function (event) {
   let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   let wordsFocused = $("#wordsInput").is(":focus");
   let modePopupVisible =
-    !$("#customTextPopupWrapper").hasClass("hidden") ||
+    !$("#CustomTextPopupWrapper").hasClass("hidden") ||
     !$("#customMode2PopupWrapper").hasClass("hidden");
   if (
     pageTestActive &&
@@ -5012,10 +5006,10 @@ function handleTab(event) {
   if (resultCalculating) {
     event.preventDefault();
   }
-  if ($("#customTextPopup .textarea").is(":focus")) {
+  if ($("#CustomTextPopup .textarea").is(":focus")) {
     event.preventDefault();
 
-    let area = $("#customTextPopup .textarea")[0];
+    let area = $("#CustomTextPopup .textarea")[0];
 
     var start = area.selectionStart;
     var end = area.selectionEnd;
@@ -5028,8 +5022,8 @@ function handleTab(event) {
     area.selectionStart = area.selectionEnd = start + 1;
 
     // event.preventDefault();
-    // $("#customTextPopup .textarea").val(
-    //   $("#customTextPopup .textarea").val() + "\t"
+    // $("#CustomTextPopup .textarea").val(
+    //   $("#CustomTextPopup .textarea").val() + "\t"
     // );
     return;
   } else if (
@@ -5089,14 +5083,14 @@ function handleTab(event) {
   //       (config.mode === "time" && config.time < 3600) ||
   //       config.mode === "quote" ||
   //       (config.mode === "custom" &&
-  //         customText.isWordRandom &&
-  //         customText.word < 1000) ||
+  //         CustomText.isWordRandom &&
+  //         CustomText.word < 1000) ||
   //       (config.mode === "custom" &&
-  //         customText.isTimeRandom &&
-  //         customText.time < 3600) ||
+  //         CustomText.isTimeRandom &&
+  //         CustomText.time < 3600) ||
   //       (config.mode === "custom" &&
-  //         !customText.isWordRandom &&
-  //         customText.text.length < 1000)
+  //         !CustomText.isWordRandom &&
+  //         CustomText.text.length < 1000)
   //     ) {
   //       if (testActive) {
   //         let testNow = performance.now();
@@ -5315,8 +5309,8 @@ function handleSpace(event, isEnter) {
   if (
     !config.showAllLines ||
     config.mode == "time" ||
-    (customText.isWordRandom && customText.word == 0) ||
-    customText.isTimeRandom
+    (CustomText.isWordRandom && CustomText.word == 0) ||
+    CustomText.isTimeRandom
   ) {
     let currentTop = Math.floor(
       document.querySelectorAll("#words .word")[currentWordElementIndex - 1]
@@ -5688,14 +5682,14 @@ window.addEventListener("beforeunload", (event) => {
     (config.mode === "time" && config.time < 3600) ||
     config.mode === "quote" ||
     (config.mode === "custom" &&
-      customText.isWordRandom &&
-      customText.word < 1000) ||
+      CustomText.isWordRandom &&
+      CustomText.word < 1000) ||
     (config.mode === "custom" &&
-      customText.isTimeRandom &&
-      customText.time < 1000) ||
+      CustomText.isTimeRandom &&
+      CustomText.time < 1000) ||
     (config.mode === "custom" &&
-      !customText.isWordRandom &&
-      customText.text.length < 1000)
+      !CustomText.isWordRandom &&
+      CustomText.text.length < 1000)
   ) {
     //ignore
   } else {
@@ -5898,10 +5892,10 @@ async function setupChallenge(challengeName) {
       setWordCount(challenge.parameters[0], true);
       setMode("words", true);
       setDifficulty("normal", true);
-    } else if (challenge.type === "customText") {
-      customText.text = challenge.parameters[0].split(" ");
-      customText.isWordRandom = challenge.parameters[1];
-      customText.word = parseInt(challenge.parameters[2]);
+    } else if (challenge.type === "CustomText") {
+      CustomText.setText(challenge.parameters[0].split(" "));
+      CustomText.setIsWordRandom(challenge.parameters[1]);
+      CustomText.setWord(parseInt(challenge.parameters[2]));
       setMode("custom", true);
       setDifficulty("normal", true);
     } else if (challenge.type === "script") {
@@ -5910,8 +5904,8 @@ async function setupChallenge(challengeName) {
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
-      customText.text = text.split(" ");
-      customText.isWordRandom = false;
+      CustomText.setText(text.split(" "));
+      CustomText.setIsWordRandom(false);
       setMode("custom", true);
       setDifficulty("normal", true);
       if (challenge.parameters[1] != null) {

@@ -1373,20 +1373,20 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       (obj.mode === "words" && obj.mode2 < 10 && obj.mode2 > 0) ||
       (obj.mode === "words" && obj.mode2 == 0 && obj.testDuration < 15) ||
       (obj.mode === "custom" &&
-        obj.customText !== undefined &&
-        !obj.customText.isWordRandom &&
-        !obj.customText.isTimeRandom &&
-        obj.customText.textLen < 10) ||
+        obj.CustomText !== undefined &&
+        !obj.CustomText.isWordRandom &&
+        !obj.CustomText.isTimeRandom &&
+        obj.CustomText.textLen < 10) ||
       (obj.mode === "custom" &&
-        obj.customText !== undefined &&
-        obj.customText.isWordRandom &&
-        !obj.customText.isTimeRandom &&
-        obj.customText.word < 10) ||
+        obj.CustomText !== undefined &&
+        obj.CustomText.isWordRandom &&
+        !obj.CustomText.isTimeRandom &&
+        obj.CustomText.word < 10) ||
       (obj.mode === "custom" &&
-        obj.customText !== undefined &&
-        !obj.customText.isWordRandom &&
-        obj.customText.isTimeRandom &&
-        obj.customText.time < 15)
+        obj.CustomText !== undefined &&
+        !obj.CustomText.isWordRandom &&
+        obj.CustomText.isTimeRandom &&
+        obj.CustomText.time < 15)
     ) {
       response
         .status(200)
