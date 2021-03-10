@@ -15,6 +15,7 @@ let activeWordJumped = false;
 let sameWordset = false;
 let textHasTab = false;
 let caretAnimating = true;
+let randomQuote = null;
 
 //funbox
 let activeFunBox = "none";
@@ -49,6 +50,20 @@ let currentError = {
 };
 let lastSecondNotRound = false;
 let missedWords = [];
+let accuracyStats = {
+  correct: 0,
+  incorrect: 0,
+};
+let keypressStats = {
+  spacing: {
+    current: -1,
+    array: [],
+  },
+  duration: {
+    current: -1,
+    array: [],
+  },
+};
 
 //ui
 let pageTransition = false;
@@ -74,28 +89,11 @@ let themeColors = {
   colorfulErrorExtra: "#7e2a33",
 };
 
-let accuracyStats = {
-  correct: 0,
-  incorrect: 0,
-};
-
-let keypressStats = {
-  spacing: {
-    current: -1,
-    array: [],
-  },
-  duration: {
-    current: -1,
-    array: [],
-  },
-};
-
 let isPreviewingTheme = false;
 
 // let CustomText = "The quick brown fox jumps over the lazy dog".split(" ");
 // let CustomText.isWordRandom = false;
 // let CustomText.word = 1;
-let randomQuote = null;
 
 function refreshThemeColorObject() {
   let st = getComputedStyle(document.body);
