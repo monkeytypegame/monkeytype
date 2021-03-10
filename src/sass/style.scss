@@ -1328,6 +1328,7 @@ a:hover {
   z-index: 2;
   align-items: center;
   gap: 0.5rem;
+  user-select: none;
 
   .logo {
     margin-bottom: 0.6rem;
