@@ -1,7 +1,5 @@
 import * as Misc from "./misc";
 
-let filters = defaultResultFilters;
-
 let defaultResultFilters = {
   difficulty: {
     normal: true,
@@ -58,7 +56,7 @@ let defaultResultFilters = {
   },
 };
 
-load();
+let filters = defaultResultFilters;
 
 Misc.getLanguageList().then((languages) => {
   languages.forEach((language) => {
@@ -123,3 +121,5 @@ export function reset() {
   filters = defaultResultFilters;
   save();
 }
+
+load();

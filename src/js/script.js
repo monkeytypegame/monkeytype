@@ -269,7 +269,7 @@ function copyResultToClipboard() {
                   })
                 ),
               ])
-              .then((f) => {
+              .then(() => {
                 $("#notificationCenter").removeClass("hidden");
                 $("#commandLineMobileButton").removeClass("hidden");
                 Notifications.add("Copied to clipboard", 1, 2);
@@ -834,14 +834,14 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
   ) {
     word = `"${word}"`;
   } else if (
-    Math.random() < 0.01 &&
+    Math.random() < 0.011 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "." &&
     config.language.split("_")[0] !== "russian"
   ) {
     word = `'${word}'`;
   } else if (
-    Math.random() < 0.01 &&
+    Math.random() < 0.012 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "."
   ) {
@@ -859,21 +859,21 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     } else {
       word = `(${word})`;
     }
-  } else if (Math.random() < 0.01) {
+  } else if (Math.random() < 0.013) {
     if (config.language.split("_")[0] == "french") {
       word = ":";
     } else {
       word += ":";
     }
   } else if (
-    Math.random() < 0.01 &&
+    Math.random() < 0.014 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "." &&
     previousWord != "-"
   ) {
     word = "-";
   } else if (
-    Math.random() < 0.01 &&
+    Math.random() < 0.015 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "." &&
     Misc.getLastChar(previousWord) != ";"
@@ -1177,8 +1177,7 @@ function updateWordElement(showError) {
           //   }
           // }
           if (!showError) {
-            if (currentLetter == undefined) {
-            } else {
+            if (currentLetter !== undefined) {
               ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
             }
           } else {
@@ -2112,11 +2111,6 @@ function showResult(difficultyFailed = false) {
   let maxChartVal = Math.max(
     ...[Math.max(...rawWpmPerSecond), Math.max(...wpmHistory)]
   );
-
-  let minChartVal = Math.min(
-    ...[Math.min(...rawWpmPerSecond), Math.min(...wpmHistory)]
-  );
-
   if (!config.startGraphsAtZero) {
     wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.min(
       ...wpmHistory
@@ -2285,7 +2279,6 @@ function showResult(difficultyFailed = false) {
 
         //check local pb
         accountIconLoading(true);
-        let localPb = false;
         let dontShowCrown = false;
         let pbDiff = 0;
         db_getLocalPB(
@@ -2319,7 +2312,6 @@ function showResult(difficultyFailed = false) {
                   "+" + Misc.roundTo2(pbDiff)
                 );
               }
-              localPb = true;
             }
             if (lpb > 0) {
               wpmOverTimeChart.options.annotation.annotations.push({
@@ -2690,8 +2682,6 @@ function showResult(difficultyFailed = false) {
                   if (e.data.resultCode === 2) {
                     //new pb
                     showCrown();
-                    if (!localPb) {
-                    }
                     db_saveLocalPB(
                       config.mode,
                       mode2,
@@ -3052,9 +3042,13 @@ function restartTest(withSameWordset = false, nosave = false, event) {
         if (config.mode !== "zen") event.preventDefault();
       } catch {}
       if (
-        Misc.canQuickRestart(config.mode, config.words, config.time, customText)
+        !Misc.canQuickRestart(
+          config.mode,
+          config.words,
+          config.time,
+          customText
+        )
       ) {
-      } else {
         let message = "Use your mouse to confirm.";
         if (config.quickTab)
           message = "Press shift + tab or use your mouse to confirm.";
@@ -3276,18 +3270,6 @@ function restartTest(withSameWordset = false, nosave = false, event) {
 function focusWords() {
   if (!$("#wordsWrapper").hasClass("hidden")) {
     $("#wordsInput").focus();
-  }
-}
-
-function setCustomText() {
-  customText.text = prompt("Custom text").trim();
-  customText.text = customText.text.replace(/[\n\r\t ]/gm, " ");
-  customText.text = customText.text.replace(/ +/gm, " ");
-  customText.text = customText.text.split(" ");
-  if (customText.text.text.length >= 10000) {
-    Notifications.add("Custom text cannot be longer than 10000 words.", 0);
-    setMode("time");
-    customText.text = "The quick brown fox jumped over the lazy dog".split(" ");
   }
 }
 
@@ -4488,20 +4470,17 @@ function movePaceCaret(expectedStepEnd) {
     let newTop;
     let newLeft;
     try {
+      let newIndex =
+        paceCaret.currentWordIndex -
+        (currentWordIndex - currentWordElementIndex);
       if (paceCaret.currentLetterIndex === -1) {
         currentLetter = document
           .querySelectorAll("#words .word")
-          [
-            paceCaret.currentWordIndex -
-              (currentWordIndex - currentWordElementIndex)
-          ].querySelectorAll("letter")[0];
+          [newIndex].querySelectorAll("letter")[0];
       } else {
         currentLetter = document
           .querySelectorAll("#words .word")
-          [
-            paceCaret.currentWordIndex -
-              (currentWordIndex - currentWordElementIndex)
-          ].querySelectorAll("letter")[paceCaret.currentLetterIndex];
+          [newIndex].querySelectorAll("letter")[paceCaret.currentLetterIndex];
       }
       newTop = currentLetter.offsetTop - $(currentLetter).height() / 20;
       newLeft;
@@ -5202,6 +5181,7 @@ function handleTab(event) {
   ) {
     if (config.quickTab) {
       if (config.mode == "zen" && !event.shiftKey) {
+        //ignore
       } else {
         if (event.shiftKey) manualRestart = true;
 
@@ -5360,7 +5340,7 @@ function handleBackspace(event) {
 function handleSpace(event, isEnter) {
   if (!testActive) return;
   if (currentInput === "") return;
-  let nextWord = wordsList[currentWordIndex + 1];
+  // let nextWord = wordsList[currentWordIndex + 1];
   // if ((isEnter && nextWord !== "\n") && (isEnter && activeFunBox !== "58008")) return;
   // if (!isEnter && nextWord === "\n") return;
   event.preventDefault();
@@ -5858,6 +5838,7 @@ window.addEventListener("beforeunload", (event) => {
       !customText.isWordRandom &&
       customText.text.length < 1000)
   ) {
+    //ignore
   } else {
     if (testActive) {
       event.preventDefault();
@@ -5890,7 +5871,7 @@ if (window.location.hostname === "localhost") {
 manualRestart = true;
 
 let configLoadDone;
-let configLoadPromise = new Promise((v, x) => {
+let configLoadPromise = new Promise((v) => {
   configLoadDone = v;
 });
 loadConfigFromCookie();
@@ -6166,7 +6147,7 @@ let wpmOverTimeChart = new Chart(ctx, {
       mode: "index",
       intersect: false,
       callbacks: {
-        afterLabel: function (ti, data) {
+        afterLabel: function (ti) {
           try {
             $(".wordInputAfter").remove();
 
@@ -6180,7 +6161,7 @@ let wpmOverTimeChart = new Chart(ctx, {
               if (input != undefined)
                 wordEl.append(`<div class="wordInputAfter">${input}</div>`);
             });
-          } catch (e) {}
+          } catch {}
         },
       },
     },

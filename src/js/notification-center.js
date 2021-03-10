@@ -87,7 +87,7 @@ class Notification {
                 );
               }
             );
-          $(`#notificationCenter .notif[id='${this.id}']`).click((e) => {
+          $(`#notificationCenter .notif[id='${this.id}']`).click(() => {
             this.hide();
           });
         }
@@ -97,7 +97,7 @@ class Notification {
         this.hide();
       }, this.duration + 250);
     }
-    $(`#notificationCenter .notif[id='${this.id}']`).hover((e) => {
+    $(`#notificationCenter .notif[id='${this.id}']`).hover(() => {
       $(`#notificationCenter .notif[id='${this.id}']`).toggleClass("hover");
     });
   }

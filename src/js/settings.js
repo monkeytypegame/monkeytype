@@ -616,7 +616,6 @@ function refreshTagsSettingsSection() {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     db_getSnapshot().tags.forEach((tag) => {
       let tagPbString = "No PB found";
-      let balloon = "";
       if (tag.pb != undefined && tag.pb > 0) {
         tagPbString = `PB: ${tag.pb}`;
       }

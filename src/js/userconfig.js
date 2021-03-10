@@ -113,8 +113,7 @@ async function saveConfigToDB() {
       obj: config,
     }).then((d) => {
       accountIconLoading(false);
-      if (d.data.returnCode === 1) {
-      } else {
+      if (d.data.returnCode !== 1) {
         Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
       }
       return;
@@ -797,8 +796,7 @@ function toggleKeyTips() {
 
 //mode
 function setTimeConfig(time, nosave) {
-  if (time !== null && !isNaN(time) && time >= 0) {
-  } else {
+  if (time === null || isNaN(time) || time < 0) {
     time = 15;
   }
   time = parseInt(time);
@@ -821,8 +819,7 @@ function setQuoteLength(len, nosave, multipleMode) {
     config.quoteLength = len;
   } else {
     if (!Array.isArray(config.quoteLength)) config.quoteLength = [];
-    if (len !== null && !isNaN(len) && len >= -1 && len <= 3) {
-    } else {
+    if (len === null || isNaN(len) || len < -1 || len > 3) {
       len = 1;
     }
     len = parseInt(len);
@@ -843,8 +840,7 @@ function setQuoteLength(len, nosave, multipleMode) {
 }
 
 function setWordCount(wordCount, nosave) {
-  if (wordCount !== null && !isNaN(wordCount) && wordCount >= 0) {
-  } else {
+  if (wordCount === null || isNaN(wordCount) || wordCount < 0) {
     wordCount = 10;
   }
   wordCount = parseInt(wordCount);

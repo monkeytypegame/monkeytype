@@ -98,7 +98,7 @@ function linkWithGoogle() {
     });
 }
 
-let dontCheckUserName = false;
+// let dontCheckUserName = false;
 
 function signUp() {
   $(".pageLogin .register .button").addClass("disabled");
@@ -135,7 +135,7 @@ function signUp() {
         .createUserWithEmailAndPassword(email, password)
         .then((user) => {
           // Account has been created here.
-          dontCheckUserName = true;
+          // dontCheckUserName = true;
           let usr = user.user;
           usr
             .updateProfile({
@@ -257,12 +257,12 @@ firebase.auth().onAuthStateChanged(function (user) {
     accountIconLoading(true);
     getAccountDataAndInit();
     var displayName = user.displayName;
-    var email = user.email;
-    var emailVerified = user.emailVerified;
-    var photoURL = user.photoURL;
-    var isAnonymous = user.isAnonymous;
-    var uid = user.uid;
-    var providerData = user.providerData;
+    // var email = user.email;
+    // var emailVerified = user.emailVerified;
+    // var photoURL = user.photoURL;
+    // var isAnonymous = user.isAnonymous;
+    // var uid = user.uid;
+    // var providerData = user.providerData;
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
 
@@ -562,10 +562,10 @@ var resultHistoryChart = new Chart($(".pageAccount #resultHistoryChart"), {
 
           return label;
         },
-        label: function (tooltipItem, data) {
+        label: function () {
           return;
         },
-        afterLabel: function (tooltipItem, data) {
+        afterLabel: function () {
           return;
         },
       },
@@ -684,7 +684,7 @@ let activityChart = new Chart($(".pageAccount #activityChart"), {
             return `Average Wpm: ${Misc.roundTo2(resultData.y)}`;
           }
         },
-        label: function (tooltipItem, data) {
+        label: function () {
           return;
         },
       },
@@ -1225,23 +1225,23 @@ function showActiveFilters() {
   refreshAccountPage();
 }
 
-function showChartPreloader() {
-  $(".pageAccount .group.chart .preloader").stop(true, true).animate(
-    {
-      opacity: 1,
-    },
-    125
-  );
-}
+// function showChartPreloader() {
+//   $(".pageAccount .group.chart .preloader").stop(true, true).animate(
+//     {
+//       opacity: 1,
+//     },
+//     125
+//   );
+// }
 
-function hideChartPreloader() {
-  $(".pageAccount .group.chart .preloader").stop(true, true).animate(
-    {
-      opacity: 0,
-    },
-    125
-  );
-}
+// function hideChartPreloader() {
+//   $(".pageAccount .group.chart .preloader").stop(true, true).animate(
+//     {
+//       opacity: 0,
+//     },
+//     125
+//   );
+// }
 
 $(".pageAccount .topFilters .button.allFilters").click((e) => {
   Object.keys(ResultFilters.getFilters()).forEach((group) => {
@@ -2146,26 +2146,16 @@ function refreshAccountPage() {
     let minWpmChartVal = Math.min(...wpms);
     let maxWpmChartVal = Math.max(...wpms);
 
-    let accuracies = accChartData.map((r) => r.y);
-    let minAccuracyChartVal = Math.min(...accuracies);
-    let maxAccuracyChartVal = Math.max(...accuracies);
-
+    // let accuracies = accChartData.map((r) => r.y);
     resultHistoryChart.options.scales.yAxes[0].ticks.max =
       Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
-    // resultHistoryChart.options.scales.yAxes[1].ticks.max = Math.ceil(
-    //   maxAccuracyChartVal
-    // );
 
     if (!config.startGraphsAtZero) {
       resultHistoryChart.options.scales.yAxes[0].ticks.min = Math.floor(
         minWpmChartVal
       );
-      // resultHistoryChart.options.scales.yAxes[1].ticks.min = Math.floor(
-      //   minAccuracyChartVal
-      // );
     } else {
       resultHistoryChart.options.scales.yAxes[0].ticks.min = 0;
-      // resultHistoryChart.options.scales.yAxes[1].ticks.min = 0;
     }
 
     if (chartData == [] || chartData.length == 0) {
@@ -2331,11 +2321,11 @@ function hideResultEditTagsPanel() {
   }
 }
 
-$(".pageAccount .toggleAccuracyOnChart").click((params) => {
+$(".pageAccount .toggleAccuracyOnChart").click((e) => {
   toggleChartAccuracy();
 });
 
-$(".pageAccount .toggleChartStyle").click((params) => {
+$(".pageAccount .toggleChartStyle").click((e) => {
   toggleChartStyle();
 });
 
@@ -2381,9 +2371,9 @@ function updateActiveResultEditTagsPanelButtons(active) {
   });
 }
 
-$("#resultEditTagsPanel .confirmButton").click((f) => {
+$("#resultEditTagsPanel .confirmButton").click((e) => {
   let resultid = $("#resultEditTagsPanel").attr("resultid");
-  let oldtags = JSON.parse($("#resultEditTagsPanel").attr("tags"));
+  // let oldtags = JSON.parse($("#resultEditTagsPanel").attr("tags"));
 
   let newtags = [];
   $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
