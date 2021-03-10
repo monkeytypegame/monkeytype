@@ -599,29 +599,45 @@ async function initWords() {
       return;
     }
 
-    let group = config.quoteLength;
-
-    if (config.quoteLength === -1) {
-      group = Math.floor(Math.random() * quotes.groups.length);
-      while (quotes.groups[group].length === 0) {
-        group = Math.floor(Math.random() * quotes.groups.length);
+    let quoteLengths = config.quoteLength;
+    let groupIndex;
+    if (quoteLengths.length > 1) {
+      groupIndex =
+        quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
+      while (quotes.groups[groupIndex].length === 0) {
+        groupIndex =
+          quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
       }
     } else {
-      if (quotes.groups[group].length === 0) {
+      groupIndex = quoteLengths[0];
+      if (quotes.groups[groupIndex].length === 0) {
         Notifications.add("No quotes found for selected quote length", 0);
         testRestarting = false;
         return;
       }
     }
 
+    // if (config.quoteLength === -1) {
+    //   group = Math.floor(Math.random() * quotes.groups.length);
+    //   while (quotes.groups[group].length === 0) {
+    //     group = Math.floor(Math.random() * quotes.groups.length);
+    //   }
+    // } else {
+    //   if (quotes.groups[group].length === 0) {
+    //     Notifications.add("No quotes found for selected quote length", 0);
+    //     testRestarting = false;
+    //     return;
+    //   }
+    // }
+
     let rq =
-      quotes.groups[group][
-        Math.floor(Math.random() * quotes.groups[group].length)
+      quotes.groups[groupIndex][
+        Math.floor(Math.random() * quotes.groups[groupIndex].length)
       ];
     if (randomQuote != null && rq.id === randomQuote.id) {
       rq =
-        quotes.groups[group][
-          Math.floor(Math.random() * quotes.groups[group].length)
+        quotes.groups[groupIndex][
+          Math.floor(Math.random() * quotes.groups[groupIndex].length)
         ];
     }
     randomQuote = rq;
@@ -4737,7 +4753,10 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len = $(e.currentTarget).attr("quoteLength");
-  setQuoteLength(len);
+  if (len == -1) {
+    len = [0, 1, 2, 3];
+  }
+  setQuoteLength(len, false, e.shiftKey);
   manualRestart = true;
   restartTest();
 });

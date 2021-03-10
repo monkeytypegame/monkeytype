@@ -23,7 +23,7 @@ let defaultConfig = {
   words: 50,
   time: 30,
   mode: "time",
-  quoteLength: 1,
+  quoteLength: [1],
   language: "english",
   fontSize: 15,
   freedomMode: false,
@@ -815,18 +815,30 @@ function setTimeConfig(time, nosave) {
 }
 
 //quote length
-function setQuoteLength(len, nosave) {
-  if (len !== null && !isNaN(len) && len >= -1 && len <= 3) {
+function setQuoteLength(len, nosave, multipleMode) {
+  if (Array.isArray(len)) {
+    //config load
+    config.quoteLength = len;
   } else {
-    len = 1;
+    if (!Array.isArray(config.quoteLength)) config.quoteLength = [];
+    if (len !== null && !isNaN(len) && len >= -1 && len <= 3) {
+    } else {
+      len = 1;
+    }
+    len = parseInt(len);
+    if (multipleMode) {
+      if (!config.quoteLength.includes(len)) config.quoteLength.push(len);
+    } else {
+      config.quoteLength = [len];
+    }
   }
-  len = parseInt(len);
-  if (!nosave) setMode("quote", nosave);
-  config.quoteLength = len;
+  // if (!nosave) setMode("quote", nosave);
   $("#top .config .quoteLength .text-button").removeClass("active");
-  $(
-    "#top .config .quoteLength .text-button[quoteLength='" + len + "']"
-  ).addClass("active");
+  config.quoteLength.forEach((ql) => {
+    $(
+      "#top .config .quoteLength .text-button[quoteLength='" + ql + "']"
+    ).addClass("active");
+  });
   if (!nosave) saveConfigToCookie();
 }
 
