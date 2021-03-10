@@ -5892,7 +5892,7 @@ async function setupChallenge(challengeName) {
       setWordCount(challenge.parameters[0], true);
       setMode("words", true);
       setDifficulty("normal", true);
-    } else if (challenge.type === "CustomText") {
+    } else if (challenge.type === "customText") {
       CustomText.setText(challenge.parameters[0].split(" "));
       CustomText.setIsWordRandom(challenge.parameters[1]);
       CustomText.setWord(parseInt(challenge.parameters[2]));
