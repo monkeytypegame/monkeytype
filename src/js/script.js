@@ -2340,8 +2340,10 @@ function showResult(difficultyFailed = false) {
               );
               wpmOverTimeChart.update({ duration: 0 });
             }
-            $("#result .stats .leaderboards").removeClass("hidden");
-            $("#result .stats .leaderboards .bottom").html("checking...");
+            if (config.mode === "time" && (mode2 === 15 || mode2 === 60)) {
+              $("#result .stats .leaderboards").removeClass("hidden");
+              $("#result .stats .leaderboards .bottom").html("checking...");
+            }
 
             if (activeTags.length == 0) {
               $("#result .stats .tags").addClass("hidden");
