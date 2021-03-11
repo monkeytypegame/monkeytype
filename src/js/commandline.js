@@ -854,6 +854,13 @@ let commandsSoundOnClick = {
         setPlaySoundOnClick("4");
         Sound.playClick(config.playSoundOnClick);
       },
+          {
+      id: "setSoundOnClick4",
+      display: "5",
+      exec: () => {
+        setPlaySoundOnClick("5");
+        Sound.playClick(config.playSoundOnClick);
+      },
     },
   ],
 };
