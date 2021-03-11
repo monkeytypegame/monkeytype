@@ -116,6 +116,28 @@ export function init() {
         ],
         counter: 0,
       },
+           {
+        sounds: [
+          new Audio("../sound/click5/click5_1.wav"),
+          new Audio("../sound/click5/click5_2.wav"),
+        ],
+        counter: 0,
+      },
+         {
+        sounds: [
+          new Audio("../sound/click5/click5_3.wav"),
+          new Audio("../sound/click5/click5_4.wav"),
+        ],
+        counter: 0,
+      },
+           {
+        sounds: [
+          new Audio("../sound/click5/click5_5.wav"),
+          new Audio("../sound/click5/click5_6.wav"),
+        ],
+        counter: 0,
+      },
+      },
     ],
   };
 }
