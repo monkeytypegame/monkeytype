@@ -143,6 +143,12 @@ function copyResultToClipboard() {
         try {
           if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
             open(URL.createObjectURL(blob));
+            $("#notificationCenter").removeClass("hidden");
+            $("#commandLineMobileButton").removeClass("hidden");
+            $(".pageTest .ssWatermark").addClass("hidden");
+            $(".pageTest .buttons").removeClass("hidden");
+            if (firebase.auth().currentUser == null)
+              $(".pageTest .loginTip").removeClass("hidden");
           } else {
             navigator.clipboard
               .write([
