@@ -41,6 +41,14 @@
    - Click on `Email/Password`, enable it and save
    - Click on `Google`, add a support email and save
 
+1. Enable Firebase Firestore
+
+   - In the Firebase console, go to Cloud Firestore
+   - Create database
+   - Start in test mode
+   - Select default location and enable
+
+
 ## Building and Running
 
 1. Run `npm install` in the project root directory to install dependencies.
