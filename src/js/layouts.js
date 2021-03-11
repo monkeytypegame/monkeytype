@@ -265,5 +265,25 @@ const layouts = {
             " "
         ]
     },
+    soul: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "qQ", "wW", "lL", "dD", "pP", "kK", "mM", "uU", "yY", ";:", "[{", "]}", "\\|",
+            "aA", "sS", "rR", "tT", "gG", "fF", "nN", "eE", "iI", "oO", "'\"",
+            "\\|", "zZ", "xX", "cC", "vV", "jJ", "bB", "hH", ",<", ".>", "/?",
+            " "
+        ]
+    },
+    niro: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "qQ", "wW", "uU", "dD", "pP", "jJ", "fF", "yY", "lL", ";:", "[{", "]}", "\\|",
+            "aA", "sS", "eE", "tT", "gG", "hH", "nN", "iI", "rR", "oO", "'\"",
+            "\\|", "zZ", "xX", "cC", "vV", "bB", "kK", "mM", ",<", ".>", "/?",
+            " "
+        ]
+    },
 }
 export default layouts;
