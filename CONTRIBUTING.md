@@ -12,10 +12,10 @@
    - The project name doesn't really matter, but just name it `monkeytype`.
    - Google Analytics is not necessary.
 
-1. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
-1. Run `firebase login` on your terminal to log in to the same google account as you just used to create the project.
-1. Git clone this project.
-1. Rename `.firebaserc_example` to `.firebaserc` and change the project name of default to the firebase project id you just created.
+2. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
+3. Run `firebase login` on your terminal to log in to the same google account as you just used to create the project.
+4. Git clone this project.
+5. Rename `.firebaserc_example` to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -29,17 +29,24 @@
 
    - Run `firebase projects:list` to find your firebase project id.
 
-1. Generate a Firebase Admin private key
+6. Generate a Firebase Admin private key
 
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` in the `functions/` directory
 
-1. Enable Firebase Authentication
+7. Enable Firebase Authentication
 
    - In the Firebase console, go to Authentication
    - Click on `Email/Password`, enable it and save
    - Click on `Google`, add a support email and save
+
+8. Enable Firebase Firestore
+
+   - In the Firebase console, go to Cloud Firestore
+   - Create database
+   - Start in test mode
+   - Select default location and enable
 
 ## Building and Running
 
