@@ -255,5 +255,15 @@ const layouts = {
             " "
         ],
     },
+    MTGAP: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "yY", "pP", "oO", "uU", "jJ", "kK", "dD", "lL", "cC", "wW", "[{", "]}", "\\|",
+            "iI", "nN", "eE", "aA", ",;", "mM", "hH", "tT", "sS", "rR", "'\"",
+            "\\|", "qQ", "zZ", "/<", ".>", ":?", "bB", "fF", "gG", "vV", "xX",
+            " "
+        ]
+    },
 }
 export default layouts;
