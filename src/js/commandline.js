@@ -633,7 +633,7 @@ let commands = {
         showCustomTextPopup();
         setTimeout(() => {
           // Workaround to focus textarea since hideCommandLine() will focus test words
-          $("#CustomTextPopup textarea").focus();
+          $("#customTextPopup textarea").focus();
         }, 150);
       },
     },

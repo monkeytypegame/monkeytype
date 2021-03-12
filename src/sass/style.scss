@@ -389,7 +389,7 @@ a:hover {
   }
 }
 
-#CustomTextPopupWrapper {
+#customTextPopupWrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -402,7 +402,7 @@ a:hover {
   align-items: center;
   padding: 5rem 0;
 
-  #CustomTextPopup {
+  #customTextPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -455,7 +455,7 @@ a:hover {
         height: 0;
         display: none;
 
-        & ~ .CustomTextRandomCheckbox {
+        & ~ .customTextRandomCheckbox {
           width: 12px;
           height: 12px;
           background: rgba(0, 0, 0, 0.1);
@@ -466,7 +466,7 @@ a:hover {
           transition: 0.25s;
         }
 
-        &:checked ~ .CustomTextRandomCheckbox {
+        &:checked ~ .customTextRandomCheckbox {
           background: var(--main-color);
         }
       }
@@ -489,7 +489,7 @@ a:hover {
         height: 0;
         display: none;
 
-        & ~ .CustomTextTypographyCheckbox {
+        & ~ .customTextTypographyCheckbox {
           width: 12px;
           height: 12px;
           background: rgba(0, 0, 0, 0.1);
@@ -500,7 +500,7 @@ a:hover {
           transition: 0.25s;
         }
 
-        &:checked ~ .CustomTextTypographyCheckbox {
+        &:checked ~ .customTextTypographyCheckbox {
           background: var(--main-color);
         }
       }

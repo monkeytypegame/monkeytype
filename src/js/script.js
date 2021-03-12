@@ -3127,7 +3127,7 @@ function setMode(mode, nosave) {
   if (config.mode == "time") {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").removeClass("hidden");
-    $("#top .config .CustomText").addClass("hidden");
+    $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3136,7 +3136,7 @@ function setMode(mode, nosave) {
   } else if (config.mode == "words") {
     $("#top .config .wordCount").removeClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .CustomText").addClass("hidden");
+    $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3153,7 +3153,7 @@ function setMode(mode, nosave) {
     }
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .CustomText").removeClass("hidden");
+    $("#top .config .customText").removeClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3165,7 +3165,7 @@ function setMode(mode, nosave) {
     setToggleSettings(false, nosave);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .CustomText").addClass("hidden");
+    $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").addClass("disabled");
     $("#top .config .numbersMode").addClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3175,7 +3175,7 @@ function setMode(mode, nosave) {
   } else if (config.mode == "zen") {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .CustomText").addClass("hidden");
+    $("#top .config .customText").addClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
@@ -3834,30 +3834,30 @@ function hideCapsWarning() {
 }
 
 function showCustomTextPopup() {
-  if ($("#CustomTextPopupWrapper").hasClass("hidden")) {
-    if ($("#CustomTextPopup .check input").prop("checked")) {
-      $("#CustomTextPopup .inputs .randomInputFields").removeClass("hidden");
+  if ($("#customTextPopupWrapper").hasClass("hidden")) {
+    if ($("#customTextPopup .check input").prop("checked")) {
+      $("#customTextPopup .inputs .randomInputFields").removeClass("hidden");
     } else {
-      $("#CustomTextPopup .inputs .randomInputFields").addClass("hidden");
+      $("#customTextPopup .inputs .randomInputFields").addClass("hidden");
     }
-    $("#CustomTextPopupWrapper")
+    $("#customTextPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
         let newtext = CustomText.text.join(" ");
         newtext = newtext.replace(/\n /g, "\n");
-        $("#CustomTextPopup textarea").val(newtext);
-        $("#CustomTextPopup .wordcount input").val(CustomText.word);
-        $("#CustomTextPopup .time input").val(CustomText.time);
-        $("#CustomTextPopup textarea").focus();
+        $("#customTextPopup textarea").val(newtext);
+        $("#customTextPopup .wordcount input").val(CustomText.word);
+        $("#customTextPopup .time input").val(CustomText.time);
+        $("#customTextPopup textarea").focus();
       });
   }
 }
 
 function hideCustomTextPopup() {
-  if (!$("#CustomTextPopupWrapper").hasClass("hidden")) {
-    $("#CustomTextPopupWrapper")
+  if (!$("#customTextPopupWrapper").hasClass("hidden")) {
+    $("#customTextPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
       .animate(
@@ -3866,42 +3866,42 @@ function hideCustomTextPopup() {
         },
         100,
         (e) => {
-          $("#CustomTextPopupWrapper").addClass("hidden");
+          $("#customTextPopupWrapper").addClass("hidden");
         }
       );
   }
 }
 
-$("#CustomTextPopupWrapper").mousedown((e) => {
+$("#customTextPopupWrapper").mousedown((e) => {
   if ($(e.target).attr("id") === "CustomTextPopupWrapper") {
     hideCustomTextPopup();
   }
 });
 
-$("#CustomTextPopup .inputs .check input").change(() => {
-  if ($("#CustomTextPopup .check input").prop("checked")) {
-    $("#CustomTextPopup .inputs .randomInputFields").removeClass("hidden");
+$("#customTextPopup .inputs .check input").change(() => {
+  if ($("#customTextPopup .check input").prop("checked")) {
+    $("#customTextPopup .inputs .randomInputFields").removeClass("hidden");
   } else {
-    $("#CustomTextPopup .inputs .randomInputFields").addClass("hidden");
+    $("#customTextPopup .inputs .randomInputFields").addClass("hidden");
   }
 });
 
-$("#CustomTextPopup textarea").keypress((e) => {
+$("#customTextPopup textarea").keypress((e) => {
   if (e.code === "Enter" && e.ctrlKey) {
-    $("#CustomTextPopup .button").click();
+    $("#customTextPopup .button").click();
   }
 });
 
-$("#CustomTextPopup .randomInputFields .wordcount input").keypress((e) => {
-  $("#CustomTextPopup .randomInputFields .time input").val("");
+$("#customTextPopup .randomInputFields .wordcount input").keypress((e) => {
+  $("#customTextPopup .randomInputFields .time input").val("");
 });
 
-$("#CustomTextPopup .randomInputFields .time input").keypress((e) => {
-  $("#CustomTextPopup .randomInputFields .wordcount input").val("");
+$("#customTextPopup .randomInputFields .time input").keypress((e) => {
+  $("#customTextPopup .randomInputFields .wordcount input").val("");
 });
 
-$("#CustomTextPopup .button").click(() => {
-  let text = $("#CustomTextPopup textarea").val();
+$("#customTextPopup .button").click(() => {
+  let text = $("#customTextPopup textarea").val();
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
@@ -3913,22 +3913,22 @@ $("#CustomTextPopup .button").click(() => {
   // text = text.replace(/(\n)+/g, "\n");
   // text = text.replace(/(\r)+/g, "\r");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if ($("#CustomTextPopup .typographyCheck input").prop("checked")) {
+  if ($("#customTextPopup .typographyCheck input").prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
   text = text.split(" ");
   CustomText.setText(text);
-  CustomText.setWord(parseInt($("#CustomTextPopup .wordcount input").val()));
-  CustomText.setTime(parseInt($("#CustomTextPopup .time input").val()));
+  CustomText.setWord(parseInt($("#customTextPopup .wordcount input").val()));
+  CustomText.setTime(parseInt($("#customTextPopup .time input").val()));
 
   CustomText.setIsWordRandom(
-    $("#CustomTextPopup .check input").prop("checked") &&
+    $("#customTextPopup .check input").prop("checked") &&
       !isNaN(CustomText.word)
   );
   CustomText.setIsTimeRandom(
-    $("#CustomTextPopup .check input").prop("checked") &&
+    $("#customTextPopup .check input").prop("checked") &&
       !isNaN(CustomText.time)
   );
 
@@ -4406,7 +4406,7 @@ $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   restartTest();
 });
 
-$(document).on("click", "#top .config .CustomText .text-button", () => {
+$(document).on("click", "#top .config .customText .text-button", () => {
   showCustomTextPopup();
 });
 
@@ -4734,7 +4734,7 @@ $(document).keydown(function (event) {
   let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   let wordsFocused = $("#wordsInput").is(":focus");
   let modePopupVisible =
-    !$("#CustomTextPopupWrapper").hasClass("hidden") ||
+    !$("#customTextPopupWrapper").hasClass("hidden") ||
     !$("#customMode2PopupWrapper").hasClass("hidden");
   if (
     pageTestActive &&
@@ -4816,10 +4816,10 @@ function handleTab(event) {
   if (resultCalculating) {
     event.preventDefault();
   }
-  if ($("#CustomTextPopup .textarea").is(":focus")) {
+  if ($("#customTextPopup .textarea").is(":focus")) {
     event.preventDefault();
 
-    let area = $("#CustomTextPopup .textarea")[0];
+    let area = $("#customTextPopup .textarea")[0];
 
     var start = area.selectionStart;
     var end = area.selectionEnd;
@@ -4832,8 +4832,8 @@ function handleTab(event) {
     area.selectionStart = area.selectionEnd = start + 1;
 
     // event.preventDefault();
-    // $("#CustomTextPopup .textarea").val(
-    //   $("#CustomTextPopup .textarea").val() + "\t"
+    // $("#customTextPopup .textarea").val(
+    //   $("#customTextPopup .textarea").val() + "\t"
     // );
     return;
   } else if (
