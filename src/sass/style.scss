@@ -1574,6 +1574,9 @@ key {
       width: 100%;
       align-content: flex-start;
       user-select: none;
+      .word {
+        position: relative;
+      }
     }
   }
 
@@ -2123,11 +2126,12 @@ key {
     padding: 0.5rem;
     /* left: .5rem; */
     margin-left: -0.5rem;
-    margin-top: -1.5rem;
+    // margin-top: -1.5rem;
     border-radius: var(--roundness);
     // box-shadow: 0 0 10px rgba(0,0,0,.25);
     transition: 0.25s;
     text-shadow: none;
+    top: -0.5rem;
   }
 }
 
