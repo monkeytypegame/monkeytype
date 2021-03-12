@@ -24,6 +24,7 @@ import {
   showBackgroundLoader,
   hideBackgroundLoader,
   swapElements,
+  accountIconLoading,
 } from "./dom-util";
 import * as Misc from "./misc";
 import * as CloudFunctions from "./cloud-functions";
