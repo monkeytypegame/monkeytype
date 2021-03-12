@@ -5277,6 +5277,8 @@ function handleSpace(event, isEnter) {
       }
     }
     accuracyStats.incorrect++;
+    currentError.count++;
+    currentError.words.push(currentWordIndex);
     let cil = currentInput.length;
     if (cil <= wordsList[currentWordIndex].length) {
       if (cil >= currentCorrected.length) {
