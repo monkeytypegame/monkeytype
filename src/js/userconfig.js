@@ -76,6 +76,7 @@ let defaultConfig = {
   showLiveAcc: false,
   monkey: false,
   repeatQuotes: "off",
+  oppositeShiftMode: "off",
 };
 
 let cookieConfig = null;
@@ -577,6 +578,15 @@ function setStrictSpace(val, nosave) {
 function toggleStrictSpace() {
   config.strictSpace = !config.strictSpace;
   saveConfigToCookie();
+}
+
+//opposite shift space
+function setOppositeShiftMode(val, nosave) {
+  if (val == undefined) {
+    val = "off";
+  }
+  config.oppositeShiftMode = val;
+  if (!nosave) saveConfigToCookie();
 }
 
 function setPageWidth(val, nosave) {
@@ -1609,6 +1619,7 @@ function applyConfig(configObj) {
     setHideExtraLetters(configObj.hideExtraLetters, true);
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setStrictSpace(configObj.strictSpace, true);
+    setOppositeShiftMode(configObj.oppositeShiftMode, true);
     setMode(configObj.mode, true);
     setMonkey(configObj.monkey, true);
 

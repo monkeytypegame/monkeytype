@@ -134,6 +134,10 @@ settingsGroups.freedomMode = new SettingsGroup(
   }
 );
 settingsGroups.strictSpace = new SettingsGroup("strictSpace", setStrictSpace);
+settingsGroups.oppositeShiftMode = new SettingsGroup(
+  "oppositeShiftMode",
+  setOppositeShiftMode
+);
 settingsGroups.confidenceMode = new SettingsGroup(
   "confidenceMode",
   setConfidenceMode,

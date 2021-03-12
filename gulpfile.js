@@ -97,6 +97,7 @@ const refactoredSrc = [
   "./src/js/leaderboards.js",
   "./src/js/sound.js",
   "./src/js/custom-text.js",
+  "./src/js/shift-tracker.js",
 ];
 
 //legacy files

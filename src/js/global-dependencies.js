@@ -30,3 +30,4 @@ import * as ResultFilters from "./result-filters";
 import * as Leaderboards from "./leaderboards";
 import * as Sound from "./sound";
 import * as CustomText from "./custom-text";
+import * as ShiftTracker from "./shift-tracker";

@@ -305,6 +305,15 @@ let commands = {
       },
     },
     {
+      id: "changeOppositeShiftMode",
+      display: "Change opposite shift mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsOppositeShiftMode);
+        showCommandLine();
+      },
+    },
+    {
       id: "togglePlaySoundOnError",
       display: "Toggle play sound on error",
       exec: () => {
@@ -774,6 +783,26 @@ let commandsRepeatQuotes = {
       display: "typing",
       exec: () => {
         setRepeatQuotes("typing");
+      },
+    },
+  ],
+};
+
+let commandsOppositeShiftMode = {
+  title: "Change opposite shift mode...",
+  list: [
+    {
+      id: "setOppositeShiftModeOff",
+      display: "off",
+      exec: () => {
+        setOppositeShiftMode("off");
+      },
+    },
+    {
+      id: "setOppositeShiftModeOn",
+      display: "on",
+      exec: () => {
+        setOppositeShiftMode("on");
       },
     },
   ],

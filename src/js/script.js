@@ -2982,6 +2982,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   missedWords = {};
   correctedHistory = [];
   currentCorrected = "";
+  ShiftTracker.reset();
   setFocus(false);
   hideCaret();
   testActive = false;
@@ -3896,6 +3897,12 @@ function updateTestModesNotice() {
   if (config.layout !== "default") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsLayouts"><i class="fas fa-keyboard"></i>${config.layout}</div>`
+    );
+  }
+
+  if (config.oppositeShiftMode === "on") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsOppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift</div>`
     );
   }
 
@@ -5473,6 +5480,9 @@ function handleAlpha(event) {
   )
     return;
   if (event.metaKey) return;
+
+  let originalEvent = event;
+
   event = emulateLayout(event);
 
   //start the test
@@ -5555,6 +5565,13 @@ function handleAlpha(event) {
     thisCharCorrect = true;
   }
 
+  if (
+    config.oppositeShiftMode === "on" &&
+    ShiftTracker.isUsingOppositeShift(originalEvent) === false
+  ) {
+    thisCharCorrect = false;
+  }
+
   if (!thisCharCorrect) {
     accuracyStats.incorrect++;
     currentError.count++;
@@ -5585,6 +5602,12 @@ function handleAlpha(event) {
       Sound.playError(config.playSoundOnError);
     }
   }
+
+  if (
+    config.oppositeShiftMode === "on" &&
+    ShiftTracker.isUsingOppositeShift(originalEvent) === false
+  )
+    return;
 
   //update current corrected verison. if its empty then add the current key. if its not then replace the last character with the currently pressed one / add it
   if (currentCorrected === "") {
