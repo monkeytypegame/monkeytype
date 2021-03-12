@@ -2057,7 +2057,7 @@ function showResult(difficultyFailed = false) {
       funbox: activeFunBox,
       bailedOut: bailout,
       chartData: chartData,
-      CustomText: cdata,
+      customText: cdata,
     };
 
     if (config.mode !== "custom") {
