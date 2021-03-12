@@ -39,6 +39,13 @@ let leftSideKeys = [
   "KeyX",
   "KeyC",
   "KeyV",
+  
+  "Backquote",
+  "Digit1",
+  "Digit2",
+  "Digit3",
+  "Digit4",
+  "Digit5",
 ];
 
 let rightSideKeys = [
@@ -54,6 +61,20 @@ let rightSideKeys = [
 
   "KeyN",
   "KeyM",
+  
+  "Digit7",
+  "Digit8",
+  "Digit9",
+  "Digit0",
+  
+  "Backslash",
+  "BracketLeft",
+  "BracketRight",
+  "Semicolon",
+  "Quote",
+  "Comma",
+  "Period",
+  "Slash",
 ];
 
 export function isUsingOppositeShift(event) {
