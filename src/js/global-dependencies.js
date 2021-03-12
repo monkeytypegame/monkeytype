@@ -38,3 +38,4 @@ import * as CustomText from "./custom-text";
 import * as ShiftTracker from "./shift-tracker";
 import * as TestStats from "./test-stats";
 import * as ThemeColors from "./theme-colors";
+import * as OutOfFocus from "./out-of-focus";

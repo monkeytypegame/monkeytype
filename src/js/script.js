@@ -1793,7 +1793,7 @@ function showResult(difficultyFailed = false) {
   }
   $("#result .stats .key .bottom").text(testtime + "s");
   $("#words").removeClass("blurred");
-  $(".outOfFocusWarning").addClass("hidden");
+  OutOfFocus.hide();
   $("#result .stats .key .bottom").text(
     stats.correctChars +
       stats.correctSpaces +
@@ -4635,32 +4635,16 @@ $("#wordsInput").keypress((event) => {
   event.preventDefault();
 });
 
-let outOfFocusTimeouts = [];
-
-function clearTimeouts(timeouts) {
-  timeouts.forEach((to) => {
-    clearTimeout(to);
-    to = null;
-  });
-}
-
 $("#wordsInput").on("focus", () => {
   if (!resultVisible && config.showOutOfFocusWarning) {
-    $("#words").css("transition", "none").removeClass("blurred");
-    $(".outOfFocusWarning").addClass("hidden");
-    clearTimeouts(outOfFocusTimeouts);
+    OutOfFocus.hide();
   }
   showCaret();
 });
 
 $("#wordsInput").on("focusout", () => {
   if (!resultVisible && config.showOutOfFocusWarning) {
-    outOfFocusTimeouts.push(
-      setTimeout(() => {
-        $("#words").css("transition", "0.25s").addClass("blurred");
-        $(".outOfFocusWarning").removeClass("hidden");
-      }, 1000)
-    );
+    OutOfFocus.show();
   }
   hideCaret();
 });

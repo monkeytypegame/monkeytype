@@ -691,3 +691,10 @@ export function canQuickRestart(mode, words, time, CustomText) {
     return false;
   }
 }
+
+export function clearTimeouts(timeouts) {
+  timeouts.forEach((to) => {
+    clearTimeout(to);
+    to = null;
+  });
+}

@@ -100,6 +100,7 @@ const refactoredSrc = [
   "./src/js/shift-tracker.js",
   "./src/js/test/test-stats.js",
   "./src/js/theme-colors.js",
+  "./src/js/test/out-of-focus.js",
 ];
 
 //legacy files

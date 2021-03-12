@@ -358,9 +358,7 @@ function setAlwaysShowCPM(val, nosave) {
 function toggleShowOutOfFocusWarning() {
   config.showOutOfFocusWarning = !config.showOutOfFocusWarning;
   if (!config.showOutOfFocusWarning) {
-    $("#words").css("transition", "none").removeClass("blurred");
-    $(".outOfFocusWarning").addClass("hidden");
-    clearTimeouts(outOfFocusTimeouts);
+    OutOfFocus.hide();
   }
   saveConfigToCookie();
 }
@@ -371,9 +369,7 @@ function setShowOutOfFocusWarning(val, nosave) {
   }
   config.showOutOfFocusWarning = val;
   if (!config.showOutOfFocusWarning) {
-    $("#words").css("transition", "none").removeClass("blurred");
-    $(".outOfFocusWarning").addClass("hidden");
-    clearTimeouts(outOfFocusTimeouts);
+    OutOfFocus.hide();
   }
   if (!nosave) saveConfigToCookie();
 }
