@@ -1,15 +1,15 @@
 function canBailOut() {
   return (
     (config.mode === "custom" &&
-      customText.isWordRandom &&
-      customText.word >= 5000) ||
+      CustomText.isWordRandom &&
+      CustomText.word >= 5000) ||
     (config.mode === "custom" &&
-      !customText.isWordRandom &&
-      !customText.isTimeRandom &&
-      customText.text.length >= 5000) ||
+      !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.text.length >= 5000) ||
     (config.mode === "custom" &&
-      customText.isTimeRandom &&
-      customText.time >= 3600) ||
+      CustomText.isTimeRandom &&
+      CustomText.time >= 3600) ||
     (config.mode === "words" && config.words >= 5000) ||
     config.words === 0 ||
     (config.mode === "time" && (config.time >= 3600 || config.time === 0)) ||
@@ -29,9 +29,10 @@ function addChildCommands(
     try {
       commandItem.exec();
       const currentCommandsIndex = currentCommands.length - 1;
-      currentCommands[currentCommandsIndex].list.forEach((cmd) =>
-        addChildCommands(unifiedCommands, cmd, commandItemDisplay)
-      );
+      currentCommands[currentCommandsIndex].list.forEach((cmd) => {
+        if (cmd.alias === undefined) cmd.alias = commandItem.alias;
+        addChildCommands(unifiedCommands, cmd, commandItemDisplay);
+      });
       currentCommands.pop();
     } catch (e) {}
   } else {
@@ -110,6 +111,7 @@ let commands = {
     {
       id: "changeWordCount",
       display: "Change word count...",
+      alias: "words",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsWordCount);
@@ -119,6 +121,7 @@ let commands = {
     {
       id: "changeQuoteLength",
       display: "Change quote length...",
+      alias: "quotes",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsQuoteLengthConfig);
@@ -298,6 +301,15 @@ let commands = {
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsMinAcc);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeOppositeShiftMode",
+      display: "Change opposite shift mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsOppositeShiftMode);
         showCommandLine();
       },
     },
@@ -489,6 +501,7 @@ let commands = {
     {
       id: "changeFunbox",
       display: "Change funbox...",
+      alias: "fun box",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsFunbox);
@@ -573,6 +586,7 @@ let commands = {
     {
       id: "viewTypingPage",
       display: "View Typing Page",
+      alias: "start begin type test",
       exec: () => $("#top #menu .icon-button.view-start").click(),
     },
     {
@@ -593,6 +607,7 @@ let commands = {
     {
       id: "viewAccount",
       display: "View Account Page",
+      alias: "stats",
       exec: () =>
         $("#top #menu .icon-button.view-account").hasClass("hidden")
           ? $("#top #menu .icon-button.view-login").click()
@@ -697,7 +712,7 @@ let commands = {
         showCustomTextPopup();
         setTimeout(() => {
           // Workaround to focus textarea since hideCommandLine() will focus test words
-          $("#customTextPopup textarea").focus();
+          $("#CustomTextPopup textarea").focus();
         }, 150);
       },
     },
@@ -773,6 +788,26 @@ let commandsRepeatQuotes = {
   ],
 };
 
+let commandsOppositeShiftMode = {
+  title: "Change opposite shift mode...",
+  list: [
+    {
+      id: "setOppositeShiftModeOff",
+      display: "off",
+      exec: () => {
+        setOppositeShiftMode("off");
+      },
+    },
+    {
+      id: "setOppositeShiftModeOn",
+      display: "on",
+      exec: () => {
+        setOppositeShiftMode("on");
+      },
+    },
+  ],
+};
+
 let commandsKeymapMode = {
   title: "Change keymap mode...",
   list: [
@@ -822,7 +857,7 @@ let commandsSoundOnClick = {
       display: "1",
       exec: () => {
         setPlaySoundOnClick("1");
-        playClickSound();
+        Sound.playClick(config.playSoundOnClick);
       },
     },
     {
@@ -830,7 +865,7 @@ let commandsSoundOnClick = {
       display: "2",
       exec: () => {
         setPlaySoundOnClick("2");
-        playClickSound();
+        Sound.playClick(config.playSoundOnClick);
       },
     },
     {
@@ -838,7 +873,7 @@ let commandsSoundOnClick = {
       display: "3",
       exec: () => {
         setPlaySoundOnClick("3");
-        playClickSound();
+        Sound.playClick(config.playSoundOnClick);
       },
     },
     {
@@ -846,7 +881,7 @@ let commandsSoundOnClick = {
       display: "4",
       exec: () => {
         setPlaySoundOnClick("4");
-        playClickSound();
+        Sound.playClick(config.playSoundOnClick);
       },
     },
   ],
@@ -1852,7 +1887,7 @@ $(document).ready((e) => {
       if (!$("#leaderboardsWrapper").hasClass("hidden")) {
         //maybe add more condition for closing other dialogs in the future as well
         event.preventDefault();
-        hideLeaderboards();
+        Leaderboards.hide();
       } else if (!$("#commandLineWrapper").hasClass("hidden")) {
         if (currentCommands.length > 1) {
           currentCommands.pop();
@@ -2191,7 +2226,14 @@ function updateSuggestedCommands() {
         let escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
         let re = new RegExp("\\b" + escaped, "g");
         let res = obj.display.toLowerCase().match(re);
-        if (res != null && res.length > 0) {
+        let res2 = null;
+        if (obj.alias !== undefined) {
+          res2 = obj.alias.toLowerCase().match(re);
+        }
+        if (
+          (res != null && res.length > 0) ||
+          (res2 != null && res2.length > 0)
+        ) {
           foundcount++;
         } else {
           foundcount--;

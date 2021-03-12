@@ -134,6 +134,10 @@ settingsGroups.freedomMode = new SettingsGroup(
   }
 );
 settingsGroups.strictSpace = new SettingsGroup("strictSpace", setStrictSpace);
+settingsGroups.oppositeShiftMode = new SettingsGroup(
+  "oppositeShiftMode",
+  setOppositeShiftMode
+);
 settingsGroups.confidenceMode = new SettingsGroup(
   "confidenceMode",
   setConfidenceMode,
@@ -201,7 +205,8 @@ settingsGroups.playSoundOnClick = new SettingsGroup(
   "playSoundOnClick",
   setPlaySoundOnClick,
   () => {
-    if (config.playSoundOnClick !== "off") playClickSound();
+    if (config.playSoundOnClick !== "off")
+      Sound.playClick(config.playSoundOnClick);
   }
 );
 settingsGroups.showAllLines = new SettingsGroup(
@@ -616,7 +621,6 @@ function refreshTagsSettingsSection() {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     db_getSnapshot().tags.forEach((tag) => {
       let tagPbString = "No PB found";
-      let balloon = "";
       if (tag.pb != undefined && tag.pb > 0) {
         tagPbString = `PB: ${tag.pb}`;
       }

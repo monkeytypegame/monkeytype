@@ -23,7 +23,7 @@ let defaultConfig = {
   words: 50,
   time: 30,
   mode: "time",
-  quoteLength: 1,
+  quoteLength: [1],
   language: "english",
   fontSize: 15,
   freedomMode: false,
@@ -76,6 +76,7 @@ let defaultConfig = {
   showLiveAcc: false,
   monkey: false,
   repeatQuotes: "off",
+  oppositeShiftMode: "off",
 };
 
 let cookieConfig = null;
@@ -113,8 +114,7 @@ async function saveConfigToDB() {
       obj: config,
     }).then((d) => {
       accountIconLoading(false);
-      if (d.data.returnCode === 1) {
-      } else {
+      if (d.data.returnCode !== 1) {
         Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
       }
       return;
@@ -206,8 +206,7 @@ function setPlaySoundOnClick(val, nosave) {
     val = "off";
   }
   config.playSoundOnClick = val;
-  if (clickSounds === null && config.playSoundOnClick !== "off")
-    initClickSounds();
+  if (config.playSoundOnClick !== "off") Sound.init();
   if (!nosave) saveConfigToCookie();
 }
 
@@ -581,6 +580,15 @@ function toggleStrictSpace() {
   saveConfigToCookie();
 }
 
+//opposite shift space
+function setOppositeShiftMode(val, nosave) {
+  if (val == undefined) {
+    val = "off";
+  }
+  config.oppositeShiftMode = val;
+  if (!nosave) saveConfigToCookie();
+}
+
 function setPageWidth(val, nosave) {
   if (val == null || val == undefined) {
     val = "100";
@@ -797,8 +805,7 @@ function toggleKeyTips() {
 
 //mode
 function setTimeConfig(time, nosave) {
-  if (time !== null && !isNaN(time) && time >= 0) {
-  } else {
+  if (time === null || isNaN(time) || time < 0) {
     time = 15;
   }
   time = parseInt(time);
@@ -815,24 +822,34 @@ function setTimeConfig(time, nosave) {
 }
 
 //quote length
-function setQuoteLength(len, nosave) {
-  if (len !== null && !isNaN(len) && len >= -2 && len <= 3) {
+function setQuoteLength(len, nosave, multipleMode) {
+  if (Array.isArray(len)) {
+    //config load
+    config.quoteLength = len;
   } else {
-    len = 1;
+    if (!Array.isArray(config.quoteLength)) config.quoteLength = [];
+    if (len === null || isNaN(len) || len < -1 || len > 3) {
+      len = 1;
+    }
+    len = parseInt(len);
+    if (multipleMode) {
+      if (!config.quoteLength.includes(len)) config.quoteLength.push(len);
+    } else {
+      config.quoteLength = [len];
+    }
   }
-  len = parseInt(len);
-  if (!nosave) setMode("quote", nosave);
-  config.quoteLength = len;
+  // if (!nosave) setMode("quote", nosave);
   $("#top .config .quoteLength .text-button").removeClass("active");
-  $(
-    "#top .config .quoteLength .text-button[quoteLength='" + len + "']"
-  ).addClass("active");
+  config.quoteLength.forEach((ql) => {
+    $(
+      "#top .config .quoteLength .text-button[quoteLength='" + ql + "']"
+    ).addClass("active");
+  });
   if (!nosave) saveConfigToCookie();
 }
 
 function setWordCount(wordCount, nosave) {
-  if (wordCount !== null && !isNaN(wordCount) && wordCount >= 0) {
-  } else {
+  if (wordCount === null || isNaN(wordCount) || wordCount < 0) {
     wordCount = 10;
   }
   wordCount = parseInt(wordCount);
@@ -1602,6 +1619,7 @@ function applyConfig(configObj) {
     setHideExtraLetters(configObj.hideExtraLetters, true);
     setStartGraphsAtZero(configObj.startGraphsAtZero, true);
     setStrictSpace(configObj.strictSpace, true);
+    setOppositeShiftMode(configObj.oppositeShiftMode, true);
     setMode(configObj.mode, true);
     setMonkey(configObj.monkey, true);
 
@@ -1759,6 +1777,7 @@ function applyConfig(configObj) {
         });
         $("#nitropay_ad_account").removeClass("hidden");
       } else {
+        $(".footerads").remove();
         $("#nitropay_ad_left").remove();
         $("#nitropay_ad_right").remove();
         $("#nitropay_ad_footer").remove();
@@ -1772,6 +1791,7 @@ function applyConfig(configObj) {
     } catch (e) {
       Notifications.add("Error initialising ads: " + e.message);
       console.log("error initialising ads " + e.message);
+      $(".footerads").remove();
       $("#nitropay_ad_left").remove();
       $("#nitropay_ad_right").remove();
       $("#nitropay_ad_footer").remove();

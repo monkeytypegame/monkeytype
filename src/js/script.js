@@ -1,23 +1,47 @@
+//test logic
 let wordsList = [];
 let currentWordIndex = 0;
-let currentWordElementIndex = 0;
 let inputHistory = [];
 let correctedHistory = [];
 let currentCorrected = "";
 let currentInput = "";
+let sameWordset = false;
+let textHasTab = false;
+let randomQuote = null;
+let bailout = false;
+let manualRestart = false;
+
+//test ui
+let currentWordElementIndex = 0;
+let resultVisible = false;
+let caretAnimating = true;
+let activeWordTop = 0;
+let activeWordJumped = false;
+let activeWordTopBeforeJump = 0;
+let testRestarting = false;
+let lineTransition = false;
+let currentTestLine = 0;
+
+//test timer
+let testActive = false;
 let time = 0;
 let timer = null;
-let testActive = false;
-let testStart, testEnd;
+
+//funbox
+let activeFunBox = "none";
+let memoryFunboxTimer = null;
+let memoryFunboxInterval = null;
+
+//pace caret
+let paceCaret = null;
+
+//test stats
 let testInvalid = false;
+let testStart, testEnd;
 let wpmHistory = [];
 let rawHistory = [];
 let restartCount = 0;
 let incompleteTestSeconds = 0;
-let currentTestLine = 0;
-let pageTransition = false;
-let lineTransition = false;
-let testRestarting = false;
 let keypressPerSecond = [];
 let currentKeypress = {
   count: 0,
@@ -29,28 +53,34 @@ let currentError = {
   count: 0,
   words: [],
 };
-let resultVisible = false;
-let activeWordTopBeforeJump = 0;
-let activeWordTop = 0;
-let activeWordJumped = false;
-let sameWordset = false;
-let selectedQuoteId = 1;
-let focusState = false;
-let activeFunBox = "none";
-let manualRestart = false;
-let bailout = false;
-let notSignedInLastResult = null;
-let caretAnimating = true;
 let lastSecondNotRound = false;
-let paceCaret = null;
 let missedWords = [];
+let accuracyStats = {
+  correct: 0,
+  incorrect: 0,
+};
+let keypressStats = {
+  spacing: {
+    current: -1,
+    array: [],
+  },
+  duration: {
+    current: -1,
+    array: [],
+  },
+};
+
+//ui
+let pageTransition = false;
+let focusState = false;
+let notSignedInLastResult = null;
 let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
 let punctuationBeforePractise = null;
 let numbersBeforePractise = null;
-let memoryFunboxTimer = null;
-let memoryFunboxInterval = null;
-let textHasTab = false;
+let selectedQuoteId = 1;
+
+///
 
 let themeColors = {
   bg: "#323437",
@@ -64,157 +94,11 @@ let themeColors = {
   colorfulErrorExtra: "#7e2a33",
 };
 
-let accuracyStats = {
-  correct: 0,
-  incorrect: 0,
-};
-
-let keypressStats = {
-  spacing: {
-    current: -1,
-    array: [],
-  },
-  duration: {
-    current: -1,
-    array: [],
-  },
-};
-
-let errorSound = new Audio("../sound/error.wav");
-let clickSounds = null;
-
 let isPreviewingTheme = false;
 
-function initClickSounds() {
-  clickSounds = {
-    1: [
-      {
-        sounds: [
-          new Audio("../sound/click1/click1_1.wav"),
-          new Audio("../sound/click1/click1_1.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click1/click1_2.wav"),
-          new Audio("../sound/click1/click1_2.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click1/click1_3.wav"),
-          new Audio("../sound/click1/click1_3.wav"),
-        ],
-        counter: 0,
-      },
-    ],
-    2: [
-      {
-        sounds: [
-          new Audio("../sound/click2/click2_1.wav"),
-          new Audio("../sound/click2/click2_1.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click2/click2_2.wav"),
-          new Audio("../sound/click2/click2_2.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click2/click2_3.wav"),
-          new Audio("../sound/click2/click2_3.wav"),
-        ],
-        counter: 0,
-      },
-    ],
-    3: [
-      {
-        sounds: [
-          new Audio("../sound/click3/click3_1.wav"),
-          new Audio("../sound/click3/click3_1.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click3/click3_2.wav"),
-          new Audio("../sound/click3/click3_2.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click3/click3_3.wav"),
-          new Audio("../sound/click3/click3_3.wav"),
-        ],
-        counter: 0,
-      },
-    ],
-    4: [
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_1.wav"),
-          new Audio("../sound/click4/click4_1.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_2.wav"),
-          new Audio("../sound/click4/click4_2.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_3.wav"),
-          new Audio("../sound/click4/click4_3.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_4.wav"),
-          new Audio("../sound/click4/click4_4.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_5.wav"),
-          new Audio("../sound/click4/click4_5.wav"),
-        ],
-        counter: 0,
-      },
-      {
-        sounds: [
-          new Audio("../sound/click4/click4_6.wav"),
-          new Audio("../sound/click4/click4_6.wav"),
-        ],
-        counter: 0,
-      },
-    ],
-  };
-}
-
-let customText = {
-  text: "The quick brown fox jumps over the lazy dog".split(" "),
-  isWordRandom: false,
-  isTimeRandom: false,
-  word: "",
-  time: "",
-};
-
-// let customText = "The quick brown fox jumps over the lazy dog".split(" ");
-// let customText.isWordRandom = false;
-// let customText.word = 1;
-let randomQuote = null;
+// let CustomText = "The quick brown fox jumps over the lazy dog".split(" ");
+// let CustomText.isWordRandom = false;
+// let CustomText.word = 1;
 
 function refreshThemeColorObject() {
   let st = getComputedStyle(document.body);
@@ -260,6 +144,12 @@ function copyResultToClipboard() {
         try {
           if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
             open(URL.createObjectURL(blob));
+            $("#notificationCenter").removeClass("hidden");
+            $("#commandLineMobileButton").removeClass("hidden");
+            $(".pageTest .ssWatermark").addClass("hidden");
+            $(".pageTest .buttons").removeClass("hidden");
+            if (firebase.auth().currentUser == null)
+              $(".pageTest .loginTip").removeClass("hidden");
           } else {
             navigator.clipboard
               .write([
@@ -270,7 +160,7 @@ function copyResultToClipboard() {
                   })
                 ),
               ])
-              .then((f) => {
+              .then(() => {
                 $("#notificationCenter").removeClass("hidden");
                 $("#commandLineMobileButton").removeClass("hidden");
                 Notifications.add("Copied to clipboard", 1, 2);
@@ -458,7 +348,7 @@ async function initWords() {
 
   if (!language) {
     config.language = "english";
-    language = words[config.language];
+    language = await Misc.getLanguage(config.language);
   }
 
   if (
@@ -469,12 +359,12 @@ async function initWords() {
     let wordsBound = 100;
     if (config.showAllLines) {
       if (config.mode === "custom") {
-        if (customText.isWordRandom) {
-          wordsBound = customText.word;
-        } else if (customText.isTimeRandom) {
+        if (CustomText.isWordRandom) {
+          wordsBound = CustomText.word;
+        } else if (CustomText.isTimeRandom) {
           wordsBound = 100;
         } else {
-          wordsBound = customText.text.length;
+          wordsBound = CustomText.text.length;
         }
       } else if (config.mode != "time") {
         wordsBound = config.words;
@@ -485,34 +375,34 @@ async function initWords() {
       }
       if (
         config.mode == "custom" &&
-        customText.isWordRandom &&
-        customText.word < wordsBound
+        CustomText.isWordRandom &&
+        CustomText.word < wordsBound
       ) {
-        wordsBound = customText.word;
+        wordsBound = CustomText.word;
       }
       if (
         config.mode == "custom" &&
-        customText.isTimeRandom &&
-        customText.time < wordsBound
+        CustomText.isTimeRandom &&
+        CustomText.time < wordsBound
       ) {
         wordsBound = 100;
       }
       if (
         config.mode == "custom" &&
-        !customText.isWordRandom &&
-        customText.text.length < wordsBound
+        !CustomText.isWordRandom &&
+        CustomText.text.length < wordsBound
       ) {
-        wordsBound = customText.text.length;
+        wordsBound = CustomText.text.length;
       }
     }
 
     if (
       (config.mode === "custom" &&
-        customText.isWordRandom &&
-        customText.word == 0) ||
+        CustomText.isWordRandom &&
+        CustomText.word == 0) ||
       (config.mode === "custom" &&
-        customText.isTimeRandom &&
-        customText.time == 0)
+        CustomText.isTimeRandom &&
+        CustomText.time == 0)
     ) {
       wordsBound = 100;
     }
@@ -525,7 +415,7 @@ async function initWords() {
     }
     let wordset = language.words;
     if (config.mode == "custom") {
-      wordset = customText.text;
+      wordset = CustomText.text;
     }
     for (let i = 0; i < wordsBound; i++) {
       let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
@@ -533,11 +423,11 @@ async function initWords() {
       const previousWord2 = wordsList[i - 2];
       if (
         config.mode == "custom" &&
-        (customText.isWordRandom || customText.isTimeRandom)
+        (CustomText.isWordRandom || CustomText.isTimeRandom)
       ) {
         randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-      } else if (config.mode == "custom" && !customText.isWordRandom) {
-        randomWord = customText.text[i];
+      } else if (config.mode == "custom" && !CustomText.isWordRandom) {
+        randomWord = CustomText.text[i];
       } else {
         while (
           randomWord == previousWord ||
@@ -599,31 +489,40 @@ async function initWords() {
       restartTest();
       return;
     }
+
     let rq;
     if(config.quoteLength != -2){
-    let group = config.quoteLength;
-
-      if (config.quoteLength === -1) {
-        group = Math.floor(Math.random() * quotes.groups.length);
-        while (quotes.groups[group].length === 0) {
-          group = Math.floor(Math.random() * quotes.groups.length);
+      let quoteLengths = config.quoteLength;
+      let groupIndex;
+      if (quoteLengths.length > 1) {
+        groupIndex =
+          quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
+        while (quotes.groups[groupIndex].length === 0) {
+          groupIndex =
+            quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
         }
       } else {
-        if (quotes.groups[group].length === 0) {
+        groupIndex = quoteLengths[0];
+        if (quotes.groups[groupIndex].length === 0) {
           Notifications.add("No quotes found for selected quote length", 0);
+          testRestarting = false;
           return;
         }
       }
+
+      
       
         rq =
-        quotes.groups[group][
-          Math.floor(Math.random() * quotes.groups[group].length)
+        quotes.groups[groupIndex][
+          Math.floor(Math.random() * quotes.groups[groupIndex].length)
         ];
-      if (randomQuote != null && rq.id === randomQuote.id) {
-        rq =
-          quotes.groups[group][
-            Math.floor(Math.random() * quotes.groups[group].length)
-          ];
+    if (randomQuote != null && rq.id === randomQuote.id) {
+      rq =
+        quotes.groups[groupIndex][
+          Math.floor(Math.random() * quotes.groups[groupIndex].length)
+
+        ];
+      
     }
   } else {
     quotes.groups.forEach(group => {
@@ -831,14 +730,14 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
   ) {
     word = `"${word}"`;
   } else if (
-    Math.random() < 0.01 &&
+    Math.random() < 0.011 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "." &&
     config.language.split("_")[0] !== "russian"
   ) {
     word = `'${word}'`;
   } else if (
-    Math.random() < 0.01 &&
+    Math.random() < 0.012 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "."
   ) {
@@ -856,21 +755,21 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
     } else {
       word = `(${word})`;
     }
-  } else if (Math.random() < 0.01) {
+  } else if (Math.random() < 0.013) {
     if (config.language.split("_")[0] == "french") {
       word = ":";
     } else {
       word += ":";
     }
   } else if (
-    Math.random() < 0.01 &&
+    Math.random() < 0.014 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "." &&
     previousWord != "-"
   ) {
     word = "-";
   } else if (
-    Math.random() < 0.01 &&
+    Math.random() < 0.015 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "." &&
     Misc.getLastChar(previousWord) != ";"
@@ -899,12 +798,12 @@ function addWord() {
       wordsList.length >= config.words &&
       config.words > 0) ||
     (config.mode === "custom" &&
-      customText.isWordRandom &&
-      wordsList.length >= customText.word &&
-      customText.word != 0) ||
+      CustomText.isWordRandom &&
+      wordsList.length >= CustomText.word &&
+      CustomText.word != 0) ||
     (config.mode === "custom" &&
-      !customText.isWordRandom &&
-      wordsList.length >= customText.text.length)
+      !CustomText.isWordRandom &&
+      wordsList.length >= CustomText.text.length)
   )
     return;
   const language =
@@ -913,7 +812,7 @@ function addWord() {
       : {
           //borrow the direction of the current language
           leftToRight: Misc.getCurrentLanguage().leftToRight,
-          words: customText.text,
+          words: CustomText.text,
         };
   const wordset = language.words;
   let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
@@ -927,12 +826,12 @@ function addWord() {
 
   if (
     config.mode === "custom" &&
-    customText.isWordRandom &&
+    CustomText.isWordRandom &&
     wordset.length < 3
   ) {
     randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  } else if (config.mode == "custom" && !customText.isWordRandom) {
-    randomWord = customText.text[wordsList.length];
+  } else if (config.mode == "custom" && !CustomText.isWordRandom) {
+    randomWord = CustomText.text[wordsList.length];
   } else {
     while (
       previousWordStripped == randomWord ||
@@ -1018,8 +917,8 @@ function showWords() {
   if (
     config.showAllLines &&
     config.mode != "time" &&
-    !(customText.isWordRandom && customText.word == 0) &&
-    !customText.isTimeRandom
+    !(CustomText.isWordRandom && CustomText.word == 0) &&
+    !CustomText.isTimeRandom
   ) {
     $("#words").css("height", "auto");
     $("#wordsWrapper").css("height", "auto");
@@ -1174,8 +1073,7 @@ function updateWordElement(showError) {
           //   }
           // }
           if (!showError) {
-            if (currentLetter == undefined) {
-            } else {
+            if (currentLetter !== undefined) {
               ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
             }
           } else {
@@ -1305,11 +1203,11 @@ function updateTimer() {
   if (!config.showTimerProgress) return;
   if (
     config.mode === "time" ||
-    (config.mode === "custom" && customText.isTimeRandom)
+    (config.mode === "custom" && CustomText.isTimeRandom)
   ) {
     let maxtime = config.time;
-    if (config.mode === "custom" && customText.isTimeRandom) {
-      maxtime = customText.time;
+    if (config.mode === "custom" && CustomText.isTimeRandom) {
+      maxtime = CustomText.time;
     }
     if (config.timerStyle === "bar") {
       let percent = 100 - ((time + 1) / maxtime) * 100;
@@ -1346,10 +1244,10 @@ function updateTimer() {
         outof = config.words;
       }
       if (config.mode === "custom") {
-        if (customText.isWordRandom) {
-          outof = customText.word;
+        if (CustomText.isWordRandom) {
+          outof = CustomText.word;
         } else {
-          outof = customText.text.length;
+          outof = CustomText.text.length;
         }
       }
       let percent = Math.floor(((currentWordIndex + 1) / outof) * 100);
@@ -1367,10 +1265,10 @@ function updateTimer() {
         outof = config.words;
       }
       if (config.mode === "custom") {
-        if (customText.isWordRandom) {
-          outof = customText.word;
+        if (CustomText.isWordRandom) {
+          outof = CustomText.word;
         } else {
-          outof = customText.text.length;
+          outof = CustomText.text.length;
         }
       }
       if (outof === 0) {
@@ -1386,10 +1284,10 @@ function updateTimer() {
         outof = config.words;
       }
       if (config.mode === "custom") {
-        if (customText.isWordRandom) {
-          outof = customText.word;
+        if (CustomText.isWordRandom) {
+          outof = CustomText.word;
         } else {
-          outof = customText.text.length;
+          outof = CustomText.text.length;
         }
       }
       if (config.words === 0) {
@@ -2109,11 +2007,6 @@ function showResult(difficultyFailed = false) {
   let maxChartVal = Math.max(
     ...[Math.max(...rawWpmPerSecond), Math.max(...wpmHistory)]
   );
-
-  let minChartVal = Math.min(
-    ...[Math.min(...rawWpmPerSecond), Math.min(...wpmHistory)]
-  );
-
   if (!config.startGraphsAtZero) {
     wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.min(
       ...wpmHistory
@@ -2166,17 +2059,17 @@ function showResult(difficultyFailed = false) {
     (config.mode === "words" && mode2 < 10 && mode2 > 0) ||
     (config.mode === "words" && mode2 == 0 && testtime < 15) ||
     (config.mode === "custom" &&
-      !customText.isWordRandom &&
-      !customText.isTimeRandom &&
-      customText.text.length < 10) ||
+      !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.text.length < 10) ||
     (config.mode === "custom" &&
-      customText.isWordRandom &&
-      !customText.isTimeRandom &&
-      customText.word < 10) ||
+      CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.word < 10) ||
     (config.mode === "custom" &&
-      !customText.isWordRandom &&
-      customText.isTimeRandom &&
-      customText.time < 15) ||
+      !CustomText.isWordRandom &&
+      CustomText.isTimeRandom &&
+      CustomText.time < 15) ||
     (config.mode === "zen" && testtime < 15)
   ) {
     Notifications.add("Test too short", 0);
@@ -2214,16 +2107,16 @@ function showResult(difficultyFailed = false) {
     let cdata = null;
     if (config.mode === "custom") {
       cdata = {};
-      cdata.textLen = customText.text.length;
-      cdata.isWordRandom = customText.isWordRandom;
-      cdata.isTimeRandom = customText.isTimeRandom;
+      cdata.textLen = CustomText.text.length;
+      cdata.isWordRandom = CustomText.isWordRandom;
+      cdata.isTimeRandom = CustomText.isTimeRandom;
       cdata.word =
-        customText.word !== "" && !isNaN(customText.word)
-          ? customText.word
+        CustomText.word !== "" && !isNaN(CustomText.word)
+          ? CustomText.word
           : null;
       cdata.time =
-        customText.time !== "" && !isNaN(customText.time)
-          ? customText.time
+        CustomText.time !== "" && !isNaN(CustomText.time)
+          ? CustomText.time
           : null;
     }
 
@@ -2256,11 +2149,11 @@ function showResult(difficultyFailed = false) {
       funbox: activeFunBox,
       bailedOut: bailout,
       chartData: chartData,
-      customText: cdata,
+      CustomText: cdata,
     };
 
     if (config.mode !== "custom") {
-      delete completedEvent.customText;
+      delete completedEvent.CustomText;
     }
 
     if (
@@ -2282,7 +2175,6 @@ function showResult(difficultyFailed = false) {
 
         //check local pb
         accountIconLoading(true);
-        let localPb = false;
         let dontShowCrown = false;
         let pbDiff = 0;
         db_getLocalPB(
@@ -2316,7 +2208,6 @@ function showResult(difficultyFailed = false) {
                   "+" + Misc.roundTo2(pbDiff)
                 );
               }
-              localPb = true;
             }
             if (lpb > 0) {
               wpmOverTimeChart.options.annotation.annotations.push({
@@ -2353,8 +2244,10 @@ function showResult(difficultyFailed = false) {
               );
               wpmOverTimeChart.update({ duration: 0 });
             }
-            $("#result .stats .leaderboards").removeClass("hidden");
-            $("#result .stats .leaderboards .bottom").html("checking...");
+            if (config.mode === "time" && (mode2 === 15 || mode2 === 60)) {
+              $("#result .stats .leaderboards").removeClass("hidden");
+              $("#result .stats .leaderboards .bottom").html("checking...");
+            }
 
             if (activeTags.length == 0) {
               $("#result .stats .tags").addClass("hidden");
@@ -2572,11 +2465,11 @@ function showResult(difficultyFailed = false) {
                       let sString =
                         globalLbDiff === 1 || globalLbDiff === -1 ? "" : "s";
                       if (globalLbDiff > 0) {
-                        globalLbString += ` <span class="lbChange" aria-label="You've gained ${globalLbDiff} position${sString}" data-balloon-pos="up">(${lbUpIcon}${globalLbDiff})</span>`;
+                        globalLbString += ` <span class="lbChange" aria-label="You've gained ${globalLbDiff} position${sString}" data-balloon-pos="left">(${lbUpIcon}${globalLbDiff})</span>`;
                       } else if (globalLbDiff === 0) {
-                        globalLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="up">(${lbRightIcon}${globalLbDiff})</span>`;
+                        globalLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="left">(${lbRightIcon}${globalLbDiff})</span>`;
                       } else if (globalLbDiff < 0) {
-                        globalLbString += ` <span class="lbChange" aria-label="You've lost ${globalLbDiff} position${sString}" data-balloon-pos="up">(${lbDownIcon}${globalLbDiff})</span>`;
+                        globalLbString += ` <span class="lbChange" aria-label="You've lost ${globalLbDiff} position${sString}" data-balloon-pos="left">(${lbDownIcon}${globalLbDiff})</span>`;
                       }
                     }
 
@@ -2632,11 +2525,11 @@ function showResult(difficultyFailed = false) {
                       let sString =
                         dailyLbDiff === 1 || dailyLbDiff === -1 ? "" : "s";
                       if (dailyLbDiff > 0) {
-                        dailyLbString += ` <span class="lbChange" aria-label="You've gained ${dailyLbDiff} position${sString}" data-balloon-pos="up">(${lbUpIcon}${dailyLbDiff})</span>`;
+                        dailyLbString += ` <span class="lbChange" aria-label="You've gained ${dailyLbDiff} position${sString}" data-balloon-pos="left">(${lbUpIcon}${dailyLbDiff})</span>`;
                       } else if (dailyLbDiff === 0) {
-                        dailyLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="up">(${lbRightIcon}${dailyLbDiff})</span>`;
+                        dailyLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="left">(${lbRightIcon}${dailyLbDiff})</span>`;
                       } else if (dailyLbDiff < 0) {
-                        dailyLbString += ` <span class="lbChange" aria-label="You've lost ${dailyLbDiff} position${sString}" data-balloon-pos="up">(${lbDownIcon}${dailyLbDiff})</span>`;
+                        dailyLbString += ` <span class="lbChange" aria-label="You've lost ${dailyLbDiff} position${sString}" data-balloon-pos="left">(${lbDownIcon}${dailyLbDiff})</span>`;
                       }
                     }
                     $("#result .stats .leaderboards .bottom").html(
@@ -2685,8 +2578,6 @@ function showResult(difficultyFailed = false) {
                   if (e.data.resultCode === 2) {
                     //new pb
                     showCrown();
-                    if (!localPb) {
-                    }
                     db_saveLocalPB(
                       config.mode,
                       mode2,
@@ -2904,7 +2795,7 @@ function startTest() {
       $(".pageTest #premidSecondsLeft").text(config.time - time);
       if (
         config.mode === "time" ||
-        (config.mode === "custom" && customText.isTimeRandom)
+        (config.mode === "custom" && CustomText.isTimeRandom)
       ) {
         updateTimer();
       }
@@ -2976,14 +2867,14 @@ function startTest() {
       }
       if (
         config.mode == "time" ||
-        (config.mode === "custom" && customText.isTimeRandom)
+        (config.mode === "custom" && CustomText.isTimeRandom)
       ) {
         if (
           (time >= config.time &&
             config.time !== 0 &&
             config.mode === "time") ||
-          (time >= customText.time &&
-            customText.time !== 0 &&
+          (time >= CustomText.time &&
+            CustomText.time !== 0 &&
             config.mode === "custom")
         ) {
           //times up
@@ -3008,16 +2899,16 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   //     (config.mode === "time" && config.time < 3600 && config.time > 0) ||
   //     config.mode === "quote" ||
   //     (config.mode === "custom" &&
-  //       customText.isWordRandom &&
-  //       customText.word < 1000 &&
-  //       customText.word != 0) ||
+  //       CustomText.isWordRandom &&
+  //       CustomText.word < 1000 &&
+  //       CustomText.word != 0) ||
   //     (config.mode === "custom" &&
-  //       customText.isTimeRandom &&
-  //       customText.time < 3600 &&
-  //       customText.time != 0) ||
+  //       CustomText.isTimeRandom &&
+  //       CustomText.time < 3600 &&
+  //       CustomText.time != 0) ||
   //     (config.mode === "custom" &&
-  //       !customText.isWordRandom &&
-  //       customText.text.length < 1000)
+  //       !CustomText.isWordRandom &&
+  //       CustomText.text.length < 1000)
   //   ) {
   //   } else {
   //     if (testActive) {
@@ -3047,9 +2938,13 @@ function restartTest(withSameWordset = false, nosave = false, event) {
         if (config.mode !== "zen") event.preventDefault();
       } catch {}
       if (
-        Misc.canQuickRestart(config.mode, config.words, config.time, customText)
+        !Misc.canQuickRestart(
+          config.mode,
+          config.words,
+          config.time,
+          CustomText
+        )
       ) {
-      } else {
         let message = "Use your mouse to confirm.";
         if (config.quickTab)
           message = "Press shift + tab or use your mouse to confirm.";
@@ -3093,6 +2988,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   missedWords = {};
   correctedHistory = [];
   currentCorrected = "";
+  ShiftTracker.reset();
   setFocus(false);
   hideCaret();
   testActive = false;
@@ -3274,18 +3170,6 @@ function focusWords() {
   }
 }
 
-function setCustomText() {
-  customText.text = prompt("Custom text").trim();
-  customText.text = customText.text.replace(/[\n\r\t ]/gm, " ");
-  customText.text = customText.text.replace(/ +/gm, " ");
-  customText.text = customText.text.split(" ");
-  if (customText.text.text.length >= 10000) {
-    Notifications.add("Custom text cannot be longer than 10000 words.", 0);
-    setMode("time");
-    customText.text = "The quick brown fox jumped over the lazy dog".split(" ");
-  }
-}
-
 function changePage(page) {
   if (pageTransition) {
     return;
@@ -3373,7 +3257,7 @@ function setMode(mode, nosave) {
   if (config.mode == "time") {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").removeClass("hidden");
-    $("#top .config .customText").addClass("hidden");
+    $("#top .config .CustomText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3382,7 +3266,7 @@ function setMode(mode, nosave) {
   } else if (config.mode == "words") {
     $("#top .config .wordCount").removeClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
+    $("#top .config .CustomText").addClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3399,7 +3283,7 @@ function setMode(mode, nosave) {
     }
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").removeClass("hidden");
+    $("#top .config .CustomText").removeClass("hidden");
     $("#top .config .punctuationMode").removeClass("disabled");
     $("#top .config .numbersMode").removeClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3411,7 +3295,7 @@ function setMode(mode, nosave) {
     setToggleSettings(false, nosave);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
+    $("#top .config .CustomText").addClass("hidden");
     $("#top .config .punctuationMode").addClass("disabled");
     $("#top .config .numbersMode").addClass("disabled");
     $("#top .config .punctuationMode").removeClass("hidden");
@@ -3421,7 +3305,7 @@ function setMode(mode, nosave) {
   } else if (config.mode == "zen") {
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
+    $("#top .config .CustomText").addClass("hidden");
     $("#top .config .punctuationMode").addClass("hidden");
     $("#top .config .numbersMode").addClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
@@ -4022,6 +3906,12 @@ function updateTestModesNotice() {
     );
   }
 
+  if (config.oppositeShiftMode === "on") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsOppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift</div>`
+    );
+  }
+
   let tagsString = "";
   try {
     db_getSnapshot().tags.forEach((tag) => {
@@ -4163,30 +4053,30 @@ function hideCapsWarning() {
 }
 
 function showCustomTextPopup() {
-  if ($("#customTextPopupWrapper").hasClass("hidden")) {
-    if ($("#customTextPopup .check input").prop("checked")) {
-      $("#customTextPopup .inputs .randomInputFields").removeClass("hidden");
+  if ($("#CustomTextPopupWrapper").hasClass("hidden")) {
+    if ($("#CustomTextPopup .check input").prop("checked")) {
+      $("#CustomTextPopup .inputs .randomInputFields").removeClass("hidden");
     } else {
-      $("#customTextPopup .inputs .randomInputFields").addClass("hidden");
+      $("#CustomTextPopup .inputs .randomInputFields").addClass("hidden");
     }
-    $("#customTextPopupWrapper")
+    $("#CustomTextPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        let newtext = customText.text.join(" ");
+        let newtext = CustomText.text.join(" ");
         newtext = newtext.replace(/\n /g, "\n");
-        $("#customTextPopup textarea").val(newtext);
-        $("#customTextPopup .wordcount input").val(customText.word);
-        $("#customTextPopup .time input").val(customText.time);
-        $("#customTextPopup textarea").focus();
+        $("#CustomTextPopup textarea").val(newtext);
+        $("#CustomTextPopup .wordcount input").val(CustomText.word);
+        $("#CustomTextPopup .time input").val(CustomText.time);
+        $("#CustomTextPopup textarea").focus();
       });
   }
 }
 
 function hideCustomTextPopup() {
-  if (!$("#customTextPopupWrapper").hasClass("hidden")) {
-    $("#customTextPopupWrapper")
+  if (!$("#CustomTextPopupWrapper").hasClass("hidden")) {
+    $("#CustomTextPopupWrapper")
       .stop(true, true)
       .css("opacity", 1)
       .animate(
@@ -4195,42 +4085,42 @@ function hideCustomTextPopup() {
         },
         100,
         (e) => {
-          $("#customTextPopupWrapper").addClass("hidden");
+          $("#CustomTextPopupWrapper").addClass("hidden");
         }
       );
   }
 }
 
-$("#customTextPopupWrapper").mousedown((e) => {
-  if ($(e.target).attr("id") === "customTextPopupWrapper") {
+$("#CustomTextPopupWrapper").mousedown((e) => {
+  if ($(e.target).attr("id") === "CustomTextPopupWrapper") {
     hideCustomTextPopup();
   }
 });
 
-$("#customTextPopup .inputs .check input").change(() => {
-  if ($("#customTextPopup .check input").prop("checked")) {
-    $("#customTextPopup .inputs .randomInputFields").removeClass("hidden");
+$("#CustomTextPopup .inputs .check input").change(() => {
+  if ($("#CustomTextPopup .check input").prop("checked")) {
+    $("#CustomTextPopup .inputs .randomInputFields").removeClass("hidden");
   } else {
-    $("#customTextPopup .inputs .randomInputFields").addClass("hidden");
+    $("#CustomTextPopup .inputs .randomInputFields").addClass("hidden");
   }
 });
 
-$("#customTextPopup textarea").keypress((e) => {
+$("#CustomTextPopup textarea").keypress((e) => {
   if (e.code === "Enter" && e.ctrlKey) {
-    $("#customTextPopup .button").click();
+    $("#CustomTextPopup .button").click();
   }
 });
 
-$("#customTextPopup .randomInputFields .wordcount input").keypress((e) => {
-  $("#customTextPopup .randomInputFields .time input").val("");
+$("#CustomTextPopup .randomInputFields .wordcount input").keypress((e) => {
+  $("#CustomTextPopup .randomInputFields .time input").val("");
 });
 
-$("#customTextPopup .randomInputFields .time input").keypress((e) => {
-  $("#customTextPopup .randomInputFields .wordcount input").val("");
+$("#CustomTextPopup .randomInputFields .time input").keypress((e) => {
+  $("#CustomTextPopup .randomInputFields .wordcount input").val("");
 });
 
-$("#customTextPopup .button").click(() => {
-  let text = $("#customTextPopup textarea").val();
+$("#CustomTextPopup .button").click(() => {
+  let text = $("#CustomTextPopup textarea").val();
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
@@ -4242,27 +4132,29 @@ $("#customTextPopup .button").click(() => {
   // text = text.replace(/(\n)+/g, "\n");
   // text = text.replace(/(\r)+/g, "\r");
   text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if ($("#customTextPopup .typographyCheck input").prop("checked")) {
+  if ($("#CustomTextPopup .typographyCheck input").prop("checked")) {
     text = Misc.cleanTypographySymbols(text);
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
   text = text.split(" ");
-  customText.text = text;
-  customText.word = parseInt($("#customTextPopup .wordcount input").val());
-  customText.time = parseInt($("#customTextPopup .time input").val());
+  CustomText.setText(text);
+  CustomText.setWord(parseInt($("#CustomTextPopup .wordcount input").val()));
+  CustomText.setTime(parseInt($("#CustomTextPopup .time input").val()));
 
-  customText.isWordRandom =
-    $("#customTextPopup .check input").prop("checked") &&
-    !isNaN(customText.word);
-  customText.isTimeRandom =
-    $("#customTextPopup .check input").prop("checked") &&
-    !isNaN(customText.time);
+  CustomText.setIsWordRandom(
+    $("#CustomTextPopup .check input").prop("checked") &&
+      !isNaN(CustomText.word)
+  );
+  CustomText.setIsTimeRandom(
+    $("#CustomTextPopup .check input").prop("checked") &&
+      !isNaN(CustomText.time)
+  );
 
   if (
-    isNaN(customText.word) &&
-    isNaN(customText.time) &&
-    (customText.isTimeRandom || customText.isWordRandom)
+    isNaN(CustomText.word) &&
+    isNaN(CustomText.time) &&
+    (CustomText.isTimeRandom || CustomText.isWordRandom)
   ) {
     Notifications.add(
       "You need to specify word count or time in seconds to start a random custom test.",
@@ -4273,9 +4165,9 @@ $("#customTextPopup .button").click(() => {
   }
 
   if (
-    !isNaN(customText.word) &&
-    !isNaN(customText.time) &&
-    (customText.isTimeRandom || customText.isWordRandom)
+    !isNaN(CustomText.word) &&
+    !isNaN(CustomText.time) &&
+    (CustomText.isTimeRandom || CustomText.isWordRandom)
   ) {
     Notifications.add(
       "You need to pick between word count or time in seconds to start a random custom test.",
@@ -4286,8 +4178,8 @@ $("#customTextPopup .button").click(() => {
   }
 
   if (
-    (customText.isWordRandom && parseInt(customText.word) === 0) ||
-    (customText.isTimeRandom && parseInt(customText.time) === 0)
+    (CustomText.isWordRandom && parseInt(CustomText.word) === 0) ||
+    (CustomText.isTimeRandom && parseInt(CustomText.time) === 0)
   ) {
     Notifications.add(
       "Infinite words! Make sure to use Bail Out from the command line to save your result.",
@@ -4350,26 +4242,6 @@ function hideCustomMode2Popup() {
         }
       );
   }
-}
-
-function playClickSound() {
-  if (config.playSoundOnClick === "off") return;
-  if (clickSounds === null) initClickSounds();
-
-  let rand = Math.floor(
-    Math.random() * clickSounds[config.playSoundOnClick].length
-  );
-  let randomSound = clickSounds[config.playSoundOnClick][rand];
-  randomSound.counter++;
-  if (randomSound.counter === 2) randomSound.counter = 0;
-  randomSound.sounds[randomSound.counter].currentTime = 0;
-  randomSound.sounds[randomSound.counter].play();
-}
-
-function playErrorSound() {
-  if (!config.playSoundOnError) return;
-  errorSound.currentTime = 0;
-  errorSound.play();
 }
 
 async function initPaceCaret() {
@@ -4498,20 +4370,17 @@ function movePaceCaret(expectedStepEnd) {
     let newTop;
     let newLeft;
     try {
+      let newIndex =
+        paceCaret.currentWordIndex -
+        (currentWordIndex - currentWordElementIndex);
       if (paceCaret.currentLetterIndex === -1) {
         currentLetter = document
           .querySelectorAll("#words .word")
-          [
-            paceCaret.currentWordIndex -
-              (currentWordIndex - currentWordElementIndex)
-          ].querySelectorAll("letter")[0];
+          [newIndex].querySelectorAll("letter")[0];
       } else {
         currentLetter = document
           .querySelectorAll("#words .word")
-          [
-            paceCaret.currentWordIndex -
-              (currentWordIndex - currentWordElementIndex)
-          ].querySelectorAll("letter")[paceCaret.currentLetterIndex];
+          [newIndex].querySelectorAll("letter")[paceCaret.currentLetterIndex];
       }
       newTop = currentLetter.offsetTop - $(currentLetter).height() / 20;
       newLeft;
@@ -4833,14 +4702,15 @@ $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len = $(e.currentTarget).attr("quoteLength");
   if(len == -2){
     showCustomMode2Popup("quote");
-  } else {
-    setQuoteLength(len);
-    manualRestart = true;
-    restartTest();
+  } else if (len == -1) {
+    len = [0, 1, 2, 3];
   }
+  setQuoteLength(len, false, e.shiftKey);
+  manualRestart = true;
+  restartTest();
 });
 
-$(document).on("click", "#top .config .customText .text-button", () => {
+$(document).on("click", "#top .config .CustomText .text-button", () => {
   showCustomTextPopup();
 });
 
@@ -4873,7 +4743,7 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
 $(document).on("click", "#top #menu .icon-button", (e) => {
   if ($(e.currentTarget).hasClass("discord")) return;
   if ($(e.currentTarget).hasClass("leaderboards")) {
-    showLeaderboards();
+    Leaderboards.show();
   } else {
     const href = $(e.currentTarget).attr("href");
     manualRestart = true;
@@ -4941,9 +4811,9 @@ function initPractiseMissedWords() {
       newCustomText.push(missedWord);
     }
   });
-  customText.text = newCustomText;
-  customText.isWordRandom = true;
-  customText.word = 50;
+  CustomText.setText(newCustomText);
+  CustomText.setIsWordRandom(true);
+  CustomText.setWord(50);
 
   modeBeforePractise = null;
   punctuationBeforePractise = null;
@@ -5168,7 +5038,7 @@ $(document).keydown(function (event) {
   let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   let wordsFocused = $("#wordsInput").is(":focus");
   let modePopupVisible =
-    !$("#customTextPopupWrapper").hasClass("hidden") ||
+    !$("#CustomTextPopupWrapper").hasClass("hidden") ||
     !$("#customMode2PopupWrapper").hasClass("hidden");
   if (
     pageTestActive &&
@@ -5253,10 +5123,10 @@ function handleTab(event) {
   if (resultCalculating) {
     event.preventDefault();
   }
-  if ($("#customTextPopup .textarea").is(":focus")) {
+  if ($("#CustomTextPopup .textarea").is(":focus")) {
     event.preventDefault();
 
-    let area = $("#customTextPopup .textarea")[0];
+    let area = $("#CustomTextPopup .textarea")[0];
 
     var start = area.selectionStart;
     var end = area.selectionEnd;
@@ -5269,8 +5139,8 @@ function handleTab(event) {
     area.selectionStart = area.selectionEnd = start + 1;
 
     // event.preventDefault();
-    // $("#customTextPopup .textarea").val(
-    //   $("#customTextPopup .textarea").val() + "\t"
+    // $("#CustomTextPopup .textarea").val(
+    //   $("#CustomTextPopup .textarea").val() + "\t"
     // );
     return;
   } else if (
@@ -5281,6 +5151,7 @@ function handleTab(event) {
   ) {
     if (config.quickTab) {
       if (config.mode == "zen" && !event.shiftKey) {
+        //ignore
       } else {
         if (event.shiftKey) manualRestart = true;
 
@@ -5329,14 +5200,14 @@ function handleTab(event) {
   //       (config.mode === "time" && config.time < 3600) ||
   //       config.mode === "quote" ||
   //       (config.mode === "custom" &&
-  //         customText.isWordRandom &&
-  //         customText.word < 1000) ||
+  //         CustomText.isWordRandom &&
+  //         CustomText.word < 1000) ||
   //       (config.mode === "custom" &&
-  //         customText.isTimeRandom &&
-  //         customText.time < 3600) ||
+  //         CustomText.isTimeRandom &&
+  //         CustomText.time < 3600) ||
   //       (config.mode === "custom" &&
-  //         !customText.isWordRandom &&
-  //         customText.text.length < 1000)
+  //         !CustomText.isWordRandom &&
+  //         CustomText.text.length < 1000)
   //     ) {
   //       if (testActive) {
   //         let testNow = performance.now();
@@ -5427,7 +5298,7 @@ function handleBackspace(event) {
     }
     updateWordElement(!config.blindMode);
   }
-  playClickSound();
+  Sound.playClick(config.playSoundOnClick);
   if (config.keymapMode === "react") {
     flashPressedKeymapKey(event.code, true);
   } else if (config.keymapMode === "next") {
@@ -5439,7 +5310,7 @@ function handleBackspace(event) {
 function handleSpace(event, isEnter) {
   if (!testActive) return;
   if (currentInput === "") return;
-  let nextWord = wordsList[currentWordIndex + 1];
+  // let nextWord = wordsList[currentWordIndex + 1];
   // if ((isEnter && nextWord !== "\n") && (isEnter && activeFunBox !== "58008")) return;
   // if (!isEnter && nextWord === "\n") return;
   event.preventDefault();
@@ -5484,7 +5355,7 @@ function handleSpace(event, isEnter) {
     currentKeypress.count++;
     currentKeypress.words.push(currentWordIndex);
     if (activeFunBox !== "nospace") {
-      playClickSound();
+      Sound.playClick(config.playSoundOnClick);
     }
   } else {
     //incorrect word
@@ -5498,12 +5369,14 @@ function handleSpace(event, isEnter) {
     }
     if (activeFunBox !== "nospace") {
       if (!config.playSoundOnError || config.blindMode) {
-        playClickSound();
+        Sound.playClick(config.playSoundOnClick);
       } else {
-        playErrorSound();
+        Sound.playError(config.playSoundOnError);
       }
     }
     accuracyStats.incorrect++;
+    currentError.count++;
+    currentError.words.push(currentWordIndex);
     let cil = currentInput.length;
     if (cil <= wordsList[currentWordIndex].length) {
       if (cil >= currentCorrected.length) {
@@ -5555,8 +5428,8 @@ function handleSpace(event, isEnter) {
   if (
     !config.showAllLines ||
     config.mode == "time" ||
-    (customText.isWordRandom && customText.word == 0) ||
-    customText.isTimeRandom
+    (CustomText.isWordRandom && CustomText.word == 0) ||
+    CustomText.isTimeRandom
   ) {
     let currentTop = Math.floor(
       document.querySelectorAll("#words .word")[currentWordElementIndex - 1]
@@ -5698,6 +5571,9 @@ function handleAlpha(event) {
   )
     return;
   if (event.metaKey) return;
+
+  let originalEvent = event;
+
   event = emulateLayout(event);
 
   //start the test
@@ -5712,7 +5588,7 @@ function handleAlpha(event) {
 
   //show dead keys
   if (event.key === "Dead") {
-    playClickSound();
+    Sound.playClick(config.playSoundOnClick);
     $(
       document.querySelector("#words .word.active").querySelectorAll("letter")[
         currentInput.length
@@ -5780,6 +5656,13 @@ function handleAlpha(event) {
     thisCharCorrect = true;
   }
 
+  if (
+    config.oppositeShiftMode === "on" &&
+    ShiftTracker.isUsingOppositeShift(originalEvent) === false
+  ) {
+    thisCharCorrect = false;
+  }
+
   if (!thisCharCorrect) {
     accuracyStats.incorrect++;
     currentError.count++;
@@ -5802,14 +5685,20 @@ function handleAlpha(event) {
   }
 
   if (thisCharCorrect) {
-    playClickSound();
+    Sound.playClick(config.playSoundOnClick);
   } else {
     if (!config.playSoundOnError || config.blindMode) {
-      playClickSound();
+      Sound.playClick(config.playSoundOnClick);
     } else {
-      playErrorSound();
+      Sound.playError(config.playSoundOnError);
     }
   }
+
+  if (
+    config.oppositeShiftMode === "on" &&
+    ShiftTracker.isUsingOppositeShift(originalEvent) === false
+  )
+    return;
 
   //update current corrected verison. if its empty then add the current key. if its not then replace the last character with the currently pressed one / add it
   if (currentCorrected === "") {
@@ -5928,15 +5817,16 @@ window.addEventListener("beforeunload", (event) => {
     (config.mode === "time" && config.time < 3600) ||
     config.mode === "quote" ||
     (config.mode === "custom" &&
-      customText.isWordRandom &&
-      customText.word < 1000) ||
+      CustomText.isWordRandom &&
+      CustomText.word < 1000) ||
     (config.mode === "custom" &&
-      customText.isTimeRandom &&
-      customText.time < 1000) ||
+      CustomText.isTimeRandom &&
+      CustomText.time < 1000) ||
     (config.mode === "custom" &&
-      !customText.isWordRandom &&
-      customText.text.length < 1000)
+      !CustomText.isWordRandom &&
+      CustomText.text.length < 1000)
   ) {
+    //ignore
   } else {
     if (testActive) {
       event.preventDefault();
@@ -5969,7 +5859,7 @@ if (window.location.hostname === "localhost") {
 manualRestart = true;
 
 let configLoadDone;
-let configLoadPromise = new Promise((v, x) => {
+let configLoadPromise = new Promise((v) => {
   configLoadDone = v;
 });
 loadConfigFromCookie();
@@ -6138,9 +6028,9 @@ async function setupChallenge(challengeName) {
       setMode("words", true);
       setDifficulty("normal", true);
     } else if (challenge.type === "customText") {
-      customText.text = challenge.parameters[0].split(" ");
-      customText.isWordRandom = challenge.parameters[1];
-      customText.word = parseInt(challenge.parameters[2]);
+      CustomText.setText(challenge.parameters[0].split(" "));
+      CustomText.setIsWordRandom(challenge.parameters[1]);
+      CustomText.setWord(parseInt(challenge.parameters[2]));
       setMode("custom", true);
       setDifficulty("normal", true);
     } else if (challenge.type === "script") {
@@ -6149,8 +6039,8 @@ async function setupChallenge(challengeName) {
       let text = scriptdata.trim();
       text = text.replace(/[\n\r\t ]/gm, " ");
       text = text.replace(/ +/gm, " ");
-      customText.text = text.split(" ");
-      customText.isWordRandom = false;
+      CustomText.setText(text.split(" "));
+      CustomText.setIsWordRandom(false);
       setMode("custom", true);
       setDifficulty("normal", true);
       if (challenge.parameters[1] != null) {
@@ -6245,7 +6135,7 @@ let wpmOverTimeChart = new Chart(ctx, {
       mode: "index",
       intersect: false,
       callbacks: {
-        afterLabel: function (ti, data) {
+        afterLabel: function (ti) {
           try {
             $(".wordInputAfter").remove();
 
@@ -6259,7 +6149,7 @@ let wpmOverTimeChart = new Chart(ctx, {
               if (input != undefined)
                 wordEl.append(`<div class="wordInputAfter">${input}</div>`);
             });
-          } catch (e) {}
+          } catch {}
         },
       },
     },

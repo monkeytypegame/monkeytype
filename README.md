@@ -50,3 +50,7 @@ If you wish to support further development and feel extra awesome, you can do so
 # Contribute
 
 Refer to [CONTRIBUTING.md](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)
+
+# Code Of Conduct
+
+Before contributing to this repository please refer to [CODE_OF_CONDUCT.md](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)

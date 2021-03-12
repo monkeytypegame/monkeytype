@@ -197,7 +197,6 @@ export async function db_getUserAverageWpm10(
   function cont() {
     let wpmSum = 0;
     let count = 0;
-    let i = 0;
     // You have to use every so you can break out of the loop
     dbSnapshot.results.every((result) => {
       if (

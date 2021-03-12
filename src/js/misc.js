@@ -675,16 +675,16 @@ export function mapRange(x, in_min, in_max, out_min, out_max) {
   return num;
 }
 
-export function canQuickRestart(mode, words, time, customText) {
+export function canQuickRestart(mode, words, time, CustomText) {
   if (
     (mode === "words" && words < 1000) ||
     (mode === "time" && time < 3600) ||
     mode === "quote" ||
-    (mode === "custom" && customText.isWordRandom && customText.word < 1000) ||
-    (mode === "custom" && customText.isTimeRandom && customText.time < 3600) ||
+    (mode === "custom" && CustomText.isWordRandom && CustomText.word < 1000) ||
+    (mode === "custom" && CustomText.isTimeRandom && CustomText.time < 3600) ||
     (mode === "custom" &&
-      !customText.isWordRandom &&
-      customText.text.length < 1000)
+      !CustomText.isWordRandom &&
+      CustomText.text.length < 1000)
   ) {
     return true;
   } else {

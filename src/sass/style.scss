@@ -389,7 +389,7 @@ a:hover {
   }
 }
 
-#customTextPopupWrapper {
+#CustomTextPopupWrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -402,7 +402,7 @@ a:hover {
   align-items: center;
   padding: 5rem 0;
 
-  #customTextPopup {
+  #CustomTextPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -455,7 +455,7 @@ a:hover {
         height: 0;
         display: none;
 
-        & ~ .customTextRandomCheckbox {
+        & ~ .CustomTextRandomCheckbox {
           width: 12px;
           height: 12px;
           background: rgba(0, 0, 0, 0.1);
@@ -466,7 +466,7 @@ a:hover {
           transition: 0.25s;
         }
 
-        &:checked ~ .customTextRandomCheckbox {
+        &:checked ~ .CustomTextRandomCheckbox {
           background: var(--main-color);
         }
       }
@@ -489,7 +489,7 @@ a:hover {
         height: 0;
         display: none;
 
-        & ~ .customTextTypographyCheckbox {
+        & ~ .CustomTextTypographyCheckbox {
           width: 12px;
           height: 12px;
           background: rgba(0, 0, 0, 0.1);
@@ -500,7 +500,7 @@ a:hover {
           transition: 0.25s;
         }
 
-        &:checked ~ .customTextTypographyCheckbox {
+        &:checked ~ .CustomTextTypographyCheckbox {
           background: var(--main-color);
         }
       }
@@ -1179,7 +1179,7 @@ a:hover {
 
   &.carrot {
     background-color: transparent;
-    background-image: url("../carrot.png");
+    background-image: url("../images/carrot.png");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -1360,6 +1360,7 @@ a:hover {
   z-index: 2;
   align-items: center;
   gap: 0.5rem;
+  user-select: none;
 
   .logo {
     margin-bottom: 0.6rem;
@@ -1605,6 +1606,9 @@ key {
       width: 100%;
       align-content: flex-start;
       user-select: none;
+      .word {
+        position: relative;
+      }
     }
   }
 
@@ -2154,11 +2158,12 @@ key {
     padding: 0.5rem;
     /* left: .5rem; */
     margin-left: -0.5rem;
-    margin-top: -1.5rem;
+    // margin-top: -1.5rem;
     border-radius: var(--roundness);
     // box-shadow: 0 0 10px rgba(0,0,0,.25);
     transition: 0.25s;
     text-shadow: none;
+    top: -0.5rem;
   }
 }
 
@@ -3468,29 +3473,29 @@ key {
     position: fixed;
   }
   .up {
-    background-image: url("../m3.png");
+    background-image: url("../images/monkey/m3.png");
   }
   .left {
-    background-image: url("../m1.png");
+    background-image: url("../images/monkey/m1.png");
   }
   .right {
-    background-image: url("../m2.png");
+    background-image: url("../images/monkey/m2.png");
   }
   .both {
-    background-image: url("../m4.png");
+    background-image: url("../images/monkey/m4.png");
   }
   .fast {
     .up {
-      background-image: url("../m3_fast.png");
+      background-image: url("../images/monkey/m3_fast.png");
     }
     .left {
-      background-image: url("../m1_fast.png");
+      background-image: url("../images/monkey/m1_fast.png");
     }
     .right {
-      background-image: url("../m2_fast.png");
+      background-image: url("../images/monkey/m2_fast.png");
     }
     .both {
-      background-image: url("../m4_fast.png");
+      background-image: url("../images/monkey/m4_fast.png");
     }
   }
 }

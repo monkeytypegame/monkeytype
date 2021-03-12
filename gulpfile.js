@@ -40,7 +40,7 @@ let eslintConfig = {
     "no-dupe-else-if": "warn",
     "no-dupe-keys": "error",
     "no-duplicate-case": "error",
-    "no-empty": "warn",
+    "no-empty": ["warn", { allowEmptyCatch: true }],
     "no-empty-character-class": "error",
     "no-empty-pattern": "error",
     "no-ex-assign": "error",
@@ -72,7 +72,7 @@ let eslintConfig = {
     "no-unsafe-finally": "error",
     "no-unsafe-negation": "error",
     "no-unused-labels": "error",
-    "no-unused-vars": "warn",
+    "no-unused-vars": ["warn", { argsIgnorePattern: "e|event" }],
     "no-use-before-define": "warn",
     "no-useless-catch": "error",
     "no-useless-escape": "error",
@@ -94,6 +94,10 @@ const refactoredSrc = [
   "./src/js/monkey.js",
   "./src/js/result-filters.js",
   "./src/js/notification-center.js",
+  "./src/js/leaderboards.js",
+  "./src/js/sound.js",
+  "./src/js/custom-text.js",
+  "./src/js/shift-tracker.js",
 ];
 
 //legacy files
@@ -101,10 +105,8 @@ const refactoredSrc = [
 const globalSrc = [
   "./src/js/global-dependencies.js",
   "./src/js/simple-popups.js",
-  "./src/js/words.js",
   "./src/js/userconfig.js",
   "./src/js/commandline.js",
-  "./src/js/leaderboards.js",
   "./src/js/settings.js",
   "./src/js/account.js",
   "./src/js/script.js",
