@@ -1,10 +1,10 @@
 //test logic
 let wordsList = [];
 let currentWordIndex = 0;
-let inputHistory = [];
-let correctedHistory = [];
-let currentCorrected = "";
 let currentInput = "";
+let inputHistory = [];
+let currentCorrected = "";
+let correctedHistory = [];
 let sameWordset = false;
 let textHasTab = false;
 let randomQuote = null;
@@ -34,41 +34,6 @@ let memoryFunboxInterval = null;
 
 //pace caret
 let paceCaret = null;
-
-//test stats
-let testInvalid = false;
-let testStart, testEnd;
-let wpmHistory = [];
-let rawHistory = [];
-let restartCount = 0;
-let incompleteTestSeconds = 0;
-let keypressPerSecond = [];
-let currentKeypress = {
-  count: 0,
-  mod: 0,
-  words: [],
-};
-let errorsPerSecond = [];
-let currentError = {
-  count: 0,
-  words: [],
-};
-let lastSecondNotRound = false;
-let missedWords = [];
-let accuracyStats = {
-  correct: 0,
-  incorrect: 0,
-};
-let keypressStats = {
-  spacing: {
-    current: -1,
-    array: [],
-  },
-  duration: {
-    current: -1,
-    array: [],
-  },
-};
 
 //ui
 let pageTransition = false;
@@ -331,13 +296,13 @@ async function initWords() {
   wordsList = [];
   currentWordIndex = 0;
   currentWordElementIndex = 0;
-  accuracyStats = {
-    correct: 0,
-    incorrect: 0,
-  };
+  // accuracy = {
+  //   correct: 0,
+  //   incorrect: 0,
+  // };
   inputHistory = [];
-  correctedHistory = [];
-  currentCorrected = "";
+  // correctedHistory = [];
+  // currentCorrected = "";
   currentInput = "";
 
   let language = await Misc.getLanguage(config.language);
@@ -1658,7 +1623,7 @@ function countChars() {
     correctWordChars: correctWordChars,
     allCorrectChars: correctChars,
     incorrectChars:
-      config.mode == "zen" ? accuracyStats.incorrect : incorrectChars,
+      config.mode == "zen" ? TestStats.accuracy.incorrect : incorrectChars,
     extraChars: extraChars,
     missedChars: missedChars,
     correctSpaces: correctspaces,
@@ -1666,7 +1631,7 @@ function countChars() {
 }
 
 function calculateStats() {
-  let testSeconds = (testEnd - testStart) / 1000;
+  let testSeconds = TestStats.calculateTestSeconds();
   let chars = countChars();
   let wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
@@ -1679,11 +1644,7 @@ function calculateStats() {
       (60 / testSeconds)) /
       5
   );
-  let acc = Misc.roundTo2(
-    (accuracyStats.correct /
-      (accuracyStats.correct + accuracyStats.incorrect)) *
-      100
-  );
+  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
@@ -1723,14 +1684,12 @@ function showCrown() {
 function failTest() {
   inputHistory.push(currentInput);
   correctedHistory.push(currentCorrected);
-  lastSecondNotRound = true;
+  TestStats.setLastSecondNotRound();
   showResult(true);
-  let testNow = performance.now();
-  let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-  let afkseconds = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0)
-    .length;
-  incompleteTestSeconds += testSeconds - afkseconds;
-  restartCount++;
+  let testSeconds = TestStats.calculateTestSeconds(performance.now());
+  let afkseconds = TestStats.calculateAfkSeconds();
+  TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
+  TestStats.incrementRestartCount();
 }
 
 let resultCalculating = false;
@@ -1743,7 +1702,7 @@ function showResult(difficultyFailed = false) {
 
   resultCalculating = true;
   resultVisible = true;
-  testEnd = performance.now();
+  TestStats.setEnd(performance.now());
   testActive = false;
   setFocus(false);
   hideCaret();
@@ -1751,7 +1710,6 @@ function showResult(difficultyFailed = false) {
   hideLiveAcc();
   hideTimer();
   hideKeymap();
-  testInvalid = false;
   let stats = calculateStats();
   if (stats === undefined) {
     stats = {
@@ -1773,8 +1731,7 @@ function showResult(difficultyFailed = false) {
   }
   clearTimeout(timer);
   let testtime = stats.time;
-  let afkseconds = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0)
-    .length;
+  let afkseconds = TestStats.calculateAfkSeconds();
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
 
   wpmOverTimeChart.options.annotation.annotations = [];
@@ -1907,26 +1864,21 @@ function showResult(difficultyFailed = false) {
     mode2 = "zen";
   }
 
-  if (lastSecondNotRound) {
+  if (TestStats.lastSecondNotRound) {
     let wpmAndRaw = liveWpmAndRaw();
-    wpmHistory.push(wpmAndRaw.wpm);
-    rawHistory.push(wpmAndRaw.raw);
-    keypressPerSecond.push(currentKeypress);
-    currentKeypress = {
-      mod: 0,
-      count: 0,
-      words: [],
-    };
-    errorsPerSecond.push(currentError);
-    currentError = {
-      count: 0,
-      words: [],
-    };
+    TestStats.pushToWpmHistory(wpmAndRaw.wpm);
+    TestStats.pushToRawHistory(wpmAndRaw.raw);
+    TestStats.pushKeypressesToHistory();
+    // errorsPerSecond.push(currentError);
+    // currentError = {
+    //   count: 0,
+    //   words: [],
+    // };
   }
 
   let labels = [];
-  for (let i = 1; i <= wpmHistory.length; i++) {
-    if (lastSecondNotRound && i === wpmHistory.length) {
+  for (let i = 1; i <= TestStats.wpmHistory.length; i++) {
+    if (TestStats.lastSecondNotRound && i === TestStats.wpmHistory.length) {
       labels.push(Misc.roundTo2(testtime).toString());
     } else {
       labels.push(i.toString());
@@ -1952,7 +1904,7 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.data.labels = labels;
 
-  let rawWpmPerSecondRaw = keypressPerSecond.map((f) =>
+  let rawWpmPerSecondRaw = TestStats.keypressPerSecond.map((f) =>
     Math.round((f.count / 5) * 60)
   );
 
@@ -1964,8 +1916,8 @@ function showResult(difficultyFailed = false) {
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
   let keyConsistency = Misc.roundTo2(
     Misc.kogasa(
-      Misc.stdDev(keypressStats.spacing.array) /
-        Misc.mean(keypressStats.spacing.array)
+      Misc.stdDev(TestStats.keypressTimings.spacing.array) /
+        Misc.mean(TestStats.keypressTimings.spacing.array)
     )
   );
 
@@ -1993,20 +1945,20 @@ function showResult(difficultyFailed = false) {
 
   wpmOverTimeChart.data.datasets[0].borderColor = themeColors.main;
   wpmOverTimeChart.data.datasets[0].pointBackgroundColor = themeColors.main;
-  wpmOverTimeChart.data.datasets[0].data = wpmHistory;
+  wpmOverTimeChart.data.datasets[0].data = TestStats.wpmHistory;
   wpmOverTimeChart.data.datasets[1].borderColor = themeColors.sub;
   wpmOverTimeChart.data.datasets[1].pointBackgroundColor = themeColors.sub;
   wpmOverTimeChart.data.datasets[1].data = rawWpmPerSecond;
 
   let maxChartVal = Math.max(
-    ...[Math.max(...rawWpmPerSecond), Math.max(...wpmHistory)]
+    ...[Math.max(...rawWpmPerSecond), Math.max(...TestStats.wpmHistory)]
   );
   if (!config.startGraphsAtZero) {
     wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.min(
-      ...wpmHistory
+      ...TestStats.wpmHistory
     );
     wpmOverTimeChart.options.scales.yAxes[1].ticks.min = Math.min(
-      ...wpmHistory
+      ...TestStats.wpmHistory
     );
   } else {
     wpmOverTimeChart.options.scales.yAxes[0].ticks.min = 0;
@@ -2023,13 +1975,15 @@ function showResult(difficultyFailed = false) {
   // }
 
   let errorsArray = [];
-  for (let i = 0; i < errorsPerSecond.length; i++) {
-    errorsArray.push(errorsPerSecond[i].count);
+  for (let i = 0; i < TestStats.keypressPerSecond.length; i++) {
+    errorsArray.push(TestStats.keypressPerSecond[i].errors);
   }
 
   wpmOverTimeChart.data.datasets[2].data = errorsArray;
 
-  let kps = keypressPerSecond.slice(Math.max(keypressPerSecond.length - 5, 0));
+  let kps = TestStats.keypressPerSecond.slice(
+    Math.max(TestStats.keypressPerSecond.length - 5, 0)
+  );
 
   kps = kps.map((a) => a.count);
 
@@ -2080,15 +2034,14 @@ function showResult(difficultyFailed = false) {
     } catch (e) {}
 
     let chartData = {
-      wpm: wpmHistory,
+      wpm: TestStats.wpmHistory,
       raw: rawWpmPerSecond,
       err: errorsArray,
     };
 
     if (testtime > 122) {
       chartData = "toolong";
-      keypressStats.spacing.array = "toolong";
-      keypressStats.duration.array = "toolong";
+      TestStats.setKeypressTimingsTooLong();
     }
 
     let lang = config.language;
@@ -2128,16 +2081,16 @@ function showResult(difficultyFailed = false) {
       numbers: config.numbers,
       timestamp: Date.now(),
       language: lang,
-      restartCount: restartCount,
-      incompleteTestSeconds: incompleteTestSeconds,
+      restartCount: TestStats.restartCount,
+      incompleteTestSeconds: TestStats.incompleteSeconds,
       difficulty: config.difficulty,
       testDuration: testtime,
       afkDuration: afkseconds,
       blindMode: config.blindMode,
       theme: config.theme,
       tags: activeTagsIds,
-      keySpacing: keypressStats.spacing.array,
-      keyDuration: keypressStats.duration.array,
+      keySpacing: TestStats.keypressTimings.spacing.array,
+      keyDuration: TestStats.keypressTimings.duration.array,
       consistency: consistency,
       keyConsistency: keyConsistency,
       funbox: activeFunBox,
@@ -2155,8 +2108,9 @@ function showResult(difficultyFailed = false) {
       ((config.difficulty == "master" || config.difficulty == "expert") &&
         !difficultyFailed)
     ) {
-      restartCount = 0;
-      incompleteTestSeconds = 0;
+      // restartCount = 0;
+      // incompleteTestSeconds = 0;
+      TestStats.resetIncomplete();
     }
     if (
       stats.wpm > 0 &&
@@ -2379,9 +2333,11 @@ function showResult(difficultyFailed = false) {
                         afkseconds;
                     }
                     if (db_getSnapshot().globalStats.started == undefined) {
-                      db_getSnapshot().globalStats.started = restartCount + 1;
+                      db_getSnapshot().globalStats.started =
+                        TestStats.restartCount + 1;
                     } else {
-                      db_getSnapshot().globalStats.started += restartCount + 1;
+                      db_getSnapshot().globalStats.started +=
+                        TestStats.restartCount + 1;
                     }
                     if (db_getSnapshot().globalStats.completed == undefined) {
                       db_getSnapshot().globalStats.completed = 1;
@@ -2610,7 +2566,7 @@ function showResult(difficultyFailed = false) {
       }
     } else {
       Notifications.add("Test invalid", 0);
-      testInvalid = true;
+      TestStats.setInvalid();
       try {
         firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
       } catch (e) {
@@ -2685,7 +2641,7 @@ function showResult(difficultyFailed = false) {
   if (afkDetected) {
     otherText += "<br>afk detected";
   }
-  if (testInvalid) {
+  if (TestStats.invalid) {
     otherText += "<br>invalid";
   }
   if (sameWordset) {
@@ -2751,7 +2707,7 @@ function startTest() {
     console.log("Analytics unavailable");
   }
   testActive = true;
-  testStart = performance.now();
+  TestStats.setStart(performance.now());
   restartTimer();
   showTimer();
   $("#liveWpm").text("0");
@@ -2759,16 +2715,6 @@ function startTest() {
   showLiveAcc();
   updateTimer();
   clearTimeout(timer);
-  keypressStats = {
-    spacing: {
-      current: -1,
-      array: [],
-    },
-    duration: {
-      current: -1,
-      array: [],
-    },
-  };
 
   if (activeFunBox === "memory") {
     memoryFunboxInterval = clearInterval(memoryFunboxInterval);
@@ -2795,15 +2741,11 @@ function startTest() {
       }
       let wpmAndRaw = liveWpmAndRaw();
       updateLiveWpm(wpmAndRaw.wpm, wpmAndRaw.raw);
-      wpmHistory.push(wpmAndRaw.wpm);
-      rawHistory.push(wpmAndRaw.raw);
+      TestStats.pushToWpmHistory(wpmAndRaw.wpm);
+      TestStats.pushToRawHistory(wpmAndRaw.raw);
       Monkey.updateFastOpacity(wpmAndRaw.wpm);
 
-      let acc = Misc.roundTo2(
-        (accuracyStats.correct /
-          (accuracyStats.correct + accuracyStats.incorrect)) *
-          100
-      );
+      let acc = Misc.roundTo2(TestStats.calculateAccuracy());
 
       if (activeFunBox === "layoutfluid" && config.mode === "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];
@@ -2838,17 +2780,7 @@ function startTest() {
         settingsGroups.layout.updateButton();
       }
 
-      keypressPerSecond.push(currentKeypress);
-      currentKeypress = {
-        mod: 0,
-        count: 0,
-        words: [],
-      };
-      errorsPerSecond.push(currentError);
-      currentError = {
-        count: 0,
-        words: [],
-      };
+      TestStats.pushKeypressesToHistory();
       if (
         (config.minWpm === "custom" &&
           wpmAndRaw.wpm < parseInt(config.minWpmCustomSpeed) &&
@@ -2882,7 +2814,7 @@ function startTest() {
       }
       loop(expectedStepEnd + stepIntervalMS);
     }, delay);
-  })(testStart + stepIntervalMS);
+  })(TestStats.start + stepIntervalMS);
   return true;
 }
 
@@ -2952,12 +2884,12 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   }
 
   if (testActive) {
-    let testNow = performance.now();
-    let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-    let afkseconds = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0)
-      .length;
-    incompleteTestSeconds += testSeconds - afkseconds;
-    restartCount++;
+    let testSeconds = TestStats.calculateTestSeconds(performance.now());
+    let afkseconds = TestStats.calculateAfkSeconds();
+    // incompleteTestSeconds += ;
+    TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
+    TestStats.incrementRestartCount();
+    // restartCount++;
   }
 
   if (config.mode == "zen") {
@@ -2977,11 +2909,9 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   manualRestart = false;
   clearTimeout(timer);
   time = 0;
-  wpmHistory = [];
-  rawHistory = [];
-  missedWords = {};
-  correctedHistory = [];
+  TestStats.restart();
   currentCorrected = "";
+  correctedHistory = [];
   ShiftTracker.reset();
   setFocus(false);
   hideCaret();
@@ -2994,30 +2924,10 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   if (paceCaret !== null) clearTimeout(paceCaret.timeout);
   $("#showWordHistoryButton").removeClass("loaded");
   focusWords();
-  keypressPerSecond = [];
-  lastSecondNotRound = false;
-  currentKeypress = {
-    mod: 0,
-    count: 0,
-    words: [],
-  };
-  errorsPerSecond = [];
-  currentError = {
-    count: 0,
-    words: [],
-  };
+
   currentTestLine = 0;
   activeWordJumped = false;
-  keypressStats = {
-    spacing: {
-      current: -1,
-      array: [],
-    },
-    duration: {
-      current: -1,
-      array: [],
-    },
-  };
+
   $("#timerNumber").css("opacity", 0);
   let el = null;
   if (resultVisible) {
@@ -3058,10 +2968,6 @@ function restartTest(withSameWordset = false, nosave = false, event) {
         testActive = false;
         currentWordIndex = 0;
         currentWordElementIndex = 0;
-        accuracyStats = {
-          correct: 0,
-          incorrect: 0,
-        };
         inputHistory = [];
         currentInput = "";
         initPaceCaret();
@@ -3181,8 +3087,9 @@ function changePage(page) {
     });
     showTestConfig();
     hideSignOutButton();
-    restartCount = 0;
-    incompleteTestSeconds = 0;
+    // restartCount = 0;
+    // incompleteTestSeconds = 0;
+    TestStats.resetIncomplete();
     manualRestart = true;
     restartTest();
   } else if (page == "about") {
@@ -3337,8 +3244,7 @@ function liveWpmAndRaw() {
     spaces = 0;
   }
   chars += currentInput.length;
-  let testNow = performance.now();
-  let testSeconds = (testNow - testStart) / 1000;
+  let testSeconds = TestStats.calculateTestSeconds(performance.now());
   let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
   let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
   return {
@@ -4706,6 +4612,10 @@ $(document.body).on("click", "#restartTestButton", () => {
 });
 
 function initPractiseMissedWords() {
+  if (Object.keys(TestStats.missedWords).length == 0) {
+    Notifications.add("You haven't missed any words.", 0);
+    return;
+  }
   let mode = modeBeforePractise === null ? config.mode : modeBeforePractise;
   let punctuation =
     punctuationBeforePractise === null
@@ -4715,8 +4625,8 @@ function initPractiseMissedWords() {
     numbersBeforePractise === null ? config.numbers : numbersBeforePractise;
   setMode("custom");
   let newCustomText = [];
-  Object.keys(missedWords).forEach((missedWord) => {
-    for (let i = 0; i < missedWords[missedWord]; i++) {
+  Object.keys(TestStats.missedWords).forEach((missedWord) => {
+    for (let i = 0; i < TestStats.missedWords[missedWord]; i++) {
       newCustomText.push(missedWord);
     }
   });
@@ -4735,20 +4645,12 @@ function initPractiseMissedWords() {
 
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
   if (event.keyCode == 13) {
-    if (Object.keys(missedWords).length > 0) {
-      initPractiseMissedWords();
-    } else {
-      Notifications.add("You haven't missed any words.", 0);
-    }
+    initPractiseMissedWords();
   }
 });
 
 $(document.body).on("click", "#practiseMissedWordsButton", () => {
-  if (Object.keys(missedWords).length > 0) {
-    initPractiseMissedWords();
-  } else {
-    Notifications.add("You haven't missed any words.", 0);
-  }
+  initPractiseMissedWords();
 });
 
 $(document).on("keypress", "#nextTestButton", (event) => {
@@ -4920,11 +4822,13 @@ $(document).keyup((event) => {
 
   if (resultVisible) return;
   let now = performance.now();
-  let diff = Math.abs(keypressStats.duration.current - now);
-  if (keypressStats.duration.current !== -1) {
-    keypressStats.duration.array.push(diff);
+  let diff = Math.abs(TestStats.keypressTimings.duration.current - now);
+  if (TestStats.keypressTimings.duration.current !== -1) {
+    TestStats.pushKeypressDuration(diff);
+    // keypressStats.duration.array.push(diff);
   }
-  keypressStats.duration.current = now;
+  TestStats.setKeypressDuration(now);
+  // keypressStats.duration.current = now;
   Monkey.stop();
 });
 
@@ -4933,11 +4837,13 @@ $(document).keydown(function (event) {
 
   if (!resultVisible) {
     let now = performance.now();
-    let diff = Math.abs(keypressStats.spacing.current - now);
-    if (keypressStats.spacing.current !== -1) {
-      keypressStats.spacing.array.push(diff);
+    let diff = Math.abs(TestStats.keypressTimings.spacing.current - now);
+    if (TestStats.keypressTimings.spacing.current !== -1) {
+      TestStats.pushKeypressSpacing(diff);
+      // keypressStats.spacing.array.push(diff);
     }
-    keypressStats.spacing.current = now;
+    TestStats.setKeypressSpacing(now);
+    // keypressStats.spacing.current = now;
   }
 
   Monkey.type();
@@ -4983,7 +4889,8 @@ $(document).keydown(function (event) {
     }
   }
 
-  keypressStats.duration.current = performance.now();
+  // keypressStats.duration.current = performance.now();
+  TestStats.setKeypressDuration(performance.now());
   try {
     if (
       !config.capsLockBackspace &&
@@ -5020,11 +4927,7 @@ $(document).keydown(function (event) {
     handleAlpha(event);
   }
 
-  let acc = Misc.roundTo2(
-    (accuracyStats.correct /
-      (accuracyStats.correct + accuracyStats.incorrect)) *
-      100
-  );
+  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
   updateLiveAcc(acc);
 });
 
@@ -5254,15 +5157,17 @@ function handleSpace(event, isEnter) {
       paceCaret.wordsStatus[currentWordIndex] = undefined;
       paceCaret.correction -= currentWord.length + 1;
     }
-    accuracyStats.correct++;
+    TestStats.incrementAccuracy(true);
     inputHistory.push(currentInput);
     currentInput = "";
     currentWordIndex++;
     currentWordElementIndex++;
     updateActiveElement();
     updateCaretPosition();
-    currentKeypress.count++;
-    currentKeypress.words.push(currentWordIndex);
+    TestStats.incrementKeypressCount();
+    TestStats.pushKeypressWord(currentWordIndex);
+    // currentKeypress.count++;
+    // currentKeypress.words.push(currentWordIndex);
     if (activeFunBox !== "nospace") {
       Sound.playClick(config.playSoundOnClick);
     }
@@ -5283,9 +5188,8 @@ function handleSpace(event, isEnter) {
         Sound.playError(config.playSoundOnError);
       }
     }
-    accuracyStats.incorrect++;
-    currentError.count++;
-    currentError.words.push(currentWordIndex);
+    TestStats.incrementAccuracy(false);
+    TestStats.incrementKeypressErrors();
     let cil = currentInput.length;
     if (cil <= wordsList[currentWordIndex].length) {
       if (cil >= currentCorrected.length) {
@@ -5318,14 +5222,16 @@ function handleSpace(event, isEnter) {
     currentWordElementIndex++;
     updateActiveElement();
     updateCaretPosition();
-    currentKeypress.count++;
-    currentKeypress.words.push(currentWordIndex);
+    // currentKeypress.count++;
+    // currentKeypress.words.push(currentWordIndex);
+    TestStats.incrementKeypressCount();
+    TestStats.pushKeypressWord(currentWordIndex);
     if (config.difficulty == "expert" || config.difficulty == "master") {
       failTest();
       return;
     } else if (currentWordIndex == wordsList.length) {
       //submitted last word that is incorrect
-      lastSecondNotRound = true;
+      TestStats.setLastSecondNotRound();
       showResult();
       return;
     }
@@ -5426,7 +5332,8 @@ function handleAlpha(event) {
       undefined,
     ].includes(event.key)
   ) {
-    currentKeypress.mod++;
+    TestStats.incrementKeypressMod();
+    // currentKeypress.mod++;
     return;
   }
 
@@ -5573,17 +5480,14 @@ function handleAlpha(event) {
   }
 
   if (!thisCharCorrect) {
-    accuracyStats.incorrect++;
-    currentError.count++;
-    currentError.words.push(currentWordIndex);
+    TestStats.incrementAccuracy(false);
+    TestStats.incrementKeypressErrors();
+    // currentError.count++;
+    // currentError.words.push(currentWordIndex);
     thisCharCorrect = false;
-    if (!Object.keys(missedWords).includes(wordsList[currentWordIndex])) {
-      missedWords[wordsList[currentWordIndex]] = 1;
-    } else {
-      missedWords[wordsList[currentWordIndex]]++;
-    }
+    TestStats.pushMissedWord(wordsList[currentWordIndex]);
   } else {
-    accuracyStats.correct++;
+    TestStats.incrementAccuracy(true);
     thisCharCorrect = true;
     if (config.mode == "zen") {
       //making the input visible to the user
@@ -5623,9 +5527,10 @@ function handleAlpha(event) {
         currentCorrected.substring(cil + 1);
     }
   }
-
-  currentKeypress.count++;
-  currentKeypress.words.push(currentWordIndex);
+  TestStats.incrementKeypressCount();
+  TestStats.pushKeypressWord(currentWordIndex);
+  // currentKeypress.count++;
+  // currentKeypress.words.push(currentWordIndex);
 
   if (config.stopOnError == "letter" && !thisCharCorrect) {
     return;
@@ -5675,7 +5580,7 @@ function handleAlpha(event) {
       currentInput = "";
       correctedHistory.push(currentCorrected);
       currentCorrected = "";
-      lastSecondNotRound = true;
+      TestStats.setLastSecondNotRound();
       showResult();
     }
   }
@@ -6049,7 +5954,7 @@ let wpmOverTimeChart = new Chart(ctx, {
             $(".wordInputAfter").remove();
 
             let wordsToHighlight =
-              keypressPerSecond[parseInt(ti.xLabel) - 1].words;
+              TestStats.keypressPerSecond[parseInt(ti.xLabel) - 1].words;
 
             let unique = [...new Set(wordsToHighlight)];
             unique.forEach((wordIndex) => {

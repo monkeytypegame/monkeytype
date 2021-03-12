@@ -31,3 +31,4 @@ import * as Leaderboards from "./leaderboards";
 import * as Sound from "./sound";
 import * as CustomText from "./custom-text";
 import * as ShiftTracker from "./shift-tracker";
+import * as TestStats from "./test-stats";

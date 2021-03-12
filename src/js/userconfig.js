@@ -102,7 +102,7 @@ async function saveConfigToCookie(noDbCheck = false) {
   let save = config;
   delete save.resultFilters;
   Misc.setCookie("config", JSON.stringify(save), 365);
-  restartCount = 0;
+  // restartCount = 0;
   if (!noDbCheck) await saveConfigToDB();
 }
 

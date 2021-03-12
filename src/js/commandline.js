@@ -682,7 +682,7 @@ let commands = {
         initPractiseMissedWords();
       },
       available: () => {
-        return resultVisible && Object.keys(missedWords).length > 0;
+        return resultVisible && Object.keys(TestStats.missedWords).length > 0;
       },
     },
     {
