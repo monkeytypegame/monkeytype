@@ -1777,6 +1777,7 @@ function applyConfig(configObj) {
         });
         $("#nitropay_ad_account").removeClass("hidden");
       } else {
+        $(".footerads").remove();
         $("#nitropay_ad_left").remove();
         $("#nitropay_ad_right").remove();
         $("#nitropay_ad_footer").remove();
@@ -1790,6 +1791,7 @@ function applyConfig(configObj) {
     } catch (e) {
       Notifications.add("Error initialising ads: " + e.message);
       console.log("error initialising ads " + e.message);
+      $(".footerads").remove();
       $("#nitropay_ad_left").remove();
       $("#nitropay_ad_right").remove();
       $("#nitropay_ad_footer").remove();
