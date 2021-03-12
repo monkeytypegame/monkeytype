@@ -6,7 +6,7 @@ export function hideBackgroundLoader() {
   $("#backgroundLoader").stop(true, true).fadeOut(125);
 }
 
-function accountIconLoading(truefalse) {
+export function accountIconLoading(truefalse) {
   if (truefalse) {
     $("#top #menu .account .icon").html(
       '<i class="fas fa-fw fa-spin fa-circle-notch"></i>'
