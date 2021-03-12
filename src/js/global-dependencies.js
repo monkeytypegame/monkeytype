@@ -20,7 +20,11 @@ import {
   db_saveLocalTagPB,
 } from "./db";
 
-import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
+import {
+  showBackgroundLoader,
+  hideBackgroundLoader,
+  swapElements,
+} from "./dom-util";
 import * as Misc from "./misc";
 import * as CloudFunctions from "./cloud-functions";
 import layouts from "./layouts";
@@ -32,3 +36,4 @@ import * as Sound from "./sound";
 import * as CustomText from "./custom-text";
 import * as ShiftTracker from "./shift-tracker";
 import * as TestStats from "./test-stats";
+import * as ThemeColors from "./theme-colors";

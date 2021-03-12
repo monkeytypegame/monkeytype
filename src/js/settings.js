@@ -1013,27 +1013,29 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
   });
 
   setTimeout(() => {
-    refreshThemeColorObject();
+    ThemeColors.update();
+    updateChartColors();
+
     colorVars.forEach((colorName) => {
       let color;
       if (colorName === "--bg-color") {
-        color = themeColors.bg;
+        color = ThemeColors.bg;
       } else if (colorName === "--main-color") {
-        color = themeColors.main;
+        color = ThemeColors.main;
       } else if (colorName === "--sub-color") {
-        color = themeColors.sub;
+        color = ThemeColors.sub;
       } else if (colorName === "--caret-color") {
-        color = themeColors.caret;
+        color = ThemeColors.caret;
       } else if (colorName === "--text-color") {
-        color = themeColors.text;
+        color = ThemeColors.text;
       } else if (colorName === "--error-color") {
-        color = themeColors.error;
+        color = ThemeColors.error;
       } else if (colorName === "--error-extra-color") {
-        color = themeColors.errorExtra;
+        color = ThemeColors.errorExtra;
       } else if (colorName === "--colorful-error-color") {
-        color = themeColors.colorfulError;
+        color = ThemeColors.colorfulError;
       } else if (colorName === "--colorful-error-extra-color") {
-        color = themeColors.colorfulErrorExtra;
+        color = ThemeColors.colorfulErrorExtra;
       }
       $(".colorPicker #" + colorName).attr("value", color);
       $(".colorPicker #" + colorName).val(color);

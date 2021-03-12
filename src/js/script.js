@@ -46,44 +46,9 @@ let numbersBeforePractise = null;
 
 ///
 
-let themeColors = {
-  bg: "#323437",
-  main: "#e2b714",
-  caret: "#e2b714",
-  sub: "#646669",
-  text: "#d1d0c5",
-  error: "#ca4754",
-  errorExtra: "#7e2a33",
-  colorfulError: "#ca4754",
-  colorfulErrorExtra: "#7e2a33",
-};
-
-let isPreviewingTheme = false;
-
 // let CustomText = "The quick brown fox jumps over the lazy dog".split(" ");
 // let CustomText.isWordRandom = false;
 // let CustomText.word = 1;
-
-function refreshThemeColorObject() {
-  let st = getComputedStyle(document.body);
-
-  themeColors.bg = st.getPropertyValue("--bg-color").replace(" ", "");
-  themeColors.main = st.getPropertyValue("--main-color").replace(" ", "");
-  themeColors.caret = st.getPropertyValue("--caret-color").replace(" ", "");
-  themeColors.sub = st.getPropertyValue("--sub-color").replace(" ", "");
-  themeColors.text = st.getPropertyValue("--text-color").replace(" ", "");
-  themeColors.error = st.getPropertyValue("--error-color").replace(" ", "");
-  themeColors.errorExtra = st
-    .getPropertyValue("--error-extra-color")
-    .replace(" ", "");
-  themeColors.colorfulError = st
-    .getPropertyValue("--colorful-error-color")
-    .replace(" ", "");
-  themeColors.colorfulErrorExtra = st
-    .getPropertyValue("--colorful-error-extra-color")
-    .replace(" ", "");
-  updateChartColors();
-}
 
 function copyResultToClipboard() {
   $(".pageTest .ssWatermark").removeClass("hidden");
@@ -98,7 +63,7 @@ function copyResultToClipboard() {
   $(".pageTest .loginTip").addClass("hidden");
   try {
     html2canvas(document.body, {
-      backgroundColor: themeColors.bg,
+      backgroundColor: ThemeColors.bg,
       height: sourceHeight + 50,
       width: sourceWidth + 50,
       x: sourceX - 25,
@@ -1356,15 +1321,15 @@ function flashPressedKeymapKey(key, correct) {
       $(key)
         .stop(true, true)
         .css({
-          color: themeColors.bg,
-          backgroundColor: themeColors.main,
-          borderColor: themeColors.main,
+          color: ThemeColors.bg,
+          backgroundColor: ThemeColors.main,
+          borderColor: ThemeColors.main,
         })
         .animate(
           {
-            color: themeColors.sub,
+            color: ThemeColors.sub,
             backgroundColor: "transparent",
-            borderColor: themeColors.sub,
+            borderColor: ThemeColors.sub,
           },
           500,
           "easeOutExpo"
@@ -1373,15 +1338,15 @@ function flashPressedKeymapKey(key, correct) {
       $(key)
         .stop(true, true)
         .css({
-          color: themeColors.bg,
-          backgroundColor: themeColors.error,
-          borderColor: themeColors.error,
+          color: ThemeColors.bg,
+          backgroundColor: ThemeColors.error,
+          borderColor: ThemeColors.error,
         })
         .animate(
           {
-            color: themeColors.sub,
+            color: ThemeColors.sub,
             backgroundColor: "transparent",
-            borderColor: themeColors.sub,
+            borderColor: ThemeColors.sub,
           },
           500,
           "easeOutExpo"
@@ -1885,22 +1850,22 @@ function showResult(difficultyFailed = false) {
     }
   }
 
-  if (themeColors.main == "") {
-    refreshThemeColorObject();
+  if (ThemeColors.main == "") {
+    ThemeColors.update();
   }
 
   wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor =
-    themeColors.sub;
+    ThemeColors.sub;
   wpmOverTimeChart.options.scales.xAxes[0].scaleLabel.fontColor =
-    themeColors.sub;
+    ThemeColors.sub;
   wpmOverTimeChart.options.scales.yAxes[0].ticks.minor.fontColor =
-    themeColors.sub;
+    ThemeColors.sub;
   wpmOverTimeChart.options.scales.yAxes[2].ticks.minor.fontColor =
-    themeColors.sub;
+    ThemeColors.sub;
   wpmOverTimeChart.options.scales.yAxes[0].scaleLabel.fontColor =
-    themeColors.sub;
+    ThemeColors.sub;
   wpmOverTimeChart.options.scales.yAxes[2].scaleLabel.fontColor =
-    themeColors.sub;
+    ThemeColors.sub;
 
   wpmOverTimeChart.data.labels = labels;
 
@@ -1943,11 +1908,11 @@ function showResult(difficultyFailed = false) {
     );
   }
 
-  wpmOverTimeChart.data.datasets[0].borderColor = themeColors.main;
-  wpmOverTimeChart.data.datasets[0].pointBackgroundColor = themeColors.main;
+  wpmOverTimeChart.data.datasets[0].borderColor = ThemeColors.main;
+  wpmOverTimeChart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
   wpmOverTimeChart.data.datasets[0].data = TestStats.wpmHistory;
-  wpmOverTimeChart.data.datasets[1].borderColor = themeColors.sub;
-  wpmOverTimeChart.data.datasets[1].pointBackgroundColor = themeColors.sub;
+  wpmOverTimeChart.data.datasets[1].borderColor = ThemeColors.sub;
+  wpmOverTimeChart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
   wpmOverTimeChart.data.datasets[1].data = rawWpmPerSecond;
 
   let maxChartVal = Math.max(
@@ -2164,15 +2129,15 @@ function showResult(difficultyFailed = false) {
                 mode: "horizontal",
                 scaleID: "wpm",
                 value: lpb,
-                borderColor: themeColors.sub,
+                borderColor: ThemeColors.sub,
                 borderWidth: 1,
                 borderDash: [2, 2],
                 label: {
-                  backgroundColor: themeColors.sub,
+                  backgroundColor: ThemeColors.sub,
                   fontFamily: config.fontFamily.replace(/_/g, " "),
                   fontSize: 11,
                   fontStyle: "normal",
-                  fontColor: themeColors.bg,
+                  fontColor: ThemeColors.bg,
                   xPadding: 6,
                   yPadding: 6,
                   cornerRadius: 3,
@@ -2246,15 +2211,15 @@ function showResult(difficultyFailed = false) {
                     mode: "horizontal",
                     scaleID: "wpm",
                     value: tpb,
-                    borderColor: themeColors.sub,
+                    borderColor: ThemeColors.sub,
                     borderWidth: 1,
                     borderDash: [2, 2],
                     label: {
-                      backgroundColor: themeColors.sub,
+                      backgroundColor: ThemeColors.sub,
                       fontFamily: config.fontFamily.replace(/_/g, " "),
                       fontSize: 11,
                       fontStyle: "normal",
-                      fontColor: themeColors.bg,
+                      fontColor: ThemeColors.bg,
                       xPadding: 6,
                       yPadding: 6,
                       cornerRadius: 3,
@@ -3382,82 +3347,6 @@ function hideLiveAcc() {
       $("#miniTimerAndLiveWpm .acc").addClass("hidden");
     }
   );
-}
-
-function swapElements(
-  el1,
-  el2,
-  totalDuration,
-  callback = function () {
-    return;
-  }
-) {
-  if (
-    (el1.hasClass("hidden") && !el2.hasClass("hidden")) ||
-    (!el1.hasClass("hidden") && el2.hasClass("hidden"))
-  ) {
-    //one of them is hidden and the other is visible
-    if (el1.hasClass("hidden")) {
-      callback();
-      return false;
-    }
-    $(el1)
-      .removeClass("hidden")
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        totalDuration / 2,
-        () => {
-          $(el1).addClass("hidden");
-          $(el2)
-            .removeClass("hidden")
-            .css("opacity", 0)
-            .animate(
-              {
-                opacity: 1,
-              },
-              totalDuration / 2,
-              () => {
-                callback();
-              }
-            );
-        }
-      );
-  } else if (el1.hasClass("hidden") && el2.hasClass("hidden")) {
-    //both are hidden, only fade in the second
-    $(el2)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        totalDuration,
-        () => {
-          callback();
-        }
-      );
-  } else {
-    callback();
-  }
-}
-
-function updateAccountLoginButton() {
-  if (firebase.auth().currentUser != null) {
-    swapElements(
-      $("#menu .icon-button.login"),
-      $("#menu .icon-button.account"),
-      250
-    );
-  } else {
-    swapElements(
-      $("#menu .icon-button.account"),
-      $("#menu .icon-button.login"),
-      250
-    );
-  }
 }
 
 function accountIconLoading(truefalse) {
