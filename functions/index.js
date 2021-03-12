@@ -2414,11 +2414,11 @@ async function checkLeaderboards(
 
         if (insertResult.insertedAt >= 0) {
           //update the database here
-          console.log(
-            `leaderboard changed ${resultObj.mode} ${
-              resultObj.mode2
-            } ${type} - ${JSON.stringify(lb.board)}`
-          );
+          // console.log(
+          //   `leaderboard changed ${resultObj.mode} ${
+          //     resultObj.mode2
+          //   } ${type} - ${JSON.stringify(lb.board)}`
+          // );
           t.update(db.collection("leaderboards").doc(docid), {
             size: lb.size,
             type: lb.type,
