@@ -407,12 +407,15 @@ async function initWords() {
       wordsList.push(randomWord);
     }
   } else if (config.mode == "quote") {
-    setLanguage(config.language.replace(/_\d*k$/g, ""), true);
+    // setLanguage(config.language.replace(/_\d*k$/g, ""), true);
 
-    let quotes = await Misc.getQuotes(config.language);
+    let quotes = await Misc.getQuotes(config.language.replace(/_\d*k$/g, ""));
 
     if (quotes.length === 0) {
-      Notifications.add(`No ${config.language} quotes found`, 0);
+      Notifications.add(
+        `No ${config.language.replace(/_\d*k$/g, "")} quotes found`,
+        0
+      );
       testRestarting = false;
       setMode("words");
       restartTest();
@@ -2009,13 +2012,6 @@ function showResult(difficultyFailed = false) {
       TestStats.setKeypressTimingsTooLong();
     }
 
-    let lang = config.language;
-
-    let quoteLength = -1;
-    if (config.mode === "quote") {
-      quoteLength = randomQuote.group;
-    }
-
     let cdata = null;
     if (config.mode === "custom") {
       cdata = {};
@@ -2547,6 +2543,14 @@ function showResult(difficultyFailed = false) {
     $("#result .loginTip").removeClass("hidden");
   }
 
+  let lang = config.language;
+
+  let quoteLength = -1;
+  if (config.mode === "quote") {
+    quoteLength = randomQuote.group;
+    lang = config.language.replace(/_\d*k$/g, "");
+  }
+
   let testType = "";
 
   if (config.mode === "quote") {
@@ -2574,7 +2578,7 @@ function showResult(difficultyFailed = false) {
     activeFunBox !== "gibberish" &&
     activeFunBox !== "58008"
   ) {
-    testType += "<br>" + config.language.replace(/_/g, " ");
+    testType += "<br>" + lang;
   }
   if (config.punctuation) {
     testType += "<br>punctuation";
@@ -3598,7 +3602,7 @@ function updateTestModesNotice() {
 
   // /^[0-9a-zA-Z_.-]+$/.test(name);
 
-  if (/_\d+k$/g.test(config.language)) {
+  if (/_\d+k$/g.test(config.language) && config.mode !== "quote") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${config.language.replace(
         /_/g,
