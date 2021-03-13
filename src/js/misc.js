@@ -130,7 +130,6 @@ export async function getQuotes(language) {
           }
         });
       });
-      quotes.quotes = [];
       return quotes;
     } catch {
       hideBackgroundLoader();

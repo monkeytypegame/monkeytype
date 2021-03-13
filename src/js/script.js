@@ -4198,24 +4198,9 @@ function showCustomMode2Popup(mode) {
     if (mode == "time") {
       $("#customMode2Popup .title").text("Test length");
       $("#customMode2Popup").attr("mode", "time");
-      $("#customMode2Popup .tip").removeClass("hidden");
-      $("#customMode2Popup .quoteSearchText").addClass("hidden");
-      $("#customMode2Popup .quoteSearchInput").addClass("hidden");
-      $("#customMode2Popup .quoteSearchResults").addClass("hidden");
     } else if (mode == "words") {
       $("#customMode2Popup .title").text("Word amount");
       $("#customMode2Popup").attr("mode", "words");
-      $("#customMode2Popup .tip").removeClass("hidden");
-      $("#customMode2Popup .quoteSearchText").addClass("hidden");
-      $("#customMode2Popup .quoteSearchInput").addClass("hidden");
-      $("#customMode2Popup .quoteSearchResults").addClass("hidden");
-    }  else if (mode == "quote") {
-      $("#customMode2Popup .title").text("Quote ID");
-      $("#customMode2Popup").attr("mode", "quote");
-      $("#customMode2Popup .tip").addClass("hidden");
-      $("#customMode2Popup .quoteSearchText").removeClass("hidden");
-      $("#customMode2Popup .quoteSearchInput").removeClass("hidden");
-      $("#customMode2Popup .quoteSearchResults").removeClass("hidden");
     }
     $("#customMode2PopupWrapper")
       .stop(true, true)
@@ -4243,6 +4228,63 @@ function hideCustomMode2Popup() {
       );
   }
 }
+
+async function showQuoteSearchPopup() {
+  if($("#quoteSearchPopupWrapper").hasClass("hidden")){
+    let quotes = await Misc.getQuotes(config.language);
+    let table = $("#quoteSearchPopup .searchResultTable");
+    let numberOfSearchResults = 0;
+    table.find("tbody").empty();
+    $("#quoteSearchPopup input").val("");
+    for(let i = 0 ;i < 5; i++){
+      let quote = quotes.quotes[i];
+      table.find("tbody").append(`
+      <tr class="searchResult" id=${quote.id}>
+              <td class="alignRight"><div class="fixedHeight">${quote.id}</div></td>
+              <td class="alignRight"><div class="fixedHeight">${quote.length}</div></td>
+              <td>
+                <div class="fixedHeight">${quote.text}</div>
+              </td>
+              <td>
+              <div class="fixedHeight">${quote.source}</div>
+              </td>
+              <td><i class="fas fa-chevron-right"></i></td>
+            </tr>
+      `)
+    }
+    quotes.groups.forEach(group =>{
+      group.forEach(quote =>{
+        numberOfSearchResults++;
+      })
+    })
+    document.getElementById("extraResults").innerHTML = (numberOfSearchResults - 5) + " more results";
+    $("#quoteSearchPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100, (e) => {
+        $("#quoteSearchPopup input").focus().select();
+      });
+  }
+}
+
+function hideQuoteSearchPopup() {
+  if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
+    $("#quoteSearchPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        100,
+        (e) => {
+          $("#quoteSearchPopupWrapper").addClass("hidden");
+        }
+      );
+  }
+}
+
 
 async function initPaceCaret() {
   let mode2 = "";
@@ -4470,54 +4512,77 @@ $("#customMode2Popup input").keypress((e) => {
   }
 });
 //Quote search
-$("#customMode2Popup .quoteSearchInput").keydown((e) => {
-  setTimeout(() => {
-    let previousSearches = document.getElementsByClassName("quoteSearchButton");
-    for ( let i = previousSearches.length; i--;){
-      previousSearches[i].remove();
-    }
-  }, 1);
-  setTimeout(() => {
-    $.ajax({
-      url: `quotes/${config.language}.json`,
-      async: false,
-      success: function (data) {
-        let quotes = data;
-        let searchText = document.getElementById("quoteSearchInput").value
-        let searchResult = 0;
-        quotes.quotes.forEach(quote => {
-          let quoteText = quote["text"];
-          let quoteSource = quote["source"];
-          let quoteId = quote["id"];
-          let quoteTextShort = quoteText;
-          let test1 = quoteText.toUpperCase().search(searchText.toUpperCase());
-          let test2 = quoteSource.toUpperCase().search(searchText.toUpperCase());
-          let test3 = quoteId.search(searchText);
-          let search = [];
-          if(quoteText.length > 50){
-            quoteTextShort = quoteText.substring(0, 50) + "...";
-          }
-          if (test1 != -1 || test2 != -1){
-            if (searchResult < 5){
-              search[searchResult] = document.createElement("div");
-              search[searchResult].classList.add("quoteSearchButton");
-              search[searchResult].classList.add("button");
-              search[searchResult].setAttribute("id", quote["id"]);
-              search[searchResult].innerHTML = quoteTextShort + " Id: " + quote["id"];
-              document.getElementById("quoteSearchResults").appendChild(search[searchResult]);
-              searchResult += 1;
-            } else {
-              searchResult += 1;
-            }
-          }
-        })
-        if(searchResult > 5){
-          document.getElementById("extraResults").innerHTML = "+" + (searchResult - 5) + " Other Results";
-        } else {
-          document.getElementById("extraResults").innerHTML = "";
-        }
+$("#quoteSearchPopup .searchBox").keydown((e) => {
+  setTimeout( async () => {
+    let quotes = await Misc.getQuotes(config.language);
+    let searchText = document.getElementById("searchBox").value
+    searchText = searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    let reg = new RegExp(searchText, "i");
+    let found = [];
+    let numberOfSearchResults = 0;
+    quotes.quotes.forEach(quote =>{
+      let quoteText = quote["text"];
+      let quoteSource = quote["source"];
+      let quoteId = quote["id"];
+      let test1 = reg.test(quoteText);
+      let test2 = reg.test(quoteSource);
+      let test3 = reg.test(quoteId);
+      
+      if (test1 || test2 || test3){
+        found.push(quote);
+        numberOfSearchResults++
       }
     })
+    let table = $("#quoteSearchPopup .searchResultTable");
+    table.find("tbody").empty();
+    for( let i=0; i<5; i++){
+      if(found[i] === undefined) continue;
+      // if(found[i].text.length > 100){
+      //   found[i].text = found[i].text.substring(0, 100) + "...";
+      // }
+      // if(found[i].source.length > 50){
+      //   found[i].source = found[i].source.substring(0, 50) + "...";
+      // }
+      table.find("tbody").append(`
+      <tr class="searchResult" id=${found[i].id}>
+              <td class="alignRight"><div class="fixedHeight">${found[i].id}</div></td>
+              <td class="alignRight"><div class="fixedHeight">${found[i].length}</div></td>
+              <td>
+                <div class="fixedHeight">${found[i].text}</div>
+              </td>
+              <td>
+              <div class="fixedHeight">${found[i].source}</div>
+              </td>
+              <td><i class="fas fa-chevron-right"></i></td>
+            </tr>
+      `)
+    }
+    if(numberOfSearchResults > 5){
+      $("#extraResults").css("opacity", "1");
+      document.getElementById("extraResults").innerHTML = (numberOfSearchResults - 5) + " more results";
+    }else if (numberOfSearchResults < 5){
+      $("#extraResults").css("opacity", "1");
+      document.getElementById("extraResults").innerHTML = "No other results";
+      for (let i = 0; i < 5 - numberOfSearchResults; i++){
+        table.find("tbody").append(`
+          <tr class="fillerResult" id="">
+              <td class="alignRight"><div class="fixedHeight">-</div></td>
+              <td class="alignRight"><div class="fixedHeight">-</div></td>
+              <td>
+                <div class="fixedHeight">-</div>
+              </td>
+              <td>
+              <div class="fixedHeight">-</div>
+              </td>
+              <td></td>
+            </tr>
+      `)
+      }
+    } 
+    if (numberOfSearchResults == 0){
+      $("#extraResults").css("opacity", "1");
+      document.getElementById("extraResults").innerHTML = "No search results";
+    }
   }, 0.1) //arbitrarily v. small time as it's only to allow text to input before searching
 });
 //sets quote id to searched quote clicked
@@ -4528,8 +4593,47 @@ $("#quoteSearchResults").click((e) => {
   }
 })
 
+$("#quoteSearchPopupWrapper").click((e) => {
+  if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
+    hideQuoteSearchPopup();
+  }
+});
+
 $("#customMode2Popup .button").click(() => {
   applyMode2Popup();
+});
+
+$("#quoteSearchPopup .button").click(() => {
+  if(!isNaN(document.getElementById("searchBox").value)){
+    applyQuoteSearchPopup();
+  } else {
+    let results = document.getElementsByClassName("searchResult");
+    if(results.length > 0){
+      selectedQuoteId = parseInt(results[0].getAttribute("id"));
+      applyQuoteSearchPopup(selectedQuoteId);
+    }
+  }
+});
+
+$(document).on("click", "#quoteSearchPopup .searchResultTable tbody tr", (e) => {
+  if($(e.currentTarget).hasClass("searchResult")){
+    selectedQuoteId = parseInt($(e.currentTarget).attr("id"));
+    applyQuoteSearchPopup(selectedQuoteId);
+  }
+});
+
+$("#quoteSearchPopup input").keypress((e) => {
+  if (e.keyCode == 13) {
+    if(!isNaN(document.getElementById("searchBox").value)){
+      applyQuoteSearchPopup();
+    } else {
+      let results = document.getElementsByClassName("searchResult");
+      if(results.length > 0){
+        selectedQuoteId = parseInt(results[0].getAttribute("id"));
+        applyQuoteSearchPopup(selectedQuoteId);
+      }
+    }
+  }
 });
 
 function updateKeytips() {
@@ -4592,18 +4696,24 @@ function applyMode2Popup() {
     } else {
       Notifications.add("Custom word amount must be at least 1", 0);
     }
-  } else if (mode == "quote"){
-    if (val !== null && !isNaN(val) && val >= 0) {
-      setQuoteLength(-2);
-      selectedQuoteId = val;
-      manualRestart = true;
-      restartTest();
-    } else {
-      Notifications.add("Quote ID must be at least 1", 0);
-    }
-  }
+  } 
 
   hideCustomMode2Popup();
+}
+
+function applyQuoteSearchPopup(val) {
+  if(isNaN(val)){
+    val = document.getElementById("searchBox").value
+  }
+  if (val !== null && !isNaN(val) && val >= 0) {
+    setQuoteLength(-2, false, false);
+    selectedQuoteId = val;
+    manualRestart = true;
+    restartTest();
+  } else {
+    Notifications.add("Quote ID must be at least 1", 0);
+  }
+  hideQuoteSearchPopup();
 }
 
 function lineJump(currentTop) {
@@ -4701,13 +4811,16 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len = $(e.currentTarget).attr("quoteLength");
   if(len == -2){
-    showCustomMode2Popup("quote");
-  } else if (len == -1) {
-    len = [0, 1, 2, 3];
+    showQuoteSearchPopup();
+    setQuoteLength(len, false, e.shiftKey);
+  } else { 
+    if (len == -1) {
+      len = [0, 1, 2, 3];
+    }
+    setQuoteLength(len, false, e.shiftKey);
+    manualRestart = true;
+    restartTest();
   }
-  setQuoteLength(len, false, e.shiftKey);
-  manualRestart = true;
-  restartTest();
 });
 
 $(document).on("click", "#top .config .CustomText .text-button", () => {
@@ -5038,8 +5151,9 @@ $(document).keydown(function (event) {
   let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
   let wordsFocused = $("#wordsInput").is(":focus");
   let modePopupVisible =
-    !$("#CustomTextPopupWrapper").hasClass("hidden") ||
-    !$("#customMode2PopupWrapper").hasClass("hidden");
+    !$("#customTextPopupWrapper").hasClass("hidden") ||
+    !$("#customMode2PopupWrapper").hasClass("hidden") ||
+    !$("#quoteSearchPopupWrapper").hasClass("hidden");
   if (
     pageTestActive &&
     !commandLineVisible &&

@@ -622,16 +622,111 @@ a:hover {
     padding: 2rem;
     display: grid;
     gap: 1rem;
-    width: 400px;
+    width: 1000px;
 
+    #extraResults{
+      text-align: center;
+      color: var(--sub-color);
+    }
     .title {
       font-size: 1.5rem;
       color: var(--sub-color);
     }
 
+    .searchResult{
+      height: 2rem;
+      font-size: 0.8rem;
+    }
     .quoteSearchResults{
       display: grid;
       gap: 0.3rem;
+    }
+
+    .searchResultTable {
+      width: 100%;
+      border-spacing: 0;
+      border-collapse: collapse;
+      user-select: none;
+
+      .alignRight{
+        text-align: right;
+      }
+
+      tr td:first-child {
+        text-align: center;
+      }
+
+      td {
+        padding: 0.5rem 0.5rem;
+        .fixedHeight{
+          height: 2rem;
+          overflow: hidden;
+          display: grid;
+          align-items: center;
+        }
+        &.me {
+          color: var(--main-color);
+          font-weight: 900;
+        }
+      }
+
+      thead {
+        color: var(--sub-color);
+        font-size: 0.75rem;
+
+        td {
+          padding: 0.5rem;
+          background: var(--bg-color);
+          position: -webkit-sticky;
+          position: sticky;
+          top: 0;
+          z-index: 99;
+        }
+      }
+
+      tbody {
+        color: var(--text-color);
+        .fillerResult td{
+          color: var(--sub-color);
+        }
+        td{
+          transition: 0.25s;
+          height: 3rem;
+        }
+        tr td:nth-child(3),
+        tr td:nth-child(4){
+          font-size: .75rem;
+        }
+        tr td:nth-child(5){
+          color: var(--sub-color);
+        }
+        .searchResult:hover td{
+          background: rgba(0, 0, 0, 0.1);
+        }
+      }
+
+      tfoot {
+        td {
+          padding: 0.5rem;
+          position: -webkit-sticky;
+          position: sticky;
+          bottom: 0;
+          background: var(--bg-color);
+          color: var(--sub-color);
+          z-index: 4;
+        }
+      }
+
+      tr {
+        td:first-child {
+          padding-left: 1rem;
+        }
+        td:last-child {
+          padding-right: 1rem;
+        }
+      }
+
+      
     }
   }
 }
