@@ -99,15 +99,11 @@ let isPreviewingTheme = false;
 // let CustomText.isWordRandom = false;
 // let CustomText.word = 1;
 
-/* TODO
-  save enter as _ maybe
-*/
+//save keys and time between keys to lists
 let keysPressed = [];
 let timeBetweenKeys = [];
 let lastInputTime = performance.now();
 const ignoredKeys = ["Tab", "Shift", "Control", "Alt", "Escape"];
-
-//save keys and time between keys to lists
 $(document).keydown((event) => {
   //make sure that test is active and key is not forbidden
   if (testActive && ignoredKeys.indexOf(event.key) < 0) {
