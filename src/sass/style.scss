@@ -624,7 +624,7 @@ a:hover {
     gap: 1rem;
     width: 1000px;
 
-    #extraResults{
+    #extraResults {
       text-align: center;
       color: var(--sub-color);
     }
@@ -633,11 +633,11 @@ a:hover {
       color: var(--sub-color);
     }
 
-    .searchResult{
+    .searchResult {
       height: 2rem;
       font-size: 0.8rem;
     }
-    .quoteSearchResults{
+    .quoteSearchResults {
       display: grid;
       gap: 0.3rem;
     }
@@ -648,18 +648,18 @@ a:hover {
       border-collapse: collapse;
       user-select: none;
 
-      .alignRight{
-        text-align: right;
-      }
-
       tr td:first-child {
         text-align: center;
       }
 
+      .alignRight {
+        text-align: right;
+      }
+
       td {
         padding: 0.5rem 0.5rem;
-        .fixedHeight{
-          height: 2rem;
+        .fixedHeight {
+          height: 3rem;
           overflow: hidden;
           display: grid;
           align-items: center;
@@ -686,22 +686,23 @@ a:hover {
 
       tbody {
         color: var(--text-color);
-        .fillerResult td{
+        .fillerResult td {
           color: var(--sub-color);
         }
-        td{
+        td {
           transition: 0.25s;
           height: 3rem;
         }
         tr td:nth-child(3),
-        tr td:nth-child(4){
-          font-size: .75rem;
+        tr td:nth-child(4) {
+          font-size: 0.75rem;
         }
-        tr td:nth-child(5){
+        tr td:nth-child(5) {
           color: var(--sub-color);
         }
-        .searchResult:hover td{
+        .searchResult:hover td {
           background: rgba(0, 0, 0, 0.1);
+          cursor: pointer;
         }
       }
 
@@ -725,8 +726,6 @@ a:hover {
           padding-right: 1rem;
         }
       }
-
-      
     }
   }
 }
