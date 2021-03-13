@@ -110,8 +110,6 @@ $(document).keydown((event) => {
     keysPressed.push(event.key);
     timeBetweenKeys.push(performance.now() - lastInputTime);
     lastInputTime = performance.now();
-    console.log(timeBetweenKeys);
-    console.log(keysPressed);
   }
 });
 
@@ -3776,7 +3774,6 @@ async function startReplay() {
         typedReplay += keysPressed[i];
       }
       $("#replayWords").text(typedReplay);
-      console.log(i + " " + typedReplay);
     }, lastTime + timeBetweenKeys[i]);
     lastTime += timeBetweenKeys[i];
   });
