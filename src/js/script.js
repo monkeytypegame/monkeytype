@@ -1652,6 +1652,7 @@ function showCrown() {
 function failTest() {
   inputHistory.push(currentInput);
   correctedHistory.push(currentCorrected);
+  TestStats.pushKeypressesToHistory();
   TestStats.setLastSecondNotRound();
   showResult(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());
@@ -2051,7 +2052,7 @@ function showResult(difficultyFailed = false) {
       timestamp: Date.now(),
       language: lang,
       restartCount: TestStats.restartCount,
-      incompleteTestSeconds: TestStats.incompleteSeconds,
+      incompleteTestSeconds: Misc.roundTo2(TestStats.incompleteSeconds),
       difficulty: config.difficulty,
       testDuration: testtime,
       afkDuration: afkseconds,
@@ -2853,6 +2854,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   }
 
   if (testActive) {
+    TestStats.pushKeypressesToHistory();
     let testSeconds = TestStats.calculateTestSeconds(performance.now());
     let afkseconds = TestStats.calculateAfkSeconds();
     // incompleteTestSeconds += ;
