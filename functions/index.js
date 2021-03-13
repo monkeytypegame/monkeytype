@@ -1052,6 +1052,13 @@ async function getIncrementedTypingStats(userData, resultObj) {
     }
     tt = resultObj.testDuration + resultObj.incompleteTestSeconds - afk;
 
+    if (tt > 500)
+      console.log(
+        `FUCK, INCREASING BY A LOT ${resultObj.uid}: ${JSON.stringify(
+          resultObj
+        )}`
+      );
+
     if (userData.startedTests === undefined) {
       newStarted = resultObj.restartCount + 1;
     } else {
@@ -1252,6 +1259,13 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
     }
 
     let obj = request.obj;
+
+    if (obj.incompleteTestSeconds > 500)
+      console.log(
+        `FUCK, HIGH INCOMPLETE TEST SECONDS ${request.uid}: ${JSON.stringify(
+          obj
+        )}`
+      );
 
     function verifyValue(val) {
       let errCount = 0;

@@ -2052,7 +2052,10 @@ function showResult(difficultyFailed = false) {
       timestamp: Date.now(),
       language: lang,
       restartCount: TestStats.restartCount,
-      incompleteTestSeconds: Misc.roundTo2(TestStats.incompleteSeconds),
+      incompleteTestSeconds:
+        TestStats.incompleteSeconds < 0
+          ? 0
+          : Misc.roundTo2(TestStats.incompleteSeconds),
       difficulty: config.difficulty,
       testDuration: testtime,
       afkDuration: afkseconds,
@@ -3029,6 +3032,8 @@ function restartTest(withSameWordset = false, nosave = false, event) {
             wpmOverTimeChart.update();
             updateTestModesNotice();
             pageTransition = false;
+            // console.log(TestStats.incompleteSeconds);
+            // console.log(TestStats.restartCount);
           }
         );
     }
