@@ -1963,6 +1963,14 @@ function showResult(difficultyFailed = false) {
 
   $("#result .stats .tags").addClass("hidden");
 
+  let lang = config.language;
+
+  let quoteLength = -1;
+  if (config.mode === "quote") {
+    quoteLength = randomQuote.group;
+    lang = config.language.replace(/_\d*k$/g, "");
+  }
+
   if (difficultyFailed) {
     Notifications.add("Test failed", 0);
   } else if (afkDetected) {
@@ -2541,14 +2549,6 @@ function showResult(difficultyFailed = false) {
   } else {
     $("#result .stats .leaderboards").addClass("hidden");
     $("#result .loginTip").removeClass("hidden");
-  }
-
-  let lang = config.language;
-
-  let quoteLength = -1;
-  if (config.mode === "quote") {
-    quoteLength = randomQuote.group;
-    lang = config.language.replace(/_\d*k$/g, "");
   }
 
   let testType = "";
