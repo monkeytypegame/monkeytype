@@ -88,3 +88,6 @@ dist/
 .cloudflareKey.txt
 .cloudflareKey_copy.txt
 purgeCfCache.sh
+
+#package-lock
+*package-lock.json
