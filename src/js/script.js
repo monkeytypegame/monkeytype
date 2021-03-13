@@ -2681,6 +2681,7 @@ function startTest() {
   }
   testActive = true;
   TestStats.setStart(performance.now());
+  TestStats.resetKeypressTimings();
   restartTimer();
   showTimer();
   $("#liveWpm").text("0");

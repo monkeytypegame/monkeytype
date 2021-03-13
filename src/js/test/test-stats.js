@@ -180,6 +180,19 @@ export function setKeypressSpacing(val) {
   keypressTimings.spacing.current = val;
 }
 
+export function resetKeypressTimings() {
+  keypressTimings = {
+    spacing: {
+      current: -1,
+      array: [],
+    },
+    duration: {
+      current: -1,
+      array: [],
+    },
+  };
+}
+
 export function pushMissedWord(word) {
   if (!Object.keys(missedWords).includes(word)) {
     missedWords[word] = 1;
