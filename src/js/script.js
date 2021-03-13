@@ -99,6 +99,33 @@ let isPreviewingTheme = false;
 // let CustomText.isWordRandom = false;
 // let CustomText.word = 1;
 
+/* TODO
+  save enter as _ maybe
+*/
+let keysPressed = [];
+let timeBetweenKeys = [];
+let lastInputTime = performance.now();
+const ignoredKeys = ["Tab", "Shift", "Control", "Alt", "Escape"];
+
+//save keys and time between keys to lists
+$(document).keydown((event) => {
+  //make sure that test is active and key is not forbidden
+  if (testActive && ignoredKeys.indexOf(event.key) < 0) {
+    keysPressed.push(event.key);
+    timeBetweenKeys.push(performance.now() - lastInputTime);
+    lastInputTime = performance.now();
+    console.log(timeBetweenKeys);
+    console.log(keysPressed);
+  }
+});
+
+function clearReplayData() {
+  //set to first letter of first word and 0ms to type first letter
+  keysPressed = [wordsList[0][0]];
+  timeBetweenKeys = [0];
+  lastInputTime = performance.now();
+}
+
 function refreshThemeColorObject() {
   let st = getComputedStyle(document.body);
 
@@ -2746,6 +2773,7 @@ function startTest() {
   }
   testActive = true;
   testStart = performance.now();
+  clearReplayData();
   restartTimer();
   showTimer();
   $("#liveWpm").text("0");
@@ -3712,6 +3740,50 @@ async function loadWordsHistory() {
   $("#resultWordsHistory .words").html(wordsHTML);
   $("#showWordHistoryButton").addClass("loaded");
   return true;
+}
+
+function toggleReplayDisplay() {
+  if ($("#resultReplay").stop(true, true).hasClass("hidden")) {
+    //show
+    if (!$("#watchReplayButton").hasClass("loaded")) {
+      $("#words").html(
+        `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
+      );
+      loadWordsHistory().then(() => {
+        $("#resultReplay")
+          .removeClass("hidden")
+          .css("display", "none")
+          .slideDown(250);
+      });
+    } else {
+      $("#resultReplay")
+        .removeClass("hidden")
+        .css("display", "none")
+        .slideDown(250);
+    }
+  } else {
+    //hide
+    $("#resultReplay").slideUp(250, () => {
+      $("#resultReplay").addClass("hidden");
+    });
+  }
+}
+
+async function startReplay() {
+  let typedReplay = "";
+  let lastTime = 0;
+  keysPressed.forEach((item, i) => {
+    setTimeout(() => {
+      if (keysPressed[i] == "Backspace") {
+        typedReplay = typedReplay.slice(0, -1);
+      } else {
+        typedReplay += keysPressed[i];
+      }
+      $("#replayWords").text(typedReplay);
+      console.log(i + " " + typedReplay);
+    }, lastTime + timeBetweenKeys[i]);
+    lastTime += timeBetweenKeys[i];
+  });
 }
 
 function flipTestColors(tf) {
@@ -4757,6 +4829,16 @@ $(document).on("keypress", "#showWordHistoryButton", (event) => {
 
 $(document.body).on("click", "#showWordHistoryButton", () => {
   toggleResultWordsDisplay();
+});
+
+$(document).on("keypress", "#watchReplayButton", (event) => {
+  if (event.keyCode == 13) {
+    toggleReplayDisplay();
+  }
+});
+
+$(document.body).on("click", "#watchReplayButton", () => {
+  toggleReplayDisplay();
 });
 
 $(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
@@ -5874,6 +5956,10 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
+});
+
+$(".pageTest #startReplayButton").click(async (event) => {
+  startReplay();
 });
 
 //stop space scrolling

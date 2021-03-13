@@ -1564,7 +1564,8 @@ key {
     grid-column: 1/3;
   }
 
-  #resultWordsHistory {
+  #resultWordsHistory,
+  #resultReplay {
     // grid-area: wordsHistory;
     color: var(--sub-color);
     grid-column: 1/3;
@@ -1963,12 +1964,14 @@ key {
   gap: 1rem;
 }
 
+//Why isn't this a class?
 #restartTestButton,
 #showWordHistoryButton,
 #copyResultToClipboardButton,
 #restartTestButtonWithSameWordset,
 #nextTestButton,
-#practiseMissedWordsButton {
+#practiseMissedWordsButton,
+#watchReplayButton {
   position: relative;
   border-radius: var(--roundness);
   padding: 1rem 2rem;
