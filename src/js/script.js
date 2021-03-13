@@ -1795,6 +1795,8 @@ function showResult(difficultyFailed = false) {
   wpmOverTimeChart.options.annotation.annotations = [];
 
   $("#result #resultWordsHistory").addClass("hidden");
+  $("#result #resultReplay").addClass("hidden");
+  $("#replayWords").text("");
 
   if (config.alwaysShowDecimalPlaces) {
     if (config.alwaysShowCPM == false) {
