@@ -954,22 +954,22 @@ function updateHoverChart(filteredId) {
   hoverChart.data.datasets[1].data = data.raw;
   hoverChart.data.datasets[2].data = data.err;
 
-  hoverChart.options.scales.xAxes[0].ticks.minor.fontColor = themeColors.sub;
-  hoverChart.options.scales.xAxes[0].scaleLabel.fontColor = themeColors.sub;
-  hoverChart.options.scales.yAxes[0].ticks.minor.fontColor = themeColors.sub;
-  hoverChart.options.scales.yAxes[2].ticks.minor.fontColor = themeColors.sub;
-  hoverChart.options.scales.yAxes[0].scaleLabel.fontColor = themeColors.sub;
-  hoverChart.options.scales.yAxes[2].scaleLabel.fontColor = themeColors.sub;
+  hoverChart.options.scales.xAxes[0].ticks.minor.fontColor = ThemeColors.sub;
+  hoverChart.options.scales.xAxes[0].scaleLabel.fontColor = ThemeColors.sub;
+  hoverChart.options.scales.yAxes[0].ticks.minor.fontColor = ThemeColors.sub;
+  hoverChart.options.scales.yAxes[2].ticks.minor.fontColor = ThemeColors.sub;
+  hoverChart.options.scales.yAxes[0].scaleLabel.fontColor = ThemeColors.sub;
+  hoverChart.options.scales.yAxes[2].scaleLabel.fontColor = ThemeColors.sub;
 
-  hoverChart.data.datasets[0].borderColor = themeColors.main;
-  hoverChart.data.datasets[0].pointBackgroundColor = themeColors.main;
-  hoverChart.data.datasets[1].borderColor = themeColors.sub;
-  hoverChart.data.datasets[1].pointBackgroundColor = themeColors.sub;
+  hoverChart.data.datasets[0].borderColor = ThemeColors.main;
+  hoverChart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
+  hoverChart.data.datasets[1].borderColor = ThemeColors.sub;
+  hoverChart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
 
-  hoverChart.options.annotation.annotations[0].borderColor = themeColors.sub;
+  hoverChart.options.annotation.annotations[0].borderColor = ThemeColors.sub;
   hoverChart.options.annotation.annotations[0].label.backgroundColor =
-    themeColors.sub;
-  hoverChart.options.annotation.annotations[0].label.fontColor = themeColors.bg;
+    ThemeColors.sub;
+  hoverChart.options.annotation.annotations[0].label.fontColor = ThemeColors.bg;
 
   let maxChartVal = Math.max(...[Math.max(...data.wpm), Math.max(...data.raw)]);
   let minChartVal = Math.min(...[Math.min(...data.wpm), Math.min(...data.raw)]);
@@ -1746,11 +1746,28 @@ function refreshGlobalStats() {
   }
 }
 
+function updateAccountLoginButton() {
+  if (firebase.auth().currentUser != null) {
+    swapElements(
+      $("#menu .icon-button.login"),
+      $("#menu .icon-button.account"),
+      250
+    );
+  } else {
+    swapElements(
+      $("#menu .icon-button.account"),
+      $("#menu .icon-button.login"),
+      250
+    );
+  }
+}
+
 let totalSecondsFiltered = 0;
 
 function refreshAccountPage() {
   function cont() {
-    refreshThemeColorObject();
+    ThemeColors.update();
+    updateChartColors();
     refreshGlobalStats();
     fillPbTables();
 
@@ -2102,42 +2119,42 @@ function refreshAccountPage() {
     activityChart.data.datasets[0].data = activityChartData_time;
     activityChart.data.datasets[1].data = activityChartData_avgWpm;
 
-    activityChart.options.legend.labels.fontColor = themeColors.sub;
+    activityChart.options.legend.labels.fontColor = ThemeColors.sub;
 
     activityChart.options.scales.xAxes[0].ticks.minor.fontColor =
-      themeColors.sub;
+      ThemeColors.sub;
     activityChart.options.scales.yAxes[0].ticks.minor.fontColor =
-      themeColors.sub;
+      ThemeColors.sub;
     activityChart.options.scales.yAxes[0].scaleLabel.fontColor =
-      themeColors.sub;
-    activityChart.data.datasets[0].borderColor = themeColors.main;
-    activityChart.data.datasets[0].backgroundColor = themeColors.main;
+      ThemeColors.sub;
+    activityChart.data.datasets[0].borderColor = ThemeColors.main;
+    activityChart.data.datasets[0].backgroundColor = ThemeColors.main;
 
-    activityChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
+    activityChart.data.datasets[0].trendlineLinear.style = ThemeColors.sub;
 
     activityChart.options.scales.yAxes[1].ticks.minor.fontColor =
-      themeColors.sub;
+      ThemeColors.sub;
     activityChart.options.scales.yAxes[1].scaleLabel.fontColor =
-      themeColors.sub;
-    activityChart.data.datasets[1].borderColor = themeColors.sub;
+      ThemeColors.sub;
+    activityChart.data.datasets[1].borderColor = ThemeColors.sub;
 
-    activityChart.options.legend.labels.fontColor = themeColors.sub;
+    activityChart.options.legend.labels.fontColor = ThemeColors.sub;
 
     resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor =
-      themeColors.sub;
+      ThemeColors.sub;
     resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor =
-      themeColors.sub;
+      ThemeColors.sub;
     resultHistoryChart.options.scales.yAxes[0].scaleLabel.fontColor =
-      themeColors.sub;
+      ThemeColors.sub;
     resultHistoryChart.options.scales.yAxes[1].ticks.minor.fontColor =
-      themeColors.sub;
+      ThemeColors.sub;
     resultHistoryChart.options.scales.yAxes[1].scaleLabel.fontColor =
-      themeColors.sub;
-    resultHistoryChart.data.datasets[0].borderColor = themeColors.main;
-    resultHistoryChart.data.datasets[1].borderColor = themeColors.sub;
+      ThemeColors.sub;
+    resultHistoryChart.data.datasets[0].borderColor = ThemeColors.main;
+    resultHistoryChart.data.datasets[1].borderColor = ThemeColors.sub;
 
-    resultHistoryChart.options.legend.labels.fontColor = themeColors.sub;
-    resultHistoryChart.data.datasets[0].trendlineLinear.style = themeColors.sub;
+    resultHistoryChart.options.legend.labels.fontColor = ThemeColors.sub;
+    resultHistoryChart.data.datasets[0].trendlineLinear.style = ThemeColors.sub;
 
     resultHistoryChart.data.datasets[0].data = chartData;
     resultHistoryChart.data.datasets[1].data = accChartData;

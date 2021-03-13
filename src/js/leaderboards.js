@@ -276,5 +276,5 @@ $("#leaderboardsWrapper").click((e) => {
 
 $("#leaderboardsWrapper .buttons .button").click((e) => {
   currentLeaderboard = $(e.target).attr("board");
-  show();
+  update();
 });
