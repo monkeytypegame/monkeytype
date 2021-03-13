@@ -846,7 +846,7 @@ function validateResult(result) {
         return total + val;
       }) / 1000;
     if (
-      keyPressTimeSum < result.testDuration - 8 ||
+      keyPressTimeSum < result.testDuration - 1 ||
       keyPressTimeSum > result.testDuration + 1
     ) {
       console.error(
