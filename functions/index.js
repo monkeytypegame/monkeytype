@@ -1229,81 +1229,6 @@ async function incrementStartedTestCounter(uid, num, userData) {
   }
 }
 
-async function incrementTimeSpentTyping(uid, res, userData) {
-  try {
-    if (userData.timeTyping === undefined) {
-      let stepSize = 1000;
-      let results = [];
-      let query = await db
-        .collection(`users/${uid}/results`)
-        .orderBy("timestamp", "desc")
-        .limit(stepSize)
-        .get();
-      let lastDoc;
-      while (query.docs.length > 0) {
-        lastDoc = query.docs[query.docs.length - 1];
-        query.docs.forEach((doc) => {
-          let dd = doc.data();
-          results.push({
-            testDuration: dd.testDuration,
-            incompleteTestSeconds: dd.incompleteTestSeconds,
-          });
-        });
-        query = await db
-          .collection(`users/${uid}/results`)
-          .orderBy("timestamp", "desc")
-          .limit(stepSize)
-          .startAfter(lastDoc)
-          .get();
-      }
-
-      let timeSum = 0;
-      results.forEach((result) => {
-        try {
-          let ts = result.testDuration;
-          let its = result.incompleteTestSeconds;
-          let s1 = ts == undefined ? 0 : ts;
-          let s2 = its == undefined ? 0 : its;
-
-          timeSum += parseFloat(s1) + parseFloat(s2);
-        } catch (e) {}
-      });
-      db.collection("users")
-        .doc(uid)
-        .update({
-          timeTyping: admin.firestore.FieldValue.increment(timeSum),
-        });
-      db.collection("public")
-        .doc("stats")
-        .update({
-          timeTyping: admin.firestore.FieldValue.increment(timeSum),
-        });
-    } else {
-      let afk = res.afkDuration;
-      if (afk == undefined) {
-        afk = 0;
-      }
-
-      db.collection("users")
-        .doc(uid)
-        .update({
-          timeTyping: admin.firestore.FieldValue.increment(
-            res.testDuration + res.incompleteTestSeconds - afk
-          ),
-        });
-      db.collection("public")
-        .doc("stats")
-        .update({
-          timeTyping: admin.firestore.FieldValue.increment(
-            res.testDuration + res.incompleteTestSeconds - afk
-          ),
-        });
-    }
-  } catch (e) {
-    console.error(`Error while incrementing time typing for user ${uid}: ${e}`);
-  }
-}
-
 exports.testCompleted = functions.https.onRequest(async (request, response) => {
   response.set("Access-Control-Allow-Origin", origin);
   if (request.method === "OPTIONS") {
@@ -1373,20 +1298,20 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       (obj.mode === "words" && obj.mode2 < 10 && obj.mode2 > 0) ||
       (obj.mode === "words" && obj.mode2 == 0 && obj.testDuration < 15) ||
       (obj.mode === "custom" &&
-        obj.CustomText !== undefined &&
-        !obj.CustomText.isWordRandom &&
-        !obj.CustomText.isTimeRandom &&
-        obj.CustomText.textLen < 10) ||
+        obj.customText !== undefined &&
+        !obj.customText.isWordRandom &&
+        !obj.customText.isTimeRandom &&
+        obj.customText.textLen < 10) ||
       (obj.mode === "custom" &&
-        obj.CustomText !== undefined &&
-        obj.CustomText.isWordRandom &&
-        !obj.CustomText.isTimeRandom &&
-        obj.CustomText.word < 10) ||
+        obj.customText !== undefined &&
+        obj.customText.isWordRandom &&
+        !obj.customText.isTimeRandom &&
+        obj.customText.word < 10) ||
       (obj.mode === "custom" &&
-        obj.CustomText !== undefined &&
-        !obj.CustomText.isWordRandom &&
-        obj.CustomText.isTimeRandom &&
-        obj.CustomText.time < 15)
+        obj.customText !== undefined &&
+        !obj.customText.isWordRandom &&
+        obj.customText.isTimeRandom &&
+        obj.customText.time < 15)
     ) {
       response
         .status(200)
@@ -2489,11 +2414,11 @@ async function checkLeaderboards(
 
         if (insertResult.insertedAt >= 0) {
           //update the database here
-          console.log(
-            `leaderboard changed ${resultObj.mode} ${
-              resultObj.mode2
-            } ${type} - ${JSON.stringify(lb.board)}`
-          );
+          // console.log(
+          //   `leaderboard changed ${resultObj.mode} ${
+          //     resultObj.mode2
+          //   } ${type} - ${JSON.stringify(lb.board)}`
+          // );
           t.update(db.collection("leaderboards").doc(docid), {
             size: lb.size,
             type: lb.type,
