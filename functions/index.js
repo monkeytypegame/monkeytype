@@ -1491,14 +1491,6 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
               incrementT60Bananas(request.uid, obj, userdata);
             }
 
-            // incrementTestCounter(request.uid, userdata);
-            // incrementStartedTestCounter(
-            //   request.uid,
-            //   obj.restartCount + 1,
-            //   userdata
-            // );
-            // incrementTimeSpentTyping(request.uid, obj, userdata);
-
             let newTypingStats = await getIncrementedTypingStats(userdata, obj);
 
             if (
