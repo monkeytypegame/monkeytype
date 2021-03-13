@@ -148,6 +148,32 @@
         <div class="button">ok</div>
       </div>
     </div>
+    <div id="quoteSearchPopupWrapper" class="hidden">
+      <div id="quoteSearchPopup" mode="">
+        <div class="title">Quote Search</div>
+        <input id="searchBox" class="searchBox" type="text" maxLength="200" autocomplete="off"/>
+        <table class="searchResultTable">
+          <thead>
+            <tr>
+              <td class="alignRight" width="5%">#</td>
+              <td class="alignRight" width="10%">length</td>
+              <td>
+                text
+              </td>
+              <td  width="30%">
+                source
+              </td>
+              <td width="1%"></td>
+            </tr>
+          </thead>
+          <tbody id="searchResultList">
+            
+          </tbody>
+        </table>
+        <div id="extraResults" class="quoteSearchResults">No search results</div>
+        <div class="button">ok</div>
+      </div>
+    </div>
     <div id="tagsWrapper" class="hidden">
       <div id="tagsEdit" action="" tagid="">
         <div class="title"></div>
@@ -962,6 +988,9 @@
                 <div class="text-button" quoteLength="2" tabindex="2">long</div>
                 <div class="text-button" quoteLength="3" tabindex="2">
                   thicc
+                </div>
+                <div class="text-button" quoteLength="-2" tabindex="2">
+                  <i class="fas fa-tools"></i>
                 </div>
               </div>
             </div>

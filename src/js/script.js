@@ -43,6 +43,7 @@ let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
 let punctuationBeforePractise = null;
 let numbersBeforePractise = null;
+let selectedQuoteId = 1;
 
 ///
 
@@ -422,47 +423,52 @@ async function initWords() {
       return;
     }
 
-    let quoteLengths = config.quoteLength;
-    let groupIndex;
-    if (quoteLengths.length > 1) {
-      groupIndex =
-        quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
-      while (quotes.groups[groupIndex].length === 0) {
+    let rq;
+    if(config.quoteLength != -2){
+      let quoteLengths = config.quoteLength;
+      let groupIndex;
+      if (quoteLengths.length > 1) {
         groupIndex =
           quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
+        while (quotes.groups[groupIndex].length === 0) {
+          groupIndex =
+            quoteLengths[Math.floor(Math.random() * quoteLengths.length)];
+        }
+      } else {
+        groupIndex = quoteLengths[0];
+        if (quotes.groups[groupIndex].length === 0) {
+          Notifications.add("No quotes found for selected quote length", 0);
+          testRestarting = false;
+          return;
+        }
       }
-    } else {
-      groupIndex = quoteLengths[0];
-      if (quotes.groups[groupIndex].length === 0) {
-        Notifications.add("No quotes found for selected quote length", 0);
-        testRestarting = false;
-        return;
-      }
-    }
 
-    // if (config.quoteLength === -1) {
-    //   group = Math.floor(Math.random() * quotes.groups.length);
-    //   while (quotes.groups[group].length === 0) {
-    //     group = Math.floor(Math.random() * quotes.groups.length);
-    //   }
-    // } else {
-    //   if (quotes.groups[group].length === 0) {
-    //     Notifications.add("No quotes found for selected quote length", 0);
-    //     testRestarting = false;
-    //     return;
-    //   }
-    // }
-
-    let rq =
-      quotes.groups[groupIndex][
-        Math.floor(Math.random() * quotes.groups[groupIndex].length)
-      ];
+      
+      
+        rq =
+        quotes.groups[groupIndex][
+          Math.floor(Math.random() * quotes.groups[groupIndex].length)
+        ];
     if (randomQuote != null && rq.id === randomQuote.id) {
       rq =
         quotes.groups[groupIndex][
           Math.floor(Math.random() * quotes.groups[groupIndex].length)
+
         ];
+      
     }
+  } else {
+    quotes.groups.forEach(group => {
+      let filtered = group.filter( quote => quote.id == selectedQuoteId)
+      if(filtered.length > 0){
+        rq = filtered[0];
+        }
+    })
+    if(rq == undefined){
+      rq = quotes.groups[0][0];
+      Notifications.add("Quote Id Does Not Exist", 0);
+    }
+  }
     randomQuote = rq;
     randomQuote.text = randomQuote.text.replace(/ +/gm, " ");
     randomQuote.text = randomQuote.text.replace(/\\\\t/gm, "\t");
@@ -3984,18 +3990,18 @@ $("#customTextPopup .button").click(() => {
 
 function showCustomMode2Popup(mode) {
   if ($("#customMode2PopupWrapper").hasClass("hidden")) {
+    if (mode == "time") {
+      $("#customMode2Popup .title").text("Test length");
+      $("#customMode2Popup").attr("mode", "time");
+    } else if (mode == "words") {
+      $("#customMode2Popup .title").text("Word amount");
+      $("#customMode2Popup").attr("mode", "words");
+    }
     $("#customMode2PopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, (e) => {
-        if (mode == "time") {
-          $("#customMode2Popup .text").text("Test length");
-          $("#customMode2Popup").attr("mode", "time");
-        } else if (mode == "words") {
-          $("#customMode2Popup .text").text("Word amount");
-          $("#customMode2Popup").attr("mode", "words");
-        }
         $("#customMode2Popup input").focus().select();
       });
   }
@@ -4017,6 +4023,63 @@ function hideCustomMode2Popup() {
       );
   }
 }
+
+async function showQuoteSearchPopup() {
+  if($("#quoteSearchPopupWrapper").hasClass("hidden")){
+    let quotes = await Misc.getQuotes(config.language);
+    let table = $("#quoteSearchPopup .searchResultTable");
+    let numberOfSearchResults = 0;
+    table.find("tbody").empty();
+    $("#quoteSearchPopup input").val("");
+    for(let i = 0 ;i < 5; i++){
+      let quote = quotes.quotes[i];
+      table.find("tbody").append(`
+      <tr class="searchResult" id=${quote.id}>
+              <td class="alignRight"><div class="fixedHeight">${quote.id}</div></td>
+              <td class="alignRight"><div class="fixedHeight">${quote.length}</div></td>
+              <td>
+                <div class="fixedHeight">${quote.text}</div>
+              </td>
+              <td>
+              <div class="fixedHeight">${quote.source}</div>
+              </td>
+              <td><i class="fas fa-chevron-right"></i></td>
+            </tr>
+      `)
+    }
+    quotes.groups.forEach(group =>{
+      group.forEach(quote =>{
+        numberOfSearchResults++;
+      })
+    })
+    document.getElementById("extraResults").innerHTML = (numberOfSearchResults - 5) + " more results";
+    $("#quoteSearchPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100, (e) => {
+        $("#quoteSearchPopup input").focus().select();
+      });
+  }
+}
+
+function hideQuoteSearchPopup() {
+  if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
+    $("#quoteSearchPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        100,
+        (e) => {
+          $("#quoteSearchPopupWrapper").addClass("hidden");
+        }
+      );
+  }
+}
+
 
 async function initPaceCaret() {
   let mode2 = "";
@@ -4243,9 +4306,129 @@ $("#customMode2Popup input").keypress((e) => {
     applyMode2Popup();
   }
 });
+//Quote search
+$("#quoteSearchPopup .searchBox").keydown((e) => {
+  setTimeout( async () => {
+    let quotes = await Misc.getQuotes(config.language);
+    let searchText = document.getElementById("searchBox").value
+    searchText = searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    let reg = new RegExp(searchText, "i");
+    let found = [];
+    let numberOfSearchResults = 0;
+    quotes.quotes.forEach(quote =>{
+      let quoteText = quote["text"];
+      let quoteSource = quote["source"];
+      let quoteId = quote["id"];
+      let test1 = reg.test(quoteText);
+      let test2 = reg.test(quoteSource);
+      let test3 = reg.test(quoteId);
+      
+      if (test1 || test2 || test3){
+        found.push(quote);
+        numberOfSearchResults++
+      }
+    })
+    let table = $("#quoteSearchPopup .searchResultTable");
+    table.find("tbody").empty();
+    for( let i=0; i<5; i++){
+      if(found[i] === undefined) continue;
+      // if(found[i].text.length > 100){
+      //   found[i].text = found[i].text.substring(0, 100) + "...";
+      // }
+      // if(found[i].source.length > 50){
+      //   found[i].source = found[i].source.substring(0, 50) + "...";
+      // }
+      table.find("tbody").append(`
+      <tr class="searchResult" id=${found[i].id}>
+              <td class="alignRight"><div class="fixedHeight">${found[i].id}</div></td>
+              <td class="alignRight"><div class="fixedHeight">${found[i].length}</div></td>
+              <td>
+                <div class="fixedHeight">${found[i].text}</div>
+              </td>
+              <td>
+              <div class="fixedHeight">${found[i].source}</div>
+              </td>
+              <td><i class="fas fa-chevron-right"></i></td>
+            </tr>
+      `)
+    }
+    if(numberOfSearchResults > 5){
+      $("#extraResults").css("opacity", "1");
+      document.getElementById("extraResults").innerHTML = (numberOfSearchResults - 5) + " more results";
+    }else if (numberOfSearchResults < 5){
+      $("#extraResults").css("opacity", "1");
+      document.getElementById("extraResults").innerHTML = "No other results";
+      for (let i = 0; i < 5 - numberOfSearchResults; i++){
+        table.find("tbody").append(`
+          <tr class="fillerResult" id="">
+              <td class="alignRight"><div class="fixedHeight">-</div></td>
+              <td class="alignRight"><div class="fixedHeight">-</div></td>
+              <td>
+                <div class="fixedHeight">-</div>
+              </td>
+              <td>
+              <div class="fixedHeight">-</div>
+              </td>
+              <td></td>
+            </tr>
+      `)
+      }
+    } 
+    if (numberOfSearchResults == 0){
+      $("#extraResults").css("opacity", "1");
+      document.getElementById("extraResults").innerHTML = "No search results";
+    }
+  }, 0.1) //arbitrarily v. small time as it's only to allow text to input before searching
+});
+//sets quote id to searched quote clicked
+$("#quoteSearchResults").click((e) => {
+  if($(e.target).hasClass("quoteSearchButton")){
+    document.getElementById("inputNumber").value = e.target.getAttribute("id");
+    applyMode2Popup();
+  }
+})
+
+$("#quoteSearchPopupWrapper").click((e) => {
+  if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
+    hideQuoteSearchPopup();
+  }
+});
 
 $("#customMode2Popup .button").click(() => {
   applyMode2Popup();
+});
+
+$("#quoteSearchPopup .button").click(() => {
+  if(!isNaN(document.getElementById("searchBox").value)){
+    applyQuoteSearchPopup();
+  } else {
+    let results = document.getElementsByClassName("searchResult");
+    if(results.length > 0){
+      selectedQuoteId = parseInt(results[0].getAttribute("id"));
+      applyQuoteSearchPopup(selectedQuoteId);
+    }
+  }
+});
+
+$(document).on("click", "#quoteSearchPopup .searchResultTable tbody tr", (e) => {
+  if($(e.currentTarget).hasClass("searchResult")){
+    selectedQuoteId = parseInt($(e.currentTarget).attr("id"));
+    applyQuoteSearchPopup(selectedQuoteId);
+  }
+});
+
+$("#quoteSearchPopup input").keypress((e) => {
+  if (e.keyCode == 13) {
+    if(!isNaN(document.getElementById("searchBox").value)){
+      applyQuoteSearchPopup();
+    } else {
+      let results = document.getElementsByClassName("searchResult");
+      if(results.length > 0){
+        selectedQuoteId = parseInt(results[0].getAttribute("id"));
+        applyQuoteSearchPopup(selectedQuoteId);
+      }
+    }
+  }
 });
 
 function updateKeytips() {
@@ -4308,9 +4491,24 @@ function applyMode2Popup() {
     } else {
       Notifications.add("Custom word amount must be at least 1", 0);
     }
-  }
+  } 
 
   hideCustomMode2Popup();
+}
+
+function applyQuoteSearchPopup(val) {
+  if(isNaN(val)){
+    val = document.getElementById("searchBox").value
+  }
+  if (val !== null && !isNaN(val) && val >= 0) {
+    setQuoteLength(-2, false, false);
+    selectedQuoteId = val;
+    manualRestart = true;
+    restartTest();
+  } else {
+    Notifications.add("Quote ID must be at least 1", 0);
+  }
+  hideQuoteSearchPopup();
 }
 
 function lineJump(currentTop) {
@@ -4404,14 +4602,20 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
   }
 });
 
+
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len = $(e.currentTarget).attr("quoteLength");
-  if (len == -1) {
-    len = [0, 1, 2, 3];
+  if(len == -2){
+    showQuoteSearchPopup();
+    setQuoteLength(len, false, e.shiftKey);
+  } else { 
+    if (len == -1) {
+      len = [0, 1, 2, 3];
+    }
+    setQuoteLength(len, false, e.shiftKey);
+    manualRestart = true;
+    restartTest();
   }
-  setQuoteLength(len, false, e.shiftKey);
-  manualRestart = true;
-  restartTest();
 });
 
 $(document).on("click", "#top .config .customText .text-button", () => {
@@ -4727,7 +4931,8 @@ $(document).keydown(function (event) {
   let wordsFocused = $("#wordsInput").is(":focus");
   let modePopupVisible =
     !$("#customTextPopupWrapper").hasClass("hidden") ||
-    !$("#customMode2PopupWrapper").hasClass("hidden");
+    !$("#customMode2PopupWrapper").hasClass("hidden") ||
+    !$("#quoteSearchPopupWrapper").hasClass("hidden");
   if (
     pageTestActive &&
     !commandLineVisible &&

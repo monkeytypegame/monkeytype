@@ -824,7 +824,7 @@ function setQuoteLength(len, nosave, multipleMode) {
     config.quoteLength = len;
   } else {
     if (!Array.isArray(config.quoteLength)) config.quoteLength = [];
-    if (len === null || isNaN(len) || len < -1 || len > 3) {
+    if (len === null || isNaN(len) || len < -2 || len > 3) {
       len = 1;
     }
     len = parseInt(len);
