@@ -1782,6 +1782,7 @@ function showResult(difficultyFailed = false) {
     );
   }
 
+  ChartController.result.data.datasets[0].data = TestStats.wpmHistory;
   ChartController.result.data.datasets[1].data = rawWpmPerSecond;
 
   let maxChartVal = Math.max(
