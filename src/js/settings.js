@@ -1013,8 +1013,7 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
   });
 
   setTimeout(() => {
-    ThemeColors.update();
-    updateChartColors();
+    ChartController.updateAllChartColors();
 
     colorVars.forEach((colorName) => {
       let color;

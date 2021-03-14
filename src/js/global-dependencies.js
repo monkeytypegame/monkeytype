@@ -39,3 +39,4 @@ import * as ShiftTracker from "./shift-tracker";
 import * as TestStats from "./test-stats";
 import * as ThemeColors from "./theme-colors";
 import * as OutOfFocus from "./out-of-focus";
+import * as ChartController from "./chart-controller";

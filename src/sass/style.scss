@@ -110,7 +110,7 @@ body {
   background: var(--bg-color);
   font-family: var(--font);
   color: var(--main-color);
-  // overflow-x: hidden;
+  overflow-x: hidden;
 }
 
 html {
@@ -2878,17 +2878,7 @@ key {
     }
   }
 
-  // .hoverChartWrapper {
-  //   z-index: 999;
-  //   display: none;
-  //   width: 100%;
-  //   height: 100%;
-  //   background: rgba(0, 0, 0, 0.25);
-  //   position: fixed;
-  //   left: 0;
-  //   top: 0;
-  // }
-  .hoverChartWrapper {
+  .miniResultChartWrapper {
     // pointer-events: none;
     z-index: 999;
     display: none;
@@ -2901,7 +2891,7 @@ key {
     // box-shadow: 0 0 1rem rgba(0, 0, 0, 0.25);
   }
 
-  .hoverChartBg {
+  .miniResultChartBg {
     display: none;
     z-index: 998;
     width: 100%;
@@ -3061,7 +3051,7 @@ key {
     td.infoIcons span {
       margin: 0 0.1rem;
     }
-    .hoverChartButton {
+    .miniResultChartButton {
       opacity: 0.25;
       transition: 0.25s;
       cursor: pointer;

@@ -261,20 +261,21 @@ function setBlindMode(blind, nosave) {
 }
 
 function updateChartAccuracy() {
-  resultHistoryChart.data.datasets[1].hidden = !config.chartAccuracy;
-  resultHistoryChart.options.scales.yAxes[1].display = config.chartAccuracy;
-  resultHistoryChart.update();
+  ChartController.accountHistory.data.datasets[1].hidden = !config.chartAccuracy;
+  ChartController.accountHistory.options.scales.yAxes[1].display =
+    config.chartAccuracy;
+  ChartController.accountHistory.update();
 }
 
 function updateChartStyle() {
   if (config.chartStyle == "scatter") {
-    resultHistoryChart.data.datasets[0].showLine = false;
-    resultHistoryChart.data.datasets[1].showLine = false;
+    ChartController.accountHistory.data.datasets[0].showLine = false;
+    ChartController.accountHistory.data.datasets[1].showLine = false;
   } else {
-    resultHistoryChart.data.datasets[0].showLine = true;
-    resultHistoryChart.data.datasets[1].showLine = true;
+    ChartController.accountHistory.data.datasets[0].showLine = true;
+    ChartController.accountHistory.data.datasets[1].showLine = true;
   }
-  resultHistoryChart.update();
+  ChartController.accountHistory.update();
 }
 
 function toggleChartAccuracy() {
@@ -1060,66 +1061,6 @@ function setIndicateTypos(it, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function updateChartColors() {
-  hoverChart.options.scales.xAxes[0].ticks.minor.fontColor = ThemeColors.sub;
-  hoverChart.options.scales.xAxes[0].scaleLabel.fontColor = ThemeColors.sub;
-  hoverChart.options.scales.yAxes[0].ticks.minor.fontColor = ThemeColors.sub;
-  hoverChart.options.scales.yAxes[2].ticks.minor.fontColor = ThemeColors.sub;
-  hoverChart.options.scales.yAxes[0].scaleLabel.fontColor = ThemeColors.sub;
-  hoverChart.options.scales.yAxes[2].scaleLabel.fontColor = ThemeColors.sub;
-
-  hoverChart.data.datasets[0].borderColor = ThemeColors.main;
-  hoverChart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
-  hoverChart.data.datasets[1].borderColor = ThemeColors.sub;
-  hoverChart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
-
-  hoverChart.options.annotation.annotations[0].borderColor = ThemeColors.sub;
-  hoverChart.options.annotation.annotations[0].label.backgroundColor =
-    ThemeColors.sub;
-  hoverChart.options.annotation.annotations[0].label.fontColor = ThemeColors.bg;
-
-  activityChart.options.legend.labels.fontColor = ThemeColors.sub;
-
-  activityChart.options.scales.xAxes[0].ticks.minor.fontColor = ThemeColors.sub;
-  activityChart.options.scales.yAxes[0].ticks.minor.fontColor = ThemeColors.sub;
-  activityChart.options.scales.yAxes[0].scaleLabel.fontColor = ThemeColors.sub;
-  activityChart.data.datasets[0].borderColor = ThemeColors.main;
-  activityChart.data.datasets[0].backgroundColor = ThemeColors.main;
-
-  activityChart.data.datasets[0].trendlineLinear.style = ThemeColors.sub;
-
-  activityChart.options.scales.yAxes[1].ticks.minor.fontColor = ThemeColors.sub;
-  activityChart.options.scales.yAxes[1].scaleLabel.fontColor = ThemeColors.sub;
-  activityChart.data.datasets[1].borderColor = ThemeColors.sub;
-
-  activityChart.options.legend.labels.fontColor = ThemeColors.sub;
-
-  resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor =
-    ThemeColors.sub;
-  resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor =
-    ThemeColors.sub;
-  resultHistoryChart.options.scales.yAxes[0].scaleLabel.fontColor =
-    ThemeColors.sub;
-  resultHistoryChart.options.scales.yAxes[1].ticks.minor.fontColor =
-    ThemeColors.sub;
-  resultHistoryChart.options.scales.yAxes[1].scaleLabel.fontColor =
-    ThemeColors.sub;
-  resultHistoryChart.data.datasets[0].borderColor = ThemeColors.main;
-  resultHistoryChart.data.datasets[1].borderColor = ThemeColors.sub;
-
-  resultHistoryChart.options.legend.labels.fontColor = ThemeColors.sub;
-  resultHistoryChart.data.datasets[0].trendlineLinear.style = ThemeColors.sub;
-  wpmOverTimeChart.data.datasets[0].borderColor = ThemeColors.main;
-  wpmOverTimeChart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
-  wpmOverTimeChart.data.datasets[1].borderColor = ThemeColors.sub;
-  wpmOverTimeChart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
-
-  hoverChart.update();
-  wpmOverTimeChart.update();
-  resultHistoryChart.update();
-  activityChart.update();
-}
-
 let isPreviewingTheme = false;
 function previewTheme(name, setIsPreviewingVar = true) {
   if (
@@ -1133,8 +1074,7 @@ function previewTheme(name, setIsPreviewingVar = true) {
   clearCustomTheme();
   $("#currentTheme").attr("href", `themes/${name}.css`);
   setTimeout(() => {
-    ThemeColors.update();
-    updateChartColors();
+    ChartController.updateAllChartColors();
   }, 500);
 }
 
@@ -1166,8 +1106,7 @@ function setTheme(name, nosave) {
   // applyCustomThemeColors();
   setTimeout(() => {
     $(".keymap-key").attr("style", "");
-    ThemeColors.update();
-    updateChartColors();
+    ChartController.updateAllChartColors();
 
     $("#metaThemeColor").attr("content", ThemeColors.main);
   }, 500);
@@ -1232,8 +1171,7 @@ function applyCustomThemeColors() {
     clearCustomTheme();
   }
   setTimeout(() => {
-    ThemeColors.update();
-    updateChartColors();
+    ChartController.updateAllChartColors();
     updateFavicon(32, 14);
     $(".keymap-key").attr("style", "");
   }, 500);

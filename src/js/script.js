@@ -1705,7 +1705,7 @@ function showResult(difficultyFailed = false) {
   let afkseconds = TestStats.calculateAfkSeconds();
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
 
-  wpmOverTimeChart.options.annotation.annotations = [];
+  ChartController.result.options.annotation.annotations = [];
 
   $("#result #resultWordsHistory").addClass("hidden");
 
@@ -1856,24 +1856,9 @@ function showResult(difficultyFailed = false) {
     }
   }
 
-  if (ThemeColors.main == "") {
-    ThemeColors.update();
-  }
+  ChartController.result.updateColors();
 
-  wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor =
-    ThemeColors.sub;
-  wpmOverTimeChart.options.scales.xAxes[0].scaleLabel.fontColor =
-    ThemeColors.sub;
-  wpmOverTimeChart.options.scales.yAxes[0].ticks.minor.fontColor =
-    ThemeColors.sub;
-  wpmOverTimeChart.options.scales.yAxes[2].ticks.minor.fontColor =
-    ThemeColors.sub;
-  wpmOverTimeChart.options.scales.yAxes[0].scaleLabel.fontColor =
-    ThemeColors.sub;
-  wpmOverTimeChart.options.scales.yAxes[2].scaleLabel.fontColor =
-    ThemeColors.sub;
-
-  wpmOverTimeChart.data.labels = labels;
+  ChartController.result.data.labels = labels;
 
   let rawWpmPerSecondRaw = TestStats.keypressPerSecond.map((f) =>
     Math.round((f.count / 5) * 60)
@@ -1914,26 +1899,21 @@ function showResult(difficultyFailed = false) {
     );
   }
 
-  wpmOverTimeChart.data.datasets[0].borderColor = ThemeColors.main;
-  wpmOverTimeChart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
-  wpmOverTimeChart.data.datasets[0].data = TestStats.wpmHistory;
-  wpmOverTimeChart.data.datasets[1].borderColor = ThemeColors.sub;
-  wpmOverTimeChart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
-  wpmOverTimeChart.data.datasets[1].data = rawWpmPerSecond;
+  ChartController.result.data.datasets[1].data = rawWpmPerSecond;
 
   let maxChartVal = Math.max(
     ...[Math.max(...rawWpmPerSecond), Math.max(...TestStats.wpmHistory)]
   );
   if (!config.startGraphsAtZero) {
-    wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.min(
+    ChartController.result.options.scales.yAxes[0].ticks.min = Math.min(
       ...TestStats.wpmHistory
     );
-    wpmOverTimeChart.options.scales.yAxes[1].ticks.min = Math.min(
+    ChartController.result.options.scales.yAxes[1].ticks.min = Math.min(
       ...TestStats.wpmHistory
     );
   } else {
-    wpmOverTimeChart.options.scales.yAxes[0].ticks.min = 0;
-    wpmOverTimeChart.options.scales.yAxes[1].ticks.min = 0;
+    ChartController.result.options.scales.yAxes[0].ticks.min = 0;
+    ChartController.result.options.scales.yAxes[1].ticks.min = 0;
   }
 
   // let errorsNoZero = [];
@@ -1950,7 +1930,7 @@ function showResult(difficultyFailed = false) {
     errorsArray.push(TestStats.keypressPerSecond[i].errors);
   }
 
-  wpmOverTimeChart.data.datasets[2].data = errorsArray;
+  ChartController.result.data.datasets[2].data = errorsArray;
 
   let kps = TestStats.keypressPerSecond.slice(
     Math.max(TestStats.keypressPerSecond.length - 5, 0)
@@ -2133,7 +2113,7 @@ function showResult(difficultyFailed = false) {
               }
             }
             if (lpb > 0) {
-              wpmOverTimeChart.options.annotation.annotations.push({
+              ChartController.result.options.annotation.annotations.push({
                 enabled: false,
                 type: "line",
                 mode: "horizontal",
@@ -2159,13 +2139,13 @@ function showResult(difficultyFailed = false) {
               if (maxChartVal >= lpb - 15 && maxChartVal <= lpb + 15) {
                 maxChartVal = lpb + 15;
               }
-              wpmOverTimeChart.options.scales.yAxes[0].ticks.max = Math.round(
+              ChartController.result.options.scales.yAxes[0].ticks.max = Math.round(
                 maxChartVal
               );
-              wpmOverTimeChart.options.scales.yAxes[1].ticks.max = Math.round(
+              ChartController.result.options.scales.yAxes[1].ticks.max = Math.round(
                 maxChartVal
               );
-              wpmOverTimeChart.update({ duration: 0 });
+              ChartController.result.update({ duration: 0 });
             }
             if (config.mode === "time" && (mode2 === 15 || mode2 === 60)) {
               $("#result .stats .leaderboards").removeClass("hidden");
@@ -2215,7 +2195,7 @@ function showResult(difficultyFailed = false) {
                   );
                   // console.log("new pb for tag " + tag.name);
                 } else {
-                  wpmOverTimeChart.options.annotation.annotations.push({
+                  ChartController.result.options.annotation.annotations.push({
                     enabled: false,
                     type: "line",
                     mode: "horizontal",
@@ -2650,15 +2630,15 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .source").addClass("hidden");
   }
 
-  wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxChartVal;
-  wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxChartVal;
+  ChartController.result.options.scales.yAxes[0].ticks.max = maxChartVal;
+  ChartController.result.options.scales.yAxes[1].ticks.max = maxChartVal;
 
-  wpmOverTimeChart.update({ duration: 0 });
-  wpmOverTimeChart.resize();
+  ChartController.result.update({ duration: 0 });
+  ChartController.result.resize();
   swapElements($("#typingTest"), $("#result"), 250, () => {
     resultCalculating = false;
     $("#words").empty();
-    wpmOverTimeChart.resize();
+    ChartController.result.resize();
     if (config.alwaysShowWordsHistory) {
       toggleResultWordsDisplay();
     }
@@ -2822,6 +2802,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   //     }
   //   }
   // }
+
   if (testRestarting || resultCalculating) {
     try {
       event.preventDefault();
@@ -3032,7 +3013,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
             hideCrown();
             clearTimeout(timer);
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
-            wpmOverTimeChart.update();
+            ChartController.result.update();
             updateTestModesNotice();
             pageTransition = false;
             // console.log(TestStats.incompleteSeconds);
@@ -5978,155 +5959,3 @@ async function setupChallenge(challengeName) {
     Notifications.add("Something went wrong: " + e, -1);
   }
 }
-
-let ctx = $("#wpmChart");
-let wpmOverTimeChart = new Chart(ctx, {
-  type: "line",
-  data: {
-    labels: [],
-    datasets: [
-      {
-        label: "wpm",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
-        yAxisID: "wpm",
-        order: 2,
-        radius: 2,
-      },
-      {
-        label: "raw",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
-        yAxisID: "raw",
-        order: 3,
-        radius: 2,
-      },
-      {
-        label: "errors",
-        data: [],
-        borderColor: "rgba(255, 125, 125, 1)",
-        pointBackgroundColor: "rgba(255, 125, 125, 1)",
-        borderWidth: 2,
-        order: 1,
-        yAxisID: "error",
-        maxBarThickness: 10,
-        type: "scatter",
-        pointStyle: "crossRot",
-        radius: function (context) {
-          var index = context.dataIndex;
-          var value = context.dataset.data[index];
-          return value <= 0 ? 0 : 3;
-        },
-        pointHoverRadius: function (context) {
-          var index = context.dataIndex;
-          var value = context.dataset.data[index];
-          return value <= 0 ? 0 : 5;
-        },
-      },
-    ],
-  },
-  options: {
-    tooltips: {
-      mode: "index",
-      intersect: false,
-      callbacks: {
-        afterLabel: function (ti) {
-          try {
-            $(".wordInputAfter").remove();
-
-            let wordsToHighlight =
-              TestStats.keypressPerSecond[parseInt(ti.xLabel) - 1].words;
-
-            let unique = [...new Set(wordsToHighlight)];
-            unique.forEach((wordIndex) => {
-              let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
-              let input = wordEl.attr("input");
-              if (input != undefined)
-                wordEl.append(`<div class="wordInputAfter">${input}</div>`);
-            });
-          } catch {}
-        },
-      },
-    },
-    legend: {
-      display: false,
-      labels: {},
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [
-        {
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          display: true,
-          scaleLabel: {
-            display: false,
-            labelString: "Seconds",
-          },
-        },
-      ],
-      yAxes: [
-        {
-          id: "wpm",
-          display: true,
-          scaleLabel: {
-            display: true,
-            labelString: "Words per Minute",
-          },
-          ticks: {
-            beginAtZero: true,
-            min: 0,
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          gridLines: {
-            display: true,
-          },
-        },
-        {
-          id: "raw",
-          display: false,
-          scaleLabel: {
-            display: true,
-            labelString: "Raw Words per Minute",
-          },
-          ticks: {
-            beginAtZero: true,
-            min: 0,
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          gridLines: {
-            display: false,
-          },
-        },
-        {
-          id: "error",
-          display: true,
-          position: "right",
-          scaleLabel: {
-            display: true,
-            labelString: "Errors",
-          },
-          ticks: {
-            precision: 0,
-            beginAtZero: true,
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          gridLines: {
-            display: false,
-          },
-        },
-      ],
-    },
-    annotation: {
-      annotations: [],
-    },
-  },
-});

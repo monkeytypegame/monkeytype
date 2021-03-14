@@ -151,26 +151,28 @@
     <div id="quoteSearchPopupWrapper" class="hidden">
       <div id="quoteSearchPopup" mode="">
         <div class="title">Quote Search</div>
-        <input id="searchBox" class="searchBox" type="text" maxLength="200" autocomplete="off"/>
+        <input
+          id="searchBox"
+          class="searchBox"
+          type="text"
+          maxlength="200"
+          autocomplete="off"
+        />
         <table class="searchResultTable">
           <thead>
             <tr>
               <td class="alignRight" width="5%">#</td>
               <td class="alignRight" width="10%">length</td>
-              <td>
-                text
-              </td>
-              <td  width="30%">
-                source
-              </td>
+              <td>text</td>
+              <td width="30%">source</td>
               <td width="1%"></td>
             </tr>
           </thead>
-          <tbody id="searchResultList">
-            
-          </tbody>
+          <tbody id="searchResultList"></tbody>
         </table>
-        <div id="extraResults" class="quoteSearchResults">No search results</div>
+        <div id="extraResults" class="quoteSearchResults">
+          No search results
+        </div>
         <div class="button">ok</div>
       </div>
     </div>
@@ -3268,10 +3270,10 @@
               <i class="fas fa-fw fa-spin fa-circle-notch"></i>
             </div>
             <div class="content hidden">
-              <div class="hoverChartWrapper">
-                <canvas id="hoverChart"></canvas>
+              <div class="miniResultChartWrapper">
+                <canvas id="miniResultChart"></canvas>
               </div>
-              <div class="hoverChartBg"></div>
+              <div class="miniResultChartBg"></div>
               <div class="triplegroup">
                 <div class="group globalTestsStarted">
                   <div class="title">tests started</div>
@@ -3494,7 +3496,7 @@
               </div> -->
                 <div class="above"></div>
                 <div class="chart" style="height: 400px">
-                  <canvas id="resultHistoryChart"></canvas>
+                  <canvas id="accountHistoryChart"></canvas>
                 </div>
                 <div class="below">
                   <div class="text"></div>
@@ -3512,7 +3514,7 @@
               </div>
               <div class="group dailyActivityChart">
                 <div class="chart" style="height: 200px">
-                  <canvas id="activityChart"></canvas>
+                  <canvas id="accountActivityChart"></canvas>
                 </div>
               </div>
               <div class="triplegroup stats">
