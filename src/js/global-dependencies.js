@@ -32,3 +32,5 @@ import * as OutOfFocus from "./out-of-focus";
 import * as ChartController from "./chart-controller";
 import * as ThemeController from "./theme-controller";
 import * as Caret from "./caret";
+import * as CustomTextPopup from "./custom-text-popup";
+import * as ManualRestart from "./manual-restart-tracker";

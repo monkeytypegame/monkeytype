@@ -9,7 +9,6 @@ let sameWordset = false;
 let textHasTab = false;
 let randomQuote = null;
 let bailout = false;
-let manualRestart = false;
 
 //test ui
 let currentWordElementIndex = 0;
@@ -156,7 +155,7 @@ async function activateFunbox(funbox, mode) {
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
 
-  manualRestart = true;
+  ManualRestart.set();
   if (mode === "style") {
     if (funbox != undefined) {
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
@@ -2696,7 +2695,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
     return;
   }
   if ($(".pageTest").hasClass("active") && !resultVisible) {
-    if (!manualRestart) {
+    if (!ManualRestart.get()) {
       // if ((textHasTab && manualRestart) || !textHasTab) {
       if (textHasTab) {
         try {
@@ -2750,7 +2749,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
     numbersBeforePractise = null;
   }
 
-  manualRestart = false;
+  ManualRestart.reset();
   clearTimeout(timer);
   time = 0;
   TestStats.restart();
@@ -2942,7 +2941,7 @@ function changePage(page) {
     // restartCount = 0;
     // incompleteTestSeconds = 0;
     TestStats.resetIncomplete();
-    manualRestart = true;
+    ManualRestart.set();
     restartTest();
   } else if (page == "about") {
     pageTransition = true;
@@ -3571,147 +3570,6 @@ function hideCapsWarning() {
   }
 }
 
-function showCustomTextPopup() {
-  if ($("#customTextPopupWrapper").hasClass("hidden")) {
-    if ($("#customTextPopup .check input").prop("checked")) {
-      $("#customTextPopup .inputs .randomInputFields").removeClass("hidden");
-    } else {
-      $("#customTextPopup .inputs .randomInputFields").addClass("hidden");
-    }
-    $("#customTextPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, () => {
-        let newtext = CustomText.text.join(" ");
-        newtext = newtext.replace(/\n /g, "\n");
-        $("#customTextPopup textarea").val(newtext);
-        $("#customTextPopup .wordcount input").val(CustomText.word);
-        $("#customTextPopup .time input").val(CustomText.time);
-        $("#customTextPopup textarea").focus();
-      });
-  }
-}
-
-function hideCustomTextPopup() {
-  if (!$("#customTextPopupWrapper").hasClass("hidden")) {
-    $("#customTextPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        100,
-        (e) => {
-          $("#customTextPopupWrapper").addClass("hidden");
-        }
-      );
-  }
-}
-
-$("#customTextPopupWrapper").mousedown((e) => {
-  if ($(e.target).attr("id") === "CustomTextPopupWrapper") {
-    hideCustomTextPopup();
-  }
-});
-
-$("#customTextPopup .inputs .check input").change(() => {
-  if ($("#customTextPopup .check input").prop("checked")) {
-    $("#customTextPopup .inputs .randomInputFields").removeClass("hidden");
-  } else {
-    $("#customTextPopup .inputs .randomInputFields").addClass("hidden");
-  }
-});
-
-$("#customTextPopup textarea").keypress((e) => {
-  if (e.code === "Enter" && e.ctrlKey) {
-    $("#customTextPopup .button").click();
-  }
-});
-
-$("#customTextPopup .randomInputFields .wordcount input").keypress((e) => {
-  $("#customTextPopup .randomInputFields .time input").val("");
-});
-
-$("#customTextPopup .randomInputFields .time input").keypress((e) => {
-  $("#customTextPopup .randomInputFields .wordcount input").val("");
-});
-
-$("#customTextPopup .button").click(() => {
-  let text = $("#customTextPopup textarea").val();
-  text = text.trim();
-  // text = text.replace(/[\r]/gm, " ");
-  text = text.replace(/\\\\t/gm, "\t");
-  text = text.replace(/\\\\n/gm, "\n");
-  text = text.replace(/\\t/gm, "\t");
-  text = text.replace(/\\n/gm, "\n");
-  text = text.replace(/ +/gm, " ");
-  // text = text.replace(/(\r\n)+/g, "\r\n");
-  // text = text.replace(/(\n)+/g, "\n");
-  // text = text.replace(/(\r)+/g, "\r");
-  text = text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-  if ($("#customTextPopup .typographyCheck input").prop("checked")) {
-    text = Misc.cleanTypographySymbols(text);
-  }
-  // text = Misc.remove_non_ascii(text);
-  text = text.replace(/[\u2060]/g, "");
-  text = text.split(" ");
-  CustomText.setText(text);
-  CustomText.setWord(parseInt($("#customTextPopup .wordcount input").val()));
-  CustomText.setTime(parseInt($("#customTextPopup .time input").val()));
-
-  CustomText.setIsWordRandom(
-    $("#customTextPopup .check input").prop("checked") &&
-      !isNaN(CustomText.word)
-  );
-  CustomText.setIsTimeRandom(
-    $("#customTextPopup .check input").prop("checked") &&
-      !isNaN(CustomText.time)
-  );
-
-  if (
-    isNaN(CustomText.word) &&
-    isNaN(CustomText.time) &&
-    (CustomText.isTimeRandom || CustomText.isWordRandom)
-  ) {
-    Notifications.add(
-      "You need to specify word count or time in seconds to start a random custom test.",
-      0,
-      5
-    );
-    return;
-  }
-
-  if (
-    !isNaN(CustomText.word) &&
-    !isNaN(CustomText.time) &&
-    (CustomText.isTimeRandom || CustomText.isWordRandom)
-  ) {
-    Notifications.add(
-      "You need to pick between word count or time in seconds to start a random custom test.",
-      0,
-      5
-    );
-    return;
-  }
-
-  if (
-    (CustomText.isWordRandom && parseInt(CustomText.word) === 0) ||
-    (CustomText.isTimeRandom && parseInt(CustomText.time) === 0)
-  ) {
-    Notifications.add(
-      "Infinite words! Make sure to use Bail Out from the command line to save your result.",
-      0,
-      7
-    );
-  }
-
-  manualRestart = true;
-  restartTest();
-  hideCustomTextPopup();
-});
-
 function showCustomMode2Popup(mode) {
   if ($("#customMode2PopupWrapper").hasClass("hidden")) {
     if (mode == "time") {
@@ -4150,7 +4008,7 @@ function applyMode2Popup() {
   if (mode == "time") {
     if (val !== null && !isNaN(val) && val >= 0) {
       setTimeConfig(val);
-      manualRestart = true;
+      ManualRestart.set();
       restartTest();
       if (val >= 1800) {
         Notifications.add("Stay safe and take breaks!", 0);
@@ -4167,7 +4025,7 @@ function applyMode2Popup() {
   } else if (mode == "words") {
     if (val !== null && !isNaN(val) && val >= 0) {
       setWordCount(val);
-      manualRestart = true;
+      ManualRestart.set();
       restartTest();
       if (val > 2000) {
         Notifications.add("Stay safe and take breaks!", 0);
@@ -4193,7 +4051,7 @@ function applyQuoteSearchPopup(val) {
   if (val !== null && !isNaN(val) && val >= 0) {
     setQuoteLength(-2, false, false);
     selectedQuoteId = val;
-    manualRestart = true;
+    ManualRestart.set();
     restartTest();
   } else {
     Notifications.add("Quote ID must be at least 1", 0);
@@ -4275,7 +4133,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
     showCustomMode2Popup("words");
   } else {
     setWordCount(wrd);
-    manualRestart = true;
+    ManualRestart.set();
     restartTest();
   }
 });
@@ -4286,7 +4144,7 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
     showCustomMode2Popup("time");
   } else {
     setTimeConfig(mode);
-    manualRestart = true;
+    ManualRestart.set();
 
     restartTest();
   }
@@ -4302,25 +4160,25 @@ $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
       len = [0, 1, 2, 3];
     }
     setQuoteLength(len, false, e.shiftKey);
-    manualRestart = true;
+    ManualRestart.set();
     restartTest();
   }
 });
 
 $(document).on("click", "#top .config .customText .text-button", () => {
-  showCustomTextPopup();
+  CustomTextPopup.show(restartTest);
 });
 
 $(document).on("click", "#top .config .punctuationMode .text-button", () => {
   togglePunctuation();
-  manualRestart = true;
+  ManualRestart.set();
 
   restartTest();
 });
 
 $(document).on("click", "#top .config .numbersMode .text-button", () => {
   toggleNumbers();
-  manualRestart = true;
+  ManualRestart.set();
 
   restartTest();
 });
@@ -4333,7 +4191,7 @@ $(document).on("click", "#top .config .mode .text-button", (e) => {
   if ($(e.currentTarget).hasClass("active")) return;
   const mode = $(e.currentTarget).attr("mode");
   setMode(mode);
-  manualRestart = true;
+  ManualRestart.set();
   restartTest();
 });
 
@@ -4343,7 +4201,7 @@ $(document).on("click", "#top #menu .icon-button", (e) => {
     Leaderboards.show();
   } else {
     const href = $(e.currentTarget).attr("href");
-    manualRestart = true;
+    ManualRestart.set();
     changePage(href.replace("/", ""));
   }
 });
@@ -4380,7 +4238,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
 });
 
 $(document.body).on("click", "#restartTestButton", () => {
-  manualRestart = true;
+  ManualRestart.set();
   if (resultCalculating) return;
   if (
     testActive &&
@@ -4442,7 +4300,7 @@ $(document).on("keypress", "#nextTestButton", (event) => {
 });
 
 $(document.body).on("click", "#nextTestButton", () => {
-  manualRestart = true;
+  ManualRestart.set();
   restartTest();
 });
 
@@ -4461,7 +4319,7 @@ $(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
     Notifications.add("Repeat test disabled in zen mode");
     return;
   }
-  manualRestart = true;
+  ManualRestart.set();
   restartTest(true);
 });
 
@@ -4725,7 +4583,7 @@ function handleTab(event) {
       if (config.mode == "zen" && !event.shiftKey) {
         //ignore
       } else {
-        if (event.shiftKey) manualRestart = true;
+        if (event.shiftKey) ManualRestart.set();
 
         if (
           testActive &&
@@ -5430,7 +5288,7 @@ if (window.location.hostname === "localhost") {
   );
 }
 
-manualRestart = true;
+ManualRestart.set();
 
 let configLoadDone;
 let configLoadPromise = new Promise((v) => {
@@ -5639,7 +5497,7 @@ async function setupChallenge(challengeName) {
         setDifficulty(challenge.parameters[3], true);
       }
     }
-    manualRestart = true;
+    ManualRestart.set();
     restartTest(false, true);
     notitext = challenge.message;
     $("#top .config").removeClass("hidden");
