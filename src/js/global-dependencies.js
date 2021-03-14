@@ -33,3 +33,5 @@ import * as ChartController from "./chart-controller";
 import * as ThemeController from "./theme-controller";
 import * as Caret from "./caret";
 import * as WordFilter from "./word-filter";
+import * as CustomTextPopup from "./custom-text-popup";
+import * as ManualRestart from "./manual-restart-tracker";

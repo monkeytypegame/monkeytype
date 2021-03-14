@@ -176,6 +176,15 @@ export function pushKeypressSpacing(val) {
   keypressTimings.spacing.array.push(val);
 }
 
+export function recordKeypressSpacing() {
+  let now = performance.now();
+  let diff = Math.abs(keypressTimings.spacing.current - now);
+  if (keypressTimings.spacing.current !== -1) {
+    pushKeypressSpacing(diff);
+  }
+  setKeypressSpacing(now);
+}
+
 export function setKeypressSpacing(val) {
   keypressTimings.spacing.current = val;
 }
@@ -183,11 +192,11 @@ export function setKeypressSpacing(val) {
 export function resetKeypressTimings() {
   keypressTimings = {
     spacing: {
-      current: -1,
+      current: performance.now(),
       array: [],
     },
     duration: {
-      current: -1,
+      current: performance.now(),
       array: [],
     },
   };
