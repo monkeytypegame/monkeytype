@@ -631,9 +631,31 @@ export function updateColors(chart) {
     ThemeColors.update();
   }
   chart.data.datasets[0].borderColor = ThemeColors.main;
-  chart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
   chart.data.datasets[1].borderColor = ThemeColors.sub;
-  chart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
+
+  if (chart.data.datasets[0].type === undefined) {
+    if (chart.config.type === "line") {
+      chart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
+    } else if (chart.config.type === "bar") {
+      chart.data.datasets[0].backgroundColor = ThemeColors.main;
+    }
+  } else if (chart.data.datasets[0].type === "bar") {
+    chart.data.datasets[0].backgroundColor = ThemeColors.main;
+  } else if (chart.data.datasets[0].type === "line") {
+    chart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
+  }
+
+  if (chart.data.datasets[1].type === undefined) {
+    if (chart.config.type === "line") {
+      chart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
+    } else if (chart.config.type === "bar") {
+      chart.data.datasets[1].backgroundColor = ThemeColors.sub;
+    }
+  } else if (chart.data.datasets[1].type === "bar") {
+    chart.data.datasets[1].backgroundColor = ThemeColors.sub;
+  } else if (chart.data.datasets[1].type === "line") {
+    chart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
+  }
 
   try {
     chart.options.scales.xAxes[0].ticks.minor.fontColor = ThemeColors.sub;
@@ -654,6 +676,12 @@ export function updateColors(chart) {
     chart.options.scales.yAxes[2].ticks.minor.fontColor = ThemeColors.sub;
     chart.options.scales.yAxes[2].scaleLabel.fontColor = ThemeColors.sub;
   } catch {}
+
+  try {
+    chart.data.datasets[0].trendlineLinear.style = ThemeColors.sub;
+    chart.data.datasets[1].trendlineLinear.style = ThemeColors.sub;
+  } catch {}
+
   chart.update();
 }
 
