@@ -1554,6 +1554,8 @@ function showResult(difficultyFailed = false) {
     correctedHistory.push(currentCorrected);
   }
 
+  TestStats.recordKeypressSpacing();
+
   resultCalculating = true;
   resultVisible = true;
   TestStats.setEnd(performance.now());
@@ -4600,14 +4602,7 @@ $(document).keydown(function (event) {
   if (!(event.key == " ") && !event.originalEvent.isTrusted) return;
 
   if (!resultVisible) {
-    let now = performance.now();
-    let diff = Math.abs(TestStats.keypressTimings.spacing.current - now);
-    if (TestStats.keypressTimings.spacing.current !== -1) {
-      TestStats.pushKeypressSpacing(diff);
-      // keypressStats.spacing.array.push(diff);
-    }
-    TestStats.setKeypressSpacing(now);
-    // keypressStats.spacing.current = now;
+    TestStats.recordKeypressSpacing();
   }
 
   Monkey.type();
