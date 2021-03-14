@@ -14,7 +14,6 @@ let manualRestart = false;
 //test ui
 let currentWordElementIndex = 0;
 let resultVisible = false;
-let caretAnimating = true;
 let activeWordTop = 0;
 let activeWordJumped = false;
 let activeWordTopBeforeJump = 0;
@@ -244,7 +243,7 @@ function getuid() {
 function setFocus(foc) {
   if (foc && !focusState) {
     focusState = true;
-    stopCaretAnimation();
+    Caret.stopAnimation();
     $("#top").addClass("focus");
     $("#bottom").addClass("focus");
     $("body").css("cursor", "none");
@@ -252,9 +251,9 @@ function setFocus(foc) {
   } else if (!foc && focusState) {
     focusState = false;
     if (testActive) {
-      stopCaretAnimation();
+      Caret.stopAnimation();
     } else {
-      startCaretAnimation();
+      Caret.startAnimation(config);
     }
     $("#top").removeClass("focus");
     $("#bottom").removeClass("focus");
@@ -882,7 +881,7 @@ function showWords() {
   }
 
   updateActiveElement();
-  updateCaretPosition();
+  Caret.updatePosition(currentInput, config);
 }
 
 (function (history) {
@@ -1240,37 +1239,6 @@ function updateTimer() {
   }
 }
 
-function hideCaret() {
-  $("#caret").addClass("hidden");
-}
-
-function showCaret() {
-  if ($("#result").hasClass("hidden")) {
-    updateCaretPosition();
-    $("#caret").removeClass("hidden");
-    startCaretAnimation();
-  }
-}
-
-function stopCaretAnimation() {
-  if (caretAnimating === true) {
-    $("#caret").css("animation-name", "none");
-    $("#caret").css("opacity", "1");
-    caretAnimating = false;
-  }
-}
-
-function startCaretAnimation() {
-  if (caretAnimating === false) {
-    if (config.smoothCaret) {
-      $("#caret").css("animation-name", "caretFlashSmooth");
-    } else {
-      $("#caret").css("animation-name", "caretFlashHard");
-    }
-    caretAnimating = true;
-  }
-}
-
 function hideKeymap() {
   $(".keymap").addClass("hidden");
   // $("#liveWpm").removeClass("lower");
@@ -1424,97 +1392,6 @@ function updateHighlightedKeymapKey() {
     }
   } catch (e) {
     console.log("could not update highlighted keymap key: " + e.message);
-  }
-}
-
-function updateCaretPosition() {
-  if ($("#wordsWrapper").hasClass("hidden")) return;
-  if ($("#caret").hasClass("off")) {
-    return;
-  }
-
-  let caret = $("#caret");
-
-  let inputLen = currentInput.length;
-  let currentLetterIndex = inputLen - 1;
-  if (currentLetterIndex == -1) {
-    currentLetterIndex = 0;
-  }
-  try {
-    //insert temporary character so the caret will work in zen mode
-    let activeWordEmpty = $("#words .active").children().length == 0;
-    if (activeWordEmpty) {
-      $("#words .active").append('<letter style="opacity: 0;">_</letter>');
-    }
-
-    let currentWordNodeList = document
-      .querySelector("#words .active")
-      .querySelectorAll("letter");
-    let currentLetter = currentWordNodeList[currentLetterIndex];
-    if (inputLen > currentWordNodeList.length) {
-      currentLetter = currentWordNodeList[currentWordNodeList.length - 1];
-    }
-
-    if (config.mode != "zen" && $(currentLetter).length == 0) return;
-    const isLanguageLeftToRight = Misc.getCurrentLanguage().leftToRight;
-    let currentLetterPosLeft = isLanguageLeftToRight
-      ? currentLetter.offsetLeft
-      : currentLetter.offsetLeft + $(currentLetter).width();
-    let currentLetterPosTop = currentLetter.offsetTop;
-    let letterHeight = $(currentLetter).height();
-    let newTop = 0;
-    let newLeft = 0;
-
-    newTop = currentLetterPosTop - Math.round(letterHeight / 5);
-    if (inputLen == 0) {
-      newLeft = isLanguageLeftToRight
-        ? currentLetterPosLeft - caret.width() / 2
-        : currentLetterPosLeft + caret.width() / 2;
-    } else {
-      newLeft = isLanguageLeftToRight
-        ? currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2
-        : currentLetterPosLeft - $(currentLetter).width() + caret.width() / 2;
-    }
-
-    let smoothlinescroll = $("#words .smoothScroller").height();
-    if (smoothlinescroll === undefined) smoothlinescroll = 0;
-
-    if (config.smoothCaret) {
-      caret.stop(true, false).animate(
-        {
-          top: newTop - smoothlinescroll,
-          left: newLeft,
-        },
-        100
-      );
-    } else {
-      caret.stop(true, true).animate(
-        {
-          top: newTop - smoothlinescroll,
-          left: newLeft,
-        },
-        0
-      );
-    }
-
-    if (config.showAllLines) {
-      let browserHeight = window.innerHeight;
-      let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
-      let contentHeight = document.body.scrollHeight;
-
-      if (newTop >= middlePos && contentHeight > browserHeight) {
-        window.scrollTo({
-          left: 0,
-          top: newTop - middlePos,
-          behavior: "smooth",
-        });
-      }
-    }
-    if (activeWordEmpty) {
-      $("#words .active").children().remove();
-    }
-  } catch (e) {
-    console.log("could not move caret: " + e.message);
   }
 }
 
@@ -1682,7 +1559,7 @@ function showResult(difficultyFailed = false) {
   TestStats.setEnd(performance.now());
   testActive = false;
   setFocus(false);
-  hideCaret();
+  Caret.hide();
   hideLiveWpm();
   hideLiveAcc();
   hideTimer();
@@ -2767,7 +2644,7 @@ function startTest() {
         ) {
           //times up
           clearTimeout(timer);
-          hideCaret();
+          Caret.hide();
           inputHistory.push(currentInput);
           correctedHistory.push(currentCorrected);
           showResult();
@@ -2878,7 +2755,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   correctedHistory = [];
   ShiftTracker.reset();
   setFocus(false);
-  hideCaret();
+  Caret.hide();
   testActive = false;
   hideLiveWpm();
   hideLiveAcc();
@@ -4710,18 +4587,18 @@ $("#wordsInput").on("focus", () => {
   if (!resultVisible && config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
-  showCaret();
+  Caret.show(config);
 });
 
 $("#wordsInput").on("focusout", () => {
   if (!resultVisible && config.showOutOfFocusWarning) {
     OutOfFocus.show();
   }
-  hideCaret();
+  Caret.hide();
 });
 
 $(window).resize(() => {
-  updateCaretPosition();
+  Caret.updatePosition(currentInput, config);
 });
 
 $(document).mousemove(function (event) {
@@ -4802,7 +4679,7 @@ $(document).keydown(function (event) {
   ) {
     focusWords();
     wordsFocused = true;
-    if (config.showOutOfFocusWarning) return;
+    // if (config.showOutOfFocusWarning) return;
   }
 
   //tab
@@ -5053,7 +4930,7 @@ function handleBackspace(event) {
   } else if (config.keymapMode === "next") {
     updateHighlightedKeymapKey();
   }
-  updateCaretPosition();
+  Caret.updatePosition(currentInput, config);
 }
 
 function handleSpace(event, isEnter) {
@@ -5100,7 +4977,7 @@ function handleSpace(event, isEnter) {
     currentWordIndex++;
     currentWordElementIndex++;
     updateActiveElement();
-    updateCaretPosition();
+    Caret.updatePosition(currentInput, config);
     TestStats.incrementKeypressCount();
     TestStats.pushKeypressWord(currentWordIndex);
     // currentKeypress.count++;
@@ -5147,7 +5024,7 @@ function handleSpace(event, isEnter) {
       if (config.stopOnError == "word") {
         currentInput += " ";
         updateWordElement(true);
-        updateCaretPosition();
+        Caret.updatePosition(currentInput, config);
       }
       return;
     }
@@ -5158,7 +5035,7 @@ function handleSpace(event, isEnter) {
     currentWordIndex++;
     currentWordElementIndex++;
     updateActiveElement();
-    updateCaretPosition();
+    Caret.updatePosition(currentInput, config);
     // currentKeypress.count++;
     // currentKeypress.words.push(currentWordIndex);
     TestStats.incrementKeypressCount();
@@ -5202,7 +5079,7 @@ function handleSpace(event, isEnter) {
     }
   } //end of line wrap
 
-  updateCaretPosition();
+  Caret.updatePosition(currentInput, config);
 
   if (config.keymapMode === "react") {
     flashPressedKeymapKey(event.code, true);
@@ -5337,7 +5214,7 @@ function handleAlpha(event) {
   }
 
   setFocus(true);
-  stopCaretAnimation();
+  Caret.stopAnimation();
 
   //show dead keys
   if (event.key === "Dead") {
@@ -5558,7 +5435,7 @@ function handleAlpha(event) {
     }
   }
 
-  updateCaretPosition();
+  Caret.updatePosition(currentInput, config);
 }
 
 window.addEventListener("beforeunload", (event) => {
