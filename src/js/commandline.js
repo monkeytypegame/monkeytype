@@ -1,83 +1,4 @@
-function canBailOut() {
-  return (
-    (config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      CustomText.word >= 5000) ||
-    (config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      !CustomText.isTimeRandom &&
-      CustomText.text.length >= 5000) ||
-    (config.mode === "custom" &&
-      CustomText.isTimeRandom &&
-      CustomText.time >= 3600) ||
-    (config.mode === "words" && config.words >= 5000) ||
-    config.words === 0 ||
-    (config.mode === "time" && (config.time >= 3600 || config.time === 0)) ||
-    config.mode == "zen"
-  );
-}
-
-function addChildCommands(
-  unifiedCommands,
-  commandItem,
-  parentCommandDisplay = ""
-) {
-  let commandItemDisplay = commandItem.display.replace(/\s?\.\.\.$/g, "");
-  if (parentCommandDisplay)
-    commandItemDisplay = parentCommandDisplay + " > " + commandItemDisplay;
-  if (commandItem.subgroup) {
-    try {
-      commandItem.exec();
-      const currentCommandsIndex = currentCommands.length - 1;
-      currentCommands[currentCommandsIndex].list.forEach((cmd) => {
-        if (cmd.alias === undefined) cmd.alias = commandItem.alias;
-        addChildCommands(unifiedCommands, cmd, commandItemDisplay);
-      });
-      currentCommands.pop();
-    } catch (e) {}
-  } else {
-    let tempCommandItem = { ...commandItem };
-    if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
-    unifiedCommands.push(tempCommandItem);
-  }
-}
-
-function generateSingleListOfCommands() {
-  const allCommands = [];
-  const oldShowCommandLine = showCommandLine;
-  showCommandLine = () => {};
-  commands.list.forEach((c) => addChildCommands(allCommands, c));
-  showCommandLine = oldShowCommandLine;
-  return {
-    title: "All Commands",
-    list: allCommands,
-  };
-}
-
-function isSingleListCommandLineActive() {
-  return $("#commandLine").hasClass("allCommands");
-}
-
-function useSingleListCommandLine(show = true) {
-  let allCommands = generateSingleListOfCommands();
-  if (config.singleListCommandLine == "manual")
-    currentCommands.push(allCommands);
-  else if (config.singleListCommandLine == "on")
-    currentCommands = [allCommands];
-
-  if (config.singleListCommandLine != "off")
-    $("#commandLine").addClass("allCommands");
-  if (show) showCommandLine();
-}
-
-function restoreOldCommandLine(show = true) {
-  if (isSingleListCommandLineActive()) {
-    $("#commandLine").removeClass("allCommands");
-    currentCommands = currentCommands.filter((l) => l.title != "All Commands");
-    if (currentCommands.length < 1) currentCommands = [commands];
-  }
-  if (show) showCommandLine();
-}
+let currentCommands = [commands];
 
 let commands = {
   title: "",
@@ -305,6 +226,15 @@ let commands = {
       },
     },
     {
+      id: "changeOppositeShiftMode",
+      display: "Change opposite shift mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsOppositeShiftMode);
+        showCommandLine();
+      },
+    },
+    {
       id: "togglePlaySoundOnError",
       display: "Toggle play sound on error",
       exec: () => {
@@ -384,10 +314,10 @@ let commands = {
       },
     },
     {
-      id: "togglePresetCustomTheme",
+      id: "toggleCustomTheme",
       display: "Toggle preset/custom theme",
       exec: () => {
-        togglePresetCustomTheme();
+        toggleCustomTheme();
       },
     },
     {
@@ -572,7 +502,7 @@ let commands = {
     {
       id: "randomiseTheme",
       display: "Next random theme",
-      exec: () => randomiseTheme(),
+      exec: () => ThemeController.randomiseTheme(config),
     },
     {
       id: "viewTypingPage",
@@ -673,7 +603,7 @@ let commands = {
         initPractiseMissedWords();
       },
       available: () => {
-        return resultVisible && Object.keys(missedWords).length > 0;
+        return resultVisible && Object.keys(TestStats.missedWords).length > 0;
       },
     },
     {
@@ -703,7 +633,7 @@ let commands = {
         showCustomTextPopup();
         setTimeout(() => {
           // Workaround to focus textarea since hideCommandLine() will focus test words
-          $("#CustomTextPopup textarea").focus();
+          $("#customTextPopup textarea").focus();
         }, 150);
       },
     },
@@ -774,6 +704,26 @@ let commandsRepeatQuotes = {
       display: "typing",
       exec: () => {
         setRepeatQuotes("typing");
+      },
+    },
+  ],
+};
+
+let commandsOppositeShiftMode = {
+  title: "Change opposite shift mode...",
+  list: [
+    {
+      id: "setOppositeShiftModeOff",
+      display: "off",
+      exec: () => {
+        setOppositeShiftMode("off");
+      },
+    },
+    {
+      id: "setOppositeShiftModeOn",
+      display: "on",
+      exec: () => {
+        setOppositeShiftMode("on");
       },
     },
   ],
@@ -852,19 +802,6 @@ let commandsSoundOnClick = {
       display: "4",
       exec: () => {
         setPlaySoundOnClick("4");
-        Sound.playClick(config.playSoundOnClick);
-           },
-          {
-      id: "setSoundOnClick4",
-      display: "5",
-      exec: () => {
-        setPlaySoundOnClick("5");
-        Sound.playClick(config.playSoundOnClick);
-          {
-      id: "setSoundOnClick5",
-      display: "5",
-      exec: () => {
-        setPlaySoundOnClick("5");
         Sound.playClick(config.playSoundOnClick);
       },
     },
@@ -1594,22 +1531,28 @@ let commandsTags = {
 };
 
 function updateCommandsTagsList() {
-  if (db_getSnapshot().tags.length > 0) {
+  if (DB.getSnapshot().tags.length > 0) {
     commandsTags.list = [];
 
     commandsTags.list.push({
       id: "clearTags",
       display: "Clear tags",
       exec: () => {
-        db_getSnapshot().tags.forEach((tag) => {
+        DB.getSnapshot().tags.forEach((tag) => {
           tag.active = false;
         });
-        updateTestModesNotice();
+        updateTestModesNotice(
+          sameWordset,
+          textHasTab,
+          paceCaret,
+          activeFunBox,
+          config
+        );
         saveActiveTagsToCookie();
       },
     });
 
-    db_getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags.forEach((tag) => {
       let dis = tag.name;
 
       if (tag.active === true) {
@@ -1624,7 +1567,13 @@ function updateCommandsTagsList() {
         sticky: true,
         exec: () => {
           toggleTag(tag.id);
-          updateTestModesNotice();
+          updateTestModesNotice(
+            sameWordset,
+            textHasTab,
+            paceCaret,
+            activeFunBox,
+            config
+          );
           let txt = tag.name;
 
           if (tag.active === true) {
@@ -1654,7 +1603,8 @@ Misc.getThemesList().then((themes) => {
       id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
       display: theme.name.replace(/_/g, " "),
       hover: () => {
-        previewTheme(theme.name);
+        // previewTheme(theme.name);
+        ThemeController.preview(theme.name);
       },
       exec: () => {
         setTheme(theme.name);
@@ -1671,7 +1621,8 @@ function showFavouriteThemesAtTheTop() {
         id: "changeTheme" + Misc.capitalizeFirstLetter(theme),
         display: theme.replace(/_/g, " "),
         hover: () => {
-          previewTheme(theme);
+          // previewTheme(theme);
+          ThemeController.preview(theme);
         },
         exec: () => {
           setTheme(theme);
@@ -1685,7 +1636,8 @@ function showFavouriteThemesAtTheTop() {
           id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
           display: theme.name.replace(/_/g, " "),
           hover: () => {
-            previewTheme(theme.name);
+            // previewTheme(theme.name);
+            ThemeController.preview(theme.name);
           },
           exec: () => {
             setTheme(theme.name);
@@ -1700,6 +1652,87 @@ let commandsFonts = {
   title: "Change font...",
   list: [],
 };
+
+function canBailOut() {
+  return (
+    (config.mode === "custom" &&
+      CustomText.isWordRandom &&
+      CustomText.word >= 5000) ||
+    (config.mode === "custom" &&
+      !CustomText.isWordRandom &&
+      !CustomText.isTimeRandom &&
+      CustomText.text.length >= 5000) ||
+    (config.mode === "custom" &&
+      CustomText.isTimeRandom &&
+      CustomText.time >= 3600) ||
+    (config.mode === "words" && config.words >= 5000) ||
+    config.words === 0 ||
+    (config.mode === "time" && (config.time >= 3600 || config.time === 0)) ||
+    config.mode == "zen"
+  );
+}
+
+function addChildCommands(
+  unifiedCommands,
+  commandItem,
+  parentCommandDisplay = ""
+) {
+  let commandItemDisplay = commandItem.display.replace(/\s?\.\.\.$/g, "");
+  if (parentCommandDisplay)
+    commandItemDisplay = parentCommandDisplay + " > " + commandItemDisplay;
+  if (commandItem.subgroup) {
+    try {
+      commandItem.exec();
+      const currentCommandsIndex = currentCommands.length - 1;
+      currentCommands[currentCommandsIndex].list.forEach((cmd) => {
+        if (cmd.alias === undefined) cmd.alias = commandItem.alias;
+        addChildCommands(unifiedCommands, cmd, commandItemDisplay);
+      });
+      currentCommands.pop();
+    } catch (e) {}
+  } else {
+    let tempCommandItem = { ...commandItem };
+    if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
+    unifiedCommands.push(tempCommandItem);
+  }
+}
+
+function generateSingleListOfCommands() {
+  const allCommands = [];
+  const oldShowCommandLine = showCommandLine;
+  showCommandLine = () => {};
+  commands.list.forEach((c) => addChildCommands(allCommands, c));
+  showCommandLine = oldShowCommandLine;
+  return {
+    title: "All Commands",
+    list: allCommands,
+  };
+}
+
+function isSingleListCommandLineActive() {
+  return $("#commandLine").hasClass("allCommands");
+}
+
+function useSingleListCommandLine(show = true) {
+  let allCommands = generateSingleListOfCommands();
+  if (config.singleListCommandLine == "manual")
+    currentCommands.push(allCommands);
+  else if (config.singleListCommandLine == "on")
+    currentCommands = [allCommands];
+
+  if (config.singleListCommandLine != "off")
+    $("#commandLine").addClass("allCommands");
+  if (show) showCommandLine();
+}
+
+function restoreOldCommandLine(show = true) {
+  if (isSingleListCommandLineActive()) {
+    $("#commandLine").removeClass("allCommands");
+    currentCommands = currentCommands.filter((l) => l.title != "All Commands");
+    if (currentCommands.length < 1) currentCommands = [commands];
+  }
+  if (show) showCommandLine();
+}
 
 Misc.getFontsList().then((fonts) => {
   fonts.forEach((font) => {
@@ -1881,11 +1914,6 @@ $(document).ready((e) => {
           hideCommandLine();
         }
         setFontFamily(config.fontFamily, true);
-        if (config.customTheme === true) {
-          applyCustomThemeColors();
-        } else {
-          setTheme(config.theme);
-        }
       } else if (event.keyCode == 9 || !config.swapEscAndTab) {
         if (config.singleListCommandLine == "on")
           useSingleListCommandLine(false);
@@ -1954,15 +1982,14 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeKeyboard"
   );
-  if (isPreviewingTheme) {
-    applyCustomThemeColors();
-    // previewTheme(config.theme, false);
-  }
   let hoverId = $(e.target).attr("command");
   try {
     let list = currentCommands[currentCommands.length - 1];
     $.each(list.list, (index, obj) => {
       if (obj.id == hoverId) {
+        if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+          ThemeController.clearPreview();
+        if (!/font/gi.test(obj.id)) previewFontFamily(config.fontFamily);
         obj.hover();
       }
     });
@@ -1978,20 +2005,20 @@ $("#commandLineWrapper").click((e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hideCommandLine();
     setFontFamily(config.fontFamily, true);
-    if (config.customTheme === true) {
-      applyCustomThemeColors();
-    } else {
-      setTheme(config.theme, true);
-    }
+    // if (config.customTheme === true) {
+    //   applyCustomThemeColors();
+    // } else {
+    //   setTheme(config.theme, true);
+    // }
   }
 });
 
 $(document).keydown((e) => {
-  if (isPreviewingTheme) {
-    console.log("applying theme");
-    applyCustomThemeColors();
-    // previewTheme(config.theme, false);
-  }
+  // if (isPreviewingTheme) {
+  // console.log("applying theme");
+  // applyCustomThemeColors();
+  // previewTheme(config.theme, false);
+  // }
   if (!$("#commandLineWrapper").hasClass("hidden")) {
     $("#commandLine input").focus();
     if (e.key == ">" && config.singleListCommandLine == "manual") {
@@ -2080,6 +2107,9 @@ $(document).keydown((e) => {
         let list = currentCommands[currentCommands.length - 1];
         $.each(list.list, (index, obj) => {
           if (obj.id == hoverId) {
+            if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+              ThemeController.clearPreview();
+            if (!/font/gi.test(obj.id)) previewFontFamily(config.fontFamily);
             obj.hover();
           }
         });
@@ -2089,8 +2119,6 @@ $(document).keydown((e) => {
     }
   }
 });
-
-let currentCommands = [commands];
 
 function triggerCommand(command) {
   let subgroup = false;
@@ -2127,7 +2155,8 @@ function triggerCommand(command) {
 
 function hideCommandLine() {
   previewFontFamily(config.fontFamily);
-  applyCustomThemeColors();
+  // applyCustomThemeColors();
+  ThemeController.clearPreview();
   $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -2258,6 +2287,9 @@ function displayFoundCommands() {
     try {
       $.each(list.list, (index, obj) => {
         if (obj.found) {
+          if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+            ThemeController.clearPreview();
+          if (!/font/gi.test(obj.id)) previewFontFamily(config.fontFamily);
           obj.hover();
           return false;
         }
