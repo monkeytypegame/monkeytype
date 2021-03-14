@@ -139,6 +139,10 @@ html {
   background: var(--main-color);
 }
 
+::-webkit-scrollbar-corner{
+  background: var(--subcolour);
+}
+
 a {
   color: var(--sub-color);
   transition: 0.25s;
@@ -623,6 +627,8 @@ a:hover {
     display: grid;
     gap: 1rem;
     width: 1000px;
+    height: 80vh;
+    grid-template-rows: auto auto auto 1fr;
 
     #extraResults{
       text-align: center;
@@ -633,100 +639,75 @@ a:hover {
       color: var(--sub-color);
     }
 
-    .searchResult{
-      height: 2rem;
-      font-size: 0.8rem;
-    }
-    .quoteSearchResults{
+    
+    #quoteSearchResults{
       display: grid;
-      gap: 0.3rem;
-    }
+      gap: 0.5rem;
+      height: auto;
+      overflow: scroll;
 
-    .searchResultTable {
-      width: 100%;
-      border-spacing: 0;
-      border-collapse: collapse;
-      user-select: none;
-
-      .alignRight{
-        text-align: right;
-      }
-
-      tr td:first-child {
-        text-align: center;
-      }
-
-      td {
-        padding: 0.5rem 0.5rem;
-        .fixedHeight{
-          height: 2rem;
-          overflow: hidden;
-          display: grid;
+      .searchResult{
+        display: grid;
+        grid-template-columns: 1fr 1fr 3fr 0fr;
+        grid-auto-rows: auto;
+        width: 100%;
+        gap: 1rem;
+        Transition: 0.25s;
+        padding: 1rem;
+        box-sizing:border-box;
+        user-select: none;
+        cursor: pointer;
+        .text{
+          grid-column-start: 1;
+          grid-column-end: 4;
+          grid-row-start: 1;
+          grid-row-end: 2;
+          overflow:visible;
+          color: var(--text-color);
+        }
+        .id{
+          grid-column-start: 1;
+          grid-column-end: 2;
+          grid-row-start: 2;
+          grid-row-end: 3;
+          font-size: 0.8rem;
+          color: var(--sub-color);
+        }
+        .length{
+          grid-column-start: 2;
+          grid-column-end: 3;
+          grid-row-start: 2;
+          grid-row-end: 3;
+          font-size: 0.8rem;
+          color: var(--sub-color);
+        }
+        .source{
+          grid-column-start: 3;
+          grid-column-end: 4;
+          grid-row-start: 2;
+          grid-row-end: 3;
+          font-size: 0.8rem;
+          color: var(--sub-color);
+        }
+        .resultChevron{
+          grid-column-start: 4;
+          grid-column-end: 5;
+          grid-row-start: 1;
+          grid-row-end: 3;
+          display: flex;
           align-items: center;
-        }
-        &.me {
-          color: var(--main-color);
-          font-weight: 900;
-        }
-      }
-
-      thead {
-        color: var(--sub-color);
-        font-size: 0.75rem;
-
-        td {
-          padding: 0.5rem;
-          background: var(--bg-color);
-          position: -webkit-sticky;
-          position: sticky;
-          top: 0;
-          z-index: 99;
-        }
-      }
-
-      tbody {
-        color: var(--text-color);
-        .fillerResult td{
+          justify-items:center;
           color: var(--sub-color);
+          font-size:2rem;
         }
-        td{
-          transition: 0.25s;
-          height: 3rem;
-        }
-        tr td:nth-child(3),
-        tr td:nth-child(4){
-          font-size: .75rem;
-        }
-        tr td:nth-child(5){
-          color: var(--sub-color);
-        }
-        .searchResult:hover td{
-          background: rgba(0, 0, 0, 0.1);
+        .sub{
+          opacity: 0.5;
         }
       }
-
-      tfoot {
-        td {
-          padding: 0.5rem;
-          position: -webkit-sticky;
-          position: sticky;
-          bottom: 0;
-          background: var(--bg-color);
-          color: var(--sub-color);
-          z-index: 4;
-        }
+      .searchResult:hover{
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
       }
-
-      tr {
-        td:first-child {
-          padding-left: 1rem;
-        }
-        td:last-child {
-          padding-right: 1rem;
-        }
-      }
-
-      
     }
   }
 }

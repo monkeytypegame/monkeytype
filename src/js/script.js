@@ -4027,32 +4027,36 @@ function hideCustomMode2Popup() {
 async function showQuoteSearchPopup() {
   if($("#quoteSearchPopupWrapper").hasClass("hidden")){
     let quotes = await Misc.getQuotes(config.language);
-    let table = $("#quoteSearchPopup .searchResultTable");
-    let numberOfSearchResults = 0;
-    table.find("tbody").empty();
     $("#quoteSearchPopup input").val("");
-    for(let i = 0 ;i < 5; i++){
-      let quote = quotes.quotes[i];
-      table.find("tbody").append(`
-      <tr class="searchResult" id=${quote.id}>
-              <td class="alignRight"><div class="fixedHeight">${quote.id}</div></td>
-              <td class="alignRight"><div class="fixedHeight">${quote.length}</div></td>
-              <td>
-                <div class="fixedHeight">${quote.text}</div>
-              </td>
-              <td>
-              <div class="fixedHeight">${quote.source}</div>
-              </td>
-              <td><i class="fas fa-chevron-right"></i></td>
-            </tr>
-      `)
-    }
-    quotes.groups.forEach(group =>{
-      group.forEach(quote =>{
-        numberOfSearchResults++;
-      })
+    let oldResults = document.getElementById("quoteSearchResults");
+    oldResults.remove();
+    $("#quoteSearchPopup").append('<div class="quoteSearchResults" id="quoteSearchResults"></div>');
+    let resultsList = $("#quoteSearchResults");
+    let resultsShown = 0;
+    quotes.quotes.forEach(quote =>{
+      let lengthDesc;
+      if(quote.length < 101){
+        lengthDesc = "short";
+      } else if (quote.length < 301){
+        lengthDesc = "medium";
+      } else if (quote.length < 601){
+        lengthDesc = "long";
+      } else {
+        lengthDesc = "thicc";
+      }
+      if(resultsShown++ < 200){
+        resultsList.append(`
+        <div class="searchResult" id="${quote.id}">
+          <div class="text">${quote.text}</div>
+          <div class="id"><div class="sub">id</div>${quote.id}</div>
+          <div class="length"><div class="sub">length</div>${lengthDesc}</div>
+          <div class="source"><div class="sub">source</div>${quote.source}</div>
+          <div class="resultChevron"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        `)
+      }
     })
-    document.getElementById("extraResults").innerHTML = (numberOfSearchResults - 5) + " more results";
+    document.getElementById("extraResults").innerHTML = resultsShown + " results";
     $("#quoteSearchPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -4314,7 +4318,6 @@ $("#quoteSearchPopup .searchBox").keydown((e) => {
     searchText = searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     let reg = new RegExp(searchText, "i");
     let found = [];
-    let numberOfSearchResults = 0;
     quotes.quotes.forEach(quote =>{
       let quoteText = quote["text"];
       let quoteSource = quote["source"];
@@ -4322,72 +4325,42 @@ $("#quoteSearchPopup .searchBox").keydown((e) => {
       let test1 = reg.test(quoteText);
       let test2 = reg.test(quoteSource);
       let test3 = reg.test(quoteId);
-      
       if (test1 || test2 || test3){
         found.push(quote);
-        numberOfSearchResults++
       }
     })
-    let table = $("#quoteSearchPopup .searchResultTable");
-    table.find("tbody").empty();
-    for( let i=0; i<5; i++){
-      if(found[i] === undefined) continue;
-      // if(found[i].text.length > 100){
-      //   found[i].text = found[i].text.substring(0, 100) + "...";
-      // }
-      // if(found[i].source.length > 50){
-      //   found[i].source = found[i].source.substring(0, 50) + "...";
-      // }
-      table.find("tbody").append(`
-      <tr class="searchResult" id=${found[i].id}>
-              <td class="alignRight"><div class="fixedHeight">${found[i].id}</div></td>
-              <td class="alignRight"><div class="fixedHeight">${found[i].length}</div></td>
-              <td>
-                <div class="fixedHeight">${found[i].text}</div>
-              </td>
-              <td>
-              <div class="fixedHeight">${found[i].source}</div>
-              </td>
-              <td><i class="fas fa-chevron-right"></i></td>
-            </tr>
-      `)
-    }
-    if(numberOfSearchResults > 5){
-      $("#extraResults").css("opacity", "1");
-      document.getElementById("extraResults").innerHTML = (numberOfSearchResults - 5) + " more results";
-    }else if (numberOfSearchResults < 5){
-      $("#extraResults").css("opacity", "1");
-      document.getElementById("extraResults").innerHTML = "No other results";
-      for (let i = 0; i < 5 - numberOfSearchResults; i++){
-        table.find("tbody").append(`
-          <tr class="fillerResult" id="">
-              <td class="alignRight"><div class="fixedHeight">-</div></td>
-              <td class="alignRight"><div class="fixedHeight">-</div></td>
-              <td>
-                <div class="fixedHeight">-</div>
-              </td>
-              <td>
-              <div class="fixedHeight">-</div>
-              </td>
-              <td></td>
-            </tr>
-      `)
+    let oldResults = document.getElementById("quoteSearchResults");
+    oldResults.remove();
+    $("#quoteSearchPopup").append('<div class="quoteSearchResults" id="quoteSearchResults"></div>');
+    let resultsList = $("#quoteSearchResults");
+    let resultListLength = 0;
+    found.forEach(quote =>{
+      let lengthDesc;
+      if(quote.length < 101){
+        lengthDesc = "short";
+      } else if (quote.length < 301){
+        lengthDesc = "medium";
+      } else if (quote.length < 601){
+        lengthDesc = "long";
+      } else {
+        lengthDesc = "thicc";
       }
-    } 
-    if (numberOfSearchResults == 0){
-      $("#extraResults").css("opacity", "1");
-      document.getElementById("extraResults").innerHTML = "No search results";
-    }
+      if (resultListLength++ < 200){
+        resultsList.append(`
+        <div class="searchResult" id="${quote.id}">
+          <div class="text">${quote.text}</div>
+          <div class="id"><div class="sub">id</div>${quote.id}</div>
+          <div class="length"><div class="sub">length</div>${lengthDesc}</div>
+          <div class="source"><div class="sub">source</div>${quote.source}</div>
+          <div class="resultChevron"><i class="fas fa-chevron-right"></i></div>
+        </div>
+        `)
+      }
+    })
+    document.getElementById("extraResults").innerHTML = resultListLength + " results";
   }, 0.1) //arbitrarily v. small time as it's only to allow text to input before searching
 });
 //sets quote id to searched quote clicked
-$("#quoteSearchResults").click((e) => {
-  if($(e.target).hasClass("quoteSearchButton")){
-    document.getElementById("inputNumber").value = e.target.getAttribute("id");
-    applyMode2Popup();
-  }
-})
-
 $("#quoteSearchPopupWrapper").click((e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
     hideQuoteSearchPopup();
@@ -4398,23 +4371,9 @@ $("#customMode2Popup .button").click(() => {
   applyMode2Popup();
 });
 
-$("#quoteSearchPopup .button").click(() => {
-  if(!isNaN(document.getElementById("searchBox").value)){
-    applyQuoteSearchPopup();
-  } else {
-    let results = document.getElementsByClassName("searchResult");
-    if(results.length > 0){
-      selectedQuoteId = parseInt(results[0].getAttribute("id"));
-      applyQuoteSearchPopup(selectedQuoteId);
-    }
-  }
-});
-
-$(document).on("click", "#quoteSearchPopup .searchResultTable tbody tr", (e) => {
-  if($(e.currentTarget).hasClass("searchResult")){
-    selectedQuoteId = parseInt($(e.currentTarget).attr("id"));
-    applyQuoteSearchPopup(selectedQuoteId);
-  }
+$(document).on("click", "#quoteSearchResults .searchResult", (e) => {
+  selectedQuoteId = parseInt($(e.currentTarget).attr("id"));
+  applyQuoteSearchPopup(selectedQuoteId);
 });
 
 $("#quoteSearchPopup input").keypress((e) => {
