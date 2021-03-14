@@ -153,7 +153,7 @@ function saveActiveTagsToCookie() {
   let tags = [];
 
   try {
-    db_getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags.forEach((tag) => {
       if (tag.active === true) {
         tags.push(tag.id);
       }

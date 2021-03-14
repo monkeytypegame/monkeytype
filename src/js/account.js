@@ -1,5 +1,3 @@
-import { db_updateName } from "./db";
-
 var gmailProvider = new firebase.auth.GoogleAuthProvider();
 
 function showSignOutButton() {
@@ -164,7 +162,7 @@ function signUp() {
                 console.log("Analytics unavailable");
               }
               $(".pageLogin .preloader").addClass("hidden");
-              db_setSnapshot({
+              DB.setSnapshot({
                 results: [],
                 personalBests: {},
                 tags: [],
@@ -180,7 +178,7 @@ function signUp() {
                   uid: usr.uid,
                   obj: notSignedInLastResult,
                 });
-                db_getSnapshot().results.push(notSignedInLastResult);
+                DB.getSnapshot().results.push(notSignedInLastResult);
               }
               changePage("account");
               usr.sendEmailVerification();
@@ -237,7 +235,7 @@ function signOut() {
       hideAccountSettingsSection();
       updateAccountLoginButton();
       changePage("login");
-      db_setSnapshot(null);
+      DB.setSnapshot(null);
     })
     .catch(function (error) {
       Notifications.add(error.message, -1);
@@ -285,7 +283,7 @@ firebase.auth().onAuthStateChanged(function (user) {
       CloudFunctions.verifyUser(verifyUserWhenLoggedIn).then((data) => {
         if (data.data.status === 1) {
           Notifications.add(data.data.message, 1);
-          db_getSnapshot().discordId = data.data.did;
+          DB.getSnapshot().discordId = data.data.did;
           updateDiscordSettingsSection();
         } else {
           Notifications.add(data.data.message, -1);
@@ -319,9 +317,9 @@ firebase.auth().onAuthStateChanged(function (user) {
 });
 
 function getAccountDataAndInit() {
-  db_getUserSnapshot()
+  DB.initSnapshot()
     .then(async (e) => {
-      let snap = db_getSnapshot();
+      let snap = DB.getSnapshot();
       if (snap === null) {
         throw "Missing db snapshot. Client likely could not connect to the backend.";
       }
@@ -331,8 +329,8 @@ function getAccountDataAndInit() {
         if (Misc.isUsernameValid(user.displayName)) {
           //valid, just update
           snap.name = user.displayName;
-          db_setSnapshot(snap);
-          db_updateName(user.uid, user.displayName);
+          DB.setSnapshot(snap);
+          DB.updateName(user.uid, user.displayName);
         } else {
           //invalid, get new
           // Notifications.add("Invalid name", 0);
@@ -366,11 +364,11 @@ function getAccountDataAndInit() {
       if (!configChangedBeforeDb) {
         if (cookieConfig === null) {
           accountIconLoading(false);
-          applyConfig(db_getSnapshot().config);
+          applyConfig(DB.getSnapshot().config);
           updateSettingsPage();
           saveConfigToCookie(true);
           restartTest(false, true);
-        } else if (db_getSnapshot().config !== undefined) {
+        } else if (DB.getSnapshot().config !== undefined) {
           // let configsDifferent = false;
           // Object.keys(config).forEach((key) => {
           //   if (!configsDifferent) {
@@ -378,19 +376,19 @@ function getAccountDataAndInit() {
           //       if (key !== "resultFilters") {
           //         if (Array.isArray(config[key])) {
           //           config[key].forEach((arrval, index) => {
-          //             if (arrval != db_getSnapshot().config[key][index]) {
+          //             if (arrval != DB.getSnapshot().config[key][index]) {
           //               configsDifferent = true;
           //               console.log(
-          //                 `.config is different: ${arrval} != ${db_getSnapshot().config[key][index]
+          //                 `.config is different: ${arrval} != ${DB.getSnapshot().config[key][index]
           //                 }`
           //               );
           //             }
           //           });
           //         } else {
-          //           if (config[key] != db_getSnapshot().config[key]) {
+          //           if (config[key] != DB.getSnapshot().config[key]) {
           //             configsDifferent = true;
           //             console.log(
-          //               `..config is different ${key}: ${config[key]} != ${db_getSnapshot().config[key]
+          //               `..config is different ${key}: ${config[key]} != ${DB.getSnapshot().config[key]
           //               }`
           //             );
           //           }
@@ -406,7 +404,7 @@ function getAccountDataAndInit() {
           // if (configsDifferent) {
           //   console.log("applying config from db");
           //   accountIconLoading(false);
-          //   config = db_getSnapshot().config;
+          //   config = DB.getSnapshot().config;
           //   applyConfig(config);
           //   updateSettingsPage();
           //   saveConfigToCookie(true);
@@ -429,12 +427,12 @@ function getAccountDataAndInit() {
       //     config.resultFilters.difficulty === undefined
       //   ) {
       //     if (
-      //       db_getSnapshot().config.resultFilters == null ||
-      //       db_getSnapshot().config.resultFilters.difficulty === undefined
+      //       DB.getSnapshot().config.resultFilters == null ||
+      //       DB.getSnapshot().config.resultFilters.difficulty === undefined
       //     ) {
       //       config.resultFilters = defaultAccountFilters;
       //     } else {
-      //       config.resultFilters = db_getSnapshot().config.resultFilters;
+      //       config.resultFilters = DB.getSnapshot().config.resultFilters;
       //     }
       //   }
       // } catch (e) {
@@ -578,14 +576,14 @@ function updateFilterTags() {
   $(
     ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
   ).empty();
-  if (db_getSnapshot().tags.length > 0) {
+  if (DB.getSnapshot().tags.length > 0) {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
       "hidden"
     );
     $(
       ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
     ).append(`<div class="button" filter="none">no tag</div>`);
-    db_getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags.forEach((tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
       ).append(`<div class="button" filter="${tag.id}">${tag.name}</div>`);
@@ -689,9 +687,9 @@ function showActiveFilters() {
         ret += aboveChartDisplay.tags.array
           .map((id) => {
             if (id == "none") return id;
-            let name = db_getSnapshot().tags.filter((t) => t.id == id)[0];
+            let name = DB.getSnapshot().tags.filter((t) => t.id == id)[0];
             if (name !== undefined) {
-              return db_getSnapshot().tags.filter((t) => t.id == id)[0].name;
+              return DB.getSnapshot().tags.filter((t) => t.id == id)[0].name;
             }
           })
           .join(", ");
@@ -821,7 +819,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   }
   ResultFilters.setFilter("funbox", activeFunBox, true);
   ResultFilters.setFilter("tags", "none", true);
-  db_getSnapshot().tags.forEach((tag) => {
+  DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
       ResultFilters.setFilter("tags", "none", false);
       ResultFilters.setFilter("tags", tag.id, true);
@@ -941,7 +939,7 @@ function fillPbTables() {
   </tr>
   `);
 
-  const pb = db_getSnapshot().personalBests;
+  const pb = DB.getSnapshot().personalBests;
   let pbData;
   let text;
 
@@ -1180,7 +1178,7 @@ function loadMoreLines() {
 
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
-        db_getSnapshot().tags.forEach((snaptag) => {
+        DB.getSnapshot().tags.forEach((snaptag) => {
           if (tag === snaptag.id) {
             tagNames += snaptag.name + ", ";
           }
@@ -1251,10 +1249,10 @@ function clearGlobalStats() {
 }
 
 function refreshGlobalStats() {
-  if (db_getSnapshot().globalStats.time != undefined) {
-    let th = Math.floor(db_getSnapshot().globalStats.time / 3600);
-    let tm = Math.floor((db_getSnapshot().globalStats.time % 3600) / 60);
-    let ts = Math.floor((db_getSnapshot().globalStats.time % 3600) % 60);
+  if (DB.getSnapshot().globalStats.time != undefined) {
+    let th = Math.floor(DB.getSnapshot().globalStats.time / 3600);
+    let tm = Math.floor((DB.getSnapshot().globalStats.time % 3600) / 60);
+    let ts = Math.floor((DB.getSnapshot().globalStats.time % 3600) % 60);
     $(".pageAccount .globalTimeTyping .val").text(`
 
       ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
@@ -1262,14 +1260,14 @@ function refreshGlobalStats() {
     }
   `);
   }
-  if (db_getSnapshot().globalStats.started != undefined) {
+  if (DB.getSnapshot().globalStats.started != undefined) {
     $(".pageAccount .globalTestsStarted .val").text(
-      db_getSnapshot().globalStats.started
+      DB.getSnapshot().globalStats.started
     );
   }
-  if (db_getSnapshot().globalStats.completed != undefined) {
+  if (DB.getSnapshot().globalStats.completed != undefined) {
     $(".pageAccount .globalTestsCompleted .val").text(
-      db_getSnapshot().globalStats.completed
+      DB.getSnapshot().globalStats.completed
     );
   }
 }
@@ -1336,7 +1334,7 @@ function refreshAccountPage() {
 
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
-    db_getSnapshot().results.forEach((result) => {
+    DB.getSnapshot().results.forEach((result) => {
       let tt = 0;
       if (result.testDuration == undefined) {
         //test finished before testDuration field was introduced - estimate
@@ -1428,14 +1426,14 @@ function refreshAccountPage() {
 
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
-          if (db_getSnapshot().tags.length > 0) {
+          if (DB.getSnapshot().tags.length > 0) {
             if (ResultFilters.getFilter("tags", "none")) tagHide = false;
           } else {
             tagHide = false;
           }
         } else {
           //tags exist
-          let validTags = db_getSnapshot().tags.map((t) => t.id);
+          let validTags = DB.getSnapshot().tags.map((t) => t.id);
           result.tags.forEach((tag) => {
             //check if i even need to check tags anymore
             if (!tagHide) return;
@@ -1779,11 +1777,11 @@ function refreshAccountPage() {
 
     swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
   }
-  if (db_getSnapshot() === null) {
+  if (DB.getSnapshot() === null) {
     Notifications.add(`Missing account data. Please refresh.`, -1);
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");
-  } else if (db_getSnapshot().results === undefined) {
-    db_getUserResults().then((d) => {
+  } else if (DB.getSnapshot().results === undefined) {
+    DB.getUserResults().then((d) => {
       if (d) {
         showActiveFilters();
       } else {
@@ -1839,7 +1837,7 @@ $(".pageAccount .toggleChartStyle").click((e) => {
 });
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
-  if (db_getSnapshot().tags.length > 0) {
+  if (DB.getSnapshot().tags.length > 0) {
     let resultid = $(f.target).parents("span").attr("resultid");
     let tags = $(f.target).parents("span").attr("tags");
     $("#resultEditTagsPanel").attr("resultid", resultid);
@@ -1861,7 +1859,7 @@ $("#resultEditTagsPanelWrapper").click((e) => {
 
 function updateResultEditTagsPanelButtons() {
   $("#resultEditTagsPanel .buttons").empty();
-  db_getSnapshot().tags.forEach((tag) => {
+  DB.getSnapshot().tags.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
       `<div class="button tag" tagid="${tag.id}">${tag.name}</div>`
     );
@@ -1901,7 +1899,7 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
     hideBackgroundLoader();
     if (r.data.resultCode === 1) {
       Notifications.add("Tags updated.", 1, 2);
-      db_getSnapshot().results.forEach((result) => {
+      DB.getSnapshot().results.forEach((result) => {
         if (result.id === resultid) {
           result.tags = newtags;
         }
@@ -1911,7 +1909,7 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
 
       if (newtags.length > 0) {
         newtags.forEach((tag) => {
-          db_getSnapshot().tags.forEach((snaptag) => {
+          DB.getSnapshot().tags.forEach((snaptag) => {
             if (tag === snaptag.id) {
               tagNames += snaptag.name + ", ";
             }
@@ -1956,9 +1954,6 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
   });
 });
 
-function updateLbMemory(mode, mode2, type, value) {
-  db_getSnapshot().lbMemory[mode + mode2][type] = value;
-}
 $(".pageLogin .register input").keyup((e) => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;
   if (e.key == "Enter") {

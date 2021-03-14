@@ -1984,7 +1984,7 @@ function showResult(difficultyFailed = false) {
     let activeTags = [];
     let activeTagsIds = [];
     try {
-      db_getSnapshot().tags.forEach((tag) => {
+      DB.getSnapshot().tags.forEach((tag) => {
         if (tag.active === true) {
           activeTags.push(tag);
           activeTagsIds.push(tag.id);
@@ -2080,14 +2080,14 @@ function showResult(difficultyFailed = false) {
         accountIconLoading(true);
         let dontShowCrown = false;
         let pbDiff = 0;
-        db_getLocalPB(
+        DB.getLocalPB(
           config.mode,
           mode2,
           config.punctuation,
           config.language,
           config.difficulty
         ).then((lpb) => {
-          db_getUserHighestWpm(
+          DB.getUserHighestWpm(
             config.mode,
             mode2,
             config.punctuation,
@@ -2160,7 +2160,7 @@ function showResult(difficultyFailed = false) {
             $("#result .stats .tags .bottom").text("");
             let annotationSide = "left";
             activeTags.forEach(async (tag) => {
-              let tpb = await db_getLocalTagPB(
+              let tpb = await DB.getLocalTagPB(
                 tag.id,
                 config.mode,
                 mode2,
@@ -2174,7 +2174,7 @@ function showResult(difficultyFailed = false) {
               if (config.mode != "quote") {
                 if (tpb < stats.wpm) {
                   //new pb for that tag
-                  db_saveLocalTagPB(
+                  DB.saveLocalTagPB(
                     tag.id,
                     config.mode,
                     mode2,
@@ -2272,32 +2272,32 @@ function showResult(difficultyFailed = false) {
                     completedEvent.isPb = true;
                   }
                   if (
-                    db_getSnapshot() !== null &&
-                    db_getSnapshot().results !== undefined
+                    DB.getSnapshot() !== null &&
+                    DB.getSnapshot().results !== undefined
                   ) {
-                    db_getSnapshot().results.unshift(completedEvent);
-                    if (db_getSnapshot().globalStats.time == undefined) {
-                      db_getSnapshot().globalStats.time =
+                    DB.getSnapshot().results.unshift(completedEvent);
+                    if (DB.getSnapshot().globalStats.time == undefined) {
+                      DB.getSnapshot().globalStats.time =
                         testtime +
                         completedEvent.incompleteTestSeconds -
                         afkseconds;
                     } else {
-                      db_getSnapshot().globalStats.time +=
+                      DB.getSnapshot().globalStats.time +=
                         testtime +
                         completedEvent.incompleteTestSeconds -
                         afkseconds;
                     }
-                    if (db_getSnapshot().globalStats.started == undefined) {
-                      db_getSnapshot().globalStats.started =
+                    if (DB.getSnapshot().globalStats.started == undefined) {
+                      DB.getSnapshot().globalStats.started =
                         TestStats.restartCount + 1;
                     } else {
-                      db_getSnapshot().globalStats.started +=
+                      DB.getSnapshot().globalStats.started +=
                         TestStats.restartCount + 1;
                     }
-                    if (db_getSnapshot().globalStats.completed == undefined) {
-                      db_getSnapshot().globalStats.completed = 1;
+                    if (DB.getSnapshot().globalStats.completed == undefined) {
+                      DB.getSnapshot().globalStats.completed = 1;
                     } else {
-                      db_getSnapshot().globalStats.completed += 1;
+                      DB.getSnapshot().globalStats.completed += 1;
                     }
                   }
                   try {
@@ -2311,7 +2311,7 @@ function showResult(difficultyFailed = false) {
                   if (
                     config.mode === "time" &&
                     (mode2 == "15" || mode2 == "60") &&
-                    db_getSnapshot() !== null
+                    DB.getSnapshot() !== null
                   ) {
                     const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
                     const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
@@ -2322,7 +2322,7 @@ function showResult(difficultyFailed = false) {
                     const glb = e.data.globalLeaderboard;
                     let glbMemory;
                     try {
-                      glbMemory = db_getSnapshot().lbMemory[config.mode + mode2]
+                      glbMemory = DB.getSnapshot().lbMemory[config.mode + mode2]
                         .global;
                     } catch {
                       glbMemory = null;
@@ -2335,7 +2335,7 @@ function showResult(difficultyFailed = false) {
                     } else if (glb.insertedAt === -1) {
                       dontShowGlobalDiff = true;
                       globalLbDiff = glbMemory - glb.insertedAt;
-                      updateLbMemory(
+                      DB.updateLbMemory(
                         config.mode,
                         mode2,
                         "global",
@@ -2346,7 +2346,7 @@ function showResult(difficultyFailed = false) {
                     } else if (glb.insertedAt >= 0) {
                       if (glb.newBest) {
                         globalLbDiff = glbMemory - glb.insertedAt;
-                        updateLbMemory(
+                        DB.updateLbMemory(
                           config.mode,
                           mode2,
                           "global",
@@ -2356,7 +2356,7 @@ function showResult(difficultyFailed = false) {
                         globalLbString = `global: ${str}`;
                       } else {
                         globalLbDiff = glbMemory - glb.foundAt;
-                        updateLbMemory(
+                        DB.updateLbMemory(
                           config.mode,
                           mode2,
                           "global",
@@ -2383,7 +2383,7 @@ function showResult(difficultyFailed = false) {
                     const dlb = e.data.dailyLeaderboard;
                     let dlbMemory;
                     try {
-                      dlbMemory = db_getSnapshot().lbMemory[config.mode + mode2]
+                      dlbMemory = DB.getSnapshot().lbMemory[config.mode + mode2]
                         .daily;
                     } catch {
                       dlbMemory = null;
@@ -2396,7 +2396,7 @@ function showResult(difficultyFailed = false) {
                     } else if (dlb.insertedAt === -1) {
                       dontShowDailyDiff = true;
                       dailyLbDiff = dlbMemory - dlb.insertedAt;
-                      updateLbMemory(
+                      DB.updateLbMemory(
                         config.mode,
                         mode2,
                         "daily",
@@ -2406,7 +2406,7 @@ function showResult(difficultyFailed = false) {
                     } else if (dlb.insertedAt >= 0) {
                       if (dlb.newBest) {
                         dailyLbDiff = dlbMemory - dlb.insertedAt;
-                        updateLbMemory(
+                        DB.updateLbMemory(
                           config.mode,
                           mode2,
                           "daily",
@@ -2416,7 +2416,7 @@ function showResult(difficultyFailed = false) {
                         dailyLbString = `daily: ${str}`;
                       } else {
                         dailyLbDiff = dlbMemory - dlb.foundAt;
-                        updateLbMemory(
+                        DB.updateLbMemory(
                           config.mode,
                           mode2,
                           "daily",
@@ -2443,7 +2443,7 @@ function showResult(difficultyFailed = false) {
 
                     // CloudFunctions.saveLbMemory({
                     //   uid: firebase.auth().currentUser.uid,
-                    //   obj: db_getSnapshot().lbMemory,
+                    //   obj: DB.getSnapshot().lbMemory,
                     // }).then((d) => {
                     //   if (d.data.returnCode === 1) {
                     //   } else {
@@ -2483,7 +2483,7 @@ function showResult(difficultyFailed = false) {
                   if (e.data.resultCode === 2) {
                     //new pb
                     showCrown();
-                    db_saveLocalPB(
+                    DB.saveLocalPB(
                       config.mode,
                       mode2,
                       config.punctuation,
@@ -3686,7 +3686,7 @@ function updateTestModesNotice() {
 
   let tagsString = "";
   try {
-    db_getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags.forEach((tag) => {
       if (tag.active === true) {
         tagsString += tag.name + ", ";
       }
@@ -3749,7 +3749,7 @@ function tagsEdit() {
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Tag added", 1, 2);
-        db_getSnapshot().tags.push({
+        DB.getSnapshot().tags.push({
           name: inputVal,
           id: e.data.id,
         });
@@ -3773,7 +3773,7 @@ function tagsEdit() {
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Tag updated", 1);
-        db_getSnapshot().tags.forEach((tag) => {
+        DB.getSnapshot().tags.forEach((tag) => {
           if (tag.id === tagid) {
             tag.name = inputVal;
           }
@@ -3797,9 +3797,9 @@ function tagsEdit() {
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Tag removed", 1);
-        db_getSnapshot().tags.forEach((tag, index) => {
+        DB.getSnapshot().tags.forEach((tag, index) => {
           if (tag.id === tagid) {
-            db_getSnapshot().tags.splice(index, 1);
+            DB.getSnapshot().tags.splice(index, 1);
           }
         });
         updateResultEditTagsPanelButtons();
@@ -4071,7 +4071,7 @@ async function initPaceCaret() {
   }
   let wpm;
   if (config.paceCaret === "pb") {
-    wpm = await db_getLocalPB(
+    wpm = await DB.getLocalPB(
       config.mode,
       mode2,
       config.punctuation,
@@ -4089,7 +4089,7 @@ async function initPaceCaret() {
     } else if (config.mode === "quote") {
       mode2 = randomQuote.id;
     }
-    wpm = await db_getUserAverageWpm10(
+    wpm = await DB.getUserAverageWpm10(
       config.mode,
       mode2,
       config.punctuation,

@@ -188,7 +188,7 @@ simplePopups.clearTagPb = new SimplePopup(
       .then((res) => {
         hideBackgroundLoader();
         if (res.data.resultCode === 1) {
-          let tag = db_getSnapshot().tags.filter((t) => t.id === tagid)[0];
+          let tag = DB.getSnapshot().tags.filter((t) => t.id === tagid)[0];
           tag.pb = 0;
           $(
             `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`

@@ -5,19 +5,19 @@ db.settings({ experimentalForceLongPolling: true });
 
 let dbSnapshot = null;
 
-export function db_updateName(uid, name) {
+export function updateName(uid, name) {
   db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
 }
 
-export function db_getSnapshot() {
+export function getSnapshot() {
   return dbSnapshot;
 }
 
-export function db_setSnapshot(newSnapshot) {
+export function setSnapshot(newSnapshot) {
   dbSnapshot = newSnapshot;
 }
 
-export async function db_getUserSnapshot() {
+export async function initSnapshot() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
   let snap = {
@@ -112,7 +112,7 @@ export async function db_getUserSnapshot() {
   return dbSnapshot;
 }
 
-export async function db_getUserResults() {
+export async function getUserResults() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
   if (dbSnapshot === null) return false;
@@ -153,7 +153,7 @@ export async function db_getUserResults() {
   }
 }
 
-export async function db_getUserHighestWpm(
+export async function getUserHighestWpm(
   mode,
   mode2,
   punctuation,
@@ -187,7 +187,7 @@ export async function db_getUserHighestWpm(
   return retval;
 }
 
-export async function db_getUserAverageWpm10(
+export async function getUserAverageWpm10(
   mode,
   mode2,
   punctuation,
@@ -220,7 +220,7 @@ export async function db_getUserAverageWpm10(
   let retval = 0;
 
   if (dbSnapshot == null) return retval;
-  var dbSnapshotValid = await db_getUserResults();
+  var dbSnapshotValid = await getUserResults();
   if (dbSnapshotValid === false) {
     return retval;
   }
@@ -228,7 +228,7 @@ export async function db_getUserAverageWpm10(
   return retval;
 }
 
-export async function db_getLocalPB(
+export async function getLocalPB(
   mode,
   mode2,
   punctuation,
@@ -262,7 +262,7 @@ export async function db_getLocalPB(
   return retval;
 }
 
-export async function db_saveLocalPB(
+export async function saveLocalPB(
   mode,
   mode2,
   punctuation,
@@ -330,7 +330,7 @@ export async function db_saveLocalPB(
   }
 }
 
-export async function db_getLocalTagPB(
+export async function getLocalTagPB(
   tagId,
   mode,
   mode2,
@@ -366,7 +366,7 @@ export async function db_getLocalTagPB(
   return retval;
 }
 
-export async function db_saveLocalTagPB(
+export async function saveLocalTagPB(
   tagId,
   mode,
   mode2,
@@ -436,7 +436,11 @@ export async function db_saveLocalTagPB(
   }
 }
 
-// export async function db_getLocalTagPB(tagId) {
+export function updateLbMemory(mode, mode2, type, value) {
+  getSnapshot().lbMemory[mode + mode2][type] = value;
+}
+
+// export async function DB.getLocalTagPB(tagId) {
 //   function cont() {
 //     let ret = 0;
 //     try {
@@ -457,7 +461,7 @@ export async function db_saveLocalTagPB(
 //   return retval;
 // }
 
-// export async function db_saveLocalTagPB(tagId, wpm) {
+// export async functio(tagId, wpm) {
 //   function cont() {
 //     dbSnapshot.tags.forEach((tag) => {
 //       if (tag.id === tagId) {

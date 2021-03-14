@@ -1531,14 +1531,14 @@ let commandsTags = {
 };
 
 function updateCommandsTagsList() {
-  if (db_getSnapshot().tags.length > 0) {
+  if (DB.getSnapshot().tags.length > 0) {
     commandsTags.list = [];
 
     commandsTags.list.push({
       id: "clearTags",
       display: "Clear tags",
       exec: () => {
-        db_getSnapshot().tags.forEach((tag) => {
+        DB.getSnapshot().tags.forEach((tag) => {
           tag.active = false;
         });
         updateTestModesNotice();
@@ -1546,7 +1546,7 @@ function updateCommandsTagsList() {
       },
     });
 
-    db_getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags.forEach((tag) => {
       let dis = tag.name;
 
       if (tag.active === true) {

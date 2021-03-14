@@ -617,9 +617,9 @@ function hideAccountSettingsSection() {
 }
 
 function refreshTagsSettingsSection() {
-  if (firebase.auth().currentUser !== null && db_getSnapshot() !== null) {
+  if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
-    db_getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags.forEach((tag) => {
       let tagPbString = "No PB found";
       if (tag.pb != undefined && tag.pb > 0) {
         tagPbString = `PB: ${tag.pb}`;
@@ -732,7 +732,7 @@ function setCustomThemeInputs() {
 }
 
 function showActiveTags() {
-  db_getSnapshot().tags.forEach((tag) => {
+  DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
       $(
         `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
@@ -746,7 +746,7 @@ function showActiveTags() {
 }
 
 function toggleTag(tagid, nosave = false) {
-  db_getSnapshot().tags.forEach((tag) => {
+  DB.getSnapshot().tags.forEach((tag) => {
     if (tag.id === tagid) {
       if (tag.active === undefined) {
         tag.active = true;
@@ -764,10 +764,10 @@ function updateDiscordSettingsSection() {
   if (firebase.auth().currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
-    if (db_getSnapshot() == null) return;
+    if (DB.getSnapshot() == null) return;
     $(".pageSettings .section.discordIntegration").removeClass("hidden");
 
-    if (db_getSnapshot().discordId == undefined) {
+    if (DB.getSnapshot().discordId == undefined) {
       //show button
       $(".pageSettings .section.discordIntegration .buttons").removeClass(
         "hidden"
@@ -852,7 +852,7 @@ $(
     .then((ret) => {
       hideBackgroundLoader();
       if (ret.data.status === 1 || ret.data.status === 2) {
-        db_getSnapshot().pairingCode = ret.data.pairingCode;
+        DB.getSnapshot().pairingCode = ret.data.pairingCode;
         $(".pageSettings .section.discordIntegration .code .bottom").text(
           ret.data.pairingCode
         );
@@ -878,7 +878,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
         hideBackgroundLoader();
         console.log(ret);
         if (ret.data.status === 1) {
-          db_getSnapshot().discordId = null;
+          DB.getSnapshot().discordId = null;
           Notifications.add("Accounts unlinked", 0);
           updateDiscordSettingsSection();
         } else {

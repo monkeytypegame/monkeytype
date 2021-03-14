@@ -7,18 +7,7 @@ import chartAnnotation from "chartjs-plugin-annotation";
 Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
 
-import {
-  db_getSnapshot,
-  db_setSnapshot,
-  db_getUserSnapshot,
-  db_getUserResults,
-  db_getUserHighestWpm,
-  db_getLocalPB,
-  db_getUserAverageWpm10,
-  db_saveLocalPB,
-  db_getLocalTagPB,
-  db_saveLocalTagPB,
-} from "./db";
+import * as DB from "./db";
 
 import {
   showBackgroundLoader,
