@@ -14,6 +14,7 @@ import {
   hideBackgroundLoader,
   swapElements,
   accountIconLoading,
+  updateTestModesNotice,
 } from "./dom-util";
 import * as Misc from "./misc";
 import * as CloudFunctions from "./cloud-functions";

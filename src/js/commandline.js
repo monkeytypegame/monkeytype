@@ -1541,7 +1541,13 @@ function updateCommandsTagsList() {
         DB.getSnapshot().tags.forEach((tag) => {
           tag.active = false;
         });
-        updateTestModesNotice();
+        updateTestModesNotice(
+          sameWordset,
+          textHasTab,
+          paceCaret,
+          activeFunBox,
+          config
+        );
         saveActiveTagsToCookie();
       },
     });
@@ -1561,7 +1567,13 @@ function updateCommandsTagsList() {
         sticky: true,
         exec: () => {
           toggleTag(tag.id);
-          updateTestModesNotice();
+          updateTestModesNotice(
+            sameWordset,
+            textHasTab,
+            paceCaret,
+            activeFunBox,
+            config
+          );
           let txt = tag.name;
 
           if (tag.active === true) {
