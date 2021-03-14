@@ -656,6 +656,8 @@ a:hover {
         box-sizing: border-box;
         user-select: none;
         cursor: pointer;
+        height: min-content;
+
         .text {
           grid-column-start: 1;
           grid-column-end: 4;
