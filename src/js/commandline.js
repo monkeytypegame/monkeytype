@@ -314,10 +314,10 @@ let commands = {
       },
     },
     {
-      id: "togglePresetCustomTheme",
+      id: "toggleCustomTheme",
       display: "Toggle preset/custom theme",
       exec: () => {
-        togglePresetCustomTheme();
+        toggleCustomTheme();
       },
     },
     {
@@ -502,7 +502,7 @@ let commands = {
     {
       id: "randomiseTheme",
       display: "Next random theme",
-      exec: () => randomiseTheme(),
+      exec: () => ThemeController.randomiseTheme(config),
     },
     {
       id: "viewTypingPage",
@@ -1603,7 +1603,8 @@ Misc.getThemesList().then((themes) => {
       id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
       display: theme.name.replace(/_/g, " "),
       hover: () => {
-        previewTheme(theme.name);
+        // previewTheme(theme.name);
+        ThemeController.preview(theme.name);
       },
       exec: () => {
         setTheme(theme.name);
@@ -1620,7 +1621,8 @@ function showFavouriteThemesAtTheTop() {
         id: "changeTheme" + Misc.capitalizeFirstLetter(theme),
         display: theme.replace(/_/g, " "),
         hover: () => {
-          previewTheme(theme);
+          // previewTheme(theme);
+          ThemeController.preview(theme);
         },
         exec: () => {
           setTheme(theme);
@@ -1634,7 +1636,8 @@ function showFavouriteThemesAtTheTop() {
           id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),
           display: theme.name.replace(/_/g, " "),
           hover: () => {
-            previewTheme(theme.name);
+            // previewTheme(theme.name);
+            ThemeController.preview(theme.name);
           },
           exec: () => {
             setTheme(theme.name);
@@ -1911,11 +1914,6 @@ $(document).ready((e) => {
           hideCommandLine();
         }
         setFontFamily(config.fontFamily, true);
-        if (config.customTheme === true) {
-          applyCustomThemeColors();
-        } else {
-          setTheme(config.theme);
-        }
       } else if (event.keyCode == 9 || !config.swapEscAndTab) {
         if (config.singleListCommandLine == "on")
           useSingleListCommandLine(false);
@@ -1984,15 +1982,14 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeKeyboard"
   );
-  if (isPreviewingTheme) {
-    applyCustomThemeColors();
-    // previewTheme(config.theme, false);
-  }
   let hoverId = $(e.target).attr("command");
   try {
     let list = currentCommands[currentCommands.length - 1];
     $.each(list.list, (index, obj) => {
       if (obj.id == hoverId) {
+        if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+          ThemeController.clearPreview();
+        if (!/font/gi.test(obj.id)) previewFontFamily(config.fontFamily);
         obj.hover();
       }
     });
@@ -2008,20 +2005,20 @@ $("#commandLineWrapper").click((e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
     hideCommandLine();
     setFontFamily(config.fontFamily, true);
-    if (config.customTheme === true) {
-      applyCustomThemeColors();
-    } else {
-      setTheme(config.theme, true);
-    }
+    // if (config.customTheme === true) {
+    //   applyCustomThemeColors();
+    // } else {
+    //   setTheme(config.theme, true);
+    // }
   }
 });
 
 $(document).keydown((e) => {
-  if (isPreviewingTheme) {
-    console.log("applying theme");
-    applyCustomThemeColors();
-    // previewTheme(config.theme, false);
-  }
+  // if (isPreviewingTheme) {
+  // console.log("applying theme");
+  // applyCustomThemeColors();
+  // previewTheme(config.theme, false);
+  // }
   if (!$("#commandLineWrapper").hasClass("hidden")) {
     $("#commandLine input").focus();
     if (e.key == ">" && config.singleListCommandLine == "manual") {
@@ -2110,6 +2107,9 @@ $(document).keydown((e) => {
         let list = currentCommands[currentCommands.length - 1];
         $.each(list.list, (index, obj) => {
           if (obj.id == hoverId) {
+            if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+              ThemeController.clearPreview();
+            if (!/font/gi.test(obj.id)) previewFontFamily(config.fontFamily);
             obj.hover();
           }
         });
@@ -2155,7 +2155,8 @@ function triggerCommand(command) {
 
 function hideCommandLine() {
   previewFontFamily(config.fontFamily);
-  applyCustomThemeColors();
+  // applyCustomThemeColors();
+  ThemeController.clearPreview();
   $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -2286,6 +2287,9 @@ function displayFoundCommands() {
     try {
       $.each(list.list, (index, obj) => {
         if (obj.found) {
+          if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+            ThemeController.clearPreview();
+          if (!/font/gi.test(obj.id)) previewFontFamily(config.fontFamily);
           obj.hover();
           return false;
         }

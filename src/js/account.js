@@ -306,7 +306,6 @@ firebase.auth().onAuthStateChanged(function (user) {
     }
     setCustomTheme(true);
     setCustomThemeInputs();
-    applyCustomThemeColors();
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
     let challengeName = window.location.pathname.split("_")[1];

@@ -2907,7 +2907,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
       !pageTransition &&
       !config.customTheme
     ) {
-      randomiseTheme();
+      ThemeController.randomiseTheme(config);
     }
   }
   resultVisible = false;
@@ -5632,10 +5632,10 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
-    togglePresetCustomTheme();
+    toggleCustomTheme();
   } else {
     // if (config.customTheme) {
-    //   togglePresetCustomTheme();
+    //   toggleCustomTheme();
     // }
     currentCommands.push(commandsThemes);
     showCommandLine();
@@ -5676,7 +5676,6 @@ $(document).ready(() => {
   if (window.location.pathname === "/") {
     $("#top .config").removeClass("hidden");
   }
-  updateFavicon(32, 14);
   $("body").css("transition", ".25s");
   if (config.quickTab) {
     $("#restartTestButton").addClass("hidden");

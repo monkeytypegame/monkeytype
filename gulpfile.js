@@ -102,6 +102,7 @@ const refactoredSrc = [
   "./src/js/theme-colors.js",
   "./src/js/test/out-of-focus.js",
   "./src/js/chart-controller.js",
+  "./src/js/theme-controller.js",
 ];
 
 //legacy files

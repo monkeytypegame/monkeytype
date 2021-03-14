@@ -30,3 +30,4 @@ import * as TestStats from "./test-stats";
 import * as ThemeColors from "./theme-colors";
 import * as OutOfFocus from "./out-of-focus";
 import * as ChartController from "./chart-controller";
+import * as ThemeController from "./theme-controller";

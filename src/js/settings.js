@@ -402,8 +402,8 @@ function refreshThemeButtons() {
   let themesEl = $(".pageSettings .section.themes .allThemes.buttons").empty();
 
   let activeThemeName = config.theme;
-  if (config.randomTheme !== "off" && randomTheme !== null) {
-    activeThemeName = randomTheme;
+  if (config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
+    activeThemeName = ThemeController.randomTheme;
   }
 
   Misc.getSortedThemesList().then((themes) => {
@@ -531,7 +531,7 @@ function hideCustomThemeShare() {
       config.customThemeColors = defaultConfig.customThemeColors;
     }
     setCustomThemeInputs();
-    applyCustomThemeColors();
+    // applyCustomThemeColors();
     $("#customThemeShareWrapper input").val("");
     $("#customThemeShareWrapper")
       .stop(true, true)
@@ -952,17 +952,7 @@ $(document).on(
 );
 
 //theme tabs & custom theme
-const colorVars = [
-  "--bg-color",
-  "--main-color",
-  "--caret-color",
-  "--sub-color",
-  "--text-color",
-  "--error-color",
-  "--error-extra-color",
-  "--colorful-error-color",
-  "--colorful-error-extra-color",
-];
+const colorVars = ThemeController.colorVars;
 
 $(".pageSettings .section.themes .tabs .button").click((e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
@@ -971,7 +961,8 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
   setCustomThemeInputs();
   if ($target.attr("tab") == "preset") {
     setCustomTheme(false);
-    applyCustomThemeColors();
+    ThemeController.set(config.theme);
+    // applyCustomThemeColors();
     swapElements(
       $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
       $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
@@ -979,7 +970,8 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
     );
   } else {
     setCustomTheme(true);
-    applyCustomThemeColors();
+    ThemeController.set("custom");
+    // applyCustomThemeColors();
     swapElements(
       $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
       $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
@@ -1009,11 +1001,14 @@ $(".pageSettings .saveCustomThemeButton").click((e) => {
     }
   );
   setCustomThemeColors(save);
+  ThemeController.set("custom");
   Notifications.add("Custom theme colors saved", 0);
 });
 
 $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
-  previewTheme(config.theme);
+  // previewTheme(config.theme);
+  ThemeController.preview(config.theme);
+
   colorVars.forEach((e) => {
     document.documentElement.style.setProperty(e, "");
   });
