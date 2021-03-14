@@ -7,24 +7,14 @@ import chartAnnotation from "chartjs-plugin-annotation";
 Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
 
-import {
-  db_getSnapshot,
-  db_setSnapshot,
-  db_getUserSnapshot,
-  db_getUserResults,
-  db_getUserHighestWpm,
-  db_getLocalPB,
-  db_getUserAverageWpm10,
-  db_saveLocalPB,
-  db_getLocalTagPB,
-  db_saveLocalTagPB,
-} from "./db";
+import * as DB from "./db";
 
 import {
   showBackgroundLoader,
   hideBackgroundLoader,
   swapElements,
   accountIconLoading,
+  updateTestModesNotice,
 } from "./dom-util";
 import * as Misc from "./misc";
 import * as CloudFunctions from "./cloud-functions";
@@ -39,3 +29,6 @@ import * as ShiftTracker from "./shift-tracker";
 import * as TestStats from "./test-stats";
 import * as ThemeColors from "./theme-colors";
 import * as OutOfFocus from "./out-of-focus";
+import * as ChartController from "./chart-controller";
+import * as ThemeController from "./theme-controller";
+import * as Caret from "./caret";

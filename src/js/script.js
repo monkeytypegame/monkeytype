@@ -14,7 +14,6 @@ let manualRestart = false;
 //test ui
 let currentWordElementIndex = 0;
 let resultVisible = false;
-let caretAnimating = true;
 let activeWordTop = 0;
 let activeWordJumped = false;
 let activeWordTopBeforeJump = 0;
@@ -215,7 +214,13 @@ async function activateFunbox(funbox, mode) {
       settingsGroups.layout.updateButton();
     }
   }
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
   return true;
 }
 
@@ -238,7 +243,7 @@ function getuid() {
 function setFocus(foc) {
   if (foc && !focusState) {
     focusState = true;
-    stopCaretAnimation();
+    Caret.stopAnimation();
     $("#top").addClass("focus");
     $("#bottom").addClass("focus");
     $("body").css("cursor", "none");
@@ -246,9 +251,9 @@ function setFocus(foc) {
   } else if (!foc && focusState) {
     focusState = false;
     if (testActive) {
-      stopCaretAnimation();
+      Caret.stopAnimation();
     } else {
-      startCaretAnimation();
+      Caret.startAnimation(config);
     }
     $("#top").removeClass("focus");
     $("#bottom").removeClass("focus");
@@ -876,7 +881,7 @@ function showWords() {
   }
 
   updateActiveElement();
-  updateCaretPosition();
+  Caret.updatePosition(currentInput, config);
 }
 
 (function (history) {
@@ -1234,37 +1239,6 @@ function updateTimer() {
   }
 }
 
-function hideCaret() {
-  $("#caret").addClass("hidden");
-}
-
-function showCaret() {
-  if ($("#result").hasClass("hidden")) {
-    updateCaretPosition();
-    $("#caret").removeClass("hidden");
-    startCaretAnimation();
-  }
-}
-
-function stopCaretAnimation() {
-  if (caretAnimating === true) {
-    $("#caret").css("animation-name", "none");
-    $("#caret").css("opacity", "1");
-    caretAnimating = false;
-  }
-}
-
-function startCaretAnimation() {
-  if (caretAnimating === false) {
-    if (config.smoothCaret) {
-      $("#caret").css("animation-name", "caretFlashSmooth");
-    } else {
-      $("#caret").css("animation-name", "caretFlashHard");
-    }
-    caretAnimating = true;
-  }
-}
-
 function hideKeymap() {
   $(".keymap").addClass("hidden");
   // $("#liveWpm").removeClass("lower");
@@ -1418,97 +1392,6 @@ function updateHighlightedKeymapKey() {
     }
   } catch (e) {
     console.log("could not update highlighted keymap key: " + e.message);
-  }
-}
-
-function updateCaretPosition() {
-  if ($("#wordsWrapper").hasClass("hidden")) return;
-  if ($("#caret").hasClass("off")) {
-    return;
-  }
-
-  let caret = $("#caret");
-
-  let inputLen = currentInput.length;
-  let currentLetterIndex = inputLen - 1;
-  if (currentLetterIndex == -1) {
-    currentLetterIndex = 0;
-  }
-  try {
-    //insert temporary character so the caret will work in zen mode
-    let activeWordEmpty = $("#words .active").children().length == 0;
-    if (activeWordEmpty) {
-      $("#words .active").append('<letter style="opacity: 0;">_</letter>');
-    }
-
-    let currentWordNodeList = document
-      .querySelector("#words .active")
-      .querySelectorAll("letter");
-    let currentLetter = currentWordNodeList[currentLetterIndex];
-    if (inputLen > currentWordNodeList.length) {
-      currentLetter = currentWordNodeList[currentWordNodeList.length - 1];
-    }
-
-    if (config.mode != "zen" && $(currentLetter).length == 0) return;
-    const isLanguageLeftToRight = Misc.getCurrentLanguage().leftToRight;
-    let currentLetterPosLeft = isLanguageLeftToRight
-      ? currentLetter.offsetLeft
-      : currentLetter.offsetLeft + $(currentLetter).width();
-    let currentLetterPosTop = currentLetter.offsetTop;
-    let letterHeight = $(currentLetter).height();
-    let newTop = 0;
-    let newLeft = 0;
-
-    newTop = currentLetterPosTop - Math.round(letterHeight / 5);
-    if (inputLen == 0) {
-      newLeft = isLanguageLeftToRight
-        ? currentLetterPosLeft - caret.width() / 2
-        : currentLetterPosLeft + caret.width() / 2;
-    } else {
-      newLeft = isLanguageLeftToRight
-        ? currentLetterPosLeft + $(currentLetter).width() - caret.width() / 2
-        : currentLetterPosLeft - $(currentLetter).width() + caret.width() / 2;
-    }
-
-    let smoothlinescroll = $("#words .smoothScroller").height();
-    if (smoothlinescroll === undefined) smoothlinescroll = 0;
-
-    if (config.smoothCaret) {
-      caret.stop(true, false).animate(
-        {
-          top: newTop - smoothlinescroll,
-          left: newLeft,
-        },
-        100
-      );
-    } else {
-      caret.stop(true, true).animate(
-        {
-          top: newTop - smoothlinescroll,
-          left: newLeft,
-        },
-        0
-      );
-    }
-
-    if (config.showAllLines) {
-      let browserHeight = window.innerHeight;
-      let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
-      let contentHeight = document.body.scrollHeight;
-
-      if (newTop >= middlePos && contentHeight > browserHeight) {
-        window.scrollTo({
-          left: 0,
-          top: newTop - middlePos,
-          behavior: "smooth",
-        });
-      }
-    }
-    if (activeWordEmpty) {
-      $("#words .active").children().remove();
-    }
-  } catch (e) {
-    console.log("could not move caret: " + e.message);
   }
 }
 
@@ -1676,7 +1559,7 @@ function showResult(difficultyFailed = false) {
   TestStats.setEnd(performance.now());
   testActive = false;
   setFocus(false);
-  hideCaret();
+  Caret.hide();
   hideLiveWpm();
   hideLiveAcc();
   hideTimer();
@@ -1705,7 +1588,7 @@ function showResult(difficultyFailed = false) {
   let afkseconds = TestStats.calculateAfkSeconds();
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
 
-  wpmOverTimeChart.options.annotation.annotations = [];
+  ChartController.result.options.annotation.annotations = [];
 
   $("#result #resultWordsHistory").addClass("hidden");
 
@@ -1856,24 +1739,9 @@ function showResult(difficultyFailed = false) {
     }
   }
 
-  if (ThemeColors.main == "") {
-    ThemeColors.update();
-  }
+  ChartController.result.updateColors();
 
-  wpmOverTimeChart.options.scales.xAxes[0].ticks.minor.fontColor =
-    ThemeColors.sub;
-  wpmOverTimeChart.options.scales.xAxes[0].scaleLabel.fontColor =
-    ThemeColors.sub;
-  wpmOverTimeChart.options.scales.yAxes[0].ticks.minor.fontColor =
-    ThemeColors.sub;
-  wpmOverTimeChart.options.scales.yAxes[2].ticks.minor.fontColor =
-    ThemeColors.sub;
-  wpmOverTimeChart.options.scales.yAxes[0].scaleLabel.fontColor =
-    ThemeColors.sub;
-  wpmOverTimeChart.options.scales.yAxes[2].scaleLabel.fontColor =
-    ThemeColors.sub;
-
-  wpmOverTimeChart.data.labels = labels;
+  ChartController.result.data.labels = labels;
 
   let rawWpmPerSecondRaw = TestStats.keypressPerSecond.map((f) =>
     Math.round((f.count / 5) * 60)
@@ -1914,26 +1782,21 @@ function showResult(difficultyFailed = false) {
     );
   }
 
-  wpmOverTimeChart.data.datasets[0].borderColor = ThemeColors.main;
-  wpmOverTimeChart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
-  wpmOverTimeChart.data.datasets[0].data = TestStats.wpmHistory;
-  wpmOverTimeChart.data.datasets[1].borderColor = ThemeColors.sub;
-  wpmOverTimeChart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
-  wpmOverTimeChart.data.datasets[1].data = rawWpmPerSecond;
+  ChartController.result.data.datasets[1].data = rawWpmPerSecond;
 
   let maxChartVal = Math.max(
     ...[Math.max(...rawWpmPerSecond), Math.max(...TestStats.wpmHistory)]
   );
   if (!config.startGraphsAtZero) {
-    wpmOverTimeChart.options.scales.yAxes[0].ticks.min = Math.min(
+    ChartController.result.options.scales.yAxes[0].ticks.min = Math.min(
       ...TestStats.wpmHistory
     );
-    wpmOverTimeChart.options.scales.yAxes[1].ticks.min = Math.min(
+    ChartController.result.options.scales.yAxes[1].ticks.min = Math.min(
       ...TestStats.wpmHistory
     );
   } else {
-    wpmOverTimeChart.options.scales.yAxes[0].ticks.min = 0;
-    wpmOverTimeChart.options.scales.yAxes[1].ticks.min = 0;
+    ChartController.result.options.scales.yAxes[0].ticks.min = 0;
+    ChartController.result.options.scales.yAxes[1].ticks.min = 0;
   }
 
   // let errorsNoZero = [];
@@ -1950,7 +1813,7 @@ function showResult(difficultyFailed = false) {
     errorsArray.push(TestStats.keypressPerSecond[i].errors);
   }
 
-  wpmOverTimeChart.data.datasets[2].data = errorsArray;
+  ChartController.result.data.datasets[2].data = errorsArray;
 
   let kps = TestStats.keypressPerSecond.slice(
     Math.max(TestStats.keypressPerSecond.length - 5, 0)
@@ -2004,7 +1867,7 @@ function showResult(difficultyFailed = false) {
     let activeTags = [];
     let activeTagsIds = [];
     try {
-      db_getSnapshot().tags.forEach((tag) => {
+      DB.getSnapshot().tags.forEach((tag) => {
         if (tag.active === true) {
           activeTags.push(tag);
           activeTagsIds.push(tag.id);
@@ -2100,14 +1963,14 @@ function showResult(difficultyFailed = false) {
         accountIconLoading(true);
         let dontShowCrown = false;
         let pbDiff = 0;
-        db_getLocalPB(
+        DB.getLocalPB(
           config.mode,
           mode2,
           config.punctuation,
           config.language,
           config.difficulty
         ).then((lpb) => {
-          db_getUserHighestWpm(
+          DB.getUserHighestWpm(
             config.mode,
             mode2,
             config.punctuation,
@@ -2133,7 +1996,7 @@ function showResult(difficultyFailed = false) {
               }
             }
             if (lpb > 0) {
-              wpmOverTimeChart.options.annotation.annotations.push({
+              ChartController.result.options.annotation.annotations.push({
                 enabled: false,
                 type: "line",
                 mode: "horizontal",
@@ -2159,13 +2022,13 @@ function showResult(difficultyFailed = false) {
               if (maxChartVal >= lpb - 15 && maxChartVal <= lpb + 15) {
                 maxChartVal = lpb + 15;
               }
-              wpmOverTimeChart.options.scales.yAxes[0].ticks.max = Math.round(
+              ChartController.result.options.scales.yAxes[0].ticks.max = Math.round(
                 maxChartVal
               );
-              wpmOverTimeChart.options.scales.yAxes[1].ticks.max = Math.round(
+              ChartController.result.options.scales.yAxes[1].ticks.max = Math.round(
                 maxChartVal
               );
-              wpmOverTimeChart.update({ duration: 0 });
+              ChartController.result.update({ duration: 0 });
             }
             if (config.mode === "time" && (mode2 === 15 || mode2 === 60)) {
               $("#result .stats .leaderboards").removeClass("hidden");
@@ -2180,7 +2043,7 @@ function showResult(difficultyFailed = false) {
             $("#result .stats .tags .bottom").text("");
             let annotationSide = "left";
             activeTags.forEach(async (tag) => {
-              let tpb = await db_getLocalTagPB(
+              let tpb = await DB.getLocalTagPB(
                 tag.id,
                 config.mode,
                 mode2,
@@ -2194,7 +2057,7 @@ function showResult(difficultyFailed = false) {
               if (config.mode != "quote") {
                 if (tpb < stats.wpm) {
                   //new pb for that tag
-                  db_saveLocalTagPB(
+                  DB.saveLocalTagPB(
                     tag.id,
                     config.mode,
                     mode2,
@@ -2215,7 +2078,7 @@ function showResult(difficultyFailed = false) {
                   );
                   // console.log("new pb for tag " + tag.name);
                 } else {
-                  wpmOverTimeChart.options.annotation.annotations.push({
+                  ChartController.result.options.annotation.annotations.push({
                     enabled: false,
                     type: "line",
                     mode: "horizontal",
@@ -2292,32 +2155,32 @@ function showResult(difficultyFailed = false) {
                     completedEvent.isPb = true;
                   }
                   if (
-                    db_getSnapshot() !== null &&
-                    db_getSnapshot().results !== undefined
+                    DB.getSnapshot() !== null &&
+                    DB.getSnapshot().results !== undefined
                   ) {
-                    db_getSnapshot().results.unshift(completedEvent);
-                    if (db_getSnapshot().globalStats.time == undefined) {
-                      db_getSnapshot().globalStats.time =
+                    DB.getSnapshot().results.unshift(completedEvent);
+                    if (DB.getSnapshot().globalStats.time == undefined) {
+                      DB.getSnapshot().globalStats.time =
                         testtime +
                         completedEvent.incompleteTestSeconds -
                         afkseconds;
                     } else {
-                      db_getSnapshot().globalStats.time +=
+                      DB.getSnapshot().globalStats.time +=
                         testtime +
                         completedEvent.incompleteTestSeconds -
                         afkseconds;
                     }
-                    if (db_getSnapshot().globalStats.started == undefined) {
-                      db_getSnapshot().globalStats.started =
+                    if (DB.getSnapshot().globalStats.started == undefined) {
+                      DB.getSnapshot().globalStats.started =
                         TestStats.restartCount + 1;
                     } else {
-                      db_getSnapshot().globalStats.started +=
+                      DB.getSnapshot().globalStats.started +=
                         TestStats.restartCount + 1;
                     }
-                    if (db_getSnapshot().globalStats.completed == undefined) {
-                      db_getSnapshot().globalStats.completed = 1;
+                    if (DB.getSnapshot().globalStats.completed == undefined) {
+                      DB.getSnapshot().globalStats.completed = 1;
                     } else {
-                      db_getSnapshot().globalStats.completed += 1;
+                      DB.getSnapshot().globalStats.completed += 1;
                     }
                   }
                   try {
@@ -2331,7 +2194,7 @@ function showResult(difficultyFailed = false) {
                   if (
                     config.mode === "time" &&
                     (mode2 == "15" || mode2 == "60") &&
-                    db_getSnapshot() !== null
+                    DB.getSnapshot() !== null
                   ) {
                     const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
                     const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
@@ -2342,7 +2205,7 @@ function showResult(difficultyFailed = false) {
                     const glb = e.data.globalLeaderboard;
                     let glbMemory;
                     try {
-                      glbMemory = db_getSnapshot().lbMemory[config.mode + mode2]
+                      glbMemory = DB.getSnapshot().lbMemory[config.mode + mode2]
                         .global;
                     } catch {
                       glbMemory = null;
@@ -2355,7 +2218,7 @@ function showResult(difficultyFailed = false) {
                     } else if (glb.insertedAt === -1) {
                       dontShowGlobalDiff = true;
                       globalLbDiff = glbMemory - glb.insertedAt;
-                      updateLbMemory(
+                      DB.updateLbMemory(
                         config.mode,
                         mode2,
                         "global",
@@ -2366,7 +2229,7 @@ function showResult(difficultyFailed = false) {
                     } else if (glb.insertedAt >= 0) {
                       if (glb.newBest) {
                         globalLbDiff = glbMemory - glb.insertedAt;
-                        updateLbMemory(
+                        DB.updateLbMemory(
                           config.mode,
                           mode2,
                           "global",
@@ -2376,7 +2239,7 @@ function showResult(difficultyFailed = false) {
                         globalLbString = `global: ${str}`;
                       } else {
                         globalLbDiff = glbMemory - glb.foundAt;
-                        updateLbMemory(
+                        DB.updateLbMemory(
                           config.mode,
                           mode2,
                           "global",
@@ -2403,7 +2266,7 @@ function showResult(difficultyFailed = false) {
                     const dlb = e.data.dailyLeaderboard;
                     let dlbMemory;
                     try {
-                      dlbMemory = db_getSnapshot().lbMemory[config.mode + mode2]
+                      dlbMemory = DB.getSnapshot().lbMemory[config.mode + mode2]
                         .daily;
                     } catch {
                       dlbMemory = null;
@@ -2416,7 +2279,7 @@ function showResult(difficultyFailed = false) {
                     } else if (dlb.insertedAt === -1) {
                       dontShowDailyDiff = true;
                       dailyLbDiff = dlbMemory - dlb.insertedAt;
-                      updateLbMemory(
+                      DB.updateLbMemory(
                         config.mode,
                         mode2,
                         "daily",
@@ -2426,7 +2289,7 @@ function showResult(difficultyFailed = false) {
                     } else if (dlb.insertedAt >= 0) {
                       if (dlb.newBest) {
                         dailyLbDiff = dlbMemory - dlb.insertedAt;
-                        updateLbMemory(
+                        DB.updateLbMemory(
                           config.mode,
                           mode2,
                           "daily",
@@ -2436,7 +2299,7 @@ function showResult(difficultyFailed = false) {
                         dailyLbString = `daily: ${str}`;
                       } else {
                         dailyLbDiff = dlbMemory - dlb.foundAt;
-                        updateLbMemory(
+                        DB.updateLbMemory(
                           config.mode,
                           mode2,
                           "daily",
@@ -2463,7 +2326,7 @@ function showResult(difficultyFailed = false) {
 
                     // CloudFunctions.saveLbMemory({
                     //   uid: firebase.auth().currentUser.uid,
-                    //   obj: db_getSnapshot().lbMemory,
+                    //   obj: DB.getSnapshot().lbMemory,
                     // }).then((d) => {
                     //   if (d.data.returnCode === 1) {
                     //   } else {
@@ -2503,7 +2366,7 @@ function showResult(difficultyFailed = false) {
                   if (e.data.resultCode === 2) {
                     //new pb
                     showCrown();
-                    db_saveLocalPB(
+                    DB.saveLocalPB(
                       config.mode,
                       mode2,
                       config.punctuation,
@@ -2650,15 +2513,15 @@ function showResult(difficultyFailed = false) {
     $("#result .stats .source").addClass("hidden");
   }
 
-  wpmOverTimeChart.options.scales.yAxes[0].ticks.max = maxChartVal;
-  wpmOverTimeChart.options.scales.yAxes[1].ticks.max = maxChartVal;
+  ChartController.result.options.scales.yAxes[0].ticks.max = maxChartVal;
+  ChartController.result.options.scales.yAxes[1].ticks.max = maxChartVal;
 
-  wpmOverTimeChart.update({ duration: 0 });
-  wpmOverTimeChart.resize();
+  ChartController.result.update({ duration: 0 });
+  ChartController.result.resize();
   swapElements($("#typingTest"), $("#result"), 250, () => {
     resultCalculating = false;
     $("#words").empty();
-    wpmOverTimeChart.resize();
+    ChartController.result.resize();
     if (config.alwaysShowWordsHistory) {
       toggleResultWordsDisplay();
     }
@@ -2781,7 +2644,7 @@ function startTest() {
         ) {
           //times up
           clearTimeout(timer);
-          hideCaret();
+          Caret.hide();
           inputHistory.push(currentInput);
           correctedHistory.push(currentCorrected);
           showResult();
@@ -2822,6 +2685,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   //     }
   //   }
   // }
+
   if (testRestarting || resultCalculating) {
     try {
       event.preventDefault();
@@ -2891,7 +2755,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   correctedHistory = [];
   ShiftTracker.reset();
   setFocus(false);
-  hideCaret();
+  Caret.hide();
   testActive = false;
   hideLiveWpm();
   hideLiveAcc();
@@ -2920,7 +2784,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
       !pageTransition &&
       !config.customTheme
     ) {
-      randomiseTheme();
+      ThemeController.randomiseTheme(config);
     }
   }
   resultVisible = false;
@@ -3032,8 +2896,14 @@ function restartTest(withSameWordset = false, nosave = false, event) {
             hideCrown();
             clearTimeout(timer);
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
-            wpmOverTimeChart.update();
-            updateTestModesNotice();
+            ChartController.result.update();
+            updateTestModesNotice(
+              sameWordset,
+              textHasTab,
+              paceCaret,
+              activeFunBox,
+              config
+            );
             pageTransition = false;
             // console.log(TestStats.incompleteSeconds);
             // console.log(TestStats.restartCount);
@@ -3159,7 +3029,13 @@ function setMode(mode, nosave) {
       activeFunBox === "ascii"
     ) {
       activeFunBox = "none";
-      updateTestModesNotice();
+      updateTestModesNotice(
+        sameWordset,
+        textHasTab,
+        paceCaret,
+        activeFunBox,
+        config
+      );
     }
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
@@ -3586,157 +3462,6 @@ function hideEditTags() {
   }
 }
 
-function updateTestModesNotice() {
-  let anim = false;
-  if ($(".pageTest #testModesNotice").text() === "") anim = true;
-
-  $(".pageTest #testModesNotice").empty();
-
-  if (sameWordset) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" function="restartTest()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
-    );
-  }
-
-  if (textHasTab) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
-    );
-  }
-
-  if (config.mode === "zen") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
-    );
-  }
-
-  // /^[0-9a-zA-Z_.-]+$/.test(name);
-
-  if (/_\d+k$/g.test(config.language) && config.mode !== "quote") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${config.language.replace(
-        /_/g,
-        " "
-      )}</div>`
-    );
-  }
-
-  if (config.difficulty === "expert") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsDifficulty"><i class="fas fa-star-half-alt"></i>expert</div>`
-    );
-  } else if (config.difficulty === "master") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsDifficulty"><i class="fas fa-star"></i>master</div>`
-    );
-  }
-
-  if (config.blindMode) {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" function="toggleBlindMode()"><i class="fas fa-eye-slash"></i>blind</div>`
-    );
-  }
-
-  if (config.paceCaret !== "off") {
-    let speed = "";
-    try {
-      speed = ` (${Math.round(paceCaret.wpm)} wpm)`;
-    } catch {}
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
-        config.paceCaret === "average"
-          ? "average"
-          : config.paceCaret === "pb"
-          ? "pb"
-          : "custom"
-      } pace${speed}</div>`
-    );
-  }
-
-  if (config.minWpm !== "off") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsMinWpm"><i class="fas fa-bomb"></i>min ${config.minWpmCustomSpeed} wpm</div>`
-    );
-  }
-
-  if (config.minAcc !== "off") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsMinAcc"><i class="fas fa-bomb"></i>min ${config.minAccCustom}% acc</div>`
-    );
-  }
-
-  if (activeFunBox !== "none") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsFunbox"><i class="fas fa-gamepad"></i>${activeFunBox.replace(
-        /_/g,
-        " "
-      )}</div>`
-    );
-  }
-
-  if (config.confidenceMode === "on") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsConfidenceMode"><i class="fas fa-backspace"></i>confidence</div>`
-    );
-  }
-  if (config.confidenceMode === "max") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsConfidenceMode"><i class="fas fa-backspace"></i>max confidence</div>`
-    );
-  }
-
-  if (config.stopOnError != "off") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsStopOnError"><i class="fas fa-hand-paper"></i>stop on ${config.stopOnError}</div>`
-    );
-  }
-
-  if (config.layout !== "default") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsLayouts"><i class="fas fa-keyboard"></i>${config.layout}</div>`
-    );
-  }
-
-  if (config.oppositeShiftMode === "on") {
-    $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsOppositeShiftMode"><i class="fas fa-exchange-alt"></i>opposite shift</div>`
-    );
-  }
-
-  let tagsString = "";
-  try {
-    db_getSnapshot().tags.forEach((tag) => {
-      if (tag.active === true) {
-        tagsString += tag.name + ", ";
-      }
-    });
-
-    if (tagsString !== "") {
-      $(".pageTest #testModesNotice").append(
-        `<div class="text-button" commands="commandsTags"><i class="fas fa-tag"></i>${tagsString.substring(
-          0,
-          tagsString.length - 2
-        )}</div>`
-      );
-    }
-  } catch {}
-
-  if (anim) {
-    $(".pageTest #testModesNotice")
-      .css("transition", "none")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: 1,
-        },
-        125,
-        () => {
-          $(".pageTest #testModesNotice").css("transition", ".125s");
-        }
-      );
-  }
-}
-
 $("#tagsWrapper").click((e) => {
   if ($(e.target).attr("id") === "tagsWrapper") {
     hideEditTags();
@@ -3768,7 +3493,7 @@ function tagsEdit() {
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Tag added", 1, 2);
-        db_getSnapshot().tags.push({
+        DB.getSnapshot().tags.push({
           name: inputVal,
           id: e.data.id,
         });
@@ -3792,7 +3517,7 @@ function tagsEdit() {
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Tag updated", 1);
-        db_getSnapshot().tags.forEach((tag) => {
+        DB.getSnapshot().tags.forEach((tag) => {
           if (tag.id === tagid) {
             tag.name = inputVal;
           }
@@ -3816,9 +3541,9 @@ function tagsEdit() {
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Tag removed", 1);
-        db_getSnapshot().tags.forEach((tag, index) => {
+        DB.getSnapshot().tags.forEach((tag, index) => {
           if (tag.id === tagid) {
-            db_getSnapshot().tags.splice(index, 1);
+            DB.getSnapshot().tags.splice(index, 1);
           }
         });
         updateResultEditTagsPanelButtons();
@@ -4127,7 +3852,7 @@ async function initPaceCaret() {
   }
   let wpm;
   if (config.paceCaret === "pb") {
-    wpm = await db_getLocalPB(
+    wpm = await DB.getLocalPB(
       config.mode,
       mode2,
       config.punctuation,
@@ -4145,7 +3870,7 @@ async function initPaceCaret() {
     } else if (config.mode === "quote") {
       mode2 = randomQuote.id;
     }
-    wpm = await db_getUserAverageWpm10(
+    wpm = await DB.getUserAverageWpm10(
       config.mode,
       mode2,
       config.punctuation,
@@ -4177,7 +3902,13 @@ async function initPaceCaret() {
     timeout: null,
   };
 
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
 }
 
 function movePaceCaret(expectedStepEnd) {
@@ -4351,6 +4082,13 @@ $("#quoteSearchPopup .searchBox").keydown((e) => {
   }, 0.1); //arbitrarily v. small time as it's only to allow text to input before searching
 });
 //sets quote id to searched quote clicked
+$("#quoteSearchResults").click((e) => {
+  if ($(e.target).hasClass("quoteSearchButton")) {
+    document.getElementById("inputNumber").value = e.target.getAttribute("id");
+    applyMode2Popup();
+  }
+});
+
 $("#quoteSearchPopupWrapper").click((e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
     hideQuoteSearchPopup();
@@ -4799,18 +4537,18 @@ $("#wordsInput").on("focus", () => {
   if (!resultVisible && config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
-  showCaret();
+  Caret.show(config);
 });
 
 $("#wordsInput").on("focusout", () => {
   if (!resultVisible && config.showOutOfFocusWarning) {
     OutOfFocus.show();
   }
-  hideCaret();
+  Caret.hide();
 });
 
 $(window).resize(() => {
-  updateCaretPosition();
+  Caret.updatePosition(currentInput, config);
 });
 
 $(document).mousemove(function (event) {
@@ -4891,7 +4629,7 @@ $(document).keydown(function (event) {
   ) {
     focusWords();
     wordsFocused = true;
-    if (config.showOutOfFocusWarning) return;
+    // if (config.showOutOfFocusWarning) return;
   }
 
   //tab
@@ -5142,7 +4880,7 @@ function handleBackspace(event) {
   } else if (config.keymapMode === "next") {
     updateHighlightedKeymapKey();
   }
-  updateCaretPosition();
+  Caret.updatePosition(currentInput, config);
 }
 
 function handleSpace(event, isEnter) {
@@ -5189,7 +4927,7 @@ function handleSpace(event, isEnter) {
     currentWordIndex++;
     currentWordElementIndex++;
     updateActiveElement();
-    updateCaretPosition();
+    Caret.updatePosition(currentInput, config);
     TestStats.incrementKeypressCount();
     TestStats.pushKeypressWord(currentWordIndex);
     // currentKeypress.count++;
@@ -5236,7 +4974,7 @@ function handleSpace(event, isEnter) {
       if (config.stopOnError == "word") {
         currentInput += " ";
         updateWordElement(true);
-        updateCaretPosition();
+        Caret.updatePosition(currentInput, config);
       }
       return;
     }
@@ -5247,7 +4985,7 @@ function handleSpace(event, isEnter) {
     currentWordIndex++;
     currentWordElementIndex++;
     updateActiveElement();
-    updateCaretPosition();
+    Caret.updatePosition(currentInput, config);
     // currentKeypress.count++;
     // currentKeypress.words.push(currentWordIndex);
     TestStats.incrementKeypressCount();
@@ -5291,7 +5029,7 @@ function handleSpace(event, isEnter) {
     }
   } //end of line wrap
 
-  updateCaretPosition();
+  Caret.updatePosition(currentInput, config);
 
   if (config.keymapMode === "react") {
     flashPressedKeymapKey(event.code, true);
@@ -5426,7 +5164,7 @@ function handleAlpha(event) {
   }
 
   setFocus(true);
-  stopCaretAnimation();
+  Caret.stopAnimation();
 
   //show dead keys
   if (event.key === "Dead") {
@@ -5647,7 +5385,7 @@ function handleAlpha(event) {
     }
   }
 
-  updateCaretPosition();
+  Caret.updatePosition(currentInput, config);
 }
 
 window.addEventListener("beforeunload", (event) => {
@@ -5721,10 +5459,10 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
   if (e.shiftKey) {
-    togglePresetCustomTheme();
+    toggleCustomTheme();
   } else {
     // if (config.customTheme) {
-    //   togglePresetCustomTheme();
+    //   toggleCustomTheme();
     // }
     currentCommands.push(commandsThemes);
     showCommandLine();
@@ -5765,7 +5503,6 @@ $(document).ready(() => {
   if (window.location.pathname === "/") {
     $("#top .config").removeClass("hidden");
   }
-  updateFavicon(32, 14);
   $("body").css("transition", ".25s");
   if (config.quickTab) {
     $("#restartTestButton").addClass("hidden");
@@ -5921,155 +5658,3 @@ async function setupChallenge(challengeName) {
     Notifications.add("Something went wrong: " + e, -1);
   }
 }
-
-let ctx = $("#wpmChart");
-let wpmOverTimeChart = new Chart(ctx, {
-  type: "line",
-  data: {
-    labels: [],
-    datasets: [
-      {
-        label: "wpm",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
-        yAxisID: "wpm",
-        order: 2,
-        radius: 2,
-      },
-      {
-        label: "raw",
-        data: [],
-        borderColor: "rgba(125, 125, 125, 1)",
-        borderWidth: 2,
-        yAxisID: "raw",
-        order: 3,
-        radius: 2,
-      },
-      {
-        label: "errors",
-        data: [],
-        borderColor: "rgba(255, 125, 125, 1)",
-        pointBackgroundColor: "rgba(255, 125, 125, 1)",
-        borderWidth: 2,
-        order: 1,
-        yAxisID: "error",
-        maxBarThickness: 10,
-        type: "scatter",
-        pointStyle: "crossRot",
-        radius: function (context) {
-          var index = context.dataIndex;
-          var value = context.dataset.data[index];
-          return value <= 0 ? 0 : 3;
-        },
-        pointHoverRadius: function (context) {
-          var index = context.dataIndex;
-          var value = context.dataset.data[index];
-          return value <= 0 ? 0 : 5;
-        },
-      },
-    ],
-  },
-  options: {
-    tooltips: {
-      mode: "index",
-      intersect: false,
-      callbacks: {
-        afterLabel: function (ti) {
-          try {
-            $(".wordInputAfter").remove();
-
-            let wordsToHighlight =
-              TestStats.keypressPerSecond[parseInt(ti.xLabel) - 1].words;
-
-            let unique = [...new Set(wordsToHighlight)];
-            unique.forEach((wordIndex) => {
-              let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
-              let input = wordEl.attr("input");
-              if (input != undefined)
-                wordEl.append(`<div class="wordInputAfter">${input}</div>`);
-            });
-          } catch {}
-        },
-      },
-    },
-    legend: {
-      display: false,
-      labels: {},
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      xAxes: [
-        {
-          ticks: {
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          display: true,
-          scaleLabel: {
-            display: false,
-            labelString: "Seconds",
-          },
-        },
-      ],
-      yAxes: [
-        {
-          id: "wpm",
-          display: true,
-          scaleLabel: {
-            display: true,
-            labelString: "Words per Minute",
-          },
-          ticks: {
-            beginAtZero: true,
-            min: 0,
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          gridLines: {
-            display: true,
-          },
-        },
-        {
-          id: "raw",
-          display: false,
-          scaleLabel: {
-            display: true,
-            labelString: "Raw Words per Minute",
-          },
-          ticks: {
-            beginAtZero: true,
-            min: 0,
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          gridLines: {
-            display: false,
-          },
-        },
-        {
-          id: "error",
-          display: true,
-          position: "right",
-          scaleLabel: {
-            display: true,
-            labelString: "Errors",
-          },
-          ticks: {
-            precision: 0,
-            beginAtZero: true,
-            autoSkip: true,
-            autoSkipPadding: 40,
-          },
-          gridLines: {
-            display: false,
-          },
-        },
-      ],
-    },
-    annotation: {
-      annotations: [],
-    },
-  },
-});

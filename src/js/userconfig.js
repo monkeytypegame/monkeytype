@@ -153,7 +153,7 @@ function saveActiveTagsToCookie() {
   let tags = [];
 
   try {
-    db_getSnapshot().tags.forEach((tag) => {
+    DB.getSnapshot().tags.forEach((tag) => {
       if (tag.active === true) {
         tags.push(tag.id);
       }
@@ -227,7 +227,13 @@ function setDifficulty(diff, nosave) {
   }
   config.difficulty = diff;
   if (!nosave) restartTest(false, nosave);
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
   if (!nosave) saveConfigToCookie();
 }
 
@@ -247,7 +253,13 @@ function toggleBlindMode() {
     blind = false;
   }
   config.blindMode = blind;
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
   saveConfigToCookie();
 }
 
@@ -256,25 +268,32 @@ function setBlindMode(blind, nosave) {
     blind = false;
   }
   config.blindMode = blind;
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
   if (!nosave) saveConfigToCookie();
 }
 
 function updateChartAccuracy() {
-  resultHistoryChart.data.datasets[1].hidden = !config.chartAccuracy;
-  resultHistoryChart.options.scales.yAxes[1].display = config.chartAccuracy;
-  resultHistoryChart.update();
+  ChartController.accountHistory.data.datasets[1].hidden = !config.chartAccuracy;
+  ChartController.accountHistory.options.scales.yAxes[1].display =
+    config.chartAccuracy;
+  ChartController.accountHistory.update();
 }
 
 function updateChartStyle() {
   if (config.chartStyle == "scatter") {
-    resultHistoryChart.data.datasets[0].showLine = false;
-    resultHistoryChart.data.datasets[1].showLine = false;
+    ChartController.accountHistory.data.datasets[0].showLine = false;
+    ChartController.accountHistory.data.datasets[1].showLine = false;
   } else {
-    resultHistoryChart.data.datasets[0].showLine = true;
-    resultHistoryChart.data.datasets[1].showLine = true;
+    ChartController.accountHistory.data.datasets[0].showLine = true;
+    ChartController.accountHistory.data.datasets[1].showLine = true;
   }
-  resultHistoryChart.update();
+  ChartController.accountHistory.update();
 }
 
 function toggleChartAccuracy() {
@@ -323,7 +342,13 @@ function setStopOnError(soe, nosave) {
   if (config.stopOnError !== "off") {
     config.confidenceMode = "off";
   }
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
   if (!nosave) saveConfigToCookie();
 }
 
@@ -400,7 +425,13 @@ function setPaceCaret(val, nosave) {
   //   val = "off";
   // }
   config.paceCaret = val;
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
   initPaceCaret(nosave);
   if (!nosave) saveConfigToCookie();
 }
@@ -419,7 +450,13 @@ function setMinWpm(minwpm, nosave) {
     minwpm = "off";
   }
   config.minWpm = minwpm;
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
   if (!nosave) saveConfigToCookie();
 }
 
@@ -437,7 +474,13 @@ function setMinAcc(min, nosave) {
     min = "off";
   }
   config.minAcc = min;
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
   if (!nosave) saveConfigToCookie();
 }
 
@@ -1039,7 +1082,13 @@ function setConfidenceMode(cm, nosave) {
     config.stopOnError = "off";
   }
 
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
   if (!nosave) saveConfigToCookie();
 }
 
@@ -1060,137 +1109,11 @@ function setIndicateTypos(it, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function updateChartColors() {
-  hoverChart.options.scales.xAxes[0].ticks.minor.fontColor = ThemeColors.sub;
-  hoverChart.options.scales.xAxes[0].scaleLabel.fontColor = ThemeColors.sub;
-  hoverChart.options.scales.yAxes[0].ticks.minor.fontColor = ThemeColors.sub;
-  hoverChart.options.scales.yAxes[2].ticks.minor.fontColor = ThemeColors.sub;
-  hoverChart.options.scales.yAxes[0].scaleLabel.fontColor = ThemeColors.sub;
-  hoverChart.options.scales.yAxes[2].scaleLabel.fontColor = ThemeColors.sub;
-
-  hoverChart.data.datasets[0].borderColor = ThemeColors.main;
-  hoverChart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
-  hoverChart.data.datasets[1].borderColor = ThemeColors.sub;
-  hoverChart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
-
-  hoverChart.options.annotation.annotations[0].borderColor = ThemeColors.sub;
-  hoverChart.options.annotation.annotations[0].label.backgroundColor =
-    ThemeColors.sub;
-  hoverChart.options.annotation.annotations[0].label.fontColor = ThemeColors.bg;
-
-  activityChart.options.legend.labels.fontColor = ThemeColors.sub;
-
-  activityChart.options.scales.xAxes[0].ticks.minor.fontColor = ThemeColors.sub;
-  activityChart.options.scales.yAxes[0].ticks.minor.fontColor = ThemeColors.sub;
-  activityChart.options.scales.yAxes[0].scaleLabel.fontColor = ThemeColors.sub;
-  activityChart.data.datasets[0].borderColor = ThemeColors.main;
-  activityChart.data.datasets[0].backgroundColor = ThemeColors.main;
-
-  activityChart.data.datasets[0].trendlineLinear.style = ThemeColors.sub;
-
-  activityChart.options.scales.yAxes[1].ticks.minor.fontColor = ThemeColors.sub;
-  activityChart.options.scales.yAxes[1].scaleLabel.fontColor = ThemeColors.sub;
-  activityChart.data.datasets[1].borderColor = ThemeColors.sub;
-
-  activityChart.options.legend.labels.fontColor = ThemeColors.sub;
-
-  resultHistoryChart.options.scales.xAxes[0].ticks.minor.fontColor =
-    ThemeColors.sub;
-  resultHistoryChart.options.scales.yAxes[0].ticks.minor.fontColor =
-    ThemeColors.sub;
-  resultHistoryChart.options.scales.yAxes[0].scaleLabel.fontColor =
-    ThemeColors.sub;
-  resultHistoryChart.options.scales.yAxes[1].ticks.minor.fontColor =
-    ThemeColors.sub;
-  resultHistoryChart.options.scales.yAxes[1].scaleLabel.fontColor =
-    ThemeColors.sub;
-  resultHistoryChart.data.datasets[0].borderColor = ThemeColors.main;
-  resultHistoryChart.data.datasets[1].borderColor = ThemeColors.sub;
-
-  resultHistoryChart.options.legend.labels.fontColor = ThemeColors.sub;
-  resultHistoryChart.data.datasets[0].trendlineLinear.style = ThemeColors.sub;
-  wpmOverTimeChart.data.datasets[0].borderColor = ThemeColors.main;
-  wpmOverTimeChart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
-  wpmOverTimeChart.data.datasets[1].borderColor = ThemeColors.sub;
-  wpmOverTimeChart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
-
-  hoverChart.update();
-  wpmOverTimeChart.update();
-  resultHistoryChart.update();
-  activityChart.update();
-}
-
-let isPreviewingTheme = false;
-function previewTheme(name, setIsPreviewingVar = true) {
-  if (
-    (testActive || resultVisible) &&
-    (config.theme === "nausea" || config.theme === "round_round_baby")
-  )
-    return;
-  if (resultVisible && (name === "nausea" || name === "round_round_baby"))
-    return;
-  isPreviewingTheme = setIsPreviewingVar;
-  clearCustomTheme();
-  $("#currentTheme").attr("href", `themes/${name}.css`);
-  setTimeout(() => {
-    ThemeColors.update();
-    updateChartColors();
-  }, 500);
-}
-
 function setTheme(name, nosave) {
-  if (
-    (testActive || resultVisible) &&
-    (config.theme === "nausea" || config.theme === "round_round_baby")
-  ) {
-    return;
-  }
-  if (resultVisible && (name === "nausea" || name === "round_round_baby"))
-    return;
   config.theme = name;
-  $(".keymap-key").attr("style", "");
-  $("#currentTheme").attr("href", `themes/${name}.css`);
-  $(".current-theme").text(name.replace("_", " "));
-  setTimeout(() => {
-    updateFavicon(32, 14);
-  }, 500);
-  try {
-    firebase.analytics().logEvent("changedTheme", {
-      theme: name,
-    });
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
   setCustomTheme(false, true);
-  clearCustomTheme();
-  // applyCustomThemeColors();
-  setTimeout(() => {
-    $(".keymap-key").attr("style", "");
-    ThemeColors.update();
-    updateChartColors();
-
-    $("#metaThemeColor").attr("content", ThemeColors.main);
-  }, 500);
+  ThemeController.set(config.theme);
   if (!nosave) saveConfigToCookie();
-}
-
-let randomTheme = null;
-function randomiseTheme() {
-  // var randomList = Misc.getThemesList().map((t) => {
-  //   return t.name;
-  // });
-  var randomList;
-  Misc.getThemesList().then((themes) => {
-    randomList = themes.map((t) => {
-      return t.name;
-    });
-
-    if (config.randomTheme === "fav" && config.favThemes.length > 0)
-      randomList = config.favThemes;
-    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
-    setTheme(randomTheme, true);
-    Notifications.add(randomTheme.replace(/_/g, " "), 0);
-  });
 }
 
 function setRandomTheme(val, nosave) {
@@ -1198,7 +1121,7 @@ function setRandomTheme(val, nosave) {
     val = "off";
   }
   if (val === "off") {
-    randomTheme = null;
+    ThemeController.clearRandom();
   }
   config.randomTheme = val;
   if (!nosave) saveConfigToCookie();
@@ -1209,46 +1132,11 @@ function setCustomTheme(boolean, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function setCustomThemeColors(colors, nosave) {
-  if (colors !== undefined) {
-    config.customThemeColors = colors;
-    applyCustomThemeColors();
-  }
-  if (!nosave) saveConfigToCookie();
-}
-
-function applyCustomThemeColors() {
-  const array = config.customThemeColors;
-
-  if (config.customTheme === true) {
-    $(".current-theme").text("custom");
-    previewTheme("serika_dark", false);
-    colorVars.forEach((e, index) => {
-      document.documentElement.style.setProperty(e, array[index]);
-    });
-  } else {
-    $(".current-theme").text(config.theme.replace("_", " "));
-    previewTheme(config.theme, false);
-    clearCustomTheme();
-  }
-  setTimeout(() => {
-    ThemeColors.update();
-    updateChartColors();
-    updateFavicon(32, 14);
-    $(".keymap-key").attr("style", "");
-  }, 500);
-}
-
-function clearCustomTheme() {
-  colorVars.forEach((e) => {
-    document.documentElement.style.setProperty(e, "");
-  });
-}
-
-function togglePresetCustomTheme() {
+function toggleCustomTheme(nosave) {
   if (config.customTheme) {
     setCustomTheme(false);
-    applyCustomThemeColors();
+    ThemeController.set(config.theme);
+    // applyCustomThemeColors();
     swapElements(
       $('.pageSettings [tabContent="custom"]'),
       $('.pageSettings [tabContent="preset"]'),
@@ -1256,53 +1144,25 @@ function togglePresetCustomTheme() {
     );
   } else {
     setCustomTheme(true);
-    applyCustomThemeColors();
+    ThemeController.set("custom");
+    // applyCustomThemeColors();
     swapElements(
       $('.pageSettings [tabContent="preset"]'),
       $('.pageSettings [tabContent="custom"]'),
       250
     );
   }
-  $(".keymap-key").attr("style", "");
+  if (!nosave) saveConfigToCookie();
 }
 
-function updateFavicon(size, curveSize) {
-  let maincolor, bgcolor;
-
-  bgcolor = getComputedStyle(document.body)
-    .getPropertyValue("--bg-color")
-    .replace(" ", "");
-  maincolor = getComputedStyle(document.body)
-    .getPropertyValue("--main-color")
-    .replace(" ", "");
-
-  if (bgcolor == maincolor) {
-    bgcolor = "#111";
-    maincolor = "#eee";
+function setCustomThemeColors(colors, nosave) {
+  if (colors !== undefined) {
+    config.customThemeColors = colors;
+    ThemeController.setCustomColors(colors);
+    // ThemeController.set("custom");
+    // applyCustomThemeColors();
   }
-
-  var canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  let ctx = canvas.getContext("2d");
-  ctx.beginPath();
-  ctx.moveTo(0, curveSize);
-  //top left
-  ctx.quadraticCurveTo(0, 0, curveSize, 0);
-  ctx.lineTo(size - curveSize, 0);
-  //top right
-  ctx.quadraticCurveTo(size, 0, size, curveSize);
-  ctx.lineTo(size, size - curveSize);
-  ctx.quadraticCurveTo(size, size, size - curveSize, size);
-  ctx.lineTo(curveSize, size);
-  ctx.quadraticCurveTo(0, size, 0, size - curveSize);
-  ctx.fillStyle = bgcolor;
-  ctx.fill();
-  ctx.font = "900 " + (size / 2) * 1.2 + "px Roboto Mono";
-  ctx.textAlign = "center";
-  ctx.fillStyle = maincolor;
-  ctx.fillText("mt", size / 2 + size / 32, (size / 3) * 2.1);
-  $("#favicon").attr("href", canvas.toDataURL("image/png"));
+  if (!nosave) saveConfigToCookie();
 }
 
 function setLanguage(language, nosave) {
@@ -1360,7 +1220,13 @@ function setLayout(layout, nosave) {
     layout = "qwerty";
   }
   config.layout = layout;
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
   if (config.keymapLayout === "overrideSync") {
     refreshKeymapKeys(config.keymapLayout);
   }
@@ -1804,5 +1670,11 @@ function applyConfig(configObj) {
       $("#nitropay_ad_about").remove();
     }
   }
-  updateTestModesNotice();
+  updateTestModesNotice(
+    sameWordset,
+    textHasTab,
+    paceCaret,
+    activeFunBox,
+    config
+  );
 }
