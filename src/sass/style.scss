@@ -414,6 +414,11 @@ a:hover {
     gap: 1rem;
     width: 60vw;
 
+    .wordfilter{
+      width: 25%;
+      justify-self:right;
+    }
+
     textarea {
       background: var(--bg-color);
       padding: 1rem;

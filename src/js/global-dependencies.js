@@ -32,3 +32,4 @@ import * as OutOfFocus from "./out-of-focus";
 import * as ChartController from "./chart-controller";
 import * as ThemeController from "./theme-controller";
 import * as Caret from "./caret";
+import * as WordFilter from "./word-filter";

@@ -10,3 +10,5 @@ global.snapshot = DB.getSnapshot;
 global.config = config;
 // global.addnotif = Notifications.add;
 global.link = linkWithGoogle;
+
+global.wordFilter = WordFilter;
