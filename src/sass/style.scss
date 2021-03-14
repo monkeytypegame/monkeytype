@@ -139,7 +139,7 @@ html {
   background: var(--main-color);
 }
 
-::-webkit-scrollbar-corner{
+::-webkit-scrollbar-corner {
   background: var(--subcolour);
 }
 
@@ -630,7 +630,7 @@ a:hover {
     height: 80vh;
     grid-template-rows: auto auto auto 1fr;
 
-    #extraResults{
+    #extraResults {
       text-align: center;
       color: var(--sub-color);
     }
@@ -639,33 +639,32 @@ a:hover {
       color: var(--sub-color);
     }
 
-    
-    #quoteSearchResults{
+    #quoteSearchResults {
       display: grid;
       gap: 0.5rem;
       height: auto;
       overflow: scroll;
 
-      .searchResult{
+      .searchResult {
         display: grid;
         grid-template-columns: 1fr 1fr 3fr 0fr;
         grid-auto-rows: auto;
         width: 100%;
-        gap: 1rem;
-        Transition: 0.25s;
+        gap: 0.5rem;
+        transition: 0.25s;
         padding: 1rem;
-        box-sizing:border-box;
+        box-sizing: border-box;
         user-select: none;
         cursor: pointer;
-        .text{
+        .text {
           grid-column-start: 1;
           grid-column-end: 4;
           grid-row-start: 1;
           grid-row-end: 2;
-          overflow:visible;
+          overflow: visible;
           color: var(--text-color);
         }
-        .id{
+        .id {
           grid-column-start: 1;
           grid-column-end: 2;
           grid-row-start: 2;
@@ -673,7 +672,7 @@ a:hover {
           font-size: 0.8rem;
           color: var(--sub-color);
         }
-        .length{
+        .length {
           grid-column-start: 2;
           grid-column-end: 3;
           grid-row-start: 2;
@@ -681,7 +680,7 @@ a:hover {
           font-size: 0.8rem;
           color: var(--sub-color);
         }
-        .source{
+        .source {
           grid-column-start: 3;
           grid-column-end: 4;
           grid-row-start: 2;
@@ -689,22 +688,22 @@ a:hover {
           font-size: 0.8rem;
           color: var(--sub-color);
         }
-        .resultChevron{
+        .resultChevron {
           grid-column-start: 4;
           grid-column-end: 5;
           grid-row-start: 1;
           grid-row-end: 3;
           display: flex;
           align-items: center;
-          justify-items:center;
+          justify-items: center;
           color: var(--sub-color);
-          font-size:2rem;
+          font-size: 2rem;
         }
-        .sub{
+        .sub {
           opacity: 0.5;
         }
       }
-      .searchResult:hover{
+      .searchResult:hover {
         background: rgba(0, 0, 0, 0.1);
         border-radius: 5px;
       }
