@@ -1537,7 +1537,7 @@ function updateCommandsTagsList() {
         DB.getSnapshot().tags.forEach((tag) => {
           tag.active = false;
         });
-        updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+        updateTestModesNotice(sameWordset, textHasTab, activeFunbox);
         saveActiveTagsToCookie();
       },
     });
@@ -1557,12 +1557,7 @@ function updateCommandsTagsList() {
         sticky: true,
         exec: () => {
           toggleTag(tag.id);
-          updateTestModesNotice(
-            sameWordset,
-            textHasTab,
-            paceCaret,
-            activeFunbox
-          );
+          updateTestModesNotice(sameWordset, textHasTab, activeFunbox);
           let txt = tag.name;
 
           if (tag.active === true) {

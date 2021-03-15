@@ -30,9 +30,6 @@ let activeFunbox = "none";
 let memoryFunboxTimer = null;
 let memoryFunboxInterval = null;
 
-//pace caret
-let paceCaret = null;
-
 //ui
 let pageTransition = false;
 let focusState = false;
@@ -213,7 +210,7 @@ async function activateFunbox(funbox, mode) {
       settingsGroups.layout.updateButton();
     }
   }
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  updateTestModesNotice(sameWordset, textHasTab, activeFunbox);
   return true;
 }
 
@@ -2559,7 +2556,8 @@ function startTest() {
 
   try {
     if (Config.paceCaret !== "off")
-      movePaceCaret(performance.now() + paceCaret.spc * 1000);
+      PaceCaret.updatePosition(performance.now() + PaceCaret.caret.spc * 1000);
+    // movePaceCaret();
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
   const stepIntervalMS = 1000;
@@ -2757,8 +2755,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   hideLiveAcc();
   hideTimer();
   bailout = false;
-  paceCaret = null;
-  if (paceCaret !== null) clearTimeout(paceCaret.timeout);
+  PaceCaret.reset();
   $("#showWordHistoryButton").removeClass("loaded");
   focusWords();
 
@@ -2799,7 +2796,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
         sameWordset = false;
         textHasTab = false;
         await initWords();
-        initPaceCaret(nosave);
+        PaceCaret.init();
       } else {
         sameWordset = true;
         testActive = false;
@@ -2807,7 +2804,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
         currentWordElementIndex = 0;
         inputHistory = [];
         currentInput = "";
-        initPaceCaret();
+        PaceCaret.init();
         showWords();
       }
       if (Config.mode === "quote") {
@@ -2876,7 +2873,6 @@ function restartTest(withSameWordset = false, nosave = false, event) {
       $("#testModesNotice").removeClass("hidden").css({
         opacity: 1,
       });
-      resetPaceCaret();
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -2888,17 +2884,12 @@ function restartTest(withSameWordset = false, nosave = false, event) {
           125,
           () => {
             testRestarting = false;
-            resetPaceCaret();
+            PaceCaret.resetPosition();
             hideCrown();
             clearTimeout(timer);
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
             ChartController.result.update();
-            updateTestModesNotice(
-              sameWordset,
-              textHasTab,
-              paceCaret,
-              activeFunbox
-            );
+            updateTestModesNotice(sameWordset, textHasTab, activeFunbox);
             pageTransition = false;
             // console.log(TestStats.incompleteSeconds);
             // console.log(TestStats.restartCount);
@@ -3024,7 +3015,7 @@ function setMode(mode, nosave) {
       activeFunbox === "ascii"
     ) {
       activeFunbox = "none";
-      updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+      updateTestModesNotice(sameWordset, textHasTab, activeFunbox);
     }
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
@@ -3685,220 +3676,6 @@ function hideQuoteSearchPopup() {
         }
       );
   }
-}
-
-async function initPaceCaret() {
-  let mode2 = "";
-  if (Config.mode === "time") {
-    mode2 = Config.time;
-  } else if (Config.mode === "words") {
-    mode2 = Config.words;
-  } else if (Config.mode === "custom") {
-    mode2 = "custom";
-  } else if (Config.mode === "quote") {
-    mode2 = randomQuote.id;
-  }
-  let wpm;
-  if (Config.paceCaret === "pb") {
-    wpm = await DB.getLocalPB(
-      Config.mode,
-      mode2,
-      Config.punctuation,
-      Config.language,
-      Config.difficulty
-    );
-  } else if (Config.paceCaret === "average") {
-    let mode2 = "";
-    if (Config.mode === "time") {
-      mode2 = Config.time;
-    } else if (Config.mode === "words") {
-      mode2 = Config.words;
-    } else if (Config.mode === "custom") {
-      mode2 = "custom";
-    } else if (Config.mode === "quote") {
-      mode2 = randomQuote.id;
-    }
-    wpm = await DB.getUserAverageWpm10(
-      Config.mode,
-      mode2,
-      Config.punctuation,
-      Config.language,
-      Config.difficulty
-    );
-    console.log("avg pace " + wpm);
-  } else if (Config.paceCaret === "custom") {
-    wpm = Config.paceCaretCustomSpeed;
-  }
-
-  if (wpm < 1 || wpm == false || wpm == undefined || Number.isNaN(wpm)) {
-    paceCaret = null;
-    return;
-  }
-
-  let characters = wpm * 5;
-  let cps = characters / 60; //characters per step
-  let spc = 60 / characters; //seconds per character
-
-  paceCaret = {
-    wpm: wpm,
-    cps: cps,
-    spc: spc,
-    correction: 0,
-    currentWordIndex: 0,
-    currentLetterIndex: -1,
-    wordsStatus: {},
-    timeout: null,
-  };
-
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
-}
-
-function movePaceCaret(expectedStepEnd) {
-  if (paceCaret === null || !testActive || resultVisible) {
-    return;
-  }
-  if ($("#paceCaret").hasClass("hidden")) {
-    $("#paceCaret").removeClass("hidden");
-  }
-  if ($("#paceCaret").hasClass("off")) {
-    return;
-  }
-  try {
-    paceCaret.currentLetterIndex++;
-    if (
-      paceCaret.currentLetterIndex >=
-      wordsList[paceCaret.currentWordIndex].length
-    ) {
-      //go to the next word
-      paceCaret.currentLetterIndex = -1;
-      paceCaret.currentWordIndex++;
-    }
-    if (!Config.blindMode) {
-      if (paceCaret.correction < 0) {
-        while (paceCaret.correction < 0) {
-          paceCaret.currentLetterIndex--;
-          if (paceCaret.currentLetterIndex <= -2) {
-            //go to the previous word
-            paceCaret.currentLetterIndex =
-              wordsList[paceCaret.currentWordIndex - 1].length - 1;
-            paceCaret.currentWordIndex--;
-          }
-          paceCaret.correction++;
-        }
-      } else if (paceCaret.correction > 0) {
-        while (paceCaret.correction > 0) {
-          paceCaret.currentLetterIndex++;
-          if (
-            paceCaret.currentLetterIndex >=
-            wordsList[paceCaret.currentWordIndex].length
-          ) {
-            //go to the next word
-            paceCaret.currentLetterIndex = -1;
-            paceCaret.currentWordIndex++;
-          }
-          paceCaret.correction--;
-        }
-      }
-    }
-  } catch (e) {
-    //out of words
-    paceCaret = null;
-    $("#paceCaret").addClass("hidden");
-    return;
-  }
-
-  try {
-    let caret = $("#paceCaret");
-    let currentLetter;
-    let newTop;
-    let newLeft;
-    try {
-      let newIndex =
-        paceCaret.currentWordIndex -
-        (currentWordIndex - currentWordElementIndex);
-      if (paceCaret.currentLetterIndex === -1) {
-        currentLetter = document
-          .querySelectorAll("#words .word")
-          [newIndex].querySelectorAll("letter")[0];
-      } else {
-        currentLetter = document
-          .querySelectorAll("#words .word")
-          [newIndex].querySelectorAll("letter")[paceCaret.currentLetterIndex];
-      }
-      newTop = currentLetter.offsetTop - $(currentLetter).height() / 20;
-      newLeft;
-      if (paceCaret.currentLetterIndex === -1) {
-        newLeft = currentLetter.offsetLeft;
-      } else {
-        newLeft =
-          currentLetter.offsetLeft +
-          $(currentLetter).width() -
-          caret.width() / 2;
-      }
-      caret.removeClass("hidden");
-    } catch (e) {
-      caret.addClass("hidden");
-    }
-
-    let smoothlinescroll = $("#words .smoothScroller").height();
-    if (smoothlinescroll === undefined) smoothlinescroll = 0;
-
-    $("#paceCaret").css({
-      top: newTop - smoothlinescroll,
-    });
-
-    let duration = expectedStepEnd - performance.now();
-
-    if (Config.smoothCaret) {
-      caret.stop(true, true).animate(
-        {
-          left: newLeft,
-        },
-        duration,
-        "linear"
-      );
-    } else {
-      caret.stop(true, true).animate(
-        {
-          left: newLeft,
-        },
-        0,
-        "linear"
-      );
-    }
-    paceCaret.timeout = setTimeout(() => {
-      try {
-        movePaceCaret(expectedStepEnd + paceCaret.spc * 1000);
-      } catch (e) {
-        paceCaret = null;
-      }
-    }, duration);
-  } catch (e) {
-    console.error(e);
-    $("#paceCaret").addClass("hidden");
-  }
-}
-
-function resetPaceCaret() {
-  if (Config.paceCaret === "off") return;
-  if (!$("#paceCaret").hasClass("hidden")) {
-    $("#paceCaret").addClass("hidden");
-  }
-  if (Config.mode === "zen") return;
-
-  let caret = $("#paceCaret");
-  let firstLetter = document
-    .querySelector("#words .word")
-    .querySelector("letter");
-
-  caret.stop(true, true).animate(
-    {
-      top: firstLetter.offsetTop - $(firstLetter).height() / 4,
-      left: firstLetter.offsetLeft,
-    },
-    0,
-    "linear"
-  );
 }
 
 $("#customMode2PopupWrapper").click((e) => {
@@ -4753,12 +4530,12 @@ function handleSpace(event, isEnter) {
   if (currentWord == currentInput || Config.mode == "zen") {
     //correct word or in zen mode
     if (
-      paceCaret !== null &&
-      paceCaret.wordsStatus[currentWordIndex] === true &&
+      PaceCaret.caret !== null &&
+      PaceCaret.caret.wordsStatus[currentWordIndex] === true &&
       !Config.blindMode
     ) {
-      paceCaret.wordsStatus[currentWordIndex] = undefined;
-      paceCaret.correction -= currentWord.length + 1;
+      PaceCaret.caret.wordsStatus[currentWordIndex] = undefined;
+      PaceCaret.caret.correction -= currentWord.length + 1;
     }
     TestStats.incrementAccuracy(true);
     inputHistory.push(currentInput);
@@ -4777,12 +4554,12 @@ function handleSpace(event, isEnter) {
   } else {
     //incorrect word
     if (
-      paceCaret !== null &&
-      paceCaret.wordsStatus[currentWordIndex] === undefined &&
+      PaceCaret.caret !== null &&
+      PaceCaret.caret.wordsStatus[currentWordIndex] === undefined &&
       !Config.blindMode
     ) {
-      paceCaret.wordsStatus[currentWordIndex] = true;
-      paceCaret.correction += currentWord.length + 1;
+      PaceCaret.caret.wordsStatus[currentWordIndex] = true;
+      PaceCaret.caret.correction += currentWord.length + 1;
     }
     if (activeFunbox !== "nospace") {
       if (!Config.playSoundOnError || Config.blindMode) {

@@ -416,7 +416,7 @@ function getAccountDataAndInit() {
       }
       if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
         if (!testActive) {
-          initPaceCaret(true);
+          PaceCaret.init();
         }
       }
       // try {
