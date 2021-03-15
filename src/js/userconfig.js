@@ -23,12 +23,12 @@ async function saveConfigToCookie(noDbCheck = false) {
 
 async function saveConfigToDB() {
   if (firebase.auth().currentUser !== null) {
-    accountIconLoading(true);
+    AccountIcon.loading(true);
     CloudFunctions.saveConfig({
       uid: firebase.auth().currentUser.uid,
       obj: Config,
     }).then((d) => {
-      accountIconLoading(false);
+      AccountIcon.loading(false);
       if (d.data.returnCode !== 1) {
         Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
       }

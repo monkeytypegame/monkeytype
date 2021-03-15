@@ -13,7 +13,6 @@ import {
   showBackgroundLoader,
   hideBackgroundLoader,
   swapElements,
-  accountIconLoading,
   updateTestModesNotice,
   focusWords,
 } from "./dom-util";
@@ -38,3 +37,4 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config from "./config";
 import * as ConfigSet from "./config-set";
 import * as Focus from "./focus";
+import * as AccountIcon from "./account-icon";

@@ -252,7 +252,7 @@ firebase.auth().onAuthStateChanged(function (user) {
       );
     }
     updateAccountLoginButton();
-    accountIconLoading(true);
+    AccountIcon.loading(true);
     getAccountDataAndInit();
     var displayName = user.displayName;
     // var email = user.email;
@@ -362,7 +362,7 @@ function getAccountDataAndInit() {
       }
       if (!configChangedBeforeDb) {
         if (cookieConfig === null) {
-          accountIconLoading(false);
+          AccountIcon.loading(false);
           applyConfig(DB.getSnapshot().config);
           updateSettingsPage();
           saveConfigToCookie(true);
@@ -402,7 +402,7 @@ function getAccountDataAndInit() {
           // });
           // if (configsDifferent) {
           //   console.log("applying config from db");
-          //   accountIconLoading(false);
+          //   AccountIcon.loading(false);
           //   config = DB.getSnapshot().config;
           //   applyConfig(config);
           //   updateSettingsPage();
@@ -412,7 +412,7 @@ function getAccountDataAndInit() {
         }
         dbConfigLoaded = true;
       } else {
-        accountIconLoading(false);
+        AccountIcon.loading(false);
       }
       if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
         if (!testActive) {
@@ -456,7 +456,7 @@ function getAccountDataAndInit() {
         changePage("account");
       }
       refreshThemeButtons();
-      accountIconLoading(false);
+      AccountIcon.loading(false);
       updateFilterTags();
       updateCommandsTagsList();
       loadActiveTagsFromCookie();
@@ -464,7 +464,7 @@ function getAccountDataAndInit() {
       showAccountSettingsSection();
     })
     .catch((e) => {
-      accountIconLoading(false);
+      AccountIcon.loading(false);
       console.error(e);
       Notifications.add(
         "Error downloading user data - refresh to try again. Client likely could not connect to the backend, if error persists contact Miodec.",

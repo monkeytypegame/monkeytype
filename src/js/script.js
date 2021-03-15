@@ -1933,7 +1933,7 @@ function showResult(difficultyFailed = false) {
         completedEvent.uid = firebase.auth().currentUser.uid;
 
         //check local pb
-        accountIconLoading(true);
+        AccountIcon.loading(true);
         let dontShowCrown = false;
         let pbDiff = 0;
         DB.getLocalPB(
@@ -2088,7 +2088,7 @@ function showResult(difficultyFailed = false) {
               obj: completedEvent,
             })
               .then((e) => {
-                accountIconLoading(false);
+                AccountIcon.loading(false);
                 if (e.data == null) {
                   Notifications.add(
                     "Unexpected response from the server: " + e.data,

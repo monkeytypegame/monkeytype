@@ -9,18 +9,6 @@ export function hideBackgroundLoader() {
   $("#backgroundLoader").stop(true, true).fadeOut(125);
 }
 
-export function accountIconLoading(truefalse) {
-  if (truefalse) {
-    $("#top #menu .account .icon").html(
-      '<i class="fas fa-fw fa-spin fa-circle-notch"></i>'
-    );
-    $("#top #menu .account").css("opacity", 1).css("pointer-events", "none");
-  } else {
-    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-user"></i>');
-    $("#top #menu .account").css("opacity", 1).css("pointer-events", "auto");
-  }
-}
-
 export function swapElements(
   el1,
   el2,
@@ -237,7 +225,7 @@ export function updateTestModesNotice(
   }
 }
 
-function focusWords() {
+export function focusWords() {
   if (!$("#wordsWrapper").hasClass("hidden")) {
     $("#wordsInput").focus();
   }
