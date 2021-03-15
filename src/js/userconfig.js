@@ -1,89 +1,4 @@
-let defaultConfig = {
-  theme: "serika_dark",
-  customTheme: false,
-  customThemeColors: [
-    "#323437",
-    "#e2b714",
-    "#e2b714",
-    "#646669",
-    "#d1d0c5",
-    "#ca4754",
-    "#7e2a33",
-    "#ca4754",
-    "#7e2a33",
-  ],
-  favThemes: [],
-  showKeyTips: true,
-  showLiveWpm: false,
-  showTimerProgress: true,
-  smoothCaret: true,
-  quickTab: false,
-  punctuation: false,
-  numbers: false,
-  words: 50,
-  time: 30,
-  mode: "time",
-  quoteLength: [1],
-  language: "english",
-  fontSize: 15,
-  freedomMode: false,
-  resultFilters: null,
-  difficulty: "normal",
-  blindMode: false,
-  quickEnd: false,
-  caretStyle: "default",
-  paceCaretStyle: "default",
-  flipTestColors: false,
-  capsLockBackspace: false,
-  layout: "default",
-  savedLayout: "default",
-  confidenceMode: "off",
-  indicateTypos: false,
-  timerStyle: "text",
-  colorfulMode: false,
-  randomTheme: "off",
-  timerColor: "black",
-  timerOpacity: "0.25",
-  stopOnError: "off",
-  showAllLines: false,
-  keymapMode: "off",
-  keymapStyle: "staggered",
-  keymapLayout: "qwerty",
-  fontFamily: "Roboto_Mono",
-  smoothLineScroll: false,
-  alwaysShowDecimalPlaces: false,
-  alwaysShowWordsHistory: false,
-  singleListCommandLine: "manual",
-  playSoundOnError: false,
-  playSoundOnClick: "off",
-  startGraphsAtZero: true,
-  swapEscAndTab: false,
-  showOutOfFocusWarning: true,
-  paceCaret: "off",
-  paceCaretCustomSpeed: 100,
-  pageWidth: "100",
-  chartAccuracy: true,
-  chartStyle: "line",
-  minWpm: "off",
-  minWpmCustomSpeed: 100,
-  highlightMode: "letter",
-  alwaysShowCPM: false,
-  enableAds: "off",
-  hideExtraLetters: false,
-  strictSpace: false,
-  minAcc: "off",
-  minAccCustom: 90,
-  showLiveAcc: false,
-  monkey: false,
-  repeatQuotes: "off",
-  oppositeShiftMode: "off",
-};
-
 let cookieConfig = null;
-
-let config = {
-  ...defaultConfig,
-};
 
 let dbConfigLoaded = false;
 let configChangedBeforeDb = false;
@@ -99,7 +14,7 @@ async function saveConfigToCookie(noDbCheck = false) {
   //   expires: d,
   //   path: "/",
   // });
-  let save = config;
+  let save = Config;
   delete save.resultFilters;
   Misc.setCookie("config", JSON.stringify(save), 365);
   // restartCount = 0;
@@ -111,7 +26,7 @@ async function saveConfigToDB() {
     accountIconLoading(true);
     CloudFunctions.saveConfig({
       uid: firebase.auth().currentUser.uid,
-      obj: config,
+      obj: Config,
     }).then((d) => {
       accountIconLoading(false);
       if (d.data.returnCode !== 1) {
@@ -123,10 +38,8 @@ async function saveConfigToDB() {
 }
 
 function resetConfig() {
-  config = {
-    ...defaultConfig,
-  };
-  applyConfig(config);
+  ConfigSet.reset();
+  applyConfig(Config);
   saveConfigToCookie();
 }
 
@@ -197,7 +110,7 @@ function setPlaySoundOnError(val, nosave) {
   if (val == undefined) {
     val = false;
   }
-  config.playSoundOnError = val;
+  ConfigSet.playSoundOnError(val);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -205,15 +118,15 @@ function setPlaySoundOnClick(val, nosave) {
   if (val == undefined) {
     val = "off";
   }
-  config.playSoundOnClick = val;
-  if (config.playSoundOnClick !== "off") Sound.init();
+  ConfigSet.playSoundOnClick(val);
+  if (Config.playSoundOnClick !== "off") Sound.init();
   if (!nosave) saveConfigToCookie();
 }
 
 function togglePlaySoundOnError() {
-  config.playSoundOnError = !config.playSoundOnError;
-  if (config.playSoundOnError == undefined) {
-    config.playSoundOnError = false;
+  ConfigSet.playSoundOnError(!Config.playSoundOnError);
+  if (Config.playSoundOnError == undefined) {
+    ConfigSet.playSoundOnError(false);
   }
 }
 
@@ -225,21 +138,15 @@ function setDifficulty(diff, nosave) {
   ) {
     diff = "normal";
   }
-  config.difficulty = diff;
+  ConfigSet.difficulty(diff);
   if (!nosave) restartTest(false, nosave);
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
 //set fav themes
 function setFavThemes(themes, nosave) {
-  config.favThemes = themes;
+  ConfigSet.favThemes(themes);
   if (!nosave) {
     refreshThemeButtons();
     saveConfigToCookie();
@@ -248,18 +155,12 @@ function setFavThemes(themes, nosave) {
 
 //blind mode
 function toggleBlindMode() {
-  let blind = !config.blindMode;
+  let blind = !Config.blindMode;
   if (blind == undefined) {
     blind = false;
   }
-  config.blindMode = blind;
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
+  ConfigSet.blindMode(blind);
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   saveConfigToCookie();
 }
 
@@ -267,26 +168,20 @@ function setBlindMode(blind, nosave) {
   if (blind == undefined) {
     blind = false;
   }
-  config.blindMode = blind;
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
+  ConfigSet.blindMode(blind);
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
 function updateChartAccuracy() {
-  ChartController.accountHistory.data.datasets[1].hidden = !config.chartAccuracy;
+  ChartController.accountHistory.data.datasets[1].hidden = !Config.chartAccuracy;
   ChartController.accountHistory.options.scales.yAxes[1].display =
-    config.chartAccuracy;
+    Config.chartAccuracy;
   ChartController.accountHistory.update();
 }
 
 function updateChartStyle() {
-  if (config.chartStyle == "scatter") {
+  if (Config.chartStyle == "scatter") {
     ChartController.accountHistory.data.datasets[0].showLine = false;
     ChartController.accountHistory.data.datasets[1].showLine = false;
   } else {
@@ -297,10 +192,10 @@ function updateChartStyle() {
 }
 
 function toggleChartAccuracy() {
-  if (config.chartAccuracy) {
-    config.chartAccuracy = false;
+  if (Config.chartAccuracy) {
+    ConfigSet.chartAccuracy(false);
   } else {
-    config.chartAccuracy = true;
+    ConfigSet.chartAccuracy(true);
   }
   updateChartAccuracy();
   saveConfigToCookie();
@@ -310,16 +205,16 @@ function setChartAccuracy(chartAccuracy, nosave) {
   if (chartAccuracy == undefined) {
     chartAccuracy = true;
   }
-  config.chartAccuracy = chartAccuracy;
+  ConfigSet.chartAccuracy(chartAccuracy);
   updateChartAccuracy();
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleChartStyle() {
-  if (config.chartStyle == "scatter") {
-    config.chartStyle = "line";
+  if (Config.chartStyle == "scatter") {
+    ConfigSet.chartStyle("line");
   } else {
-    config.chartStyle = "scatter";
+    ConfigSet.chartStyle("scatter");
   }
   updateChartStyle();
   saveConfigToCookie();
@@ -329,7 +224,7 @@ function setChartStyle(chartStyle, nosave) {
   if (chartStyle == undefined) {
     chartStyle = "line";
   }
-  config.chartStyle = chartStyle;
+  ConfigSet.chartStyle(chartStyle);
   updateChartStyle();
   if (!nosave) saveConfigToCookie();
 }
@@ -338,23 +233,17 @@ function setStopOnError(soe, nosave) {
   if (soe == undefined || soe === true || soe === false) {
     soe = "off";
   }
-  config.stopOnError = soe;
-  if (config.stopOnError !== "off") {
-    config.confidenceMode = "off";
+  ConfigSet.stopOnError(soe);
+  if (Config.stopOnError !== "off") {
+    ConfigSet.confidenceMode("off");
   }
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
 //alwaysshowdecimal
 function toggleAlwaysShowDecimalPlaces() {
-  config.alwaysShowDecimalPlaces = !config.alwaysShowDecimalPlaces;
+  ConfigSet.alwaysShowDecimalPlaces(!Config.alwaysShowDecimalPlaces);
   saveConfigToCookie();
 }
 
@@ -362,12 +251,12 @@ function setAlwaysShowDecimalPlaces(val, nosave) {
   if (val == undefined) {
     val = false;
   }
-  config.alwaysShowDecimalPlaces = val;
+  ConfigSet.alwaysShowDecimalPlaces(val);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleAlwaysShowCPM() {
-  config.alwaysShowCPM = !config.alwaysShowCPM;
+  ConfigSet.alwaysShowCPM(!Config.alwaysShowCPM);
   saveConfigToCookie();
 }
 
@@ -375,14 +264,14 @@ function setAlwaysShowCPM(val, nosave) {
   if (val == undefined) {
     val = false;
   }
-  config.alwaysShowCPM = val;
+  ConfigSet.alwaysShowCPM(val);
   if (!nosave) saveConfigToCookie();
 }
 
 //show out of focus warning
 function toggleShowOutOfFocusWarning() {
-  config.showOutOfFocusWarning = !config.showOutOfFocusWarning;
-  if (!config.showOutOfFocusWarning) {
+  ConfigSet.showOutOfFocusWarning(!Config.showOutOfFocusWarning);
+  if (!Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
   saveConfigToCookie();
@@ -392,8 +281,8 @@ function setShowOutOfFocusWarning(val, nosave) {
   if (val == undefined) {
     val = true;
   }
-  config.showOutOfFocusWarning = val;
-  if (!config.showOutOfFocusWarning) {
+  ConfigSet.showOutOfFocusWarning(val);
+  if (!Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
   if (!nosave) saveConfigToCookie();
@@ -401,7 +290,7 @@ function setShowOutOfFocusWarning(val, nosave) {
 
 //swap esc and tab
 function toggleSwapEscAndTab() {
-  config.swapEscAndTab = !config.swapEscAndTab;
+  ConfigSet.swapEscAndTab(!Config.swapEscAndTab);
   saveConfigToCookie();
   updateKeytips();
 }
@@ -410,7 +299,7 @@ function setSwapEscAndTab(val, nosave) {
   if (val == undefined) {
     val = false;
   }
-  config.swapEscAndTab = val;
+  ConfigSet.swapEscAndTab(val);
   updateKeytips();
   if (!nosave) saveConfigToCookie();
 }
@@ -420,18 +309,12 @@ function setPaceCaret(val, nosave) {
   if (val == undefined) {
     val = "off";
   }
-  // if (config.mode === "zen" && val != "off") {
+  // if (Config.mode === "zen" && val != "off") {
   //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
   //   val = "off";
   // }
-  config.paceCaret = val;
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
+  ConfigSet.paceCaret(val);
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   initPaceCaret(nosave);
   if (!nosave) saveConfigToCookie();
 }
@@ -440,7 +323,7 @@ function setPaceCaretCustomSpeed(val, nosave) {
   if (val == undefined || Number.isNaN(parseInt(val))) {
     val = 100;
   }
-  config.paceCaretCustomSpeed = val;
+  ConfigSet.paceCaretCustomSpeed(val);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -449,14 +332,8 @@ function setMinWpm(minwpm, nosave) {
   if (minwpm == undefined) {
     minwpm = "off";
   }
-  config.minWpm = minwpm;
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
+  ConfigSet.minWpm(minwpm);
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -464,7 +341,7 @@ function setMinWpmCustomSpeed(val, nosave) {
   if (val == undefined || Number.isNaN(parseInt(val))) {
     val = 100;
   }
-  config.minWpmCustomSpeed = val;
+  ConfigSet.minWpmCustomSpeed(val);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -473,14 +350,8 @@ function setMinAcc(min, nosave) {
   if (min == undefined) {
     min = "off";
   }
-  config.minAcc = min;
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
+  ConfigSet.minAcc(min);
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -488,7 +359,7 @@ function setMinAccCustom(val, nosave) {
   if (val == undefined || Number.isNaN(parseInt(val))) {
     val = 90;
   }
-  config.minAccCustom = val;
+  ConfigSet.minAccCustom(val);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -497,33 +368,33 @@ function setAlwaysShowWordsHistory(val, nosave) {
   if (val == undefined) {
     val = false;
   }
-  config.alwaysShowWordsHistory = val;
+  ConfigSet.alwaysShowWordsHistory(val);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleAlwaysShowWordsHistory() {
-  let val = !config.alwaysShowWordsHistory;
+  let val = !Config.alwaysShowWordsHistory;
   if (val == undefined) {
     val = false;
   }
-  config.alwaysShowWordsHistory = val;
+  ConfigSet.alwaysShowWordsHistory(val);
   saveConfigToCookie();
 }
 
 //single list command line
 function setSingleListCommandLine(option, nosave) {
   if (!option) option = "manual";
-  config.singleListCommandLine = option;
+  ConfigSet.singleListCommandLine(option);
   if (!nosave) saveConfigToCookie();
 }
 
 //show all lines
 function toggleShowAllLines() {
-  let sal = !config.showAllLines;
+  let sal = !Config.showAllLines;
   if (sal == undefined) {
     sal = false;
   }
-  config.showAllLines = sal;
+  ConfigSet.showAllLines(sal);
   restartTest();
   saveConfigToCookie();
 }
@@ -532,7 +403,7 @@ function setShowAllLines(sal, nosave) {
   if (sal == undefined) {
     sal = false;
   }
-  config.showAllLines = sal;
+  ConfigSet.showAllLines(sal);
   if (!nosave) {
     saveConfigToCookie();
     restartTest();
@@ -541,11 +412,11 @@ function setShowAllLines(sal, nosave) {
 
 //quickend
 function toggleQuickEnd() {
-  let qe = !config.quickEnd;
+  let qe = !Config.quickEnd;
   if (qe == undefined) {
     qe = false;
   }
-  config.quickEnd = qe;
+  ConfigSet.quickEnd(qe);
   saveConfigToCookie();
 }
 
@@ -553,7 +424,7 @@ function setQuickEnd(qe, nosave) {
   if (qe == undefined) {
     qe = false;
   }
-  config.quickEnd = qe;
+  ConfigSet.quickEnd(qe);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -561,7 +432,7 @@ function setEnableAds(val, nosave) {
   if (val == undefined || val === true || val === false) {
     val = "off";
   }
-  config.enableAds = val;
+  ConfigSet.enableAds(val);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -569,7 +440,7 @@ function setRepeatQuotes(val, nosave) {
   if (val == undefined || val === true || val === false) {
     val = "off";
   }
-  config.repeatQuotes = val;
+  ConfigSet.repeatQuotes(val);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -578,14 +449,14 @@ function setFlipTestColors(flip, nosave) {
   if (flip == undefined) {
     flip = false;
   }
-  config.flipTestColors = flip;
+  ConfigSet.flipTestColors(flip);
   flipTestColors(flip);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleFlipTestColors() {
-  config.flipTestColors = !config.flipTestColors;
-  flipTestColors(config.flipTestColors);
+  ConfigSet.flipTestColors(!Config.flipTestColors);
+  flipTestColors(Config.flipTestColors);
   saveConfigToCookie();
 }
 
@@ -594,14 +465,14 @@ function setColorfulMode(extra, nosave) {
   if (extra == undefined) {
     extra = false;
   }
-  config.colorfulMode = extra;
+  ConfigSet.colorfulMode(extra);
   applyColorfulMode(extra);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleColorfulMode() {
-  config.colorfulMode = !config.colorfulMode;
-  applyColorfulMode(config.colorfulMode);
+  ConfigSet.colorfulMode(!Config.colorfulMode);
+  applyColorfulMode(Config.colorfulMode);
   saveConfigToCookie();
 }
 
@@ -610,12 +481,12 @@ function setStrictSpace(val, nosave) {
   if (val == undefined) {
     val = false;
   }
-  config.strictSpace = val;
+  ConfigSet.strictSpace(val);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleStrictSpace() {
-  config.strictSpace = !config.strictSpace;
+  ConfigSet.strictSpace(!Config.strictSpace);
   saveConfigToCookie();
 }
 
@@ -624,7 +495,7 @@ function setOppositeShiftMode(val, nosave) {
   if (val == undefined) {
     val = "off";
   }
-  config.oppositeShiftMode = val;
+  ConfigSet.oppositeShiftMode(val);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -632,7 +503,7 @@ function setPageWidth(val, nosave) {
   if (val == null || val == undefined) {
     val = "100";
   }
-  config.pageWidth = val;
+  ConfigSet.pageWidth(val);
   $("#centerContent").removeClass("wide125");
   $("#centerContent").removeClass("wide150");
   $("#centerContent").removeClass("wide200");
@@ -648,7 +519,7 @@ function setCaretStyle(caretStyle, nosave) {
   if (caretStyle == null || caretStyle == undefined) {
     caretStyle = "default";
   }
-  config.caretStyle = caretStyle;
+  ConfigSet.caretStyle(caretStyle);
   $("#caret").removeClass("off");
   $("#caret").removeClass("default");
   $("#caret").removeClass("underline");
@@ -676,7 +547,7 @@ function setPaceCaretStyle(caretStyle, nosave) {
   if (caretStyle == null || caretStyle == undefined) {
     caretStyle = "default";
   }
-  config.paceCaretStyle = caretStyle;
+  ConfigSet.paceCaretStyle(caretStyle);
   $("#paceCaret").removeClass("off");
   $("#paceCaret").removeClass("default");
   $("#paceCaret").removeClass("underline");
@@ -701,12 +572,12 @@ function setShowTimerProgress(timer, nosave) {
   if (timer == null || timer == undefined) {
     timer = false;
   }
-  config.showTimerProgress = timer;
+  ConfigSet.showTimerProgress(timer);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleShowTimerProgress() {
-  config.showTimerProgress = !config.showTimerProgress;
+  ConfigSet.showTimerProgress(!Config.showTimerProgress);
   saveConfigToCookie();
 }
 
@@ -714,12 +585,12 @@ function setShowLiveWpm(live, nosave) {
   if (live == null || live == undefined) {
     live = false;
   }
-  config.showLiveWpm = live;
+  ConfigSet.showLiveWpm(live);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleShowLiveWpm() {
-  config.showLiveWpm = !config.showLiveWpm;
+  ConfigSet.showLiveWpm(!Config.showLiveWpm);
   saveConfigToCookie();
 }
 
@@ -727,19 +598,19 @@ function setShowLiveAcc(live, nosave) {
   if (live == null || live == undefined) {
     live = false;
   }
-  config.showLiveAcc = live;
+  ConfigSet.showLiveAcc(live);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleShowLiveAcc() {
-  config.showLiveAcc = !config.showLiveAcc;
+  ConfigSet.showLiveAcc(!Config.showLiveAcc);
   saveConfigToCookie();
 }
 
 function setHighlightMode(mode, nosave) {
   if (
     mode === "word" &&
-    (activeFunBox === "nospace" || activeFunBox === "read_ahead")
+    (activeFunbox === "nospace" || activeFunbox === "read_ahead")
   ) {
     Notifications.add("Can't use word highlight with this funbox", 0);
     return;
@@ -747,7 +618,7 @@ function setHighlightMode(mode, nosave) {
   if (mode == null || mode == undefined) {
     mode = "letter";
   }
-  config.highlightMode = mode;
+  ConfigSet.highlightMode(mode);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -755,12 +626,12 @@ function setHideExtraLetters(val, nosave) {
   if (val == null || val == undefined) {
     val = false;
   }
-  config.hideExtraLetters = val;
+  ConfigSet.hideExtraLetters(val);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleHideExtraLetters() {
-  config.hideExtraLetters = !config.hideExtraLetters;
+  ConfigSet.hideExtraLetters(!Config.hideExtraLetters);
   saveConfigToCookie();
 }
 
@@ -768,7 +639,7 @@ function setTimerStyle(style, nosave) {
   if (style == null || style == undefined) {
     style = "bar";
   }
-  config.timerStyle = style;
+  ConfigSet.timerStyle(style);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -776,7 +647,7 @@ function setTimerColor(color, nosave) {
   if (color == null || color == undefined) {
     color = "black";
   }
-  config.timerColor = color;
+  ConfigSet.timerColor(color);
 
   $("#timer").removeClass("timerSub");
   $("#timer").removeClass("timerText");
@@ -817,14 +688,14 @@ function setTimerOpacity(opacity, nosave) {
   if (opacity == null || opacity == undefined) {
     opacity = 0.25;
   }
-  config.timerOpacity = opacity;
+  ConfigSet.timerOpacity(opacity);
   if (!nosave) saveConfigToCookie();
 }
 
 //key tips
 function setKeyTips(keyTips, nosave) {
-  config.showKeyTips = keyTips;
-  if (config.showKeyTips) {
+  ConfigSet.showKeyTips(keyTips);
+  if (Config.showKeyTips) {
     $("#bottom .keyTips").removeClass("hidden");
   } else {
     $("#bottom .keyTips").addClass("hidden");
@@ -833,8 +704,8 @@ function setKeyTips(keyTips, nosave) {
 }
 
 function toggleKeyTips() {
-  config.showKeyTips = !config.showKeyTips;
-  if (config.showKeyTips) {
+  ConfigSet.showKeyTips(!Config.showKeyTips);
+  if (Config.showKeyTips) {
     $("#bottom .keyTips").removeClass("hidden");
   } else {
     $("#bottom .keyTips").addClass("hidden");
@@ -849,7 +720,7 @@ function setTimeConfig(time, nosave) {
   }
   time = parseInt(time);
   if (!nosave) setMode("time", nosave);
-  config.time = time;
+  ConfigSet.time(time);
   $("#top .config .time .text-button").removeClass("active");
   if (![15, 30, 60, 120].includes(time)) {
     time = "custom";
@@ -864,22 +735,22 @@ function setTimeConfig(time, nosave) {
 function setQuoteLength(len, nosave, multipleMode) {
   if (Array.isArray(len)) {
     //config load
-    config.quoteLength = len;
+    ConfigSet.quoteLength(len);
   } else {
-    if (!Array.isArray(config.quoteLength)) config.quoteLength = [];
+    if (!Array.isArray(ConfigSet.quoteLength)) Config.quoteLength([]);
     if (len === null || isNaN(len) || len < -2 || len > 3) {
       len = 1;
     }
     len = parseInt(len);
     if (multipleMode) {
-      if (!config.quoteLength.includes(len)) config.quoteLength.push(len);
+      if (!Config.quoteLength.includes(len)) Config.quoteLength.push(len);
     } else {
-      config.quoteLength = [len];
+      ConfigSet.quoteLength([len]);
     }
   }
   // if (!nosave) setMode("quote", nosave);
   $("#top .config .quoteLength .text-button").removeClass("active");
-  config.quoteLength.forEach((ql) => {
+  Config.quoteLength.forEach((ql) => {
     $(
       "#top .config .quoteLength .text-button[quoteLength='" + ql + "']"
     ).addClass("active");
@@ -893,7 +764,7 @@ function setWordCount(wordCount, nosave) {
   }
   wordCount = parseInt(wordCount);
   if (!nosave) setMode("words", nosave);
-  config.words = wordCount;
+  ConfigSet.words(wordCount);
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
     wordCount = "custom";
@@ -906,7 +777,7 @@ function setWordCount(wordCount, nosave) {
 
 //caret
 function setSmoothCaret(mode, nosave) {
-  config.smoothCaret = mode;
+  ConfigSet.smoothCaret(mode);
   if (!nosave) saveConfigToCookie();
   if (mode) {
     $("#caret").css("animation-name", "caretFlashSmooth");
@@ -916,9 +787,9 @@ function setSmoothCaret(mode, nosave) {
 }
 
 function toggleSmoothCaret() {
-  config.smoothCaret = !config.smoothCaret;
+  ConfigSet.smoothCaret(!Config.smoothCaret);
   saveConfigToCookie();
-  if (config.smoothCaret) {
+  if (Config.smoothCaret) {
     $("#caret").css("animation-name", "caretFlashSmooth");
   } else {
     $("#caret").css("animation-name", "caretFlashHard");
@@ -927,30 +798,30 @@ function toggleSmoothCaret() {
 
 //startgraphsatzero
 function toggleStartGraphsAtZero() {
-  config.startGraphsAtZero = !config.startGraphsAtZero;
+  ConfigSet.startGraphsAtZero(!Config.startGraphsAtZero);
   saveConfigToCookie();
 }
 
 function setStartGraphsAtZero(mode, nosave) {
-  config.startGraphsAtZero = mode;
+  ConfigSet.startGraphsAtZero(mode);
   if (!nosave) saveConfigToCookie();
 }
 
 //linescroll
 function setSmoothLineScroll(mode, nosave) {
-  config.smoothLineScroll = mode;
+  ConfigSet.smoothLineScroll(mode);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleSmoothLineScroll() {
-  config.smoothLineScroll = !config.smoothLineScroll;
+  ConfigSet.smoothLineScroll(!Config.smoothLineScroll);
   saveConfigToCookie();
 }
 
 //quick tab
 function setQuickTabMode(mode, nosave) {
-  config.quickTab = mode;
-  if (!config.quickTab) {
+  ConfigSet.quickTab(mode);
+  if (!Config.quickTab) {
     $("#restartTestButton").removeClass("hidden");
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
@@ -965,8 +836,8 @@ function setQuickTabMode(mode, nosave) {
 }
 
 function toggleQuickTabMode() {
-  config.quickTab = !config.quickTab;
-  if (!config.quickTab) {
+  ConfigSet.quickTab(!Config.quickTab);
+  if (!Config.quickTab) {
     $("#restartTestButton").removeClass("hidden");
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
@@ -982,11 +853,11 @@ function toggleQuickTabMode() {
 
 //numbers
 function setNumbers(numb, nosave) {
-  if (config.mode === "quote") {
+  if (Config.mode === "quote") {
     numb = false;
   }
-  config.numbers = numb;
-  if (!config.numbers) {
+  ConfigSet.numbers(numb);
+  if (!Config.numbers) {
     $("#top .config .numbersMode .text-button").removeClass("active");
   } else {
     $("#top .config .numbersMode .text-button").addClass("active");
@@ -995,11 +866,11 @@ function setNumbers(numb, nosave) {
 }
 
 function toggleNumbers() {
-  config.numbers = !config.numbers;
-  if (config.mode === "quote") {
-    config.numbers = false;
+  ConfigSet.numbers(!Config.numbers);
+  if (Config.mode === "quote") {
+    ConfigSet.numbers(false);
   }
-  if (config.numbers) {
+  if (Config.numbers) {
     $("#top .config .numbersMode .text-button").addClass("active");
   } else {
     $("#top .config .numbersMode .text-button").removeClass("active");
@@ -1009,11 +880,11 @@ function toggleNumbers() {
 
 //punctuation
 function setPunctuation(punc, nosave) {
-  if (config.mode === "quote") {
+  if (Config.mode === "quote") {
     punc = false;
   }
-  config.punctuation = punc;
-  if (!config.punctuation) {
+  ConfigSet.punctuation(punc);
+  if (!Config.punctuation) {
     $("#top .config .punctuationMode .text-button").removeClass("active");
   } else {
     $("#top .config .punctuationMode .text-button").addClass("active");
@@ -1022,11 +893,11 @@ function setPunctuation(punc, nosave) {
 }
 
 function togglePunctuation() {
-  config.punctuation = !config.punctuation;
-  if (config.mode === "quote") {
-    config.punctuation = false;
+  ConfigSet.punctuation(!Config.punctuation);
+  if (Config.mode === "quote") {
+    ConfigSet.punctuation(false);
   }
-  if (config.punctuation) {
+  if (Config.punctuation) {
     $("#top .config .punctuationMode .text-button").addClass("active");
   } else {
     $("#top .config .punctuationMode .text-button").removeClass("active");
@@ -1046,7 +917,7 @@ function setFontFamily(font, nosave) {
   if (font == undefined || font === "") {
     font = "Roboto_Mono";
   }
-  config.fontFamily = font;
+  ConfigSet.fontFamily(font);
   document.documentElement.style.setProperty("--font", font.replace(/_/g, " "));
   Chart.defaults.global.defaultFontFamily = font.replace(/_/g, " ");
   if (!nosave) saveConfigToCookie();
@@ -1057,17 +928,17 @@ function setFreedomMode(freedom, nosave) {
   if (freedom == null) {
     freedom = false;
   }
-  config.freedomMode = freedom;
-  if (config.freedomMode && config.confidenceMode !== "off") {
-    config.confidenceMode = "off";
+  ConfigSet.freedomMode(freedom);
+  if (Config.freedomMode && Config.confidenceMode !== "off") {
+    ConfigSet.confidenceMode("off");
   }
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleFreedomMode() {
-  config.freedomMode = !config.freedomMode;
-  if (config.freedomMode && config.confidenceMode !== "off") {
-    config.confidenceMode = false;
+  ConfigSet.freedomMode(!Config.freedomMode);
+  if (Config.freedomMode && Config.confidenceMode !== "off") {
+    ConfigSet.confidenceMode(false);
   }
   saveConfigToCookie();
 }
@@ -1076,28 +947,22 @@ function setConfidenceMode(cm, nosave) {
   if (cm == undefined) {
     cm = "off";
   }
-  config.confidenceMode = cm;
-  if (config.confidenceMode !== "off") {
-    config.freedomMode = false;
-    config.stopOnError = "off";
+  ConfigSet.confidenceMode(cm);
+  if (Config.confidenceMode !== "off") {
+    ConfigSet.freedomMode(false);
+    ConfigSet.stopOnError("off");
   }
 
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleIndicateTypos() {
-  let it = !config.indicateTypos;
+  let it = !Config.indicateTypos;
   if (it == undefined) {
     it = false;
   }
-  config.indicateTypos = it;
+  ConfigSet.indicateTypos(it);
   saveConfigToCookie();
 }
 
@@ -1105,14 +970,14 @@ function setIndicateTypos(it, nosave) {
   if (it == undefined) {
     it = false;
   }
-  config.indicateTypos = it;
+  ConfigSet.indicateTypos(it);
   if (!nosave) saveConfigToCookie();
 }
 
 function setTheme(name, nosave) {
-  config.theme = name;
+  ConfigSet.theme(name);
   setCustomTheme(false, true);
-  ThemeController.set(config.theme);
+  ThemeController.set(Config.theme);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -1123,19 +988,19 @@ function setRandomTheme(val, nosave) {
   if (val === "off") {
     ThemeController.clearRandom();
   }
-  config.randomTheme = val;
+  ConfigSet.randomTheme(val);
   if (!nosave) saveConfigToCookie();
 }
 
 function setCustomTheme(boolean, nosave) {
-  if (boolean !== undefined) config.customTheme = boolean;
+  if (boolean !== undefined) ConfigSet.customTheme(boolean);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleCustomTheme(nosave) {
-  if (config.customTheme) {
+  if (Config.customTheme) {
     setCustomTheme(false);
-    ThemeController.set(config.theme);
+    ThemeController.set(Config.theme);
     // applyCustomThemeColors();
     swapElements(
       $('.pageSettings [tabContent="custom"]'),
@@ -1157,7 +1022,7 @@ function toggleCustomTheme(nosave) {
 
 function setCustomThemeColors(colors, nosave) {
   if (colors !== undefined) {
-    config.customThemeColors = colors;
+    ConfigSet.customThemeColors(colors);
     ThemeController.setCustomColors(colors);
     // ThemeController.set("custom");
     // applyCustomThemeColors();
@@ -1169,7 +1034,7 @@ function setLanguage(language, nosave) {
   if (language == null || language == undefined) {
     language = "english";
   }
-  config.language = language;
+  ConfigSet.language(language);
   try {
     firebase.analytics().logEvent("changedLanguage", {
       language: language,
@@ -1181,8 +1046,8 @@ function setLanguage(language, nosave) {
 }
 
 function toggleMonkey(nosave) {
-  config.monkey = !config.monkey;
-  if (config.monkey) {
+  ConfigSet.monkey(!Config.monkey);
+  if (Config.monkey) {
     $("#monkey").removeClass("hidden");
   } else {
     $("#monkey").addClass("hidden");
@@ -1194,8 +1059,8 @@ function setMonkey(monkey, nosave) {
   if (monkey === null || monkey === undefined) {
     monkey = false;
   }
-  config.monkey = monkey;
-  if (config.monkey) {
+  ConfigSet.monkey(monkey);
+  if (Config.monkey) {
     $("#monkey").removeClass("hidden");
   } else {
     $("#monkey").addClass("hidden");
@@ -1207,28 +1072,22 @@ function setCapsLockBackspace(capsLockBackspace, nosave) {
   if (capsLockBackspace === null || capsLockBackspace === undefined) {
     capsLockBackspace = false;
   }
-  config.capsLockBackspace = capsLockBackspace;
+  ConfigSet.capsLockBackspace(capsLockBackspace);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleCapsLockBackspace() {
-  setCapsLockBackspace(!config.capsLockBackspace, false);
+  setCapsLockBackspace(!Config.capsLockBackspace, false);
 }
 
 function setLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
-  config.layout = layout;
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
-  if (config.keymapLayout === "overrideSync") {
-    refreshKeymapKeys(config.keymapLayout);
+  ConfigSet.layout(layout);
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  if (Config.keymapLayout === "overrideSync") {
+    refreshKeymapKeys(Config.keymapLayout);
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -1237,7 +1096,7 @@ function setSavedLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
-  config.savedLayout = layout;
+  ConfigSet.savedLayout(layout);
   setLayout(layout, nosave);
 }
 
@@ -1247,7 +1106,7 @@ function setKeymapMode(mode, nosave) {
   }
   $(".active-key").removeClass("active-key");
   $(".keymap-key").attr("style", "");
-  config.keymapMode = mode;
+  ConfigSet.keymapMode(mode);
   if (!nosave) restartTest(false, nosave);
   if (!nosave) saveConfigToCookie();
 }
@@ -1268,7 +1127,7 @@ function setKeymapStyle(style, nosave) {
   } else if (style === "split_matrix") {
     $(".keymap").addClass("split_matrix");
   }
-  config.keymapStyle = style;
+  ConfigSet.keymapStyle(style);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -1284,7 +1143,7 @@ function setKeymapLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
-  config.keymapLayout = layout;
+  ConfigSet.keymapLayout(layout);
   refreshKeymapKeys(layout);
   if (!nosave) saveConfigToCookie();
 }
@@ -1293,13 +1152,13 @@ function refreshKeymapKeys(layout) {
   try {
     let lts = layouts[layout]; //layout to show
     let layoutString = layout;
-    if (config.keymapLayout === "overrideSync") {
-      if (config.layout === "default") {
+    if (Config.keymapLayout === "overrideSync") {
+      if (Config.layout === "default") {
         lts = layouts["qwerty"];
         layoutString = "default";
       } else {
-        lts = layouts[config.layout];
-        layoutString = config.layout;
+        lts = layouts[Config.layout];
+        layoutString = Config.layout;
       }
     }
 
@@ -1379,7 +1238,7 @@ function setFontSize(fontSize, nosave) {
   if (fontSize == null || fontSize == undefined) {
     fontSize = 1;
   }
-  config.fontSize = fontSize;
+  ConfigSet.fontSize(fontSize);
   $("#words").removeClass("size125");
   $("#caret, #paceCaret").removeClass("size125");
   $("#words").removeClass("size15");
@@ -1419,9 +1278,9 @@ function applyConfig(configObj) {
     Notifications.add("Could not apply config", -1, 3);
     return;
   }
-  Object.keys(defaultConfig).forEach((configKey) => {
+  Object.keys(ConfigSet.defaultConfig).forEach((configKey) => {
     if (configObj[configKey] === undefined) {
-      configObj[configKey] = defaultConfig[configKey];
+      configObj[configKey] = ConfigSet.defaultConfig[configKey];
     }
   });
   if (configObj && configObj != null && configObj != "null") {
@@ -1502,8 +1361,8 @@ function applyConfig(configObj) {
         addemo = true;
       }
 
-      if (config.enableAds === "max" || config.enableAds === "on") {
-        if (config.enableAds === "max") {
+      if (Config.enableAds === "max" || Config.enableAds === "on") {
+        if (Config.enableAds === "max") {
           window["nitroAds"].createAd("nitropay_ad_left", {
             refreshLimit: 10,
             refreshTime: 30,
@@ -1670,11 +1529,5 @@ function applyConfig(configObj) {
       $("#nitropay_ad_about").remove();
     }
   }
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
 }

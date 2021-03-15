@@ -34,3 +34,5 @@ import * as ThemeController from "./theme-controller";
 import * as Caret from "./caret";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ManualRestart from "./manual-restart-tracker";
+import Config from "./config";
+import * as ConfigSet from "./config-set";

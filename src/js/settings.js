@@ -6,7 +6,7 @@ class SettingsGroup {
     updateCallback = null
   ) {
     this.configName = configName;
-    this.configValue = config[configName];
+    this.configValue = Config[configName];
     if (this.configValue === true || this.configValue === false) {
       this.onOff = true;
     } else {
@@ -53,7 +53,7 @@ class SettingsGroup {
   }
 
   updateButton() {
-    this.configValue = config[this.configName];
+    this.configValue = Config[this.configName];
     $(`.pageSettings .section.${this.configName} .button`).removeClass(
       "active"
     );
@@ -100,7 +100,7 @@ settingsGroups.keymapMode = new SettingsGroup(
     settingsGroups.showLiveWpm.updateButton();
   },
   () => {
-    if (config.keymapMode === "off") {
+    if (Config.keymapMode === "off") {
       $(".pageSettings .section.keymapStyle").addClass("hidden");
       $(".pageSettings .section.keymapLayout").addClass("hidden");
     } else {
@@ -119,7 +119,7 @@ settingsGroups.showKeyTips = new SettingsGroup(
   setKeyTips,
   null,
   () => {
-    if (config.showKeyTips) {
+    if (Config.showKeyTips) {
       $(".pageSettings .tip").removeClass("hidden");
     } else {
       $(".pageSettings .tip").addClass("hidden");
@@ -205,8 +205,8 @@ settingsGroups.playSoundOnClick = new SettingsGroup(
   "playSoundOnClick",
   setPlaySoundOnClick,
   () => {
-    if (config.playSoundOnClick !== "off")
-      Sound.playClick(config.playSoundOnClick);
+    if (Config.playSoundOnClick !== "off")
+      Sound.playClick(Config.playSoundOnClick);
   }
 );
 settingsGroups.showAllLines = new SettingsGroup(
@@ -214,7 +214,7 @@ settingsGroups.showAllLines = new SettingsGroup(
   setShowAllLines
 );
 settingsGroups.paceCaret = new SettingsGroup("paceCaret", setPaceCaret, () => {
-  if (config.paceCaret === "custom") {
+  if (Config.paceCaret === "custom") {
     $(
       ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
     ).removeClass("hidden");
@@ -225,7 +225,7 @@ settingsGroups.paceCaret = new SettingsGroup("paceCaret", setPaceCaret, () => {
   }
 });
 settingsGroups.minWpm = new SettingsGroup("minWpm", setMinWpm, () => {
-  if (config.minWpm === "custom") {
+  if (Config.minWpm === "custom") {
     $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
       "hidden"
     );
@@ -236,7 +236,7 @@ settingsGroups.minWpm = new SettingsGroup("minWpm", setMinWpm, () => {
   }
 });
 settingsGroups.minAcc = new SettingsGroup("minAcc", setMinAcc, () => {
-  if (config.minAcc === "custom") {
+  if (Config.minAcc === "custom") {
     $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
   } else {
     $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
@@ -277,7 +277,7 @@ settingsGroups.fontFamily = new SettingsGroup(
     let customButton = $(".pageSettings .section.fontFamily .buttons .custom");
     if ($(".pageSettings .section.fontFamily .buttons .active").length === 0) {
       customButton.addClass("active");
-      customButton.text(`Custom (${config.fontFamily.replace(/_/g, " ")})`);
+      customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
     } else {
       customButton.text("Custom");
     }
@@ -301,7 +301,7 @@ async function fillSettingsPage() {
   let langGroupsEl = $(
     ".pageSettings .section.languageGroups .buttons"
   ).empty();
-  let currentLanguageGroup = await Misc.findCurrentGroup(config.language);
+  let currentLanguageGroup = await Misc.findCurrentGroup(Config.language);
   Misc.getLanguageGroups().then((groups) => {
     groups.forEach((group) => {
       langGroupsEl.append(
@@ -368,10 +368,10 @@ async function fillSettingsPage() {
   let fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
   Misc.getFontsList().then((fonts) => {
     fonts.forEach((font) => {
-      if (config.fontFamily === font.name) isCustomFont = false;
+      if (ConfigSet.fontFamily === font.name) isCustomFont(false);
       fontsEl.append(
         `<div class="button${
-          config.fontFamily === font.name ? " active" : ""
+          Config.fontFamily === font.name ? " active" : ""
         }" style="font-family:${
           font.display !== undefined ? font.display : font.name
         }" fontFamily="${font.name.replace(/ /g, "_")}" tabindex="0"
@@ -382,7 +382,7 @@ async function fillSettingsPage() {
     });
     $(
       isCustomFont
-        ? `<div class="language button no-auto-handle custom active" onclick="this.blur();">Custom (${config.fontFamily.replace(
+        ? `<div class="language button no-auto-handle custom active" onclick="this.blur();">Custom (${Config.fontFamily.replace(
             /_/g,
             " "
           )})</div>`
@@ -401,17 +401,17 @@ function refreshThemeButtons() {
   ).empty();
   let themesEl = $(".pageSettings .section.themes .allThemes.buttons").empty();
 
-  let activeThemeName = config.theme;
-  if (config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
+  let activeThemeName = Config.theme;
+  if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
     activeThemeName = ThemeController.randomTheme;
   }
 
   Misc.getSortedThemesList().then((themes) => {
     //first show favourites
-    if (config.favThemes.length > 0) {
+    if (Config.favThemes.length > 0) {
       favThemesEl.css({ paddingBottom: "1rem" });
       themes.forEach((theme) => {
-        if (config.favThemes.includes(theme.name)) {
+        if (Config.favThemes.includes(theme.name)) {
           let activeTheme = activeThemeName === theme.name ? "active" : "";
           favThemesEl.append(
             `<div class="theme button" theme='${theme.name}' style="color:${
@@ -428,7 +428,7 @@ function refreshThemeButtons() {
     }
     //then the rest
     themes.forEach((theme) => {
-      if (!config.favThemes.includes(theme.name)) {
+      if (!Config.favThemes.includes(theme.name)) {
         let activeTheme = activeThemeName === theme.name ? "active" : "";
         themesEl.append(
           `<div class="theme button" theme='${theme.name}' style="color:${
@@ -458,12 +458,12 @@ function updateSettingsPage() {
   updateDiscordSettingsSection();
   refreshThemeButtons();
 
-  if (config.paceCaret === "custom") {
+  if (Config.paceCaret === "custom") {
     $(
       ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
     ).removeClass("hidden");
     $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
-      config.paceCaretCustomSpeed
+      Config.paceCaretCustomSpeed
     );
   } else {
     $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
@@ -471,12 +471,12 @@ function updateSettingsPage() {
     );
   }
 
-  if (config.minWpm === "custom") {
+  if (Config.minWpm === "custom") {
     $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
       "hidden"
     );
     $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
-      config.minWpmCustomSpeed
+      Config.minWpmCustomSpeed
     );
   } else {
     $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
@@ -484,10 +484,10 @@ function updateSettingsPage() {
     );
   }
 
-  if (config.minAcc === "custom") {
+  if (Config.minAcc === "custom") {
     $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
     $(".pageSettings .section.minAcc input.customMinAcc").val(
-      config.minAccCustom
+      Config.minAccCustom
     );
   } else {
     $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
@@ -519,8 +519,8 @@ function showCustomThemeShare() {
 function hideCustomThemeShare() {
   if (!$("#customThemeShareWrapper").hasClass("hidden")) {
     try {
-      config.customThemeColors = JSON.parse(
-        $("#customThemeShareWrapper input").val()
+      ConfigSet.customThemeColors(
+        JSON.parse($("#customThemeShareWrapper input").val())
       );
     } catch (e) {
       Notifications.add(
@@ -528,7 +528,7 @@ function hideCustomThemeShare() {
         0,
         4
       );
-      config.customThemeColors = defaultConfig.customThemeColors;
+      ConfigSet.customThemeColors(Config.defaultConfig.customThemeColors);
     }
     setCustomThemeInputs();
     // applyCustomThemeColors();
@@ -588,16 +588,18 @@ $("#shareCustomThemeButton").click((e) => {
 });
 
 function toggleFavouriteTheme(themename) {
-  if (config.favThemes.includes(themename)) {
+  if (Config.favThemes.includes(themename)) {
     //already favourite, remove
-    config.favThemes = config.favThemes.filter((t) => {
-      if (t !== themename) {
-        return t;
-      }
-    });
+    ConfigSet.favThemes(
+      Config.favThemes.filter((t) => {
+        if (t !== themename) {
+          return t;
+        }
+      })
+    );
   } else {
     //add to favourites
-    config.favThemes.push(themename);
+    Config.favThemes.push(themename);
   }
   saveConfigToCookie();
   refreshThemeButtons();
@@ -662,7 +664,7 @@ function refreshTagsSettingsSection() {
 
 function setActiveFunboxButton() {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
-  $(`.pageSettings .section.funbox .button[funbox='${activeFunBox}']`).addClass(
+  $(`.pageSettings .section.funbox .button[funbox='${activeFunbox}']`).addClass(
     "active"
   );
 }
@@ -670,7 +672,7 @@ function setActiveFunboxButton() {
 async function setActiveLanguageGroup(groupName, clicked = false) {
   let currentGroup;
   if (groupName === undefined) {
-    currentGroup = await Misc.findCurrentGroup(config.language);
+    currentGroup = await Misc.findCurrentGroup(Config.language);
   } else {
     let groups = await Misc.getLanguageGroups();
     groups.forEach((g) => {
@@ -701,20 +703,20 @@ async function setActiveLanguageGroup(groupName, clicked = false) {
     setLanguage(currentGroup.languages[0]);
   } else {
     $(
-      `.pageSettings .section.language .buttons .button[language=${config.language}]`
+      `.pageSettings .section.language .buttons .button[language=${Config.language}]`
     ).addClass("active");
   }
 }
 
 function setActiveThemeButton() {
   $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${config.theme}]`).addClass(
+  $(`.pageSettings .section.themes .theme[theme=${Config.theme}]`).addClass(
     "active"
   );
 }
 
 function setActiveThemeTab() {
-  config.customTheme === true
+  Config.customTheme === true
     ? $(".pageSettings .section.themes .tabs .button[tab='custom']").click()
     : $(".pageSettings .section.themes .tabs .button[tab='preset']").click();
 }
@@ -724,7 +726,7 @@ function setCustomThemeInputs() {
     ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
   ).each((n, index) => {
     let currentColor =
-      config.customThemeColors[colorVars.indexOf($(index).attr("id"))];
+      Config.customThemeColors[colorVars.indexOf($(index).attr("id"))];
     $(index).val(currentColor);
     $(index).attr("value", currentColor);
     $(index).prev().text(currentColor);
@@ -755,13 +757,7 @@ function toggleTag(tagid, nosave = false) {
       }
     }
   });
-  updateTestModesNotice(
-    sameWordset,
-    textHasTab,
-    paceCaret,
-    activeFunBox,
-    config
-  );
+  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveActiveTagsToCookie();
 }
 
@@ -961,7 +957,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
   setCustomThemeInputs();
   if ($target.attr("tab") == "preset") {
     setCustomTheme(false);
-    ThemeController.set(config.theme);
+    ThemeController.set(Config.theme);
     // applyCustomThemeColors();
     swapElements(
       $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
@@ -1006,8 +1002,8 @@ $(".pageSettings .saveCustomThemeButton").click((e) => {
 });
 
 $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
-  // previewTheme(config.theme);
-  ThemeController.preview(config.theme);
+  // previewTheme(Config.theme);
+  ThemeController.preview(Config.theme);
 
   colorVars.forEach((e) => {
     document.documentElement.style.setProperty(e, "");
@@ -1054,7 +1050,7 @@ $("#resetSettingsButton").click((e) => {
 });
 
 $("#exportSettingsButton").click((e) => {
-  let configJSON = JSON.stringify(config);
+  let configJSON = JSON.stringify(Config);
   navigator.clipboard.writeText(configJSON).then(
     function () {
       Notifications.add("JSON Copied to clipboard", 0);

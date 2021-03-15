@@ -106,6 +106,8 @@ const refactoredSrc = [
   "./src/js/test/caret.js",
   "./src/js/custom-text-popup.js",
   "./src/js/manual-restart-tracker.js",
+  "./src/js/config.js",
+  "./src/js/config-set.js",
 ];
 
 //legacy files

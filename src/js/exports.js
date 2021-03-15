@@ -7,6 +7,6 @@ global.getuid = getuid;
 
 //these exports are just for debugging in the browser
 global.snapshot = DB.getSnapshot;
-global.config = config;
+global.config = Config;
 // global.addnotif = Notifications.add;
 global.link = linkWithGoogle;

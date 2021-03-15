@@ -2,6 +2,7 @@ import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "./misc";
 import * as Notifications from "./notification-center";
+import Config from "./config";
 
 let isPreviewingTheme = false;
 let randomTheme = null;
@@ -85,15 +86,15 @@ export function setCustomColors(colors) {
 }
 
 //TODO remove config once config is a module
-export function randomiseTheme(config) {
+export function randomiseTheme() {
   var randomList;
   Misc.getThemesList().then((themes) => {
     randomList = themes.map((t) => {
       return t.name;
     });
 
-    if (config.randomTheme === "fav" && config.favThemes.length > 0)
-      randomList = config.favThemes;
+    if (Config.randomTheme === "fav" && Config.favThemes.length > 0)
+      randomList = Config.favThemes;
     randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
     preview(randomTheme);
     Notifications.add(randomTheme.replace(/_/g, " "), 0);

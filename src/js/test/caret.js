@@ -1,4 +1,5 @@
 import * as Misc from "./misc";
+import Config from "./config";
 
 export let caretAnimating = true;
 
@@ -11,9 +12,9 @@ export function stopAnimation() {
 }
 
 //TODO remove config when module
-export function startAnimation(config) {
+export function startAnimation() {
   if (caretAnimating === false) {
-    if (config.smoothCaret) {
+    if (Config.smoothCaret) {
       $("#caret").css("animation-name", "caretFlashSmooth");
     } else {
       $("#caret").css("animation-name", "caretFlashHard");
@@ -26,17 +27,17 @@ export function hide() {
   $("#caret").addClass("hidden");
 }
 
-export function show(config) {
+export function show() {
   if ($("#result").hasClass("hidden")) {
-    updatePosition("", config);
+    updatePosition("");
     $("#caret").removeClass("hidden");
-    startAnimation(config);
+    startAnimation();
   }
 }
 
 //TODO remove this after test logic is a module
 //TODO remove config when module
-export function updatePosition(currentInput, config) {
+export function updatePosition(currentInput) {
   if ($("#wordsWrapper").hasClass("hidden")) return;
   if ($("#caret").hasClass("off")) {
     return;
@@ -64,7 +65,7 @@ export function updatePosition(currentInput, config) {
       currentLetter = currentWordNodeList[currentWordNodeList.length - 1];
     }
 
-    if (config.mode != "zen" && $(currentLetter).length == 0) return;
+    if (Config.mode != "zen" && $(currentLetter).length == 0) return;
     const isLanguageLeftToRight = Misc.getCurrentLanguage().leftToRight;
     let currentLetterPosLeft = isLanguageLeftToRight
       ? currentLetter.offsetLeft
@@ -88,7 +89,7 @@ export function updatePosition(currentInput, config) {
     let smoothlinescroll = $("#words .smoothScroller").height();
     if (smoothlinescroll === undefined) smoothlinescroll = 0;
 
-    if (config.smoothCaret) {
+    if (Config.smoothCaret) {
       caret.stop(true, false).animate(
         {
           top: newTop - smoothlinescroll,
@@ -106,7 +107,7 @@ export function updatePosition(currentInput, config) {
       );
     }
 
-    if (config.showAllLines) {
+    if (Config.showAllLines) {
       let browserHeight = window.innerHeight;
       let middlePos = browserHeight / 2 - $("#caret").outerHeight() / 2;
       let contentHeight = document.body.scrollHeight;

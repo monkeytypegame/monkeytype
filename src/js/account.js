@@ -295,14 +295,14 @@ firebase.auth().onAuthStateChanged(function (user) {
   if (theme !== null) {
     try {
       theme = theme.split(",");
-      config.customThemeColors = theme;
+      ConfigSet.customThemeColors(theme);
       Notifications.add("Custom theme applied.", 1);
     } catch (e) {
       Notifications.add(
         "Something went wrong. Reverting to default custom colors.",
         0
       );
-      config.customThemeColors = defaultConfig.customThemeColors;
+      ConfigSet.customThemeColors(Config.defaultConfig.customThemeColors);
     }
     setCustomTheme(true);
     setCustomThemeInputs();
@@ -414,40 +414,40 @@ function getAccountDataAndInit() {
       } else {
         accountIconLoading(false);
       }
-      if (config.paceCaret === "pb" || config.paceCaret === "average") {
+      if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
         if (!testActive) {
           initPaceCaret(true);
         }
       }
       // try {
       //   if (
-      //     config.resultFilters === undefined ||
-      //     config.resultFilters === null ||
-      //     config.resultFilters.difficulty === undefined
+      //     Config.resultFilters === undefined ||
+      //     Config.resultFilters === null ||
+      //     Config.resultFilters.difficulty === undefined
       //   ) {
       //     if (
-      //       DB.getSnapshot().config.resultFilters == null ||
-      //       DB.getSnapshot().config.resultFilters.difficulty === undefined
+      //       DB.getSnapshot().Config.resultFilters == null ||
+      //       DB.getSnapshot().Config.resultFilters.difficulty === undefined
       //     ) {
-      //       config.resultFilters = defaultAccountFilters;
+      //       ConfigSet.resultFilters(defaultAccountFilters);
       //     } else {
-      //       config.resultFilters = DB.getSnapshot().config.resultFilters;
+      //       ConfigSet.resultFilters(DB.getSnapshot().Config.resultFilters);
       //     }
       //   }
       // } catch (e) {
-      //   config.resultFilters = defaultAccountFilters;
+      //   ConfigSet.resultFilters(defaultAccountFilters);
       // }
       // if (
-      //   Object.keys(config.resultFilters.language).length !==
+      //   Object.keys(Config.resultFilters.language).length !==
       //   Object.keys(defaultAccountFilters.language).length
       // ) {
-      //   config.resultFilters.language = defaultAccountFilters.language;
+      //   ConfigSet.resultFilters.language(defaultAccountFilters.language);
       // }
       // if (
-      //   Object.keys(config.resultFilters.funbox).length !==
+      //   Object.keys(Config.resultFilters.funbox).length !==
       //   Object.keys(defaultAccountFilters.funbox).length
       // ) {
-      //   config.resultFilters.funbox = defaultAccountFilters.funbox;
+      //   ConfigSet.resultFilters.funbox(defaultAccountFilters.funbox);
       // }
       if (
         $(".pageLogin").hasClass("active") ||
@@ -497,7 +497,7 @@ function updateMiniResultChart(filteredId) {
     maxChartVal
   );
 
-  if (!config.startGraphsAtZero) {
+  if (!Config.startGraphsAtZero) {
     ChartController.miniResult.options.scales.yAxes[0].ticks.min = Math.round(
       minChartVal
     );
@@ -790,33 +790,33 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
     });
   });
 
-  ResultFilters.setFilter("difficulty", config.difficulty, true);
-  ResultFilters.setFilter("mode", config.mode, true);
-  if (config.mode === "time") {
-    ResultFilters.setFilter("time", config.time, true);
-  } else if (config.mode === "words") {
-    ResultFilters.setFilter("words", config.words, true);
-  } else if (config.mode === "quote") {
+  ResultFilters.setFilter("difficulty", Config.difficulty, true);
+  ResultFilters.setFilter("mode", Config.mode, true);
+  if (Config.mode === "time") {
+    ResultFilters.setFilter("time", Config.time, true);
+  } else if (Config.mode === "words") {
+    ResultFilters.setFilter("words", Config.words, true);
+  } else if (Config.mode === "quote") {
     Object.keys(ResultFilters.getGroup("quoteLength")).forEach((ql) => {
       ResultFilters.setFilter("quoteLength", ql, true);
     });
   }
-  if (config.punctuation) {
+  if (Config.punctuation) {
     ResultFilters.setFilter("punctuation", "on", true);
   } else {
     ResultFilters.setFilter("punctuation", "off", true);
   }
-  if (config.numbers) {
+  if (Config.numbers) {
     ResultFilters.setFilter("numbers", "on", true);
   } else {
     ResultFilters.setFilter("numbers", "off", true);
   }
-  if (config.mode === "quote" && /english.*/.test(config.language)) {
+  if (Config.mode === "quote" && /english.*/.test(Config.language)) {
     ResultFilters.setFilter("language", "english", true);
   } else {
-    ResultFilters.setFilter("language", config.language, true);
+    ResultFilters.setFilter("language", Config.language, true);
   }
-  ResultFilters.setFilter("funbox", activeFunBox, true);
+  ResultFilters.setFilter("funbox", activeFunbox, true);
   ResultFilters.setFilter("tags", "none", true);
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
@@ -1656,7 +1656,7 @@ function refreshAccountPage() {
     ChartController.accountHistory.options.scales.yAxes[0].ticks.max =
       Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
-    if (!config.startGraphsAtZero) {
+    if (!Config.startGraphsAtZero) {
       ChartController.accountHistory.options.scales.yAxes[0].ticks.min = Math.floor(
         minWpmChartVal
       );
