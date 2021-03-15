@@ -36,4 +36,3 @@ import * as CustomTextPopup from "./custom-text-popup";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config from "./config";
 import * as ConfigSet from "./config-set";
-import * as PaceCaret from "./test/pace-caret";

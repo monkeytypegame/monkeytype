@@ -1,6 +1,5 @@
 import * as DB from "./db";
 import Config from "./config";
-import * as PaceCaret from "./pace-caret";
 
 export function showBackgroundLoader() {
   $("#backgroundLoader").stop(true, true).fadeIn(125);
@@ -82,7 +81,12 @@ export function swapElements(
   }
 }
 
-export function updateTestModesNotice(sameWordset, textHasTab, activeFunbox) {
+export function updateTestModesNotice(
+  sameWordset,
+  textHasTab,
+  paceCaret,
+  activeFunbox
+) {
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
 
@@ -136,7 +140,7 @@ export function updateTestModesNotice(sameWordset, textHasTab, activeFunbox) {
   if (Config.paceCaret !== "off") {
     let speed = "";
     try {
-      speed = ` (${Math.round(PaceCaret.caret.wpm)} wpm)`;
+      speed = ` (${Math.round(paceCaret.wpm)} wpm)`;
     } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${

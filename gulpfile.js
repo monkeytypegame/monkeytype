@@ -108,7 +108,6 @@ const refactoredSrc = [
   "./src/js/manual-restart-tracker.js",
   "./src/js/config.js",
   "./src/js/config-set.js",
-  "./src/js/test/pace-caret.js",
 ];
 
 //legacy files
