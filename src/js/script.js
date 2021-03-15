@@ -35,7 +35,6 @@ let paceCaret = null;
 
 //ui
 let pageTransition = false;
-let focusState = false;
 let notSignedInLastResult = null;
 let verifyUserWhenLoggedIn = null;
 let modeBeforePractise = null;
@@ -231,28 +230,6 @@ function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
   console.log(firebase.auth().currentUser.uid);
   console.error("Only share this uid with Miodec and nobody else!");
-}
-
-function setFocus(foc) {
-  if (foc && !focusState) {
-    focusState = true;
-    Caret.stopAnimation();
-    $("#top").addClass("focus");
-    $("#bottom").addClass("focus");
-    $("body").css("cursor", "none");
-    $("#middle").addClass("focus");
-  } else if (!foc && focusState) {
-    focusState = false;
-    if (testActive) {
-      Caret.stopAnimation();
-    } else {
-      Caret.startAnimation();
-    }
-    $("#top").removeClass("focus");
-    $("#bottom").removeClass("focus");
-    $("body").css("cursor", "default");
-    $("#middle").removeClass("focus");
-  }
 }
 
 async function initWords() {
@@ -1553,7 +1530,7 @@ function showResult(difficultyFailed = false) {
   resultVisible = true;
   TestStats.setEnd(performance.now());
   testActive = false;
-  setFocus(false);
+  Focus.set(false);
   Caret.hide();
   hideLiveWpm();
   hideLiveAcc();
@@ -2750,7 +2727,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   currentCorrected = "";
   correctedHistory = [];
   ShiftTracker.reset();
-  setFocus(false);
+  Focus.set(false);
   Caret.hide();
   testActive = false;
   hideLiveWpm();
@@ -4398,7 +4375,7 @@ $(document).mousemove(function (event) {
     $("#top").hasClass("focus") &&
     (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)
   ) {
-    setFocus(false);
+    Focus.set(false);
   }
 });
 
@@ -5002,7 +4979,7 @@ function handleAlpha(event) {
     if (!testActive) return;
   }
 
-  setFocus(true);
+  Focus.set(true);
   Caret.stopAnimation();
 
   //show dead keys

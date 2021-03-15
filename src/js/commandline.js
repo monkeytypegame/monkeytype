@@ -2159,7 +2159,7 @@ function hideCommandLine() {
 }
 
 let showCommandLine = () => {
-  setFocus(false);
+  Focus.set(false);
   $("#commandLine").removeClass("hidden");
   $("#commandInput").addClass("hidden");
   if ($("#commandLineWrapper").hasClass("hidden")) {
