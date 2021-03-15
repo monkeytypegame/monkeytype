@@ -33,7 +33,7 @@ Recently, a Discord bot was added to autoassign roles on our server. You can fin
 
 # Bug report or Feature request
 
-If you encounter a bug, or have a feature request - send me a message on Reddit, create an issue, share in the discussions page, or join the [Discord server](https://discord.com/invite/yENzqcB).
+If you encounter a bug, or have a feature request - send me a message on Reddit, create an issue, share on the discussions page, or join the [Discord server](https://discord.com/invite/yENzqcB).
 
 # Credits
 
