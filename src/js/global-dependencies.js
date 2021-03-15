@@ -15,6 +15,7 @@ import {
   swapElements,
   accountIconLoading,
   updateTestModesNotice,
+  focusWords,
 } from "./dom-util";
 import * as Misc from "./misc";
 import * as CloudFunctions from "./cloud-functions";

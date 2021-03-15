@@ -2885,12 +2885,6 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   );
 }
 
-function focusWords() {
-  if (!$("#wordsWrapper").hasClass("hidden")) {
-    $("#wordsInput").focus();
-  }
-}
-
 function changePage(page) {
   if (pageTransition) {
     return;

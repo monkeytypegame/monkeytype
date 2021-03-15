@@ -236,3 +236,9 @@ export function updateTestModesNotice(
       );
   }
 }
+
+function focusWords() {
+  if (!$("#wordsWrapper").hasClass("hidden")) {
+    $("#wordsInput").focus();
+  }
+}
