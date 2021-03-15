@@ -597,7 +597,7 @@ let commands = {
       id: "practiceMissedWords",
       display: "Practice missed words",
       exec: () => {
-        initPractiseMissedWords();
+        PractiseMissed.init(setMode, restartTest);
       },
       available: () => {
         return resultVisible && Object.keys(TestStats.missedWords).length > 0;

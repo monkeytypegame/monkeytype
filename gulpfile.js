@@ -110,6 +110,7 @@ const refactoredSrc = [
   "./src/js/config-set.js",
   "./src/js/test/focus.js",
   "./src/js/account-icon.js",
+  "./src/js/test/practise-missed.js",
 ];
 
 //legacy files

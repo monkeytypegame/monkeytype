@@ -37,9 +37,7 @@ let paceCaret = null;
 let pageTransition = false;
 let notSignedInLastResult = null;
 let verifyUserWhenLoggedIn = null;
-let modeBeforePractise = null;
-let punctuationBeforePractise = null;
-let numbersBeforePractise = null;
+
 let selectedQuoteId = 1;
 
 ///
@@ -2710,14 +2708,12 @@ function restartTest(withSameWordset = false, nosave = false, event) {
     $("#words").empty();
   }
 
-  if (modeBeforePractise !== null && !withSameWordset) {
+  if (PractiseMissed.before.mode !== null && !withSameWordset) {
     Notifications.add("Reverting to previous settings.", 0);
-    setMode(modeBeforePractise);
-    setPunctuation(punctuationBeforePractise);
-    setNumbers(numbersBeforePractise);
-    modeBeforePractise = null;
-    punctuationBeforePractise = null;
-    numbersBeforePractise = null;
+    setMode(PractiseMissed.before.mode);
+    setPunctuation(PractiseMissed.before.punctuation);
+    setNumbers(PractiseMissed.before.numbers);
+    PractiseMissed.resetBefore();
   }
 
   ManualRestart.reset();
@@ -4203,46 +4199,14 @@ $(document.body).on("click", "#restartTestButton", () => {
   }
 });
 
-function initPractiseMissedWords() {
-  if (Object.keys(TestStats.missedWords).length == 0) {
-    Notifications.add("You haven't missed any words.", 0);
-    return;
-  }
-  let mode = modeBeforePractise === null ? Config.mode : modeBeforePractise;
-  let punctuation =
-    punctuationBeforePractise === null
-      ? Config.punctuation
-      : punctuationBeforePractise;
-  let numbers =
-    numbersBeforePractise === null ? Config.numbers : numbersBeforePractise;
-  setMode("custom");
-  let newCustomText = [];
-  Object.keys(TestStats.missedWords).forEach((missedWord) => {
-    for (let i = 0; i < TestStats.missedWords[missedWord]; i++) {
-      newCustomText.push(missedWord);
-    }
-  });
-  CustomText.setText(newCustomText);
-  CustomText.setIsWordRandom(true);
-  CustomText.setWord(50);
-
-  modeBeforePractise = null;
-  punctuationBeforePractise = null;
-  numbersBeforePractise = null;
-  restartTest();
-  modeBeforePractise = mode;
-  punctuationBeforePractise = punctuation;
-  numbersBeforePractise = numbers;
-}
-
 $(document).on("keypress", "#practiseMissedWordsButton", (event) => {
   if (event.keyCode == 13) {
-    initPractiseMissedWords();
+    PractiseMissed.init(setMode, restartTest);
   }
 });
 
 $(document.body).on("click", "#practiseMissedWordsButton", () => {
-  initPractiseMissedWords();
+  PractiseMissed.init(setMode, restartTest);
 });
 
 $(document).on("keypress", "#nextTestButton", (event) => {
