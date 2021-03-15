@@ -1,6 +1,10 @@
+import * as CloudFunctions from "./cloud-functions";
+import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
+import * as Notifications from "./notification-center";
+
 let currentLeaderboard = "time_15";
 
-function showLeaderboards() {
+export function show() {
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
     $("#leaderboardsWrapper")
       .stop(true, true)
@@ -12,13 +16,13 @@ function showLeaderboards() {
         },
         125,
         () => {
-          updateLeaderboards();
+          update();
         }
       );
   }
 }
 
-function hideLeaderboards() {
+export function hide() {
   $("#leaderboardsWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -31,10 +35,10 @@ function hideLeaderboards() {
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
-  focusWords();
+  // focusWords();
 }
 
-function updateLeaderboards() {
+function update() {
   $("#leaderboardsWrapper .buttons .button").removeClass("active");
   $(
     `#leaderboardsWrapper .buttons .button[board=${currentLeaderboard}]`
@@ -266,11 +270,11 @@ function updateLeaderboards() {
 
 $("#leaderboardsWrapper").click((e) => {
   if ($(e.target).attr("id") === "leaderboardsWrapper") {
-    hideLeaderboards();
+    hide();
   }
 });
 
 $("#leaderboardsWrapper .buttons .button").click((e) => {
   currentLeaderboard = $(e.target).attr("board");
-  updateLeaderboards();
+  update();
 });

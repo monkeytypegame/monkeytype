@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
-    <link id="favicon" rel="shortcut icon" href="fav.png" />
-    <link rel="shortcut icon" href="fav.png" />
+    <link id="favicon" rel="shortcut icon" href="images/fav.png" />
+    <link rel="shortcut icon" href="images/fav.png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
@@ -82,7 +82,6 @@
       . We've got some awesome designs for you.
       <i class="fas closeButton fa-times"></i>
     </div>
-    <div class="notification">Signed in</div>
 
     <div id="simplePopupWrapper" class="hidden">
       <div id="simplePopup" popupId=""></div>
@@ -146,6 +145,16 @@
           use the Bail Out feature (esc > Bail Out)
         </div>
         <div class="button">ok</div>
+      </div>
+    </div>
+    <div id="quoteSearchPopupWrapper" class="hidden">
+      <div id="quoteSearchPopup" mode="">
+        <div class="title">Quote Search</div>
+        <input id="searchBox" class="searchBox" type="text" maxLength="200" autocomplete="off"/>
+        <div id="extraResults">No search results</div>
+        <div id="quoteSearchResults" class="quoteSearchResults">
+
+        </div>
       </div>
     </div>
     <div id="tagsWrapper" class="hidden">
@@ -962,6 +971,9 @@
                 <div class="text-button" quoteLength="2" tabindex="2">long</div>
                 <div class="text-button" quoteLength="3" tabindex="2">
                   thicc
+                </div>
+                <div class="text-button" quoteLength="-2" tabindex="2">
+                  <i class="fas fa-tools"></i>
                 </div>
               </div>
             </div>
@@ -1934,6 +1946,39 @@
                     off
                   </div>
                   <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section oppositeShiftMode">
+                <h1>opposite shift mode</h1>
+                <div class="text">
+                  This mode will force you to use opposite
+                  <key>shift</key>
+                  keys for shifting. Using an incorrect one will count as an
+                  error. This feature ignores keys in locations
+                  <key>B</key>
+                  ,
+                  <key>Y</key>
+                  , and
+                  <key>^</key>
+                  because many people use the other hand for those keys.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    oppositeShiftMode="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    oppositeShiftMode="on"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
                     on
                   </div>
                 </div>
@@ -3206,10 +3251,10 @@
               <i class="fas fa-fw fa-spin fa-circle-notch"></i>
             </div>
             <div class="content hidden">
-              <div class="hoverChartWrapper">
-                <canvas id="hoverChart"></canvas>
+              <div class="miniResultChartWrapper">
+                <canvas id="miniResultChart"></canvas>
               </div>
-              <div class="hoverChartBg"></div>
+              <div class="miniResultChartBg"></div>
               <div class="triplegroup">
                 <div class="group globalTestsStarted">
                   <div class="title">tests started</div>
@@ -3432,7 +3477,7 @@
               </div> -->
                 <div class="above"></div>
                 <div class="chart" style="height: 400px">
-                  <canvas id="resultHistoryChart"></canvas>
+                  <canvas id="accountHistoryChart"></canvas>
                 </div>
                 <div class="below">
                   <div class="text"></div>
@@ -3450,7 +3495,7 @@
               </div>
               <div class="group dailyActivityChart">
                 <div class="chart" style="height: 200px">
-                  <canvas id="activityChart"></canvas>
+                  <canvas id="accountActivityChart"></canvas>
                 </div>
               </div>
               <div class="triplegroup stats">
