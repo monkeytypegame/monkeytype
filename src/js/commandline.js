@@ -123,7 +123,6 @@ let commands = {
       display: "Toggle live wpm display",
       exec: () => {
         toggleShowLiveWpm();
-        saveConfigToCookie();
       },
     },
     {
@@ -131,7 +130,6 @@ let commands = {
       display: "Toggle live accuracy display",
       exec: () => {
         toggleShowLiveAcc();
-        saveConfigToCookie();
       },
     },
     {
@@ -139,7 +137,6 @@ let commands = {
       display: "Toggle timer display",
       exec: () => {
         toggleShowTimerProgress();
-        saveConfigToCookie();
       },
     },
     {
@@ -1803,7 +1800,6 @@ Misc.getLanguageList().then((languages) => {
       exec: () => {
         setLanguage(language);
         restartTest();
-        saveConfigToCookie();
       },
     });
   });
@@ -1828,7 +1824,6 @@ if (Object.keys(layouts).length > 0) {
       exec: () => {
         setSavedLayout(layout);
         restartTest();
-        saveConfigToCookie();
       },
     });
   });
