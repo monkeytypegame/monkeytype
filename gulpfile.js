@@ -113,6 +113,7 @@ const refactoredSrc = [
   "./src/js/test/practise-missed.js",
   "./src/js/test/test-ui.js",
   "./src/js/test/keymap.js",
+  "./src/js/test/live-wpm.js",
 ];
 
 //legacy files

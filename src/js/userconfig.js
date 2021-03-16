@@ -586,11 +586,21 @@ function setShowLiveWpm(live, nosave) {
     live = false;
   }
   ConfigSet.showLiveWpm(live);
+  if (live) {
+    LiveWpm.show();
+  } else {
+    LiveWpm.hide();
+  }
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleShowLiveWpm() {
   ConfigSet.showLiveWpm(!Config.showLiveWpm);
+  if (Config.showLiveWpm) {
+    LiveWpm.show();
+  } else {
+    LiveWpm.hide();
+  }
   saveConfigToCookie();
 }
 

@@ -1260,7 +1260,7 @@ function showResult(difficultyFailed = false) {
   testActive = false;
   Focus.set(false);
   Caret.hide();
-  hideLiveWpm();
+  LiveWpm.hide();
   hideLiveAcc();
   hideTimer();
   Keymap.hide();
@@ -2252,7 +2252,7 @@ function startTest() {
   restartTimer();
   showTimer();
   $("#liveWpm").text("0");
-  showLiveWpm();
+  LiveWpm.show();
   showLiveAcc();
   updateTimer();
   clearTimeout(timer);
@@ -2281,7 +2281,7 @@ function startTest() {
         updateTimer();
       }
       let wpmAndRaw = liveWpmAndRaw();
-      updateLiveWpm(wpmAndRaw.wpm, wpmAndRaw.raw);
+      LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
       TestStats.pushToWpmHistory(wpmAndRaw.wpm);
       TestStats.pushToRawHistory(wpmAndRaw.raw);
       Monkey.updateFastOpacity(wpmAndRaw.wpm);
@@ -2462,7 +2462,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   Focus.set(false);
   Caret.hide();
   testActive = false;
-  hideLiveWpm();
+  LiveWpm.hide();
   hideLiveAcc();
   hideTimer();
   bailout = false;
@@ -2808,23 +2808,6 @@ function liveWpmAndRaw() {
   };
 }
 
-function updateLiveWpm(wpm, raw) {
-  if (!testActive || !Config.showLiveWpm) {
-    hideLiveWpm();
-  } else {
-    showLiveWpm();
-  }
-  let number = wpm;
-  if (Config.blindMode) {
-    number = raw;
-  }
-  if (Config.alwaysShowCPM) {
-    number = Math.round(number * 5);
-  }
-  document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = number;
-  document.querySelector("#liveWpm").innerHTML = number;
-}
-
 function updateLiveAcc(acc) {
   if (!testActive || !Config.showLiveAcc) {
     hideLiveAcc();
@@ -2837,56 +2820,6 @@ function updateLiveAcc(acc) {
   }
   document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = number + "%";
   document.querySelector("#liveAcc").innerHTML = number + "%";
-}
-
-function showLiveWpm() {
-  if (!Config.showLiveWpm) return;
-  if (!testActive) return;
-  if (Config.timerStyle === "mini") {
-    // $("#miniTimerAndLiveWpm .wpm").css("opacity", Config.timerOpacity);
-    if (!$("#miniTimerAndLiveWpm .wpm").hasClass("hidden")) return;
-    $("#miniTimerAndLiveWpm .wpm")
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: Config.timerOpacity,
-        },
-        125
-      );
-  } else {
-    // $("#liveWpm").css("opacity", Config.timerOpacity);
-    if (!$("#liveWpm").hasClass("hidden")) return;
-    $("#liveWpm").removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: Config.timerOpacity,
-      },
-      125
-    );
-  }
-}
-
-function hideLiveWpm() {
-  // $("#liveWpm").css("opacity", 0);
-  // $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
-  $("#liveWpm").animate(
-    {
-      opacity: Config.timerOpacity,
-    },
-    125,
-    () => {
-      $("#liveWpm").addClass("hidden");
-    }
-  );
-  $("#miniTimerAndLiveWpm .wpm").animate(
-    {
-      opacity: Config.timerOpacity,
-    },
-    125,
-    () => {
-      $("#miniTimerAndLiveWpm .wpm").addClass("hidden");
-    }
-  );
 }
 
 function showLiveAcc() {
