@@ -3173,18 +3173,6 @@ function tagsEdit() {
   }
 }
 
-function showCapsWarning() {
-  if ($("#capsWarning").hasClass("hidden")) {
-    $("#capsWarning").removeClass("hidden");
-  }
-}
-
-function hideCapsWarning() {
-  if (!$("#capsWarning").hasClass("hidden")) {
-    $("#capsWarning").addClass("hidden");
-  }
-}
-
 function showCustomMode2Popup(mode) {
   if ($("#customMode2PopupWrapper").hasClass("hidden")) {
     if (mode == "time") {
@@ -3997,16 +3985,6 @@ $(document).keydown(function (event) {
 
   // keypressStats.duration.current = performance.now();
   TestStats.setKeypressDuration(performance.now());
-  try {
-    if (
-      !Config.capsLockBackspace &&
-      event.originalEvent.getModifierState("CapsLock")
-    ) {
-      showCapsWarning();
-    } else {
-      hideCapsWarning();
-    }
-  } catch {}
 
   if (TestUI.testRestarting) {
     return;

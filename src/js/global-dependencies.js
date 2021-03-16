@@ -43,3 +43,4 @@ import * as PractiseMissed from "./practise-missed";
 import * as TestUI from "./test-ui";
 import * as Keymap from "./keymap";
 import * as LiveWpm from "./live-wpm";
+import * as CapsWarning from "./caps-warning";
