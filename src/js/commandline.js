@@ -455,6 +455,7 @@ let commands = {
     {
       id: "changeKeymapStyle",
       display: "Change keymap style...",
+      alias: "keyboard",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsKeymapStyle);
@@ -464,6 +465,7 @@ let commands = {
     {
       id: "changeKeymapLayout",
       display: "Change keymap layout...",
+      alias: "keyboard",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsKeymapLayouts);
