@@ -1261,6 +1261,7 @@ function showResult(difficultyFailed = false) {
   Focus.set(false);
   Caret.hide();
   LiveWpm.hide();
+  hideCrown();
   hideLiveAcc();
   hideTimer();
   Keymap.hide();
@@ -1659,7 +1660,6 @@ function showResult(difficultyFailed = false) {
     ) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
-
         //check local pb
         AccountIcon.loading(true);
         let dontShowCrown = false;
@@ -1683,12 +1683,11 @@ function showResult(difficultyFailed = false) {
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
               dontShowCrown = true;
             }
-            if (ConfigSet.mode == "quote") dontShowCrown(true);
+            if (Config.mode == "quote") dontShowCrown = true;
             if (lpb < stats.wpm) {
               //new pb based on local
               pbDiff = Math.abs(stats.wpm - lpb);
               if (!dontShowCrown) {
-                hideCrown();
                 showCrown();
                 $("#result .stats .wpm .crown").attr(
                   "aria-label",
