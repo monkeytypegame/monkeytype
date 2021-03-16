@@ -33,7 +33,7 @@ Recently, a Discord bot was added to autoassign roles on our server. You can fin
 
 # Bug report or Feature request
 
-If you encounter a bug, or have a feature request - send me a message on Reddit, create an issue, [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or join the [Discord server](https://www.discord.gg/monkeytype).
+If you encounter a bug, or have a feature request - send me a message on Reddit, [create an issue](https://github.com/Miodec/monkeytype/issues), [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
 
 # Credits
 
