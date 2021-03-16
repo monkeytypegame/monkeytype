@@ -74,3 +74,25 @@ export function focusWords() {
     $("#wordsInput").focus();
   }
 }
+
+export function updateKeytips() {
+  if (Config.swapEscAndTab) {
+    $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (
+    <key>tab</key>
+    )`);
+    $("#bottom .keyTips").html(`
+    <key>esc</key> - restart test<br>
+      <key>tab</key> - command line`);
+  } else {
+    $(".pageSettings .tip").html(`
+    tip: You can also change all these settings quickly using the
+    command line (
+    <key>esc</key>
+    )`);
+    $("#bottom .keyTips").html(`
+    <key>tab</key> - restart test<br>
+      <key>esc</key> - command line`);
+  }
+}

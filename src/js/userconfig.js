@@ -450,13 +450,13 @@ function setFlipTestColors(flip, nosave) {
     flip = false;
   }
   ConfigSet.flipTestColors(flip);
-  flipTestColors(flip);
+  TestUI.flipColors(flip);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleFlipTestColors() {
   ConfigSet.flipTestColors(!Config.flipTestColors);
-  flipTestColors(Config.flipTestColors);
+  TestUI.flipColors(Config.flipTestColors);
   saveConfigToCookie();
 }
 
@@ -466,13 +466,13 @@ function setColorfulMode(extra, nosave) {
     extra = false;
   }
   ConfigSet.colorfulMode(extra);
-  applyColorfulMode(extra);
+  TestUI.colorful(extra);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleColorfulMode() {
   ConfigSet.colorfulMode(!Config.colorfulMode);
-  applyColorfulMode(Config.colorfulMode);
+  TestUI.colorful(Config.colorfulMode);
   saveConfigToCookie();
 }
 

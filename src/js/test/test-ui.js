@@ -63,6 +63,22 @@ export function updateActiveElement(backspace) {
   } catch (e) {}
 }
 
+export function flipColors(tf) {
+  if (tf) {
+    $("#words").addClass("flipped");
+  } else {
+    $("#words").removeClass("flipped");
+  }
+}
+
+export function colorful(tc) {
+  if (tc) {
+    $("#words").addClass("colorfulMode");
+  } else {
+    $("#words").removeClass("colorfulMode");
+  }
+}
+
 export function screenshot() {
   $(".pageTest .ssWatermark").removeClass("hidden");
   $(".pageTest .buttons").addClass("hidden");
