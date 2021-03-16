@@ -2579,13 +2579,13 @@ exports.scheduledFunctionCrontab = functions.pubsub
 
             announceDailyLbResult(lbdata);
             t = new Date();
-            db.collection("leaderboards_history")
-              .doc(
-                `${t.getUTCDate()}_${t.getUTCMonth()}_${t.getUTCFullYear()}_${
-                  lbdata.mode
-                }_${lbdata.mode2}`
-              )
-              .set(lbdata);
+            // db.collection("leaderboards_history")
+            //   .doc(
+            //     `${t.getUTCDate()}_${t.getUTCMonth()}_${t.getUTCFullYear()}_${
+            //       lbdata.mode
+            //     }_${lbdata.mode2}`
+            //   )
+            //   .set(lbdata);
             db.collection("leaderboards").doc(doc.id).set(
               {
                 board: [],
