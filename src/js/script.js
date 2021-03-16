@@ -4139,7 +4139,7 @@ $("#wordsInput").on("focus", () => {
   if (!TestUI.resultVisible && Config.showOutOfFocusWarning) {
     OutOfFocus.hide();
   }
-  Caret.show();
+  Caret.show(currentInput);
 });
 
 $("#wordsInput").on("focusout", () => {
