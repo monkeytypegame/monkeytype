@@ -446,6 +446,7 @@ let commands = {
       id: "toggleKeymap",
       display: "Change keymap mode...",
       subgroup: true,
+      alias: "keyboard",
       exec: () => {
         currentCommands.push(commandsKeymapMode);
         showCommandLine();
@@ -454,6 +455,7 @@ let commands = {
     {
       id: "changeKeymapStyle",
       display: "Change keymap style...",
+      alias: "keyboard",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsKeymapStyle);
@@ -463,6 +465,7 @@ let commands = {
     {
       id: "changeKeymapLayout",
       display: "Change keymap layout...",
+      alias: "keyboard",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsKeymapLayouts);
@@ -590,17 +593,19 @@ let commands = {
         restartTest(true);
       },
       available: () => {
-        return resultVisible;
+        return TestUI.resultVisible;
       },
     },
     {
       id: "practiceMissedWords",
       display: "Practice missed words",
       exec: () => {
-        initPractiseMissedWords();
+        PractiseMissed.init(setMode, restartTest);
       },
       available: () => {
-        return resultVisible && Object.keys(TestStats.missedWords).length > 0;
+        return (
+          TestUI.resultVisible && Object.keys(TestStats.missedWords).length > 0
+        );
       },
     },
     {
@@ -610,17 +615,17 @@ let commands = {
         toggleResultWordsDisplay();
       },
       available: () => {
-        return resultVisible;
+        return TestUI.resultVisible;
       },
     },
     {
       id: "saveScreenshot",
       display: "Save screenshot",
       exec: () => {
-        copyResultToClipboard();
+        TestUI.screenshot();
       },
       available: () => {
-        return resultVisible;
+        return TestUI.resultVisible;
       },
     },
     {
@@ -1534,7 +1539,12 @@ function updateCommandsTagsList() {
         DB.getSnapshot().tags.forEach((tag) => {
           tag.active = false;
         });
-        updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+        TestUI.updateModesNotice(
+          sameWordset,
+          textHasTab,
+          paceCaret,
+          activeFunbox
+        );
         saveActiveTagsToCookie();
       },
     });
@@ -1554,7 +1564,7 @@ function updateCommandsTagsList() {
         sticky: true,
         exec: () => {
           toggleTag(tag.id);
-          updateTestModesNotice(
+          TestUI.updateModesNotice(
             sameWordset,
             textHasTab,
             paceCaret,

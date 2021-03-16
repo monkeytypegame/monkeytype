@@ -140,7 +140,7 @@ function setDifficulty(diff, nosave) {
   }
   ConfigSet.difficulty(diff);
   if (!nosave) restartTest(false, nosave);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -160,7 +160,7 @@ function toggleBlindMode() {
     blind = false;
   }
   ConfigSet.blindMode(blind);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   saveConfigToCookie();
 }
 
@@ -169,7 +169,7 @@ function setBlindMode(blind, nosave) {
     blind = false;
   }
   ConfigSet.blindMode(blind);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -237,7 +237,7 @@ function setStopOnError(soe, nosave) {
   if (Config.stopOnError !== "off") {
     ConfigSet.confidenceMode("off");
   }
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -314,7 +314,7 @@ function setPaceCaret(val, nosave) {
   //   val = "off";
   // }
   ConfigSet.paceCaret(val);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   initPaceCaret(nosave);
   if (!nosave) saveConfigToCookie();
 }
@@ -333,7 +333,7 @@ function setMinWpm(minwpm, nosave) {
     minwpm = "off";
   }
   ConfigSet.minWpm(minwpm);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -351,7 +351,7 @@ function setMinAcc(min, nosave) {
     min = "off";
   }
   ConfigSet.minAcc(min);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -450,13 +450,13 @@ function setFlipTestColors(flip, nosave) {
     flip = false;
   }
   ConfigSet.flipTestColors(flip);
-  flipTestColors(flip);
+  TestUI.flipColors(flip);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleFlipTestColors() {
   ConfigSet.flipTestColors(!Config.flipTestColors);
-  flipTestColors(Config.flipTestColors);
+  TestUI.flipColors(Config.flipTestColors);
   saveConfigToCookie();
 }
 
@@ -466,13 +466,13 @@ function setColorfulMode(extra, nosave) {
     extra = false;
   }
   ConfigSet.colorfulMode(extra);
-  applyColorfulMode(extra);
+  TestUI.colorful(extra);
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleColorfulMode() {
   ConfigSet.colorfulMode(!Config.colorfulMode);
-  applyColorfulMode(Config.colorfulMode);
+  TestUI.colorful(Config.colorfulMode);
   saveConfigToCookie();
 }
 
@@ -586,11 +586,21 @@ function setShowLiveWpm(live, nosave) {
     live = false;
   }
   ConfigSet.showLiveWpm(live);
+  if (live) {
+    LiveWpm.show();
+  } else {
+    LiveWpm.hide();
+  }
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleShowLiveWpm() {
   ConfigSet.showLiveWpm(!Config.showLiveWpm);
+  if (Config.showLiveWpm) {
+    LiveWpm.show();
+  } else {
+    LiveWpm.hide();
+  }
   saveConfigToCookie();
 }
 
@@ -953,7 +963,7 @@ function setConfidenceMode(cm, nosave) {
     ConfigSet.stopOnError("off");
   }
 
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -1085,9 +1095,9 @@ function setLayout(layout, nosave) {
     layout = "qwerty";
   }
   ConfigSet.layout(layout);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (Config.keymapLayout === "overrideSync") {
-    refreshKeymapKeys(Config.keymapLayout);
+    Keymap.refreshKeys(Config.keymapLayout, setKeymapLayout);
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -1131,107 +1141,13 @@ function setKeymapStyle(style, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function keymapShowIsoKey(tf) {
-  if (tf) {
-    $(".keymap .r4 .keymap-key.first").removeClass("hidden-key");
-  } else {
-    $(".keymap .r4 .keymap-key.first").addClass("hidden-key");
-  }
-}
-
 function setKeymapLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
   ConfigSet.keymapLayout(layout);
-  refreshKeymapKeys(layout);
+  Keymap.refreshKeys(layout, setKeymapLayout);
   if (!nosave) saveConfigToCookie();
-}
-
-function refreshKeymapKeys(layout) {
-  try {
-    let lts = layouts[layout]; //layout to show
-    let layoutString = layout;
-    if (Config.keymapLayout === "overrideSync") {
-      if (Config.layout === "default") {
-        lts = layouts["qwerty"];
-        layoutString = "default";
-      } else {
-        lts = layouts[Config.layout];
-        layoutString = Config.layout;
-      }
-    }
-
-    if (lts.keymapShowTopRow) {
-      $(".keymap .r1").removeClass("hidden");
-    } else {
-      $(".keymap .r1").addClass("hidden");
-    }
-
-    $($(".keymap .r5 .keymap-key .letter")[0]).text(
-      layoutString.replace(/_/g, " ")
-    );
-    keymapShowIsoKey(lts.iso);
-
-    var toReplace = lts.keys.slice(1, 48);
-    var count = 0;
-
-    $(".keymap .letter")
-      .map(function () {
-        if (count < toReplace.length) {
-          var key = toReplace[count].charAt(0);
-          this.innerHTML = key;
-
-          switch (key) {
-            case "\\":
-            case "|":
-              this.parentElement.id = "KeyBackslash";
-              break;
-            case "}":
-            case "]":
-              this.parentElement.id = "KeyRightBracket";
-              break;
-            case "{":
-            case "[":
-              this.parentElement.id = "KeyLeftBracket";
-              break;
-            case '"':
-            case "'":
-              this.parentElement.id = "KeyQuote";
-              break;
-            case ":":
-            case ";":
-              this.parentElement.id = "KeySemicolon";
-              break;
-            case "<":
-            case ",":
-              this.parentElement.id = "KeyComma";
-              break;
-            case ">":
-            case ".":
-              this.parentElement.id = "KeyPeriod";
-              break;
-            case "?":
-            case "/":
-              this.parentElement.id = "KeySlash";
-              break;
-            case "":
-              this.parentElement.id = "KeySpace";
-              break;
-            default:
-              this.parentElement.id = `Key${key.toUpperCase()}`;
-          }
-        }
-        count++;
-        // }
-      })
-      .get();
-  } catch (e) {
-    console.log(
-      "something went wrong when changing layout, resettings: " + e.message
-    );
-    setKeymapLayout("qwerty", true);
-  }
 }
 
 function setFontSize(fontSize, nosave) {
@@ -1529,5 +1445,5 @@ function applyConfig(configObj) {
       $("#nitropay_ad_about").remove();
     }
   }
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
 }

@@ -467,7 +467,7 @@ function getAccountDataAndInit() {
       AccountIcon.loading(false);
       console.error(e);
       Notifications.add(
-        "Error downloading user data - refresh to try again. Client likely could not connect to the backend, if error persists contact Miodec.",
+        "Error downloading user data. Client likely could not connect to the backend  - refresh to try again. If error persists try clearing your cache and website data or contact Miodec.",
         -1
       );
       $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');

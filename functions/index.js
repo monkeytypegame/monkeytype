@@ -2012,6 +2012,9 @@ class Leaderboard {
   logBoard() {
     console.log(this.board);
   }
+  getMinWpm() {
+    return this.board[this.board.length - 1].wpm;
+  }
   removeDuplicates(insertedAt, uid) {
     //return true if a better result is found
     let found = false;
@@ -2042,29 +2045,52 @@ class Leaderboard {
   insert(a) {
     let insertedAt = -1;
     if (a.mode == this.mode && parseInt(a.mode2) === parseInt(this.mode2)) {
-      this.board.forEach((b, index) => {
-        if (insertedAt !== -1) return;
-        if (a.wpm === b.wpm) {
-          if (a.acc === b.acc) {
-            if (a.timestamp < b.timestamp) {
-              this.board.splice(index, 0, {
-                uid: a.uid,
-                name: a.name,
-                wpm: parseFloat(a.wpm),
-                raw: parseFloat(a.rawWpm),
-                acc: parseFloat(a.acc),
-                consistency: isNaN(parseInt(a.consistency))
-                  ? "-"
-                  : parseInt(a.consistency),
-                mode: a.mode,
-                mode2: parseInt(a.mode2),
-                timestamp: a.timestamp,
-                hidden: a.hidden === undefined ? false : a.hidden,
-              });
-              insertedAt = index;
+      if (
+        this.board.length !== this.size ||
+        (this.board.length === this.size && a.wpm > this.getMinWpm())
+      ) {
+        this.board.forEach((b, index) => {
+          if (insertedAt !== -1) return;
+          if (a.wpm === b.wpm) {
+            if (a.acc === b.acc) {
+              if (a.timestamp < b.timestamp) {
+                this.board.splice(index, 0, {
+                  uid: a.uid,
+                  name: a.name,
+                  wpm: parseFloat(a.wpm),
+                  raw: parseFloat(a.rawWpm),
+                  acc: parseFloat(a.acc),
+                  consistency: isNaN(parseInt(a.consistency))
+                    ? "-"
+                    : parseInt(a.consistency),
+                  mode: a.mode,
+                  mode2: parseInt(a.mode2),
+                  timestamp: a.timestamp,
+                  hidden: a.hidden === undefined ? false : a.hidden,
+                });
+                insertedAt = index;
+              }
+            } else {
+              if (a.acc > b.acc) {
+                this.board.splice(index, 0, {
+                  uid: a.uid,
+                  name: a.name,
+                  wpm: parseFloat(a.wpm),
+                  raw: parseFloat(a.rawWpm),
+                  acc: parseFloat(a.acc),
+                  consistency: isNaN(parseInt(a.consistency))
+                    ? "-"
+                    : parseInt(a.consistency),
+                  mode: a.mode,
+                  mode2: parseInt(a.mode2),
+                  timestamp: a.timestamp,
+                  hidden: a.hidden === undefined ? false : a.hidden,
+                });
+                insertedAt = index;
+              }
             }
           } else {
-            if (a.acc > b.acc) {
+            if (a.wpm > b.wpm) {
               this.board.splice(index, 0, {
                 uid: a.uid,
                 name: a.name,
@@ -2082,65 +2108,51 @@ class Leaderboard {
               insertedAt = index;
             }
           }
-        } else {
-          if (a.wpm > b.wpm) {
-            this.board.splice(index, 0, {
-              uid: a.uid,
-              name: a.name,
-              wpm: parseFloat(a.wpm),
-              raw: parseFloat(a.rawWpm),
-              acc: parseFloat(a.acc),
-              consistency: isNaN(parseInt(a.consistency))
-                ? "-"
-                : parseInt(a.consistency),
-              mode: a.mode,
-              mode2: parseInt(a.mode2),
-              timestamp: a.timestamp,
-              hidden: a.hidden === undefined ? false : a.hidden,
-            });
-            insertedAt = index;
+        });
+        if (this.board.length < this.size && insertedAt === -1) {
+          this.board.push({
+            uid: a.uid,
+            name: a.name,
+            wpm: parseFloat(a.wpm),
+            raw: parseFloat(a.rawWpm),
+            acc: parseFloat(a.acc),
+            consistency: isNaN(parseInt(a.consistency))
+              ? "-"
+              : parseInt(a.consistency),
+            mode: a.mode,
+            mode2: parseInt(a.mode2),
+            timestamp: a.timestamp,
+            hidden: a.hidden === undefined ? false : a.hidden,
+          });
+          insertedAt = this.board.length - 1;
+        }
+        // console.log("before duplicate remove");
+        // console.log(this.board);
+        let newBest = false;
+        let foundAt = null;
+        if (insertedAt >= 0) {
+          // if (this.removeDuplicates(insertedAt, a.uid)) {
+          //   insertedAt = -2;
+          // }
+          foundAt = this.removeDuplicates(insertedAt, a.uid);
+
+          if (foundAt >= insertedAt) {
+            //new better result
+            newBest = true;
           }
         }
-      });
-      if (this.board.length < this.size && insertedAt === -1) {
-        this.board.push({
-          uid: a.uid,
-          name: a.name,
-          wpm: parseFloat(a.wpm),
-          raw: parseFloat(a.rawWpm),
-          acc: parseFloat(a.acc),
-          consistency: isNaN(parseInt(a.consistency))
-            ? "-"
-            : parseInt(a.consistency),
-          mode: a.mode,
-          mode2: parseInt(a.mode2),
-          timestamp: a.timestamp,
-          hidden: a.hidden === undefined ? false : a.hidden,
-        });
-        insertedAt = this.board.length - 1;
+        // console.log(this.board);
+        this.clipBoard();
+        return {
+          insertedAt: insertedAt,
+          newBest: newBest,
+          foundAt: foundAt,
+        };
+      } else {
+        return {
+          insertedAt: -999,
+        };
       }
-      // console.log("before duplicate remove");
-      // console.log(this.board);
-      let newBest = false;
-      let foundAt = null;
-      if (insertedAt >= 0) {
-        // if (this.removeDuplicates(insertedAt, a.uid)) {
-        //   insertedAt = -2;
-        // }
-        foundAt = this.removeDuplicates(insertedAt, a.uid);
-
-        if (foundAt >= insertedAt) {
-          //new better result
-          newBest = true;
-        }
-      }
-      // console.log(this.board);
-      this.clipBoard();
-      return {
-        insertedAt: insertedAt,
-        newBest: newBest,
-        foundAt: foundAt,
-      };
     } else {
       return {
         insertedAt: -999,
@@ -2373,69 +2385,86 @@ async function checkLeaderboards(
       ["15", "60"].includes(String(resultObj.mode2)) &&
       resultObj.language === "english"
     ) {
-      return await db.runTransaction(async (t) => {
-        const lbdoc = await t.get(
-          db
-            .collection("leaderboards")
-            .where("mode", "==", String(resultObj.mode))
-            .where("mode2", "==", String(resultObj.mode2))
-            .where("type", "==", type)
-        );
-        let lbData;
-        let docid = `${String(resultObj.mode)}_${String(
-          resultObj.mode2
-        )}_${type}`;
-        if (lbdoc.docs.length === 0) {
-          console.log(
-            `no ${resultObj.mode} ${resultObj.mode2} ${type} leaderboard found - creating`
-          );
-          let toAdd = {
-            size: 20,
-            mode: String(resultObj.mode),
-            mode2: String(resultObj.mode2),
-            type: type,
-          };
-          t.set(
+      return db
+        .runTransaction(async (t) => {
+          const lbdoc = await t.get(
             db
               .collection("leaderboards")
-              .doc(
-                `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`
-              ),
-            toAdd
+              .where("mode", "==", String(resultObj.mode))
+              .where("mode2", "==", String(resultObj.mode2))
+              .where("type", "==", type)
           );
-          lbData = toAdd;
-        } else {
-          lbData = lbdoc.docs[0].data();
-        }
-        let boardInfo = lbData;
-        let boardData = lbData.board;
-        let lb = new Leaderboard(
-          boardInfo.size,
-          resultObj.mode,
-          resultObj.mode2,
-          boardInfo.type,
-          boardData
-        );
-        let insertResult = lb.insert(resultObj);
+          let lbData;
+          let docid = `${String(resultObj.mode)}_${String(
+            resultObj.mode2
+          )}_${type}`;
+          if (lbdoc.docs.length === 0) {
+            console.log(
+              `no ${resultObj.mode} ${resultObj.mode2} ${type} leaderboard found - creating`
+            );
+            let toAdd = {
+              size: 20,
+              mode: String(resultObj.mode),
+              mode2: String(resultObj.mode2),
+              type: type,
+            };
+            t.set(
+              db
+                .collection("leaderboards")
+                .doc(
+                  `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`
+                ),
+              toAdd
+            );
+            lbData = toAdd;
+          } else {
+            lbData = lbdoc.docs[0].data();
+          }
+          let boardInfo = lbData;
+          if (
+            boardInfo.minWpm === undefined ||
+            boardInfo.board.length !== boardInfo.size ||
+            (boardInfo.minWpm !== undefined &&
+              resultObj.wpm > boardInfo.minWpm &&
+              boardInfo.board.length === boardInfo.size)
+          ) {
+            let boardData = lbData.board;
+            let lb = new Leaderboard(
+              boardInfo.size,
+              resultObj.mode,
+              resultObj.mode2,
+              boardInfo.type,
+              boardData
+            );
+            let insertResult = lb.insert(resultObj);
 
-        if (insertResult.insertedAt >= 0) {
-          //update the database here
-          // console.log(
-          //   `leaderboard changed ${resultObj.mode} ${
-          //     resultObj.mode2
-          //   } ${type} - ${JSON.stringify(lb.board)}`
-          // );
-          t.update(db.collection("leaderboards").doc(docid), {
-            size: lb.size,
-            type: lb.type,
-            board: lb.board,
-          });
-        }
+            if (insertResult.insertedAt >= 0) {
+              t.update(db.collection("leaderboards").doc(docid), {
+                size: lb.size,
+                type: lb.type,
+                board: lb.board,
+                minWpm: lb.getMinWpm(),
+              });
+            }
 
-        return {
-          insertedAt: insertResult,
-        };
-      });
+            return {
+              insertedAt: insertResult,
+            };
+          } else {
+            //not above leaderboard minwpm
+            return {
+              insertedAt: -999,
+            };
+          }
+        })
+        .catch((error) => {
+          console.error(
+            `error in transaction checking leaderboards - ${error}`
+          );
+          return {
+            insertedAt: null,
+          };
+        });
     } else {
       return {
         insertedAt: null,
@@ -2559,13 +2588,13 @@ exports.scheduledFunctionCrontab = functions.pubsub
 
             announceDailyLbResult(lbdata);
             t = new Date();
-            db.collection("leaderboards_history")
-              .doc(
-                `${t.getUTCDate()}_${t.getUTCMonth()}_${t.getUTCFullYear()}_${
-                  lbdata.mode
-                }_${lbdata.mode2}`
-              )
-              .set(lbdata);
+            // db.collection("leaderboards_history")
+            //   .doc(
+            //     `${t.getUTCDate()}_${t.getUTCMonth()}_${t.getUTCFullYear()}_${
+            //       lbdata.mode
+            //     }_${lbdata.mode2}`
+            //   )
+            //   .set(lbdata);
             db.collection("leaderboards").doc(doc.id).set(
               {
                 board: [],

@@ -27,9 +27,9 @@ export function hide() {
   $("#caret").addClass("hidden");
 }
 
-export function show() {
+export function show(currentInput) {
   if ($("#result").hasClass("hidden")) {
-    updatePosition("");
+    updatePosition(currentInput);
     $("#caret").removeClass("hidden");
     startAnimation();
   }
