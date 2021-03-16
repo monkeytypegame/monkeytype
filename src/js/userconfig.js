@@ -747,7 +747,7 @@ function setQuoteLength(len, nosave, multipleMode) {
     //config load
     ConfigSet.quoteLength(len);
   } else {
-    if (!Array.isArray(ConfigSet.quoteLength)) Config.quoteLength([]);
+    if (!Array.isArray(ConfigSet.quoteLength)) ConfigSet.quoteLength([]);
     if (len === null || isNaN(len) || len < -2 || len > 3) {
       len = 1;
     }
