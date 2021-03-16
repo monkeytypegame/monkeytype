@@ -140,7 +140,7 @@ function setDifficulty(diff, nosave) {
   }
   ConfigSet.difficulty(diff);
   if (!nosave) restartTest(false, nosave);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -160,7 +160,7 @@ function toggleBlindMode() {
     blind = false;
   }
   ConfigSet.blindMode(blind);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   saveConfigToCookie();
 }
 
@@ -169,7 +169,7 @@ function setBlindMode(blind, nosave) {
     blind = false;
   }
   ConfigSet.blindMode(blind);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -237,7 +237,7 @@ function setStopOnError(soe, nosave) {
   if (Config.stopOnError !== "off") {
     ConfigSet.confidenceMode("off");
   }
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -314,7 +314,7 @@ function setPaceCaret(val, nosave) {
   //   val = "off";
   // }
   ConfigSet.paceCaret(val);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   initPaceCaret(nosave);
   if (!nosave) saveConfigToCookie();
 }
@@ -333,7 +333,7 @@ function setMinWpm(minwpm, nosave) {
     minwpm = "off";
   }
   ConfigSet.minWpm(minwpm);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -351,7 +351,7 @@ function setMinAcc(min, nosave) {
     min = "off";
   }
   ConfigSet.minAcc(min);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -953,7 +953,7 @@ function setConfidenceMode(cm, nosave) {
     ConfigSet.stopOnError("off");
   }
 
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (!nosave) saveConfigToCookie();
 }
 
@@ -1085,7 +1085,7 @@ function setLayout(layout, nosave) {
     layout = "qwerty";
   }
   ConfigSet.layout(layout);
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (Config.keymapLayout === "overrideSync") {
     refreshKeymapKeys(Config.keymapLayout);
   }
@@ -1529,5 +1529,5 @@ function applyConfig(configObj) {
       $("#nitropay_ad_about").remove();
     }
   }
-  updateTestModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
+  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
 }
