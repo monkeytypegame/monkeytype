@@ -1245,7 +1245,6 @@ function failTest() {
   TestStats.incrementRestartCount();
 }
 
-let resultCalculating = false;
 function showResult(difficultyFailed = false) {
   if (!testActive) return;
   if (Config.mode == "zen" && currentInput.length != 0) {
@@ -1255,7 +1254,7 @@ function showResult(difficultyFailed = false) {
 
   TestStats.recordKeypressSpacing();
 
-  resultCalculating = true;
+  TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
   TestStats.setEnd(performance.now());
   testActive = false;
@@ -2221,7 +2220,7 @@ function showResult(difficultyFailed = false) {
   ChartController.result.update({ duration: 0 });
   ChartController.result.resize();
   swapElements($("#typingTest"), $("#result"), 250, () => {
-    resultCalculating = false;
+    TestUI.setResultCalculating(false);
     $("#words").empty();
     ChartController.result.resize();
     if (Config.alwaysShowWordsHistory) {
@@ -2393,7 +2392,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   //   }
   // }
 
-  if (TestUI.testRestarting || resultCalculating) {
+  if (TestUI.testRestarting || TestUI.resultCalculating) {
     try {
       event.preventDefault();
     } catch {}
@@ -3867,7 +3866,7 @@ $(document).on("keypress", "#restartTestButton", (event) => {
 
 $(document.body).on("click", "#restartTestButton", () => {
   ManualRestart.set();
-  if (resultCalculating) return;
+  if (TestUI.resultCalculating) return;
   if (
     testActive &&
     Config.repeatQuotes === "typing" &&
@@ -4147,7 +4146,7 @@ $(document).keydown(function (event) {
 });
 
 function handleTab(event) {
-  if (resultCalculating) {
+  if (TestUI.resultCalculating) {
     event.preventDefault();
   }
   if ($("#customTextPopup .textarea").is(":focus")) {
@@ -4172,7 +4171,7 @@ function handleTab(event) {
     return;
   } else if (
     $(".pageTest").hasClass("active") &&
-    !resultCalculating &&
+    !TestUI.resultCalculating &&
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden")
   ) {

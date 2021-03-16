@@ -9,6 +9,7 @@ export let activeWordTop = 0;
 export let testRestarting = false;
 export let lineTransition = false;
 export let currentTestLine = 0;
+export let resultCalculating = false;
 
 export function setResultVisible(val) {
   resultVisible = val;
@@ -24,6 +25,10 @@ export function setActiveWordTop(val) {
 
 export function setTestRestarting(val) {
   testRestarting = val;
+}
+
+export function setResultCalculating(val) {
+  resultCalculating = val;
 }
 
 export function reset() {
