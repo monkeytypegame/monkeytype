@@ -4177,6 +4177,7 @@ $(document).on("click", "#testModesNotice .text-button", (event) => {
 });
 
 $(document).on("click", "#commandLineMobileButton", () => {
+  currentCommands = [commands];
   showCommandLine();
 });
 
