@@ -40,3 +40,4 @@ import * as Focus from "./focus";
 import * as AccountIcon from "./account-icon";
 import * as PractiseMissed from "./practise-missed";
 import * as TestUI from "./test-ui";
+import * as Keymap from "./keymap";

@@ -348,6 +348,14 @@ export function updateModesNotice(
   }
 }
 
+export function arrangeCharactersRightToLeft() {
+  $("#words").addClass("rightToLeftTest");
+}
+
+export function arrangeCharactersLeftToRight() {
+  $("#words").removeClass("rightToLeftTest");
+}
+
 $(document.body).on("click", "#copyResultToClipboardButton", () => {
   screenshot();
 });

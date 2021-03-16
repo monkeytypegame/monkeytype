@@ -371,9 +371,9 @@ async function initWords() {
   }
   //handle right-to-left languages
   if (language.leftToRight) {
-    arrangeCharactersLeftToRight();
+    TestUI.arrangeCharactersLeftToRight();
   } else {
-    arrangeCharactersRightToLeft();
+    TestUI.arrangeCharactersRightToLeft();
   }
   if (language.ligatures) {
     $("#words").addClass("withLigatures");
@@ -388,14 +388,6 @@ async function initWords() {
   // } else {
   showWords();
   // }
-}
-
-function arrangeCharactersRightToLeft() {
-  $("#words").addClass("rightToLeftTest");
-}
-
-function arrangeCharactersLeftToRight() {
-  $("#words").removeClass("rightToLeftTest");
 }
 
 function setToggleSettings(state, nosave) {
@@ -761,7 +753,12 @@ function showWords() {
   }
 
   if (Config.keymapMode === "next") {
-    updateHighlightedKeymapKey();
+    Keymap.highlightKey(
+      wordsList[currentWordIndex]
+        .substring(currentInput.length, currentInput.length + 1)
+        .toString()
+        .toUpperCase()
+    );
   }
 
   TestUI.updateActiveElement();
@@ -1097,162 +1094,6 @@ function updateTimer() {
   }
 }
 
-function hideKeymap() {
-  $(".keymap").addClass("hidden");
-  // $("#liveWpm").removeClass("lower");
-}
-
-function showKeymap() {
-  $(".keymap").removeClass("hidden");
-  // $("#liveWpm").addClass("lower");
-}
-
-function flashPressedKeymapKey(key, correct) {
-  if (key == undefined) return;
-  switch (key) {
-    case "\\":
-    case "|":
-      key = "#KeyBackslash";
-      break;
-    case "}":
-    case "]":
-      key = "#KeyRightBracket";
-      break;
-    case "{":
-    case "[":
-      key = "#KeyLeftBracket";
-      break;
-    case '"':
-    case "'":
-      key = "#KeyQuote";
-      break;
-    case ":":
-    case ";":
-      key = "#KeySemicolon";
-      break;
-    case "<":
-    case ",":
-      key = "#KeyComma";
-      break;
-    case ">":
-    case ".":
-      key = "#KeyPeriod";
-      break;
-    case "?":
-    case "/":
-      key = "#KeySlash";
-      break;
-    case "" || "Space":
-      key = "#KeySpace";
-      break;
-    default:
-      key = `#Key${key.toUpperCase()}`;
-  }
-
-  if (key == "#KeySpace") {
-    key = ".key-split-space";
-  }
-
-  try {
-    if (correct || Config.blindMode) {
-      $(key)
-        .stop(true, true)
-        .css({
-          color: ThemeColors.bg,
-          backgroundColor: ThemeColors.main,
-          borderColor: ThemeColors.main,
-        })
-        .animate(
-          {
-            color: ThemeColors.sub,
-            backgroundColor: "transparent",
-            borderColor: ThemeColors.sub,
-          },
-          500,
-          "easeOutExpo"
-        );
-    } else {
-      $(key)
-        .stop(true, true)
-        .css({
-          color: ThemeColors.bg,
-          backgroundColor: ThemeColors.error,
-          borderColor: ThemeColors.error,
-        })
-        .animate(
-          {
-            color: ThemeColors.sub,
-            backgroundColor: "transparent",
-            borderColor: ThemeColors.sub,
-          },
-          500,
-          "easeOutExpo"
-        );
-    }
-  } catch (e) {}
-}
-
-function updateHighlightedKeymapKey() {
-  try {
-    if ($(".active-key") != undefined) {
-      $(".active-key").removeClass("active-key");
-    }
-
-    var currentKey = wordsList[currentWordIndex]
-      .substring(currentInput.length, currentInput.length + 1)
-      .toString()
-      .toUpperCase();
-
-    let highlightKey;
-    switch (currentKey) {
-      case "\\":
-      case "|":
-        highlightKey = "#KeyBackslash";
-        break;
-      case "}":
-      case "]":
-        highlightKey = "#KeyRightBracket";
-        break;
-      case "{":
-      case "[":
-        highlightKey = "#KeyLeftBracket";
-        break;
-      case '"':
-      case "'":
-        highlightKey = "#KeyQuote";
-        break;
-      case ":":
-      case ";":
-        highlightKey = "#KeySemicolon";
-        break;
-      case "<":
-      case ",":
-        highlightKey = "#KeyComma";
-        break;
-      case ">":
-      case ".":
-        highlightKey = "#KeyPeriod";
-        break;
-      case "?":
-      case "/":
-        highlightKey = "#KeySlash";
-        break;
-      case "":
-        highlightKey = "#KeySpace";
-        break;
-      default:
-        highlightKey = `#Key${currentKey}`;
-    }
-
-    $(highlightKey).addClass("active-key");
-    if (highlightKey === "#KeySpace") {
-      $("#KeySpace2").addClass("active-key");
-    }
-  } catch (e) {
-    console.log("could not update highlighted keymap key: " + e.message);
-  }
-}
-
 function countChars() {
   let correctWordChars = 0;
   let correctChars = 0;
@@ -1423,7 +1264,7 @@ function showResult(difficultyFailed = false) {
   hideLiveWpm();
   hideLiveAcc();
   hideTimer();
-  hideKeymap();
+  Keymap.hide();
   let stats = calculateStats();
   if (stats === undefined) {
     stats = {
@@ -2476,7 +2317,12 @@ function startTest() {
         }
         setLayout(layouts[index]);
         setKeymapLayout(layouts[index]);
-        updateHighlightedKeymapKey();
+        Keymap.highlightKey(
+          wordsList[currentWordIndex]
+            .substring(currentInput.length, currentInput.length + 1)
+            .toString()
+            .toUpperCase()
+        );
         settingsGroups.layout.updateButton();
       }
 
@@ -2675,9 +2521,9 @@ function restartTest(withSameWordset = false, nosave = false, event) {
         sameWordset = false;
       }
       if (Config.keymapMode !== "off") {
-        showKeymap();
+        Keymap.show();
       } else {
-        hideKeymap();
+        Keymap.hide();
       }
       document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = "0";
       document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = "100%";
@@ -2730,7 +2576,12 @@ function restartTest(withSameWordset = false, nosave = false, event) {
         settingsGroups.layout.updateButton();
         setKeymapLayout("qwerty");
         settingsGroups.keymapLayout.updateButton();
-        updateHighlightedKeymapKey();
+        Keymap.highlightKey(
+          wordsList[currentWordIndex]
+            .substring(currentInput.length, currentInput.length + 1)
+            .toString()
+            .toUpperCase()
+        );
       }
 
       $("#result").addClass("hidden");
@@ -4477,9 +4328,14 @@ function handleBackspace(event) {
   }
   Sound.playClick(Config.playSoundOnClick);
   if (Config.keymapMode === "react") {
-    flashPressedKeymapKey(event.code, true);
+    Keymap.flashKey(event.code, true);
   } else if (Config.keymapMode === "next") {
-    updateHighlightedKeymapKey();
+    Keymap.highlightKey(
+      wordsList[currentWordIndex]
+        .substring(currentInput.length, currentInput.length + 1)
+        .toString()
+        .toUpperCase()
+    );
   }
   Caret.updatePosition(currentInput);
 }
@@ -4508,7 +4364,12 @@ function handleSpace(event, isEnter) {
     }
     setLayout(layouts[index]);
     setKeymapLayout(layouts[index]);
-    updateHighlightedKeymapKey();
+    Keymap.highlightKey(
+      wordsList[currentWordIndex]
+        .substring(currentInput.length, currentInput.length + 1)
+        .toString()
+        .toUpperCase()
+    );
     settingsGroups.layout.updateButton();
   }
   dontInsertSpace = true;
@@ -4637,9 +4498,14 @@ function handleSpace(event, isEnter) {
   Caret.updatePosition(currentInput);
 
   if (Config.keymapMode === "react") {
-    flashPressedKeymapKey(event.code, true);
+    Keymap.flashKey(event.code, true);
   } else if (Config.keymapMode === "next") {
-    updateHighlightedKeymapKey();
+    Keymap.highlightKey(
+      wordsList[currentWordIndex]
+        .substring(currentInput.length, currentInput.length + 1)
+        .toString()
+        .toUpperCase()
+    );
   }
   if (
     Config.mode === "words" ||
@@ -4925,9 +4791,14 @@ function handleAlpha(event) {
 
   //keymap
   if (Config.keymapMode === "react") {
-    flashPressedKeymapKey(event.key, thisCharCorrect);
+    Keymap.flashKey(event.key, thisCharCorrect);
   } else if (Config.keymapMode === "next") {
-    updateHighlightedKeymapKey();
+    Keymap.highlightKey(
+      wordsList[currentWordIndex]
+        .substring(currentInput.length, currentInput.length + 1)
+        .toString()
+        .toUpperCase()
+    );
   }
 
   let activeWordTopBeforeJump = TestUI.activeWordTop;

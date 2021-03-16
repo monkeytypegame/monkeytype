@@ -2385,77 +2385,86 @@ async function checkLeaderboards(
       ["15", "60"].includes(String(resultObj.mode2)) &&
       resultObj.language === "english"
     ) {
-      return await db.runTransaction(async (t) => {
-        const lbdoc = await t.get(
-          db
-            .collection("leaderboards")
-            .where("mode", "==", String(resultObj.mode))
-            .where("mode2", "==", String(resultObj.mode2))
-            .where("type", "==", type)
-        );
-        let lbData;
-        let docid = `${String(resultObj.mode)}_${String(
-          resultObj.mode2
-        )}_${type}`;
-        if (lbdoc.docs.length === 0) {
-          console.log(
-            `no ${resultObj.mode} ${resultObj.mode2} ${type} leaderboard found - creating`
-          );
-          let toAdd = {
-            size: 20,
-            mode: String(resultObj.mode),
-            mode2: String(resultObj.mode2),
-            type: type,
-          };
-          t.set(
+      return db
+        .runTransaction(async (t) => {
+          const lbdoc = await t.get(
             db
               .collection("leaderboards")
-              .doc(
-                `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`
-              ),
-            toAdd
+              .where("mode", "==", String(resultObj.mode))
+              .where("mode2", "==", String(resultObj.mode2))
+              .where("type", "==", type)
           );
-          lbData = toAdd;
-        } else {
-          lbData = lbdoc.docs[0].data();
-        }
-        let boardInfo = lbData;
-        if (
-          boardInfo.minWpm === undefined ||
-          boardInfo.board.length !== boardInfo.size ||
-          (boardInfo.minWpm !== undefined &&
-            resultObj.wpm > boardInfo.minWpm &&
-            boardInfo.board.length === boardInfo.size)
-        ) {
-          let boardData = lbData.board;
-          let lb = new Leaderboard(
-            boardInfo.size,
-            resultObj.mode,
-            resultObj.mode2,
-            boardInfo.type,
-            boardData
-          );
-          let insertResult = lb.insert(resultObj);
-
-          if (insertResult.insertedAt >= 0) {
-            t.update(db.collection("leaderboards").doc(docid), {
-              size: lb.size,
-              type: lb.type,
-              board: lb.board,
-              minWpm: lb.getMinWpm(),
-            });
+          let lbData;
+          let docid = `${String(resultObj.mode)}_${String(
+            resultObj.mode2
+          )}_${type}`;
+          if (lbdoc.docs.length === 0) {
+            console.log(
+              `no ${resultObj.mode} ${resultObj.mode2} ${type} leaderboard found - creating`
+            );
+            let toAdd = {
+              size: 20,
+              mode: String(resultObj.mode),
+              mode2: String(resultObj.mode2),
+              type: type,
+            };
+            t.set(
+              db
+                .collection("leaderboards")
+                .doc(
+                  `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`
+                ),
+              toAdd
+            );
+            lbData = toAdd;
+          } else {
+            lbData = lbdoc.docs[0].data();
           }
+          let boardInfo = lbData;
+          if (
+            boardInfo.minWpm === undefined ||
+            boardInfo.board.length !== boardInfo.size ||
+            (boardInfo.minWpm !== undefined &&
+              resultObj.wpm > boardInfo.minWpm &&
+              boardInfo.board.length === boardInfo.size)
+          ) {
+            let boardData = lbData.board;
+            let lb = new Leaderboard(
+              boardInfo.size,
+              resultObj.mode,
+              resultObj.mode2,
+              boardInfo.type,
+              boardData
+            );
+            let insertResult = lb.insert(resultObj);
 
+            if (insertResult.insertedAt >= 0) {
+              t.update(db.collection("leaderboards").doc(docid), {
+                size: lb.size,
+                type: lb.type,
+                board: lb.board,
+                minWpm: lb.getMinWpm(),
+              });
+            }
+
+            return {
+              insertedAt: insertResult,
+            };
+          } else {
+            //not above leaderboard minwpm
+            return {
+              insertedAt: -999,
+            };
+          }
+        })
+        .catch((error) => {
+          console.error(
+            `error in transaction checking leaderboards - ${error}`
+          );
           return {
-            insertedAt: insertResult,
+            insertedAt: null,
           };
-        } else {
-          //not above leaderboard minwpm
-          return {
-            insertedAt: -999,
-          };
-        }
-      });
+        });
     } else {
       return {
         insertedAt: null,

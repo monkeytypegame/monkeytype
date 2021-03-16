@@ -112,6 +112,7 @@ const refactoredSrc = [
   "./src/js/account-icon.js",
   "./src/js/test/practise-missed.js",
   "./src/js/test/test-ui.js",
+  "./src/js/test/keymap.js",
 ];
 
 //legacy files

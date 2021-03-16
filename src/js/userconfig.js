@@ -1087,7 +1087,7 @@ function setLayout(layout, nosave) {
   ConfigSet.layout(layout);
   TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
   if (Config.keymapLayout === "overrideSync") {
-    refreshKeymapKeys(Config.keymapLayout);
+    Keymap.refreshKeys(Config.keymapLayout, setKeymapLayout);
   }
   if (!nosave) saveConfigToCookie();
 }
@@ -1131,107 +1131,13 @@ function setKeymapStyle(style, nosave) {
   if (!nosave) saveConfigToCookie();
 }
 
-function keymapShowIsoKey(tf) {
-  if (tf) {
-    $(".keymap .r4 .keymap-key.first").removeClass("hidden-key");
-  } else {
-    $(".keymap .r4 .keymap-key.first").addClass("hidden-key");
-  }
-}
-
 function setKeymapLayout(layout, nosave) {
   if (layout == null || layout == undefined) {
     layout = "qwerty";
   }
   ConfigSet.keymapLayout(layout);
-  refreshKeymapKeys(layout);
+  Keymap.refreshKeys(layout, setKeymapLayout);
   if (!nosave) saveConfigToCookie();
-}
-
-function refreshKeymapKeys(layout) {
-  try {
-    let lts = layouts[layout]; //layout to show
-    let layoutString = layout;
-    if (Config.keymapLayout === "overrideSync") {
-      if (Config.layout === "default") {
-        lts = layouts["qwerty"];
-        layoutString = "default";
-      } else {
-        lts = layouts[Config.layout];
-        layoutString = Config.layout;
-      }
-    }
-
-    if (lts.keymapShowTopRow) {
-      $(".keymap .r1").removeClass("hidden");
-    } else {
-      $(".keymap .r1").addClass("hidden");
-    }
-
-    $($(".keymap .r5 .keymap-key .letter")[0]).text(
-      layoutString.replace(/_/g, " ")
-    );
-    keymapShowIsoKey(lts.iso);
-
-    var toReplace = lts.keys.slice(1, 48);
-    var count = 0;
-
-    $(".keymap .letter")
-      .map(function () {
-        if (count < toReplace.length) {
-          var key = toReplace[count].charAt(0);
-          this.innerHTML = key;
-
-          switch (key) {
-            case "\\":
-            case "|":
-              this.parentElement.id = "KeyBackslash";
-              break;
-            case "}":
-            case "]":
-              this.parentElement.id = "KeyRightBracket";
-              break;
-            case "{":
-            case "[":
-              this.parentElement.id = "KeyLeftBracket";
-              break;
-            case '"':
-            case "'":
-              this.parentElement.id = "KeyQuote";
-              break;
-            case ":":
-            case ";":
-              this.parentElement.id = "KeySemicolon";
-              break;
-            case "<":
-            case ",":
-              this.parentElement.id = "KeyComma";
-              break;
-            case ">":
-            case ".":
-              this.parentElement.id = "KeyPeriod";
-              break;
-            case "?":
-            case "/":
-              this.parentElement.id = "KeySlash";
-              break;
-            case "":
-              this.parentElement.id = "KeySpace";
-              break;
-            default:
-              this.parentElement.id = `Key${key.toUpperCase()}`;
-          }
-        }
-        count++;
-        // }
-      })
-      .get();
-  } catch (e) {
-    console.log(
-      "something went wrong when changing layout, resettings: " + e.message
-    );
-    setKeymapLayout("qwerty", true);
-  }
 }
 
 function setFontSize(fontSize, nosave) {
