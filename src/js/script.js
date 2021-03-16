@@ -2090,6 +2090,7 @@ function showResult(difficultyFailed = false) {
                 }
               })
               .catch((e) => {
+                AccountIcon.loading(false);
                 console.error(e);
                 Notifications.add("Could not save result. " + e, -1);
               });
