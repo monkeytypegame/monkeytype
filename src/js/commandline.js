@@ -446,6 +446,7 @@ let commands = {
       id: "toggleKeymap",
       display: "Change keymap mode...",
       subgroup: true,
+      alias: "keyboard",
       exec: () => {
         currentCommands.push(commandsKeymapMode);
         showCommandLine();
