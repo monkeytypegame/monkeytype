@@ -1730,10 +1730,6 @@ function showResult(difficultyFailed = false) {
               );
               ChartController.result.update({ duration: 0 });
             }
-            if (Config.mode === "time" && (mode2 === 15 || mode2 === 60)) {
-              $("#result .stats .leaderboards").removeClass("hidden");
-              $("#result .stats .leaderboards .bottom").html("checking...");
-            }
 
             if (activeTags.length == 0) {
               $("#result .stats .tags").addClass("hidden");
@@ -1809,7 +1805,17 @@ function showResult(difficultyFailed = false) {
                 }
               }
             });
-
+            if (
+              completedEvent.funbox === "none" &&
+              completedEvent.language === "english" &&
+              completedEvent.mode === "time" &&
+              ["15", "60"].includes(String(completedEvent.mode2))
+            ) {
+              $("#result .stats .leaderboards").removeClass("hidden");
+              $("#result .stats .leaderboards .bottom").html(
+                `checking<i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+              );
+            }
             CloudFunctions.testCompleted({
               uid: firebase.auth().currentUser.uid,
               obj: completedEvent,
@@ -1851,6 +1857,7 @@ function showResult(difficultyFailed = false) {
                   );
                 } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                   completedEvent.id = e.data.createdId;
+                  TestLeaderboards.check(completedEvent);
                   if (e.data.resultCode === 2) {
                     completedEvent.isPb = true;
                   }
@@ -1889,178 +1896,6 @@ function showResult(difficultyFailed = false) {
                       .logEvent("testCompleted", completedEvent);
                   } catch (e) {
                     console.log("Analytics unavailable");
-                  }
-
-                  if (
-                    Config.mode === "time" &&
-                    (mode2 == "15" || mode2 == "60") &&
-                    DB.getSnapshot() !== null
-                  ) {
-                    const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
-                    const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
-                    const lbRightIcon = `<i class="fas fa-angle-right"></i>`;
-
-                    //global
-                    let globalLbString = "";
-                    const glb = e.data.globalLeaderboard;
-                    let glbMemory;
-                    try {
-                      glbMemory = DB.getSnapshot().lbMemory[Config.mode + mode2]
-                        .global;
-                    } catch {
-                      glbMemory = null;
-                    }
-                    let dontShowGlobalDiff =
-                      glbMemory == null || glbMemory === -1 ? true : false;
-                    let globalLbDiff = null;
-                    if (glb === null) {
-                      globalLbString = "global: not found";
-                    } else if (glb.insertedAt === -1) {
-                      dontShowGlobalDiff = true;
-                      globalLbDiff = glbMemory - glb.insertedAt;
-                      DB.updateLbMemory(
-                        Config.mode,
-                        mode2,
-                        "global",
-                        glb.insertedAt
-                      );
-
-                      globalLbString = "global: not qualified";
-                    } else if (glb.insertedAt >= 0) {
-                      if (glb.newBest) {
-                        globalLbDiff = glbMemory - glb.insertedAt;
-                        DB.updateLbMemory(
-                          Config.mode,
-                          mode2,
-                          "global",
-                          glb.insertedAt
-                        );
-                        let str = Misc.getPositionString(glb.insertedAt + 1);
-                        globalLbString = `global: ${str}`;
-                      } else {
-                        globalLbDiff = glbMemory - glb.foundAt;
-                        DB.updateLbMemory(
-                          Config.mode,
-                          mode2,
-                          "global",
-                          glb.foundAt
-                        );
-                        let str = Misc.getPositionString(glb.foundAt + 1);
-                        globalLbString = `global: ${str}`;
-                      }
-                    }
-                    if (!dontShowGlobalDiff) {
-                      let sString =
-                        globalLbDiff === 1 || globalLbDiff === -1 ? "" : "s";
-                      if (globalLbDiff > 0) {
-                        globalLbString += ` <span class="lbChange" aria-label="You've gained ${globalLbDiff} position${sString}" data-balloon-pos="left">(${lbUpIcon}${globalLbDiff})</span>`;
-                      } else if (globalLbDiff === 0) {
-                        globalLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="left">(${lbRightIcon}${globalLbDiff})</span>`;
-                      } else if (globalLbDiff < 0) {
-                        globalLbString += ` <span class="lbChange" aria-label="You've lost ${globalLbDiff} position${sString}" data-balloon-pos="left">(${lbDownIcon}${globalLbDiff})</span>`;
-                      }
-                    }
-
-                    //daily
-                    let dailyLbString = "";
-                    const dlb = e.data.dailyLeaderboard;
-                    let dlbMemory;
-                    try {
-                      dlbMemory = DB.getSnapshot().lbMemory[Config.mode + mode2]
-                        .daily;
-                    } catch {
-                      dlbMemory = null;
-                    }
-                    let dontShowDailyDiff =
-                      dlbMemory == null || dlbMemory === -1 ? true : false;
-                    let dailyLbDiff = null;
-                    if (dlb === null) {
-                      dailyLbString = "daily: not found";
-                    } else if (dlb.insertedAt === -1) {
-                      dontShowDailyDiff = true;
-                      dailyLbDiff = dlbMemory - dlb.insertedAt;
-                      DB.updateLbMemory(
-                        Config.mode,
-                        mode2,
-                        "daily",
-                        dlb.insertedAt
-                      );
-                      dailyLbString = "daily: not qualified";
-                    } else if (dlb.insertedAt >= 0) {
-                      if (dlb.newBest) {
-                        dailyLbDiff = dlbMemory - dlb.insertedAt;
-                        DB.updateLbMemory(
-                          Config.mode,
-                          mode2,
-                          "daily",
-                          dlb.insertedAt
-                        );
-                        let str = Misc.getPositionString(dlb.insertedAt + 1);
-                        dailyLbString = `daily: ${str}`;
-                      } else {
-                        dailyLbDiff = dlbMemory - dlb.foundAt;
-                        DB.updateLbMemory(
-                          Config.mode,
-                          mode2,
-                          "daily",
-                          dlb.foundAt
-                        );
-                        let str = Misc.getPositionString(dlb.foundAt + 1);
-                        dailyLbString = `daily: ${str}`;
-                      }
-                    }
-                    if (!dontShowDailyDiff) {
-                      let sString =
-                        dailyLbDiff === 1 || dailyLbDiff === -1 ? "" : "s";
-                      if (dailyLbDiff > 0) {
-                        dailyLbString += ` <span class="lbChange" aria-label="You've gained ${dailyLbDiff} position${sString}" data-balloon-pos="left">(${lbUpIcon}${dailyLbDiff})</span>`;
-                      } else if (dailyLbDiff === 0) {
-                        dailyLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="left">(${lbRightIcon}${dailyLbDiff})</span>`;
-                      } else if (dailyLbDiff < 0) {
-                        dailyLbString += ` <span class="lbChange" aria-label="You've lost ${dailyLbDiff} position${sString}" data-balloon-pos="left">(${lbDownIcon}${dailyLbDiff})</span>`;
-                      }
-                    }
-                    $("#result .stats .leaderboards .bottom").html(
-                      globalLbString + "<br>" + dailyLbString
-                    );
-
-                    // CloudFunctions.saveLbMemory({
-                    //   uid: firebase.auth().currentUser.uid,
-                    //   obj: DB.getSnapshot().lbMemory,
-                    // }).then((d) => {
-                    //   if (d.data.returnCode === 1) {
-                    //   } else {
-                    //     Notifications.add(
-                    //       `Error saving lb memory ${d.data.message}`,
-                    //       4000
-                    //     );
-                    //   }
-                    // });
-                  }
-                  if (
-                    e.data.dailyLeaderboard === null &&
-                    e.data.globalLeaderboard === null
-                  ) {
-                    $("#result .stats .leaderboards").addClass("hidden");
-                  }
-                  if (e.data.needsToVerifyEmail === true) {
-                    $("#result .stats .leaderboards").removeClass("hidden");
-                    $("#result .stats .leaderboards .bottom").html(
-                      `please verify your email<br>to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`
-                    );
-                  } else if (e.data.lbBanned) {
-                    $("#result .stats .leaderboards").removeClass("hidden");
-                    $("#result .stats .leaderboards .bottom").html("banned");
-                  } else if (e.data.name === false) {
-                    $("#result .stats .leaderboards").removeClass("hidden");
-                    $("#result .stats .leaderboards .bottom").html(
-                      "update your name to access leaderboards"
-                    );
-                  } else if (e.data.needsToVerify === true) {
-                    $("#result .stats .leaderboards").removeClass("hidden");
-                    $("#result .stats .leaderboards .bottom").html(
-                      "verification needed to access leaderboards"
-                    );
                   }
 
                   if (e.data.resultCode === 2) {

@@ -44,4 +44,5 @@ import * as TestUI from "./test-ui";
 import * as Keymap from "./keymap";
 import * as LiveWpm from "./live-wpm";
 import * as CapsWarning from "./caps-warning";
-import * as LiveAcc from './live-acc';
+import * as LiveAcc from "./live-acc";
+import * as TestLeaderboards from "./test-leaderboards";
