@@ -609,11 +609,21 @@ function setShowLiveAcc(live, nosave) {
     live = false;
   }
   ConfigSet.showLiveAcc(live);
+  if (live) {
+    LiveAcc.show();
+  } else {
+    LiveAcc.hide();
+  }
   if (!nosave) saveConfigToCookie();
 }
 
-function toggleShowLiveAcc() {
+function toggleLiveAcc() {
   ConfigSet.showLiveAcc(!Config.showLiveAcc);
+  if (Config.showLiveAcc) {
+    LiveAcc.show();
+  } else {
+    LiveAcc.hide();
+  }
   saveConfigToCookie();
 }
 

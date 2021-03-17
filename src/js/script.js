@@ -1262,7 +1262,7 @@ function showResult(difficultyFailed = false) {
   Caret.hide();
   LiveWpm.hide();
   hideCrown();
-  hideLiveAcc();
+  LiveAcc.hide();
   hideTimer();
   Keymap.hide();
   let stats = calculateStats();
@@ -2252,7 +2252,7 @@ function startTest() {
   showTimer();
   $("#liveWpm").text("0");
   LiveWpm.show();
-  showLiveAcc();
+  LiveAcc.show();
   updateTimer();
   clearTimeout(timer);
 
@@ -2462,7 +2462,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   Caret.hide();
   testActive = false;
   LiveWpm.hide();
-  hideLiveAcc();
+  LiveAcc.hide();
   hideTimer();
   bailout = false;
   paceCaret = null;
@@ -2805,70 +2805,6 @@ function liveWpmAndRaw() {
     wpm: wpm,
     raw: raw,
   };
-}
-
-function updateLiveAcc(acc) {
-  if (!testActive || !Config.showLiveAcc) {
-    hideLiveAcc();
-  } else {
-    showLiveAcc();
-  }
-  let number = Math.floor(acc);
-  if (Config.blindMode) {
-    number = 100;
-  }
-  document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = number + "%";
-  document.querySelector("#liveAcc").innerHTML = number + "%";
-}
-
-function showLiveAcc() {
-  if (!Config.showLiveAcc) return;
-  if (!testActive) return;
-  if (Config.timerStyle === "mini") {
-    // $("#miniTimerAndLiveWpm .wpm").css("opacity", Config.timerOpacity);
-    if (!$("#miniTimerAndLiveWpm .acc").hasClass("hidden")) return;
-    $("#miniTimerAndLiveWpm .acc")
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: Config.timerOpacity,
-        },
-        125
-      );
-  } else {
-    // $("#liveWpm").css("opacity", Config.timerOpacity);
-    if (!$("#liveAcc").hasClass("hidden")) return;
-    $("#liveAcc").removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: Config.timerOpacity,
-      },
-      125
-    );
-  }
-}
-
-function hideLiveAcc() {
-  // $("#liveWpm").css("opacity", 0);
-  // $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
-  $("#liveAcc").animate(
-    {
-      opacity: Config.timerOpacity,
-    },
-    125,
-    () => {
-      $("#liveAcc").addClass("hidden");
-    }
-  );
-  $("#miniTimerAndLiveWpm .acc").animate(
-    {
-      opacity: Config.timerOpacity,
-    },
-    125,
-    () => {
-      $("#miniTimerAndLiveWpm .acc").addClass("hidden");
-    }
-  );
 }
 
 function toggleResultWordsDisplay() {
@@ -4015,7 +3951,7 @@ $(document).keydown(function (event) {
   }
 
   let acc = Misc.roundTo2(TestStats.calculateAccuracy());
-  updateLiveAcc(acc);
+  LiveAcc.update(acc);
 });
 
 function handleTab(event) {
