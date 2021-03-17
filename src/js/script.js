@@ -750,15 +750,15 @@ function showWords() {
 
   if (Config.mode === "zen") {
     $(document.querySelector(".word")).remove();
-  }
-
-  if (Config.keymapMode === "next") {
-    Keymap.highlightKey(
-      wordsList[currentWordIndex]
-        .substring(currentInput.length, currentInput.length + 1)
-        .toString()
-        .toUpperCase()
-    );
+  } else {
+    if (Config.keymapMode === "next") {
+      Keymap.highlightKey(
+        wordsList[currentWordIndex]
+          .substring(currentInput.length, currentInput.length + 1)
+          .toString()
+          .toUpperCase()
+      );
+    }
   }
 
   TestUI.updateActiveElement();
@@ -4137,7 +4137,7 @@ function handleBackspace(event) {
   Sound.playClick(Config.playSoundOnClick);
   if (Config.keymapMode === "react") {
     Keymap.flashKey(event.code, true);
-  } else if (Config.keymapMode === "next") {
+  } else if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
       wordsList[currentWordIndex]
         .substring(currentInput.length, currentInput.length + 1)
@@ -4307,7 +4307,7 @@ function handleSpace(event, isEnter) {
 
   if (Config.keymapMode === "react") {
     Keymap.flashKey(event.code, true);
-  } else if (Config.keymapMode === "next") {
+  } else if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
       wordsList[currentWordIndex]
         .substring(currentInput.length, currentInput.length + 1)
@@ -4600,7 +4600,7 @@ function handleAlpha(event) {
   //keymap
   if (Config.keymapMode === "react") {
     Keymap.flashKey(event.key, thisCharCorrect);
-  } else if (Config.keymapMode === "next") {
+  } else if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
       wordsList[currentWordIndex]
         .substring(currentInput.length, currentInput.length + 1)
