@@ -115,6 +115,7 @@ const refactoredSrc = [
   "./src/js/test/keymap.js",
   "./src/js/test/live-wpm.js",
   "./src/js/test/caps-warning.js",
+  "./src/js/test/live-acc.js"
 ];
 
 //legacy files
