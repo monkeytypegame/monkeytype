@@ -573,11 +573,21 @@ function setShowTimerProgress(timer, nosave) {
     timer = false;
   }
   ConfigSet.showTimerProgress(timer);
+  if (Config.showTimerProgress) {
+    TimerProgress.show();
+  } else {
+    TimerProgress.hide();
+  }
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleShowTimerProgress() {
   ConfigSet.showTimerProgress(!Config.showTimerProgress);
+  if (Config.showTimerProgress) {
+    TimerProgress.show();
+  } else {
+    TimerProgress.hide();
+  }
   saveConfigToCookie();
 }
 
