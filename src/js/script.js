@@ -1,4 +1,5 @@
 //test logic
+let testActive = false;
 let wordsList = [];
 let currentWordIndex = 0;
 let currentInput = "";
@@ -11,7 +12,6 @@ let randomQuote = null;
 let bailout = false;
 
 //test timer
-let testActive = false;
 let time = 0;
 let timer = null;
 
