@@ -1285,6 +1285,7 @@ function applyConfig(configObj) {
     setOppositeShiftMode(configObj.oppositeShiftMode, true);
     setMode(configObj.mode, true);
     setMonkey(configObj.monkey, true);
+    setRepeatQuotes(configObj.repeatQuotes, true);
 
     setActiveLanguageGroup();
 
