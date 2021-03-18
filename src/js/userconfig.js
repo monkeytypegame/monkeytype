@@ -765,6 +765,7 @@ function setTimeConfig(time, nosave) {
 function setQuoteLength(len, nosave, multipleMode) {
   if (Array.isArray(len)) {
     //config load
+    if (len.length === 1 && len[0] === -1) len = [1];
     ConfigSet.quoteLength(len);
   } else {
     if (!Array.isArray(ConfigSet.quoteLength)) ConfigSet.quoteLength([]);
