@@ -1,0 +1,29 @@
+{
+  "language": "filipino",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "Ang hindi magmahal sa sariling wika ay higit sa hayop at malansang isda; kaya ating pagyamaning kusa, gaya ng inang sa atin ay nagpala.",
+      "source": "Dr. José P. Rizal",
+      "length": 135,
+      "id": 1
+    }
+  ]
+}

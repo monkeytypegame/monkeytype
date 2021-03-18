@@ -1,10 +1,22 @@
 {
   "language": "swedish",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -348,6 +360,30 @@
       "source": "Arne Sand, Ljugarstriden",
       "length": 143,
       "id": 57
+    },
+    {
+      "text": "Provensalerna är nästan slösaktigare än svenskarna. Provensalska bönder och även köpmän är periodvis patologiskt slösaktiga och kan spela bort hus och hem på ett tärningskast.",
+      "source": "Evert Taube, Vallfart till Trubadurien och Toscana",
+      "length": 175,
+      "id": 58
+    },
+    {
+      "text": "Karl den stores storhet är en storgermansk propagandamyt! Karln var i det närmaste analfabet, hans konstintresse var en barbars lyxfröjd.",
+      "source": "Evert Taube, Vallfart till Trubadurien och Toscana",
+      "length": 137,
+      "id": 59
+    },
+    {
+      "text": "När man vill uppleva poesins monumentalitet eller himlaflykt eller innerligaste ömhet och smek eller torterande melankoli eller daggstänk av lyriska tårar eller förtvivlans gråt ur rödkantade ögon i en ungkarlslya där lakanen bränner som nässlor, nattskjortan dryper av ångestsvett och djävulen står i tamburen, då skall man läsa Dante.",
+      "source": "Evert Taube, Vallfart till Trubadurien och Toscana",
+      "length": 336,
+      "id": 60
+    },
+    {
+      "text": "En målare, som endast sett honom, skulle ha blivit förtjust; en musiker, som hört, skulle bringats till förtvivlan.",
+      "source": "Victoria Benedictsson, Pengar",
+      "length": 115,
+      "id": 61
     }
   ]
 }
