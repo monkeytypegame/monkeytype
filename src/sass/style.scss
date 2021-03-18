@@ -2707,6 +2707,10 @@ key {
           overflow: revert;
           height: auto;
 
+          &.customTheme {
+            margin-top: 0.5rem;
+          }
+
           .text {
             align-self: center;
           }
