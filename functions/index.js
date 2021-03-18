@@ -2389,7 +2389,7 @@ exports.checkLeaderboards = functions.https.onRequest(
               boardInfo.minWpm === undefined ||
               boardInfo.board.length !== boardInfo.size ||
               (boardInfo.minWpm !== undefined &&
-                request.wpm > boardInfo.minWpm &&
+                request.result.wpm > boardInfo.minWpm &&
                 boardInfo.board.length === boardInfo.size)
             ) {
               let boardData = boardInfo.board;
@@ -2413,7 +2413,7 @@ exports.checkLeaderboards = functions.https.onRequest(
             } else {
               //not above leaderboard minwpm
               return {
-                insertedAt: -999,
+                insertedAt: -1,
               };
             }
           })
@@ -2467,7 +2467,7 @@ exports.checkLeaderboards = functions.https.onRequest(
               boardInfo.minWpm === undefined ||
               boardInfo.board.length !== boardInfo.size ||
               (boardInfo.minWpm !== undefined &&
-                request.wpm > boardInfo.minWpm &&
+                request.result.wpm > boardInfo.minWpm &&
                 boardInfo.board.length === boardInfo.size)
             ) {
               let boardData = boardInfo.board;
@@ -2491,7 +2491,7 @@ exports.checkLeaderboards = functions.https.onRequest(
             } else {
               //not above leaderboard minwpm
               return {
-                insertedAt: -999,
+                insertedAt: -1,
               };
             }
           })
