@@ -1813,7 +1813,7 @@ function showResult(difficultyFailed = false) {
             ) {
               $("#result .stats .leaderboards").removeClass("hidden");
               $("#result .stats .leaderboards .bottom").html(
-                `checking<i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+                `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
               );
             }
             CloudFunctions.testCompleted({

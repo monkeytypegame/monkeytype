@@ -4,6 +4,8 @@ import * as Notifications from "./notification-center";
 import Config from "./config";
 import * as Misc from "./misc";
 
+let textTimeouts = [];
+
 export function check(completedEvent) {
   try {
     if (
@@ -14,7 +16,21 @@ export function check(completedEvent) {
     ) {
       $("#result .stats .leaderboards").removeClass("hidden");
       $("#result .stats .leaderboards .bottom").html(
-        `checking<i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+        `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+      );
+      textTimeouts.push(
+        setTimeout(() => {
+          $("#result .stats .leaderboards .bottom").html(
+            `still checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+          );
+        }, 5000)
+      );
+      textTimeouts.push(
+        setTimeout(() => {
+          $("#result .stats .leaderboards .bottom").html(
+            `leaderboard seems<br>to be very busy <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+          );
+        }, 10000)
       );
       let lbRes = completedEvent;
       delete lbRes.keySpacing;
@@ -31,6 +47,7 @@ export function check(completedEvent) {
         result: lbRes,
       })
         .then((data) => {
+          Misc.clearTimeouts(textTimeouts);
           show(data.data, completedEvent.mode2);
         })
         .catch((e) => {
