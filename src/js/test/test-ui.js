@@ -1,7 +1,7 @@
 import * as Notifications from "./notification-center";
 import * as ThemeColors from "./theme-colors";
 import Config from "./config";
-import * as DB from "./config";
+import * as DB from "./db";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;

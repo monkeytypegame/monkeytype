@@ -1,4 +1,5 @@
 //test logic
+let testActive = false;
 let wordsList = [];
 let currentWordIndex = 0;
 let currentInput = "";
@@ -11,7 +12,6 @@ let randomQuote = null;
 let bailout = false;
 
 //test timer
-let testActive = false;
 let time = 0;
 let timer = null;
 
@@ -750,15 +750,15 @@ function showWords() {
 
   if (Config.mode === "zen") {
     $(document.querySelector(".word")).remove();
-  }
-
-  if (Config.keymapMode === "next") {
-    Keymap.highlightKey(
-      wordsList[currentWordIndex]
-        .substring(currentInput.length, currentInput.length + 1)
-        .toString()
-        .toUpperCase()
-    );
+  } else {
+    if (Config.keymapMode === "next") {
+      Keymap.highlightKey(
+        wordsList[currentWordIndex]
+          .substring(currentInput.length, currentInput.length + 1)
+          .toString()
+          .toUpperCase()
+      );
+    }
   }
 
   TestUI.updateActiveElement();
@@ -905,193 +905,6 @@ function updateWordElement(showError) {
 function highlightBadWord(index, showError) {
   if (!showError) return;
   $($("#words .word")[index]).addClass("error");
-}
-
-function showTimer() {
-  let op = Config.showTimerProgress ? Config.timerOpacity : 0;
-  if (Config.mode != "zen" && Config.timerStyle === "bar") {
-    $("#timerWrapper").stop(true, true).removeClass("hidden").animate(
-      {
-        opacity: op,
-      },
-      125
-    );
-  } else if (Config.timerStyle === "text") {
-    $("#timerNumber")
-      .stop(true, true)
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: op,
-        },
-        125
-      );
-  } else if (Config.mode == "zen" || Config.timerStyle === "mini") {
-    if (op > 0) {
-      $("#miniTimerAndLiveWpm .time")
-        .stop(true, true)
-        .removeClass("hidden")
-        .animate(
-          {
-            opacity: op,
-          },
-          125
-        );
-    }
-  }
-}
-
-function hideTimer() {
-  $("#timerWrapper").stop(true, true).animate(
-    {
-      opacity: 0,
-    },
-    125
-  );
-  $("#miniTimerAndLiveWpm .time")
-    .stop(true, true)
-    .animate(
-      {
-        opacity: 0,
-      },
-      125,
-      () => {
-        $("#miniTimerAndLiveWpm .time").addClass("hidden");
-      }
-    );
-  $("#timerNumber").stop(true, true).animate(
-    {
-      opacity: 0,
-    },
-    125
-  );
-}
-
-function restartTimer() {
-  if (Config.timerStyle === "bar") {
-    if (Config.mode === "time") {
-      $("#timer").stop(true, true).animate(
-        {
-          width: "100vw",
-        },
-        0
-      );
-    } else if (Config.mode === "words" || Config.mode === "custom") {
-      $("#timer").stop(true, true).animate(
-        {
-          width: "0vw",
-        },
-        0
-      );
-    }
-  }
-}
-
-function updateTimer() {
-  if (!Config.showTimerProgress) return;
-  if (
-    Config.mode === "time" ||
-    (Config.mode === "custom" && CustomText.isTimeRandom)
-  ) {
-    let maxtime = Config.time;
-    if (Config.mode === "custom" && CustomText.isTimeRandom) {
-      maxtime = CustomText.time;
-    }
-    if (Config.timerStyle === "bar") {
-      let percent = 100 - ((time + 1) / maxtime) * 100;
-      $("#timer")
-        .stop(true, true)
-        .animate(
-          {
-            width: percent + "vw",
-          },
-          1000,
-          "linear"
-        );
-    } else if (Config.timerStyle === "text") {
-      let displayTime = Misc.secondsToString(maxtime - time);
-      if (maxtime === 0) {
-        displayTime = Misc.secondsToString(time);
-      }
-      $("#timerNumber").html("<div>" + displayTime + "</div>");
-    } else if (Config.timerStyle === "mini") {
-      let displayTime = Misc.secondsToString(maxtime - time);
-      if (maxtime === 0) {
-        displayTime = Misc.secondsToString(time);
-      }
-      $("#miniTimerAndLiveWpm .time").html(displayTime);
-    }
-  } else if (
-    Config.mode === "words" ||
-    Config.mode === "custom" ||
-    Config.mode === "quote"
-  ) {
-    if (Config.timerStyle === "bar") {
-      let outof = wordsList.length;
-      if (Config.mode === "words") {
-        outof = Config.words;
-      }
-      if (Config.mode === "custom") {
-        if (CustomText.isWordRandom) {
-          outof = CustomText.word;
-        } else {
-          outof = CustomText.text.length;
-        }
-      }
-      let percent = Math.floor(((currentWordIndex + 1) / outof) * 100);
-      $("#timer")
-        .stop(true, true)
-        .animate(
-          {
-            width: percent + "vw",
-          },
-          250
-        );
-    } else if (Config.timerStyle === "text") {
-      let outof = wordsList.length;
-      if (Config.mode === "words") {
-        outof = Config.words;
-      }
-      if (Config.mode === "custom") {
-        if (CustomText.isWordRandom) {
-          outof = CustomText.word;
-        } else {
-          outof = CustomText.text.length;
-        }
-      }
-      if (outof === 0) {
-        $("#timerNumber").html("<div>" + `${inputHistory.length}` + "</div>");
-      } else {
-        $("#timerNumber").html(
-          "<div>" + `${inputHistory.length}/${outof}` + "</div>"
-        );
-      }
-    } else if (Config.timerStyle === "mini") {
-      let outof = wordsList.length;
-      if (Config.mode === "words") {
-        outof = Config.words;
-      }
-      if (Config.mode === "custom") {
-        if (CustomText.isWordRandom) {
-          outof = CustomText.word;
-        } else {
-          outof = CustomText.text.length;
-        }
-      }
-      if (Config.words === 0) {
-        $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}`);
-      } else {
-        $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}/${outof}`);
-      }
-    }
-  } else if (Config.mode == "zen") {
-    if (Config.timerStyle === "text") {
-      $("#timerNumber").html("<div>" + `${inputHistory.length}` + "</div>");
-    } else {
-      $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}`);
-    }
-  }
 }
 
 function countChars() {
@@ -1261,8 +1074,9 @@ function showResult(difficultyFailed = false) {
   Focus.set(false);
   Caret.hide();
   LiveWpm.hide();
-  hideLiveAcc();
-  hideTimer();
+  hideCrown();
+  LiveAcc.hide();
+  TimerProgress.hide();
   Keymap.hide();
   let stats = calculateStats();
   if (stats === undefined) {
@@ -1659,7 +1473,6 @@ function showResult(difficultyFailed = false) {
     ) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
-
         //check local pb
         AccountIcon.loading(true);
         let dontShowCrown = false;
@@ -1683,12 +1496,11 @@ function showResult(difficultyFailed = false) {
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
               dontShowCrown = true;
             }
-            if (ConfigSet.mode == "quote") dontShowCrown(true);
+            if (Config.mode == "quote") dontShowCrown = true;
             if (lpb < stats.wpm) {
               //new pb based on local
               pbDiff = Math.abs(stats.wpm - lpb);
               if (!dontShowCrown) {
-                hideCrown();
                 showCrown();
                 $("#result .stats .wpm .crown").attr(
                   "aria-label",
@@ -1730,10 +1542,6 @@ function showResult(difficultyFailed = false) {
                 maxChartVal
               );
               ChartController.result.update({ duration: 0 });
-            }
-            if (Config.mode === "time" && (mode2 === 15 || mode2 === 60)) {
-              $("#result .stats .leaderboards").removeClass("hidden");
-              $("#result .stats .leaderboards .bottom").html("checking...");
             }
 
             if (activeTags.length == 0) {
@@ -1810,7 +1618,17 @@ function showResult(difficultyFailed = false) {
                 }
               }
             });
-
+            if (
+              completedEvent.funbox === "none" &&
+              completedEvent.language === "english" &&
+              completedEvent.mode === "time" &&
+              ["15", "60"].includes(String(completedEvent.mode2))
+            ) {
+              $("#result .stats .leaderboards").removeClass("hidden");
+              $("#result .stats .leaderboards .bottom").html(
+                `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+              );
+            }
             CloudFunctions.testCompleted({
               uid: firebase.auth().currentUser.uid,
               obj: completedEvent,
@@ -1852,6 +1670,7 @@ function showResult(difficultyFailed = false) {
                   );
                 } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
                   completedEvent.id = e.data.createdId;
+                  TestLeaderboards.check(completedEvent);
                   if (e.data.resultCode === 2) {
                     completedEvent.isPb = true;
                   }
@@ -1890,178 +1709,6 @@ function showResult(difficultyFailed = false) {
                       .logEvent("testCompleted", completedEvent);
                   } catch (e) {
                     console.log("Analytics unavailable");
-                  }
-
-                  if (
-                    Config.mode === "time" &&
-                    (mode2 == "15" || mode2 == "60") &&
-                    DB.getSnapshot() !== null
-                  ) {
-                    const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
-                    const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
-                    const lbRightIcon = `<i class="fas fa-angle-right"></i>`;
-
-                    //global
-                    let globalLbString = "";
-                    const glb = e.data.globalLeaderboard;
-                    let glbMemory;
-                    try {
-                      glbMemory = DB.getSnapshot().lbMemory[Config.mode + mode2]
-                        .global;
-                    } catch {
-                      glbMemory = null;
-                    }
-                    let dontShowGlobalDiff =
-                      glbMemory == null || glbMemory === -1 ? true : false;
-                    let globalLbDiff = null;
-                    if (glb === null) {
-                      globalLbString = "global: not found";
-                    } else if (glb.insertedAt === -1) {
-                      dontShowGlobalDiff = true;
-                      globalLbDiff = glbMemory - glb.insertedAt;
-                      DB.updateLbMemory(
-                        Config.mode,
-                        mode2,
-                        "global",
-                        glb.insertedAt
-                      );
-
-                      globalLbString = "global: not qualified";
-                    } else if (glb.insertedAt >= 0) {
-                      if (glb.newBest) {
-                        globalLbDiff = glbMemory - glb.insertedAt;
-                        DB.updateLbMemory(
-                          Config.mode,
-                          mode2,
-                          "global",
-                          glb.insertedAt
-                        );
-                        let str = Misc.getPositionString(glb.insertedAt + 1);
-                        globalLbString = `global: ${str}`;
-                      } else {
-                        globalLbDiff = glbMemory - glb.foundAt;
-                        DB.updateLbMemory(
-                          Config.mode,
-                          mode2,
-                          "global",
-                          glb.foundAt
-                        );
-                        let str = Misc.getPositionString(glb.foundAt + 1);
-                        globalLbString = `global: ${str}`;
-                      }
-                    }
-                    if (!dontShowGlobalDiff) {
-                      let sString =
-                        globalLbDiff === 1 || globalLbDiff === -1 ? "" : "s";
-                      if (globalLbDiff > 0) {
-                        globalLbString += ` <span class="lbChange" aria-label="You've gained ${globalLbDiff} position${sString}" data-balloon-pos="left">(${lbUpIcon}${globalLbDiff})</span>`;
-                      } else if (globalLbDiff === 0) {
-                        globalLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="left">(${lbRightIcon}${globalLbDiff})</span>`;
-                      } else if (globalLbDiff < 0) {
-                        globalLbString += ` <span class="lbChange" aria-label="You've lost ${globalLbDiff} position${sString}" data-balloon-pos="left">(${lbDownIcon}${globalLbDiff})</span>`;
-                      }
-                    }
-
-                    //daily
-                    let dailyLbString = "";
-                    const dlb = e.data.dailyLeaderboard;
-                    let dlbMemory;
-                    try {
-                      dlbMemory = DB.getSnapshot().lbMemory[Config.mode + mode2]
-                        .daily;
-                    } catch {
-                      dlbMemory = null;
-                    }
-                    let dontShowDailyDiff =
-                      dlbMemory == null || dlbMemory === -1 ? true : false;
-                    let dailyLbDiff = null;
-                    if (dlb === null) {
-                      dailyLbString = "daily: not found";
-                    } else if (dlb.insertedAt === -1) {
-                      dontShowDailyDiff = true;
-                      dailyLbDiff = dlbMemory - dlb.insertedAt;
-                      DB.updateLbMemory(
-                        Config.mode,
-                        mode2,
-                        "daily",
-                        dlb.insertedAt
-                      );
-                      dailyLbString = "daily: not qualified";
-                    } else if (dlb.insertedAt >= 0) {
-                      if (dlb.newBest) {
-                        dailyLbDiff = dlbMemory - dlb.insertedAt;
-                        DB.updateLbMemory(
-                          Config.mode,
-                          mode2,
-                          "daily",
-                          dlb.insertedAt
-                        );
-                        let str = Misc.getPositionString(dlb.insertedAt + 1);
-                        dailyLbString = `daily: ${str}`;
-                      } else {
-                        dailyLbDiff = dlbMemory - dlb.foundAt;
-                        DB.updateLbMemory(
-                          Config.mode,
-                          mode2,
-                          "daily",
-                          dlb.foundAt
-                        );
-                        let str = Misc.getPositionString(dlb.foundAt + 1);
-                        dailyLbString = `daily: ${str}`;
-                      }
-                    }
-                    if (!dontShowDailyDiff) {
-                      let sString =
-                        dailyLbDiff === 1 || dailyLbDiff === -1 ? "" : "s";
-                      if (dailyLbDiff > 0) {
-                        dailyLbString += ` <span class="lbChange" aria-label="You've gained ${dailyLbDiff} position${sString}" data-balloon-pos="left">(${lbUpIcon}${dailyLbDiff})</span>`;
-                      } else if (dailyLbDiff === 0) {
-                        dailyLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="left">(${lbRightIcon}${dailyLbDiff})</span>`;
-                      } else if (dailyLbDiff < 0) {
-                        dailyLbString += ` <span class="lbChange" aria-label="You've lost ${dailyLbDiff} position${sString}" data-balloon-pos="left">(${lbDownIcon}${dailyLbDiff})</span>`;
-                      }
-                    }
-                    $("#result .stats .leaderboards .bottom").html(
-                      globalLbString + "<br>" + dailyLbString
-                    );
-
-                    // CloudFunctions.saveLbMemory({
-                    //   uid: firebase.auth().currentUser.uid,
-                    //   obj: DB.getSnapshot().lbMemory,
-                    // }).then((d) => {
-                    //   if (d.data.returnCode === 1) {
-                    //   } else {
-                    //     Notifications.add(
-                    //       `Error saving lb memory ${d.data.message}`,
-                    //       4000
-                    //     );
-                    //   }
-                    // });
-                  }
-                  if (
-                    e.data.dailyLeaderboard === null &&
-                    e.data.globalLeaderboard === null
-                  ) {
-                    $("#result .stats .leaderboards").addClass("hidden");
-                  }
-                  if (e.data.needsToVerifyEmail === true) {
-                    $("#result .stats .leaderboards").removeClass("hidden");
-                    $("#result .stats .leaderboards .bottom").html(
-                      `please verify your email<br>to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`
-                    );
-                  } else if (e.data.lbBanned) {
-                    $("#result .stats .leaderboards").removeClass("hidden");
-                    $("#result .stats .leaderboards .bottom").html("banned");
-                  } else if (e.data.name === false) {
-                    $("#result .stats .leaderboards").removeClass("hidden");
-                    $("#result .stats .leaderboards .bottom").html(
-                      "update your name to access leaderboards"
-                    );
-                  } else if (e.data.needsToVerify === true) {
-                    $("#result .stats .leaderboards").removeClass("hidden");
-                    $("#result .stats .leaderboards .bottom").html(
-                      "verification needed to access leaderboards"
-                    );
                   }
 
                   if (e.data.resultCode === 2) {
@@ -2249,12 +1896,12 @@ function startTest() {
   testActive = true;
   TestStats.setStart(performance.now());
   TestStats.resetKeypressTimings();
-  restartTimer();
-  showTimer();
+  TimerProgress.restart();
+  TimerProgress.show();
   $("#liveWpm").text("0");
   LiveWpm.show();
-  showLiveAcc();
-  updateTimer();
+  LiveAcc.show();
+  TimerProgress.update(time, wordsList, currentWordIndex, inputHistory);
   clearTimeout(timer);
 
   if (activeFunbox === "memory") {
@@ -2278,7 +1925,7 @@ function startTest() {
         Config.mode === "time" ||
         (Config.mode === "custom" && CustomText.isTimeRandom)
       ) {
-        updateTimer();
+        TimerProgress.update(time, wordsList, currentWordIndex, inputHistory);
       }
       let wpmAndRaw = liveWpmAndRaw();
       LiveWpm.update(wpmAndRaw.wpm, wpmAndRaw.raw);
@@ -2463,8 +2110,8 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   Caret.hide();
   testActive = false;
   LiveWpm.hide();
-  hideLiveAcc();
-  hideTimer();
+  LiveAcc.hide();
+  TimerProgress.hide();
   bailout = false;
   paceCaret = null;
   if (paceCaret !== null) clearTimeout(paceCaret.timeout);
@@ -2806,70 +2453,6 @@ function liveWpmAndRaw() {
     wpm: wpm,
     raw: raw,
   };
-}
-
-function updateLiveAcc(acc) {
-  if (!testActive || !Config.showLiveAcc) {
-    hideLiveAcc();
-  } else {
-    showLiveAcc();
-  }
-  let number = Math.floor(acc);
-  if (Config.blindMode) {
-    number = 100;
-  }
-  document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = number + "%";
-  document.querySelector("#liveAcc").innerHTML = number + "%";
-}
-
-function showLiveAcc() {
-  if (!Config.showLiveAcc) return;
-  if (!testActive) return;
-  if (Config.timerStyle === "mini") {
-    // $("#miniTimerAndLiveWpm .wpm").css("opacity", Config.timerOpacity);
-    if (!$("#miniTimerAndLiveWpm .acc").hasClass("hidden")) return;
-    $("#miniTimerAndLiveWpm .acc")
-      .removeClass("hidden")
-      .css("opacity", 0)
-      .animate(
-        {
-          opacity: Config.timerOpacity,
-        },
-        125
-      );
-  } else {
-    // $("#liveWpm").css("opacity", Config.timerOpacity);
-    if (!$("#liveAcc").hasClass("hidden")) return;
-    $("#liveAcc").removeClass("hidden").css("opacity", 0).animate(
-      {
-        opacity: Config.timerOpacity,
-      },
-      125
-    );
-  }
-}
-
-function hideLiveAcc() {
-  // $("#liveWpm").css("opacity", 0);
-  // $("#miniTimerAndLiveWpm .wpm").css("opacity", 0);
-  $("#liveAcc").animate(
-    {
-      opacity: Config.timerOpacity,
-    },
-    125,
-    () => {
-      $("#liveAcc").addClass("hidden");
-    }
-  );
-  $("#miniTimerAndLiveWpm .acc").animate(
-    {
-      opacity: Config.timerOpacity,
-    },
-    125,
-    () => {
-      $("#miniTimerAndLiveWpm .acc").addClass("hidden");
-    }
-  );
 }
 
 function toggleResultWordsDisplay() {
@@ -4016,7 +3599,7 @@ $(document).keydown(function (event) {
   }
 
   let acc = Misc.roundTo2(TestStats.calculateAccuracy());
-  updateLiveAcc(acc);
+  LiveAcc.update(acc);
 });
 
 function handleTab(event) {
@@ -4202,7 +3785,7 @@ function handleBackspace(event) {
   Sound.playClick(Config.playSoundOnClick);
   if (Config.keymapMode === "react") {
     Keymap.flashKey(event.code, true);
-  } else if (Config.keymapMode === "next") {
+  } else if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
       wordsList[currentWordIndex]
         .substring(currentInput.length, currentInput.length + 1)
@@ -4372,7 +3955,7 @@ function handleSpace(event, isEnter) {
 
   if (Config.keymapMode === "react") {
     Keymap.flashKey(event.code, true);
-  } else if (Config.keymapMode === "next") {
+  } else if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
       wordsList[currentWordIndex]
         .substring(currentInput.length, currentInput.length + 1)
@@ -4386,7 +3969,7 @@ function handleSpace(event, isEnter) {
     Config.mode === "quote" ||
     Config.mode === "zen"
   ) {
-    updateTimer();
+    TimerProgress.update(time, wordsList, currentWordIndex, inputHistory);
   }
   if (
     Config.mode == "time" ||
@@ -4665,7 +4248,7 @@ function handleAlpha(event) {
   //keymap
   if (Config.keymapMode === "react") {
     Keymap.flashKey(event.key, thisCharCorrect);
-  } else if (Config.keymapMode === "next") {
+  } else if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
       wordsList[currentWordIndex]
         .substring(currentInput.length, currentInput.length + 1)

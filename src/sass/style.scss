@@ -2570,9 +2570,10 @@ key {
       margin: 0;
     }
 
-    .text {
+    & > .text {
       align-self: normal;
       color: var(--text-color);
+      grid-area: text;
     }
 
     .buttons {
@@ -2706,6 +2707,10 @@ key {
           overflow: revert;
           height: auto;
 
+          &.customTheme {
+            margin-top: 0.5rem;
+          }
+
           .text {
             align-self: center;
           }
@@ -2770,9 +2775,10 @@ key {
       grid-template-columns: 2fr 1fr;
       grid-template-areas:
         "title tabs"
+        "text text"
         "buttons buttons";
       column-gap: 2rem;
-      row-gap: 0.5rem;
+      // row-gap: 0.5rem;
 
       .tabs {
         display: grid;
@@ -2811,6 +2817,7 @@ key {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 0.5rem;
+        margin-top: 0.5rem;
       }
     }
   }

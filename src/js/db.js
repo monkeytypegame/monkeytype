@@ -14,6 +14,8 @@ export function getSnapshot() {
 }
 
 export function setSnapshot(newSnapshot) {
+  delete newSnapshot.banned;
+  delete newSnapshot.verified;
   dbSnapshot = newSnapshot;
 }
 
@@ -27,6 +29,9 @@ export async function initSnapshot() {
     tags: [],
     favouriteThemes: [],
     refactored: false,
+    banned: undefined,
+    verified: undefined,
+    emailVerified: undefined,
     lbMemory: {
       time15: {
         global: null,
@@ -92,6 +97,9 @@ export async function initSnapshot() {
           started: data.startedTests,
           completed: data.completedTests,
         };
+        snap.banned = data.banned;
+        snap.verified = data.verified;
+        snap.emailVerified = user.emailVerified;
         try {
           if (data.lbMemory.time15 !== undefined) {
             snap.lbMemory.time15 = data.lbMemory.time15;

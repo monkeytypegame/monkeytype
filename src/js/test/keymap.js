@@ -4,6 +4,7 @@ import layouts from "./layouts";
 
 //TODO remove after wordslist and currentinput and current word index are in a module
 export function highlightKey(currentKey) {
+  if (Config.mode === "zen") return;
   try {
     if ($(".active-key") != undefined) {
       $(".active-key").removeClass("active-key");

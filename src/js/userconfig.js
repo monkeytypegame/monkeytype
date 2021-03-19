@@ -573,11 +573,21 @@ function setShowTimerProgress(timer, nosave) {
     timer = false;
   }
   ConfigSet.showTimerProgress(timer);
+  if (Config.showTimerProgress) {
+    TimerProgress.show();
+  } else {
+    TimerProgress.hide();
+  }
   if (!nosave) saveConfigToCookie();
 }
 
 function toggleShowTimerProgress() {
   ConfigSet.showTimerProgress(!Config.showTimerProgress);
+  if (Config.showTimerProgress) {
+    TimerProgress.show();
+  } else {
+    TimerProgress.hide();
+  }
   saveConfigToCookie();
 }
 
@@ -609,11 +619,21 @@ function setShowLiveAcc(live, nosave) {
     live = false;
   }
   ConfigSet.showLiveAcc(live);
+  if (live) {
+    LiveAcc.show();
+  } else {
+    LiveAcc.hide();
+  }
   if (!nosave) saveConfigToCookie();
 }
 
-function toggleShowLiveAcc() {
+function toggleLiveAcc() {
   ConfigSet.showLiveAcc(!Config.showLiveAcc);
+  if (Config.showLiveAcc) {
+    LiveAcc.show();
+  } else {
+    LiveAcc.hide();
+  }
   saveConfigToCookie();
 }
 
@@ -745,9 +765,10 @@ function setTimeConfig(time, nosave) {
 function setQuoteLength(len, nosave, multipleMode) {
   if (Array.isArray(len)) {
     //config load
+    if (len.length === 1 && len[0] === -1) len = [1];
     ConfigSet.quoteLength(len);
   } else {
-    if (!Array.isArray(ConfigSet.quoteLength)) Config.quoteLength([]);
+    if (!Array.isArray(ConfigSet.quoteLength)) ConfigSet.quoteLength([]);
     if (len === null || isNaN(len) || len < -2 || len > 3) {
       len = 1;
     }
@@ -1264,6 +1285,7 @@ function applyConfig(configObj) {
     setOppositeShiftMode(configObj.oppositeShiftMode, true);
     setMode(configObj.mode, true);
     setMonkey(configObj.monkey, true);
+    setRepeatQuotes(configObj.repeatQuotes, true);
 
     setActiveLanguageGroup();
 
