@@ -57,7 +57,7 @@
 
 ## Standards and Conventions
 
-1. Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically run every time you `git commit` (if you've followed the above instructions properly).
+1. Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically ran every time you `git commit` (if you've followed the above instructions properly).
 
 ## Questions
 
