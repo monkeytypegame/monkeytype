@@ -80,6 +80,8 @@ async function startReplay() {
   keysPressed.forEach((item, i) => {
     setTimeout(() => {
       // TODO handle pressing backspace when last word was correct
+      // pressing backspace when last word was skipped results in the entire prompt being underlined and word stays underlined after it's fixed
+      // error class persists after correction
       if (keysPressed[i] == " " && promptPart[0] == " ") {
         // if space was pressed and space was expected
         inputPart += '</div><div class="word">'; //end word and create new word
@@ -92,6 +94,9 @@ async function startReplay() {
         promptPart = promptPart.substring(1); //removed last typed character from prompt
       } else if (keysPressed[i] == "Backspace") {
         let lastLetterIndex = inputPart.lastIndexOf("<letter"); //get index of last inputted letter
+        if (promptPartLast.slice(-1) == " ") {
+          //if going back a word check for error
+        }
         if (
           inputPart.substring(lastLetterIndex).substring(15, 22) == "skipped"
         ) {
@@ -147,7 +152,6 @@ async function startReplay() {
           submittedWordIndex,
           nextWordIndex
         );
-        console.log(submittedWordSubstring);
         if (
           submittedWordSubstring.indexOf("incorrect") >= 0 ||
           submittedWordSubstring.indexOf("skipped") >= 0
@@ -160,6 +164,22 @@ async function startReplay() {
             submittedWordSubstring,
             newSubmittedWord
           ); //replace submittedWordSubstring with newSubmittedWord
+        } else if (submittedWordSubstring.indexOf("error") >= 0) {
+          //if there was an error but there isn't anymore
+          let newSubmittedWord = "";
+          if (
+            submittedWordSubstring.indexOf("incorrect") < 0 ||
+            submittedWordSubstring.indexOf("skipped") < 0
+          ) {
+            // if there are no incorrect or skipped words
+            newSubmittedWord =
+              submittedWordSubstring.slice(0, 16) +
+              submittedWordSubstring.slice(22);
+          }
+          inputPart = inputPart.replace(
+            submittedWordSubstring,
+            newSubmittedWord
+          );
         }
       }
       replayOutput = inputPart + promptPart;
