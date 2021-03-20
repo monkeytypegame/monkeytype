@@ -3,14 +3,27 @@
   * Stop replay when a new test is started or a new replay is requested
   * Make replay.js es6/refactored
 */
+let wordsList = [];
+export function replayGetWordsList(wordsListFromScript) {
+  wordsList = wordsListFromScript;
+}
+
 function showReplayWords(wordsList) {
   const wordsString = wordsList.join(" ");
   $("#replayWords").text(wordsString);
 }
+
+let replayTrackingStarted = false; // mirrors testActive state, only exists because of es6 modules
+function startReplayTracking() {
+  replayTrackingStarted = true;
+}
+function stopReplayTracking() {
+  replayTrackingStarted = false;
+}
+
 //save keys and time between keys to lists
 let keysPressed = [];
 let timeBetweenKeys = [];
-let replayTrackingStarted = false; // mirrors testActive state, only exists because of es6 modules
 let lastInputTime = performance.now();
 const ignoredKeys = ["Tab", "Shift", "Control", "Alt", "Escape"];
 $(document).keydown((event) => {
@@ -37,12 +50,11 @@ function toggleReplayDisplay() {
       $("#words").html(
         `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
       );
-      loadWordsHistory().then(() => {
-        $("#resultReplay")
-          .removeClass("hidden")
-          .css("display", "none")
-          .slideDown(250);
-      });
+
+      $("#resultReplay")
+        .removeClass("hidden")
+        .css("display", "none")
+        .slideDown(250);
     } else {
       $("#resultReplay")
         .removeClass("hidden")
@@ -171,4 +183,9 @@ $(document.body).on("click", "#watchReplayButton", () => {
   toggleReplayDisplay();
 });
 
-//export { clearReplayData, replayTrackingStarted }; //might be necessary after script.js is refactored
+export {
+  clearReplayData,
+  replayTrackingStarted,
+  startReplayTracking,
+  stopReplayTracking,
+};

@@ -1,3 +1,9 @@
+import {
+  replayGetWordsList,
+  clearReplayData,
+  startReplayTracking,
+  stopReplayTracking,
+} from "./replay.js";
 //test logic
 let testActive = false;
 let wordsList = [];
@@ -1896,7 +1902,8 @@ function startTest() {
     console.log("Analytics unavailable");
   }
   testActive = true;
-  replayTrackingStarted = true;
+  startReplayTracking();
+  replayGetWordsList(wordsList);
   clearReplayData();
   TestStats.setStart(performance.now());
   TestStats.resetKeypressTimings();
@@ -2113,7 +2120,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   Focus.set(false);
   Caret.hide();
   testActive = false;
-  replayTrackingStarted = false;
+  stopReplayTracking();
   LiveWpm.hide();
   LiveAcc.hide();
   TimerProgress.hide();
@@ -2163,7 +2170,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
       } else {
         sameWordset = true;
         testActive = false;
-        replayTrackingStarted = false;
+        stopReplayTracking();
         currentWordIndex = 0;
         inputHistory = [];
         currentInput = "";
