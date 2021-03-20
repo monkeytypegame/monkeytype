@@ -207,6 +207,7 @@ let commands = {
     {
       id: "changeMinWpm",
       display: "Change min wpm mode...",
+      alias: "minimum",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsMinWpm);
@@ -216,6 +217,7 @@ let commands = {
     {
       id: "changeMinAcc",
       display: "Change min accuracy mode...",
+      alias: "minimum",
       subgroup: true,
       exec: () => {
         currentCommands.push(commandsMinAcc);
@@ -621,6 +623,7 @@ let commands = {
     {
       id: "saveScreenshot",
       display: "Save screenshot",
+      alias: "ss picture",
       exec: () => {
         setTimeout(() => {
           TestUI.screenshot();
