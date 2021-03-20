@@ -74,7 +74,6 @@ function startReplay() {
   let lastTime = 0;
   let stopFunction = false;
   $(".pageTest #startReplayButton").click((event) => {
-    console.log("replay pressed idk");
     stopFunction = true;
   });
   keysPressed.forEach((item, i) => {
