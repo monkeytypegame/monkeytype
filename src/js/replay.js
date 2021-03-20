@@ -105,11 +105,9 @@ function startReplay() {
             nextWordIndex
           );
           if (submittedWordSubstring.lastIndexOf("error" >= 0)) {
-            console.log("substring before: " + submittedWordSubstring);
             let newSubmittedWord =
               submittedWordSubstring.slice(0, 16) +
               submittedWordSubstring.slice(22);
-            console.log("substring after: " + newSubmittedWord);
             inputPart = inputPart.replace(
               submittedWordSubstring,
               newSubmittedWord
