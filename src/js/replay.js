@@ -1,8 +1,3 @@
-/*
-// TODO:
-  * Stop replay when a new test is started or a new replay is requested
-  * Make replay.js es6/refactored
-*/
 let wordsList = [];
 export function replayGetWordsList(wordsListFromScript) {
   wordsList = wordsListFromScript;
@@ -69,7 +64,7 @@ function toggleReplayDisplay() {
   }
 }
 
-async function startReplay() {
+function startReplay() {
   showReplayWords(wordsList);
   //show replay of the typing test
   let promptPart = document.getElementById("replayWords").innerHTML;
@@ -77,8 +72,16 @@ async function startReplay() {
   let inputPart = '<div class="word">'; //html representation of input
   let replayOutput = "</div>"; //combined inputPart and promptPart
   let lastTime = 0;
+  let stopFunction = false;
+  $(".pageTest #startReplayButton").click((event) => {
+    console.log("replay pressed idk");
+    stopFunction = true;
+  });
   keysPressed.forEach((item, i) => {
     setTimeout(() => {
+      if (stopFunction == true) {
+        return;
+      }
       // TODO handle pressing backspace when last word was correct
       // pressing backspace when last word was skipped results in the entire prompt being underlined and word stays underlined after it's fixed
       if (keysPressed[i] == " " && promptPart[0] == " ") {
