@@ -1105,6 +1105,8 @@ function showResult(difficultyFailed = false) {
   ChartController.result.options.annotation.annotations = [];
 
   $("#result #resultWordsHistory").addClass("hidden");
+  $("#result #resultReplay").addClass("hidden");
+  $("#replayWords").text("");
 
   if (Config.alwaysShowDecimalPlaces) {
     if (Config.alwaysShowCPM == false) {
@@ -1894,6 +1896,8 @@ function startTest() {
     console.log("Analytics unavailable");
   }
   testActive = true;
+  replayTrackingStarted = true;
+  clearReplayData();
   TestStats.setStart(performance.now());
   TestStats.resetKeypressTimings();
   TimerProgress.restart();
@@ -2109,6 +2113,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   Focus.set(false);
   Caret.hide();
   testActive = false;
+  replayTrackingStarted = false;
   LiveWpm.hide();
   LiveAcc.hide();
   TimerProgress.hide();
@@ -2158,6 +2163,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
       } else {
         sameWordset = true;
         testActive = false;
+        replayTrackingStarted = false;
         currentWordIndex = 0;
         inputHistory = [];
         currentInput = "";

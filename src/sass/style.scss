@@ -1686,6 +1686,15 @@ key {
         position: relative;
       }
     }
+    .correct {
+      color: var(--text-color);
+    }
+    .incorrect {
+      color: var(--error-color);
+    }
+    .incorrect.extra {
+      color: var(--error-extra-color);
+    }
   }
 
   .chart {
@@ -2079,7 +2088,8 @@ key {
 #copyResultToClipboardButton,
 #restartTestButtonWithSameWordset,
 #nextTestButton,
-#practiseMissedWordsButton {
+#practiseMissedWordsButton,
+#watchReplayButton {
   position: relative;
   border-radius: var(--roundness);
   padding: 1rem 2rem;
