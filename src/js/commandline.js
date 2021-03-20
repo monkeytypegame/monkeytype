@@ -129,7 +129,7 @@ let commands = {
       id: "toggleShowLiveAcc",
       display: "Toggle live accuracy display",
       exec: () => {
-        LiveAcc.show();
+        toggleLiveAcc();
       },
     },
     {
@@ -622,7 +622,9 @@ let commands = {
       id: "saveScreenshot",
       display: "Save screenshot",
       exec: () => {
-        TestUI.screenshot();
+        setTimeout(() => {
+          TestUI.screenshot();
+        }, 500);
       },
       available: () => {
         return TestUI.resultVisible;
