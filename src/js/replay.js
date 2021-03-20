@@ -82,7 +82,6 @@ function startReplay() {
         return;
       }
       // TODO handle pressing backspace when last word was correct
-      // pressing backspace when last word was skipped results in the entire prompt being underlined and word stays underlined after it's fixed
       if (keysPressed[i] == " " && promptPart[0] == " ") {
         // if space was pressed and space was expected
         inputPart += '</div><div class="word">'; //end word and create new word
@@ -94,6 +93,29 @@ function startReplay() {
         promptPartLast += promptPart[0]; //add typed letter to last prompt
         promptPart = promptPart.substring(1); //removed last typed character from prompt
       } else if (keysPressed[i] == "Backspace") {
+        if (promptPartLast.slice(-1) == " ") {
+          //if the last character was a space, check if last word was error and remove
+          let nextWordIndex = inputPart.lastIndexOf('<div class="word');
+          let submittedWordIndex = inputPart.lastIndexOf(
+            '<div class="word',
+            nextWordIndex - 1
+          ); // get index of last submitted word
+          let submittedWordSubstring = inputPart.substring(
+            submittedWordIndex,
+            nextWordIndex
+          );
+          if (submittedWordSubstring.lastIndexOf("error" >= 0)) {
+            console.log("substring before: " + submittedWordSubstring);
+            let newSubmittedWord =
+              submittedWordSubstring.slice(0, 16) +
+              submittedWordSubstring.slice(22);
+            console.log("substring after: " + newSubmittedWord);
+            inputPart = inputPart.replace(
+              submittedWordSubstring,
+              newSubmittedWord
+            );
+          }
+        }
         let lastLetterIndex = inputPart.lastIndexOf("<letter"); //get index of last inputted letter
         if (
           inputPart.substring(lastLetterIndex).substring(15, 22) == "skipped"
