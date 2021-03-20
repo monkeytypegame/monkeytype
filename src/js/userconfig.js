@@ -640,7 +640,10 @@ function toggleLiveAcc() {
 function setHighlightMode(mode, nosave) {
   if (
     mode === "word" &&
-    (activeFunbox === "nospace" || activeFunbox === "read_ahead")
+    (activeFunbox === "nospace" ||
+      activeFunbox === "read_ahead" ||
+      activeFunbox === "read_ahead_easy" ||
+      activeFunbox === "read_ahead_hard")
   ) {
     Notifications.add("Can't use word highlight with this funbox", 0);
     return;
