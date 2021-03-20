@@ -17,6 +17,7 @@ export function update(wpm, raw) {
   document.querySelector("#liveWpm").innerHTML = number;
 }
 
+//TODO needs to check if test is active
 export function show() {
   if (!Config.showLiveWpm) return;
   if (Config.timerStyle === "mini") {
