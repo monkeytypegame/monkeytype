@@ -1353,7 +1353,7 @@ function showResult(difficultyFailed = false) {
   }
 
   if (difficultyFailed) {
-    Notifications.add("Test failed", 0);
+    Notifications.add("Test failed", 0, 1);
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
   } else if (sameWordset) {
@@ -4517,7 +4517,14 @@ async function setupChallenge(challengeName) {
   let notitext;
   try {
     if (challenge === undefined) {
-      throw "Challenge not found";
+      Notifications.add("Challenge not found", 0);
+      ManualRestart.set();
+      restartTest(false, true);
+      setTimeout(() => {
+        $("#top .config").removeClass("hidden");
+        $(".page.pageTest").removeClass("hidden");
+      }, 250);
+      return;
     }
     if (challenge.type === "customTime") {
       setTimeConfig(challenge.parameters[0], true);

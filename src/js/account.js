@@ -308,6 +308,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     setCustomThemeInputs();
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
+    Notifications.add("Loading challenge", 0);
     let challengeName = window.location.pathname.split("_")[1];
     setTimeout(() => {
       setupChallenge(challengeName);
