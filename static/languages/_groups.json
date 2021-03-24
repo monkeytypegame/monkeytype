@@ -5,7 +5,7 @@
   },
   {
     "name": "spanish",
-    "languages": ["spanish", "spanish_1k"]
+    "languages": ["spanish", "spanish_1k", "spanish_10k"]
   },
   {
     "name": "french",
