@@ -4472,7 +4472,8 @@ $(document).keydown(function (event) {
   let modePopupVisible =
     !$("#customTextPopupWrapper").hasClass("hidden") ||
     !$("#customMode2PopupWrapper").hasClass("hidden") ||
-    !$("#quoteSearchPopupWrapper").hasClass("hidden");
+    !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
+    !$("#wordFilterPopupWrapper").hasClass("hidden");
   if (
     pageTestActive &&
     !commandLineVisible &&

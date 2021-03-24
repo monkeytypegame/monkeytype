@@ -2,6 +2,7 @@ import * as CustomText from "./custom-text";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as Misc from "./misc";
 import * as Notifications from "./notification-center";
+import * as wordFilter from "./word-filter";
 
 let wrapper = "#customTextPopupWrapper";
 let popup = "#customTextPopup";
@@ -84,7 +85,7 @@ $(`${popup} .randomInputFields .time input`).keypress((e) => {
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 
-$("#customTextPopup .button").click(() => {
+$("#customTextPopup .apply").click(() => {
   let text = $("#customTextPopup textarea").val();
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
@@ -157,3 +158,7 @@ $("#customTextPopup .button").click(() => {
   restartTest();
   hide();
 });
+
+$("#customTextPopup .wordfilter").click(() => {
+  wordFilter.showWordFilterPopup();
+})
