@@ -148,7 +148,7 @@ export function update(expectedStepEnd) {
           .querySelectorAll("#words .word")
           [newIndex].querySelectorAll("letter")[settings.currentLetterIndex];
       }
-      newTop = currentLetter.offsetTop - $(currentLetter).height() / 20;
+      newTop = currentLetter.offsetTop - $(currentLetter).height() / 5;
       newLeft;
       if (settings.currentLetterIndex === -1) {
         newLeft = currentLetter.offsetLeft;
