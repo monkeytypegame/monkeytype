@@ -106,6 +106,12 @@ function hideTestConfig() {
   $("#top .config").css("opacity", 0).addClass("hidden");
 }
 
+function isConfigKeyValid(name) {
+  if (name === null || name === undefined || name === "") return false;
+  if (name.length > 30) return false;
+  return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
+}
+
 function setPlaySoundOnError(val, nosave) {
   if (val == undefined) {
     val = false;
@@ -943,16 +949,37 @@ function previewFontFamily(font) {
   if (font == undefined) {
     font = "Roboto_Mono";
   }
-  document.documentElement.style.setProperty("--font", font.replace(/_/g, " "));
+  document.documentElement.style.setProperty(
+    "--font",
+    '"' + font.replace(/_/g, " ") + '"'
+  );
 }
 
 //font family
 function setFontFamily(font, nosave) {
   if (font == undefined || font === "") {
     font = "Roboto_Mono";
+    Notifications.add(
+      "Empty input received, reverted to the default font.",
+      0,
+      3,
+      "Custom font"
+    );
+  }
+  if (!isConfigKeyValid(font)) {
+    Notifications.add(
+      `Invalid font name value: "${font}".`,
+      -1,
+      3,
+      "Custom font"
+    );
+    return;
   }
   ConfigSet.fontFamily(font);
-  document.documentElement.style.setProperty("--font", font.replace(/_/g, " "));
+  document.documentElement.style.setProperty(
+    "--font",
+    '"' + font.replace(/_/g, " ") + '"'
+  );
   Chart.defaults.global.defaultFontFamily = font.replace(/_/g, " ");
   if (!nosave) saveConfigToCookie();
 }
