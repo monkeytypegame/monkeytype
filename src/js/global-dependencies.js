@@ -50,3 +50,4 @@ import * as TimerProgress from "./timer-progress";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
 import * as PaceCaret from "./pace-caret";
+import * as QuoteSearchPopup from "./quote-search-popup";

@@ -7,8 +7,6 @@ let pageTransition = false;
 let notSignedInLastResult = null;
 let verifyUserWhenLoggedIn = null;
 
-let selectedQuoteId = 1;
-
 ///
 
 // let CustomText = "The quick brown fox jumps over the lazy dog".split(" ");
@@ -107,16 +105,6 @@ async function activateFunbox(funbox, mode) {
   }
   TestUI.updateModesNotice();
   return true;
-}
-
-function toggleScriptFunbox(...params) {
-  if (Funbox.active === "tts") {
-    var msg = new SpeechSynthesisUtterance();
-    msg.text = params[0];
-    msg.lang = "en-US";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(msg);
-  }
 }
 
 function getuid() {
@@ -321,7 +309,9 @@ async function initWords() {
       }
     } else {
       quotes.groups.forEach((group) => {
-        let filtered = group.filter((quote) => quote.id == selectedQuoteId);
+        let filtered = group.filter(
+          (quote) => quote.id == QuoteSearchPopup.selectedId
+        );
         if (filtered.length > 0) {
           rq = filtered[0];
         }
@@ -752,7 +742,7 @@ function showWords() {
   }
 
   TestUI.updateActiveElement();
-  toggleScriptFunbox(TestLogic.words.getCurrent());
+  Funbox.toggleScript(TestLogic.words.getCurrent());
 
   Caret.updatePosition();
 }
@@ -766,135 +756,6 @@ function showWords() {
     return pushState.apply(history, arguments);
   };
 })(window.history);
-
-function updateWordElement(showError) {
-  // if (Config.mode == "zen") return;
-
-  let input = TestLogic.input.current;
-  let wordAtIndex;
-  let currentWord;
-  wordAtIndex = document.querySelector("#words .word.active");
-  currentWord = TestLogic.words.getCurrent();
-  let ret = "";
-
-  let newlineafter = false;
-
-  if (Config.mode === "zen") {
-    for (let i = 0; i < TestLogic.input.current.length; i++) {
-      if (TestLogic.input.current[i] === "\t") {
-        ret += `<letter class='tabChar correct'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-      } else if (TestLogic.input.current[i] === "\n") {
-        newlineafter = true;
-        ret += `<letter class='nlChar correct'><i class="fas fa-angle-down"></i></letter>`;
-      } else {
-        ret +=
-          `<letter class="correct">` + TestLogic.input.current[i] + `</letter>`;
-      }
-    }
-  } else {
-    if (Config.highlightMode == "word") {
-      //only for word highlight
-
-      let correctSoFar = false;
-      if (currentWord.slice(0, input.length) == input) {
-        // this is when input so far is correct
-        correctSoFar = true;
-      }
-      let classString = correctSoFar ? "correct" : "incorrect";
-      if (Config.blindMode) {
-        classString = "correct";
-      }
-
-      //show letters in the current word
-      for (let i = 0; i < currentWord.length; i++) {
-        ret += `<letter class="${classString}">` + currentWord[i] + `</letter>`;
-      }
-
-      //show any extra letters if hide extra letters is disabled
-      if (
-        TestLogic.input.current.length > currentWord.length &&
-        !Config.hideExtraLetters
-      ) {
-        for (
-          let i = currentWord.length;
-          i < TestLogic.input.current.length;
-          i++
-        ) {
-          let letter = TestLogic.input.current[i];
-          if (letter == " ") {
-            letter = "_";
-          }
-          ret += `<letter class="${classString}">${letter}</letter>`;
-        }
-      }
-    } else {
-      for (let i = 0; i < input.length; i++) {
-        let charCorrect;
-        if (currentWord[i] == input[i]) {
-          charCorrect = true;
-        } else {
-          charCorrect = false;
-        }
-
-        let currentLetter = currentWord[i];
-        let tabChar = "";
-        let nlChar = "";
-        if (currentLetter === "\t") {
-          tabChar = "tabChar";
-          currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
-        } else if (currentLetter === "\n") {
-          nlChar = "nlChar";
-          currentLetter = `<i class="fas fa-angle-down"></i>`;
-        }
-
-        if (charCorrect) {
-          ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
-        } else {
-          // if (Config.difficulty == "master") {
-          //   if (!TestUI.resultVisible) {
-          //     failTest();
-          //   }
-          // }
-          if (!showError) {
-            if (currentLetter !== undefined) {
-              ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
-            }
-          } else {
-            if (currentLetter == undefined) {
-              if (!Config.hideExtraLetters) {
-                let letter = input[i];
-                if (letter == " " || letter == "\t" || letter == "\n") {
-                  letter = "_";
-                }
-                ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
-              }
-            } else {
-              ret +=
-                `<letter class="incorrect ${tabChar}${nlChar}">` +
-                currentLetter +
-                (Config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
-                "</letter>";
-            }
-          }
-        }
-      }
-
-      if (input.length < currentWord.length) {
-        for (let i = input.length; i < currentWord.length; i++) {
-          if (currentWord[i] === "\t") {
-            ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-          } else if (currentWord[i] === "\n") {
-            ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
-          } else {
-            ret += "<letter>" + currentWord[i] + "</letter>";
-          }
-        }
-      }
-    }
-  }
-  wordAtIndex.innerHTML = ret;
-  if (newlineafter) $("#words").append("<div class='newline'></div>");
-}
 
 function highlightBadWord(index, showError) {
   if (!showError) return;
@@ -2773,100 +2634,6 @@ function hideCustomMode2Popup() {
   }
 }
 
-async function showQuoteSearchPopup() {
-  if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
-    $("#quoteSearchPopup input").val("");
-    $("#quoteSearchPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
-        $("#quoteSearchPopup input").focus().select();
-        updateQuoteSearchResults("");
-      });
-  }
-}
-
-async function updateQuoteSearchResults(searchText) {
-  let quotes = await Misc.getQuotes(Config.language);
-  let reg = new RegExp(searchText, "i");
-  let found = [];
-  quotes.quotes.forEach((quote) => {
-    let quoteText = quote["text"].replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "");
-    let test1 = reg.test(quoteText);
-    if (test1) {
-      found.push(quote);
-    }
-  });
-  quotes.quotes.forEach((quote) => {
-    let quoteSource = quote["source"].replace(
-      /[.,'"/#!$%^&*;:{}=\-_`~()]/g,
-      ""
-    );
-    let quoteId = quote["id"];
-    let test2 = reg.test(quoteSource);
-    let test3 = reg.test(quoteId);
-    if ((test2 || test3) && found.filter((q) => q.id == quote.id).length == 0) {
-      found.push(quote);
-    }
-  });
-  $("#quoteSearchResults").remove();
-  $("#quoteSearchPopup").append(
-    '<div class="quoteSearchResults" id="quoteSearchResults"></div>'
-  );
-  let resultsList = $("#quoteSearchResults");
-  let resultListLength = 0;
-
-  found.forEach(async (quote) => {
-    let lengthDesc;
-    if (quote.length < 101) {
-      lengthDesc = "short";
-    } else if (quote.length < 301) {
-      lengthDesc = "medium";
-    } else if (quote.length < 601) {
-      lengthDesc = "long";
-    } else {
-      lengthDesc = "thicc";
-    }
-    if (resultListLength++ < 100) {
-      resultsList.append(`
-      <div class="searchResult" id="${quote.id}">
-        <div class="text">${quote.text}</div>
-        <div class="id"><div class="sub">id</div>${quote.id}</div>
-        <div class="length"><div class="sub">length</div>${lengthDesc}</div>
-        <div class="source"><div class="sub">source</div>${quote.source}</div>
-        <div class="resultChevron"><i class="fas fa-chevron-right"></i></div>
-      </div>
-      `);
-    }
-  });
-  if (found.length > 100) {
-    $("#extraResults").html(
-      found.length +
-        " results <span style='opacity: 0.5'>(only showing 100)</span>"
-    );
-  } else {
-    $("#extraResults").html(found.length + " results");
-  }
-}
-
-function hideQuoteSearchPopup() {
-  if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
-    $("#quoteSearchPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        100,
-        (e) => {
-          $("#quoteSearchPopupWrapper").addClass("hidden");
-        }
-      );
-  }
-}
-
 $("#customMode2PopupWrapper").click((e) => {
   if ($(e.target).attr("id") === "customMode2PopupWrapper") {
     hideCustomMode2Popup();
@@ -2878,52 +2645,9 @@ $("#customMode2Popup input").keypress((e) => {
     applyMode2Popup();
   }
 });
-//Quote search
-$("#quoteSearchPopup .searchBox").keydown((e) => {
-  setTimeout(() => {
-    let searchText = document.getElementById("searchBox").value;
-    searchText = searchText
-      .replace(/[.,'"/#!$%^&*;:{}=\-_`~()]/g, "")
-      .replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-
-    updateQuoteSearchResults(searchText);
-  }, 0.1); //arbitrarily v. small time as it's only to allow text to input before searching
-});
-//sets quote id to searched quote clicked
-$("#quoteSearchResults").click((e) => {
-  if ($(e.target).hasClass("quoteSearchButton")) {
-    document.getElementById("inputNumber").value = e.target.getAttribute("id");
-    applyMode2Popup();
-  }
-});
-
-$("#quoteSearchPopupWrapper").click((e) => {
-  if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
-    hideQuoteSearchPopup();
-  }
-});
 
 $("#customMode2Popup .button").click(() => {
   applyMode2Popup();
-});
-
-$(document).on("click", "#quoteSearchResults .searchResult", (e) => {
-  selectedQuoteId = parseInt($(e.currentTarget).attr("id"));
-  applyQuoteSearchPopup(selectedQuoteId);
-});
-
-$("#quoteSearchPopup input").keypress((e) => {
-  if (e.keyCode == 13) {
-    if (!isNaN(document.getElementById("searchBox").value)) {
-      applyQuoteSearchPopup();
-    } else {
-      let results = document.getElementsByClassName("searchResult");
-      if (results.length > 0) {
-        selectedQuoteId = parseInt(results[0].getAttribute("id"));
-        applyQuoteSearchPopup(selectedQuoteId);
-      }
-    }
-  }
 });
 
 function applyMode2Popup() {
@@ -2969,21 +2693,6 @@ function applyMode2Popup() {
   hideCustomMode2Popup();
 }
 
-function applyQuoteSearchPopup(val) {
-  if (isNaN(val)) {
-    val = document.getElementById("searchBox").value;
-  }
-  if (val !== null && !isNaN(val) && val >= 0) {
-    setQuoteLength(-2, false, false);
-    selectedQuoteId = val;
-    ManualRestart.set();
-    restartTest();
-  } else {
-    Notifications.add("Quote ID must be at least 1", 0);
-  }
-  hideQuoteSearchPopup();
-}
-
 $(document).on("click", "#top .logo", (e) => {
   changePage("test");
 });
@@ -3014,8 +2723,8 @@ $(document).on("click", "#top .config .time .text-button", (e) => {
 $(document).on("click", "#top .config .quoteLength .text-button", (e) => {
   let len = $(e.currentTarget).attr("quoteLength");
   if (len == -2) {
-    showQuoteSearchPopup();
-    setQuoteLength(len, false, e.shiftKey);
+    setQuoteLength(-2, false, e.shiftKey);
+    QuoteSearchPopup.show(restartTest, setQuoteLength);
   } else {
     if (len == -1) {
       len = [0, 1, 2, 3];
@@ -3520,8 +3229,8 @@ function handleBackspace(event) {
       TestLogic.words.decreaseCurrentIndex();
       TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
       TestUI.updateActiveElement(true);
-      toggleScriptFunbox(TestLogic.words.getCurrent());
-      updateWordElement(!Config.blindMode);
+      Funbox.toggleScript(TestLogic.words.getCurrent());
+      TestUI.updateWordElement(!Config.blindMode);
     }
   } else {
     if (Config.confidenceMode === "max") return;
@@ -3554,7 +3263,7 @@ function handleBackspace(event) {
         TestLogic.input.current.substring(0, TestLogic.input.current.length - 1)
       );
     }
-    updateWordElement(!Config.blindMode);
+    TestUI.updateWordElement(!Config.blindMode);
   }
   Sound.playClick(Config.playSoundOnClick);
   if (Config.keymapMode === "react") {
@@ -3619,7 +3328,7 @@ function handleSpace(event, isEnter) {
     TestLogic.words.increaseCurrentIndex();
     TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
     TestUI.updateActiveElement();
-    toggleScriptFunbox(TestLogic.words.getCurrent());
+    Funbox.toggleScript(TestLogic.words.getCurrent());
     Caret.updatePosition();
     TestStats.incrementKeypressCount();
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
@@ -3660,7 +3369,7 @@ function handleSpace(event, isEnter) {
       }
       if (Config.stopOnError == "word") {
         TestLogic.input.appendCurrent(" ");
-        updateWordElement(true);
+        TestUI.updateWordElement(true);
         Caret.updatePosition();
       }
       return;
@@ -3671,7 +3380,7 @@ function handleSpace(event, isEnter) {
     TestLogic.words.increaseCurrentIndex();
     TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
     TestUI.updateActiveElement();
-    toggleScriptFunbox(TestLogic.words.getCurrent());
+    Funbox.toggleScript(TestLogic.words.getCurrent());
     Caret.updatePosition();
     // currentKeypress.count++;
     // currentKeypress.words.push(TestLogic.words.currentIndex);
@@ -4042,7 +3751,7 @@ function handleAlpha(event) {
   }
 
   let activeWordTopBeforeJump = TestUI.activeWordTop;
-  updateWordElement(!Config.blindMode);
+  TestUI.updateWordElement(!Config.blindMode);
 
   if (Config.mode != "zen") {
     //not applicable to zen mode
@@ -4093,7 +3802,7 @@ function handleAlpha(event) {
       if (!Config.showAllLines) TestUI.lineJump(currentTop);
     } else {
       TestLogic.input.setCurrent(TestLogic.input.current.slice(0, -1));
-      updateWordElement(!Config.blindMode);
+      TestUI.updateWordElement(!Config.blindMode);
     }
   }
 

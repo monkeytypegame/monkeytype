@@ -156,6 +156,135 @@ export function screenshot() {
   }
 }
 
+export function updateWordElement(showError) {
+  // if (Config.mode == "zen") return;
+
+  let input = TestLogic.input.current;
+  let wordAtIndex;
+  let currentWord;
+  wordAtIndex = document.querySelector("#words .word.active");
+  currentWord = TestLogic.words.getCurrent();
+  let ret = "";
+
+  let newlineafter = false;
+
+  if (Config.mode === "zen") {
+    for (let i = 0; i < TestLogic.input.current.length; i++) {
+      if (TestLogic.input.current[i] === "\t") {
+        ret += `<letter class='tabChar correct'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+      } else if (TestLogic.input.current[i] === "\n") {
+        newlineafter = true;
+        ret += `<letter class='nlChar correct'><i class="fas fa-angle-down"></i></letter>`;
+      } else {
+        ret +=
+          `<letter class="correct">` + TestLogic.input.current[i] + `</letter>`;
+      }
+    }
+  } else {
+    if (Config.highlightMode == "word") {
+      //only for word highlight
+
+      let correctSoFar = false;
+      if (currentWord.slice(0, input.length) == input) {
+        // this is when input so far is correct
+        correctSoFar = true;
+      }
+      let classString = correctSoFar ? "correct" : "incorrect";
+      if (Config.blindMode) {
+        classString = "correct";
+      }
+
+      //show letters in the current word
+      for (let i = 0; i < currentWord.length; i++) {
+        ret += `<letter class="${classString}">` + currentWord[i] + `</letter>`;
+      }
+
+      //show any extra letters if hide extra letters is disabled
+      if (
+        TestLogic.input.current.length > currentWord.length &&
+        !Config.hideExtraLetters
+      ) {
+        for (
+          let i = currentWord.length;
+          i < TestLogic.input.current.length;
+          i++
+        ) {
+          let letter = TestLogic.input.current[i];
+          if (letter == " ") {
+            letter = "_";
+          }
+          ret += `<letter class="${classString}">${letter}</letter>`;
+        }
+      }
+    } else {
+      for (let i = 0; i < input.length; i++) {
+        let charCorrect;
+        if (currentWord[i] == input[i]) {
+          charCorrect = true;
+        } else {
+          charCorrect = false;
+        }
+
+        let currentLetter = currentWord[i];
+        let tabChar = "";
+        let nlChar = "";
+        if (currentLetter === "\t") {
+          tabChar = "tabChar";
+          currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
+        } else if (currentLetter === "\n") {
+          nlChar = "nlChar";
+          currentLetter = `<i class="fas fa-angle-down"></i>`;
+        }
+
+        if (charCorrect) {
+          ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
+        } else {
+          // if (Config.difficulty == "master") {
+          //   if (!TestUI.resultVisible) {
+          //     failTest();
+          //   }
+          // }
+          if (!showError) {
+            if (currentLetter !== undefined) {
+              ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
+            }
+          } else {
+            if (currentLetter == undefined) {
+              if (!Config.hideExtraLetters) {
+                let letter = input[i];
+                if (letter == " " || letter == "\t" || letter == "\n") {
+                  letter = "_";
+                }
+                ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
+              }
+            } else {
+              ret +=
+                `<letter class="incorrect ${tabChar}${nlChar}">` +
+                currentLetter +
+                (Config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
+                "</letter>";
+            }
+          }
+        }
+      }
+
+      if (input.length < currentWord.length) {
+        for (let i = input.length; i < currentWord.length; i++) {
+          if (currentWord[i] === "\t") {
+            ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+          } else if (currentWord[i] === "\n") {
+            ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+          } else {
+            ret += "<letter>" + currentWord[i] + "</letter>";
+          }
+        }
+      }
+    }
+  }
+  wordAtIndex.innerHTML = ret;
+  if (newlineafter) $("#words").append("<div class='newline'></div>");
+}
+
 export function lineJump(currentTop) {
   //last word of the line
   if (currentTestLine > 0) {

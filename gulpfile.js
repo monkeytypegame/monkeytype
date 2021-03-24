@@ -121,6 +121,7 @@ const refactoredSrc = [
   "./src/js/test/test-logic.js",
   "./src/js/test/funbox.js",
   "./src/js/test/pace-caret.js",
+  "./src/js/quote-search-popup.js",
 ];
 
 //legacy files

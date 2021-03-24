@@ -58,3 +58,13 @@ function updateMemoryTimer(sec) {
     `Timer left to memorise all words: ${sec}s`
   );
 }
+
+export function toggleScript(...params) {
+  if (active === "tts") {
+    var msg = new SpeechSynthesisUtterance();
+    msg.text = params[0];
+    msg.lang = "en-US";
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(msg);
+  }
+}
