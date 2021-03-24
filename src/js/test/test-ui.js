@@ -4,6 +4,7 @@ import Config from "./config";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
+import * as PaceCaret from "./pace-caret";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -215,7 +216,7 @@ export function lineJump(currentTop) {
   currentTestLine++;
 }
 
-export function updateModesNotice(paceCaret) {
+export function updateModesNotice() {
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
 
@@ -269,7 +270,7 @@ export function updateModesNotice(paceCaret) {
   if (Config.paceCaret !== "off") {
     let speed = "";
     try {
-      speed = ` (${Math.round(paceCaret.wpm)} wpm)`;
+      speed = ` (${Math.round(PaceCaret.settings.wpm)} wpm)`;
     } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${

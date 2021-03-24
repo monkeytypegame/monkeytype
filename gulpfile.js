@@ -120,6 +120,7 @@ const refactoredSrc = [
   "./src/js/test/timer-progress.js",
   "./src/js/test/test-logic.js",
   "./src/js/test/funbox.js",
+  "./src/js/test/pace-caret.js",
 ];
 
 //legacy files

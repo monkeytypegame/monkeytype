@@ -757,7 +757,7 @@ function toggleTag(tagid, nosave = false) {
       }
     }
   });
-  TestUI.updateModesNotice(paceCaret);
+  TestUI.updateModesNotice();
   if (!nosave) saveActiveTagsToCookie();
 }
 

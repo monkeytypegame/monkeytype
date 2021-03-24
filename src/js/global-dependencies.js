@@ -49,3 +49,4 @@ import * as TestLeaderboards from "./test-leaderboards";
 import * as TimerProgress from "./timer-progress";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
+import * as PaceCaret from "./pace-caret";
