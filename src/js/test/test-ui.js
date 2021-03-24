@@ -2,6 +2,7 @@ import * as Notifications from "./notification-center";
 import * as ThemeColors from "./theme-colors";
 import Config from "./config";
 import * as DB from "./db";
+import * as TestLogic from "./test-logic";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -213,24 +214,19 @@ export function lineJump(currentTop) {
   currentTestLine++;
 }
 
-export function updateModesNotice(
-  sameWordset,
-  textHasTab,
-  paceCaret,
-  activeFunbox
-) {
+export function updateModesNotice(paceCaret, activeFunbox) {
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
 
   $(".pageTest #testModesNotice").empty();
 
-  if (sameWordset) {
+  if (TestLogic.isRepeated) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" function="restartTest()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
     );
   }
 
-  if (textHasTab) {
+  if (TestLogic.hasTab) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
     );

@@ -566,7 +566,7 @@ let commands = {
               id: "bailOutForSure",
               display: "Yes, I am sure",
               exec: () => {
-                bailout = true;
+                TestLogic.setBailout(true);
                 showResult();
               },
               available: () => {
@@ -1544,12 +1544,7 @@ function updateCommandsTagsList() {
         DB.getSnapshot().tags.forEach((tag) => {
           tag.active = false;
         });
-        TestUI.updateModesNotice(
-          sameWordset,
-          textHasTab,
-          paceCaret,
-          activeFunbox
-        );
+        TestUI.updateModesNotice(paceCaret, activeFunbox);
         saveActiveTagsToCookie();
       },
     });
@@ -1569,12 +1564,7 @@ function updateCommandsTagsList() {
         sticky: true,
         exec: () => {
           toggleTag(tag.id);
-          TestUI.updateModesNotice(
-            sameWordset,
-            textHasTab,
-            paceCaret,
-            activeFunbox
-          );
+          TestUI.updateModesNotice(paceCaret, activeFunbox);
           let txt = tag.name;
 
           if (tag.active === true) {

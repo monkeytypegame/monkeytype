@@ -47,3 +47,4 @@ import * as CapsWarning from "./caps-warning";
 import * as LiveAcc from "./live-acc";
 import * as TestLeaderboards from "./test-leaderboards";
 import * as TimerProgress from "./timer-progress";
+import * as TestLogic from "./test-logic";

@@ -1,5 +1,6 @@
 import * as Misc from "./misc";
 import Config from "./config";
+import * as TestLogic from "./test-logic";
 
 export let caretAnimating = true;
 
@@ -27,9 +28,9 @@ export function hide() {
   $("#caret").addClass("hidden");
 }
 
-export function show(currentInput) {
+export function show() {
   if ($("#result").hasClass("hidden")) {
-    updatePosition(currentInput);
+    updatePosition();
     $("#caret").removeClass("hidden");
     startAnimation();
   }
@@ -37,7 +38,7 @@ export function show(currentInput) {
 
 //TODO remove this after test logic is a module
 //TODO remove config when module
-export function updatePosition(currentInput) {
+export function updatePosition() {
   if ($("#wordsWrapper").hasClass("hidden")) return;
   if ($("#caret").hasClass("off")) {
     return;
@@ -45,7 +46,7 @@ export function updatePosition(currentInput) {
 
   let caret = $("#caret");
 
-  let inputLen = currentInput.length;
+  let inputLen = TestLogic.input.current.length;
   let currentLetterIndex = inputLen - 1;
   if (currentLetterIndex == -1) {
     currentLetterIndex = 0;

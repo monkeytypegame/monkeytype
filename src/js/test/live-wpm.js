@@ -1,7 +1,7 @@
 import Config from "./config";
 
 export function update(wpm, raw) {
-  // if (!testActive || !Config.showLiveWpm) {
+  // if (!TestLogic.active || !Config.showLiveWpm) {
   //   hideLiveWpm();
   // } else {
   //   showLiveWpm();

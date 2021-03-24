@@ -2,7 +2,6 @@ import * as Caret from "./caret";
 
 let state = false;
 
-//TODO remove testActive once in a module
 export function set(foc) {
   if (foc && !state) {
     state = true;

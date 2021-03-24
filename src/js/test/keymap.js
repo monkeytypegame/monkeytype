@@ -2,18 +2,12 @@ import Config from "./config";
 import * as ThemeColors from "./theme-colors";
 import layouts from "./layouts";
 
-//TODO remove after wordslist and currentinput and current word index are in a module
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;
   try {
     if ($(".active-key") != undefined) {
       $(".active-key").removeClass("active-key");
     }
-
-    // var currentKey = wordsList[currentWordIndex]
-    //   .substring(currentInput.length, currentInput.length + 1)
-    //   .toString()
-    //   .toUpperCase();
 
     let highlightKey;
     switch (currentKey) {
