@@ -664,9 +664,9 @@ function refreshTagsSettingsSection() {
 
 function setActiveFunboxButton() {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
-  $(`.pageSettings .section.funbox .button[funbox='${activeFunbox}']`).addClass(
-    "active"
-  );
+  $(
+    `.pageSettings .section.funbox .button[funbox='${Funbox.active}']`
+  ).addClass("active");
 }
 
 async function setActiveLanguageGroup(groupName, clicked = false) {
@@ -757,7 +757,7 @@ function toggleTag(tagid, nosave = false) {
       }
     }
   });
-  TestUI.updateModesNotice(paceCaret, activeFunbox);
+  TestUI.updateModesNotice(paceCaret);
   if (!nosave) saveActiveTagsToCookie();
 }
 

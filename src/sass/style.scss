@@ -2107,6 +2107,23 @@ key {
 
 #middle {
   .pageTest {
+    #memoryTimer {
+      background: var(--main-color);
+      color: var(--bg-color);
+      padding: 1rem;
+      border-radius: var(--roundness);
+      /* width: min-content; */
+      text-align: center;
+      width: max-content;
+      /* justify-self: center; */
+      left: 50%;
+      position: absolute;
+      transform: translateX(-50%);
+      top: -6rem;
+      user-select: none;
+      pointer-events: none;
+      opacity: 0;
+    }
     .outOfFocusWarning {
       text-align: center;
       height: 0;

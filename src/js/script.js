@@ -2,11 +2,6 @@
 let time = 0;
 let timer = null;
 
-//funbox
-let activeFunbox = "none";
-let memoryFunboxTimer = null;
-let memoryFunboxInterval = null;
-
 //pace caret
 let paceCaret = null;
 
@@ -44,9 +39,9 @@ async function activateFunbox(funbox, mode) {
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
   // if (funbox === "none") {
-  activeFunbox = "none";
-  memoryFunboxInterval = clearInterval(memoryFunboxInterval);
-  memoryFunboxTimer = null;
+
+  Funbox.reset();
+
   $("#wordsWrapper").removeClass("hidden");
   // }
 
@@ -59,7 +54,7 @@ async function activateFunbox(funbox, mode) {
   if (mode === "style") {
     if (funbox != undefined) {
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
-      activeFunbox = funbox;
+      Funbox.setActive(funbox);
     }
 
     if (funbox === "simon_says") {
@@ -104,7 +99,7 @@ async function activateFunbox(funbox, mode) {
       setHighlightMode("letter", true);
       restartTest(false, true);
     }
-    activeFunbox = funbox;
+    Funbox.setActive(funbox);
   }
 
   if (funbox !== "layoutfluid" || mode !== "script") {
@@ -113,12 +108,12 @@ async function activateFunbox(funbox, mode) {
       settingsGroups.layout.updateButton();
     }
   }
-  TestUI.updateModesNotice(paceCaret, activeFunbox);
+  TestUI.updateModesNotice(paceCaret);
   return true;
 }
 
 function toggleScriptFunbox(...params) {
-  if (activeFunbox === "tts") {
+  if (Funbox.active === "tts") {
     var msg = new SpeechSynthesisUtterance();
     msg.text = params[0];
     msg.lang = "en-US";
@@ -214,7 +209,7 @@ async function initWords() {
     if (Config.mode === "words" && Config.words === 0) {
       wordsBound = 100;
     }
-    if (activeFunbox === "plus_one") {
+    if (Funbox.active === "plus_one") {
       wordsBound = 2;
     }
     let wordset = language.words;
@@ -243,7 +238,7 @@ async function initWords() {
         }
       }
 
-      if (activeFunbox === "rAnDoMcAsE") {
+      if (Funbox.active === "rAnDoMcAsE") {
         let randomcaseword = "";
         for (let i = 0; i < randomWord.length; i++) {
           if (i % 2 != 0) {
@@ -253,15 +248,15 @@ async function initWords() {
           }
         }
         randomWord = randomcaseword;
-      } else if (activeFunbox === "gibberish") {
+      } else if (Funbox.active === "gibberish") {
         randomWord = Misc.getGibberish();
-      } else if (activeFunbox === "58008") {
+      } else if (Funbox.active === "58008") {
         setToggleSettings(false, true);
         randomWord = Misc.getNumbers(7);
-      } else if (activeFunbox === "specials") {
+      } else if (Funbox.active === "specials") {
         setToggleSettings(false, true);
         randomWord = Misc.getSpecials();
-      } else if (activeFunbox === "ascii") {
+      } else if (Funbox.active === "ascii") {
         setToggleSettings(false, true);
         randomWord = Misc.getASCII();
       }
@@ -588,7 +583,7 @@ function punctuateWord(previousWord, currentWord, index, maxindex) {
 
 function addWord() {
   let bound = 100;
-  if (activeFunbox === "plus_one") bound = 1;
+  if (Funbox.active === "plus_one") bound = 1;
   if (
     TestLogic.words.length - TestLogic.input.history.length > bound ||
     (Config.mode === "words" &&
@@ -641,7 +636,7 @@ function addWord() {
     }
   }
 
-  if (activeFunbox === "rAnDoMcAsE") {
+  if (Funbox.active === "rAnDoMcAsE") {
     let randomcaseword = "";
     for (let i = 0; i < randomWord.length; i++) {
       if (i % 2 != 0) {
@@ -651,13 +646,13 @@ function addWord() {
       }
     }
     randomWord = randomcaseword;
-  } else if (activeFunbox === "gibberish") {
+  } else if (Funbox.active === "gibberish") {
     randomWord = Misc.getGibberish();
-  } else if (activeFunbox === "58008") {
+  } else if (Funbox.active === "58008") {
     randomWord = Misc.getNumbers(7);
-  } else if (activeFunbox === "specials") {
+  } else if (Funbox.active === "specials") {
     randomWord = Misc.getSpecials();
-  } else if (activeFunbox === "ascii") {
+  } else if (Funbox.active === "ascii") {
     randomWord = Misc.getASCII();
   }
 
@@ -768,9 +763,8 @@ function showWords() {
 (function (history) {
   var pushState = history.pushState;
   history.pushState = function (state) {
-    if (activeFunbox === "memory" && state !== "/") {
-      memoryFunboxInterval = clearInterval(memoryFunboxInterval);
-      memoryFunboxTimer = null;
+    if (Funbox.active === "memory" && state !== "/") {
+      Funbox.resetMemoryTimer();
     }
     return pushState.apply(history, arguments);
   };
@@ -985,7 +979,7 @@ function countChars() {
       spaces++;
     }
   }
-  if (activeFunbox === "nospace") {
+  if (Funbox.active === "nospace") {
     spaces = 0;
     correctspaces = 0;
   }
@@ -1452,7 +1446,7 @@ function showResult(difficultyFailed = false) {
       keyDuration: TestStats.keypressTimings.duration.array,
       consistency: consistency,
       keyConsistency: keyConsistency,
-      funbox: activeFunbox,
+      funbox: Funbox.active,
       bailedOut: TestLogic.bailout,
       chartData: chartData,
       customText: cdata,
@@ -1799,8 +1793,8 @@ function showResult(difficultyFailed = false) {
   }
   if (
     Config.mode != "custom" &&
-    activeFunbox !== "gibberish" &&
-    activeFunbox !== "58008"
+    Funbox.active !== "gibberish" &&
+    Funbox.active !== "58008"
   ) {
     testType += "<br>" + lang;
   }
@@ -1813,8 +1807,8 @@ function showResult(difficultyFailed = false) {
   if (Config.blindMode) {
     testType += "<br>blind";
   }
-  if (activeFunbox !== "none") {
-    testType += "<br>" + activeFunbox.replace(/_/g, " ");
+  if (Funbox.active !== "none") {
+    testType += "<br>" + Funbox.active.replace(/_/g, " ");
   }
   if (Config.difficulty == "expert") {
     testType += "<br>expert";
@@ -1910,9 +1904,8 @@ function startTest() {
   TimerProgress.update(time);
   clearTimeout(timer);
 
-  if (activeFunbox === "memory") {
-    memoryFunboxInterval = clearInterval(memoryFunboxInterval);
-    memoryFunboxTimer = null;
+  if (Funbox.active === "memory") {
+    Funbox.resetMemoryTimer();
     $("#wordsWrapper").addClass("hidden");
   }
 
@@ -1941,7 +1934,7 @@ function startTest() {
 
       let acc = Misc.roundTo2(TestStats.calculateAccuracy());
 
-      if (activeFunbox === "layoutfluid" && Config.mode === "time") {
+      if (Funbox.active === "layoutfluid" && Config.mode === "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];
         let index = 0;
         index = Math.floor(time / (Config.time / 3));
@@ -2085,7 +2078,6 @@ function restartTest(withSameWordset = false, nosave = false, event) {
       // }
     }
   }
-
   if (TestLogic.active) {
     TestStats.pushKeypressesToHistory();
     let testSeconds = TestStats.calculateTestSeconds(performance.now());
@@ -2125,6 +2117,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   if (paceCaret !== null) clearTimeout(paceCaret.timeout);
   $("#showWordHistoryButton").removeClass("loaded");
   focusWords();
+  Funbox.resetMemoryTimer();
 
   TestUI.reset();
 
@@ -2184,23 +2177,8 @@ function restartTest(withSameWordset = false, nosave = false, event) {
       document.querySelector("#liveWpm").innerHTML = "0";
       document.querySelector("#liveAcc").innerHTML = "100%";
 
-      if (activeFunbox === "memory") {
-        memoryFunboxInterval = clearInterval(memoryFunboxInterval);
-        memoryFunboxTimer = Math.round(Math.pow(TestLogic.words.length, 1.2));
-        memoryFunboxInterval = setInterval(() => {
-          memoryFunboxTimer -= 1;
-          Notifications.add(
-            memoryFunboxTimer == 0 ? "Times up" : memoryFunboxTimer,
-            0,
-            1
-          );
-          if (memoryFunboxTimer <= 0) {
-            memoryFunboxInterval = clearInterval(memoryFunboxInterval);
-            memoryFunboxTimer = null;
-            $("#wordsWrapper").addClass("hidden");
-          }
-        }, 1000);
-
+      if (Funbox.active === "memory") {
+        Funbox.startMemoryTimer();
         if (Config.keymapMode === "next") {
           setKeymapMode("react");
         }
@@ -2217,15 +2195,15 @@ function restartTest(withSameWordset = false, nosave = false, event) {
         mode2 = TestLogic.randomQuote.id;
       }
       let fbtext = "";
-      if (activeFunbox !== "none") {
-        fbtext = " " + activeFunbox;
+      if (Funbox.active !== "none") {
+        fbtext = " " + Funbox.active;
       }
       $(".pageTest #premidTestMode").text(
         `${Config.mode} ${mode2} ${Config.language}${fbtext}`
       );
       $(".pageTest #premidSecondsLeft").text(Config.time);
 
-      if (activeFunbox === "layoutfluid") {
+      if (Funbox.active === "layoutfluid") {
         setLayout("qwerty");
         settingsGroups.layout.updateButton();
         setKeymapLayout("qwerty");
@@ -2263,7 +2241,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
             clearTimeout(timer);
             if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
             ChartController.result.update();
-            TestUI.updateModesNotice(paceCaret, activeFunbox);
+            TestUI.updateModesNotice(paceCaret);
             pageTransition = false;
             // console.log(TestStats.incompleteSeconds);
             // console.log(TestStats.restartCount);
@@ -2350,7 +2328,7 @@ function changePage(page) {
 
 function setMode(mode, nosave) {
   if (TestUI.testRestarting) return;
-  if (mode !== "words" && activeFunbox === "memory") {
+  if (mode !== "words" && Funbox.active === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
   }
@@ -2378,12 +2356,12 @@ function setMode(mode, nosave) {
     $("#top .config .quoteLength").addClass("hidden");
   } else if (Config.mode == "custom") {
     if (
-      activeFunbox === "58008" ||
-      activeFunbox === "gibberish" ||
-      activeFunbox === "ascii"
+      Funbox.active === "58008" ||
+      Funbox.active === "gibberish" ||
+      Funbox.active === "ascii"
     ) {
-      activeFunbox = "none";
-      TestUI.updateModesNotice(paceCaret, activeFunbox);
+      Funbox.setAcitve("none");
+      TestUI.updateModesNotice(paceCaret);
     }
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
@@ -2446,7 +2424,7 @@ function liveWpmAndRaw() {
   if (TestLogic.words.getCurrent() == TestLogic.input.current) {
     correctWordChars += TestLogic.input.current.length;
   }
-  if (activeFunbox === "nospace") {
+  if (Funbox.active === "nospace") {
     spaces = 0;
   }
   chars += TestLogic.input.current.length;
@@ -2957,7 +2935,7 @@ async function initPaceCaret() {
     timeout: null,
   };
 
-  TestUI.updateModesNotice(paceCaret, activeFunbox);
+  TestUI.updateModesNotice(paceCaret);
 }
 
 function movePaceCaret(expectedStepEnd) {
@@ -3589,11 +3567,7 @@ $(document).keydown(function (event) {
     handleBackspace(event);
   }
 
-  if (
-    event.key === "Enter" &&
-    activeFunbox.activeFunbox === "58008" &&
-    wordsFocused
-  ) {
+  if (event.key === "Enter" && Funbox.active === "58008" && wordsFocused) {
     event.key = " ";
   }
 
@@ -3753,7 +3727,7 @@ function handleBackspace(event) {
       } else {
         TestLogic.input.setCurrent(TestLogic.input.popHistory());
         TestLogic.corrected.setCurrent(TestLogic.corrected.popHistory());
-        if (activeFunbox === "nospace") {
+        if (Funbox.active === "nospace") {
           TestLogic.input.setCurrent(
             TestLogic.input.current.substring(
               0,
@@ -3823,7 +3797,7 @@ function handleSpace(event, isEnter) {
   if (!TestLogic.active) return;
   if (TestLogic.input.current === "") return;
   // let nextWord = wordsList[TestLogic.words.currentIndex + 1];
-  // if ((isEnter && nextWord !== "\n") && (isEnter && activeFunbox !== "58008")) return;
+  // if ((isEnter && nextWord !== "\n") && (isEnter && Funbox.active !== "58008")) return;
   // if (!isEnter && nextWord === "\n") return;
   event.preventDefault();
 
@@ -3833,7 +3807,7 @@ function handleSpace(event, isEnter) {
   }
 
   let currentWord = TestLogic.words.getCurrent();
-  if (activeFunbox === "layoutfluid" && Config.mode !== "time") {
+  if (Funbox.active === "layoutfluid" && Config.mode !== "time") {
     const layouts = ["qwerty", "dvorak", "colemak"];
     let index = 0;
     let outof = TestLogic.words.length;
@@ -3877,7 +3851,7 @@ function handleSpace(event, isEnter) {
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
     // currentKeypress.count++;
     // currentKeypress.words.push(TestLogic.words.currentIndex);
-    if (activeFunbox !== "nospace") {
+    if (Funbox.active !== "nospace") {
       Sound.playClick(Config.playSoundOnClick);
     }
   } else {
@@ -3890,7 +3864,7 @@ function handleSpace(event, isEnter) {
       paceCaret.wordsStatus[TestLogic.words.currentIndex] = true;
       paceCaret.correction += currentWord.length + 1;
     }
-    if (activeFunbox !== "nospace") {
+    if (Funbox.active !== "nospace") {
       if (!Config.playSoundOnError || Config.blindMode) {
         Sound.playClick(Config.playSoundOnClick);
       } else {
@@ -4325,7 +4299,7 @@ function handleAlpha(event) {
 
   //simulate space press in nospace funbox
   if (
-    (activeFunbox === "nospace" &&
+    (Funbox.active === "nospace" &&
       TestLogic.input.current.length === TestLogic.words.getCurrent().length) ||
     (event.key === "\n" && thisCharCorrect)
   ) {

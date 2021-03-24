@@ -817,7 +817,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   } else {
     ResultFilters.setFilter("language", Config.language, true);
   }
-  ResultFilters.setFilter("funbox", activeFunbox, true);
+  ResultFilters.setFilter("funbox", true);
   ResultFilters.setFilter("tags", "none", true);
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {

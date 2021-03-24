@@ -3,6 +3,7 @@ import * as ThemeColors from "./theme-colors";
 import Config from "./config";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
+import * as Funbox from "./funbox";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -214,7 +215,7 @@ export function lineJump(currentTop) {
   currentTestLine++;
 }
 
-export function updateModesNotice(paceCaret, activeFunbox) {
+export function updateModesNotice(paceCaret) {
   let anim = false;
   if ($(".pageTest #testModesNotice").text() === "") anim = true;
 
@@ -293,9 +294,9 @@ export function updateModesNotice(paceCaret, activeFunbox) {
     );
   }
 
-  if (activeFunbox !== "none") {
+  if (Funbox.active !== "none") {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsFunbox"><i class="fas fa-gamepad"></i>${activeFunbox.replace(
+      `<div class="text-button" commands="commandsFunbox"><i class="fas fa-gamepad"></i>${Funbox.active.replace(
         /_/g,
         " "
       )}</div>`

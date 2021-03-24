@@ -1544,7 +1544,7 @@ function updateCommandsTagsList() {
         DB.getSnapshot().tags.forEach((tag) => {
           tag.active = false;
         });
-        TestUI.updateModesNotice(paceCaret, activeFunbox);
+        TestUI.updateModesNotice(paceCaret);
         saveActiveTagsToCookie();
       },
     });
@@ -1564,7 +1564,7 @@ function updateCommandsTagsList() {
         sticky: true,
         exec: () => {
           toggleTag(tag.id);
-          TestUI.updateModesNotice(paceCaret, activeFunbox);
+          TestUI.updateModesNotice(paceCaret);
           let txt = tag.name;
 
           if (tag.active === true) {
