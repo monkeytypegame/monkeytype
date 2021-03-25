@@ -2,7 +2,8 @@ import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "./misc";
 import * as Notifications from "./notification-center";
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
+import { swapElements } from "./dom-util";
 
 let isPreviewingTheme = false;
 let randomTheme = null;
@@ -37,6 +38,18 @@ export function apply(themeName) {
   let name = "serika_dark";
   if (themeName !== "custom") {
     name = themeName;
+    swapElements(
+      $('.pageSettings [tabContent="custom"]'),
+      $('.pageSettings [tabContent="preset"]'),
+      250
+    );
+  } else {
+    //is custom
+    swapElements(
+      $('.pageSettings [tabContent="preset"]'),
+      $('.pageSettings [tabContent="custom"]'),
+      250
+    );
   }
 
   $(".keymap-key").attr("style", "");

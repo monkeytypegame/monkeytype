@@ -1,7 +1,7 @@
 import * as CloudFunctions from "./cloud-functions";
 import * as DB from "./db";
 import * as Notifications from "./notification-center";
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as Misc from "./misc";
 
 let textTimeouts = [];

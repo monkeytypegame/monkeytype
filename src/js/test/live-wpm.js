@@ -1,4 +1,4 @@
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 
 export function update(wpm, raw) {
   // if (!TestLogic.active || !Config.showLiveWpm) {

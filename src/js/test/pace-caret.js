@@ -1,6 +1,6 @@
 import * as TestLogic from "./test-logic";
 import * as TestUI from "./test-ui";
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as DB from "./db";
 
 export let settings = null;

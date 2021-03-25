@@ -2,15 +2,12 @@ import * as CustomText from "./custom-text";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as Misc from "./misc";
 import * as Notifications from "./notification-center";
+import * as TestLogic from "./test-logic";
 
 let wrapper = "#customTextPopupWrapper";
 let popup = "#customTextPopup";
 
-let restartTest;
-
-//TODO remove restarttest ref after test logic is a module
-export function show(restartTestRef) {
-  restartTest = restartTestRef;
+export function show() {
   if ($(wrapper).hasClass("hidden")) {
     if ($(`${popup} .check input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
@@ -154,6 +151,6 @@ $("#customTextPopup .button").click(() => {
   }
 
   ManualRestart.set();
-  restartTest();
+  TestLogic.restart();
   hide();
 });

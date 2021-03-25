@@ -1,4 +1,4 @@
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as ThemeColors from "./theme-colors";
 import layouts from "./layouts";
 

@@ -1,5 +1,5 @@
 import * as DB from "./db";
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 
 export function showBackgroundLoader() {
   $("#backgroundLoader").stop(true, true).fadeIn(125);

@@ -1,15 +1,12 @@
 import * as Misc from "./misc";
 import * as Notifications from "./notification-center";
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as ManualRestart from "./manual-restart-tracker";
+import * as TestLogic from "./test-logic";
 
 export let selectedId = 1;
 
-let restartTest;
-
-//TODO remove when restart test in module
-export async function show(restartTestRef) {
-  restartTest = restartTestRef;
+export async function show() {
   if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
     $("#quoteSearchPopup input").val("");
     $("#quoteSearchPopupWrapper")
@@ -47,7 +44,7 @@ function apply(val) {
   if (val !== null && !isNaN(val) && val >= 0) {
     selectedId = val;
     ManualRestart.set();
-    restartTest();
+    TestLogic.restart();
   } else {
     Notifications.add("Quote ID must be at least 1", 0);
   }

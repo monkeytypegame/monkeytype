@@ -172,13 +172,13 @@ function signUp() {
                   completed: undefined,
                 },
               });
-              if (notSignedInLastResult !== null) {
-                notSignedInLastResult.uid = usr.uid;
+              if (TestLogic.notSignedInLastResult !== null) {
+                TestLogic.setNotSignedInUid(usr.uid);
                 CloudFunctions.testCompleted({
                   uid: usr.uid,
-                  obj: notSignedInLastResult,
+                  obj: TestLogic.notSignedInLastResult,
                 });
-                DB.getSnapshot().results.push(notSignedInLastResult);
+                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
               }
               changePage("account");
               usr.sendEmailVerification();
@@ -295,16 +295,16 @@ firebase.auth().onAuthStateChanged(function (user) {
   if (theme !== null) {
     try {
       theme = theme.split(",");
-      ConfigSet.customThemeColors(theme);
+      UpdateConfig.setCustomThemeColors(theme);
       Notifications.add("Custom theme applied.", 1);
     } catch (e) {
       Notifications.add(
         "Something went wrong. Reverting to default custom colors.",
         0
       );
-      ConfigSet.customThemeColors(Config.defaultConfig.customThemeColors);
+      UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
     }
-    setCustomTheme(true);
+    UpdateConfig.setCustomTheme(true);
     setCustomThemeInputs();
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
@@ -361,13 +361,13 @@ function getAccountDataAndInit() {
       if (snap.refactored === false) {
         CloudFunctions.removeSmallTests({ uid: user.uid });
       }
-      if (!configChangedBeforeDb) {
-        if (cookieConfig === null) {
+      if (!Config.changedBeforeDb) {
+        if (Config.cookieConfig === null) {
           AccountIcon.loading(false);
-          applyConfig(DB.getSnapshot().config);
+          UpdateConfig.apply(DB.getSnapshot().config);
           updateSettingsPage();
-          saveConfigToCookie(true);
-          restartTest(false, true);
+          UpdateConfig.saveToCookie(true);
+          TestLogic.restart(false, true);
         } else if (DB.getSnapshot().config !== undefined) {
           // let configsDifferent = false;
           // Object.keys(config).forEach((key) => {
@@ -408,10 +408,10 @@ function getAccountDataAndInit() {
           //   applyConfig(config);
           //   updateSettingsPage();
           //   saveConfigToCookie(true);
-          //   restartTest(false, true);
+          //   TestLogic.restart(false, true);
           // }
         }
-        dbConfigLoaded = true;
+        UpdateConfig.setDbConfigLoaded(true);
       } else {
         AccountIcon.loading(false);
       }
@@ -460,7 +460,7 @@ function getAccountDataAndInit() {
       AccountIcon.loading(false);
       updateFilterTags();
       updateCommandsTagsList();
-      loadActiveTagsFromCookie();
+      TagController.loadActiveFromCookie();
       updateResultEditTagsPanelButtons();
       showAccountSettingsSection();
     })
@@ -1829,11 +1829,11 @@ function hideResultEditTagsPanel() {
 }
 
 $(".pageAccount .toggleAccuracyOnChart").click((e) => {
-  toggleChartAccuracy();
+  UpdateConfig.toggleChartAccuracy();
 });
 
 $(".pageAccount .toggleChartStyle").click((e) => {
-  toggleChartStyle();
+  UpdateConfig.toggleChartStyle();
 });
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
@@ -1968,18 +1968,18 @@ $(".pageLogin .register .button").click((e) => {
 
 $(".pageLogin .login input").keyup((e) => {
   if (e.key == "Enter") {
-    configChangedBeforeDb = false;
+    UpdateConfig.setChangedBeforeDb(false);
     signIn();
   }
 });
 
 $(".pageLogin .login .button.signIn").click((e) => {
-  configChangedBeforeDb = false;
+  UpdateConfig.setChangedBeforeDb(false);
   signIn();
 });
 
 $(".pageLogin .login .button.signInWithGoogle").click((e) => {
-  configChangedBeforeDb = false;
+  UpdateConfig.setChangedBeforeDb(false);
   signInWithGoogle();
 });
 

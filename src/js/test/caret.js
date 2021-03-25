@@ -1,5 +1,5 @@
 import * as Misc from "./misc";
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as TestLogic from "./test-logic";
 
 export let caretAnimating = true;

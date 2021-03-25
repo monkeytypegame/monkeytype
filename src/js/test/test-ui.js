@@ -1,10 +1,13 @@
 import * as Notifications from "./notification-center";
 import * as ThemeColors from "./theme-colors";
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
 import * as PaceCaret from "./pace-caret";
+import * as CustomText from "./custom-text";
+import * as Keymap from "./keymap";
+import * as Caret from "./caret";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -37,6 +40,86 @@ export function setResultCalculating(val) {
 export function reset() {
   currentTestLine = 0;
   currentWordElementIndex = 0;
+}
+
+export function showWords() {
+  $("#words").empty();
+
+  let wordsHTML = "";
+  let newlineafter = false;
+  if (Config.mode !== "zen") {
+    for (let i = 0; i < TestLogic.words.length; i++) {
+      newlineafter = false;
+      wordsHTML += `<div class='word'>`;
+      for (let c = 0; c < TestLogic.words.get(i).length; c++) {
+        if (TestLogic.words.get(i).charAt(c) === "\t") {
+          wordsHTML += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        } else if (TestLogic.words.get(i).charAt(c) === "\n") {
+          newlineafter = true;
+          wordsHTML += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+        } else {
+          wordsHTML +=
+            "<letter>" + TestLogic.words.get(i).charAt(c) + "</letter>";
+        }
+      }
+      wordsHTML += "</div>";
+      if (newlineafter) wordsHTML += "<div class='newline'></div>";
+    }
+  } else {
+    wordsHTML =
+      '<div class="word">word height</div><div class="word active"></div>';
+  }
+
+  $("#words").html(wordsHTML);
+
+  $("#wordsWrapper").removeClass("hidden");
+  const wordHeight = $(document.querySelector(".word")).outerHeight(true);
+  const wordsHeight = $(document.querySelector("#words")).outerHeight(true);
+  if (
+    Config.showAllLines &&
+    Config.mode != "time" &&
+    !(CustomText.isWordRandom && CustomText.word == 0) &&
+    !CustomText.isTimeRandom
+  ) {
+    $("#words").css("height", "auto");
+    $("#wordsWrapper").css("height", "auto");
+    let nh = wordHeight * 3;
+
+    if (nh > wordsHeight) {
+      nh = wordsHeight;
+    }
+    $(".outOfFocusWarning").css("line-height", nh + "px");
+  } else {
+    $("#words")
+      .css("height", wordHeight * 4 + "px")
+      .css("overflow", "hidden");
+    $("#wordsWrapper")
+      .css("height", wordHeight * 3 + "px")
+      .css("overflow", "hidden");
+    $(".outOfFocusWarning").css("line-height", wordHeight * 3 + "px");
+  }
+
+  if (Config.mode === "zen") {
+    $(document.querySelector(".word")).remove();
+  } else {
+    if (Config.keymapMode === "next") {
+      Keymap.highlightKey(
+        TestLogic.words
+          .getCurrent()
+          .substring(
+            TestLogic.input.current.length,
+            TestLogic.input.current.length + 1
+          )
+          .toString()
+          .toUpperCase()
+      );
+    }
+  }
+
+  updateActiveElement();
+  Funbox.toggleScript(TestLogic.words.getCurrent());
+
+  Caret.updatePosition();
 }
 
 export function updateActiveElement(backspace) {
@@ -239,11 +322,6 @@ export function updateWordElement(showError) {
         if (charCorrect) {
           ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
         } else {
-          // if (Config.difficulty == "master") {
-          //   if (!TestUI.resultVisible) {
-          //     failTest();
-          //   }
-          // }
           if (!showError) {
             if (currentLetter !== undefined) {
               ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
@@ -353,7 +431,7 @@ export function updateModesNotice() {
 
   if (TestLogic.isRepeated) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" function="restartTest()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
+      `<div class="text-button" function="TestLogic.restart()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
     );
   }
 
@@ -502,6 +580,165 @@ export function arrangeCharactersRightToLeft() {
 
 export function arrangeCharactersLeftToRight() {
   $("#words").removeClass("rightToLeftTest");
+}
+
+async function loadWordsHistory() {
+  $("#resultWordsHistory .words").empty();
+  let wordsHTML = "";
+  for (let i = 0; i < TestLogic.input.history.length + 2; i++) {
+    let input = TestLogic.input.getHistory(i);
+    let word = TestLogic.words.get(i);
+    let wordEl = "";
+    try {
+      if (input === "") throw new Error("empty input word");
+      if (
+        TestLogic.corrected.getHistory(i) !== undefined &&
+        TestLogic.corrected.getHistory(i) !== ""
+      ) {
+        wordEl = `<div class='word' input="${TestLogic.corrected
+          .getHistory(i)
+          .replace(/"/g, "&quot;")
+          .replace(/ /g, "_")}">`;
+      } else {
+        wordEl = `<div class='word' input="${input
+          .replace(/"/g, "&quot;")
+          .replace(/ /g, "_")}">`;
+      }
+      if (i === TestLogic.input.history.length - 1) {
+        //last word
+        let wordstats = {
+          correct: 0,
+          incorrect: 0,
+          missed: 0,
+        };
+        let length = Config.mode == "zen" ? input.length : word.length;
+        for (let c = 0; c < length; c++) {
+          if (c < input.length) {
+            //on char that still has a word list pair
+            if (Config.mode == "zen" || input[c] == word[c]) {
+              wordstats.correct++;
+            } else {
+              wordstats.incorrect++;
+            }
+          } else {
+            //on char that is extra
+            wordstats.missed++;
+          }
+        }
+        if (wordstats.incorrect !== 0 || Config.mode !== "time") {
+          if (Config.mode != "zen" && input !== word) {
+            wordEl = `<div class='word error' input="${input
+              .replace(/"/g, "&quot;")
+              .replace(/ /g, "_")}">`;
+          }
+        }
+      } else {
+        if (Config.mode != "zen" && input !== word) {
+          wordEl = `<div class='word error' input="${input
+            .replace(/"/g, "&quot;")
+            .replace(/ /g, "_")}">`;
+        }
+      }
+
+      let loop;
+      if (Config.mode == "zen" || input.length > word.length) {
+        //input is longer - extra characters possible (loop over input)
+        loop = input.length;
+      } else {
+        //input is shorter or equal (loop over word list)
+        loop = word.length;
+      }
+
+      for (let c = 0; c < loop; c++) {
+        let correctedChar;
+        try {
+          correctedChar = TestLogic.corrected.getHistory(i)[c];
+        } catch (e) {
+          correctedChar = undefined;
+        }
+        let extraCorrected = "";
+        if (
+          c + 1 === loop &&
+          TestLogic.corrected.getHistory(i) !== undefined &&
+          TestLogic.corrected.getHistory(i).length > input.length
+        ) {
+          extraCorrected = "extraCorrected";
+        }
+        if (Config.mode == "zen" || word[c] !== undefined) {
+          if (Config.mode == "zen" || input[c] === word[c]) {
+            if (correctedChar === input[c] || correctedChar === undefined) {
+              wordEl += `<letter class="correct ${extraCorrected}">${input[c]}</letter>`;
+            } else {
+              wordEl +=
+                `<letter class="corrected ${extraCorrected}">` +
+                input[c] +
+                "</letter>";
+            }
+          } else {
+            if (input[c] === TestLogic.input.current) {
+              wordEl +=
+                `<letter class='correct ${extraCorrected}'>` +
+                word[c] +
+                "</letter>";
+            } else if (input[c] === undefined) {
+              wordEl += "<letter>" + word[c] + "</letter>";
+            } else {
+              wordEl +=
+                `<letter class="incorrect ${extraCorrected}">` +
+                word[c] +
+                "</letter>";
+            }
+          }
+        } else {
+          wordEl += '<letter class="incorrect extra">' + input[c] + "</letter>";
+        }
+      }
+      wordEl += "</div>";
+    } catch (e) {
+      try {
+        wordEl = "<div class='word'>";
+        for (let c = 0; c < word.length; c++) {
+          wordEl += "<letter>" + word[c] + "</letter>";
+        }
+        wordEl += "</div>";
+      } catch {}
+    }
+    wordsHTML += wordEl;
+  }
+  $("#resultWordsHistory .words").html(wordsHTML);
+  $("#showWordHistoryButton").addClass("loaded");
+  return true;
+}
+
+export function toggleResultWords() {
+  if (resultVisible) {
+    if ($("#resultWordsHistory").stop(true, true).hasClass("hidden")) {
+      //show
+
+      if (!$("#showWordHistoryButton").hasClass("loaded")) {
+        $("#words").html(
+          `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
+        );
+        loadWordsHistory().then(() => {
+          $("#resultWordsHistory")
+            .removeClass("hidden")
+            .css("display", "none")
+            .slideDown(250);
+        });
+      } else {
+        $("#resultWordsHistory")
+          .removeClass("hidden")
+          .css("display", "none")
+          .slideDown(250);
+      }
+    } else {
+      //hide
+
+      $("#resultWordsHistory").slideUp(250, () => {
+        $("#resultWordsHistory").addClass("hidden");
+      });
+    }
+  }
 }
 
 $(document.body).on("click", "#copyResultToClipboardButton", () => {
