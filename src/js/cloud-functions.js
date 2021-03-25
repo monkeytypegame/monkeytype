@@ -37,3 +37,6 @@ export const removeSmallTests = firebase
 export const resetPersonalBests = firebase
   .functions()
   .httpsCallable("resetPersonalBests");
+export const checkLeaderboards = firebase
+  .functions()
+  .httpsCallable("checkLeaderboards");

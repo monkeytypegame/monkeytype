@@ -8,13 +8,11 @@ Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
 
 import * as DB from "./db";
-
 import {
   showBackgroundLoader,
   hideBackgroundLoader,
   swapElements,
-  accountIconLoading,
-  updateTestModesNotice,
+  focusWords,
 } from "./dom-util";
 import * as Misc from "./misc";
 import * as CloudFunctions from "./cloud-functions";
@@ -35,3 +33,24 @@ import * as Caret from "./caret";
 import * as WordFilter from "./word-filter";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ManualRestart from "./manual-restart-tracker";
+import Config, * as UpdateConfig from "./config";
+// import * as ConfigSet from "./config-set";
+import * as Focus from "./focus";
+import * as AccountIcon from "./account-icon";
+import * as PractiseMissed from "./practise-missed";
+import * as TestUI from "./test-ui";
+import * as Keymap from "./keymap";
+import * as LiveWpm from "./live-wpm";
+import "./caps-warning";
+import * as LiveAcc from "./live-acc";
+import * as TimerProgress from "./timer-progress";
+import * as TestLogic from "./test-logic";
+import * as Funbox from "./funbox";
+import * as PaceCaret from "./pace-caret";
+import * as QuoteSearchPopup from "./quote-search-popup";
+import * as TagController from "./tag-controller";
+import * as TestTimer from "./test-timer";
+import * as LanguagePicker from "./language-picker";
+import * as UI from "./ui";
+import * as Commandline from "./commandline";
+import * as CommandlineLists from "./commandline-lists";

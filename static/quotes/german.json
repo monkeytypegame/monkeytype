@@ -1,10 +1,22 @@
 {
   "language": "german",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -500,7 +512,7 @@
       "id": 82
     },
     {
-      "text": "Populär ist der Text nicht, aber bedeutend: Das Grundgesetz ist das wichtigste Dokument unseres demokratischen Selbstverständnisses und die freiheitlichste Verfassung, die Deutschland in seiner Geschichte je hatte. Dass unsere Verfassung Grundgesetz heißt, ist Ausdruck der Teilung Deutschlands nach dem Zweiten Weltkrieg. Der Begriff Grundgesetz betonte den offenen, provisorischen Charakter der Bestimmungen, an deren Formulierung mitzuwirken Vertretern der sowjetischen Besatzungszone damals versagt war. Darum wurde in einem eigenen Artikel 146 ausdrücklich festgelegt, dass dieses Provisorium seine Gültigkeit verliert, sobald eine vom gesamten deutschen Volk in freier Entscheidung beschlossene Verfassung vorlieg.t Das ursprünglich provisorisch gemeinte Grundgesetz ist heute, nach dem Beitritt der neuen Länder zur Bundesrepublik Deutschland 1990, die unbestrittene Grundlage der politischen Verfassung des Landes im Sinne einer freiheitlich-demokratischen Gesellschaft geworden.",
+      "text": "Populär ist der Text nicht, aber bedeutend: Das Grundgesetz ist das wichtigste Dokument unseres demokratischen Selbstverständnisses und die freiheitlichste Verfassung, die Deutschland in seiner Geschichte je hatte. Dass unsere Verfassung Grundgesetz heißt, ist Ausdruck der Teilung Deutschlands nach dem Zweiten Weltkrieg. Der Begriff Grundgesetz betonte den offenen, provisorischen Charakter der Bestimmungen, an deren Formulierung mitzuwirken Vertretern der sowjetischen Besatzungszone damals versagt war. Darum wurde in einem eigenen Artikel 146 ausdrücklich festgelegt, dass dieses Provisorium seine Gültigkeit verliert, sobald eine vom gesamten deutschen Volk in freier Entscheidung beschlossene Verfassung vorliegt. Das ursprünglich provisorisch gemeinte Grundgesetz ist heute, nach dem Beitritt der neuen Länder zur Bundesrepublik Deutschland 1990, die unbestrittene Grundlage der politischen Verfassung des Landes im Sinne einer freiheitlich-demokratischen Gesellschaft geworden.",
       "source": "Grundgesetz: Geleitwort Prof. Dr. Norbert Lammert",
       "length": 987,
       "id": 83
@@ -666,6 +678,42 @@
       "source": "Grundgesetz Artikel 13.1",
       "length": 30,
       "id": 110
+    },
+    {
+      "text": "Mr und Mrs Dursley im Ligusterweg Nummer 4 waren stolz darauf, ganz und gar normal zu sein, sehr stolz sogar. Niemand wäre auf die Idee gekommen, sie könnten sich in eine merkwürdige und geheimnisvolle Geschichte verstricken, denn mit solchem Unsinn wollten sie nichts zu tun haben.",
+      "source": "Harry Potter und der Stein der Weisen",
+      "length": 282,
+      "id": 111
+    },
+    {
+      "text": "Mr Dursley war Direktor einer Firma namens Grunnings, die Bohrmaschinen herstellte. Er war groß und bullig und hatte fast keinen Hals, dafür aber einen sehr großen Schnurrbart. Mrs Dursley war dünn und blond und besaß doppelt so viel Hals, wie notwendig gewesen wäre, was allerdings sehr nützlich war, denn so konnte sie den Hals über den Gartenzaun recken und zu den Nachbarn hinüberspähen. Die Dursleys hatten einen kleinen Sohn namens Dudley und in ihren Augen gab es nirgendwo einen prächtigeren Jungen.",
+      "source": "Harry Potter und der Stein der Weisen",
+      "length": 507,
+      "id": 112
+    },
+    {
+      "text": "Die Dursleys besaßen alles, was sie wollten, doch sie hatten auch ein Geheimnis, und dass es jemand aufdecken könnte, war ihre größte Sorge. Einfach unerträglich wäre es, wenn die Sache mit den Potters herauskommen würde. Mrs Potter war die Schwester von Mrs Dursley; doch die beiden hatten sich schon seit etlichen Jahren nicht mehr gesehen. Mrs Dursley behauptete sogar, dass sie gar keine Schwester hätte, denn diese und deren Nichtsnutz von einem Mann waren so undursleyhaft, wie man es sich nur denken konnte. Die Dursleys schauderten beim Gedanken daran, was die Nachbarn sagen würden, sollten die Potters eines Tages in ihrer Straße aufkreuzen. Die Dursleys wussten, dass auch die Potters einen kleinen Sohn hatten, doch den hatten sie nie gesehen. Auch dieser Junge war ein guter Grund, sich von den Potters fernzuhalten; mit einem solchen Kind sollte ihr Dudley nicht in Berührung kommen.",
+      "source": "Harry Potter und der Stein der Weisen",
+      "length": 897,
+      "id": 113
+    },
+    {
+      "text": "Um halb neun griff Mr Dursley nach der Aktentasche, gab seiner Frau einen Schmatz auf die Wange und versuchte es auch bei Dudley mit einem Abschiedskuss. Der ging jedoch daneben, weil Dudley gerade einen Wutanfall hatte und die Wände mit seinem Haferbrei bewarf. >>Kleiner Schlingel<<, gluckste Mr Dursley, während er nach draußen ging. Er setzte sich in den Wagen und fuhr rückwärts die Einfahrt zu Nummer 4 hinaus.",
+      "source": "Harry Potter und der Stein der Weisen",
+      "length": 414,
+      "id": 114
+    },
+    {
+      "text": "An der Straßenecke fiel ihm zum ersten Mal etwas Merkwürdiges auf - eine Katze, die eine Straßenkarte studierte. Einen Moment war Mr Dursley nicht klar, was er gesehen hatte - dann wandte er rasch den Kopf zurück, um noch einmal hinzuschauen. An der Einbiegung zum Ligusterweg stand eine getigerte Katze, aber eine Straßenkarte war nicht zu sehen. Woran er nur wieder gedacht hatte! Das musste eine Sinnestäuschung gewesen sein. Mr Dursley blinzelte und starrte die Katze an. Die Katze starrte zurück. Während Mr Dursley um die Ecke bog und die Straße entlangfuhr, beobachtete er die Katze im Rückspiegel. Jetzt las sie das Schild mit dem Namen Ligusterweg - nein, sie blickte auf das Schild. Katzen konnten weder Karten noch Schilder lesen. Mr Dursley gab sich einen kleinen Ruck und verjagte die Katze aus seinen Gedanken. Während er in Richtung Stadt fuhr, hatte er nur noch den großen Auftrag für Bohrmaschinen im Sinn, der heute hoffentlich eintreffen würde.",
+      "source": "Harry Potter und der Stein der Weisen",
+      "length": 963,
+      "id": 115
+    },
+    {
+      "text": "Doch am Stadtrand wurden die Bohrmaschinen von etwas anderem aus seinen Gedanken verdrängt. Er saß im üblichen morgendlichen Stau fest und konnte nicht umhin zu bemerken, dass offenbar eine Menge seltsam gekleideter Menschen unterwegs waren. Menschen in langen und weiten Umhängen. Mr Dursley konnte Leute nicht ausstehen, die sich komisch anzogen - wie sich die jungen Leute herausputzten! Das musste wohl irgendeine dumme neue Mode sein. Er trommelte mit den Fingern auf das Lenkrad und sein Blick fiel auf eine Ansammlung dieser merkwürdigen Gestalten nicht weit von ihm. Ganz aufgeregt flüsterten sie miteinander. Erzürnt stellte Mr Dursley fest, dass einige von ihnen überhaupt nicht jung waren; nanu, dieser Mann dort musste älter sein als er und trug einen smaragdgrünen Umhang! Der hatte vielleicht Nerven! Doch dann fiel Mr Dursley plötzlich ein, dass dies wohl eine verrückte Verkleidung sein musste - die Leute sammelten offenbar für irgendetwas ... ja, so musste es sein. Die Autoschlange bewegte sich, und ein paar Minuten später fuhr Mr Dursley auf den Parkplatz seiner Firma, die Gedanken wieder bei den Bohrern.",
+      "source": "Harry Potter und der Stein der Weisen",
+      "length": 1125,
+      "id": 116
     }
   ]
 }

@@ -31,27 +31,27 @@
   }
   ,{
     "name": "trueSimp",
-    "type": "CustomText",
+    "type": "customText",
     "parameters": ["miodec",true,10000]
   }
   ,{
     "name": "simp",
-    "type": "CustomText",
+    "type": "customText",
     "parameters": ["miodec",true,1000]
   }
   ,{
     "name": "antidiseWhat",
-    "type": "CustomText",
+    "type": "customText",
     "parameters": ["antidisestablishmentarianism",true,1]
   }
   ,{
     "name": "whatsThisWebsiteCalledAgain",
-    "type": "CustomText",
+    "type": "customText",
     "parameters": ["monkeytype",true,1000]
   }
   ,{
     "name": "developd",
-    "type": "CustomText",
+    "type": "customText",
     "parameters": ["develop",true,1000]
   }
   ,{
@@ -61,12 +61,12 @@
   }
   ,{
     "name": "speedSpacer",
-    "type": "CustomText",
+    "type": "customText",
     "parameters": ["a b c d e f g h i j k l m n o p q r s t u v w x y z",true,100]
   }
   ,{
     "name": "iveGotThePower",
-    "type": "CustomText",
+    "type": "customText",
     "parameters": ["power",true,10]
   }
   ,{

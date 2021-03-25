@@ -1,4 +1,7 @@
 import { loadTags } from "./result-filters";
+import * as AccountIcon from "./account-icon";
+import * as CloudFunctions from "./cloud-functions";
+import * as Notifications from "./notification-center";
 
 const db = firebase.firestore();
 db.settings({ experimentalForceLongPolling: true });
@@ -14,6 +17,8 @@ export function getSnapshot() {
 }
 
 export function setSnapshot(newSnapshot) {
+  delete newSnapshot.banned;
+  delete newSnapshot.verified;
   dbSnapshot = newSnapshot;
 }
 
@@ -27,6 +32,9 @@ export async function initSnapshot() {
     tags: [],
     favouriteThemes: [],
     refactored: false,
+    banned: undefined,
+    verified: undefined,
+    emailVerified: undefined,
     lbMemory: {
       time15: {
         global: null,
@@ -92,6 +100,9 @@ export async function initSnapshot() {
           started: data.startedTests,
           completed: data.completedTests,
         };
+        snap.banned = data.banned;
+        snap.verified = data.verified;
+        snap.emailVerified = user.emailVerified;
         try {
           if (data.lbMemory.time15 !== undefined) {
             snap.lbMemory.time15 = data.lbMemory.time15;
@@ -438,6 +449,22 @@ export async function saveLocalTagPB(
 
 export function updateLbMemory(mode, mode2, type, value) {
   getSnapshot().lbMemory[mode + mode2][type] = value;
+}
+
+export async function saveConfig(config) {
+  if (firebase.auth().currentUser !== null) {
+    AccountIcon.loading(true);
+    CloudFunctions.saveConfig({
+      uid: firebase.auth().currentUser.uid,
+      obj: config,
+    }).then((d) => {
+      AccountIcon.loading(false);
+      if (d.data.returnCode !== 1) {
+        Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
+      }
+      return;
+    });
+  }
 }
 
 // export async function DB.getLocalTagPB(tagId) {

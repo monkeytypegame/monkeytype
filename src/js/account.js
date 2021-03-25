@@ -172,13 +172,13 @@ function signUp() {
                   completed: undefined,
                 },
               });
-              if (notSignedInLastResult !== null) {
-                notSignedInLastResult.uid = usr.uid;
+              if (TestLogic.notSignedInLastResult !== null) {
+                TestLogic.setNotSignedInUid(usr.uid);
                 CloudFunctions.testCompleted({
                   uid: usr.uid,
-                  obj: notSignedInLastResult,
+                  obj: TestLogic.notSignedInLastResult,
                 });
-                DB.getSnapshot().results.push(notSignedInLastResult);
+                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
               }
               changePage("account");
               usr.sendEmailVerification();
@@ -252,7 +252,7 @@ firebase.auth().onAuthStateChanged(function (user) {
       );
     }
     updateAccountLoginButton();
-    accountIconLoading(true);
+    AccountIcon.loading(true);
     getAccountDataAndInit();
     var displayName = user.displayName;
     // var email = user.email;
@@ -264,7 +264,8 @@ firebase.auth().onAuthStateChanged(function (user) {
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
 
-    showFavouriteThemesAtTheTop();
+    // showFavouriteThemesAtTheTop();
+    CommandlineLists.updateThemeCommands();
 
     let text = "Account created on " + user.metadata.creationTime;
 
@@ -295,19 +296,20 @@ firebase.auth().onAuthStateChanged(function (user) {
   if (theme !== null) {
     try {
       theme = theme.split(",");
-      config.customThemeColors = theme;
+      UpdateConfig.setCustomThemeColors(theme);
       Notifications.add("Custom theme applied.", 1);
     } catch (e) {
       Notifications.add(
         "Something went wrong. Reverting to default custom colors.",
         0
       );
-      config.customThemeColors = defaultConfig.customThemeColors;
+      UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
     }
-    setCustomTheme(true);
+    UpdateConfig.setCustomTheme(true);
     setCustomThemeInputs();
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
+    Notifications.add("Loading challenge", 0);
     let challengeName = window.location.pathname.split("_")[1];
     setTimeout(() => {
       setupChallenge(challengeName);
@@ -360,13 +362,13 @@ function getAccountDataAndInit() {
       if (snap.refactored === false) {
         CloudFunctions.removeSmallTests({ uid: user.uid });
       }
-      if (!configChangedBeforeDb) {
-        if (cookieConfig === null) {
-          accountIconLoading(false);
-          applyConfig(DB.getSnapshot().config);
+      if (!Config.changedBeforeDb) {
+        if (Config.cookieConfig === null) {
+          AccountIcon.loading(false);
+          UpdateConfig.apply(DB.getSnapshot().config);
           updateSettingsPage();
-          saveConfigToCookie(true);
-          restartTest(false, true);
+          UpdateConfig.saveToCookie(true);
+          TestLogic.restart(false, true);
         } else if (DB.getSnapshot().config !== undefined) {
           // let configsDifferent = false;
           // Object.keys(config).forEach((key) => {
@@ -402,52 +404,52 @@ function getAccountDataAndInit() {
           // });
           // if (configsDifferent) {
           //   console.log("applying config from db");
-          //   accountIconLoading(false);
+          //   AccountIcon.loading(false);
           //   config = DB.getSnapshot().config;
           //   applyConfig(config);
           //   updateSettingsPage();
           //   saveConfigToCookie(true);
-          //   restartTest(false, true);
+          //   TestLogic.restart(false, true);
           // }
         }
-        dbConfigLoaded = true;
+        UpdateConfig.setDbConfigLoaded(true);
       } else {
-        accountIconLoading(false);
+        AccountIcon.loading(false);
       }
-      if (config.paceCaret === "pb" || config.paceCaret === "average") {
-        if (!testActive) {
-          initPaceCaret(true);
+      if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
+        if (!TestLogic.active) {
+          PaceCaret.init(true);
         }
       }
       // try {
       //   if (
-      //     config.resultFilters === undefined ||
-      //     config.resultFilters === null ||
-      //     config.resultFilters.difficulty === undefined
+      //     Config.resultFilters === undefined ||
+      //     Config.resultFilters === null ||
+      //     Config.resultFilters.difficulty === undefined
       //   ) {
       //     if (
-      //       DB.getSnapshot().config.resultFilters == null ||
-      //       DB.getSnapshot().config.resultFilters.difficulty === undefined
+      //       DB.getSnapshot().Config.resultFilters == null ||
+      //       DB.getSnapshot().Config.resultFilters.difficulty === undefined
       //     ) {
-      //       config.resultFilters = defaultAccountFilters;
+      //       ConfigSet.resultFilters(defaultAccountFilters);
       //     } else {
-      //       config.resultFilters = DB.getSnapshot().config.resultFilters;
+      //       ConfigSet.resultFilters(DB.getSnapshot().Config.resultFilters);
       //     }
       //   }
       // } catch (e) {
-      //   config.resultFilters = defaultAccountFilters;
+      //   ConfigSet.resultFilters(defaultAccountFilters);
       // }
       // if (
-      //   Object.keys(config.resultFilters.language).length !==
+      //   Object.keys(Config.resultFilters.language).length !==
       //   Object.keys(defaultAccountFilters.language).length
       // ) {
-      //   config.resultFilters.language = defaultAccountFilters.language;
+      //   ConfigSet.resultFilters.language(defaultAccountFilters.language);
       // }
       // if (
-      //   Object.keys(config.resultFilters.funbox).length !==
+      //   Object.keys(Config.resultFilters.funbox).length !==
       //   Object.keys(defaultAccountFilters.funbox).length
       // ) {
-      //   config.resultFilters.funbox = defaultAccountFilters.funbox;
+      //   ConfigSet.resultFilters.funbox(defaultAccountFilters.funbox);
       // }
       if (
         $(".pageLogin").hasClass("active") ||
@@ -456,18 +458,18 @@ function getAccountDataAndInit() {
         changePage("account");
       }
       refreshThemeButtons();
-      accountIconLoading(false);
+      AccountIcon.loading(false);
       updateFilterTags();
-      updateCommandsTagsList();
-      loadActiveTagsFromCookie();
+      CommandlineLists.updateTagCommands();
+      TagController.loadActiveFromCookie();
       updateResultEditTagsPanelButtons();
       showAccountSettingsSection();
     })
     .catch((e) => {
-      accountIconLoading(false);
+      AccountIcon.loading(false);
       console.error(e);
       Notifications.add(
-        "Error downloading user data - refresh to try again. Client likely could not connect to the backend, if error persists contact Miodec.",
+        "Error downloading user data. Client likely could not connect to the backend  - refresh to try again. If error persists try clearing your cache and website data or contact Miodec.",
         -1
       );
       $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
@@ -497,7 +499,7 @@ function updateMiniResultChart(filteredId) {
     maxChartVal
   );
 
-  if (!config.startGraphsAtZero) {
+  if (!Config.startGraphsAtZero) {
     ChartController.miniResult.options.scales.yAxes[0].ticks.min = Math.round(
       minChartVal
     );
@@ -790,33 +792,33 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
     });
   });
 
-  ResultFilters.setFilter("difficulty", config.difficulty, true);
-  ResultFilters.setFilter("mode", config.mode, true);
-  if (config.mode === "time") {
-    ResultFilters.setFilter("time", config.time, true);
-  } else if (config.mode === "words") {
-    ResultFilters.setFilter("words", config.words, true);
-  } else if (config.mode === "quote") {
+  ResultFilters.setFilter("difficulty", Config.difficulty, true);
+  ResultFilters.setFilter("mode", Config.mode, true);
+  if (Config.mode === "time") {
+    ResultFilters.setFilter("time", Config.time, true);
+  } else if (Config.mode === "words") {
+    ResultFilters.setFilter("words", Config.words, true);
+  } else if (Config.mode === "quote") {
     Object.keys(ResultFilters.getGroup("quoteLength")).forEach((ql) => {
       ResultFilters.setFilter("quoteLength", ql, true);
     });
   }
-  if (config.punctuation) {
+  if (Config.punctuation) {
     ResultFilters.setFilter("punctuation", "on", true);
   } else {
     ResultFilters.setFilter("punctuation", "off", true);
   }
-  if (config.numbers) {
+  if (Config.numbers) {
     ResultFilters.setFilter("numbers", "on", true);
   } else {
     ResultFilters.setFilter("numbers", "off", true);
   }
-  if (config.mode === "quote" && /english.*/.test(config.language)) {
+  if (Config.mode === "quote" && /english.*/.test(Config.language)) {
     ResultFilters.setFilter("language", "english", true);
   } else {
-    ResultFilters.setFilter("language", config.language, true);
+    ResultFilters.setFilter("language", Config.language, true);
   }
-  ResultFilters.setFilter("funbox", activeFunBox, true);
+  ResultFilters.setFilter("funbox", true);
   ResultFilters.setFilter("tags", "none", true);
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
@@ -1656,7 +1658,7 @@ function refreshAccountPage() {
     ChartController.accountHistory.options.scales.yAxes[0].ticks.max =
       Math.floor(maxWpmChartVal) + (10 - (Math.floor(maxWpmChartVal) % 10));
 
-    if (!config.startGraphsAtZero) {
+    if (!Config.startGraphsAtZero) {
       ChartController.accountHistory.options.scales.yAxes[0].ticks.min = Math.floor(
         minWpmChartVal
       );
@@ -1828,11 +1830,11 @@ function hideResultEditTagsPanel() {
 }
 
 $(".pageAccount .toggleAccuracyOnChart").click((e) => {
-  toggleChartAccuracy();
+  UpdateConfig.toggleChartAccuracy();
 });
 
 $(".pageAccount .toggleChartStyle").click((e) => {
-  toggleChartStyle();
+  UpdateConfig.toggleChartStyle();
 });
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
@@ -1967,18 +1969,18 @@ $(".pageLogin .register .button").click((e) => {
 
 $(".pageLogin .login input").keyup((e) => {
   if (e.key == "Enter") {
-    configChangedBeforeDb = false;
+    UpdateConfig.setChangedBeforeDb(false);
     signIn();
   }
 });
 
 $(".pageLogin .login .button.signIn").click((e) => {
-  configChangedBeforeDb = false;
+  UpdateConfig.setChangedBeforeDb(false);
   signIn();
 });
 
 $(".pageLogin .login .button.signInWithGoogle").click((e) => {
-  configChangedBeforeDb = false;
+  UpdateConfig.setChangedBeforeDb(false);
   signInWithGoogle();
 });
 

@@ -172,11 +172,15 @@
     <div id="quoteSearchPopupWrapper" class="hidden">
       <div id="quoteSearchPopup" mode="">
         <div class="title">Quote Search</div>
-        <input id="searchBox" class="searchBox" type="text" maxLength="200" autocomplete="off"/>
+        <input
+          id="searchBox"
+          class="searchBox"
+          type="text"
+          maxlength="200"
+          autocomplete="off"
+        />
         <div id="extraResults">No search results</div>
-        <div id="quoteSearchResults" class="quoteSearchResults">
-
-        </div>
+        <div id="quoteSearchResults" class="quoteSearchResults"></div>
       </div>
     </div>
     <div id="tagsWrapper" class="hidden">
@@ -1022,6 +1026,7 @@
                 <i class="fas fa-lock"></i>
                 Caps Lock
               </div>
+              <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
               <div id="caret" class="default size15"></div>
               <div id="paceCaret" class="default size15 hidden"></div>
@@ -1221,7 +1226,7 @@
               </div>
               <div
                 id="restartTestButton"
-                aria-label="Restart test"
+                aria-label="Restart Test"
                 data-balloon-pos="down"
                 class=""
                 tabindex="0"
@@ -1369,7 +1374,7 @@
                 </div>
                 <div
                   id="restartTestButtonWithSameWordset"
-                  aria-label="Repeat test"
+                  aria-label="Repeat Test"
                   data-balloon-pos="down"
                   tabindex="0"
                   onclick="this.blur();"
@@ -1438,7 +1443,7 @@
                 ) to restart the typing test. Open the command line by pressing
                 <key>esc</key>
                 - there you can access all the functionality you need without
-                touching your mouse.
+                touching your mouse
               </p>
             </div>
             <div class="section">
@@ -1540,7 +1545,7 @@
                 <div>Jackson</div>
                 <div>Nicholas</div>
                 <div>Kenn</div>
-                <div>Kieren</div>
+                <div>Ennui</div>
                 <div>mweepigeon</div>
                 <div>Stephen</div>
                 <div>Pulsing Penguin</div>
@@ -1934,6 +1939,11 @@
               </div>
               <div class="section funbox">
                 <h1>funbox</h1>
+                <div class="text">
+                  These are special modes that change the website in some
+                  special way (by altering the word generation, behaviour of the
+                  website or the looks). Give each one of them a try!
+                </div>
                 <div class="buttons"></div>
               </div>
               <div class="sectionSpacer"></div>
@@ -2147,6 +2157,11 @@
               </div>
               <div class="section layout">
                 <h1>layout override</h1>
+                <div class="text">
+                  With this setting you can emulate other layouts. This setting
+                  is best kept default, as it can break things like dead keys
+                  and alt layers.
+                </div>
                 <div class="buttons"></div>
               </div>
               <div class="sectionSpacer"></div>
@@ -2898,27 +2913,27 @@
                     tabContent="custom"
                     class="tabContent section customTheme hidden"
                   >
-                    <label class="text">background</label>
+                    <label class="colorText">background</label>
                     <span class="colorPicker">
                       <label for="--bg-color">#000000</label>
                       <input type="color" value="#000000" id="--bg-color" />
                     </span>
-                    <label class="text">main</label>
+                    <label class="colorText">main</label>
                     <span class="colorPicker">
                       <label for="--main-color">#000000</label>
                       <input type="color" value="#000000" id="--main-color" />
                     </span>
-                    <label class="text">caret</label>
+                    <label class="colorText">caret</label>
                     <span class="colorPicker">
                       <label for="--caret-color">#000000</label>
                       <input type="color" value="#000000" id="--caret-color" />
                     </span>
-                    <label class="text">sub</label>
+                    <label class="colorText">sub</label>
                     <span class="colorPicker">
                       <label for="--sub-color">#000000</label>
                       <input type="color" value="#000000" id="--sub-color" />
                     </span>
-                    <label class="text">text</label>
+                    <label class="colorText">text</label>
                     <span class="colorPicker">
                       <label for="--text-color">#000000</label>
                       <input type="color" value="#000000" id="--text-color" />
@@ -2926,12 +2941,12 @@
 
                     <span class="spacer"></span>
 
-                    <label class="text">error</label>
+                    <label class="colorText">error</label>
                     <span class="colorPicker">
                       <label for="--error-color">#000000</label>
                       <input type="color" value="#000000" id="--error-color" />
                     </span>
-                    <label class="text">extra error</label>
+                    <label class="colorText">extra error</label>
                     <span class="colorPicker">
                       <label for="--error-extra-color">#000000</label>
                       <input
@@ -2943,7 +2958,7 @@
 
                     <p>colorful mode</p>
 
-                    <label class="text">error</label>
+                    <label class="colorText">error</label>
                     <span class="colorPicker">
                       <!-- Change variable names here -->
                       <label for="--colorful-error-color">#000000</label>
@@ -2953,7 +2968,7 @@
                         id="--colorful-error-color"
                       />
                     </span>
-                    <label class="text">extra error</label>
+                    <label class="colorText">extra error</label>
                     <span class="colorPicker">
                       <!-- Change variable names here -->
                       <label for="--colorful-error-extra-color">#000000</label>
@@ -3658,10 +3673,10 @@
             <key>tab</key>
             and
             <key>enter</key>
-            - restart test
+            - Restart Test
             <br />
             <key>esc</key>
-            - command line
+            - Command Line
           </div>
           <div class="leftright">
             <div class="left">

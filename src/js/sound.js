@@ -1,3 +1,5 @@
+import Config, * as UpdateConfig from "./config";
+
 let errorSound = new Audio("../sound/error.wav");
 let clickSounds = null;
 
@@ -120,20 +122,22 @@ export function init() {
   };
 }
 
-export function playClick(config) {
-  if (config === "off") return;
+export function playClick() {
+  if (Config.playSoundOnClick === "off") return;
   if (clickSounds === null) init();
 
-  let rand = Math.floor(Math.random() * clickSounds[config].length);
-  let randomSound = clickSounds[config][rand];
+  let rand = Math.floor(
+    Math.random() * clickSounds[Config.playSoundOnClick].length
+  );
+  let randomSound = clickSounds[Config.playSoundOnClick][rand];
   randomSound.counter++;
   if (randomSound.counter === 2) randomSound.counter = 0;
   randomSound.sounds[randomSound.counter].currentTime = 0;
   randomSound.sounds[randomSound.counter].play();
 }
 
-export function playError(config) {
-  if (!config) return;
+export function playError() {
+  if (!Config.playSoundOnError) return;
   errorSound.currentTime = 0;
   errorSound.play();
 }

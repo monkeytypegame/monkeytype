@@ -1,3 +1,9 @@
+import * as TestLogic from "./test-logic";
+import Config, * as UpdateConfig from "./config";
+import * as Funbox from "./funbox";
+import * as Misc from "./misc";
+import * as TestStats from "./test-stats";
+
 export let invalid = false;
 export let start, end;
 export let wpmHistory = [];
@@ -208,4 +214,129 @@ export function pushMissedWord(word) {
   } else {
     missedWords[word]++;
   }
+}
+
+function countChars() {
+  let correctWordChars = 0;
+  let correctChars = 0;
+  let incorrectChars = 0;
+  let extraChars = 0;
+  let missedChars = 0;
+  let spaces = 0;
+  let correctspaces = 0;
+  for (let i = 0; i < TestLogic.input.history.length; i++) {
+    let word =
+      Config.mode == "zen"
+        ? TestLogic.input.getHistory(i)
+        : TestLogic.words.get(i);
+    if (TestLogic.input.getHistory(i) === "") {
+      //last word that was not started
+      continue;
+    }
+    if (TestLogic.input.getHistory(i) == word) {
+      //the word is correct
+      correctWordChars += word.length;
+      correctChars += word.length;
+      if (
+        i < TestLogic.input.history.length - 1 &&
+        Misc.getLastChar(TestLogic.input.getHistory(i)) !== "\n"
+      ) {
+        correctspaces++;
+      }
+    } else if (TestLogic.input.getHistory(i).length >= word.length) {
+      //too many chars
+      for (let c = 0; c < TestLogic.input.getHistory(i).length; c++) {
+        if (c < word.length) {
+          //on char that still has a word list pair
+          if (TestLogic.input.getHistory(i)[c] == word[c]) {
+            correctChars++;
+          } else {
+            incorrectChars++;
+          }
+        } else {
+          //on char that is extra
+          extraChars++;
+        }
+      }
+    } else {
+      //not enough chars
+      let toAdd = {
+        correct: 0,
+        incorrect: 0,
+        missed: 0,
+      };
+      for (let c = 0; c < word.length; c++) {
+        if (c < TestLogic.input.getHistory(i).length) {
+          //on char that still has a word list pair
+          if (TestLogic.input.getHistory(i)[c] == word[c]) {
+            toAdd.correct++;
+          } else {
+            toAdd.incorrect++;
+          }
+        } else {
+          //on char that is extra
+          toAdd.missed++;
+        }
+      }
+      correctChars += toAdd.correct;
+      incorrectChars += toAdd.incorrect;
+      if (i === TestLogic.input.history.length - 1 && Config.mode == "time") {
+        //last word - check if it was all correct - add to correct word chars
+        if (toAdd.incorrect === 0) correctWordChars += toAdd.correct;
+      } else {
+        missedChars += toAdd.missed;
+      }
+    }
+    if (i < TestLogic.input.history.length - 1) {
+      spaces++;
+    }
+  }
+  if (Funbox.active === "nospace") {
+    spaces = 0;
+    correctspaces = 0;
+  }
+  return {
+    spaces: spaces,
+    correctWordChars: correctWordChars,
+    allCorrectChars: correctChars,
+    incorrectChars:
+      Config.mode == "zen" ? TestStats.accuracy.incorrect : incorrectChars,
+    extraChars: extraChars,
+    missedChars: missedChars,
+    correctSpaces: correctspaces,
+  };
+}
+
+export function calculateStats() {
+  let testSeconds = TestStats.calculateTestSeconds();
+  let chars = countChars();
+  let wpm = Misc.roundTo2(
+    ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
+  );
+  let wpmraw = Misc.roundTo2(
+    ((chars.allCorrectChars +
+      chars.spaces +
+      chars.incorrectChars +
+      chars.extraChars) *
+      (60 / testSeconds)) /
+      5
+  );
+  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  return {
+    wpm: isNaN(wpm) ? 0 : wpm,
+    wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
+    acc: acc,
+    correctChars: chars.correctWordChars,
+    incorrectChars: chars.incorrectChars,
+    missedChars: chars.missedChars,
+    extraChars: chars.extraChars,
+    allChars:
+      chars.allCorrectChars +
+      chars.spaces +
+      chars.incorrectChars +
+      chars.extraChars,
+    time: testSeconds,
+    spaces: chars.spaces,
+    correctSpaces: chars.correctSpaces,
+  };
 }

@@ -626,6 +626,10 @@ Chart.prototype.updateColors = function () {
   updateColors(this);
 };
 
+export function setDefaultFontFamily(font) {
+  Chart.defaults.global.defaultFontFamily = font.replace(/_/g, " ");
+}
+
 export function updateColors(chart) {
   if (ThemeColors.main == "") {
     ThemeColors.update();
