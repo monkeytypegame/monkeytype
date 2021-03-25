@@ -1,658 +1,24 @@
 let currentCommands = [commands];
 
-let commands = {
-  title: "",
-  list: [
-    {
-      id: "togglePunctuation",
-      display: "Toggle punctuation",
-      exec: () => {
-        UpdateConfig.togglePunctuation();
-        TestLogic.restart();
-      },
-    },
-    {
-      id: "changeMode",
-      display: "Change mode...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsMode);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeTimeConfig",
-      display: "Change time config...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsTimeConfig);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeWordCount",
-      display: "Change word count...",
-      alias: "words",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsWordCount);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeQuoteLength",
-      display: "Change quote length...",
-      alias: "quotes",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsQuoteLengthConfig);
-        showCommandLine();
-      },
-    },
-    {
-      visible: false,
-      id: "changeTags",
-      display: "Change tags...",
-      subgroup: true,
-      exec: () => {
-        updateCommandsTagsList();
-        currentCommands.push(commandsTags);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeConfidenceMode",
-      display: "Change confidence mode...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsConfidenceMode);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeStopOnError",
-      display: "Change stop on error...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsStopOnError);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeSoundOnClick",
-      display: "Change sound on click...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsSoundOnClick);
-        showCommandLine();
-      },
-    },
-    {
-      id: "toggleNumbers",
-      display: "Toggle numbers",
-      exec: () => {
-        UpdateConfig.toggleNumbers();
-        TestLogic.restart();
-      },
-    },
-    {
-      id: "toggleSmoothCaret",
-      display: "Toggle smooth caret",
-      exec: () => {
-        UpdateConfig.toggleSmoothCaret();
-      },
-    },
-    {
-      id: "toggleQuickTab",
-      display: "Toggle quick tab mode",
-      exec: () => {
-        console.log("before command");
-        console.log(Config.quickTab);
-        UpdateConfig.toggleQuickTabMode();
-        console.log("after command");
-        console.log(Config.quickTab);
-      },
-    },
-    {
-      id: "changeRepeatQuotes",
-      display: "Change repeat quotes...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsRepeatQuotes);
-        showCommandLine();
-      },
-    },
-    {
-      id: "toggleShowLiveWpm",
-      display: "Toggle live wpm display",
-      exec: () => {
-        UpdateConfig.toggleShowLiveWpm();
-      },
-    },
-    {
-      id: "toggleShowLiveAcc",
-      display: "Toggle live accuracy display",
-      exec: () => {
-        UpdateConfig.toggleLiveAcc();
-      },
-    },
-    {
-      id: "toggleTimerBar",
-      display: "Toggle timer display",
-      exec: () => {
-        UpdateConfig.toggleShowTimerProgress();
-      },
-    },
-    {
-      id: "toggleKeyTips",
-      display: "Toggle keybind tips",
-      exec: () => {
-        UpdateConfig.toggleKeyTips();
-      },
-    },
-    {
-      id: "toggleFreedom",
-      display: "Toggle freedom mode",
-      exec: () => {
-        UpdateConfig.toggleFreedomMode();
-      },
-    },
-    {
-      id: "toggleStrictSpace",
-      display: "Toggle strict space",
-      exec: () => {
-        UpdateConfig.toggleStrictSpace();
-      },
-    },
-    {
-      id: "toggleBlindMode",
-      display: "Toggle blind mode",
-      exec: () => {
-        UpdateConfig.toggleBlindMode();
-      },
-    },
-    {
-      id: "toggleAlwaysShowWordsHistory",
-      display: "Toggle always show words history",
-      exec: () => {
-        UpdateConfig.toggleAlwaysShowWordsHistory();
-      },
-    },
-    {
-      id: "toggleIndicateTypos",
-      display: "Toggle indicate typos",
-      exec: () => {
-        UpdateConfig.toggleIndicateTypos();
-      },
-    },
-    {
-      id: "toggleHideExtraLetters",
-      display: "Toggle hide extra letters",
-      exec: () => {
-        UpdateConfig.toggleHideExtraLetters();
-      },
-    },
-    {
-      id: "toggleQuickEnd",
-      display: "Toggle quick end",
-      exec: () => {
-        UpdateConfig.toggleQuickEnd();
-      },
-    },
-    {
-      id: "singleListCommandLine",
-      display: "Single list command line...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsSingleListCommandLine);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeMinWpm",
-      display: "Change min wpm mode...",
-      alias: "minimum",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsMinWpm);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeMinAcc",
-      display: "Change min accuracy mode...",
-      alias: "minimum",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsMinAcc);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeOppositeShiftMode",
-      display: "Change opposite shift mode...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsOppositeShiftMode);
-        showCommandLine();
-      },
-    },
-    {
-      id: "togglePlaySoundOnError",
-      display: "Toggle play sound on error",
-      exec: () => {
-        UpdateConfig.togglePlaySoundOnError();
-      },
-    },
-    {
-      id: "toggleFlipTestColors",
-      display: "Toggle flip test colors",
-      exec: () => {
-        UpdateConfig.toggleFlipTestColors();
-      },
-    },
-    {
-      id: "toggleSmoothLineScroll",
-      display: "Toggle smooth line scroll",
-      exec: () => {
-        UpdateConfig.toggleSmoothLineScroll();
-      },
-    },
-    {
-      id: "toggleAlwaysShowDecimalPlaces",
-      display: "Toggle always show decimal places",
-      exec: () => {
-        UpdateConfig.toggleAlwaysShowDecimalPlaces();
-      },
-    },
-    {
-      id: "toggleAlwaysShowCPM",
-      display: "Toggle always show CPM",
-      exec: () => {
-        UpdateConfig.toggleAlwaysShowCPM();
-      },
-    },
-    {
-      id: "toggleStartGraphsAtZero",
-      display: "Toggle start graphs at zero",
-      exec: () => {
-        UpdateConfig.toggleStartGraphsAtZero();
-      },
-    },
-    {
-      id: "toggleSwapEscAndTab",
-      display: "Toggle swap esc and tab",
-      exec: () => {
-        UpdateConfig.toggleSwapEscAndTab();
-      },
-    },
-    {
-      id: "toggleShowAllLines",
-      display: "Toggle show all lines",
-      exec: () => {
-        UpdateConfig.toggleShowAllLines();
-      },
-    },
-    {
-      id: "toggleColorfulMode",
-      display: "Toggle colorful mode",
-      exec: () => {
-        UpdateConfig.toggleColorfulMode();
-      },
-    },
-    {
-      id: "toggleShowOutOfFocusWarning",
-      display: "Toggle out of focus warning",
-      exec: () => {
-        UpdateConfig.toggleShowOutOfFocusWarning();
-      },
-    },
-    {
-      id: "setEnableAds",
-      display: "Set enable ads...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsEnableAds);
-        showCommandLine();
-      },
-    },
-    {
-      id: "toggleCustomTheme",
-      display: "Toggle preset/custom theme",
-      exec: () => {
-        UpdateConfig.toggleCustomTheme();
-      },
-    },
-    {
-      id: "changeDifficulty",
-      display: "Change difficulty...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsDifficulty);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeCaretStyle",
-      display: "Change caret style...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsCaretStyle);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changePaceCaret",
-      display: "Change pace caret mode...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsPaceCaret);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changePaceCaretStyle",
-      display: "Change pace caret style...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsPaceCaretStyle);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeTimerStyle",
-      display: "Change timer/progress style...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsTimerStyle);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeTimerColor",
-      display: "Change timer/progress color...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsTimerColor);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeTimerOpacity",
-      display: "Change timer/progress opacity...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsTimerOpacity);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeHighlightMode",
-      display: "Change highlight mode...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsHighlightMode);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeTheme",
-      display: "Change theme...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsThemes);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeRandomTheme",
-      display: "Change random theme...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsRandomTheme);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeLanguage",
-      display: "Change language...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsLanguages);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeFunbox",
-      display: "Change funbox...",
-      alias: "fun box",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsFunbox);
-        showCommandLine();
-      },
-    },
-    {
-      id: "toggleCapsLockBackspace",
-      display: "Toggle caps lock backspace",
-      exec: () => {
-        UpdateConfig.toggleCapsLockBackspace();
-      },
-    },
-    {
-      id: "changeLayout",
-      display: "Change layout...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsLayouts);
-        showCommandLine();
-      },
-    },
-    {
-      id: "toggleKeymap",
-      display: "Change keymap mode...",
-      subgroup: true,
-      alias: "keyboard",
-      exec: () => {
-        currentCommands.push(commandsKeymapMode);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeKeymapStyle",
-      display: "Change keymap style...",
-      alias: "keyboard",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsKeymapStyle);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeKeymapLayout",
-      display: "Change keymap layout...",
-      alias: "keyboard",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsKeymapLayouts);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeFontSize",
-      display: "Change font size...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsFontSize);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changeFontFamily",
-      display: "Change font family...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsFonts);
-        showCommandLine();
-      },
-    },
-    {
-      id: "changePageWidth",
-      display: "Change page width...",
-      subgroup: true,
-      exec: () => {
-        currentCommands.push(commandsPageWidth);
-        showCommandLine();
-      },
-    },
-    {
-      id: "randomiseTheme",
-      display: "Next random theme",
-      exec: () => ThemeController.randomiseTheme(),
-    },
-    {
-      id: "viewTypingPage",
-      display: "View Typing Page",
-      alias: "start begin type test",
-      exec: () => $("#top #menu .icon-button.view-start").click(),
-    },
-    {
-      id: "viewLeaderboards",
-      display: "View Leaderboards Page",
-      exec: () => $("#top #menu .icon-button.view-leaderboards").click(),
-    },
-    {
-      id: "viewAbout",
-      display: "View About Page",
-      exec: () => $("#top #menu .icon-button.view-about").click(),
-    },
-    {
-      id: "viewSettings",
-      display: "View Settings Page",
-      exec: () => $("#top #menu .icon-button.view-settings").click(),
-    },
-    {
-      id: "viewAccount",
-      display: "View Account Page",
-      alias: "stats",
-      exec: () =>
-        $("#top #menu .icon-button.view-account").hasClass("hidden")
-          ? $("#top #menu .icon-button.view-login").click()
-          : $("#top #menu .icon-button.view-account").click(),
-    },
-    {
-      id: "toggleFullscreen",
-      display: "Toggle Fullscreen",
-      exec: () => {
-        Misc.toggleFullscreen();
-      },
-    },
-    {
-      id: "bailOut",
-      display: "Bail out...",
-      subgroup: true,
-      visible: false,
-      exec: () => {
-        currentCommands.push({
-          title: "Are you sure...",
-          list: [
-            {
-              id: "bailOutNo",
-              display: "Nevermind",
-              exec: () => {
-                hideCommandLine();
-              },
-              available: () => {
-                return canBailOut();
-              },
-            },
-            {
-              id: "bailOutForSure",
-              display: "Yes, I am sure",
-              exec: () => {
-                TestLogic.setBailout(true);
-                TestLogic.finish();
-              },
-              available: () => {
-                return canBailOut();
-              },
-            },
-          ],
-        });
-        showCommandLine();
-      },
-      available: () => {
-        return canBailOut();
-      },
-    },
-    {
-      id: "joinDiscord",
-      display: "Join the Discord server",
-      exec: () => {
-        window.open("https://discord.gg/monkeytype");
-      },
-    },
-    {
-      id: "repeatTest",
-      display: "Repeat test",
-      exec: () => {
-        TestLogic.restart(true);
-      },
-      available: () => {
-        return TestUI.resultVisible;
-      },
-    },
-    {
-      id: "practiceMissedWords",
-      display: "Practice missed words",
-      exec: () => {
-        PractiseMissed.init();
-      },
-      available: () => {
-        return (
-          TestUI.resultVisible && Object.keys(TestStats.missedWords).length > 0
-        );
-      },
-    },
-    {
-      id: "toggleWordHistory",
-      display: "Toggle word history",
-      exec: () => {
-        TestUI.toggleResultWords();
-      },
-      available: () => {
-        return TestUI.resultVisible;
-      },
-    },
-    {
-      id: "saveScreenshot",
-      display: "Save screenshot",
-      alias: "ss picture",
-      exec: () => {
-        setTimeout(() => {
-          TestUI.screenshot();
-        }, 500);
-      },
-      available: () => {
-        return TestUI.resultVisible;
-      },
-    },
-    {
-      id: "changeCustomModeText",
-      display: "Change custom text",
-      exec: () => {
-        CustomTextPopup.show();
-      },
-    },
-    {
-      id: "toggleMonkey",
-      display: "Toggle Monkey",
-      visible: false,
-      exec: () => {
-        UpdateConfig.toggleMonkey();
-      },
-    },
-  ],
+let showCommandLine = () => {
+  Focus.set(false);
+  $("#commandLine").removeClass("hidden");
+  $("#commandInput").addClass("hidden");
+  if ($("#commandLineWrapper").hasClass("hidden")) {
+    $("#commandLineWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate(
+        {
+          opacity: 1,
+        },
+        100
+      );
+  }
+  $("#commandLine input").val("");
+  updateSuggestedCommands();
+  $("#commandLine input").focus();
 };
 
 let commandsPageWidth = {
@@ -1592,6 +958,11 @@ function updateCommandsTagsList() {
   }
 }
 
+let commandsThemes = {
+  title: "Change theme...",
+  list: [],
+};
+
 Misc.getThemesList().then((themes) => {
   themes.forEach((theme) => {
     commandsThemes.list.push({
@@ -1607,6 +978,661 @@ Misc.getThemesList().then((themes) => {
     });
   });
 });
+
+let commands = {
+  title: "",
+  list: [
+    {
+      id: "togglePunctuation",
+      display: "Toggle punctuation",
+      exec: () => {
+        UpdateConfig.togglePunctuation();
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "changeMode",
+      display: "Change mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsMode);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeTimeConfig",
+      display: "Change time config...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsTimeConfig);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeWordCount",
+      display: "Change word count...",
+      alias: "words",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsWordCount);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeQuoteLength",
+      display: "Change quote length...",
+      alias: "quotes",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsQuoteLengthConfig);
+        showCommandLine();
+      },
+    },
+    {
+      visible: false,
+      id: "changeTags",
+      display: "Change tags...",
+      subgroup: true,
+      exec: () => {
+        updateCommandsTagsList();
+        currentCommands.push(commandsTags);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeConfidenceMode",
+      display: "Change confidence mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsConfidenceMode);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeStopOnError",
+      display: "Change stop on error...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsStopOnError);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeSoundOnClick",
+      display: "Change sound on click...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsSoundOnClick);
+        showCommandLine();
+      },
+    },
+    {
+      id: "toggleNumbers",
+      display: "Toggle numbers",
+      exec: () => {
+        UpdateConfig.toggleNumbers();
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "toggleSmoothCaret",
+      display: "Toggle smooth caret",
+      exec: () => {
+        UpdateConfig.toggleSmoothCaret();
+      },
+    },
+    {
+      id: "toggleQuickTab",
+      display: "Toggle quick tab mode",
+      exec: () => {
+        console.log("before command");
+        console.log(Config.quickTab);
+        UpdateConfig.toggleQuickTabMode();
+        console.log("after command");
+        console.log(Config.quickTab);
+      },
+    },
+    {
+      id: "changeRepeatQuotes",
+      display: "Change repeat quotes...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsRepeatQuotes);
+        showCommandLine();
+      },
+    },
+    {
+      id: "toggleShowLiveWpm",
+      display: "Toggle live wpm display",
+      exec: () => {
+        UpdateConfig.toggleShowLiveWpm();
+      },
+    },
+    {
+      id: "toggleShowLiveAcc",
+      display: "Toggle live accuracy display",
+      exec: () => {
+        UpdateConfig.toggleLiveAcc();
+      },
+    },
+    {
+      id: "toggleTimerBar",
+      display: "Toggle timer display",
+      exec: () => {
+        UpdateConfig.toggleShowTimerProgress();
+      },
+    },
+    {
+      id: "toggleKeyTips",
+      display: "Toggle keybind tips",
+      exec: () => {
+        UpdateConfig.toggleKeyTips();
+      },
+    },
+    {
+      id: "toggleFreedom",
+      display: "Toggle freedom mode",
+      exec: () => {
+        UpdateConfig.toggleFreedomMode();
+      },
+    },
+    {
+      id: "toggleStrictSpace",
+      display: "Toggle strict space",
+      exec: () => {
+        UpdateConfig.toggleStrictSpace();
+      },
+    },
+    {
+      id: "toggleBlindMode",
+      display: "Toggle blind mode",
+      exec: () => {
+        UpdateConfig.toggleBlindMode();
+      },
+    },
+    {
+      id: "toggleAlwaysShowWordsHistory",
+      display: "Toggle always show words history",
+      exec: () => {
+        UpdateConfig.toggleAlwaysShowWordsHistory();
+      },
+    },
+    {
+      id: "toggleIndicateTypos",
+      display: "Toggle indicate typos",
+      exec: () => {
+        UpdateConfig.toggleIndicateTypos();
+      },
+    },
+    {
+      id: "toggleHideExtraLetters",
+      display: "Toggle hide extra letters",
+      exec: () => {
+        UpdateConfig.toggleHideExtraLetters();
+      },
+    },
+    {
+      id: "toggleQuickEnd",
+      display: "Toggle quick end",
+      exec: () => {
+        UpdateConfig.toggleQuickEnd();
+      },
+    },
+    {
+      id: "singleListCommandLine",
+      display: "Single list command line...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsSingleListCommandLine);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeMinWpm",
+      display: "Change min wpm mode...",
+      alias: "minimum",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsMinWpm);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeMinAcc",
+      display: "Change min accuracy mode...",
+      alias: "minimum",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsMinAcc);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeOppositeShiftMode",
+      display: "Change opposite shift mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsOppositeShiftMode);
+        showCommandLine();
+      },
+    },
+    {
+      id: "togglePlaySoundOnError",
+      display: "Toggle play sound on error",
+      exec: () => {
+        UpdateConfig.togglePlaySoundOnError();
+      },
+    },
+    {
+      id: "toggleFlipTestColors",
+      display: "Toggle flip test colors",
+      exec: () => {
+        UpdateConfig.toggleFlipTestColors();
+      },
+    },
+    {
+      id: "toggleSmoothLineScroll",
+      display: "Toggle smooth line scroll",
+      exec: () => {
+        UpdateConfig.toggleSmoothLineScroll();
+      },
+    },
+    {
+      id: "toggleAlwaysShowDecimalPlaces",
+      display: "Toggle always show decimal places",
+      exec: () => {
+        UpdateConfig.toggleAlwaysShowDecimalPlaces();
+      },
+    },
+    {
+      id: "toggleAlwaysShowCPM",
+      display: "Toggle always show CPM",
+      exec: () => {
+        UpdateConfig.toggleAlwaysShowCPM();
+      },
+    },
+    {
+      id: "toggleStartGraphsAtZero",
+      display: "Toggle start graphs at zero",
+      exec: () => {
+        UpdateConfig.toggleStartGraphsAtZero();
+      },
+    },
+    {
+      id: "toggleSwapEscAndTab",
+      display: "Toggle swap esc and tab",
+      exec: () => {
+        UpdateConfig.toggleSwapEscAndTab();
+      },
+    },
+    {
+      id: "toggleShowAllLines",
+      display: "Toggle show all lines",
+      exec: () => {
+        UpdateConfig.toggleShowAllLines();
+      },
+    },
+    {
+      id: "toggleColorfulMode",
+      display: "Toggle colorful mode",
+      exec: () => {
+        UpdateConfig.toggleColorfulMode();
+      },
+    },
+    {
+      id: "toggleShowOutOfFocusWarning",
+      display: "Toggle out of focus warning",
+      exec: () => {
+        UpdateConfig.toggleShowOutOfFocusWarning();
+      },
+    },
+    {
+      id: "setEnableAds",
+      display: "Set enable ads...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsEnableAds);
+        showCommandLine();
+      },
+    },
+    {
+      id: "toggleCustomTheme",
+      display: "Toggle preset/custom theme",
+      exec: () => {
+        UpdateConfig.toggleCustomTheme();
+      },
+    },
+    {
+      id: "changeDifficulty",
+      display: "Change difficulty...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsDifficulty);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeCaretStyle",
+      display: "Change caret style...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsCaretStyle);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changePaceCaret",
+      display: "Change pace caret mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsPaceCaret);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changePaceCaretStyle",
+      display: "Change pace caret style...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsPaceCaretStyle);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeTimerStyle",
+      display: "Change timer/progress style...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsTimerStyle);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeTimerColor",
+      display: "Change timer/progress color...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsTimerColor);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeTimerOpacity",
+      display: "Change timer/progress opacity...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsTimerOpacity);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeHighlightMode",
+      display: "Change highlight mode...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsHighlightMode);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeTheme",
+      display: "Change theme...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsThemes);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeRandomTheme",
+      display: "Change random theme...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsRandomTheme);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeLanguage",
+      display: "Change language...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsLanguages);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeFunbox",
+      display: "Change funbox...",
+      alias: "fun box",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsFunbox);
+        showCommandLine();
+      },
+    },
+    {
+      id: "toggleCapsLockBackspace",
+      display: "Toggle caps lock backspace",
+      exec: () => {
+        UpdateConfig.toggleCapsLockBackspace();
+      },
+    },
+    {
+      id: "changeLayout",
+      display: "Change layout...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsLayouts);
+        showCommandLine();
+      },
+    },
+    {
+      id: "toggleKeymap",
+      display: "Change keymap mode...",
+      subgroup: true,
+      alias: "keyboard",
+      exec: () => {
+        currentCommands.push(commandsKeymapMode);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeKeymapStyle",
+      display: "Change keymap style...",
+      alias: "keyboard",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsKeymapStyle);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeKeymapLayout",
+      display: "Change keymap layout...",
+      alias: "keyboard",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsKeymapLayouts);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeFontSize",
+      display: "Change font size...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsFontSize);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changeFontFamily",
+      display: "Change font family...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsFonts);
+        showCommandLine();
+      },
+    },
+    {
+      id: "changePageWidth",
+      display: "Change page width...",
+      subgroup: true,
+      exec: () => {
+        currentCommands.push(commandsPageWidth);
+        showCommandLine();
+      },
+    },
+    {
+      id: "randomiseTheme",
+      display: "Next random theme",
+      exec: () => ThemeController.randomiseTheme(),
+    },
+    {
+      id: "viewTypingPage",
+      display: "View Typing Page",
+      alias: "start begin type test",
+      exec: () => $("#top #menu .icon-button.view-start").click(),
+    },
+    {
+      id: "viewLeaderboards",
+      display: "View Leaderboards Page",
+      exec: () => $("#top #menu .icon-button.view-leaderboards").click(),
+    },
+    {
+      id: "viewAbout",
+      display: "View About Page",
+      exec: () => $("#top #menu .icon-button.view-about").click(),
+    },
+    {
+      id: "viewSettings",
+      display: "View Settings Page",
+      exec: () => $("#top #menu .icon-button.view-settings").click(),
+    },
+    {
+      id: "viewAccount",
+      display: "View Account Page",
+      alias: "stats",
+      exec: () =>
+        $("#top #menu .icon-button.view-account").hasClass("hidden")
+          ? $("#top #menu .icon-button.view-login").click()
+          : $("#top #menu .icon-button.view-account").click(),
+    },
+    {
+      id: "toggleFullscreen",
+      display: "Toggle Fullscreen",
+      exec: () => {
+        Misc.toggleFullscreen();
+      },
+    },
+    {
+      id: "bailOut",
+      display: "Bail out...",
+      subgroup: true,
+      visible: false,
+      exec: () => {
+        currentCommands.push({
+          title: "Are you sure...",
+          list: [
+            {
+              id: "bailOutNo",
+              display: "Nevermind",
+              exec: () => {
+                hideCommandLine();
+              },
+              available: () => {
+                return canBailOut();
+              },
+            },
+            {
+              id: "bailOutForSure",
+              display: "Yes, I am sure",
+              exec: () => {
+                TestLogic.setBailout(true);
+                TestLogic.finish();
+              },
+              available: () => {
+                return canBailOut();
+              },
+            },
+          ],
+        });
+        showCommandLine();
+      },
+      available: () => {
+        return canBailOut();
+      },
+    },
+    {
+      id: "joinDiscord",
+      display: "Join the Discord server",
+      exec: () => {
+        window.open("https://discord.gg/monkeytype");
+      },
+    },
+    {
+      id: "repeatTest",
+      display: "Repeat test",
+      exec: () => {
+        TestLogic.restart(true);
+      },
+      available: () => {
+        return TestUI.resultVisible;
+      },
+    },
+    {
+      id: "practiceMissedWords",
+      display: "Practice missed words",
+      exec: () => {
+        PractiseMissed.init();
+      },
+      available: () => {
+        return (
+          TestUI.resultVisible && Object.keys(TestStats.missedWords).length > 0
+        );
+      },
+    },
+    {
+      id: "toggleWordHistory",
+      display: "Toggle word history",
+      exec: () => {
+        TestUI.toggleResultWords();
+      },
+      available: () => {
+        return TestUI.resultVisible;
+      },
+    },
+    {
+      id: "saveScreenshot",
+      display: "Save screenshot",
+      alias: "ss picture",
+      exec: () => {
+        setTimeout(() => {
+          TestUI.screenshot();
+        }, 500);
+      },
+      available: () => {
+        return TestUI.resultVisible;
+      },
+    },
+    {
+      id: "changeCustomModeText",
+      display: "Change custom text",
+      exec: () => {
+        CustomTextPopup.show();
+      },
+    },
+    {
+      id: "toggleMonkey",
+      display: "Toggle Monkey",
+      visible: false,
+      exec: () => {
+        UpdateConfig.toggleMonkey();
+      },
+    },
+  ],
+};
 
 function showFavouriteThemesAtTheTop() {
   if (Config.favThemes.length > 0) {
@@ -1763,7 +1789,7 @@ let commandsFunbox = {
       id: "changeFunboxNone",
       display: "none",
       exec: () => {
-        if (activateFunbox("none", null)) {
+        if (Funbox.activate("none", null)) {
           TestLogic.restart();
         }
       },
@@ -1777,18 +1803,13 @@ Misc.getFunboxList().then((funboxes) => {
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
       exec: () => {
-        if (activateFunbox(funbox.name, funbox.type)) {
+        if (Funbox.activate(funbox.name, funbox.type)) {
           TestLogic.restart();
         }
       },
     });
   });
 });
-
-let commandsThemes = {
-  title: "Change theme...",
-  list: [],
-};
 
 let commandsLanguages = {
   title: "Change language...",
@@ -2167,27 +2188,6 @@ function hideCommandLine() {
     );
   focusWords();
 }
-
-let showCommandLine = () => {
-  Focus.set(false);
-  $("#commandLine").removeClass("hidden");
-  $("#commandInput").addClass("hidden");
-  if ($("#commandLineWrapper").hasClass("hidden")) {
-    $("#commandLineWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate(
-        {
-          opacity: 1,
-        },
-        100
-      );
-  }
-  $("#commandLine input").val("");
-  updateSuggestedCommands();
-  $("#commandLine input").focus();
-};
 
 function showCommandInput(command, placeholder) {
   $("#commandLineWrapper").removeClass("hidden");
