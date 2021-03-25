@@ -907,7 +907,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   let funbox = $(e.currentTarget).attr("funbox");
   let type = $(e.currentTarget).attr("type");
-  activateFunbox(funbox, type);
+  Funbox.activate(funbox, type);
   setActiveFunboxButton();
 });
 

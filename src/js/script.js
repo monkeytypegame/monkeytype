@@ -9,99 +9,6 @@ let verifyUserWhenLoggedIn = null;
 // let CustomText.isWordRandom = false;
 // let CustomText.word = 1;
 
-async function activateFunbox(funbox, mode) {
-  if (TestLogic.active || TestUI.resultVisible) {
-    Notifications.add(
-      "You can only change the funbox before starting a test.",
-      0
-    );
-    return false;
-  }
-  if (Misc.getCurrentLanguage().ligatures) {
-    if (funbox == "choo_choo" || funbox == "earthquake") {
-      Notifications.add(
-        "Current language does not support this funbox mode",
-        0
-      );
-      activateFunbox("none", null);
-      return;
-    }
-  }
-  $("#funBoxTheme").attr("href", ``);
-  $("#words").removeClass("nospace");
-  // if (funbox === "none") {
-
-  Funbox.reset();
-
-  $("#wordsWrapper").removeClass("hidden");
-  // }
-
-  if (mode === null || mode === undefined) {
-    let list = await Misc.getFunboxList();
-    mode = list.filter((f) => f.name === funbox)[0].type;
-  }
-
-  ManualRestart.set();
-  if (mode === "style") {
-    if (funbox != undefined) {
-      $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
-      Funbox.setActive(funbox);
-    }
-
-    if (funbox === "simon_says") {
-      UpdateConfig.setKeymapMode("next");
-      settingsGroups.keymapMode.updateButton();
-      TestLogic.restart();
-    }
-
-    if (
-      funbox === "read_ahead" ||
-      funbox === "read_ahead_easy" ||
-      funbox === "read_ahead_hard"
-    ) {
-      UpdateConfig.setHighlightMode("letter", true);
-      TestLogic.restart();
-    }
-  } else if (mode === "script") {
-    if (funbox === "tts") {
-      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
-      UpdateConfig.setKeymapMode("off");
-      settingsGroups.keymapMode.updateButton();
-      TestLogic.restart();
-    } else if (funbox === "layoutfluid") {
-      UpdateConfig.setKeymapMode("next");
-      settingsGroups.keymapMode.updateButton();
-      UpdateConfig.setSavedLayout(Config.layout);
-      UpdateConfig.setLayout("qwerty");
-      settingsGroups.layout.updateButton();
-      UpdateConfig.setKeymapLayout("qwerty");
-      settingsGroups.keymapLayout.updateButton();
-      TestLogic.restart();
-    } else if (funbox === "memory") {
-      UpdateConfig.setMode("words");
-      UpdateConfig.setShowAllLines(true, true);
-      TestLogic.restart(false, true);
-      if (Config.keymapMode === "next") {
-        UpdateConfig.setKeymapMode("react");
-      }
-    } else if (funbox === "nospace") {
-      $("#words").addClass("nospace");
-      UpdateConfig.setHighlightMode("letter", true);
-      TestLogic.restart(false, true);
-    }
-    Funbox.setActive(funbox);
-  }
-
-  if (funbox !== "layoutfluid" || mode !== "script") {
-    if (Config.layout !== Config.savedLayout) {
-      UpdateConfig.setLayout(Config.savedLayout);
-      settingsGroups.layout.updateButton();
-    }
-  }
-  TestUI.updateModesNotice();
-  return true;
-}
-
 function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
   console.log(firebase.auth().currentUser.uid);
@@ -1951,14 +1858,14 @@ async function setupChallenge(challengeName) {
         UpdateConfig.setTheme(challenge.parameters[1]);
       }
       if (challenge.parameters[2] != null) {
-        activateFunbox(challenge.parameters[2]);
+        Funbox.activate(challenge.parameters[2]);
       }
     } else if (challenge.type === "accuracy") {
       UpdateConfig.setTimeConfig(0, true);
       UpdateConfig.setMode("time", true);
       UpdateConfig.setDifficulty("master", true);
     } else if (challenge.type === "funbox") {
-      activateFunbox(challenge.parameters[0]);
+      Funbox.activate(challenge.parameters[0]);
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.parameters[1] === "words") {
         UpdateConfig.setWordCount(challenge.parameters[2], true);

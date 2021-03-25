@@ -1,5 +1,9 @@
 import * as TestLogic from "./test-logic";
 import * as Notifications from "./notification-center";
+import * as TestUI from "./test-ui";
+import * as Misc from "./misc";
+import * as ManualRestart from "./manual-restart-tracker";
+import Config, * as UpdateConfig from "./config";
 
 export let active = "none";
 let memoryTimer = null;
@@ -29,10 +33,6 @@ export function resetMemoryTimer() {
   memoryInterval = clearInterval(memoryInterval);
   memoryTimer = null;
   hideMemoryTimer();
-}
-
-export function setActive(val) {
-  active = val;
 }
 
 function showMemoryTimer() {
@@ -67,4 +67,97 @@ export function toggleScript(...params) {
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(msg);
   }
+}
+
+export async function activate(funbox, mode) {
+  if (TestLogic.active || TestUI.resultVisible) {
+    Notifications.add(
+      "You can only change the funbox before starting a test.",
+      0
+    );
+    return false;
+  }
+  if (Misc.getCurrentLanguage().ligatures) {
+    if (funbox == "choo_choo" || funbox == "earthquake") {
+      Notifications.add(
+        "Current language does not support this funbox mode",
+        0
+      );
+      activate("none", null);
+      return;
+    }
+  }
+  $("#funBoxTheme").attr("href", ``);
+  $("#words").removeClass("nospace");
+  // if (funbox === "none") {
+
+  reset();
+
+  $("#wordsWrapper").removeClass("hidden");
+  // }
+
+  if (mode === null || mode === undefined) {
+    let list = await Misc.getFunboxList();
+    mode = list.filter((f) => f.name === funbox)[0].type;
+  }
+
+  ManualRestart.set();
+  if (mode === "style") {
+    if (funbox != undefined) {
+      $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
+      active = funbox;
+    }
+
+    if (funbox === "simon_says") {
+      UpdateConfig.setKeymapMode("next");
+      // settingsGroups.keymapMode.updateButton();
+      TestLogic.restart();
+    }
+
+    if (
+      funbox === "read_ahead" ||
+      funbox === "read_ahead_easy" ||
+      funbox === "read_ahead_hard"
+    ) {
+      UpdateConfig.setHighlightMode("letter", true);
+      TestLogic.restart();
+    }
+  } else if (mode === "script") {
+    if (funbox === "tts") {
+      $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+      UpdateConfig.setKeymapMode("off");
+      // settingsGroups.keymapMode.updateButton();
+      TestLogic.restart();
+    } else if (funbox === "layoutfluid") {
+      UpdateConfig.setKeymapMode("next");
+      // settingsGroups.keymapMode.updateButton();
+      UpdateConfig.setSavedLayout(Config.layout);
+      UpdateConfig.setLayout("qwerty");
+      // settingsGroups.layout.updateButton();
+      UpdateConfig.setKeymapLayout("qwerty");
+      // settingsGroups.keymapLayout.updateButton();
+      TestLogic.restart();
+    } else if (funbox === "memory") {
+      UpdateConfig.setMode("words");
+      UpdateConfig.setShowAllLines(true, true);
+      TestLogic.restart(false, true);
+      if (Config.keymapMode === "next") {
+        UpdateConfig.setKeymapMode("react");
+      }
+    } else if (funbox === "nospace") {
+      $("#words").addClass("nospace");
+      UpdateConfig.setHighlightMode("letter", true);
+      TestLogic.restart(false, true);
+    }
+    active = funbox;
+  }
+
+  if (funbox !== "layoutfluid" || mode !== "script") {
+    if (Config.layout !== Config.savedLayout) {
+      UpdateConfig.setLayout(Config.savedLayout);
+      // settingsGroups.layout.updateButton();
+    }
+  }
+  TestUI.updateModesNotice();
+  return true;
 }
