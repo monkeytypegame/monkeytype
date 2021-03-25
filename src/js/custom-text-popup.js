@@ -2,7 +2,7 @@ import * as CustomText from "./custom-text";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as Misc from "./misc";
 import * as Notifications from "./notification-center";
-import * as wordFilter from "./word-filter";
+import * as WordFilter from "./word-filter";
 import * as TestLogic from "./test-logic";
 
 let wrapper = "#customTextPopupWrapper";
@@ -157,5 +157,5 @@ $("#customTextPopup .apply").click(() => {
 });
 
 $("#customTextPopup .wordfilter").click(() => {
-  wordFilter.showWordFilterPopup();
+  WordFilter.showWordFilterPopup();
 })
