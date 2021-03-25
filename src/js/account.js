@@ -264,7 +264,8 @@ firebase.auth().onAuthStateChanged(function (user) {
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
 
-    showFavouriteThemesAtTheTop();
+    // showFavouriteThemesAtTheTop();
+    CommandlineLists.updateThemeCommands();
 
     let text = "Account created on " + user.metadata.creationTime;
 
@@ -459,7 +460,7 @@ function getAccountDataAndInit() {
       refreshThemeButtons();
       AccountIcon.loading(false);
       updateFilterTags();
-      updateCommandsTagsList();
+      CommandlineLists.updateTagCommands();
       TagController.loadActiveFromCookie();
       updateResultEditTagsPanelButtons();
       showAccountSettingsSection();

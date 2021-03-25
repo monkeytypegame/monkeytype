@@ -431,7 +431,7 @@ export function updateModesNotice() {
 
   if (TestLogic.isRepeated) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" function="TestLogic.restart()" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
+      `<div class="text-button restart" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
     );
   }
 
@@ -470,7 +470,7 @@ export function updateModesNotice() {
 
   if (Config.blindMode) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" function="toggleBlindMode()"><i class="fas fa-eye-slash"></i>blind</div>`
+      `<div class="text-button blind"><i class="fas fa-eye-slash"></i>blind</div>`
     );
   }
 
@@ -743,4 +743,12 @@ export function toggleResultWords() {
 
 $(document.body).on("click", "#copyResultToClipboardButton", () => {
   screenshot();
+});
+
+$(document).on("click", "#testModesNotice .text-button.restart", (event) => {
+  TestLogic.restart();
+});
+
+$(document).on("click", "#testModesNotice .text-button.blind", (event) => {
+  UpdateConfig.toggleBlindMode();
 });

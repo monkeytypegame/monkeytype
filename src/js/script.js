@@ -705,8 +705,8 @@ $(document.body).on("click", "#supportMeWrapper", () => {
 });
 
 $(document.body).on("click", "#supportMeWrapper .button.ads", () => {
-  currentCommands.push(commandsEnableAds);
-  showCommandLine();
+  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
+  Commandline.show();
   $("#supportMeWrapper")
     .css("opacity", 1)
     .animate({ opacity: 0 }, 125, () => {
@@ -723,8 +723,8 @@ $(document.body).on("click", "#supportMeWrapper a.button", () => {
 });
 
 $(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
-  currentCommands.push(commandsEnableAds);
-  showCommandLine();
+  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
+  Commandline.show();
 });
 
 $("#wordsInput").keypress((event) => {
@@ -759,22 +759,25 @@ $(document).mousemove(function (event) {
 });
 
 $(document).on("click", "#testModesNotice .text-button", (event) => {
-  let commands = eval($(event.currentTarget).attr("commands"));
+  // console.log("CommandlineLists."+$(event.currentTarget).attr("commands"));
+  let commands = CommandlineLists.getList(
+    $(event.currentTarget).attr("commands")
+  );
   let func = $(event.currentTarget).attr("function");
   if (commands !== undefined) {
     if ($(event.currentTarget).attr("commands") === "commandsTags") {
-      updateCommandsTagsList();
+      CommandlineLists.updateTagCommands();
     }
-    currentCommands.push(commands);
-    showCommandLine();
+    CommandlineLists.pushCurrent(commands);
+    Commandline.show();
   } else if (func != undefined) {
     eval(func);
   }
 });
 
 $(document).on("click", "#commandLineMobileButton", () => {
-  currentCommands = [commands];
-  showCommandLine();
+  CommandlineLists.setCurrent(CommandlineLists.defaultCommands);
+  Commandline.show();
 });
 
 let dontInsertSpace = false;
@@ -1688,14 +1691,14 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
     // if (Config.customTheme) {
     //   toggleCustomTheme();
     // }
-    currentCommands.push(commandsThemes);
-    showCommandLine();
+    CommandlineLists.setCurrent(CommandlineLists.themeCommands);
+    Commandline.show();
   }
 });
 
 $(document).on("click", ".keymap .r5 #KeySpace", (e) => {
-  currentCommands.push(commandsKeymapLayouts);
-  showCommandLine();
+  CommandlineLists.setCurrent(CommandlineLists.commandsKeymapLayouts);
+  Commandline.show();
 });
 
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {

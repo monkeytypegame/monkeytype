@@ -127,6 +127,9 @@ const refactoredSrc = [
   "./src/js/test/pb-crown.js",
   "./src/js/test/test-timer.js",
   "./src/js/settings/language-picker.js",
+  "./src/js/commandline.js",
+  "./src/js/commandline-lists.js",
+  "./src/js/commandline.js",
 ];
 
 //legacy files
@@ -134,8 +137,6 @@ const refactoredSrc = [
 const globalSrc = [
   "./src/js/global-dependencies.js",
   "./src/js/simple-popups.js",
-  "./src/js/userconfig.js",
-  "./src/js/commandline.js",
   "./src/js/settings.js",
   "./src/js/account.js",
   "./src/js/script.js",

@@ -8,7 +8,6 @@ Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
 
 import * as DB from "./db";
-
 import {
   showBackgroundLoader,
   hideBackgroundLoader,
@@ -52,3 +51,5 @@ import * as TagController from "./tag-controller";
 import * as TestTimer from "./test-timer";
 import * as LanguagePicker from "./language-picker";
 import * as UI from "./ui";
+import * as Commandline from "./commandline";
+import * as CommandlineLists from "./commandline-lists";

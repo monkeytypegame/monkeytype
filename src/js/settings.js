@@ -667,7 +667,8 @@ function toggleFavouriteTheme(themename) {
   }
   UpdateConfig.saveToCookie();
   refreshThemeButtons();
-  showFavouriteThemesAtTheTop();
+  // showFavouriteThemesAtTheTop();
+  CommandlineLists.updateThemeCommands();
 }
 
 function showAccountSettingsSection() {
