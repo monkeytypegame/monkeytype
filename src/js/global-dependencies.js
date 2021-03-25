@@ -13,9 +13,7 @@ import {
   showBackgroundLoader,
   hideBackgroundLoader,
   swapElements,
-  updateTestModesNotice,
   focusWords,
-  updateKeytips,
 } from "./dom-util";
 import * as Misc from "./misc";
 import * as CloudFunctions from "./cloud-functions";
@@ -43,9 +41,8 @@ import * as PractiseMissed from "./practise-missed";
 import * as TestUI from "./test-ui";
 import * as Keymap from "./keymap";
 import * as LiveWpm from "./live-wpm";
-import * as CapsWarning from "./caps-warning";
+import "./caps-warning";
 import * as LiveAcc from "./live-acc";
-import * as TestLeaderboards from "./test-leaderboards";
 import * as TimerProgress from "./timer-progress";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
@@ -55,4 +52,3 @@ import * as TagController from "./tag-controller";
 import * as TestTimer from "./test-timer";
 import * as LanguagePicker from "./language-picker";
 import * as UI from "./ui";
-import * as PbCrown from "./pb-crown";
