@@ -834,7 +834,7 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
   let theme = $(e.currentTarget).attr("theme");
   if (!$(e.target).hasClass("favButton")) {
     UpdateConfig.setTheme(theme);
-    UpdateConfig.setActiveThemeButton();
+    setActiveThemeButton();
     refreshThemeButtons();
   }
 });
