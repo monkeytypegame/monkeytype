@@ -104,6 +104,7 @@ const refactoredSrc = [
   "./src/js/chart-controller.js",
   "./src/js/theme-controller.js",
   "./src/js/test/caret.js",
+  "./src/js/word-filter.js",
   "./src/js/custom-text-popup.js",
   "./src/js/manual-restart-tracker.js",
   "./src/js/config.js",
