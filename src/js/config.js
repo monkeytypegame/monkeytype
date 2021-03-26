@@ -1182,7 +1182,6 @@ export function toggleCustomTheme(nosave) {
 export function setCustomThemeColors(colors, nosave) {
   if (colors !== undefined) {
     config.customThemeColors = colors;
-    ThemeController.setCustomColors(colors);
     // ThemeController.set("custom");
     // applyCustomThemeColors();
   }

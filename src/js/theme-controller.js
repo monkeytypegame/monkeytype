@@ -7,19 +7,7 @@ import { swapElements } from "./dom-util";
 
 let isPreviewingTheme = false;
 let randomTheme = null;
-//TODO remove current theme and customcolors once config is a module
-let currentTheme = "serika_dark";
-let customColors = [
-  "#323437",
-  "#e2b714",
-  "#e2b714",
-  "#646669",
-  "#d1d0c5",
-  "#ca4754",
-  "#7e2a33",
-  "#ca4754",
-  "#7e2a33",
-];
+
 export const colorVars = [
   "--bg-color",
   "--main-color",
@@ -99,7 +87,10 @@ export function apply(themeName) {
 
   if (themeName === "custom") {
     colorVars.forEach((e, index) => {
-      document.documentElement.style.setProperty(e, customColors[index]);
+      document.documentElement.style.setProperty(
+        e,
+        Config.customThemeColors[index]
+      );
     });
   }
 
@@ -124,22 +115,16 @@ export function preview(themeName) {
 }
 
 export function set(themeName) {
-  currentTheme = themeName;
   apply(themeName);
 }
 
 export function clearPreview() {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
-    apply(currentTheme);
+    apply(Config.theme);
   }
 }
 
-export function setCustomColors(colors) {
-  customColors = colors;
-}
-
-//TODO remove config once config is a module
 export function randomiseTheme() {
   var randomList;
   Misc.getThemesList().then((themes) => {
