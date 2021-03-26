@@ -1,5 +1,5 @@
 import * as TestLogic from "./test-logic";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 import * as Funbox from "./funbox";
 import * as Misc from "./misc";
 import * as TestStats from "./test-stats";
@@ -182,6 +182,10 @@ export function pushKeypressSpacing(val) {
   keypressTimings.spacing.array.push(val);
 }
 
+export function setKeypressSpacing(val) {
+  keypressTimings.spacing.current = val;
+}
+
 export function recordKeypressSpacing() {
   let now = performance.now();
   let diff = Math.abs(keypressTimings.spacing.current - now);
@@ -189,10 +193,6 @@ export function recordKeypressSpacing() {
     pushKeypressSpacing(diff);
   }
   setKeypressSpacing(now);
-}
-
-export function setKeypressSpacing(val) {
-  keypressTimings.spacing.current = val;
 }
 
 export function resetKeypressTimings() {

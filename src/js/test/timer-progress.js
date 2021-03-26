@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 import * as CustomText from "./custom-text";
 import * as Misc from "./misc";
 import * as TestLogic from "./test-logic";

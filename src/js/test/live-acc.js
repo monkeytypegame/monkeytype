@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 
 export function update(acc) {
   let number = Math.floor(acc);

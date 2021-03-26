@@ -2,7 +2,7 @@ import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "./misc";
 import * as Notifications from "./notification-center";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 import { swapElements } from "./dom-util";
 
 let isPreviewingTheme = false;
@@ -31,6 +31,47 @@ export const colorVars = [
   "--colorful-error-color",
   "--colorful-error-extra-color",
 ];
+
+function updateFavicon(size, curveSize) {
+  let maincolor, bgcolor;
+
+  bgcolor = ThemeColors.bg;
+  maincolor = ThemeColors.main;
+
+  if (bgcolor == maincolor) {
+    bgcolor = "#111";
+    maincolor = "#eee";
+  }
+
+  var canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  let ctx = canvas.getContext("2d");
+  ctx.beginPath();
+  ctx.moveTo(0, curveSize);
+  //top left
+  ctx.quadraticCurveTo(0, 0, curveSize, 0);
+  ctx.lineTo(size - curveSize, 0);
+  //top right
+  ctx.quadraticCurveTo(size, 0, size, curveSize);
+  ctx.lineTo(size, size - curveSize);
+  ctx.quadraticCurveTo(size, size, size - curveSize, size);
+  ctx.lineTo(curveSize, size);
+  ctx.quadraticCurveTo(0, size, 0, size - curveSize);
+  ctx.fillStyle = bgcolor;
+  ctx.fill();
+  ctx.font = "900 " + (size / 2) * 1.2 + "px Roboto Mono";
+  ctx.textAlign = "center";
+  ctx.fillStyle = maincolor;
+  ctx.fillText("mt", size / 2 + size / 32, (size / 3) * 2.1);
+  $("#favicon").attr("href", canvas.toDataURL("image/png"));
+}
+
+function clearCustomTheme() {
+  colorVars.forEach((e) => {
+    document.documentElement.style.setProperty(e, "");
+  });
+}
 
 export function apply(themeName) {
   clearCustomTheme();
@@ -116,45 +157,4 @@ export function randomiseTheme() {
 
 export function clearRandom() {
   randomTheme = null;
-}
-
-function updateFavicon(size, curveSize) {
-  let maincolor, bgcolor;
-
-  bgcolor = ThemeColors.bg;
-  maincolor = ThemeColors.main;
-
-  if (bgcolor == maincolor) {
-    bgcolor = "#111";
-    maincolor = "#eee";
-  }
-
-  var canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  let ctx = canvas.getContext("2d");
-  ctx.beginPath();
-  ctx.moveTo(0, curveSize);
-  //top left
-  ctx.quadraticCurveTo(0, 0, curveSize, 0);
-  ctx.lineTo(size - curveSize, 0);
-  //top right
-  ctx.quadraticCurveTo(size, 0, size, curveSize);
-  ctx.lineTo(size, size - curveSize);
-  ctx.quadraticCurveTo(size, size, size - curveSize, size);
-  ctx.lineTo(curveSize, size);
-  ctx.quadraticCurveTo(0, size, 0, size - curveSize);
-  ctx.fillStyle = bgcolor;
-  ctx.fill();
-  ctx.font = "900 " + (size / 2) * 1.2 + "px Roboto Mono";
-  ctx.textAlign = "center";
-  ctx.fillStyle = maincolor;
-  ctx.fillText("mt", size / 2 + size / 32, (size / 3) * 2.1);
-  $("#favicon").attr("href", canvas.toDataURL("image/png"));
-}
-
-function clearCustomTheme() {
-  colorVars.forEach((e) => {
-    document.documentElement.style.setProperty(e, "");
-  });
 }

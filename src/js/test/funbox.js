@@ -9,32 +9,6 @@ export let active = "none";
 let memoryTimer = null;
 let memoryInterval = null;
 
-export function reset() {
-  active = "none";
-  resetMemoryTimer();
-}
-
-export function startMemoryTimer() {
-  resetMemoryTimer();
-  memoryTimer = Math.round(Math.pow(TestLogic.words.length, 1.2));
-  updateMemoryTimer(memoryTimer);
-  showMemoryTimer();
-  memoryInterval = setInterval(() => {
-    memoryTimer -= 1;
-    memoryTimer == 0 ? hideMemoryTimer() : updateMemoryTimer(memoryTimer);
-    if (memoryTimer <= 0) {
-      resetMemoryTimer();
-      $("#wordsWrapper").addClass("hidden");
-    }
-  }, 1000);
-}
-
-export function resetMemoryTimer() {
-  memoryInterval = clearInterval(memoryInterval);
-  memoryTimer = null;
-  hideMemoryTimer();
-}
-
 function showMemoryTimer() {
   $("#typingTest #memoryTimer").stop(true, true).animate(
     {
@@ -53,10 +27,36 @@ function hideMemoryTimer() {
   );
 }
 
+export function resetMemoryTimer() {
+  memoryInterval = clearInterval(memoryInterval);
+  memoryTimer = null;
+  hideMemoryTimer();
+}
+
 function updateMemoryTimer(sec) {
   $("#typingTest #memoryTimer").text(
     `Timer left to memorise all words: ${sec}s`
   );
+}
+
+export function startMemoryTimer() {
+  resetMemoryTimer();
+  memoryTimer = Math.round(Math.pow(TestLogic.words.length, 1.2));
+  updateMemoryTimer(memoryTimer);
+  showMemoryTimer();
+  memoryInterval = setInterval(() => {
+    memoryTimer -= 1;
+    memoryTimer == 0 ? hideMemoryTimer() : updateMemoryTimer(memoryTimer);
+    if (memoryTimer <= 0) {
+      resetMemoryTimer();
+      $("#wordsWrapper").addClass("hidden");
+    }
+  }, 1000);
+}
+
+export function reset() {
+  active = "none";
+  resetMemoryTimer();
 }
 
 export function toggleScript(...params) {

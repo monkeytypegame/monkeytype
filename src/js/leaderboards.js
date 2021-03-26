@@ -4,24 +4,6 @@ import * as Notifications from "./notification-center";
 
 let currentLeaderboard = "time_15";
 
-export function show() {
-  if ($("#leaderboardsWrapper").hasClass("hidden")) {
-    $("#leaderboardsWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate(
-        {
-          opacity: 1,
-        },
-        125,
-        () => {
-          update();
-        }
-      );
-  }
-}
-
 export function hide() {
   $("#leaderboardsWrapper")
     .stop(true, true)
@@ -266,6 +248,24 @@ function update() {
       hideBackgroundLoader();
       Notifications.add("Something went wrong: " + e.message, -1);
     });
+}
+
+export function show() {
+  if ($("#leaderboardsWrapper").hasClass("hidden")) {
+    $("#leaderboardsWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate(
+        {
+          opacity: 1,
+        },
+        125,
+        () => {
+          update();
+        }
+      );
+  }
 }
 
 $("#leaderboardsWrapper").click((e) => {

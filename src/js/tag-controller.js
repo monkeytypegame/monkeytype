@@ -2,20 +2,6 @@ import * as DB from "./db";
 import * as TestUI from "./test-ui";
 import * as Misc from "./misc";
 
-export function toggle(tagid, nosave = false) {
-  DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.id === tagid) {
-      if (tag.active === undefined) {
-        tag.active = true;
-      } else {
-        tag.active = !tag.active;
-      }
-    }
-  });
-  TestUI.updateModesNotice();
-  if (!nosave) saveActiveToCookie();
-}
-
 export function saveActiveToCookie() {
   let tags = [];
 
@@ -34,6 +20,20 @@ export function saveActiveToCookie() {
     // });
     Misc.setCookie("activeTags", JSON.stringify(tags), 365);
   } catch (e) {}
+}
+
+export function toggle(tagid, nosave = false) {
+  DB.getSnapshot().tags.forEach((tag) => {
+    if (tag.id === tagid) {
+      if (tag.active === undefined) {
+        tag.active = true;
+      } else {
+        tag.active = !tag.active;
+      }
+    }
+  });
+  TestUI.updateModesNotice();
+  if (!nosave) saveActiveToCookie();
 }
 
 export function loadActiveFromCookie() {

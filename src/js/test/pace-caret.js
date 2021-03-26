@@ -1,12 +1,30 @@
 import * as TestLogic from "./test-logic";
 import * as TestUI from "./test-ui";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 import * as DB from "./db";
 
 export let settings = null;
 
-export function start() {
-  update(performance.now() + settings.spc * 1000);
+function resetCaretPosition() {
+  if (Config.paceCaret === "off") return;
+  if (!$("#paceCaret").hasClass("hidden")) {
+    $("#paceCaret").addClass("hidden");
+  }
+  if (Config.mode === "zen") return;
+
+  let caret = $("#paceCaret");
+  let firstLetter = document
+    .querySelector("#words .word")
+    .querySelector("letter");
+
+  caret.stop(true, true).animate(
+    {
+      top: firstLetter.offsetTop - $(firstLetter).height() / 4,
+      left: firstLetter.offsetLeft,
+    },
+    0,
+    "linear"
+  );
 }
 
 export async function init() {
@@ -202,28 +220,6 @@ export function update(expectedStepEnd) {
   }
 }
 
-function resetCaretPosition() {
-  if (Config.paceCaret === "off") return;
-  if (!$("#paceCaret").hasClass("hidden")) {
-    $("#paceCaret").addClass("hidden");
-  }
-  if (Config.mode === "zen") return;
-
-  let caret = $("#paceCaret");
-  let firstLetter = document
-    .querySelector("#words .word")
-    .querySelector("letter");
-
-  caret.stop(true, true).animate(
-    {
-      top: firstLetter.offsetTop - $(firstLetter).height() / 4,
-      left: firstLetter.offsetLeft,
-    },
-    0,
-    "linear"
-  );
-}
-
 export function reset() {
   settings = null;
   if (settings !== null) clearTimeout(settings.timeout);
@@ -249,4 +245,8 @@ export function handleSpace(correct, currentWord) {
       settings.correction += currentWord.length + 1;
     }
   }
+}
+
+export function start() {
+  update(performance.now() + settings.spc * 1000);
 }

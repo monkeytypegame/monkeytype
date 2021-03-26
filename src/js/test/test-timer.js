@@ -10,7 +10,6 @@ import * as Funbox from "./funbox";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
 import * as Keymap from "./keymap";
-import * as TestUI from "./test-ui";
 
 export let time = 0;
 let timer = null;
