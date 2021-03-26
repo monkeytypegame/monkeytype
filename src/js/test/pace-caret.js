@@ -157,14 +157,13 @@ export function update(expectedStepEnd) {
       let newIndex =
         settings.currentWordIndex -
         (TestLogic.words.currentIndex - TestUI.currentWordElementIndex);
+      let word = document.querySelectorAll("#words .word")[newIndex];
       if (settings.currentLetterIndex === -1) {
-        currentLetter = document
-          .querySelectorAll("#words .word")
-          [newIndex].querySelectorAll("letter")[0];
+        currentLetter = word.querySelectorAll("letter")[0];
       } else {
-        currentLetter = document
-          .querySelectorAll("#words .word")
-          [newIndex].querySelectorAll("letter")[settings.currentLetterIndex];
+        currentLetter = word.querySelectorAll("letter")[
+          settings.currentLetterIndex
+        ];
       }
       newTop = currentLetter.offsetTop - $(currentLetter).height() / 5;
       newLeft;
