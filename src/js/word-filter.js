@@ -1,4 +1,6 @@
+import { setCustomThemeColors } from "./config";
 import * as Misc from "./misc";
+import * as ThemeColors from "./theme-colors";
 //import * as config from "./userconfig";
 
 export async function showWordFilterPopup(){
@@ -13,6 +15,9 @@ export async function showWordFilterPopup(){
             <option value=${language}>${prettyLang}</option>
         `)
     })
+    $("#languageList").select2({
+        minimumResultsForSearch: -1,
+    });
 }
 
 function hideWordFilterPopup(){
@@ -70,7 +75,6 @@ async function filter(language){
         let test2 = regexcl.test(word);
         if((test1 && !test2 || test1 && filterout == "") && word.length <= maxLength && word.length >= minLength){
             filteredWords.push(word);
-            console.log(test1, test2, word, filterout, filterin, regexcl);
         }
     }
     return filteredWords;
