@@ -414,11 +414,6 @@ a:hover {
     gap: 1rem;
     width: 60vw;
 
-    .wordfilter{
-      width: 33%;
-      justify-self:right;
-    }
-
     textarea {
       background: var(--bg-color);
       padding: 1rem;
@@ -432,8 +427,6 @@ a:hover {
       resize: vertical;
       height: 200px;
       color: var(--text-color);
-      overflow-x: hidden;
-      overflow-y: scroll;
     }
 
     .inputs {
@@ -515,81 +508,6 @@ a:hover {
           background: var(--main-color);
         }
       }
-    }
-  }
-}
-
-#wordFilterPopupWrapper{
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
-  #wordFilterPopup{
-    background: var(--bg-color);
-    border-radius: var(--roundness);
-    padding: 2rem;
-    display: grid;
-    gap: 1rem;
-    width: 400px;
-
-    .lengthgrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 0.2rem;
-    }
-
-    .wordLength{
-      width: 10rem;
-    }
-
-    #languageList{
-      background: rgba(0, 0, 0, 0.1);
-      height: fit-content;
-      padding: 5px;
-      border-radius: 5px;
-      color: var(--text-color);
-      font: var(--font);
-      border: none;
-      
-
-      option{
-        background: var(--bg-color);
-      }
-    }
-    #languageList:focus{
-      height: fit-content;
-      padding: 5px;
-      border-radius: 5px;
-      color: var(--text-color);
-      font: var(--font);
-      border: none;
-      outline: none;
-    }
-    #languageList:active{
-      height: fit-content;
-      padding: 5px;
-      border-radius: 5px;
-      color: var(--text-color);
-      font: var(--font);
-      border: none;
-      outline: none;
-    }
-    .wftip{
-      color: var(--sub-color);
-      font-size: 0.8rem;
-    }
-
-    .wfload{
-      justify-self: center;
     }
   }
 }
