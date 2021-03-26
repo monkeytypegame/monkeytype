@@ -12,7 +12,6 @@ export function stopAnimation() {
   }
 }
 
-//TODO remove config when module
 export function startAnimation() {
   if (caretAnimating === false) {
     if (Config.smoothCaret) {
@@ -28,8 +27,6 @@ export function hide() {
   $("#caret").addClass("hidden");
 }
 
-//TODO remove this after test logic is a module
-//TODO remove config when module
 export function updatePosition() {
   if ($("#wordsWrapper").hasClass("hidden")) return;
   if ($("#caret").hasClass("off")) {
