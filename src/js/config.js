@@ -114,42 +114,15 @@ let defaultConfig = {
   oppositeShiftMode: "off",
 };
 
-let config = {
-  ...defaultConfig,
-};
-
-export function reset() {
-  config = {
-    ...defaultConfig,
-  };
-  apply();
-  saveToCookie();
-}
-
 function isConfigKeyValid(name) {
   if (name === null || name === undefined || name === "") return false;
   if (name.length > 30) return false;
   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
 }
 
-export function loadFromCookie() {
-  console.log("loading cookie config");
-  // let newConfig = $.cookie("config");
-  let newConfig = Misc.getCookie("config");
-  if (newConfig !== undefined && newConfig !== "") {
-    try {
-      newConfig = JSON.parse(newConfig);
-    } catch (e) {
-      newConfig = {};
-    }
-    apply(newConfig);
-    console.log("applying cookie config");
-    cookieConfig = newConfig;
-    saveToCookie(true);
-    console.log("saving cookie config");
-  }
-  TestLogic.restart(false, true);
-}
+let config = {
+  ...defaultConfig,
+};
 
 export async function saveToCookie(noDbCheck = false) {
   if (!dbConfigLoaded && !noDbCheck) {
@@ -166,6 +139,134 @@ export async function saveToCookie(noDbCheck = false) {
   Misc.setCookie("config", JSON.stringify(save), 365);
   // restartCount = 0;
   if (!noDbCheck) await DB.saveConfig(save);
+}
+
+//numbers
+export function setNumbers(numb, nosave) {
+  if (config.mode === "quote") {
+    numb = false;
+  }
+  config.numbers = numb;
+  if (!config.numbers) {
+    $("#top .config .numbersMode .text-button").removeClass("active");
+  } else {
+    $("#top .config .numbersMode .text-button").addClass("active");
+  }
+  if (!nosave) saveToCookie();
+}
+
+export function toggleNumbers() {
+  config.numbers = !config.numbers;
+  if (config.mode === "quote") {
+    config.numbers = false;
+  }
+  if (config.numbers) {
+    $("#top .config .numbersMode .text-button").addClass("active");
+  } else {
+    $("#top .config .numbersMode .text-button").removeClass("active");
+  }
+  saveToCookie();
+}
+
+//punctuation
+export function setPunctuation(punc, nosave) {
+  if (config.mode === "quote") {
+    punc = false;
+  }
+  config.punctuation = punc;
+  if (!config.punctuation) {
+    $("#top .config .punctuationMode .text-button").removeClass("active");
+  } else {
+    $("#top .config .punctuationMode .text-button").addClass("active");
+  }
+  if (!nosave) saveToCookie();
+}
+
+export function togglePunctuation() {
+  config.punctuation = !config.punctuation;
+  if (config.mode === "quote") {
+    config.punctuation = false;
+  }
+  if (config.punctuation) {
+    $("#top .config .punctuationMode .text-button").addClass("active");
+  } else {
+    $("#top .config .punctuationMode .text-button").removeClass("active");
+  }
+  saveToCookie();
+}
+
+export function setMode(mode, nosave) {
+  if (TestUI.testRestarting) return;
+  if (mode !== "words" && Funbox.active === "memory") {
+    Notifications.add("Memory funbox can only be used with words mode.", 0);
+    return;
+  }
+
+  config.mode = mode;
+  $("#top .config .mode .text-button").removeClass("active");
+  $("#top .config .mode .text-button[mode='" + mode + "']").addClass("active");
+  if (config.mode == "time") {
+    $("#top .config .wordCount").addClass("hidden");
+    $("#top .config .time").removeClass("hidden");
+    $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
+    $("#top .config .punctuationMode").removeClass("hidden");
+    $("#top .config .numbersMode").removeClass("hidden");
+    $("#top .config .quoteLength").addClass("hidden");
+  } else if (config.mode == "words") {
+    $("#top .config .wordCount").removeClass("hidden");
+    $("#top .config .time").addClass("hidden");
+    $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
+    $("#top .config .punctuationMode").removeClass("hidden");
+    $("#top .config .numbersMode").removeClass("hidden");
+    $("#top .config .quoteLength").addClass("hidden");
+  } else if (config.mode == "custom") {
+    if (
+      Funbox.active === "58008" ||
+      Funbox.active === "gibberish" ||
+      Funbox.active === "ascii"
+    ) {
+      Funbox.setAcitve("none");
+      TestUI.updateModesNotice();
+    }
+    $("#top .config .wordCount").addClass("hidden");
+    $("#top .config .time").addClass("hidden");
+    $("#top .config .customText").removeClass("hidden");
+    $("#top .config .punctuationMode").removeClass("disabled");
+    $("#top .config .numbersMode").removeClass("disabled");
+    $("#top .config .punctuationMode").removeClass("hidden");
+    $("#top .config .numbersMode").removeClass("hidden");
+    $("#top .config .quoteLength").addClass("hidden");
+    setPunctuation(false, true);
+    setNumbers(false, true);
+  } else if (config.mode == "quote") {
+    setPunctuation(false, nosave);
+    setNumbers(false, nosave);
+    $("#top .config .wordCount").addClass("hidden");
+    $("#top .config .time").addClass("hidden");
+    $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").addClass("disabled");
+    $("#top .config .numbersMode").addClass("disabled");
+    $("#top .config .punctuationMode").removeClass("hidden");
+    $("#top .config .numbersMode").removeClass("hidden");
+    $("#result .stats .source").removeClass("hidden");
+    $("#top .config .quoteLength").removeClass("hidden");
+  } else if (config.mode == "zen") {
+    $("#top .config .wordCount").addClass("hidden");
+    $("#top .config .time").addClass("hidden");
+    $("#top .config .customText").addClass("hidden");
+    $("#top .config .punctuationMode").addClass("hidden");
+    $("#top .config .numbersMode").addClass("hidden");
+    $("#top .config .quoteLength").addClass("hidden");
+    if (config.paceCaret != "off") {
+      Notifications.add(`Pace caret will not work with zen mode.`, 0);
+    }
+    // setPaceCaret("off", true);
+  }
+  if (!nosave) saveToCookie();
 }
 
 export function setPlaySoundOnError(val, nosave) {
@@ -954,60 +1055,6 @@ export function toggleQuickTabMode() {
   console.log(config.quickTab);
 }
 
-//numbers
-export function setNumbers(numb, nosave) {
-  if (config.mode === "quote") {
-    numb = false;
-  }
-  config.numbers = numb;
-  if (!config.numbers) {
-    $("#top .config .numbersMode .text-button").removeClass("active");
-  } else {
-    $("#top .config .numbersMode .text-button").addClass("active");
-  }
-  if (!nosave) saveToCookie();
-}
-
-export function toggleNumbers() {
-  config.numbers = !config.numbers;
-  if (config.mode === "quote") {
-    config.numbers = false;
-  }
-  if (config.numbers) {
-    $("#top .config .numbersMode .text-button").addClass("active");
-  } else {
-    $("#top .config .numbersMode .text-button").removeClass("active");
-  }
-  saveToCookie();
-}
-
-//punctuation
-export function setPunctuation(punc, nosave) {
-  if (config.mode === "quote") {
-    punc = false;
-  }
-  config.punctuation = punc;
-  if (!config.punctuation) {
-    $("#top .config .punctuationMode .text-button").removeClass("active");
-  } else {
-    $("#top .config .punctuationMode .text-button").addClass("active");
-  }
-  if (!nosave) saveToCookie();
-}
-
-export function togglePunctuation() {
-  config.punctuation = !config.punctuation;
-  if (config.mode === "quote") {
-    config.punctuation = false;
-  }
-  if (config.punctuation) {
-    $("#top .config .punctuationMode .text-button").addClass("active");
-  } else {
-    $("#top .config .punctuationMode .text-button").removeClass("active");
-  }
-  saveToCookie();
-}
-
 export function previewFontFamily(font) {
   if (font == undefined) {
     font = "Roboto_Mono";
@@ -1098,6 +1145,11 @@ export function setIndicateTypos(it, nosave) {
   if (!nosave) saveToCookie();
 }
 
+export function setCustomTheme(boolean, nosave) {
+  if (boolean !== undefined) config.customTheme = boolean;
+  if (!nosave) saveToCookie();
+}
+
 export function setTheme(name, nosave) {
   config.theme = name;
   setCustomTheme(false, true);
@@ -1116,11 +1168,6 @@ export function setRandomTheme(val, nosave) {
   if (!nosave) saveToCookie();
 }
 
-export function setCustomTheme(boolean, nosave) {
-  if (boolean !== undefined) config.customTheme = boolean;
-  if (!nosave) saveToCookie();
-}
-
 export function toggleCustomTheme(nosave) {
   if (config.customTheme) {
     setCustomTheme(false);
@@ -1135,7 +1182,6 @@ export function toggleCustomTheme(nosave) {
 export function setCustomThemeColors(colors, nosave) {
   if (colors !== undefined) {
     config.customThemeColors = colors;
-    ThemeController.setCustomColors(colors);
     // ThemeController.set("custom");
     // applyCustomThemeColors();
   }
@@ -1192,26 +1238,6 @@ export function toggleCapsLockBackspace() {
   setCapsLockBackspace(!config.capsLockBackspace, false);
 }
 
-export function setLayout(layout, nosave) {
-  if (layout == null || layout == undefined) {
-    layout = "qwerty";
-  }
-  config.layout = layout;
-  TestUI.updateModesNotice();
-  if (config.keymapLayout === "overrideSync") {
-    Keymap.refreshKeys(config.keymapLayout, setKeymapLayout);
-  }
-  if (!nosave) saveToCookie();
-}
-
-export function setSavedLayout(layout, nosave) {
-  if (layout == null || layout == undefined) {
-    layout = "qwerty";
-  }
-  config.savedLayout = layout;
-  setLayout(layout, nosave);
-}
-
 export function setKeymapMode(mode, nosave) {
   if (mode == null || mode == undefined) {
     mode = "off";
@@ -1252,6 +1278,26 @@ export function setKeymapLayout(layout, nosave) {
   if (!nosave) saveToCookie();
 }
 
+export function setLayout(layout, nosave) {
+  if (layout == null || layout == undefined) {
+    layout = "qwerty";
+  }
+  config.layout = layout;
+  TestUI.updateModesNotice();
+  if (config.keymapLayout === "overrideSync") {
+    Keymap.refreshKeys(config.keymapLayout, setKeymapLayout);
+  }
+  if (!nosave) saveToCookie();
+}
+
+export function setSavedLayout(layout, nosave) {
+  if (layout == null || layout == undefined) {
+    layout = "qwerty";
+  }
+  config.savedLayout = layout;
+  setLayout(layout, nosave);
+}
+
 export function setFontSize(fontSize, nosave) {
   if (fontSize == null || fontSize == undefined) {
     fontSize = 1;
@@ -1287,80 +1333,6 @@ export function setFontSize(fontSize, nosave) {
     $("#words").addClass("size3");
     $("#caret, #paceCaret").addClass("size3");
     $("#miniTimerAndLiveWpm").addClass("size3");
-  }
-  if (!nosave) saveToCookie();
-}
-
-export function setMode(mode, nosave) {
-  if (TestUI.testRestarting) return;
-  if (mode !== "words" && Funbox.active === "memory") {
-    Notifications.add("Memory funbox can only be used with words mode.", 0);
-    return;
-  }
-
-  config.mode = mode;
-  $("#top .config .mode .text-button").removeClass("active");
-  $("#top .config .mode .text-button[mode='" + mode + "']").addClass("active");
-  if (config.mode == "time") {
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").removeClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-  } else if (config.mode == "words") {
-    $("#top .config .wordCount").removeClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-  } else if (config.mode == "custom") {
-    if (
-      Funbox.active === "58008" ||
-      Funbox.active === "gibberish" ||
-      Funbox.active === "ascii"
-    ) {
-      Funbox.setAcitve("none");
-      TestUI.updateModesNotice();
-    }
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").removeClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-    setPunctuation(false, true);
-    setNumbers(false, true);
-  } else if (config.mode == "quote") {
-    setPunctuation(false, nosave);
-    setNumbers(false, nosave);
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("disabled");
-    $("#top .config .numbersMode").addClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#result .stats .source").removeClass("hidden");
-    $("#top .config .quoteLength").removeClass("hidden");
-  } else if (config.mode == "zen") {
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("hidden");
-    $("#top .config .numbersMode").addClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-    if (config.paceCaret != "off") {
-      Notifications.add(`Pace caret will not work with zen mode.`, 0);
-    }
-    // setPaceCaret("off", true);
   }
   if (!nosave) saveToCookie();
 }
@@ -1623,6 +1595,33 @@ export function apply(configObj) {
     }
   }
   TestUI.updateModesNotice();
+}
+
+export function reset() {
+  config = {
+    ...defaultConfig,
+  };
+  apply();
+  saveToCookie();
+}
+
+export function loadFromCookie() {
+  console.log("loading cookie config");
+  // let newConfig = $.cookie("config");
+  let newConfig = Misc.getCookie("config");
+  if (newConfig !== undefined && newConfig !== "") {
+    try {
+      newConfig = JSON.parse(newConfig);
+    } catch (e) {
+      newConfig = {};
+    }
+    apply(newConfig);
+    console.log("applying cookie config");
+    cookieConfig = newConfig;
+    saveToCookie(true);
+    console.log("saving cookie config");
+  }
+  TestLogic.restart(false, true);
 }
 
 export default config;

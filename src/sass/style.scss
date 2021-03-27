@@ -493,11 +493,6 @@ a:hover {
     gap: 1rem;
     width: 60vw;
 
-    .wordfilter{
-      width: 33%;
-      justify-self:right;
-    }
-
     textarea {
       background: var(--bg-color);
       padding: 1rem;
@@ -511,8 +506,6 @@ a:hover {
       resize: vertical;
       height: 200px;
       color: var(--text-color);
-      overflow-x: hidden;
-      overflow-y: scroll;
     }
 
     .inputs {

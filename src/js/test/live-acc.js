@@ -1,4 +1,5 @@
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
+import * as TestLogic from "./test-logic";
 
 export function update(acc) {
   let number = Math.floor(acc);
@@ -11,7 +12,7 @@ export function update(acc) {
 
 export function show() {
   if (!Config.showLiveAcc) return;
-  // if (!TestLogic.active) return;
+  if (!TestLogic.active) return;
   if (Config.timerStyle === "mini") {
     // $("#miniTimerAndLiveWpm .wpm").css("opacity", Config.timerOpacity);
     if (!$("#miniTimerAndLiveWpm .acc").hasClass("hidden")) return;

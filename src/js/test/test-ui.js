@@ -42,6 +42,33 @@ export function reset() {
   currentWordElementIndex = 0;
 }
 
+export function updateActiveElement(backspace) {
+  let active = document.querySelector("#words .active");
+  if (Config.mode == "zen" && backspace) {
+    active.remove();
+  } else if (active !== null) {
+    if (Config.highlightMode == "word") {
+      active.querySelectorAll("letter").forEach((e) => {
+        e.classList.remove("correct");
+      });
+    }
+    active.classList.remove("active");
+  }
+  try {
+    let activeWord = document.querySelectorAll("#words .word")[
+      currentWordElementIndex
+    ];
+    activeWord.classList.add("active");
+    activeWord.classList.remove("error");
+    activeWordTop = document.querySelector("#words .active").offsetTop;
+    if (Config.highlightMode == "word") {
+      activeWord.querySelectorAll("letter").forEach((e) => {
+        e.classList.add("correct");
+      });
+    }
+  } catch (e) {}
+}
+
 export function showWords() {
   $("#words").empty();
 
@@ -120,33 +147,6 @@ export function showWords() {
   Funbox.toggleScript(TestLogic.words.getCurrent());
 
   Caret.updatePosition();
-}
-
-export function updateActiveElement(backspace) {
-  let active = document.querySelector("#words .active");
-  if (Config.mode == "zen" && backspace) {
-    active.remove();
-  } else if (active !== null) {
-    if (Config.highlightMode == "word") {
-      active.querySelectorAll("letter").forEach((e) => {
-        e.classList.remove("correct");
-      });
-    }
-    active.classList.remove("active");
-  }
-  try {
-    let activeWord = document.querySelectorAll("#words .word")[
-      currentWordElementIndex
-    ];
-    activeWord.classList.add("active");
-    activeWord.classList.remove("error");
-    activeWordTop = document.querySelector("#words .active").offsetTop;
-    if (Config.highlightMode == "word") {
-      activeWord.querySelectorAll("letter").forEach((e) => {
-        e.classList.add("correct");
-      });
-    }
-  } catch (e) {}
 }
 
 export function flipColors(tf) {

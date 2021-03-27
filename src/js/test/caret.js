@@ -1,5 +1,5 @@
 import * as Misc from "./misc";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 import * as TestLogic from "./test-logic";
 
 export let caretAnimating = true;
@@ -12,7 +12,6 @@ export function stopAnimation() {
   }
 }
 
-//TODO remove config when module
 export function startAnimation() {
   if (caretAnimating === false) {
     if (Config.smoothCaret) {
@@ -28,16 +27,6 @@ export function hide() {
   $("#caret").addClass("hidden");
 }
 
-export function show() {
-  if ($("#result").hasClass("hidden")) {
-    updatePosition();
-    $("#caret").removeClass("hidden");
-    startAnimation();
-  }
-}
-
-//TODO remove this after test logic is a module
-//TODO remove config when module
 export function updatePosition() {
   if ($("#wordsWrapper").hasClass("hidden")) return;
   if ($("#caret").hasClass("off")) {
@@ -126,5 +115,13 @@ export function updatePosition() {
     }
   } catch (e) {
     console.log("could not move caret: " + e.message);
+  }
+}
+
+export function show() {
+  if ($("#result").hasClass("hidden")) {
+    updatePosition();
+    $("#caret").removeClass("hidden");
+    startAnimation();
   }
 }

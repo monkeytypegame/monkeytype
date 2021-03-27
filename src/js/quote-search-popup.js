@@ -1,55 +1,10 @@
 import * as Misc from "./misc";
 import * as Notifications from "./notification-center";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
 
 export let selectedId = 1;
-
-export async function show() {
-  if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
-    $("#quoteSearchPopup input").val("");
-    $("#quoteSearchPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
-        $("#quoteSearchPopup input").focus().select();
-        updateResults("");
-      });
-  }
-}
-
-export function hide() {
-  if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
-    $("#quoteSearchPopupWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        100,
-        (e) => {
-          $("#quoteSearchPopupWrapper").addClass("hidden");
-        }
-      );
-  }
-}
-
-function apply(val) {
-  if (isNaN(val)) {
-    val = document.getElementById("searchBox").value;
-  }
-  if (val !== null && !isNaN(val) && val >= 0) {
-    selectedId = val;
-    ManualRestart.set();
-    TestLogic.restart();
-  } else {
-    Notifications.add("Quote ID must be at least 1", 0);
-  }
-  hide();
-}
 
 async function updateResults(searchText) {
   let quotes = await Misc.getQuotes(Config.language);
@@ -112,6 +67,51 @@ async function updateResults(searchText) {
   } else {
     $("#extraResults").html(found.length + " results");
   }
+}
+
+export async function show() {
+  if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
+    $("#quoteSearchPopup input").val("");
+    $("#quoteSearchPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100, (e) => {
+        $("#quoteSearchPopup input").focus().select();
+        updateResults("");
+      });
+  }
+}
+
+export function hide() {
+  if (!$("#quoteSearchPopupWrapper").hasClass("hidden")) {
+    $("#quoteSearchPopupWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        100,
+        (e) => {
+          $("#quoteSearchPopupWrapper").addClass("hidden");
+        }
+      );
+  }
+}
+
+function apply(val) {
+  if (isNaN(val)) {
+    val = document.getElementById("searchBox").value;
+  }
+  if (val !== null && !isNaN(val) && val >= 0) {
+    selectedId = val;
+    ManualRestart.set();
+    TestLogic.restart();
+  } else {
+    Notifications.add("Quote ID must be at least 1", 0);
+  }
+  hide();
 }
 
 $("#quoteSearchPopup .searchBox").keydown((e) => {

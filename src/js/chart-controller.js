@@ -622,14 +622,6 @@ export let miniResult = new Chart($(".pageAccount #miniResultChart"), {
   },
 });
 
-Chart.prototype.updateColors = function () {
-  updateColors(this);
-};
-
-export function setDefaultFontFamily(font) {
-  Chart.defaults.global.defaultFontFamily = font.replace(/_/g, " ");
-}
-
 export function updateColors(chart) {
   if (ThemeColors.main == "") {
     ThemeColors.update();
@@ -687,6 +679,14 @@ export function updateColors(chart) {
   } catch {}
 
   chart.update();
+}
+
+Chart.prototype.updateColors = function () {
+  updateColors(this);
+};
+
+export function setDefaultFontFamily(font) {
+  Chart.defaults.global.defaultFontFamily = font.replace(/_/g, " ");
 }
 
 export function updateAllChartColors() {

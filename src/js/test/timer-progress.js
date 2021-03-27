@@ -1,7 +1,8 @@
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 import * as CustomText from "./custom-text";
 import * as Misc from "./misc";
 import * as TestLogic from "./test-logic";
+import * as TestTimer from "./test-timer";
 
 export function show() {
   let op = Config.showTimerProgress ? Config.timerOpacity : 0;
@@ -84,8 +85,8 @@ export function restart() {
   }
 }
 
-//TODO remove the parameters once they are inside a module
-export function update(time) {
+export function update() {
+  let time = TestTimer.time;
   if (
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)

@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 
 let errorSound = new Audio("../sound/error.wav");
 let clickSounds = null;
