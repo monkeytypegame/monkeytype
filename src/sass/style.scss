@@ -117,6 +117,85 @@ html {
   overflow-y: scroll;
 }
 
+.select2-dropdown {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  outline: none;
+}
+
+.select2-selection {
+  background: rgba(0, 0, 0, 0.1);
+  height: fit-content;
+  padding: 5px;
+  border-radius: var(--roundness);
+  color: var(--text-color);
+  font: var(--font);
+  border: none;
+  outline: none;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: var(--text-color);
+  outline: none;
+}
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+  background-color: var(--sub-color);
+  color: var(--text-color);
+}
+
+.select2-container--default .select2-results__option--selected {
+  background-color: var(--main-color);
+  color: var(--bg-color);
+}
+
+.select2-container--open .select2-dropdown--below {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: var(--bg-color);
+  color: var(--sub-color);
+  border-radius: var(--roundness);
+}
+
+.select2-container--default .select2-selection--single
+{
+  color: var(--text-color);
+  background: rgba(0, 0, 0, 0.1);
+  outline: none;
+  border: none;
+  height:auto;
+}
+
+.select2-selection:focus{
+  height: fit-content;
+  padding: 5px;
+  border-radius: var(--roundness);
+  color: var(--text-color);
+  font: var(--font);
+  border: none;
+  outline: none;
+}
+.select2-selection:active{
+  height: fit-content;
+  padding: 5px;
+  border-radius: var(--roundness);
+  color: var(--text-color);
+  font: var(--font);
+  border: none;
+  outline: none;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 35px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-color: var(--main-color) transparent transparent transparent;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+  border-color: var(--main-color) transparent;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 7px;
@@ -508,6 +587,51 @@ a:hover {
           background: var(--main-color);
         }
       }
+    }
+  }
+}
+
+#wordFilterPopupWrapper{
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 0;
+
+  #wordFilterPopup{
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    width: 400px;
+
+    
+
+    .lengthgrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 0.2rem;
+    }
+
+    .wordLength{
+      width: 10rem;
+    }
+
+    .wftip{
+      color: var(--sub-color);
+      font-size: 0.8rem;
+    }
+
+    .wfload{
+      justify-self: center;
     }
   }
 }

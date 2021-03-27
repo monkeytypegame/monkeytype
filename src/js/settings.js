@@ -433,7 +433,7 @@ async function fillSettingsPage() {
   let fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
   Misc.getFontsList().then((fonts) => {
     fonts.forEach((font) => {
-      if (Config.fontFamily === font.name) isCustomFont(false);
+      if (Config.fontFamily === font.name) isCustomFont = false;
       fontsEl.append(
         `<div class="button${
           Config.fontFamily === font.name ? " active" : ""

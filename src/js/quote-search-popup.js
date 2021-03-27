@@ -124,13 +124,6 @@ $("#quoteSearchPopup .searchBox").keydown((e) => {
     updateResults(searchText);
   }, 0.1); //arbitrarily v. small time as it's only to allow text to input before searching
 });
-// //sets quote id to searched quote clicked
-// $("#quoteSearchResults").click((e) => {
-//   if ($(e.target).hasClass("quoteSearchButton")) {
-//     document.getElementById("inputNumber").value = e.target.getAttribute("id");
-//     applyMode2Popup();
-//   }
-// });
 
 $("#quoteSearchPopupWrapper").click((e) => {
   if ($(e.target).attr("id") === "quoteSearchPopupWrapper") {
