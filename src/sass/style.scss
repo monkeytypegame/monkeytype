@@ -187,6 +187,14 @@ html {
   height: 35px;
 }
 
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-color: var(--main-color) transparent transparent transparent;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+  border-color: var(--main-color) transparent;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 7px;

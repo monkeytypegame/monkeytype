@@ -54,9 +54,11 @@ $("#wordFilterPopupWrapper .button").mousedown((e) => {
 
 async function filter(language){
     let filterin = $("#wordFilter").val();
+    filterin = filterin.trim();
     filterin = filterin.replace(/ /gi, "|");
     let regincl = new RegExp(filterin, "i");
     let filterout = $("#wordExclude").val();
+    filterout = filterout.trim();
     filterout = filterout.replace(/ /gi, "|");
     let regexcl = new RegExp(filterout, "i");
     let filteredWords = [];
