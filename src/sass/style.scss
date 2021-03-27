@@ -127,7 +127,7 @@ html {
   background: rgba(0, 0, 0, 0.1);
   height: fit-content;
   padding: 5px;
-  border-radius: 5px;
+  border-radius: var(--roundness);
   color: var(--text-color);
   font: var(--font);
   border: none;
@@ -141,7 +141,7 @@ html {
 
 .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
   background-color: var(--sub-color);
-  color: var(--bg-color);
+  color: var(--text-color);
 }
 
 .select2-container--default .select2-results__option--selected {
@@ -153,6 +153,7 @@ html {
   border-color: rgba(0, 0, 0, 0.1);
   background: var(--bg-color);
   color: var(--sub-color);
+  border-radius: var(--roundness);
 }
 
 .select2-container--default .select2-selection--single
@@ -167,7 +168,7 @@ html {
 .select2-selection:focus{
   height: fit-content;
   padding: 5px;
-  border-radius: 5px;
+  border-radius: var(--roundness);
   color: var(--text-color);
   font: var(--font);
   border: none;
@@ -176,7 +177,7 @@ html {
 .select2-selection:active{
   height: fit-content;
   padding: 5px;
-  border-radius: 5px;
+  border-radius: var(--roundness);
   color: var(--text-color);
   font: var(--font);
   border: none;
