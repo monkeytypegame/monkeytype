@@ -196,7 +196,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       Misc.getLastChar(previousWord) == "." ||
       Misc.getLastChar(previousWord) == "?" ||
       Misc.getLastChar(previousWord) == "!") &&
-    UpdateConfig.language.split("_")[0] != "code"
+    Config.language.split("_")[0] != "code"
   ) {
     //always capitalise the first word or if there was a dot unless using a code alphabet
     word = Misc.capitalizeFirstLetter(word);
@@ -227,14 +227,14 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
     Math.random() < 0.01 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "." &&
-    UpdateConfig.language.split("_")[0] !== "russian"
+    Config.language.split("_")[0] !== "russian"
   ) {
     word = `"${word}"`;
   } else if (
     Math.random() < 0.011 &&
     Misc.getLastChar(previousWord) != "," &&
     Misc.getLastChar(previousWord) != "." &&
-    UpdateConfig.language.split("_")[0] !== "russian"
+    Config.language.split("_")[0] !== "russian"
   ) {
     word = `'${word}'`;
   } else if (
