@@ -106,7 +106,6 @@ const refactoredSrc = [
   "./src/js/custom-text-popup.js",
   "./src/js/manual-restart-tracker.js",
   "./src/js/config.js",
-  "./src/js/config-set.js",
   "./src/js/test/focus.js",
   "./src/js/account-icon.js",
   "./src/js/test/practise-missed.js",
