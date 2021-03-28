@@ -1,4 +1,13 @@
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
+import * as Notifications from "./notification-center";
+import * as Leaderboards from "./leaderboards";
+import * as ManualRestart from "./manual-restart-tracker";
+import * as Misc from "./misc";
+import * as Caret from "./caret";
+import * as TestLogic from "./test-logic";
+import * as CustomText from "./custom-text";
+import * as CommandlineLists from "./commandline-lists";
+import * as Commandline from "./commandline";
 
 export let pageTransition = false;
 
@@ -91,3 +100,96 @@ export function swapElements(
     callback();
   }
 }
+
+if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
+  $("#top .logo .bottom").text("monkey-dev");
+  $("head title").text("Monkey Dev");
+  $("body").append(
+    `<div class="devIndicator tr">DEV</div><div class="devIndicator bl">DEV</div>`
+  );
+}
+
+if (window.location.hostname === "localhost") {
+  window.onerror = function (error) {
+    Notifications.add(error, -1);
+  };
+  $("#top .logo .top").text("localhost");
+  $("head title").text($("head title").text() + " (localhost)");
+  firebase.functions().useFunctionsEmulator("http://localhost:5001");
+  $("body").append(
+    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
+  );
+}
+
+//stop space scrolling
+window.addEventListener("keydown", function (e) {
+  if (e.keyCode == 32 && e.target == document.body) {
+    e.preventDefault();
+  }
+});
+
+$(".merchBanner a").click((event) => {
+  $(".merchBanner").remove();
+  Misc.setCookie("merchbannerclosed", true, 365);
+});
+
+$(".merchBanner .fas").click((event) => {
+  $(".merchBanner").remove();
+  Misc.setCookie("merchbannerclosed", true, 365);
+  Notifications.add(
+    "Won't remind you anymore. Thanks for continued support <3",
+    0,
+    5
+  );
+});
+
+$(".scrollToTopButton").click((event) => {
+  window.scrollTo(0, 0);
+});
+
+$(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
+  if (e.shiftKey) {
+    UpdateConfig.toggleCustomTheme();
+  } else {
+    // if (Config.customTheme) {
+    //   toggleCustomTheme();
+    // }
+    CommandlineLists.setCurrent(CommandlineLists.themeCommands);
+    Commandline.show();
+  }
+});
+
+$(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
+  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
+  Commandline.show();
+});
+
+window.addEventListener("beforeunload", (event) => {
+  // Cancel the event as stated by the standard.
+  if (
+    (Config.mode === "words" && Config.words < 1000) ||
+    (Config.mode === "time" && Config.time < 3600) ||
+    Config.mode === "quote" ||
+    (Config.mode === "custom" &&
+      CustomText.isWordRandom &&
+      CustomText.word < 1000) ||
+    (Config.mode === "custom" &&
+      CustomText.isTimeRandom &&
+      CustomText.time < 1000) ||
+    (Config.mode === "custom" &&
+      !CustomText.isWordRandom &&
+      CustomText.text.length < 1000)
+  ) {
+    //ignore
+  } else {
+    if (TestLogic.active) {
+      event.preventDefault();
+      // Chrome requires returnValue to be set.
+      event.returnValue = "";
+    }
+  }
+});
+
+$(window).resize(() => {
+  Caret.updatePosition();
+});

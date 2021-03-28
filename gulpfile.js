@@ -136,6 +136,9 @@ const refactoredSrc = [
   "./src/js/loader.js",
   "./src/js/mini-result-chart.js",
   "./src/js/sign-out-button.js",
+  "./src/js/layout-emulator.js",
+  "./src/js/version-popup.js",
+  "./src/js/support-popup.js",
 ];
 
 //legacy files

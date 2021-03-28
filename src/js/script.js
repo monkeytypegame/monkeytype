@@ -9,114 +9,6 @@ let verifyUserWhenLoggedIn = null;
 // let CustomText.isWordRandom = false;
 // let CustomText.word = 1;
 
-function getuid() {
-  console.error("Only share this uid with Miodec and nobody else!");
-  console.log(firebase.auth().currentUser.uid);
-  console.error("Only share this uid with Miodec and nobody else!");
-}
-
-function emulateLayout(event) {
-  function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
-    if (Config.capsLockBackspace) return event.shiftKey;
-    const isCapsLockHeld = event.originalEvent.getModifierState("CapsLock");
-    if (isCapsLockHeld)
-      return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;
-    return event.shiftKey;
-  }
-
-  function replaceEventKey(event, keyCode) {
-    const newKey = String.fromCharCode(keyCode);
-    event.keyCode = keyCode;
-    event.charCode = keyCode;
-    event.which = keyCode;
-    event.key = newKey;
-    event.code = "Key" + newKey.toUpperCase();
-  }
-
-  let newEvent = event;
-
-  try {
-    if (Config.layout === "default") {
-      //override the caps lock modifier for the default layout if needed
-      if (Config.capsLockBackspace && Misc.isASCIILetter(newEvent.key)) {
-        replaceEventKey(
-          newEvent,
-          newEvent.shiftKey
-            ? newEvent.key.toUpperCase().charCodeAt(0)
-            : newEvent.key.toLowerCase().charCodeAt(0)
-        );
-      }
-      return newEvent;
-    }
-    const keyEventCodes = [
-      "Backquote",
-      "Digit1",
-      "Digit2",
-      "Digit3",
-      "Digit4",
-      "Digit5",
-      "Digit6",
-      "Digit7",
-      "Digit8",
-      "Digit9",
-      "Digit0",
-      "Minus",
-      "Equal",
-      "KeyQ",
-      "KeyW",
-      "KeyE",
-      "KeyR",
-      "KeyT",
-      "KeyY",
-      "KeyU",
-      "KeyI",
-      "KeyO",
-      "KeyP",
-      "BracketLeft",
-      "BracketRight",
-      "Backslash",
-      "KeyA",
-      "KeyS",
-      "KeyD",
-      "KeyF",
-      "KeyG",
-      "KeyH",
-      "KeyJ",
-      "KeyK",
-      "KeyL",
-      "Semicolon",
-      "Quote",
-      "IntlBackslash",
-      "KeyZ",
-      "KeyX",
-      "KeyC",
-      "KeyV",
-      "KeyB",
-      "KeyN",
-      "KeyM",
-      "Comma",
-      "Period",
-      "Slash",
-      "Space",
-    ];
-    const layoutMap = layouts[Config.layout].keys;
-
-    let mapIndex;
-    for (let i = 0; i < keyEventCodes.length; i++) {
-      if (newEvent.code == keyEventCodes[i]) {
-        mapIndex = i;
-      }
-    }
-    const newKeyPreview = layoutMap[mapIndex][0];
-    const shift = emulatedLayoutShouldShiftKey(newEvent, newKeyPreview) ? 1 : 0;
-    const newKey = layoutMap[mapIndex][shift];
-    replaceEventKey(newEvent, newKey.charCodeAt(0));
-  } catch (e) {
-    return event;
-  }
-  return newEvent;
-}
-
 (function (history) {
   var pushState = history.pushState;
   history.pushState = function (state) {
@@ -126,51 +18,6 @@ function emulateLayout(event) {
     return pushState.apply(history, arguments);
   };
 })(window.history);
-
-function highlightBadWord(index, showError) {
-  if (!showError) return;
-  $($("#words .word")[index]).addClass("error");
-}
-
-function startTest() {
-  if (UI.pageTransition) {
-    return false;
-  }
-  if (!Config.dbConfigLoaded) {
-    UpdateConfig.setChangedBeforeDb(true);
-  }
-  try {
-    if (firebase.auth().currentUser != null) {
-      firebase.analytics().logEvent("testStarted");
-    } else {
-      firebase.analytics().logEvent("testStartedNoLogin");
-    }
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
-  TestLogic.setActive(true);
-  TestStats.resetKeypressTimings();
-  TimerProgress.restart();
-  TimerProgress.show();
-  $("#liveWpm").text("0");
-  LiveWpm.show();
-  LiveAcc.show();
-  TimerProgress.update(TestTimer.time);
-  TestTimer.clear();
-
-  if (Funbox.active === "memory") {
-    Funbox.resetMemoryTimer();
-    $("#wordsWrapper").addClass("hidden");
-  }
-
-  try {
-    if (Config.paceCaret !== "off") PaceCaret.start();
-  } catch (e) {}
-  //use a recursive self-adjusting timer to avoid time drift
-  TestStats.setStart(performance.now());
-  TestTimer.start();
-  return true;
-}
 
 function changePage(page) {
   if (UI.pageTransition) {
@@ -407,25 +254,6 @@ function tagsEdit() {
   }
 }
 
-$(document).on("click", "#top .logo", (e) => {
-  changePage("test");
-});
-
-$("#wordsWrapper").on("click", () => {
-  TestUI.focusWords();
-});
-
-$(document).on("click", "#top #menu .icon-button", (e) => {
-  if ($(e.currentTarget).hasClass("discord")) return;
-  if ($(e.currentTarget).hasClass("leaderboards")) {
-    Leaderboards.show();
-  } else {
-    const href = $(e.currentTarget).attr("href");
-    ManualRestart.set();
-    changePage(href.replace("/", ""));
-  }
-});
-
 $(window).on("popstate", (e) => {
   let state = e.originalEvent.state;
   if (state == "" || state == "/") {
@@ -443,188 +271,8 @@ $(window).on("popstate", (e) => {
   }
 });
 
-$(document).on("keypress", "#restartTestButton", (event) => {
-  if (event.keyCode == 13) {
-    if (
-      TestLogic.active &&
-      Config.repeatQuotes === "typing" &&
-      Config.mode === "quote"
-    ) {
-      TestLogic.restart(true);
-    } else {
-      TestLogic.restart();
-    }
-  }
-});
-
-$(document.body).on("click", "#restartTestButton", () => {
-  ManualRestart.set();
-  if (TestUI.resultCalculating) return;
-  if (
-    TestLogic.active &&
-    Config.repeatQuotes === "typing" &&
-    Config.mode === "quote"
-  ) {
-    TestLogic.restart(true);
-  } else {
-    TestLogic.restart();
-  }
-});
-
-$(document).on("keypress", "#practiseMissedWordsButton", (event) => {
-  if (event.keyCode == 13) {
-    PractiseMissed.init();
-  }
-});
-
-$(document.body).on("click", "#practiseMissedWordsButton", () => {
-  PractiseMissed.init();
-});
-
-$(document).on("keypress", "#nextTestButton", (event) => {
-  if (event.keyCode == 13) {
-    TestLogic.restart();
-  }
-});
-
-$(document.body).on("click", "#nextTestButton", () => {
-  ManualRestart.set();
-  TestLogic.restart();
-});
-
-$(document).on("keypress", "#showWordHistoryButton", (event) => {
-  if (event.keyCode == 13) {
-    TestUI.toggleResultWords();
-  }
-});
-
-$(document.body).on("click", "#showWordHistoryButton", () => {
-  TestUI.toggleResultWords();
-});
-
-$(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
-  if (Config.mode == "zen") {
-    Notifications.add("Repeat test disabled in zen mode");
-    return;
-  }
-  ManualRestart.set();
-  TestLogic.restart(true);
-});
-
-$(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
-  if (Config.mode == "zen") {
-    Notifications.add("Repeat test disabled in zen mode");
-    return;
-  }
-  if (event.keyCode == 13) {
-    TestLogic.restart(true);
-  }
-});
-
-$(document.body).on("click", ".version", () => {
-  $("#versionHistoryWrapper")
-    .css("opacity", 0)
-    .removeClass("hidden")
-    .animate({ opacity: 1 }, 125);
-});
-
-$(document.body).on("click", "#versionHistoryWrapper", () => {
-  $("#versionHistoryWrapper")
-    .css("opacity", 1)
-    .animate({ opacity: 0 }, 125, () => {
-      $("#versionHistoryWrapper").addClass("hidden");
-    });
-});
-
-$(document.body).on("click", "#supportMeButton", () => {
-  $("#supportMeWrapper")
-    .css("opacity", 0)
-    .removeClass("hidden")
-    .animate({ opacity: 1 }, 125);
-});
-
-$(document.body).on("click", "#supportMeWrapper", () => {
-  $("#supportMeWrapper")
-    .css("opacity", 1)
-    .animate({ opacity: 0 }, 125, () => {
-      $("#supportMeWrapper").addClass("hidden");
-    });
-});
-
-$(document.body).on("click", "#supportMeWrapper .button.ads", () => {
-  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
-  Commandline.show();
-  $("#supportMeWrapper")
-    .css("opacity", 1)
-    .animate({ opacity: 0 }, 125, () => {
-      $("#supportMeWrapper").addClass("hidden");
-    });
-});
-
-$(document.body).on("click", "#supportMeWrapper a.button", () => {
-  $("#supportMeWrapper")
-    .css("opacity", 1)
-    .animate({ opacity: 0 }, 125, () => {
-      $("#supportMeWrapper").addClass("hidden");
-    });
-});
-
-$(document.body).on("click", ".pageAbout .aboutEnableAds", () => {
-  CommandlineLists.pushCurrent(CommandlineLists.commandsEnableAds);
-  Commandline.show();
-});
-
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
-});
-
-$("#wordsInput").on("focus", () => {
-  if (!TestUI.resultVisible && Config.showOutOfFocusWarning) {
-    OutOfFocus.hide();
-  }
-  Caret.show(TestLogic.input.current);
-});
-
-$("#wordsInput").on("focusout", () => {
-  if (!TestUI.resultVisible && Config.showOutOfFocusWarning) {
-    OutOfFocus.show();
-  }
-  Caret.hide();
-});
-
-$(window).resize(() => {
-  Caret.updatePosition();
-});
-
-$(document).mousemove(function (event) {
-  if (
-    $("#top").hasClass("focus") &&
-    (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)
-  ) {
-    Focus.set(false);
-  }
-});
-
-$(document).on("click", "#testModesNotice .text-button", (event) => {
-  // console.log("CommandlineLists."+$(event.currentTarget).attr("commands"));
-  let commands = CommandlineLists.getList(
-    $(event.currentTarget).attr("commands")
-  );
-  let func = $(event.currentTarget).attr("function");
-  if (commands !== undefined) {
-    if ($(event.currentTarget).attr("commands") === "commandsTags") {
-      CommandlineLists.updateTagCommands();
-    }
-    CommandlineLists.pushCurrent(commands);
-    Commandline.show();
-  } else if (func != undefined) {
-    eval(func);
-  }
-});
-
-$(document).on("click", "#commandLineMobileButton", () => {
-  CommandlineLists.setCurrent(CommandlineLists.defaultCommands);
-  Commandline.show();
 });
 
 let dontInsertSpace = false;
@@ -1030,7 +678,7 @@ function handleSpace(event, isEnter) {
     }
     if (Config.blindMode) $("#words .word.active letter").addClass("correct");
     TestLogic.input.pushHistory();
-    highlightBadWord(TestUI.currentWordElementIndex, !Config.blindMode);
+    TestUI.highlightBadWord(TestUI.currentWordElementIndex, !Config.blindMode);
     TestLogic.words.increaseCurrentIndex();
     TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex + 1);
     TestUI.updateActiveElement();
@@ -1214,7 +862,7 @@ function handleAlpha(event) {
 
   let originalEvent = event;
 
-  event = emulateLayout(event);
+  event = LayoutEmulator.updateEvent(event);
 
   //start the test
   if (
@@ -1222,7 +870,7 @@ function handleAlpha(event) {
     TestLogic.input.history.length == 0 &&
     !TestLogic.active
   ) {
-    if (!startTest()) return;
+    if (!TestLogic.startTest()) return;
   } else {
     if (!TestLogic.active) return;
   }
@@ -1463,52 +1111,6 @@ function handleAlpha(event) {
   Caret.updatePosition();
 }
 
-window.addEventListener("beforeunload", (event) => {
-  // Cancel the event as stated by the standard.
-  if (
-    (Config.mode === "words" && Config.words < 1000) ||
-    (Config.mode === "time" && Config.time < 3600) ||
-    Config.mode === "quote" ||
-    (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      CustomText.word < 1000) ||
-    (Config.mode === "custom" &&
-      CustomText.isTimeRandom &&
-      CustomText.time < 1000) ||
-    (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      CustomText.text.length < 1000)
-  ) {
-    //ignore
-  } else {
-    if (TestLogic.active) {
-      event.preventDefault();
-      // Chrome requires returnValue to be set.
-      event.returnValue = "";
-    }
-  }
-});
-
-if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
-  $("#top .logo .bottom").text("monkey-dev");
-  $("head title").text("Monkey Dev");
-  $("body").append(
-    `<div class="devIndicator tr">DEV</div><div class="devIndicator bl">DEV</div>`
-  );
-}
-
-if (window.location.hostname === "localhost") {
-  window.onerror = function (error) {
-    Notifications.add(error, -1);
-  };
-  $("#top .logo .top").text("localhost");
-  $("head title").text($("head title").text() + " (localhost)");
-  firebase.functions().useFunctionsEmulator("http://localhost:5001");
-  $("body").append(
-    `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
-  );
-}
-
 ManualRestart.set();
 
 let configLoadDone;
@@ -1519,43 +1121,6 @@ UpdateConfig.loadFromCookie();
 configLoadDone();
 Misc.getReleasesFromGitHub();
 // getPatreonNames();
-
-$(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
-  if (TestUI.resultVisible) {
-    let input = $(e.currentTarget).attr("input");
-    if (input != undefined)
-      $(e.currentTarget).append(
-        `<div class="wordInputAfter">${input
-          .replace(/\t/g, "_")
-          .replace(/\n/g, "_")}</div>`
-      );
-  }
-});
-
-$(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
-  if (e.shiftKey) {
-    UpdateConfig.toggleCustomTheme();
-  } else {
-    // if (Config.customTheme) {
-    //   toggleCustomTheme();
-    // }
-    CommandlineLists.setCurrent(CommandlineLists.themeCommands);
-    Commandline.show();
-  }
-});
-
-$(document).on("click", ".keymap .r5 #KeySpace", (e) => {
-  CommandlineLists.setCurrent(CommandlineLists.commandsKeymapLayouts);
-  Commandline.show();
-});
-
-$(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
-  $(".wordInputAfter").remove();
-});
-
-$("#wpmChart").on("mouseleave", (e) => {
-  $(".wordInputAfter").remove();
-});
 
 let mappedRoutes = {
   "/": "pageTest",
@@ -1616,46 +1181,17 @@ $(document).ready(() => {
   settingsFillPromise.then(updateSettingsPage);
 });
 
-$(".scrollToTopButton").click((event) => {
-  window.scrollTo(0, 0);
+//TODO move after account is a module
+$(document).on("click", "#top .logo", (e) => {
+  changePage("test");
 });
 
-$(".merchBanner a").click((event) => {
-  $(".merchBanner").remove();
-  Misc.setCookie("merchbannerclosed", true, 365);
-});
-
-$(".merchBanner .fas").click((event) => {
-  $(".merchBanner").remove();
-  Misc.setCookie("merchbannerclosed", true, 365);
-  Notifications.add(
-    "Won't remind you anymore. Thanks for continued support <3",
-    0,
-    5
-  );
-});
-
-$(".pageTest #copyWordsListButton").click(async (event) => {
-  try {
-    let words;
-    if (Config.mode == "zen") {
-      words = TestLogic.input.history.join(" ");
-    } else {
-      words = TestLogic.words
-        .get()
-        .slice(0, TestLogic.input.history.length)
-        .join(" ");
-    }
-    await navigator.clipboard.writeText(words);
-    Notifications.add("Copied to clipboard", 0, 2);
-  } catch (e) {
-    Notifications.add("Could not copy to clipboard: " + e, -1);
-  }
-});
-
-//stop space scrolling
-window.addEventListener("keydown", function (e) {
-  if (e.keyCode == 32 && e.target == document.body) {
-    e.preventDefault();
+$(document).on("click", "#top #menu .icon-button", (e) => {
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    Leaderboards.show();
+  } else {
+    const href = $(e.currentTarget).attr("href");
+    ManualRestart.set();
+    changePage(href.replace("/", ""));
   }
 });

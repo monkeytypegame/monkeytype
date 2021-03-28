@@ -8,6 +8,11 @@ import * as PaceCaret from "./pace-caret";
 import * as CustomText from "./custom-text";
 import * as Keymap from "./keymap";
 import * as Caret from "./caret";
+import * as CommandlineLists from "./commandline-lists";
+import * as Commandline from "./commandline";
+import * as OutOfFocus from "./out-of-focus";
+import * as ManualRestart from "./manual-restart-tracker";
+import * as PractiseMissed from "./practise-missed";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -747,6 +752,11 @@ export function toggleResultWords() {
   }
 }
 
+export function highlightBadWord(index, showError) {
+  if (!showError) return;
+  $($("#words .word")[index]).addClass("error");
+}
+
 $(document.body).on("click", "#copyResultToClipboardButton", () => {
   screenshot();
 });
@@ -757,4 +767,155 @@ $(document).on("click", "#testModesNotice .text-button.restart", (event) => {
 
 $(document).on("click", "#testModesNotice .text-button.blind", (event) => {
   UpdateConfig.toggleBlindMode();
+});
+
+$(".pageTest #copyWordsListButton").click(async (event) => {
+  try {
+    let words;
+    if (Config.mode == "zen") {
+      words = TestLogic.input.history.join(" ");
+    } else {
+      words = TestLogic.words
+        .get()
+        .slice(0, TestLogic.input.history.length)
+        .join(" ");
+    }
+    await navigator.clipboard.writeText(words);
+    Notifications.add("Copied to clipboard", 0, 2);
+  } catch (e) {
+    Notifications.add("Could not copy to clipboard: " + e, -1);
+  }
+});
+
+$(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
+  $(".wordInputAfter").remove();
+});
+
+$("#wpmChart").on("mouseleave", (e) => {
+  $(".wordInputAfter").remove();
+});
+
+$(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
+  if (resultVisible) {
+    let input = $(e.currentTarget).attr("input");
+    if (input != undefined)
+      $(e.currentTarget).append(
+        `<div class="wordInputAfter">${input
+          .replace(/\t/g, "_")
+          .replace(/\n/g, "_")}</div>`
+      );
+  }
+});
+
+$(document).on("click", "#testModesNotice .text-button", (event) => {
+  // console.log("CommandlineLists."+$(event.currentTarget).attr("commands"));
+  let commands = CommandlineLists.getList(
+    $(event.currentTarget).attr("commands")
+  );
+  let func = $(event.currentTarget).attr("function");
+  if (commands !== undefined) {
+    if ($(event.currentTarget).attr("commands") === "commandsTags") {
+      CommandlineLists.updateTagCommands();
+    }
+    CommandlineLists.pushCurrent(commands);
+    Commandline.show();
+  } else if (func != undefined) {
+    eval(func);
+  }
+});
+
+$("#wordsInput").on("focus", () => {
+  if (!resultVisible && Config.showOutOfFocusWarning) {
+    OutOfFocus.hide();
+  }
+  Caret.show(TestLogic.input.current);
+});
+
+$("#wordsInput").on("focusout", () => {
+  if (!resultVisible && Config.showOutOfFocusWarning) {
+    OutOfFocus.show();
+  }
+  Caret.hide();
+});
+
+$(document).on("keypress", "#restartTestButton", (event) => {
+  if (event.keyCode == 13) {
+    if (
+      TestLogic.active &&
+      Config.repeatQuotes === "typing" &&
+      Config.mode === "quote"
+    ) {
+      TestLogic.restart(true);
+    } else {
+      TestLogic.restart();
+    }
+  }
+});
+
+$(document.body).on("click", "#restartTestButton", () => {
+  ManualRestart.set();
+  if (resultCalculating) return;
+  if (
+    TestLogic.active &&
+    Config.repeatQuotes === "typing" &&
+    Config.mode === "quote"
+  ) {
+    TestLogic.restart(true);
+  } else {
+    TestLogic.restart();
+  }
+});
+
+$(document).on("keypress", "#practiseMissedWordsButton", (event) => {
+  if (event.keyCode == 13) {
+    PractiseMissed.init();
+  }
+});
+
+$(document.body).on("click", "#practiseMissedWordsButton", () => {
+  PractiseMissed.init();
+});
+
+$(document).on("keypress", "#nextTestButton", (event) => {
+  if (event.keyCode == 13) {
+    TestLogic.restart();
+  }
+});
+
+$(document.body).on("click", "#nextTestButton", () => {
+  ManualRestart.set();
+  TestLogic.restart();
+});
+
+$(document).on("keypress", "#showWordHistoryButton", (event) => {
+  if (event.keyCode == 13) {
+    toggleResultWords();
+  }
+});
+
+$(document.body).on("click", "#showWordHistoryButton", () => {
+  toggleResultWords();
+});
+
+$(document.body).on("click", "#restartTestButtonWithSameWordset", () => {
+  if (Config.mode == "zen") {
+    Notifications.add("Repeat test disabled in zen mode");
+    return;
+  }
+  ManualRestart.set();
+  TestLogic.restart(true);
+});
+
+$(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
+  if (Config.mode == "zen") {
+    Notifications.add("Repeat test disabled in zen mode");
+    return;
+  }
+  if (event.keyCode == 13) {
+    TestLogic.restart(true);
+  }
+});
+
+$("#wordsWrapper").on("click", () => {
+  focusWords();
 });

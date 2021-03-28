@@ -1,5 +1,11 @@
 import * as Loader from "./loader";
 
+export function getuid() {
+  console.error("Only share this uid with Miodec and nobody else!");
+  console.log(firebase.auth().currentUser.uid);
+  console.error("Only share this uid with Miodec and nobody else!");
+}
+
 function hexToHSL(H) {
   // Convert hex to RGB first
   let r = 0,

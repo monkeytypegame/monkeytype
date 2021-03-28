@@ -1,6 +1,8 @@
 import Config, * as UpdateConfig from "./config";
 import * as ThemeColors from "./theme-colors";
 import layouts from "./layouts";
+import * as CommandlineLists from "./commandline-lists";
+import * as Commandline from "./commandline";
 
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;
@@ -242,3 +244,8 @@ export function refreshKeys(layout) {
     UpdateConfig.setKeymapLayout("qwerty", true);
   }
 }
+
+$(document).on("click", ".keymap .r5 #KeySpace", (e) => {
+  CommandlineLists.setCurrent(CommandlineLists.commandsKeymapLayouts);
+  Commandline.show();
+});

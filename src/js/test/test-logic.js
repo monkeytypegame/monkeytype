@@ -288,6 +288,46 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
   return word;
 }
 
+export function startTest() {
+  if (UI.pageTransition) {
+    return false;
+  }
+  if (!Config.dbConfigLoaded) {
+    UpdateConfig.setChangedBeforeDb(true);
+  }
+  try {
+    if (firebase.auth().currentUser != null) {
+      firebase.analytics().logEvent("testStarted");
+    } else {
+      firebase.analytics().logEvent("testStartedNoLogin");
+    }
+  } catch (e) {
+    console.log("Analytics unavailable");
+  }
+  setActive(true);
+  TestStats.resetKeypressTimings();
+  TimerProgress.restart();
+  TimerProgress.show();
+  $("#liveWpm").text("0");
+  LiveWpm.show();
+  LiveAcc.show();
+  TimerProgress.update(TestTimer.time);
+  TestTimer.clear();
+
+  if (Funbox.active === "memory") {
+    Funbox.resetMemoryTimer();
+    $("#wordsWrapper").addClass("hidden");
+  }
+
+  try {
+    if (Config.paceCaret !== "off") PaceCaret.start();
+  } catch (e) {}
+  //use a recursive self-adjusting timer to avoid time drift
+  TestStats.setStart(performance.now());
+  TestTimer.start();
+  return true;
+}
+
 export async function init() {
   setActive(false);
   words.reset();
