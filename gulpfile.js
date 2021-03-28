@@ -133,6 +133,7 @@ const refactoredSrc = [
   "./src/js/custom-mode2-popup.js",
   "./src/js/test/test-config.js",
   "./src/js/loader.js",
+  "./src/js/mini-result-chart.js",
 ];
 
 //legacy files

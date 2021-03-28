@@ -477,71 +477,16 @@ function getAccountDataAndInit() {
     });
 }
 
-function updateMiniResultChart(filteredId) {
-  let data = filteredResults[filteredId].chartData;
-  let labels = [];
-  for (let i = 1; i <= data.wpm.length; i++) {
-    labels.push(i.toString());
-  }
-  ChartController.miniResult.data.labels = labels;
-  ChartController.miniResult.data.datasets[0].data = data.wpm;
-  ChartController.miniResult.data.datasets[1].data = data.raw;
-  ChartController.miniResult.data.datasets[2].data = data.err;
-
-  ChartController.miniResult.updateColors();
-
-  let maxChartVal = Math.max(...[Math.max(...data.wpm), Math.max(...data.raw)]);
-  let minChartVal = Math.min(...[Math.min(...data.wpm), Math.min(...data.raw)]);
-  ChartController.miniResult.options.scales.yAxes[0].ticks.max = Math.round(
-    maxChartVal
-  );
-  ChartController.miniResult.options.scales.yAxes[1].ticks.max = Math.round(
-    maxChartVal
-  );
-
-  if (!Config.startGraphsAtZero) {
-    ChartController.miniResult.options.scales.yAxes[0].ticks.min = Math.round(
-      minChartVal
-    );
-    ChartController.miniResult.options.scales.yAxes[1].ticks.min = Math.round(
-      minChartVal
-    );
-  } else {
-    ChartController.miniResult.options.scales.yAxes[0].ticks.min = 0;
-    ChartController.miniResult.options.scales.yAxes[1].ticks.min = 0;
-  }
-
-  ChartController.miniResult.update({ duration: 0 });
-}
-
-function showMiniResultChart() {
-  $(".pageAccount .miniResultChartWrapper").stop(true, true).fadeIn(125);
-  $(".pageAccount .miniResultChartBg").stop(true, true).fadeIn(125);
-}
-
-function hideMiniResultChart() {
-  $(".pageAccount .miniResultChartWrapper").stop(true, true).fadeOut(125);
-  $(".pageAccount .miniResultChartBg").stop(true, true).fadeOut(125);
-}
-
-function updateMiniResultChartPosition(x, y) {
-  $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });
-}
-
 $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
   console.log("updating");
-  let filterid = $(event.currentTarget).attr("filteredResultsId");
-  if (filterid === undefined) return;
-  updateMiniResultChart(filterid);
-  showMiniResultChart();
-  updateMiniResultChartPosition(
+  let filteredId = $(event.currentTarget).attr("filteredResultsId");
+  if (filteredId === undefined) return;
+  MiniResultChart.updateData(filteredResults[filteredId].chartData);
+  MiniResultChart.show();
+  MiniResultChart.updatePosition(
     event.pageX - $(".pageAccount .miniResultChartWrapper").outerWidth(),
     event.pageY + 30
   );
-});
-
-$(document).on("click", ".pageAccount .miniResultChartBg", (event) => {
-  hideMiniResultChart();
 });
 
 Misc.getLanguageList().then((languages) => {

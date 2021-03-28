@@ -51,3 +51,4 @@ import * as ChallengeController from "./challenge-controller";
 import * as CustomMode2Popup from "./custom-mode2-popup";
 import * as TestConfig from "./test-config";
 import * as Loader from "./loader";
+import * as MiniResultChart from "./mini-result-chart";
