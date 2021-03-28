@@ -132,6 +132,7 @@ const refactoredSrc = [
   "./src/js/commandline.js",
   "./src/js/challenge-controller.js",
   "./src/js/custom-mode2-popup.js",
+  "./src/js/test/test-config.js",
 ];
 
 //legacy files

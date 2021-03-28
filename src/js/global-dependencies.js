@@ -55,3 +55,4 @@ import * as Commandline from "./commandline";
 import * as CommandlineLists from "./commandline-lists";
 import * as ChallengeController from "./challenge-controller";
 import * as CustomMode2Popup from "./custom-mode2-popup";
+import * as TestConfig from "./test-config";

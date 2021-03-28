@@ -132,14 +132,6 @@ function highlightBadWord(index, showError) {
   $($("#words .word")[index]).addClass("error");
 }
 
-function showTestConfig() {
-  $("#top .config").removeClass("hidden").css("opacity", 1);
-}
-
-function hideTestConfig() {
-  $("#top .config").css("opacity", 0).addClass("hidden");
-}
-
 function startTest() {
   if (UI.pageTransition) {
     return false;
@@ -195,7 +187,7 @@ function changePage(page) {
       $(".page.pageTest").addClass("active");
       history.pushState("/", null, "/");
     });
-    showTestConfig();
+    TestConfig.show();
     hideSignOutButton();
     // restartCount = 0;
     // incompleteTestSeconds = 0;
@@ -210,7 +202,7 @@ function changePage(page) {
       history.pushState("about", null, "about");
       $(".page.pageAbout").addClass("active");
     });
-    hideTestConfig();
+    TestConfig.hide();
     hideSignOutButton();
   } else if (page == "settings") {
     UI.setPageTransition(true);
@@ -221,7 +213,7 @@ function changePage(page) {
       $(".page.pageSettings").addClass("active");
     });
     updateSettingsPage();
-    hideTestConfig();
+    TestConfig.hide();
     hideSignOutButton();
   } else if (page == "account") {
     if (!firebase.auth().currentUser) {
@@ -235,7 +227,7 @@ function changePage(page) {
         $(".page.pageAccount").addClass("active");
       });
       refreshAccountPage();
-      hideTestConfig();
+      TestConfig.hide();
       showSignOutButton();
     }
   } else if (page == "login") {
@@ -249,7 +241,7 @@ function changePage(page) {
         history.pushState("login", null, "login");
         $(".page.pageLogin").addClass("active");
       });
-      hideTestConfig();
+      TestConfig.hide();
       hideSignOutButton();
     }
   }
@@ -405,72 +397,8 @@ $(document).on("click", "#top .logo", (e) => {
   changePage("test");
 });
 
-$(document).on("click", "#top .config .wordCount .text-button", (e) => {
-  const wrd = $(e.currentTarget).attr("wordCount");
-  if (wrd == "custom") {
-    CustomMode2Popup.show("words");
-  } else {
-    UpdateConfig.setWordCount(wrd);
-    ManualRestart.set();
-    TestLogic.restart();
-  }
-});
-
-$(document).on("click", "#top .config .time .text-button", (e) => {
-  let mode = $(e.currentTarget).attr("timeConfig");
-  if (mode == "custom") {
-    CustomMode2Popup.show("time");
-  } else {
-    UpdateConfig.setTimeConfig(mode);
-    ManualRestart.set();
-
-    TestLogic.restart();
-  }
-});
-
-$(document).on("click", "#top .config .quoteLength .text-button", (e) => {
-  let len = $(e.currentTarget).attr("quoteLength");
-  if (len == -2) {
-    UpdateConfig.setQuoteLength(-2, false, e.shiftKey);
-    QuoteSearchPopup.show();
-  } else {
-    if (len == -1) {
-      len = [0, 1, 2, 3];
-    }
-    UpdateConfig.setQuoteLength(len, false, e.shiftKey);
-    ManualRestart.set();
-    TestLogic.restart();
-  }
-});
-
-$(document).on("click", "#top .config .customText .text-button", () => {
-  CustomTextPopup.show();
-});
-
-$(document).on("click", "#top .config .punctuationMode .text-button", () => {
-  UpdateConfig.togglePunctuation();
-  ManualRestart.set();
-
-  TestLogic.restart();
-});
-
-$(document).on("click", "#top .config .numbersMode .text-button", () => {
-  UpdateConfig.toggleNumbers();
-  ManualRestart.set();
-
-  TestLogic.restart();
-});
-
 $("#wordsWrapper").on("click", () => {
   focusWords();
-});
-
-$(document).on("click", "#top .config .mode .text-button", (e) => {
-  if ($(e.currentTarget).hasClass("active")) return;
-  const mode = $(e.currentTarget).attr("mode");
-  UpdateConfig.setMode(mode);
-  ManualRestart.set();
-  TestLogic.restart();
 });
 
 $(document).on("click", "#top #menu .icon-button", (e) => {
