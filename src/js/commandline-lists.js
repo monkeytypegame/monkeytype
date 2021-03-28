@@ -1174,6 +1174,33 @@ export function updateThemeCommands() {
   }
 }
 
+let commandsCopyWordsToClipboard = {
+  title: "Are you sure...",
+  list: [
+    {
+      id: "copyNo",
+      display: "Nevermind",
+      exec: () => {},
+    },
+    {
+      id: "copyYes",
+      display: "Yes, I am sure",
+      exec: () => {
+        const words = Misc.getWords();
+
+        navigator.clipboard.writeText(words).then(
+          () => {
+            Notifications.add("Copied to clipboard", 1);
+          },
+          () => {
+            Notifications.add("Failed to copy!", -1);
+          }
+        );
+      },
+    },
+  ],
+};
+
 export let defaultCommands = {
   title: "",
   list: [
@@ -1824,6 +1851,15 @@ export let defaultCommands = {
       visible: false,
       exec: () => {
         UpdateConfig.toggleMonkey();
+      },
+    },
+    {
+      id: "copyWordsToClipboard",
+      display: "Copy words to clipboard",
+      subgroup: true,
+      exec: () => {
+        current.push(commandsCopyWordsToClipboard);
+        Commandline.show();
       },
     },
   ],

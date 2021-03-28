@@ -622,6 +622,18 @@ export function toggleFullscreen(elem) {
   }
 }
 
+export function getWords() {
+  const words = [...document.querySelectorAll("#words .word")]
+    .map((word) => {
+      return [...word.querySelectorAll("letter")]
+        .map((letter) => letter.innerText)
+        .join("");
+    })
+    .join(" ");
+
+  return words;
+}
+
 //credit: https://www.w3resource.com/javascript-exercises/javascript-string-exercise-32.php
 export function remove_non_ascii(str) {
   if (str === null || str === "") return false;
