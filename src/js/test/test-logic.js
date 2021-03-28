@@ -539,135 +539,6 @@ export async function init() {
   // }
 }
 
-export function calculateWpmAndRaw() {
-  let chars = 0;
-  let correctWordChars = 0;
-  let spaces = 0;
-  for (let i = 0; i < input.history.length; i++) {
-    let word = Config.mode == "zen" ? input.getHistory(i) : words.get(i);
-    if (input.getHistory(i) == word) {
-      //the word is correct
-      //+1 for space
-      correctWordChars += word.length;
-      if (
-        i < input.history.length - 1 &&
-        Misc.getLastChar(input.getHistory(i)) !== "\n"
-      ) {
-        spaces++;
-      }
-    }
-    chars += input.getHistory(i).length;
-  }
-  if (words.getCurrent() == input.current) {
-    correctWordChars += input.current.length;
-  }
-  if (Funbox.active === "nospace") {
-    spaces = 0;
-  }
-  chars += input.current.length;
-  let testSeconds = TestStats.calculateTestSeconds(performance.now());
-  let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
-  let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
-  return {
-    wpm: wpm,
-    raw: raw,
-  };
-}
-
-export function addWord() {
-  let bound = 100;
-  if (Funbox.active === "plus_one") bound = 1;
-  if (
-    words.length - input.history.length > bound ||
-    (Config.mode === "words" &&
-      words.length >= Config.words &&
-      Config.words > 0) ||
-    (Config.mode === "custom" &&
-      CustomText.isWordRandom &&
-      words.length >= CustomText.word &&
-      CustomText.word != 0) ||
-    (Config.mode === "custom" &&
-      !CustomText.isWordRandom &&
-      words.length >= CustomText.text.length)
-  )
-    return;
-  const language =
-    Config.mode !== "custom"
-      ? Misc.getCurrentLanguage()
-      : {
-          //borrow the direction of the current language
-          leftToRight: Misc.getCurrentLanguage().leftToRight,
-          words: CustomText.text,
-        };
-  const wordset = language.words;
-  let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  const previousWord = words.getLast();
-  const previousWordStripped = previousWord
-    .replace(/[.?!":\-,]/g, "")
-    .toLowerCase();
-  const previousWord2Stripped = words
-    .get(words.length - 2)
-    .replace(/[.?!":\-,]/g, "")
-    .toLowerCase();
-
-  if (
-    Config.mode === "custom" &&
-    CustomText.isWordRandom &&
-    wordset.length < 3
-  ) {
-    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  } else if (Config.mode == "custom" && !CustomText.isWordRandom) {
-    randomWord = CustomText.text[words.length];
-  } else {
-    while (
-      previousWordStripped == randomWord ||
-      previousWord2Stripped == randomWord ||
-      randomWord.indexOf(" ") > -1 ||
-      (!Config.punctuation && randomWord == "I")
-    ) {
-      randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-    }
-  }
-
-  if (Funbox.active === "rAnDoMcAsE") {
-    let randomcaseword = "";
-    for (let i = 0; i < randomWord.length; i++) {
-      if (i % 2 != 0) {
-        randomcaseword += randomWord[i].toUpperCase();
-      } else {
-        randomcaseword += randomWord[i];
-      }
-    }
-    randomWord = randomcaseword;
-  } else if (Funbox.active === "gibberish") {
-    randomWord = Misc.getGibberish();
-  } else if (Funbox.active === "58008") {
-    randomWord = Misc.getNumbers(7);
-  } else if (Funbox.active === "specials") {
-    randomWord = Misc.getSpecials();
-  } else if (Funbox.active === "ascii") {
-    randomWord = Misc.getASCII();
-  }
-
-  if (Config.punctuation && Config.mode != "custom") {
-    randomWord = punctuateWord(previousWord, randomWord, words.length, 0);
-  }
-  if (Config.numbers && Config.mode != "custom") {
-    if (Math.random() < 0.1) {
-      randomWord = Misc.getNumbers(4);
-    }
-  }
-
-  words.push(randomWord);
-
-  let w = "<div class='word'>";
-  for (let c = 0; c < randomWord.length; c++) {
-    w += "<letter>" + randomWord.charAt(c) + "</letter>";
-  }
-  w += "</div>";
-  $("#words").append(w);
-}
-
 export function restart(withSameWordset = false, nosave = false, event) {
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     try {
@@ -868,6 +739,135 @@ export function restart(withSameWordset = false, nosave = false, event) {
         );
     }
   );
+}
+
+export function calculateWpmAndRaw() {
+  let chars = 0;
+  let correctWordChars = 0;
+  let spaces = 0;
+  for (let i = 0; i < input.history.length; i++) {
+    let word = Config.mode == "zen" ? input.getHistory(i) : words.get(i);
+    if (input.getHistory(i) == word) {
+      //the word is correct
+      //+1 for space
+      correctWordChars += word.length;
+      if (
+        i < input.history.length - 1 &&
+        Misc.getLastChar(input.getHistory(i)) !== "\n"
+      ) {
+        spaces++;
+      }
+    }
+    chars += input.getHistory(i).length;
+  }
+  if (words.getCurrent() == input.current) {
+    correctWordChars += input.current.length;
+  }
+  if (Funbox.active === "nospace") {
+    spaces = 0;
+  }
+  chars += input.current.length;
+  let testSeconds = TestStats.calculateTestSeconds(performance.now());
+  let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
+  let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
+  return {
+    wpm: wpm,
+    raw: raw,
+  };
+}
+
+export function addWord() {
+  let bound = 100;
+  if (Funbox.active === "plus_one") bound = 1;
+  if (
+    words.length - input.history.length > bound ||
+    (Config.mode === "words" &&
+      words.length >= Config.words &&
+      Config.words > 0) ||
+    (Config.mode === "custom" &&
+      CustomText.isWordRandom &&
+      words.length >= CustomText.word &&
+      CustomText.word != 0) ||
+    (Config.mode === "custom" &&
+      !CustomText.isWordRandom &&
+      words.length >= CustomText.text.length)
+  )
+    return;
+  const language =
+    Config.mode !== "custom"
+      ? Misc.getCurrentLanguage()
+      : {
+          //borrow the direction of the current language
+          leftToRight: Misc.getCurrentLanguage().leftToRight,
+          words: CustomText.text,
+        };
+  const wordset = language.words;
+  let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+  const previousWord = words.getLast();
+  const previousWordStripped = previousWord
+    .replace(/[.?!":\-,]/g, "")
+    .toLowerCase();
+  const previousWord2Stripped = words
+    .get(words.length - 2)
+    .replace(/[.?!":\-,]/g, "")
+    .toLowerCase();
+
+  if (
+    Config.mode === "custom" &&
+    CustomText.isWordRandom &&
+    wordset.length < 3
+  ) {
+    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+  } else if (Config.mode == "custom" && !CustomText.isWordRandom) {
+    randomWord = CustomText.text[words.length];
+  } else {
+    while (
+      previousWordStripped == randomWord ||
+      previousWord2Stripped == randomWord ||
+      randomWord.indexOf(" ") > -1 ||
+      (!Config.punctuation && randomWord == "I")
+    ) {
+      randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+    }
+  }
+
+  if (Funbox.active === "rAnDoMcAsE") {
+    let randomcaseword = "";
+    for (let i = 0; i < randomWord.length; i++) {
+      if (i % 2 != 0) {
+        randomcaseword += randomWord[i].toUpperCase();
+      } else {
+        randomcaseword += randomWord[i];
+      }
+    }
+    randomWord = randomcaseword;
+  } else if (Funbox.active === "gibberish") {
+    randomWord = Misc.getGibberish();
+  } else if (Funbox.active === "58008") {
+    randomWord = Misc.getNumbers(7);
+  } else if (Funbox.active === "specials") {
+    randomWord = Misc.getSpecials();
+  } else if (Funbox.active === "ascii") {
+    randomWord = Misc.getASCII();
+  }
+
+  if (Config.punctuation && Config.mode != "custom") {
+    randomWord = punctuateWord(previousWord, randomWord, words.length, 0);
+  }
+  if (Config.numbers && Config.mode != "custom") {
+    if (Math.random() < 0.1) {
+      randomWord = Misc.getNumbers(4);
+    }
+  }
+
+  words.push(randomWord);
+
+  let w = "<div class='word'>";
+  for (let c = 0; c < randomWord.length; c++) {
+    w += "<letter>" + randomWord.charAt(c) + "</letter>";
+  }
+  w += "</div>";
+  $("#words").append(w);
 }
 
 export function fail() {

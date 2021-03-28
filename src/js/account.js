@@ -312,7 +312,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     Notifications.add("Loading challenge", 0);
     let challengeName = window.location.pathname.split("_")[1];
     setTimeout(() => {
-      setupChallenge(challengeName);
+      ChallengeController.setup(challengeName);
     }, 1000);
   }
 });
