@@ -87,7 +87,6 @@ let eslintConfig = {
 //once all files are moved here, then can we use a bundler to its full potential
 const refactoredSrc = [
   "./src/js/db.js",
-  "./src/js/dom-util.js",
   "./src/js/cloud-functions.js",
   "./src/js/misc.js",
   "./src/js/layouts.js",
@@ -118,6 +117,24 @@ const refactoredSrc = [
   "./src/js/test/live-acc.js",
   "./src/js/test/test-leaderboards.js",
   "./src/js/test/timer-progress.js",
+  "./src/js/test/test-logic.js",
+  "./src/js/test/funbox.js",
+  "./src/js/test/pace-caret.js",
+  "./src/js/quote-search-popup.js",
+  "./src/js/tag-controller.js",
+  "./src/js/ui.js",
+  "./src/js/test/pb-crown.js",
+  "./src/js/test/test-timer.js",
+  "./src/js/settings/language-picker.js",
+  "./src/js/commandline.js",
+  "./src/js/commandline-lists.js",
+  "./src/js/commandline.js",
+  "./src/js/challenge-controller.js",
+  "./src/js/custom-word-amount-popup.js",
+  "./src/js/custom-test-duration-popup.js",
+  "./src/js/test/test-config.js",
+  "./src/js/loader.js",
+  "./src/js/mini-result-chart.js",
 ];
 
 //legacy files
@@ -125,8 +142,6 @@ const refactoredSrc = [
 const globalSrc = [
   "./src/js/global-dependencies.js",
   "./src/js/simple-popups.js",
-  "./src/js/userconfig.js",
-  "./src/js/commandline.js",
   "./src/js/settings.js",
   "./src/js/account.js",
   "./src/js/script.js",

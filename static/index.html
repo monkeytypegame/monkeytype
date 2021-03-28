@@ -136,10 +136,22 @@
         <div class="button">ok</div>
       </div>
     </div>
-    <div id="customMode2PopupWrapper" class="hidden">
-      <div id="customMode2Popup" mode="">
-        <div class="title">Test length</div>
+    <div id="customWordAmountPopupWrapper" class="hidden">
+      <div id="customWordAmountPopup">
+        <div class="title">Word amount</div>
         <input type="number" value="1" min="1" max="10000" />
+        <div class="tip">
+          You can start an infinite test by inputting 0. Then, to stop the test,
+          use the Bail Out feature (esc > Bail Out)
+        </div>
+        <div class="button">ok</div>
+      </div>
+    </div>
+    <div id="customTestDurationPopupWrapper" class="hidden">
+      <div id="customTestDurationPopup">
+        <div class="title">Test duration</div>
+        <div class="preview"></div>
+        <input value="1" />
         <div class="tip">
           You can start an infinite test by inputting 0. Then, to stop the test,
           use the Bail Out feature (esc > Bail Out)
@@ -1004,6 +1016,7 @@
                 <i class="fas fa-lock"></i>
                 Caps Lock
               </div>
+              <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
               <div id="caret" class="default size15"></div>
               <div id="paceCaret" class="default size15 hidden"></div>

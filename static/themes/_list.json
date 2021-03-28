@@ -508,5 +508,10 @@
     "name": "copper",
     "bgColor": "#442f29",
     "textColor": "#e7e0de"
+  },
+  {
+    "name": "grand_prix",
+    "bgColor": "#36475c",
+    "textColor": "#c0d036"
   }
 ]

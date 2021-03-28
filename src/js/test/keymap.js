@@ -1,19 +1,13 @@
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as ThemeColors from "./theme-colors";
 import layouts from "./layouts";
 
-//TODO remove after wordslist and currentinput and current word index are in a module
 export function highlightKey(currentKey) {
   if (Config.mode === "zen") return;
   try {
     if ($(".active-key") != undefined) {
       $(".active-key").removeClass("active-key");
     }
-
-    // var currentKey = wordsList[currentWordIndex]
-    //   .substring(currentInput.length, currentInput.length + 1)
-    //   .toString()
-    //   .toUpperCase();
 
     let highlightKey;
     switch (currentKey) {
@@ -158,8 +152,7 @@ export function show() {
   $(".keymap").removeClass("hidden");
 }
 
-//TODO remove setkeymaplayout after userconfig is a module
-export function refreshKeys(layout, setKeymapLayout) {
+export function refreshKeys(layout) {
   try {
     let lts = layouts[layout]; //layout to show
     let layoutString = layout;
@@ -246,6 +239,6 @@ export function refreshKeys(layout, setKeymapLayout) {
     console.log(
       "something went wrong when changing layout, resettings: " + e.message
     );
-    setKeymapLayout("qwerty", true);
+    UpdateConfig.setKeymapLayout("qwerty", true);
   }
 }

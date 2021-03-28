@@ -1,26 +1,8 @@
 import * as CloudFunctions from "./cloud-functions";
-import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
+import * as Loader from "./loader";
 import * as Notifications from "./notification-center";
 
 let currentLeaderboard = "time_15";
-
-export function show() {
-  if ($("#leaderboardsWrapper").hasClass("hidden")) {
-    $("#leaderboardsWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate(
-        {
-          opacity: 1,
-        },
-        125,
-        () => {
-          update();
-        }
-      );
-  }
-}
 
 export function hide() {
   $("#leaderboardsWrapper")
@@ -35,7 +17,6 @@ export function hide() {
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
-  // focusWords();
 }
 
 function update() {
@@ -51,7 +32,7 @@ function update() {
     uid = firebase.auth().currentUser.uid;
   }
 
-  showBackgroundLoader();
+  Loader.show();
   Promise.all([
     CloudFunctions.getLeaderboard({
       mode: boardinfo[0],
@@ -67,7 +48,7 @@ function update() {
     }),
   ])
     .then((lbdata) => {
-      hideBackgroundLoader();
+      Loader.hide();
       let dailyData = lbdata[0].data;
       let globalData = lbdata[1].data;
 
@@ -263,9 +244,27 @@ function update() {
       }
     })
     .catch((e) => {
-      hideBackgroundLoader();
+      Loader.hide();
       Notifications.add("Something went wrong: " + e.message, -1);
     });
+}
+
+export function show() {
+  if ($("#leaderboardsWrapper").hasClass("hidden")) {
+    $("#leaderboardsWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate(
+        {
+          opacity: 1,
+        },
+        125,
+        () => {
+          update();
+        }
+      );
+  }
 }
 
 $("#leaderboardsWrapper").click((e) => {

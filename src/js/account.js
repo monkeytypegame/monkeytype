@@ -172,13 +172,13 @@ function signUp() {
                   completed: undefined,
                 },
               });
-              if (notSignedInLastResult !== null) {
-                notSignedInLastResult.uid = usr.uid;
+              if (TestLogic.notSignedInLastResult !== null) {
+                TestLogic.setNotSignedInUid(usr.uid);
                 CloudFunctions.testCompleted({
                   uid: usr.uid,
-                  obj: notSignedInLastResult,
+                  obj: TestLogic.notSignedInLastResult,
                 });
-                DB.getSnapshot().results.push(notSignedInLastResult);
+                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
               }
               changePage("account");
               usr.sendEmailVerification();
@@ -264,7 +264,8 @@ firebase.auth().onAuthStateChanged(function (user) {
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
 
-    showFavouriteThemesAtTheTop();
+    // showFavouriteThemesAtTheTop();
+    CommandlineLists.updateThemeCommands();
 
     let text = "Account created on " + user.metadata.creationTime;
 
@@ -295,23 +296,23 @@ firebase.auth().onAuthStateChanged(function (user) {
   if (theme !== null) {
     try {
       theme = theme.split(",");
-      ConfigSet.customThemeColors(theme);
+      UpdateConfig.setCustomThemeColors(theme);
       Notifications.add("Custom theme applied.", 1);
     } catch (e) {
       Notifications.add(
         "Something went wrong. Reverting to default custom colors.",
         0
       );
-      ConfigSet.customThemeColors(Config.defaultConfig.customThemeColors);
+      UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
     }
-    setCustomTheme(true);
+    UpdateConfig.setCustomTheme(true);
     setCustomThemeInputs();
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add("Loading challenge", 0);
     let challengeName = window.location.pathname.split("_")[1];
     setTimeout(() => {
-      setupChallenge(challengeName);
+      ChallengeController.setup(challengeName);
     }, 1000);
   }
 });
@@ -361,13 +362,13 @@ function getAccountDataAndInit() {
       if (snap.refactored === false) {
         CloudFunctions.removeSmallTests({ uid: user.uid });
       }
-      if (!configChangedBeforeDb) {
-        if (cookieConfig === null) {
+      if (!Config.changedBeforeDb) {
+        if (Config.cookieConfig === null) {
           AccountIcon.loading(false);
-          applyConfig(DB.getSnapshot().config);
+          UpdateConfig.apply(DB.getSnapshot().config);
           updateSettingsPage();
-          saveConfigToCookie(true);
-          restartTest(false, true);
+          UpdateConfig.saveToCookie(true);
+          TestLogic.restart(false, true);
         } else if (DB.getSnapshot().config !== undefined) {
           // let configsDifferent = false;
           // Object.keys(config).forEach((key) => {
@@ -408,16 +409,16 @@ function getAccountDataAndInit() {
           //   applyConfig(config);
           //   updateSettingsPage();
           //   saveConfigToCookie(true);
-          //   restartTest(false, true);
+          //   TestLogic.restart(false, true);
           // }
         }
-        dbConfigLoaded = true;
+        UpdateConfig.setDbConfigLoaded(true);
       } else {
         AccountIcon.loading(false);
       }
       if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-        if (!testActive) {
-          initPaceCaret(true);
+        if (!TestLogic.active) {
+          PaceCaret.init(true);
         }
       }
       // try {
@@ -459,8 +460,8 @@ function getAccountDataAndInit() {
       refreshThemeButtons();
       AccountIcon.loading(false);
       updateFilterTags();
-      updateCommandsTagsList();
-      loadActiveTagsFromCookie();
+      CommandlineLists.updateTagCommands();
+      TagController.loadActiveFromCookie();
       updateResultEditTagsPanelButtons();
       showAccountSettingsSection();
     })
@@ -476,71 +477,16 @@ function getAccountDataAndInit() {
     });
 }
 
-function updateMiniResultChart(filteredId) {
-  let data = filteredResults[filteredId].chartData;
-  let labels = [];
-  for (let i = 1; i <= data.wpm.length; i++) {
-    labels.push(i.toString());
-  }
-  ChartController.miniResult.data.labels = labels;
-  ChartController.miniResult.data.datasets[0].data = data.wpm;
-  ChartController.miniResult.data.datasets[1].data = data.raw;
-  ChartController.miniResult.data.datasets[2].data = data.err;
-
-  ChartController.miniResult.updateColors();
-
-  let maxChartVal = Math.max(...[Math.max(...data.wpm), Math.max(...data.raw)]);
-  let minChartVal = Math.min(...[Math.min(...data.wpm), Math.min(...data.raw)]);
-  ChartController.miniResult.options.scales.yAxes[0].ticks.max = Math.round(
-    maxChartVal
-  );
-  ChartController.miniResult.options.scales.yAxes[1].ticks.max = Math.round(
-    maxChartVal
-  );
-
-  if (!Config.startGraphsAtZero) {
-    ChartController.miniResult.options.scales.yAxes[0].ticks.min = Math.round(
-      minChartVal
-    );
-    ChartController.miniResult.options.scales.yAxes[1].ticks.min = Math.round(
-      minChartVal
-    );
-  } else {
-    ChartController.miniResult.options.scales.yAxes[0].ticks.min = 0;
-    ChartController.miniResult.options.scales.yAxes[1].ticks.min = 0;
-  }
-
-  ChartController.miniResult.update({ duration: 0 });
-}
-
-function showMiniResultChart() {
-  $(".pageAccount .miniResultChartWrapper").stop(true, true).fadeIn(125);
-  $(".pageAccount .miniResultChartBg").stop(true, true).fadeIn(125);
-}
-
-function hideMiniResultChart() {
-  $(".pageAccount .miniResultChartWrapper").stop(true, true).fadeOut(125);
-  $(".pageAccount .miniResultChartBg").stop(true, true).fadeOut(125);
-}
-
-function updateMiniResultChartPosition(x, y) {
-  $(".pageAccount .miniResultChartWrapper").css({ top: y, left: x });
-}
-
 $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
   console.log("updating");
-  let filterid = $(event.currentTarget).attr("filteredResultsId");
-  if (filterid === undefined) return;
-  updateMiniResultChart(filterid);
-  showMiniResultChart();
-  updateMiniResultChartPosition(
+  let filteredId = $(event.currentTarget).attr("filteredResultsId");
+  if (filteredId === undefined) return;
+  MiniResultChart.updateData(filteredResults[filteredId].chartData);
+  MiniResultChart.show();
+  MiniResultChart.updatePosition(
     event.pageX - $(".pageAccount .miniResultChartWrapper").outerWidth(),
     event.pageY + 30
   );
-});
-
-$(document).on("click", ".pageAccount .miniResultChartBg", (event) => {
-  hideMiniResultChart();
 });
 
 Misc.getLanguageList().then((languages) => {
@@ -817,7 +763,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   } else {
     ResultFilters.setFilter("language", Config.language, true);
   }
-  ResultFilters.setFilter("funbox", activeFunbox, true);
+  ResultFilters.setFilter("funbox", true);
   ResultFilters.setFilter("tags", "none", true);
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
@@ -1274,13 +1220,13 @@ function refreshGlobalStats() {
 
 function updateAccountLoginButton() {
   if (firebase.auth().currentUser != null) {
-    swapElements(
+    UI.swapElements(
       $("#menu .icon-button.login"),
       $("#menu .icon-button.account"),
       250
     );
   } else {
-    swapElements(
+    UI.swapElements(
       $("#menu .icon-button.account"),
       $("#menu .icon-button.login"),
       250
@@ -1775,7 +1721,11 @@ function refreshAccountPage() {
     ChartController.accountHistory.update({ duration: 0 });
     ChartController.accountActivity.update({ duration: 0 });
 
-    swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
+    UI.swapElements(
+      $(".pageAccount .preloader"),
+      $(".pageAccount .content"),
+      250
+    );
   }
   if (DB.getSnapshot() === null) {
     Notifications.add(`Missing account data. Please refresh.`, -1);
@@ -1829,11 +1779,11 @@ function hideResultEditTagsPanel() {
 }
 
 $(".pageAccount .toggleAccuracyOnChart").click((e) => {
-  toggleChartAccuracy();
+  UpdateConfig.toggleChartAccuracy();
 });
 
 $(".pageAccount .toggleChartStyle").click((e) => {
-  toggleChartStyle();
+  UpdateConfig.toggleChartStyle();
 });
 
 $(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
@@ -1889,14 +1839,14 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
       newtags.push(tagid);
     }
   });
-  showBackgroundLoader();
+  Loader.show();
   hideResultEditTagsPanel();
   CloudFunctions.updateResultTags({
     uid: firebase.auth().currentUser.uid,
     tags: newtags,
     resultid: resultid,
   }).then((r) => {
-    hideBackgroundLoader();
+    Loader.hide();
     if (r.data.resultCode === 1) {
       Notifications.add("Tags updated.", 1, 2);
       DB.getSnapshot().results.forEach((result) => {
@@ -1968,18 +1918,18 @@ $(".pageLogin .register .button").click((e) => {
 
 $(".pageLogin .login input").keyup((e) => {
   if (e.key == "Enter") {
-    configChangedBeforeDb = false;
+    UpdateConfig.setChangedBeforeDb(false);
     signIn();
   }
 });
 
 $(".pageLogin .login .button.signIn").click((e) => {
-  configChangedBeforeDb = false;
+  UpdateConfig.setChangedBeforeDb(false);
   signIn();
 });
 
 $(".pageLogin .login .button.signInWithGoogle").click((e) => {
-  configChangedBeforeDb = false;
+  UpdateConfig.setChangedBeforeDb(false);
   signInWithGoogle();
 });
 

@@ -3,22 +3,11 @@ import * as ChartController from "./chart-controller";
 import * as Misc from "./misc";
 import * as Notifications from "./notification-center";
 import Config from "./config";
+import * as UI from "./ui";
 
 let isPreviewingTheme = false;
 let randomTheme = null;
-//TODO remove current theme and customcolors once config is a module
-let currentTheme = "serika_dark";
-let customColors = [
-  "#323437",
-  "#e2b714",
-  "#e2b714",
-  "#646669",
-  "#d1d0c5",
-  "#ca4754",
-  "#7e2a33",
-  "#ca4754",
-  "#7e2a33",
-];
+
 export const colorVars = [
   "--bg-color",
   "--main-color",
@@ -30,80 +19,6 @@ export const colorVars = [
   "--colorful-error-color",
   "--colorful-error-extra-color",
 ];
-
-export function apply(themeName) {
-  clearCustomTheme();
-
-  let name = "serika_dark";
-  if (themeName !== "custom") {
-    name = themeName;
-  }
-
-  $(".keymap-key").attr("style", "");
-  $("#currentTheme").attr("href", `themes/${name}.css`);
-  $(".current-theme").text(themeName.replace("_", " "));
-
-  if (themeName === "custom") {
-    colorVars.forEach((e, index) => {
-      document.documentElement.style.setProperty(e, customColors[index]);
-    });
-  }
-
-  try {
-    firebase.analytics().logEvent("changedTheme", {
-      theme: themeName,
-    });
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
-  setTimeout(() => {
-    $(".keymap-key").attr("style", "");
-    ChartController.updateAllChartColors();
-    updateFavicon(32, 14);
-    $("#metaThemeColor").attr("content", ThemeColors.main);
-  }, 500);
-}
-
-export function preview(themeName) {
-  isPreviewingTheme = true;
-  apply(themeName);
-}
-
-export function set(themeName) {
-  currentTheme = themeName;
-  apply(themeName);
-}
-
-export function clearPreview() {
-  if (isPreviewingTheme) {
-    isPreviewingTheme = false;
-    apply(currentTheme);
-  }
-}
-
-export function setCustomColors(colors) {
-  customColors = colors;
-}
-
-//TODO remove config once config is a module
-export function randomiseTheme() {
-  var randomList;
-  Misc.getThemesList().then((themes) => {
-    randomList = themes.map((t) => {
-      return t.name;
-    });
-
-    if (Config.randomTheme === "fav" && Config.favThemes.length > 0)
-      randomList = Config.favThemes;
-    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
-    preview(randomTheme);
-    Notifications.add(randomTheme.replace(/_/g, " "), 0);
-  });
-}
-
-export function clearRandom() {
-  randomTheme = null;
-}
 
 function updateFavicon(size, curveSize) {
   let maincolor, bgcolor;
@@ -144,4 +59,87 @@ function clearCustomTheme() {
   colorVars.forEach((e) => {
     document.documentElement.style.setProperty(e, "");
   });
+}
+
+export function apply(themeName) {
+  clearCustomTheme();
+
+  let name = "serika_dark";
+  if (themeName !== "custom") {
+    name = themeName;
+    UI.swapElements(
+      $('.pageSettings [tabContent="custom"]'),
+      $('.pageSettings [tabContent="preset"]'),
+      250
+    );
+  } else {
+    //is custom
+    UI.swapElements(
+      $('.pageSettings [tabContent="preset"]'),
+      $('.pageSettings [tabContent="custom"]'),
+      250
+    );
+  }
+
+  $(".keymap-key").attr("style", "");
+  $("#currentTheme").attr("href", `themes/${name}.css`);
+  $(".current-theme").text(themeName.replace("_", " "));
+
+  if (themeName === "custom") {
+    colorVars.forEach((e, index) => {
+      document.documentElement.style.setProperty(
+        e,
+        Config.customThemeColors[index]
+      );
+    });
+  }
+
+  try {
+    firebase.analytics().logEvent("changedTheme", {
+      theme: themeName,
+    });
+  } catch (e) {
+    console.log("Analytics unavailable");
+  }
+  setTimeout(() => {
+    $(".keymap-key").attr("style", "");
+    ChartController.updateAllChartColors();
+    updateFavicon(32, 14);
+    $("#metaThemeColor").attr("content", ThemeColors.main);
+  }, 500);
+}
+
+export function preview(themeName) {
+  isPreviewingTheme = true;
+  apply(themeName);
+}
+
+export function set(themeName) {
+  apply(themeName);
+}
+
+export function clearPreview() {
+  if (isPreviewingTheme) {
+    isPreviewingTheme = false;
+    apply(Config.theme);
+  }
+}
+
+export function randomiseTheme() {
+  var randomList;
+  Misc.getThemesList().then((themes) => {
+    randomList = themes.map((t) => {
+      return t.name;
+    });
+
+    if (Config.randomTheme === "fav" && Config.favThemes.length > 0)
+      randomList = Config.favThemes;
+    randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
+    preview(randomTheme);
+    Notifications.add(randomTheme.replace(/_/g, " "), 0);
+  });
+}
+
+export function clearRandom() {
+  randomTheme = null;
 }
