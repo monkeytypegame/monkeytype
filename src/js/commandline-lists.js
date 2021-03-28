@@ -844,7 +844,7 @@ let commandsQuoteLengthConfig = {
       id: "changeQuoteLengthAll",
       display: "all",
       exec: () => {
-        UpdateConfig.setQuoteLength(-1);
+        UpdateConfig.setQuoteLength([0, 1, 2, 3]);
         TestLogic.restart();
       },
     },
