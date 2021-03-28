@@ -715,6 +715,13 @@ a:hover {
       color: var(--sub-color);
     }
   }
+
+  #customTestDurationPopup {
+    .preview {
+      font-size: 0.75rem;
+      color: var(--sub-color);
+    }
+  }
 }
 
 #customThemeShareWrapper {
