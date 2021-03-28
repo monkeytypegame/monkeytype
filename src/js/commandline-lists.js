@@ -1,7 +1,7 @@
 import * as DB from "./db";
 import * as Misc from "./misc";
 import layouts from "./layouts";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import * as Sound from "./sound";
 import * as TestStats from "./test-stats";
 import * as ThemeController from "./theme-controller";

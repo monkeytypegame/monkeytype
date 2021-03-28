@@ -1,7 +1,7 @@
 import * as CustomText from "./custom-text";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as Misc from "./misc";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import * as TestLogic from "./test-logic";
 
 let wrapper = "#customTextPopupWrapper";

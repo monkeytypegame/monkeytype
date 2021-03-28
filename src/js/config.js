@@ -8,7 +8,7 @@ import * as TimerProgress from "./timer-progress";
 import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
 import * as Funbox from "./funbox";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import * as ThemeController from "./theme-controller";
 import * as Keymap from "./keymap";
 import * as LanguagePicker from "./language-picker";

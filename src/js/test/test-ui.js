@@ -1,4 +1,4 @@
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import * as ThemeColors from "./theme-colors";
 import Config, * as UpdateConfig from "./config";
 import * as DB from "./db";

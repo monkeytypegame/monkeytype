@@ -1,6 +1,6 @@
 import * as UpdateConfig from "./config";
 import * as ManualRestart from "./manual-restart-tracker";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import * as TestLogic from "./test-logic";
 
 function parseInput(input) {

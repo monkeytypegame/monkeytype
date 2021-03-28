@@ -1,7 +1,7 @@
 import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "./misc";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import Config from "./config";
 import * as UI from "./ui";
 

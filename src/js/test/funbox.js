@@ -1,5 +1,5 @@
 import * as TestLogic from "./test-logic";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import * as TestUI from "./test-ui";
 import * as Misc from "./misc";
 import * as ManualRestart from "./manual-restart-tracker";

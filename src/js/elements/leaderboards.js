@@ -1,6 +1,6 @@
 import * as CloudFunctions from "./cloud-functions";
 import * as Loader from "./loader";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 
 let currentLeaderboard = "time_15";
 

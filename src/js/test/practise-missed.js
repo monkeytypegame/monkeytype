@@ -1,5 +1,5 @@
 import * as TestStats from "./test-stats";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import Config, * as UpdateConfig from "./config";
 import * as CustomText from "./custom-text";
 import * as TestLogic from "./test-logic";

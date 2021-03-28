@@ -1,5 +1,5 @@
 import Config, * as UpdateConfig from "./config";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import * as Leaderboards from "./leaderboards";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as Misc from "./misc";

@@ -5,7 +5,7 @@ import * as LiveWpm from "./live-wpm";
 import * as TestStats from "./test-stats";
 import * as Monkey from "./monkey";
 import * as Misc from "./misc";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import * as Funbox from "./funbox";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";

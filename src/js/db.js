@@ -1,7 +1,7 @@
 import { loadTags } from "./result-filters";
 import * as AccountIcon from "./account-icon";
 import * as CloudFunctions from "./cloud-functions";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 
 const db = firebase.firestore();
 db.settings({ experimentalForceLongPolling: true });

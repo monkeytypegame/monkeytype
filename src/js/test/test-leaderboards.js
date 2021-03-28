@@ -1,6 +1,6 @@
 import * as CloudFunctions from "./cloud-functions";
 import * as DB from "./db";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import Config from "./config";
 import * as Misc from "./misc";
 

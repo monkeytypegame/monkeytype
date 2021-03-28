@@ -1,5 +1,5 @@
 import * as Misc from "./misc";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import * as UpdateConfig from "./config";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as CustomText from "./custom-text";
