@@ -8,12 +8,6 @@ Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
 
 import * as DB from "./db";
-import {
-  showBackgroundLoader,
-  hideBackgroundLoader,
-  swapElements,
-  focusWords,
-} from "./dom-util";
 import * as Misc from "./misc";
 import * as CloudFunctions from "./cloud-functions";
 import layouts from "./layouts";
@@ -56,3 +50,4 @@ import * as CommandlineLists from "./commandline-lists";
 import * as ChallengeController from "./challenge-controller";
 import * as CustomMode2Popup from "./custom-mode2-popup";
 import * as TestConfig from "./test-config";
+import * as Loader from "./loader";

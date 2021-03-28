@@ -861,10 +861,10 @@ $(document).on(
 $(
   ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
 ).click((e) => {
-  showBackgroundLoader();
+  Loader.show();
   CloudFunctions.generatePairingCode({ uid: firebase.auth().currentUser.uid })
     .then((ret) => {
-      hideBackgroundLoader();
+      Loader.hide();
       if (ret.data.status === 1 || ret.data.status === 2) {
         DB.getSnapshot().pairingCode = ret.data.pairingCode;
         $(".pageSettings .section.discordIntegration .code .bottom").text(
@@ -877,7 +877,7 @@ $(
       }
     })
     .catch((e) => {
-      hideBackgroundLoader();
+      Loader.hide();
       Notifications.add("Something went wrong. Error: " + e.message, -1);
     });
 });
@@ -885,11 +885,11 @@ $(
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   (e) => {
     if (confirm("Are you sure?")) {
-      showBackgroundLoader();
+      Loader.show();
       CloudFunctions.unlinkDiscord({
         uid: firebase.auth().currentUser.uid,
       }).then((ret) => {
-        hideBackgroundLoader();
+        Loader.hide();
         console.log(ret);
         if (ret.data.status === 1) {
           DB.getSnapshot().discordId = null;
@@ -971,7 +971,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
     UpdateConfig.setCustomTheme(false);
     ThemeController.set(Config.theme);
     // applyCustomThemeColors();
-    swapElements(
+    UI.swapElements(
       $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
       $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
       250
@@ -980,7 +980,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
     UpdateConfig.setCustomTheme(true);
     ThemeController.set("custom");
     // applyCustomThemeColors();
-    swapElements(
+    UI.swapElements(
       $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
       $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
       250

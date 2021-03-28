@@ -1,9 +1,9 @@
-import { focusWords } from "./dom-util";
 import * as Leaderboards from "./leaderboards";
 import * as ThemeController from "./theme-controller";
 import Config, * as UpdateConfig from "./config";
 import * as Focus from "./focus";
 import * as CommandlineLists from "./commandline-lists";
+import * as TestUI from "./test-ui";
 
 let commandLineMouseMode = false;
 
@@ -127,10 +127,10 @@ function hide() {
       () => {
         $("#commandLineWrapper").addClass("hidden");
         $("#commandLine").removeClass("allCommands");
-        focusWords();
+        TestUI.focusWords();
       }
     );
-  focusWords();
+  TestUI.focusWords();
 }
 
 function trigger(command) {

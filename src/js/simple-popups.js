@@ -143,13 +143,13 @@ simplePopups.updateEmail = new SimplePopup(
   "Update",
   (previousEmail, newEmail) => {
     try {
-      showBackgroundLoader();
+      Loader.show();
       CloudFunctions.updateEmail({
         uid: firebase.auth().currentUser.uid,
         previousEmail: previousEmail,
         newEmail: newEmail,
       }).then((data) => {
-        hideBackgroundLoader();
+        Loader.hide();
         if (data.data.resultCode === 1) {
           Notifications.add("Email updated", 0);
           setTimeout(() => {
@@ -180,13 +180,13 @@ simplePopups.clearTagPb = new SimplePopup(
   "Clear",
   () => {
     let tagid = eval("this.parameters[0]");
-    showBackgroundLoader();
+    Loader.show();
     CloudFunctions.clearTagPb({
       uid: firebase.auth().currentUser.uid,
       tagid: tagid,
     })
       .then((res) => {
-        hideBackgroundLoader();
+        Loader.hide();
         if (res.data.resultCode === 1) {
           let tag = DB.getSnapshot().tags.filter((t) => t.id === tagid)[0];
           tag.pb = 0;
@@ -199,7 +199,7 @@ simplePopups.clearTagPb = new SimplePopup(
         }
       })
       .catch((e) => {
-        hideBackgroundLoader();
+        Loader.hide();
         Notifications.add(
           "Something went wrong while clearing tag pb " + e,
           -1
@@ -237,13 +237,13 @@ simplePopups.resetPersonalBests = new SimplePopup(
   "Reset",
   () => {
     try {
-      showBackgroundLoader();
+      Loader.show();
 
       CloudFunctions.resetPersonalBests({
         uid: firebase.auth().currentUser.uid,
       }).then((res) => {
         if (res) {
-          hideBackgroundLoader();
+          Loader.hide();
           Notifications.add(
             "Personal bests removed, refreshing the page...",
             0

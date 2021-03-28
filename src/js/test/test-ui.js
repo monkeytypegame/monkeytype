@@ -42,6 +42,12 @@ export function reset() {
   currentWordElementIndex = 0;
 }
 
+export function focusWords() {
+  if (!$("#wordsWrapper").hasClass("hidden")) {
+    $("#wordsInput").focus();
+  }
+}
+
 export function updateActiveElement(backspace) {
   let active = document.querySelector("#words .active");
   if (Config.mode == "zen" && backspace) {

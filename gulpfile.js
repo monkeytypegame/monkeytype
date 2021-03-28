@@ -87,7 +87,6 @@ let eslintConfig = {
 //once all files are moved here, then can we use a bundler to its full potential
 const refactoredSrc = [
   "./src/js/db.js",
-  "./src/js/dom-util.js",
   "./src/js/cloud-functions.js",
   "./src/js/misc.js",
   "./src/js/layouts.js",
@@ -133,6 +132,7 @@ const refactoredSrc = [
   "./src/js/challenge-controller.js",
   "./src/js/custom-mode2-popup.js",
   "./src/js/test/test-config.js",
+  "./src/js/loader.js",
 ];
 
 //legacy files

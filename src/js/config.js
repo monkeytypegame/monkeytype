@@ -15,7 +15,7 @@ import * as Keymap from "./keymap";
 import * as LanguagePicker from "./language-picker";
 import * as TestLogic from "./test-logic";
 import * as PaceCaret from "./pace-caret";
-import { updateKeytips } from "./dom-util";
+import * as UI from "./ui";
 
 export let cookieConfig = null;
 export let dbConfigLoaded = false;
@@ -454,7 +454,7 @@ export function setShowOutOfFocusWarning(val, nosave) {
 export function toggleSwapEscAndTab() {
   config.swapEscAndTab = !config.swapEscAndTab;
   saveToCookie();
-  updateKeytips();
+  UI.updateKeytips();
 }
 
 export function setSwapEscAndTab(val, nosave) {
@@ -462,7 +462,7 @@ export function setSwapEscAndTab(val, nosave) {
     val = false;
   }
   config.swapEscAndTab = val;
-  updateKeytips();
+  UI.updateKeytips();
   if (!nosave) saveToCookie();
 }
 

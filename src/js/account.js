@@ -1275,13 +1275,13 @@ function refreshGlobalStats() {
 
 function updateAccountLoginButton() {
   if (firebase.auth().currentUser != null) {
-    swapElements(
+    UI.swapElements(
       $("#menu .icon-button.login"),
       $("#menu .icon-button.account"),
       250
     );
   } else {
-    swapElements(
+    UI.swapElements(
       $("#menu .icon-button.account"),
       $("#menu .icon-button.login"),
       250
@@ -1776,7 +1776,11 @@ function refreshAccountPage() {
     ChartController.accountHistory.update({ duration: 0 });
     ChartController.accountActivity.update({ duration: 0 });
 
-    swapElements($(".pageAccount .preloader"), $(".pageAccount .content"), 250);
+    UI.swapElements(
+      $(".pageAccount .preloader"),
+      $(".pageAccount .content"),
+      250
+    );
   }
   if (DB.getSnapshot() === null) {
     Notifications.add(`Missing account data. Please refresh.`, -1);
@@ -1890,14 +1894,14 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
       newtags.push(tagid);
     }
   });
-  showBackgroundLoader();
+  Loader.show();
   hideResultEditTagsPanel();
   CloudFunctions.updateResultTags({
     uid: firebase.auth().currentUser.uid,
     tags: newtags,
     resultid: resultid,
   }).then((r) => {
-    hideBackgroundLoader();
+    Loader.hide();
     if (r.data.resultCode === 1) {
       Notifications.add("Tags updated.", 1, 2);
       DB.getSnapshot().results.forEach((result) => {

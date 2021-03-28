@@ -3,7 +3,7 @@ import * as ChartController from "./chart-controller";
 import * as Misc from "./misc";
 import * as Notifications from "./notification-center";
 import Config from "./config";
-import { swapElements } from "./dom-util";
+import * as UI from "./ui";
 
 let isPreviewingTheme = false;
 let randomTheme = null;
@@ -67,14 +67,14 @@ export function apply(themeName) {
   let name = "serika_dark";
   if (themeName !== "custom") {
     name = themeName;
-    swapElements(
+    UI.swapElements(
       $('.pageSettings [tabContent="custom"]'),
       $('.pageSettings [tabContent="preset"]'),
       250
     );
   } else {
     //is custom
-    swapElements(
+    UI.swapElements(
       $('.pageSettings [tabContent="preset"]'),
       $('.pageSettings [tabContent="custom"]'),
       250

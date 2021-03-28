@@ -181,9 +181,9 @@ function changePage(page) {
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
     UI.setPageTransition(true);
-    swapElements(activePage, $(".page.pageTest"), 250, () => {
+    UI.swapElements(activePage, $(".page.pageTest"), 250, () => {
       UI.setPageTransition(false);
-      focusWords();
+      TestUI.focusWords();
       $(".page.pageTest").addClass("active");
       history.pushState("/", null, "/");
     });
@@ -197,7 +197,7 @@ function changePage(page) {
   } else if (page == "about") {
     UI.setPageTransition(true);
     TestLogic.restart();
-    swapElements(activePage, $(".page.pageAbout"), 250, () => {
+    UI.swapElements(activePage, $(".page.pageAbout"), 250, () => {
       UI.setPageTransition(false);
       history.pushState("about", null, "about");
       $(".page.pageAbout").addClass("active");
@@ -207,7 +207,7 @@ function changePage(page) {
   } else if (page == "settings") {
     UI.setPageTransition(true);
     TestLogic.restart();
-    swapElements(activePage, $(".page.pageSettings"), 250, () => {
+    UI.swapElements(activePage, $(".page.pageSettings"), 250, () => {
       UI.setPageTransition(false);
       history.pushState("settings", null, "settings");
       $(".page.pageSettings").addClass("active");
@@ -221,7 +221,7 @@ function changePage(page) {
     } else {
       UI.setPageTransition(true);
       TestLogic.restart();
-      swapElements(activePage, $(".page.pageAccount"), 250, () => {
+      UI.swapElements(activePage, $(".page.pageAccount"), 250, () => {
         UI.setPageTransition(false);
         history.pushState("account", null, "account");
         $(".page.pageAccount").addClass("active");
@@ -236,7 +236,7 @@ function changePage(page) {
     } else {
       UI.setPageTransition(true);
       TestLogic.restart();
-      swapElements(activePage, $(".page.pageLogin"), 250, () => {
+      UI.swapElements(activePage, $(".page.pageLogin"), 250, () => {
         UI.setPageTransition(false);
         history.pushState("login", null, "login");
         $(".page.pageLogin").addClass("active");
@@ -321,12 +321,12 @@ function tagsEdit() {
   let tagid = $("#tagsWrapper #tagsEdit").attr("tagid");
   hideEditTags();
   if (action === "add") {
-    showBackgroundLoader();
+    Loader.show();
     CloudFunctions.addTag({
       uid: firebase.auth().currentUser.uid,
       name: inputVal,
     }).then((e) => {
-      hideBackgroundLoader();
+      Loader.hide();
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Tag added", 1, 2);
@@ -344,13 +344,13 @@ function tagsEdit() {
       }
     });
   } else if (action === "edit") {
-    showBackgroundLoader();
+    Loader.show();
     CloudFunctions.editTag({
       uid: firebase.auth().currentUser.uid,
       name: inputVal,
       tagid: tagid,
     }).then((e) => {
-      hideBackgroundLoader();
+      Loader.hide();
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Tag updated", 1);
@@ -369,12 +369,12 @@ function tagsEdit() {
       }
     });
   } else if (action === "remove") {
-    showBackgroundLoader();
+    Loader.show();
     CloudFunctions.removeTag({
       uid: firebase.auth().currentUser.uid,
       tagid: tagid,
     }).then((e) => {
-      hideBackgroundLoader();
+      Loader.hide();
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Tag removed", 1);
@@ -398,7 +398,7 @@ $(document).on("click", "#top .logo", (e) => {
 });
 
 $("#wordsWrapper").on("click", () => {
-  focusWords();
+  TestUI.focusWords();
 });
 
 $(document).on("click", "#top #menu .icon-button", (e) => {
@@ -655,7 +655,7 @@ $(document).keydown(function (event) {
     !wordsFocused &&
     event.key !== "Enter"
   ) {
-    focusWords();
+    TestUI.focusWords();
     wordsFocused = true;
     // if (Config.showOutOfFocusWarning) return;
   }

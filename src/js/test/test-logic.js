@@ -17,7 +17,6 @@ import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
 import * as TimerProgress from "./timer-progress";
 import * as ChartController from "./chart-controller";
-import { focusWords } from "./dom-util";
 import * as UI from "./ui";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as PbCrown from "./pb-crown";
@@ -28,7 +27,6 @@ import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
 import * as CloudFunctions from "./cloud-functions";
 import * as TestLeaderboards from "./test-leaderboards";
-import { swapElements } from "./dom-util";
 
 export let notSignedInLastResult = null;
 
@@ -611,7 +609,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
   setBailout(false);
   PaceCaret.reset();
   $("#showWordHistoryButton").removeClass("loaded");
-  focusWords();
+  TestUI.focusWords();
   Funbox.resetMemoryTimer();
 
   TestUI.reset();
@@ -729,7 +727,8 @@ export function restart(withSameWordset = false, nosave = false, event) {
             // resetPaceCaret();
             PbCrown.hide();
             TestTimer.clear();
-            if ($("#commandLineWrapper").hasClass("hidden")) focusWords();
+            if ($("#commandLineWrapper").hasClass("hidden"))
+              TestUI.focusWords();
             ChartController.result.update();
             TestUI.updateModesNotice();
             UI.setPageTransition(false);
@@ -1691,7 +1690,7 @@ export function finish(difficultyFailed = false) {
 
   ChartController.result.update({ duration: 0 });
   ChartController.result.resize();
-  swapElements($("#typingTest"), $("#result"), 250, () => {
+  UI.swapElements($("#typingTest"), $("#result"), 250, () => {
     TestUI.setResultCalculating(false);
     $("#words").empty();
     ChartController.result.resize();
