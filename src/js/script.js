@@ -645,7 +645,8 @@ $(document).keydown(function (event) {
   let wordsFocused = $("#wordsInput").is(":focus");
   let modePopupVisible =
     !$("#customTextPopupWrapper").hasClass("hidden") ||
-    !$("#customMode2PopupWrapper").hasClass("hidden") ||
+    !$("#customWordAmountPopupWrapper").hasClass("hidden") ||
+    !$("#customTestDurationPopupWrapper").hasClass("hidden") ||
     !$("#quoteSearchPopupWrapper").hasClass("hidden");
   if (
     pageTestActive &&

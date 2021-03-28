@@ -134,12 +134,15 @@ html {
   outline: none;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__rendered {
   color: var(--text-color);
   outline: none;
 }
 
-.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+.select2-container--default
+  .select2-results__option--highlighted.select2-results__option--selectable {
   background-color: var(--sub-color);
   color: var(--text-color);
 }
@@ -156,16 +159,15 @@ html {
   border-radius: var(--roundness);
 }
 
-.select2-container--default .select2-selection--single
-{
+.select2-container--default .select2-selection--single {
   color: var(--text-color);
   background: rgba(0, 0, 0, 0.1);
   outline: none;
   border: none;
-  height:auto;
+  height: auto;
 }
 
-.select2-selection:focus{
+.select2-selection:focus {
   height: fit-content;
   padding: 5px;
   border-radius: var(--roundness);
@@ -174,7 +176,7 @@ html {
   border: none;
   outline: none;
 }
-.select2-selection:active{
+.select2-selection:active {
   height: fit-content;
   padding: 5px;
   border-radius: var(--roundness);
@@ -184,15 +186,23 @@ html {
   outline: none;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__arrow {
   height: 35px;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow b {
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__arrow
+  b {
   border-color: var(--main-color) transparent transparent transparent;
 }
 
-.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+.select2-container--default.select2-container--open
+  .select2-selection--single
+  .select2-selection__arrow
+  b {
   border-color: var(--main-color) transparent;
 }
 
@@ -591,7 +601,7 @@ a:hover {
   }
 }
 
-#wordFilterPopupWrapper{
+#wordFilterPopupWrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -604,7 +614,7 @@ a:hover {
   align-items: center;
   padding: 5rem 0;
 
-  #wordFilterPopup{
+  #wordFilterPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -612,25 +622,23 @@ a:hover {
     gap: 1rem;
     width: 400px;
 
-    
-
-    .lengthgrid{
-      display:grid;
+    .lengthgrid {
+      display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
       gap: 0.2rem;
     }
 
-    .wordLength{
+    .wordLength {
       width: 10rem;
     }
 
-    .wftip{
+    .wftip {
       color: var(--sub-color);
       font-size: 0.8rem;
     }
 
-    .wfload{
+    .wfload {
       justify-self: center;
     }
   }
@@ -674,7 +682,8 @@ a:hover {
   }
 }
 
-#customMode2PopupWrapper {
+#customWordAmountPopupWrapper,
+#customTestDurationPopupWrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -687,7 +696,8 @@ a:hover {
   align-items: center;
   padding: 5rem 0;
 
-  #customMode2Popup {
+  #customWordAmountPopup,
+  #customTestDurationPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -701,6 +711,13 @@ a:hover {
     }
 
     .tip {
+      font-size: 0.75rem;
+      color: var(--sub-color);
+    }
+  }
+
+  #customTestDurationPopup {
+    .preview {
       font-size: 0.75rem;
       color: var(--sub-color);
     }

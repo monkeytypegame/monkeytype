@@ -1,4 +1,5 @@
-import * as CustomMode2Popup from "./custom-mode2-popup";
+import * as CustomWordAmountPopup from "./custom-word-amount-popup";
+import * as CustomTestDurationPopup from "./custom-test-duration-popup";
 import * as UpdateConfig from "./config";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
@@ -16,7 +17,7 @@ export function hide() {
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {
   const wrd = $(e.currentTarget).attr("wordCount");
   if (wrd == "custom") {
-    CustomMode2Popup.show("words");
+    CustomWordAmountPopup.show();
   } else {
     UpdateConfig.setWordCount(wrd);
     ManualRestart.set();
@@ -27,7 +28,7 @@ $(document).on("click", "#top .config .wordCount .text-button", (e) => {
 $(document).on("click", "#top .config .time .text-button", (e) => {
   let mode = $(e.currentTarget).attr("timeConfig");
   if (mode == "custom") {
-    CustomMode2Popup.show("time");
+    CustomTestDurationPopup.show();
   } else {
     UpdateConfig.setTimeConfig(mode);
     ManualRestart.set();
