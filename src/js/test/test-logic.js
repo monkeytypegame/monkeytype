@@ -153,6 +153,8 @@ class Corrected {
 
   pushHistory() {
     this.history.push(this.current);
+    this.current = "";
+    console.log(this.history);
   }
 }
 
