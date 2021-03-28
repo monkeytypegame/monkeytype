@@ -1,22 +1,10 @@
 {
   "language": "polish",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -500,9 +488,9 @@
       "id": 80
     },
     {
-      "text": "Co za ponury absurd… Żeby o życiu decydować za młodu, kiedy jest się kretynem?",
+      "text": "Co za ponury absurd... Żeby o życiu decydować za młodu, kiedy jest się kretynem?",
       "source": "Dzień świra",
-      "length": 78,
+      "length": 80,
       "id": 81
     },
     {
@@ -618,6 +606,306 @@
       "source": "Caterina Fake",
       "length": 138,
       "id": 100
+    },
+    {
+      "text": "Jeśli myślisz, że wszystko jest winą kogoś innego, dużo się wycierpisz. Kiedy zdasz sobie sprawę, że wszystko wypływa tylko z ciebie samego, poznasz zarówno spokój, jak i radość.",
+      "source": "Dalajlama",
+      "length": 178,
+      "id": 101
+    },
+    {
+      "text": "Oceniaj swój sukces na podstawie tego, z czego musiałaś zrezygnować, by go osiągnąć.",
+      "source": "Dalajlama",
+      "length": 84,
+      "id": 102
+    },
+    {
+      "text": "Podaruj tym, których kochasz, skrzydła, by mogli latać; korzenie, aby wracali, oraz powody, aby zostali.",
+      "source": "Dalajlama",
+      "length": 104,
+      "id": 103
+    },
+    {
+      "text": "Jeśli problem jest możliwy do rozwiązania, jeśli sytuacja jest taka, że możesz coś z nią zrobić, nie musisz się martwić. Jeśli problem nie jest możliwy do rozwiązania, nie martw się. Nie ma żadnych korzyści z zamartwiania się.",
+      "source": "Dalajlama",
+      "length": 226,
+      "id": 104
+    },
+    {
+      "text": "Istnieją tylko dwa dni w roku, w których nic nie może być zrobione. Jeden nazywamy wczoraj, a drugi jutro. Dzisiaj jest właściwy dzień, aby kochać, wierzyć i żyć w pełni.",
+      "source": "Dalajlama",
+      "length": 170,
+      "id": 105
+    },
+    {
+      "text": "Najbardziej zaskakuje mnie człowiek. Bo poświęca swoje zdrowie, by zarabiać pieniądze, następnie zaś poświęca pieniądze, by odzyskać zdrowie. Oprócz tego jest tak zaniepokojony swoją przyszłością, że nie cieszy się z teraźniejszości. W rezultacie nie żyje ani w teraźniejszości, ani w przyszłości; żyje tak, jakby nigdy nie miał umrzeć, po czym umiera, tak naprawdę nie żyjąc.",
+      "source": "Dalajlama",
+      "length": 376,
+      "id": 106
+    },
+    {
+      "text": "Pamiętaj, że nie otrzymać tego, czego się chce, to czasem wspaniały łut szczęścia.",
+      "source": "Dalajlama",
+      "length": 82,
+      "id": 107
+    },
+    {
+      "text": "Kiedy mówisz, powtarzasz tylko to, czego się wcześniej dowiedziałeś. Kiedy słuchasz, możesz nauczyć się czegoś nowego.",
+      "source": "Dalajlama",
+      "length": 118,
+      "id": 108
+    },
+    {
+      "text": "Aby samemu stać się lepszym, nie musisz czekać na lepszy świat.",
+      "source": "Bosmans Phil",
+      "length": 63,
+      "id": 109
+    },
+    {
+      "text": "Humor i cierpliwość to dwa wielbłądy, na których przemierzyć można wszystkie pustynie.",
+      "source": "Bosmans Phil",
+      "length": 86,
+      "id": 110
+    },
+    {
+      "text": "Po każdym dniu trzeba postawić kropkę, odwrócić kartę i zaczynać na nowo.",
+      "source": "Bosmans Phil",
+      "length": 73,
+      "id": 111
+    },
+    {
+      "text": "Nigdy nie jest za późno, aby się pojednać, nigdy nie jest za późno na to, aby pokochać, nigdy także nie jest za późno, aby być szczęśliwym.",
+      "source": "Bosmans Phil",
+      "length": 139,
+      "id": 112
+    },
+    {
+      "text": "Jedynie woda jest w stanie odmienić pustynię. Woda to życie. Miłość jest tą wodą.",
+      "source": "Bosmans Phil",
+      "length": 81,
+      "id": 113
+    },
+    {
+      "text": "Najlepiej bawić się w towarzystwie swoich przyjaciół. Oni podniosą cię, gdy upadniesz, podstawią nogę, by wywołać twój uśmiech.",
+      "source": "Bosmans Phil",
+      "length": 127,
+      "id": 114
+    },
+    {
+      "text": "Czas to nie droga szybkiego ruchu pomiędzy kołyską a grobem; czas - to miejsce na zaparkowanie pod słońcem.",
+      "source": "Bosmans Phil",
+      "length": 107,
+      "id": 115
+    },
+    {
+      "text": "Kto potrafi cieszyć się z małych rzeczy, mieszka w ogrodzie pełnym szczęśliwości.",
+      "source": "Bosmans Phil",
+      "length": 81,
+      "id": 116
+    },
+    {
+      "text": "Miłość oznacza być zupełnie blisko siebie, jednak bez chęci zawładnięcia drugim.",
+      "source": "Bosmans Phil",
+      "length": 80,
+      "id": 117
+    },
+    {
+      "text": "Najpiękniejszy dar to przebaczenie. Tam, gdzie nie chce się przebaczyć, od razu powstaje mur. Od muru zaś zaczyna się więzienie.",
+      "source": "Bosmans Phil",
+      "length": 128,
+      "id": 118
+    },
+    {
+      "text": "Sztuka życia to cieszyć się małym szczęściem.",
+      "source": "Bosmans Phil",
+      "length": 45,
+      "id": 119
+    },
+    {
+      "text": "Szczęście nie jest kolorowym motylem, za którym musisz pobiec, jeśli chcesz go złapać. Szczęście jest jak cień: podąża za Tobą nawet wtedy, gdy o nim nie myślisz.",
+      "source": "Bosmans Phil",
+      "length": 162,
+      "id": 120
+    },
+    {
+      "text": "Dziel z innymi swój chleb, a lepiej będzie ci smakował.",
+      "source": "Bosmans Phil",
+      "length": 55,
+      "id": 121
+    },
+    {
+      "text": "Najpiękniejszych chwil w życiu nie zaplanujesz. One przyjdą same.",
+      "source": "Bosmans Phil",
+      "length": 65,
+      "id": 122
+    },
+    {
+      "text": "Marzenia są po to, by je realizować.",
+      "source": "Bosmans Phil",
+      "length": 36,
+      "id": 123
+    },
+    {
+      "text": "Wspomnienia ogrzewają człowieka od środka. Ale jednocześnie siekają go gwałtownie na kawałki.",
+      "source": "Murakami Haruki",
+      "length": 93,
+      "id": 124
+    },
+    {
+      "text": "Nie ma na świecie nic równie okrutnego, jak poczucie opuszczenia wywołane tym, że nie ma się na co czekać.",
+      "source": "Murakami Haruki",
+      "length": 106,
+      "id": 125
+    },
+    {
+      "text": "Są wspomnienia, których nie da się zatrzeć. Zostają w człowieku jak nieruchome głazy.",
+      "source": "Murakami Haruki",
+      "length": 85,
+      "id": 126
+    },
+    {
+      "text": "Zamykanie oczu nic nie pomoże. Nic nie zniknie. A raczej, kiedy się je znowu otworzy, będzie jeszcze gorzej. Otwórz szeroko oczy. Tylko mięczaki je zamykają. Tchórze odwracają wzrok od rzeczywistości. Czas mija nawet kiedy ma się zamknięte oczy i zasłonięte uszy.",
+      "source": "Murakami Haruki",
+      "length": 263,
+      "id": 127
+    },
+    {
+      "text": "Są rzeczy, których nie da się zrobić, jeżeli nie pójdzie się na koniec świata.",
+      "source": "Murakami Haruki",
+      "length": 78,
+      "id": 128
+    },
+    {
+      "text": "Wszystko jest kwestią wyobraźni. Nasz odpowiedzialność zaczyna się od wyobraźni.",
+      "source": "Murakami Haruki",
+      "length": 80,
+      "id": 129
+    },
+    {
+      "text": "Każdy z nas ma coś wyjątkowego, co może zdobyć tylko w wyjątkowym okresie życia. Coś w rodzaju małego płomyka. Nieliczni uważni i uprzywilejowani pielęgnują ten płomień, dbają o niego, trzymają niczym pochodnie oświetlającą ich życie. Kiedy jednak ten płomień gaśnie to już na zawsze.",
+      "source": "Murakami Haruki",
+      "length": 284,
+      "id": 130
+    },
+    {
+      "text": "Prawie nikt na świecie nie pragnie wolności. Ludzie tylko myślą, że jej pragną. To wszystko iluzja. Gdyby naprawdę dano im wolność, większość nie wiedziałaby, co począć. Lepiej to zapamiętaj. Ludzie w rzeczywistości lubią niewolę.",
+      "source": "Murakami Haruki",
+      "length": 230,
+      "id": 131
+    },
+    {
+      "text": "Złudzenia mają to do siebie, że im więcej się nad nimi zastanawia, tym bardziej rosną i nabierają tym wyraźniejszego kształtu. I wkrótce przestają być złudzeniami.",
+      "source": "Murakami Haruki",
+      "length": 163,
+      "id": 132
+    },
+    {
+      "text": "Ubywa przyszłości. Przybywa przeszłości. Ubywa możliwości. Przybywa żalu.",
+      "source": "Murakami Haruki",
+      "length": 73,
+      "id": 133
+    },
+    {
+      "text": "Jak masz głupio myśleć, lepiej odpocznij.",
+      "source": "Murakami Haruki",
+      "length": 41,
+      "id": 134
+    },
+    {
+      "text": "Serce przypomina głęboką studnię. Nikt nie wie, co jest na dnie. Można tylko sobie wyobrażać na podstawie tego, co czasami wypływa na powierzchnię.",
+      "source": "Murakami Haruki",
+      "length": 147,
+      "id": 135
+    },
+    {
+      "text": "Często się zdarza, że dopiero przyszłość pokazuje nam, ile coś było warte.",
+      "source": "Murakami Haruki",
+      "length": 74,
+      "id": 136
+    },
+    {
+      "text": "Ciasnota umysłowa, brak wyobraźni i nietolerancja są jak pasożyty. Zmieniają właściciela, zmieniają kształt i żyją wiecznie.",
+      "source": "Murakami Haruki",
+      "length": 124,
+      "id": 137
+    },
+    {
+      "text": "Jeśli kiedykolwiek poczujesz lęk, wiedz, że jest to znak. Od tej chwili musisz natychmiast zacząć działać. Przede wszystkim nie poddawaj się temu uczuciu. Twój lęk jest w istocie pragnieniem czegoś lepszego; jest tęsknotą za uwolnieniem od strachu i tęsknotą za poczuciem bezpieczeństwa. A gdzie znajdziesz spokój wewnętrzny? Znajdziesz go w swoich myślach o spokoju, w równowadze psychicznej i miłości.",
+      "source": "Joseph Murphy",
+      "length": 403,
+      "id": 138
+    },
+    {
+      "text": "Krytyka i szkalowanie bogatszych jest najpewniejszym sposobem odstraszenia dobrobytu.",
+      "source": "Joseph Murphy",
+      "length": 85,
+      "id": 139
+    },
+    {
+      "text": "Podświadomość ma niezawodne sposoby na rozwiązanie każdego problemu.",
+      "source": "Joseph Murphy",
+      "length": 68,
+      "id": 140
+    },
+    {
+      "text": "Zaprzestań osądzania ludzi. Twój osąd jest wyrokiem czy werdyktem wydanym we własnym umyśle. Mówiąc najkrócej - to twoja myśl. A ponieważ myśl ma naturę stwórczą, więc to, co myślisz o innych lub do nich czujesz, stwarzasz we własnym umyśle, ciele i doświadczeniu.",
+      "source": "Joseph Murphy",
+      "length": 264,
+      "id": 141
+    },
+    {
+      "text": "Cudze słowa i czyny mogą urazić cię tylko wtedy, kiedy im na to pozwolisz w myślach i uczuciach.",
+      "source": "Joseph Murphy",
+      "length": 96,
+      "id": 142
+    },
+    {
+      "text": "Wiele osób mówi mi, że chcieliby znaleźć jakąś wioskę albo miasteczko blisko plaży, gdzie mogliby odpocząć i wyciszyć się. Prawdą jest jednak, że dokądkolwiek się udajesz, zawsze zabierasz ze sobą swój umysł. Nie jesteś w stanie uciec od siebie. Jeśli twój umysł jest wzburzony, jeśli przepełnia cię niepokój i wciąż czymś się zamartwiasz, plaża lub góry niewiele pomogą. Pokój to owoc wyboru, a nie zewnętrznych okoliczności.",
+      "source": "Joseph Murphy",
+      "length": 426,
+      "id": 143
+    },
+    {
+      "text": "Pamiętaj, że serce przepełnione wdzięcznością otwiera się na dobrodziejstwa wszechświata.",
+      "source": "Joseph Murphy",
+      "length": 89,
+      "id": 144
+    },
+    {
+      "text": "Twoja podświadomość pomnaża wszystko, co jej powierzysz.",
+      "source": "Joseph Murphy",
+      "length": 56,
+      "id": 145
+    },
+    {
+      "text": "W drodze do szczęścia nie napotkasz żadnych przeszkód, prócz tych, które sam wzniesiesz w myślach i w wyobraźni.",
+      "source": "Joseph Murphy",
+      "length": 112,
+      "id": 146
+    },
+    {
+      "text": "Rób tak, jakby to już było rzeczywistością, a stanie się nią.",
+      "source": "Joseph Murphy",
+      "length": 61,
+      "id": 147
+    },
+    {
+      "text": "Takie wartości, jak miłość, piękno, spokój, radość i szczęście, mądrość, serdeczność i zrozumienie nigdy się nie zestarzeją. Twój charakter, zalety umysłu, wiara i przekonania nie zużywają się.",
+      "source": "Joseph Murphy",
+      "length": 193,
+      "id": 148
+    },
+    {
+      "text": "Masz wolny wybór. Wybierz pomyślność i zdrowie. Od Ciebie zależy, czy będziesz życzliwy, czy nie. Bądź uczynny, pogodny, życzliwy, ujmujący, a świat stanie się taki dla Ciebie.",
+      "source": "Joseph Murphy",
+      "length": 176,
+      "id": 149
+    },
+    {
+      "text": "Niezwykła siła podświadomości urzeczywistni każde wyobrażenie, jakie będziesz kreślić z wiarą i uporem. Zaufaj temu, a staną się rzeczy niezwykłe.",
+      "source": "Joseph Murphy",
+      "length": 146,
+      "id": 150
     }
   ]
 }
