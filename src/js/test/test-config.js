@@ -6,12 +6,40 @@ import * as TestLogic from "./test-logic";
 import * as QuoteSearchPopup from "./quote-search-popup";
 import * as CustomTextPopup from "./custom-text-popup";
 
+// export function show() {
+//   $("#top .config").removeClass("hidden").css("opacity", 1);
+// }
+
+// export function hide() {
+//   $("#top .config").css("opacity", 0).addClass("hidden");
+// }
+
 export function show() {
-  $("#top .config").removeClass("hidden").css("opacity", 1);
+  $("#top .config")
+    .stop(true, true)
+    .removeClass("hidden")
+    .css("opacity", 0)
+    .animate(
+      {
+        opacity: 1,
+      },
+      125
+    );
 }
 
 export function hide() {
-  $("#top .config").css("opacity", 0).addClass("hidden");
+  $("#top .config")
+    .stop(true, true)
+    .css("opacity", 1)
+    .animate(
+      {
+        opacity: 0,
+      },
+      125,
+      () => {
+        $("#top .config").addClass("hidden");
+      }
+    );
 }
 
 $(document).on("click", "#top .config .wordCount .text-button", (e) => {

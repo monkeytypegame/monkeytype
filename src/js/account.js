@@ -1,13 +1,5 @@
 var gmailProvider = new firebase.auth.GoogleAuthProvider();
 
-function showSignOutButton() {
-  $(".signOut").removeClass("hidden").css("opacity", 1);
-}
-
-function hideSignOutButton() {
-  $(".signOut").css("opacity", 0).addClass("hidden");
-}
-
 function signIn() {
   $(".pageLogin .preloader").removeClass("hidden");
   let email = $(".pageLogin .login input")[0].value;

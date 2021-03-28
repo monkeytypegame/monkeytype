@@ -181,14 +181,21 @@ function changePage(page) {
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
     UI.setPageTransition(true);
-    UI.swapElements(activePage, $(".page.pageTest"), 250, () => {
-      UI.setPageTransition(false);
-      TestUI.focusWords();
-      $(".page.pageTest").addClass("active");
-      history.pushState("/", null, "/");
-    });
-    TestConfig.show();
-    hideSignOutButton();
+    UI.swapElements(
+      activePage,
+      $(".page.pageTest"),
+      250,
+      () => {
+        UI.setPageTransition(false);
+        TestUI.focusWords();
+        $(".page.pageTest").addClass("active");
+        history.pushState("/", null, "/");
+      },
+      () => {
+        TestConfig.show();
+      }
+    );
+    SignOutButton.hide();
     // restartCount = 0;
     // incompleteTestSeconds = 0;
     TestStats.resetIncomplete();
@@ -203,7 +210,7 @@ function changePage(page) {
       $(".page.pageAbout").addClass("active");
     });
     TestConfig.hide();
-    hideSignOutButton();
+    SignOutButton.hide();
   } else if (page == "settings") {
     UI.setPageTransition(true);
     TestLogic.restart();
@@ -214,21 +221,28 @@ function changePage(page) {
     });
     updateSettingsPage();
     TestConfig.hide();
-    hideSignOutButton();
+    SignOutButton.hide();
   } else if (page == "account") {
     if (!firebase.auth().currentUser) {
       changePage("login");
     } else {
       UI.setPageTransition(true);
       TestLogic.restart();
-      UI.swapElements(activePage, $(".page.pageAccount"), 250, () => {
-        UI.setPageTransition(false);
-        history.pushState("account", null, "account");
-        $(".page.pageAccount").addClass("active");
-      });
+      UI.swapElements(
+        activePage,
+        $(".page.pageAccount"),
+        250,
+        () => {
+          UI.setPageTransition(false);
+          history.pushState("account", null, "account");
+          $(".page.pageAccount").addClass("active");
+        },
+        () => {
+          SignOutButton.show();
+        }
+      );
       refreshAccountPage();
       TestConfig.hide();
-      showSignOutButton();
     }
   } else if (page == "login") {
     if (firebase.auth().currentUser != null) {
@@ -242,7 +256,7 @@ function changePage(page) {
         $(".page.pageLogin").addClass("active");
       });
       TestConfig.hide();
-      hideSignOutButton();
+      SignOutButton.hide();
     }
   }
 }

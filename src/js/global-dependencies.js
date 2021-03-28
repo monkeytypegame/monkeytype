@@ -49,3 +49,4 @@ import * as ChallengeController from "./challenge-controller";
 import * as TestConfig from "./test-config";
 import * as Loader from "./loader";
 import * as MiniResultChart from "./mini-result-chart";
+import * as SignOutButton from "./sign-out-button";

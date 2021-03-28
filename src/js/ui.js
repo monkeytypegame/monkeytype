@@ -34,6 +34,9 @@ export function swapElements(
   totalDuration,
   callback = function () {
     return;
+  },
+  middleCallback = function () {
+    return;
   }
 ) {
   if (
@@ -54,6 +57,7 @@ export function swapElements(
         },
         totalDuration / 2,
         () => {
+          middleCallback();
           $(el1).addClass("hidden");
           $(el2)
             .removeClass("hidden")
