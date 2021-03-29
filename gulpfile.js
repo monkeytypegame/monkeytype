@@ -131,6 +131,7 @@ const refactoredSrc = [
   "./src/js/challenge-controller.js",
   "./src/js/popups/custom-word-amount-popup.js",
   "./src/js/popups/custom-test-duration-popup.js",
+  "./src/js/popups/word-filter-popup.js",
   "./src/js/test/test-config.js",
   "./src/js/elements/loader.js",
   "./src/js/mini-result-chart.js",

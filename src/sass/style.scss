@@ -503,8 +503,13 @@ a:hover {
     gap: 1rem;
     width: 60vw;
 
+    .wordfilter {
+      width: 33%;
+      justify-self: right;
+    }
+
     textarea {
-      background: var(--bg-color);
+      background: rgba(0, 0, 0, 0.1);
       padding: 1rem;
       color: var(--main-color);
       border: none;
@@ -516,6 +521,8 @@ a:hover {
       resize: vertical;
       height: 200px;
       color: var(--text-color);
+      overflow-x: hidden;
+      overflow-y: scroll;
     }
 
     .inputs {

@@ -1,7 +1,4 @@
-import { setCustomThemeColors } from "./config";
 import * as Misc from "./misc";
-import * as ThemeColors from "./theme-colors";
-//import * as config from "./userconfig";
 
 export async function showWordFilterPopup() {
   $("#wordFilterPopupWrapper").removeClass("hidden");

@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monkeytype</title>
     <!-- <link rel="stylesheet" href="css/fa.css" /> -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/balloon.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
@@ -102,6 +106,10 @@
     </div>
     <div id="customTextPopupWrapper" class="hidden">
       <div id="customTextPopup" action="">
+        <div class="wordfilter button">
+          <i class="fas fa-filter"></i>
+          Words filter
+        </div>
         <textarea class="textarea" placeholder="Custom text"></textarea>
         <div class="inputs">
           <label class="check">
@@ -133,6 +141,38 @@
             </span>
           </label>
         </div>
+        <div class="button apply">ok</div>
+      </div>
+    </div>
+    <div id="wordFilterPopupWrapper" class="hidden">
+      <div id="wordFilterPopup">
+        <div class="wftitle">language</div>
+        <select id="languageList" class=""></select>
+        <div class="lengthgrid">
+          <div id="wordMinTitle" class="wftitle">min length</div>
+          <div id="wordMaxTitle" class="wftitle">max length</div>
+          <input
+            id="wordMin"
+            class="wordLength"
+            autocomplete="off"
+            type="number"
+          />
+          <input
+            id="wordMax"
+            class="wordLength"
+            autocomplete="off"
+            type="number"
+          />
+        </div>
+        <div class="wftitle">include</div>
+        <input id="wordFilter" autocomplete="off" />
+        <div class="wftitle">exclude</div>
+        <input id="wordExclude" autocomplete="off" />
+        <div class="wftip">
+          Use the above filters to include and exclude words or characters
+          (separated by spaces)
+        </div>
+        <i class="fas fa-fw fa-spin fa-circle-notch hidden wfload"></i>
         <div class="button">ok</div>
       </div>
     </div>
@@ -3766,5 +3806,6 @@
   <script src="js/jquery.cookie-1.4.1.min.js"></script>
   <script src="js/moment.min.js"></script>
   <script src="js/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script src="js/monkeytype.js"></script>
 </html>
