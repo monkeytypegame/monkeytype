@@ -636,23 +636,28 @@ a:hover {
     gap: 1rem;
     width: 400px;
 
+    input {
+      width: 100%;
+    }
+
+    .group {
+      display: grid;
+      gap: 0.5rem;
+    }
+
     .lengthgrid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 0.2rem;
+      grid-template-rows: auto 1fr;
+      column-gap: 1rem;
     }
 
-    .wordLength {
-      width: 10rem;
-    }
-
-    .wftip {
+    .tip {
       color: var(--sub-color);
       font-size: 0.8rem;
     }
 
-    .wfload {
+    .loadingIndicator {
       justify-self: center;
     }
   }

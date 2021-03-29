@@ -12,7 +12,9 @@ export async function showWordFilterPopup() {
             <option value=${language}>${prettyLang}</option>
         `);
   });
-  $("#languageList").select2();
+  $("#languageList").select2({
+    width: "100%",
+  });
 }
 
 function hideWordFilterPopup() {
