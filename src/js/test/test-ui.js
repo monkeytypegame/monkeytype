@@ -84,24 +84,9 @@ export function showWords() {
   $("#words").empty();
 
   let wordsHTML = "";
-  let newlineafter = false;
   if (Config.mode !== "zen") {
     for (let i = 0; i < TestLogic.words.length; i++) {
-      newlineafter = false;
-      wordsHTML += `<div class='word'>`;
-      for (let c = 0; c < TestLogic.words.get(i).length; c++) {
-        if (TestLogic.words.get(i).charAt(c) === "\t") {
-          wordsHTML += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-        } else if (TestLogic.words.get(i).charAt(c) === "\n") {
-          newlineafter = true;
-          wordsHTML += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
-        } else {
-          wordsHTML +=
-            "<letter>" + TestLogic.words.get(i).charAt(c) + "</letter>";
-        }
-      }
-      wordsHTML += "</div>";
-      if (newlineafter) wordsHTML += "<div class='newline'></div>";
+      wordsHTML += getWordHTML(TestLogic.words.get(i));
     }
   } else {
     wordsHTML =
@@ -158,6 +143,28 @@ export function showWords() {
   Funbox.toggleScript(TestLogic.words.getCurrent());
 
   Caret.updatePosition();
+}
+
+function getWordHTML(word) {
+  let newlineafter = false;
+  let retval = `<div class='word'>`;
+  for (let c = 0; c < word.length; c++) {
+    if (word.charAt(c) === "\t") {
+      retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+    } else if (word.charAt(c) === "\n") {
+      newlineafter = true;
+      retval += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+    } else {
+      retval += "<letter>" + word.charAt(c) + "</letter>";
+    }
+  }
+  retval += "</div>";
+  if (newlineafter) retval += "<div class='newline'></div>";
+  return retval;
+}
+
+export function addWord(word) {
+  $("#words").append(getWordHTML(word));
 }
 
 export function flipColors(tf) {

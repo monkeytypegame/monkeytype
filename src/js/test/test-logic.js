@@ -901,13 +901,7 @@ export function addWord() {
   }
 
   words.push(randomWord);
-
-  let w = "<div class='word'>";
-  for (let c = 0; c < randomWord.length; c++) {
-    w += "<letter>" + randomWord.charAt(c) + "</letter>";
-  }
-  w += "</div>";
-  $("#words").append(w);
+  TestUI.addWord(randomWord);
 }
 
 export function fail() {
