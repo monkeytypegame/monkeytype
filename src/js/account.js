@@ -362,6 +362,7 @@ function getAccountDataAndInit() {
           UpdateConfig.saveToCookie(true);
           TestLogic.restart(false, true);
         } else if (DB.getSnapshot().config !== undefined) {
+          //loading db config, keep for now
           // let configsDifferent = false;
           // Object.keys(config).forEach((key) => {
           //   if (!configsDifferent) {
@@ -413,36 +414,6 @@ function getAccountDataAndInit() {
           PaceCaret.init(true);
         }
       }
-      // try {
-      //   if (
-      //     Config.resultFilters === undefined ||
-      //     Config.resultFilters === null ||
-      //     Config.resultFilters.difficulty === undefined
-      //   ) {
-      //     if (
-      //       DB.getSnapshot().Config.resultFilters == null ||
-      //       DB.getSnapshot().Config.resultFilters.difficulty === undefined
-      //     ) {
-      //       ConfigSet.resultFilters(defaultAccountFilters);
-      //     } else {
-      //       ConfigSet.resultFilters(DB.getSnapshot().Config.resultFilters);
-      //     }
-      //   }
-      // } catch (e) {
-      //   ConfigSet.resultFilters(defaultAccountFilters);
-      // }
-      // if (
-      //   Object.keys(Config.resultFilters.language).length !==
-      //   Object.keys(defaultAccountFilters.language).length
-      // ) {
-      //   ConfigSet.resultFilters.language(defaultAccountFilters.language);
-      // }
-      // if (
-      //   Object.keys(Config.resultFilters.funbox).length !==
-      //   Object.keys(defaultAccountFilters.funbox).length
-      // ) {
-      //   ConfigSet.resultFilters.funbox(defaultAccountFilters.funbox);
-      // }
       if (
         $(".pageLogin").hasClass("active") ||
         window.location.pathname === "/account"
