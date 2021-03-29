@@ -206,6 +206,13 @@ html {
   border-color: var(--main-color) transparent;
 }
 
+.select2-container--default .select2-search--dropdown .select2-search__field {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: var(--bg-color);
+  color: var(--text-color);
+  border-radius: var(--roundness);
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 7px;

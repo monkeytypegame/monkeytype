@@ -3,6 +3,7 @@ import * as Misc from "./misc";
 export async function showWordFilterPopup() {
   $("#wordFilterPopupWrapper").removeClass("hidden");
   $("#customTextPopupWrapper").addClass("hidden");
+  $("#languageList").empty();
   let LanguageList = await Misc.getLanguageList();
   LanguageList.forEach((language) => {
     let prettyLang = language;
@@ -11,9 +12,7 @@ export async function showWordFilterPopup() {
             <option value=${language}>${prettyLang}</option>
         `);
   });
-  $("#languageList").select2({
-    minimumResultsForSearch: -1,
-  });
+  $("#languageList").select2();
 }
 
 function hideWordFilterPopup() {
@@ -81,3 +80,7 @@ async function filter(language) {
   }
   return filteredWords;
 }
+
+$("#languageList").one("select2:open", function (e) {
+  $("input.select2-search__field").prop("placeholder", "search");
+});
