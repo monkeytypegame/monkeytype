@@ -3,7 +3,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import * as TestLogic from "./test-logic";
-import * as WordFilter from "./word-filter-popup";
+import * as WordFilterPopup from "./word-filter-popup";
 
 let wrapper = "#customTextPopupWrapper";
 let popup = "#customTextPopup";
@@ -157,5 +157,5 @@ $("#customTextPopup .apply").click(() => {
 });
 
 $("#customTextPopup .wordfilter").click(() => {
-  WordFilter.showWordFilterPopup();
+  WordFilterPopup.show();
 });

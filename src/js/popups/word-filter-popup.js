@@ -1,50 +1,59 @@
 import * as Misc from "./misc";
 
-export async function showWordFilterPopup() {
+let initialised = false;
+
+async function init() {
+  if (!initialised) {
+    $("#languageList").empty();
+    let LanguageList = await Misc.getLanguageList();
+    LanguageList.forEach((language) => {
+      let prettyLang = language;
+      prettyLang = prettyLang.replace("_", " ");
+      $("#languageList").append(`
+        <option value=${language}>${prettyLang}</option>
+      `);
+    });
+    initialised = true;
+  }
+}
+
+export async function show() {
+  await init();
   $("#wordFilterPopupWrapper").removeClass("hidden");
   $("#customTextPopupWrapper").addClass("hidden");
-  $("#languageList").empty();
-  let LanguageList = await Misc.getLanguageList();
-  LanguageList.forEach((language) => {
-    let prettyLang = language;
-    prettyLang = prettyLang.replace("_", " ");
-    $("#languageList").append(`
-            <option value=${language}>${prettyLang}</option>
-        `);
-  });
   $("#languageList").select2({
     width: "100%",
   });
 }
 
-function hideWordFilterPopup() {
+function hide() {
   $("#wordFilterPopupWrapper").addClass("hidden");
   $("#customTextPopupWrapper").removeClass("hidden");
 }
 
-async function applyWordFilterPopup() {
+async function apply() {
   let language = $("#languageList").val();
   let filteredWords = await filter(language);
   let customText = "";
   filteredWords.forEach((word) => {
     customText += word + " ";
   });
-  hideWordFilterPopup();
+  hide();
   $("#customTextPopup textarea").val(customText);
 }
 
 $("#wordFilterPopupWrapper").mousedown((e) => {
   if ($(e.target).attr("id") === "wordFilterPopupWrapper") {
-    hideWordFilterPopup();
+    hide();
   }
 });
 
 $("#wordFilterPopupWrapper .button").mousedown((e) => {
-  $("#wordFilterPopupWrapper .wfload").removeClass("hidden");
+  $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
   $("#wordFilterPopupWrapper .button").addClass("hidden");
   setTimeout(() => {
-    applyWordFilterPopup();
-    $("#wordFilterPopupWrapper .wfload").addClass("hidden");
+    apply();
+    $("#wordFilterPopupWrapper .loadingIndicator").addClass("hidden");
     $("#wordFilterPopupWrapper .button").removeClass("hidden");
   }, 1);
 });
