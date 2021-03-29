@@ -4,12 +4,12 @@ let initialised = false;
 
 async function init() {
   if (!initialised) {
-    $("#languageList").empty();
+    $("#wordFilterPopup .languageInput").empty();
     let LanguageList = await Misc.getLanguageList();
     LanguageList.forEach((language) => {
       let prettyLang = language;
       prettyLang = prettyLang.replace("_", " ");
-      $("#languageList").append(`
+      $("#wordFilterPopup .languageInput").append(`
         <option value=${language}>${prettyLang}</option>
       `);
     });
@@ -21,7 +21,7 @@ export async function show() {
   await init();
   $("#wordFilterPopupWrapper").removeClass("hidden");
   $("#customTextPopupWrapper").addClass("hidden");
-  $("#languageList").select2({
+  $("#wordFilterPopup .languageInput").select2({
     width: "100%",
   });
 }
@@ -32,7 +32,7 @@ function hide() {
 }
 
 async function apply() {
-  let language = $("#languageList").val();
+  let language = $("#wordFilterPopup .languageInput").val();
   let filteredWords = await filter(language);
   let customText = "";
   filteredWords.forEach((word) => {
@@ -59,18 +59,18 @@ $("#wordFilterPopupWrapper .button").mousedown((e) => {
 });
 
 async function filter(language) {
-  let filterin = $("#wordFilter").val();
+  let filterin = $("#wordFilterPopup .wordIncludeInput").val();
   filterin = filterin.trim();
   filterin = filterin.replace(/ /gi, "|");
   let regincl = new RegExp(filterin, "i");
-  let filterout = $("#wordExclude").val();
+  let filterout = $("#wordFilterPopup .wordExcludeInput").val();
   filterout = filterout.trim();
   filterout = filterout.replace(/ /gi, "|");
   let regexcl = new RegExp(filterout, "i");
   let filteredWords = [];
   let languageWordList = await Misc.getLanguage(language);
-  let maxLength = $("#wordMax").val();
-  let minLength = $("#wordMin").val();
+  let maxLength = $("#wordFilterPopup .wordMaxInput").val();
+  let minLength = $("#wordFilterPopup .wordMinInput").val();
   if (maxLength == "") {
     maxLength = 999;
   }
@@ -92,6 +92,6 @@ async function filter(language) {
   return filteredWords;
 }
 
-$("#languageList").one("select2:open", function (e) {
+$("#wordFilterPopup .languageInput").one("select2:open", function (e) {
   $("input.select2-search__field").prop("placeholder", "search");
 });

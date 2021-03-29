@@ -148,31 +148,29 @@
       <div id="wordFilterPopup">
         <div class="group">
           <div class="title">language</div>
-          <select id="languageList" class=""></select>
+          <select class="languageInput" class=""></select>
         </div>
         <div class="group lengthgrid">
           <div class="title">min length</div>
           <div class="title">max length</div>
           <input
-            id="wordMin"
-            class="wordLength"
+            class="wordLength wordMinInput"
             autocomplete="off"
             type="number"
           />
           <input
-            id="wordMax"
-            class="wordLength"
+            class="wordLength wordMaxInput"
             autocomplete="off"
             type="number"
           />
         </div>
         <div class="group">
           <div class="title">include</div>
-          <input id="wordFilter" autocomplete="off" />
+          <input class="wordIncludeInput" autocomplete="off" />
         </div>
         <div class="group">
           <div class="title">exclude</div>
-          <input id="wordExclude" autocomplete="off" />
+          <input class="wordExcludeInput" autocomplete="off" />
         </div>
         <div class="tip">
           Use the above filters to include and exclude words or characters
