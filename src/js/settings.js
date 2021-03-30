@@ -3,17 +3,12 @@ import Config, * as UpdateConfig from "./config";
 import * as Sound from "./sound";
 import * as Misc from "./misc";
 import layouts from "./layouts";
-import * as ThemeController from "./theme-controller";
 import * as LanguagePicker from "./language-picker";
 import * as Notifications from "./notifications";
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as CloudFunctions from "./cloud-functions";
 import * as Funbox from "./funbox";
-import * as ThemeColors from "./theme-colors";
-import * as CommandlineLists from "./commandline-lists";
-import * as UI from "./ui";
-import * as ChartController from "./chart-controller";
 import * as TagController from "./tag-controller";
 import * as SimplePopups from "./simple-popups";
 import * as EditTagsPopup from "./edit-tags-popup";
@@ -273,7 +268,6 @@ async function initGroups() {
     UpdateConfig.setAlwaysShowCPM
   );
 }
-export let settingsFillPromise = fillSettingsPage();
 
 async function fillSettingsPage() {
   await initGroups();
@@ -377,55 +371,7 @@ async function fillSettingsPage() {
   });
 }
 
-export function update() {
-  Object.keys(groups).forEach((group) => {
-    groups[group].updateButton();
-  });
-
-  refreshTagsSettingsSection();
-  LanguagePicker.setActiveGroup();
-  setActiveFunboxButton();
-  // ThemePicker.updateActiveButton();
-  ThemePicker.updateActiveTab();
-  ThemePicker.setCustomInputs();
-  updateDiscordSection();
-  ThemePicker.refreshButtons();
-
-  if (Config.paceCaret === "custom") {
-    $(
-      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
-    ).removeClass("hidden");
-    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
-      Config.paceCaretCustomSpeed
-    );
-  } else {
-    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
-      "hidden"
-    );
-  }
-
-  if (Config.minWpm === "custom") {
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
-      "hidden"
-    );
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
-      Config.minWpmCustomSpeed
-    );
-  } else {
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
-      "hidden"
-    );
-  }
-
-  if (Config.minAcc === "custom") {
-    $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
-    $(".pageSettings .section.minAcc input.customMinAcc").val(
-      Config.minAccCustom
-    );
-  } else {
-    $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
-  }
-}
+export let settingsFillPromise = fillSettingsPage();
 
 export function showAccountSection() {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
@@ -437,6 +383,52 @@ export function showAccountSection() {
 export function hideAccountSection() {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
+}
+
+function showActiveTags() {
+  DB.getSnapshot().tags.forEach((tag) => {
+    if (tag.active === true) {
+      $(
+        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
+      ).html('<i class="fas fa-check-square"></i>');
+    } else {
+      $(
+        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
+      ).html('<i class="fas fa-square"></i>');
+    }
+  });
+}
+
+export function updateDiscordSection() {
+  //no code and no discord
+  if (firebase.auth().currentUser == null) {
+    $(".pageSettings .section.discordIntegration").addClass("hidden");
+  } else {
+    if (DB.getSnapshot() == null) return;
+    $(".pageSettings .section.discordIntegration").removeClass("hidden");
+
+    if (DB.getSnapshot().discordId == undefined) {
+      //show button
+      $(".pageSettings .section.discordIntegration .buttons").removeClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
+    } else {
+      $(".pageSettings .section.discordIntegration .buttons").addClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .info").removeClass(
+        "hidden"
+      );
+    }
+  }
+}
+
+function setActiveFunboxButton() {
+  $(`.pageSettings .section.funbox .button`).removeClass("active");
+  $(
+    `.pageSettings .section.funbox .button[funbox='${Funbox.active}']`
+  ).addClass("active");
 }
 
 function refreshTagsSettingsSection() {
@@ -483,49 +475,52 @@ function refreshTagsSettingsSection() {
   }
 }
 
-function setActiveFunboxButton() {
-  $(`.pageSettings .section.funbox .button`).removeClass("active");
-  $(
-    `.pageSettings .section.funbox .button[funbox='${Funbox.active}']`
-  ).addClass("active");
-}
-
-function showActiveTags() {
-  DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.active === true) {
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
-      ).html('<i class="fas fa-check-square"></i>');
-    } else {
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
-      ).html('<i class="fas fa-square"></i>');
-    }
+export function update() {
+  Object.keys(groups).forEach((group) => {
+    groups[group].updateButton();
   });
-}
 
-export function updateDiscordSection() {
-  //no code and no discord
-  if (firebase.auth().currentUser == null) {
-    $(".pageSettings .section.discordIntegration").addClass("hidden");
+  refreshTagsSettingsSection();
+  LanguagePicker.setActiveGroup();
+  setActiveFunboxButton();
+  ThemePicker.updateActiveTab();
+  ThemePicker.setCustomInputs();
+  updateDiscordSection();
+  ThemePicker.refreshButtons();
+
+  if (Config.paceCaret === "custom") {
+    $(
+      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+    ).removeClass("hidden");
+    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
+      Config.paceCaretCustomSpeed
+    );
   } else {
-    if (DB.getSnapshot() == null) return;
-    $(".pageSettings .section.discordIntegration").removeClass("hidden");
+    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
+      "hidden"
+    );
+  }
 
-    if (DB.getSnapshot().discordId == undefined) {
-      //show button
-      $(".pageSettings .section.discordIntegration .buttons").removeClass(
-        "hidden"
-      );
-      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
-    } else {
-      $(".pageSettings .section.discordIntegration .buttons").addClass(
-        "hidden"
-      );
-      $(".pageSettings .section.discordIntegration .info").removeClass(
-        "hidden"
-      );
-    }
+  if (Config.minWpm === "custom") {
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
+      "hidden"
+    );
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
+      Config.minWpmCustomSpeed
+    );
+  } else {
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
+      "hidden"
+    );
+  }
+
+  if (Config.minAcc === "custom") {
+    $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
+    $(".pageSettings .section.minAcc input.customMinAcc").val(
+      Config.minAccCustom
+    );
+  } else {
+    $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
   }
 }
 
