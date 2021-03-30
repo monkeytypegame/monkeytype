@@ -904,18 +904,6 @@ export function addWord() {
   TestUI.addWord(randomWord);
 }
 
-export function fail() {
-  input.pushHistory();
-  corrected.pushHistory();
-  TestStats.pushKeypressesToHistory();
-  TestStats.setLastSecondNotRound();
-  finish(true);
-  let testSeconds = TestStats.calculateTestSeconds(performance.now());
-  let afkseconds = TestStats.calculateAfkSeconds();
-  TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
-  TestStats.incrementRestartCount();
-}
-
 export function finish(difficultyFailed = false) {
   if (!active) return;
   if (Config.mode == "zen" && input.current.length != 0) {
@@ -1733,4 +1721,16 @@ export function finish(difficultyFailed = false) {
       TestUI.toggleResultWords();
     }
   });
+}
+
+export function fail() {
+  input.pushHistory();
+  corrected.pushHistory();
+  TestStats.pushKeypressesToHistory();
+  TestStats.setLastSecondNotRound();
+  finish(true);
+  let testSeconds = TestStats.calculateTestSeconds(performance.now());
+  let afkseconds = TestStats.calculateAfkSeconds();
+  TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
+  TestStats.incrementRestartCount();
 }
