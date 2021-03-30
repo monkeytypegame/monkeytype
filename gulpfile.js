@@ -139,14 +139,16 @@ const refactoredSrc = [
   "./src/js/test/layout-emulator.js",
   "./src/js/popups/version-popup.js",
   "./src/js/popups/support-popup.js",
+  "./src/js/account-controller.js",
+  "./src/js/simple-popups.js",
+  "./src/js/settings.js",
+  "./src/js/popups/result-tags-popup.js",
 ];
 
 //legacy files
 //the order of files is important
 const globalSrc = [
   "./src/js/global-dependencies.js",
-  "./src/js/simple-popups.js",
-  "./src/js/settings.js",
   "./src/js/account.js",
   "./src/js/script.js",
   "./src/js/exports.js",

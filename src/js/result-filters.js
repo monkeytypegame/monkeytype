@@ -1,4 +1,5 @@
 import * as Misc from "./misc";
+import * as DB from "./db";
 
 let defaultResultFilters = {
   difficulty: {
@@ -123,3 +124,26 @@ export function reset() {
 }
 
 load();
+
+export function updateTags() {
+  $(
+    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+  ).empty();
+  if (DB.getSnapshot().tags.length > 0) {
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
+      "hidden"
+    );
+    $(
+      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+    ).append(`<div class="button" filter="none">no tag</div>`);
+    DB.getSnapshot().tags.forEach((tag) => {
+      $(
+        ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
+      ).append(`<div class="button" filter="${tag.id}">${tag.name}</div>`);
+    });
+  } else {
+    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
+      "hidden"
+    );
+  }
+}

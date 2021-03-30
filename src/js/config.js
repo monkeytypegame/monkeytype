@@ -1621,6 +1621,12 @@ export function loadFromCookie() {
     console.log("saving cookie config");
   }
   TestLogic.restart(false, true);
+  loadDone();
 }
+
+let loadDone;
+export let loadPromise = new Promise((v) => {
+  loadDone = v;
+});
 
 export default config;

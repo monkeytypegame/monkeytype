@@ -1,3 +1,23 @@
+import Config, * as UpdateConfig from "./config";
+import * as Sound from "./sound";
+import * as Misc from "./misc";
+import layouts from "./layouts";
+import * as ThemeController from "./theme-controller";
+import * as LanguagePicker from "./language-picker";
+import * as Notifications from "./notifications";
+import * as DB from "./db";
+import * as Loader from "./loader";
+import * as CloudFunctions from "./cloud-functions";
+import * as Funbox from "./funbox";
+import * as ThemeColors from "./theme-colors";
+import * as CommandlineLists from "./commandline-lists";
+import * as UI from "./ui";
+import * as ChartController from "./chart-controller";
+import * as TagController from "./tag-controller";
+import * as SimplePopups from "./simple-popups";
+import * as ResultTagsPopup from "./result-tags-popup";
+import * as ResultFilters from "./result-filters";
+
 class SettingsGroup {
   constructor(
     configName,
@@ -76,7 +96,7 @@ class SettingsGroup {
   }
 }
 
-let settingsGroups = {};
+export let settingsGroups = {};
 
 settingsGroups.smoothCaret = new SettingsGroup(
   "smoothCaret",
@@ -357,10 +377,10 @@ settingsGroups.alwaysShowCPM = new SettingsGroup(
   UpdateConfig.setAlwaysShowCPM
 );
 
-let settingsFillPromise = fillSettingsPage();
+export let settingsFillPromise = fillSettingsPage();
 
 async function fillSettingsPage() {
-  await configLoadPromise;
+  await UpdateConfig.loadPromise;
   refreshThemeButtons();
 
   let langGroupsEl = $(
@@ -454,13 +474,13 @@ async function fillSettingsPage() {
         : '<div class="language button no-auto-handle custom" onclick="this.blur();">Custom</div>'
     )
       .on("click", () => {
-        simplePopups.applyCustomFont.show([]);
+        SimplePopups.list.applyCustomFont.show([]);
       })
       .appendTo(fontsEl);
   });
 }
 
-function refreshThemeButtons() {
+export function refreshThemeButtons() {
   let favThemesEl = $(
     ".pageSettings .section.themes .favThemes.buttons"
   ).empty();
@@ -508,7 +528,7 @@ function refreshThemeButtons() {
   });
 }
 
-function updateSettingsPage() {
+export function update() {
   Object.keys(settingsGroups).forEach((group) => {
     settingsGroups[group].updateButton();
   });
@@ -519,7 +539,7 @@ function updateSettingsPage() {
   setActiveThemeButton();
   setActiveThemeTab();
   setCustomThemeInputs();
-  updateDiscordSettingsSection();
+  updateDiscordSection();
   refreshThemeButtons();
 
   if (Config.paceCaret === "custom") {
@@ -673,14 +693,14 @@ function toggleFavouriteTheme(themename) {
   CommandlineLists.updateThemeCommands();
 }
 
-function showAccountSettingsSection() {
+export function showAccountSection() {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
   $(`.settingsGroup.account`).removeClass("hidden");
   refreshTagsSettingsSection();
-  updateDiscordSettingsSection();
+  updateDiscordSection();
 }
 
-function hideAccountSettingsSection() {
+export function hideAccountSection() {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
 }
@@ -749,7 +769,7 @@ function setActiveThemeTab() {
     : $(".pageSettings .section.themes .tabs .button[tab='preset']").click();
 }
 
-function setCustomThemeInputs() {
+export function setCustomThemeInputs() {
   $(
     ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
   ).each((n, index) => {
@@ -775,7 +795,7 @@ function showActiveTags() {
   });
 }
 
-function updateDiscordSettingsSection() {
+export function updateDiscordSection() {
   //no code and no discord
   if (firebase.auth().currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
@@ -875,7 +895,7 @@ $(
         $(".pageSettings .section.discordIntegration .howtocode").text(
           ret.data.pairingCode
         );
-        updateDiscordSettingsSection();
+        updateDiscordSection();
       }
     })
     .catch((e) => {
@@ -896,10 +916,10 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
         if (ret.data.status === 1) {
           DB.getSnapshot().discordId = null;
           Notifications.add("Accounts unlinked", 0);
-          updateDiscordSettingsSection();
+          updateDiscordSection();
         } else {
           Notifications.add("Something went wrong: " + ret.data.message, -1);
-          updateDiscordSettingsSection();
+          updateDiscordSection();
         }
       });
     }
@@ -937,7 +957,7 @@ $(document).on(
     let target = e.currentTarget;
     let tagid = $(target).parent(".tag").attr("id");
     let tagname = $(target).siblings(".title")[0].innerHTML;
-    simplePopups.clearTagPb.show([tagid, tagname]);
+    SimplePopups.list.clearTagPb.show([tagid, tagname]);
   }
 );
 
@@ -1104,7 +1124,7 @@ function hideSettingsImport() {
         );
       }
       UpdateConfig.saveToCookie();
-      updateSettingsPage();
+      update();
     }
     $("#settingsImportWrapper")
       .stop(true, true)
@@ -1165,3 +1185,150 @@ $(".pageSettings .sectionGroupTitle").click((e) => {
       );
   }
 });
+
+//mode to module when possible
+function showEditTags(action, id, name) {
+  if (action === "add") {
+    $("#tagsWrapper #tagsEdit").attr("action", "add");
+    $("#tagsWrapper #tagsEdit .title").html("Add new tag");
+    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-plus"></i>`);
+    $("#tagsWrapper #tagsEdit input").val("");
+    $("#tagsWrapper #tagsEdit input").removeClass("hidden");
+  } else if (action === "edit") {
+    $("#tagsWrapper #tagsEdit").attr("action", "edit");
+    $("#tagsWrapper #tagsEdit").attr("tagid", id);
+    $("#tagsWrapper #tagsEdit .title").html("Edit tag name");
+    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-pen"></i>`);
+    $("#tagsWrapper #tagsEdit input").val(name);
+    $("#tagsWrapper #tagsEdit input").removeClass("hidden");
+  } else if (action === "remove") {
+    $("#tagsWrapper #tagsEdit").attr("action", "remove");
+    $("#tagsWrapper #tagsEdit").attr("tagid", id);
+    $("#tagsWrapper #tagsEdit .title").html("Remove tag " + name);
+    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-check"></i>`);
+    $("#tagsWrapper #tagsEdit input").addClass("hidden");
+  }
+
+  if ($("#tagsWrapper").hasClass("hidden")) {
+    $("#tagsWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100, () => {
+        $("#tagsWrapper #tagsEdit input").focus();
+      });
+  }
+}
+
+function hideEditTags() {
+  if (!$("#tagsWrapper").hasClass("hidden")) {
+    $("#tagsWrapper #tagsEdit").attr("action", "");
+    $("#tagsWrapper #tagsEdit").attr("tagid", "");
+    $("#tagsWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        100,
+        () => {
+          $("#tagsWrapper").addClass("hidden");
+        }
+      );
+  }
+}
+
+$("#tagsWrapper").click((e) => {
+  if ($(e.target).attr("id") === "tagsWrapper") {
+    hideEditTags();
+  }
+});
+
+$("#tagsWrapper #tagsEdit .button").click(() => {
+  tagsEdit();
+});
+
+$("#tagsWrapper #tagsEdit input").keypress((e) => {
+  if (e.keyCode == 13) {
+    tagsEdit();
+  }
+});
+
+function tagsEdit() {
+  let action = $("#tagsWrapper #tagsEdit").attr("action");
+  let inputVal = $("#tagsWrapper #tagsEdit input").val();
+  let tagid = $("#tagsWrapper #tagsEdit").attr("tagid");
+  hideEditTags();
+  if (action === "add") {
+    Loader.show();
+    CloudFunctions.addTag({
+      uid: firebase.auth().currentUser.uid,
+      name: inputVal,
+    }).then((e) => {
+      Loader.hide();
+      let status = e.data.resultCode;
+      if (status === 1) {
+        Notifications.add("Tag added", 1, 2);
+        DB.getSnapshot().tags.push({
+          name: inputVal,
+          id: e.data.id,
+        });
+        ResultTagsPopup.updateButtons();
+        update();
+        ResultFilters.updateTags();
+      } else if (status === -1) {
+        Notifications.add("Invalid tag name", 0);
+      } else if (status < -1) {
+        Notifications.add("Unknown error: " + e.data.message, -1);
+      }
+    });
+  } else if (action === "edit") {
+    Loader.show();
+    CloudFunctions.editTag({
+      uid: firebase.auth().currentUser.uid,
+      name: inputVal,
+      tagid: tagid,
+    }).then((e) => {
+      Loader.hide();
+      let status = e.data.resultCode;
+      if (status === 1) {
+        Notifications.add("Tag updated", 1);
+        DB.getSnapshot().tags.forEach((tag) => {
+          if (tag.id === tagid) {
+            tag.name = inputVal;
+          }
+        });
+        ResultTagsPopup.updateButtons();
+        update();
+        ResultFilters.updateTags();
+      } else if (status === -1) {
+        Notifications.add("Invalid tag name", 0);
+      } else if (status < -1) {
+        Notifications.add("Unknown error: " + e.data.message, -1);
+      }
+    });
+  } else if (action === "remove") {
+    Loader.show();
+    CloudFunctions.removeTag({
+      uid: firebase.auth().currentUser.uid,
+      tagid: tagid,
+    }).then((e) => {
+      Loader.hide();
+      let status = e.data.resultCode;
+      if (status === 1) {
+        Notifications.add("Tag removed", 1);
+        DB.getSnapshot().tags.forEach((tag, index) => {
+          if (tag.id === tagid) {
+            DB.getSnapshot().tags.splice(index, 1);
+          }
+        });
+        ResultTagsPopup.updateButtons();
+        update();
+        ResultFilters.updateTags();
+      } else if (status < -1) {
+        Notifications.add("Unknown error: " + e.data.message, -1);
+      }
+    });
+  }
+}

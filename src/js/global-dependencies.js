@@ -52,3 +52,7 @@ import * as SignOutButton from "./sign-out-button";
 import * as SupportPopup from "./support-popup";
 import * as VersionPopup from "./version-popup";
 import * as LayoutEmulator from "./layout-emulator";
+import * as AccountController from "./account-controller";
+import * as ResultTagsPopup from "./result-tags-popup";
+import * as Settings from "./settings";
+import * as SimplePopups from "./simple-popups";

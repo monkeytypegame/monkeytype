@@ -1,93 +1,3 @@
-var gmailProvider = new firebase.auth.GoogleAuthProvider();
-
-function signIn() {
-  $(".pageLogin .preloader").removeClass("hidden");
-  let email = $(".pageLogin .login input")[0].value;
-  let password = $(".pageLogin .login input")[1].value;
-
-  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
-    //remember me
-    firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(function () {
-        return firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .then((e) => {
-            changePage("test");
-          })
-          .catch(function (error) {
-            Notifications.add(error.message, -1);
-            $(".pageLogin .preloader").addClass("hidden");
-          });
-      });
-  } else {
-    //dont remember
-    firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
-      .then(function () {
-        return firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .then((e) => {
-            changePage("test");
-          })
-          .catch(function (error) {
-            Notifications.add(error.message, -1);
-            $(".pageLogin .preloader").addClass("hidden");
-          });
-      });
-  }
-}
-
-async function signInWithGoogle() {
-  $(".pageLogin .preloader").removeClass("hidden");
-
-  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
-    //remember me
-    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    firebase
-      .auth()
-      .signInWithPopup(gmailProvider)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        Notifications.add(error.message, -1);
-        $(".pageLogin .preloader").addClass("hidden");
-      });
-  } else {
-    //dont remember
-    await firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.SESSION);
-    firebase
-      .auth()
-      .signInWithPopup(gmailProvider)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        Notifications.add(error.message, -1);
-        $(".pageLogin .preloader").addClass("hidden");
-      });
-  }
-}
-
-function linkWithGoogle() {
-  firebase
-    .auth()
-    .currentUser.linkWithPopup(gmailProvider)
-    .then(function (result) {
-      console.log(result);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-}
-
 // let dontCheckUserName = false;
 
 function signUp() {
@@ -217,23 +127,6 @@ function signUp() {
   });
 }
 
-function signOut() {
-  firebase
-    .auth()
-    .signOut()
-    .then(function () {
-      Notifications.add("Signed out", 0, 2);
-      clearGlobalStats();
-      hideAccountSettingsSection();
-      updateAccountLoginButton();
-      changePage("login");
-      DB.setSnapshot(null);
-    })
-    .catch(function (error) {
-      Notifications.add(error.message, -1);
-    });
-}
-
 firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     // User is signed in.
@@ -277,7 +170,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         if (data.data.status === 1) {
           Notifications.add(data.data.message, 1);
           DB.getSnapshot().discordId = data.data.did;
-          updateDiscordSettingsSection();
+          Settings.updateDiscordSection();
         } else {
           Notifications.add(data.data.message, -1);
         }
@@ -298,7 +191,7 @@ firebase.auth().onAuthStateChanged(function (user) {
       UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
     }
     UpdateConfig.setCustomTheme(true);
-    setCustomThemeInputs();
+    Settings.setCustomThemeInputs();
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
     Notifications.add("Loading challenge", 0);
@@ -358,7 +251,7 @@ function getAccountDataAndInit() {
         if (Config.cookieConfig === null) {
           AccountIcon.loading(false);
           UpdateConfig.apply(DB.getSnapshot().config);
-          updateSettingsPage();
+          Settings.update();
           UpdateConfig.saveToCookie(true);
           TestLogic.restart(false, true);
         } else if (DB.getSnapshot().config !== undefined) {
@@ -400,7 +293,7 @@ function getAccountDataAndInit() {
           //   AccountIcon.loading(false);
           //   config = DB.getSnapshot().config;
           //   applyConfig(config);
-          //   updateSettingsPage();
+          //   Settings.update();
           //   saveConfigToCookie(true);
           //   TestLogic.restart(false, true);
           // }
@@ -420,13 +313,13 @@ function getAccountDataAndInit() {
       ) {
         changePage("account");
       }
-      refreshThemeButtons();
+      Settings.refreshThemeButtons();
       AccountIcon.loading(false);
-      updateFilterTags();
+      ResultFilters.updateTags();
       CommandlineLists.updateTagCommands();
       TagController.loadActiveFromCookie();
-      updateResultEditTagsPanelButtons();
-      showAccountSettingsSection();
+      ResultTagsPopup.updateButtons();
+      Settings.showAccountSection();
     })
     .catch((e) => {
       AccountIcon.loading(false);
@@ -480,29 +373,6 @@ Misc.getFunboxList().then((funboxModes) => {
     );
   });
 });
-
-function updateFilterTags() {
-  $(
-    ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-  ).empty();
-  if (DB.getSnapshot().tags.length > 0) {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").removeClass(
-      "hidden"
-    );
-    $(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-    ).append(`<div class="button" filter="none">no tag</div>`);
-    DB.getSnapshot().tags.forEach((tag) => {
-      $(
-        ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-      ).append(`<div class="button" filter="${tag.id}">${tag.name}</div>`);
-    });
-  } else {
-    $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
-      "hidden"
-    );
-  }
-}
 
 function toggleFilter(group, filter) {
   try {
@@ -1714,157 +1584,12 @@ function refreshAccountPage() {
   }
 }
 
-function showResultEditTagsPanel() {
-  if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
-    $("#resultEditTagsPanelWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 125);
-  }
-}
-
-function hideResultEditTagsPanel() {
-  if (!$("#resultEditTagsPanelWrapper").hasClass("hidden")) {
-    $("#resultEditTagsPanelWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        100,
-        (e) => {
-          $("#resultEditTagsPanelWrapper").addClass("hidden");
-        }
-      );
-  }
-}
-
 $(".pageAccount .toggleAccuracyOnChart").click((e) => {
   UpdateConfig.toggleChartAccuracy();
 });
 
 $(".pageAccount .toggleChartStyle").click((e) => {
   UpdateConfig.toggleChartStyle();
-});
-
-$(document).on("click", ".pageAccount .group.history #resultEditTags", (f) => {
-  if (DB.getSnapshot().tags.length > 0) {
-    let resultid = $(f.target).parents("span").attr("resultid");
-    let tags = $(f.target).parents("span").attr("tags");
-    $("#resultEditTagsPanel").attr("resultid", resultid);
-    $("#resultEditTagsPanel").attr("tags", tags);
-    updateActiveResultEditTagsPanelButtons(JSON.parse(tags));
-    showResultEditTagsPanel();
-  }
-});
-
-$(document).on("click", "#resultEditTagsPanelWrapper .button.tag", (f) => {
-  $(f.target).toggleClass("active");
-});
-
-$("#resultEditTagsPanelWrapper").click((e) => {
-  if ($(e.target).attr("id") === "resultEditTagsPanelWrapper") {
-    hideResultEditTagsPanel();
-  }
-});
-
-function updateResultEditTagsPanelButtons() {
-  $("#resultEditTagsPanel .buttons").empty();
-  DB.getSnapshot().tags.forEach((tag) => {
-    $("#resultEditTagsPanel .buttons").append(
-      `<div class="button tag" tagid="${tag.id}">${tag.name}</div>`
-    );
-  });
-}
-
-function updateActiveResultEditTagsPanelButtons(active) {
-  if (active === []) return;
-  $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
-    let tagid = $(obj).attr("tagid");
-    if (active.includes(tagid)) {
-      $(obj).addClass("active");
-    } else {
-      $(obj).removeClass("active");
-    }
-  });
-}
-
-$("#resultEditTagsPanel .confirmButton").click((e) => {
-  let resultid = $("#resultEditTagsPanel").attr("resultid");
-  // let oldtags = JSON.parse($("#resultEditTagsPanel").attr("tags"));
-
-  let newtags = [];
-  $.each($("#resultEditTagsPanel .buttons .button"), (index, obj) => {
-    let tagid = $(obj).attr("tagid");
-    if ($(obj).hasClass("active")) {
-      newtags.push(tagid);
-    }
-  });
-  Loader.show();
-  hideResultEditTagsPanel();
-  CloudFunctions.updateResultTags({
-    uid: firebase.auth().currentUser.uid,
-    tags: newtags,
-    resultid: resultid,
-  }).then((r) => {
-    Loader.hide();
-    if (r.data.resultCode === 1) {
-      Notifications.add("Tags updated.", 1, 2);
-      DB.getSnapshot().results.forEach((result) => {
-        if (result.id === resultid) {
-          result.tags = newtags;
-        }
-      });
-
-      let tagNames = "";
-
-      if (newtags.length > 0) {
-        newtags.forEach((tag) => {
-          DB.getSnapshot().tags.forEach((snaptag) => {
-            if (tag === snaptag.id) {
-              tagNames += snaptag.name + ", ";
-            }
-          });
-        });
-        tagNames = tagNames.substring(0, tagNames.length - 2);
-      }
-
-      let restags;
-      if (newtags === undefined) {
-        restags = "[]";
-      } else {
-        restags = JSON.stringify(newtags);
-      }
-
-      $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
-        "tags",
-        restags
-      );
-      if (newtags.length > 0) {
-        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).css(
-          "opacity",
-          1
-        );
-        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
-          "aria-label",
-          tagNames
-        );
-      } else {
-        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).css(
-          "opacity",
-          0.25
-        );
-        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
-          "aria-label",
-          "no tags"
-        );
-      }
-    } else {
-      Notifications.add("Error updating tags: " + r.data.message, -1);
-    }
-  });
 });
 
 $(".pageLogin .register input").keyup((e) => {
@@ -1882,22 +1607,22 @@ $(".pageLogin .register .button").click((e) => {
 $(".pageLogin .login input").keyup((e) => {
   if (e.key == "Enter") {
     UpdateConfig.setChangedBeforeDb(false);
-    signIn();
+    AccountController.signIn();
   }
 });
 
 $(".pageLogin .login .button.signIn").click((e) => {
   UpdateConfig.setChangedBeforeDb(false);
-  signIn();
+  AccountController.signIn();
 });
 
 $(".pageLogin .login .button.signInWithGoogle").click((e) => {
   UpdateConfig.setChangedBeforeDb(false);
-  signInWithGoogle();
+  AccountController.signInWithGoogle();
 });
 
 $(".signOut").click((e) => {
-  signOut();
+  AccountController.signOut();
 });
 
 $(".pageAccount .loadMoreButton").click((e) => {
