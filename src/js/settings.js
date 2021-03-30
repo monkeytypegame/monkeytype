@@ -655,7 +655,7 @@ function toggleFavouriteTheme(themename) {
   if (Config.favThemes.includes(themename)) {
     //already favourite, remove
     UpdateConfig.setFavThemes(
-      UpdateConfig.favThemes.filter((t) => {
+      Config.favThemes.filter((t) => {
         if (t !== themename) {
           return t;
         }
@@ -663,7 +663,9 @@ function toggleFavouriteTheme(themename) {
     );
   } else {
     //add to favourites
-    UpdateConfig.favThemes.push(themename);
+    let newlist = Config.favThemes;
+    newlist.push(themename);
+    UpdateConfig.setFavThemes(newlist);
   }
   UpdateConfig.saveToCookie();
   refreshThemeButtons();

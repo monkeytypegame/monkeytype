@@ -1142,7 +1142,7 @@ Misc.getThemesList().then((themes) => {
 export function updateThemeCommands() {
   if (Config.favThemes.length > 0) {
     themeCommands.list = [];
-    UpdateConfig.favThemes.forEach((theme) => {
+    Config.favThemes.forEach((theme) => {
       themeCommands.list.push({
         id: "changeTheme" + Misc.capitalizeFirstLetter(theme),
         display: theme.replace(/_/g, " "),
