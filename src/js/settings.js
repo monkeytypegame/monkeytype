@@ -16,119 +16,36 @@ import * as ChartController from "./chart-controller";
 import * as TagController from "./tag-controller";
 import * as SimplePopups from "./simple-popups";
 import * as EditTagsPopup from "./edit-tags-popup";
+import SettingsGroup from "./settings-group";
 
-class SettingsGroup {
-  constructor(
-    configName,
-    toggleFunction,
-    setCallback = null,
-    updateCallback = null
-  ) {
-    this.configName = configName;
-    this.configValue = Config[configName];
-    if (this.configValue === true || this.configValue === false) {
-      this.onOff = true;
-    } else {
-      this.onOff = false;
-    }
-    this.toggleFunction = toggleFunction;
-    this.setCallback = setCallback;
-    this.updateCallback = updateCallback;
+export let groups = {};
 
-    this.updateButton();
-
-    $(document).on(
-      "click",
-      `.pageSettings .section.${this.configName} .button`,
-      (e) => {
-        let target = $(e.currentTarget);
-        if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
-          return;
-        if (this.onOff) {
-          if (target.hasClass("on")) {
-            this.setValue(true);
-          } else {
-            this.setValue(false);
-          }
-          this.updateButton();
-          if (this.setCallback !== null) this.setCallback();
-        } else {
-          let value = target.attr(configName);
-          let params = target.attr("params");
-          this.setValue(value, params);
-        }
-      }
-    );
-  }
-
-  setValue(value, params = undefined) {
-    if (params === undefined) {
-      this.toggleFunction(value);
-    } else {
-      this.toggleFunction(value, ...params);
-    }
-    this.updateButton();
-    if (this.setCallback !== null) this.setCallback();
-  }
-
-  updateButton() {
-    this.configValue = Config[this.configName];
-    $(`.pageSettings .section.${this.configName} .button`).removeClass(
-      "active"
-    );
-    if (this.onOff) {
-      let onoffstring;
-      if (this.configValue) {
-        onoffstring = "on";
-      } else {
-        onoffstring = "off";
-      }
-      $(
-        `.pageSettings .section.${this.configName} .buttons .button.${onoffstring}`
-      ).addClass("active");
-    } else {
-      $(
-        `.pageSettings .section.${this.configName} .button[${this.configName}='${this.configValue}']`
-      ).addClass("active");
-    }
-    if (this.updateCallback !== null) this.updateCallback();
-  }
-}
-
-export let settingsGroups = {};
-
-settingsGroups.smoothCaret = new SettingsGroup(
+groups.smoothCaret = new SettingsGroup(
   "smoothCaret",
   UpdateConfig.setSmoothCaret
 );
-settingsGroups.difficulty = new SettingsGroup(
-  "difficulty",
-  UpdateConfig.setDifficulty
-);
-settingsGroups.quickTab = new SettingsGroup(
-  "quickTab",
-  UpdateConfig.setQuickTabMode
-);
-settingsGroups.showLiveWpm = new SettingsGroup(
+groups.difficulty = new SettingsGroup("difficulty", UpdateConfig.setDifficulty);
+groups.quickTab = new SettingsGroup("quickTab", UpdateConfig.setQuickTabMode);
+groups.showLiveWpm = new SettingsGroup(
   "showLiveWpm",
   UpdateConfig.setShowLiveWpm,
   () => {
-    settingsGroups.keymapMode.updateButton();
+    groups.keymapMode.updateButton();
   }
 );
-settingsGroups.showLiveAcc = new SettingsGroup(
+groups.showLiveAcc = new SettingsGroup(
   "showLiveAcc",
   UpdateConfig.setShowLiveAcc
 );
-settingsGroups.showTimerProgress = new SettingsGroup(
+groups.showTimerProgress = new SettingsGroup(
   "showTimerProgress",
   UpdateConfig.setShowTimerProgress
 );
-settingsGroups.keymapMode = new SettingsGroup(
+groups.keymapMode = new SettingsGroup(
   "keymapMode",
   UpdateConfig.setKeymapMode,
   () => {
-    settingsGroups.showLiveWpm.updateButton();
+    groups.showLiveWpm.updateButton();
   },
   () => {
     if (Config.keymapMode === "off") {
@@ -140,15 +57,15 @@ settingsGroups.keymapMode = new SettingsGroup(
     }
   }
 );
-settingsGroups.keymapMatrix = new SettingsGroup(
+groups.keymapMatrix = new SettingsGroup(
   "keymapStyle",
   UpdateConfig.setKeymapStyle
 );
-settingsGroups.keymapLayout = new SettingsGroup(
+groups.keymapLayout = new SettingsGroup(
   "keymapLayout",
   UpdateConfig.setKeymapLayout
 );
-settingsGroups.showKeyTips = new SettingsGroup(
+groups.showKeyTips = new SettingsGroup(
   "showKeyTips",
   UpdateConfig.setKeyTips,
   null,
@@ -160,97 +77,88 @@ settingsGroups.showKeyTips = new SettingsGroup(
     }
   }
 );
-settingsGroups.freedomMode = new SettingsGroup(
+groups.freedomMode = new SettingsGroup(
   "freedomMode",
   UpdateConfig.setFreedomMode,
   () => {
-    settingsGroups.confidenceMode.updateButton();
+    groups.confidenceMode.updateButton();
   }
 );
-settingsGroups.strictSpace = new SettingsGroup(
+groups.strictSpace = new SettingsGroup(
   "strictSpace",
   UpdateConfig.setStrictSpace
 );
-settingsGroups.oppositeShiftMode = new SettingsGroup(
+groups.oppositeShiftMode = new SettingsGroup(
   "oppositeShiftMode",
   UpdateConfig.setOppositeShiftMode
 );
-settingsGroups.confidenceMode = new SettingsGroup(
+groups.confidenceMode = new SettingsGroup(
   "confidenceMode",
   UpdateConfig.setConfidenceMode,
   () => {
-    settingsGroups.freedomMode.updateButton();
-    settingsGroups.stopOnError.updateButton();
+    groups.freedomMode.updateButton();
+    groups.stopOnError.updateButton();
   }
 );
-settingsGroups.indicateTypos = new SettingsGroup(
+groups.indicateTypos = new SettingsGroup(
   "indicateTypos",
   UpdateConfig.setIndicateTypos
 );
-settingsGroups.hideExtraLetters = new SettingsGroup(
+groups.hideExtraLetters = new SettingsGroup(
   "hideExtraLetters",
   UpdateConfig.setHideExtraLetters
 );
-settingsGroups.blindMode = new SettingsGroup(
-  "blindMode",
-  UpdateConfig.setBlindMode
-);
-settingsGroups.quickEnd = new SettingsGroup(
-  "quickEnd",
-  UpdateConfig.setQuickEnd
-);
-settingsGroups.repeatQuotes = new SettingsGroup(
+groups.blindMode = new SettingsGroup("blindMode", UpdateConfig.setBlindMode);
+groups.quickEnd = new SettingsGroup("quickEnd", UpdateConfig.setQuickEnd);
+groups.repeatQuotes = new SettingsGroup(
   "repeatQuotes",
   UpdateConfig.setRepeatQuotes
 );
-settingsGroups.enableAds = new SettingsGroup(
-  "enableAds",
-  UpdateConfig.setEnableAds
-);
-settingsGroups.alwaysShowWordsHistory = new SettingsGroup(
+groups.enableAds = new SettingsGroup("enableAds", UpdateConfig.setEnableAds);
+groups.alwaysShowWordsHistory = new SettingsGroup(
   "alwaysShowWordsHistory",
   UpdateConfig.setAlwaysShowWordsHistory
 );
-settingsGroups.singleListCommandLine = new SettingsGroup(
+groups.singleListCommandLine = new SettingsGroup(
   "singleListCommandLine",
   UpdateConfig.setSingleListCommandLine
 );
-settingsGroups.flipTestColors = new SettingsGroup(
+groups.flipTestColors = new SettingsGroup(
   "flipTestColors",
   UpdateConfig.setFlipTestColors
 );
-settingsGroups.swapEscAndTab = new SettingsGroup(
+groups.swapEscAndTab = new SettingsGroup(
   "swapEscAndTab",
   UpdateConfig.setSwapEscAndTab
 );
-settingsGroups.showOutOfFocusWarning = new SettingsGroup(
+groups.showOutOfFocusWarning = new SettingsGroup(
   "showOutOfFocusWarning",
   UpdateConfig.setShowOutOfFocusWarning
 );
-settingsGroups.colorfulMode = new SettingsGroup(
+groups.colorfulMode = new SettingsGroup(
   "colorfulMode",
   UpdateConfig.setColorfulMode
 );
-settingsGroups.startGraphsAtZero = new SettingsGroup(
+groups.startGraphsAtZero = new SettingsGroup(
   "startGraphsAtZero",
   UpdateConfig.setStartGraphsAtZero
 );
-settingsGroups.randomTheme = new SettingsGroup(
+groups.randomTheme = new SettingsGroup(
   "randomTheme",
   UpdateConfig.setRandomTheme
 );
-settingsGroups.stopOnError = new SettingsGroup(
+groups.stopOnError = new SettingsGroup(
   "stopOnError",
   UpdateConfig.setStopOnError,
   () => {
-    settingsGroups.confidenceMode.updateButton();
+    groups.confidenceMode.updateButton();
   }
 );
-settingsGroups.playSoundOnError = new SettingsGroup(
+groups.playSoundOnError = new SettingsGroup(
   "playSoundOnError",
   UpdateConfig.setPlaySoundOnError
 );
-settingsGroups.playSoundOnClick = new SettingsGroup(
+groups.playSoundOnClick = new SettingsGroup(
   "playSoundOnClick",
   UpdateConfig.setPlaySoundOnClick,
   () => {
@@ -258,11 +166,11 @@ settingsGroups.playSoundOnClick = new SettingsGroup(
       Sound.playClick(Config.playSoundOnClick);
   }
 );
-settingsGroups.showAllLines = new SettingsGroup(
+groups.showAllLines = new SettingsGroup(
   "showAllLines",
   UpdateConfig.setShowAllLines
 );
-settingsGroups.paceCaret = new SettingsGroup(
+groups.paceCaret = new SettingsGroup(
   "paceCaret",
   UpdateConfig.setPaceCaret,
   () => {
@@ -277,83 +185,52 @@ settingsGroups.paceCaret = new SettingsGroup(
     }
   }
 );
-settingsGroups.minWpm = new SettingsGroup(
-  "minWpm",
-  UpdateConfig.setMinWpm,
-  () => {
-    if (Config.minWpm === "custom") {
-      $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
-        "hidden"
-      );
-    } else {
-      $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
-        "hidden"
-      );
-    }
+groups.minWpm = new SettingsGroup("minWpm", UpdateConfig.setMinWpm, () => {
+  if (Config.minWpm === "custom") {
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
+      "hidden"
+    );
+  } else {
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
+      "hidden"
+    );
   }
-);
-settingsGroups.minAcc = new SettingsGroup(
-  "minAcc",
-  UpdateConfig.setMinAcc,
-  () => {
-    if (Config.minAcc === "custom") {
-      $(".pageSettings .section.minAcc input.customMinAcc").removeClass(
-        "hidden"
-      );
-    } else {
-      $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
-    }
+});
+groups.minAcc = new SettingsGroup("minAcc", UpdateConfig.setMinAcc, () => {
+  if (Config.minAcc === "custom") {
+    $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
+  } else {
+    $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
   }
-);
-settingsGroups.smoothLineScroll = new SettingsGroup(
+});
+groups.smoothLineScroll = new SettingsGroup(
   "smoothLineScroll",
   UpdateConfig.setSmoothLineScroll
 );
-settingsGroups.capsLockBackspace = new SettingsGroup(
+groups.capsLockBackspace = new SettingsGroup(
   "capsLockBackspace",
   UpdateConfig.setCapsLockBackspace
 );
-settingsGroups.layout = new SettingsGroup(
-  "layout",
-  UpdateConfig.setSavedLayout
-);
-settingsGroups.language = new SettingsGroup(
-  "language",
-  UpdateConfig.setLanguage
-);
-settingsGroups.fontSize = new SettingsGroup(
-  "fontSize",
-  UpdateConfig.setFontSize
-);
-settingsGroups.pageWidth = new SettingsGroup(
-  "pageWidth",
-  UpdateConfig.setPageWidth
-);
-settingsGroups.caretStyle = new SettingsGroup(
-  "caretStyle",
-  UpdateConfig.setCaretStyle
-);
-settingsGroups.paceCaretStyle = new SettingsGroup(
+groups.layout = new SettingsGroup("layout", UpdateConfig.setSavedLayout);
+groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
+groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);
+groups.pageWidth = new SettingsGroup("pageWidth", UpdateConfig.setPageWidth);
+groups.caretStyle = new SettingsGroup("caretStyle", UpdateConfig.setCaretStyle);
+groups.paceCaretStyle = new SettingsGroup(
   "paceCaretStyle",
   UpdateConfig.setPaceCaretStyle
 );
-settingsGroups.timerStyle = new SettingsGroup(
-  "timerStyle",
-  UpdateConfig.setTimerStyle
-);
-settingsGroups.highlighteMode = new SettingsGroup(
+groups.timerStyle = new SettingsGroup("timerStyle", UpdateConfig.setTimerStyle);
+groups.highlighteMode = new SettingsGroup(
   "highlightMode",
   UpdateConfig.setHighlightMode
 );
-settingsGroups.timerOpacity = new SettingsGroup(
+groups.timerOpacity = new SettingsGroup(
   "timerOpacity",
   UpdateConfig.setTimerOpacity
 );
-settingsGroups.timerColor = new SettingsGroup(
-  "timerColor",
-  UpdateConfig.setTimerColor
-);
-settingsGroups.fontFamily = new SettingsGroup(
+groups.timerColor = new SettingsGroup("timerColor", UpdateConfig.setTimerColor);
+groups.fontFamily = new SettingsGroup(
   "fontFamily",
   UpdateConfig.setFontFamily,
   null,
@@ -367,11 +244,11 @@ settingsGroups.fontFamily = new SettingsGroup(
     }
   }
 );
-settingsGroups.alwaysShowDecimalPlaces = new SettingsGroup(
+groups.alwaysShowDecimalPlaces = new SettingsGroup(
   "alwaysShowDecimalPlaces",
   UpdateConfig.setAlwaysShowDecimalPlaces
 );
-settingsGroups.alwaysShowCPM = new SettingsGroup(
+groups.alwaysShowCPM = new SettingsGroup(
   "alwaysShowCPM",
   UpdateConfig.setAlwaysShowCPM
 );
@@ -528,8 +405,8 @@ export function refreshThemeButtons() {
 }
 
 export function update() {
-  Object.keys(settingsGroups).forEach((group) => {
-    settingsGroups[group].updateButton();
+  Object.keys(groups).forEach((group) => {
+    groups[group].updateButton();
   });
 
   refreshTagsSettingsSection();

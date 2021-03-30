@@ -110,7 +110,7 @@ export async function activate(funbox, mode) {
 
     if (funbox === "simon_says") {
       UpdateConfig.setKeymapMode("next");
-      // settingsGroups.keymapMode.updateButton();
+      Settings.groups.keymapMode.updateButton();
       TestLogic.restart();
     }
 
@@ -126,16 +126,16 @@ export async function activate(funbox, mode) {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
       UpdateConfig.setKeymapMode("off");
-      // settingsGroups.keymapMode.updateButton();
+      Settings.groups.keymapMode.updateButton();
       TestLogic.restart();
     } else if (funbox === "layoutfluid") {
       UpdateConfig.setKeymapMode("next");
-      // settingsGroups.keymapMode.updateButton();
+      Settings.groups.keymapMode.updateButton();
       UpdateConfig.setSavedLayout(Config.layout);
       UpdateConfig.setLayout("qwerty");
-      // settingsGroups.layout.updateButton();
+      Settings.groups.layout.updateButton();
       UpdateConfig.setKeymapLayout("qwerty");
-      // settingsGroups.keymapLayout.updateButton();
+      Settings.groups.keymapLayout.updateButton();
       TestLogic.restart();
     } else if (funbox === "memory") {
       UpdateConfig.setMode("words");
@@ -155,7 +155,7 @@ export async function activate(funbox, mode) {
   if (funbox !== "layoutfluid" || mode !== "script") {
     if (Config.layout !== Config.savedLayout) {
       UpdateConfig.setLayout(Config.savedLayout);
-      // settingsGroups.layout.updateButton();
+      Settings.groups.layout.updateButton();
     }
   }
   TestUI.updateModesNotice();

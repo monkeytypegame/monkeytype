@@ -474,7 +474,7 @@ function handleSpace(event, isEnter) {
         .toString()
         .toUpperCase()
     );
-    Settings.settingsGroups.layout.updateButton();
+    Settings.groups.layout.updateButton();
   }
   dontInsertSpace = true;
   if (currentWord == TestLogic.input.current || Config.mode == "zen") {
