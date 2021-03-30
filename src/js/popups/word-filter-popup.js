@@ -31,33 +31,6 @@ function hide() {
   $("#customTextPopupWrapper").removeClass("hidden");
 }
 
-async function apply() {
-  let language = $("#wordFilterPopup .languageInput").val();
-  let filteredWords = await filter(language);
-  let customText = "";
-  filteredWords.forEach((word) => {
-    customText += word + " ";
-  });
-  hide();
-  $("#customTextPopup textarea").val(customText);
-}
-
-$("#wordFilterPopupWrapper").mousedown((e) => {
-  if ($(e.target).attr("id") === "wordFilterPopupWrapper") {
-    hide();
-  }
-});
-
-$("#wordFilterPopupWrapper .button").mousedown((e) => {
-  $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
-  $("#wordFilterPopupWrapper .button").addClass("hidden");
-  setTimeout(() => {
-    apply();
-    $("#wordFilterPopupWrapper .loadingIndicator").addClass("hidden");
-    $("#wordFilterPopupWrapper .button").removeClass("hidden");
-  }, 1);
-});
-
 async function filter(language) {
   let filterin = $("#wordFilterPopup .wordIncludeInput").val();
   filterin = filterin.trim();
@@ -92,6 +65,33 @@ async function filter(language) {
   return filteredWords;
 }
 
+async function apply() {
+  let language = $("#wordFilterPopup .languageInput").val();
+  let filteredWords = await filter(language);
+  let customText = "";
+  filteredWords.forEach((word) => {
+    customText += word + " ";
+  });
+  hide();
+  $("#customTextPopup textarea").val(customText);
+}
+
+$("#wordFilterPopupWrapper").mousedown((e) => {
+  if ($(e.target).attr("id") === "wordFilterPopupWrapper") {
+    hide();
+  }
+});
+
 $("#wordFilterPopup .languageInput").one("select2:open", function (e) {
   $("input.select2-search__field").prop("placeholder", "search");
+});
+
+$("#wordFilterPopupWrapper .button").mousedown((e) => {
+  $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
+  $("#wordFilterPopupWrapper .button").addClass("hidden");
+  setTimeout(() => {
+    apply();
+    $("#wordFilterPopupWrapper .loadingIndicator").addClass("hidden");
+    $("#wordFilterPopupWrapper .button").removeClass("hidden");
+  }, 1);
 });
