@@ -373,13 +373,6 @@ async function fillSettingsPage() {
 
 export let settingsFillPromise = fillSettingsPage();
 
-export function showAccountSection() {
-  $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
-  $(`.settingsGroup.account`).removeClass("hidden");
-  refreshTagsSettingsSection();
-  updateDiscordSection();
-}
-
 export function hideAccountSection() {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
@@ -473,6 +466,13 @@ function refreshTagsSettingsSection() {
   } else {
     $(".pageSettings .section.tags").addClass("hidden");
   }
+}
+
+export function showAccountSection() {
+  $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
+  $(`.settingsGroup.account`).removeClass("hidden");
+  refreshTagsSettingsSection();
+  updateDiscordSection();
 }
 
 export function update() {

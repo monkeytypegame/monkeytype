@@ -6,6 +6,13 @@ import * as CommandlineLists from "./commandline-lists";
 import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
 
+export function updateActiveButton() {
+  $(`.pageSettings .section.themes .theme`).removeClass("active");
+  $(`.pageSettings .section.themes .theme[theme=${Config.theme}]`).addClass(
+    "active"
+  );
+}
+
 export function refreshButtons() {
   let favThemesEl = $(
     ".pageSettings .section.themes .favThemes.buttons"
@@ -89,14 +96,6 @@ function toggleFavourite(themename) {
   refreshButtons();
   // showFavouriteThemesAtTheTop();
   CommandlineLists.updateThemeCommands();
-}
-
-export function updateActiveButton() {
-  $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${Config.theme}]`).addClass(
-    "active"
-  );
-  // console.log(`.pageSettings .section.themes .theme[theme=${Config.theme}]`);
 }
 
 export function updateActiveTab() {
