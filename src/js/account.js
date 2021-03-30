@@ -136,7 +136,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
       );
     }
-    AccountButton.updateAccountLoginButton();
+    AccountButton.update();
     AccountButton.loading(true);
     getAccountDataAndInit();
     var displayName = user.displayName;
