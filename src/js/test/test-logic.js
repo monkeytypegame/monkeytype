@@ -22,7 +22,7 @@ import * as QuoteSearchPopup from "./quote-search-popup";
 import * as PbCrown from "./pb-crown";
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
-import * as AccountIcon from "./account-icon";
+import * as AccountButton from "./account-icon";
 import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
 import * as CloudFunctions from "./cloud-functions";
@@ -1320,7 +1320,7 @@ export function finish(difficultyFailed = false) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
         //check local pb
-        AccountIcon.loading(true);
+        AccountButton.loading(true);
         let dontShowCrown = false;
         let pbDiff = 0;
         DB.getLocalPB(
@@ -1480,7 +1480,7 @@ export function finish(difficultyFailed = false) {
               obj: completedEvent,
             })
               .then((e) => {
-                AccountIcon.loading(false);
+                AccountButton.loading(false);
                 if (e.data == null) {
                   Notifications.add(
                     "Unexpected response from the server: " + e.data,
@@ -1583,7 +1583,7 @@ export function finish(difficultyFailed = false) {
                 }
               })
               .catch((e) => {
-                AccountIcon.loading(false);
+                AccountButton.loading(false);
                 console.error(e);
                 Notifications.add("Could not save result. " + e, -1);
               });

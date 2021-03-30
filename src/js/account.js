@@ -136,8 +136,8 @@ firebase.auth().onAuthStateChanged(function (user) {
         `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
       );
     }
-    updateAccountLoginButton();
-    AccountIcon.loading(true);
+    AccountButton.updateAccountLoginButton();
+    AccountButton.loading(true);
     getAccountDataAndInit();
     var displayName = user.displayName;
     // var email = user.email;
@@ -249,7 +249,7 @@ function getAccountDataAndInit() {
       }
       if (!Config.changedBeforeDb) {
         if (Config.cookieConfig === null) {
-          AccountIcon.loading(false);
+          AccountButton.loading(false);
           UpdateConfig.apply(DB.getSnapshot().config);
           Settings.update();
           UpdateConfig.saveToCookie(true);
@@ -290,7 +290,7 @@ function getAccountDataAndInit() {
           // });
           // if (configsDifferent) {
           //   console.log("applying config from db");
-          //   AccountIcon.loading(false);
+          //   AccountButton.loading(false);
           //   config = DB.getSnapshot().config;
           //   applyConfig(config);
           //   Settings.update();
@@ -300,7 +300,7 @@ function getAccountDataAndInit() {
         }
         UpdateConfig.setDbConfigLoaded(true);
       } else {
-        AccountIcon.loading(false);
+        AccountButton.loading(false);
       }
       if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
         if (!TestLogic.active) {
@@ -314,7 +314,7 @@ function getAccountDataAndInit() {
         changePage("account");
       }
       ThemePicker.refreshButtons();
-      AccountIcon.loading(false);
+      AccountButton.loading(false);
       ResultFilters.updateTags();
       CommandlineLists.updateTagCommands();
       TagController.loadActiveFromCookie();
@@ -322,7 +322,7 @@ function getAccountDataAndInit() {
       Settings.showAccountSection();
     })
     .catch((e) => {
-      AccountIcon.loading(false);
+      AccountButton.loading(false);
       console.error(e);
       Notifications.add(
         "Error downloading user data. Client likely could not connect to the backend  - refresh to try again. If error persists try clearing your cache and website data or contact Miodec.",
@@ -1047,22 +1047,6 @@ function refreshGlobalStats() {
   if (DB.getSnapshot().globalStats.completed != undefined) {
     $(".pageAccount .globalTestsCompleted .val").text(
       DB.getSnapshot().globalStats.completed
-    );
-  }
-}
-
-function updateAccountLoginButton() {
-  if (firebase.auth().currentUser != null) {
-    UI.swapElements(
-      $("#menu .icon-button.login"),
-      $("#menu .icon-button.account"),
-      250
-    );
-  } else {
-    UI.swapElements(
-      $("#menu .icon-button.account"),
-      $("#menu .icon-button.login"),
-      250
     );
   }
 }

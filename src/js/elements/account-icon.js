@@ -9,3 +9,19 @@ export function loading(truefalse) {
     $("#top #menu .account").css("opacity", 1).css("pointer-events", "auto");
   }
 }
+
+export function update() {
+  if (firebase.auth().currentUser != null) {
+    UI.swapElements(
+      $("#menu .icon-button.login"),
+      $("#menu .icon-button.account"),
+      250
+    );
+  } else {
+    UI.swapElements(
+      $("#menu .icon-button.account"),
+      $("#menu .icon-button.login"),
+      250
+    );
+  }
+}

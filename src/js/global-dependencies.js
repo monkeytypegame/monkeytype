@@ -24,7 +24,7 @@ import * as Caret from "./caret";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Focus from "./focus";
-import * as AccountIcon from "./account-icon";
+import * as AccountButton from "./account-icon";
 import * as TestUI from "./test-ui";
 import * as Keymap from "./keymap";
 import "./caps-warning";

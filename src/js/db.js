@@ -1,5 +1,5 @@
 import { loadTags } from "./result-filters";
-import * as AccountIcon from "./account-icon";
+import * as AccountButton from "./account-icon";
 import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 
@@ -453,12 +453,12 @@ export function updateLbMemory(mode, mode2, type, value) {
 
 export async function saveConfig(config) {
   if (firebase.auth().currentUser !== null) {
-    AccountIcon.loading(true);
+    AccountButton.loading(true);
     CloudFunctions.saveConfig({
       uid: firebase.auth().currentUser.uid,
       obj: config,
     }).then((d) => {
-      AccountIcon.loading(false);
+      AccountButton.loading(false);
       if (d.data.returnCode !== 1) {
         Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
       }
