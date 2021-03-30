@@ -56,3 +56,4 @@ import * as AccountController from "./account-controller";
 import * as ResultTagsPopup from "./result-tags-popup";
 import * as Settings from "./settings";
 import * as SimplePopups from "./simple-popups";
+import * as ThemePicker from "./theme-picker";

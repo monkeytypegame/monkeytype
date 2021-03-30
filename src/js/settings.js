@@ -1,3 +1,4 @@
+import SettingsGroup from "./settings-group";
 import Config, * as UpdateConfig from "./config";
 import * as Sound from "./sound";
 import * as Misc from "./misc";
@@ -16,248 +17,268 @@ import * as ChartController from "./chart-controller";
 import * as TagController from "./tag-controller";
 import * as SimplePopups from "./simple-popups";
 import * as EditTagsPopup from "./edit-tags-popup";
-import SettingsGroup from "./settings-group";
+import * as ThemePicker from "./theme-picker";
 
 export let groups = {};
-
-groups.smoothCaret = new SettingsGroup(
-  "smoothCaret",
-  UpdateConfig.setSmoothCaret
-);
-groups.difficulty = new SettingsGroup("difficulty", UpdateConfig.setDifficulty);
-groups.quickTab = new SettingsGroup("quickTab", UpdateConfig.setQuickTabMode);
-groups.showLiveWpm = new SettingsGroup(
-  "showLiveWpm",
-  UpdateConfig.setShowLiveWpm,
-  () => {
-    groups.keymapMode.updateButton();
-  }
-);
-groups.showLiveAcc = new SettingsGroup(
-  "showLiveAcc",
-  UpdateConfig.setShowLiveAcc
-);
-groups.showTimerProgress = new SettingsGroup(
-  "showTimerProgress",
-  UpdateConfig.setShowTimerProgress
-);
-groups.keymapMode = new SettingsGroup(
-  "keymapMode",
-  UpdateConfig.setKeymapMode,
-  () => {
-    groups.showLiveWpm.updateButton();
-  },
-  () => {
-    if (Config.keymapMode === "off") {
-      $(".pageSettings .section.keymapStyle").addClass("hidden");
-      $(".pageSettings .section.keymapLayout").addClass("hidden");
-    } else {
-      $(".pageSettings .section.keymapStyle").removeClass("hidden");
-      $(".pageSettings .section.keymapLayout").removeClass("hidden");
+async function initGroups() {
+  await UpdateConfig.loadPromise;
+  groups.smoothCaret = new SettingsGroup(
+    "smoothCaret",
+    UpdateConfig.setSmoothCaret
+  );
+  groups.difficulty = new SettingsGroup(
+    "difficulty",
+    UpdateConfig.setDifficulty
+  );
+  groups.quickTab = new SettingsGroup("quickTab", UpdateConfig.setQuickTabMode);
+  groups.showLiveWpm = new SettingsGroup(
+    "showLiveWpm",
+    UpdateConfig.setShowLiveWpm,
+    () => {
+      groups.keymapMode.updateButton();
     }
-  }
-);
-groups.keymapMatrix = new SettingsGroup(
-  "keymapStyle",
-  UpdateConfig.setKeymapStyle
-);
-groups.keymapLayout = new SettingsGroup(
-  "keymapLayout",
-  UpdateConfig.setKeymapLayout
-);
-groups.showKeyTips = new SettingsGroup(
-  "showKeyTips",
-  UpdateConfig.setKeyTips,
-  null,
-  () => {
-    if (Config.showKeyTips) {
-      $(".pageSettings .tip").removeClass("hidden");
-    } else {
-      $(".pageSettings .tip").addClass("hidden");
+  );
+  groups.showLiveAcc = new SettingsGroup(
+    "showLiveAcc",
+    UpdateConfig.setShowLiveAcc
+  );
+  groups.showTimerProgress = new SettingsGroup(
+    "showTimerProgress",
+    UpdateConfig.setShowTimerProgress
+  );
+  groups.keymapMode = new SettingsGroup(
+    "keymapMode",
+    UpdateConfig.setKeymapMode,
+    () => {
+      groups.showLiveWpm.updateButton();
+    },
+    () => {
+      if (Config.keymapMode === "off") {
+        $(".pageSettings .section.keymapStyle").addClass("hidden");
+        $(".pageSettings .section.keymapLayout").addClass("hidden");
+      } else {
+        $(".pageSettings .section.keymapStyle").removeClass("hidden");
+        $(".pageSettings .section.keymapLayout").removeClass("hidden");
+      }
     }
-  }
-);
-groups.freedomMode = new SettingsGroup(
-  "freedomMode",
-  UpdateConfig.setFreedomMode,
-  () => {
-    groups.confidenceMode.updateButton();
-  }
-);
-groups.strictSpace = new SettingsGroup(
-  "strictSpace",
-  UpdateConfig.setStrictSpace
-);
-groups.oppositeShiftMode = new SettingsGroup(
-  "oppositeShiftMode",
-  UpdateConfig.setOppositeShiftMode
-);
-groups.confidenceMode = new SettingsGroup(
-  "confidenceMode",
-  UpdateConfig.setConfidenceMode,
-  () => {
-    groups.freedomMode.updateButton();
-    groups.stopOnError.updateButton();
-  }
-);
-groups.indicateTypos = new SettingsGroup(
-  "indicateTypos",
-  UpdateConfig.setIndicateTypos
-);
-groups.hideExtraLetters = new SettingsGroup(
-  "hideExtraLetters",
-  UpdateConfig.setHideExtraLetters
-);
-groups.blindMode = new SettingsGroup("blindMode", UpdateConfig.setBlindMode);
-groups.quickEnd = new SettingsGroup("quickEnd", UpdateConfig.setQuickEnd);
-groups.repeatQuotes = new SettingsGroup(
-  "repeatQuotes",
-  UpdateConfig.setRepeatQuotes
-);
-groups.enableAds = new SettingsGroup("enableAds", UpdateConfig.setEnableAds);
-groups.alwaysShowWordsHistory = new SettingsGroup(
-  "alwaysShowWordsHistory",
-  UpdateConfig.setAlwaysShowWordsHistory
-);
-groups.singleListCommandLine = new SettingsGroup(
-  "singleListCommandLine",
-  UpdateConfig.setSingleListCommandLine
-);
-groups.flipTestColors = new SettingsGroup(
-  "flipTestColors",
-  UpdateConfig.setFlipTestColors
-);
-groups.swapEscAndTab = new SettingsGroup(
-  "swapEscAndTab",
-  UpdateConfig.setSwapEscAndTab
-);
-groups.showOutOfFocusWarning = new SettingsGroup(
-  "showOutOfFocusWarning",
-  UpdateConfig.setShowOutOfFocusWarning
-);
-groups.colorfulMode = new SettingsGroup(
-  "colorfulMode",
-  UpdateConfig.setColorfulMode
-);
-groups.startGraphsAtZero = new SettingsGroup(
-  "startGraphsAtZero",
-  UpdateConfig.setStartGraphsAtZero
-);
-groups.randomTheme = new SettingsGroup(
-  "randomTheme",
-  UpdateConfig.setRandomTheme
-);
-groups.stopOnError = new SettingsGroup(
-  "stopOnError",
-  UpdateConfig.setStopOnError,
-  () => {
-    groups.confidenceMode.updateButton();
-  }
-);
-groups.playSoundOnError = new SettingsGroup(
-  "playSoundOnError",
-  UpdateConfig.setPlaySoundOnError
-);
-groups.playSoundOnClick = new SettingsGroup(
-  "playSoundOnClick",
-  UpdateConfig.setPlaySoundOnClick,
-  () => {
-    if (Config.playSoundOnClick !== "off")
-      Sound.playClick(Config.playSoundOnClick);
-  }
-);
-groups.showAllLines = new SettingsGroup(
-  "showAllLines",
-  UpdateConfig.setShowAllLines
-);
-groups.paceCaret = new SettingsGroup(
-  "paceCaret",
-  UpdateConfig.setPaceCaret,
-  () => {
-    if (Config.paceCaret === "custom") {
-      $(
-        ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
-      ).removeClass("hidden");
+  );
+  groups.keymapMatrix = new SettingsGroup(
+    "keymapStyle",
+    UpdateConfig.setKeymapStyle
+  );
+  groups.keymapLayout = new SettingsGroup(
+    "keymapLayout",
+    UpdateConfig.setKeymapLayout
+  );
+  groups.showKeyTips = new SettingsGroup(
+    "showKeyTips",
+    UpdateConfig.setKeyTips,
+    null,
+    () => {
+      if (Config.showKeyTips) {
+        $(".pageSettings .tip").removeClass("hidden");
+      } else {
+        $(".pageSettings .tip").addClass("hidden");
+      }
+    }
+  );
+  groups.freedomMode = new SettingsGroup(
+    "freedomMode",
+    UpdateConfig.setFreedomMode,
+    () => {
+      groups.confidenceMode.updateButton();
+    }
+  );
+  groups.strictSpace = new SettingsGroup(
+    "strictSpace",
+    UpdateConfig.setStrictSpace
+  );
+  groups.oppositeShiftMode = new SettingsGroup(
+    "oppositeShiftMode",
+    UpdateConfig.setOppositeShiftMode
+  );
+  groups.confidenceMode = new SettingsGroup(
+    "confidenceMode",
+    UpdateConfig.setConfidenceMode,
+    () => {
+      groups.freedomMode.updateButton();
+      groups.stopOnError.updateButton();
+    }
+  );
+  groups.indicateTypos = new SettingsGroup(
+    "indicateTypos",
+    UpdateConfig.setIndicateTypos
+  );
+  groups.hideExtraLetters = new SettingsGroup(
+    "hideExtraLetters",
+    UpdateConfig.setHideExtraLetters
+  );
+  groups.blindMode = new SettingsGroup("blindMode", UpdateConfig.setBlindMode);
+  groups.quickEnd = new SettingsGroup("quickEnd", UpdateConfig.setQuickEnd);
+  groups.repeatQuotes = new SettingsGroup(
+    "repeatQuotes",
+    UpdateConfig.setRepeatQuotes
+  );
+  groups.enableAds = new SettingsGroup("enableAds", UpdateConfig.setEnableAds);
+  groups.alwaysShowWordsHistory = new SettingsGroup(
+    "alwaysShowWordsHistory",
+    UpdateConfig.setAlwaysShowWordsHistory
+  );
+  groups.singleListCommandLine = new SettingsGroup(
+    "singleListCommandLine",
+    UpdateConfig.setSingleListCommandLine
+  );
+  groups.flipTestColors = new SettingsGroup(
+    "flipTestColors",
+    UpdateConfig.setFlipTestColors
+  );
+  groups.swapEscAndTab = new SettingsGroup(
+    "swapEscAndTab",
+    UpdateConfig.setSwapEscAndTab
+  );
+  groups.showOutOfFocusWarning = new SettingsGroup(
+    "showOutOfFocusWarning",
+    UpdateConfig.setShowOutOfFocusWarning
+  );
+  groups.colorfulMode = new SettingsGroup(
+    "colorfulMode",
+    UpdateConfig.setColorfulMode
+  );
+  groups.startGraphsAtZero = new SettingsGroup(
+    "startGraphsAtZero",
+    UpdateConfig.setStartGraphsAtZero
+  );
+  groups.randomTheme = new SettingsGroup(
+    "randomTheme",
+    UpdateConfig.setRandomTheme
+  );
+  groups.stopOnError = new SettingsGroup(
+    "stopOnError",
+    UpdateConfig.setStopOnError,
+    () => {
+      groups.confidenceMode.updateButton();
+    }
+  );
+  groups.playSoundOnError = new SettingsGroup(
+    "playSoundOnError",
+    UpdateConfig.setPlaySoundOnError
+  );
+  groups.playSoundOnClick = new SettingsGroup(
+    "playSoundOnClick",
+    UpdateConfig.setPlaySoundOnClick,
+    () => {
+      if (Config.playSoundOnClick !== "off")
+        Sound.playClick(Config.playSoundOnClick);
+    }
+  );
+  groups.showAllLines = new SettingsGroup(
+    "showAllLines",
+    UpdateConfig.setShowAllLines
+  );
+  groups.paceCaret = new SettingsGroup(
+    "paceCaret",
+    UpdateConfig.setPaceCaret,
+    () => {
+      if (Config.paceCaret === "custom") {
+        $(
+          ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+        ).removeClass("hidden");
+      } else {
+        $(
+          ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+        ).addClass("hidden");
+      }
+    }
+  );
+  groups.minWpm = new SettingsGroup("minWpm", UpdateConfig.setMinWpm, () => {
+    if (Config.minWpm === "custom") {
+      $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
+        "hidden"
+      );
     } else {
-      $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
+      $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
         "hidden"
       );
     }
-  }
-);
-groups.minWpm = new SettingsGroup("minWpm", UpdateConfig.setMinWpm, () => {
-  if (Config.minWpm === "custom") {
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
-      "hidden"
-    );
-  } else {
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
-      "hidden"
-    );
-  }
-});
-groups.minAcc = new SettingsGroup("minAcc", UpdateConfig.setMinAcc, () => {
-  if (Config.minAcc === "custom") {
-    $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
-  } else {
-    $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
-  }
-});
-groups.smoothLineScroll = new SettingsGroup(
-  "smoothLineScroll",
-  UpdateConfig.setSmoothLineScroll
-);
-groups.capsLockBackspace = new SettingsGroup(
-  "capsLockBackspace",
-  UpdateConfig.setCapsLockBackspace
-);
-groups.layout = new SettingsGroup("layout", UpdateConfig.setSavedLayout);
-groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
-groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);
-groups.pageWidth = new SettingsGroup("pageWidth", UpdateConfig.setPageWidth);
-groups.caretStyle = new SettingsGroup("caretStyle", UpdateConfig.setCaretStyle);
-groups.paceCaretStyle = new SettingsGroup(
-  "paceCaretStyle",
-  UpdateConfig.setPaceCaretStyle
-);
-groups.timerStyle = new SettingsGroup("timerStyle", UpdateConfig.setTimerStyle);
-groups.highlighteMode = new SettingsGroup(
-  "highlightMode",
-  UpdateConfig.setHighlightMode
-);
-groups.timerOpacity = new SettingsGroup(
-  "timerOpacity",
-  UpdateConfig.setTimerOpacity
-);
-groups.timerColor = new SettingsGroup("timerColor", UpdateConfig.setTimerColor);
-groups.fontFamily = new SettingsGroup(
-  "fontFamily",
-  UpdateConfig.setFontFamily,
-  null,
-  () => {
-    let customButton = $(".pageSettings .section.fontFamily .buttons .custom");
-    if ($(".pageSettings .section.fontFamily .buttons .active").length === 0) {
-      customButton.addClass("active");
-      customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
+  });
+  groups.minAcc = new SettingsGroup("minAcc", UpdateConfig.setMinAcc, () => {
+    if (Config.minAcc === "custom") {
+      $(".pageSettings .section.minAcc input.customMinAcc").removeClass(
+        "hidden"
+      );
     } else {
-      customButton.text("Custom");
+      $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
     }
-  }
-);
-groups.alwaysShowDecimalPlaces = new SettingsGroup(
-  "alwaysShowDecimalPlaces",
-  UpdateConfig.setAlwaysShowDecimalPlaces
-);
-groups.alwaysShowCPM = new SettingsGroup(
-  "alwaysShowCPM",
-  UpdateConfig.setAlwaysShowCPM
-);
-
+  });
+  groups.smoothLineScroll = new SettingsGroup(
+    "smoothLineScroll",
+    UpdateConfig.setSmoothLineScroll
+  );
+  groups.capsLockBackspace = new SettingsGroup(
+    "capsLockBackspace",
+    UpdateConfig.setCapsLockBackspace
+  );
+  groups.layout = new SettingsGroup("layout", UpdateConfig.setSavedLayout);
+  groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
+  groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);
+  groups.pageWidth = new SettingsGroup("pageWidth", UpdateConfig.setPageWidth);
+  groups.caretStyle = new SettingsGroup(
+    "caretStyle",
+    UpdateConfig.setCaretStyle
+  );
+  groups.paceCaretStyle = new SettingsGroup(
+    "paceCaretStyle",
+    UpdateConfig.setPaceCaretStyle
+  );
+  groups.timerStyle = new SettingsGroup(
+    "timerStyle",
+    UpdateConfig.setTimerStyle
+  );
+  groups.highlighteMode = new SettingsGroup(
+    "highlightMode",
+    UpdateConfig.setHighlightMode
+  );
+  groups.timerOpacity = new SettingsGroup(
+    "timerOpacity",
+    UpdateConfig.setTimerOpacity
+  );
+  groups.timerColor = new SettingsGroup(
+    "timerColor",
+    UpdateConfig.setTimerColor
+  );
+  groups.fontFamily = new SettingsGroup(
+    "fontFamily",
+    UpdateConfig.setFontFamily,
+    null,
+    () => {
+      let customButton = $(
+        ".pageSettings .section.fontFamily .buttons .custom"
+      );
+      if (
+        $(".pageSettings .section.fontFamily .buttons .active").length === 0
+      ) {
+        customButton.addClass("active");
+        customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
+      } else {
+        customButton.text("Custom");
+      }
+    }
+  );
+  groups.alwaysShowDecimalPlaces = new SettingsGroup(
+    "alwaysShowDecimalPlaces",
+    UpdateConfig.setAlwaysShowDecimalPlaces
+  );
+  groups.alwaysShowCPM = new SettingsGroup(
+    "alwaysShowCPM",
+    UpdateConfig.setAlwaysShowCPM
+  );
+}
 export let settingsFillPromise = fillSettingsPage();
 
 async function fillSettingsPage() {
+  await initGroups();
   await UpdateConfig.loadPromise;
-  refreshThemeButtons();
+  ThemePicker.refreshButtons();
 
   let langGroupsEl = $(
     ".pageSettings .section.languageGroups .buttons"
@@ -356,54 +377,6 @@ async function fillSettingsPage() {
   });
 }
 
-export function refreshThemeButtons() {
-  let favThemesEl = $(
-    ".pageSettings .section.themes .favThemes.buttons"
-  ).empty();
-  let themesEl = $(".pageSettings .section.themes .allThemes.buttons").empty();
-
-  let activeThemeName = Config.theme;
-  if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
-    activeThemeName = ThemeController.randomTheme;
-  }
-
-  Misc.getSortedThemesList().then((themes) => {
-    //first show favourites
-    if (Config.favThemes.length > 0) {
-      favThemesEl.css({ paddingBottom: "1rem" });
-      themes.forEach((theme) => {
-        if (Config.favThemes.includes(theme.name)) {
-          let activeTheme = activeThemeName === theme.name ? "active" : "";
-          favThemesEl.append(
-            `<div class="theme button" theme='${theme.name}' style="color:${
-              theme.textColor
-            };background:${theme.bgColor}">
-          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
-          <div class="text">${theme.name.replace(/_/g, " ")}</div>
-          <div class="favButton active"><i class="fas fa-star"></i></div></div>`
-          );
-        }
-      });
-    } else {
-      favThemesEl.css({ paddingBottom: "0" });
-    }
-    //then the rest
-    themes.forEach((theme) => {
-      if (!Config.favThemes.includes(theme.name)) {
-        let activeTheme = activeThemeName === theme.name ? "active" : "";
-        themesEl.append(
-          `<div class="theme button" theme='${theme.name}' style="color:${
-            theme.textColor
-          };background:${theme.bgColor}">
-          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
-          <div class="text">${theme.name.replace(/_/g, " ")}</div>
-          <div class="favButton"><i class="far fa-star"></i></div></div>`
-        );
-      }
-    });
-  });
-}
-
 export function update() {
   Object.keys(groups).forEach((group) => {
     groups[group].updateButton();
@@ -416,7 +389,7 @@ export function update() {
   setActiveThemeTab();
   setCustomThemeInputs();
   updateDiscordSection();
-  refreshThemeButtons();
+  ThemePicker.refreshButtons();
 
   if (Config.paceCaret === "custom") {
     $(
@@ -564,7 +537,7 @@ function toggleFavouriteTheme(themename) {
     UpdateConfig.setFavThemes(newlist);
   }
   UpdateConfig.saveToCookie();
-  refreshThemeButtons();
+  ThemePicker.refreshButtons();
   // showFavouriteThemesAtTheTop();
   CommandlineLists.updateThemeCommands();
 }
@@ -733,7 +706,7 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
   if (!$(e.target).hasClass("favButton")) {
     UpdateConfig.setTheme(theme);
     setActiveThemeButton();
-    refreshThemeButtons();
+    ThemePicker.refreshButtons();
   }
 });
 

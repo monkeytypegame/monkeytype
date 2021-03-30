@@ -4,6 +4,7 @@ import * as TestUI from "./test-ui";
 import * as Misc from "./misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
+import * as Settings from "./settings";
 
 export let active = "none";
 let memoryTimer = null;

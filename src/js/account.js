@@ -313,7 +313,7 @@ function getAccountDataAndInit() {
       ) {
         changePage("account");
       }
-      Settings.refreshThemeButtons();
+      ThemePicker.refreshButtons();
       AccountIcon.loading(false);
       ResultFilters.updateTags();
       CommandlineLists.updateTagCommands();

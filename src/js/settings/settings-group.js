@@ -1,3 +1,5 @@
+import Config from "./config";
+
 export default class SettingsGroup {
   constructor(
     configName,

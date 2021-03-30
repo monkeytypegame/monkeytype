@@ -86,6 +86,27 @@ let eslintConfig = {
 //refactored files, which should be es6 modules
 //once all files are moved here, then can we use a bundler to its full potential
 const refactoredSrc = [
+  "./src/js/db.js",
+  "./src/js/cloud-functions.js",
+  "./src/js/misc.js",
+  "./src/js/layouts.js",
+  "./src/js/result-filters.js",
+  "./src/js/sound.js",
+  "./src/js/theme-colors.js",
+  "./src/js/chart-controller.js",
+  "./src/js/theme-controller.js",
+  "./src/js/config.js",
+  "./src/js/tag-controller.js",
+  "./src/js/ui.js",
+  "./src/js/commandline.js",
+  "./src/js/commandline-lists.js",
+  "./src/js/commandline.js",
+  "./src/js/challenge-controller.js",
+  "./src/js/mini-result-chart.js",
+  "./src/js/account-controller.js",
+  "./src/js/simple-popups.js",
+  "./src/js/settings.js",
+
   "./src/js/elements/monkey.js",
   "./src/js/elements/notifications.js",
   "./src/js/elements/leaderboards.js",
@@ -104,6 +125,8 @@ const refactoredSrc = [
   "./src/js/popups/edit-tags-popup.js",
 
   "./src/js/settings/language-picker.js",
+  "./src/js/settings/theme-picker.js",
+  "./src/js/settings/settings-group.js",
 
   "./src/js/test/custom-text.js",
   "./src/js/test/shift-tracker.js",
@@ -127,27 +150,6 @@ const refactoredSrc = [
   "./src/js/test/test-timer.js",
   "./src/js/test/test-config.js",
   "./src/js/test/layout-emulator.js",
-
-  "./src/js/db.js",
-  "./src/js/cloud-functions.js",
-  "./src/js/misc.js",
-  "./src/js/layouts.js",
-  "./src/js/result-filters.js",
-  "./src/js/sound.js",
-  "./src/js/theme-colors.js",
-  "./src/js/chart-controller.js",
-  "./src/js/theme-controller.js",
-  "./src/js/config.js",
-  "./src/js/tag-controller.js",
-  "./src/js/ui.js",
-  "./src/js/commandline.js",
-  "./src/js/commandline-lists.js",
-  "./src/js/commandline.js",
-  "./src/js/challenge-controller.js",
-  "./src/js/mini-result-chart.js",
-  "./src/js/account-controller.js",
-  "./src/js/simple-popups.js",
-  "./src/js/settings.js",
 ];
 
 //legacy files
