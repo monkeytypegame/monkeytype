@@ -1,3 +1,5 @@
+import * as UI from "./ui";
+
 export function loading(truefalse) {
   if (truefalse) {
     $("#top #menu .account .icon").html(
