@@ -80,6 +80,24 @@ export function updateActiveElement(backspace) {
   } catch (e) {}
 }
 
+function getWordHTML(word) {
+  let newlineafter = false;
+  let retval = `<div class='word'>`;
+  for (let c = 0; c < word.length; c++) {
+    if (word.charAt(c) === "\t") {
+      retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+    } else if (word.charAt(c) === "\n") {
+      newlineafter = true;
+      retval += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+    } else {
+      retval += "<letter>" + word.charAt(c) + "</letter>";
+    }
+  }
+  retval += "</div>";
+  if (newlineafter) retval += "<div class='newline'></div>";
+  return retval;
+}
+
 export function showWords() {
   $("#words").empty();
 
@@ -143,24 +161,6 @@ export function showWords() {
   Funbox.toggleScript(TestLogic.words.getCurrent());
 
   Caret.updatePosition();
-}
-
-function getWordHTML(word) {
-  let newlineafter = false;
-  let retval = `<div class='word'>`;
-  for (let c = 0; c < word.length; c++) {
-    if (word.charAt(c) === "\t") {
-      retval += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-    } else if (word.charAt(c) === "\n") {
-      newlineafter = true;
-      retval += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
-    } else {
-      retval += "<letter>" + word.charAt(c) + "</letter>";
-    }
-  }
-  retval += "</div>";
-  if (newlineafter) retval += "<div class='newline'></div>";
-  return retval;
 }
 
 export function addWord(word) {
