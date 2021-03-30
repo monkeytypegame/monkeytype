@@ -32,6 +32,8 @@ export function setChangedBeforeDb(val) {
   changedBeforeDb = val;
 }
 
+let loadDone;
+
 let defaultConfig = {
   theme: "serika_dark",
   customTheme: false,
@@ -1624,7 +1626,6 @@ export function loadFromCookie() {
   loadDone();
 }
 
-let loadDone;
 export let loadPromise = new Promise((v) => {
   loadDone = v;
 });
