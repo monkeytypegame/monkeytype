@@ -58,3 +58,4 @@ import * as Settings from "./settings";
 import * as SimplePopups from "./simple-popups";
 import * as ThemePicker from "./theme-picker";
 import "./custom-theme-popup";
+import "./import-settings-popup";
