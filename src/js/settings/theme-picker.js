@@ -1,7 +1,10 @@
-import Config from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as ThemeController from "./theme-controller";
 import * as Misc from "./misc";
 import * as Notifications from "./notifications";
+import * as CommandlineLists from "./commandline-lists";
+import * as ThemeColors from "./theme-colors";
+import * as ChartController from "./chart-controller";
 
 export function refreshButtons() {
   let favThemesEl = $(
@@ -48,6 +51,7 @@ export function refreshButtons() {
         );
       }
     });
+    updateActiveButton();
   });
 }
 
@@ -63,6 +67,42 @@ export function setCustomInputs() {
     $(index).attr("value", currentColor);
     $(index).prev().text(currentColor);
   });
+}
+
+function toggleFavourite(themename) {
+  if (Config.favThemes.includes(themename)) {
+    //already favourite, remove
+    UpdateConfig.setFavThemes(
+      Config.favThemes.filter((t) => {
+        if (t !== themename) {
+          return t;
+        }
+      })
+    );
+  } else {
+    //add to favourites
+    let newlist = Config.favThemes;
+    newlist.push(themename);
+    UpdateConfig.setFavThemes(newlist);
+  }
+  UpdateConfig.saveToCookie();
+  refreshButtons();
+  // showFavouriteThemesAtTheTop();
+  CommandlineLists.updateThemeCommands();
+}
+
+export function updateActiveButton() {
+  $(`.pageSettings .section.themes .theme`).removeClass("active");
+  $(`.pageSettings .section.themes .theme[theme=${Config.theme}]`).addClass(
+    "active"
+  );
+  // console.log(`.pageSettings .section.themes .theme[theme=${Config.theme}]`);
+}
+
+export function updateActiveTab() {
+  Config.customTheme === true
+    ? $(".pageSettings .section.themes .tabs .button[tab='custom']").click()
+    : $(".pageSettings .section.themes .tabs .button[tab='preset']").click();
 }
 
 $("#shareCustomThemeButton").click((e) => {
@@ -90,4 +130,112 @@ $("#shareCustomThemeButton").click((e) => {
       }
     );
   }
+});
+
+$(".pageSettings .section.themes .tabs .button").click((e) => {
+  $(".pageSettings .section.themes .tabs .button").removeClass("active");
+  var $target = $(e.currentTarget);
+  $target.addClass("active");
+  setCustomInputs();
+  if ($target.attr("tab") == "preset") {
+    UpdateConfig.setCustomTheme(false);
+    ThemeController.set(Config.theme);
+    // applyCustomThemeColors();
+    // UI.swapElements(
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+    //   250
+    // );
+  } else {
+    UpdateConfig.setCustomTheme(true);
+    ThemeController.set("custom");
+    // applyCustomThemeColors();
+    // UI.swapElements(
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+    //   250
+    // );
+  }
+});
+
+$(document).on(
+  "click",
+  ".pageSettings .section.themes .theme .favButton",
+  (e) => {
+    let theme = $(e.currentTarget).parents(".theme.button").attr("theme");
+    toggleFavourite(theme);
+  }
+);
+
+$(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
+  let theme = $(e.currentTarget).attr("theme");
+  if (!$(e.target).hasClass("favButton")) {
+    UpdateConfig.setTheme(theme);
+    // ThemePicker.refreshButtons();
+    updateActiveButton();
+  }
+});
+
+$(
+  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+).on("input", (e) => {
+  UpdateConfig.setCustomTheme(true, true);
+  let $colorVar = $(e.currentTarget).attr("id");
+  let $pickedColor = $(e.currentTarget).val();
+
+  document.documentElement.style.setProperty($colorVar, $pickedColor);
+  $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
+  $(".colorPicker [for=" + $colorVar + "]").text($pickedColor);
+});
+
+$(".pageSettings .saveCustomThemeButton").click((e) => {
+  let save = [];
+  $.each(
+    $(".pageSettings .section.customTheme [type='color']"),
+    (index, element) => {
+      save.push($(element).attr("value"));
+    }
+  );
+  UpdateConfig.setCustomThemeColors(save);
+  ThemeController.set("custom");
+  Notifications.add("Custom theme colors saved", 0);
+});
+
+$(".pageSettings #loadCustomColorsFromPreset").click((e) => {
+  // previewTheme(Config.theme);
+  ThemeController.preview(Config.theme);
+
+  ThemeController.colorVars.forEach((e) => {
+    document.documentElement.style.setProperty(e, "");
+  });
+
+  setTimeout(() => {
+    ChartController.updateAllChartColors();
+
+    ThemeController.colorVars.forEach((colorName) => {
+      let color;
+      if (colorName === "--bg-color") {
+        color = ThemeColors.bg;
+      } else if (colorName === "--main-color") {
+        color = ThemeColors.main;
+      } else if (colorName === "--sub-color") {
+        color = ThemeColors.sub;
+      } else if (colorName === "--caret-color") {
+        color = ThemeColors.caret;
+      } else if (colorName === "--text-color") {
+        color = ThemeColors.text;
+      } else if (colorName === "--error-color") {
+        color = ThemeColors.error;
+      } else if (colorName === "--error-extra-color") {
+        color = ThemeColors.errorExtra;
+      } else if (colorName === "--colorful-error-color") {
+        color = ThemeColors.colorfulError;
+      } else if (colorName === "--colorful-error-extra-color") {
+        color = ThemeColors.colorfulErrorExtra;
+      }
+      $(".colorPicker #" + colorName).attr("value", color);
+      $(".colorPicker #" + colorName).val(color);
+      $(".colorPicker [for=" + colorName + "]").text(color);
+    });
+  }, 250);
 });

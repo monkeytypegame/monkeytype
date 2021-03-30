@@ -385,8 +385,8 @@ export function update() {
   refreshTagsSettingsSection();
   LanguagePicker.setActiveGroup();
   setActiveFunboxButton();
-  setActiveThemeButton();
-  setActiveThemeTab();
+  // ThemePicker.updateActiveButton();
+  ThemePicker.updateActiveTab();
   ThemePicker.setCustomInputs();
   updateDiscordSection();
   ThemePicker.refreshButtons();
@@ -425,28 +425,6 @@ export function update() {
   } else {
     $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
   }
-}
-
-function toggleFavouriteTheme(themename) {
-  if (Config.favThemes.includes(themename)) {
-    //already favourite, remove
-    UpdateConfig.setFavThemes(
-      Config.favThemes.filter((t) => {
-        if (t !== themename) {
-          return t;
-        }
-      })
-    );
-  } else {
-    //add to favourites
-    let newlist = Config.favThemes;
-    newlist.push(themename);
-    UpdateConfig.setFavThemes(newlist);
-  }
-  UpdateConfig.saveToCookie();
-  ThemePicker.refreshButtons();
-  // showFavouriteThemesAtTheTop();
-  CommandlineLists.updateThemeCommands();
 }
 
 export function showAccountSection() {
@@ -510,19 +488,6 @@ function setActiveFunboxButton() {
   $(
     `.pageSettings .section.funbox .button[funbox='${Funbox.active}']`
   ).addClass("active");
-}
-
-function setActiveThemeButton() {
-  $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${Config.theme}]`).addClass(
-    "active"
-  );
-}
-
-function setActiveThemeTab() {
-  Config.customTheme === true
-    ? $(".pageSettings .section.themes .tabs .button[tab='custom']").click()
-    : $(".pageSettings .section.themes .tabs .button[tab='preset']").click();
 }
 
 function showActiveTags() {
@@ -593,24 +558,6 @@ $(document).on(
     UpdateConfig.setMinAccCustom(
       parseInt($(".pageSettings .section.minAcc input.customMinAcc").val())
     );
-  }
-);
-
-$(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
-  let theme = $(e.currentTarget).attr("theme");
-  if (!$(e.target).hasClass("favButton")) {
-    UpdateConfig.setTheme(theme);
-    setActiveThemeButton();
-    ThemePicker.refreshButtons();
-  }
-});
-
-$(document).on(
-  "click",
-  ".pageSettings .section.themes .theme .favButton",
-  (e) => {
-    let theme = $(e.currentTarget).parents(".theme.button").attr("theme");
-    toggleFavouriteTheme(theme);
   }
 );
 
@@ -724,99 +671,6 @@ $(document).on(
     EditTagsPopup.show("remove", tagid, name);
   }
 );
-
-//theme tabs & custom theme
-const colorVars = ThemeController.colorVars;
-
-$(".pageSettings .section.themes .tabs .button").click((e) => {
-  $(".pageSettings .section.themes .tabs .button").removeClass("active");
-  var $target = $(e.currentTarget);
-  $target.addClass("active");
-  ThemePicker.setCustomInputs();
-  if ($target.attr("tab") == "preset") {
-    UpdateConfig.setCustomTheme(false);
-    ThemeController.set(Config.theme);
-    // applyCustomThemeColors();
-    // UI.swapElements(
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-    //   250
-    // );
-  } else {
-    UpdateConfig.setCustomTheme(true);
-    ThemeController.set("custom");
-    // applyCustomThemeColors();
-    // UI.swapElements(
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-    //   250
-    // );
-  }
-});
-
-$(
-  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
-).on("input", (e) => {
-  UpdateConfig.setCustomTheme(true, true);
-  let $colorVar = $(e.currentTarget).attr("id");
-  let $pickedColor = $(e.currentTarget).val();
-
-  document.documentElement.style.setProperty($colorVar, $pickedColor);
-  $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  $(".colorPicker [for=" + $colorVar + "]").text($pickedColor);
-});
-
-$(".pageSettings .saveCustomThemeButton").click((e) => {
-  let save = [];
-  $.each(
-    $(".pageSettings .section.customTheme [type='color']"),
-    (index, element) => {
-      save.push($(element).attr("value"));
-    }
-  );
-  UpdateConfig.setCustomThemeColors(save);
-  ThemeController.set("custom");
-  Notifications.add("Custom theme colors saved", 0);
-});
-
-$(".pageSettings #loadCustomColorsFromPreset").click((e) => {
-  // previewTheme(Config.theme);
-  ThemeController.preview(Config.theme);
-
-  colorVars.forEach((e) => {
-    document.documentElement.style.setProperty(e, "");
-  });
-
-  setTimeout(() => {
-    ChartController.updateAllChartColors();
-
-    colorVars.forEach((colorName) => {
-      let color;
-      if (colorName === "--bg-color") {
-        color = ThemeColors.bg;
-      } else if (colorName === "--main-color") {
-        color = ThemeColors.main;
-      } else if (colorName === "--sub-color") {
-        color = ThemeColors.sub;
-      } else if (colorName === "--caret-color") {
-        color = ThemeColors.caret;
-      } else if (colorName === "--text-color") {
-        color = ThemeColors.text;
-      } else if (colorName === "--error-color") {
-        color = ThemeColors.error;
-      } else if (colorName === "--error-extra-color") {
-        color = ThemeColors.errorExtra;
-      } else if (colorName === "--colorful-error-color") {
-        color = ThemeColors.colorfulError;
-      } else if (colorName === "--colorful-error-extra-color") {
-        color = ThemeColors.colorfulErrorExtra;
-      }
-      $(".colorPicker #" + colorName).attr("value", color);
-      $(".colorPicker #" + colorName).val(color);
-      $(".colorPicker [for=" + colorName + "]").text(color);
-    });
-  }, 250);
-});
 
 $("#resetSettingsButton").click((e) => {
   if (confirm("Press OK to confirm.")) {

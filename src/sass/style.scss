@@ -2890,6 +2890,9 @@ key {
 
           &.customTheme {
             margin-top: 0.5rem;
+            .colorText {
+              color: var(--text-color);
+            }
           }
 
           .text {
@@ -2939,6 +2942,11 @@ key {
         &:hover {
           .favButton {
             width: 1.25rem;
+            opacity: 1;
+          }
+        }
+        &.active {
+          .activeIndicator {
             opacity: 1;
           }
         }
