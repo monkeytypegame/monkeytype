@@ -134,9 +134,15 @@ export function randomiseTheme() {
 
     if (Config.randomTheme === "fav" && Config.favThemes.length > 0)
       randomList = Config.favThemes;
+
+    const previousTheme = randomTheme;
     randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
+
     preview(randomTheme);
-    Notifications.add(randomTheme.replace(/_/g, " "), 0);
+
+    if (previousTheme != randomTheme) {
+      Notifications.add(randomTheme.replace(/_/g, " "), 0);
+    }
   });
 }
 
