@@ -387,7 +387,7 @@ export function update() {
   setActiveFunboxButton();
   setActiveThemeButton();
   setActiveThemeTab();
-  setCustomThemeInputs();
+  ThemePicker.setCustomInputs();
   updateDiscordSection();
   ThemePicker.refreshButtons();
 
@@ -426,99 +426,6 @@ export function update() {
     $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
   }
 }
-
-function showCustomThemeShare() {
-  if ($("#customThemeShareWrapper").hasClass("hidden")) {
-    let save = [];
-    $.each(
-      $(".pageSettings .section.customTheme [type='color']"),
-      (index, element) => {
-        save.push($(element).attr("value"));
-      }
-    );
-    $("#customThemeShareWrapper input").val(JSON.stringify(save));
-    $("#customThemeShareWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
-        $("#customThemeShare input").focus();
-        $("#customThemeShare input").select();
-        $("#customThemeShare input").focus();
-      });
-  }
-}
-
-function hideCustomThemeShare() {
-  if (!$("#customThemeShareWrapper").hasClass("hidden")) {
-    try {
-      UpdateConfig.setCustomThemeColors(
-        JSON.parse($("#customThemeShareWrapper input").val())
-      );
-    } catch (e) {
-      Notifications.add(
-        "Something went wrong. Reverting to default custom colors.",
-        0,
-        4
-      );
-      UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
-    }
-    setCustomThemeInputs();
-    // applyCustomThemeColors();
-    $("#customThemeShareWrapper input").val("");
-    $("#customThemeShareWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        100,
-        (e) => {
-          $("#customThemeShareWrapper").addClass("hidden");
-        }
-      );
-  }
-}
-
-$("#customThemeShareWrapper").click((e) => {
-  if ($(e.target).attr("id") === "customThemeShareWrapper") {
-    hideCustomThemeShare();
-  }
-});
-
-$("#customThemeShare .button").click((e) => {
-  hideCustomThemeShare();
-});
-
-$("#shareCustomThemeButton").click((e) => {
-  if (e.shiftKey) {
-    showCustomThemeShare();
-  } else {
-    let share = [];
-    $.each(
-      $(".pageSettings .section.customTheme [type='color']"),
-      (index, element) => {
-        share.push($(element).attr("value"));
-      }
-    );
-
-    let url =
-      "https://monkeytype.com?" +
-      Misc.objectToQueryString({ customTheme: share });
-    navigator.clipboard.writeText(url).then(
-      function () {
-        Notifications.add("URL Copied to clipboard", 0);
-      },
-      function (err) {
-        Notifications.add(
-          "Something went wrong when copying the URL: " + err,
-          -1
-        );
-      }
-    );
-  }
-});
 
 function toggleFavouriteTheme(themename) {
   if (Config.favThemes.includes(themename)) {
@@ -616,18 +523,6 @@ function setActiveThemeTab() {
   Config.customTheme === true
     ? $(".pageSettings .section.themes .tabs .button[tab='custom']").click()
     : $(".pageSettings .section.themes .tabs .button[tab='preset']").click();
-}
-
-export function setCustomThemeInputs() {
-  $(
-    ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
-  ).each((n, index) => {
-    let currentColor =
-      Config.customThemeColors[colorVars.indexOf($(index).attr("id"))];
-    $(index).val(currentColor);
-    $(index).attr("value", currentColor);
-    $(index).prev().text(currentColor);
-  });
 }
 
 function showActiveTags() {
@@ -837,25 +732,25 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
   $(".pageSettings .section.themes .tabs .button").removeClass("active");
   var $target = $(e.currentTarget);
   $target.addClass("active");
-  setCustomThemeInputs();
+  ThemePicker.setCustomInputs();
   if ($target.attr("tab") == "preset") {
     UpdateConfig.setCustomTheme(false);
     ThemeController.set(Config.theme);
     // applyCustomThemeColors();
-    UI.swapElements(
-      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-      250
-    );
+    // UI.swapElements(
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+    //   250
+    // );
   } else {
     UpdateConfig.setCustomTheme(true);
     ThemeController.set("custom");
     // applyCustomThemeColors();
-    UI.swapElements(
-      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-      250
-    );
+    // UI.swapElements(
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+    //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+    //   250
+    // );
   }
 });
 

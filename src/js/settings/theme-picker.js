@@ -1,6 +1,7 @@
 import Config from "./config";
 import * as ThemeController from "./theme-controller";
 import * as Misc from "./misc";
+import * as Notifications from "./notifications";
 
 export function refreshButtons() {
   let favThemesEl = $(
@@ -49,3 +50,44 @@ export function refreshButtons() {
     });
   });
 }
+
+export function setCustomInputs() {
+  $(
+    ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+  ).each((n, index) => {
+    let currentColor =
+      Config.customThemeColors[
+        ThemeController.colorVars.indexOf($(index).attr("id"))
+      ];
+    $(index).val(currentColor);
+    $(index).attr("value", currentColor);
+    $(index).prev().text(currentColor);
+  });
+}
+
+$("#shareCustomThemeButton").click((e) => {
+  if (!e.shiftKey) {
+    let share = [];
+    $.each(
+      $(".pageSettings .section.customTheme [type='color']"),
+      (index, element) => {
+        share.push($(element).attr("value"));
+      }
+    );
+
+    let url =
+      "https://monkeytype.com?" +
+      Misc.objectToQueryString({ customTheme: share });
+    navigator.clipboard.writeText(url).then(
+      function () {
+        Notifications.add("URL Copied to clipboard", 0);
+      },
+      function (err) {
+        Notifications.add(
+          "Something went wrong when copying the URL: " + err,
+          -1
+        );
+      }
+    );
+  }
+});
