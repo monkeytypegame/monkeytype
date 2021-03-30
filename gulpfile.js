@@ -143,6 +143,7 @@ const refactoredSrc = [
   "./src/js/simple-popups.js",
   "./src/js/settings.js",
   "./src/js/popups/result-tags-popup.js",
+  "./src/js/popups/edit-tags-popup.js",
 ];
 
 //legacy files
