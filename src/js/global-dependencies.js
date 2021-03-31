@@ -55,3 +55,4 @@ import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
 import * as Account from "./account";
 import * as VerificationController from "./verification-controller";
+import "./input-controller";

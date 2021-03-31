@@ -105,6 +105,7 @@ const refactoredSrc = [
   "./src/js/account-controller.js",
   "./src/js/simple-popups.js",
   "./src/js/settings.js",
+  "./src/js/input-controller.js",
 
   "./src/js/account/all-time-stats.js",
   "./src/js/account/pb-tables.js",
