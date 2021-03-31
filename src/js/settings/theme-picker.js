@@ -5,6 +5,7 @@ import * as Notifications from "./notifications";
 import * as CommandlineLists from "./commandline-lists";
 import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
+import * as UI from "./ui";
 
 export function updateActiveButton() {
   $(`.pageSettings .section.themes .theme`).removeClass("active");
@@ -99,9 +100,28 @@ function toggleFavourite(themename) {
 }
 
 export function updateActiveTab() {
-  Config.customTheme === true
-    ? $(".pageSettings .section.themes .tabs .button[tab='custom']").click()
-    : $(".pageSettings .section.themes .tabs .button[tab='preset']").click();
+  $(".pageSettings .section.themes .tabs .button").removeClass("active");
+  if (!Config.customTheme) {
+    $(".pageSettings .section.themes .tabs .button[tab='preset']").addClass(
+      "active"
+    );
+
+    UI.swapElements(
+      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+      250
+    );
+  } else {
+    $(".pageSettings .section.themes .tabs .button[tab='custom']").addClass(
+      "active"
+    );
+
+    UI.swapElements(
+      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
+      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
+      250
+    );
+  }
 }
 
 $("#shareCustomThemeButton").click((e) => {
