@@ -27,106 +27,6 @@ $("#wordsInput").keypress((event) => {
 
 let dontInsertSpace = false;
 
-$(document).keyup((event) => {
-  if (!event.originalEvent.isTrusted) return;
-
-  if (TestUI.resultVisible) return;
-  let now = performance.now();
-  let diff = Math.abs(TestStats.keypressTimings.duration.current - now);
-  if (TestStats.keypressTimings.duration.current !== -1) {
-    TestStats.pushKeypressDuration(diff);
-    // keypressStats.duration.array.push(diff);
-  }
-  TestStats.setKeypressDuration(now);
-  // keypressStats.duration.current = now;
-  Monkey.stop();
-});
-
-$(document).keydown(function (event) {
-  if (!(event.key == " ") && !event.originalEvent.isTrusted) return;
-
-  if (!TestUI.resultVisible) {
-    TestStats.recordKeypressSpacing();
-  }
-
-  Monkey.type();
-
-  //autofocus
-  let pageTestActive = !$(".pageTest").hasClass("hidden");
-  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
-  let wordsFocused = $("#wordsInput").is(":focus");
-  let modePopupVisible =
-    !$("#customTextPopupWrapper").hasClass("hidden") ||
-    !$("#customWordAmountPopupWrapper").hasClass("hidden") ||
-    !$("#customTestDurationPopupWrapper").hasClass("hidden") ||
-    !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
-    !$("#wordFilterPopupWrapper").hasClass("hidden");
-  if (
-    pageTestActive &&
-    !commandLineVisible &&
-    !modePopupVisible &&
-    !TestUI.resultVisible &&
-    !wordsFocused &&
-    event.key !== "Enter"
-  ) {
-    TestUI.focusWords();
-    wordsFocused = true;
-    // if (Config.showOutOfFocusWarning) return;
-  }
-
-  //tab
-  if (
-    (event.key == "Tab" && !Config.swapEscAndTab) ||
-    (event.key == "Escape" && Config.swapEscAndTab)
-  ) {
-    handleTab(event);
-    // event.preventDefault();
-  }
-
-  //blocking firefox from going back in history with backspace
-  if (event.key === "Backspace" && wordsFocused) {
-    let t = /INPUT|SELECT|TEXTAREA/i;
-    if (
-      !t.test(event.target.tagName) ||
-      event.target.disabled ||
-      event.target.readOnly
-    ) {
-      event.preventDefault();
-    }
-  }
-
-  // keypressStats.duration.current = performance.now();
-  TestStats.setKeypressDuration(performance.now());
-
-  if (TestUI.testRestarting) {
-    return;
-  }
-
-  //backspace
-  const isBackspace =
-    event.key === "Backspace" ||
-    (Config.capsLockBackspace && event.key === "CapsLock");
-  if (isBackspace && wordsFocused) {
-    handleBackspace(event);
-  }
-
-  if (event.key === "Enter" && Funbox.active === "58008" && wordsFocused) {
-    event.key = " ";
-  }
-
-  //space or enter
-  if (event.key === " " && wordsFocused) {
-    handleSpace(event, false);
-  }
-
-  if (wordsFocused && !commandLineVisible) {
-    handleAlpha(event);
-  }
-
-  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
-  LiveAcc.update(acc);
-});
-
 function handleTab(event) {
   if (TestUI.resultCalculating) {
     event.preventDefault();
@@ -806,3 +706,103 @@ function handleAlpha(event) {
 
   Caret.updatePosition();
 }
+
+$(document).keyup((event) => {
+  if (!event.originalEvent.isTrusted) return;
+
+  if (TestUI.resultVisible) return;
+  let now = performance.now();
+  let diff = Math.abs(TestStats.keypressTimings.duration.current - now);
+  if (TestStats.keypressTimings.duration.current !== -1) {
+    TestStats.pushKeypressDuration(diff);
+    // keypressStats.duration.array.push(diff);
+  }
+  TestStats.setKeypressDuration(now);
+  // keypressStats.duration.current = now;
+  Monkey.stop();
+});
+
+$(document).keydown(function (event) {
+  if (!(event.key == " ") && !event.originalEvent.isTrusted) return;
+
+  if (!TestUI.resultVisible) {
+    TestStats.recordKeypressSpacing();
+  }
+
+  Monkey.type();
+
+  //autofocus
+  let pageTestActive = !$(".pageTest").hasClass("hidden");
+  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
+  let wordsFocused = $("#wordsInput").is(":focus");
+  let modePopupVisible =
+    !$("#customTextPopupWrapper").hasClass("hidden") ||
+    !$("#customWordAmountPopupWrapper").hasClass("hidden") ||
+    !$("#customTestDurationPopupWrapper").hasClass("hidden") ||
+    !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
+    !$("#wordFilterPopupWrapper").hasClass("hidden");
+  if (
+    pageTestActive &&
+    !commandLineVisible &&
+    !modePopupVisible &&
+    !TestUI.resultVisible &&
+    !wordsFocused &&
+    event.key !== "Enter"
+  ) {
+    TestUI.focusWords();
+    wordsFocused = true;
+    // if (Config.showOutOfFocusWarning) return;
+  }
+
+  //tab
+  if (
+    (event.key == "Tab" && !Config.swapEscAndTab) ||
+    (event.key == "Escape" && Config.swapEscAndTab)
+  ) {
+    handleTab(event);
+    // event.preventDefault();
+  }
+
+  //blocking firefox from going back in history with backspace
+  if (event.key === "Backspace" && wordsFocused) {
+    let t = /INPUT|SELECT|TEXTAREA/i;
+    if (
+      !t.test(event.target.tagName) ||
+      event.target.disabled ||
+      event.target.readOnly
+    ) {
+      event.preventDefault();
+    }
+  }
+
+  // keypressStats.duration.current = performance.now();
+  TestStats.setKeypressDuration(performance.now());
+
+  if (TestUI.testRestarting) {
+    return;
+  }
+
+  //backspace
+  const isBackspace =
+    event.key === "Backspace" ||
+    (Config.capsLockBackspace && event.key === "CapsLock");
+  if (isBackspace && wordsFocused) {
+    handleBackspace(event);
+  }
+
+  if (event.key === "Enter" && Funbox.active === "58008" && wordsFocused) {
+    event.key = " ";
+  }
+
+  //space or enter
+  if (event.key === " " && wordsFocused) {
+    handleSpace(event, false);
+  }
+
+  if (wordsFocused && !commandLineVisible) {
+    handleAlpha(event);
+  }
+
+  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  LiveAcc.update(acc);
+});
