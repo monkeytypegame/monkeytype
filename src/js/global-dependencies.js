@@ -51,3 +51,4 @@ import * as SimplePopups from "./simple-popups";
 import * as ThemePicker from "./theme-picker";
 import "./custom-theme-popup";
 import "./import-settings-popup";
+import * as AllTimeStats from "./all-time-stats";

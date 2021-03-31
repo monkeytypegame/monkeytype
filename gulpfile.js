@@ -107,6 +107,8 @@ const refactoredSrc = [
   "./src/js/simple-popups.js",
   "./src/js/settings.js",
 
+  "./src/js/account/all-time-stats.js",
+
   "./src/js/elements/monkey.js",
   "./src/js/elements/notifications.js",
   "./src/js/elements/leaderboards.js",

@@ -102,9 +102,9 @@ export function signOut() {
 
       //TODO Bring this back when possible
 
-      // clearGlobalStats();
+      // AllTimeStats.clear();
       // Settings.hideAccountSection();
-      // updateAccountLoginButton();
+      // AccountIcon.update();
       // changePage("login");
       // DB.setSnapshot(null);
     })
