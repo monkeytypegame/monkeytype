@@ -1,7 +1,6 @@
 //test timer
 
 //ui
-let verifyUserWhenLoggedIn = null;
 
 ///
 
@@ -19,108 +18,19 @@ let verifyUserWhenLoggedIn = null;
   };
 })(window.history);
 
-function changePage(page) {
-  if (UI.pageTransition) {
-    return;
-  }
-  let activePage = $(".page.active");
-  $(".page").removeClass("active");
-  $("#wordsInput").focusout();
-  if (page == "test" || page == "") {
-    UI.setPageTransition(true);
-    UI.swapElements(
-      activePage,
-      $(".page.pageTest"),
-      250,
-      () => {
-        UI.setPageTransition(false);
-        TestUI.focusWords();
-        $(".page.pageTest").addClass("active");
-        history.pushState("/", null, "/");
-      },
-      () => {
-        TestConfig.show();
-      }
-    );
-    SignOutButton.hide();
-    // restartCount = 0;
-    // incompleteTestSeconds = 0;
-    TestStats.resetIncomplete();
-    ManualRestart.set();
-    TestLogic.restart();
-  } else if (page == "about") {
-    UI.setPageTransition(true);
-    TestLogic.restart();
-    UI.swapElements(activePage, $(".page.pageAbout"), 250, () => {
-      UI.setPageTransition(false);
-      history.pushState("about", null, "about");
-      $(".page.pageAbout").addClass("active");
-    });
-    TestConfig.hide();
-    SignOutButton.hide();
-  } else if (page == "settings") {
-    UI.setPageTransition(true);
-    TestLogic.restart();
-    UI.swapElements(activePage, $(".page.pageSettings"), 250, () => {
-      UI.setPageTransition(false);
-      history.pushState("settings", null, "settings");
-      $(".page.pageSettings").addClass("active");
-    });
-    Settings.update();
-    TestConfig.hide();
-    SignOutButton.hide();
-  } else if (page == "account") {
-    if (!firebase.auth().currentUser) {
-      changePage("login");
-    } else {
-      UI.setPageTransition(true);
-      TestLogic.restart();
-      UI.swapElements(
-        activePage,
-        $(".page.pageAccount"),
-        250,
-        () => {
-          UI.setPageTransition(false);
-          history.pushState("account", null, "account");
-          $(".page.pageAccount").addClass("active");
-        },
-        () => {
-          SignOutButton.show();
-        }
-      );
-      refreshAccountPage();
-      TestConfig.hide();
-    }
-  } else if (page == "login") {
-    if (firebase.auth().currentUser != null) {
-      changePage("account");
-    } else {
-      UI.setPageTransition(true);
-      TestLogic.restart();
-      UI.swapElements(activePage, $(".page.pageLogin"), 250, () => {
-        UI.setPageTransition(false);
-        history.pushState("login", null, "login");
-        $(".page.pageLogin").addClass("active");
-      });
-      TestConfig.hide();
-      SignOutButton.hide();
-    }
-  }
-}
-
 $(window).on("popstate", (e) => {
   let state = e.originalEvent.state;
   if (state == "" || state == "/") {
     // show test
-    changePage("test");
+    UI.changePage("test");
   } else if (state == "about") {
     // show about
-    changePage("about");
+    UI.changePage("about");
   } else if (state == "account" || state == "login") {
     if (firebase.auth().currentUser) {
-      changePage("account");
+      UI.changePage("account");
     } else {
-      changePage("login");
+      UI.changePage("login");
     }
   }
 });
@@ -289,63 +199,8 @@ function handleTab(event) {
       }
     }
   } else if (Config.quickTab) {
-    changePage("test");
+    UI.changePage("test");
   }
-
-  // } else if (
-  //   !event.ctrlKey &&
-  //   (
-  //     (!event.shiftKey && !TestLogic.hasTab) ||
-  //     (event.shiftKey && TestLogic.hasTab) ||
-  //     TestUI.resultVisible
-  //   ) &&
-  //   Config.quickTab &&
-  //   !$(".pageLogin").hasClass("active") &&
-  //   !resultCalculating &&
-  //   $("#commandLineWrapper").hasClass("hidden") &&
-  //   $("#simplePopupWrapper").hasClass("hidden")
-  // ) {
-  //   event.preventDefault();
-  //   if ($(".pageTest").hasClass("active")) {
-  //     if (
-  //       (Config.mode === "words" && Config.words < 1000) ||
-  //       (Config.mode === "time" && Config.time < 3600) ||
-  //       Config.mode === "quote" ||
-  //       (Config.mode === "custom" &&
-  //         CustomText.isWordRandom &&
-  //         CustomText.word < 1000) ||
-  //       (Config.mode === "custom" &&
-  //         CustomText.isTimeRandom &&
-  //         CustomText.time < 3600) ||
-  //       (Config.mode === "custom" &&
-  //         !CustomText.isWordRandom &&
-  //         CustomText.text.length < 1000)
-  //     ) {
-  //       if (TestLogic.active) {
-  //         let testNow = performance.now();
-  //         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-  //         let afkseconds = keypressPerSecond.filter(
-  //           (x) => x.count == 0 && x.mod == 0
-  //         ).length;
-  //         incompleteTestSeconds += testSeconds - afkseconds;
-  //         restartCount++;
-  //       }
-  //       TestLogic.restart();
-  //     } else {
-  //       Notifications.add("Quick restart disabled for long tests", 0);
-  //     }
-  //   } else {
-  //     changePage("test");
-  //   }
-  // } else if (
-  //   !Config.quickTab &&
-  //   TestLogic.hasTab &&
-  //   event.shiftKey &&
-  //   !TestUI.resultVisible
-  // ) {
-  //   event.preventDefault();
-  //   $("#restartTestButton").focus();
-  // }
 }
 
 function handleBackspace(event) {
@@ -969,7 +824,6 @@ function handleAlpha(event) {
 ManualRestart.set();
 UpdateConfig.loadFromCookie();
 Misc.getReleasesFromGitHub();
-// getPatreonNames();
 
 let mappedRoutes = {
   "/": "pageTest",
@@ -1011,10 +865,10 @@ $(document).ready(() => {
         if (fragment.has("access_token")) {
           const accessToken = fragment.get("access_token");
           const tokenType = fragment.get("token_type");
-          verifyUserWhenLoggedIn = {
+          VerificationController.set({
             accessToken: accessToken,
             tokenType: tokenType,
-          };
+          });
           history.replaceState("/", null, "/");
         }
       } else if (window.location.pathname === "/account") {
@@ -1024,23 +878,8 @@ $(document).ready(() => {
         // }
       } else if (window.location.pathname !== "/") {
         let page = window.location.pathname.replace("/", "");
-        changePage(page);
+        UI.changePage(page);
       }
     });
   Settings.settingsFillPromise.then(Settings.update);
-});
-
-//TODO move after account is a module
-$(document).on("click", "#top .logo", (e) => {
-  changePage("test");
-});
-
-$(document).on("click", "#top #menu .icon-button", (e) => {
-  if ($(e.currentTarget).hasClass("leaderboards")) {
-    Leaderboards.show();
-  } else {
-    const href = $(e.currentTarget).attr("href");
-    ManualRestart.set();
-    changePage(href.replace("/", ""));
-  }
 });

@@ -22,7 +22,7 @@ import * as QuoteSearchPopup from "./quote-search-popup";
 import * as PbCrown from "./pb-crown";
 import * as TestTimer from "./test-timer";
 import * as OutOfFocus from "./out-of-focus";
-import * as AccountButton from "./account-icon";
+import * as AccountButton from "./account-button";
 import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
 import * as CloudFunctions from "./cloud-functions";

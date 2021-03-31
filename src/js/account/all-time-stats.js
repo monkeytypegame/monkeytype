@@ -1,3 +1,5 @@
+import * as DB from "./db";
+
 export function clear() {
   $(".pageAccount .globalTimeTyping .val").text(`-`);
   $(".pageAccount .globalTestsStarted .val").text(`-`);

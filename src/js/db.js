@@ -1,5 +1,5 @@
 import { loadTags } from "./result-filters";
-import * as AccountButton from "./account-icon";
+import * as AccountButton from "./account-button";
 import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 

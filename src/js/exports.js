@@ -10,3 +10,5 @@ global.snapshot = DB.getSnapshot;
 global.config = Config;
 // global.addnotif = Notifications.add;
 global.link = AccountController.linkWithGoogle;
+
+global.filters = ResultFilters.filters;
