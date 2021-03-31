@@ -56,3 +56,4 @@ import * as PbTables from "./pb-tables";
 import * as Account from "./account";
 import * as VerificationController from "./verification-controller";
 import "./input-controller";
+import "./ready";

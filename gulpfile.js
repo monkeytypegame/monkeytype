@@ -106,6 +106,8 @@ const refactoredSrc = [
   "./src/js/simple-popups.js",
   "./src/js/settings.js",
   "./src/js/input-controller.js",
+  "./src/js/route-controller.js",
+  "./src/js/ready.js",
 
   "./src/js/account/all-time-stats.js",
   "./src/js/account/pb-tables.js",
@@ -162,11 +164,7 @@ const refactoredSrc = [
 
 //legacy files
 //the order of files is important
-const globalSrc = [
-  "./src/js/global-dependencies.js",
-  "./src/js/script.js",
-  "./src/js/exports.js",
-];
+const globalSrc = ["./src/js/global-dependencies.js", "./src/js/exports.js"];
 
 //concatenates and lints legacy js files and writes the output to dist/gen/index.js
 task("cat", function () {
