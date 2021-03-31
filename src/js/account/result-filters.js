@@ -15,6 +15,7 @@ let defaultResultFilters = {
     words: true,
     time: true,
     quote: true,
+    zen: true,
     custom: true,
   },
   words: {
