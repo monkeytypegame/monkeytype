@@ -13,6 +13,8 @@ import * as Commandline from "./commandline";
 import * as OutOfFocus from "./out-of-focus";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as PractiseMissed from "./practise-missed";
+import * as Tribe from "./tribe";
+import * as UI from "./ui";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -885,13 +887,21 @@ $(document.body).on("click", "#practiseMissedWordsButton", () => {
 
 $(document).on("keypress", "#nextTestButton", (event) => {
   if (event.keyCode == 13) {
-    TestLogic.restart();
+    if (Tribe.state >= 10) {
+      Tribe.startTest();
+    } else {
+      TestLogic.restart();
+    }
   }
 });
 
 $(document.body).on("click", "#nextTestButton", () => {
   ManualRestart.set();
-  TestLogic.restart();
+  if (Tribe.state >= 10) {
+    Tribe.startTest();
+  } else {
+    TestLogic.restart();
+  }
 });
 
 $(document).on("keypress", "#showWordHistoryButton", (event) => {
@@ -925,4 +935,12 @@ $(document).on("keypress", "#restartTestButtonWithSameWordset", (event) => {
 
 $("#wordsWrapper").on("click", () => {
   focusWords();
+});
+
+$(document).on("keypress", "#goBackToLobbyButton", (event) => {
+  UI.changePage("tribe");
+});
+
+$(document.body).on("click", "#goBackToLobbyButton", (event) => {
+  UI.changePage("tribe");
 });

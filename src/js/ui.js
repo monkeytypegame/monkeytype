@@ -14,6 +14,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
+import * as Tribe from "./tribe";
 
 export let pageTransition = false;
 
@@ -109,12 +110,21 @@ export function swapElements(
 
 export function changePage(page) {
   if (pageTransition) {
+    Notifications.add("Not changing page, page transition true", 0, 0, "DEBUG");
     return;
   }
   let activePage = $(".page.active");
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
+    if (
+      Tribe.state >= 20 &&
+      Tribe.state <= 29 &&
+      !Tribe.room.isTyping &&
+      !Tribe.room.isReady &&
+      !Tribe.room.isLeader
+    )
+      return;
     setPageTransition(true);
     swapElements(
       activePage,
@@ -192,6 +202,26 @@ export function changePage(page) {
       });
       TestConfig.hide();
       SignOutButton.hide();
+    }
+  } else if (page == "tribe") {
+    if (Tribe.state === 20 || Tribe.state === 21) {
+      changePage("test");
+    } else {
+      pageTransition = true;
+      TestLogic.restart();
+      swapElements(activePage, $(".page.pageTribe"), 250, () => {
+        pageTransition = false;
+        Tribe.scrollChat();
+        Tribe.showTestConfig();
+        $(".pageTribe .lobby .chat .input input").focus();
+        history.pushState("tribe", null, "tribe");
+        $(".page.pageTribe").addClass("active");
+        if (!Tribe.socket.connected) {
+          if (Tribe.state === -1) {
+            Tribe.init();
+          }
+        }
+      });
     }
   }
 }

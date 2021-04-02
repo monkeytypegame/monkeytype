@@ -4,6 +4,7 @@ import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import * as TestLogic from "./test-logic";
 import * as WordFilterPopup from "./word-filter-popup";
+import * as Tribe from "./tribe";
 
 let wrapper = "#customTextPopupWrapper";
 let popup = "#customTextPopup";
@@ -154,6 +155,7 @@ $("#customTextPopup .apply").click(() => {
   ManualRestart.set();
   TestLogic.restart();
   hide();
+  Tribe.syncConfig();
 });
 
 $("#customTextPopup .wordfilter").click(() => {

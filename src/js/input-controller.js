@@ -20,6 +20,7 @@ import * as TimerProgress from "./timer-progress";
 import * as TestTimer from "./test-timer";
 import * as Focus from "./focus";
 import * as ShiftTracker from "./shift-tracker";
+import * as Tribe from "./tribe";
 
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
@@ -51,6 +52,10 @@ function handleTab(event) {
     //   $("#customTextPopup .textarea").val() + "\t"
     // );
     return;
+  } else if (Tribe.state >= 10) {
+    if (Tribe.state < 28) {
+      event.preventDefault();
+    }
   } else if (
     $(".pageTest").hasClass("active") &&
     !TestUI.resultCalculating &&
@@ -323,6 +328,23 @@ function handleSpace(event, isEnter) {
       TestUI.lineJump(currentTop);
     }
   } //end of line wrap
+
+  let wpmAndRaw = TestLogic.calculateWpmAndRaw();
+
+  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+
+  let progress = 0;
+  if (Config.mode === "time") {
+    progress = 100 - ((TestTimer.time + 1) / Config.time) * 100;
+  } else {
+    let outof = TestLogic.words.length;
+    if (Config.mode === "words") {
+      outof = Config.words;
+    }
+    progress = Math.floor((TestLogic.currentWordIndex / (outof - 1)) * 100);
+  }
+
+  Tribe.sendTestProgress(wpmAndRaw.wpm, wpmAndRaw.raw, acc, progress);
 
   Caret.updatePosition();
 
@@ -752,6 +774,11 @@ $(document).keydown(function (event) {
     TestUI.focusWords();
     wordsFocused = true;
     // if (Config.showOutOfFocusWarning) return;
+  }
+
+  if (Tribe.state == 20) {
+    event.preventDefault();
+    return;
   }
 
   //tab

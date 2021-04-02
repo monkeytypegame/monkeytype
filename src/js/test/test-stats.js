@@ -322,6 +322,7 @@ export function calculateStats() {
       5
   );
   let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  if (isNaN(acc)) acc = 0;
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,

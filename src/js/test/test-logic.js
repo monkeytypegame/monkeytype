@@ -27,6 +27,7 @@ import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
 import * as CloudFunctions from "./cloud-functions";
 import * as TestLeaderboards from "./test-leaderboards";
+import * as Tribe from "./tribe";
 
 export let notSignedInLastResult = null;
 
@@ -578,7 +579,13 @@ export async function init() {
   // }
 }
 
-export function restart(withSameWordset = false, nosave = false, event) {
+export function restart(
+  withSameWordset = false,
+  nosave = false,
+  event,
+  tribe = false
+) {
+  if (Tribe.state >= 10 && !tribe) return;
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     try {
       event.preventDefault();
@@ -904,7 +911,7 @@ export function addWord() {
   TestUI.addWord(randomWord);
 }
 
-export function finish(difficultyFailed = false) {
+export function finish(difficultyFailed = false, mp_outOfTime = false) {
   if (!active) return;
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
@@ -949,6 +956,29 @@ export function finish(difficultyFailed = false) {
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
 
   ChartController.result.options.annotation.annotations = [];
+
+  if (Tribe.state >= 10) {
+    $(".pageTest #nextTestButton").addClass("hidden");
+    $(".pageTest #backToLobbyButton").addClass("hidden");
+    $(".pageTest #readyButton").removeClass("hidden");
+    $(".pageTest #restartTestButtonWithSameWordset").addClass("hidden");
+    $(".pageTest #goBackToLobbyButton").removeClass("hidden");
+    $(".pageTest #practiseMissedWordsButton").addClass("hidden");
+    $(".pageTest #result .tribeResultChat").removeClass("hidden");
+    if (Tribe.room.isLeader) {
+      // $(".pageTest #backToLobbyButton").removeClass("hidden");
+      // $(".pageTest #nextTestButton").removeClass("hidden");
+      $(".pageTest #readyButton").addClass("hidden");
+    }
+  } else {
+    $(".pageTest #nextTestButton").removeClass("hidden");
+    $(".pageTest #backToLobbyButton").addClass("hidden");
+    $(".pageTest #readyButton").addClass("hidden");
+    $(".pageTest #restartTestButtonWithSameWordset").removeClass("hidden");
+    $(".pageTest #goBackToLobbyButton").addClass("hidden");
+    $(".pageTest #practiseMissedWordsButton").removeClass("hidden");
+    $(".pageTest #result .tribeResultChat").addClass("hidden");
+  }
 
   $("#result #resultWordsHistory").addClass("hidden");
 
@@ -1204,6 +1234,8 @@ export function finish(difficultyFailed = false) {
     Notifications.add("Test invalid - AFK detected", 0);
   } else if (isRepeated) {
     Notifications.add("Test invalid - repeated", 0);
+  } else if (mp_outOfTime) {
+    Notifications.add("Test failed - out of time", 0);
   } else if (
     (Config.mode === "time" && mode2 < 15 && mode2 > 0) ||
     (Config.mode === "time" && mode2 == 0 && testtime < 15) ||
@@ -1671,6 +1703,9 @@ export function finish(difficultyFailed = false) {
   if (difficultyFailed) {
     otherText += "<br>failed";
   }
+  if (mp_outOfTime) {
+    otherText += "<br>out of time";
+  }
   if (afkDetected) {
     otherText += "<br>afk detected";
   }
@@ -1717,9 +1752,29 @@ export function finish(difficultyFailed = false) {
     TestUI.setResultCalculating(false);
     $("#words").empty();
     ChartController.result.resize();
+    Tribe.scrollChat();
     if (Config.alwaysShowWordsHistory) {
       TestUI.toggleResultWords();
     }
+  });
+  Tribe.testFinished({
+    wpm: stats.wpm,
+    acc: stats.acc,
+    raw: stats.wpmRaw,
+    char: `${stats.correctChars + stats.correctSpaces}/${
+      stats.incorrectChars
+    }/${stats.extraChars}/${stats.missedChars}`,
+    con: consistency,
+    duration: testtime,
+    invalid: TestStats.invalid,
+    failed: difficultyFailed,
+    outOfTime: mp_outOfTime,
+    afk: afkDetected,
+    chartData: {
+      wpm: TestStats.wpmHistory,
+      raw: rawWpmPerSecond,
+      err: errorsArray,
+    },
   });
 }
 

@@ -3,7 +3,6 @@
 import Chart from "chart.js";
 import chartTrendline from "chartjs-plugin-trendline";
 import chartAnnotation from "chartjs-plugin-annotation";
-import seedrandom from "seedrandom";
 
 Chart.plugins.register(chartTrendline);
 Chart.plugins.register(chartAnnotation);
@@ -14,6 +13,7 @@ import * as ResultFilters from "./result-filters";
 import Config from "./config";
 import * as SimplePopups from "./simple-popups";
 import * as AccountController from "./account-controller";
+import * as Tribe from "./tribe";
 import "./caps-warning";
 import "./support-popup";
 import "./version-popup";

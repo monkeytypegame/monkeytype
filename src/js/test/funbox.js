@@ -5,6 +5,7 @@ import * as Misc from "./misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Settings from "./settings";
+import * as Tribe from "./tribe";
 
 export let active = "none";
 let memoryTimer = null;
@@ -70,8 +71,11 @@ export function toggleScript(...params) {
   }
 }
 
-export async function activate(funbox, mode) {
-  if (TestLogic.active || TestUI.resultVisible) {
+export async function activate(funbox, mode, mp = false) {
+  if (!Tribe.checkIfCanChangeConfig(mp)) {
+    return;
+  }
+  if (TestLogic.active || (TestUI.resultVisible && Tribe.state < 10)) {
     Notifications.add(
       "You can only change the funbox before starting a test.",
       0
@@ -97,7 +101,7 @@ export async function activate(funbox, mode) {
   $("#wordsWrapper").removeClass("hidden");
   // }
 
-  if (mode === null || mode === undefined) {
+  if ((mode === null || mode === undefined) && funbox !== "none") {
     let list = await Misc.getFunboxList();
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
@@ -159,6 +163,7 @@ export async function activate(funbox, mode) {
       Settings.groups.layout.updateButton();
     }
   }
+  Tribe.syncConfig();
   TestUI.updateModesNotice();
   return true;
 }

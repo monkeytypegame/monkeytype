@@ -7,8 +7,7 @@ global.getuid = Misc.getuid;
 
 //these exports are just for debugging in the browser
 
-global.MP = MP;
-global.addnotif = Notifications.add;
+global.Tribe = Tribe;
 
 global.snapshot = DB.getSnapshot;
 global.config = Config;

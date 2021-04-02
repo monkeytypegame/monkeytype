@@ -10,6 +10,7 @@ import * as Funbox from "./funbox";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
 import * as Keymap from "./keymap";
+import * as Tribe from "./tribe";
 
 export let time = 0;
 let timer = null;
@@ -24,6 +25,10 @@ export function start() {
   (function loop(expectedStepEnd) {
     const delay = expectedStepEnd - performance.now();
     timer = setTimeout(function () {
+      if (!TestLogic.active) {
+        clearTimeout(timer);
+        return;
+      }
       time++;
       $(".pageTest #premidSecondsLeft").text(Config.time - time);
       if (
@@ -39,6 +44,31 @@ export function start() {
       Monkey.updateFastOpacity(wpmAndRaw.wpm);
 
       let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+
+      let progress = 0;
+
+      if (Config.mode === "time") {
+        progress = 100 - ((time + 1) / Config.time) * 100;
+      } else {
+        let outof = TestLogic.words.length;
+        if (Config.mode === "words") {
+          outof = Config.words;
+        }
+        progress = Math.floor((TestLogic.currentWordIndex / (outof - 1)) * 100);
+      }
+
+      Tribe.sendTestProgress(wpmAndRaw.wpm, wpmAndRaw.raw, acc, progress);
+      Tribe.updateTribeDiff(wpmAndRaw.wpm);
+
+      if (
+        Tribe.state >= 21 &&
+        Tribe.state <= 28 &&
+        time >= 5 &&
+        TestLogic.input.current === "" &&
+        TestLogic.input.getHistory().length === 0
+      ) {
+        TestLogic.finish();
+      }
 
       if (Funbox.active === "layoutfluid" && Config.mode === "time") {
         const layouts = ["qwerty", "dvorak", "colemak"];

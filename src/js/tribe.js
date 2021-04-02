@@ -1,28 +1,47 @@
 import InputSuggestions from "./input-suggestions";
 import * as MatchmakingStatus from "./tribe-mm-status";
 import TribeDefaultConfigs from "./tribe-default-configs";
+import * as Misc from "./misc";
+import * as UI from "./ui";
+import Config, * as UpdateConfig from "./config";
+import * as CustomText from "./custom-text";
+import * as Notifications from "./notifications";
+import * as Funbox from "./funbox";
+import * as ThemeColors from "./theme-colors";
+import Chart from "chart.js";
+import * as TestLogic from "./test-logic";
+import * as TestUI from "./test-ui";
+import * as Commandline from "./commandline";
+import * as CommandlineLists from "./commandline-lists";
+import seedrandom from "seedrandom";
 
-let MP = {
-  state: -1,
-  socket: io(
-    window.location.hostname === "localhost"
-      ? "http://localhost:3000"
-      : "https://tribe.monkeytype.com",
-    {
-      // socket: io("http://localhost:3000", {
-      autoConnect: false,
-      secure: true,
-      reconnectionAttempts: 1,
-    }
-  ),
-  reconnectionAttempts: 0,
-  maxReconnectionAttempts: 1,
-  activePage: "preloader",
-  pageTransition: false,
-  expectedVersion: "0.8.2",
-};
+export let state = -1;
+export let socket = io(
+  window.location.hostname === "localhost"
+    ? "http://localhost:3000"
+    : "https://tribe.monkeytype.com",
+  {
+    // socket: io("http://localhost:3000", {
+    autoConnect: false,
+    secure: true,
+    reconnectionAttempts: 1,
+  }
+);
+export let reconnectionAttempts = 0;
+export let maxReconnectionAttempts = 1;
+export let activePage = "preloader";
+export let pageTransition = false;
+export let expectedVersion = "0.8.2";
 
-let scrollChat = true;
+let room = undefined;
+let name = undefined;
+let autoJoin = undefined;
+
+export function setAutoJoin(code) {
+  autoJoin = code;
+}
+
+let shouldScrollChat = true;
 
 let lobbySuggestions;
 let resultSuggestions;
@@ -64,45 +83,45 @@ let tribeSounds = {
 //28 - leader finished
 //29 - everybody finished
 
-function mp_init() {
+export function init() {
   $(".pageTribe .preloader .icon").html(
     `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
   );
   $(".pageTribe .preloader .text").text("Connecting to Tribe");
-  MP.socket.connect();
+  socket.connect();
 }
 
-function mp_changeActiveSubpage(newPage) {
-  if (MP.pageTransition) return;
-  if (newPage === MP.activePage) return;
-  MP.pageTransition = true;
+function changeActiveSubpage(newPage) {
+  if (pageTransition) return;
+  if (newPage === activePage) return;
+  pageTransition = true;
 
-  swapElements(
-    $(`.pageTribe .${MP.activePage}`),
+  UI.swapElements(
+    $(`.pageTribe .${activePage}`),
     $(`.pageTribe .${newPage}`),
     250,
     () => {
       if (newPage === "prelobby") {
-        MP.socket.emit("mp_get_online_stats");
+        socket.emit("mp_get_online_stats");
       }
       if (newPage === "lobby") {
         $(".pageTribe .lobby .chat .input input").focus();
       }
-      MP.pageTransition = false;
-      MP.activePage = newPage;
+      pageTransition = false;
+      activePage = newPage;
     }
   );
 }
 
-function mp_refreshUserList() {
+function refreshUserList() {
   $(".pageTribe .lobby .userlist .list").empty();
   $(".pageTest #result .tribeResultChat .userlist .list").empty();
   let usersArray = [];
   let names = [];
-  Object.keys(MP.room.users).forEach((sid) => {
-    let u = MP.room.users[sid];
+  Object.keys(room.users).forEach((sid) => {
+    let u = room.users[sid];
     u.sid = sid;
-    if (sid !== MP.socket.id) {
+    if (sid !== socket.id) {
       names.push(u.name);
     }
     usersArray.push(u);
@@ -113,8 +132,8 @@ function mp_refreshUserList() {
   sortedUsers.forEach((user) => {
     let icons = "";
     if (user.isLeader) {
-      if (user.sid === MP.socket.id) {
-        MP.room.isLeader = true;
+      if (user.sid === socket.id) {
+        room.isLeader = true;
       }
 
       icons += `<div class="icon active"><i class="fas fa-fw fa-star"></i></div>`;
@@ -133,7 +152,7 @@ function mp_refreshUserList() {
       pointsString = user.points + (user.points == 1 ? "pt" : "pts");
     }
     $(".pageTribe .lobby .userlist .list").append(`
-    <div class='user ${user.sid === MP.id ? "me" : ""}'>
+    <div class='user ${user.sid === socket.id ? "me" : ""}'>
     <div class="nameAndIcons">
       <div class='icons'>
       ${icons}
@@ -142,7 +161,7 @@ function mp_refreshUserList() {
       ${user.name}
       </div>
       ${
-        MP.room.isLeader && user.sid !== MP.id
+        room.isLeader && user.sid !== socket.id
           ? `<div class='userSettings' sid='` +
             user.sid +
             `' aria-label="User settigns" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
@@ -153,7 +172,7 @@ function mp_refreshUserList() {
     </div>
     `);
     $(".pageTest #result .tribeResultChat .userlist .list").append(`
-    <div class='user ${user.sid === MP.id ? "me" : ""}'>
+    <div class='user ${user.sid === socket.id ? "me" : ""}'>
     <div class="nameAndIcons">
       <div class='icons'>
       ${icons}
@@ -162,7 +181,7 @@ function mp_refreshUserList() {
       ${user.name}
       </div>
       ${
-        MP.room.isLeader && user.sid !== MP.id
+        room.isLeader && user.sid !== socket.id
           ? `<div class='userSettings' sid='` +
             user.sid +
             `' aria-label="User settigns" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
@@ -175,12 +194,12 @@ function mp_refreshUserList() {
   });
 }
 
-function mp_playSound(sound) {
+function playSound(sound) {
   tribeSounds[sound].currentTime = 0;
   tribeSounds[sound].play();
 }
 
-function mp_resetLobby() {
+function resetLobby() {
   $(".pageTribe .lobby .userlist .list").empty();
   $(".pageTest #result .tribeResultChat .chat .messages").empty();
   $(".pageTest #result .tribeResultChat .userlist .list").empty();
@@ -193,7 +212,7 @@ function mp_resetLobby() {
   $("#tribeCountdownWrapper .withbg").addClass("hidden");
 }
 
-function mp_resetRace() {
+function resetRace() {
   $(".pageTest .tribePlayers").empty().addClass("hidden");
   $(".pageTribe .lobby .tribePlayers").empty().addClass("hidden");
   hideCountdown();
@@ -202,44 +221,50 @@ function mp_resetRace() {
   $(".pageTest #result .tribeResultChat").addClass("hidden");
 }
 
-function mp_applyRoomConfig(cfg) {
-  setMode(cfg.mode, true, true);
+function applyRoomConfig(cfg) {
+  UpdateConfig.setMode(cfg.mode, true, true);
   if (cfg.mode === "time") {
-    setTimeConfig(cfg.mode2, true, true);
+    UpdateConfig.setTimeConfig(cfg.mode2, true, true);
   } else if (cfg.mode === "words") {
-    setWordCount(cfg.mode2, true, true);
+    UpdateConfig.setWordCount(cfg.mode2, true, true);
   } else if (cfg.mode === "quote") {
-    setQuoteLength(cfg.mode2, true, true);
+    UpdateConfig.setQuoteLength(cfg.mode2, true, true);
   }
-  setDifficulty(cfg.difficulty, true, true);
-  setBlindMode(cfg.blindMode, true, true);
-  setLanguage(cfg.language, true, true);
-  activateFunbox(cfg.funbox, null, true);
-  setStopOnError(cfg.stopOnError, true, true);
-  setConfidenceMode(cfg.confidenceMode, true, true);
-  setPunctuation(cfg.punctuation, true, true);
-  setNumbers(cfg.numbers, true, true);
+  UpdateConfig.setDifficulty(cfg.difficulty, true, true);
+  UpdateConfig.setBlindMode(cfg.blindMode, true, true);
+  UpdateConfig.setLanguage(cfg.language, true, true);
+  UpdateConfig.activateFunbox(cfg.funbox, null, true);
+  UpdateConfig.setStopOnError(cfg.stopOnError, true, true);
+  UpdateConfig.setConfidenceMode(cfg.confidenceMode, true, true);
+  UpdateConfig.setPunctuation(cfg.punctuation, true, true);
+  UpdateConfig.setNumbers(cfg.numbers, true, true);
   if (cfg.minAcc != null) {
-    setMinAccCustom(cfg.minAcc, true, true);
-    setMinAcc("custom", true, true);
+    UpdateConfig.setMinAccCustom(cfg.minAcc, true, true);
+    UpdateConfig.setMinAcc("custom", true, true);
   } else {
-    setMinAcc("off", true, true);
+    UpdateConfig.setMinAcc("off", true, true);
   }
   if (cfg.minWpm != null) {
-    setMinWpmCustomSpeed(cfg.minAcc, true, true);
-    setMinWpm("custom", true, true);
+    UpdateConfig.setMinWpmCustomSpeed(cfg.minAcc, true, true);
+    UpdateConfig.setMinWpm("custom", true, true);
   } else {
-    setMinWpm("off", true, true);
+    UpdateConfig.setMinWpm("off", true, true);
   }
-  if (cfg.customText !== null) customText = cfg.customText;
+  if (cfg.customText !== null) {
+    CustomText.setText(cfg.customText.text);
+    CustomText.setIsWordRandom(cfg.customText.isWordRandom);
+    CustomText.setIsTimeRandom(cfg.customText.isTimeRandom);
+    CustomText.setTime(cfg.customText.time);
+    CustomText.setWord(cfg.customText.word);
+  }
 }
 
-function mp_checkIfCanChangeConfig(mp) {
-  if (MP.state >= 8) {
-    if (MP.state >= 20 && MP.state < 29) {
+export function checkIfCanChangeConfig(mp) {
+  if (state >= 8) {
+    if (state >= 20 && state < 29) {
       Notifications.add("You can't change settings during the test", 0, 1);
       return false;
-    } else if (MP.room !== undefined && MP.room.isLeader) {
+    } else if (room !== undefined && room.isLeader) {
       return true;
     } else {
       if (mp) return true;
@@ -250,35 +275,43 @@ function mp_checkIfCanChangeConfig(mp) {
     return true;
   }
 }
+
 let syncConfigTimeout = null;
-function mp_syncConfig() {
+
+export function syncConfig() {
   setSettingsLoadingIndicator(true);
   if (syncConfigTimeout === null) {
     syncConfigTimeout = setTimeout(() => {
       setSettingsLoadingIndicator(false);
       let mode2;
-      if (config.mode === "time") {
-        mode2 = config.time;
-      } else if (config.mode === "words") {
-        mode2 = config.words;
-      } else if (config.mode === "quote") {
-        mode2 = config.quoteLength === undefined ? "-1" : config.quoteLength;
+      if (Config.mode === "time") {
+        mode2 = Config.time;
+      } else if (Config.mode === "words") {
+        mode2 = Config.words;
+      } else if (Config.mode === "quote") {
+        mode2 = Config.quoteLength === undefined ? "-1" : Config.quoteLength;
       }
-      MP.socket.emit("mp_room_config_update", {
+      socket.emit("mp_room_config_update", {
         config: {
-          mode: config.mode,
+          mode: Config.mode,
           mode2: mode2,
-          difficulty: config.difficulty,
-          blindMode: config.blindMode,
-          language: config.language,
-          funbox: activeFunBox,
-          stopOnError: config.stopOnError,
-          confidenceMode: config.confidenceMode,
-          customText: customText,
-          punctuation: config.punctuation,
-          numbers: config.numbers,
-          minWpm: config.minWpm === "custom" ? config.minWpmCustomSpeed : null,
-          minAcc: config.minAcc === "custom" ? config.minAccCustom : null,
+          difficulty: Config.difficulty,
+          blindMode: Config.blindMode,
+          language: Config.language,
+          funbox: Funbox.active,
+          stopOnError: Config.stopOnError,
+          confidenceMode: Config.confidenceMode,
+          customText: {
+            text: CustomText.text,
+            isWordRandom: CustomText.isWordRandom,
+            isTimeRandom: CustomText.isTimeRandom,
+            word: CustomText.word,
+            time: CustomText.time,
+          },
+          punctuation: Config.punctuation,
+          numbers: Config.numbers,
+          minWpm: Config.minWpm === "custom" ? Config.minWpmCustomSpeed : null,
+          minAcc: Config.minAcc === "custom" ? Config.minAccCustom : null,
         },
       });
       clearTimeout(syncConfigTimeout);
@@ -287,9 +320,9 @@ function mp_syncConfig() {
   }
 }
 
-function mp_joinRoomByCode(code) {
+export function joinRoomByCode(code) {
   code = "room_" + code;
-  MP.socket.emit("mp_room_join", { roomId: code });
+  socket.emit("mp_room_join", { roomId: code });
   $(".pageTribe .prelobby #joinByCode input").val("");
 
   $(".pageTribe .prelobby #joinByCode .customInput").html(`
@@ -301,18 +334,18 @@ function mp_joinRoomByCode(code) {
   `);
 }
 
-function mp_startTest() {
+export function startTest() {
   if (syncConfigTimeout !== null) return;
-  if (MP.room.newTestCooldown) return;
-  MP.room.isReady = true;
-  MP.socket.emit("mp_room_test_start");
+  if (room.newTestCooldown) return;
+  room.isReady = true;
+  socket.emit("mp_room_test_start");
 }
 
-function mp_sendTestProgress(wpm, raw, acc, progress) {
-  if (MP.state >= 21 && MP.state <= 28 && testActive) {
-    MP.socket.emit("mp_room_test_progress_update", {
-      sid: MP.socket.id,
-      roomId: MP.room.id,
+export function sendTestProgress(wpm, raw, acc, progress) {
+  if (state >= 21 && state <= 28 && TestLogic.active) {
+    socket.emit("mp_room_test_progress_update", {
+      sid: socket.id,
+      roomId: room.id,
       stats: {
         wpm: wpm,
         raw: raw,
@@ -323,19 +356,19 @@ function mp_sendTestProgress(wpm, raw, acc, progress) {
   }
 }
 
-function mp_refreshTestUserList() {
+function refreshTestUserList() {
   $(".tribePlayers").empty();
-  Object.keys(MP.room.users).forEach((sid) => {
+  Object.keys(room.users).forEach((sid) => {
     if (
-      (MP.room.private &&
-        (MP.room.users[sid].isTyping ||
-          MP.room.users[sid].isReady ||
-          MP.room.users[sid].isLeader)) ||
-      !MP.room.private
+      (room.private &&
+        (room.users[sid].isTyping ||
+          room.users[sid].isReady ||
+          room.users[sid].isLeader)) ||
+      !room.private
     ) {
-      let user = MP.room.users[sid];
+      let user = room.users[sid];
       let me = "";
-      if (sid === MP.socket.id) {
+      if (sid === socket.id) {
         me = " me";
       }
       $(".tribePlayers").append(`
@@ -357,17 +390,17 @@ function mp_refreshTestUserList() {
   $(".tribePlayers").removeClass("hidden");
 
   $(".tribeResult table tbody").empty();
-  Object.keys(MP.room.users).forEach((sid) => {
+  Object.keys(room.users).forEach((sid) => {
     if (
-      (MP.room.private &&
-        (MP.room.users[sid].isTyping ||
-          MP.room.users[sid].isReady ||
-          MP.room.users[sid].isLeader)) ||
-      !MP.room.private
+      (room.private &&
+        (room.users[sid].isTyping ||
+          room.users[sid].isReady ||
+          room.users[sid].isLeader)) ||
+      !room.private
     ) {
-      let user = MP.room.users[sid];
+      let user = room.users[sid];
       let me = "";
-      if (sid === MP.socket.id) {
+      if (sid === socket.id) {
         me = " me";
       }
       $(".tribeResult table tbody").append(`
@@ -416,31 +449,31 @@ function mp_refreshTestUserList() {
   $(".tribeResult").removeClass("hidden");
 }
 
-function mp_refreshConfig() {
-  if (MP.room == undefined) return;
+function refreshConfig() {
+  if (room == undefined) return;
   $(".pageTribe .lobby .currentSettings .groups").empty();
 
   $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Mode" data-balloon-pos="up" commands="commandsMode">
-    <i class="fas fa-bars"></i>${MP.room.config.mode}
+    <i class="fas fa-bars"></i>${room.config.mode}
     </div>
     `);
 
-  if (MP.room.config.mode === "time") {
+  if (room.config.mode === "time") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Time" data-balloon-pos="up" commands="commandsTimeConfig">
-    <i class="fas fa-clock"></i>${MP.room.config.mode2}
+    <i class="fas fa-clock"></i>${room.config.mode2}
     </div>
     `);
-  } else if (MP.room.config.mode === "words") {
+  } else if (room.config.mode === "words") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Words" data-balloon-pos="up" commands="commandsWordCount">
-    <i class="fas fa-font"></i>${MP.room.config.mode2}
+    <i class="fas fa-font"></i>${room.config.mode2}
     </div>
     `);
-  } else if (MP.room.config.mode === "quote") {
+  } else if (room.config.mode === "quote") {
     let qstring = "all";
-    let num = MP.room.config.mode2;
+    let num = room.config.mode2;
     if (num == 0) {
       qstring = "short";
     } else if (num == 1) {
@@ -456,19 +489,19 @@ function mp_refreshConfig() {
     <i class="fas fa-quote-right"></i>${qstring}
     </div>
     `);
-  } else if (MP.room.config.mode === "custom") {
+  } else if (room.config.mode === "custom") {
     let t = "Custom settings:";
 
-    t += `\ntext length: ${customText.text.length}`;
-    if (customText.isTimeRandom || customText.isWordRandom) {
+    t += `\ntext length: ${CustomText.text.length}`;
+    if (CustomText.isTimeRandom || CustomText.isWordRandom) {
       let r = "";
       let n = "";
-      if (customText.isTimeRandom) {
+      if (CustomText.isTimeRandom) {
         r = "time";
-        n = customText.time;
-      } else if (customText.isWordRandom) {
+        n = CustomText.time;
+      } else if (CustomText.isWordRandom) {
         r = "words";
-        n = customText.word;
+        n = CustomText.word;
       }
       t += `\nrandom: ${r} ${n}`;
     }
@@ -489,7 +522,7 @@ function mp_refreshConfig() {
       display: inline-block;
       margin-right: .5rem;
       letter-spacing: -.1rem;">!?</span>${
-        MP.room.config.punctuation ? "on" : "off"
+        room.config.punctuation ? "on" : "off"
       }
     </div>
     `);
@@ -503,31 +536,29 @@ function mp_refreshConfig() {
         margin-right: .1rem;
         display: inline-block;
         margin-right: .5rem;
-        letter-spacing: -.1rem;">15</span>${
-          MP.room.config.numbers ? "on" : "off"
-        }
+        letter-spacing: -.1rem;">15</span>${room.config.numbers ? "on" : "off"}
     </div>
     `);
 
   $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Language" data-balloon-pos="up" commands="commandsLanguages">
-    <i class="fas fa-globe-americas"></i>${MP.room.config.language}
+    <i class="fas fa-globe-americas"></i>${room.config.language}
     </div>
     `);
 
-  if (MP.room.config.difficulty === "normal") {
+  if (room.config.difficulty === "normal") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="commandsDifficulty">
     <i class="far fa-star"></i>normal
     </div>
     `);
-  } else if (MP.room.config.difficulty === "expert") {
+  } else if (room.config.difficulty === "expert") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="commandsDifficulty">
     <i class="fas fa-star-half-alt"></i>expert
     </div>
     `);
-  } else if (MP.room.config.difficulty === "master") {
+  } else if (room.config.difficulty === "master") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Difficulty" data-balloon-pos="up" commands="commandsDifficulty">
     <i class="fas fa-star"></i>master
@@ -535,7 +566,7 @@ function mp_refreshConfig() {
     `);
   }
 
-  if (MP.room.config.blindMode) {
+  if (room.config.blindMode) {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Blind mode" data-balloon-pos="up" function="toggleBlindMode()">
     <i class="fas fa-eye-slash"></i>blind
@@ -551,23 +582,23 @@ function mp_refreshConfig() {
 
   $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Funbox" data-balloon-pos="up" commands="commandsFunbox">
-    <i class="fas fa-gamepad"></i>${MP.room.config.funbox}
+    <i class="fas fa-gamepad"></i>${room.config.funbox}
     </div>
     `);
 
-  if (MP.room.config.confidenceMode === "off") {
+  if (room.config.confidenceMode === "off") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Confidence mode" data-balloon-pos="up" commands="commandsConfidenceMode">
     <i class="fas fa-backspace"></i>off
     </div>
     `);
-  } else if (MP.room.config.confidenceMode === "on") {
+  } else if (room.config.confidenceMode === "on") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Confidence mode" data-balloon-pos="up" commands="commandsConfidenceMode">
     <i class="fas fa-backspace"></i>confidence
     </div>
     `);
-  } else if (MP.room.config.confidenceMode === "max") {
+  } else if (room.config.confidenceMode === "max") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Confidence mode" data-balloon-pos="up" commands="commandsConfidenceMode">
     <i class="fas fa-backspace"></i>max
@@ -575,7 +606,7 @@ function mp_refreshConfig() {
     `);
   }
 
-  if (MP.room.config.stopOnError === "off") {
+  if (room.config.stopOnError === "off") {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Stop on error" data-balloon-pos="up" commands="commandsStopOnError">
     <i class="fas fa-hand-paper"></i>off
@@ -584,7 +615,7 @@ function mp_refreshConfig() {
   } else {
     $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Stop on error" data-balloon-pos="up" commands="commandsStopOnError">
-    <i class="fas fa-hand-paper"></i>stop on ${MP.room.config.stopOnError}
+    <i class="fas fa-hand-paper"></i>stop on ${room.config.stopOnError}
     </div>
     `);
   }
@@ -592,7 +623,7 @@ function mp_refreshConfig() {
   $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Min Wpm" data-balloon-pos="up" commands="commandsMinWpm">
     <i class="fas fa-bomb"></i>${
-      MP.room.config.minWpm == null ? "off" : MP.room.config.minWpm + "wpm"
+      room.config.minWpm == null ? "off" : room.config.minWpm + "wpm"
     }
     </div>
     `);
@@ -600,14 +631,14 @@ function mp_refreshConfig() {
   $(".pageTribe .lobby .currentSettings .groups").append(`
     <div class='group' aria-label="Min Acc" data-balloon-pos="up" commands="commandsMinAcc">
     <i class="fas fa-bomb"></i>${
-      MP.room.config.minAcc == null ? "off" : MP.room.config.minAcc + "%"
+      room.config.minAcc == null ? "off" : room.config.minAcc + "%"
     }
     </div>
     `);
 }
 
-function mp_testFinished(result) {
-  MP.socket.emit("mp_room_test_finished", { result: result });
+export function testFinished(result) {
+  socket.emit("mp_room_test_finished", { result: result });
 }
 
 function showCountdown(faint = false) {
@@ -662,29 +693,29 @@ function updateResultCountdown(text) {
   $("#result .tribeResult .timer").text(text);
 }
 
-function mp_scrollChat() {
+export function scrollChat() {
   let chatEl = $(".pageTribe .lobby .chat .messages")[0];
   let chatEl2 = $(".pageTest #result .tribeResultChat .chat .messages")[0];
 
-  if (scrollChat) {
+  if (shouldScrollChat) {
     chatEl.scrollTop = chatEl.scrollHeight;
     chatEl2.scrollTop = chatEl2.scrollHeight;
-    scrollChat = true;
+    shouldScrollChat = true;
   }
 }
 
-function updateAllGraphs(graphs, max) {
-  try {
-    graphs.forEach((graph) => {
-      if (graph.options.scales.yAxes[0].ticks.max < Math.round(max)) {
-        graph.options.scales.yAxes[0].ticks.max = Math.round(max);
-        graph.options.scales.yAxes[1].ticks.max = Math.round(max);
-      }
-    });
-  } catch (e) {
-    console.error("Something went wrong while updating max graph values " + e);
-  }
-}
+// function updateAllGraphs(graphs, max) {
+//   try {
+//     graphs.forEach((graph) => {
+//       if (graph.options.scales.yAxes[0].ticks.max < Math.round(max)) {
+//         graph.options.scales.yAxes[0].ticks.max = Math.round(max);
+//         graph.options.scales.yAxes[1].ticks.max = Math.round(max);
+//       }
+//     });
+//   } catch (e) {
+//     console.error("Something went wrong while updating max graph values " + e);
+//   }
+// }
 
 function fillGraphDataAndUpdate(graph, result, sid) {
   let labels = [];
@@ -705,15 +736,15 @@ function fillGraphDataAndUpdate(graph, result, sid) {
   graph.options.scales.yAxes[0].ticks.max = Math.round(graphmaxval);
   graph.options.scales.yAxes[1].ticks.max = Math.round(graphmaxval);
 
-  if (sid == MP.socket.id) {
-    graph.data.datasets[0].borderColor = themeColors.main;
-    graph.data.datasets[0].pointBackgroundColor = themeColors.main;
+  if (sid == socket.id) {
+    graph.data.datasets[0].borderColor = ThemeColors.main;
+    graph.data.datasets[0].pointBackgroundColor = ThemeColors.main;
   } else {
-    graph.data.datasets[0].borderColor = themeColors.text;
-    graph.data.datasets[0].pointBackgroundColor = themeColors.text;
+    graph.data.datasets[0].borderColor = ThemeColors.text;
+    graph.data.datasets[0].pointBackgroundColor = ThemeColors.text;
   }
-  graph.data.datasets[1].borderColor = themeColors.sub;
-  graph.data.datasets[1].pointBackgroundColor = themeColors.sub;
+  graph.data.datasets[1].borderColor = ThemeColors.sub;
+  graph.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
 
   graph.update({ duration: 0 });
 }
@@ -732,11 +763,11 @@ function drawMinigraph(sid, result) {
 }
 
 function destroyAllGraphs() {
-  Object.keys(MP.room.userGraphs).forEach((sid) => {
-    let userGraph = MP.room.userGraphs[sid];
+  Object.keys(room.userGraphs).forEach((sid) => {
+    let userGraph = room.userGraphs[sid];
     userGraph.graph.clear();
     userGraph.graph.destroy();
-    delete MP.room.userGraphs[sid];
+    delete room.userGraphs[sid];
   });
 }
 
@@ -752,15 +783,15 @@ function setSettingsLoadingIndicator(truefalse) {
   }
 }
 
-function mp_userReady() {
+function userReady() {
   $(".pageTribe .lobby .lobbyButtons .userReadyButton").addClass("disabled");
   $(".pageTest #result .resultMpButtons .userReadyButton").addClass("disabled");
   $(".pageTest #result #readyButton").addClass("disabled");
-  MP.socket.emit("mp_user_ready");
+  socket.emit("mp_user_ready");
 }
 
-function mp_resetReadyButtons() {
-  if (MP.room.isLeader === false && MP.room.isReady === false) {
+function resetReadyButtons() {
+  if (room.isLeader === false && room.isReady === false) {
     $(".pageTribe .lobby .lobbyButtons .userReadyButton").removeClass(
       "disabled"
     );
@@ -775,7 +806,7 @@ function mp_resetReadyButtons() {
     $(".pageTest #result #readyButton").removeClass("hidden");
   } else {
     let cls = "disabled";
-    if (MP.room.isLeader) {
+    if (room.isLeader) {
       cls = "hidden";
     }
     $(".pageTribe .lobby .lobbyButtons .userReadyButton").addClass(cls);
@@ -784,8 +815,8 @@ function mp_resetReadyButtons() {
   }
 }
 
-function mp_resetLeaderButtons() {
-  if (MP.room.isLeader) {
+function resetLeaderButtons() {
+  if (room.isLeader) {
     $(".pageTribe .lobby .lobbyButtons .startTestButton").removeClass("hidden");
     $(".pageTest #result #backToLobbyButton").removeClass("hidden");
   } else {
@@ -825,30 +856,30 @@ function hideTribeUserSettingsPopup() {
 function updateTribeUserSettingsPopup(sid) {
   $("#tribeUserSettingsPopup").attr("sid", sid);
   $("#tribeUserSettingsPopup .title").text(
-    "User settings: " + MP.room.users[sid].name
+    "User settings: " + room.users[sid].name
   );
 }
 
-function mp_setName(name) {
-  MP.name = name;
-  MP.socket.emit("mp_system_name_set", { name: name });
+export function setName(name) {
+  name = this.name;
+  socket.emit("mp_system_name_set", { name: name });
 }
 
-function mp_sendIsTypingUpdate(truefalse) {
-  MP.socket.emit("mp_room_user_istypingupdate", {
-    sid: MP.socket.id,
+export function sendIsTypingUpdate(truefalse) {
+  socket.emit("mp_room_user_istypingupdate", {
+    sid: socket.id,
     typing: truefalse,
-    name: MP.name,
+    name: name,
   });
 }
 
-function mp_updateWhoIsTyping() {
+function updateWhoIsTyping() {
   let string = "";
 
   let names = [];
-  Object.keys(MP.room.whoIsTyping).forEach((sid) => {
-    if (MP.room.whoIsTyping[sid].truefalse && sid !== MP.socket.id) {
-      names.push(MP.room.whoIsTyping[sid].name);
+  Object.keys(room.whoIsTyping).forEach((sid) => {
+    if (room.whoIsTyping[sid].truefalse && sid !== socket.id) {
+      names.push(room.whoIsTyping[sid].name);
     }
   });
   if (names.length > 0) {
@@ -874,15 +905,15 @@ function mp_updateWhoIsTyping() {
   $(".pageTest #result .tribeResultChat .chat .whoIsTyping").html(string);
 }
 
-function mp_updateTribeDiff(currentSpeed) {
-  if (MP.state >= 21 && MP.state <= 28 && testActive) {
+export function updateTribeDiff(currentSpeed) {
+  if (state >= 21 && state <= 28 && TestLogic.active) {
     let elem = $("#tribeDiff");
     elem.removeClass("ahead");
     elem.removeClass("behind");
 
     let maxwpm = 0;
-    Object.keys(MP.room.userSpeeds).forEach((sid) => {
-      if (MP.room.userSpeeds[sid] > maxwpm) maxwpm = MP.room.userSpeeds[sid];
+    Object.keys(room.userSpeeds).forEach((sid) => {
+      if (room.userSpeeds[sid] > maxwpm) maxwpm = room.userSpeeds[sid];
     });
 
     let diff = Math.round(maxwpm - currentSpeed);
@@ -898,7 +929,7 @@ function mp_updateTribeDiff(currentSpeed) {
   }
 }
 
-function mp_showHideTribeDiff(showhide) {
+function showHideTribeDiff(showhide) {
   if (showhide) {
     $("#tribeDiff").removeClass("hidden");
   } else {
@@ -906,14 +937,14 @@ function mp_showHideTribeDiff(showhide) {
   }
 }
 
-function mp_resetTribeDiff() {
+function resetTribeDiff() {
   let elem = $("#tribeDiff");
   elem.removeClass("ahead");
   elem.removeClass("behind");
   elem.text("--");
 }
 
-async function mp_insertImageEmoji(text) {
+async function insertImageEmoji(text) {
   text = text.trim().split(" ");
   let big = "";
   if (text.length === 1) big = " big";
@@ -931,23 +962,22 @@ async function mp_insertImageEmoji(text) {
   return text.join(" ");
 }
 
-MP.socket.on("connect", (f) => {
-  setTimerStyle("mini", true);
-  MP.state = 1;
-  MP.reconnectionAttempts = 0;
+socket.on("connect", (f) => {
+  UpdateConfig.setTimerStyle("mini", true);
+  state = 1;
+  reconnectionAttempts = 0;
   Notifications.add("Connected to Tribe", 1);
   let name = "Guest";
   if (firebase.auth().currentUser !== null) {
     name = firebase.auth().currentUser.displayName;
   }
-  MP.id = MP.socket.id;
-  mp_setName(name);
-  mp_changeActiveSubpage("prelobby");
-  mp_showHideTribeDiff(true);
+  setName(name);
+  changeActiveSubpage("prelobby");
+  showHideTribeDiff(true);
   setTimeout(() => {
-    if (MP.autoJoin) {
-      MP.socket.emit("mp_room_join", { roomId: MP.autoJoin });
-      MP.autoJoin = undefined;
+    if (autoJoin) {
+      socket.emit("mp_room_join", { roomId: autoJoin });
+      autoJoin = undefined;
       // swapElements($(".pageTribe .preloader"), $(".pageTribe .lobby"), 250);
     } else {
       // swapElements($(".pageTribe .preloader"), $(".pageTribe .prelobby"), 250);
@@ -955,12 +985,12 @@ MP.socket.on("connect", (f) => {
   }, 500);
 });
 
-MP.socket.on("mp_room_name_update", (data) => {
-  MP.room.users[data.sid].name = data.name;
-  mp_refreshUserList();
+socket.on("mp_room_name_update", (data) => {
+  room.users[data.sid].name = data.name;
+  refreshUserList();
 });
 
-MP.socket.on("mp_update_online_stats", (data) => {
+socket.on("mp_update_online_stats", (data) => {
   $(".pageTribe .prelobby .welcome .stats").empty();
   $(".pageTribe .prelobby .welcome .stats").append(
     `<div>Online <span class="num">${data.online}</span></div>`
@@ -971,27 +1001,27 @@ MP.socket.on("mp_update_online_stats", (data) => {
   $(".pageTribe .prelobby .welcome .stats").append(
     `<div class="small">Version ${data.version}</div>`
   );
-  if (data.version !== MP.expectedVersion) {
+  if (data.version !== expectedVersion) {
     Notifications.add(
-      `Tribe version mismatch. Try refreshing or clearing cache. Client version: ${MP.expectedVersion}, server version: ${data.version}`,
+      `Tribe version mismatch. Try refreshing or clearing cache. Client version: ${expectedVersion}, server version: ${data.version}`,
       -1
     );
-    MP.socket.disconnect();
+    socket.disconnect();
   }
 });
 
-MP.socket.on("mp_update_name", (data) => {
-  MP.name = data.newName;
+socket.on("mp_update_name", (data) => {
+  name = data.newName;
 });
 
-MP.socket.on("disconnect", (f) => {
-  MP.state = -1;
-  MP.room = undefined;
+socket.on("disconnect", (f) => {
+  state = -1;
+  room = undefined;
   Notifications.add("Disconnected from Tribe", 0);
-  mp_resetLobby();
-  mp_resetRace();
-  mp_changeActiveSubpage("preloader");
-  mp_showHideTribeDiff(false);
+  resetLobby();
+  resetRace();
+  changeActiveSubpage("preloader");
+  showHideTribeDiff(false);
   MatchmakingStatus.reset();
   // $(".pageTribe .preloader div").removeClass("hidden");
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
@@ -999,13 +1029,13 @@ MP.socket.on("disconnect", (f) => {
   // $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
 });
 
-MP.socket.on("connect_failed", (f) => {
-  MP.state = -1;
-  mp_changeActiveSubpage("preloader");
+socket.on("connect_failed", (f) => {
+  state = -1;
+  changeActiveSubpage("preloader");
   // $(".pageTribe .preloader div").removeClass("hidden");
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
-  MP.reconnectionAttempts++;
-  if (MP.reconnectionAttempts >= MP.maxReconnectionAttempts) {
+  reconnectionAttempts++;
+  if (reconnectionAttempts >= maxReconnectionAttempts) {
     $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
     $(".pageTribe .preloader .text").text(
       `Could not connect to Tribe server: ${f.message}`
@@ -1016,14 +1046,14 @@ MP.socket.on("connect_failed", (f) => {
   }
 });
 
-MP.socket.on("connect_error", (f) => {
-  MP.state = -1;
-  MP.reconnectionAttempts++;
+socket.on("connect_error", (f) => {
+  state = -1;
+  reconnectionAttempts++;
   console.error(f);
-  mp_changeActiveSubpage("preloader");
+  changeActiveSubpage("preloader");
   // $(".pageTribe .preloader div").removeClass("hidden");
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
-  if (MP.reconnectionAttempts >= MP.maxReconnectionAttempts) {
+  if (reconnectionAttempts >= maxReconnectionAttempts) {
     $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
     $(".pageTribe .preloader .text").text(
       `Could not connect to Tribe server: ${f.message}`
@@ -1034,136 +1064,134 @@ MP.socket.on("connect_error", (f) => {
   }
 });
 
-MP.socket.on("mp_room_joined", (data) => {
-  if (MP.room === undefined) {
-    MP.room = data.room;
+socket.on("mp_room_joined", (data) => {
+  if (room === undefined) {
+    room = data.room;
   } else {
-    MP.room.users[data.sid] = { sid: data.sid, name: data.name };
+    room.users[data.sid] = { sid: data.sid, name: data.name };
   }
   if (data.room.private) {
-    mp_playSound("join");
-    if (data.sid === MP.socket.id) {
-      let user = MP.room.users[MP.socket.id];
+    playSound("join");
+    if (data.sid === socket.id) {
+      let user = room.users[socket.id];
       if (user.isLeader) {
-        MP.room.isLeader = true;
+        room.isLeader = true;
       } else {
-        MP.room.isLeader = false;
+        room.isLeader = false;
       }
-      MP.room.isReady = false;
-      MP.room.isTyping = false;
+      room.isReady = false;
+      room.isTyping = false;
     }
-    mp_resetReadyButtons();
-    mp_refreshUserList();
-    if (MP.state === 10) {
+    resetReadyButtons();
+    refreshUserList();
+    if (state === 10) {
       //user is already in the room and somebody joined
-    } else if (MP.state === 1) {
+    } else if (state === 1) {
       //user is in prelobby and joined a room
-      mp_applyRoomConfig(MP.room.config);
-      mp_refreshConfig();
-      let link = location.origin + "/tribe" + MP.room.id.substring(4);
-      $(".pageTribe .lobby .inviteLink .code .text").text(
-        MP.room.id.substring(5)
-      );
+      applyRoomConfig(room.config);
+      refreshConfig();
+      let link = location.origin + "/tribe" + room.id.substring(4);
+      $(".pageTribe .lobby .inviteLink .code .text").text(room.id.substring(5));
       $(".pageTribe .lobby .inviteLink .link").text(link);
       $(".pageTest .tribeResultChat .inviteLink .code .text").text(
-        MP.room.id.substring(5)
+        room.id.substring(5)
       );
       $(".pageTest .tribeResultChat .inviteLink .link").text(link);
-      mp_changeActiveSubpage("lobby");
-      MP.state = data.room.state;
-      if (MP.state >= 20 && MP.state < 29) {
-        mp_refreshTestUserList();
+      changeActiveSubpage("lobby");
+      state = data.room.state;
+      if (state >= 20 && state < 29) {
+        refreshTestUserList();
       }
       // swapElements($(".pageTribe .prelobby"), $(".pageTribe .lobby"), 250, () => {
-      //   MP.state = 10;
+      //   state = 10;
       //   // $(".pageTribe .prelobby").addClass('hidden');
       // });
-      mp_resetReadyButtons();
-      mp_resetLeaderButtons();
+      resetReadyButtons();
+      resetLeaderButtons();
     }
   } else {
     MatchmakingStatus.setText(
       `Waiting for more players to join (${
-        Object.keys(MP.room.users).length
+        Object.keys(room.users).length
       }/5)...`
     );
   }
 });
 
-MP.socket.on("mp_room_leave", () => {
-  let privateRoom = MP.room.private;
-  MP.state = 1;
-  MP.room = undefined;
-  MP.name.replace(/\(\d\)$/g, "");
-  mp_resetLobby();
-  mp_changeActiveSubpage("prelobby");
-  mp_resetLobby();
-  if (privateRoom) mp_resetRace();
+socket.on("mp_room_leave", () => {
+  let privateRoom = room.private;
+  state = 1;
+  room = undefined;
+  name.replace(/\(\d\)$/g, "");
+  resetLobby();
+  changeActiveSubpage("prelobby");
+  resetLobby();
+  if (privateRoom) resetRace();
   // swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
 });
 
-MP.socket.on("mp_room_user_left", (data) => {
-  if (MP.room.private) {
-    mp_playSound("leave");
-    if (MP.room.whoIsTyping === undefined) {
-      MP.room.whoIsTyping = {};
+socket.on("mp_room_user_left", (data) => {
+  if (room.private) {
+    playSound("leave");
+    if (room.whoIsTyping === undefined) {
+      room.whoIsTyping = {};
     }
-    MP.room.whoIsTyping[data.sid] = { name: data.name, truefalse: false };
-    mp_updateWhoIsTyping();
-    delete MP.room.users[data.sid];
-    if (data.newLeader !== "" && data.newLeader === MP.socket.id) {
-      MP.room.isLeader = true;
-      MP.room.users[MP.socket.id].isLeader = true;
+    room.whoIsTyping[data.sid] = { name: data.name, truefalse: false };
+    updateWhoIsTyping();
+    delete room.users[data.sid];
+    if (data.newLeader !== "" && data.newLeader === socket.id) {
+      room.isLeader = true;
+      room.users[socket.id].isLeader = true;
     }
-    mp_refreshUserList();
-    mp_resetLeaderButtons();
-    mp_resetReadyButtons();
+    refreshUserList();
+    resetLeaderButtons();
+    resetReadyButtons();
   } else {
-    delete MP.room.users[data.sid];
+    delete room.users[data.sid];
     MatchmakingStatus.setText(
       `Waiting for more players to join (${
-        Object.keys(MP.room.users).length
+        Object.keys(room.users).length
       }/5)...`
     );
   }
 });
 
-MP.socket.on("mp_room_new_leader", (data) => {
-  MP.room.isLeader = false;
-  Object.keys(MP.room.users).forEach((u) => {
-    MP.room.users[u].isLeader = false;
+socket.on("mp_room_new_leader", (data) => {
+  room.isLeader = false;
+  Object.keys(room.users).forEach((u) => {
+    room.users[u].isLeader = false;
   });
-  MP.room.users[data.newLeader].isLeader = true;
-  if (data.newLeader !== "" && data.newLeader === MP.socket.id) {
-    MP.room.isLeader = true;
-    MP.room.users[MP.socket.id].isLeader = true;
+  room.users[data.newLeader].isLeader = true;
+  if (data.newLeader !== "" && data.newLeader === socket.id) {
+    room.isLeader = true;
+    room.users[socket.id].isLeader = true;
   }
-  mp_refreshUserList();
-  mp_resetLeaderButtons();
-  mp_resetReadyButtons();
+  refreshUserList();
+  resetLeaderButtons();
+  resetReadyButtons();
 });
 
-MP.socket.on("mp_room_config_update", (data) => {
-  MP.room.config = data.newConfig;
-  mp_refreshConfig();
-  if (!MP.room.isLeader) {
+socket.on("mp_room_config_update", (data) => {
+  room.config = data.newConfig;
+  refreshConfig();
+  if (!room.isLeader) {
     Notifications.add("Config changed", 0, 2);
-    mp_applyRoomConfig(MP.room.config);
+    applyRoomConfig(room.config);
   }
-  Object.keys(MP.room.users).forEach((sid) => {
-    MP.room.users[sid].isReady = false;
+  Object.keys(room.users).forEach((sid) => {
+    room.users[sid].isReady = false;
   });
-  MP.room.isReady = false;
-  mp_resetReadyButtons();
-  mp_refreshUserList();
+  room.isReady = false;
+  resetReadyButtons();
+  refreshUserList();
 });
 
-MP.socket.on("mp_chat_message", async (data) => {
+socket.on("mp_chat_message", async (data) => {
   data.message = data.message.trim();
   let nameregex;
   if (data.isLeader) {
     nameregex = new RegExp(
-      ` @${MP.name.replace(/[.()]/g, "\\$&")} |^@${MP.name.replace(
+      ` @${name.replace(/[.()]/g, "\\$&")} |^@${name.replace(
         /[.()]/g,
         "\\$&"
       )}$|ready|@everyone`,
@@ -1171,22 +1199,22 @@ MP.socket.on("mp_chat_message", async (data) => {
     );
   } else {
     nameregex = new RegExp(
-      ` @${MP.name.replace(/[.()]/g, "\\$&")} |^@${MP.name.replace(
+      ` @${name.replace(/[.()]/g, "\\$&")} |^@${name.replace(
         /[.()]/g,
         "\\$&"
       )}$`,
       "i"
     );
   }
-  if (!data.isSystem && data.from.name != MP.name) {
+  if (!data.isSystem && data.from.name != name) {
     if (nameregex.test(data.message)) {
-      mp_playSound("chat_mention");
+      playSound("chat_mention");
       data.message = data.message.replace(
         nameregex,
         "<span class='mention'>$&</span>"
       );
     } else {
-      mp_playSound("chat2");
+      playSound("chat2");
     }
   }
   let cls = "message";
@@ -1195,10 +1223,10 @@ MP.socket.on("mp_chat_message", async (data) => {
     cls = "systemMessage";
   } else {
     let me = "";
-    if (data.from.name == MP.name) me = " me";
+    if (data.from.name == name) me = " me";
     author = `<div class="author ${me}">${data.from.name}:</div>`;
   }
-  data.message = await mp_insertImageEmoji(data.message);
+  data.message = await insertImageEmoji(data.message);
   $(".pageTribe .lobby .chat .messages").append(`
     <div class="${cls}">${author}<div class="text">${data.message}</div></div>
   `);
@@ -1206,10 +1234,10 @@ MP.socket.on("mp_chat_message", async (data) => {
     <div class="${cls}">${author}<div class="text">${data.message}</div></div>
   `);
 
-  mp_scrollChat();
+  shouldScrollChat();
 });
 
-MP.socket.on("mp_update_mm_status", (data) => {
+socket.on("mp_update_mm_status", (data) => {
   if (data.visible) {
     MatchmakingStatus.show();
   } else {
@@ -1219,12 +1247,12 @@ MP.socket.on("mp_update_mm_status", (data) => {
   if (data.text !== undefined) MatchmakingStatus.setText(data.text);
 });
 
-MP.socket.on("mp_room_user_istypingupdate", (data) => {
-  if (MP.room.whoIsTyping === undefined) {
-    MP.room.whoIsTyping = {};
+socket.on("mp_room_user_istypingupdate", (data) => {
+  if (room.whoIsTyping === undefined) {
+    room.whoIsTyping = {};
   }
-  MP.room.whoIsTyping[data.sid] = { name: data.name, truefalse: data.typing };
-  mp_updateWhoIsTyping();
+  room.whoIsTyping[data.sid] = { name: data.name, truefalse: data.typing };
+  updateWhoIsTyping();
 });
 
 $(".pageTest #result .tribeResultChat .chat .input input").keypress(() => {
@@ -1347,109 +1375,104 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
   }
 });
 
-MP.socket.on("mp_system_message", (data) => {
+socket.on("mp_system_message", (data) => {
   Notifications.add(`${data.message}`, data.level, undefined, "Tribe");
 });
 
-MP.socket.on("mp_room_test_start", (data) => {
-  if (MP.room.private && !MP.room.isTyping) return;
-  // changePage('');
+socket.on("mp_room_test_start", (data) => {
+  if (room.private && !room.isTyping) return;
+  // UI.changePage('');
   // mp_testCountdown();
   // startTest();
   setTimeout(() => {
-    if (!testActive) {
+    if (!TestLogic.active) {
       startTest();
     }
   }, 500);
   // Notifications.add("test starting",0);
   updateCountdown("");
   fadeoutCountdown();
-  mp_playSound("cd_go");
+  playSound("cd_go");
 });
 
-MP.socket.on("mp_room_test_countdown", (data) => {
-  if (MP.room.private && !MP.room.isTyping) return;
-  focusWords();
+socket.on("mp_room_test_countdown", (data) => {
+  if (room.private && !room.isTyping) return;
+  TestUI.focusWords();
   updateCountdown(data.val);
-  if (data.val <= 3) mp_playSound("cd");
+  if (data.val <= 3) playSound("cd");
   // if (data.val == 1) fadeoutCountdown()
   // Notifications.add(`countdown ${data.val}`,0);
 });
 
-MP.socket.on("mp_room_finishTimer_countdown", (data) => {
+socket.on("mp_room_finishTimer_countdown", (data) => {
   showResultCountdown();
   updateResultCountdown(`Time left for everyone to finish: ${data.val}s`);
   showCountdown(true);
   updateCountdown(data.val);
-  if (data.val <= 3) mp_playSound("cd");
+  if (data.val <= 3) playSound("cd");
 });
 
-MP.socket.on("mp_room_finishTimer_over", (data) => {
+socket.on("mp_room_finishTimer_over", (data) => {
   hideResultCountdown();
-  if (testActive) showResult(undefined, true);
+  if (TestLogic.active) TestLogic.finish(undefined, true);
 });
 
-MP.socket.on("mp_room_readyResultTimer_countdown", (data) => {
+socket.on("mp_room_readyResultTimer_countdown", (data) => {
   showResultCountdown();
   updateResultCountdown(`Waiting for everyone to get ready: ${data.val}s`);
 });
 
-MP.socket.on("mp_room_readyResultTimer_over", (data) => {
+socket.on("mp_room_readyResultTimer_over", (data) => {
   hideResultCountdown();
-  if (MP.room.isLeader) {
+  if (room.isLeader) {
     $(".pageTest #nextTestButton").removeClass("hidden");
     $(".pageTest #backToLobbyButton").removeClass("hidden");
   }
 });
 
-MP.socket.on("mp_room_test_init", (data) => {
-  mp_refreshTestUserList();
-  if (
-    MP.room.private &&
-    MP.room.isReady !== true &&
-    MP.room.isLeader !== true
-  ) {
-    changePage("tribe");
-    mp_changeActiveSubpage("lobby");
+socket.on("mp_room_test_init", (data) => {
+  refreshTestUserList();
+  if (room.private && room.isReady !== true && room.isLeader !== true) {
+    UI.changePage("tribe");
+    changeActiveSubpage("lobby");
     Notifications.add(
-      `Not joining race. isReady: ${MP.room.isReady}, isLeader: ${MP.room.isLeader}`,
+      `Not joining race. isReady: ${room.isReady}, isLeader: ${room.isLeader}`,
       0,
       0,
       "DEBUG"
     );
     return;
   }
-  mp_playSound("start");
-  MP.room.userSpeeds = {};
-  mp_resetTribeDiff();
-  MP.room.userGraphs = {};
-  MP.room.userFinished = false;
+  playSound("start");
+  room.userSpeeds = {};
+  resetTribeDiff();
+  room.userGraphs = {};
+  room.userFinished = false;
   destroyAllGraphs();
   seedrandom(data.seed, { global: true });
   console.log(`seed: ${data.seed}`);
   console.log(`random: ${Math.random()}`);
-  changePage("");
+  UI.changePage("");
   $(".pageTribe .lobby .chat .input input").val("");
   $(".pageTest #result .tribeResultChat .chat .input input").val("");
   lobbySuggestions.hide();
   resultSuggestions.hide();
   MatchmakingStatus.reset();
-  mp_sendIsTypingUpdate(false);
-  restartTest(false, true, true);
+  sendIsTypingUpdate(false);
+  TestLogic.restart(false, true, true);
   showCountdown();
   hideResultCountdown();
   $(".pageTest #restartTestButton").addClass("hidden");
 });
 
-MP.socket.on("mp_room_state_update", (data) => {
-  MP.state = data.newState;
+socket.on("mp_room_state_update", (data) => {
+  state = data.newState;
   // Notifications.add(`state changed to ${data.newState}`, 0);
 });
 
-MP.socket.on("mp_room_user_test_progress_update", (data) => {
-  if (MP.room.isTyping) {
-    if (data.sid !== MP.socket.id)
-      MP.room.userSpeeds[data.sid] = data.stats.wpm;
+socket.on("mp_room_user_test_progress_update", (data) => {
+  if (room.isTyping) {
+    if (data.sid !== socket.id) room.userSpeeds[data.sid] = data.stats.wpm;
   }
   $(`.tribePlayers .player[sid=${data.sid}] .wpm`).text(data.stats.wpm);
   $(`.tribePlayers .player[sid=${data.sid}] .acc`).text(
@@ -1466,7 +1489,7 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
     .animate(
       {
         width:
-          config.mode === "time"
+          Config.mode === "time"
             ? data.stats.wpmProgress + "%"
             : data.stats.progress + "%",
       },
@@ -1478,7 +1501,7 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
     .animate(
       {
         width:
-          config.mode === "time"
+          Config.mode === "time"
             ? data.stats.wpmProgress + "%"
             : data.stats.progress + "%",
       },
@@ -1489,8 +1512,8 @@ MP.socket.on("mp_room_user_test_progress_update", (data) => {
 
 let graphs = [];
 
-MP.socket.on("mp_room_user_finished", (data) => {
-  MP.room.users[data.sid].isFinished = true;
+socket.on("mp_room_user_finished", (data) => {
+  room.users[data.sid].isFinished = true;
   $(`.tribeResult`).removeClass("hidden");
   $(`.tribeResult table .player[sid=${data.sid}] .wpm .text`).text(
     data.result.wpm
@@ -1531,30 +1554,30 @@ MP.socket.on("mp_room_user_finished", (data) => {
     $(`.tribeResult .player[sid=${data.sid}]`).addClass("failed");
   }
 
-  if (MP.room.userGraphs === undefined) MP.room.userGraphs = {};
-  MP.room.userGraphs[data.sid] = {
+  if (room.userGraphs === undefined) room.userGraphs = {};
+  room.userGraphs[data.sid] = {
     data: data.result,
   };
 
-  swapElements(
+  UI.swapElements(
     $(`.tribeResult table .player[sid=${data.sid}] .progress`),
     $(`.tribeResult table .player[sid=${data.sid}] .graph`),
     125
   );
 
   setTimeout(() => {
-    if (data.sid === MP.socket.id) {
-      MP.room.userFinished = true;
+    if (data.sid === socket.id) {
+      room.userFinished = true;
 
-      Object.keys(MP.room.userGraphs).forEachWithCallback((sid, i, next) => {
+      Object.keys(room.userGraphs).forEachWithCallback((sid, i, next) => {
         setTimeout(() => {
-          let userGraph = MP.room.userGraphs[sid];
+          let userGraph = room.userGraphs[sid];
           userGraph.graph = drawMinigraph(sid, userGraph.data);
           next();
         }, 100);
       });
-    } else if (MP.room.userFinished) {
-      MP.room.userGraphs[data.sid].graph = drawMinigraph(data.sid, data.result);
+    } else if (room.userFinished) {
+      room.userGraphs[data.sid].graph = drawMinigraph(data.sid, data.result);
     }
   }, 250);
 
@@ -1569,7 +1592,7 @@ MP.socket.on("mp_room_user_finished", (data) => {
   //     }
   //   );
 
-  if (config.mode !== "time" && !data.result.failed && !data.result.afk) {
+  if (Config.mode !== "time" && !data.result.failed && !data.result.afk) {
     $(`.tribePlayers .player[sid=${data.sid}] .bar`).stop(true, false).animate(
       {
         width: "100%",
@@ -1589,12 +1612,12 @@ MP.socket.on("mp_room_user_finished", (data) => {
   }
 });
 
-MP.socket.on("mp_room_winner", (data) => {
+socket.on("mp_room_winner", (data) => {
   let pos = 1;
   if (data.official) {
     hideResultCountdown();
     // updateAllGraphs(graphs, data.maxRaw);
-    // MP.room.newTestCooldown = true;
+    // room.newTestCooldown = true;
     // $("#result #nextTestButton").html(
     //   `<i class="fas fa-fw fa-spin fa-circle-notch"></i>`
     // );
@@ -1603,7 +1626,7 @@ MP.socket.on("mp_room_winner", (data) => {
     //   "Please wait for all players to view their result"
     // );
     // setTimeout(() => {
-    //   MP.room.newTestCooldown = false;
+    //   room.newTestCooldown = false;
     //   $("#result #nextTestButton").html(
     //     `<i class="fas fa-fw fa-chevron-right"></i>`
     //   );
@@ -1616,7 +1639,7 @@ MP.socket.on("mp_room_winner", (data) => {
       `${pos}${Misc.getNumberSuffix(pos)}`
     );
     if (data.official && pos == 1) {
-      if (sid.sid === MP.socket.id) {
+      if (sid.sid === socket.id) {
         userwon = true;
       }
       $(`.tribeResult table [sid=${sid.sid}] .crown .fa-crown`).animate(
@@ -1632,13 +1655,13 @@ MP.socket.on("mp_room_winner", (data) => {
     pos++;
   });
   if (userwon && data.official) {
-    mp_playSound("finish_win");
+    playSound("finish_win");
   } else if (!userwon && data.official) {
-    mp_playSound("finish");
+    playSound("finish");
   }
 });
 
-MP.socket.on("mp_room_miniCrowns", (data) => {
+socket.on("mp_room_miniCrowns", (data) => {
   let count = {};
   Object.keys(data.crowns).forEach((c) => {
     let crown = data.crowns[c];
@@ -1667,60 +1690,60 @@ MP.socket.on("mp_room_miniCrowns", (data) => {
         "data-balloon-pos",
         "up"
       );
-      if (sid === MP.socket.id) {
-        mp_playSound("glow");
+      if (sid === socket.id) {
+        playSound("glow");
       }
     }
   });
 });
 
-MP.socket.on("mp_room_points", (data) => {
+socket.on("mp_room_points", (data) => {
   data.users.forEach((user) => {
     $(`.tribeResult table [sid=${user.sid}] .pos .points`).text(
       `+${user.newPoints}${user.newPoints == 1 ? "pt" : "pts"}`
     );
-    MP.room.users[user.sid].points = user.totalPoints;
+    room.users[user.sid].points = user.totalPoints;
   });
-  mp_refreshUserList();
+  refreshUserList();
 });
 
-MP.socket.on("mp_room_back_to_lobby", (data) => {
-  Object.keys(MP.room.users).forEach((sid) => {
-    MP.room.users[sid].isTyping = false;
+socket.on("mp_room_back_to_lobby", (data) => {
+  Object.keys(room.users).forEach((sid) => {
+    room.users[sid].isTyping = false;
   });
   $(".tribePlayers").addClass("hidden");
-  changePage("tribe");
-  mp_refreshUserList();
+  UI.changePage("tribe");
+  refreshUserList();
 });
 
-MP.socket.on("mp_room_user_info_update", (data) => {
+socket.on("mp_room_user_info_update", (data) => {
   let checkReady = false;
   Object.keys(data.values).forEach((bool) => {
-    MP.room.users[data.sid][bool] = data.values[bool];
+    room.users[data.sid][bool] = data.values[bool];
     if (bool === "isReady" && data.values[bool]) checkReady = true;
-    if (data.sid === MP.socket.id) {
-      MP.room[bool] = data.values[bool];
-      if (bool === "isReady" && !data.values[bool] && !MP.room.isLeader) {
-        mp_resetReadyButtons();
+    if (data.sid === socket.id) {
+      room[bool] = data.values[bool];
+      if (bool === "isReady" && !data.values[bool] && !room.isLeader) {
+        resetReadyButtons();
       }
     }
   });
-  if (MP.room.isLeader && checkReady) {
+  if (room.isLeader && checkReady) {
     let everyoneReady = true;
-    Object.keys(MP.room.users).forEach((sid) => {
+    Object.keys(room.users).forEach((sid) => {
       if (
-        !MP.room.users[sid].isReady &&
-        !MP.room.users[sid].isLeader &&
-        (!MP.room.users[sid].isTyping || MP.room.users[sid].isFinished)
+        !room.users[sid].isReady &&
+        !room.users[sid].isLeader &&
+        (!room.users[sid].isTyping || room.users[sid].isFinished)
       )
         everyoneReady = false;
     });
     if (everyoneReady) {
-      mp_playSound("chat_mention");
+      playSound("chat_mention");
       Notifications.add("Everyone is ready", 1, 3, "Tribe");
     }
   }
-  mp_refreshUserList();
+  refreshUserList();
 });
 
 $(".pageTribe #createPrivateRoom").click((f) => {
@@ -1728,28 +1751,34 @@ $(".pageTribe #createPrivateRoom").click((f) => {
   // setLanguage("english");
   // setMode("quote");
   let mode2;
-  if (config.mode === "time") {
-    mode2 = config.time;
-  } else if (config.mode === "words") {
-    mode2 = config.words;
-  } else if (config.mode === "quote") {
-    mode2 = config.quoteLength === undefined ? "-1" : config.quoteLength;
+  if (Config.mode === "time") {
+    mode2 = Config.time;
+  } else if (Config.mode === "words") {
+    mode2 = Config.words;
+  } else if (Config.mode === "quote") {
+    mode2 = Config.quoteLength === undefined ? "-1" : Config.quoteLength;
   }
-  MP.socket.emit("mp_room_create", {
+  socket.emit("mp_room_create", {
     config: {
-      mode: config.mode,
+      mode: Config.mode,
       mode2: mode2,
-      difficulty: config.difficulty,
-      blindMode: config.blindMode,
-      language: config.language,
-      funbox: activeFunBox,
-      stopOnError: config.stopOnError,
-      confidenceMode: config.confidenceMode,
-      customText: customText,
-      punctuation: config.punctuation,
-      numbers: config.numbers,
-      minWpm: config.minWpm === "custom" ? config.minWpmCustomSpeed : null,
-      minAcc: config.minAcc === "custom" ? config.minAccCustom : null,
+      difficulty: Config.difficulty,
+      blindMode: Config.blindMode,
+      language: Config.language,
+      funbox: Funbox.active,
+      stopOnError: Config.stopOnError,
+      confidenceMode: Config.confidenceMode,
+      customText: {
+        text: CustomText.text,
+        isWordRandom: CustomText.isWordRandom,
+        isTimeRandom: CustomText.isTimeRandom,
+        word: CustomText.word,
+        time: CustomText.time,
+      },
+      punctuation: Config.punctuation,
+      numbers: Config.numbers,
+      minWpm: Config.minWpm === "custom" ? Config.minWpmCustomSpeed : null,
+      minAcc: Config.minAcc === "custom" ? Config.minAccCustom : null,
     },
   });
 });
@@ -1763,14 +1792,14 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
       Notifications.add("Message cannot be longer than 512 characters.", 0);
       return;
     }
-    mp_sendIsTypingUpdate(false);
-    MP.socket.emit("mp_chat_message", {
+    sendIsTypingUpdate(false);
+    socket.emit("mp_chat_message", {
       isSystem: false,
-      isLeader: MP.room.isLeader,
+      isLeader: room.isLeader,
       message: msg,
       from: {
-        id: MP.socket.id,
-        name: MP.name,
+        id: socket.id,
+        name: name,
       },
     });
     resultSuggestions.hide();
@@ -1788,14 +1817,14 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
       Notifications.add("Message cannot be longer than 512 characters.", 0);
       return;
     }
-    mp_sendIsTypingUpdate(false);
-    MP.socket.emit("mp_chat_message", {
+    sendIsTypingUpdate(false);
+    socket.emit("mp_chat_message", {
       isSystem: false,
-      isLeader: MP.room.isLeader,
+      isLeader: room.isLeader,
       message: msg,
       from: {
-        id: MP.socket.id,
-        name: MP.name,
+        id: socket.id,
+        name: name,
       },
     });
     lobbySuggestions.hide();
@@ -1810,22 +1839,22 @@ $(
   // e.currentTarget.value = emoji.emojify(e.currentTarget.value);
   if (e.currentTarget.value.length === 1) {
     //typing update
-    mp_sendIsTypingUpdate(true);
+    sendIsTypingUpdate(true);
   } else if (e.currentTarget.value == "") {
     //not typing update
-    mp_sendIsTypingUpdate(false);
+    sendIsTypingUpdate(false);
   }
 });
 
 $(".pageTest #result .tribeResultChat .chat .messages").on("scroll", (e) => {
   let chatEl = $(".pageTest #result .tribeResultChat .chat .messages")[0];
-  scrollChat =
+  shouldScrollChat =
     chatEl.scrollHeight - chatEl.scrollTop <= chatEl.clientHeight + 10;
 });
 
 $(".pageTribe .lobby .chat .messages").on("scroll", (e) => {
   let chatEl = $(".pageTribe .lobby .chat .messages")[0];
-  scrollChat =
+  shouldScrollChat =
     chatEl.scrollHeight - chatEl.scrollTop <= chatEl.clientHeight + 10;
 });
 
@@ -1905,10 +1934,10 @@ $(".pageTribe .prelobby .matchmaking .button").click((e) => {
   let queue = $(e.currentTarget).attr("queue");
   MatchmakingStatus.setText("Searching for a room...");
   MatchmakingStatus.show();
-  MP.state = 8;
-  mp_applyRoomConfig(TribeDefaultConfigs[queue]);
+  state = 8;
+  applyRoomConfig(TribeDefaultConfigs[queue]);
   setTimeout(() => {
-    MP.socket.emit("mp_room_join", { queue: queue });
+    socket.emit("mp_room_join", { queue: queue });
   }, 1000);
 });
 
@@ -1917,7 +1946,7 @@ $(".pageTribe .prelobby #joinByCode .button").click((e) => {
   if (code.length !== 6) {
     Notifications.add("Code required", 0);
   } else {
-    mp_joinRoomByCode(code);
+    joinRoomByCode(code);
   }
 });
 
@@ -1927,7 +1956,7 @@ $(".pageTribe .prelobby #joinByCode input").keyup((e) => {
     if (code.length !== 6) {
       Notifications.add("Code required", 0);
     } else {
-      mp_joinRoomByCode(code);
+      joinRoomByCode(code);
     }
   } else {
     setTimeout((t) => {
@@ -1963,11 +1992,11 @@ $(".pageTribe .prelobby #joinByCode input").keyup((e) => {
 $(
   ".pageTribe .lobby .lobbyButtons .leaveRoomButton, .pageTest #result .resultMpButtons .leaveRoomButton"
 ).click((e) => {
-  MP.socket.emit("mp_room_leave");
+  socket.emit("mp_room_leave");
 });
 
 $(".pageTribe .lobby .lobbyButtons .startTestButton").click((e) => {
-  mp_startTest();
+  startTest();
 });
 
 $(
@@ -1975,7 +2004,7 @@ $(
   .pageTest #result #readyButton,
   .pageTest #result .resultMpButtons .userReadyButton`
 ).click((e) => {
-  mp_userReady();
+  userReady();
 });
 
 $(
@@ -1984,34 +2013,40 @@ $(
   .pageTest #result .resultMpButtons .userReadyButton`
 ).on("keypress", (event) => {
   if (event.keyCode == 13) {
-    mp_userReady();
+    userReady();
   }
 });
 
 $(document).on("keypress", (e) => {
-  if ((MP.state === 10 || MP.state === 29) && e.key === "Enter" && e.shiftKey) {
-    if (MP.room.isLeader) {
-      mp_startTest();
+  if ((state === 10 || state === 29) && e.key === "Enter" && e.shiftKey) {
+    if (room.isLeader) {
+      startTest();
     } else {
-      mp_userReady();
+      userReady();
     }
   }
 });
 
 $(".pageTest #result #backToLobbyButton").click((e) => {
-  MP.socket.emit("mp_room_back_to_lobby");
+  socket.emit("mp_room_back_to_lobby");
 });
 
 $(document).on(
   "click",
   ".pageTribe .lobby .currentSettings .groups .group",
   (e) => {
-    if (MP.room.isLeader) {
-      let commands = eval($(e.currentTarget).attr("commands"));
+    if (room.isLeader) {
+      // let commands = eval($(e.currentTarget).attr("commands"));
+      let commands = CommandlineLists.getList(
+        $(e.currentTarget).attr("commands")
+      );
       let func = $(e.currentTarget).attr("function");
       if (commands != undefined) {
-        currentCommands.push(commands);
-        showCommandLine();
+        if ($(e.currentTarget).attr("commands") === "commandsTags") {
+          CommandlineLists.updateTagCommands();
+        }
+        CommandlineLists.pushCurrent(commands);
+        Commandline.show();
       } else if (func != undefined) {
         eval(func);
       }
@@ -2036,19 +2071,19 @@ $(document).on(
 
 $(document).on("click", "#tribeUserSettingsPopup .buttons .leader", (e) => {
   let sid = $("#tribeUserSettingsPopup").attr("sid");
-  MP.socket.emit("mp_room_new_leader", { sid: sid });
+  socket.emit("mp_room_new_leader", { sid: sid });
   hideTribeUserSettingsPopup();
 });
 
 $(document).on("click", "#tribeUserSettingsPopup .buttons .ban", (e) => {
   let sid = $("#tribeUserSettingsPopup").attr("sid");
-  MP.socket.emit("mp_room_ban_user", { sid: sid });
+  socket.emit("mp_room_ban_user", { sid: sid });
   hideTribeUserSettingsPopup();
 });
 
 $(document).on("keypress", (e) => {
   if (
-    MP.state === 10 &&
+    state === 10 &&
     !$(".pageTribe .lobby .chat .input input").is(":focus") &&
     e.key === "/"
   ) {
@@ -2056,7 +2091,7 @@ $(document).on("keypress", (e) => {
     e.preventDefault();
   }
   if (
-    MP.state >= 28 &&
+    state >= 28 &&
     !$(".pageTest #result .tribeResultChat .chat .input input").is(":focus") &&
     e.key === "/"
   ) {
@@ -2129,18 +2164,17 @@ let miniChartSettings = {
       callbacks: {
         afterLabel: function (ti, data) {
           try {
-            $(".wordInputAfter").remove();
-
-            let wordsToHighlight =
-              keypressPerSecond[parseInt(ti.xLabel) - 1].words;
-
-            let unique = [...new Set(wordsToHighlight)];
-            unique.forEach((wordIndex) => {
-              let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
-              let input = wordEl.attr("input");
-              if (input != undefined)
-                wordEl.append(`<div class="wordInputAfter">${input}</div>`);
-            });
+            //TODO bring back
+            // $(".wordInputAfter").remove();
+            // let wordsToHighlight =
+            //   keypressPerSecond[parseInt(ti.xLabel) - 1].words;
+            // let unique = [...new Set(wordsToHighlight)];
+            // unique.forEach((wordIndex) => {
+            //   let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
+            //   let input = wordEl.attr("input");
+            //   if (input != undefined)
+            //     wordEl.append(`<div class="wordInputAfter">${input}</div>`);
+            // });
           } catch (e) {}
         },
       },

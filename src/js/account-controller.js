@@ -13,6 +13,7 @@ import * as AllTimeStats from "./all-time-stats";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
+import * as Tribe from "./tribe";
 
 var gmailProvider = new firebase.auth.GoogleAuthProvider();
 
@@ -308,6 +309,10 @@ firebase.auth().onAuthStateChanged(function (user) {
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
 
+    try {
+      Tribe.setName(displayName);
+    } catch {}
+
     // showFavouriteThemesAtTheTop();
     CommandlineLists.updateThemeCommands();
 
@@ -348,6 +353,20 @@ firebase.auth().onAuthStateChanged(function (user) {
     setTimeout(() => {
       ChallengeController.setup(challengeName);
     }, 1000);
+  }
+  if (/\/tribe/.test(window.location.pathname)) {
+    if (/\/tribe_.+/.test(window.location.pathname)) {
+      let code = window.location.pathname.split("/")[1];
+      code = code.substring(5);
+      code = "room" + code;
+      Tribe.setAutoJoin(code);
+    }
+    UI.changePage("tribe");
+  }
+  if (!Tribe.socket.connected && Tribe.autoJoin != undefined) {
+    if (Tribe.state === -1) {
+      Tribe.init();
+    }
   }
 });
 
