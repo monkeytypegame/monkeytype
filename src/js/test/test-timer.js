@@ -54,7 +54,9 @@ export function start() {
         if (Config.mode === "words") {
           outof = Config.words;
         }
-        progress = Math.floor((TestLogic.currentWordIndex / (outof - 1)) * 100);
+        progress = Math.floor(
+          (TestLogic.words.currentIndex / (outof - 1)) * 100
+        );
       }
 
       Tribe.sendTestProgress(wpmAndRaw.wpm, wpmAndRaw.raw, acc, progress);

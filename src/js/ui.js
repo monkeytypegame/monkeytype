@@ -108,7 +108,7 @@ export function swapElements(
   }
 }
 
-export function changePage(page) {
+export function changePage(page, tribe = false) {
   if (pageTransition) {
     Notifications.add("Not changing page, page transition true", 0, 0, "DEBUG");
     return;
@@ -145,7 +145,7 @@ export function changePage(page) {
     // incompleteTestSeconds = 0;
     TestStats.resetIncomplete();
     ManualRestart.set();
-    TestLogic.restart();
+    TestLogic.restart(undefined, undefined, undefined, tribe);
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();

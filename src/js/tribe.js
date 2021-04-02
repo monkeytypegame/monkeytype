@@ -33,7 +33,7 @@ export let activePage = "preloader";
 export let pageTransition = false;
 export let expectedVersion = "0.8.2";
 
-let room = undefined;
+export let room = undefined;
 let name = undefined;
 let autoJoin = undefined;
 
@@ -1452,7 +1452,7 @@ socket.on("mp_room_test_init", (data) => {
   seedrandom(data.seed, { global: true });
   console.log(`seed: ${data.seed}`);
   console.log(`random: ${Math.random()}`);
-  UI.changePage("");
+  UI.changePage("", true);
   $(".pageTribe .lobby .chat .input input").val("");
   $(".pageTest #result .tribeResultChat .chat .input input").val("");
   lobbySuggestions.hide();
