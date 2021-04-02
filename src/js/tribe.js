@@ -1386,7 +1386,7 @@ socket.on("mp_room_test_start", (data) => {
   // startTest();
   setTimeout(() => {
     if (!TestLogic.active) {
-      startTest();
+      TestLogic.startTest();
     }
   }, 500);
   // Notifications.add("test starting",0);

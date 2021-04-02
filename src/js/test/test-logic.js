@@ -114,7 +114,11 @@ class Input {
   }
 
   getHistory(i) {
-    return this.history[i];
+    if (i === undefined) {
+      return this.history;
+    } else {
+      return this.history[i];
+    }
   }
 }
 
