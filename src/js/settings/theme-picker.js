@@ -158,7 +158,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
   setCustomInputs();
   if ($target.attr("tab") == "preset") {
     UpdateConfig.setCustomTheme(false);
-    ThemeController.set(Config.theme);
+    // ThemeController.set(Config.theme);
     // applyCustomThemeColors();
     // UI.swapElements(
     //   $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
@@ -167,7 +167,7 @@ $(".pageSettings .section.themes .tabs .button").click((e) => {
     // );
   } else {
     UpdateConfig.setCustomTheme(true);
-    ThemeController.set("custom");
+    // ThemeController.set("custom");
     // applyCustomThemeColors();
     // UI.swapElements(
     //   $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),

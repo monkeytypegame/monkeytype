@@ -1148,6 +1148,11 @@ export function setIndicateTypos(it, nosave) {
 
 export function setCustomTheme(boolean, nosave) {
   if (boolean !== undefined) config.customTheme = boolean;
+  if (boolean) {
+    ThemeController.set("custom");
+  } else {
+    ThemeController.set(config.theme);
+  }
   if (!nosave) saveToCookie();
 }
 
