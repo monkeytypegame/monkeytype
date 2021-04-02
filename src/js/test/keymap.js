@@ -246,6 +246,6 @@ export function refreshKeys(layout) {
 }
 
 $(document).on("click", ".keymap .r5 #KeySpace", (e) => {
-  CommandlineLists.setCurrent(CommandlineLists.commandsKeymapLayouts);
+  CommandlineLists.setCurrent([CommandlineLists.commandsKeymapLayouts]);
   Commandline.show();
 });

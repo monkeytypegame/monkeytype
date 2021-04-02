@@ -61,7 +61,7 @@ if (Object.keys(layouts).length > 0) {
   });
 }
 
-let commandsKeymapLayouts = {
+export let commandsKeymapLayouts = {
   title: "Change keymap layout...",
   list: [
     {
@@ -413,7 +413,7 @@ let commandsDifficulty = {
   ],
 };
 
-let commandsEnableAds = {
+export let commandsEnableAds = {
   title: "Set enable ads...",
   list: [
     {
@@ -1117,7 +1117,7 @@ let commandsPageWidth = {
   ],
 };
 
-let themeCommands = {
+export let themeCommands = {
   title: "Change theme...",
   list: [],
 };

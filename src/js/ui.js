@@ -249,7 +249,7 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
     // if (Config.customTheme) {
     //   toggleCustomTheme();
     // }
-    CommandlineLists.setCurrent(CommandlineLists.themeCommands);
+    CommandlineLists.setCurrent([CommandlineLists.themeCommands]);
     Commandline.show();
   }
 });
