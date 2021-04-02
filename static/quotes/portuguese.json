@@ -1,0 +1,137 @@
+{
+  "language": "portuguese",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "A mulher põe no mundo toda a poesia e toda a doçura.",
+      "source": "Alphonse Daudet",
+      "length": 52,
+      "id": 1
+    },
+    {
+      "text": "O homem é o único animal que não aprende nada sem ser ensinado: não sabe falar, nem caminhar, nem comer, enfim, não sabe fazer nada no estado natural, a não ser chorar.",
+      "source": "Plinio",
+      "length": 168,
+      "id": 2
+    },
+    {
+      "text": "Esquecer é uma necessidade. A vida é uma lousa, em que o destino, para escrever um novo caso, precisa de apagar o caso escrito.",
+      "source": "Machado de Assis",
+      "length": 127,
+      "id": 3
+    },
+    {
+      "text": "Minha Pátria é minha língua. Pouco se me dá que Portugal seja invádido, desde que não mexam comigo.",
+      "source": "Fernando Pessoa",
+      "length": 99,
+      "id": 3
+    },
+    {
+      "text": "Enquanto prevalecer a cultura do 'eles' (os responsáveis por todos os males) e 'nós' (as inocentes vítimas deles), vai ser muito difícil convencer os portugueses de que não há vida para a frente com a vida que levamos.",
+      "source": "Miguel Sousa Tavares",
+      "length": 218,
+      "id": 4
+    },
+    {
+      "text": "Os portugueses são pouco dados a elogios - temem que afecte negativamente a qualidade e positivamente o preço.",
+      "source": "Miguel Esteves Cardoso",
+      "length": 110,
+      "id": 5
+    },
+    {
+      "text": "Dizem não ser possível filosofar em outra língua que não alemão, ou cantar rock em inglês e samba em português.",
+      "source": "Francis Scott Key Fitzgerald",
+      "length": 111,
+      "id": 6
+    },
+    {
+      "text": "As ideias da classe dominante são, em todas as épocas, as ideias dominantes, isto é, a classe que é a força material dominante da sociedade é, ao mesmo tempo, sua força intelectual dominante.",
+      "source": "Karl Marx",
+      "length": 191,
+      "id": 7
+    },
+    {
+      "text": "A primeira condição para modificar a realidade consiste em conhece-la.",
+      "source": "Eduardo Galeano",
+      "length": 70,
+      "id": 8
+    },
+    {
+      "text": "É necessário que os países do Primeiro Mundo entendam que é preciso preservar também cidades como Salvador, não apenas Roma ou Paris.",
+      "source": "Jorge Amado",
+      "length": 133,
+      "id": 9
+    },
+    {
+      "text": "O que vale na vida não é o ponto de partida e sim a caminhada. Caminhando e semeando, no fim terás o que colher.",
+      "source": "Cora Coralina",
+      "length": 112,
+      "id": 10
+    },
+    {
+      "text": "É na idade da ambição que se prova a têmpera dos homens.",
+      "source": "José de Alencar",
+      "length": 56,
+      "id": 11
+    },
+    {
+      "text": "Ociosos, pertencem às classes perigosas, como os ladrões e os vagabundos. O sujeito se faz padre ou frade só para viver no ócio, e o ócio é garantido pelo número deles. Se fossem, digamos, um em mil almas, os padres teriam tanto o que fazer que não poderiam ficar de papo para o ar comendo capões. E entre os padres mais indignos o governo escolhe os mais estúpidos, e os nomeia bispos.",
+      "source": "Umberto Eco",
+      "length": 386,
+      "id": 12
+    },
+    {
+      "text": "A vida é a arte do encontro, embora haja tanto desencontro pela vida.",
+      "source": "Vinícius de Moraes",
+      "length": 69,
+      "id": 13
+    },
+    {
+      "text": "Te amo como as begônias tarântulas amam seus congêneres, como as serpentes se amam enroscadas lentas algumas muito verdes outras escuras, a cruz na testa lerdas prenhes, dessa agudez que me rodeia, te amo ainda que isso te fulmine ou que um soco na minha cara me faça menos osso e mais verdade.",
+      "source": "Hilda Hilst",
+      "length": 294,
+      "id": 14
+    },
+    {
+      "text": "Escrevo sem pensar, tudo o que o meu inconsciente grita. Penso depois: nao só para corrigir, mas para justificar o que escrevi.",
+      "source": "Mário de Andrade",
+      "length": 127,
+      "id": 15
+    },
+    {
+      "text": "A sorte me acompanha, tenho corpo fechado à inveja, a intriga não me amarra os pés, sou imune ao mau-olhado.",
+      "source": "Jorge Amado",
+      "length": 108,
+      "id": 16
+    },
+    {
+      "text": "Amizade é como flores, não podemos deixar de regá-las, mas também não podemos regá-las muito.",
+      "source": "Manuel Bandeira",
+      "length": 93,
+      "id": 17
+    },
+    {
+      "text": "A maior solidão é a do ser que não ama. A maior solidão é a dor do ser que se ausenta, que se defende, que se fecha, que se recusa a participar da vida humana.",
+      "source": "Vinícius de Moraes",
+      "length": 159,
+      "id": 18
+    },
+    {
+      "text": "Liberdade de voar num horizonte qualquer, liberdade de pousar onde o coração quiser.",
+      "source": "Cecília Meireles",
+      "length": 84,
+      "id": 19
+    },
+    {
+      "text": "Viver é negócio muito perigoso.",
+      "source": "João Guimarães Rosa",
+      "length": 31,
+      "id": 20
+    }
+  ]
+}

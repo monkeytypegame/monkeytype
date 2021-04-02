@@ -1,4 +1,11 @@
-let simplePopups = {};
+import * as Loader from "./loader";
+import * as CloudFunctions from "./cloud-functions";
+import * as Notifications from "./notifications";
+import * as AccountController from "./account-controller";
+import * as DB from "./db";
+import * as Settings from "./settings";
+
+export let list = {};
 class SimplePopup {
   constructor(
     id,
@@ -25,7 +32,7 @@ class SimplePopup {
   reset() {
     this.element.html(`
     <div class="title"></div>
-    <form class="inputs"></form>
+    <div class="inputs"></div>
     <div class="text"></div>
     <div class="button"></div>`);
   }
@@ -114,17 +121,18 @@ $("#simplePopupWrapper").click((e) => {
 
 $(document).on("click", "#simplePopupWrapper .button", (e) => {
   let id = $("#simplePopup").attr("popupId");
-  simplePopups[id].exec();
+  list[id].exec();
 });
 
 $(document).on("keyup", "#simplePopupWrapper input", (e) => {
   if (e.key === "Enter") {
+    e.preventDefault();
     let id = $("#simplePopup").attr("popupId");
-    simplePopups[id].exec();
+    list[id].exec();
   }
 });
 
-simplePopups.updateEmail = new SimplePopup(
+list.updateEmail = new SimplePopup(
   "updateEmail",
   "text",
   "Update Email",
@@ -142,17 +150,17 @@ simplePopups.updateEmail = new SimplePopup(
   "Update",
   (previousEmail, newEmail) => {
     try {
-      showBackgroundLoader();
+      Loader.show();
       CloudFunctions.updateEmail({
         uid: firebase.auth().currentUser.uid,
         previousEmail: previousEmail,
         newEmail: newEmail,
       }).then((data) => {
-        hideBackgroundLoader();
+        Loader.hide();
         if (data.data.resultCode === 1) {
           Notifications.add("Email updated", 0);
           setTimeout(() => {
-            signOut();
+            AccountController.signOut();
           }, 1000);
         } else if (data.data.resultCode === -1) {
           Notifications.add("Current email doesn't match", 0);
@@ -170,7 +178,7 @@ simplePopups.updateEmail = new SimplePopup(
   () => {}
 );
 
-simplePopups.clearTagPb = new SimplePopup(
+list.clearTagPb = new SimplePopup(
   "clearTagPb",
   "text",
   "Clear Tag PB",
@@ -179,15 +187,15 @@ simplePopups.clearTagPb = new SimplePopup(
   "Clear",
   () => {
     let tagid = eval("this.parameters[0]");
-    showBackgroundLoader();
+    Loader.show();
     CloudFunctions.clearTagPb({
       uid: firebase.auth().currentUser.uid,
       tagid: tagid,
     })
       .then((res) => {
-        hideBackgroundLoader();
+        Loader.hide();
         if (res.data.resultCode === 1) {
-          let tag = db_getSnapshot().tags.filter((t) => t.id === tagid)[0];
+          let tag = DB.getSnapshot().tags.filter((t) => t.id === tagid)[0];
           tag.pb = 0;
           $(
             `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
@@ -198,7 +206,7 @@ simplePopups.clearTagPb = new SimplePopup(
         }
       })
       .catch((e) => {
-        hideBackgroundLoader();
+        Loader.hide();
         Notifications.add(
           "Something went wrong while clearing tag pb " + e,
           -1
@@ -211,4 +219,55 @@ simplePopups.clearTagPb = new SimplePopup(
       "this.text = `Are you sure you want to clear PB for tag ${eval('this.parameters[1]')}?`"
     );
   }
+);
+
+list.applyCustomFont = new SimplePopup(
+  "applyCustomFont",
+  "text",
+  "Custom font",
+  [{ placeholder: "Font name", initVal: "" }],
+  "Make sure you have the font installed on your computer before applying.",
+  "Apply",
+  (fontName) => {
+    if (fontName === "") return;
+    Settings.groups.fontFamily.setValue(fontName.replace(/\s/g, "_"));
+  },
+  () => {}
+);
+
+list.resetPersonalBests = new SimplePopup(
+  "resetPersonalBests",
+  "text",
+  "Reset Personal Bests",
+  [],
+  "Are you sure you want to reset all your personal bests?",
+  "Reset",
+  () => {
+    try {
+      Loader.show();
+
+      CloudFunctions.resetPersonalBests({
+        uid: firebase.auth().currentUser.uid,
+      }).then((res) => {
+        if (res) {
+          Loader.hide();
+          Notifications.add(
+            "Personal bests removed, refreshing the page...",
+            0
+          );
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        } else {
+          Notifications.add(
+            "Something went wrong while removing personal bests...",
+            -1
+          );
+        }
+      });
+    } catch (e) {
+      Notifications.add("Something went wrong: " + e, -1);
+    }
+  },
+  () => {}
 );

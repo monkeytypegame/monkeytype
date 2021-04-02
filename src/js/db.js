@@ -1,26 +1,40 @@
 import { loadTags } from "./result-filters";
+import * as AccountButton from "./account-button";
+import * as CloudFunctions from "./cloud-functions";
+import * as Notifications from "./notifications";
 
 const db = firebase.firestore();
 db.settings({ experimentalForceLongPolling: true });
 
 let dbSnapshot = null;
 
-export function db_getSnapshot() {
+export function updateName(uid, name) {
+  db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
+}
+
+export function getSnapshot() {
   return dbSnapshot;
 }
 
-export function db_setSnapshot(newSnapshot) {
+export function setSnapshot(newSnapshot) {
+  delete newSnapshot.banned;
+  delete newSnapshot.verified;
   dbSnapshot = newSnapshot;
 }
 
-export async function db_getUserSnapshot() {
+export async function initSnapshot() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
   let snap = {
     results: undefined,
     personalBests: {},
+    name: undefined,
     tags: [],
     favouriteThemes: [],
+    refactored: false,
+    banned: undefined,
+    verified: undefined,
+    emailVerified: undefined,
     lbMemory: {
       time15: {
         global: null,
@@ -73,20 +87,30 @@ export async function db_getUserSnapshot() {
         if (data.personalBests !== undefined) {
           snap.personalBests = data.personalBests;
         }
+        snap.name = data.name;
         snap.discordId = data.discordId;
         snap.pairingCode =
           data.discordPairingCode == null ? undefined : data.discordPairingCode;
         snap.config = data.config;
         snap.favouriteThemes =
           data.favouriteThemes === undefined ? [] : data.favouriteThemes;
+        snap.refactored = data.refactored === true ? true : false;
         snap.globalStats = {
           time: data.timeTyping,
           started: data.startedTests,
           completed: data.completedTests,
         };
-        if (data.lbMemory !== undefined) {
-          snap.lbMemory = data.lbMemory;
-        }
+        snap.banned = data.banned;
+        snap.verified = data.verified;
+        snap.emailVerified = user.emailVerified;
+        try {
+          if (data.lbMemory.time15 !== undefined) {
+            snap.lbMemory.time15 = data.lbMemory.time15;
+          }
+          if (data.lbMemory.time60 !== undefined) {
+            snap.lbMemory.time60 = data.lbMemory.time60;
+          }
+        } catch {}
       })
       .catch((e) => {
         throw e;
@@ -99,7 +123,7 @@ export async function db_getUserSnapshot() {
   return dbSnapshot;
 }
 
-export async function db_getUserResults() {
+export async function getUserResults() {
   let user = firebase.auth().currentUser;
   if (user == null) return false;
   if (dbSnapshot === null) return false;
@@ -117,6 +141,15 @@ export async function db_getUserResults() {
           data.docs.forEach((doc) => {
             let result = doc.data();
             result.id = doc.id;
+
+            if (result.bailedOut === undefined) result.bailedOut = false;
+            if (result.blindMode === undefined) result.blindMode = false;
+            if (result.difficulty === undefined) result.difficulty = "normal";
+            if (result.funbox === undefined) result.funbox = "none";
+            if (result.language === undefined) result.language = "english";
+            if (result.numbers === undefined) result.numbers = false;
+            if (result.punctuation === undefined) result.punctuation = false;
+
             dbSnapshot.results.push(result);
           });
           return true;
@@ -131,7 +164,7 @@ export async function db_getUserResults() {
   }
 }
 
-export async function db_getUserHighestWpm(
+export async function getUserHighestWpm(
   mode,
   mode2,
   punctuation,
@@ -165,7 +198,7 @@ export async function db_getUserHighestWpm(
   return retval;
 }
 
-export async function db_getUserAverageWpm10(
+export async function getUserAverageWpm10(
   mode,
   mode2,
   punctuation,
@@ -175,7 +208,6 @@ export async function db_getUserAverageWpm10(
   function cont() {
     let wpmSum = 0;
     let count = 0;
-    let i = 0;
     // You have to use every so you can break out of the loop
     dbSnapshot.results.every((result) => {
       if (
@@ -199,7 +231,7 @@ export async function db_getUserAverageWpm10(
   let retval = 0;
 
   if (dbSnapshot == null) return retval;
-  var dbSnapshotValid = await db_getUserResults();
+  var dbSnapshotValid = await getUserResults();
   if (dbSnapshotValid === false) {
     return retval;
   }
@@ -207,7 +239,7 @@ export async function db_getUserAverageWpm10(
   return retval;
 }
 
-export async function db_getLocalPB(
+export async function getLocalPB(
   mode,
   mode2,
   punctuation,
@@ -241,7 +273,7 @@ export async function db_getLocalPB(
   return retval;
 }
 
-export async function db_saveLocalPB(
+export async function saveLocalPB(
   mode,
   mode2,
   punctuation,
@@ -252,6 +284,7 @@ export async function db_saveLocalPB(
   raw,
   consistency
 ) {
+  if (mode == "quote") return;
   function cont() {
     try {
       let found = false;
@@ -308,7 +341,7 @@ export async function db_saveLocalPB(
   }
 }
 
-export async function db_getLocalTagPB(
+export async function getLocalTagPB(
   tagId,
   mode,
   mode2,
@@ -344,7 +377,7 @@ export async function db_getLocalTagPB(
   return retval;
 }
 
-export async function db_saveLocalTagPB(
+export async function saveLocalTagPB(
   tagId,
   mode,
   mode2,
@@ -356,6 +389,7 @@ export async function db_saveLocalTagPB(
   raw,
   consistency
 ) {
+  if (mode == "quote") return;
   function cont() {
     let filteredtag = dbSnapshot.tags.filter((t) => t.id === tagId)[0];
     try {
@@ -413,7 +447,27 @@ export async function db_saveLocalTagPB(
   }
 }
 
-// export async function db_getLocalTagPB(tagId) {
+export function updateLbMemory(mode, mode2, type, value) {
+  getSnapshot().lbMemory[mode + mode2][type] = value;
+}
+
+export async function saveConfig(config) {
+  if (firebase.auth().currentUser !== null) {
+    AccountButton.loading(true);
+    CloudFunctions.saveConfig({
+      uid: firebase.auth().currentUser.uid,
+      obj: config,
+    }).then((d) => {
+      AccountButton.loading(false);
+      if (d.data.returnCode !== 1) {
+        Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
+      }
+      return;
+    });
+  }
+}
+
+// export async function DB.getLocalTagPB(tagId) {
 //   function cont() {
 //     let ret = 0;
 //     try {
@@ -434,7 +488,7 @@ export async function db_saveLocalTagPB(
 //   return retval;
 // }
 
-// export async function db_saveLocalTagPB(tagId, wpm) {
+// export async functio(tagId, wpm) {
 //   function cont() {
 //     dbSnapshot.tags.forEach((tag) => {
 //       if (tag.id === tagId) {

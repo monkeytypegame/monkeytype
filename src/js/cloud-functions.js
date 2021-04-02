@@ -27,3 +27,16 @@ export const getLeaderboard = firebase
   .functions()
   .httpsCallable("getLeaderboard");
 export const clearTagPb = firebase.functions().httpsCallable("clearTagPb");
+export const changeDisplayName = firebase
+  .functions()
+  .httpsCallable("changeDisplayName");
+
+export const removeSmallTests = firebase
+  .functions()
+  .httpsCallable("removeSmallTestsAndQPB");
+export const resetPersonalBests = firebase
+  .functions()
+  .httpsCallable("resetPersonalBests");
+export const checkLeaderboards = firebase
+  .functions()
+  .httpsCallable("checkLeaderboards");

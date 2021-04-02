@@ -130,6 +130,44 @@ exports.reserveDisplayName = functions.https.onCall(
   }
 );
 
+exports.changeDisplayName = functions.https.onCall(
+  async (request, response) => {
+    try {
+      if (!isUsernameValid(request.name))
+        return { status: -1, message: "Name not valid" };
+      let taken = await db
+        .collection("takenNames")
+        .doc(request.name.toLowerCase())
+        .get();
+      taken = taken.data();
+      if (taken === undefined || taken.taken === false) {
+        //not taken
+        let oldname = admin.auth().getUser(request.uid);
+        oldname = (await oldname).displayName;
+        await admin
+          .auth()
+          .updateUser(request.uid, { displayName: request.name });
+        await db
+          .collection("users")
+          .doc(request.uid)
+          .set({ name: request.name }, { merge: true });
+        await db.collection("takenNames").doc(request.name.toLowerCase()).set(
+          {
+            taken: true,
+          },
+          { merge: true }
+        );
+        await db.collection("takenNames").doc(oldname.toLowerCase()).delete();
+        return { status: 1, message: "Updated" };
+      } else {
+        return { status: -2, message: "Name taken." };
+      }
+    } catch (e) {
+      return { status: -999, message: "Error: " + e.message };
+    }
+  }
+);
+
 exports.clearName = functions.auth.user().onDelete((user) => {
   db.collection("takenNames").doc(user.displayName.toLowerCase()).delete();
   db.collection("users").doc(user.uid).delete();
@@ -369,8 +407,76 @@ exports.checkNameAvailability = functions.https.onRequest(
 //   }
 // );
 
-function checkIfPB(uid, obj, userdata) {
+exports.removeSmallTestsAndQPB = functions.https.onCall(
+  async (request, response) => {
+    let uid = request.uid;
+
+    try {
+      let docs = await db
+        .collection(`users/${uid}/results`)
+        .where("mode", "==", "time")
+        .where("mode2", "<", 15)
+        .get();
+      docs.forEach(async (doc) => {
+        db.collection(`users/${uid}/results`).doc(doc.id).delete();
+      });
+      let docs2 = await db
+        .collection(`users/${uid}/results`)
+        .where("mode", "==", "words")
+        .where("mode2", "<", 10)
+        .get();
+      docs2.forEach(async (doc) => {
+        db.collection(`users/${uid}/results`).doc(doc.id).delete();
+      });
+      let docs3 = await db
+        .collection(`users/${uid}/results`)
+        .where("mode", "==", "custom")
+        .where("testDuration", "<", 10)
+        .get();
+      docs3.forEach(async (doc) => {
+        db.collection(`users/${uid}/results`).doc(doc.id).delete();
+      });
+      // console.log(`removing small tests for ${uid}: ${docs.size} time, ${docs2.size} words, ${docs3.size} custom`);
+      let userdata = await db.collection(`users`).doc(uid).get();
+      userdata = userdata.data();
+      try {
+        pbs = userdata.personalBests;
+        // console.log(`removing ${Object.keys(pbs.quote).length} quote pb`);
+        delete pbs.quote;
+        await db.collection("users").doc(uid).update({ personalBests: pbs });
+      } catch {}
+      db.collection("users")
+        .doc(uid)
+        .set({ refactored: true }, { merge: true });
+      console.log("removed small tests for " + uid);
+    } catch (e) {
+      console.log(`something went wrong for ${uid}: ${e.message}`);
+    }
+  }
+);
+
+exports.resetPersonalBests = functions.https.onCall(
+  async (request, response) => {
+    let uid = request.uid;
+
+    try {
+      var user = await db.collection("users").doc(uid);
+      await user.update({ personalBests: {} });
+      return true;
+    } catch (e) {
+      console.log(
+        `something went wrong when deleting personal bests for ${uid}: ${e.message}`
+      );
+      return false;
+    }
+  }
+);
+
+async function checkIfPB(uid, obj, userdata) {
   let pbs = null;
+  if (obj.mode == "quote") {
+    return false;
+  }
   if (obj.funbox !== "none") {
     return false;
   }
@@ -503,6 +609,9 @@ function checkIfPB(uid, obj, userdata) {
 
 async function checkIfTagPB(uid, obj, userdata) {
   if (obj.tags.length === 0) {
+    return [];
+  }
+  if (obj.mode == "quote") {
     return [];
   }
   let dbtags = [];
@@ -719,25 +828,25 @@ function validateResult(result) {
     );
     return false;
   }
-  if (result.allChars != undefined) {
-    let raw = roundTo2((result.allChars * (60 / result.testDuration)) / 5);
-    if (
-      raw < result.rawWpm - result.rawWpm * 0.01 ||
-      raw > result.rawWpm + result.rawWpm * 0.01
-    ) {
-      console.error(
-        `Could not validate result for ${result.uid}. raw ${raw} != ${result.rawWpm}`
-      );
-      return false;
-    }
-  }
+  // if (result.allChars != undefined) {
+  //   let raw = roundTo2((result.allChars * (60 / result.testDuration)) / 5);
+  //   if (
+  //     raw < result.rawWpm - result.rawWpm * 0.01 ||
+  //     raw > result.rawWpm + result.rawWpm * 0.01
+  //   ) {
+  //     console.error(
+  //       `Could not validate result for ${result.uid}. raw ${raw} != ${result.rawWpm}`
+  //     );
+  //     return false;
+  //   }
+  // }
   if (result.mode === "time" && (result.mode2 === 15 || result.mode2 === 60)) {
     let keyPressTimeSum =
       result.keySpacing.reduce((total, val) => {
         return total + val;
       }) / 1000;
     if (
-      keyPressTimeSum < result.testDuration - 8 ||
+      keyPressTimeSum < result.testDuration - 1 ||
       keyPressTimeSum > result.testDuration + 1
     ) {
       console.error(
@@ -756,6 +865,12 @@ function validateResult(result) {
       return false;
     }
   }
+
+  if (result.chartData.wpm !== undefined) {
+    if (result.chartData.wpm.filter((w) => w > 400).length > 0) return false;
+  }
+
+  if (result.wpm > 100 && result.consistency < 10) return false;
 
   return true;
 }
@@ -829,6 +944,21 @@ exports.verifyUser = functions.https.onRequest(async (request, response) => {
       .then((res) => res.json())
       .then(async (res2) => {
         let did = res2.id;
+
+        if (
+          (await db.collection("users").where("discordId", "==", did).get())
+            .docs.length > 0
+        ) {
+          response.status(200).send({
+            data: {
+              status: -1,
+              message:
+                "This Discord account is already paired to a different Monkeytype account",
+            },
+          });
+          return;
+        }
+
         await db.collection("users").doc(request.uid).update({
           discordId: did,
         });
@@ -922,6 +1052,13 @@ async function getIncrementedTypingStats(userData, resultObj) {
     }
     tt = resultObj.testDuration + resultObj.incompleteTestSeconds - afk;
 
+    if (tt > 500)
+      console.log(
+        `FUCK, INCREASING BY A LOT ${resultObj.uid}: ${JSON.stringify(
+          resultObj
+        )}`
+      );
+
     if (userData.startedTests === undefined) {
       newStarted = resultObj.restartCount + 1;
     } else {
@@ -963,7 +1100,7 @@ async function getUpdatedLbMemory(userdata, mode, mode2, globallb, dailylb) {
     lbmemory = {};
   }
 
-  if (lbmemory[mode + mode2] === undefined) {
+  if (lbmemory[mode + mode2] == undefined) {
     lbmemory[mode + mode2] = {
       global: null,
       daily: null,
@@ -1099,81 +1236,6 @@ async function incrementStartedTestCounter(uid, num, userData) {
   }
 }
 
-async function incrementTimeSpentTyping(uid, res, userData) {
-  try {
-    if (userData.timeTyping === undefined) {
-      let stepSize = 1000;
-      let results = [];
-      let query = await db
-        .collection(`users/${uid}/results`)
-        .orderBy("timestamp", "desc")
-        .limit(stepSize)
-        .get();
-      let lastDoc;
-      while (query.docs.length > 0) {
-        lastDoc = query.docs[query.docs.length - 1];
-        query.docs.forEach((doc) => {
-          let dd = doc.data();
-          results.push({
-            testDuration: dd.testDuration,
-            incompleteTestSeconds: dd.incompleteTestSeconds,
-          });
-        });
-        query = await db
-          .collection(`users/${uid}/results`)
-          .orderBy("timestamp", "desc")
-          .limit(stepSize)
-          .startAfter(lastDoc)
-          .get();
-      }
-
-      let timeSum = 0;
-      results.forEach((result) => {
-        try {
-          let ts = result.testDuration;
-          let its = result.incompleteTestSeconds;
-          let s1 = ts == undefined ? 0 : ts;
-          let s2 = its == undefined ? 0 : its;
-
-          timeSum += parseFloat(s1) + parseFloat(s2);
-        } catch (e) {}
-      });
-      db.collection("users")
-        .doc(uid)
-        .update({
-          timeTyping: admin.firestore.FieldValue.increment(timeSum),
-        });
-      db.collection("public")
-        .doc("stats")
-        .update({
-          timeTyping: admin.firestore.FieldValue.increment(timeSum),
-        });
-    } else {
-      let afk = res.afkDuration;
-      if (afk == undefined) {
-        afk = 0;
-      }
-
-      db.collection("users")
-        .doc(uid)
-        .update({
-          timeTyping: admin.firestore.FieldValue.increment(
-            res.testDuration + res.incompleteTestSeconds - afk
-          ),
-        });
-      db.collection("public")
-        .doc("stats")
-        .update({
-          timeTyping: admin.firestore.FieldValue.increment(
-            res.testDuration + res.incompleteTestSeconds - afk
-          ),
-        });
-    }
-  } catch (e) {
-    console.error(`Error while incrementing time typing for user ${uid}: ${e}`);
-  }
-}
-
 exports.testCompleted = functions.https.onRequest(async (request, response) => {
   response.set("Access-Control-Allow-Origin", origin);
   if (request.method === "OPTIONS") {
@@ -1198,9 +1260,17 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
 
     let obj = request.obj;
 
+    if (obj.incompleteTestSeconds > 500)
+      console.log(
+        `FUCK, HIGH INCOMPLETE TEST SECONDS ${request.uid}: ${JSON.stringify(
+          obj
+        )}`
+      );
+
     function verifyValue(val) {
       let errCount = 0;
-      if (Array.isArray(val)) {
+      if (val === null || val === undefined) {
+      } else if (Array.isArray(val)) {
         //array
         val.forEach((val2) => {
           errCount += verifyValue(val2);
@@ -1216,8 +1286,6 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       return errCount;
     }
     let errCount = verifyValue(obj);
-
-    // console.log(errCount);
     if (errCount > 0) {
       console.error(
         `error saving result for ${
@@ -1236,6 +1304,32 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
       obj.consistency > 100
     ) {
       response.status(200).send({ data: { resultCode: -1 } });
+      return;
+    }
+    if (
+      (obj.mode === "time" && obj.mode2 < 15 && obj.mode2 > 0) ||
+      (obj.mode === "time" && obj.mode2 == 0 && obj.testDuration < 15) ||
+      (obj.mode === "words" && obj.mode2 < 10 && obj.mode2 > 0) ||
+      (obj.mode === "words" && obj.mode2 == 0 && obj.testDuration < 15) ||
+      (obj.mode === "custom" &&
+        obj.customText !== undefined &&
+        !obj.customText.isWordRandom &&
+        !obj.customText.isTimeRandom &&
+        obj.customText.textLen < 10) ||
+      (obj.mode === "custom" &&
+        obj.customText !== undefined &&
+        obj.customText.isWordRandom &&
+        !obj.customText.isTimeRandom &&
+        obj.customText.word < 10) ||
+      (obj.mode === "custom" &&
+        obj.customText !== undefined &&
+        !obj.customText.isWordRandom &&
+        obj.customText.isTimeRandom &&
+        obj.customText.time < 15)
+    ) {
+      response
+        .status(200)
+        .send({ data: { resultCode: -5, message: "Test too short" } });
       return;
     }
     if (!validateResult(obj)) {
@@ -1365,109 +1459,52 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
 
         // let createdDocId = e.id;
         return Promise.all([
-          checkLeaderboards(
-            request.obj,
-            "global",
-            banned,
-            name,
-            verified,
-            emailVerified
-          ),
-          checkLeaderboards(
-            request.obj,
-            "daily",
-            banned,
-            name,
-            verified,
-            emailVerified
-          ),
+          // checkLeaderboards(
+          //   request.obj,
+          //   "global",
+          //   banned,
+          //   name,
+          //   verified,
+          //   emailVerified
+          // ),
+          // checkLeaderboards(
+          //   request.obj,
+          //   "daily",
+          //   banned,
+          //   name,
+          //   verified,
+          //   emailVerified
+          // ),
           checkIfPB(request.uid, request.obj, userdata),
           checkIfTagPB(request.uid, request.obj),
-          db.collection(`users/${request.uid}/results`).add(obj),
         ])
           .then(async (values) => {
-            let globallb = values[0].insertedAt;
-            let dailylb = values[1].insertedAt;
-            let ispb = values[2];
-            let tagPbs = values[3];
-            let createdDocId = values[4].id;
+            // let globallb = values[0].insertedAt;
+            // let dailylb = values[1].insertedAt;
+            let ispb = values[0];
+            let tagPbs = values[1];
+            let createdDocId = await stripAndSave(request.uid, request.obj);
+            createdDocId = createdDocId.id;
             // console.log(values);
 
             if (obj.mode === "time" && String(obj.mode2) === "60") {
               incrementT60Bananas(request.uid, obj, userdata);
             }
 
-            // incrementTestCounter(request.uid, userdata);
-            // incrementStartedTestCounter(
-            //   request.uid,
-            //   obj.restartCount + 1,
-            //   userdata
-            // );
-            // incrementTimeSpentTyping(request.uid, obj, userdata);
-
             let newTypingStats = await getIncrementedTypingStats(userdata, obj);
 
-            if (
-              // obj.mode === "time" &&
-              // (obj.mode2 == "15" || obj.mode2 == "60") &&
-              // obj.language === "english"
-              globallb !== null &&
-              dailylb !== null
-            ) {
-              let updatedLbMemory = await getUpdatedLbMemory(
-                userdata,
-                obj.mode,
-                obj.mode2,
-                globallb,
-                dailylb
-              );
-              db.collection("users").doc(request.uid).update({
-                startedTests: newTypingStats.newStarted,
-                completedTests: newTypingStats.newCompleted,
-                timeTyping: newTypingStats.newTime,
-                lbMemory: updatedLbMemory,
-              });
-            } else {
-              db.collection("users").doc(request.uid).update({
-                startedTests: newTypingStats.newStarted,
-                completedTests: newTypingStats.newCompleted,
-                timeTyping: newTypingStats.newTime,
-              });
-            }
-
-            let usr =
-              userdata.discordId !== undefined
-                ? userdata.discordId
-                : userdata.name;
-
-            if (
-              globallb !== null &&
-              globallb.insertedAt >= 0 &&
-              globallb.insertedAt <= 9 &&
-              globallb.newBest
-            ) {
-              let lbstring = `${obj.mode} ${obj.mode2} global`;
-              console.log(
-                `sending command to the bot to announce lb update ${
-                  userdata.discordId
-                } ${globallb + 1} ${lbstring} ${obj.wpm}`
-              );
-
-              announceLbUpdate(
-                usr,
-                globallb.insertedAt + 1,
-                lbstring,
-                obj.wpm,
-                obj.rawWpm,
-                obj.acc
-              );
-            }
+            db.collection("users").doc(request.uid).update({
+              startedTests: newTypingStats.newStarted,
+              completedTests: newTypingStats.newCompleted,
+              timeTyping: newTypingStats.newTime,
+            });
+            // }
 
             let returnobj = {
               resultCode: null,
-              globalLeaderboard: globallb,
-              dailyLeaderboard: dailylb,
-              lbBanned: banned,
+              // globalLeaderboard: globallb,
+              // dailyLeaderboard: dailylb,
+              // lbBanned: banned,
               name: name,
               createdId: createdDocId,
               needsToVerify: values[0].needsToVerify,
@@ -1544,6 +1581,18 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
     return;
   }
 });
+
+async function stripAndSave(uid, obj) {
+  if (obj.bailedOut === false) delete obj.bailedOut;
+  if (obj.blindMode === false) delete obj.blindMode;
+  if (obj.difficulty === "normal") delete obj.difficulty;
+  if (obj.funbox === "none") delete obj.funbox;
+  if (obj.language === "english") delete obj.language;
+  if (obj.numbers === false) delete obj.numbers;
+  if (obj.punctuation === false) delete obj.punctuation;
+
+  return await db.collection(`users/${uid}/results`).add(obj);
+}
 
 exports.updateEmail = functions.https.onCall(async (request, response) => {
   try {
@@ -1876,6 +1925,9 @@ class Leaderboard {
             wpm: parseFloat(entry.wpm),
             raw: parseFloat(entry.raw),
             acc: parseFloat(entry.acc),
+            consistency: isNaN(parseInt(entry.consistency))
+              ? "-"
+              : parseInt(entry.consistency),
             mode: entry.mode,
             mode2: parseInt(entry.mode2),
             timestamp: entry.timestamp,
@@ -1911,6 +1963,9 @@ class Leaderboard {
   logBoard() {
     console.log(this.board);
   }
+  getMinWpm() {
+    return this.board[this.board.length - 1].wpm;
+  }
   removeDuplicates(insertedAt, uid) {
     //return true if a better result is found
     let found = false;
@@ -1941,32 +1996,61 @@ class Leaderboard {
   insert(a) {
     let insertedAt = -1;
     if (a.mode == this.mode && parseInt(a.mode2) === parseInt(this.mode2)) {
-      this.board.forEach((b, index) => {
-        if (insertedAt !== -1) return;
-        if (a.wpm === b.wpm) {
-          if (a.acc === b.acc) {
-            if (a.timestamp < b.timestamp) {
-              this.board.splice(index, 0, {
-                uid: a.uid,
-                name: a.name,
-                wpm: parseFloat(a.wpm),
-                raw: parseFloat(a.rawWpm),
-                acc: parseFloat(a.acc),
-                mode: a.mode,
-                mode2: parseInt(a.mode2),
-                timestamp: a.timestamp,
-                hidden: a.hidden === undefined ? false : a.hidden,
-              });
-              insertedAt = index;
+      if (
+        this.board.length !== this.size ||
+        (this.board.length === this.size && a.wpm > this.getMinWpm())
+      ) {
+        this.board.forEach((b, index) => {
+          if (insertedAt !== -1) return;
+          if (a.wpm === b.wpm) {
+            if (a.acc === b.acc) {
+              if (a.timestamp < b.timestamp) {
+                this.board.splice(index, 0, {
+                  uid: a.uid,
+                  name: a.name,
+                  wpm: parseFloat(a.wpm),
+                  raw: parseFloat(a.rawWpm),
+                  acc: parseFloat(a.acc),
+                  consistency: isNaN(parseInt(a.consistency))
+                    ? "-"
+                    : parseInt(a.consistency),
+                  mode: a.mode,
+                  mode2: parseInt(a.mode2),
+                  timestamp: a.timestamp,
+                  hidden: a.hidden === undefined ? false : a.hidden,
+                });
+                insertedAt = index;
+              }
+            } else {
+              if (a.acc > b.acc) {
+                this.board.splice(index, 0, {
+                  uid: a.uid,
+                  name: a.name,
+                  wpm: parseFloat(a.wpm),
+                  raw: parseFloat(a.rawWpm),
+                  acc: parseFloat(a.acc),
+                  consistency: isNaN(parseInt(a.consistency))
+                    ? "-"
+                    : parseInt(a.consistency),
+                  mode: a.mode,
+                  mode2: parseInt(a.mode2),
+                  timestamp: a.timestamp,
+                  hidden: a.hidden === undefined ? false : a.hidden,
+                });
+                insertedAt = index;
+              }
             }
           } else {
-            if (a.acc > b.acc) {
+            if (a.wpm > b.wpm) {
               this.board.splice(index, 0, {
                 uid: a.uid,
                 name: a.name,
                 wpm: parseFloat(a.wpm),
                 raw: parseFloat(a.rawWpm),
                 acc: parseFloat(a.acc),
+                consistency: isNaN(parseInt(a.consistency))
+                  ? "-"
+                  : parseInt(a.consistency),
                 mode: a.mode,
                 mode2: parseInt(a.mode2),
                 timestamp: a.timestamp,
@@ -1975,59 +2059,51 @@ class Leaderboard {
               insertedAt = index;
             }
           }
-        } else {
-          if (a.wpm > b.wpm) {
-            this.board.splice(index, 0, {
-              uid: a.uid,
-              name: a.name,
-              wpm: parseFloat(a.wpm),
-              raw: parseFloat(a.rawWpm),
-              acc: parseFloat(a.acc),
-              mode: a.mode,
-              mode2: parseInt(a.mode2),
-              timestamp: a.timestamp,
-              hidden: a.hidden === undefined ? false : a.hidden,
-            });
-            insertedAt = index;
+        });
+        if (this.board.length < this.size && insertedAt === -1) {
+          this.board.push({
+            uid: a.uid,
+            name: a.name,
+            wpm: parseFloat(a.wpm),
+            raw: parseFloat(a.rawWpm),
+            acc: parseFloat(a.acc),
+            consistency: isNaN(parseInt(a.consistency))
+              ? "-"
+              : parseInt(a.consistency),
+            mode: a.mode,
+            mode2: parseInt(a.mode2),
+            timestamp: a.timestamp,
+            hidden: a.hidden === undefined ? false : a.hidden,
+          });
+          insertedAt = this.board.length - 1;
+        }
+        // console.log("before duplicate remove");
+        // console.log(this.board);
+        let newBest = false;
+        let foundAt = null;
+        if (insertedAt >= 0) {
+          // if (this.removeDuplicates(insertedAt, a.uid)) {
+          //   insertedAt = -2;
+          // }
+          foundAt = this.removeDuplicates(insertedAt, a.uid);
+
+          if (foundAt >= insertedAt) {
+            //new better result
+            newBest = true;
           }
         }
-      });
-      if (this.board.length < this.size && insertedAt === -1) {
-        this.board.push({
-          uid: a.uid,
-          name: a.name,
-          wpm: parseFloat(a.wpm),
-          raw: parseFloat(a.rawWpm),
-          acc: parseFloat(a.acc),
-          mode: a.mode,
-          mode2: parseInt(a.mode2),
-          timestamp: a.timestamp,
-          hidden: a.hidden === undefined ? false : a.hidden,
-        });
-        insertedAt = this.board.length - 1;
+        // console.log(this.board);
+        this.clipBoard();
+        return {
+          insertedAt: insertedAt,
+          newBest: newBest,
+          foundAt: foundAt,
+        };
+      } else {
+        return {
+          insertedAt: -999,
+        };
       }
-      // console.log("before duplicate remove");
-      // console.log(this.board);
-      let newBest = false;
-      let foundAt = null;
-      if (insertedAt >= 0) {
-        // if (this.removeDuplicates(insertedAt, a.uid)) {
-        //   insertedAt = -2;
-        // }
-        foundAt = this.removeDuplicates(insertedAt, a.uid);
-
-        if (foundAt >= insertedAt) {
-          //new better result
-          newBest = true;
-        }
-      }
-      // console.log(this.board);
-      this.clipBoard();
-      return {
-        insertedAt: insertedAt,
-        newBest: newBest,
-        foundAt: foundAt,
-      };
     } else {
       return {
         insertedAt: -999,
@@ -2215,128 +2291,327 @@ exports.unlinkDiscord = functions.https.onRequest((request, response) => {
   }
 });
 
-async function checkLeaderboards(
-  resultObj,
-  type,
-  banned,
-  name,
-  verified,
-  emailVerified
-) {
-  //lb disable
-  // return {
-  //   insertedAt: null,
-  // };
-  //
-  try {
-    if (resultObj.funbox !== "none") {
-      return {
-        insertedAt: null,
-      };
+exports.checkLeaderboards = functions.https.onRequest(
+  async (request, response) => {
+    response.set("Access-Control-Allow-Origin", origin);
+    if (request.method === "OPTIONS") {
+      // Send response to OPTIONS requests
+      response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      response.set(
+        "Access-Control-Allow-Headers",
+        "Authorization,Content-Type"
+      );
+      response.set("Access-Control-Max-Age", "3600");
+      response.status(204).send("");
+      return;
     }
-    if (emailVerified === false)
-      return {
-        insertedAt: null,
-        needsToVerifyEmail: true,
-      };
-    if (!name)
-      return {
-        insertedAt: null,
-        noName: true,
-      };
-    if (banned)
-      return {
-        insertedAt: null,
-        banned: true,
-      };
-    if (verified === false)
-      return {
-        insertedAt: null,
-        needsToVerify: true,
-      };
+    request = request.body.data;
 
-    if (
-      resultObj.mode === "time" &&
-      ["15", "60"].includes(String(resultObj.mode2)) &&
-      resultObj.language === "english"
-    ) {
-      return await db.runTransaction(async (t) => {
-        const lbdoc = await t.get(
-          db
-            .collection("leaderboards")
-            .where("mode", "==", String(resultObj.mode))
-            .where("mode2", "==", String(resultObj.mode2))
-            .where("type", "==", type)
-        );
-        let lbData;
-        let docid = `${String(resultObj.mode)}_${String(
-          resultObj.mode2
-        )}_${type}`;
-        if (lbdoc.docs.length === 0) {
+    try {
+      if (request.emailVerified === false) {
+        response.status(200).send({
+          data: {
+            needsToVerifyEmail: true,
+          },
+        });
+        return;
+      }
+      if (request.name === undefined) {
+        response.status(200).send({
+          data: {
+            noName: true,
+          },
+        });
+        return;
+      }
+      if (request.banned) {
+        response.status(200).send({
+          data: {
+            banned: true,
+          },
+        });
+        return;
+      }
+      if (request.verified === false) {
+        response.status(200).send({
+          data: {
+            needsToVerify: true,
+          },
+        });
+        return;
+      }
+
+      request.result.name = request.name;
+
+      if (
+        request.result.mode === "time" &&
+        ["15", "60"].includes(String(request.result.mode2)) &&
+        request.result.language === "english" &&
+        request.result.funbox === "none"
+      ) {
+        let global = await db
+          .runTransaction(async (t) => {
+            const lbdoc = await t.get(
+              db
+                .collection("leaderboards")
+                .where("mode", "==", String(request.result.mode))
+                .where("mode2", "==", String(request.result.mode2))
+                .where("type", "==", "global")
+            );
+            // let lbData;
+            let docid = `${String(request.result.mode)}_${String(
+              request.result.mode2
+            )}_${"global"}`;
+            // if (lbdoc.docs.length === 0) {
+            //   console.log(
+            //     `no ${request.mode} ${request.mode2} ${type} leaderboard found - creating`
+            //   );
+            //   let toAdd = {
+            //     size: 20,
+            //     mode: String(request.mode),
+            //     mode2: String(request.mode2),
+            //     type: type,
+            //   };
+            //   t.set(
+            //     db
+            //       .collection("leaderboards")
+            //       .doc(
+            //         `${String(request.mode)}_${String(request.mode2)}_${type}`
+            //       ),
+            //     toAdd
+            //   );
+            //   lbData = toAdd;
+            // } else {
+            //   lbData = lbdoc.docs[0].data();
+            // }
+            let boardInfo = lbdoc.docs[0].data();
+            if (
+              boardInfo.minWpm === undefined ||
+              boardInfo.board.length !== boardInfo.size ||
+              (boardInfo.minWpm !== undefined &&
+                request.result.wpm > boardInfo.minWpm &&
+                boardInfo.board.length === boardInfo.size)
+            ) {
+              let boardData = boardInfo.board;
+              let lb = new Leaderboard(
+                boardInfo.size,
+                request.result.mode,
+                request.result.mode2,
+                boardInfo.type,
+                boardData
+              );
+              let insertResult = lb.insert(request.result);
+              if (insertResult.insertedAt >= 0) {
+                t.update(db.collection("leaderboards").doc(docid), {
+                  size: lb.size,
+                  type: lb.type,
+                  board: lb.board,
+                  minWpm: lb.getMinWpm(),
+                });
+              }
+              return insertResult;
+            } else {
+              //not above leaderboard minwpm
+              return {
+                insertedAt: -1,
+              };
+            }
+          })
+          .catch((error) => {
+            console.error(
+              `error in transaction checking leaderboards - ${error}`
+            );
+            return {
+              status: -999,
+              message: error,
+            };
+          });
+
+        let daily = await db
+          .runTransaction(async (t) => {
+            const lbdoc = await t.get(
+              db
+                .collection("leaderboards")
+                .where("mode", "==", String(request.result.mode))
+                .where("mode2", "==", String(request.result.mode2))
+                .where("type", "==", "daily")
+            );
+            // let lbData;
+            let docid = `${String(request.result.mode)}_${String(
+              request.result.mode2
+            )}_${"daily"}`;
+            // if (lbdoc.docs.length === 0) {
+            //   console.log(
+            //     `no ${request.mode} ${request.mode2} ${type} leaderboard found - creating`
+            //   );
+            //   let toAdd = {
+            //     size: 20,
+            //     mode: String(request.mode),
+            //     mode2: String(request.mode2),
+            //     type: type,
+            //   };
+            //   t.set(
+            //     db
+            //       .collection("leaderboards")
+            //       .doc(
+            //         `${String(request.mode)}_${String(request.mode2)}_${type}`
+            //       ),
+            //     toAdd
+            //   );
+            //   lbData = toAdd;
+            // } else {
+            //   lbData = lbdoc.docs[0].data();
+            // }
+            let boardInfo = lbdoc.docs[0].data();
+            if (
+              boardInfo.minWpm === undefined ||
+              boardInfo.board.length !== boardInfo.size ||
+              (boardInfo.minWpm !== undefined &&
+                request.result.wpm > boardInfo.minWpm &&
+                boardInfo.board.length === boardInfo.size)
+            ) {
+              let boardData = boardInfo.board;
+              let lb = new Leaderboard(
+                boardInfo.size,
+                request.result.mode,
+                request.result.mode2,
+                boardInfo.type,
+                boardData
+              );
+              let insertResult = lb.insert(request.result);
+              if (insertResult.insertedAt >= 0) {
+                t.update(db.collection("leaderboards").doc(docid), {
+                  size: lb.size,
+                  type: lb.type,
+                  board: lb.board,
+                  minWpm: lb.getMinWpm(),
+                });
+              }
+              return insertResult;
+            } else {
+              //not above leaderboard minwpm
+              return {
+                insertedAt: -1,
+              };
+            }
+          })
+          .catch((error) => {
+            console.error(
+              `error in transaction checking leaderboards - ${error}`
+            );
+            return {
+              status: -999,
+              message: error,
+            };
+          });
+
+        //send discord update
+        let usr =
+          request.discordId !== undefined ? request.discordId : request.name;
+
+        if (
+          global !== null &&
+          global.insertedAt >= 0 &&
+          global.insertedAt <= 9 &&
+          global.newBest
+        ) {
+          let lbstring = `${request.result.mode} ${request.result.mode2} global`;
           console.log(
-            `no ${resultObj.mode} ${resultObj.mode2} ${type} leaderboard found - creating`
+            `sending command to the bot to announce lb update ${usr} ${
+              global.insertedAt + 1
+            } ${lbstring} ${request.result.wpm}`
           );
-          let toAdd = {
-            size: 20,
-            mode: String(resultObj.mode),
-            mode2: String(resultObj.mode2),
-            type: type,
-          };
-          t.set(
-            db
-              .collection("leaderboards")
-              .doc(
-                `${String(resultObj.mode)}_${String(resultObj.mode2)}_${type}`
-              ),
-            toAdd
+
+          announceLbUpdate(
+            usr,
+            global.insertedAt + 1,
+            lbstring,
+            request.result.wpm,
+            request.result.rawWpm,
+            request.result.acc,
+            request.result.consistency
           );
-          lbData = toAdd;
-        } else {
-          lbData = lbdoc.docs[0].data();
         }
-        let boardInfo = lbData;
-        let boardData = lbData.board;
-        let lb = new Leaderboard(
-          boardInfo.size,
-          resultObj.mode,
-          resultObj.mode2,
-          boardInfo.type,
-          boardData
-        );
-        let insertResult = lb.insert(resultObj);
 
-        if (insertResult.insertedAt >= 0) {
-          //update the database here
-          console.log(
-            `leaderboard changed ${resultObj.mode} ${
-              resultObj.mode2
-            } ${type} - ${JSON.stringify(lb.board)}`
+        //
+
+        if (
+          // obj.mode === "time" &&
+          // (obj.mode2 == "15" || obj.mode2 == "60") &&
+          // obj.language === "english"
+          global !== null ||
+          daily !== null
+        ) {
+          let updatedLbMemory = await getUpdatedLbMemory(
+            request.lbMemory,
+            request.result.mode,
+            request.result.mode2,
+            global,
+            daily
           );
-          t.update(db.collection("leaderboards").doc(docid), {
-            size: lb.size,
-            type: lb.type,
-            board: lb.board,
+          db.collection("users").doc(request.uid).update({
+            lbMemory: updatedLbMemory,
           });
         }
 
-        return {
-          insertedAt: insertResult,
-        };
+        response.status(200).send({
+          data: {
+            status: 2,
+            daily: daily,
+            global: global,
+          },
+        });
+        return;
+      } else {
+        response.status(200).send({
+          data: {
+            daily: {
+              insertedAt: null,
+            },
+            global: {
+              insertedAt: null,
+            },
+          },
+        });
+        return;
+      }
+    } catch (e) {
+      console.log(e);
+      response.status(200).send({
+        data: {
+          status: -999,
+          message: e,
+        },
       });
-    } else {
-      return {
-        insertedAt: null,
-      };
+      return;
     }
-  } catch (e) {
-    console.error(
-      `error while checking leaderboards - ${e} - ${type} ${resultObj}`
-    );
-    return {
-      insertedAt: null,
-    };
   }
-}
+);
+
+// async function checkLeaderboards(
+//   resultObj,
+//   type,
+//   banned,
+//   name,
+//   verified,
+//   emailVerified
+// ) {
+//   //lb disable
+//   // return {
+//   //   insertedAt: null,
+//   // };
+//   //
+//   try {
+
+//   } catch (e) {
+//     console.error(
+//       `error while checking leaderboards - ${e} - ${type} ${resultObj}`
+//     );
+//     return {
+//       insertedAt: null,
+//     };
+//   }
+// }
 
 exports.getLeaderboard = functions.https.onCall((request, response) => {
   return db
@@ -2446,13 +2721,13 @@ exports.scheduledFunctionCrontab = functions.pubsub
 
             announceDailyLbResult(lbdata);
             t = new Date();
-            db.collection("leaderboards_history")
-              .doc(
-                `${t.getUTCDate()}_${t.getUTCMonth()}_${t.getUTCFullYear()}_${
-                  lbdata.mode
-                }_${lbdata.mode2}`
-              )
-              .set(lbdata);
+            // db.collection("leaderboards_history")
+            //   .doc(
+            //     `${t.getUTCDate()}_${t.getUTCMonth()}_${t.getUTCFullYear()}_${
+            //       lbdata.mode
+            //     }_${lbdata.mode2}`
+            //   )
+            //   .set(lbdata);
             db.collection("leaderboards").doc(doc.id).set(
               {
                 board: [],

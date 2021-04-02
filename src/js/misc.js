@@ -1,4 +1,10 @@
-import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
+import * as Loader from "./loader";
+
+export function getuid() {
+  console.error("Only share this uid with Miodec and nobody else!");
+  console.log(firebase.auth().currentUser.uid);
+  console.error("Only share this uid with Miodec and nobody else!");
+}
 
 function hexToHSL(H) {
   // Convert hex to RGB first
@@ -102,6 +108,60 @@ export async function getFunboxList() {
   }
 }
 
+let quotes = null;
+export async function getQuotes(language) {
+  if (quotes === null || quotes.language !== language.replace(/_\d*k$/g, "")) {
+    Loader.show();
+    try {
+      let data = await $.getJSON(`quotes/${language}.json`);
+      Loader.hide();
+      if (data.quotes === undefined || data.quotes.length === 0) {
+        quotes = {
+          quotes: [],
+          length: 0,
+        };
+        return quotes;
+      }
+      quotes = data;
+      quotes.length = data.quotes.length;
+      quotes.groups.forEach((qg, i) => {
+        let lower = qg[0];
+        let upper = qg[1];
+        quotes.groups[i] = quotes.quotes.filter((q) => {
+          if (q.length >= lower && q.length <= upper) {
+            q.group = i;
+            return true;
+          } else {
+            return false;
+          }
+        });
+      });
+      return quotes;
+    } catch {
+      Loader.hide();
+      quotes = {
+        quotes: [],
+        length: 0,
+      };
+      return quotes;
+    }
+
+    // error: (e) => {
+    //   Notifications.add(
+    //     `Error while loading ${language.replace(
+    //       /_\d*k$/g,
+    //       ""
+    //     )} quotes: ${e}`,
+    //     -1
+    //   );
+    //   quotes = [];
+    //   return quotes;
+    // },
+  } else {
+    return quotes;
+  }
+}
+
 let fontsList = null;
 export async function getFontsList() {
   if (fontsList == null) {
@@ -142,6 +202,31 @@ export async function getLanguageList() {
   } else {
     return languageList;
   }
+}
+
+let languageGroupList = null;
+export async function getLanguageGroups() {
+  if (languageGroupList == null) {
+    return $.getJSON("languages/_groups.json", function (data) {
+      languageGroupList = data;
+      return languageGroupList;
+    });
+  } else {
+    return languageGroupList;
+  }
+}
+
+export async function findCurrentGroup(language) {
+  let retgroup = undefined;
+  let groups = await getLanguageGroups();
+  groups.forEach((group) => {
+    if (retgroup === undefined) {
+      if (group.languages.includes(language)) {
+        retgroup = group;
+      }
+    }
+  });
+  return retgroup;
 }
 
 let challengeList = null;
@@ -238,15 +323,15 @@ export function getCookie(cname) {
 }
 
 export function sendVerificationEmail() {
-  showBackgroundLoader();
+  Loader.show();
   let cu = firebase.auth().currentUser;
   cu.sendEmailVerification()
     .then(() => {
-      hideBackgroundLoader();
+      Loader.hide();
       showNotification("Email sent to " + cu.email, 4000);
     })
     .catch((e) => {
-      hideBackgroundLoader();
+      Loader.hide();
       showNotification("Error: " + e.message, 3000);
       console.error(e.message);
     });
@@ -574,6 +659,18 @@ export function toggleFullscreen(elem) {
   }
 }
 
+export function getWords() {
+  const words = [...document.querySelectorAll("#words .word")]
+    .map((word) => {
+      return [...word.querySelectorAll("letter")]
+        .map((letter) => letter.innerText)
+        .join("");
+    })
+    .join(" ");
+
+  return words;
+}
+
 //credit: https://www.w3resource.com/javascript-exercises/javascript-string-exercise-32.php
 export function remove_non_ascii(str) {
   if (str === null || str === "") return false;
@@ -611,3 +708,55 @@ function forEachWithCallback(callback) {
 }
 
 Array.prototype.forEachWithCallback = forEachWithCallback;
+
+export function isUsernameValid(name) {
+  if (name === null || name === undefined || name === "") return false;
+  if (/miodec/.test(name.toLowerCase())) return false;
+  if (/bitly/.test(name.toLowerCase())) return false;
+  if (name.length > 14) return false;
+  if (/^\..*/.test(name.toLowerCase())) return false;
+  return /^[0-9a-zA-Z_.-]+$/.test(name);
+}
+
+export function mapRange(x, in_min, in_max, out_min, out_max) {
+  let num = ((x - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
+
+  if (out_min > out_max) {
+    if (num > out_min) {
+      num = out_min;
+    } else if (num < out_max) {
+      num = out_max;
+    }
+  } else {
+    if (num < out_min) {
+      num = out_min;
+    } else if (num > out_max) {
+      num = out_max;
+    }
+  }
+  return num;
+}
+
+export function canQuickRestart(mode, words, time, CustomText) {
+  if (
+    (mode === "words" && words < 1000) ||
+    (mode === "time" && time < 3600) ||
+    mode === "quote" ||
+    (mode === "custom" && CustomText.isWordRandom && CustomText.word < 1000) ||
+    (mode === "custom" && CustomText.isTimeRandom && CustomText.time < 3600) ||
+    (mode === "custom" &&
+      !CustomText.isWordRandom &&
+      CustomText.text.length < 1000)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export function clearTimeouts(timeouts) {
+  timeouts.forEach((to) => {
+    clearTimeout(to);
+    to = null;
+  });
+}

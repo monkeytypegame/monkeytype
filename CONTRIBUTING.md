@@ -35,6 +35,19 @@
    - Click "Generate New Private Key"
    - Save as `serviceAccountKey.json` in the `functions/` directory
 
+1. Enable Firebase Authentication
+
+   - In the Firebase console, go to Authentication
+   - Click on `Email/Password`, enable it and save
+   - Click on `Google`, add a support email and save
+
+1. Enable Firebase Firestore
+
+   - In the Firebase console, go to Cloud Firestore
+   - Create database
+   - Start in test mode
+   - Select default location and enable
+
 ## Building and Running
 
 1. Run `npm install` in the project root directory to install dependencies.
@@ -43,7 +56,7 @@
 
 ## Standards and Conventions
 
-1. Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically run every time you `git commit` (if you've followed the above instructions properly).
+1. Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically ran every time you `git commit` (if you've followed the above instructions properly).
 
 ## Questions
 
