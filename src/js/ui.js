@@ -212,7 +212,7 @@ export function changePage(page) {
       swapElements(activePage, $(".page.pageTribe"), 250, () => {
         pageTransition = false;
         Tribe.scrollChat();
-        Tribe.showTestConfig();
+        TestConfig.show();
         $(".pageTribe .lobby .chat .input input").focus();
         history.pushState("tribe", null, "tribe");
         $(".page.pageTribe").addClass("active");

@@ -233,7 +233,7 @@ function applyRoomConfig(cfg) {
   UpdateConfig.setDifficulty(cfg.difficulty, true, true);
   UpdateConfig.setBlindMode(cfg.blindMode, true, true);
   UpdateConfig.setLanguage(cfg.language, true, true);
-  UpdateConfig.activateFunbox(cfg.funbox, null, true);
+  Funbox.activate(cfg.funbox, null, true);
   UpdateConfig.setStopOnError(cfg.stopOnError, true, true);
   UpdateConfig.setConfidenceMode(cfg.confidenceMode, true, true);
   UpdateConfig.setPunctuation(cfg.punctuation, true, true);
@@ -860,9 +860,9 @@ function updateTribeUserSettingsPopup(sid) {
   );
 }
 
-export function setName(name) {
-  name = this.name;
-  socket.emit("mp_system_name_set", { name: name });
+export function setName(newname) {
+  name = newname;
+  socket.emit("mp_system_name_set", { name: newname });
 }
 
 export function sendIsTypingUpdate(truefalse) {
@@ -1234,7 +1234,7 @@ socket.on("mp_chat_message", async (data) => {
     <div class="${cls}">${author}<div class="text">${data.message}</div></div>
   `);
 
-  shouldScrollChat();
+  scrollChat();
 });
 
 socket.on("mp_update_mm_status", (data) => {

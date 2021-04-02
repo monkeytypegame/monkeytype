@@ -46,8 +46,11 @@ $(document).ready(() => {
         //do nothing
         // }
       } else if (window.location.pathname !== "/") {
-        let page = window.location.pathname.replace("/", "");
-        UI.changePage(page);
+        if (/\/tribe.*/.test(window.location.pathname)) {
+        } else {
+          let page = window.location.pathname.replace("/", "");
+          UI.changePage(page);
+        }
       }
     });
   Settings.settingsFillPromise.then(Settings.update);
