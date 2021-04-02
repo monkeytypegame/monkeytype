@@ -1355,8 +1355,8 @@ export function apply(configObj) {
   });
   if (configObj && configObj != null && configObj != "null") {
     setTheme(configObj.theme, true);
-    setCustomTheme(configObj.customTheme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
+    setCustomTheme(configObj.customTheme, true);
     setQuickTabMode(configObj.quickTab, true);
     setKeyTips(configObj.showKeyTips, true);
     setTimeConfig(configObj.time, true);
