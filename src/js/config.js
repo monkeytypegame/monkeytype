@@ -1146,19 +1146,21 @@ export function setIndicateTypos(it, nosave) {
   if (!nosave) saveToCookie();
 }
 
-export function setCustomTheme(boolean, nosave) {
+export function setCustomTheme(boolean, nosave, noThemeChange = false) {
   if (boolean !== undefined) config.customTheme = boolean;
-  if (boolean) {
-    ThemeController.set("custom");
-  } else {
-    ThemeController.set(config.theme);
+  if (!noThemeChange) {
+    if (boolean) {
+      ThemeController.set("custom");
+    } else {
+      ThemeController.set(config.theme);
+    }
   }
   if (!nosave) saveToCookie();
 }
 
 export function setTheme(name, nosave) {
   config.theme = name;
-  setCustomTheme(false, true);
+  setCustomTheme(false, true, true);
   ThemeController.set(config.theme);
   if (!nosave) saveToCookie();
 }
