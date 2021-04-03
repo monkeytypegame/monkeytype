@@ -727,3 +727,11 @@ $(".pageSettings .sectionGroupTitle").click((e) => {
       );
   }
 });
+
+$(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
+  SimplePopups.list.resetPersonalBests.show();
+});
+
+$(".pageSettings #updateAccountEmail").on("click", (e) => {
+  SimplePopups.list.updateEmail.show();
+});
