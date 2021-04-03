@@ -961,27 +961,42 @@ export function finish(difficultyFailed = false, mp_outOfTime = false) {
 
   ChartController.result.options.annotation.annotations = [];
 
+  $(".pageTest #nextTestButton").removeClass("hidden");
+  $(".pageTest #backToLobbyButton").addClass("hidden");
+  $(".pageTest #readyButton").addClass("hidden");
+  $(".pageTest #restartTestButtonWithSameWordset").removeClass("hidden");
+  $(".pageTest #goBackToLobbyButton").addClass("hidden");
+  $(".pageTest #practiseMissedWordsButton").removeClass("hidden");
+  $(".pageTest #result .tribeResultChat").addClass("hidden");
+  $(".pageTest #readyButton").addClass("hidden");
+  $(".pageTest #queueAgainButton").addClass("hidden");
+
   if (Tribe.state >= 10) {
-    $(".pageTest #nextTestButton").addClass("hidden");
-    $(".pageTest #backToLobbyButton").addClass("hidden");
-    $(".pageTest #readyButton").removeClass("hidden");
-    $(".pageTest #restartTestButtonWithSameWordset").addClass("hidden");
-    $(".pageTest #goBackToLobbyButton").removeClass("hidden");
-    $(".pageTest #practiseMissedWordsButton").addClass("hidden");
-    $(".pageTest #result .tribeResultChat").removeClass("hidden");
-    if (Tribe.room.isLeader) {
-      // $(".pageTest #backToLobbyButton").removeClass("hidden");
-      // $(".pageTest #nextTestButton").removeClass("hidden");
-      $(".pageTest #readyButton").addClass("hidden");
+    if (Tribe.room.private) {
+      $(".pageTest #nextTestButton").addClass("hidden");
+      $(".pageTest #backToLobbyButton").addClass("hidden");
+      $(".pageTest #readyButton").removeClass("hidden");
+      $(".pageTest #restartTestButtonWithSameWordset").addClass("hidden");
+      $(".pageTest #goBackToLobbyButton").removeClass("hidden");
+      $(".pageTest #practiseMissedWordsButton").addClass("hidden");
+      $(".pageTest #result .tribeResultChat").removeClass("hidden");
+      $(".pageTest #result .resultMpButtons").removeClass("hidden");
+
+      if (Tribe.room.isLeader) {
+        // $(".pageTest #backToLobbyButton").removeClass("hidden");
+        // $(".pageTest #nextTestButton").removeClass("hidden");
+        $(".pageTest #readyButton").addClass("hidden");
+      } else {
+        $(".pageTest #readyButton").removeClass("hidden");
+      }
+    } else {
+      //public
+      $(".pageTest #result .resultMpButtons").addClass("hidden");
+      $(".pageTest #nextTestButton").removeClass("hidden");
+      $(".pageTest #restartTestButtonWithSameWordset").removeClass("hidden");
+      $(".pageTest #practiseMissedWordsButton").removeClass("hidden");
+      $(".pageTest #queueAgainButton").removeClass("hidden");
     }
-  } else {
-    $(".pageTest #nextTestButton").removeClass("hidden");
-    $(".pageTest #backToLobbyButton").addClass("hidden");
-    $(".pageTest #readyButton").addClass("hidden");
-    $(".pageTest #restartTestButtonWithSameWordset").removeClass("hidden");
-    $(".pageTest #goBackToLobbyButton").addClass("hidden");
-    $(".pageTest #practiseMissedWordsButton").removeClass("hidden");
-    $(".pageTest #result .tribeResultChat").addClass("hidden");
   }
 
   $("#result #resultWordsHistory").addClass("hidden");

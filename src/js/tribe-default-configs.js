@@ -35,7 +35,7 @@ export default [
   },
   {
     mode: "quote",
-    mode2: -1,
+    mode2: [0],
     difficulty: "normal",
     blindMode: false,
     language: "english",

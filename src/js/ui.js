@@ -145,7 +145,11 @@ export function changePage(page, tribe = false) {
     // incompleteTestSeconds = 0;
     TestStats.resetIncomplete();
     ManualRestart.set();
-    TestLogic.restart(undefined, undefined, undefined, tribe);
+    if (tribe) {
+      TestLogic.restart(false, true, undefined, tribe);
+    } else {
+      TestLogic.restart(undefined, undefined, undefined, tribe);
+    }
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();

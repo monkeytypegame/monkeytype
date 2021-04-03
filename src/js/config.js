@@ -261,11 +261,11 @@ export function setMode(mode, nosave, mp = false) {
     $("#top .config .punctuationMode").removeClass("hidden");
     $("#top .config .numbersMode").removeClass("hidden");
     $("#top .config .quoteLength").addClass("hidden");
-    setPunctuation(false, true);
-    setNumbers(false, true);
+    setPunctuation(false, true, mp);
+    setNumbers(false, true, mp);
   } else if (config.mode == "quote") {
-    setPunctuation(false, nosave);
-    setNumbers(false, nosave);
+    setPunctuation(false, nosave, mp);
+    setNumbers(false, nosave, mp);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");

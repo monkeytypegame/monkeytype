@@ -36,6 +36,7 @@ export let expectedVersion = "0.8.2";
 export let room = undefined;
 let name = undefined;
 let autoJoin = undefined;
+let lastQueue = undefined;
 
 export function setAutoJoin(code) {
   autoJoin = code;
@@ -217,8 +218,8 @@ function resetRace() {
   $(".pageTribe .lobby .tribePlayers").empty().addClass("hidden");
   hideCountdown();
   hideResultCountdown();
-  $(".pageTest #result .tribeResult").addClass("hidden");
-  $(".pageTest #result .tribeResultChat").addClass("hidden");
+  // $(".pageTest #result .tribeResult").addClass("hidden");
+  // $(".pageTest #result .tribeResultChat").addClass("hidden");
 }
 
 function applyRoomConfig(cfg) {
@@ -228,7 +229,7 @@ function applyRoomConfig(cfg) {
   } else if (cfg.mode === "words") {
     UpdateConfig.setWordCount(cfg.mode2, true, true);
   } else if (cfg.mode === "quote") {
-    UpdateConfig.setQuoteLength(cfg.mode2, true, true);
+    UpdateConfig.setQuoteLength(cfg.mode2, true, true, true);
   }
   UpdateConfig.setDifficulty(cfg.difficulty, true, true);
   UpdateConfig.setBlindMode(cfg.blindMode, true, true);
@@ -1126,7 +1127,7 @@ socket.on("mp_room_leave", () => {
   resetLobby();
   changeActiveSubpage("prelobby");
   resetLobby();
-  if (privateRoom) resetRace();
+  resetRace();
   // swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
 });
 
@@ -1243,7 +1244,6 @@ socket.on("mp_update_mm_status", (data) => {
   } else {
     MatchmakingStatus.hide();
   }
-  if (data.text !== undefined) MatchmakingStatus.setText(data.text);
   if (data.text !== undefined) MatchmakingStatus.setText(data.text);
 });
 
@@ -1431,7 +1431,6 @@ socket.on("mp_room_readyResultTimer_over", (data) => {
 });
 
 socket.on("mp_room_test_init", (data) => {
-  refreshTestUserList();
   if (room.private && room.isReady !== true && room.isLeader !== true) {
     UI.changePage("tribe");
     changeActiveSubpage("lobby");
@@ -1443,6 +1442,13 @@ socket.on("mp_room_test_init", (data) => {
     );
     return;
   }
+
+  let delay = 0;
+  if ($(".page.pageTest").hasClass("active")) {
+    //test already visible, delay some stuff
+    delay = 125;
+  }
+
   playSound("start");
   room.userSpeeds = {};
   resetTribeDiff();
@@ -1459,10 +1465,13 @@ socket.on("mp_room_test_init", (data) => {
   resultSuggestions.hide();
   MatchmakingStatus.reset();
   sendIsTypingUpdate(false);
-  TestLogic.restart(false, true, true);
-  showCountdown();
   hideResultCountdown();
   $(".pageTest #restartTestButton").addClass("hidden");
+
+  setTimeout(() => {
+    refreshTestUserList();
+    showCountdown();
+  }, delay);
 });
 
 socket.on("mp_room_state_update", (data) => {
@@ -1935,9 +1944,21 @@ $(".pageTribe .prelobby .matchmaking .button").click((e) => {
   MatchmakingStatus.setText("Searching for a room...");
   MatchmakingStatus.show();
   state = 8;
+  lastQueue = queue;
   applyRoomConfig(TribeDefaultConfigs[queue]);
   setTimeout(() => {
     socket.emit("mp_room_join", { queue: queue });
+  }, 1000);
+});
+
+$(".pageTest #result #queueAgainButton").click((e) => {
+  MatchmakingStatus.setText("Searching for a room...");
+  MatchmakingStatus.show();
+  state = 8;
+  applyRoomConfig(TribeDefaultConfigs[lastQueue]);
+  TestLogic.restart();
+  setTimeout(() => {
+    socket.emit("mp_room_join", { queue: lastQueue });
   }, 1000);
 });
 
