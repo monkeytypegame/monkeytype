@@ -1,7 +1,8 @@
 import Config from "./config";
+import * as TestLogic from "./test-logic";
 
 export function update(wpm, raw) {
-  // if (!testActive || !Config.showLiveWpm) {
+  // if (!TestLogic.active || !Config.showLiveWpm) {
   //   hideLiveWpm();
   // } else {
   //   showLiveWpm();
@@ -19,6 +20,7 @@ export function update(wpm, raw) {
 
 export function show() {
   if (!Config.showLiveWpm) return;
+  if (!TestLogic.active) return;
   if (Config.timerStyle === "mini") {
     // $("#miniTimerAndLiveWpm .wpm").css("opacity", Config.timerOpacity);
     if (!$("#miniTimerAndLiveWpm .wpm").hasClass("hidden")) return;

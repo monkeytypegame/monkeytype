@@ -5,7 +5,7 @@
   },
   {
     "name": "spanish",
-    "languages": ["spanish", "spanish_1k"]
+    "languages": ["spanish", "spanish_1k", "spanish_10k"]
   },
   {
     "name": "french",
@@ -57,7 +57,7 @@
   },
   {
     "name": "polish",
-    "languages": ["polish", "polish_2k"]
+    "languages": ["polish", "polish_2k", "polish_200k"]
   },
   {
     "name": "czech",

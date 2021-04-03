@@ -1,64 +1,10 @@
 import * as CloudFunctions from "./cloud-functions";
 import * as DB from "./db";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
 import Config from "./config";
 import * as Misc from "./misc";
 
 let textTimeouts = [];
-
-export function check(completedEvent) {
-  try {
-    if (
-      completedEvent.funbox === "none" &&
-      completedEvent.language === "english" &&
-      completedEvent.mode === "time" &&
-      ["15", "60"].includes(String(completedEvent.mode2))
-    ) {
-      $("#result .stats .leaderboards").removeClass("hidden");
-      $("#result .stats .leaderboards .bottom").html(
-        `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
-      );
-      textTimeouts.push(
-        setTimeout(() => {
-          $("#result .stats .leaderboards .bottom").html(
-            `still checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
-          );
-        }, 5000)
-      );
-      textTimeouts.push(
-        setTimeout(() => {
-          $("#result .stats .leaderboards .bottom").html(
-            `leaderboard seems<br>to be very busy <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
-          );
-        }, 10000)
-      );
-      let lbRes = completedEvent;
-      delete lbRes.keySpacing;
-      delete lbRes.keyDuration;
-      delete lbRes.chartData;
-      CloudFunctions.checkLeaderboards({
-        uid: completedEvent.uid,
-        lbMemory: DB.getSnapshot().lbMemory,
-        emailVerified: DB.getSnapshot().emailVerified,
-        name: DB.getSnapshot().name,
-        banned: DB.getSnapshot().banned,
-        verified: DB.getSnapshot().verified,
-        discordId: DB.getSnapshot().discordId,
-        result: lbRes,
-      })
-        .then((data) => {
-          Misc.clearTimeouts(textTimeouts);
-          show(data.data, completedEvent.mode2);
-        })
-        .catch((e) => {
-          $("#result .stats .leaderboards").addClass("hidden");
-          Notifications.add(e, -1);
-        });
-    }
-  } catch (e) {
-    Notifications.add(`Error while checking leaderboards: ${e}`, -1);
-  }
-}
 
 export function show(data, mode2) {
   let string = "";
@@ -182,4 +128,58 @@ export function show(data, mode2) {
   }
   $("#result .stats .leaderboards").removeClass("hidden");
   $("#result .stats .leaderboards .bottom").html(string);
+}
+
+export function check(completedEvent) {
+  try {
+    if (
+      completedEvent.funbox === "none" &&
+      completedEvent.language === "english" &&
+      completedEvent.mode === "time" &&
+      ["15", "60"].includes(String(completedEvent.mode2))
+    ) {
+      $("#result .stats .leaderboards").removeClass("hidden");
+      $("#result .stats .leaderboards .bottom").html(
+        `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+      );
+      textTimeouts.push(
+        setTimeout(() => {
+          $("#result .stats .leaderboards .bottom").html(
+            `still checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+          );
+        }, 5000)
+      );
+      textTimeouts.push(
+        setTimeout(() => {
+          $("#result .stats .leaderboards .bottom").html(
+            `leaderboard seems<br>to be very busy <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+          );
+        }, 10000)
+      );
+      let lbRes = completedEvent;
+      delete lbRes.keySpacing;
+      delete lbRes.keyDuration;
+      delete lbRes.chartData;
+      CloudFunctions.checkLeaderboards({
+        uid: completedEvent.uid,
+        lbMemory: DB.getSnapshot().lbMemory,
+        emailVerified: DB.getSnapshot().emailVerified,
+        name: DB.getSnapshot().name,
+        banned: DB.getSnapshot().banned,
+        verified: DB.getSnapshot().verified,
+        discordId: DB.getSnapshot().discordId,
+        result: lbRes,
+      })
+        .then((data) => {
+          Misc.clearTimeouts(textTimeouts);
+          show(data.data, completedEvent.mode2);
+        })
+        .catch((e) => {
+          $("#result .stats .leaderboards").addClass("hidden");
+          Notifications.add(e, -1);
+        });
+    }
+  } catch (e) {
+    Notifications.add(`Error while checking leaderboards: ${e}`, -1);
+  }
 }

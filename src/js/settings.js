@@ -1,302 +1,278 @@
-class SettingsGroup {
-  constructor(
-    configName,
-    toggleFunction,
-    setCallback = null,
-    updateCallback = null
-  ) {
-    this.configName = configName;
-    this.configValue = Config[configName];
-    if (this.configValue === true || this.configValue === false) {
-      this.onOff = true;
-    } else {
-      this.onOff = false;
+import SettingsGroup from "./settings-group";
+import Config, * as UpdateConfig from "./config";
+import * as Sound from "./sound";
+import * as Misc from "./misc";
+import layouts from "./layouts";
+import * as LanguagePicker from "./language-picker";
+import * as Notifications from "./notifications";
+import * as DB from "./db";
+import * as Loader from "./loader";
+import * as CloudFunctions from "./cloud-functions";
+import * as Funbox from "./funbox";
+import * as TagController from "./tag-controller";
+import * as SimplePopups from "./simple-popups";
+import * as EditTagsPopup from "./edit-tags-popup";
+import * as ThemePicker from "./theme-picker";
+
+export let groups = {};
+async function initGroups() {
+  await UpdateConfig.loadPromise;
+  groups.smoothCaret = new SettingsGroup(
+    "smoothCaret",
+    UpdateConfig.setSmoothCaret
+  );
+  groups.difficulty = new SettingsGroup(
+    "difficulty",
+    UpdateConfig.setDifficulty
+  );
+  groups.quickTab = new SettingsGroup("quickTab", UpdateConfig.setQuickTabMode);
+  groups.showLiveWpm = new SettingsGroup(
+    "showLiveWpm",
+    UpdateConfig.setShowLiveWpm,
+    () => {
+      groups.keymapMode.updateButton();
     }
-    this.toggleFunction = toggleFunction;
-    this.setCallback = setCallback;
-    this.updateCallback = updateCallback;
-
-    this.updateButton();
-
-    $(document).on(
-      "click",
-      `.pageSettings .section.${this.configName} .button`,
-      (e) => {
-        let target = $(e.currentTarget);
-        if (target.hasClass("disabled") || target.hasClass("no-auto-handle"))
-          return;
-        if (this.onOff) {
-          if (target.hasClass("on")) {
-            this.setValue(true);
-          } else {
-            this.setValue(false);
-          }
-          this.updateButton();
-          if (this.setCallback !== null) this.setCallback();
-        } else {
-          let value = target.attr(configName);
-          let params = target.attr("params");
-          this.setValue(value, params);
-        }
-      }
-    );
-  }
-
-  setValue(value, params = undefined) {
-    if (params === undefined) {
-      this.toggleFunction(value);
-    } else {
-      this.toggleFunction(value, ...params);
-    }
-    this.updateButton();
-    if (this.setCallback !== null) this.setCallback();
-  }
-
-  updateButton() {
-    this.configValue = Config[this.configName];
-    $(`.pageSettings .section.${this.configName} .button`).removeClass(
-      "active"
-    );
-    if (this.onOff) {
-      let onoffstring;
-      if (this.configValue) {
-        onoffstring = "on";
+  );
+  groups.showLiveAcc = new SettingsGroup(
+    "showLiveAcc",
+    UpdateConfig.setShowLiveAcc
+  );
+  groups.showTimerProgress = new SettingsGroup(
+    "showTimerProgress",
+    UpdateConfig.setShowTimerProgress
+  );
+  groups.keymapMode = new SettingsGroup(
+    "keymapMode",
+    UpdateConfig.setKeymapMode,
+    () => {
+      groups.showLiveWpm.updateButton();
+    },
+    () => {
+      if (Config.keymapMode === "off") {
+        $(".pageSettings .section.keymapStyle").addClass("hidden");
+        $(".pageSettings .section.keymapLayout").addClass("hidden");
       } else {
-        onoffstring = "off";
+        $(".pageSettings .section.keymapStyle").removeClass("hidden");
+        $(".pageSettings .section.keymapLayout").removeClass("hidden");
       }
-      $(
-        `.pageSettings .section.${this.configName} .buttons .button.${onoffstring}`
-      ).addClass("active");
-    } else {
-      $(
-        `.pageSettings .section.${this.configName} .button[${this.configName}='${this.configValue}']`
-      ).addClass("active");
     }
-    if (this.updateCallback !== null) this.updateCallback();
-  }
+  );
+  groups.keymapMatrix = new SettingsGroup(
+    "keymapStyle",
+    UpdateConfig.setKeymapStyle
+  );
+  groups.keymapLayout = new SettingsGroup(
+    "keymapLayout",
+    UpdateConfig.setKeymapLayout
+  );
+  groups.showKeyTips = new SettingsGroup(
+    "showKeyTips",
+    UpdateConfig.setKeyTips,
+    null,
+    () => {
+      if (Config.showKeyTips) {
+        $(".pageSettings .tip").removeClass("hidden");
+      } else {
+        $(".pageSettings .tip").addClass("hidden");
+      }
+    }
+  );
+  groups.freedomMode = new SettingsGroup(
+    "freedomMode",
+    UpdateConfig.setFreedomMode,
+    () => {
+      groups.confidenceMode.updateButton();
+    }
+  );
+  groups.strictSpace = new SettingsGroup(
+    "strictSpace",
+    UpdateConfig.setStrictSpace
+  );
+  groups.oppositeShiftMode = new SettingsGroup(
+    "oppositeShiftMode",
+    UpdateConfig.setOppositeShiftMode
+  );
+  groups.confidenceMode = new SettingsGroup(
+    "confidenceMode",
+    UpdateConfig.setConfidenceMode,
+    () => {
+      groups.freedomMode.updateButton();
+      groups.stopOnError.updateButton();
+    }
+  );
+  groups.indicateTypos = new SettingsGroup(
+    "indicateTypos",
+    UpdateConfig.setIndicateTypos
+  );
+  groups.hideExtraLetters = new SettingsGroup(
+    "hideExtraLetters",
+    UpdateConfig.setHideExtraLetters
+  );
+  groups.blindMode = new SettingsGroup("blindMode", UpdateConfig.setBlindMode);
+  groups.quickEnd = new SettingsGroup("quickEnd", UpdateConfig.setQuickEnd);
+  groups.repeatQuotes = new SettingsGroup(
+    "repeatQuotes",
+    UpdateConfig.setRepeatQuotes
+  );
+  groups.enableAds = new SettingsGroup("enableAds", UpdateConfig.setEnableAds);
+  groups.alwaysShowWordsHistory = new SettingsGroup(
+    "alwaysShowWordsHistory",
+    UpdateConfig.setAlwaysShowWordsHistory
+  );
+  groups.singleListCommandLine = new SettingsGroup(
+    "singleListCommandLine",
+    UpdateConfig.setSingleListCommandLine
+  );
+  groups.flipTestColors = new SettingsGroup(
+    "flipTestColors",
+    UpdateConfig.setFlipTestColors
+  );
+  groups.swapEscAndTab = new SettingsGroup(
+    "swapEscAndTab",
+    UpdateConfig.setSwapEscAndTab
+  );
+  groups.showOutOfFocusWarning = new SettingsGroup(
+    "showOutOfFocusWarning",
+    UpdateConfig.setShowOutOfFocusWarning
+  );
+  groups.colorfulMode = new SettingsGroup(
+    "colorfulMode",
+    UpdateConfig.setColorfulMode
+  );
+  groups.startGraphsAtZero = new SettingsGroup(
+    "startGraphsAtZero",
+    UpdateConfig.setStartGraphsAtZero
+  );
+  groups.randomTheme = new SettingsGroup(
+    "randomTheme",
+    UpdateConfig.setRandomTheme
+  );
+  groups.stopOnError = new SettingsGroup(
+    "stopOnError",
+    UpdateConfig.setStopOnError,
+    () => {
+      groups.confidenceMode.updateButton();
+    }
+  );
+  groups.playSoundOnError = new SettingsGroup(
+    "playSoundOnError",
+    UpdateConfig.setPlaySoundOnError
+  );
+  groups.playSoundOnClick = new SettingsGroup(
+    "playSoundOnClick",
+    UpdateConfig.setPlaySoundOnClick,
+    () => {
+      if (Config.playSoundOnClick !== "off")
+        Sound.playClick(Config.playSoundOnClick);
+    }
+  );
+  groups.showAllLines = new SettingsGroup(
+    "showAllLines",
+    UpdateConfig.setShowAllLines
+  );
+  groups.paceCaret = new SettingsGroup(
+    "paceCaret",
+    UpdateConfig.setPaceCaret,
+    () => {
+      if (Config.paceCaret === "custom") {
+        $(
+          ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+        ).removeClass("hidden");
+      } else {
+        $(
+          ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+        ).addClass("hidden");
+      }
+    }
+  );
+  groups.minWpm = new SettingsGroup("minWpm", UpdateConfig.setMinWpm, () => {
+    if (Config.minWpm === "custom") {
+      $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
+        "hidden"
+      );
+    } else {
+      $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
+        "hidden"
+      );
+    }
+  });
+  groups.minAcc = new SettingsGroup("minAcc", UpdateConfig.setMinAcc, () => {
+    if (Config.minAcc === "custom") {
+      $(".pageSettings .section.minAcc input.customMinAcc").removeClass(
+        "hidden"
+      );
+    } else {
+      $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
+    }
+  });
+  groups.smoothLineScroll = new SettingsGroup(
+    "smoothLineScroll",
+    UpdateConfig.setSmoothLineScroll
+  );
+  groups.capsLockBackspace = new SettingsGroup(
+    "capsLockBackspace",
+    UpdateConfig.setCapsLockBackspace
+  );
+  groups.layout = new SettingsGroup("layout", UpdateConfig.setSavedLayout);
+  groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
+  groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);
+  groups.pageWidth = new SettingsGroup("pageWidth", UpdateConfig.setPageWidth);
+  groups.caretStyle = new SettingsGroup(
+    "caretStyle",
+    UpdateConfig.setCaretStyle
+  );
+  groups.paceCaretStyle = new SettingsGroup(
+    "paceCaretStyle",
+    UpdateConfig.setPaceCaretStyle
+  );
+  groups.timerStyle = new SettingsGroup(
+    "timerStyle",
+    UpdateConfig.setTimerStyle
+  );
+  groups.highlighteMode = new SettingsGroup(
+    "highlightMode",
+    UpdateConfig.setHighlightMode
+  );
+  groups.timerOpacity = new SettingsGroup(
+    "timerOpacity",
+    UpdateConfig.setTimerOpacity
+  );
+  groups.timerColor = new SettingsGroup(
+    "timerColor",
+    UpdateConfig.setTimerColor
+  );
+  groups.fontFamily = new SettingsGroup(
+    "fontFamily",
+    UpdateConfig.setFontFamily,
+    null,
+    () => {
+      let customButton = $(
+        ".pageSettings .section.fontFamily .buttons .custom"
+      );
+      if (
+        $(".pageSettings .section.fontFamily .buttons .active").length === 0
+      ) {
+        customButton.addClass("active");
+        customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
+      } else {
+        customButton.text("Custom");
+      }
+    }
+  );
+  groups.alwaysShowDecimalPlaces = new SettingsGroup(
+    "alwaysShowDecimalPlaces",
+    UpdateConfig.setAlwaysShowDecimalPlaces
+  );
+  groups.alwaysShowCPM = new SettingsGroup(
+    "alwaysShowCPM",
+    UpdateConfig.setAlwaysShowCPM
+  );
 }
 
-let settingsGroups = {};
-
-settingsGroups.smoothCaret = new SettingsGroup("smoothCaret", setSmoothCaret);
-settingsGroups.difficulty = new SettingsGroup("difficulty", setDifficulty);
-settingsGroups.quickTab = new SettingsGroup("quickTab", setQuickTabMode);
-settingsGroups.showLiveWpm = new SettingsGroup(
-  "showLiveWpm",
-  setShowLiveWpm,
-  () => {
-    settingsGroups.keymapMode.updateButton();
-  }
-);
-settingsGroups.showLiveAcc = new SettingsGroup("showLiveAcc", setShowLiveAcc);
-settingsGroups.showTimerProgress = new SettingsGroup(
-  "showTimerProgress",
-  setShowTimerProgress
-);
-settingsGroups.keymapMode = new SettingsGroup(
-  "keymapMode",
-  setKeymapMode,
-  () => {
-    settingsGroups.showLiveWpm.updateButton();
-  },
-  () => {
-    if (Config.keymapMode === "off") {
-      $(".pageSettings .section.keymapStyle").addClass("hidden");
-      $(".pageSettings .section.keymapLayout").addClass("hidden");
-    } else {
-      $(".pageSettings .section.keymapStyle").removeClass("hidden");
-      $(".pageSettings .section.keymapLayout").removeClass("hidden");
-    }
-  }
-);
-settingsGroups.keymapMatrix = new SettingsGroup("keymapStyle", setKeymapStyle);
-settingsGroups.keymapLayout = new SettingsGroup(
-  "keymapLayout",
-  setKeymapLayout
-);
-settingsGroups.showKeyTips = new SettingsGroup(
-  "showKeyTips",
-  setKeyTips,
-  null,
-  () => {
-    if (Config.showKeyTips) {
-      $(".pageSettings .tip").removeClass("hidden");
-    } else {
-      $(".pageSettings .tip").addClass("hidden");
-    }
-  }
-);
-settingsGroups.freedomMode = new SettingsGroup(
-  "freedomMode",
-  setFreedomMode,
-  () => {
-    settingsGroups.confidenceMode.updateButton();
-  }
-);
-settingsGroups.strictSpace = new SettingsGroup("strictSpace", setStrictSpace);
-settingsGroups.oppositeShiftMode = new SettingsGroup(
-  "oppositeShiftMode",
-  setOppositeShiftMode
-);
-settingsGroups.confidenceMode = new SettingsGroup(
-  "confidenceMode",
-  setConfidenceMode,
-  () => {
-    settingsGroups.freedomMode.updateButton();
-    settingsGroups.stopOnError.updateButton();
-  }
-);
-settingsGroups.indicateTypos = new SettingsGroup(
-  "indicateTypos",
-  setIndicateTypos
-);
-settingsGroups.hideExtraLetters = new SettingsGroup(
-  "hideExtraLetters",
-  setHideExtraLetters
-);
-settingsGroups.blindMode = new SettingsGroup("blindMode", setBlindMode);
-settingsGroups.quickEnd = new SettingsGroup("quickEnd", setQuickEnd);
-settingsGroups.repeatQuotes = new SettingsGroup(
-  "repeatQuotes",
-  setRepeatQuotes
-);
-settingsGroups.enableAds = new SettingsGroup("enableAds", setEnableAds);
-settingsGroups.alwaysShowWordsHistory = new SettingsGroup(
-  "alwaysShowWordsHistory",
-  setAlwaysShowWordsHistory
-);
-settingsGroups.singleListCommandLine = new SettingsGroup(
-  "singleListCommandLine",
-  setSingleListCommandLine
-);
-settingsGroups.flipTestColors = new SettingsGroup(
-  "flipTestColors",
-  setFlipTestColors
-);
-settingsGroups.swapEscAndTab = new SettingsGroup(
-  "swapEscAndTab",
-  setSwapEscAndTab
-);
-settingsGroups.showOutOfFocusWarning = new SettingsGroup(
-  "showOutOfFocusWarning",
-  setShowOutOfFocusWarning
-);
-settingsGroups.colorfulMode = new SettingsGroup(
-  "colorfulMode",
-  setColorfulMode
-);
-settingsGroups.startGraphsAtZero = new SettingsGroup(
-  "startGraphsAtZero",
-  setStartGraphsAtZero
-);
-settingsGroups.randomTheme = new SettingsGroup("randomTheme", setRandomTheme);
-settingsGroups.stopOnError = new SettingsGroup(
-  "stopOnError",
-  setStopOnError,
-  () => {
-    settingsGroups.confidenceMode.updateButton();
-  }
-);
-settingsGroups.playSoundOnError = new SettingsGroup(
-  "playSoundOnError",
-  setPlaySoundOnError
-);
-settingsGroups.playSoundOnClick = new SettingsGroup(
-  "playSoundOnClick",
-  setPlaySoundOnClick,
-  () => {
-    if (Config.playSoundOnClick !== "off")
-      Sound.playClick(Config.playSoundOnClick);
-  }
-);
-settingsGroups.showAllLines = new SettingsGroup(
-  "showAllLines",
-  setShowAllLines
-);
-settingsGroups.paceCaret = new SettingsGroup("paceCaret", setPaceCaret, () => {
-  if (Config.paceCaret === "custom") {
-    $(
-      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
-    ).removeClass("hidden");
-  } else {
-    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
-      "hidden"
-    );
-  }
-});
-settingsGroups.minWpm = new SettingsGroup("minWpm", setMinWpm, () => {
-  if (Config.minWpm === "custom") {
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
-      "hidden"
-    );
-  } else {
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
-      "hidden"
-    );
-  }
-});
-settingsGroups.minAcc = new SettingsGroup("minAcc", setMinAcc, () => {
-  if (Config.minAcc === "custom") {
-    $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
-  } else {
-    $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
-  }
-});
-settingsGroups.smoothLineScroll = new SettingsGroup(
-  "smoothLineScroll",
-  setSmoothLineScroll
-);
-settingsGroups.capsLockBackspace = new SettingsGroup(
-  "capsLockBackspace",
-  setCapsLockBackspace
-);
-settingsGroups.layout = new SettingsGroup("layout", setSavedLayout);
-settingsGroups.language = new SettingsGroup("language", setLanguage);
-settingsGroups.fontSize = new SettingsGroup("fontSize", setFontSize);
-settingsGroups.pageWidth = new SettingsGroup("pageWidth", setPageWidth);
-settingsGroups.caretStyle = new SettingsGroup("caretStyle", setCaretStyle);
-settingsGroups.paceCaretStyle = new SettingsGroup(
-  "paceCaretStyle",
-  setPaceCaretStyle
-);
-settingsGroups.timerStyle = new SettingsGroup("timerStyle", setTimerStyle);
-settingsGroups.highlighteMode = new SettingsGroup(
-  "highlightMode",
-  setHighlightMode
-);
-settingsGroups.timerOpacity = new SettingsGroup(
-  "timerOpacity",
-  setTimerOpacity
-);
-settingsGroups.timerColor = new SettingsGroup("timerColor", setTimerColor);
-settingsGroups.fontFamily = new SettingsGroup(
-  "fontFamily",
-  setFontFamily,
-  null,
-  () => {
-    let customButton = $(".pageSettings .section.fontFamily .buttons .custom");
-    if ($(".pageSettings .section.fontFamily .buttons .active").length === 0) {
-      customButton.addClass("active");
-      customButton.text(`Custom (${Config.fontFamily.replace(/_/g, " ")})`);
-    } else {
-      customButton.text("Custom");
-    }
-  }
-);
-settingsGroups.alwaysShowDecimalPlaces = new SettingsGroup(
-  "alwaysShowDecimalPlaces",
-  setAlwaysShowDecimalPlaces
-);
-settingsGroups.alwaysShowCPM = new SettingsGroup(
-  "alwaysShowCPM",
-  setAlwaysShowCPM
-);
-
-let settingsFillPromise = fillSettingsPage();
-
 async function fillSettingsPage() {
-  await configLoadPromise;
-  refreshThemeButtons();
+  await initGroups();
+  await UpdateConfig.loadPromise;
+  ThemePicker.refreshButtons();
 
   let langGroupsEl = $(
     ".pageSettings .section.languageGroups .buttons"
@@ -368,7 +344,7 @@ async function fillSettingsPage() {
   let fontsEl = $(".pageSettings .section.fontFamily .buttons").empty();
   Misc.getFontsList().then((fonts) => {
     fonts.forEach((font) => {
-      if (ConfigSet.fontFamily === font.name) isCustomFont(false);
+      if (Config.fontFamily === font.name) isCustomFont = false;
       fontsEl.append(
         `<div class="button${
           Config.fontFamily === font.name ? " active" : ""
@@ -389,233 +365,63 @@ async function fillSettingsPage() {
         : '<div class="language button no-auto-handle custom" onclick="this.blur();">Custom</div>'
     )
       .on("click", () => {
-        simplePopups.applyCustomFont.show([]);
+        SimplePopups.list.applyCustomFont.show([]);
       })
       .appendTo(fontsEl);
   });
 }
 
-function refreshThemeButtons() {
-  let favThemesEl = $(
-    ".pageSettings .section.themes .favThemes.buttons"
-  ).empty();
-  let themesEl = $(".pageSettings .section.themes .allThemes.buttons").empty();
+export let settingsFillPromise = fillSettingsPage();
 
-  let activeThemeName = Config.theme;
-  if (Config.randomTheme !== "off" && ThemeController.randomTheme !== null) {
-    activeThemeName = ThemeController.randomTheme;
-  }
-
-  Misc.getSortedThemesList().then((themes) => {
-    //first show favourites
-    if (Config.favThemes.length > 0) {
-      favThemesEl.css({ paddingBottom: "1rem" });
-      themes.forEach((theme) => {
-        if (Config.favThemes.includes(theme.name)) {
-          let activeTheme = activeThemeName === theme.name ? "active" : "";
-          favThemesEl.append(
-            `<div class="theme button" theme='${theme.name}' style="color:${
-              theme.textColor
-            };background:${theme.bgColor}">
-          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
-          <div class="text">${theme.name.replace(/_/g, " ")}</div>
-          <div class="favButton active"><i class="fas fa-star"></i></div></div>`
-          );
-        }
-      });
-    } else {
-      favThemesEl.css({ paddingBottom: "0" });
-    }
-    //then the rest
-    themes.forEach((theme) => {
-      if (!Config.favThemes.includes(theme.name)) {
-        let activeTheme = activeThemeName === theme.name ? "active" : "";
-        themesEl.append(
-          `<div class="theme button" theme='${theme.name}' style="color:${
-            theme.textColor
-          };background:${theme.bgColor}">
-          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
-          <div class="text">${theme.name.replace(/_/g, " ")}</div>
-          <div class="favButton"><i class="far fa-star"></i></div></div>`
-        );
-      }
-    });
-  });
-}
-
-function updateSettingsPage() {
-  Object.keys(settingsGroups).forEach((group) => {
-    settingsGroups[group].updateButton();
-  });
-
-  refreshTagsSettingsSection();
-  // setActiveLanguageGroup();
-  setActiveLanguageGroup();
-  setActiveFunboxButton();
-  setActiveThemeButton();
-  setActiveThemeTab();
-  setCustomThemeInputs();
-  updateDiscordSettingsSection();
-  refreshThemeButtons();
-
-  if (Config.paceCaret === "custom") {
-    $(
-      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
-    ).removeClass("hidden");
-    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
-      Config.paceCaretCustomSpeed
-    );
-  } else {
-    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
-      "hidden"
-    );
-  }
-
-  if (Config.minWpm === "custom") {
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
-      "hidden"
-    );
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
-      Config.minWpmCustomSpeed
-    );
-  } else {
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
-      "hidden"
-    );
-  }
-
-  if (Config.minAcc === "custom") {
-    $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
-    $(".pageSettings .section.minAcc input.customMinAcc").val(
-      Config.minAccCustom
-    );
-  } else {
-    $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
-  }
-}
-
-function showCustomThemeShare() {
-  if ($("#customThemeShareWrapper").hasClass("hidden")) {
-    let save = [];
-    $.each(
-      $(".pageSettings .section.customTheme [type='color']"),
-      (index, element) => {
-        save.push($(element).attr("value"));
-      }
-    );
-    $("#customThemeShareWrapper input").val(JSON.stringify(save));
-    $("#customThemeShareWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
-        $("#customThemeShare input").focus();
-        $("#customThemeShare input").select();
-        $("#customThemeShare input").focus();
-      });
-  }
-}
-
-function hideCustomThemeShare() {
-  if (!$("#customThemeShareWrapper").hasClass("hidden")) {
-    try {
-      ConfigSet.customThemeColors(
-        JSON.parse($("#customThemeShareWrapper input").val())
-      );
-    } catch (e) {
-      Notifications.add(
-        "Something went wrong. Reverting to default custom colors.",
-        0,
-        4
-      );
-      ConfigSet.customThemeColors(Config.defaultConfig.customThemeColors);
-    }
-    setCustomThemeInputs();
-    // applyCustomThemeColors();
-    $("#customThemeShareWrapper input").val("");
-    $("#customThemeShareWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate(
-        {
-          opacity: 0,
-        },
-        100,
-        (e) => {
-          $("#customThemeShareWrapper").addClass("hidden");
-        }
-      );
-  }
-}
-
-$("#customThemeShareWrapper").click((e) => {
-  if ($(e.target).attr("id") === "customThemeShareWrapper") {
-    hideCustomThemeShare();
-  }
-});
-
-$("#customThemeShare .button").click((e) => {
-  hideCustomThemeShare();
-});
-
-$("#shareCustomThemeButton").click((e) => {
-  if (e.shiftKey) {
-    showCustomThemeShare();
-  } else {
-    let share = [];
-    $.each(
-      $(".pageSettings .section.customTheme [type='color']"),
-      (index, element) => {
-        share.push($(element).attr("value"));
-      }
-    );
-
-    let url =
-      "https://monkeytype.com?" +
-      Misc.objectToQueryString({ customTheme: share });
-    navigator.clipboard.writeText(url).then(
-      function () {
-        Notifications.add("URL Copied to clipboard", 0);
-      },
-      function (err) {
-        Notifications.add(
-          "Something went wrong when copying the URL: " + err,
-          -1
-        );
-      }
-    );
-  }
-});
-
-function toggleFavouriteTheme(themename) {
-  if (Config.favThemes.includes(themename)) {
-    //already favourite, remove
-    ConfigSet.favThemes(
-      Config.favThemes.filter((t) => {
-        if (t !== themename) {
-          return t;
-        }
-      })
-    );
-  } else {
-    //add to favourites
-    Config.favThemes.push(themename);
-  }
-  saveConfigToCookie();
-  refreshThemeButtons();
-  showFavouriteThemesAtTheTop();
-}
-
-function showAccountSettingsSection() {
-  $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
-  $(`.settingsGroup.account`).removeClass("hidden");
-  refreshTagsSettingsSection();
-  updateDiscordSettingsSection();
-}
-
-function hideAccountSettingsSection() {
+export function hideAccountSection() {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
+}
+
+function showActiveTags() {
+  DB.getSnapshot().tags.forEach((tag) => {
+    if (tag.active === true) {
+      $(
+        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
+      ).html('<i class="fas fa-check-square"></i>');
+    } else {
+      $(
+        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
+      ).html('<i class="fas fa-square"></i>');
+    }
+  });
+}
+
+export function updateDiscordSection() {
+  //no code and no discord
+  if (firebase.auth().currentUser == null) {
+    $(".pageSettings .section.discordIntegration").addClass("hidden");
+  } else {
+    if (DB.getSnapshot() == null) return;
+    $(".pageSettings .section.discordIntegration").removeClass("hidden");
+
+    if (DB.getSnapshot().discordId == undefined) {
+      //show button
+      $(".pageSettings .section.discordIntegration .buttons").removeClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
+    } else {
+      $(".pageSettings .section.discordIntegration .buttons").addClass(
+        "hidden"
+      );
+      $(".pageSettings .section.discordIntegration .info").removeClass(
+        "hidden"
+      );
+    }
+  }
+}
+
+function setActiveFunboxButton() {
+  $(`.pageSettings .section.funbox .button`).removeClass("active");
+  $(
+    `.pageSettings .section.funbox .button[funbox='${Funbox.active}']`
+  ).addClass("active");
 }
 
 function refreshTagsSettingsSection() {
@@ -662,127 +468,59 @@ function refreshTagsSettingsSection() {
   }
 }
 
-function setActiveFunboxButton() {
-  $(`.pageSettings .section.funbox .button`).removeClass("active");
-  $(`.pageSettings .section.funbox .button[funbox='${activeFunbox}']`).addClass(
-    "active"
-  );
+export function showAccountSection() {
+  $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
+  $(`.settingsGroup.account`).removeClass("hidden");
+  refreshTagsSettingsSection();
+  updateDiscordSection();
 }
 
-async function setActiveLanguageGroup(groupName, clicked = false) {
-  let currentGroup;
-  if (groupName === undefined) {
-    currentGroup = await Misc.findCurrentGroup(Config.language);
-  } else {
-    let groups = await Misc.getLanguageGroups();
-    groups.forEach((g) => {
-      if (g.name === groupName) {
-        currentGroup = g;
-      }
-    });
-  }
-  $(`.pageSettings .section.languageGroups .button`).removeClass("active");
-  $(
-    `.pageSettings .section.languageGroups .button[group='${currentGroup.name}']`
-  ).addClass("active");
-
-  let langEl = $(".pageSettings .section.language .buttons").empty();
-  currentGroup.languages.forEach((language) => {
-    langEl.append(
-      `<div class="language button" language='${language}'>${language.replace(
-        /_/g,
-        " "
-      )}</div>`
-    );
+export function update() {
+  Object.keys(groups).forEach((group) => {
+    groups[group].updateButton();
   });
 
-  if (clicked) {
-    $($(`.pageSettings .section.language .buttons .button`)[0]).addClass(
-      "active"
-    );
-    setLanguage(currentGroup.languages[0]);
-  } else {
+  refreshTagsSettingsSection();
+  LanguagePicker.setActiveGroup();
+  setActiveFunboxButton();
+  ThemePicker.updateActiveTab();
+  ThemePicker.setCustomInputs();
+  updateDiscordSection();
+  ThemePicker.refreshButtons();
+
+  if (Config.paceCaret === "custom") {
     $(
-      `.pageSettings .section.language .buttons .button[language=${Config.language}]`
-    ).addClass("active");
-  }
-}
-
-function setActiveThemeButton() {
-  $(`.pageSettings .section.themes .theme`).removeClass("active");
-  $(`.pageSettings .section.themes .theme[theme=${Config.theme}]`).addClass(
-    "active"
-  );
-}
-
-function setActiveThemeTab() {
-  Config.customTheme === true
-    ? $(".pageSettings .section.themes .tabs .button[tab='custom']").click()
-    : $(".pageSettings .section.themes .tabs .button[tab='preset']").click();
-}
-
-function setCustomThemeInputs() {
-  $(
-    ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
-  ).each((n, index) => {
-    let currentColor =
-      Config.customThemeColors[colorVars.indexOf($(index).attr("id"))];
-    $(index).val(currentColor);
-    $(index).attr("value", currentColor);
-    $(index).prev().text(currentColor);
-  });
-}
-
-function showActiveTags() {
-  DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.active === true) {
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
-      ).html('<i class="fas fa-check-square"></i>');
-    } else {
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
-      ).html('<i class="fas fa-square"></i>');
-    }
-  });
-}
-
-function toggleTag(tagid, nosave = false) {
-  DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.id === tagid) {
-      if (tag.active === undefined) {
-        tag.active = true;
-      } else {
-        tag.active = !tag.active;
-      }
-    }
-  });
-  TestUI.updateModesNotice(sameWordset, textHasTab, paceCaret, activeFunbox);
-  if (!nosave) saveActiveTagsToCookie();
-}
-
-function updateDiscordSettingsSection() {
-  //no code and no discord
-  if (firebase.auth().currentUser == null) {
-    $(".pageSettings .section.discordIntegration").addClass("hidden");
+      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
+    ).removeClass("hidden");
+    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
+      Config.paceCaretCustomSpeed
+    );
   } else {
-    if (DB.getSnapshot() == null) return;
-    $(".pageSettings .section.discordIntegration").removeClass("hidden");
+    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
+      "hidden"
+    );
+  }
 
-    if (DB.getSnapshot().discordId == undefined) {
-      //show button
-      $(".pageSettings .section.discordIntegration .buttons").removeClass(
-        "hidden"
-      );
-      $(".pageSettings .section.discordIntegration .info").addClass("hidden");
-    } else {
-      $(".pageSettings .section.discordIntegration .buttons").addClass(
-        "hidden"
-      );
-      $(".pageSettings .section.discordIntegration .info").removeClass(
-        "hidden"
-      );
-    }
+  if (Config.minWpm === "custom") {
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
+      "hidden"
+    );
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
+      Config.minWpmCustomSpeed
+    );
+  } else {
+    $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
+      "hidden"
+    );
+  }
+
+  if (Config.minAcc === "custom") {
+    $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
+    $(".pageSettings .section.minAcc input.customMinAcc").val(
+      Config.minAccCustom
+    );
+  } else {
+    $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
   }
 }
 
@@ -790,7 +528,7 @@ $(document).on(
   "focusout",
   ".pageSettings .section.paceCaret input.customPaceCaretSpeed",
   (e) => {
-    setPaceCaretCustomSpeed(
+    UpdateConfig.setPaceCaretCustomSpeed(
       parseInt(
         $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()
       )
@@ -802,7 +540,7 @@ $(document).on(
   "focusout",
   ".pageSettings .section.minWpm input.customMinWpmSpeed",
   (e) => {
-    setMinWpmCustomSpeed(
+    UpdateConfig.setMinWpmCustomSpeed(
       parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val())
     );
   }
@@ -812,27 +550,9 @@ $(document).on(
   "focusout",
   ".pageSettings .section.minAcc input.customMinAcc",
   (e) => {
-    setMinAccCustom(
+    UpdateConfig.setMinAccCustom(
       parseInt($(".pageSettings .section.minAcc input.customMinAcc").val())
     );
-  }
-);
-
-$(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
-  let theme = $(e.currentTarget).attr("theme");
-  if (!$(e.target).hasClass("favButton")) {
-    setTheme(theme);
-    setActiveThemeButton();
-    refreshThemeButtons();
-  }
-});
-
-$(document).on(
-  "click",
-  ".pageSettings .section.themes .theme .favButton",
-  (e) => {
-    let theme = $(e.currentTarget).parents(".theme.button").attr("theme");
-    toggleFavouriteTheme(theme);
   }
 );
 
@@ -841,7 +561,7 @@ $(document).on(
   ".pageSettings .section.languageGroups .button",
   (e) => {
     let group = $(e.currentTarget).attr("group");
-    setActiveLanguageGroup(group, true);
+    LanguagePicker.setActiveGroup(group, true);
   }
 );
 
@@ -849,10 +569,10 @@ $(document).on(
 $(
   ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
 ).click((e) => {
-  showBackgroundLoader();
+  Loader.show();
   CloudFunctions.generatePairingCode({ uid: firebase.auth().currentUser.uid })
     .then((ret) => {
-      hideBackgroundLoader();
+      Loader.hide();
       if (ret.data.status === 1 || ret.data.status === 2) {
         DB.getSnapshot().pairingCode = ret.data.pairingCode;
         $(".pageSettings .section.discordIntegration .code .bottom").text(
@@ -861,11 +581,11 @@ $(
         $(".pageSettings .section.discordIntegration .howtocode").text(
           ret.data.pairingCode
         );
-        updateDiscordSettingsSection();
+        updateDiscordSection();
       }
     })
     .catch((e) => {
-      hideBackgroundLoader();
+      Loader.hide();
       Notifications.add("Something went wrong. Error: " + e.message, -1);
     });
 });
@@ -873,19 +593,19 @@ $(
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   (e) => {
     if (confirm("Are you sure?")) {
-      showBackgroundLoader();
+      Loader.show();
       CloudFunctions.unlinkDiscord({
         uid: firebase.auth().currentUser.uid,
       }).then((ret) => {
-        hideBackgroundLoader();
+        Loader.hide();
         console.log(ret);
         if (ret.data.status === 1) {
           DB.getSnapshot().discordId = null;
           Notifications.add("Accounts unlinked", 0);
-          updateDiscordSettingsSection();
+          updateDiscordSection();
         } else {
           Notifications.add("Something went wrong: " + ret.data.message, -1);
-          updateDiscordSettingsSection();
+          updateDiscordSection();
         }
       });
     }
@@ -896,7 +616,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   let funbox = $(e.currentTarget).attr("funbox");
   let type = $(e.currentTarget).attr("type");
-  activateFunbox(funbox, type);
+  Funbox.activate(funbox, type);
   setActiveFunboxButton();
 });
 
@@ -907,13 +627,13 @@ $(document).on(
   (e) => {
     let target = e.currentTarget;
     let tagid = $(target).parent(".tag").attr("id");
-    toggleTag(tagid);
+    TagController.toggle(tagid);
     showActiveTags();
   }
 );
 
 $(document).on("click", ".pageSettings .section.tags .addTagButton", (e) => {
-  showEditTags("add");
+  EditTagsPopup.show("add");
 });
 
 $(document).on(
@@ -923,7 +643,7 @@ $(document).on(
     let target = e.currentTarget;
     let tagid = $(target).parent(".tag").attr("id");
     let tagname = $(target).siblings(".title")[0].innerHTML;
-    simplePopups.clearTagPb.show([tagid, tagname]);
+    SimplePopups.list.clearTagPb.show([tagid, tagname]);
   }
 );
 
@@ -933,7 +653,7 @@ $(document).on(
   (e) => {
     let tagid = $(e.currentTarget).parent(".tag").attr("id");
     let name = $(e.currentTarget).siblings(".title").text();
-    showEditTags("edit", tagid, name);
+    EditTagsPopup.show("edit", tagid, name);
   }
 );
 
@@ -943,106 +663,13 @@ $(document).on(
   (e) => {
     let tagid = $(e.currentTarget).parent(".tag").attr("id");
     let name = $(e.currentTarget).siblings(".title").text();
-    showEditTags("remove", tagid, name);
+    EditTagsPopup.show("remove", tagid, name);
   }
 );
 
-//theme tabs & custom theme
-const colorVars = ThemeController.colorVars;
-
-$(".pageSettings .section.themes .tabs .button").click((e) => {
-  $(".pageSettings .section.themes .tabs .button").removeClass("active");
-  var $target = $(e.currentTarget);
-  $target.addClass("active");
-  setCustomThemeInputs();
-  if ($target.attr("tab") == "preset") {
-    setCustomTheme(false);
-    ThemeController.set(Config.theme);
-    // applyCustomThemeColors();
-    swapElements(
-      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-      250
-    );
-  } else {
-    setCustomTheme(true);
-    ThemeController.set("custom");
-    // applyCustomThemeColors();
-    swapElements(
-      $('.pageSettings .section.themes .tabContainer [tabContent="preset"]'),
-      $('.pageSettings .section.themes .tabContainer [tabContent="custom"]'),
-      250
-    );
-  }
-});
-
-$(
-  ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
-).on("input", (e) => {
-  setCustomTheme(true, true);
-  let $colorVar = $(e.currentTarget).attr("id");
-  let $pickedColor = $(e.currentTarget).val();
-
-  document.documentElement.style.setProperty($colorVar, $pickedColor);
-  $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  $(".colorPicker [for=" + $colorVar + "]").text($pickedColor);
-});
-
-$(".pageSettings .saveCustomThemeButton").click((e) => {
-  let save = [];
-  $.each(
-    $(".pageSettings .section.customTheme [type='color']"),
-    (index, element) => {
-      save.push($(element).attr("value"));
-    }
-  );
-  setCustomThemeColors(save);
-  ThemeController.set("custom");
-  Notifications.add("Custom theme colors saved", 0);
-});
-
-$(".pageSettings #loadCustomColorsFromPreset").click((e) => {
-  // previewTheme(Config.theme);
-  ThemeController.preview(Config.theme);
-
-  colorVars.forEach((e) => {
-    document.documentElement.style.setProperty(e, "");
-  });
-
-  setTimeout(() => {
-    ChartController.updateAllChartColors();
-
-    colorVars.forEach((colorName) => {
-      let color;
-      if (colorName === "--bg-color") {
-        color = ThemeColors.bg;
-      } else if (colorName === "--main-color") {
-        color = ThemeColors.main;
-      } else if (colorName === "--sub-color") {
-        color = ThemeColors.sub;
-      } else if (colorName === "--caret-color") {
-        color = ThemeColors.caret;
-      } else if (colorName === "--text-color") {
-        color = ThemeColors.text;
-      } else if (colorName === "--error-color") {
-        color = ThemeColors.error;
-      } else if (colorName === "--error-extra-color") {
-        color = ThemeColors.errorExtra;
-      } else if (colorName === "--colorful-error-color") {
-        color = ThemeColors.colorfulError;
-      } else if (colorName === "--colorful-error-extra-color") {
-        color = ThemeColors.colorfulErrorExtra;
-      }
-      $(".colorPicker #" + colorName).attr("value", color);
-      $(".colorPicker #" + colorName).val(color);
-      $(".colorPicker [for=" + colorName + "]").text(color);
-    });
-  }, 250);
-});
-
 $("#resetSettingsButton").click((e) => {
   if (confirm("Press OK to confirm.")) {
-    resetConfig();
+    UpdateConfig.reset();
     setTimeout(() => {
       location.reload();
     }, 1000);
@@ -1062,57 +689,6 @@ $("#exportSettingsButton").click((e) => {
       );
     }
   );
-});
-
-function showSettingsImport() {
-  if ($("#settingsImportWrapper").hasClass("hidden")) {
-    $("#settingsImportWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
-        $("#settingsImportWrapper input").focus();
-        $("#settingsImportWrapper input").select();
-        $("#settingsImportWrapper input").focus();
-      });
-  }
-}
-
-function hideSettingsImport() {
-  if (!$("#settingsImportWrapper").hasClass("hidden")) {
-    if ($("#settingsImportWrapper input").val() !== "") {
-      try {
-        applyConfig(JSON.parse($("#settingsImportWrapper input").val()));
-      } catch (e) {
-        Notifications.add(
-          "An error occured while importing settings: " + e,
-          -1
-        );
-      }
-      saveConfigToCookie();
-      updateSettingsPage();
-    }
-    $("#settingsImportWrapper")
-      .stop(true, true)
-      .css("opacity", 1)
-      .animate({ opacity: 0 }, 100, (e) => {
-        $("#settingsImportWrapper").addClass("hidden");
-      });
-  }
-}
-
-$("#importSettingsButton").click((e) => {
-  showSettingsImport();
-});
-
-$("#settingsImport .button").click((e) => {
-  hideSettingsImport();
-});
-
-$("#settingsImportWrapper").click((e) => {
-  if ($(e.target).attr("id") === "settingsImportWrapper") {
-    hideSettingsImport();
-  }
 });
 
 $(".pageSettings .sectionGroupTitle").click((e) => {

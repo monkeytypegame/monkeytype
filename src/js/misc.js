@@ -1,4 +1,10 @@
-import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
+import * as Loader from "./loader";
+
+export function getuid() {
+  console.error("Only share this uid with Miodec and nobody else!");
+  console.log(firebase.auth().currentUser.uid);
+  console.error("Only share this uid with Miodec and nobody else!");
+}
 
 function hexToHSL(H) {
   // Convert hex to RGB first
@@ -105,10 +111,10 @@ export async function getFunboxList() {
 let quotes = null;
 export async function getQuotes(language) {
   if (quotes === null || quotes.language !== language.replace(/_\d*k$/g, "")) {
-    showBackgroundLoader();
+    Loader.show();
     try {
       let data = await $.getJSON(`quotes/${language}.json`);
-      hideBackgroundLoader();
+      Loader.hide();
       if (data.quotes === undefined || data.quotes.length === 0) {
         quotes = {
           quotes: [],
@@ -132,7 +138,7 @@ export async function getQuotes(language) {
       });
       return quotes;
     } catch {
-      hideBackgroundLoader();
+      Loader.hide();
       quotes = {
         quotes: [],
         length: 0,
@@ -305,15 +311,15 @@ export function getCookie(cname) {
 }
 
 export function sendVerificationEmail() {
-  showBackgroundLoader();
+  Loader.show();
   let cu = firebase.auth().currentUser;
   cu.sendEmailVerification()
     .then(() => {
-      hideBackgroundLoader();
+      Loader.hide();
       showNotification("Email sent to " + cu.email, 4000);
     })
     .catch((e) => {
-      hideBackgroundLoader();
+      Loader.hide();
       showNotification("Error: " + e.message, 3000);
       console.error(e.message);
     });
@@ -620,6 +626,18 @@ export function toggleFullscreen(elem) {
       document.webkitExitFullscreen();
     }
   }
+}
+
+export function getWords() {
+  const words = [...document.querySelectorAll("#words .word")]
+    .map((word) => {
+      return [...word.querySelectorAll("letter")]
+        .map((letter) => letter.innerText)
+        .join("");
+    })
+    .join(" ");
+
+  return words;
 }
 
 //credit: https://www.w3resource.com/javascript-exercises/javascript-string-exercise-32.php

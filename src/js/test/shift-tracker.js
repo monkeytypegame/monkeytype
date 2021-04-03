@@ -39,7 +39,7 @@ let leftSideKeys = [
   "KeyX",
   "KeyC",
   "KeyV",
-  
+
   "Backquote",
   "Digit1",
   "Digit2",
@@ -61,12 +61,12 @@ let rightSideKeys = [
 
   "KeyN",
   "KeyM",
-  
+
   "Digit7",
   "Digit8",
   "Digit9",
   "Digit0",
-  
+
   "Backslash",
   "BracketLeft",
   "BracketRight",

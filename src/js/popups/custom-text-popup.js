@@ -1,16 +1,14 @@
 import * as CustomText from "./custom-text";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as Misc from "./misc";
-import * as Notifications from "./notification-center";
+import * as Notifications from "./notifications";
+import * as TestLogic from "./test-logic";
+import * as WordFilterPopup from "./word-filter-popup";
 
 let wrapper = "#customTextPopupWrapper";
 let popup = "#customTextPopup";
 
-let restartTest;
-
-//TODO remove restarttest ref after test logic is a module
-export function show(restartTestRef) {
-  restartTest = restartTestRef;
+export function show() {
   if ($(wrapper).hasClass("hidden")) {
     if ($(`${popup} .check input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
@@ -84,7 +82,7 @@ $(`${popup} .randomInputFields .time input`).keypress((e) => {
   $(`${popup} .randomInputFields .wordcount input`).val("");
 });
 
-$("#customTextPopup .button").click(() => {
+$("#customTextPopup .apply").click(() => {
   let text = $("#customTextPopup textarea").val();
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
@@ -154,6 +152,10 @@ $("#customTextPopup .button").click(() => {
   }
 
   ManualRestart.set();
-  restartTest();
+  TestLogic.restart();
   hide();
+});
+
+$("#customTextPopup .wordfilter").click(() => {
+  WordFilterPopup.show();
 });

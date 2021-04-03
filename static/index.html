@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monkeytype</title>
     <!-- <link rel="stylesheet" href="css/fa.css" /> -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/balloon.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
@@ -102,6 +106,10 @@
     </div>
     <div id="customTextPopupWrapper" class="hidden">
       <div id="customTextPopup" action="">
+        <div class="wordfilter button">
+          <i class="fas fa-filter"></i>
+          Words filter
+        </div>
         <textarea class="textarea" placeholder="Custom text"></textarea>
         <div class="inputs">
           <label class="check">
@@ -133,13 +141,63 @@
             </span>
           </label>
         </div>
+        <div class="button apply">ok</div>
+      </div>
+    </div>
+    <div id="wordFilterPopupWrapper" class="hidden">
+      <div id="wordFilterPopup">
+        <div class="group">
+          <div class="title">language</div>
+          <select class="languageInput" class=""></select>
+        </div>
+        <div class="group lengthgrid">
+          <div class="title">min length</div>
+          <div class="title">max length</div>
+          <input
+            class="wordLength wordMinInput"
+            autocomplete="off"
+            type="number"
+          />
+          <input
+            class="wordLength wordMaxInput"
+            autocomplete="off"
+            type="number"
+          />
+        </div>
+        <div class="group">
+          <div class="title">include</div>
+          <input class="wordIncludeInput" autocomplete="off" />
+        </div>
+        <div class="group">
+          <div class="title">exclude</div>
+          <input class="wordExcludeInput" autocomplete="off" />
+        </div>
+        <div class="tip">
+          Use the above filters to include and exclude words or characters
+          (separated by spaces)
+        </div>
+        <i
+          class="fas fa-fw fa-spin fa-circle-notch hidden loadingIndicator"
+        ></i>
         <div class="button">ok</div>
       </div>
     </div>
-    <div id="customMode2PopupWrapper" class="hidden">
-      <div id="customMode2Popup" mode="">
-        <div class="title">Test length</div>
+    <div id="customWordAmountPopupWrapper" class="hidden">
+      <div id="customWordAmountPopup">
+        <div class="title">Word amount</div>
         <input type="number" value="1" min="1" max="10000" />
+        <div class="tip">
+          You can start an infinite test by inputting 0. Then, to stop the test,
+          use the Bail Out feature (esc > Bail Out)
+        </div>
+        <div class="button">ok</div>
+      </div>
+    </div>
+    <div id="customTestDurationPopupWrapper" class="hidden">
+      <div id="customTestDurationPopup">
+        <div class="title">Test duration</div>
+        <div class="preview"></div>
+        <input value="1" />
         <div class="tip">
           You can start an infinite test by inputting 0. Then, to stop the test,
           use the Bail Out feature (esc > Bail Out)
@@ -977,7 +1035,7 @@
                   thicc
                 </div>
                 <div class="text-button" quoteLength="-2" tabindex="2">
-                  <i class="fas fa-tools"></i>
+                  <i class="fas fa-search"></i>
                 </div>
               </div>
             </div>
@@ -1004,6 +1062,7 @@
                 <i class="fas fa-lock"></i>
                 Caps Lock
               </div>
+              <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
               <div id="caret" class="default size15"></div>
               <div id="paceCaret" class="default size15 hidden"></div>
@@ -1203,7 +1262,7 @@
               </div>
               <div
                 id="restartTestButton"
-                aria-label="Restart test"
+                aria-label="Restart Test"
                 data-balloon-pos="down"
                 class=""
                 tabindex="0"
@@ -1351,7 +1410,7 @@
                 </div>
                 <div
                   id="restartTestButtonWithSameWordset"
-                  aria-label="Repeat test"
+                  aria-label="Repeat Test"
                   data-balloon-pos="down"
                   tabindex="0"
                   onclick="this.blur();"
@@ -1420,7 +1479,7 @@
                 ) to restart the typing test. Open the command line by pressing
                 <key>esc</key>
                 - there you can access all the functionality you need without
-                touching your mouse.
+                touching your mouse
               </p>
             </div>
             <div class="section">
@@ -3650,10 +3709,10 @@
             <key>tab</key>
             and
             <key>enter</key>
-            - restart test
+            - Restart Test
             <br />
             <key>esc</key>
-            - command line
+            - Command Line
           </div>
           <div class="leftright">
             <div class="left">
@@ -3753,5 +3812,6 @@
   <script src="js/jquery.cookie-1.4.1.min.js"></script>
   <script src="js/moment.min.js"></script>
   <script src="js/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script src="js/monkeytype.js"></script>
 </html>

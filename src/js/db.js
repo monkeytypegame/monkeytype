@@ -1,4 +1,7 @@
 import { loadTags } from "./result-filters";
+import * as AccountButton from "./account-button";
+import * as CloudFunctions from "./cloud-functions";
+import * as Notifications from "./notifications";
 
 const db = firebase.firestore();
 db.settings({ experimentalForceLongPolling: true });
@@ -446,6 +449,22 @@ export async function saveLocalTagPB(
 
 export function updateLbMemory(mode, mode2, type, value) {
   getSnapshot().lbMemory[mode + mode2][type] = value;
+}
+
+export async function saveConfig(config) {
+  if (firebase.auth().currentUser !== null) {
+    AccountButton.loading(true);
+    CloudFunctions.saveConfig({
+      uid: firebase.auth().currentUser.uid,
+      obj: config,
+    }).then((d) => {
+      AccountButton.loading(false);
+      if (d.data.returnCode !== 1) {
+        Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
+      }
+      return;
+    });
+  }
 }
 
 // export async function DB.getLocalTagPB(tagId) {
