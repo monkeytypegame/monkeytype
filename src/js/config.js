@@ -1146,14 +1146,12 @@ export function setIndicateTypos(it, nosave) {
   if (!nosave) saveToCookie();
 }
 
-export function setCustomTheme(boolean, nosave, noThemeChange = false) {
+export function setCustomTheme(boolean, nosave) {
   if (boolean !== undefined) config.customTheme = boolean;
-  if (!noThemeChange) {
-    if (boolean) {
-      ThemeController.set("custom");
-    } else {
-      ThemeController.set(config.theme);
-    }
+  if (boolean) {
+    ThemeController.set("custom");
+  } else if (!boolean && !nosave) {
+    ThemeController.set(config.theme);
   }
   if (!nosave) saveToCookie();
 }
@@ -1358,7 +1356,7 @@ export function apply(configObj) {
   if (configObj && configObj != null && configObj != "null") {
     setTheme(configObj.theme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
-    setCustomTheme(configObj.customTheme, true);
+    setCustomTheme(configObj.customTheme, true, true);
     setQuickTabMode(configObj.quickTab, true);
     setKeyTips(configObj.showKeyTips, true);
     setTimeConfig(configObj.time, true);
