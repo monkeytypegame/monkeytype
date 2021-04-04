@@ -113,6 +113,7 @@ export function changePage(page, tribe = false) {
     Notifications.add("Not changing page, page transition true", 0, 0, "DEBUG");
     return;
   }
+  if (Tribe.state === 8 && !tribe) return;
   let activePage = $(".page.active");
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
