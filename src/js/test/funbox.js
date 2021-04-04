@@ -75,7 +75,7 @@ export async function activate(funbox, mode, mp = false) {
   if (!Tribe.checkIfCanChangeConfig(mp)) {
     return;
   }
-  if (TestLogic.active || (TestUI.resultVisible && Tribe.state < 8)) {
+  if (TestLogic.active || (TestUI.resultVisible && Tribe.state < 6)) {
     Notifications.add(
       "You can only change the funbox before starting a test.",
       0
