@@ -15,6 +15,7 @@ import * as LanguagePicker from "./language-picker";
 import * as TestLogic from "./test-logic";
 import * as PaceCaret from "./pace-caret";
 import * as UI from "./ui";
+import * as CommandlineLists from "./commandline-lists";
 
 export let cookieConfig = null;
 export let dbConfigLoaded = false;
@@ -1361,6 +1362,9 @@ export function setCustomBackground(value, nosave) {
     value == ""
   ) {
     config.customBackground = value;
+    CommandlineLists.defaultCommands.list.filter( (command) => 
+      command.id == "changeCustomBackground"
+    )[0].defaultValue = value;
     ThemeController.applyCustomBackground();
     if (!nosave) saveToCookie();
   } else {
