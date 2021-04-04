@@ -1349,6 +1349,7 @@ export function setCustomBackground(value, nosave) {
   if (value == null || value == undefined) {
     value = "";
   }
+  value = value.trim();
   if( /(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(value) || value == ""){
     config.customBackground = value;
     ThemeController.applyCustomBackground();

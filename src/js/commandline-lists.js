@@ -1597,6 +1597,14 @@ export let defaultCommands = {
       },
     },
     {
+      id: "changeCustomBackground",
+      display: "Change custom background...",
+      input: true,
+      exec: (input) => {
+        UpdateConfig.setCustomBackground(input);
+      },
+    },
+    {
       id: "changeTheme",
       display: "Change theme...",
       subgroup: true,
