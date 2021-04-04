@@ -474,6 +474,10 @@ export function setPaceCaret(val, nosave) {
   if (val == undefined) {
     val = "off";
   }
+  if (val == "pb" && firebase.auth().currentUser === null) {
+    Notifications.add("PB pace caret is unavailable without an account", 0);
+    return;
+  }
   // if (config.mode === "zen" && val != "off") {
   //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
   //   val = "off";
@@ -1349,7 +1353,12 @@ export function setCustomBackground(value, nosave) {
   if (value == null || value == undefined) {
     value = "";
   }
-  if( /(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(value) || value == ""){
+  if (
+    /(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
+      value
+    ) ||
+    value == ""
+  ) {
     config.customBackground = value;
     ThemeController.applyCustomBackground();
     if (!nosave) saveToCookie();
@@ -1359,7 +1368,7 @@ export function setCustomBackground(value, nosave) {
 }
 
 export function setCustomBackgroundSize(value, nosave) {
-  if (value != "cover" && value != "contain"){
+  if (value != "cover" && value != "contain") {
     value = "cover";
   }
   config.customBackgroundSize = value;
