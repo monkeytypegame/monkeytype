@@ -735,3 +735,21 @@ $(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
 $(".pageSettings #updateAccountEmail").on("click", (e) => {
   SimplePopups.list.updateEmail.show();
 });
+
+$(".pageSettings .section.customBackground .inputAndButton .save").on("click", (e) => {
+  UpdateConfig.setCustomBackground($(".pageSettings .section.customBackground .inputAndButton input").val())
+});
+
+$(".pageSettings .section.customBackground .inputAndButton .cover").on("click", (e) => {
+  UpdateConfig.setCustomBackgroundSize("cover");
+});
+
+$(".pageSettings .section.customBackground .inputAndButton .contain").on("click", (e) => {
+  UpdateConfig.setCustomBackgroundSize("contain");
+});
+
+$(".pageSettings .section.customBackground .inputAndButton input").keypress( (e) => {
+  if(e.keyCode == 13){
+    UpdateConfig.setCustomBackground($(".pageSettings .section.customBackground .inputAndButton input").val())
+  }
+});

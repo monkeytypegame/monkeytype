@@ -113,6 +113,8 @@ let defaultConfig = {
   monkey: false,
   repeatQuotes: "off",
   oppositeShiftMode: "off",
+  customBackground: "",
+  customBackgroundSize: "cover",
 };
 
 function isConfigKeyValid(name) {
@@ -1343,6 +1345,28 @@ export function setFontSize(fontSize, nosave) {
   if (!nosave) saveToCookie();
 }
 
+export function setCustomBackground(value, nosave) {
+  if (value == null || value == undefined) {
+    value = "";
+  }
+  if( /(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(value) || value == ""){
+    config.customBackground = value;
+    ThemeController.applyCustomBackground();
+    if (!nosave) saveToCookie();
+  } else {
+    Notifications.add("Invalid custom background URL", 0);
+  }
+}
+
+export function setCustomBackgroundSize(value, nosave) {
+  if (value != "cover" && value != "contain"){
+    value = "cover";
+  }
+  config.customBackgroundSize = value;
+  ThemeController.applyCustomBackgroundSize();
+  if (!nosave) saveToCookie();
+}
+
 export function apply(configObj) {
   if (configObj == null || configObj == undefined) {
     Notifications.add("Could not apply config", -1, 3);
@@ -1357,6 +1381,8 @@ export function apply(configObj) {
     setTheme(configObj.theme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
     setCustomTheme(configObj.customTheme, true, true);
+    setCustomBackground(configObj.customBackground, true);
+    setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setQuickTabMode(configObj.quickTab, true);
     setKeyTips(configObj.showKeyTips, true);
     setTimeConfig(configObj.time, true);
