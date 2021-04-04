@@ -4151,7 +4151,8 @@ key {
       cursor: default;
     }
     color: var(--sub-color);
-    background: var(--bg-color);
+    // background: var(--bg-color);
+    opacity: 0.5;
     cursor: default;
   }
 }
