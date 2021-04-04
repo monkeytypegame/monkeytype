@@ -2920,26 +2920,47 @@
                   </div>
                 </div>
               </div>
-              <div class="section customBackground">
+              <div class="section customBackgroundSize">
                 <h1>custom background</h1>
                 <div class="text">
-                  Set an image url to be a custom background image. Cover fits the image to cover the screen.
-                  Contain fits the image to be fully visible.
+                  Set an image url to be a custom background image. Cover fits
+                  the image to cover the screen. Contain fits the image to be
+                  fully visible.
                 </div>
-                <div class="inputAndButton">
-                  <input type="text" placeholder="image url"
-                    class="input"
-                    tabindex="0"
-                  >
-                  <div
-                    class="button save"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                  <i class="fas fa-save fa-fw"></i>
+                <div>
+                  <div class="inputAndButton">
+                    <input
+                      type="text"
+                      placeholder="image url"
+                      class="input"
+                      tabindex="0"
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div class="button cover" onclick="this.blur();">cover</div>
-                  <div class="button contain" onclick="this.blur();">contain</div>
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      customBackgroundSize="cover"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      cover
+                    </div>
+                    <div
+                      class="button"
+                      customBackgroundSize="contain"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      contain
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="section themes">
