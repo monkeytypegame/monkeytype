@@ -76,8 +76,9 @@ let tribeSounds = {
 
 //-1 - disconnected
 //1 - connected
-//8 - looking for a public game
-//9 - in a public lobby waiting to fill
+//6 - looking for a public game
+//7 - in a public lobby waiting to fill
+//8 - one second before public start
 //10 - lobby
 //20 - test about to start
 //21 - test active
@@ -1149,11 +1150,16 @@ socket.on("mp_room_user_left", (data) => {
     resetReadyButtons();
   } else {
     delete room.users[data.sid];
-    MatchmakingStatus.setText(
-      `Waiting for more players to join (${
-        Object.keys(room.users).length
-      }/5)...`
-    );
+    if (state <= 8) {
+      MatchmakingStatus.setText(
+        `Waiting for more players to join (${
+          Object.keys(room.users).length
+        }/5)...`
+      );
+    } else if (state >= 20) {
+      $(`.tribePlayers .player[sid=${data.sid}]`).addClass("failed");
+      $(`.tribeResult .player[sid=${data.sid}]`).addClass("failed");
+    }
   }
 });
 
@@ -1245,6 +1251,9 @@ socket.on("mp_update_mm_status", (data) => {
     MatchmakingStatus.hide();
   }
   if (data.text !== undefined) MatchmakingStatus.setText(data.text);
+  if (data.raceStarting === true) {
+    playSound("join");
+  }
 });
 
 socket.on("mp_room_user_istypingupdate", (data) => {
@@ -1476,7 +1485,7 @@ socket.on("mp_room_test_init", (data) => {
 
 socket.on("mp_room_state_update", (data) => {
   state = data.newState;
-  // Notifications.add(`state changed to ${data.newState}`, 0);
+  Notifications.add(`state changed to ${data.newState}`, 0);
 });
 
 socket.on("mp_room_user_test_progress_update", (data) => {
@@ -1943,7 +1952,7 @@ $(".pageTribe .prelobby .matchmaking .button").click((e) => {
   let queue = $(e.currentTarget).attr("queue");
   MatchmakingStatus.setText("Searching for a room...");
   MatchmakingStatus.show();
-  state = 8;
+  state = 6;
   lastQueue = queue;
   applyRoomConfig(TribeDefaultConfigs[queue]);
   setTimeout(() => {
@@ -1954,7 +1963,7 @@ $(".pageTribe .prelobby .matchmaking .button").click((e) => {
 $(".pageTest #result #queueAgainButton").click((e) => {
   MatchmakingStatus.setText("Searching for a room...");
   MatchmakingStatus.show();
-  state = 8;
+  state = 6;
   applyRoomConfig(TribeDefaultConfigs[lastQueue]);
   TestLogic.restart();
   setTimeout(() => {
