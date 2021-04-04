@@ -113,7 +113,7 @@ let defaultConfig = {
   monkey: false,
   repeatQuotes: "off",
   oppositeShiftMode: "off",
-  customBackground: "https://i.imgur.com/OWbWz6i.jpg",
+  customBackground: "",
   customBackgroundSize: "cover",
 };
 
@@ -1349,9 +1349,13 @@ export function setCustomBackground(value, nosave) {
   if (value == null || value == undefined) {
     value = "";
   }
-  config.customBackground = value;
-  ThemeController.applyCustomBackground();
-  if (!nosave) saveToCookie();
+  if( /(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(value) || value == ""){
+    config.customBackground = value;
+    ThemeController.applyCustomBackground();
+    if (!nosave) saveToCookie();
+  } else {
+    Notifications.add("Invalid custom background URL", 0);
+  }
 }
 
 export function setCustomBackgroundSize(value, nosave) {

@@ -152,14 +152,12 @@ export function clearRandom() {
 }
 
 export function applyCustomBackground(){
-  if (Config.customBackground != ""){
-    $("body").css({
-      backgroundImage: `url(${Config.customBackground})`,
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: "center center",
-      backgroundAttachment: "fixed",
-    })
-  }
+  $("body").css({
+    backgroundImage: `url(${Config.customBackground})`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center center",
+    backgroundAttachment: "fixed",
+  })
 }
 
 export function applyCustomBackgroundSize(){

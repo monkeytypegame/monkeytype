@@ -747,3 +747,9 @@ $(".pageSettings .section.customBackground .inputAndButton .cover").on("click", 
 $(".pageSettings .section.customBackground .inputAndButton .contain").on("click", (e) => {
   UpdateConfig.setCustomBackgroundSize("contain");
 });
+
+$(".pageSettings .section.customBackground .inputAndButton input").keypress( (e) => {
+  if(e.keyCode == 13){
+    UpdateConfig.setCustomBackground($(".pageSettings .section.customBackground .inputAndButton input").val())
+  }
+});
