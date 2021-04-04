@@ -2465,6 +2465,11 @@ key {
     1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
+#words.noErrorBorder {
+  .word.error {
+    text-shadow: none;
+  }
+}
 // .word letter {
 // transition: .1s;
 // height: 1rem;

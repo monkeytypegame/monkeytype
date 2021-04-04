@@ -151,19 +151,24 @@ export function clearRandom() {
   randomTheme = null;
 }
 
-export function applyCustomBackground(){
+export function applyCustomBackground() {
   $("body").css({
     backgroundImage: `url(${Config.customBackground})`,
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center center",
     backgroundAttachment: "fixed",
-  })
+  });
+  if (Config.customBackground === "") {
+    $("#words").removeClass("noErrorBorder");
+  } else {
+    $("#words").addClass("noErrorBorder");
+  }
 }
 
-export function applyCustomBackgroundSize(){
-  if (Config.customBackgroundSize != ""){
+export function applyCustomBackgroundSize() {
+  if (Config.customBackgroundSize != "") {
     $("body").css({
       backgroundSize: Config.customBackgroundSize,
-    })
+    });
   }
 }
