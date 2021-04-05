@@ -17,8 +17,12 @@ export function getSnapshot() {
 }
 
 export function setSnapshot(newSnapshot) {
-  delete newSnapshot.banned;
-  delete newSnapshot.verified;
+  try {
+    delete newSnapshot.banned;
+  } catch {}
+  try {
+    delete newSnapshot.verified;
+  } catch {}
   dbSnapshot = newSnapshot;
 }
 
