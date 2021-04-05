@@ -769,6 +769,13 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton .contain").on(
   }
 );
 
+$(".pageSettings .section.customBackgroundSize .inputAndButton .max").on(
+  "click",
+  (e) => {
+    UpdateConfig.setCustomBackgroundSize("max");
+  }
+);
+
 $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
   (e) => {
     if (e.keyCode == 13) {

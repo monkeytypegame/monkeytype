@@ -1375,7 +1375,7 @@ export function setCustomBackground(value, nosave) {
 }
 
 export function setCustomBackgroundSize(value, nosave) {
-  if (value != "cover" && value != "contain") {
+  if (value != "cover" && value != "contain" && value!= "max") {
     value = "cover";
   }
   config.customBackgroundSize = value;
