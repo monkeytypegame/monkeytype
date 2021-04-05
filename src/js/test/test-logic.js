@@ -314,6 +314,7 @@ export function startTest() {
   LiveAcc.show();
   TimerProgress.update(TestTimer.time);
   TestTimer.clear();
+
   if (Funbox.active === "memory") {
     Funbox.resetMemoryTimer();
     $("#wordsWrapper").addClass("hidden");
@@ -574,14 +575,10 @@ export async function init() {
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
   TestUI.showWords();
-  // if($(".page.active").attr("class") === $(".page.pageTest")){
-  //   Funbox.activate();
   // }
   if ($(".pageTest").hasClass("active")) {
     Funbox.activate();
   }
-
-  // }
 }
 
 export function restart(withSameWordset = false, nosave = false, event) {
@@ -630,7 +627,6 @@ export function restart(withSameWordset = false, nosave = false, event) {
 
     // restartCount++;
   }
-
   if (Config.mode == "zen") {
     $("#words").empty();
   }
