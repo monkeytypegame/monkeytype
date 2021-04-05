@@ -10,7 +10,7 @@ export function show(data, mode2) {
   let string = "";
   if (data.needsToVerifyEmail === true) {
     string = `please verify your email<br>to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`;
-  } else if (data.lbBanned) {
+  } else if (data.banned || data.lbBanned) {
     string = "banned";
   } else if (data.name === false) {
     string = "update your name to access leaderboards";
