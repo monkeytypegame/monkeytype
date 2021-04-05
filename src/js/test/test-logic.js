@@ -709,6 +709,10 @@ export function restart(
         PaceCaret.init();
         TestUI.showWords();
       }
+      if (Tribe.state > 1) {
+        Tribe.resetRace();
+        Tribe.showHideTribeDiff(false);
+      }
       if (Config.mode === "quote") {
         setRepeated(false);
       }
