@@ -126,9 +126,8 @@ let commandsFunbox = {
       id: "changeFunboxNone",
       display: "none",
       exec: () => {
-        if (Funbox.activate("none", null)) {
-          TestLogic.restart();
-        }
+        Funbox.setFunbox("none", null);
+        TestLogic.restart();
       },
     },
   ],
@@ -140,9 +139,8 @@ Misc.getFunboxList().then((funboxes) => {
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
       exec: () => {
-        if (Funbox.activate(funbox.name, funbox.type)) {
-          TestLogic.restart();
-        }
+        Funbox.setFunbox(funbox.name, funbox.type);
+        TestLogic.restart();
       },
     });
   });

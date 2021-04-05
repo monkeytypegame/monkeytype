@@ -14,6 +14,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
+import * as Funbox from "./funbox";
 
 export let pageTransition = false;
 
@@ -136,6 +137,7 @@ export function changePage(page) {
     TestStats.resetIncomplete();
     ManualRestart.set();
     TestLogic.restart();
+    Funbox.activate();
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();
@@ -144,6 +146,7 @@ export function changePage(page) {
       history.pushState("about", null, "about");
       $(".page.pageAbout").addClass("active");
     });
+    Funbox.activate("none", null);
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "settings") {
@@ -154,6 +157,7 @@ export function changePage(page) {
       history.pushState("settings", null, "settings");
       $(".page.pageSettings").addClass("active");
     });
+    Funbox.activate("none", null);
     Settings.update();
     TestConfig.hide();
     SignOutButton.hide();
@@ -176,6 +180,7 @@ export function changePage(page) {
           SignOutButton.show();
         }
       );
+      Funbox.activate("none", null);
       Account.update();
       TestConfig.hide();
     }
@@ -190,6 +195,7 @@ export function changePage(page) {
         history.pushState("login", null, "login");
         $(".page.pageLogin").addClass("active");
       });
+      Funbox.activate("none", null);
       TestConfig.hide();
       SignOutButton.hide();
     }

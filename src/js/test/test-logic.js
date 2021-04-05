@@ -314,7 +314,6 @@ export function startTest() {
   LiveAcc.show();
   TimerProgress.update(TestTimer.time);
   TestTimer.clear();
-
   if (Funbox.active === "memory") {
     Funbox.resetMemoryTimer();
     $("#wordsWrapper").addClass("hidden");
@@ -575,6 +574,13 @@ export async function init() {
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
   TestUI.showWords();
+  // if($(".page.active").attr("class") === $(".page.pageTest")){
+  //   Funbox.activate();
+  // }
+  if ($(".pageTest").hasClass("active")) {
+    Funbox.activate();
+  }
+
   // }
 }
 
@@ -621,6 +627,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
     // incompleteTestSeconds += ;
     TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
     TestStats.incrementRestartCount();
+
     // restartCount++;
   }
 
@@ -697,6 +704,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
         input.reset();
         PaceCaret.init();
         TestUI.showWords();
+        Funbox.activate();
       }
       if (Config.mode === "quote") {
         setRepeated(false);
@@ -924,6 +932,7 @@ export function finish(difficultyFailed = false) {
   LiveAcc.hide();
   TimerProgress.hide();
   Keymap.hide();
+  Funbox.activate("none", null);
   let stats = TestStats.calculateStats();
   if (stats === undefined) {
     stats = {

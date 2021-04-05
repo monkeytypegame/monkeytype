@@ -9,6 +9,8 @@ import * as Settings from "./settings";
 export let active = "none";
 let memoryTimer = null;
 let memoryInterval = null;
+let currentFunbox = "none";
+let currentMode = null;
 
 function showMemoryTimer() {
   $("#typingTest #memoryTimer").stop(true, true).animate(
@@ -71,12 +73,9 @@ export function toggleScript(...params) {
 }
 
 export async function activate(funbox, mode) {
-  if (TestLogic.active || TestUI.resultVisible) {
-    Notifications.add(
-      "You can only change the funbox before starting a test.",
-      0
-    );
-    return false;
+  if (funbox === undefined) {
+    funbox = currentFunbox;
+    mode = currentMode;
   }
   if (Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
@@ -153,12 +152,16 @@ export async function activate(funbox, mode) {
     active = funbox;
   }
 
+  TestUI.updateModesNotice();
+  return true;
+}
+export function setFunbox(funbox, mode) {
+  currentFunbox = funbox;
+  currentMode = mode;
   if (funbox !== "layoutfluid" || mode !== "script") {
     if (Config.layout !== Config.savedLayout) {
       UpdateConfig.setLayout(Config.savedLayout);
       Settings.groups.layout.updateButton();
     }
   }
-  TestUI.updateModesNotice();
-  return true;
 }
