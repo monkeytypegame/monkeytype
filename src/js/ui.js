@@ -214,19 +214,27 @@ export function changePage(page, tribe = false) {
     } else {
       pageTransition = true;
       TestLogic.restart();
-      swapElements(activePage, $(".page.pageTribe"), 250, () => {
-        pageTransition = false;
-        Tribe.scrollChat();
-        TestConfig.show();
-        $(".pageTribe .lobby .chat .input input").focus();
-        history.pushState("tribe", null, "tribe");
-        $(".page.pageTribe").addClass("active");
-        if (!Tribe.socket.connected) {
-          if (Tribe.state === -1) {
-            Tribe.init();
+      swapElements(
+        activePage,
+        $(".page.pageTribe"),
+        250,
+        () => {
+          pageTransition = false;
+          Tribe.scrollChat();
+          $(".pageTribe .lobby .chat .input input").focus();
+          history.pushState("tribe", null, "tribe");
+          $(".page.pageTribe").addClass("active");
+          if (!Tribe.socket.connected) {
+            if (Tribe.state === -1) {
+              Tribe.init();
+            }
           }
+        },
+        () => {
+          TestConfig.show();
         }
-      });
+      );
+      SignOutButton.hide();
     }
   }
 }
