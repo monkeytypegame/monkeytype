@@ -938,7 +938,7 @@ export function updateTribeDiff(currentSpeed) {
   }
 }
 
-function showHideTribeDiff(showhide) {
+export function showHideTribeDiff(showhide) {
   if (showhide) {
     $("#tribeDiff").removeClass("hidden");
   } else {
