@@ -48,8 +48,8 @@ $(document).ready(() => {
       } else if (window.location.pathname !== "/") {
         if (/\/tribe.*/.test(window.location.pathname)) {
         } else {
-          let page = window.location.pathname.replace("/", "");
-          UI.changePage(page);
+          // let page = window.location.pathname.replace("/", "");
+          // UI.changePage(page);
         }
       }
     });
