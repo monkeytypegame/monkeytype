@@ -640,7 +640,9 @@ function refreshConfig() {
 }
 
 export function testFinished(result) {
-  socket.emit("mp_room_test_finished", { result: result });
+  if (state >= 21) {
+    socket.emit("mp_room_test_finished", { result: result });
+  }
 }
 
 function showCountdown(faint = false) {
