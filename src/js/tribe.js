@@ -31,7 +31,7 @@ export let reconnectionAttempts = 0;
 export let maxReconnectionAttempts = 1;
 export let activePage = "preloader";
 export let pageTransition = false;
-export let expectedVersion = "0.8.2";
+export let expectedVersion = "0.9";
 
 export let room = undefined;
 let name = undefined;
