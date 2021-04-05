@@ -1,4 +1,4 @@
-import Config, * as UpdateConfig from "./config";
+import * as UpdateConfig from "./config";
 
 let filters = {
   blur: {
@@ -21,6 +21,16 @@ let filters = {
     value: 1,
     default: 1
   }
+}
+
+export function getCSS(){
+  let ret = "";
+  Object.keys(filters).forEach((filterKey) => {
+    if (filters[filterKey].value != filters[filterKey].default){
+      ret += `${filterKey}(${filters[filterKey].value}${filterKey == "blur" ? "rem" : ""}) `
+    }
+  })
+  return ret;
 }
 
 export function apply() {
@@ -75,16 +85,6 @@ $(".customBackgroundFilter .button").click( (e) => {
   })
   UpdateConfig.setCustomBackgroundFilter(arr, false);
 });
-
-export function getCSS(){
-  let ret = "";
-  Object.keys(filters).forEach((filterKey) => {
-    if (filters[filterKey].value != filters[filterKey].default){
-      ret += `${filterKey}(${filters[filterKey].value}${filterKey == "blur" ? "rem" : ""}) `
-    }
-  })
-  return ret;
-}
 
 export function loadConfig(config){
   filters.blur.value = config[0];
