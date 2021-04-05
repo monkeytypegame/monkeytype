@@ -44,6 +44,22 @@ input {
   font-family: var(--font);
 }
 
+input[type="range"] {
+  -webkit-appearance: none;
+  padding: 0;
+  width: 100%;
+  height: 1rem;
+  border-radius: var(--roundness);
+  &::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    padding: 0;
+    width: 2rem;
+    height: 1rem;
+    border-radius: var(--roundness);
+    background-color: var(--main-color);
+  }
+}
+
 input[type="color"] {
   -webkit-appearance: none;
   padding: 0;
@@ -110,7 +126,18 @@ body {
   font-family: var(--font);
   color: var(--main-color);
   overflow-x: hidden;
-  background: var(--bg-color);
+  background: var(--bg-color); 
+}
+
+.customBackground{
+  content:"";
+  width:100vw;
+  height:100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 html {
@@ -2738,6 +2765,12 @@ key {
             vertical-align: sub;
           }
         }
+      }
+    }
+
+    &.customBackgroundFilter {
+      .fas {
+        margin-right: 0rem;
       }
     }
 

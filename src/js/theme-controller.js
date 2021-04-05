@@ -4,7 +4,6 @@ import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import Config from "./config";
 import * as UI from "./ui";
-import config from "./config";
 
 let isPreviewingTheme = false;
 let randomTheme = null;
@@ -152,10 +151,8 @@ export function clearRandom() {
 }
 
 export function applyCustomBackground() {
-  $("body").css({
+  $(".customBackground").css({
     backgroundImage: `url(${Config.customBackground})`,
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center center",
     backgroundAttachment: "fixed",
   });
   if (Config.customBackground === "") {
@@ -167,7 +164,7 @@ export function applyCustomBackground() {
 
 export function applyCustomBackgroundSize() {
   if (Config.customBackgroundSize != "") {
-    $("body").css({
+    $(".customBackground").css({
       backgroundSize: Config.customBackgroundSize,
     });
   }
