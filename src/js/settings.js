@@ -420,7 +420,7 @@ export function updateDiscordSection() {
 function setActiveFunboxButton() {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
   $(
-    `.pageSettings .section.funbox .button[funbox='${Funbox.active}']`
+    `.pageSettings .section.funbox .button[funbox='${Funbox.funboxSaved}']`
   ).addClass("active");
 }
 
