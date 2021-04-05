@@ -4147,7 +4147,7 @@ key {
   &.disabled {
     &:hover {
       color: var(--sub-color);
-      background: var(--bg-color);
+      // background: var(--bg-color);
       cursor: default;
     }
     color: var(--sub-color);
