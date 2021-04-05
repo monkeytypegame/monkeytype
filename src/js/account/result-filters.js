@@ -340,7 +340,8 @@ $(
       });
       filters[group][filter] = true;
     } else {
-      filters[group][filter] = !filters[group][filter];
+      toggle(group, filter);
+      // filters[group][filter] = !filters[group][filter];
     }
   }
   updateActive();

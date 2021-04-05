@@ -70,6 +70,11 @@
     "textColor": "#56c3b7"
   },
   {
+    "name": "mountain",
+    "bgColor": "#0f0f0f",
+    "textColor": "#e7e7e7"
+  },
+  {
     "name": "laser",
     "bgColor": "#221b44",
     "textColor": "#b82356"

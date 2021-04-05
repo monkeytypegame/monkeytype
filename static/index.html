@@ -2920,6 +2920,50 @@
                   </div>
                 </div>
               </div>
+              <div class="section customBackgroundSize">
+                <h1>custom background</h1>
+                <div class="text">
+                  Set an image url to be a custom background image. Cover fits
+                  the image to cover the screen. Contain fits the image to be
+                  fully visible.
+                </div>
+                <div>
+                  <div class="inputAndButton">
+                    <input
+                      type="text"
+                      placeholder="image url"
+                      class="input"
+                      tabindex="0"
+                      onClick="this.select();"
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
+                  </div>
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      customBackgroundSize="cover"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      cover
+                    </div>
+                    <div
+                      class="button"
+                      customBackgroundSize="contain"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      contain
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div class="section themes">
                 <h1>theme</h1>
                 <div class="tabs">
@@ -3225,7 +3269,7 @@
                     class="button off danger"
                     id="resetPersonalBestsButton"
                     tabindex="0"
-                    onclick="this.blur();simplePopups.resetPersonalBests.show();"
+                    onclick="this.blur();"
                   >
                     reset personal bests
                   </div>
@@ -3241,7 +3285,7 @@
                     class="button off danger"
                     id="updateAccountEmail"
                     tabindex="0"
-                    onclick="this.blur();simplePopups.updateEmail.show();"
+                    onclick="this.blur();"
                   >
                     update email
                   </div>
