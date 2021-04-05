@@ -624,9 +624,9 @@ export function restart(withSameWordset = false, nosave = false, event) {
     // incompleteTestSeconds += ;
     TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
     TestStats.incrementRestartCount();
-
     // restartCount++;
   }
+
   if (Config.mode == "zen") {
     $("#words").empty();
   }
