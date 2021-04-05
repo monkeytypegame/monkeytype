@@ -1362,8 +1362,8 @@ export function setCustomBackground(value, nosave) {
     value == ""
   ) {
     config.customBackground = value;
-    CommandlineLists.defaultCommands.list.filter( (command) => 
-      command.id == "changeCustomBackground"
+    CommandlineLists.defaultCommands.list.filter(
+      (command) => command.id == "changeCustomBackground"
     )[0].defaultValue = value;
     ThemeController.applyCustomBackground();
     if (!nosave) saveToCookie();
@@ -1669,6 +1669,10 @@ export function loadFromCookie() {
   }
   TestLogic.restart(false, true);
   loadDone();
+}
+
+export function setConfig(newConfig) {
+  config = newConfig;
 }
 
 export let loadPromise = new Promise((v) => {
