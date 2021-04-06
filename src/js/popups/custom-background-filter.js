@@ -39,37 +39,51 @@ export function apply() {
 }
 
 function syncSliders() {
-  $(".blur").val(filters["blur"].value);
-  $(".brightness").val(filters["brightness"].value);
-  $(".saturate").val(filters["saturate"].value);
-  $(".opacity").val(filters["opacity"].value);
+  $(".section.customBackgroundFilter .blur input").val(filters["blur"].value);
+  $(".section.customBackgroundFilter .brightness input").val(
+    filters["brightness"].value
+  );
+  $(".section.customBackgroundFilter .saturate input").val(
+    filters["saturate"].value
+  );
+  $(".section.customBackgroundFilter .opacity input").val(
+    filters["opacity"].value
+  );
 }
 
-$(".blur").on("input", (e) => {
-  filters["blur"].value = $(".blur").val();
+$(".section.customBackgroundFilter .blur input").on("input", (e) => {
+  filters["blur"].value = $(
+    ".section.customBackgroundFilter .blur input"
+  ).val();
   updateNumbers();
   apply();
 });
 
-$(".brightness").on("input", (e) => {
-  filters["brightness"].value = $(".brightness").val();
+$(".section.customBackgroundFilter .brightness input").on("input", (e) => {
+  filters["brightness"].value = $(
+    ".section.customBackgroundFilter .brightness input"
+  ).val();
   updateNumbers();
   apply();
 });
 
-$(".saturate").on("input", (e) => {
-  filters["saturate"].value = $(".saturate").val();
+$(".section.customBackgroundFilter .saturate input").on("input", (e) => {
+  filters["saturate"].value = $(
+    ".section.customBackgroundFilter .saturate input"
+  ).val();
   updateNumbers();
   apply();
 });
 
-$(".opacity").on("input", (e) => {
-  filters["opacity"].value = $(".opacity").val();
+$(".section.customBackgroundFilter .opacity input").on("input", (e) => {
+  filters["opacity"].value = $(
+    ".section.customBackgroundFilter .opacity input"
+  ).val();
   updateNumbers();
   apply();
 });
 
-$(".customBackgroundFilter .button").click((e) => {
+$(".section.customBackgroundFilter  .save.button").click((e) => {
   let arr = [];
   Object.keys(filters).forEach((filterKey) => {
     arr.push(filters[filterKey].value);
@@ -87,8 +101,16 @@ export function loadConfig(config) {
 }
 
 function updateNumbers() {
-  $(".blurValue").html(parseFloat(filters.blur.value).toFixed(1));
-  $(".brightnessValue").html(parseFloat(filters.brightness.value).toFixed(1));
-  $(".saturateValue").html(parseFloat(filters.saturate.value).toFixed(1));
-  $(".opacityValue").html(parseFloat(filters.opacity.value).toFixed(1));
+  $(".section.customBackgroundFilter .blur .value").html(
+    parseFloat(filters.blur.value).toFixed(1)
+  );
+  $(".section.customBackgroundFilter .brightness .value").html(
+    parseFloat(filters.brightness.value).toFixed(1)
+  );
+  $(".section.customBackgroundFilter .saturate .value").html(
+    parseFloat(filters.saturate.value).toFixed(1)
+  );
+  $(".section.customBackgroundFilter .opacity .value").html(
+    parseFloat(filters.opacity.value).toFixed(1)
+  );
 }
