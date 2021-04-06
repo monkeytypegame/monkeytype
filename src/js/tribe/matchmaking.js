@@ -17,9 +17,9 @@ export function setBannerIcon(html) {
 }
 
 export function resetBanner() {
-  this.setText("Tribe mm status");
-  this.setIcon('<i class="fas fa-spin fa-circle-notch"></i>');
-  this.hide();
+  setBannerText("Tribe mm status");
+  setBannerIcon('<i class="fas fa-spin fa-circle-notch"></i>');
+  hideBanner();
 }
 
 export function disableLobbyButtons() {
