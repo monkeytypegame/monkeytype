@@ -14,7 +14,32 @@
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="images/fav.png" />
-    <link rel="shortcut icon" href="images/fav.png" />
+    <link rel="shortcut icon" href="images/favicon/fav.png" />
+    <link
+      href="images/favicon/apple-touch-icon-180x180.png"
+      rel="apple-touch-icon"
+      sizes="180x180"
+    />
+    <link
+      href="images/favicon/apple-touch-icon-152x152.png"
+      rel="apple-touch-icon"
+      sizes="152x152"
+    />
+    <link
+      href="images/favicon/apple-touch-icon-120x120.png"
+      rel="apple-touch-icon"
+      sizes="120x120"
+    />
+
+    <link
+      href="images/favicon/apple-touch-icon-76x76.png"
+      rel="apple-touch-icon"
+      sizes="76x76"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="images/favicon/apple-touch-icon-60x60.png"
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
@@ -54,7 +79,7 @@
     </script>
     <script async src="https://s.nitropay.com/ads-693.js"></script>
   </head>
-
+  <div class="customBackground"></div>
   <body>
     <div id="backgroundLoader" style="display: none"></div>
     <div id="notificationCenter">
@@ -2925,7 +2950,7 @@
                 <div class="text">
                   Set an image url to be a custom background image. Cover fits
                   the image to cover the screen. Contain fits the image to be
-                  fully visible.
+                  fully visible. Max fits the image corner to corner.
                 </div>
                 <div>
                   <div class="inputAndButton">
@@ -2960,6 +2985,48 @@
                       onclick="this.blur();"
                     >
                       contain
+                    </div>
+                    <div
+                      class="button"
+                      customBackGroundSize="max"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      max
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="section customBackgroundFilter">
+                <h1>custom background filter</h1>
+                <div class="text">
+                  Apply various effects to the custom background.
+                </div>
+                <div class="groups">
+                  <div class="group blur">
+                    <div class="title">blur</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="5" value="0" step="0.1" />
+                  </div>
+                  <div class="group brightness">
+                    <div class="title">brightness</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="2" value="1" step="0.1" />
+                  </div>
+                  <div class="group saturate">
+                    <div class="title">saturate</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="2" value="1" step="0.1" />
+                  </div>
+                  <div class="group opacity">
+                    <div class="title">opacity</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="1" value="1" step="0.1" />
+                  </div>
+                  <div class="saveContainer">
+                    <div class="save button" style="grid-column: 3">
+                      <!-- <i class="fas fa-save fa-fw"></i> -->
+                      save
                     </div>
                   </div>
                 </div>

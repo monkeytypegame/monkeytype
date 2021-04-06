@@ -133,6 +133,7 @@ const refactoredSrc = [
   "./src/js/popups/edit-tags-popup.js",
   "./src/js/popups/custom-theme-popup.js",
   "./src/js/popups/import-settings-popup.js",
+  "./src/js/popups/custom-background-filter.js",
 
   "./src/js/settings/language-picker.js",
   "./src/js/settings/theme-picker.js",

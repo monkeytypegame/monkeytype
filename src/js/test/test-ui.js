@@ -255,6 +255,14 @@ export function screenshot() {
     if (firebase.auth().currentUser == null)
       $(".pageTest .loginTip").removeClass("hidden");
   }
+  setTimeout(() => {
+    $("#notificationCenter").removeClass("hidden");
+    $("#commandLineMobileButton").removeClass("hidden");
+    $(".pageTest .ssWatermark").addClass("hidden");
+    $(".pageTest .buttons").removeClass("hidden");
+    if (firebase.auth().currentUser == null)
+      $(".pageTest .loginTip").removeClass("hidden");
+  }, 3000);
 }
 
 export function updateWordElement(showError) {
