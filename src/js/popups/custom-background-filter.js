@@ -89,6 +89,7 @@ $(".section.customBackgroundFilter  .save.button").click((e) => {
     arr.push(filters[filterKey].value);
   });
   UpdateConfig.setCustomBackgroundFilter(arr, false);
+  Notifications.add("Saved", 1);
 });
 
 export function loadConfig(config) {
