@@ -16,6 +16,7 @@ import * as TestLogic from "./test-logic";
 import * as PaceCaret from "./pace-caret";
 import * as UI from "./ui";
 import * as CommandlineLists from "./commandline-lists";
+import * as BackgroundFilter from "./custom-background-filter";
 
 export let cookieConfig = null;
 export let dbConfigLoaded = false;
@@ -116,6 +117,7 @@ let defaultConfig = {
   oppositeShiftMode: "off",
   customBackground: "",
   customBackgroundSize: "cover",
+  customBackgroundFilter: [0, 1, 1, 1, 1],
 };
 
 function isConfigKeyValid(name) {
@@ -1373,11 +1375,18 @@ export function setCustomBackground(value, nosave) {
 }
 
 export function setCustomBackgroundSize(value, nosave) {
-  if (value != "cover" && value != "contain") {
+  if (value != "cover" && value != "contain" && value!= "max") {
     value = "cover";
   }
   config.customBackgroundSize = value;
   ThemeController.applyCustomBackgroundSize();
+  if (!nosave) saveToCookie();
+}
+
+export function setCustomBackgroundFilter(array, nosave) {
+  config.customBackgroundFilter = array;
+  BackgroundFilter.loadConfig(config.customBackgroundFilter);
+  BackgroundFilter.apply();
   if (!nosave) saveToCookie();
 }
 
@@ -1397,6 +1406,7 @@ export function apply(configObj) {
     setCustomTheme(configObj.customTheme, true, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
+    setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
     setQuickTabMode(configObj.quickTab, true);
     setKeyTips(configObj.showKeyTips, true);
     setTimeConfig(configObj.time, true);
