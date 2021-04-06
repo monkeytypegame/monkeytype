@@ -2006,6 +2006,7 @@ $(".pageTest #result #queueAgainButton").click((e) => {
     $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").removeClass(
       "hidden"
     );
+    resetResult();
   }, 1000);
 });
 
