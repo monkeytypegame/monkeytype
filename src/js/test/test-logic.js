@@ -685,7 +685,7 @@ export function restart(
     }
   }
   TestUI.setResultVisible(false);
-  UI.setPageTransition(true);
+  // UI.setPageTransition(true);
   TestUI.setTestRestarting(true);
   el.stop(true, true).animate(
     {
@@ -709,9 +709,10 @@ export function restart(
         PaceCaret.init();
         TestUI.showWords();
       }
-      if (Tribe.state > 1) {
+      if (Tribe.state < 6) {
         Tribe.resetRace();
         Tribe.showHideTribeDiff(false);
+        Tribe.resetResult();
       }
       if (Config.mode === "quote") {
         setRepeated(false);
@@ -787,7 +788,7 @@ export function restart(
               TestUI.focusWords();
             ChartController.result.update();
             TestUI.updateModesNotice();
-            UI.setPageTransition(false);
+            // UI.setPageTransition(false);
             // console.log(TestStats.incompleteSeconds);
             // console.log(TestStats.restartCount);
           }

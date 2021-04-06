@@ -31,7 +31,7 @@ export let reconnectionAttempts = 0;
 export let maxReconnectionAttempts = 1;
 export let activePage = "preloader";
 export let pageTransition = false;
-export let expectedVersion = "0.9.21";
+export let expectedVersion = "0.9.3";
 
 export let room = undefined;
 let name = undefined;
@@ -219,8 +219,11 @@ export function resetRace() {
   $(".pageTribe .lobby .tribePlayers").empty().addClass("hidden");
   hideCountdown();
   hideResultCountdown();
-  // $(".pageTest #result .tribeResult").addClass("hidden");
-  // $(".pageTest #result .tribeResultChat").addClass("hidden");
+}
+
+export function resetResult() {
+  $(".pageTest #result .tribeResult").addClass("hidden");
+  $(".pageTest #result .tribeResultChat").addClass("hidden");
 }
 
 function applyRoomConfig(cfg) {
@@ -1029,6 +1032,7 @@ socket.on("disconnect", (f) => {
   Notifications.add("Disconnected from Tribe", 0);
   resetLobby();
   resetRace();
+  resetResult();
   changeActiveSubpage("preloader");
   showHideTribeDiff(false);
   MatchmakingStatus.reset();
@@ -1123,7 +1127,7 @@ socket.on("mp_room_joined", (data) => {
     MatchmakingStatus.setText(
       `Waiting for more players to join (${
         Object.keys(room.users).length
-      }/5)...`
+      }/2)...`
     );
   }
 });
@@ -1143,6 +1147,7 @@ socket.on("mp_room_leave", () => {
   $(".pageTribe .prelobby .matchmaking .buttons .button").removeClass(
     "disabled"
   );
+  $(".pageTribe .prelobby .privateRooms .button").removeClass("disabled");
   MatchmakingStatus.hide();
   // swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
 });
@@ -1169,7 +1174,7 @@ socket.on("mp_room_user_left", (data) => {
       MatchmakingStatus.setText(
         `Waiting for more players to join (${
           Object.keys(room.users).length
-        }/5)...`
+        }/2)...`
       );
     } else if (state >= 20) {
       $(`.tribePlayers .player[sid=${data.sid}]`).addClass("failed");
@@ -1476,6 +1481,7 @@ socket.on("mp_room_test_init", (data) => {
   playSound("start");
   room.userSpeeds = {};
   resetTribeDiff();
+  showHideTribeDiff(true);
   room.userGraphs = {};
   room.userFinished = false;
   destroyAllGraphs();
@@ -1784,7 +1790,8 @@ socket.on("mp_room_user_info_update", (data) => {
   refreshUserList();
 });
 
-$(".pageTribe #createPrivateRoom").click((f) => {
+$(".pageTribe #createPrivateRoom").click((e) => {
+  if ($(e.currentTarget).hasClass("disabled")) return;
   // activateFunbox("none");
   // setLanguage("english");
   // setMode("quote");
@@ -1970,6 +1977,7 @@ $(".pageTribe .prelobby #joinByCode input").focusout((e) => {
 
 $(".pageTribe .prelobby .matchmaking .button").click((e) => {
   if (state >= 6 && state <= 8) return;
+  if ($(e.currentTarget).hasClass("disabled")) return;
   let queue = $(e.currentTarget).attr("queue");
   MatchmakingStatus.setText("Searching for a room...");
   MatchmakingStatus.show();
@@ -1977,6 +1985,7 @@ $(".pageTribe .prelobby .matchmaking .button").click((e) => {
   lastQueue = queue;
   applyRoomConfig(TribeDefaultConfigs[queue]);
   $(".pageTribe .prelobby .matchmaking .buttons .button").addClass("disabled");
+  $(".pageTribe .prelobby .privateRooms .button").addClass("disabled");
   setTimeout(() => {
     $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").removeClass(
       "hidden"
@@ -1987,12 +1996,14 @@ $(".pageTribe .prelobby .matchmaking .button").click((e) => {
 
 $(".pageTest #result #queueAgainButton").click((e) => {
   if (state >= 6 && state <= 8) return;
+  if ($(e.currentTarget).hasClass("disabled")) return;
   MatchmakingStatus.setText("Searching for a room...");
   MatchmakingStatus.show();
   state = 6;
   applyRoomConfig(TribeDefaultConfigs[lastQueue]);
   TestLogic.restart();
   $(".pageTribe .prelobby .matchmaking .buttons .button").addClass("disabled");
+  $(".pageTribe .prelobby .privateRooms .button").addClass("disabled");
   setTimeout(() => {
     socket.emit("mp_room_join", { queue: lastQueue });
     $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").removeClass(
@@ -2008,6 +2019,7 @@ $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").click((e) => {
 });
 
 $(".pageTribe .prelobby #joinByCode .button").click((e) => {
+  if ($(e.currentTarget).hasClass("disabled")) return;
   let code = $(".pageTribe .prelobby #joinByCode input").val().toLowerCase();
   if (code.length !== 6) {
     Notifications.add("Code required", 0);
