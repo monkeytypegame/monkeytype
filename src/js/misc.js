@@ -287,6 +287,29 @@ export async function getLanguage(lang) {
   }
 }
 
+export function migrateFromCookies() {
+  ["resultFilters", "config", "merchbannerclosed", "activeTags"].forEach(
+    function (name) {
+      let decodedCookie = decodeURIComponent(document.cookie).split(";");
+      let value = null;
+
+      for (var i = 0; i < decodedCookie.length; i++) {
+        var c = decodedCookie[i];
+        while (c.charAt(0) == " ") {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name + "=") == 0) {
+          value = c.substring(name.length + 1, c.length);
+        }
+      }
+
+      if (value) {
+        window.localStorage.setItem(name, value);
+      }
+    }
+  );
+}
+
 export function sendVerificationEmail() {
   Loader.show();
   let cu = firebase.auth().currentUser;

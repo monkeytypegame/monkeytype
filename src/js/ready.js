@@ -7,6 +7,7 @@ import * as RouteController from "./route-controller";
 import * as UI from "./ui";
 
 ManualRestart.set();
+Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
 Misc.getReleasesFromGitHub();
 
