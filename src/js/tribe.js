@@ -1485,6 +1485,7 @@ socket.on("mp_room_test_init", (data) => {
   showHideTribeDiff(true);
   room.userGraphs = {};
   room.userFinished = false;
+  room.isTyping = true;
   destroyAllGraphs();
   seedrandom(data.seed, { global: true });
   console.log(`seed: ${data.seed}`);
