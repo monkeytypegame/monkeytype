@@ -1176,9 +1176,10 @@ socket.on("mp_room_user_left", (data) => {
           Object.keys(room.users).length
         }/2)...`
       );
-    } else if (state >= 20) {
+    } else if (state >= 20 && state < 29) {
       $(`.tribePlayers .player[sid=${data.sid}]`).addClass("failed");
       $(`.tribeResult .player[sid=${data.sid}]`).addClass("failed");
+      $(`.tribeResult table .player[sid=${data.sid}] .other`).text("left");
     }
   }
 });
