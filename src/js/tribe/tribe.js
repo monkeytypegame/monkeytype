@@ -975,7 +975,7 @@ async function insertImageEmoji(text) {
 socket.on("connect", (f) => {
   UpdateConfig.setTimerStyle("mini", true);
   state = 1;
-  Notifications.add("Connected to Tribe", 1);
+  Notifications.add("Connected", 1, undefined, "Tribe");
   let name = "Guest";
   if (firebase.auth().currentUser !== null) {
     name = firebase.auth().currentUser.displayName;
@@ -1011,11 +1011,14 @@ socket.on("mp_update_online_stats", (data) => {
     `<div class="small">Version ${data.version}</div>`
   );
   if (data.version !== expectedVersion) {
-    Notifications.add(
-      `Tribe version mismatch. Try refreshing or clearing cache. Client version: ${expectedVersion}, server version: ${data.version}`,
-      -1
-    );
     socket.disconnect();
+    $(".pageTribe .preloader .icon").html(
+      `<i class="fas fa-exclamation-triangle"></i>`
+    );
+    $(".pageTribe .preloader .text").html(
+      `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${data.version}`
+    );
+    $(".pageTribe .preloader .reconnectButton").addClass(`hidden`);
   }
 });
 
@@ -1026,7 +1029,7 @@ socket.on("mp_update_name", (data) => {
 socket.on("disconnect", (f) => {
   state = -1;
   room = undefined;
-  Notifications.add("Disconnected from Tribe", 0);
+  Notifications.add("Disconnected", 0, undefined, "Tribe");
   resetLobby();
   resetRace();
   resetResult();
