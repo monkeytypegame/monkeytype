@@ -24,11 +24,9 @@ export let socket = io(
     // socket: io("http://localhost:3000", {
     autoConnect: false,
     secure: true,
-    reconnectionAttempts: 1,
+    reconnectionAttempts: 0,
   }
 );
-export let reconnectionAttempts = 0;
-export let maxReconnectionAttempts = 1;
 export let activePage = "preloader";
 export let pageTransition = false;
 export let expectedVersion = "0.9.4";
@@ -977,7 +975,6 @@ async function insertImageEmoji(text) {
 socket.on("connect", (f) => {
   UpdateConfig.setTimerStyle("mini", true);
   state = 1;
-  reconnectionAttempts = 0;
   Notifications.add("Connected to Tribe", 1);
   let name = "Guest";
   if (firebase.auth().currentUser !== null) {
@@ -1047,34 +1044,20 @@ socket.on("connect_failed", (f) => {
   changeActiveSubpage("preloader");
   // $(".pageTribe .preloader div").removeClass("hidden");
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
-  reconnectionAttempts++;
-  if (reconnectionAttempts >= maxReconnectionAttempts) {
-    $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-    $(".pageTribe .preloader .text").text(
-      `Could not connect to Tribe server: ${f.message}`
-    );
-  } else {
-    $(".pageTribe .preloader .text").text("Connection failed. Retrying");
-    Notifications.add("Tribe connection error: " + f.message, -1);
-  }
+  $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+  $(".pageTribe .preloader .text").text(`Connection failed`);
+  $(".pageTribe .preloader .reconnectButton").removeClass(`hidden`);
 });
 
 socket.on("connect_error", (f) => {
   state = -1;
-  reconnectionAttempts++;
   console.error(f);
   changeActiveSubpage("preloader");
   // $(".pageTribe .preloader div").removeClass("hidden");
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
-  if (reconnectionAttempts >= maxReconnectionAttempts) {
-    $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
-    $(".pageTribe .preloader .text").text(
-      `Could not connect to Tribe server: ${f.message}`
-    );
-  } else {
-    $(".pageTribe .preloader .text").text("Connection error. Retrying");
-    Notifications.add("Tribe connection error: " + f.message, -1);
-  }
+  $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+  $(".pageTribe .preloader .text").text(`Connection error`);
+  $(".pageTribe .preloader .reconnectButton").removeClass(`hidden`);
 });
 
 socket.on("mp_room_joined", (data) => {
@@ -1846,6 +1829,11 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
     $(".pageTest #result .tribeResultChat .chat .input input").val("");
     $(".pageTribe .lobby .chat .input input").val("");
   }
+});
+
+$(".pageTribe .preloader .reconnectButton").click((e) => {
+  $(".pageTribe .preloader .reconnectButton").addClass(`hidden`);
+  init();
 });
 
 $(".pageTribe .lobby .chat .input input").keyup((e) => {
