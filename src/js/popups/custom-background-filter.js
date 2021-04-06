@@ -1,4 +1,5 @@
 import * as UpdateConfig from "./config";
+import * as Notifications from "./notifications";
 
 let filters = {
   blur: {
@@ -89,7 +90,7 @@ $(".section.customBackgroundFilter  .save.button").click((e) => {
     arr.push(filters[filterKey].value);
   });
   UpdateConfig.setCustomBackgroundFilter(arr, false);
-  Notifications.add("Saved", 1);
+  Notifications.add("Custom background filters saved", 1);
 });
 
 export function loadConfig(config) {
