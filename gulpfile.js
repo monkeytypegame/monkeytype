@@ -92,9 +92,6 @@ const refactoredSrc = [
   "./src/js/misc.js",
   "./src/js/layouts.js",
   "./src/js/input-suggestions.js",
-  "./src/js/tribe-mm-status.js",
-  "./src/js/tribe-default-configs.js",
-  "./src/js/tribe.js",
   "./src/js/sound.js",
   "./src/js/theme-colors.js",
   "./src/js/chart-controller.js",
@@ -113,6 +110,10 @@ const refactoredSrc = [
   "./src/js/input-controller.js",
   "./src/js/route-controller.js",
   "./src/js/ready.js",
+
+  "./src/js/tribe/matchmaking.js",
+  "./src/js/tribe/tribe-default-configs.js",
+  "./src/js/tribe/tribe.js",
 
   "./src/js/account/all-time-stats.js",
   "./src/js/account/pb-tables.js",

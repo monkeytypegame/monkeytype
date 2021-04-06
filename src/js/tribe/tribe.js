@@ -1,5 +1,5 @@
 import InputSuggestions from "./input-suggestions";
-import * as MatchmakingStatus from "./tribe-mm-status";
+import * as Matchmaking from "./matchmaking";
 import TribeDefaultConfigs from "./tribe-default-configs";
 import * as Misc from "./misc";
 import * as UI from "./ui";
@@ -1035,7 +1035,7 @@ socket.on("disconnect", (f) => {
   resetResult();
   changeActiveSubpage("preloader");
   showHideTribeDiff(false);
-  MatchmakingStatus.reset();
+  Matchmaking.resetBanner();
   // $(".pageTribe .preloader div").removeClass("hidden");
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
   // $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
@@ -1124,7 +1124,7 @@ socket.on("mp_room_joined", (data) => {
     }
   } else {
     state = 7;
-    MatchmakingStatus.setText(
+    Matchmaking.setBannerText(
       `Waiting for more players to join (${
         Object.keys(room.users).length
       }/2)...`
@@ -1141,14 +1141,8 @@ socket.on("mp_room_leave", () => {
   changeActiveSubpage("prelobby");
   resetLobby();
   resetRace();
-  $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").addClass(
-    "hidden"
-  );
-  $(".pageTribe .prelobby .matchmaking .buttons .button").removeClass(
-    "disabled"
-  );
-  $(".pageTribe .prelobby .privateRooms .button").removeClass("disabled");
-  MatchmakingStatus.hide();
+  Matchmaking.enableLobbyButtons();
+  Matchmaking.hideBanner();
   // swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
 });
 
@@ -1171,7 +1165,7 @@ socket.on("mp_room_user_left", (data) => {
   } else {
     delete room.users[data.sid];
     if (state <= 8) {
-      MatchmakingStatus.setText(
+      Matchmaking.setBannerText(
         `Waiting for more players to join (${
           Object.keys(room.users).length
         }/2)...`
@@ -1267,11 +1261,11 @@ socket.on("mp_chat_message", async (data) => {
 
 socket.on("mp_update_mm_status", (data) => {
   if (data.visible) {
-    MatchmakingStatus.show();
+    Matchmaking.showBanner();
   } else {
-    MatchmakingStatus.hide();
+    Matchmaking.hideBanner();
   }
-  if (data.text !== undefined) MatchmakingStatus.setText(data.text);
+  if (data.text !== undefined) Matchmaking.setBannerText(data.text);
   if (data.raceStarting === true) {
     playSound("join");
   }
@@ -1495,7 +1489,7 @@ socket.on("mp_room_test_init", (data) => {
   $(".pageTest #result .tribeResultChat .chat .input input").val("");
   lobbySuggestions.hide();
   resultSuggestions.hide();
-  MatchmakingStatus.reset();
+  Matchmaking.resetBanner();
   sendIsTypingUpdate(false);
   hideResultCountdown();
   $(".pageTest #restartTestButton").addClass("hidden");
@@ -1981,8 +1975,8 @@ $(".pageTribe .prelobby .matchmaking .button").click((e) => {
   if (state >= 6 && state <= 8) return;
   if ($(e.currentTarget).hasClass("disabled")) return;
   let queue = $(e.currentTarget).attr("queue");
-  MatchmakingStatus.setText("Searching for a room...");
-  MatchmakingStatus.show();
+  Matchmaking.setBannerText("Searching for a room...");
+  Matchmaking.showBanner();
   state = 6;
   lastQueue = queue;
   applyRoomConfig(TribeDefaultConfigs[queue]);
@@ -1999,8 +1993,9 @@ $(".pageTribe .prelobby .matchmaking .button").click((e) => {
 $(".pageTest #result #queueAgainButton").click((e) => {
   if (state >= 6 && state <= 8) return;
   if ($(e.currentTarget).hasClass("disabled")) return;
-  MatchmakingStatus.setText("Searching for a room...");
-  MatchmakingStatus.show();
+  Matchmaking.setBannerText("Searching for a room...");
+  Matchmaking.showBanner();
+  showHideTribeDiff(false);
   state = 6;
   applyRoomConfig(TribeDefaultConfigs[lastQueue]);
   TestLogic.restart();
