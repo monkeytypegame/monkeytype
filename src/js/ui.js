@@ -115,7 +115,6 @@ export function changePage(page, tribe = false) {
   }
   if (Tribe.state === 8 && !tribe) return;
   let activePage = $(".page.active");
-  $(".page").removeClass("active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
     if (
@@ -126,6 +125,7 @@ export function changePage(page, tribe = false) {
       !Tribe.room.isLeader
     )
       return;
+    if (Tribe.state === 10) return;
     setPageTransition(true);
     swapElements(
       activePage,
@@ -134,6 +134,7 @@ export function changePage(page, tribe = false) {
       () => {
         setPageTransition(false);
         TestUI.focusWords();
+        $(".page").removeClass("active");
         $(".page.pageTest").addClass("active");
         history.pushState("/", null, "/");
       },
@@ -157,6 +158,7 @@ export function changePage(page, tribe = false) {
     swapElements(activePage, $(".page.pageAbout"), 250, () => {
       setPageTransition(false);
       history.pushState("about", null, "about");
+      $(".page").removeClass("active");
       $(".page.pageAbout").addClass("active");
     });
     TestConfig.hide();
@@ -167,6 +169,7 @@ export function changePage(page, tribe = false) {
     swapElements(activePage, $(".page.pageSettings"), 250, () => {
       setPageTransition(false);
       history.pushState("settings", null, "settings");
+      $(".page").removeClass("active");
       $(".page.pageSettings").addClass("active");
     });
     Settings.update();
@@ -185,6 +188,7 @@ export function changePage(page, tribe = false) {
         () => {
           setPageTransition(false);
           history.pushState("account", null, "account");
+          $(".page").removeClass("active");
           $(".page.pageAccount").addClass("active");
         },
         () => {
@@ -203,6 +207,7 @@ export function changePage(page, tribe = false) {
       swapElements(activePage, $(".page.pageLogin"), 250, () => {
         setPageTransition(false);
         history.pushState("login", null, "login");
+        $(".page").removeClass("active");
         $(".page.pageLogin").addClass("active");
       });
       TestConfig.hide();
@@ -223,6 +228,7 @@ export function changePage(page, tribe = false) {
           Tribe.scrollChat();
           $(".pageTribe .lobby .chat .input input").focus();
           history.pushState("tribe", null, "tribe");
+          $(".page").removeClass("active");
           $(".page.pageTribe").addClass("active");
           if (!Tribe.socket.connected) {
             if (Tribe.state === -1) {
