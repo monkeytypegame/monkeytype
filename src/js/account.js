@@ -64,7 +64,7 @@ export function getDataAndInit() {
       if (snap.refactored === false) {
         CloudFunctions.removeSmallTests({ uid: user.uid });
       }
-      if (!Config.changedBeforeDb) {
+      if (!UpdateConfig.changedBeforeDb) {
         if (Config.cookieConfig === null) {
           AccountButton.loading(false);
           UpdateConfig.apply(DB.getSnapshot().config);
