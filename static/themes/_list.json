@@ -5,6 +5,11 @@
     "textColor": "#eee"
   },
   {
+    "name": "muted",
+    "bgColor": "#525252",
+    "textColor": "#B1E4E3"
+  },
+  {
     "name": "dark_magic_girl",
     "bgColor": "#091f2c",
     "textColor": "#a288d9"
