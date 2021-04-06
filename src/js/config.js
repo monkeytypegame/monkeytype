@@ -1665,7 +1665,7 @@ export function loadFromLocalStorage() {
   console.log("loading localStorage config");
   // let newConfig = $.cookie("config");
   let newConfig = window.localStorage.getItem("config");
-  if (newConfig !== undefined && newConfig !== "") {
+  if (newConfig !== undefined && newConfig !== null && newConfig !== "") {
     try {
       newConfig = JSON.parse(newConfig);
     } catch (e) {
