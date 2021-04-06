@@ -1142,6 +1142,7 @@ socket.on("mp_room_leave", () => {
   resetLobby();
   resetRace();
   Matchmaking.enableLobbyButtons();
+  Matchmaking.hideLeaveQueueButton();
   Matchmaking.hideBanner();
   // swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
 });
@@ -1504,9 +1505,7 @@ socket.on("mp_room_state_update", (data) => {
   state = data.newState;
   Notifications.add(`state changed to ${data.newState}`, 0);
   if (data.newState === 8) {
-    $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").addClass(
-      "hidden"
-    );
+    Matchmaking.hideLeaveQueueButton();
   }
 });
 
@@ -1980,12 +1979,9 @@ $(".pageTribe .prelobby .matchmaking .button").click((e) => {
   state = 6;
   lastQueue = queue;
   applyRoomConfig(TribeDefaultConfigs[queue]);
-  $(".pageTribe .prelobby .matchmaking .buttons .button").addClass("disabled");
-  $(".pageTribe .prelobby .privateRooms .button").addClass("disabled");
+  Matchmaking.disableLobbyButtons();
   setTimeout(() => {
-    $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").removeClass(
-      "hidden"
-    );
+    Matchmaking.showLeaveQueueButton();
     socket.emit("mp_room_join", { queue: queue });
   }, 1000);
 });
@@ -1999,13 +1995,10 @@ $(".pageTest #result #queueAgainButton").click((e) => {
   state = 6;
   applyRoomConfig(TribeDefaultConfigs[lastQueue]);
   TestLogic.restart();
-  $(".pageTribe .prelobby .matchmaking .buttons .button").addClass("disabled");
-  $(".pageTribe .prelobby .privateRooms .button").addClass("disabled");
+  Matchmaking.disableLobbyButtons();
   setTimeout(() => {
     socket.emit("mp_room_join", { queue: lastQueue });
-    $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").removeClass(
-      "hidden"
-    );
+    Matchmaking.showLeaveQueueButton();
     resetResult();
   }, 1000);
 });

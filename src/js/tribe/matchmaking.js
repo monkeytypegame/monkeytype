@@ -25,9 +25,6 @@ export function resetBanner() {
 export function disableLobbyButtons() {
   $(".pageTribe .prelobby .matchmaking .buttons .button").addClass("disabled");
   $(".pageTribe .prelobby .privateRooms .button").addClass("disabled");
-  $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").removeClass(
-    "hidden"
-  );
 }
 
 export function enableLobbyButtons() {
@@ -35,6 +32,15 @@ export function enableLobbyButtons() {
     "disabled"
   );
   $(".pageTribe .prelobby .privateRooms .button").removeClass("disabled");
+}
+
+export function showLeaveQueueButton() {
+  $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").removeClass(
+    "hidden"
+  );
+}
+
+export function hideLeaveQueueButton() {
   $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").addClass(
     "hidden"
   );
