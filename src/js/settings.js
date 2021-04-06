@@ -755,27 +755,6 @@ $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
   }
 );
 
-$(".pageSettings .section.customBackgroundSize .inputAndButton .cover").on(
-  "click",
-  (e) => {
-    UpdateConfig.setCustomBackgroundSize("cover");
-  }
-);
-
-$(".pageSettings .section.customBackgroundSize .inputAndButton .contain").on(
-  "click",
-  (e) => {
-    UpdateConfig.setCustomBackgroundSize("contain");
-  }
-);
-
-$(".pageSettings .section.customBackgroundSize .inputAndButton .max").on(
-  "click",
-  (e) => {
-    UpdateConfig.setCustomBackgroundSize("max");
-  }
-);
-
 $(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
   (e) => {
     if (e.keyCode == 13) {
