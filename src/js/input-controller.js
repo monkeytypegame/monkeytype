@@ -52,40 +52,41 @@ function handleTab(event) {
     // );
     return;
   } else if (
-    $(".pageTest").hasClass("active") &&
     !TestUI.resultCalculating &&
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden")
   ) {
-    if (Config.quickTab) {
-      if (Config.mode == "zen" && !event.shiftKey) {
-        //ignore
-      } else {
-        if (event.shiftKey) ManualRestart.set();
-
-        if (
-          TestLogic.active &&
-          Config.repeatQuotes === "typing" &&
-          Config.mode === "quote"
-        ) {
-          TestLogic.restart(true, false, event);
+    if ($(".pageTest").hasClass("active")) {
+      if (Config.quickTab) {
+        if (Config.mode == "zen" && !event.shiftKey) {
+          //ignore
         } else {
-          TestLogic.restart(false, false, event);
+          if (event.shiftKey) ManualRestart.set();
+
+          if (
+            TestLogic.active &&
+            Config.repeatQuotes === "typing" &&
+            Config.mode === "quote"
+          ) {
+            TestLogic.restart(true, false, event);
+          } else {
+            TestLogic.restart(false, false, event);
+          }
+        }
+      } else {
+        if (
+          !TestUI.resultVisible &&
+          ((TestLogic.hasTab && event.shiftKey) ||
+            (!TestLogic.hasTab && Config.mode !== "zen") ||
+            (Config.mode === "zen" && event.shiftKey))
+        ) {
+          event.preventDefault();
+          $("#restartTestButton").focus();
         }
       }
-    } else {
-      if (
-        !TestUI.resultVisible &&
-        ((TestLogic.hasTab && event.shiftKey) ||
-          (!TestLogic.hasTab && Config.mode !== "zen") ||
-          (Config.mode === "zen" && event.shiftKey))
-      ) {
-        event.preventDefault();
-        $("#restartTestButton").focus();
-      }
+    } else if (Config.quickTab) {
+      UI.changePage("test");
     }
-  } else if (Config.quickTab) {
-    UI.changePage("test");
   }
 }
 
