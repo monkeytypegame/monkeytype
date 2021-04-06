@@ -225,12 +225,12 @@ window.addEventListener("keydown", function (e) {
 
 $(".merchBanner a").click((event) => {
   $(".merchBanner").remove();
-  Misc.setCookie("merchbannerclosed", true, 365);
+  window.localStorage.setItem("merchbannerclosed", true);
 });
 
 $(".merchBanner .fas").click((event) => {
   $(".merchBanner").remove();
-  Misc.setCookie("merchbannerclosed", true, 365);
+  window.localStorage.setItem("merchbannerclosed", true);
   Notifications.add(
     "Won't remind you anymore. Thanks for continued support <3",
     0,

@@ -197,7 +197,7 @@ export function updateTagCommands() {
           tag.active = false;
         });
         TestUI.updateModesNotice();
-        TagController.saveActiveToCookie();
+        TagController.saveActiveToLocalStorage();
       },
     });
 
