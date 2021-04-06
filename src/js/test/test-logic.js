@@ -334,7 +334,7 @@ export function startTest() {
   return true;
 }
 
-export async function init() {
+export async function init(mp = false) {
   setActive(false);
   words.reset();
   TestUI.setCurrentWordElementIndex(0);
@@ -457,16 +457,16 @@ export async function init() {
       } else if (Funbox.active === "gibberish") {
         randomWord = Misc.getGibberish();
       } else if (Funbox.active === "58008") {
-        UpdateConfig.setPunctuation(false, true);
-        UpdateConfig.setNumbers(false, true);
+        UpdateConfig.setPunctuation(false, true, mp);
+        UpdateConfig.setNumbers(false, true, mp);
         randomWord = Misc.getNumbers(7);
       } else if (Funbox.active === "specials") {
-        UpdateConfig.setPunctuation(false, true);
-        UpdateConfig.setNumbers(false, true);
+        UpdateConfig.setPunctuation(false, true, mp);
+        UpdateConfig.setNumbers(false, true, mp);
         randomWord = Misc.getSpecials();
       } else if (Funbox.active === "ascii") {
-        UpdateConfig.setPunctuation(false, true);
-        UpdateConfig.setNumbers(false, true);
+        UpdateConfig.setPunctuation(false, true, mp);
+        UpdateConfig.setNumbers(false, true, mp);
         randomWord = Misc.getASCII();
       }
 
@@ -699,7 +699,7 @@ export function restart(
       if (!withSameWordset) {
         setRepeated(false);
         setHasTab(false);
-        await init();
+        await init(tribe);
         PaceCaret.init(nosave);
       } else {
         setRepeated(true);

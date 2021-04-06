@@ -265,6 +265,7 @@ function applyRoomConfig(cfg) {
 export function checkIfCanChangeConfig(mp) {
   if (state >= 6) {
     if (state >= 20 && state < 29) {
+      if (mp) return true;
       Notifications.add("You can't change settings during the test", 0, 1);
       return false;
     } else if (room !== undefined && room.isLeader) {
