@@ -4167,6 +4167,11 @@ key {
     opacity: 0.5;
     cursor: default;
   }
+
+  &.disabled.active:hover {
+    background: var(--main-color);
+    color: var(--bg-color);
+  }
 }
 
 .text-button {
