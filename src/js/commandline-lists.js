@@ -15,6 +15,7 @@ import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as Commandline from "./commandline";
 import * as CustomText from "./custom-text";
+import { keymapLegendStyles } from "../../static/keymap/legend";
 
 export let current = [];
 
@@ -642,6 +643,33 @@ let commandsKeymapStyle = {
       display: "split matrix",
       exec: () => {
         UpdateConfig.setKeymapStyle("split_matrix");
+      },
+    },
+  ],
+};
+
+let commandsKeymapLegendStyle = {
+  title: "Change keymap legend style...",
+  list: [
+    {
+      id: "setKeymapLegendStyleLowercase",
+      display: keymapLegendStyles.lowercase,
+      exec: () => {
+        UpdateConfig.setKeymapLegendStyle(keymapLegendStyles.lowercase);
+      },
+    },
+    {
+      id: "setKeymapLegendStyleUppercase",
+      display: keymapLegendStyles.uppercase,
+      exec: () => {
+        UpdateConfig.setKeymapLegendStyle(keymapLegendStyles.uppercase);
+      },
+    },
+    {
+      id: "setKeymapLegendStyleBlank",
+      display: keymapLegendStyles.blank,
+      exec: () => {
+        UpdateConfig.setKeymapLegendStyle(keymapLegendStyles.blank);
       },
     },
   ],
@@ -1675,6 +1703,16 @@ export let defaultCommands = {
       subgroup: true,
       exec: () => {
         current.push(commandsKeymapStyle);
+        Commandline.show();
+      },
+    },
+    {
+      id: "changeKeymapLegendStyle",
+      display: "Change keymap legend style...",
+      alias: "keyboard",
+      subgroup: true,
+      exec: () => {
+        current.push(commandsKeymapLegendStyle);
         Commandline.show();
       },
     },
