@@ -17,6 +17,7 @@ import * as PaceCaret from "./pace-caret";
 import * as UI from "./ui";
 import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
+import keymapLegendStyles from "../../static/keymap/legend/_list.json";
 
 export let cookieConfig = null;
 export let dbConfigLoaded = false;
@@ -87,6 +88,7 @@ let defaultConfig = {
   keymapMode: "off",
   keymapStyle: "staggered",
   keymapLayout: "qwerty",
+  keymapLegendStyle: "lowercase",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
@@ -1264,6 +1266,17 @@ export function setKeymapMode(mode, nosave) {
   if (!nosave) saveToCookie();
 }
 
+export function setKeymapLegendStyle(style = "lowercase", shouldSave = true) {
+  // Remove existing styles
+  keymapLegendStyles.forEach(({ name }) => {
+    $(".keymapLegendStyle").removeClass(name);
+  });
+
+  // Save to cookie for persistence
+  config.keymapLegendStyle = style;
+  if (shouldSave) saveToCookie();
+}
+
 export function setKeymapStyle(style, nosave) {
   $(".keymap").removeClass("matrix");
   $(".keymap").removeClass("split");
@@ -1375,7 +1388,7 @@ export function setCustomBackground(value, nosave) {
 }
 
 export function setCustomBackgroundSize(value, nosave) {
-  if (value != "cover" && value != "contain" && value!= "max") {
+  if (value != "cover" && value != "contain" && value != "max") {
     value = "cover";
   }
   config.customBackgroundSize = value;
