@@ -3608,6 +3608,7 @@ key {
       grid-template-columns: 2fr 1fr;
       align-items: center;
       grid-area: welcome;
+      position: relative;
       .stats {
         justify-self: right;
         color: var(--sub-color);
@@ -3619,6 +3620,12 @@ key {
           font-size: 0.65rem;
           line-height: 1.25rem;
         }
+      }
+      .onlineStatsLoader {
+        position: absolute;
+        right: 0;
+        margin-right: -2rem;
+        color: var(--sub-color);
       }
       .text {
         font-size: 2rem;

@@ -13,6 +13,7 @@ import * as TestLogic from "./test-logic";
 import * as TestUI from "./test-ui";
 import * as Commandline from "./commandline";
 import * as CommandlineLists from "./commandline-lists";
+import * as OnlineStats from "./tribe-online-stats";
 import seedrandom from "seedrandom";
 
 export let state = -1;
@@ -101,7 +102,7 @@ function changeActiveSubpage(newPage) {
     250,
     () => {
       if (newPage === "prelobby") {
-        socket.emit("mp_get_online_stats");
+        OnlineStats.refresh();
       }
       if (newPage === "lobby") {
         $(".pageTribe .lobby .chat .input input").focus();
@@ -1000,6 +1001,7 @@ socket.on("mp_room_name_update", (data) => {
 });
 
 socket.on("mp_update_online_stats", (data) => {
+  OnlineStats.hideLoading();
   $(".pageTribe .prelobby .welcome .stats").empty();
   $(".pageTribe .prelobby .welcome .stats").append(
     `<div>Online <span class="num">${data.online}</span></div>`

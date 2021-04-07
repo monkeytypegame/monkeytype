@@ -114,6 +114,7 @@ const refactoredSrc = [
   "./src/js/tribe/matchmaking.js",
   "./src/js/tribe/tribe-default-configs.js",
   "./src/js/tribe/tribe.js",
+  "./src/js/tribe/tribe-online-stats.js",
 
   "./src/js/account/all-time-stats.js",
   "./src/js/account/pb-tables.js",
