@@ -1369,14 +1369,20 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
       resultSuggestions.hide();
     }
   } else {
-    let split = $(".pageTest #result .tribeResultChat .chat .input input")
-      .val()
-      .split(" ");
+    let split = $(".pageTribe .lobby .chat .input input").val().split(" ");
     split = split[split.length - 1];
     if (split.slice(0, 1) === ":") {
       split = split.replace(/:/g, "");
       if (split.length >= 2) {
-        resultSuggestions.updateSuggestions(split);
+        resultSuggestions.updateSuggestions("emoji", split);
+        resultSuggestions.show();
+      } else {
+        resultSuggestions.hide();
+      }
+    } else if (split.slice(0, 1) === "@") {
+      split = split.replace(/@/g, "");
+      if (split.length >= 0) {
+        resultSuggestions.updateSuggestions("name", split);
         resultSuggestions.show();
       } else {
         resultSuggestions.hide();
