@@ -125,7 +125,7 @@ export function changePage(page, tribe = false) {
       !Tribe.room.isLeader
     )
       return;
-    if (Tribe.state === 10) return;
+    if (Tribe.state === 10 && !tribe) return;
     setPageTransition(true);
     swapElements(
       activePage,
