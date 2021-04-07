@@ -3629,17 +3629,21 @@ key {
       grid-area: mm;
       display: grid;
       gap: 1rem;
-      grid-template-rows: auto 1fr;
-      .title {
+      grid-template-rows: auto auto 1fr;
+      .title,
+      .subtitle {
         color: var(--sub-color);
       }
       .buttons {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 1rem;
-        .button {
-          padding: 2rem 0;
-        }
+        // .button {
+        //   padding: 2rem 0;
+        // }
+      }
+      .button {
+        padding: 0.7rem 0.5rem;
       }
       .leaveMatchmakingButton {
         padding: 0.7rem;
@@ -3649,11 +3653,12 @@ key {
       grid-area: priv;
       display: grid;
       gap: 1rem;
+      grid-template-rows: auto auto auto 1fr;
       .title {
         color: var(--sub-color);
       }
       #createPrivateRoom {
-        padding: 2rem 0;
+        padding: 2.4rem 0;
       }
     }
     #joinByCode {

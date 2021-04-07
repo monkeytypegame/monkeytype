@@ -1,5 +1,7 @@
 let banner = $("#tribeMatchmakingStatus");
 
+export let queues = [true, true, true, true];
+
 export function showBanner() {
   banner.removeClass("hidden");
 }
@@ -45,3 +47,47 @@ export function hideLeaveQueueButton() {
     "hidden"
   );
 }
+
+export function showStartQueueButton() {
+  $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").removeClass(
+    "hidden"
+  );
+}
+
+export function hideStartQueueButton() {
+  $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").addClass(
+    "hidden"
+  );
+}
+
+function toggleQueue(queue) {
+  queues[queue] = !queues[queue];
+}
+
+function refreshQueueButtons() {
+  let buttons = $(".pageTribe .prelobby .matchmaking .buttons .button");
+
+  buttons.removeClass("active");
+
+  queues.forEach((queue, id) => {
+    if (queue) {
+      $(buttons[id]).addClass("active");
+    }
+  });
+}
+
+export function getQ() {
+  let ret = [];
+  queues.forEach((queue, id) => {
+    if (queue) {
+      ret.push(id);
+    }
+  });
+  return ret;
+}
+
+$(".pageTribe .prelobby .matchmaking .buttons .button").click((e) => {
+  let queue = $(e.currentTarget).attr("queue");
+  toggleQueue(queue);
+  refreshQueueButtons();
+});

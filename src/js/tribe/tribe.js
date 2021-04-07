@@ -29,12 +29,11 @@ export let socket = io(
 );
 export let activePage = "preloader";
 export let pageTransition = false;
-export let expectedVersion = "0.9.4";
+export let expectedVersion = "0.9.6";
 
 export let room = undefined;
 let name = undefined;
 let autoJoin = undefined;
-let lastQueue = undefined;
 
 export function setAutoJoin(code) {
   autoJoin = code;
@@ -1130,6 +1129,7 @@ socket.on("mp_room_leave", () => {
   resetRace();
   Matchmaking.enableLobbyButtons();
   Matchmaking.hideLeaveQueueButton();
+  Matchmaking.showStartQueueButton();
   Matchmaking.hideBanner();
   // swapElements($(".pageTribe .lobby"), $(".pageTribe .prelobby"), 250);
 });
@@ -1183,17 +1183,19 @@ socket.on("mp_room_new_leader", (data) => {
 
 socket.on("mp_room_config_update", (data) => {
   room.config = data.newConfig;
-  refreshConfig();
-  if (!room.isLeader) {
-    Notifications.add("Config changed", 0, 2);
-    applyRoomConfig(room.config);
+  if (room.private) {
+    refreshConfig();
+    if (!room.isLeader) {
+      Notifications.add("Config changed", 0, 2);
+      applyRoomConfig(room.config);
+    }
+    Object.keys(room.users).forEach((sid) => {
+      room.users[sid].isReady = false;
+    });
+    room.isReady = false;
+    resetReadyButtons();
+    refreshUserList();
   }
-  Object.keys(room.users).forEach((sid) => {
-    room.users[sid].isReady = false;
-  });
-  room.isReady = false;
-  resetReadyButtons();
-  refreshUserList();
 });
 
 socket.on("mp_chat_message", async (data) => {
@@ -1465,6 +1467,10 @@ socket.on("mp_room_test_init", (data) => {
   if ($(".page.pageTest").hasClass("active")) {
     //test already visible, delay some stuff
     delay = 125;
+  }
+  if (!room.private) {
+    room.config = data.newConfig;
+    applyRoomConfig(room.config);
   }
 
   playSound("start");
@@ -1968,16 +1974,17 @@ $(".pageTribe .prelobby #joinByCode input").focusout((e) => {
   );
 });
 
-$(".pageTribe .prelobby .matchmaking .button").click((e) => {
+$(".pageTribe .prelobby .matchmaking .startMatchmakingButton").click((e) => {
   if (state >= 6 && state <= 8) return;
   if ($(e.currentTarget).hasClass("disabled")) return;
-  let queue = $(e.currentTarget).attr("queue");
+  let queue = Matchmaking.getQ();
   Matchmaking.setBannerText("Searching for a room...");
   Matchmaking.showBanner();
   state = 6;
-  lastQueue = queue;
-  applyRoomConfig(TribeDefaultConfigs[queue]);
+  // lastQueue = queue;
+  // applyRoomConfig(TribeDefaultConfigs[queue]);
   Matchmaking.disableLobbyButtons();
+  Matchmaking.hideStartQueueButton();
   setTimeout(() => {
     Matchmaking.showLeaveQueueButton();
     socket.emit("mp_room_join", { queue: queue });
@@ -1991,11 +1998,12 @@ $(".pageTest #result #queueAgainButton").click((e) => {
   Matchmaking.showBanner();
   showHideTribeDiff(false);
   state = 6;
-  applyRoomConfig(TribeDefaultConfigs[lastQueue]);
+  // applyRoomConfig(TribeDefaultConfigs[lastQueue]);
   TestLogic.restart();
   Matchmaking.disableLobbyButtons();
+  Matchmaking.hideStartQueueButton();
   setTimeout(() => {
-    socket.emit("mp_room_join", { queue: lastQueue });
+    socket.emit("mp_room_join", { queue: Matchmaking.getQ() });
     Matchmaking.showLeaveQueueButton();
     resetResult();
   }, 1000);
