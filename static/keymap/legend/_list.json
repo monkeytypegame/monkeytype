@@ -1,12 +1,5 @@
-[
-    {
-      "name": "lowercase"
-    },
-    {
-      "name": "UPPERCASE"
-    },
-    {
-      "name": "blank"
-    }
-  ]
-  
+{
+    "lowercase": "lowercase",
+    "uppercase": "uppercase",
+    "blank":  "blank"
+}

@@ -87,7 +87,7 @@ let defaultConfig = {
   showAllLines: false,
   keymapMode: "off",
   keymapStyle: "staggered",
-  keymapLegendStyle: "lowercase",
+  keymapLegendStyle: keymapLegendStyles.lowercase,
   keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
@@ -1268,11 +1268,11 @@ export function setKeymapMode(mode, nosave) {
 
 export function setKeymapLegendStyle(style, nosave) {
   // Remove existing styles
-  keymapLegendStyles.forEach(({ name }) => {
+  Object.keys(keymapLegendStyles).forEach((name) => {
     $(".keymapLegendStyle").removeClass(name);
   });
 
-  style = style || "lowercase";
+  style = style || keymapLegendStyles.lowercase;
 
   // Mutate the keymap in the DOM, if it exists.
   // 1. Remove everything
@@ -1280,10 +1280,10 @@ export function setKeymapLegendStyle(style, nosave) {
   $(".keymap-key > .letter").css("text-transform", "");
 
   // 2. Append special styles onto the DOM elements
-  if (style === "uppercase") {
+  if (style === keymapLegendStyles.uppercase) {
     $(".keymap-key > .letter").css("text-transform", "capitalize");
   }
-  if (style === "blank") {
+  if (style === keymapLegendStyles.blank) {
     $(".keymap-key > .letter").css("display", "none");
   }
 
