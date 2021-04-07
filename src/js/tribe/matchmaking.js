@@ -87,6 +87,7 @@ export function getQ() {
 }
 
 $(".pageTribe .prelobby .matchmaking .buttons .button").click((e) => {
+  if ($(e.currentTarget).hasClass("disabled")) return;
   let queue = $(e.currentTarget).attr("queue");
   toggleQueue(queue);
   refreshQueueButtons();
