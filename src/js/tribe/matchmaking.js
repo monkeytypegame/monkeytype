@@ -69,11 +69,22 @@ function refreshQueueButtons() {
 
   buttons.removeClass("active");
 
+  let atleastone = false;
   queues.forEach((queue, id) => {
     if (queue) {
+      atleastone = true;
       $(buttons[id]).addClass("active");
     }
   });
+  if (!atleastone) {
+    $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").addClass(
+      "disabled"
+    );
+  } else {
+    $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").removeClass(
+      "disabled"
+    );
+  }
 }
 
 export function getQ() {

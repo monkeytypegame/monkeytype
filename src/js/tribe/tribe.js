@@ -1502,7 +1502,7 @@ socket.on("mp_room_test_init", (data) => {
 
 socket.on("mp_room_state_update", (data) => {
   state = data.newState;
-  Notifications.add(`state changed to ${data.newState}`, 0);
+  // Notifications.add(`state changed to ${data.newState}`, 0);
   if (data.newState === 8) {
     Matchmaking.hideLeaveQueueButton();
   }
@@ -1978,6 +1978,7 @@ $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").click((e) => {
   if (state >= 6 && state <= 8) return;
   if ($(e.currentTarget).hasClass("disabled")) return;
   let queue = Matchmaking.getQ();
+  if (queue.length == 0) return;
   Matchmaking.setBannerText("Searching for a room...");
   Matchmaking.showBanner();
   state = 6;
@@ -1994,6 +1995,8 @@ $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").click((e) => {
 $(".pageTest #result #queueAgainButton").click((e) => {
   if (state >= 6 && state <= 8) return;
   if ($(e.currentTarget).hasClass("disabled")) return;
+  let queue = Matchmaking.getQ();
+  if (queue.length == 0) return;
   Matchmaking.setBannerText("Searching for a room...");
   Matchmaking.showBanner();
   showHideTribeDiff(false);
@@ -2003,7 +2006,7 @@ $(".pageTest #result #queueAgainButton").click((e) => {
   Matchmaking.disableLobbyButtons();
   Matchmaking.hideStartQueueButton();
   setTimeout(() => {
-    socket.emit("mp_room_join", { queue: Matchmaking.getQ() });
+    socket.emit("mp_room_join", { queue: queue });
     Matchmaking.showLeaveQueueButton();
     resetResult();
   }, 1000);
