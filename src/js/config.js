@@ -1274,6 +1274,19 @@ export function setKeymapLegendStyle(style, nosave) {
 
   style = style || "lowercase";
 
+  // Mutate the keymap in the DOM, if it exists.
+  // 1. Remove everything
+  $(".keymap-key > .letter").css("display", "");
+  $(".keymap-key > .letter").css("text-transform", "");
+
+  // 2. Append special styles onto the DOM elements
+  if (style === "uppercase") {
+    $(".keymap-key > .letter").css("text-transform", "capitalize");
+  }
+  if (style === "blank") {
+    $(".keymap-key > .letter").css("display", "none");
+  }
+
   // Update and save to cookie for persistence
   $(".keymapLegendStyle").addClass(style);
   config.keymapLegendStyle = style;
@@ -1281,10 +1294,10 @@ export function setKeymapLegendStyle(style, nosave) {
 }
 
 export function setKeymapStyle(style, nosave) {
+  console.log("keymap style", style);
   $(".keymap").removeClass("matrix");
   $(".keymap").removeClass("split");
   $(".keymap").removeClass("split_matrix");
-
   style = style || "staggered";
 
   $(".keymap").addClass(style);
