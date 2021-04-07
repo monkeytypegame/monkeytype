@@ -87,8 +87,8 @@ let defaultConfig = {
   showAllLines: false,
   keymapMode: "off",
   keymapStyle: "staggered",
-  keymapLayout: "qwerty",
   keymapLegendStyle: "lowercase",
+  keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,
@@ -1266,15 +1266,18 @@ export function setKeymapMode(mode, nosave) {
   if (!nosave) saveToCookie();
 }
 
-export function setKeymapLegendStyle(style = "lowercase", shouldSave = true) {
+export function setKeymapLegendStyle(style, nosave) {
   // Remove existing styles
   keymapLegendStyles.forEach(({ name }) => {
     $(".keymapLegendStyle").removeClass(name);
   });
 
-  // Save to cookie for persistence
+  style = style || "lowercase";
+
+  // Update and save to cookie for persistence
+  $(".keymapLegendStyle").addClass(style);
   config.keymapLegendStyle = style;
-  if (shouldSave) saveToCookie();
+  if (!nosave) saveToCookie();
 }
 
 export function setKeymapStyle(style, nosave) {
@@ -1282,17 +1285,9 @@ export function setKeymapStyle(style, nosave) {
   $(".keymap").removeClass("split");
   $(".keymap").removeClass("split_matrix");
 
-  if (style == null || style == undefined) {
-    style = "staggered";
-  }
+  style = style || "staggered";
 
-  if (style === "matrix") {
-    $(".keymap").addClass("matrix");
-  } else if (style === "split") {
-    $(".keymap").addClass("split");
-  } else if (style === "split_matrix") {
-    $(".keymap").addClass("split_matrix");
-  }
+  $(".keymap").addClass(style);
   config.keymapStyle = style;
   if (!nosave) saveToCookie();
 }
@@ -1444,6 +1439,7 @@ export function apply(configObj) {
     setTimerOpacity(configObj.timerOpacity, true);
     setKeymapMode(configObj.keymapMode, true);
     setKeymapStyle(configObj.keymapStyle, true);
+    setKeymapLegendStyle(configObj.keymapLegendStyle, true);
     setKeymapLayout(configObj.keymapLayout, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
