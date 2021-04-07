@@ -1004,21 +1004,21 @@ socket.on("mp_update_online_stats", (data) => {
   OnlineStats.hideLoading();
   $(".pageTribe .prelobby .welcome .stats").empty();
   $(".pageTribe .prelobby .welcome .stats").append(
-    `<div>Online <span class="num">${data.online}</span></div>`
+    `<div>Online <span class="num">${data[0]}</span></div>`
   );
   $(".pageTribe .prelobby .welcome .stats").append(
-    `<div>Active Races <span class="num">${data.rooms}</span></div>`
+    `<div>Active Races <span class="num">${data[1]}</span></div>`
   );
   $(".pageTribe .prelobby .welcome .stats").append(
-    `<div class="small">Version ${data.version}</div>`
+    `<div class="small">Version ${data[2]}</div>`
   );
-  if (data.version !== expectedVersion) {
+  if (data[2] !== expectedVersion) {
     socket.disconnect();
     $(".pageTribe .preloader .icon").html(
       `<i class="fas fa-exclamation-triangle"></i>`
     );
     $(".pageTribe .preloader .text").html(
-      `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${data.version}`
+      `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${data[2]}`
     );
     $(".pageTribe .preloader .reconnectButton").addClass(`hidden`);
   }

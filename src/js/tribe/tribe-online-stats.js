@@ -17,6 +17,6 @@ export function refresh() {
   ) {
     setTimeout(() => {
       refresh();
-    }, 10000);
+    }, 15000);
   }
 }
