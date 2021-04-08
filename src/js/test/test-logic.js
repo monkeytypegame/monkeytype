@@ -1658,8 +1658,8 @@ export function finish(difficultyFailed = false) {
   if (Config.blindMode) {
     testType += "<br>blind";
   }
-  if (Funbox.active !== "none") {
-    testType += "<br>" + Funbox.active.replace(/_/g, " ");
+  if (Funbox.funboxSaved !== "none") {
+    testType += "<br>" + Funbox.funboxSaved.replace(/_/g, " ");
   }
   if (Config.difficulty == "expert") {
     testType += "<br>expert";
