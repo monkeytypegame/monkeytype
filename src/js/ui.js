@@ -137,7 +137,7 @@ export function changePage(page) {
     TestStats.resetIncomplete();
     ManualRestart.set();
     TestLogic.restart();
-    Funbox.activate();
+    Funbox.activate(Funbox.funboxSaved, Funbox.modeSaved);
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();

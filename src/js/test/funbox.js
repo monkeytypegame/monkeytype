@@ -73,9 +73,8 @@ export function toggleScript(...params) {
 }
 
 export async function activate(funbox, mode) {
-  if (funbox === undefined) {
+  if (funbox === undefined || funbox === null) {
     funbox = funboxSaved;
-    mode = modeSaved;
   }
   if (Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
@@ -95,8 +94,12 @@ export async function activate(funbox, mode) {
 
   $("#wordsWrapper").removeClass("hidden");
   // }
-
-  if (mode === null || mode === undefined) {
+  if (funbox === "none" && mode === undefined) {
+    mode = null;
+  } else if (
+    (funbox !== "none" && mode === undefined) ||
+    (funbox !== "none" && mode === null)
+  ) {
     let list = await Misc.getFunboxList();
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
