@@ -77,11 +77,11 @@ let defaultConfig = {
   savedLayout: "default",
   confidenceMode: "off",
   indicateTypos: false,
-  timerStyle: "text",
+  timerStyle: "mini",
   colorfulMode: false,
   randomTheme: "off",
-  timerColor: "black",
-  timerOpacity: "0.25",
+  timerColor: "main",
+  timerOpacity: "1",
   stopOnError: "off",
   showAllLines: false,
   keymapMode: "off",
@@ -842,7 +842,7 @@ export function toggleHideExtraLetters() {
 
 export function setTimerStyle(style, nosave) {
   if (style == null || style == undefined) {
-    style = "bar";
+    style = "mini";
   }
   config.timerStyle = style;
   if (!nosave) saveToCookie();
@@ -1375,7 +1375,7 @@ export function setCustomBackground(value, nosave) {
 }
 
 export function setCustomBackgroundSize(value, nosave) {
-  if (value != "cover" && value != "contain" && value!= "max") {
+  if (value != "cover" && value != "contain" && value != "max") {
     value = "cover";
   }
   config.customBackgroundSize = value;
