@@ -7,6 +7,8 @@ import Config, * as UpdateConfig from "./config";
 import * as Settings from "./settings";
 
 export let active = "none";
+export let funboxSaved = "none";
+export let modeSaved = null;
 let memoryTimer = null;
 let memoryInterval = null;
 
@@ -71,12 +73,8 @@ export function toggleScript(...params) {
 }
 
 export async function activate(funbox, mode) {
-  if (TestLogic.active || TestUI.resultVisible) {
-    Notifications.add(
-      "You can only change the funbox before starting a test.",
-      0
-    );
-    return false;
+  if (funbox === undefined || funbox === null) {
+    funbox = funboxSaved;
   }
   if (Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
@@ -96,8 +94,12 @@ export async function activate(funbox, mode) {
 
   $("#wordsWrapper").removeClass("hidden");
   // }
-
-  if (mode === null || mode === undefined) {
+  if (funbox === "none" && mode === undefined) {
+    mode = null;
+  } else if (
+    (funbox !== "none" && mode === undefined) ||
+    (funbox !== "none" && mode === null)
+  ) {
     let list = await Misc.getFunboxList();
     mode = list.filter((f) => f.name === funbox)[0].type;
   }
@@ -160,5 +162,18 @@ export async function activate(funbox, mode) {
     }
   }
   TestUI.updateModesNotice();
+  return true;
+}
+export function setFunbox(funbox, mode) {
+  if (TestLogic.active || TestUI.resultVisible) {
+    Notifications.add(
+      "You can only change the funbox before starting a test.",
+      0
+    );
+    return false;
+  }
+  funboxSaved = funbox;
+  modeSaved = mode;
+  active = funbox;
   return true;
 }
