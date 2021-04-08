@@ -1713,7 +1713,7 @@ export function finish(difficultyFailed = false) {
     $("#result .stats .source").addClass("hidden");
   }
 
-  if (Funbox.active !== "none") {
+  if (Funbox.funboxSaved !== "none") {
     ChartController.result.options.annotation.annotations.push({
       enabled: false,
       type: "line",
@@ -1734,7 +1734,7 @@ export function finish(difficultyFailed = false) {
         cornerRadius: 3,
         position: "left",
         enabled: true,
-        content: `${Funbox.active}`,
+        content: `${Funbox.funboxSaved}`,
         yAdjust: -11,
       },
     });
