@@ -428,7 +428,7 @@ export function updateDiscordSection() {
 function setActiveFunboxButton() {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
   $(
-    `.pageSettings .section.funbox .button[funbox='${Funbox.active}']`
+    `.pageSettings .section.funbox .button[funbox='${Funbox.funboxSaved}']`
   ).addClass("active");
 }
 
@@ -624,7 +624,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   let funbox = $(e.currentTarget).attr("funbox");
   let type = $(e.currentTarget).attr("type");
-  Funbox.activate(funbox, type);
+  Funbox.setFunbox(funbox, type);
   setActiveFunboxButton();
 });
 
