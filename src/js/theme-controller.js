@@ -163,9 +163,9 @@ export function applyCustomBackground() {
 }
 
 export function applyCustomBackgroundSize() {
-  if (Config.customBackgroundSize == "max"){
+  if (Config.customBackgroundSize == "max") {
     $(".customBackground").css({
-      backgroundSize: "100% 100%" ,
+      backgroundSize: "100% 100%",
     });
   } else if (Config.customBackgroundSize != "") {
     $(".customBackground").css({
