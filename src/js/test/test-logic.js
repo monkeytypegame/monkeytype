@@ -1708,6 +1708,33 @@ export function finish(difficultyFailed = false) {
     $("#result .stats .source").addClass("hidden");
   }
 
+  if (Funbox.active !== "none") {
+    ChartController.result.options.annotation.annotations.push({
+      enabled: false,
+      type: "line",
+      mode: "horizontal",
+      scaleID: "wpm",
+      value: 0,
+      borderColor: "transparent",
+      borderWidth: 1,
+      borderDash: [2, 2],
+      label: {
+        backgroundColor: "transparent",
+        fontFamily: Config.fontFamily.replace(/_/g, " "),
+        fontSize: 11,
+        fontStyle: "normal",
+        fontColor: ThemeColors.sub,
+        xPadding: 6,
+        yPadding: 6,
+        cornerRadius: 3,
+        position: "left",
+        enabled: true,
+        content: `${Funbox.active}`,
+        yAdjust: -11,
+      },
+    });
+  }
+
   ChartController.result.options.scales.yAxes[0].ticks.max = maxChartVal;
   ChartController.result.options.scales.yAxes[1].ticks.max = maxChartVal;
 
