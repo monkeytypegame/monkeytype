@@ -1,29 +1,41 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
       "text": "You have the power to heal your life, and you need to know that.",
       "source": "Meditations to Heal Your Life",
-      "id": 1,
-      "length": 64
+      "length": 64,
+      "id": 1
     },
     {
       "text": "They don't know that we know they know we know.",
       "source": "Friends",
-      "id": 2,
-      "length": 47
+      "length": 47,
+      "id": 2
     },
     {
       "text": "Don't it make you sad to know that life is more than who you are?",
       "source": "Name",
-      "id": 3,
-      "length": 65
+      "length": 65,
+      "id": 3
     },
     {
       "text": "Leave something for someone but don't leave someone for something.",
@@ -30100,32 +30112,32 @@
     {
       "text": "NO ADMITTANCE. NOT EVEN TO AUTHORIZED PERSONNEL. YOU ARE WASTING YOUR TIME HERE. GO AWAY.",
       "source": "Mostly Harmless",
-      "id": 5068,
-      "length": 89
+      "length": 89,
+      "id": 5068
     },
     {
       "text": "He had a nasty feeling that that might be an idiotic thing to do, but he did it anyway, and sure enough it had turned out to be an idiotic thing to do. You live and learn. At any rate, you live.",
       "source": "Mostly Harmless",
-      "id": 5069,
-      "length": 194
+      "length": 194,
+      "id": 5069
     },
     {
       "text": "Fall, though, is the worst. Few things are worse than fall in New York, Some of the things that live in the lower intestines of rats would disagree, but most of the things that live in the lower intestines of rats are highly disagreeable anyways, so their opinion can and should be discounted.",
       "source": "Mostly Harmless",
-      "id": 5070,
-      "length": 293
+      "length": 293,
+      "id": 5070
     },
     {
       "text": "Every single decision we make, every breath we draw, opens some doors and closes many others. Most of them we don't nonce, Some we do.",
       "source": "Mostly Harmless",
-      "id": 5071,
-      "length": 134
+      "length": 134,
+      "id": 5071
     },
     {
       "text": "At every level, vital instructions were missing, and the instructions about what to do in the event of discovering that vital instructions were missing, were also missing.",
       "source": "Mostly Harmless",
-      "id": 5072,
-      "length": 171
+      "length": 171,
+      "id": 5072
     },
     {
       "text": "If you set your goals ridiculously high and it's a failure, you will fail above everyone else's success.",
@@ -32411,7 +32423,7 @@
       "text": "I promised I'd save him, take him home! I promised him!",
       "source": "Thomas, The Maze Runner",
       "length": 55,
-      "id": 5453 
+      "id": 5453
     },
     {
       "text": "Good that.",
@@ -32430,6 +32442,178 @@
       "source": "Thomas, The Maze Runner",
       "length": 61,
       "id": 5456
+    },
+    {
+      "text": "People who live in glass houses should shut the f*** up.",
+      "source": "Anorak's Almanac, Ready Player One",
+      "length": 56,
+      "id": 5457
+    },
+    {
+      "text": "Going outside is highly overrated.",
+      "source": "Anorak's Almanac, Ready Player One",
+      "length": 34,
+      "id": 5458
+    },
+    {
+      "text": "No one in the world gets what they want and that is beautiful",
+      "source": "Ready Player One",
+      "length": 61,
+      "id": 5459
+    },
+    {
+      "text": "You'd be amazed how much research you can get done when you have no life whatsoever",
+      "source": "Wade Watts, Ready Player One",
+      "length": 83,
+      "id": 5460
+    },
+    {
+      "text": "Being human totally sucks most of the time. Videogames are the only thing that make life bearable.",
+      "source": "Anorak's Almanac, Ready Player One",
+      "length": 98,
+      "id": 5461
+    },
+    {
+      "text": "You're probably wondering what's going to happen to you. That's easy. The same thing is going to happen to you that has happened to every other human being who has ever lived. You're going to die. We all die. That's just how it is.",
+      "source": "Ready Player One",
+      "length": 231,
+      "id": 5462
+    },
+    {
+      "text": "For a bunch of hair-less apes, we've actually managed to invent some pretty incredible things.",
+      "source": "Ready Player One",
+      "length": 94,
+      "id": 5463
+    },
+    {
+      "text": "I was watching a collection of vintage '80s cereal commercials when I paused to wonder why cereal manufacturers no longer included toy prizes inside every box. It was a tradegy, in my opinion. Another sign that civilization was going straight down the tubes.",
+      "source": "Wade Watts, Ready Player One",
+      "length": 258,
+      "id": 5464
+    },
+    {
+      "text": "My friend Kira always said that life is like an extremely difficult, horribly unbalanced videogame. When you’re born, you’re given a randomly generated character, with a randomly determined name, race, face, and social class. Your body is your avatar, and you spawn in a random geographic location, at a random moment in human history, surrounded by a random group of people, and then you have to try to survive for as long as you can. Sometimes the game might seem easy. Even fun. Other times it might be so difficult you want to give up and quit. But unfortunately, in this game you only get one life. When your body grows too hungry or thirsty or ill or injured or old, your health meter runs out and then it’s Game Over. Some people play the game for a hundred years without ever figuring out that it’s a game, or that there is a way to win it. To win the videogame of life you just have to try to make the experience of being forced to play it as pleasant as possible, for yourself, and for all of the other players you encounter in your travels. Kira says that if everyone played the game to win, it’d be a lot more fun for everyone.",
+      "source": "Anorak's Almanac, Ready Player Two",
+      "length": 1139,
+      "id": 5465
+    },
+    {
+      "text": "Human beings were never meant to participate in a worldwide social network comprised of billions of people. We were designed by evolution to be hunter-gatherers, with the mental capacity to interact and socialize with the other members of our tribe—a tribe made up of a few hundred other people at most. Interacting with thousands or even millions of other people on a daily basis was way too much for our ape-descended melons to handle. That was why social media had been gradually driving the entire population of the world insane since it emerged back around the turn of the century.",
+      "source": "Ready Player Two",
+      "length": 586,
+      "id": 5466
+    },
+    {
+      "text": "Everybody wants to rule the world.",
+      "source": "Wade Watts, Ready Player Two",
+      "length": 34,
+      "id": 5467
+    },
+    {
+      "text": "How the f*** do you negotiate with a piece of software?",
+      "source": "Wade Watts, Ready Player Two",
+      "length": 55,
+      "id": 5468
+    },
+    {
+      "text": "The world’s population was fast approaching ten billion people, and Mother Earth was making it abundantly clear that she could no longer sustain all of us",
+      "source": "Wade Watts, Ready Player Two",
+      "length": 154,
+      "id": 5469
+    },
+    {
+      "text": "You get tough like me and you don't get hurt. You look out for yourself and nothin' can touch you...",
+      "source": "Dally, The Outsiders",
+      "length": 100,
+      "id": 5470
+    },
+    {
+      "text": "Things are rough all over.",
+      "source": "Cherry, The Outsiders"
+    },
+    {
+      "text": "I am a greaser. I am a JD and a hood. I blacken the name of our fair city. I beat up people. I rob gas stations. I am a manace to society. Man do I have fun!",
+      "source": "The Outsiders",
+      "length": 157,
+      "id": 5471
+    },
+    {
+      "text": "You still have a lot of time to make yourself be what you want. There's still lots of good in the world. Tell Dally. I don't think he knows.",
+      "source": "Johnny, The Outsiders",
+      "length": 140,
+      "id": 5472
+    },
+    {
+      "text": "Happy Hunger Games! And may the odds be in your favor.",
+      "source": "The Hunger Games",
+      "length": 54,
+      "id": 5473
+    },
+    {
+      "text": "Destroying things is much easier than making them.",
+      "source": "The Hunger Games",
+      "length": 50,
+      "id": 5474
+    },
+    {
+      "text": "You have only one life, make the most of it.",
+      "source": "Holes",
+      "length": 44,
+      "id": 5475
+    },
+    {
+      "text": "Nothing in life is easy, but that's no reason to give up. You'll be surprised what you can accomplish when you set your mind to it.",
+      "source": "Holes",
+      "length": 131,
+      "id": 5476
+    },
+    {
+      "text": "You may have done some bad things, but that doesn't mean you're a bad kid",
+      "source": "Holes",
+      "length": 73,
+      "id": 5477
+    },
+    {
+      "text": "Don't ask for guarantees. And don't look to be saved in any one thing, person, machine, or library. Do your own bit of saving, and if you drown, at least die knowing you where heading for shore.",
+      "source": "Fahrenheit 451",
+      "length": 192,
+      "id": 5478
+    },
+    {
+      "text": "I still love books. Nothing a computer can do can compare to a book. You can't really put a book on the Internet. Three companies have offered to put books by me on the Net, and I said, 'If you can make something that has a nice jacket, nice paper with that nice smell, then we'll talk.' All the computer can give you is a manuscript. People don't want to read manuscripts. They want to read books. Books smell good. They look good. You can press it to your bosom. You can carry it in your pocket.",
+      "source": "Fahrenheit 451",
+      "length": 497,
+      "id": 5479
+    },
+    {
+      "text": "It was a pleasure to burn.",
+      "source": "Fahrenheit 451",
+      "length": 26,
+      "id": 4580
+    },
+    {
+      "text": "I don't talk things, Sir. I talk the meaning of things.",
+      "source": "Fahrenheit 451",
+      "length": 55,
+      "id": 5481
+    },
+    {
+      "text": "Our civilization is flinging itself to pieces. Stand back from the centrifuge",
+      "source": "Fahrenheit 451",
+      "length": 77,
+      "id": 5482
+    },
+    {
+      "text": "Live as if you'd drop dead in ten seconds.",
+      "source": "Fahrenheit 451",
+      "length": 42,
+      "id": 5483
+    },
+    {
+      "text": "Have you ever watched the jet cars race on the boulevard?...I sometimes think drivers don’t know what grass is, or flowers, because they never see them slowly...If you showed a driver a green blur, Oh yes! He'd say, that’s grass! A pink blur! That’s a rose garden! White blurs are houses. Brown blurs are cows.",
+      "source": "Fahrenheit 451",
+      "length": 310,
+      "id": 5484
     }
   ]
 }
