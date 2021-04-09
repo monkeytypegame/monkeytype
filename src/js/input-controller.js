@@ -61,6 +61,7 @@ function handleTab(event) {
         if (Config.mode == "zen" && !event.shiftKey) {
           //ignore
         } else {
+          event.preventDefault();
           if (event.shiftKey) ManualRestart.set();
           event.preventDefault();
           if (
