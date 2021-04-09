@@ -1294,7 +1294,6 @@ export function setKeymapLegendStyle(style, nosave) {
 }
 
 export function setKeymapStyle(style, nosave) {
-  console.log("keymap style", style);
   $(".keymap").removeClass("matrix");
   $(".keymap").removeClass("split");
   $(".keymap").removeClass("split_matrix");
