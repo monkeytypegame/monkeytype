@@ -61,7 +61,7 @@ if (Object.keys(layouts).length > 0) {
   });
 }
 
-let commandsKeymapLayouts = {
+export let commandsKeymapLayouts = {
   title: "Change keymap layout...",
   list: [
     {
@@ -126,7 +126,7 @@ let commandsFunbox = {
       id: "changeFunboxNone",
       display: "none",
       exec: () => {
-        if (Funbox.activate("none", null)) {
+        if (Funbox.setFunbox("none", null)) {
           TestLogic.restart();
         }
       },
@@ -140,7 +140,7 @@ Misc.getFunboxList().then((funboxes) => {
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
       exec: () => {
-        if (Funbox.activate(funbox.name, funbox.type)) {
+        if (Funbox.setFunbox(funbox.name, funbox.type)) {
           TestLogic.restart();
         }
       },
@@ -413,7 +413,7 @@ let commandsDifficulty = {
   ],
 };
 
-let commandsEnableAds = {
+export let commandsEnableAds = {
   title: "Set enable ads...",
   list: [
     {
@@ -1117,7 +1117,7 @@ let commandsPageWidth = {
   ],
 };
 
-let themeCommands = {
+export let themeCommands = {
   title: "Change theme...",
   list: [],
 };
@@ -1594,6 +1594,15 @@ export let defaultCommands = {
       exec: () => {
         current.push(commandsHighlightMode);
         Commandline.show();
+      },
+    },
+    {
+      id: "changeCustomBackground",
+      display: "Change custom background...",
+      defaultValue: "",
+      input: true,
+      exec: (input) => {
+        UpdateConfig.setCustomBackground(input);
       },
     },
     {

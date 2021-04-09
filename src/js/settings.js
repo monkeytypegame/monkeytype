@@ -267,6 +267,10 @@ async function initGroups() {
     "alwaysShowCPM",
     UpdateConfig.setAlwaysShowCPM
   );
+  groups.customBackgroundSize = new SettingsGroup(
+    "customBackgroundSize",
+    UpdateConfig.setCustomBackgroundSize
+  );
 }
 
 async function fillSettingsPage() {
@@ -369,6 +373,10 @@ async function fillSettingsPage() {
       })
       .appendTo(fontsEl);
   });
+
+  $(".pageSettings .section.customBackgroundSize input").val(
+    Config.customBackground
+  );
 }
 
 export let settingsFillPromise = fillSettingsPage();
@@ -420,7 +428,7 @@ export function updateDiscordSection() {
 function setActiveFunboxButton() {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
   $(
-    `.pageSettings .section.funbox .button[funbox='${Funbox.active}']`
+    `.pageSettings .section.funbox .button[funbox='${Funbox.funboxSaved}']`
   ).addClass("active");
 }
 
@@ -616,7 +624,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
 $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
   let funbox = $(e.currentTarget).attr("funbox");
   let type = $(e.currentTarget).attr("type");
-  Funbox.activate(funbox, type);
+  Funbox.setFunbox(funbox, type);
   setActiveFunboxButton();
 });
 
@@ -727,3 +735,34 @@ $(".pageSettings .sectionGroupTitle").click((e) => {
       );
   }
 });
+
+$(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
+  SimplePopups.list.resetPersonalBests.show();
+});
+
+$(".pageSettings #updateAccountEmail").on("click", (e) => {
+  SimplePopups.list.updateEmail.show();
+});
+
+$(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
+  "click",
+  (e) => {
+    UpdateConfig.setCustomBackground(
+      $(
+        ".pageSettings .section.customBackgroundSize .inputAndButton input"
+      ).val()
+    );
+  }
+);
+
+$(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
+  (e) => {
+    if (e.keyCode == 13) {
+      UpdateConfig.setCustomBackground(
+        $(
+          ".pageSettings .section.customBackgroundSize .inputAndButton input"
+        ).val()
+      );
+    }
+  }
+);

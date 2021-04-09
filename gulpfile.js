@@ -90,7 +90,6 @@ const refactoredSrc = [
   "./src/js/cloud-functions.js",
   "./src/js/misc.js",
   "./src/js/layouts.js",
-  "./src/js/result-filters.js",
   "./src/js/sound.js",
   "./src/js/theme-colors.js",
   "./src/js/chart-controller.js",
@@ -106,11 +105,20 @@ const refactoredSrc = [
   "./src/js/account-controller.js",
   "./src/js/simple-popups.js",
   "./src/js/settings.js",
+  "./src/js/input-controller.js",
+  "./src/js/route-controller.js",
+  "./src/js/ready.js",
+
+  "./src/js/account/all-time-stats.js",
+  "./src/js/account/pb-tables.js",
+  "./src/js/account/result-filters.js",
+  "./src/js/account/verification-controller.js",
+  "./src/js/account.js",
 
   "./src/js/elements/monkey.js",
   "./src/js/elements/notifications.js",
   "./src/js/elements/leaderboards.js",
-  "./src/js/elements/account-icon.js",
+  "./src/js/elements/account-button.js",
   "./src/js/elements/loader.js",
   "./src/js/elements/sign-out-button.js",
 
@@ -125,6 +133,7 @@ const refactoredSrc = [
   "./src/js/popups/edit-tags-popup.js",
   "./src/js/popups/custom-theme-popup.js",
   "./src/js/popups/import-settings-popup.js",
+  "./src/js/popups/custom-background-filter.js",
 
   "./src/js/settings/language-picker.js",
   "./src/js/settings/theme-picker.js",
@@ -156,12 +165,7 @@ const refactoredSrc = [
 
 //legacy files
 //the order of files is important
-const globalSrc = [
-  "./src/js/global-dependencies.js",
-  "./src/js/account.js",
-  "./src/js/script.js",
-  "./src/js/exports.js",
-];
+const globalSrc = ["./src/js/global-dependencies.js", "./src/js/exports.js"];
 
 //concatenates and lints legacy js files and writes the output to dist/gen/index.js
 task("cat", function () {

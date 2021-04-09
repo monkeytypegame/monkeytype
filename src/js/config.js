@@ -15,6 +15,8 @@ import * as LanguagePicker from "./language-picker";
 import * as TestLogic from "./test-logic";
 import * as PaceCaret from "./pace-caret";
 import * as UI from "./ui";
+import * as CommandlineLists from "./commandline-lists";
+import * as BackgroundFilter from "./custom-background-filter";
 
 export let cookieConfig = null;
 export let dbConfigLoaded = false;
@@ -75,11 +77,11 @@ let defaultConfig = {
   savedLayout: "default",
   confidenceMode: "off",
   indicateTypos: false,
-  timerStyle: "text",
+  timerStyle: "mini",
   colorfulMode: false,
   randomTheme: "off",
-  timerColor: "black",
-  timerOpacity: "0.25",
+  timerColor: "main",
+  timerOpacity: "1",
   stopOnError: "off",
   showAllLines: false,
   keymapMode: "off",
@@ -113,6 +115,9 @@ let defaultConfig = {
   monkey: false,
   repeatQuotes: "off",
   oppositeShiftMode: "off",
+  customBackground: "",
+  customBackgroundSize: "cover",
+  customBackgroundFilter: [0, 1, 1, 1, 1],
 };
 
 function isConfigKeyValid(name) {
@@ -472,6 +477,10 @@ export function setPaceCaret(val, nosave) {
   if (val == undefined) {
     val = "off";
   }
+  // if (val == "pb" && firebase.auth().currentUser === null) {
+  //   Notifications.add("PB pace caret is unavailable without an account", 0);
+  //   return;
+  // }
   // if (config.mode === "zen" && val != "off") {
   //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
   //   val = "off";
@@ -833,7 +842,7 @@ export function toggleHideExtraLetters() {
 
 export function setTimerStyle(style, nosave) {
   if (style == null || style == undefined) {
-    style = "bar";
+    style = "mini";
   }
   config.timerStyle = style;
   if (!nosave) saveToCookie();
@@ -1148,12 +1157,17 @@ export function setIndicateTypos(it, nosave) {
 
 export function setCustomTheme(boolean, nosave) {
   if (boolean !== undefined) config.customTheme = boolean;
+  if (boolean) {
+    ThemeController.set("custom");
+  } else if (!boolean && !nosave) {
+    ThemeController.set(config.theme);
+  }
   if (!nosave) saveToCookie();
 }
 
 export function setTheme(name, nosave) {
   config.theme = name;
-  setCustomTheme(false, true);
+  setCustomTheme(false, true, true);
   ThemeController.set(config.theme);
   if (!nosave) saveToCookie();
 }
@@ -1338,6 +1352,44 @@ export function setFontSize(fontSize, nosave) {
   if (!nosave) saveToCookie();
 }
 
+export function setCustomBackground(value, nosave) {
+  if (value == null || value == undefined) {
+    value = "";
+  }
+  value = value.trim();
+  if (
+    /(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
+      value
+    ) ||
+    value == ""
+  ) {
+    config.customBackground = value;
+    CommandlineLists.defaultCommands.list.filter(
+      (command) => command.id == "changeCustomBackground"
+    )[0].defaultValue = value;
+    ThemeController.applyCustomBackground();
+    if (!nosave) saveToCookie();
+  } else {
+    Notifications.add("Invalid custom background URL", 0);
+  }
+}
+
+export function setCustomBackgroundSize(value, nosave) {
+  if (value != "cover" && value != "contain" && value != "max") {
+    value = "cover";
+  }
+  config.customBackgroundSize = value;
+  ThemeController.applyCustomBackgroundSize();
+  if (!nosave) saveToCookie();
+}
+
+export function setCustomBackgroundFilter(array, nosave) {
+  config.customBackgroundFilter = array;
+  BackgroundFilter.loadConfig(config.customBackgroundFilter);
+  BackgroundFilter.apply();
+  if (!nosave) saveToCookie();
+}
+
 export function apply(configObj) {
   if (configObj == null || configObj == undefined) {
     Notifications.add("Could not apply config", -1, 3);
@@ -1350,8 +1402,11 @@ export function apply(configObj) {
   });
   if (configObj && configObj != null && configObj != "null") {
     setTheme(configObj.theme, true);
-    setCustomTheme(configObj.customTheme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
+    setCustomTheme(configObj.customTheme, true, true);
+    setCustomBackground(configObj.customBackground, true);
+    setCustomBackgroundSize(configObj.customBackgroundSize, true);
+    setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
     setQuickTabMode(configObj.quickTab, true);
     setKeyTips(configObj.showKeyTips, true);
     setTimeConfig(configObj.time, true);
@@ -1624,6 +1679,10 @@ export function loadFromCookie() {
   }
   TestLogic.restart(false, true);
   loadDone();
+}
+
+export function setConfig(newConfig) {
+  config = newConfig;
 }
 
 export let loadPromise = new Promise((v) => {

@@ -7,15 +7,18 @@ import * as TestUI from "./test-ui";
 
 let commandLineMouseMode = false;
 
-function showInput(command, placeholder) {
+function showInput(command, placeholder, defaultValue = "") {
   $("#commandLineWrapper").removeClass("hidden");
   $("#commandLine").addClass("hidden");
   $("#commandInput").removeClass("hidden");
   $("#commandInput input").attr("placeholder", placeholder);
-  $("#commandInput input").val("");
+  $("#commandInput input").val(defaultValue);
   $("#commandInput input").focus();
   $("#commandInput input").attr("command", "");
   $("#commandInput input").attr("command", command);
+  if (defaultValue != ""){
+    $("#commandInput input").select();
+  }
 }
 
 function showFound() {
@@ -142,7 +145,7 @@ function trigger(command) {
     if (obj.id == command) {
       if (obj.input) {
         input = true;
-        showInput(obj.id, obj.display);
+        showInput(obj.id, obj.display, obj.defaultValue);
       } else {
         obj.exec();
         if (obj.subgroup !== null && obj.subgroup !== undefined) {
@@ -498,6 +501,6 @@ $(document).keydown((e) => {
 });
 
 $(document).on("click", "#commandLineMobileButton", () => {
-  CommandlineLists.setCurrent(CommandlineLists.defaultCommands);
+  CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
   show();
 });

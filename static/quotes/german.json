@@ -1,22 +1,10 @@
 {
   "language": "german",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -320,7 +308,7 @@
       "id": 50
     },
     {
-      "text": "Das schauerlichste Übel also, der Tod, geht uns nichts an; denn solange wir existieren, ist der Tod nicht da, und wenn der Tod da ist, existieren wir nicht mehr.",
+      "text": "Das schauerlichste Übel, also der Tod, geht uns nichts an; denn solange wir existieren, ist der Tod nicht da, und wenn der Tod da ist, existieren wir nicht mehr.",
       "source": "Epikur",
       "length": 161,
       "id": 51

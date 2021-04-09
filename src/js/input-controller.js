@@ -1,235 +1,31 @@
-//test timer
-
-//ui
-let verifyUserWhenLoggedIn = null;
-
-///
-
-// let CustomText = "The quick brown fox jumps over the lazy dog".split(" ");
-// let CustomText.isWordRandom = false;
-// let CustomText.word = 1;
-
-(function (history) {
-  var pushState = history.pushState;
-  history.pushState = function (state) {
-    if (Funbox.active === "memory" && state !== "/") {
-      Funbox.resetMemoryTimer();
-    }
-    return pushState.apply(history, arguments);
-  };
-})(window.history);
-
-function changePage(page) {
-  if (UI.pageTransition) {
-    return;
-  }
-  let activePage = $(".page.active");
-  $(".page").removeClass("active");
-  $("#wordsInput").focusout();
-  if (page == "test" || page == "") {
-    UI.setPageTransition(true);
-    UI.swapElements(
-      activePage,
-      $(".page.pageTest"),
-      250,
-      () => {
-        UI.setPageTransition(false);
-        TestUI.focusWords();
-        $(".page.pageTest").addClass("active");
-        history.pushState("/", null, "/");
-      },
-      () => {
-        TestConfig.show();
-      }
-    );
-    SignOutButton.hide();
-    // restartCount = 0;
-    // incompleteTestSeconds = 0;
-    TestStats.resetIncomplete();
-    ManualRestart.set();
-    TestLogic.restart();
-  } else if (page == "about") {
-    UI.setPageTransition(true);
-    TestLogic.restart();
-    UI.swapElements(activePage, $(".page.pageAbout"), 250, () => {
-      UI.setPageTransition(false);
-      history.pushState("about", null, "about");
-      $(".page.pageAbout").addClass("active");
-    });
-    TestConfig.hide();
-    SignOutButton.hide();
-  } else if (page == "settings") {
-    UI.setPageTransition(true);
-    TestLogic.restart();
-    UI.swapElements(activePage, $(".page.pageSettings"), 250, () => {
-      UI.setPageTransition(false);
-      history.pushState("settings", null, "settings");
-      $(".page.pageSettings").addClass("active");
-    });
-    Settings.update();
-    TestConfig.hide();
-    SignOutButton.hide();
-  } else if (page == "account") {
-    if (!firebase.auth().currentUser) {
-      changePage("login");
-    } else {
-      UI.setPageTransition(true);
-      TestLogic.restart();
-      UI.swapElements(
-        activePage,
-        $(".page.pageAccount"),
-        250,
-        () => {
-          UI.setPageTransition(false);
-          history.pushState("account", null, "account");
-          $(".page.pageAccount").addClass("active");
-        },
-        () => {
-          SignOutButton.show();
-        }
-      );
-      refreshAccountPage();
-      TestConfig.hide();
-    }
-  } else if (page == "login") {
-    if (firebase.auth().currentUser != null) {
-      changePage("account");
-    } else {
-      UI.setPageTransition(true);
-      TestLogic.restart();
-      UI.swapElements(activePage, $(".page.pageLogin"), 250, () => {
-        UI.setPageTransition(false);
-        history.pushState("login", null, "login");
-        $(".page.pageLogin").addClass("active");
-      });
-      TestConfig.hide();
-      SignOutButton.hide();
-    }
-  }
-}
-
-$(window).on("popstate", (e) => {
-  let state = e.originalEvent.state;
-  if (state == "" || state == "/") {
-    // show test
-    changePage("test");
-  } else if (state == "about") {
-    // show about
-    changePage("about");
-  } else if (state == "account" || state == "login") {
-    if (firebase.auth().currentUser) {
-      changePage("account");
-    } else {
-      changePage("login");
-    }
-  }
-});
+import * as TestLogic from "./test-logic";
+import * as TestUI from "./test-ui";
+import * as TestStats from "./test-stats";
+import * as Monkey from "./monkey";
+import Config, * as UpdateConfig from "./config";
+import * as Keymap from "./keymap";
+import * as Misc from "./misc";
+import * as LiveAcc from "./live-acc";
+import * as Funbox from "./funbox";
+import * as Sound from "./sound";
+import * as Caret from "./caret";
+import * as ManualRestart from "./manual-restart-tracker";
+import * as Notifications from "./notifications";
+import * as CustomText from "./custom-text";
+import * as UI from "./ui";
+import * as Settings from "./settings";
+import * as LayoutEmulator from "./layout-emulator";
+import * as PaceCaret from "./pace-caret";
+import * as TimerProgress from "./timer-progress";
+import * as TestTimer from "./test-timer";
+import * as Focus from "./focus";
+import * as ShiftTracker from "./shift-tracker";
 
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
 });
 
 let dontInsertSpace = false;
-
-$(document).keyup((event) => {
-  if (!event.originalEvent.isTrusted) return;
-
-  if (TestUI.resultVisible) return;
-  let now = performance.now();
-  let diff = Math.abs(TestStats.keypressTimings.duration.current - now);
-  if (TestStats.keypressTimings.duration.current !== -1) {
-    TestStats.pushKeypressDuration(diff);
-    // keypressStats.duration.array.push(diff);
-  }
-  TestStats.setKeypressDuration(now);
-  // keypressStats.duration.current = now;
-  Monkey.stop();
-});
-
-$(document).keydown(function (event) {
-  if (!(event.key == " ") && !event.originalEvent.isTrusted) return;
-
-  if (!TestUI.resultVisible) {
-    TestStats.recordKeypressSpacing();
-  }
-
-  Monkey.type();
-
-  //autofocus
-  let pageTestActive = !$(".pageTest").hasClass("hidden");
-  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
-  let wordsFocused = $("#wordsInput").is(":focus");
-  let modePopupVisible =
-    !$("#customTextPopupWrapper").hasClass("hidden") ||
-    !$("#customWordAmountPopupWrapper").hasClass("hidden") ||
-    !$("#customTestDurationPopupWrapper").hasClass("hidden") ||
-    !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
-    !$("#wordFilterPopupWrapper").hasClass("hidden");
-  if (
-    pageTestActive &&
-    !commandLineVisible &&
-    !modePopupVisible &&
-    !TestUI.resultVisible &&
-    !wordsFocused &&
-    event.key !== "Enter"
-  ) {
-    TestUI.focusWords();
-    wordsFocused = true;
-    // if (Config.showOutOfFocusWarning) return;
-  }
-
-  //tab
-  if (
-    (event.key == "Tab" && !Config.swapEscAndTab) ||
-    (event.key == "Escape" && Config.swapEscAndTab)
-  ) {
-    handleTab(event);
-    // event.preventDefault();
-  }
-
-  //blocking firefox from going back in history with backspace
-  if (event.key === "Backspace" && wordsFocused) {
-    let t = /INPUT|SELECT|TEXTAREA/i;
-    if (
-      !t.test(event.target.tagName) ||
-      event.target.disabled ||
-      event.target.readOnly
-    ) {
-      event.preventDefault();
-    }
-  }
-
-  // keypressStats.duration.current = performance.now();
-  TestStats.setKeypressDuration(performance.now());
-
-  if (TestUI.testRestarting) {
-    return;
-  }
-
-  //backspace
-  const isBackspace =
-    event.key === "Backspace" ||
-    (Config.capsLockBackspace && event.key === "CapsLock");
-  if (isBackspace && wordsFocused) {
-    handleBackspace(event);
-  }
-
-  if (event.key === "Enter" && Funbox.active === "58008" && wordsFocused) {
-    event.key = " ";
-  }
-
-  //space or enter
-  if (event.key === " " && wordsFocused) {
-    handleSpace(event, false);
-  }
-
-  if (wordsFocused && !commandLineVisible) {
-    handleAlpha(event);
-  }
-
-  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
-  LiveAcc.update(acc);
-});
 
 function handleTab(event) {
   if (TestUI.resultCalculating) {
@@ -256,96 +52,42 @@ function handleTab(event) {
     // );
     return;
   } else if (
-    $(".pageTest").hasClass("active") &&
     !TestUI.resultCalculating &&
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden")
   ) {
-    if (Config.quickTab) {
-      if (Config.mode == "zen" && !event.shiftKey) {
-        //ignore
-      } else {
-        if (event.shiftKey) ManualRestart.set();
-
-        if (
-          TestLogic.active &&
-          Config.repeatQuotes === "typing" &&
-          Config.mode === "quote"
-        ) {
-          TestLogic.restart(true, false, event);
+    if ($(".pageTest").hasClass("active")) {
+      if (Config.quickTab) {
+        if (Config.mode == "zen" && !event.shiftKey) {
+          //ignore
         } else {
-          TestLogic.restart(false, false, event);
+          if (event.shiftKey) ManualRestart.set();
+          event.preventDefault();
+          if (
+            TestLogic.active &&
+            Config.repeatQuotes === "typing" &&
+            Config.mode === "quote"
+          ) {
+            TestLogic.restart(true, false, event);
+          } else {
+            TestLogic.restart(false, false, event);
+          }
+        }
+      } else {
+        if (
+          !TestUI.resultVisible &&
+          ((TestLogic.hasTab && event.shiftKey) ||
+            (!TestLogic.hasTab && Config.mode !== "zen") ||
+            (Config.mode === "zen" && event.shiftKey))
+        ) {
+          event.preventDefault();
+          $("#restartTestButton").focus();
         }
       }
-    } else {
-      if (
-        !TestUI.resultVisible &&
-        ((TestLogic.hasTab && event.shiftKey) ||
-          (!TestLogic.hasTab && Config.mode !== "zen") ||
-          (Config.mode === "zen" && event.shiftKey))
-      ) {
-        event.preventDefault();
-        $("#restartTestButton").focus();
-      }
+    } else if (Config.quickTab) {
+      UI.changePage("test");
     }
-  } else if (Config.quickTab) {
-    changePage("test");
   }
-
-  // } else if (
-  //   !event.ctrlKey &&
-  //   (
-  //     (!event.shiftKey && !TestLogic.hasTab) ||
-  //     (event.shiftKey && TestLogic.hasTab) ||
-  //     TestUI.resultVisible
-  //   ) &&
-  //   Config.quickTab &&
-  //   !$(".pageLogin").hasClass("active") &&
-  //   !resultCalculating &&
-  //   $("#commandLineWrapper").hasClass("hidden") &&
-  //   $("#simplePopupWrapper").hasClass("hidden")
-  // ) {
-  //   event.preventDefault();
-  //   if ($(".pageTest").hasClass("active")) {
-  //     if (
-  //       (Config.mode === "words" && Config.words < 1000) ||
-  //       (Config.mode === "time" && Config.time < 3600) ||
-  //       Config.mode === "quote" ||
-  //       (Config.mode === "custom" &&
-  //         CustomText.isWordRandom &&
-  //         CustomText.word < 1000) ||
-  //       (Config.mode === "custom" &&
-  //         CustomText.isTimeRandom &&
-  //         CustomText.time < 3600) ||
-  //       (Config.mode === "custom" &&
-  //         !CustomText.isWordRandom &&
-  //         CustomText.text.length < 1000)
-  //     ) {
-  //       if (TestLogic.active) {
-  //         let testNow = performance.now();
-  //         let testSeconds = Misc.roundTo2((testNow - testStart) / 1000);
-  //         let afkseconds = keypressPerSecond.filter(
-  //           (x) => x.count == 0 && x.mod == 0
-  //         ).length;
-  //         incompleteTestSeconds += testSeconds - afkseconds;
-  //         restartCount++;
-  //       }
-  //       TestLogic.restart();
-  //     } else {
-  //       Notifications.add("Quick restart disabled for long tests", 0);
-  //     }
-  //   } else {
-  //     changePage("test");
-  //   }
-  // } else if (
-  //   !Config.quickTab &&
-  //   TestLogic.hasTab &&
-  //   event.shiftKey &&
-  //   !TestUI.resultVisible
-  // ) {
-  //   event.preventDefault();
-  //   $("#restartTestButton").focus();
-  // }
 }
 
 function handleBackspace(event) {
@@ -966,81 +708,102 @@ function handleAlpha(event) {
   Caret.updatePosition();
 }
 
-ManualRestart.set();
-UpdateConfig.loadFromCookie();
-Misc.getReleasesFromGitHub();
-// getPatreonNames();
+$(document).keyup((event) => {
+  if (!event.originalEvent.isTrusted) return;
 
-let mappedRoutes = {
-  "/": "pageTest",
-  "/login": "pageLogin",
-  "/settings": "pageSettings",
-  "/about": "pageAbout",
-  "/account": "pageAccount",
-  "/verify": "pageTest",
-};
-
-function handleInitialPageClasses(el) {
-  $(el).removeClass("hidden");
-  $(el).addClass("active");
-}
-
-$(document).ready(() => {
-  handleInitialPageClasses(
-    $(".page." + mappedRoutes[window.location.pathname])
-  );
-  if (window.location.pathname === "/") {
-    $("#top .config").removeClass("hidden");
+  if (TestUI.resultVisible) return;
+  let now = performance.now();
+  let diff = Math.abs(TestStats.keypressTimings.duration.current - now);
+  if (TestStats.keypressTimings.duration.current !== -1) {
+    TestStats.pushKeypressDuration(diff);
+    // keypressStats.duration.array.push(diff);
   }
-  $("body").css("transition", ".25s");
-  if (Config.quickTab) {
-    $("#restartTestButton").addClass("hidden");
-  }
-  if (!Misc.getCookie("merchbannerclosed")) {
-    $(".merchBanner").removeClass("hidden");
-  } else {
-    $(".merchBanner").remove();
-  }
-  $("#centerContent")
-    .css("opacity", "0")
-    .removeClass("hidden")
-    .stop(true, true)
-    .animate({ opacity: 1 }, 250, () => {
-      if (window.location.pathname === "/verify") {
-        const fragment = new URLSearchParams(window.location.hash.slice(1));
-        if (fragment.has("access_token")) {
-          const accessToken = fragment.get("access_token");
-          const tokenType = fragment.get("token_type");
-          verifyUserWhenLoggedIn = {
-            accessToken: accessToken,
-            tokenType: tokenType,
-          };
-          history.replaceState("/", null, "/");
-        }
-      } else if (window.location.pathname === "/account") {
-        // history.replaceState("/", null, "/");
-      } else if (/challenge_.+/g.test(window.location.pathname)) {
-        //do nothing
-        // }
-      } else if (window.location.pathname !== "/") {
-        let page = window.location.pathname.replace("/", "");
-        changePage(page);
-      }
-    });
-  Settings.settingsFillPromise.then(Settings.update);
+  TestStats.setKeypressDuration(now);
+  // keypressStats.duration.current = now;
+  Monkey.stop();
 });
 
-//TODO move after account is a module
-$(document).on("click", "#top .logo", (e) => {
-  changePage("test");
-});
+$(document).keydown(function (event) {
+  if (!(event.key == " ") && !event.originalEvent.isTrusted) return;
 
-$(document).on("click", "#top #menu .icon-button", (e) => {
-  if ($(e.currentTarget).hasClass("leaderboards")) {
-    Leaderboards.show();
-  } else {
-    const href = $(e.currentTarget).attr("href");
-    ManualRestart.set();
-    changePage(href.replace("/", ""));
+  if (!TestUI.resultVisible) {
+    TestStats.recordKeypressSpacing();
   }
+
+  Monkey.type();
+
+  //autofocus
+  let pageTestActive = !$(".pageTest").hasClass("hidden");
+  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
+  let wordsFocused = $("#wordsInput").is(":focus");
+  let modePopupVisible =
+    !$("#customTextPopupWrapper").hasClass("hidden") ||
+    !$("#customWordAmountPopupWrapper").hasClass("hidden") ||
+    !$("#customTestDurationPopupWrapper").hasClass("hidden") ||
+    !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
+    !$("#wordFilterPopupWrapper").hasClass("hidden");
+  if (
+    pageTestActive &&
+    !commandLineVisible &&
+    !modePopupVisible &&
+    !TestUI.resultVisible &&
+    !wordsFocused &&
+    event.key !== "Enter"
+  ) {
+    TestUI.focusWords();
+    wordsFocused = true;
+    // if (Config.showOutOfFocusWarning) return;
+  }
+
+  //tab
+  if (
+    (event.key == "Tab" && !Config.swapEscAndTab) ||
+    (event.key == "Escape" && Config.swapEscAndTab)
+  ) {
+    handleTab(event);
+    // event.preventDefault();
+  }
+
+  //blocking firefox from going back in history with backspace
+  if (event.key === "Backspace" && wordsFocused) {
+    let t = /INPUT|SELECT|TEXTAREA/i;
+    if (
+      !t.test(event.target.tagName) ||
+      event.target.disabled ||
+      event.target.readOnly
+    ) {
+      event.preventDefault();
+    }
+  }
+
+  // keypressStats.duration.current = performance.now();
+  TestStats.setKeypressDuration(performance.now());
+
+  if (TestUI.testRestarting) {
+    return;
+  }
+
+  //backspace
+  const isBackspace =
+    event.key === "Backspace" ||
+    (Config.capsLockBackspace && event.key === "CapsLock");
+  if (isBackspace && wordsFocused) {
+    handleBackspace(event);
+  }
+
+  if (event.key === "Enter" && Funbox.active === "58008" && wordsFocused) {
+    event.key = " ";
+  }
+
+  //space or enter
+  if (event.key === " " && wordsFocused) {
+    handleSpace(event, false);
+  }
+
+  if (wordsFocused && !commandLineVisible) {
+    handleAlpha(event);
+  }
+
+  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  LiveAcc.update(acc);
 });

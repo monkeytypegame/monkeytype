@@ -1,5 +1,5 @@
 import { loadTags } from "./result-filters";
-import * as AccountButton from "./account-icon";
+import * as AccountButton from "./account-button";
 import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 
@@ -17,8 +17,12 @@ export function getSnapshot() {
 }
 
 export function setSnapshot(newSnapshot) {
-  delete newSnapshot.banned;
-  delete newSnapshot.verified;
+  try {
+    delete newSnapshot.banned;
+  } catch {}
+  try {
+    delete newSnapshot.verified;
+  } catch {}
   dbSnapshot = newSnapshot;
 }
 

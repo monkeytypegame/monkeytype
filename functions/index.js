@@ -1782,6 +1782,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
       }
       if (err) return;
       if (key === "resultFilters") return;
+      if (key === "customBackground") return;
       let val = obj[key];
       if (Array.isArray(val)) {
         val.forEach((valarr) => {
@@ -2306,6 +2307,38 @@ exports.checkLeaderboards = functions.https.onRequest(
       return;
     }
     request = request.body.data;
+    
+    function verifyValue(val) {
+      let errCount = 0;
+      if (val === null || val === undefined) {
+      } else if (Array.isArray(val)) {
+        //array
+        val.forEach((val2) => {
+          errCount += verifyValue(val2);
+        });
+      } else if (typeof val === "object" && !Array.isArray(val)) {
+        //object
+        Object.keys(val).forEach((valkey) => {
+          errCount += verifyValue(val[valkey]);
+        });
+      } else {
+        if (!/^[0-9a-zA-Z._\-\+]+$/.test(val)) errCount++;
+      }
+      return errCount;
+    }
+    let errCount = verifyValue(request);
+    if (errCount > 0) {
+      console.error(
+        `error checking leaderboard for ${
+          request.uid
+        } error count ${errCount} - bad input - ${JSON.stringify(request.obj)}`
+      );
+      response.status(200).send({ data: {
+        status: -999,
+        message: "Bad input",
+      }});
+      return;
+    }
 
     try {
       if (request.emailVerified === false) {
@@ -2421,10 +2454,10 @@ exports.checkLeaderboards = functions.https.onRequest(
             console.error(
               `error in transaction checking leaderboards - ${error}`
             );
-            return {
+            response.status(200).send({ data: {
               status: -999,
               message: error,
-            };
+            }});
           });
 
         let daily = await db
@@ -2499,10 +2532,10 @@ exports.checkLeaderboards = functions.https.onRequest(
             console.error(
               `error in transaction checking leaderboards - ${error}`
             );
-            return {
+            response.status(200).send({ data: {
               status: -999,
               message: error,
-            };
+            }});
           });
 
         //send discord update

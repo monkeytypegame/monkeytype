@@ -1,208 +1,25 @@
-// let dontCheckUserName = false;
+import * as DB from "./db";
+import * as Misc from "./misc";
+import * as CloudFunctions from "./cloud-functions";
+import * as Notifications from "./notifications";
+import * as ResultFilters from "./result-filters";
+import * as ThemeColors from "./theme-colors";
+import * as ChartController from "./chart-controller";
+import Config, * as UpdateConfig from "./config";
+import * as AccountButton from "./account-button";
+import * as TestLogic from "./test-logic";
+import * as PaceCaret from "./pace-caret";
+import * as TagController from "./tag-controller";
+import * as UI from "./ui";
+import * as CommandlineLists from "./commandline-lists";
+import * as MiniResultChart from "./mini-result-chart";
+import * as ResultTagsPopup from "./result-tags-popup";
+import * as Settings from "./settings";
+import * as ThemePicker from "./theme-picker";
+import * as AllTimeStats from "./all-time-stats";
+import * as PbTables from "./pb-tables";
 
-function signUp() {
-  $(".pageLogin .register .button").addClass("disabled");
-  $(".pageLogin .preloader").removeClass("hidden");
-  let nname = $(".pageLogin .register input")[0].value;
-  let email = $(".pageLogin .register input")[1].value;
-  let password = $(".pageLogin .register input")[2].value;
-  let passwordVerify = $(".pageLogin .register input")[3].value;
-
-  if (password != passwordVerify) {
-    Notifications.add("Passwords do not match", 0, 3);
-    $(".pageLogin .preloader").addClass("hidden");
-    $(".pageLogin .register .button").removeClass("disabled");
-    return;
-  }
-
-  CloudFunctions.namecheck({ name: nname }).then((d) => {
-    if (d.data.resultCode === -1) {
-      Notifications.add("Name unavailable", -1);
-      $(".pageLogin .preloader").addClass("hidden");
-      $(".pageLogin .register .button").removeClass("disabled");
-      return;
-    } else if (d.data.resultCode === -2) {
-      Notifications.add(
-        "Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
-        -1
-      );
-      $(".pageLogin .preloader").addClass("hidden");
-      $(".pageLogin .register .button").removeClass("disabled");
-      return;
-    } else if (d.data.resultCode === 1) {
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then((user) => {
-          // Account has been created here.
-          // dontCheckUserName = true;
-          let usr = user.user;
-          usr
-            .updateProfile({
-              displayName: nname,
-            })
-            .then(async function () {
-              // Update successful.
-              await firebase
-                .firestore()
-                .collection("users")
-                .doc(usr.uid)
-                .set({ name: nname }, { merge: true });
-              CloudFunctions.reserveName({ name: nname, uid: usr.uid }).catch(
-                (e) => {
-                  console.error("Could not reserve name " + e);
-                  throw "Could not reserve name";
-                }
-              );
-              usr.sendEmailVerification();
-              clearGlobalStats();
-              Notifications.add("Account created", 1, 3);
-              $("#menu .icon-button.account .text").text(nname);
-              try {
-                firebase.analytics().logEvent("accountCreated", usr.uid);
-              } catch (e) {
-                console.log("Analytics unavailable");
-              }
-              $(".pageLogin .preloader").addClass("hidden");
-              DB.setSnapshot({
-                results: [],
-                personalBests: {},
-                tags: [],
-                globalStats: {
-                  time: undefined,
-                  started: undefined,
-                  completed: undefined,
-                },
-              });
-              if (TestLogic.notSignedInLastResult !== null) {
-                TestLogic.setNotSignedInUid(usr.uid);
-                CloudFunctions.testCompleted({
-                  uid: usr.uid,
-                  obj: TestLogic.notSignedInLastResult,
-                });
-                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
-              }
-              changePage("account");
-              usr.sendEmailVerification();
-              $(".pageLogin .register .button").removeClass("disabled");
-            })
-            .catch(function (error) {
-              // An error happened.
-              $(".pageLogin .register .button").removeClass("disabled");
-              console.error(error);
-              usr
-                .delete()
-                .then(function () {
-                  // User deleted.
-                  Notifications.add(
-                    "Account not created. " + error.message,
-                    -1
-                  );
-                  $(".pageLogin .preloader").addClass("hidden");
-                })
-                .catch(function (error) {
-                  // An error happened.
-                  $(".pageLogin .preloader").addClass("hidden");
-                  Notifications.add(
-                    "Something went wrong. " + error.message,
-                    -1
-                  );
-                  console.error(error);
-                });
-            });
-        })
-        .catch(function (error) {
-          // Handle Errors here.
-          $(".pageLogin .register .button").removeClass("disabled");
-          Notifications.add(error.message, -1);
-          $(".pageLogin .preloader").addClass("hidden");
-        });
-    } else {
-      $(".pageLogin .preloader").addClass("hidden");
-      Notifications.add(
-        "Something went wrong when checking name: " + d.data.message,
-        -1
-      );
-    }
-  });
-}
-
-firebase.auth().onAuthStateChanged(function (user) {
-  if (user) {
-    // User is signed in.
-    $(".pageAccount .content p.accountVerificatinNotice").remove();
-    if (user.emailVerified === false) {
-      $(".pageAccount .content").prepend(
-        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
-      );
-    }
-    AccountButton.update();
-    AccountButton.loading(true);
-    getAccountDataAndInit();
-    var displayName = user.displayName;
-    // var email = user.email;
-    // var emailVerified = user.emailVerified;
-    // var photoURL = user.photoURL;
-    // var isAnonymous = user.isAnonymous;
-    // var uid = user.uid;
-    // var providerData = user.providerData;
-    $(".pageLogin .preloader").addClass("hidden");
-    $("#menu .icon-button.account .text").text(displayName);
-
-    // showFavouriteThemesAtTheTop();
-    CommandlineLists.updateThemeCommands();
-
-    let text = "Account created on " + user.metadata.creationTime;
-
-    const date1 = new Date(user.metadata.creationTime);
-    const date2 = new Date();
-    const diffTime = Math.abs(date2 - date1);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
-
-    $(".pageAccount .group.createdDate").text(text);
-
-    if (verifyUserWhenLoggedIn !== null) {
-      Notifications.add("Verifying", 0, 3);
-      verifyUserWhenLoggedIn.uid = user.uid;
-      CloudFunctions.verifyUser(verifyUserWhenLoggedIn).then((data) => {
-        if (data.data.status === 1) {
-          Notifications.add(data.data.message, 1);
-          DB.getSnapshot().discordId = data.data.did;
-          Settings.updateDiscordSection();
-        } else {
-          Notifications.add(data.data.message, -1);
-        }
-      });
-    }
-  }
-  let theme = Misc.findGetParameter("customTheme");
-  if (theme !== null) {
-    try {
-      theme = theme.split(",");
-      UpdateConfig.setCustomThemeColors(theme);
-      Notifications.add("Custom theme applied.", 1);
-    } catch (e) {
-      Notifications.add(
-        "Something went wrong. Reverting to default custom colors.",
-        0
-      );
-      UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
-    }
-    UpdateConfig.setCustomTheme(true);
-    Settings.setCustomThemeInputs();
-  }
-  if (/challenge_.+/g.test(window.location.pathname)) {
-    Notifications.add("Loading challenge", 0);
-    let challengeName = window.location.pathname.split("_")[1];
-    setTimeout(() => {
-      ChallengeController.setup(challengeName);
-    }, 1000);
-  }
-});
-
-function getAccountDataAndInit() {
+export function getDataAndInit() {
   DB.initSnapshot()
     .then(async (e) => {
       let snap = DB.getSnapshot();
@@ -247,7 +64,7 @@ function getAccountDataAndInit() {
       if (snap.refactored === false) {
         CloudFunctions.removeSmallTests({ uid: user.uid });
       }
-      if (!Config.changedBeforeDb) {
+      if (!UpdateConfig.changedBeforeDb) {
         if (Config.cookieConfig === null) {
           AccountButton.loading(false);
           UpdateConfig.apply(DB.getSnapshot().config);
@@ -256,47 +73,48 @@ function getAccountDataAndInit() {
           TestLogic.restart(false, true);
         } else if (DB.getSnapshot().config !== undefined) {
           //loading db config, keep for now
-          // let configsDifferent = false;
-          // Object.keys(config).forEach((key) => {
-          //   if (!configsDifferent) {
-          //     try {
-          //       if (key !== "resultFilters") {
-          //         if (Array.isArray(config[key])) {
-          //           config[key].forEach((arrval, index) => {
-          //             if (arrval != DB.getSnapshot().config[key][index]) {
-          //               configsDifferent = true;
-          //               console.log(
-          //                 `.config is different: ${arrval} != ${DB.getSnapshot().config[key][index]
-          //                 }`
-          //               );
-          //             }
-          //           });
-          //         } else {
-          //           if (config[key] != DB.getSnapshot().config[key]) {
-          //             configsDifferent = true;
-          //             console.log(
-          //               `..config is different ${key}: ${config[key]} != ${DB.getSnapshot().config[key]
-          //               }`
-          //             );
-          //           }
-          //         }
-          //       }
-          //     } catch (e) {
-          //       console.log(e);
-          //       configsDifferent = true;
-          //       console.log(`...config is different: ${e.message}`);
-          //     }
-          //   }
-          // });
-          // if (configsDifferent) {
-          //   console.log("applying config from db");
-          //   AccountButton.loading(false);
-          //   config = DB.getSnapshot().config;
-          //   applyConfig(config);
-          //   Settings.update();
-          //   saveConfigToCookie(true);
-          //   TestLogic.restart(false, true);
-          // }
+          let configsDifferent = false;
+          Object.keys(Config).forEach((key) => {
+            if (!configsDifferent) {
+              try {
+                if (key !== "resultFilters") {
+                  if (Array.isArray(Config[key])) {
+                    Config[key].forEach((arrval, index) => {
+                      if (arrval != DB.getSnapshot().config[key][index]) {
+                        configsDifferent = true;
+                        console.log(
+                          `.config is different: ${arrval} != ${
+                            DB.getSnapshot().config[key][index]
+                          }`
+                        );
+                      }
+                    });
+                  } else {
+                    if (Config[key] != DB.getSnapshot().config[key]) {
+                      configsDifferent = true;
+                      console.log(
+                        `..config is different ${key}: ${Config[key]} != ${
+                          DB.getSnapshot().config[key]
+                        }`
+                      );
+                    }
+                  }
+                }
+              } catch (e) {
+                console.log(e);
+                configsDifferent = true;
+                console.log(`...config is different: ${e.message}`);
+              }
+            }
+          });
+          if (configsDifferent) {
+            console.log("applying config from db");
+            AccountButton.loading(false);
+            UpdateConfig.apply(DB.getSnapshot().config);
+            Settings.update();
+            UpdateConfig.saveToCookie(true);
+            TestLogic.restart(false, true);
+          }
         }
         UpdateConfig.setDbConfigLoaded(true);
       } else {
@@ -311,7 +129,7 @@ function getAccountDataAndInit() {
         $(".pageLogin").hasClass("active") ||
         window.location.pathname === "/account"
       ) {
-        changePage("account");
+        UI.changePage("account");
       }
       ThemePicker.refreshButtons();
       AccountButton.loading(false);
@@ -331,562 +149,6 @@ function getAccountDataAndInit() {
       $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
       $("#top #menu .account").css("opacity", 1);
     });
-}
-
-$(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
-  console.log("updating");
-  let filteredId = $(event.currentTarget).attr("filteredResultsId");
-  if (filteredId === undefined) return;
-  MiniResultChart.updateData(filteredResults[filteredId].chartData);
-  MiniResultChart.show();
-  MiniResultChart.updatePosition(
-    event.pageX - $(".pageAccount .miniResultChartWrapper").outerWidth(),
-    event.pageY + 30
-  );
-});
-
-Misc.getLanguageList().then((languages) => {
-  languages.forEach((language) => {
-    $(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.languages .buttons"
-    ).append(
-      `<div class="button" filter="${language}">${language.replace(
-        "_",
-        " "
-      )}</div>`
-    );
-  });
-});
-
-$(
-  ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-).append(`<div class="button" filter="none">none</div>`);
-Misc.getFunboxList().then((funboxModes) => {
-  funboxModes.forEach((funbox) => {
-    $(
-      ".pageAccount .content .filterButtons .buttonsAndTitle.funbox .buttons"
-    ).append(
-      `<div class="button" filter="${funbox.name}">${funbox.name.replace(
-        /_/g,
-        " "
-      )}</div>`
-    );
-  });
-});
-
-function toggleFilter(group, filter) {
-  try {
-    if (group === "date") {
-      Object.keys(ResultFilters.getGroup("date")).forEach((date) => {
-        ResultFilters.setFilter("date", date, false);
-      });
-    }
-    ResultFilters.toggleFilter(group, filter);
-    ResultFilters.save();
-  } catch (e) {
-    Notifications.add(
-      "Something went wrong toggling filter. Reverting to defaults",
-      0
-    );
-    console.log("toggling filter error");
-    console.error(e);
-    ResultFilters.reset();
-    showActiveFilters();
-  }
-}
-
-function showActiveFilters() {
-  let aboveChartDisplay = {};
-  Object.keys(ResultFilters.getFilters()).forEach((group) => {
-    aboveChartDisplay[group] = {
-      all: true,
-      array: [],
-    };
-    Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
-      if (ResultFilters.getFilter(group, filter)) {
-        aboveChartDisplay[group].array.push(filter);
-      } else {
-        aboveChartDisplay[group].all = false;
-      }
-      let buttonEl;
-      if (group === "date") {
-        buttonEl = $(
-          `.pageAccount .group.topFilters .filterGroup[group="${group}"] .button[filter="${filter}"]`
-        );
-      } else {
-        buttonEl = $(
-          `.pageAccount .group.filterButtons .filterGroup[group="${group}"] .button[filter="${filter}"]`
-        );
-      }
-      if (ResultFilters.getFilter(group, filter)) {
-        buttonEl.addClass("active");
-      } else {
-        buttonEl.removeClass("active");
-      }
-    });
-  });
-
-  function addText(group) {
-    let ret = "";
-    ret += "<div class='group'>";
-    if (group == "difficulty") {
-      ret += `<span aria-label="Difficulty" data-balloon-pos="up"><i class="fas fa-fw fa-star"></i>`;
-    } else if (group == "mode") {
-      ret += `<span aria-label="Mode" data-balloon-pos="up"><i class="fas fa-fw fa-bars"></i>`;
-    } else if (group == "punctuation") {
-      ret += `<span aria-label="Punctuation" data-balloon-pos="up"><span class="punc" style="font-weight: 900;
-      width: 1.25rem;
-      text-align: center;
-      display: inline-block;
-      letter-spacing: -.1rem;">!?</span>`;
-    } else if (group == "numbers") {
-      ret += `<span aria-label="Numbers" data-balloon-pos="up"><span class="numbers" style="font-weight: 900;
-        width: 1.25rem;
-        text-align: center;
-        margin-right: .1rem;
-        display: inline-block;
-        letter-spacing: -.1rem;">15</span>`;
-    } else if (group == "words") {
-      ret += `<span aria-label="Words" data-balloon-pos="up"><i class="fas fa-fw fa-font"></i>`;
-    } else if (group == "time") {
-      ret += `<span aria-label="Time" data-balloon-pos="up"><i class="fas fa-fw fa-clock"></i>`;
-    } else if (group == "date") {
-      ret += `<span aria-label="Date" data-balloon-pos="up"><i class="fas fa-fw fa-calendar"></i>`;
-    } else if (group == "tags") {
-      ret += `<span aria-label="Tags" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i>`;
-    } else if (group == "language") {
-      ret += `<span aria-label="Language" data-balloon-pos="up"><i class="fas fa-fw fa-globe-americas"></i>`;
-    } else if (group == "funbox") {
-      ret += `<span aria-label="Funbox" data-balloon-pos="up"><i class="fas fa-fw fa-gamepad"></i>`;
-    }
-    if (aboveChartDisplay[group].all) {
-      ret += "all";
-    } else {
-      if (group === "tags") {
-        ret += aboveChartDisplay.tags.array
-          .map((id) => {
-            if (id == "none") return id;
-            let name = DB.getSnapshot().tags.filter((t) => t.id == id)[0];
-            if (name !== undefined) {
-              return DB.getSnapshot().tags.filter((t) => t.id == id)[0].name;
-            }
-          })
-          .join(", ");
-      } else {
-        ret += aboveChartDisplay[group].array.join(", ").replace(/_/g, " ");
-      }
-    }
-    ret += "</span></div>";
-    return ret;
-  }
-
-  let chartString = "";
-
-  //date
-  chartString += addText("date");
-  chartString += `<div class="spacer"></div>`;
-
-  //mode
-  chartString += addText("mode");
-  chartString += `<div class="spacer"></div>`;
-
-  //time
-  if (aboveChartDisplay.mode.array.includes("time")) {
-    chartString += addText("time");
-    chartString += `<div class="spacer"></div>`;
-  }
-
-  //words
-  if (aboveChartDisplay.mode.array.includes("words")) {
-    chartString += addText("words");
-    chartString += `<div class="spacer"></div>`;
-  }
-
-  //diff
-  chartString += addText("difficulty");
-  chartString += `<div class="spacer"></div>`;
-
-  //punc
-  chartString += addText("punctuation");
-  chartString += `<div class="spacer"></div>`;
-
-  //numbers
-  chartString += addText("numbers");
-  chartString += `<div class="spacer"></div>`;
-
-  //language
-  chartString += addText("language");
-  chartString += `<div class="spacer"></div>`;
-
-  //funbox
-  chartString += addText("funbox");
-  chartString += `<div class="spacer"></div>`;
-
-  //tags
-  chartString += addText("tags");
-
-  $(".pageAccount .group.chart .above").html(chartString);
-
-  refreshAccountPage();
-}
-
-// function showChartPreloader() {
-//   $(".pageAccount .group.chart .preloader").stop(true, true).animate(
-//     {
-//       opacity: 1,
-//     },
-//     125
-//   );
-// }
-
-// function hideChartPreloader() {
-//   $(".pageAccount .group.chart .preloader").stop(true, true).animate(
-//     {
-//       opacity: 0,
-//     },
-//     125
-//   );
-// }
-
-$(".pageAccount .topFilters .button.allFilters").click((e) => {
-  Object.keys(ResultFilters.getFilters()).forEach((group) => {
-    Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
-      if (group === "date") {
-        ResultFilters.setFilter(group, filter, false);
-      } else {
-        ResultFilters.setFilter(group, filter, true);
-      }
-    });
-  });
-  ResultFilters.setFilter("date", "all", true);
-  showActiveFilters();
-  ResultFilters.save();
-});
-
-$(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
-  Object.keys(ResultFilters.getFilters()).forEach((group) => {
-    Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
-      ResultFilters.setFilter(group, filter, false);
-    });
-  });
-
-  ResultFilters.setFilter("difficulty", Config.difficulty, true);
-  ResultFilters.setFilter("mode", Config.mode, true);
-  if (Config.mode === "time") {
-    ResultFilters.setFilter("time", Config.time, true);
-  } else if (Config.mode === "words") {
-    ResultFilters.setFilter("words", Config.words, true);
-  } else if (Config.mode === "quote") {
-    Object.keys(ResultFilters.getGroup("quoteLength")).forEach((ql) => {
-      ResultFilters.setFilter("quoteLength", ql, true);
-    });
-  }
-  if (Config.punctuation) {
-    ResultFilters.setFilter("punctuation", "on", true);
-  } else {
-    ResultFilters.setFilter("punctuation", "off", true);
-  }
-  if (Config.numbers) {
-    ResultFilters.setFilter("numbers", "on", true);
-  } else {
-    ResultFilters.setFilter("numbers", "off", true);
-  }
-  if (Config.mode === "quote" && /english.*/.test(Config.language)) {
-    ResultFilters.setFilter("language", "english", true);
-  } else {
-    ResultFilters.setFilter("language", Config.language, true);
-  }
-  ResultFilters.setFilter("funbox", true);
-  ResultFilters.setFilter("tags", "none", true);
-  DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.active === true) {
-      ResultFilters.setFilter("tags", "none", false);
-      ResultFilters.setFilter("tags", tag.id, true);
-    }
-  });
-
-  ResultFilters.setFilter("date", "all", true);
-  showActiveFilters();
-  ResultFilters.save();
-  console.log(ResultFilters.getFilters());
-});
-
-$(".pageAccount .topFilters .button.toggleAdvancedFilters").click((e) => {
-  $(".pageAccount .filterButtons").slideToggle(250);
-  $(".pageAccount .topFilters .button.toggleAdvancedFilters").toggleClass(
-    "active"
-  );
-});
-
-$(
-  ".pageAccount .filterButtons .buttonsAndTitle .buttons, .pageAccount .group.topFilters .buttonsAndTitle.testDate .buttons"
-).click(".button", (e) => {
-  const filter = $(e.target).attr("filter");
-  const group = $(e.target).parents(".buttons").attr("group");
-  if ($(e.target).hasClass("allFilters")) {
-    Object.keys(ResultFilters.getFilters()).forEach((group) => {
-      Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
-        if (group === "date") {
-          ResultFilters.setFilter(group, filter, false);
-        } else {
-          ResultFilters.setFilter(group, filter, true);
-        }
-      });
-    });
-    ResultFilters.setFilter("date", "all", true);
-  } else if ($(e.target).hasClass("noFilters")) {
-    Object.keys(ResultFilters.getFilters()).forEach((group) => {
-      if (group !== "date") {
-        Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
-          ResultFilters.setFilter(group, filter, false);
-        });
-      }
-    });
-  } else {
-    if (e.shiftKey) {
-      Object.keys(ResultFilters.getGroup(group)).forEach((filter) => {
-        ResultFilters.setFilter(group, filter, false);
-      });
-      ResultFilters.setFilter(group, filter, true);
-    } else {
-      toggleFilter(group, filter);
-    }
-  }
-  showActiveFilters();
-  ResultFilters.save();
-});
-
-function fillPbTables() {
-  $(".pageAccount .timePbTable tbody").html(`
-  <tr>
-    <td>15</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td>30</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td>60</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td>120</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-  </tr>
-  `);
-  $(".pageAccount .wordsPbTable tbody").html(`
-  <tr>
-    <td>10</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td>25</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td>50</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-  </tr>
-  <tr>
-    <td>100</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-  </tr>
-  `);
-
-  const pb = DB.getSnapshot().personalBests;
-  let pbData;
-  let text;
-
-  text = "";
-  try {
-    pbData = pb.time[15].sort((a, b) => b.wpm - a.wpm)[0];
-    text += `<tr>
-      <td>15</td>
-      <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
-      <td>
-      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
-      </td>
-    </tr>`;
-  } catch (e) {
-    text += `<tr>
-      <td>15</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-    </tr>`;
-  }
-  try {
-    pbData = pb.time[30].sort((a, b) => b.wpm - a.wpm)[0];
-    text += `<tr>
-      <td>30</td>
-      <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
-      <td>
-      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
-      </td>
-    </tr>`;
-  } catch (e) {
-    text += `<tr>
-      <td>30</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-    </tr>`;
-  }
-  try {
-    pbData = pb.time[60].sort((a, b) => b.wpm - a.wpm)[0];
-    text += `<tr>
-      <td>60</td>
-      <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
-      <td>
-      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
-      </td>
-    </tr>`;
-  } catch (e) {
-    text += `<tr>
-      <td>60</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-    </tr>`;
-  }
-  try {
-    pbData = pb.time[120].sort((a, b) => b.wpm - a.wpm)[0];
-    text += `<tr>
-      <td>120</td>
-      <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
-      <td>
-      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
-      </td>
-    </tr>`;
-  } catch (e) {
-    text += `<tr>
-      <td>120</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-    </tr>`;
-  }
-  $(".pageAccount .timePbTable tbody").html(text);
-
-  text = "";
-  try {
-    pbData = pb.words[10].sort((a, b) => b.wpm - a.wpm)[0];
-    text += `<tr>
-      <td>10</td>
-      <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
-      <td>
-      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
-      </td>
-    </tr>`;
-  } catch (e) {
-    text += `<tr>
-      <td>10</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-    </tr>`;
-  }
-  try {
-    pbData = pb.words[25].sort((a, b) => b.wpm - a.wpm)[0];
-    text += `<tr>
-      <td>25</td>
-      <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
-      <td>
-      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
-      </td>
-    </tr>`;
-  } catch (e) {
-    text += `<tr>
-      <td>25</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-    </tr>`;
-  }
-  try {
-    pbData = pb.words[50].sort((a, b) => b.wpm - a.wpm)[0];
-    text += `<tr>
-      <td>50</td>
-      <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
-      <td>
-      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
-      </td>
-    </tr>`;
-  } catch (e) {
-    text += `<tr>
-      <td>50</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-    </tr>`;
-  }
-  try {
-    pbData = pb.words[100].sort((a, b) => b.wpm - a.wpm)[0];
-    text += `<tr>
-      <td>100</td>
-      <td>${pbData.wpm}</td>
-      <td>${pbData.raw === undefined ? "-" : pbData.raw}</td>
-      <td>${pbData.acc === undefined ? "-" : pbData.acc + "%"}</td>
-      <td>
-      ${pbData.consistency === undefined ? "-" : pbData.consistency + "%"}
-      </td>
-    </tr>`;
-  } catch (e) {
-    text += `<tr>
-      <td>100</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-    </tr>`;
-  }
-  $(".pageAccount .wordsPbTable tbody").html(text);
 }
 
 let filteredResults = [];
@@ -1021,45 +283,15 @@ function loadMoreLines() {
   }
 }
 
-function clearGlobalStats() {
-  $(".pageAccount .globalTimeTyping .val").text(`-`);
-  $(".pageAccount .globalTestsStarted .val").text(`-`);
-  $(".pageAccount .globalTestsCompleted .val").text(`-`);
-}
-
-function refreshGlobalStats() {
-  if (DB.getSnapshot().globalStats.time != undefined) {
-    let th = Math.floor(DB.getSnapshot().globalStats.time / 3600);
-    let tm = Math.floor((DB.getSnapshot().globalStats.time % 3600) / 60);
-    let ts = Math.floor((DB.getSnapshot().globalStats.time % 3600) % 60);
-    $(".pageAccount .globalTimeTyping .val").text(`
-
-      ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
-      ts < 10 ? "0" + ts : ts
-    }
-  `);
-  }
-  if (DB.getSnapshot().globalStats.started != undefined) {
-    $(".pageAccount .globalTestsStarted .val").text(
-      DB.getSnapshot().globalStats.started
-    );
-  }
-  if (DB.getSnapshot().globalStats.completed != undefined) {
-    $(".pageAccount .globalTestsCompleted .val").text(
-      DB.getSnapshot().globalStats.completed
-    );
-  }
-}
-
 let totalSecondsFiltered = 0;
 
-function refreshAccountPage() {
+export function update() {
   function cont() {
     ThemeColors.update();
     ChartController.accountHistory.updateColors();
     ChartController.accountActivity.updateColors();
-    refreshGlobalStats();
-    fillPbTables();
+    AllTimeStats.update();
+    PbTables.update();
 
     let chartData = [];
     let wpmChartData = [];
@@ -1240,7 +472,7 @@ function refreshAccountPage() {
         console.log(result);
         console.error(e);
         ResultFilters.reset();
-        showActiveFilters();
+        ResultFilters.updateActive();
       }
 
       //filters done
@@ -1550,10 +782,10 @@ function refreshAccountPage() {
   } else if (DB.getSnapshot().results === undefined) {
     DB.getUserResults().then((d) => {
       if (d) {
-        showActiveFilters();
+        ResultFilters.updateActive();
       } else {
         setTimeout(() => {
-          changePage("");
+          UI.changePage("");
         }, 500);
       }
     });
@@ -1576,56 +808,18 @@ $(".pageAccount .toggleChartStyle").click((e) => {
   UpdateConfig.toggleChartStyle();
 });
 
-$(".pageLogin .register input").keyup((e) => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  if (e.key == "Enter") {
-    signUp();
-  }
-});
-
-$(".pageLogin .register .button").click((e) => {
-  if ($(".pageLogin .register .button").hasClass("disabled")) return;
-  signUp();
-});
-
-$(".pageLogin .login input").keyup((e) => {
-  if (e.key == "Enter") {
-    UpdateConfig.setChangedBeforeDb(false);
-    AccountController.signIn();
-  }
-});
-
-$(".pageLogin .login .button.signIn").click((e) => {
-  UpdateConfig.setChangedBeforeDb(false);
-  AccountController.signIn();
-});
-
-$(".pageLogin .login .button.signInWithGoogle").click((e) => {
-  UpdateConfig.setChangedBeforeDb(false);
-  AccountController.signInWithGoogle();
-});
-
-$(".signOut").click((e) => {
-  AccountController.signOut();
-});
-
 $(".pageAccount .loadMoreButton").click((e) => {
   loadMoreLines();
 });
 
-$(".pageLogin #forgotPasswordButton").click((e) => {
-  let email = prompt("Email address");
-  if (email) {
-    firebase
-      .auth()
-      .sendPasswordResetEmail(email)
-      .then(function () {
-        // Email sent.
-        Notifications.add("Email sent", 1, 2);
-      })
-      .catch(function (error) {
-        // An error happened.
-        Notifications.add(error.message, -1);
-      });
-  }
+$(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
+  console.log("updating");
+  let filteredId = $(event.currentTarget).attr("filteredResultsId");
+  if (filteredId === undefined) return;
+  MiniResultChart.updateData(filteredResults[filteredId].chartData);
+  MiniResultChart.show();
+  MiniResultChart.updatePosition(
+    event.pageX - $(".pageAccount .miniResultChartWrapper").outerWidth(),
+    event.pageY + 30
+  );
 });

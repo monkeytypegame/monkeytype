@@ -79,42 +79,42 @@ export function init() {
       {
         sounds: [
           new Audio("../sound/click4/click4_1.wav"),
-          new Audio("../sound/click4/click4_1.wav"),
+          new Audio("../sound/click4/click4_11.wav"),
         ],
         counter: 0,
       },
       {
         sounds: [
           new Audio("../sound/click4/click4_2.wav"),
-          new Audio("../sound/click4/click4_2.wav"),
+          new Audio("../sound/click4/click4_22.wav"),
         ],
         counter: 0,
       },
       {
         sounds: [
           new Audio("../sound/click4/click4_3.wav"),
-          new Audio("../sound/click4/click4_3.wav"),
+          new Audio("../sound/click4/click4_33.wav"),
         ],
         counter: 0,
       },
       {
         sounds: [
           new Audio("../sound/click4/click4_4.wav"),
-          new Audio("../sound/click4/click4_4.wav"),
+          new Audio("../sound/click4/click4_44.wav"),
         ],
         counter: 0,
       },
       {
         sounds: [
           new Audio("../sound/click4/click4_5.wav"),
-          new Audio("../sound/click4/click4_5.wav"),
+          new Audio("../sound/click4/click4_55.wav"),
         ],
         counter: 0,
       },
       {
         sounds: [
           new Audio("../sound/click4/click4_6.wav"),
-          new Audio("../sound/click4/click4_6.wav"),
+          new Audio("../sound/click4/click4_66.wav"),
         ],
         counter: 0,
       },

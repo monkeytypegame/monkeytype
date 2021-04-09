@@ -6,6 +6,15 @@ import * as TestLogic from "./test-logic";
 import * as CustomText from "./custom-text";
 import * as CommandlineLists from "./commandline-lists";
 import * as Commandline from "./commandline";
+import * as TestUI from "./test-ui";
+import * as TestConfig from "./test-config";
+import * as SignOutButton from "./sign-out-button";
+import * as TestStats from "./test-stats";
+import * as ManualRestart from "./manual-restart-tracker";
+import * as Settings from "./settings";
+import * as Account from "./account";
+import * as Leaderboards from "./leaderboards";
+import * as Funbox from "./funbox";
 
 export let pageTransition = false;
 
@@ -99,6 +108,100 @@ export function swapElements(
   }
 }
 
+export function changePage(page) {
+  if (pageTransition) {
+    return;
+  }
+  let activePage = $(".page.active");
+  $(".page").removeClass("active");
+  $("#wordsInput").focusout();
+  if (page == "test" || page == "") {
+    setPageTransition(true);
+    swapElements(
+      activePage,
+      $(".page.pageTest"),
+      250,
+      () => {
+        setPageTransition(false);
+        TestUI.focusWords();
+        $(".page.pageTest").addClass("active");
+        history.pushState("/", null, "/");
+      },
+      () => {
+        TestConfig.show();
+      }
+    );
+    SignOutButton.hide();
+    // restartCount = 0;
+    // incompleteTestSeconds = 0;
+    TestStats.resetIncomplete();
+    ManualRestart.set();
+    TestLogic.restart();
+    Funbox.activate(Funbox.funboxSaved, Funbox.modeSaved);
+  } else if (page == "about") {
+    setPageTransition(true);
+    TestLogic.restart();
+    swapElements(activePage, $(".page.pageAbout"), 250, () => {
+      setPageTransition(false);
+      history.pushState("about", null, "about");
+      $(".page.pageAbout").addClass("active");
+    });
+    Funbox.activate("none", null);
+    TestConfig.hide();
+    SignOutButton.hide();
+  } else if (page == "settings") {
+    setPageTransition(true);
+    TestLogic.restart();
+    swapElements(activePage, $(".page.pageSettings"), 250, () => {
+      setPageTransition(false);
+      history.pushState("settings", null, "settings");
+      $(".page.pageSettings").addClass("active");
+    });
+    Funbox.activate("none", null);
+    Settings.update();
+    TestConfig.hide();
+    SignOutButton.hide();
+  } else if (page == "account") {
+    if (!firebase.auth().currentUser) {
+      changePage("login");
+    } else {
+      setPageTransition(true);
+      TestLogic.restart();
+      swapElements(
+        activePage,
+        $(".page.pageAccount"),
+        250,
+        () => {
+          setPageTransition(false);
+          history.pushState("account", null, "account");
+          $(".page.pageAccount").addClass("active");
+        },
+        () => {
+          SignOutButton.show();
+        }
+      );
+      Funbox.activate("none", null);
+      Account.update();
+      TestConfig.hide();
+    }
+  } else if (page == "login") {
+    if (firebase.auth().currentUser != null) {
+      changePage("account");
+    } else {
+      setPageTransition(true);
+      TestLogic.restart();
+      swapElements(activePage, $(".page.pageLogin"), 250, () => {
+        setPageTransition(false);
+        history.pushState("login", null, "login");
+        $(".page.pageLogin").addClass("active");
+      });
+      Funbox.activate("none", null);
+      TestConfig.hide();
+      SignOutButton.hide();
+    }
+  }
+}
+
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
   $("head title").text("Monkey Dev");
@@ -152,7 +255,7 @@ $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {
     // if (Config.customTheme) {
     //   toggleCustomTheme();
     // }
-    CommandlineLists.setCurrent(CommandlineLists.themeCommands);
+    CommandlineLists.setCurrent([CommandlineLists.themeCommands]);
     Commandline.show();
   }
 });
@@ -190,4 +293,18 @@ window.addEventListener("beforeunload", (event) => {
 
 $(window).resize(() => {
   Caret.updatePosition();
+});
+
+$(document).on("click", "#top .logo", (e) => {
+  changePage("test");
+});
+
+$(document).on("click", "#top #menu .icon-button", (e) => {
+  if ($(e.currentTarget).hasClass("leaderboards")) {
+    Leaderboards.show();
+  } else {
+    const href = $(e.currentTarget).attr("href");
+    ManualRestart.set();
+    changePage(href.replace("/", ""));
+  }
 });
