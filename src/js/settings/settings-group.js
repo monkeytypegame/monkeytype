@@ -56,7 +56,7 @@ export default class SettingsGroup {
       "active"
     );
     if (this.onOff) {
-      const onOffString = this.configvalue ? "on" : "off";
+      const onOffString = this.configValue ? "on" : "off";
       $(
         `.pageSettings .section.${this.configName} .buttons .button.${onOffString}`
       ).addClass("active");
