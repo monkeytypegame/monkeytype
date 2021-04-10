@@ -9,11 +9,7 @@ export default class SettingsGroup {
   ) {
     this.configName = configName;
     this.configValue = Config[configName];
-    if (this.configValue === true || this.configValue === false) {
-      this.onOff = true;
-    } else {
-      this.onOff = false;
-    }
+    this.onOff = typeof this.configValue === "boolean";
     this.toggleFunction = toggleFunction;
     this.setCallback = setCallback;
     this.updateCallback = updateCallback;
@@ -36,8 +32,8 @@ export default class SettingsGroup {
           this.updateButton();
           if (this.setCallback !== null) this.setCallback();
         } else {
-          let value = target.attr(configName);
-          let params = target.attr("params");
+          const value = target.attr(configName);
+          const params = target.attr("params");
           this.setValue(value, params);
         }
       }
@@ -60,14 +56,9 @@ export default class SettingsGroup {
       "active"
     );
     if (this.onOff) {
-      let onoffstring;
-      if (this.configValue) {
-        onoffstring = "on";
-      } else {
-        onoffstring = "off";
-      }
+      const onOffString = this.configvalue ? "on" : "off";
       $(
-        `.pageSettings .section.${this.configName} .buttons .button.${onoffstring}`
+        `.pageSettings .section.${this.configName} .buttons .button.${onOffString}`
       ).addClass("active");
     } else {
       $(

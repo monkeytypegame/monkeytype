@@ -3041,6 +3041,7 @@ key {
     &.languageGroups,
     &.layout,
     &.keymapLayout,
+    &.keymapLegendStyle,
     &.fontFamily,
     &.funbox,
     &.keymapStyle,
@@ -3553,6 +3554,7 @@ key {
     .pageSettings .section.language .buttons,
     .pageSettings .section.layout .buttons,
     .pageSettings .section.keymapLayout .buttons,
+    .pageSettings .section.keymapLegendStyle .buttons,
     .pageSettings .section.fontFamily .buttons,
     .pageSettings .section.funbox .buttons,
     .pageSettings .section.keymapStyle .buttons {
@@ -3663,6 +3665,7 @@ key {
     .pageSettings .section.language .buttons,
     .pageSettings .section.layout .buttons,
     .pageSettings .section.keymapLayout .buttons,
+    .pageSettings .section.keymapLegendStyle .buttons,
     .pageSettings .section.fontFamily .buttons,
     .pageSettings .section.funbox .buttons,
     .pageSettings .section.keymapStyle .buttons {
