@@ -15,7 +15,6 @@ import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as Commandline from "./commandline";
 import * as CustomText from "./custom-text";
-import { keymapLegendStyles } from "../../static/keymap/legend";
 
 export let current = [];
 
@@ -653,23 +652,23 @@ let commandsKeymapLegendStyle = {
   list: [
     {
       id: "setKeymapLegendStyleLowercase",
-      display: keymapLegendStyles.lowercase,
+      display: "lowercase",
       exec: () => {
-        UpdateConfig.setKeymapLegendStyle(keymapLegendStyles.lowercase);
+        UpdateConfig.setKeymapLegendStyle("lowercase");
       },
     },
     {
       id: "setKeymapLegendStyleUppercase",
-      display: keymapLegendStyles.uppercase,
+      display: "uppercase",
       exec: () => {
-        UpdateConfig.setKeymapLegendStyle(keymapLegendStyles.uppercase);
+        UpdateConfig.setKeymapLegendStyle("uppercase");
       },
     },
     {
       id: "setKeymapLegendStyleBlank",
-      display: keymapLegendStyles.blank,
+      display: "blank",
       exec: () => {
-        UpdateConfig.setKeymapLegendStyle(keymapLegendStyles.blank);
+        UpdateConfig.setKeymapLegendStyle("blank");
       },
     },
   ],

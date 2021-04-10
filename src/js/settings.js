@@ -13,7 +13,6 @@ import * as TagController from "./tag-controller";
 import * as SimplePopups from "./simple-popups";
 import * as EditTagsPopup from "./edit-tags-popup";
 import * as ThemePicker from "./theme-picker";
-import { KEYMAP_LEGEND_TITLE } from "../../static/keymap/legend";
 
 export let groups = {};
 async function initGroups() {
@@ -69,7 +68,7 @@ async function initGroups() {
     UpdateConfig.setKeymapLayout
   );
   groups.keymapLegendStyle = new SettingsGroup(
-    KEYMAP_LEGEND_TITLE,
+    "keymapLegendStyle",
     UpdateConfig.setKeymapLegendStyle
   );
   groups.showKeyTips = new SettingsGroup(

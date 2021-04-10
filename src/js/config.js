@@ -17,7 +17,6 @@ import * as PaceCaret from "./pace-caret";
 import * as UI from "./ui";
 import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
-import keymapLegendStyles from "../../static/keymap/legend/_list.json";
 
 export let cookieConfig = null;
 export let dbConfigLoaded = false;
@@ -87,7 +86,7 @@ let defaultConfig = {
   showAllLines: false,
   keymapMode: "off",
   keymapStyle: "staggered",
-  keymapLegendStyle: keymapLegendStyles.lowercase,
+  keymapLegendStyle: "lowercase",
   keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
@@ -1268,11 +1267,12 @@ export function setKeymapMode(mode, nosave) {
 
 export function setKeymapLegendStyle(style, nosave) {
   // Remove existing styles
-  Object.keys(keymapLegendStyles).forEach((name) => {
+  const keymapLegendStyles = ["lowercase", "uppercase", "blank"];
+  keymapLegendStyles.forEach((name) => {
     $(".keymapLegendStyle").removeClass(name);
   });
 
-  style = style || keymapLegendStyles.lowercase;
+  style = style || "lowercase";
 
   // Mutate the keymap in the DOM, if it exists.
   // 1. Remove everything
@@ -1280,10 +1280,10 @@ export function setKeymapLegendStyle(style, nosave) {
   $(".keymap-key > .letter").css("text-transform", "");
 
   // 2. Append special styles onto the DOM elements
-  if (style === keymapLegendStyles.uppercase) {
+  if (style === "uppercase") {
     $(".keymap-key > .letter").css("text-transform", "capitalize");
   }
-  if (style === keymapLegendStyles.blank) {
+  if (style === "blank") {
     $(".keymap-key > .letter").css("display", "none");
   }
 
