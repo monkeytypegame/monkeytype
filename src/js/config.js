@@ -477,10 +477,12 @@ export function setPaceCaret(val, nosave) {
   if (val == undefined) {
     val = "off";
   }
-  // if (val == "pb" && firebase.auth().currentUser === null) {
-  //   Notifications.add("PB pace caret is unavailable without an account", 0);
-  //   return;
-  // }
+  if ( document.readyState === "complete") {
+    if (val == "pb" && firebase.auth().currentUser === null) {
+      Notifications.add("PB pace caret is unavailable without an account", 0);
+      return;
+    }
+  }
   // if (config.mode === "zen" && val != "off") {
   //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
   //   val = "off";
