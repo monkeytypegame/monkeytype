@@ -647,6 +647,33 @@ let commandsKeymapStyle = {
   ],
 };
 
+let commandsKeymapLegendStyle = {
+  title: "Change keymap legend style...",
+  list: [
+    {
+      id: "setKeymapLegendStyleLowercase",
+      display: "lowercase",
+      exec: () => {
+        UpdateConfig.setKeymapLegendStyle("lowercase");
+      },
+    },
+    {
+      id: "setKeymapLegendStyleUppercase",
+      display: "uppercase",
+      exec: () => {
+        UpdateConfig.setKeymapLegendStyle("uppercase");
+      },
+    },
+    {
+      id: "setKeymapLegendStyleBlank",
+      display: "blank",
+      exec: () => {
+        UpdateConfig.setKeymapLegendStyle("blank");
+      },
+    },
+  ],
+};
+
 let commandsHighlightMode = {
   title: "Change highlight mode...",
   list: [
@@ -1675,6 +1702,16 @@ export let defaultCommands = {
       subgroup: true,
       exec: () => {
         current.push(commandsKeymapStyle);
+        Commandline.show();
+      },
+    },
+    {
+      id: "changeKeymapLegendStyle",
+      display: "Change keymap legend style...",
+      alias: "keyboard",
+      subgroup: true,
+      exec: () => {
+        current.push(commandsKeymapLegendStyle);
         Commandline.show();
       },
     },

@@ -65,7 +65,7 @@
   },
   {
     "name": "slovak",
-    "languages": ["slovak"]
+    "languages": ["slovak", "slovak_1k"]
   },
   {
     "name": "slovenian",
