@@ -478,7 +478,7 @@ export function setPaceCaret(val, nosave) {
   if (val == undefined) {
     val = "off";
   }
-  if ( document.readyState === "complete") {
+  if (document.readyState === "complete") {
     if (val == "pb" && firebase.auth().currentUser === null) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return;
@@ -1327,13 +1327,13 @@ export function setLayout(layout, nosave) {
   if (!nosave) saveToCookie();
 }
 
-export function setSavedLayout(layout, nosave) {
-  if (layout == null || layout == undefined) {
-    layout = "qwerty";
-  }
-  config.savedLayout = layout;
-  setLayout(layout, nosave);
-}
+// export function setSavedLayout(layout, nosave) {
+//   if (layout == null || layout == undefined) {
+//     layout = "qwerty";
+//   }
+//   config.savedLayout = layout;
+//   setLayout(layout, nosave);
+// }
 
 export function setFontSize(fontSize, nosave) {
   if (fontSize == null || fontSize == undefined) {
@@ -1436,7 +1436,8 @@ export function apply(configObj) {
     setWordCount(configObj.words, true);
     setLanguage(configObj.language, true);
     setCapsLockBackspace(configObj.capsLockBackspace, true);
-    setSavedLayout(configObj.savedLayout, true);
+    // setSavedLayout(configObj.savedLayout, true);
+    setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);

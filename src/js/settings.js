@@ -219,7 +219,7 @@ async function initGroups() {
     "capsLockBackspace",
     UpdateConfig.setCapsLockBackspace
   );
-  groups.layout = new SettingsGroup("layout", UpdateConfig.setSavedLayout);
+  groups.layout = new SettingsGroup("layout", UpdateConfig.layout);
   groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
   groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);
   groups.pageWidth = new SettingsGroup("pageWidth", UpdateConfig.setPageWidth);
