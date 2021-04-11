@@ -86,6 +86,7 @@ let defaultConfig = {
   showAllLines: false,
   keymapMode: "off",
   keymapStyle: "staggered",
+  keymapLegendStyle: "lowercase",
   keymapLayout: "qwerty",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
@@ -477,10 +478,12 @@ export function setPaceCaret(val, nosave) {
   if (val == undefined) {
     val = "off";
   }
-  // if (val == "pb" && firebase.auth().currentUser === null) {
-  //   Notifications.add("PB pace caret is unavailable without an account", 0);
-  //   return;
-  // }
+  if (document.readyState === "complete") {
+    if (val == "pb" && firebase.auth().currentUser === null) {
+      Notifications.add("PB pace caret is unavailable without an account", 0);
+      return;
+    }
+  }
   // if (config.mode === "zen" && val != "off") {
   //   Notifications.add(`Can't use pace caret with zen mode.`, 0);
   //   val = "off";
@@ -1264,22 +1267,41 @@ export function setKeymapMode(mode, nosave) {
   if (!nosave) saveToCookie();
 }
 
+export function setKeymapLegendStyle(style, nosave) {
+  // Remove existing styles
+  const keymapLegendStyles = ["lowercase", "uppercase", "blank"];
+  keymapLegendStyles.forEach((name) => {
+    $(".keymapLegendStyle").removeClass(name);
+  });
+
+  style = style || "lowercase";
+
+  // Mutate the keymap in the DOM, if it exists.
+  // 1. Remove everything
+  $(".keymap-key > .letter").css("display", "");
+  $(".keymap-key > .letter").css("text-transform", "");
+
+  // 2. Append special styles onto the DOM elements
+  if (style === "uppercase") {
+    $(".keymap-key > .letter").css("text-transform", "capitalize");
+  }
+  if (style === "blank") {
+    $(".keymap-key > .letter").css("display", "none");
+  }
+
+  // Update and save to cookie for persistence
+  $(".keymapLegendStyle").addClass(style);
+  config.keymapLegendStyle = style;
+  if (!nosave) saveToCookie();
+}
+
 export function setKeymapStyle(style, nosave) {
   $(".keymap").removeClass("matrix");
   $(".keymap").removeClass("split");
   $(".keymap").removeClass("split_matrix");
+  style = style || "staggered";
 
-  if (style == null || style == undefined) {
-    style = "staggered";
-  }
-
-  if (style === "matrix") {
-    $(".keymap").addClass("matrix");
-  } else if (style === "split") {
-    $(".keymap").addClass("split");
-  } else if (style === "split_matrix") {
-    $(".keymap").addClass("split_matrix");
-  }
+  $(".keymap").addClass(style);
   config.keymapStyle = style;
   if (!nosave) saveToCookie();
 }
@@ -1305,13 +1327,13 @@ export function setLayout(layout, nosave) {
   if (!nosave) saveToCookie();
 }
 
-export function setSavedLayout(layout, nosave) {
-  if (layout == null || layout == undefined) {
-    layout = "qwerty";
-  }
-  config.savedLayout = layout;
-  setLayout(layout, nosave);
-}
+// export function setSavedLayout(layout, nosave) {
+//   if (layout == null || layout == undefined) {
+//     layout = "qwerty";
+//   }
+//   config.savedLayout = layout;
+//   setLayout(layout, nosave);
+// }
 
 export function setFontSize(fontSize, nosave) {
   if (fontSize == null || fontSize == undefined) {
@@ -1414,7 +1436,8 @@ export function apply(configObj) {
     setWordCount(configObj.words, true);
     setLanguage(configObj.language, true);
     setCapsLockBackspace(configObj.capsLockBackspace, true);
-    setSavedLayout(configObj.savedLayout, true);
+    // setSavedLayout(configObj.savedLayout, true);
+    setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);
     setFreedomMode(configObj.freedomMode, true);
     setCaretStyle(configObj.caretStyle, true);
@@ -1431,6 +1454,7 @@ export function apply(configObj) {
     setTimerOpacity(configObj.timerOpacity, true);
     setKeymapMode(configObj.keymapMode, true);
     setKeymapStyle(configObj.keymapStyle, true);
+    setKeymapLegendStyle(configObj.keymapLegendStyle, true);
     setKeymapLayout(configObj.keymapLayout, true);
     setFontFamily(configObj.fontFamily, true);
     setSmoothCaret(configObj.smoothCaret, true);
