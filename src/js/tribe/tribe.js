@@ -1982,7 +1982,7 @@ $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").click((e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
   let queue = Matchmaking.getQ();
   if (queue.length == 0) return;
-  Matchmaking.setBannerText("Searching for a room...");
+  Matchmaking.setBannerText("Waiting for more players...");
   Matchmaking.showBanner();
   state = 6;
   // lastQueue = queue;
@@ -2001,7 +2001,7 @@ $(".pageTest #result #queueAgainButton").click((e) => {
   if ($(e.currentTarget).hasClass("disabled")) return;
   let queue = Matchmaking.getQ();
   if (queue.length == 0) return;
-  Matchmaking.setBannerText("Searching for a room...");
+  Matchmaking.setBannerText("Waiting for more players...");
   Matchmaking.showBanner();
   showHideTribeDiff(false);
   state = 6;
