@@ -33,7 +33,7 @@
   },
   {
     "name": "lithuanian",
-    "languages": ["lithuanian"]
+    "languages": ["lithuanian", "lithuanian_1k"]
   },
   {
     "name": "indonesian",
