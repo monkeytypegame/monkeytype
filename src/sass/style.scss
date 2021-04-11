@@ -3601,7 +3601,7 @@ key {
     grid-template-areas:
       "welcome welcome"
       "mm priv";
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 3fr 1fr;
     gap: 2rem;
     .welcome {
       display: grid;
@@ -3636,18 +3636,29 @@ key {
       grid-area: mm;
       display: grid;
       gap: 1rem;
-      grid-template-rows: auto auto 1fr;
+      grid-template-rows: auto 2.4fr 1fr auto;
       .title,
       .subtitle {
         color: var(--sub-color);
       }
       .buttons {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 1rem;
-        // .button {
-        //   padding: 2rem 0;
-        // }
+        .button {
+          display: grid;
+          gap: 0.25rem;
+          height: 100%;
+          .icon {
+            font-size: 1.5rem;
+            line-height: 1.5rem;
+          }
+          .subtext {
+            opacity: 0.5;
+            font-size: 0.75rem;
+            line-height: 0.75rem;
+          }
+        }
       }
       .button {
         padding: 0.7rem 0.5rem;
@@ -3671,10 +3682,13 @@ key {
     #joinByCode {
       display: grid;
       grid-auto-flow: column;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 2fr 1fr;
       gap: 1rem;
       .button {
         padding: 0.7rem;
+        i {
+          margin: 0;
+        }
       }
       input {
         position: absolute;
