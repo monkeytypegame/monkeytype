@@ -1,10 +1,22 @@
 {
   "language": "german",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -708,6 +720,30 @@
       "source": "Harry Potter und der Stein der Weisen",
       "length": 571,
       "id": 117
+    },
+    {
+      "text": "Und wenn mich einer fragt, wie denn das mit den Schulden ist, dann sag' ich ihm das, was ich immer wieder sage: dass mir ein paar Milliarden mehr Schulden weniger schlaflose Nächte bereiten, als mir ein paar hunderttausend Arbeitslose mehr bereiten würden.",
+      "source": "Dr. Bruno Kreisky",
+      "length": 256,
+      "id": 118
+    },
+    {
+      "text": "Gegen die Krankheit des Schreibens muß man besondere Vorkehrungen treffen, denn sie ist eine gefährliche und ansteckende Krankheit.",
+      "source": "Peter Abaelard",
+      "length": 131,
+      "id": 119
+    },
+    {
+      "text": "Die Einheit Europas war ein Traum von wenigen. Sie wurde die Hoffnung für viele. Sie ist heute die Notwendigkeit für alle.",
+      "source": "Konrad Adenauer",
+      "length": 122,
+      "id": 120
+    },
+    {
+      "text": "Hass ist ein Unkraut, das tief wurzelt, ein Unkraut, das nicht ausgerissen werden kann. Es muss langsam verdorren dadurch, dass man ihm keinen Dünger mehr gibt. Der Boden, in dem es wuchert, wird dann langsam verarmen, und das Unkraut selbst wird absterben.",
+      "source": "Robert August Bosch",
+      "length": 257,
+      "id": 121
     }
   ]
 }

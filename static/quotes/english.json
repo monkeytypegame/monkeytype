@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -32608,6 +32620,144 @@
       "source": "Mr. Robot",
       "length": 942,
       "id": 5485
+    },
+    {
+      "text": "Hello. It's me, Choromatsu. I'm currently in Egypt. I heard that pieces of shit were more popular, so I tried being one, and... I was arrested. I'm scared. I didn't want to be held prisoner by anything anymore, so I left Japan, and now I'm literally a prisoner. Life's pretty funny isn't it? But some good things came out of this. I don't have time to think about anything other than eating, going to the bathroom, and sleeping, so I don't let the little things get me down. There's no envy, no self-loathing, and no hope. And because there's no hope, I'm in a lovely state where there's also no despair. I don't know how much happier I am being a prisoner physically versus being one mentally, but the fact that I'm thinking this way might be a sign that I'm still  a prisoner.I shouldn't feel trapped, but I do, but I also feel trapped by the fact that I don't feel trapped over feeling trapped. What the hell am I even saying? I feel like I might go insane. Anyway I'm going to try to live life without being held prisoner by anyone.",
+      "source": "Osomatsu-san 3rd Season",
+      "length": 1036,
+      "id": null
+    },
+    {
+      "text": "She wished she had cancer instead. She'd trade Alzheimer's for cancer in a heartbeat. She felt ashamed for wishing this, and it was certainly a pointless bargaining, but she permitted herself the fantasy anyway. With cancer, she'd have something to fight. There was surgery, radiation, and chemotherapy. There was the chance that she could win. Her family and the community at Harvard would rally behind her battle and consider it noble. And even if it defeated her in the end, she'd be able to look them knowingly in the eye and say good-bye before she left.",
+      "source": "Lisa Genova, Still Alice",
+      "length": 559,
+      "id": null
+    },
+    {
+      "text": "What about you? Why are you still alive? You wanted revenge against the Vanettis, right? And you finished that crap already, right? Hey, you listening to me? He never wanted to join the Family. Even when I told him how rich he could get, he wouldn't even think about it. It was stupid how damn straight-laced he was. But you... You drove him crazy. And you killed him. He'd never even been with a woman... How is it right that you live and he dies!? Hey, are you listening!?",
+      "source": "91 days",
+      "length": 474,
+      "id": null
+    },
+    {
+      "text": "We're all afraid, you know... to get up on the stage. Maybe you will mess up. Maybe they'll totally reject you. Even so, you grit your teeth and get up on the stage anyway.",
+      "source": "Your Lie In April",
+      "length": 172,
+      "id": null
+    },
+    {
+      "text": "A lump of steel, like a shooting star. Just seeing the same sky as you makes familiar scenery look different. I swing between hope and despair at your slightest gesture, and my heart starts to play a melody. What kind of feeling is this again? What do they call this kind of feeling? I think it's probably... called love. I'm sure this is what they call love.",
+      "source": "Your Lie In April",
+      "length": 359,
+      "id": null
+    },
+    {
+      "text": "What one programmer can do in one month, two programmers can do in two months.",
+      "source": "Fred Brooks",
+      "length": 78,
+      "id": null
+    },
+    {
+      "text": "An ideal is only an ideal after all. As long as you embrace that ideal, the friction with reality will continue to increase. So you will someday face reality and will have to pay the price for your compromises.",
+      "source": "Archer, Fate/Stay Night Anime",
+      "length": 210,
+      "id": null
+    },
+    {
+      "text": "When dreams become more important than reality, you give up travel, building, creating; you even forget how to repair the machines left behind by your ancestors. You just sit living and reliving other lives left behind in the thought records.",
+      "source": "Star Trek: The Original Series",
+      "length": 242,
+      "id": null
+    },
+    {
+      "text": "Genius doesn't work on an assembly line basis. Did Einstein, Kazanga or Sitar of Vulcan produce new and revolutionary theories on a regular schedule? You can't simply say, 'Today I will be brilliant'.",
+      "source": "Star Trek: The Original Series",
+      "length": 200,
+      "id": null
+    },
+    {
+      "text": "I speak of rights! A machine has none; a man must. If you do not grant him that right, you have brought us down to the level of the machine; indeed, you have elevated that machine above us!",
+      "source": "Star Trek : The Original Series",
+      "length": 189,
+      "id": null
+    },
+    {
+      "text": "Human beings do not survive on bread alone ... but on the nourishments of liberty. For what indeed is a man without freedom ... naught but a mechanism, trapped in the cogwheels of eternity.",
+      "source": "Star Trek: The Original Series",
+      "length": 189,
+      "id": null
+    },
+    {
+      "text": "Your will to survive, your love of life, your passion to know ... Everything that is truest and best in all species of beings has been revealed to you. Those are the qualities that make a civilization worthy to survive.",
+      "source": "Star Trek: The Original Series",
+      "length": 219,
+      "id": null
+    },
+    {
+      "text": "Now, I don't pretend to tell you how to find happiness and love, when every day is a struggle to survive. But I do insist that you do survive, because the days and the years ahead are worth living for!",
+      "source": "Star Trek: The Original Series",
+      "length": 201,
+      "id": null
+    },
+    {
+      "text": "With the first link, the chain is forged. The first speech censored, the first thought forbidden, the first freedom denied, chains us all irrevocably.",
+      "source": "Star Trek: The Next Generation",
+      "length": 150,
+      "id": null
+    },
+    {
+      "text": "Our species can only survive if we have obstacles to overcome. You remove those obstacles. Without them to strengthen us, we will weaken and die.",
+      "source": "Star Trek: The Original Series",
+      "length": 145,
+      "id": null
+    },
+    {
+      "text": "You know the greatest danger facing us is ourselves, and irrational fear of the unknown. There is no such thing as the unknown. Only things temporarily hidden, temporarily not understood.",
+      "source": "Star Trek: The Original Series",
+      "length": 187,
+      "id": null
+    },
+    {
+      "text": "You may find that having is not so pleasing a thing as wanting. This is not logical, but it is often true.",
+      "source": "Star Trek: The Original Series",
+      "length": 106,
+      "id": null
+    },
+    {
+      "text": "He taught me that being born with natural talent is not the greatest gift. The truly lucky ones are those with an unwavering belief in themselves. And the passion to keep striving to the very end.",
+      "source": "Naruto",
+      "length": 196,
+      "id": null
+    },
+    {
+      "text": "I cannot believe this shit! First I get a bullshit assignment, now Mr. Rice-a-Roni don't even speak American. C'mon, man, my ride over here. Put your bag in the back.",
+      "source": "Rush Hour",
+      "length": 166,
+      "id": null
+    },
+    {
+      "text": "It's like how hot dogs come in packs of 10, and buns come in packs of eight or 12; you have to buy nine packs to make it come out even.",
+      "source": "Miss Rollings (Swoosie Kurtz) - True Stories",
+      "length": 135,
+      "id": null
+    },
+    {
+      "text": "Physical wounds will definitely bleed and may look painful but over time they heal by themselves and if you apply medicine, they will heal faster. What's troublesome are wounds of the heart. Nothing is harder to heal. They're a bit different from physical injuries. You can't apply medicine for one thing and sometimes, they never heal. There's only one cure for a wound of the heart. It's a bit bothersome and you can only receive it from someone else. What is it? Love.",
+      "source": "Yashamaru Character - Masashi Kishimoto, Naruto Shippuden",
+      "length": 471,
+      "id": null
+    },
+    {
+      "text": "Normally, I don't condone leaving early, but I have an appointment with the horse doctor. How that horse became a doctor, I don't know.\\n No, I'm kidding. He's just a regular doctor... who shoots your horse in the head when its leg is broken.",
+      "source": "Dwight K. Schrute - The Office (US)",
+      "length": 242,
+      "id": null
+    },
+    {
+      "text": "This is me! Up to now, you still don't even see me for who I really am! I'm you, Dad. I tried to give you one last chance, like you said with Breeze, but you're in the way. You're in the way of my future, like you said he was in the way of yours. Ain't that what you said? In the way of your future right? Put the gun down. Tariq, if you do this, you can never go back. I'll do anything to go back, to go back to how it was before you left us for Angela. I just can't, it's too late.",
+      "source": "Power, Tariq St Patrick , James St Patrick",
+      "length": 483,
+      "id": null
     }
   ]
 }
