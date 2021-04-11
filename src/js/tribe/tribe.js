@@ -1002,6 +1002,7 @@ socket.on("mp_room_name_update", (data) => {
 
 socket.on("mp_update_online_stats", (data) => {
   OnlineStats.hideLoading();
+  OnlineStats.setInQueue(data[2]);
   $(".pageTribe .prelobby .welcome .stats").empty();
   $(".pageTribe .prelobby .welcome .stats").append(
     `<div>Online <span class="num">${data[0]}</span></div>`
@@ -1010,15 +1011,15 @@ socket.on("mp_update_online_stats", (data) => {
     `<div>Active Races <span class="num">${data[1]}</span></div>`
   );
   $(".pageTribe .prelobby .welcome .stats").append(
-    `<div class="small">Version ${data[2]}</div>`
+    `<div class="small">Version ${data[3]}</div>`
   );
-  if (data[2] !== expectedVersion) {
+  if (data[3] !== expectedVersion) {
     socket.disconnect();
     $(".pageTribe .preloader .icon").html(
       `<i class="fas fa-exclamation-triangle"></i>`
     );
     $(".pageTribe .preloader .text").html(
-      `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${data[2]}`
+      `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${data[3]}`
     );
     $(".pageTribe .preloader .reconnectButton").addClass(`hidden`);
   }
@@ -1038,6 +1039,10 @@ socket.on("disconnect", (f) => {
   changeActiveSubpage("preloader");
   showHideTribeDiff(false);
   Matchmaking.resetBanner();
+  Matchmaking.enableLobbyButtons();
+  Matchmaking.hideLeaveQueueButton();
+  Matchmaking.showStartQueueButton();
+  Matchmaking.hideBanner();
   // $(".pageTribe .preloader div").removeClass("hidden");
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
   // $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
@@ -1112,11 +1117,7 @@ socket.on("mp_room_joined", (data) => {
     }
   } else {
     state = 7;
-    Matchmaking.setBannerText(
-      `Waiting for more players to join (${
-        Object.keys(room.users).length
-      }/2)...`
-    );
+    Matchmaking.hideLeaveQueueButton();
   }
 });
 
@@ -1988,9 +1989,10 @@ $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").click((e) => {
   // applyRoomConfig(TribeDefaultConfigs[queue]);
   Matchmaking.disableLobbyButtons();
   Matchmaking.hideStartQueueButton();
+  OnlineStats.incrementQueues(queue);
   setTimeout(() => {
+    socket.emit("mp_queue_join", { queues: queue });
     Matchmaking.showLeaveQueueButton();
-    socket.emit("mp_room_join", { queue: queue });
   }, 1000);
 });
 
@@ -2007,16 +2009,25 @@ $(".pageTest #result #queueAgainButton").click((e) => {
   TestLogic.restart();
   Matchmaking.disableLobbyButtons();
   Matchmaking.hideStartQueueButton();
+  OnlineStats.incrementQueues(queue);
   setTimeout(() => {
-    socket.emit("mp_room_join", { queue: queue });
+    socket.emit("mp_queue_join", { queues: queue });
     Matchmaking.showLeaveQueueButton();
     resetResult();
   }, 1000);
 });
 
 $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").click((e) => {
-  if (state === 7) {
-    socket.emit("mp_room_leave");
+  if (state === 6) {
+    socket.emit("mp_queue_leave");
+    Matchmaking.enableLobbyButtons();
+    Matchmaking.hideLeaveQueueButton();
+    Matchmaking.showStartQueueButton();
+    Matchmaking.hideBanner();
+    OnlineStats.decrementQueues(Matchmaking.getQ());
+    setTimeout(() => {
+      state = 1;
+    }, 1000);
   }
 });
 
