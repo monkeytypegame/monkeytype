@@ -54,7 +54,8 @@ if (Object.keys(layouts).length > 0) {
       id: "changeLayout" + Misc.capitalizeFirstLetter(layout),
       display: layout.replace(/_/g, " "),
       exec: () => {
-        UpdateConfig.setSavedLayout(layout);
+        // UpdateConfig.setSavedLayout(layout);
+        UpdateConfig.setLayout(layout);
         TestLogic.restart();
       },
     });
