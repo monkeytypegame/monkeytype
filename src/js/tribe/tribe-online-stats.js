@@ -32,10 +32,22 @@ export function setInQueue(newNum) {
 export function updateQueueButtons() {
   let buttons = $(".pageTribe .prelobby .matchmaking .buttons .button");
   inQueueNumbers.forEach((num, index) => {
-    $(buttons[index])
-      .find(".subtext")
-      .text("In queue: " + num);
+    $(buttons[index]).find(".subtext .waiting").text(`Waiting: ${num}`);
+    // .html(`
+    // <div class='races'>Races: 0</div>
+    // <div class='waiting'></div>
+    // `);
   });
+}
+
+export function updateRaces(races) {
+  let buttons = $(".pageTribe .prelobby .matchmaking .buttons .button");
+  races.public.forEach((num, index) => {
+    $(buttons[index]).find(".subtext .races").text(`Races: ${num}`);
+  });
+  $(
+    ".pageTribe .prelobby .privateRooms #createPrivateRoom .subtext .rooms"
+  ).text(`Rooms: ${races.private}`);
 }
 
 export function refresh() {

@@ -3636,7 +3636,7 @@ key {
       grid-area: mm;
       display: grid;
       gap: 1rem;
-      grid-template-rows: auto 2.4fr 1fr auto;
+      grid-template-rows: auto 2fr auto;
       .title,
       .subtitle {
         color: var(--sub-color);
@@ -3649,6 +3649,7 @@ key {
           display: grid;
           gap: 0.25rem;
           height: 100%;
+          padding: 1rem;
           .icon {
             font-size: 1.5rem;
             line-height: 1.5rem;
@@ -3671,12 +3672,24 @@ key {
       grid-area: priv;
       display: grid;
       gap: 1rem;
-      grid-template-rows: auto auto auto 1fr;
+      grid-template-rows: auto 2fr auto;
       .title {
         color: var(--sub-color);
       }
       #createPrivateRoom {
-        padding: 2.4rem 0;
+        height: 100%;
+        padding: 1rem;
+        display: grid;
+        gap: 0.25rem;
+        .icon {
+          font-size: 1.5rem;
+          line-height: 1.5rem;
+        }
+        .subtext {
+          opacity: 0.5;
+          font-size: 0.75rem;
+          line-height: 0.75rem;
+        }
       }
     }
     #joinByCode {
@@ -4305,10 +4318,15 @@ key {
     .matchmaking .buttons {
       grid-template-columns: 1fr 1fr;
       .button {
-        grid-template-columns: 1fr auto;
+        padding: 1rem;
+        grid-template-rows: 1fr;
+        grid-template-columns: auto auto 1fr;
         align-items: center;
+        .subtext {
+          text-align: right;
+        }
         .icon {
-          display: none;
+          // display: none;
           font-size: 1rem;
           line-height: 1rem;
         }
@@ -4320,13 +4338,19 @@ key {
   }
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 850px) {
   .pageTribe .prelobby {
-    grid-template-areas:
-      "welcome welcome"
-      "mm mm"
-      "priv priv";
+    grid-template-columns: 2fr 1fr;
+    .matchmaking .buttons {
+      grid-template-columns: 1fr;
+    }
+    #joinByCode .customInput {
+      font-size: 1rem;
+    }
   }
+}
+
+@media only screen and (max-width: 800px) {
   #centerContent {
     #top {
       grid-template-areas:
@@ -4355,8 +4379,30 @@ key {
 }
 
 @media only screen and (max-width: 650px) {
-  .pageTribe .prelobby .matchmaking .buttons {
-    grid-template-columns: 1fr;
+  .pageTribe .prelobby {
+    grid-template-areas:
+      "welcome welcome"
+      "mm mm"
+      "priv priv";
+  }
+  .pageTribe .prelobby {
+    .privateRooms #createPrivateRoom {
+      padding: 1rem;
+      grid-template-rows: 1fr;
+      grid-template-columns: auto auto 1fr;
+      align-items: center;
+      .subtext {
+        text-align: right;
+      }
+      .icon {
+        // display: none;
+        font-size: 1rem;
+        line-height: 1rem;
+      }
+    }
+    #joinByCode .customInput {
+      font-size: 1.25rem;
+    }
   }
   .pageSettings .section {
     grid-template-columns: 1fr;

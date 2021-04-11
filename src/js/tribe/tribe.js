@@ -1003,12 +1003,10 @@ socket.on("mp_room_name_update", (data) => {
 socket.on("mp_update_online_stats", (data) => {
   OnlineStats.hideLoading();
   OnlineStats.setInQueue(data[2]);
+  OnlineStats.updateRaces(data[1]);
   $(".pageTribe .prelobby .welcome .stats").empty();
   $(".pageTribe .prelobby .welcome .stats").append(
     `<div>Online <span class="num">${data[0]}</span></div>`
-  );
-  $(".pageTribe .prelobby .welcome .stats").append(
-    `<div>Active Races <span class="num">${data[1]}</span></div>`
   );
   $(".pageTribe .prelobby .welcome .stats").append(
     `<div class="small">Version ${data[3]}</div>`
