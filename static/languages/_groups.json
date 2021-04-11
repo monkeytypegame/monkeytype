@@ -32,6 +32,10 @@
     "languages": ["portuguese"]
   },
   {
+    "name": "lithuanian",
+    "languages": ["lithuanian"]
+  },
+  {
     "name": "indonesian",
     "languages": ["indonesian", "indonesian_1k"]
   },
