@@ -30,7 +30,7 @@ export let socket = io(
 );
 export let activePage = "preloader";
 export let pageTransition = false;
-export let expectedVersion = "0.9.7";
+export let expectedVersion = "0.9.8";
 
 export let room = undefined;
 let name = undefined;
