@@ -22,14 +22,14 @@ function canBailOut() {
   return (
     (Config.mode === "custom" &&
       CustomText.isWordRandom &&
-      CustomText.word >= 5000) ||
+      (CustomText.word >= 5000 || CustomText.word == 0)) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
       CustomText.text.length >= 5000) ||
     (Config.mode === "custom" &&
       CustomText.isTimeRandom &&
-      CustomText.time >= 3600) ||
+      (CustomText.time >= 3600 || CustomText.time == 0)) ||
     (Config.mode === "words" && Config.words >= 5000) ||
     Config.words === 0 ||
     (Config.mode === "time" && (Config.time >= 3600 || Config.time === 0)) ||
