@@ -24,6 +24,10 @@
     "languages": ["mongolian", "mongolian_10k"]
   },
   {
+    "name": "lithuanian",
+    "languages": ["lithuanian", "lithuanian_1k"]
+  },
+  {
     "name": "russian",
     "languages": ["russian", "russian_1k", "russian_10k"]
   },
