@@ -3602,7 +3602,7 @@ key {
       "welcome welcome"
       "mm priv";
     grid-template-columns: 3fr 1fr;
-    gap: 2rem;
+    gap: 0.5rem 2rem;
     .welcome {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -3661,7 +3661,7 @@ key {
         }
       }
       .button {
-        padding: 0.7rem 0.5rem;
+        padding: 0.7rem 0.7rem;
       }
       .leaveMatchmakingButton {
         padding: 0.7rem;
@@ -3693,6 +3693,7 @@ key {
       input {
         position: absolute;
         opacity: 0;
+        width: 0;
       }
       .customInput {
         color: var(--sub-color);
@@ -4299,9 +4300,33 @@ key {
       }
     }
   }
+  .pageTribe .prelobby {
+    grid-template-columns: 3fr 1fr;
+    .matchmaking .buttons {
+      grid-template-columns: 1fr 1fr;
+      .button {
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        .icon {
+          display: none;
+          font-size: 1rem;
+          line-height: 1rem;
+        }
+      }
+    }
+    #joinByCode .customInput {
+      font-size: 1.25rem;
+    }
+  }
 }
 
 @media only screen and (max-width: 800px) {
+  .pageTribe .prelobby {
+    grid-template-areas:
+      "welcome welcome"
+      "mm mm"
+      "priv priv";
+  }
   #centerContent {
     #top {
       grid-template-areas:
@@ -4330,6 +4355,9 @@ key {
 }
 
 @media only screen and (max-width: 650px) {
+  .pageTribe .prelobby .matchmaking .buttons {
+    grid-template-columns: 1fr;
+  }
   .pageSettings .section {
     grid-template-columns: 1fr;
     grid-template-areas:
