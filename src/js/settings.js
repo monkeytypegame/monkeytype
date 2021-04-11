@@ -51,9 +51,11 @@ async function initGroups() {
       if (Config.keymapMode === "off") {
         $(".pageSettings .section.keymapStyle").addClass("hidden");
         $(".pageSettings .section.keymapLayout").addClass("hidden");
+        $(".pageSettings .section.keymapLegendStyle").addClass("hidden");
       } else {
         $(".pageSettings .section.keymapStyle").removeClass("hidden");
         $(".pageSettings .section.keymapLayout").removeClass("hidden");
+        $(".pageSettings .section.keymapLegendStyle").removeClass("hidden");
       }
     }
   );
@@ -64,6 +66,10 @@ async function initGroups() {
   groups.keymapLayout = new SettingsGroup(
     "keymapLayout",
     UpdateConfig.setKeymapLayout
+  );
+  groups.keymapLegendStyle = new SettingsGroup(
+    "keymapLegendStyle",
+    UpdateConfig.setKeymapLegendStyle
   );
   groups.showKeyTips = new SettingsGroup(
     "showKeyTips",
@@ -578,7 +584,9 @@ $(
   ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
 ).click((e) => {
   Loader.show();
-  CloudFunctions.generatePairingCode({ uid: firebase.auth().currentUser.uid })
+  CloudFunctions.generatePairingCode({
+    uid: firebase.auth().currentUser.uid,
+  })
     .then((ret) => {
       Loader.hide();
       if (ret.data.status === 1 || ret.data.status === 2) {
@@ -715,7 +723,9 @@ $(".pageSettings .sectionGroupTitle").click((e) => {
         {
           duration: 250,
           step: function (now) {
-            $(this).css({ transform: "rotate(" + now + "deg)" });
+            $(this).css({
+              transform: "rotate(" + now + "deg)",
+            });
           },
         }
       );
@@ -729,7 +739,9 @@ $(".pageSettings .sectionGroupTitle").click((e) => {
         {
           duration: 250,
           step: function (now) {
-            $(this).css({ transform: "rotate(" + now + "deg)" });
+            $(this).css({
+              transform: "rotate(" + now + "deg)",
+            });
           },
         }
       );
