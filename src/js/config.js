@@ -1047,8 +1047,6 @@ export function setQuickTabMode(mode, nosave) {
 }
 
 export function toggleQuickTabMode() {
-  console.log("before change");
-  console.log(config.quickTab);
   config.quickTab = !config.quickTab;
   if (!config.quickTab) {
     $("#restartTestButton").removeClass("hidden");
@@ -1061,13 +1059,7 @@ export function toggleQuickTabMode() {
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
       <key>esc</key> - command line`);
   }
-  console.log("after change");
-  console.log(config.quickTab);
-  console.log("before save");
-  console.log(config.quickTab);
   saveToLocalStorage();
-  console.log("after save");
-  console.log(config.quickTab);
 }
 
 export function previewFontFamily(font) {
