@@ -65,11 +65,11 @@ export function getDataAndInit() {
         CloudFunctions.removeSmallTests({ uid: user.uid });
       }
       if (!UpdateConfig.changedBeforeDb) {
-        if (Config.cookieConfig === null) {
+        if (Config.localStorageConfig === null) {
           AccountButton.loading(false);
           UpdateConfig.apply(DB.getSnapshot().config);
           Settings.update();
-          UpdateConfig.saveToCookie(true);
+          UpdateConfig.saveToLocalStorage(true);
           TestLogic.restart(false, true);
         } else if (DB.getSnapshot().config !== undefined) {
           //loading db config, keep for now
@@ -112,7 +112,7 @@ export function getDataAndInit() {
             AccountButton.loading(false);
             UpdateConfig.apply(DB.getSnapshot().config);
             Settings.update();
-            UpdateConfig.saveToCookie(true);
+            UpdateConfig.saveToLocalStorage(true);
             TestLogic.restart(false, true);
           }
         }
@@ -135,7 +135,7 @@ export function getDataAndInit() {
       AccountButton.loading(false);
       ResultFilters.updateTags();
       CommandlineLists.updateTagCommands();
-      TagController.loadActiveFromCookie();
+      TagController.loadActiveFromLocalStorage();
       ResultTagsPopup.updateButtons();
       Settings.showAccountSection();
     })

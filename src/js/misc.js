@@ -287,27 +287,28 @@ export async function getLanguage(lang) {
   }
 }
 
-export function setCookie(cname, cvalue, exdays) {
-  var d = new Date();
-  d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-  var expires = "expires=" + d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
+export function migrateFromCookies() {
+  ["resultFilters", "config", "merchbannerclosed", "activeTags"].forEach(
+    function (name) {
+      let decodedCookie = decodeURIComponent(document.cookie).split(";");
+      let value = null;
 
-export function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(";");
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == " ") {
-      c = c.substring(1);
+      for (var i = 0; i < decodedCookie.length; i++) {
+        var c = decodedCookie[i];
+        while (c.charAt(0) == " ") {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name + "=") == 0) {
+          value = c.substring(name.length + 1, c.length);
+        }
+      }
+
+      if (value) {
+        window.localStorage.setItem(name, value);
+        $.removeCookie(name, { path: "/" });
+      }
     }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
+  );
 }
 
 export function sendVerificationEmail() {
