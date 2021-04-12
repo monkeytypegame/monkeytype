@@ -1456,6 +1456,21 @@ a:hover {
     }
   }
 
+  &.banana {
+    background-color: transparent;
+    background-image: url("../images/banana.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 1rem;
+    &.size2 {
+      margin-left: -0.1rem;
+    }
+    &.size3 {
+      margin-left: -0.5rem;
+    }
+  }
+
   &.block {
     width: 0.7em;
     margin-left: 0.25em;
@@ -1652,7 +1667,7 @@ a:hover {
     justify-self: right;
     display: grid;
     // grid-auto-flow: row;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-rows: 0.7rem 0.7rem 0.7rem;
     grid-gap: 0.2rem;
     // width: min-content;
     // width: -moz-min-content;
@@ -3041,6 +3056,7 @@ key {
     &.languageGroups,
     &.layout,
     &.keymapLayout,
+    &.keymapLegendStyle,
     &.fontFamily,
     &.funbox,
     &.keymapStyle,
@@ -3553,6 +3569,7 @@ key {
     .pageSettings .section.language .buttons,
     .pageSettings .section.layout .buttons,
     .pageSettings .section.keymapLayout .buttons,
+    .pageSettings .section.keymapLegendStyle .buttons,
     .pageSettings .section.fontFamily .buttons,
     .pageSettings .section.funbox .buttons,
     .pageSettings .section.keymapStyle .buttons {
@@ -3663,6 +3680,7 @@ key {
     .pageSettings .section.language .buttons,
     .pageSettings .section.layout .buttons,
     .pageSettings .section.keymapLayout .buttons,
+    .pageSettings .section.keymapLegendStyle .buttons,
     .pageSettings .section.fontFamily .buttons,
     .pageSettings .section.funbox .buttons,
     .pageSettings .section.keymapStyle .buttons {

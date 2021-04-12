@@ -217,12 +217,12 @@ $(".pageSettings .saveCustomThemeButton").click((e) => {
   );
   UpdateConfig.setCustomThemeColors(save);
   ThemeController.set("custom");
-  Notifications.add("Custom theme colors saved", 0);
+  Notifications.add("Custom theme colors saved", 1);
 });
 
 $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
   // previewTheme(Config.theme);
-  ThemeController.preview(Config.theme);
+  $("#currentTheme").attr("href", `themes/${Config.theme}.css`);
 
   ThemeController.colorVars.forEach((e) => {
     document.documentElement.style.setProperty(e, "");

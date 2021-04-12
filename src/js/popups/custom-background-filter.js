@@ -52,6 +52,30 @@ function syncSliders() {
   );
 }
 
+function updateNumbers() {
+  $(".section.customBackgroundFilter .blur .value").html(
+    parseFloat(filters.blur.value).toFixed(1)
+  );
+  $(".section.customBackgroundFilter .brightness .value").html(
+    parseFloat(filters.brightness.value).toFixed(1)
+  );
+  $(".section.customBackgroundFilter .saturate .value").html(
+    parseFloat(filters.saturate.value).toFixed(1)
+  );
+  $(".section.customBackgroundFilter .opacity .value").html(
+    parseFloat(filters.opacity.value).toFixed(1)
+  );
+}
+
+export function loadConfig(config) {
+  filters.blur.value = config[0];
+  filters.brightness.value = config[1];
+  filters.saturate.value = config[2];
+  filters.opacity.value = config[3];
+  updateNumbers();
+  syncSliders();
+}
+
 $(".section.customBackgroundFilter .blur input").on("input", (e) => {
   filters["blur"].value = $(
     ".section.customBackgroundFilter .blur input"
@@ -92,27 +116,3 @@ $(".section.customBackgroundFilter  .save.button").click((e) => {
   UpdateConfig.setCustomBackgroundFilter(arr, false);
   Notifications.add("Custom background filters saved", 1);
 });
-
-export function loadConfig(config) {
-  filters.blur.value = config[0];
-  filters.brightness.value = config[1];
-  filters.saturate.value = config[2];
-  filters.opacity.value = config[3];
-  updateNumbers();
-  syncSliders();
-}
-
-function updateNumbers() {
-  $(".section.customBackgroundFilter .blur .value").html(
-    parseFloat(filters.blur.value).toFixed(1)
-  );
-  $(".section.customBackgroundFilter .brightness .value").html(
-    parseFloat(filters.brightness.value).toFixed(1)
-  );
-  $(".section.customBackgroundFilter .saturate .value").html(
-    parseFloat(filters.saturate.value).toFixed(1)
-  );
-  $(".section.customBackgroundFilter .opacity .value").html(
-    parseFloat(filters.opacity.value).toFixed(1)
-  );
-}

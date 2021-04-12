@@ -576,6 +576,9 @@ export async function init() {
   // } else {
   TestUI.showWords();
   // }
+  if ($(".pageTest").hasClass("active")) {
+    Funbox.activate();
+  }
 }
 
 export function restart(withSameWordset = false, nosave = false, event) {
@@ -697,6 +700,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
         input.reset();
         PaceCaret.init();
         TestUI.showWords();
+        Funbox.activate();
       }
       if (Config.mode === "quote") {
         setRepeated(false);
@@ -924,6 +928,7 @@ export function finish(difficultyFailed = false) {
   LiveAcc.hide();
   TimerProgress.hide();
   Keymap.hide();
+  Funbox.activate("none", null);
   let stats = TestStats.calculateStats();
   if (stats === undefined) {
     stats = {
@@ -1653,8 +1658,8 @@ export function finish(difficultyFailed = false) {
   if (Config.blindMode) {
     testType += "<br>blind";
   }
-  if (Funbox.active !== "none") {
-    testType += "<br>" + Funbox.active.replace(/_/g, " ");
+  if (Funbox.funboxSaved !== "none") {
+    testType += "<br>" + Funbox.funboxSaved.replace(/_/g, " ");
   }
   if (Config.difficulty == "expert") {
     testType += "<br>expert";
@@ -1706,6 +1711,33 @@ export function finish(difficultyFailed = false) {
     $("#result .stats .source .bottom").html(randomQuote.source);
   } else {
     $("#result .stats .source").addClass("hidden");
+  }
+
+  if (Funbox.funboxSaved !== "none") {
+    ChartController.result.options.annotation.annotations.push({
+      enabled: false,
+      type: "line",
+      mode: "horizontal",
+      scaleID: "wpm",
+      value: 0,
+      borderColor: "transparent",
+      borderWidth: 1,
+      borderDash: [2, 2],
+      label: {
+        backgroundColor: "transparent",
+        fontFamily: Config.fontFamily.replace(/_/g, " "),
+        fontSize: 11,
+        fontStyle: "normal",
+        fontColor: ThemeColors.sub,
+        xPadding: 6,
+        yPadding: 6,
+        cornerRadius: 3,
+        position: "left",
+        enabled: true,
+        content: `${Funbox.funboxSaved}`,
+        yAdjust: -11,
+      },
+    });
   }
 
   ChartController.result.options.scales.yAxes[0].ticks.max = maxChartVal;

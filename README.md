@@ -1,6 +1,6 @@
 # monkeytype
 
-![](https://github.com/Miodec/monkeytype/blob/master/static/images/mtsocial.png?raw=true) 
+[![](https://github.com/Miodec/monkeytype/blob/master/static/images/mtsocial.png?raw=true)](https://monkeytype.com/)
 <br />
 
 <img align="left" alt="JavaScript" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" />
@@ -35,6 +35,13 @@ Recently, a Discord bot was added to autoassign roles on our server. You can fin
 
 If you encounter a bug, or have a feature request - send me a message on Reddit, [create an issue](https://github.com/Miodec/monkeytype/issues), [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
 
+# Contribute
+
+Refer to [CONTRIBUTING.md](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)
+
+# Code Of Conduct
+
+Before contributing to this repository please refer to [CODE_OF_CONDUCT.md](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)
 # Credits
 
 Montydrei for the name suggestion
@@ -47,10 +54,4 @@ Contributors that have helped with implementing various features, adding themes 
 
 If you wish to support further development and feel extra awesome, you can do so [here](https://www.paypal.me/jackbartnik).
 
-# Contribute
 
-Refer to [CONTRIBUTING.md](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)
-
-# Code Of Conduct
-
-Before contributing to this repository please refer to [CODE_OF_CONDUCT.md](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)

@@ -62,7 +62,7 @@ function handleTab(event) {
           //ignore
         } else {
           if (event.shiftKey) ManualRestart.set();
-
+          event.preventDefault();
           if (
             TestLogic.active &&
             Config.repeatQuotes === "typing" &&

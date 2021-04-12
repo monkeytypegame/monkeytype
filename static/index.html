@@ -14,7 +14,32 @@
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="images/fav.png" />
-    <link rel="shortcut icon" href="images/fav.png" />
+    <link rel="shortcut icon" href="images/favicon/fav.png" />
+    <link
+      href="images/favicon/apple-touch-icon-180x180.png"
+      rel="apple-touch-icon"
+      sizes="180x180"
+    />
+    <link
+      href="images/favicon/apple-touch-icon-152x152.png"
+      rel="apple-touch-icon"
+      sizes="152x152"
+    />
+    <link
+      href="images/favicon/apple-touch-icon-120x120.png"
+      rel="apple-touch-icon"
+      sizes="120x120"
+    />
+
+    <link
+      href="images/favicon/apple-touch-icon-76x76.png"
+      rel="apple-touch-icon"
+      sizes="76x76"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="images/favicon/apple-touch-icon-60x60.png"
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
@@ -875,7 +900,7 @@
       </div>
     </div>
     <div id="timerWrapper">
-      <div id="timer"></div>
+      <div id="timer" class="timerMain"></div>
     </div>
     <div style="display: flex; justify-content: space-around">
       <div id="nitropay_ad_left" class="hidden"></div>
@@ -1067,10 +1092,10 @@
               <div id="caret" class="default size15"></div>
               <div id="paceCaret" class="default size15 hidden"></div>
               <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
-              <div id="timerNumber">
+              <div id="timerNumber" class="timerMain">
                 <div>60</div>
               </div>
-              <div id="miniTimerAndLiveWpm">
+              <div id="miniTimerAndLiveWpm" class="timerMain size15">
                 <div class="time hidden">1:00</div>
                 <div class="wpm">60</div>
                 <div class="acc">100%</div>
@@ -1256,7 +1281,7 @@
                   </div>
                 </div>
               </div>
-              <div id="largeLiveWpmAndAcc">
+              <div id="largeLiveWpmAndAcc" class="timerMain">
                 <div id="liveWpm" class="hidden">123</div>
                 <div id="liveAcc" class="hidden">100%%</div>
               </div>
@@ -1635,6 +1660,20 @@
                 <div>Robin</div>
                 <div>Sonicv6</div>
                 <div>Taran</div>
+                <div>Roux</div>
+                <div>Artem</div>
+                <div>DarkBlu</div>
+                <div>John</div>
+                <div>Gregory</div>
+                <div>Hopeless Love</div>
+                <div>Kalen</div>
+                <div>Ben</div>
+                <div>Jakub</div>
+                <div>Vincent</div>
+                <div>Connor</div>
+                <div>Zunaed</div>
+                <div>Emilio</div>
+                <div>Michael</div>
               </div>
             </div>
           </div>
@@ -2741,6 +2780,35 @@
                     onclick="this.blur();"
                   >
                     split matrix
+                  </div>
+                </div>
+              </div>
+              <div class="section keymapLegendStyle">
+                <h1>keymap legend style</h1>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    keymapLegendStyle="lowercase"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    lowercase
+                  </div>
+                  <div
+                    class="button"
+                    keymapLegendStyle="uppercase"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    uppercase
+                  </div>
+                  <div
+                    class="button"
+                    keymapLegendStyle="blank"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    blank
                   </div>
                 </div>
               </div>
