@@ -1456,6 +1456,21 @@ a:hover {
     }
   }
 
+  &.banana {
+    background-color: transparent;
+    background-image: url("../images/banana.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 1rem;
+    &.size2 {
+      margin-left: -0.1rem;
+    }
+    &.size3 {
+      margin-left: -0.5rem;
+    }
+  }
+
   &.block {
     width: 0.7em;
     margin-left: 0.25em;

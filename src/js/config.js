@@ -714,6 +714,8 @@ export function setCaretStyle(caretStyle, nosave) {
     $("#caret").addClass("underline");
   } else if (caretStyle == "carrot") {
     $("#caret").addClass("carrot");
+  } else if (caretStyle == "banana") {
+    $("#caret").addClass("banana");
   }
   if (!nosave) saveToCookie();
 }
