@@ -490,6 +490,14 @@ let commandsCaretStyle = {
         UpdateConfig.setCaretStyle("carrot");
       },
     },
+    {
+      id: "setCaretStyleBanana",
+      display: "banana",
+      visible: false,
+      exec: () => {
+        UpdateConfig.setCaretStyle("banana");
+      },
+    },
   ],
 };
 
