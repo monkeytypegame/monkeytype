@@ -3729,6 +3729,9 @@ key {
             color: var(--main-color);
           }
         }
+        &.disabled {
+          opacity: 0.5;
+        }
       }
     }
   }

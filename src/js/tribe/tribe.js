@@ -2002,6 +2002,7 @@ $(
 });
 
 $(".pageTribe .prelobby #joinByCode .customInput").click((e) => {
+  if ($(e.currentTarget).hasClass("disabled")) return;
   $(".pageTribe .prelobby #joinByCode input").focus();
 });
 
