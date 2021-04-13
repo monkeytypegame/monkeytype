@@ -16,6 +16,7 @@ import * as CommandlineLists from "./commandline-lists";
 import * as OnlineStats from "./tribe-online-stats";
 import seedrandom from "seedrandom";
 import * as SimplePopups from "./simple-popups";
+import * as ChartController from "./chart-controller";
 
 export let state = -1;
 export let socket = io(
@@ -2291,22 +2292,85 @@ let miniChartSettings = {
       bodyFontFamily: "Roboto Mono",
       mode: "index",
       intersect: false,
-      callbacks: {
-        afterLabel: function (ti, data) {
-          try {
-            //TODO bring back
-            // $(".wordInputAfter").remove();
-            // let wordsToHighlight =
-            //   keypressPerSecond[parseInt(ti.xLabel) - 1].words;
-            // let unique = [...new Set(wordsToHighlight)];
-            // unique.forEach((wordIndex) => {
-            //   let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
-            //   let input = wordEl.attr("input");
-            //   if (input != undefined)
-            //     wordEl.append(`<div class="wordInputAfter">${input}</div>`);
-            // });
-          } catch (e) {}
-        },
+      enabled: false,
+      custom: function (tooltipModel) {
+        // Tooltip Element
+        var tooltipEl = document.getElementById("tribeMiniChartCustomTooltip");
+
+        // Create element on first render
+        if (!tooltipEl) {
+          tooltipEl = document.createElement("div");
+          tooltipEl.id = "tribeMiniChartCustomTooltip";
+          tooltipEl.innerHTML = "<div></div>";
+          document.body.appendChild(tooltipEl);
+        }
+
+        // Hide if no tooltip
+        if (tooltipModel.opacity === 0) {
+          tooltipEl.style.opacity = 0;
+          return;
+        }
+
+        // Set caret Position
+        tooltipEl.classList.remove("above", "below", "no-transform");
+        if (tooltipModel.yAlign) {
+          tooltipEl.classList.add(tooltipModel.yAlign);
+        } else {
+          tooltipEl.classList.add("no-transform");
+        }
+
+        function getBody(bodyItem) {
+          return bodyItem.lines;
+        }
+
+        // Set Text
+        if (tooltipModel.body) {
+          var titleLines = tooltipModel.title || [];
+          var bodyLines = tooltipModel.body.map(getBody);
+
+          var innerHtml = "";
+
+          titleLines.forEach(function (title) {
+            innerHtml += "<div>" + title + "</div>";
+          });
+          // innerHtml += '</thead><tbody>';
+
+          bodyLines.forEach(function (body, i) {
+            // var colors = tooltipModel.labelColors[i];
+            // var style = 'background:' + colors.backgroundColor;
+            // style += '; border-color:' + colors.borderColor;
+            // style += '; border-width: 2px';
+            // var span = '<span style="' + style + '"></span>';
+            innerHtml += "<div>" + body + "</div>";
+            // innerHtml += '<tr><td>' + span + body + '</td></tr>';
+          });
+          // innerHtml += '</tbody>';
+
+          var tableRoot = tooltipEl.querySelector("div");
+          tableRoot.innerHTML = innerHtml;
+        }
+
+        // `this` will be the overall tooltip
+        var position = this._chart.canvas.getBoundingClientRect();
+
+        // Display, position, and set styles for font
+        tooltipEl.style.opacity = 1;
+        tooltipEl.style.position = "absolute";
+        tooltipEl.style.left =
+          position.left + window.pageXOffset + tooltipModel.caretX + "px";
+        tooltipEl.style.top =
+          position.top + window.pageYOffset + tooltipModel.caretY + "px";
+        // tooltipEl.style.fontFamily = tooltipModel._bodyFontFamily;
+        tooltipEl.style.fontSize = "0.75rem";
+        tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle;
+        tooltipEl.style.padding =
+          tooltipModel.yPadding + "px " + tooltipModel.xPadding + "px";
+        tooltipEl.style.pointerEvents = "none";
+        tooltipEl.style.background = "rgba(0,0,0,.75)";
+        tooltipEl.style.borderRadius = "0.5rem";
+        tooltipEl.style.color = "white";
+        tooltipEl.style.zIndex = "999";
+        tooltipEl.style.transition = "left 0.25s, top 0.25s, opacity 0.25s";
       },
     },
     legend: {
