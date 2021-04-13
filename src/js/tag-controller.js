@@ -1,6 +1,5 @@
 import * as DB from "./db";
 import * as TestUI from "./test-ui";
-import * as Misc from "./misc";
 
 export function saveActiveToLocalStorage() {
   let tags = [];

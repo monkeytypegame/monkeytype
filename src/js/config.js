@@ -1,5 +1,4 @@
 import * as DB from "./db";
-import * as Misc from "./misc";
 import * as Sound from "./sound";
 import * as TestUI from "./test-ui";
 import * as ChartController from "./chart-controller";
