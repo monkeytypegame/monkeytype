@@ -4,6 +4,7 @@ import * as Notifications from "./notifications";
 import * as AccountController from "./account-controller";
 import * as DB from "./db";
 import * as Settings from "./settings";
+import * as Tribe from "./tribe";
 
 export let list = {};
 class SimplePopup {
@@ -13,20 +14,24 @@ class SimplePopup {
     title,
     inputs = [],
     text = "",
-    buttonText = "Confirm",
-    execFn,
+    buttons = [
+      {
+        text: "Confirm",
+        execFn: () => {},
+        default: true,
+      },
+    ],
     beforeShowFn
   ) {
     this.parameters = [];
     this.id = id;
     this.type = type;
-    this.execFn = execFn;
     this.title = title;
     this.inputs = inputs;
     this.text = text;
     this.wrapper = $("#simplePopupWrapper");
     this.element = $("#simplePopup");
-    this.buttonText = buttonText;
+    this.buttons = buttons;
     this.beforeShowFn = beforeShowFn;
   }
   reset() {
@@ -34,7 +39,7 @@ class SimplePopup {
     <div class="title"></div>
     <div class="inputs"></div>
     <div class="text"></div>
-    <div class="button"></div>`);
+    <div class="buttons"></div>`);
   }
 
   init() {
@@ -48,8 +53,23 @@ class SimplePopup {
 
     this.initInputs();
 
-    el.find(".button").text(this.buttonText);
+    this.initButtons();
+
+    // el.find(".button").text(this.buttonText);
     // }
+  }
+
+  initButtons() {
+    let el = this.element;
+    this.buttons.forEach((button, index) => {
+      el.find(".buttons").append(`
+        <div class="button" buttonId="${index}">${button.text}</div>
+      `);
+    });
+    el.find(".buttons").removeClass("twocol");
+    if (this.buttons.length == 2) {
+      el.find(".buttons").addClass("twocol");
+    }
   }
 
   initInputs() {
@@ -74,12 +94,12 @@ class SimplePopup {
     }
   }
 
-  exec() {
+  exec(buttonId) {
     let vals = [];
     $.each($("#simplePopup input"), (index, el) => {
       vals.push($(el).val());
     });
-    this.execFn(...vals);
+    this.buttons[buttonId].execFn(...vals);
     this.hide();
   }
 
@@ -121,7 +141,8 @@ $("#simplePopupWrapper").click((e) => {
 
 $(document).on("click", "#simplePopupWrapper .button", (e) => {
   let id = $("#simplePopup").attr("popupId");
-  list[id].exec();
+  let buttonId = $(e.currentTarget).attr("buttonId");
+  list[id].exec(buttonId);
 });
 
 $(document).on("keyup", "#simplePopupWrapper input", (e) => {
@@ -129,6 +150,19 @@ $(document).on("keyup", "#simplePopupWrapper input", (e) => {
     e.preventDefault();
     let id = $("#simplePopup").attr("popupId");
     list[id].exec();
+  }
+});
+
+$(document).on("keyup", (e) => {
+  if (e.key === "Enter") {
+    if (!$("#simplePopupWrapper").hasClass("hidden")) {
+      let id = $("#simplePopup").attr("popupId");
+      list[id].buttons.forEach((button, index) => {
+        if (button.default) {
+          list[id].exec(index);
+        }
+      });
+    }
   }
 });
 
@@ -147,34 +181,38 @@ list.updateEmail = new SimplePopup(
     },
   ],
   "Don't mess this one up or you won't be able to login!",
-  "Update",
-  (previousEmail, newEmail) => {
-    try {
-      Loader.show();
-      CloudFunctions.updateEmail({
-        uid: firebase.auth().currentUser.uid,
-        previousEmail: previousEmail,
-        newEmail: newEmail,
-      }).then((data) => {
-        Loader.hide();
-        if (data.data.resultCode === 1) {
-          Notifications.add("Email updated", 0);
-          setTimeout(() => {
-            AccountController.signOut();
-          }, 1000);
-        } else if (data.data.resultCode === -1) {
-          Notifications.add("Current email doesn't match", 0);
-        } else {
-          Notifications.add(
-            "Something went wrong: " + JSON.stringify(data.data),
-            -1
-          );
+  [
+    {
+      text: "Update",
+      execFn: (previousEmail, newEmail) => {
+        try {
+          Loader.show();
+          CloudFunctions.updateEmail({
+            uid: firebase.auth().currentUser.uid,
+            previousEmail: previousEmail,
+            newEmail: newEmail,
+          }).then((data) => {
+            Loader.hide();
+            if (data.data.resultCode === 1) {
+              Notifications.add("Email updated", 0);
+              setTimeout(() => {
+                AccountController.signOut();
+              }, 1000);
+            } else if (data.data.resultCode === -1) {
+              Notifications.add("Current email doesn't match", 0);
+            } else {
+              Notifications.add(
+                "Something went wrong: " + JSON.stringify(data.data),
+                -1
+              );
+            }
+          });
+        } catch (e) {
+          Notifications.add("Something went wrong: " + e, -1);
         }
-      });
-    } catch (e) {
-      Notifications.add("Something went wrong: " + e, -1);
-    }
-  },
+      },
+    },
+  ],
   () => {}
 );
 
@@ -184,36 +222,43 @@ list.clearTagPb = new SimplePopup(
   "Clear Tag PB",
   [],
   `Are you sure you want to clear this tags PB?`,
-  "Clear",
-  () => {
-    let tagid = eval("this.parameters[0]");
-    Loader.show();
-    CloudFunctions.clearTagPb({
-      uid: firebase.auth().currentUser.uid,
-      tagid: tagid,
-    })
-      .then((res) => {
-        Loader.hide();
-        if (res.data.resultCode === 1) {
-          let tag = DB.getSnapshot().tags.filter((t) => t.id === tagid)[0];
-          tag.pb = 0;
-          $(
-            `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
-          ).attr("aria-label", "No PB found");
-          Notifications.add("Tag PB cleared.", 0);
-        } else {
-          Notifications.add("Something went wrong: " + res.data.message, -1);
-        }
-      })
-      .catch((e) => {
-        Loader.hide();
-        Notifications.add(
-          "Something went wrong while clearing tag pb " + e,
-          -1
-        );
-      });
-    // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
-  },
+  [
+    {
+      text: "Clear",
+      execFn: () => {
+        let tagid = eval("this.parameters[0]");
+        Loader.show();
+        CloudFunctions.clearTagPb({
+          uid: firebase.auth().currentUser.uid,
+          tagid: tagid,
+        })
+          .then((res) => {
+            Loader.hide();
+            if (res.data.resultCode === 1) {
+              let tag = DB.getSnapshot().tags.filter((t) => t.id === tagid)[0];
+              tag.pb = 0;
+              $(
+                `.pageSettings .section.tags .tagsList .tag[id="${tagid}"] .clearPbButton`
+              ).attr("aria-label", "No PB found");
+              Notifications.add("Tag PB cleared.", 0);
+            } else {
+              Notifications.add(
+                "Something went wrong: " + res.data.message,
+                -1
+              );
+            }
+          })
+          .catch((e) => {
+            Loader.hide();
+            Notifications.add(
+              "Something went wrong while clearing tag pb " + e,
+              -1
+            );
+          });
+        // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
+      },
+    },
+  ],
   () => {
     eval(
       "this.text = `Are you sure you want to clear PB for tag ${eval('this.parameters[1]')}?`"
@@ -227,11 +272,15 @@ list.applyCustomFont = new SimplePopup(
   "Custom font",
   [{ placeholder: "Font name", initVal: "" }],
   "Make sure you have the font installed on your computer before applying.",
-  "Apply",
-  (fontName) => {
-    if (fontName === "") return;
-    Settings.groups.fontFamily.setValue(fontName.replace(/\s/g, "_"));
-  },
+  [
+    {
+      text: "Apply",
+      execFn: (fontName) => {
+        if (fontName === "") return;
+        Settings.groups.fontFamily.setValue(fontName.replace(/\s/g, "_"));
+      },
+    },
+  ],
   () => {}
 );
 
@@ -241,33 +290,59 @@ list.resetPersonalBests = new SimplePopup(
   "Reset Personal Bests",
   [],
   "Are you sure you want to reset all your personal bests?",
-  "Reset",
-  () => {
-    try {
-      Loader.show();
+  [
+    {
+      text: "Reset",
+      execFn: () => {
+        try {
+          Loader.show();
 
-      CloudFunctions.resetPersonalBests({
-        uid: firebase.auth().currentUser.uid,
-      }).then((res) => {
-        if (res) {
-          Loader.hide();
-          Notifications.add(
-            "Personal bests removed, refreshing the page...",
-            0
-          );
-          setTimeout(() => {
-            location.reload();
-          }, 1500);
-        } else {
-          Notifications.add(
-            "Something went wrong while removing personal bests...",
-            -1
-          );
+          CloudFunctions.resetPersonalBests({
+            uid: firebase.auth().currentUser.uid,
+          }).then((res) => {
+            if (res) {
+              Loader.hide();
+              Notifications.add(
+                "Personal bests removed, refreshing the page...",
+                0
+              );
+              setTimeout(() => {
+                location.reload();
+              }, 1500);
+            } else {
+              Notifications.add(
+                "Something went wrong while removing personal bests...",
+                -1
+              );
+            }
+          });
+        } catch (e) {
+          Notifications.add("Something went wrong: " + e, -1);
         }
-      });
-    } catch (e) {
-      Notifications.add("Something went wrong: " + e, -1);
-    }
-  },
+      },
+    },
+  ],
+  () => {}
+);
+
+list.tribeConfirmStartTest = new SimplePopup(
+  "tribeConfirmStartTest",
+  "text",
+  "Are you sure?",
+  [],
+  "Not everyone is ready. Are you sure you want to start the test without them?",
+  [
+    {
+      text: "Start",
+      execFn: () => {
+        Tribe.startTest(true);
+      },
+      default: true,
+    },
+    {
+      text: "Cancel",
+      execFn: () => {},
+    },
+  ],
   () => {}
 );
