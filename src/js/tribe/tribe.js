@@ -15,6 +15,7 @@ import * as Commandline from "./commandline";
 import * as CommandlineLists from "./commandline-lists";
 import * as OnlineStats from "./tribe-online-stats";
 import seedrandom from "seedrandom";
+import * as SimplePopups from "./simple-popups";
 
 export let state = -1;
 export let socket = io(
@@ -343,9 +344,22 @@ export function joinRoomByCode(code) {
   `);
 }
 
-export function startTest() {
+export function startTest(override = false) {
   if (syncConfigTimeout !== null) return;
   if (room.newTestCooldown) return;
+  let everyoneReady = true;
+  Object.keys(room.users).forEach((sid) => {
+    if (
+      !room.users[sid].isReady &&
+      !room.users[sid].isLeader &&
+      (!room.users[sid].isTyping || room.users[sid].isFinished)
+    )
+      everyoneReady = false;
+  });
+  if (!everyoneReady && !override) {
+    SimplePopups.list.tribeConfirmStartTest.show();
+    return;
+  }
   room.isReady = true;
   socket.emit("mp_room_test_start");
 }
@@ -1318,7 +1332,17 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
   } else {
     let split = $(".pageTribe .lobby .chat .input input").val().split(" ");
     split = split[split.length - 1];
-    if (split.slice(0, 1) === ":") {
+    if (split.slice(-1) === ":") {
+      let active = lobbySuggestions.getActive();
+      if (active) {
+        let split = $(".pageTribe .lobby .chat .input input").val().split(" ");
+        if (active.type === "emoji") {
+          split[split.length - 1] = `${active.to}`;
+        }
+        $(".pageTribe .lobby .chat .input input").val(split.join(" ") + " ");
+        lobbySuggestions.hide();
+      }
+    } else if (split.slice(0, 1) === ":") {
       split = split.replace(/:/g, "");
       if (split.length >= 2) {
         lobbySuggestions.updateSuggestions("emoji", split);
@@ -1372,9 +1396,25 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
       resultSuggestions.hide();
     }
   } else {
-    let split = $(".pageTribe .lobby .chat .input input").val().split(" ");
+    let split = $(".pageTest #result .tribeResultChat .chat .input input")
+      .val()
+      .split(" ");
     split = split[split.length - 1];
-    if (split.slice(0, 1) === ":") {
+    if (split.slice(-1) === ":") {
+      let active = resultSuggestions.getActive();
+      if (active) {
+        let split = $(".pageTest #result .tribeResultChat .chat .input input")
+          .val()
+          .split(" ");
+        if (active.type === "emoji") {
+          split[split.length - 1] = `${active.to}`;
+        }
+        $(".pageTest #result .tribeResultChat .chat .input input").val(
+          split.join(" ") + " "
+        );
+        resultSuggestions.hide();
+      }
+    } else if (split.slice(0, 1) === ":") {
       split = split.replace(/:/g, "");
       if (split.length >= 2) {
         resultSuggestions.updateSuggestions("emoji", split);

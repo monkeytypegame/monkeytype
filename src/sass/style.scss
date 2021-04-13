@@ -716,6 +716,14 @@ a:hover {
       font-size: 1rem;
       color: var(--text-color);
     }
+
+    .buttons {
+      display: grid;
+      gap: 1rem;
+      &.twocol {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
   }
 }
 
@@ -3597,6 +3605,7 @@ key {
     }
   }
   .prelobby {
+    user-select: none;
     display: grid;
     grid-template-areas:
       "welcome welcome"
