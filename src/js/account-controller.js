@@ -309,9 +309,11 @@ firebase.auth().onAuthStateChanged(function (user) {
     $(".pageLogin .preloader").addClass("hidden");
     $("#menu .icon-button.account .text").text(displayName);
 
-    try {
+    // try {
+    if (Tribe.state >= 1) {
       Tribe.setName(displayName);
-    } catch {}
+    }
+    // } catch {}
 
     // showFavouriteThemesAtTheTop();
     CommandlineLists.updateThemeCommands();

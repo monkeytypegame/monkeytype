@@ -34,7 +34,7 @@ export let pageTransition = false;
 export let expectedVersion = "0.9.8";
 
 export let room = undefined;
-let name = undefined;
+export let name = undefined;
 let autoJoin = undefined;
 
 export function setAutoJoin(code) {
