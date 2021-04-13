@@ -1,5 +1,4 @@
 import * as DB from "./db";
-import * as Misc from "./misc";
 import * as Sound from "./sound";
 import * as TestUI from "./test-ui";
 import * as ChartController from "./chart-controller";
@@ -74,7 +73,6 @@ let defaultConfig = {
   flipTestColors: false,
   capsLockBackspace: false,
   layout: "default",
-  savedLayout: "default",
   confidenceMode: "off",
   indicateTypos: false,
   timerStyle: "mini",
@@ -87,7 +85,7 @@ let defaultConfig = {
   keymapMode: "off",
   keymapStyle: "staggered",
   keymapLegendStyle: "lowercase",
-  keymapLayout: "qwerty",
+  keymapLayout: "overrideSync",
   fontFamily: "Roboto_Mono",
   smoothLineScroll: false,
   alwaysShowDecimalPlaces: false,

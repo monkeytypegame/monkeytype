@@ -1,6 +1,5 @@
 import Config, * as UpdateConfig from "./config";
 import * as Notifications from "./notifications";
-import * as Misc from "./misc";
 import * as Caret from "./caret";
 import * as TestLogic from "./test-logic";
 import * as CustomText from "./custom-text";

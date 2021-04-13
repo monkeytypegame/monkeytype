@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -32498,7 +32486,7 @@
       "id": 5465
     },
     {
-      "text": "Human beings were never meant to participate in a worldwide social network comprised of billions of people. We were designed by evolution to be hunter-gatherers, with the mental capacity to interact and socialize with the other members of our tribe—a tribe made up of a few hundred other people at most. Interacting with thousands or even millions of other people on a daily basis was way too much for our ape-descended melons to handle. That was why social media had been gradually driving the entire population of the world insane since it emerged back around the turn of the century.",
+      "text": "Human beings were never meant to participate in a worldwide social network comprised of billions of people. We were designed by evolution to be hunter-gatherers, with the mental capacity to interact and socialize with the other members of our tribe - a tribe made up of a few hundred other people at most. Interacting with thousands or even millions of other people on a daily basis was way too much for our ape-descended melons to handle. That was why social media had been gradually driving the entire population of the world insane since it emerged back around the turn of the century.",
       "source": "Ready Player Two",
       "length": 586,
       "id": 5466

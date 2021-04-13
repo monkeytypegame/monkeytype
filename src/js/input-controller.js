@@ -457,7 +457,9 @@ function handleAlpha(event) {
     return;
   if (event.metaKey) return;
 
-  let originalEvent = event;
+  let originalEvent = {
+    code: event.code,
+  };
 
   event = LayoutEmulator.updateEvent(event);
 

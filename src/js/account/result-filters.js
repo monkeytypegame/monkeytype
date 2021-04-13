@@ -98,7 +98,7 @@ export function getFilter(group, filter) {
 
 export function loadTags(tags) {
   tags.forEach((tag) => {
-    defaultResultFilters[tag.id] = true;
+    defaultResultFilters.tags[tag.id] = true;
   });
 }
 
