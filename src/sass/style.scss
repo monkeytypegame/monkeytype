@@ -11,6 +11,8 @@
 :root {
   --roundness: 0.25rem;
   --font: "Roboto Mono";
+  scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
 }
 
 ::placeholder {
