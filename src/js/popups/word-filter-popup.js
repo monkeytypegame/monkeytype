@@ -38,7 +38,7 @@ async function filter(language) {
   let regincl = new RegExp(filterin, "i");
   let filterout = $("#wordFilterPopup .wordExcludeInput").val();
   filterout = Misc.escapeRegExp(filterout.trim());
-  filterout = filterout.replace(/s+/gi, "|");
+  filterout = filterout.replace(/\s+/gi, "|");
   let regexcl = new RegExp(filterout, "i");
   let filteredWords = [];
   let languageWordList = await Misc.getLanguage(language);
