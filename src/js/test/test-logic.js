@@ -439,7 +439,7 @@ export async function init() {
         }
       }
 
-      if (Funbox.active === "rAnDoMcAsE") {
+      if (Funbox.funboxSaved === "rAnDoMcAsE") {
         let randomcaseword = "";
         for (let i = 0; i < randomWord.length; i++) {
           if (i % 2 != 0) {
@@ -449,17 +449,17 @@ export async function init() {
           }
         }
         randomWord = randomcaseword;
-      } else if (Funbox.active === "gibberish") {
+      } else if (Funbox.funboxSaved === "gibberish") {
         randomWord = Misc.getGibberish();
-      } else if (Funbox.active === "58008") {
+      } else if (Funbox.funboxSaved === "58008") {
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
         randomWord = Misc.getNumbers(7);
-      } else if (Funbox.active === "specials") {
+      } else if (Funbox.funboxSaved === "specials") {
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
         randomWord = Misc.getSpecials();
-      } else if (Funbox.active === "ascii") {
+      } else if (Funbox.funboxSaved === "ascii") {
         UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
         randomWord = Misc.getASCII();
