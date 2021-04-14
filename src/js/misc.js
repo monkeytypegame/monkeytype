@@ -649,6 +649,10 @@ export function remove_non_ascii(str) {
   return str.replace(/[^\x20-\x7E]/g, "");
 }
 
+export function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function cleanTypographySymbols(textToClean) {
   var specials = {
     "“": '"', // &ldquo;	&#8220;
