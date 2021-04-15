@@ -469,8 +469,15 @@ export async function init() {
         randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
       }
       if (Config.numbers) {
-        if (Math.random() < 0.1) {
+        if (
+          Math.random() < 0.1 &&
+          i !== 0 &&
+          Misc.getLastChar(previousWord) !== "."
+        ) {
           randomWord = Misc.getNumbers(4);
+          if (i == wordsBound - 1) {
+            randomWord += ".";
+          }
         }
       }
 

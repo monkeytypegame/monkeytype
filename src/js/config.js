@@ -952,7 +952,12 @@ export function setQuoteLength(len, nosave, multipleMode) {
     }
     len = parseInt(len);
     if (multipleMode) {
-      if (!config.quoteLength.includes(len)) config.quoteLength.push(len);
+      if (!config.quoteLength.includes(len)) {
+        config.quoteLength.push(len);
+      } else {
+        if (config.quoteLength.length > 1)
+          config.quoteLength = config.quoteLength.filter((ql) => ql !== len);
+      }
     } else {
       config.quoteLength = [len];
     }
