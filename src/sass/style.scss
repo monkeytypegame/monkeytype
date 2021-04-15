@@ -2571,8 +2571,8 @@ key {
 
       #forgotPasswordButton {
         grid-area: forgotButton;
-        font-size: 0.5rem;
-        line-height: 0.5rem;
+        font-size: 0.75rem;
+        line-height: 0.75rem;
         height: fit-content;
         align-self: center;
         justify-self: right;
@@ -2582,7 +2582,7 @@ key {
         transition: 0.25s;
 
         &:hover {
-          color: var(--main-color);
+          color: var(--text-color);
         }
       }
 
@@ -3094,7 +3094,7 @@ key {
   float: right;
 
   &:hover {
-    color: var(--main-color);
+    color: var(--text-color);
   }
 
   .fas {
