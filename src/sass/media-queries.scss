@@ -1,0 +1,270 @@
+
+@media only screen and (max-width: 1050px) {
+  #centerContent {
+    .pageSettings .section.themes .buttons,
+    .pageSettings .section.language .buttons,
+    .pageSettings .section.layout .buttons,
+    .pageSettings .section.keymapLayout .buttons,
+    .pageSettings .section.keymapLegendStyle .buttons,
+    .pageSettings .section.fontFamily .buttons,
+    .pageSettings .section.funbox .buttons,
+    .pageSettings .section.keymapStyle .buttons,
+    .pageSettings .section.languageGroups .buttons
+     {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    #result .morestats {
+      gap: 1rem;
+      grid-template-rows: 1fr 1fr;
+    }
+  }
+  #supportMe {
+    width: 90vw !important;
+    .buttons {
+      .button {
+        .icon {
+          font-size: 3rem !important;
+          line-height: 3rem !important;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .settingsGroup.quickNav{
+    display: none;
+  }
+  #centerContent {
+    #top {
+      grid-template-areas:
+        "logo config"
+        "menu config";
+        grid-template-columns: auto auto;
+      .logo {
+        margin-bottom: 0;
+      }
+    }
+
+    #menu {
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      line-height: 0.8rem;
+
+      .icon-button {
+        padding: 0.25rem;
+      }
+    }
+  }
+  #bottom{
+    .leftright{
+      .left{
+        gap: 0.25rem 1rem;
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        grid-auto-flow: column;
+      }
+      .right{
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        gap: 0.25rem 1rem;
+      }
+    }
+  }
+
+  .pageAbout .section .supporters, .pageAbout .section .contributors{
+    grid-template-columns: 1fr 1fr 1fr;
+
+  }
+
+  .pageSettings .section.customBackgroundFilter {
+    .groups {
+      grid-template-columns: 1fr;
+    }
+    .saveContainer {
+      grid-column: -1/-2;
+    }
+  }
+
+  #commandLine,
+  #commandLineInput {
+    width: 600px !important;
+  }
+}
+
+@media only screen and (max-width: 650px) {
+  .pageSettings .section {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title title"
+      "text text"
+      "buttons buttons";
+
+    & > .text {
+      margin-bottom: 1rem;
+    }
+  }
+
+  #result {
+    .buttons {
+      grid-template-rows: 1fr 1fr;
+      #nextTestButton {
+        grid-column: 1/5;
+        width: 100%;
+        text-align: center;
+      }
+    }
+  }
+
+  #supportMe {
+    width: 80vw !important;
+    .buttons {
+      grid-template-columns: none !important;
+      .button {
+        grid-template-columns: auto auto;
+        align-items: center;
+        .icon {
+          font-size: 2rem !important;
+          line-height: 2rem !important;
+        }
+      }
+    }
+  }
+
+
+  #centerContent {
+    .pageSettings .section.themes .buttons,
+    .pageSettings .section.language .buttons,
+    .pageSettings .section.layout .buttons,
+    .pageSettings .section.keymapLayout .buttons,
+    .pageSettings .section.keymapLegendStyle .buttons,
+    .pageSettings .section.fontFamily .buttons,
+    .pageSettings .section.funbox .buttons,
+    .pageSettings .section.keymapStyle .buttons,
+    .pageSettings .section.languageGroups .buttons {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .pageAbout .section .supporters, .pageAbout .section .contributors{
+    grid-template-columns: 1fr 1fr;
+  }
+  #top .logo .bottom{
+    margin-top: 0;
+  }
+  #middle {
+    #result {
+      grid-template-areas:
+        "stats stats"
+        "chart chart"
+        "morestats morestats";
+      .stats {
+        grid-template-areas: "wpm acc";
+        gap: 4rem;
+      }
+      .stats.morestats {
+        grid-template-rows: 1fr 1fr 1fr;
+        gap: 1rem;
+      }
+    }
+  }
+  #commandLine,
+  #commandLineInput {
+    width: 500px !important;
+  }
+}
+
+
+@media only screen and (max-width: 500px) {
+
+  .pageAbout .section .supporters, .pageAbout .section .contributors{
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #top {
+    align-items: self-end;
+    .logo {
+      .bottom {
+        font-size: 1.75rem;
+        line-height: 1.75rem;
+        margin-top: 0;
+      }
+      .top {
+        display: none;
+      }
+    }
+    #menu {
+      .icon-button {
+        padding: 0;
+      }
+    }
+  }
+  #bottom{
+    .leftright{
+      .left{
+        gap: 0.25rem 1rem;
+        display: grid;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-auto-flow: column;
+      }
+      .right{
+        display: grid;
+        grid-template-rows: 1fr 1fr 1fr;
+        gap: 0.25rem 1rem;
+      }
+    }
+  }
+  #centerContent {
+    padding: 1rem;
+  }
+  #result {
+    .buttons {
+      grid-template-rows: 1fr 1fr 1fr;
+      #nextTestButton {
+        grid-column: 1/3;
+        width: 100%;
+        text-align: center;
+      }
+    }
+  }
+  #commandLine,
+  #commandLineInput {
+    width: 400px !important;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+
+  #top .logo .bottom{
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    margin-top: 0;
+  }
+
+  #top .config {
+    grid-gap: .25rem;
+    .group .buttons{
+      font-size: .65rem;
+      line-height: .65rem;
+    }
+  }
+
+  #bottom{
+    font-size: .65rem;
+  }
+
+  #commandLine,
+  #commandLineInput {
+    width: 300px !important;
+  }
+
+}
+
+@media (hover: none) and (pointer: coarse) {
+  #commandLineMobileButton {
+    display: block;
+  }
+}
