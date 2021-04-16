@@ -42,6 +42,12 @@
       "source": "Github - CodingTrain/QuadTree",
       "length": 494,
       "id": 6
+    },
+    {
+      "text": "canvas.parent('rgb-Canvas');\\nlet colors = [];\\nlet labels = [];\\nfor (let record of data.entries) {\\n\\tlet col = [record.r / 255, record.g / 255, record.b / 255];\\n\\tcolors.push(col);\\n\\tlabels.push(labelList.indexOf(record.label));\\n}",
+      "source": "GitHub - CodingTrain/ColorClassifer-TensorFlow.js",
+      "length": 236,
+      "id": 7
     }
   ]
 }

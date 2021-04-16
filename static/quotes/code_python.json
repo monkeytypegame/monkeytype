@@ -36,6 +36,12 @@
       "source": "GitHub -  GauthamGoli/rar-Password-Cracker",
       "id": 5,
       "length": 444
+    },
+    {
+      "text": "soup = BeautifulSoup(html, features='lxml')\\nprint(soup.h1)\\nprint(line_break, soup.p)\\n\\nall_href = soup.find_all('a')\\nall_href = [l['href'] for l in all_href]\\nprint(line_break, all_href)",
+      "source": "GitHub - MorvanZhou/easy-scraping-tutorial",
+      "id": 6,
+      "length": 178
     }
   ]
 }
