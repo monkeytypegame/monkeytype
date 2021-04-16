@@ -2644,14 +2644,28 @@ key {
   display: grid;
   gap: 2rem;
 
+  .created{
+    text-align: center;
+    color: var(--sub-color);
+    a{
+      text-decoration: none;
+    }
+  }
+
   .section {
     display: grid;
-    gap: 0.5rem;
+    gap: 0.25rem;
 
-    .supporters {
+    .title{
+      font-size: 2rem;
+      line-height: 2rem;
+      color: var(--sub-color);
+      margin: 1rem 0;
+    }
+
+    .supporters, .contributors {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
-      justify-items: center;
       gap: 0.25rem;
       color: var(--text-color);
     }
