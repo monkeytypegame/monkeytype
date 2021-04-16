@@ -89,7 +89,7 @@
 
   #commandLine,
   #commandLineInput {
-    width: 500px !important;
+    width: 600px !important;
   }
 }
 
@@ -132,10 +132,6 @@
     }
   }
 
-  #commandLine,
-  #commandLineInput {
-    width: 400px !important;
-  }
 
   #centerContent {
     .pageSettings .section.themes .buttons,
@@ -174,6 +170,10 @@
         gap: 1rem;
       }
     }
+  }
+  #commandLine,
+  #commandLineInput {
+    width: 500px !important;
   }
 }
 
@@ -230,6 +230,10 @@
       }
     }
   }
+  #commandLine,
+  #commandLineInput {
+    width: 400px !important;
+  }
 }
 
 @media only screen and (max-width: 400px) {
@@ -250,6 +254,11 @@
 
   #bottom{
     font-size: .65rem;
+  }
+
+  #commandLine,
+  #commandLineInput {
+    width: 300px !important;
   }
 
 }
