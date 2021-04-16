@@ -754,7 +754,7 @@ $(document).keydown(function (event) {
   ) {
     TestUI.focusWords();
     wordsFocused = true;
-    // if (Config.showOutOfFocusWarning) return;
+    if (Config.showOutOfFocusWarning) return;
   }
 
   //tab

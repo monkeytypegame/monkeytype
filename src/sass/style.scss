@@ -126,7 +126,7 @@ body {
   padding: 0;
   min-height: 100vh;
   font-family: var(--font);
-  color: var(--main-color);
+  color: var(--text-color);
   overflow-x: hidden;
   background: var(--bg-color);
 }
@@ -275,7 +275,7 @@ a {
 }
 
 a:hover {
-  color: var(--main-color);
+  color: var(--text-color);
 }
 
 .merchBanner {
@@ -1213,7 +1213,7 @@ a:hover {
     input {
       background: var(--bg-color);
       padding: 1rem;
-      color: var(--main-color);
+      color: var(--text-color);
       border: none;
       outline: none;
       font-size: 1rem;
@@ -1230,7 +1230,7 @@ a:hover {
     }
 
     .listTitle {
-      color: var(--main-color);
+      color: var(--text-color);
       padding: 0.5rem 1rem;
       font-size: 0.75rem;
       line-height: 0.75rem;
@@ -1258,14 +1258,14 @@ a:hover {
         }
 
         &.activeMouse {
-          color: var(--text-color);
-          background: var(--sub-color);
+          color: var(--bg-color);
+          background: var(--text-color);
           cursor: pointer;
         }
 
         &.activeKeyboard {
           color: var(--bg-color);
-          background: var(--main-color);
+          background: var(--text-color);
         }
 
         // &:hover {
@@ -1561,40 +1561,15 @@ a:hover {
   width: fit-content;
   width: -moz-fit-content;
 
-  /*   transition: 0.25s; */
-  .button.discord {
-    &.discord {
-      position: relative;
-
-      &::after {
-        transition: 0.25s;
-        width: 0.5rem;
-        height: 0.5rem;
-        content: "";
-        position: absolute;
-        background: var(--main-color);
-        border-radius: 1rem;
-        top: 0.25rem;
-        right: 0.25rem;
-        border: 2px solid var(--bg-color);
-      }
-
-      &.dotHidden::after {
-        background: transparent;
-        border-color: transparent;
-      }
-    }
-  }
-
   .icon-button {
-    .icon {
-      display: grid;
-      align-items: center;
-      justify-items: center;
-      text-align: center;
-      width: 1.25rem;
-      height: 1.25rem;
-    }
+    //   .icon {
+    //     display: grid;
+    //     align-items: center;
+    //     justify-items: center;
+    //     text-align: center;
+    //     width: 1.25rem;
+    //     height: 1.25rem;
+    //   }
 
     .text {
       font-size: 0.65rem;
@@ -1603,10 +1578,10 @@ a:hover {
       margin-left: 0.25rem;
     }
 
-    &:hover {
-      cursor: pointer;
-      color: var(--main-color);
-    }
+    //   &:hover {
+    //     cursor: pointer;
+    //     color: var(--main-color);
+    //   }
   }
 
   .separator {
@@ -1793,7 +1768,7 @@ key {
   #supportMeButton {
     transition: 0.25s;
     &:hover {
-      color: var(--main-color);
+      color: var(--text-color);
       cursor: pointer;
     }
   }
@@ -1818,7 +1793,7 @@ key {
         transition: 0.25s;
         text-decoration: none;
         &:hover {
-          color: var(--main-color);
+          color: var(--text-color);
           cursor: pointer;
         }
       }
@@ -1826,7 +1801,7 @@ key {
         transition: 0.25s;
         text-decoration: none;
         &:hover {
-          color: var(--main-color);
+          color: var(--text-color);
           cursor: pointer;
         }
       }
@@ -1838,7 +1813,7 @@ key {
     transition: 0.25s;
     &:hover {
       cursor: pointer;
-      color: var(--main-color);
+      color: var(--text-color);
     }
   }
 }
@@ -2596,8 +2571,8 @@ key {
 
       #forgotPasswordButton {
         grid-area: forgotButton;
-        font-size: 0.5rem;
-        line-height: 0.5rem;
+        font-size: 0.75rem;
+        line-height: 0.75rem;
         height: fit-content;
         align-self: center;
         justify-self: right;
@@ -2607,7 +2582,7 @@ key {
         transition: 0.25s;
 
         &:hover {
-          color: var(--main-color);
+          color: var(--text-color);
         }
       }
 
@@ -2713,7 +2688,7 @@ key {
     transition: 0.25s;
 
     &:hover {
-      color: var(--main-color);
+      color: var(--text-color);
     }
 
     .fas {
@@ -2737,7 +2712,7 @@ key {
       justify-content: space-between;
       a {
         text-decoration: none;
-        opacity: 0.5;
+        // opacity: 0.5;
         &:hover {
           opacity: 1;
         }
@@ -2759,7 +2734,7 @@ key {
       background: var(--error-color);
       color: #eee;
       &:hover {
-        background: var(--main-color);
+        background: var(--text-color);
         color: var(--bg-color);
       }
     }
@@ -2866,31 +2841,19 @@ key {
     }
 
     &.discordIntegration {
-      #unlinkDiscordButton {
-        margin-top: 0.5rem;
-        font-size: 0.75rem;
-      }
-
-      .code {
-        grid-area: buttons;
-        justify-content: center;
-        display: grid;
-
-        .top {
-          font-size: 1rem;
-          line-height: 1rem;
-          color: var(--sub-color);
-        }
-
-        .bottom {
-          font-size: 2rem;
-          line-height: 2rem;
-        }
-      }
-
       .info {
         grid-area: buttons;
         text-align: center;
+        color: var(--main-color);
+      }
+
+      #unlinkDiscordButton {
+        margin-top: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--sub-color);
+        &:hover {
+          color: var(--text-color);
+        }
       }
 
       .howto {
@@ -2931,15 +2894,14 @@ key {
             color: var(--sub-color);
 
             &:focus {
-              background: var(--sub-color);
-              color: var(--main-color);
+              color: var(--sub-color);
               border: none;
               outline: none;
             }
 
             &:hover {
               cursor: pointer;
-              color: var(--main-color);
+              color: var(--text-color);
             }
           }
         }
@@ -2969,7 +2931,7 @@ key {
         &:hover,
         &:focus {
           color: var(--bg-color);
-          background: var(--main-color);
+          background: var(--text-color);
           outline: none;
         }
       }
@@ -3132,7 +3094,7 @@ key {
   float: right;
 
   &:hover {
-    color: var(--main-color);
+    color: var(--text-color);
   }
 
   .fas {
@@ -3185,6 +3147,7 @@ key {
   .preloader {
     font-size: 2rem;
     justify-self: center;
+    color: var(--main-color);
   }
 
   .doublegroup {
@@ -3242,7 +3205,7 @@ key {
         &:hover,
         &:focus {
           color: var(--bg-color);
-          background: var(--main-color);
+          background: var(--text-color);
         }
       }
     }
@@ -3347,7 +3310,7 @@ key {
 
   #resultEditTags:hover {
     cursor: pointer;
-    color: var(--main-color);
+    color: var(--text-color);
     opacity: 1 !important;
   }
 }
@@ -3465,27 +3428,50 @@ key {
     margin-right: 0.5rem;
   }
 
-  &.active {
-    background: var(--main-color);
+  &:hover {
     color: var(--bg-color);
+    background: var(--text-color);
+    outline: none;
   }
-
-  &:hover,
   &:focus {
-    color: var(--bg-color);
-    background: var(--main-color);
+    color: var(--text-color);
+    background: rgba(0, 0, 0, 0.1);
     outline: none;
   }
 
+  &.active {
+    background: var(--main-color);
+    color: var(--bg-color);
+    &:hover {
+      // color: var(--text-color);
+      background: var(--text-color);
+      outline: none;
+    }
+    &:focus {
+      color: var(--bg-color);
+      background: var(--main-color);
+      outline: none;
+    }
+  }
+
   &.disabled {
+    opacity: 0.5;
+    cursor: default;
     &:hover {
       color: var(--sub-color);
-      background: var(--bg-color);
-      cursor: default;
+      background: rgba(0, 0, 0, 0.1);
+      outline: none;
     }
-    color: var(--sub-color);
-    background: var(--bg-color);
+  }
+
+  &.disabled.active {
+    opacity: 0.5;
     cursor: default;
+    &:hover {
+      color: var(--bg-color);
+      background: var(--main-color);
+      outline: none;
+    }
   }
 }
 
@@ -3497,13 +3483,13 @@ key {
   cursor: pointer;
   outline: none;
 
-  &:hover,
-  &:focus {
+  &.active {
     color: var(--main-color);
   }
 
-  &.active {
-    color: var(--main-color);
+  &:hover,
+  &:focus {
+    color: var(--text-color);
   }
 }
 
@@ -3517,11 +3503,11 @@ key {
   cursor: pointer;
 
   &:hover {
-    color: var(--main-color);
+    color: var(--text-color);
   }
   &:focus {
-    background: var(--sub-color);
-    color: var(--main-color);
+    // background: var(--sub-color);
+    color: var(--sub-color);
     border: none;
     outline: none;
   }
@@ -3543,7 +3529,7 @@ key {
   color: var(--sub-color);
   transition: 0.25s;
   &:hover {
-    color: var(--main-color);
+    color: var(--text-color);
   }
 }
 
