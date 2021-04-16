@@ -1776,7 +1776,7 @@ key {
 
   .leftright {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto auto;
     gap: 1rem;
     a {
       text-decoration: none;
@@ -3618,6 +3618,19 @@ key {
       .icon-button {
         padding: 0.25rem;
       }
+    }
+  }
+
+  .centerContent .bottom .leftright{
+    .left{
+      gap: 0.25rem 1rem;
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      grid-auto-flow: column;
+    }
+    .right{
+      display: grid;
+      gap: 0.25rem 1rem;
     }
   }
 
