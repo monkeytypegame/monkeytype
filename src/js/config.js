@@ -699,6 +699,7 @@ export function setCaretStyle(caretStyle, nosave) {
   $("#caret").removeClass("outline");
   $("#caret").removeClass("block");
   $("#caret").removeClass("carrot");
+  $("#caret").removeClass("banana");
 
   if (caretStyle == "off") {
     $("#caret").addClass("off");
