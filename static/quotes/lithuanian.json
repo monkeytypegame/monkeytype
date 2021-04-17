@@ -104,7 +104,7 @@
       "id": 16
     },
     {
-      "text": "Angelas nusklendė žemyn, praskyręs rūką įleido sielą vidun: eik, šį kartą tau bus lemta ilgiau Žemėje užtrukti – kol pastatysi šventovę.",
+      "text": "Angelas nusklendė žemyn, praskyręs rūką įleido sielą vidun: eik, šį kartą tau bus lemta ilgiau Žemėje užtrukti - kol pastatysi šventovę.",
       "source": "Lietuvos nacionalinis diktantas - Milinė",
       "length": 21,
       "id": 17
@@ -120,6 +120,12 @@
       "source": "Dievų miškas",
       "length": 23,
       "id": 19
+    }
+    {
+      "text": "Dviratukas mano niekaip nesustoja. Aš minu į priekį ir dainas dainuoju.",
+      "source": "Dviratukas",
+      "length": 11,
+      "id": 20
     }
   ]
 }
