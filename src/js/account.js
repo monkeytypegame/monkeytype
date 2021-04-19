@@ -288,6 +288,7 @@ let totalSecondsFiltered = 0;
 
 export function update() {
   function cont() {
+    console.log("updating account page");
     ThemeColors.update();
     ChartController.accountHistory.updateColors();
     ChartController.accountActivity.updateColors();
