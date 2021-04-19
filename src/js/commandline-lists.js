@@ -539,6 +539,22 @@ let commandsPaceCaretStyle = {
         UpdateConfig.setPaceCaretStyle("underline");
       },
     },
+    {
+      id: "setPaceCaretStyleCarrot",
+      display: "carrot",
+      visible: false,
+      exec: () => {
+        UpdateConfig.setPaceCaretStyle("carrot");
+      },
+    },
+    {
+      id: "setPaceCaretStyleBanana",
+      display: "banana",
+      visible: false,
+      exec: () => {
+        UpdateConfig.setPaceCaretStyle("banana");
+      },
+    },
   ],
 };
 

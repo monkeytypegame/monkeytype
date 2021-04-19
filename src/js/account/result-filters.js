@@ -62,7 +62,7 @@ let defaultResultFilters = {
   },
 };
 
-export let filters;
+export let filters = defaultResultFilters;
 
 Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
   let languages = values[0];
@@ -73,7 +73,7 @@ Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
   funboxModes.forEach((funbox) => {
     defaultResultFilters.funbox[funbox.name] = true;
   });
-  filters = defaultResultFilters;
+  // filters = defaultResultFilters;
 });
 
 export function getFilters() {
@@ -110,7 +110,7 @@ export function load() {
   // let newTags = $.cookie("activeTags");
   try {
     let newResultFilters = window.localStorage.getItem("resultFilters");
-    if (newResultFilters !== undefined && newResultFilters !== "") {
+    if (newResultFilters != undefined && newResultFilters !== "") {
       filters = JSON.parse(newResultFilters);
       save();
     } else {
@@ -118,6 +118,7 @@ export function load() {
       save();
     }
   } catch {
+    console.log("error in loading result filters");
     filters = defaultResultFilters;
     save();
   }

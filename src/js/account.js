@@ -23,6 +23,7 @@ export function getDataAndInit() {
   DB.initSnapshot()
     .then(async (e) => {
       let snap = DB.getSnapshot();
+      $("#menu .icon-button.account .text").text(snap.name);
       if (snap === null) {
         throw "Missing db snapshot. Client likely could not connect to the backend.";
       }
@@ -287,6 +288,7 @@ let totalSecondsFiltered = 0;
 
 export function update() {
   function cont() {
+    console.log("updating account page");
     ThemeColors.update();
     ChartController.accountHistory.updateColors();
     ChartController.accountActivity.updateColors();
