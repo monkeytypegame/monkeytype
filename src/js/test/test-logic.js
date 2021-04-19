@@ -770,6 +770,11 @@ export function restart(
         opacity: 1,
       });
       // resetPaceCaret();
+
+      if (Tribe.state < 8 && !Config.quickTab) {
+        $(".pageTest #restartTestButton").removeClass("hidden");
+      }
+
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
