@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-<!-- **DID YOU MAKE sURE To CLEAR CACHE BEFORE OPENING AN ISSUE?**
+<!-- **DID YOU MAKE SURE TO CLEAR CACHE BEFORE OPENING AN ISSUE?**
 Sometimes your browser has old files cached and the bug you are experiencing might be already fixed, or is just a side effect of a new update. If you don't know how to do that, this website should help: https://www.pcmag.com/how-to/how-to-clear-your-cache-on-any-browser -->
 
 
