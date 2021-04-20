@@ -154,7 +154,7 @@ $(document).on("keyup", "#simplePopupWrapper input", (e) => {
 });
 
 $(document).on("keyup", (e) => {
-  if (e.key === "Enter") {
+  if (e.key === "Enter" && !e.shiftKey) {
     if (!$("#simplePopupWrapper").hasClass("hidden")) {
       let id = $("#simplePopup").attr("popupId");
       list[id].buttons.forEach((button, index) => {
