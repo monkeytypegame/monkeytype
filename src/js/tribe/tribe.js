@@ -43,6 +43,7 @@ export function setAutoJoin(code) {
 }
 
 let shouldScrollChat = true;
+let lastMessageTimestamp = 0;
 
 let lobbySuggestions;
 let resultSuggestions;
@@ -730,6 +731,25 @@ export function scrollChat() {
   }
 }
 
+function limitChatMessages() {
+  let messages1 = $(".pageTribe .lobby .chat .messages .message");
+  let messages2 = $(
+    ".pageTest #result .tribeResultChat .chat .messages .message"
+  );
+
+  let limit = 100;
+
+  //they should be in sync so it doesnt matter if i check one length
+  if (messages1 <= limit) return;
+
+  let del = messages1.length - limit;
+
+  for (let i = 0; i < del; i++) {
+    $(messages1[i]).remove();
+    $(messages2[i]).remove();
+  }
+}
+
 // function updateAllGraphs(graphs, max) {
 //   try {
 //     graphs.forEach((graph) => {
@@ -1262,6 +1282,7 @@ socket.on("mp_chat_message", async (data) => {
     <div class="${cls}">${author}<div class="text">${data.message}</div></div>
   `);
 
+  limitChatMessages();
   scrollChat();
 });
 
@@ -1873,6 +1894,8 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
       Notifications.add("Message cannot be longer than 512 characters.", 0);
       return;
     }
+    if (performance.now() < lastMessageTimestamp + 500) return;
+    lastMessageTimestamp = performance.now();
     sendIsTypingUpdate(false);
     socket.emit("mp_chat_message", {
       isSystem: false,
@@ -1903,6 +1926,8 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
       Notifications.add("Message cannot be longer than 512 characters.", 0);
       return;
     }
+    if (performance.now() < lastMessageTimestamp + 500) return;
+    lastMessageTimestamp = performance.now();
     sendIsTypingUpdate(false);
     socket.emit("mp_chat_message", {
       isSystem: false,
