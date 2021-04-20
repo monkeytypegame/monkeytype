@@ -1569,6 +1569,9 @@ socket.on("mp_room_state_update", (data) => {
   if (data.newState === 8) {
     Matchmaking.hideLeaveQueueButton();
   }
+  if(data.newState === 19 && room.isReady) {
+    Notifications.add("Race starting",0,1);
+  }
 });
 
 socket.on("mp_room_user_test_progress_update", (data) => {

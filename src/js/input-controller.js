@@ -776,7 +776,7 @@ $(document).keydown(function (event) {
     // if (Config.showOutOfFocusWarning) return;
   }
 
-  if (Tribe.state == 20) {
+  if (Tribe.state == 20 || Tribe.state == 19) {
     event.preventDefault();
     return;
   }
