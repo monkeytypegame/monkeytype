@@ -3450,6 +3450,7 @@ key {
     text-align: center;
     color: var(--sub-color);
     display: grid;
+    justify-items: center;
     justify-content: center;
     .code {
       width: min-content;
