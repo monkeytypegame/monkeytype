@@ -2067,6 +2067,14 @@ $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").click((e) => {
 });
 
 $(".pageTest #result #queueAgainButton").click((e) => {
+  queueAgain(e);
+});
+
+$(".pageTest #result #queueAgainButton").keypress((e) => {
+  if (e.key === "Enter" && !e.shiftKey) queueAgain(e);
+});
+
+function queueAgain(e) {
   if (state >= 6 && state <= 8) return;
   if ($(e.currentTarget).hasClass("disabled")) return;
   let queue = Matchmaking.getQ();
@@ -2085,7 +2093,7 @@ $(".pageTest #result #queueAgainButton").click((e) => {
     Matchmaking.showLeaveQueueButton();
     resetResult();
   }, 1000);
-});
+}
 
 $(".pageTribe .prelobby .matchmaking .leaveMatchmakingButton").click((e) => {
   if (state === 6) {
