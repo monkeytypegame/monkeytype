@@ -23,6 +23,7 @@ export function getDataAndInit() {
   DB.initSnapshot()
     .then(async (e) => {
       let snap = DB.getSnapshot();
+      $("#menu .icon-button.account .text").text(snap.name);
       if (snap === null) {
         throw "Missing db snapshot. Client likely could not connect to the backend.";
       }
@@ -64,56 +65,57 @@ export function getDataAndInit() {
       if (snap.refactored === false) {
         CloudFunctions.removeSmallTests({ uid: user.uid });
       }
-      if (!Config.changedBeforeDb) {
-        if (Config.cookieConfig === null) {
+      if (!UpdateConfig.changedBeforeDb) {
+        if (Config.localStorageConfig === null) {
           AccountButton.loading(false);
           UpdateConfig.apply(DB.getSnapshot().config);
           Settings.update();
-          UpdateConfig.saveToCookie(true);
+          UpdateConfig.saveToLocalStorage(true);
           TestLogic.restart(false, true);
         } else if (DB.getSnapshot().config !== undefined) {
           //loading db config, keep for now
-          // let configsDifferent = false;
-          // Object.keys(config).forEach((key) => {
-          //   if (!configsDifferent) {
-          //     try {
-          //       if (key !== "resultFilters") {
-          //         if (Array.isArray(config[key])) {
-          //           config[key].forEach((arrval, index) => {
-          //             if (arrval != DB.getSnapshot().config[key][index]) {
-          //               configsDifferent = true;
-          //               console.log(
-          //                 `.config is different: ${arrval} != ${DB.getSnapshot().config[key][index]
-          //                 }`
-          //               );
-          //             }
-          //           });
-          //         } else {
-          //           if (config[key] != DB.getSnapshot().config[key]) {
-          //             configsDifferent = true;
-          //             console.log(
-          //               `..config is different ${key}: ${config[key]} != ${DB.getSnapshot().config[key]
-          //               }`
-          //             );
-          //           }
-          //         }
-          //       }
-          //     } catch (e) {
-          //       console.log(e);
-          //       configsDifferent = true;
-          //       console.log(`...config is different: ${e.message}`);
-          //     }
-          //   }
-          // });
-          // if (configsDifferent) {
-          //   console.log("applying config from db");
-          //   AccountButton.loading(false);
-          //   config = DB.getSnapshot().config;
-          //   applyConfig(config);
-          //   Settings.update();
-          //   saveConfigToCookie(true);
-          //   TestLogic.restart(false, true);
-          // }
+          let configsDifferent = false;
+          Object.keys(Config).forEach((key) => {
+            if (!configsDifferent) {
+              try {
+                if (key !== "resultFilters") {
+                  if (Array.isArray(Config[key])) {
+                    Config[key].forEach((arrval, index) => {
+                      if (arrval != DB.getSnapshot().config[key][index]) {
+                        configsDifferent = true;
+                        console.log(
+                          `.config is different: ${arrval} != ${
+                            DB.getSnapshot().config[key][index]
+                          }`
+                        );
+                      }
+                    });
+                  } else {
+                    if (Config[key] != DB.getSnapshot().config[key]) {
+                      configsDifferent = true;
+                      console.log(
+                        `..config is different ${key}: ${Config[key]} != ${
+                          DB.getSnapshot().config[key]
+                        }`
+                      );
+                    }
+                  }
+                }
+              } catch (e) {
+                console.log(e);
+                configsDifferent = true;
+                console.log(`...config is different: ${e.message}`);
+              }
+            }
+          });
+          if (configsDifferent) {
+            console.log("applying config from db");
+            AccountButton.loading(false);
+            UpdateConfig.apply(DB.getSnapshot().config);
+            Settings.update();
+            UpdateConfig.saveToLocalStorage(true);
+            TestLogic.restart(false, true);
+          }
         }
         UpdateConfig.setDbConfigLoaded(true);
       } else {
@@ -134,7 +136,7 @@ export function getDataAndInit() {
       AccountButton.loading(false);
       ResultFilters.updateTags();
       CommandlineLists.updateTagCommands();
-      TagController.loadActiveFromCookie();
+      TagController.loadActiveFromLocalStorage();
       ResultTagsPopup.updateButtons();
       Settings.showAccountSection();
     })
@@ -286,6 +288,7 @@ let totalSecondsFiltered = 0;
 
 export function update() {
   function cont() {
+    console.log("updating account page");
     ThemeColors.update();
     ChartController.accountHistory.updateColors();
     ChartController.accountActivity.updateColors();

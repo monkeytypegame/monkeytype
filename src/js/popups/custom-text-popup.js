@@ -71,7 +71,7 @@ $(`${popup} .inputs .check input`).change(() => {
 
 $(`${popup} textarea`).keypress((e) => {
   if (e.code === "Enter" && e.ctrlKey) {
-    $(`${popup} .button`).click();
+    $(`${popup} .button.apply`).click();
   }
 });
 

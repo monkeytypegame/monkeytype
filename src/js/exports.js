@@ -14,4 +14,4 @@ global.config = Config;
 // global.addnotif = Notifications.add;
 global.link = AccountController.linkWithGoogle;
 
-global.filters = ResultFilters.filters;
+global.filters = ResultFilters.getFilters();

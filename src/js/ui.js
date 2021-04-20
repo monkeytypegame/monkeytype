@@ -1,6 +1,5 @@
 import Config, * as UpdateConfig from "./config";
 import * as Notifications from "./notifications";
-import * as Misc from "./misc";
 import * as Caret from "./caret";
 import * as TestLogic from "./test-logic";
 import * as CustomText from "./custom-text";
@@ -16,6 +15,7 @@ import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Tribe from "./tribe";
 import * as TribeOnlineStats from "./tribe-online-stats";
+import * as Funbox from "./funbox";
 
 export let pageTransition = false;
 
@@ -154,6 +154,7 @@ export function changePage(page, tribe = false) {
     } else {
       TestLogic.restart(undefined, undefined, undefined, tribe);
     }
+    Funbox.activate(Funbox.funboxSaved, Funbox.modeSaved);
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();
@@ -163,6 +164,7 @@ export function changePage(page, tribe = false) {
       $(".page").removeClass("active");
       $(".page.pageAbout").addClass("active");
     });
+    Funbox.activate("none", null);
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "settings") {
@@ -174,6 +176,7 @@ export function changePage(page, tribe = false) {
       $(".page").removeClass("active");
       $(".page.pageSettings").addClass("active");
     });
+    Funbox.activate("none", null);
     Settings.update();
     TestConfig.hide();
     SignOutButton.hide();
@@ -197,6 +200,7 @@ export function changePage(page, tribe = false) {
           SignOutButton.show();
         }
       );
+      Funbox.activate("none", null);
       Account.update();
       TestConfig.hide();
     }
@@ -212,6 +216,7 @@ export function changePage(page, tribe = false) {
         $(".page").removeClass("active");
         $(".page.pageLogin").addClass("active");
       });
+      Funbox.activate("none", null);
       TestConfig.hide();
       SignOutButton.hide();
     }
@@ -277,12 +282,12 @@ window.addEventListener("keydown", function (e) {
 
 $(".merchBanner a").click((event) => {
   $(".merchBanner").remove();
-  Misc.setCookie("merchbannerclosed", true, 365);
+  window.localStorage.setItem("merchbannerclosed", true);
 });
 
 $(".merchBanner .fas").click((event) => {
   $(".merchBanner").remove();
-  Misc.setCookie("merchbannerclosed", true, 365);
+  window.localStorage.setItem("merchbannerclosed", true);
   Notifications.add(
     "Won't remind you anymore. Thanks for continued support <3",
     0,

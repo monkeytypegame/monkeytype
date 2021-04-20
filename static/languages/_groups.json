@@ -32,6 +32,10 @@
     "languages": ["portuguese"]
   },
   {
+    "name": "lithuanian",
+    "languages": ["lithuanian", "lithuanian_1k"]
+  },
+  {
     "name": "indonesian",
     "languages": ["indonesian", "indonesian_1k"]
   },
@@ -65,7 +69,7 @@
   },
   {
     "name": "slovak",
-    "languages": ["slovak"]
+    "languages": ["slovak", "slovak_1k"]
   },
   {
     "name": "slovenian",
@@ -142,6 +146,10 @@
   {
     "name": "maori",
     "languages": ["maori_1k"]
+  },
+  {
+    "name": "catalan",
+    "languages": ["catalan", "catalan_1k"]
   },
   {
     "name": "code",

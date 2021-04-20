@@ -444,7 +444,7 @@ export async function init(mp = false) {
         }
       }
 
-      if (Funbox.active === "rAnDoMcAsE") {
+      if (Funbox.funboxSaved === "rAnDoMcAsE") {
         let randomcaseword = "";
         for (let i = 0; i < randomWord.length; i++) {
           if (i % 2 != 0) {
@@ -454,7 +454,7 @@ export async function init(mp = false) {
           }
         }
         randomWord = randomcaseword;
-      } else if (Funbox.active === "gibberish") {
+      } else if (Funbox.funboxSaved === "gibberish") {
         randomWord = Misc.getGibberish();
       } else if (Funbox.active === "58008") {
         UpdateConfig.setPunctuation(false, true, mp);
@@ -474,8 +474,15 @@ export async function init(mp = false) {
         randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
       }
       if (Config.numbers) {
-        if (Math.random() < 0.1) {
+        if (
+          Math.random() < 0.1 &&
+          i !== 0 &&
+          Misc.getLastChar(previousWord) !== "."
+        ) {
           randomWord = Misc.getNumbers(4);
+          if (i == wordsBound - 1) {
+            randomWord += ".";
+          }
         }
       }
 
@@ -581,6 +588,9 @@ export async function init(mp = false) {
   // } else {
   TestUI.showWords();
   // }
+  if ($(".pageTest").hasClass("active")) {
+    Funbox.activate();
+  }
 }
 
 export function restart(
@@ -708,6 +718,7 @@ export function restart(
         input.reset();
         PaceCaret.init();
         TestUI.showWords();
+        Funbox.activate();
       }
       if (Tribe.state < 6) {
         Tribe.resetRace();
@@ -945,6 +956,7 @@ export function finish(difficultyFailed = false, mp_outOfTime = false) {
   LiveAcc.hide();
   TimerProgress.hide();
   Keymap.hide();
+  Funbox.activate("none", null);
   let stats = TestStats.calculateStats();
   if (stats === undefined) {
     stats = {
@@ -1714,8 +1726,8 @@ export function finish(difficultyFailed = false, mp_outOfTime = false) {
   if (Config.blindMode) {
     testType += "<br>blind";
   }
-  if (Funbox.active !== "none") {
-    testType += "<br>" + Funbox.active.replace(/_/g, " ");
+  if (Funbox.funboxSaved !== "none") {
+    testType += "<br>" + Funbox.funboxSaved.replace(/_/g, " ");
   }
   if (Config.difficulty == "expert") {
     testType += "<br>expert";
@@ -1770,6 +1782,33 @@ export function finish(difficultyFailed = false, mp_outOfTime = false) {
     $("#result .stats .source .bottom").html(randomQuote.source);
   } else {
     $("#result .stats .source").addClass("hidden");
+  }
+
+  if (Funbox.funboxSaved !== "none") {
+    ChartController.result.options.annotation.annotations.push({
+      enabled: false,
+      type: "line",
+      mode: "horizontal",
+      scaleID: "wpm",
+      value: 0,
+      borderColor: "transparent",
+      borderWidth: 1,
+      borderDash: [2, 2],
+      label: {
+        backgroundColor: "transparent",
+        fontFamily: Config.fontFamily.replace(/_/g, " "),
+        fontSize: 11,
+        fontStyle: "normal",
+        fontColor: ThemeColors.sub,
+        xPadding: 6,
+        yPadding: 6,
+        cornerRadius: 3,
+        position: "left",
+        enabled: true,
+        content: `${Funbox.funboxSaved}`,
+        yAdjust: -11,
+      },
+    });
   }
 
   ChartController.result.options.scales.yAxes[0].ticks.max = maxChartVal;

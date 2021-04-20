@@ -5,6 +5,11 @@
     "textColor": "#eee"
   },
   {
+    "name": "muted",
+    "bgColor": "#525252",
+    "textColor": "#B1E4E3"
+  },
+  {
     "name": "dark_magic_girl",
     "bgColor": "#091f2c",
     "textColor": "#a288d9"
@@ -68,6 +73,11 @@
     "name": "metropolis",
     "bgColor": "#0f1f2c",
     "textColor": "#56c3b7"
+  },
+  {
+    "name": "mountain",
+    "bgColor": "#0f0f0f",
+    "textColor": "#e7e7e7"
   },
   {
     "name": "laser",
