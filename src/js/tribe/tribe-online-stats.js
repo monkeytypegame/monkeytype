@@ -1,4 +1,5 @@
 import * as Tribe from "./tribe";
+import * as Notifications from "./notifications";
 
 export let inQueueNumbers = [0, 0, 0, 0];
 
@@ -50,14 +51,18 @@ export function updateRaces(races) {
   ).text(`Rooms: ${races.private}`);
 }
 
+let to = null;
+
 export function refresh() {
   showLoading();
   Tribe.socket.emit("mp_get_online_stats");
   if (
     $(".pageTribe").hasClass("active") &&
-    !$(".pageTribe .prelobby").hasClass("hidden")
+    !$(".pageTribe .prelobby").hasClass("hidden") &&
+    to == null
   ) {
-    setTimeout(() => {
+    to = setTimeout(() => {
+      to = null;
       refresh();
     }, 15000);
   }

@@ -15,6 +15,7 @@ import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Tribe from "./tribe";
+import * as TribeOnlineStats from "./tribe-online-stats";
 
 export let pageTransition = false;
 
@@ -235,6 +236,7 @@ export function changePage(page, tribe = false) {
               Tribe.init();
             }
           }
+          TribeOnlineStats.refresh();
         },
         () => {
           TestConfig.show();
