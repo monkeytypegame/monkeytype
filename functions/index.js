@@ -1383,7 +1383,7 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
     //   .then((user) => {
     //     return user.emailVerified;
     //   });
-    emailVerified = true;
+    // emailVerified = true;
 
     // if (obj.funbox === "nospace") {
     //   response.status(200).send({ data: { resultCode: -1 } });
@@ -2342,8 +2342,15 @@ exports.checkLeaderboards = functions.https.onRequest(
       return;
     }
 
+    let emailVerified = await admin
+      .auth()
+      .getUser(request.uid)
+      .then((user) => {
+        return user.emailVerified;
+      });
+
     try {
-      if (request.emailVerified === false) {
+      if (emailVerified === false) {
         response.status(200).send({
           data: {
             needsToVerifyEmail: true,
