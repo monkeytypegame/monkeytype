@@ -78,7 +78,7 @@ let tribeSounds = {
 //-1 - disconnected
 //1 - connected
 //6 - looking for a public game
-//7 - in a public lobby waiting to fill
+//7 - in a public lobby waiting to fill (not used anymore)
 //8 - one second before public start
 //10 - lobby
 //20 - test about to start
