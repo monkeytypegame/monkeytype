@@ -110,11 +110,12 @@ export function swapElements(
 }
 
 export function changePage(page, tribe = false) {
-  if (pageTransition) {
-    Notifications.add("Not changing page, page transition true", 0, 0, "DEBUG");
+  // if (pageTransition) {
+  //   Notifications.add("Not changing page, page transition true", 0, 0, "DEBUG");
+  //   return;
+  // }
+  if ((Tribe.state === 8 || (Tribe.state >= 19 && Tribe.state < 29)) && !tribe)
     return;
-  }
-  if (Tribe.state === 8 && !tribe) return;
   let activePage = $(".page.active");
   $("#wordsInput").focusout();
   if (page == "test" || page == "") {
