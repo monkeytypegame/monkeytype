@@ -1523,6 +1523,8 @@ socket.on("mp_room_test_init", (data) => {
     //   0,
     //   "DEBUG"
     // );
+    $(".pageTribe .lobby .lobbyButtons .userReadyButton").addClass("disabled");
+    refreshTestUserList();
     return;
   }
 
@@ -1569,8 +1571,8 @@ socket.on("mp_room_state_update", (data) => {
   if (data.newState === 8) {
     Matchmaking.hideLeaveQueueButton();
   }
-  if(data.newState === 19 && room.isReady) {
-    Notifications.add("Race starting",0,1);
+  if (data.newState === 19 && room.isReady) {
+    Notifications.add("Race starting", 0, 1);
   }
 });
 
