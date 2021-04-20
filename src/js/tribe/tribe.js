@@ -1496,12 +1496,12 @@ socket.on("mp_room_test_init", (data) => {
   if (room.private && room.isReady !== true && room.isLeader !== true) {
     UI.changePage("tribe");
     changeActiveSubpage("lobby");
-    Notifications.add(
-      `Not joining race. isReady: ${room.isReady}, isLeader: ${room.isLeader}`,
-      0,
-      0,
-      "DEBUG"
-    );
+    // Notifications.add(
+    //   `Not joining race. isReady: ${room.isReady}, isLeader: ${room.isLeader}`,
+    //   0,
+    //   0,
+    //   "DEBUG"
+    // );
     return;
   }
 
