@@ -2383,7 +2383,7 @@ exports.checkLeaderboards = functions.https.onRequest(
         return;
       }
 
-      request.result.name = request.name;
+      // request.result.name = request.name;
 
       if (
         request.result.mode === "time" &&
