@@ -2788,10 +2788,10 @@ exports.scheduledFunctionCrontab = functions.pubsub
     }
   });
 
-async function announceLbUpdate(discordId, pos, lb, wpm, raw, acc) {
+async function announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
   db.collection("bot-commands").add({
     command: "sayLbUpdate",
-    arguments: [discordId, pos, lb, wpm, raw, acc],
+    arguments: [discordId, pos, lb, wpm, raw, acc, con],
     executed: false,
     requestTimestamp: Date.now(),
   });
