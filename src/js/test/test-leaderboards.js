@@ -169,7 +169,6 @@ export function check(completedEvent) {
         verified: DB.getSnapshot().verified,
         discordId: DB.getSnapshot().discordId,
         result: lbRes,
-        name: DB.getSnapshot().name,
       })
         .then((data) => {
           Misc.clearTimeouts(textTimeouts);
