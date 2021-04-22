@@ -2553,7 +2553,7 @@ exports.checkLeaderboards = functions.https.onRequest(
 
         //send discord update
         let usr =
-          request.discordId !== undefined ? request.discordId : request.name;
+          request.discordId != undefined ? request.discordId : request.name;
 
         if (
           global !== null &&
