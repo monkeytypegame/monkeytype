@@ -2611,6 +2611,7 @@ exports.checkLeaderboards = functions.https.onRequest(
       } else {
         response.status(200).send({
           data: {
+            status: 1,
             daily: {
               insertedAt: null,
             },
