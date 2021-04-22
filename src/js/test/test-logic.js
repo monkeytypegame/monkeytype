@@ -1304,7 +1304,7 @@ export function finish(difficultyFailed = false) {
       keyDuration: TestStats.keypressTimings.duration.array,
       consistency: consistency,
       keyConsistency: keyConsistency,
-      funbox: Funbox.active,
+      funbox: Funbox.funboxSaved,
       bailedOut: bailout,
       chartData: chartData,
       customText: cdata,
@@ -1651,8 +1651,9 @@ export function finish(difficultyFailed = false) {
   }
   if (
     Config.mode != "custom" &&
-    Funbox.active !== "gibberish" &&
-    Funbox.active !== "58008"
+    Funbox.funboxSaved !== "gibberish" &&
+    Funbox.funboxSaved !== "ascii" &&
+    Funbox.funboxSaved !== "58008"
   ) {
     testType += "<br>" + lang;
   }
