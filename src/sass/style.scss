@@ -1783,15 +1783,19 @@ key {
     }
     .left {
       text-align: left;
-      display: flex;
+      display: grid;
+      grid-auto-flow: column;
+      width: fit-content;
       gap: 1rem;
     }
     .right {
       text-align: right;
-      display: flex;
+      display: grid;
+      grid-auto-flow: column;
+      width: fit-content;
+      justify-self: right;
       gap: 1rem;
       // align-items: center;
-      justify-content: flex-end;
       .current-theme {
         transition: 0.25s;
         text-decoration: none;
