@@ -1383,7 +1383,7 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
     //   .then((user) => {
     //     return user.emailVerified;
     //   });
-    emailVerified = true;
+    // emailVerified = true;
 
     // if (obj.funbox === "nospace") {
     //   response.status(200).send({ data: { resultCode: -1 } });
@@ -2342,8 +2342,15 @@ exports.checkLeaderboards = functions.https.onRequest(
       return;
     }
 
+    let emailVerified = await admin
+      .auth()
+      .getUser(request.uid)
+      .then((user) => {
+        return user.emailVerified;
+      });
+
     try {
-      if (request.emailVerified === false) {
+      if (emailVerified === false) {
         response.status(200).send({
           data: {
             needsToVerifyEmail: true,
@@ -2546,7 +2553,7 @@ exports.checkLeaderboards = functions.https.onRequest(
 
         //send discord update
         let usr =
-          request.discordId !== undefined ? request.discordId : request.name;
+          request.discordId != undefined ? request.discordId : request.name;
 
         if (
           global !== null &&
@@ -2604,6 +2611,7 @@ exports.checkLeaderboards = functions.https.onRequest(
       } else {
         response.status(200).send({
           data: {
+            status: 1,
             daily: {
               insertedAt: null,
             },
@@ -2781,10 +2789,10 @@ exports.scheduledFunctionCrontab = functions.pubsub
     }
   });
 
-async function announceLbUpdate(discordId, pos, lb, wpm, raw, acc) {
+async function announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
   db.collection("bot-commands").add({
     command: "sayLbUpdate",
-    arguments: [discordId, pos, lb, wpm, raw, acc],
+    arguments: [discordId, pos, lb, wpm, raw, acc, con],
     executed: false,
     requestTimestamp: Date.now(),
   });

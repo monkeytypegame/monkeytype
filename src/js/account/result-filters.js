@@ -334,7 +334,7 @@ $(
         });
       }
     });
-  } else {
+  } else if ($(e.target).hasClass("button")) {
     if (e.shiftKey) {
       Object.keys(getGroup(group)).forEach((filter) => {
         filters[group][filter] = false;

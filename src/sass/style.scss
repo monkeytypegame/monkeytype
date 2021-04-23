@@ -11,7 +11,7 @@
 :root {
   --roundness: 0.25rem;
   --font: "Roboto Mono";
-  scroll-behavior: smooth;
+  // scroll-behavior: smooth;
   scroll-padding-top: 2rem;
 }
 
@@ -1783,15 +1783,19 @@ key {
     }
     .left {
       text-align: left;
-      display: flex;
+      display: grid;
+      grid-auto-flow: column;
+      width: fit-content;
       gap: 1rem;
     }
     .right {
       text-align: right;
-      display: flex;
+      display: grid;
+      grid-auto-flow: column;
+      width: fit-content;
+      justify-self: right;
       gap: 1rem;
       // align-items: center;
-      justify-content: flex-end;
       .current-theme {
         transition: 0.25s;
         text-decoration: none;
@@ -2647,10 +2651,10 @@ key {
   display: grid;
   gap: 2rem;
 
-  .created{
+  .created {
     text-align: center;
     color: var(--sub-color);
-    a{
+    a {
       text-decoration: none;
     }
   }
@@ -2659,14 +2663,15 @@ key {
     display: grid;
     gap: 0.25rem;
 
-    .title{
+    .title {
       font-size: 2rem;
       line-height: 2rem;
       color: var(--sub-color);
       margin: 1rem 0;
     }
 
-    .supporters, .contributors {
+    .supporters,
+    .contributors {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
       gap: 0.25rem;
@@ -3568,7 +3573,6 @@ key {
   color: var(--bg-color);
   transition: 0.25s;
 }
-
 
 .keymap {
   display: grid;

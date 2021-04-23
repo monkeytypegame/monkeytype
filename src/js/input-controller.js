@@ -58,7 +58,10 @@ function handleTab(event) {
   ) {
     if ($(".pageTest").hasClass("active")) {
       if (Config.quickTab) {
-        if (Config.mode == "zen" && !event.shiftKey) {
+        if (
+          (Config.mode == "zen" && !event.shiftKey) ||
+          (TestLogic.hasTab && !event.shiftKey)
+        ) {
           //ignore
         } else {
           if (event.shiftKey) ManualRestart.set();

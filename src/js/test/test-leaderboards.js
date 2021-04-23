@@ -163,7 +163,7 @@ export function check(completedEvent) {
       CloudFunctions.checkLeaderboards({
         uid: completedEvent.uid,
         lbMemory: DB.getSnapshot().lbMemory,
-        emailVerified: DB.getSnapshot().emailVerified,
+        // emailVerified: DB.getSnapshot().emailVerified,
         name: DB.getSnapshot().name,
         banned: DB.getSnapshot().banned,
         verified: DB.getSnapshot().verified,
