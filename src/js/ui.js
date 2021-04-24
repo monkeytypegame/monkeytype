@@ -114,9 +114,6 @@ export function changePage(page) {
   let activePage = $(".page.active");
   $(".page").removeClass("active");
   $("#wordsInput").focusout();
-  console.log(
-    `changing to page ${page}, current active is ${activePage[0].classList}`
-  );
   if (page == "test" || page == "") {
     setPageTransition(true);
     swapElements(
@@ -205,7 +202,6 @@ export function changePage(page) {
       SignOutButton.hide();
     }
   }
-  console.log("change page finished");
 }
 
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
