@@ -190,101 +190,113 @@ export function setRandomQuote(rq) {
 export function punctuateWord(previousWord, currentWord, index, maxindex) {
   let word = currentWord;
 
-  if (
-    (index == 0 ||
-      Misc.getLastChar(previousWord) == "." ||
-      Misc.getLastChar(previousWord) == "?" ||
-      Misc.getLastChar(previousWord) == "!") &&
-    Config.language.split("_")[0] != "code"
-  ) {
-    //always capitalise the first word or if there was a dot unless using a code alphabet
-    word = Misc.capitalizeFirstLetter(word);
-  } else if (
-    (Math.random() < 0.1 &&
-      Misc.getLastChar(previousWord) != "." &&
+  if (Funbox.funboxSaved === "58008") {
+    if (currentWord.length > 3) {
+      if (Math.random() < 0.75) {
+        let special = ["/", "*", "-", "+"][Math.floor(Math.random() * 4)];
+        word = Misc.setCharAt(word, Math.floor(word.length / 2), special);
+      }
+    }
+  } else {
+    if (
+      (index == 0 ||
+        Misc.getLastChar(previousWord) == "." ||
+        Misc.getLastChar(previousWord) == "?" ||
+        Misc.getLastChar(previousWord) == "!") &&
+      Config.language.split("_")[0] != "code"
+    ) {
+      //always capitalise the first word or if there was a dot unless using a code alphabet
+      word = Misc.capitalizeFirstLetter(word);
+    } else if (
+      (Math.random() < 0.1 &&
+        Misc.getLastChar(previousWord) != "." &&
+        Misc.getLastChar(previousWord) != "," &&
+        index != maxindex - 2) ||
+      index == maxindex - 1
+    ) {
+      let rand = Math.random();
+      if (rand <= 0.8) {
+        word += ".";
+      } else if (rand > 0.8 && rand < 0.9) {
+        if (Config.language.split("_")[0] == "french") {
+          word = "?";
+        } else {
+          word += "?";
+        }
+      } else {
+        if (Config.language.split("_")[0] == "french") {
+          word = "!";
+        } else {
+          word += "!";
+        }
+      }
+    } else if (
+      Math.random() < 0.01 &&
       Misc.getLastChar(previousWord) != "," &&
-      index != maxindex - 2) ||
-    index == maxindex - 1
-  ) {
-    let rand = Math.random();
-    if (rand <= 0.8) {
-      word += ".";
-    } else if (rand > 0.8 && rand < 0.9) {
-      if (Config.language.split("_")[0] == "french") {
-        word = "?";
+      Misc.getLastChar(previousWord) != "." &&
+      Config.language.split("_")[0] !== "russian"
+    ) {
+      word = `"${word}"`;
+    } else if (
+      Math.random() < 0.011 &&
+      Misc.getLastChar(previousWord) != "," &&
+      Misc.getLastChar(previousWord) != "." &&
+      Config.language.split("_")[0] !== "russian"
+    ) {
+      word = `'${word}'`;
+    } else if (
+      Math.random() < 0.012 &&
+      Misc.getLastChar(previousWord) != "," &&
+      Misc.getLastChar(previousWord) != "."
+    ) {
+      if (Config.language.split("_")[0] == "code") {
+        let r = Math.random();
+        if (r < 0.25) {
+          word = `(${word})`;
+        } else if (r < 0.5) {
+          word = `{${word}}`;
+        } else if (r < 0.75) {
+          word = `[${word}]`;
+        } else {
+          word = `<${word}>`;
+        }
       } else {
-        word += "?";
-      }
-    } else {
-      if (Config.language.split("_")[0] == "french") {
-        word = "!";
-      } else {
-        word += "!";
-      }
-    }
-  } else if (
-    Math.random() < 0.01 &&
-    Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "." &&
-    Config.language.split("_")[0] !== "russian"
-  ) {
-    word = `"${word}"`;
-  } else if (
-    Math.random() < 0.011 &&
-    Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "." &&
-    Config.language.split("_")[0] !== "russian"
-  ) {
-    word = `'${word}'`;
-  } else if (
-    Math.random() < 0.012 &&
-    Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "."
-  ) {
-    if (Config.language.split("_")[0] == "code") {
-      let r = Math.random();
-      if (r < 0.25) {
         word = `(${word})`;
-      } else if (r < 0.5) {
-        word = `{${word}}`;
-      } else if (r < 0.75) {
-        word = `[${word}]`;
-      } else {
-        word = `<${word}>`;
       }
-    } else {
-      word = `(${word})`;
-    }
-  } else if (Math.random() < 0.013) {
-    if (Config.language.split("_")[0] == "french") {
-      word = ":";
-    } else {
-      word += ":";
-    }
-  } else if (
-    Math.random() < 0.014 &&
-    Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "." &&
-    previousWord != "-"
-  ) {
-    word = "-";
-  } else if (
-    Math.random() < 0.015 &&
-    Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "." &&
-    Misc.getLastChar(previousWord) != ";"
-  ) {
-    if (Config.language.split("_")[0] == "french") {
-      word = ";";
-    } else {
-      word += ";";
-    }
-  } else if (Math.random() < 0.2 && Misc.getLastChar(previousWord) != ",") {
-    word += ",";
-  } else if (Math.random() < 0.25 && Config.language.split("_")[0] == "code") {
-    let specials = ["{", "}", "[", "]", "(", ")", ";", "=", "%", "/"];
+    } else if (Math.random() < 0.013) {
+      if (Config.language.split("_")[0] == "french") {
+        word = ":";
+      } else {
+        word += ":";
+      }
+    } else if (
+      Math.random() < 0.014 &&
+      Misc.getLastChar(previousWord) != "," &&
+      Misc.getLastChar(previousWord) != "." &&
+      previousWord != "-"
+    ) {
+      word = "-";
+    } else if (
+      Math.random() < 0.015 &&
+      Misc.getLastChar(previousWord) != "," &&
+      Misc.getLastChar(previousWord) != "." &&
+      Misc.getLastChar(previousWord) != ";"
+    ) {
+      if (Config.language.split("_")[0] == "french") {
+        word = ";";
+      } else {
+        word += ";";
+      }
+    } else if (Math.random() < 0.2 && Misc.getLastChar(previousWord) != ",") {
+      word += ",";
+    } else if (
+      Math.random() < 0.25 &&
+      Config.language.split("_")[0] == "code"
+    ) {
+      let specials = ["{", "}", "[", "]", "(", ")", ";", "=", "%", "/"];
 
-    word = specials[Math.floor(Math.random() * 10)];
+      word = specials[Math.floor(Math.random() * 10)];
+    }
   }
   return word;
 }
@@ -452,7 +464,7 @@ export async function init() {
       } else if (Funbox.funboxSaved === "gibberish") {
         randomWord = Misc.getGibberish();
       } else if (Funbox.funboxSaved === "58008") {
-        UpdateConfig.setPunctuation(false, true);
+        // UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
         randomWord = Misc.getNumbers(7);
       } else if (Funbox.funboxSaved === "specials") {

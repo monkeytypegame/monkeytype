@@ -720,3 +720,9 @@ export function clearTimeouts(timeouts) {
     to = null;
   });
 }
+
+//https://stackoverflow.com/questions/1431094/how-do-i-replace-a-character-at-a-particular-index-in-javascript
+export function setCharAt(str, index, chr) {
+  if (index > str.length - 1) return str;
+  return str.substring(0, index) + chr + str.substring(index + 1);
+}
