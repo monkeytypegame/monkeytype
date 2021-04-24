@@ -198,7 +198,7 @@ export function updateTagCommands() {
           tag.active = false;
         });
         TestUI.updateModesNotice();
-        TagController.saveActiveToCookie();
+        TagController.saveActiveToLocalStorage();
       },
     });
 
@@ -490,6 +490,14 @@ let commandsCaretStyle = {
         UpdateConfig.setCaretStyle("carrot");
       },
     },
+    {
+      id: "setCaretStyleBanana",
+      display: "banana",
+      visible: false,
+      exec: () => {
+        UpdateConfig.setCaretStyle("banana");
+      },
+    },
   ],
 };
 
@@ -529,6 +537,22 @@ let commandsPaceCaretStyle = {
       display: "underline",
       exec: () => {
         UpdateConfig.setPaceCaretStyle("underline");
+      },
+    },
+    {
+      id: "setPaceCaretStyleCarrot",
+      display: "carrot",
+      visible: false,
+      exec: () => {
+        UpdateConfig.setPaceCaretStyle("carrot");
+      },
+    },
+    {
+      id: "setPaceCaretStyleBanana",
+      display: "banana",
+      visible: false,
+      exec: () => {
+        UpdateConfig.setPaceCaretStyle("banana");
       },
     },
   ],

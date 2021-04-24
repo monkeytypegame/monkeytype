@@ -23,6 +23,7 @@ export function getDataAndInit() {
   DB.initSnapshot()
     .then(async (e) => {
       let snap = DB.getSnapshot();
+      $("#menu .icon-button.account .text").text(snap.name);
       if (snap === null) {
         throw "Missing db snapshot. Client likely could not connect to the backend.";
       }
@@ -65,11 +66,11 @@ export function getDataAndInit() {
         CloudFunctions.removeSmallTests({ uid: user.uid });
       }
       if (!UpdateConfig.changedBeforeDb) {
-        if (Config.cookieConfig === null) {
+        if (Config.localStorageConfig === null) {
           AccountButton.loading(false);
           UpdateConfig.apply(DB.getSnapshot().config);
           Settings.update();
-          UpdateConfig.saveToCookie(true);
+          UpdateConfig.saveToLocalStorage(true);
           TestLogic.restart(false, true);
         } else if (DB.getSnapshot().config !== undefined) {
           //loading db config, keep for now
@@ -112,8 +113,10 @@ export function getDataAndInit() {
             AccountButton.loading(false);
             UpdateConfig.apply(DB.getSnapshot().config);
             Settings.update();
-            UpdateConfig.saveToCookie(true);
-            TestLogic.restart(false, true);
+            UpdateConfig.saveToLocalStorage(true);
+            if ($(".page.pageTest").hasClass("active")) {
+              TestLogic.restart(false, true);
+            }
           }
         }
         UpdateConfig.setDbConfigLoaded(true);
@@ -135,7 +138,7 @@ export function getDataAndInit() {
       AccountButton.loading(false);
       ResultFilters.updateTags();
       CommandlineLists.updateTagCommands();
-      TagController.loadActiveFromCookie();
+      TagController.loadActiveFromLocalStorage();
       ResultTagsPopup.updateButtons();
       Settings.showAccountSection();
     })
@@ -287,6 +290,7 @@ let totalSecondsFiltered = 0;
 
 export function update() {
   function cont() {
+    console.log("updating account page");
     ThemeColors.update();
     ChartController.accountHistory.updateColors();
     ChartController.accountActivity.updateColors();

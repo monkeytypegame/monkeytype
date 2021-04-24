@@ -1,6 +1,5 @@
 import Config, * as UpdateConfig from "./config";
 import * as Notifications from "./notifications";
-import * as Misc from "./misc";
 import * as Caret from "./caret";
 import * as TestLogic from "./test-logic";
 import * as CustomText from "./custom-text";
@@ -163,6 +162,9 @@ export function changePage(page) {
     SignOutButton.hide();
   } else if (page == "account") {
     if (!firebase.auth().currentUser) {
+      console.log(
+        `current user is ${firebase.auth().currentUser}, going back to login`
+      );
       changePage("login");
     } else {
       setPageTransition(true);
@@ -231,12 +233,12 @@ window.addEventListener("keydown", function (e) {
 
 $(".merchBanner a").click((event) => {
   $(".merchBanner").remove();
-  Misc.setCookie("merchbannerclosed", true, 365);
+  window.localStorage.setItem("merchbannerclosed", true);
 });
 
 $(".merchBanner .fas").click((event) => {
   $(".merchBanner").remove();
-  Misc.setCookie("merchbannerclosed", true, 365);
+  window.localStorage.setItem("merchbannerclosed", true);
   Notifications.add(
     "Won't remind you anymore. Thanks for continued support <3",
     0,

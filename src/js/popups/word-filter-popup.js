@@ -33,12 +33,12 @@ function hide() {
 
 async function filter(language) {
   let filterin = $("#wordFilterPopup .wordIncludeInput").val();
-  filterin = filterin.trim();
-  filterin = filterin.replace(/ /gi, "|");
+  filterin = Misc.escapeRegExp(filterin.trim());
+  filterin = filterin.replace(/\s+/gi, "|");
   let regincl = new RegExp(filterin, "i");
   let filterout = $("#wordFilterPopup .wordExcludeInput").val();
-  filterout = filterout.trim();
-  filterout = filterout.replace(/ /gi, "|");
+  filterout = Misc.escapeRegExp(filterout.trim());
+  filterout = filterout.replace(/\s+/gi, "|");
   let regexcl = new RegExp(filterout, "i");
   let filteredWords = [];
   let languageWordList = await Misc.getLanguage(language);

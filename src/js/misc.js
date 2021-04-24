@@ -287,27 +287,28 @@ export async function getLanguage(lang) {
   }
 }
 
-export function setCookie(cname, cvalue, exdays) {
-  var d = new Date();
-  d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-  var expires = "expires=" + d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
+export function migrateFromCookies() {
+  ["resultFilters", "config", "merchbannerclosed", "activeTags"].forEach(
+    function (name) {
+      let decodedCookie = decodeURIComponent(document.cookie).split(";");
+      let value = null;
 
-export function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(";");
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == " ") {
-      c = c.substring(1);
+      for (var i = 0; i < decodedCookie.length; i++) {
+        var c = decodedCookie[i];
+        while (c.charAt(0) == " ") {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name + "=") == 0) {
+          value = c.substring(name.length + 1, c.length);
+        }
+      }
+
+      if (value) {
+        window.localStorage.setItem(name, value);
+        $.removeCookie(name, { path: "/" });
+      }
     }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
+  );
 }
 
 export function sendVerificationEmail() {
@@ -648,6 +649,10 @@ export function remove_non_ascii(str) {
   return str.replace(/[^\x20-\x7E]/g, "");
 }
 
+export function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function cleanTypographySymbols(textToClean) {
   var specials = {
     "“": '"', // &ldquo;	&#8220;
@@ -714,4 +719,10 @@ export function clearTimeouts(timeouts) {
     clearTimeout(to);
     to = null;
   });
+}
+
+//https://stackoverflow.com/questions/1431094/how-do-i-replace-a-character-at-a-particular-index-in-javascript
+export function setCharAt(str, index, chr) {
+  if (index > str.length - 1) return str;
+  return str.substring(0, index) + chr + str.substring(index + 1);
 }

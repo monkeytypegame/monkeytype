@@ -58,7 +58,10 @@ function handleTab(event) {
   ) {
     if ($(".pageTest").hasClass("active")) {
       if (Config.quickTab) {
-        if (Config.mode == "zen" && !event.shiftKey) {
+        if (
+          (Config.mode == "zen" && !event.shiftKey) ||
+          (TestLogic.hasTab && !event.shiftKey)
+        ) {
           //ignore
         } else {
           if (event.shiftKey) ManualRestart.set();
@@ -457,7 +460,9 @@ function handleAlpha(event) {
     return;
   if (event.metaKey) return;
 
-  let originalEvent = event;
+  let originalEvent = {
+    code: event.code,
+  };
 
   event = LayoutEmulator.updateEvent(event);
 
@@ -752,7 +757,7 @@ $(document).keydown(function (event) {
   ) {
     TestUI.focusWords();
     wordsFocused = true;
-    // if (Config.showOutOfFocusWarning) return;
+    if (Config.showOutOfFocusWarning) return;
   }
 
   //tab

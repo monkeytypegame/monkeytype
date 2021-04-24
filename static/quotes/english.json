@@ -1,22 +1,10 @@
 {
   "language": "english",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -30086,7 +30074,7 @@
       "length": 62
     },
     {
-      "text": "You see, the quality of any advice anybody has to offer has to be judged against the quality Of life they actually lead.",
+      "text": "You see, the quality of any advice anybody has to offer has to be judged against the quality of life they actually lead.",
       "source": "Mostly Harmless",
       "id": 5064,
       "length": 120
@@ -32072,7 +32060,7 @@
       "id": 5394
     },
     {
-      "text": "My first girlfriend turned into the moon...That's rough, buddy.",
+      "text": "My first girlfriend turned into the moon... That's rough, buddy.",
       "source": "Avatar: The Last Airbender",
       "length": 63,
       "id": 5395
@@ -32385,13 +32373,13 @@
     },
     {
       "text": "Do not pity the dead, Harry. Pity the living, and, above all those who live without love.",
-      "source": "Albus Dumbledore",
+      "source": "Harry Potter And The Deathly Hallows",
       "length": 89,
       "id": 5447
     },
     {
       "text": "It does not do well to dwell on dreams and forget to live.",
-      "source": "Albus Dumbledore",
+      "source": "Harry Potter and the Sorcerer's Stone",
       "length": 58,
       "id": 5448
     },
@@ -32408,7 +32396,7 @@
       "id": 5450
     },
     {
-      "text": "If you ain’t scared… you ain’t human.",
+      "text": "If you ain’t scared... you ain’t human.",
       "source": "Alby, The Maze Runner",
       "length": 37,
       "id": 5451
@@ -32498,7 +32486,7 @@
       "id": 5465
     },
     {
-      "text": "Human beings were never meant to participate in a worldwide social network comprised of billions of people. We were designed by evolution to be hunter-gatherers, with the mental capacity to interact and socialize with the other members of our tribe—a tribe made up of a few hundred other people at most. Interacting with thousands or even millions of other people on a daily basis was way too much for our ape-descended melons to handle. That was why social media had been gradually driving the entire population of the world insane since it emerged back around the turn of the century.",
+      "text": "Human beings were never meant to participate in a worldwide social network comprised of billions of people. We were designed by evolution to be hunter-gatherers, with the mental capacity to interact and socialize with the other members of our tribe - a tribe made up of a few hundred other people at most. Interacting with thousands or even millions of other people on a daily basis was way too much for our ape-descended melons to handle. That was why social media had been gradually driving the entire population of the world insane since it emerged back around the turn of the century.",
       "source": "Ready Player Two",
       "length": 586,
       "id": 5466
@@ -32616,310 +32604,304 @@
       "id": 5484
     },
     {
-      "text": "My father picked me up from school one day and we played hookey and went to the beach. It was too cold to go in the water so we sat on a blanket and ate pizza. When I got home my sneakers were full of sand and I dumped it on my bedroom floor. I didn't know the difference, I was six. My mother screamed at me for the mess but he wasn't mad. He said that billions of years ago the world 's shifting and ocean moving brought that sand to that spot on the beach and then I took it away. Every day he said we change the world. Which is a nice thought until I think about how many days and lifetimes I would need to bring a shoe full of sand home until there is no beach. Until it made a difference to anyone. Every day we change the world. But to change the world in a way that means anything that takes more time than most people have. it never happens all at once. Its slow. Its methodical. Its exhausting. We don't all have the stomach for it.",
+      "text": "My father picked me up from school one day and we played hookey and went to the beach. It was too cold to go in the water so we sat on a blanket and ate pizza. When I got home my sneakers were full of sand and I dumped it on my bedroom floor. I didn't know the difference, I was six. My mother screamed at me for the mess but he wasn't mad. He said that billions of years ago the world's shifting and ocean moving brought that sand to that spot on the beach and then I took it away. Every day he said we change the world. Which is a nice thought until I think about how many days and lifetimes I would need to bring a shoe full of sand home until there is no beach. Until it made a difference to anyone. Every day we change the world. But to change the world in a way that means anything that takes more time than most people have. It never happens all at once. It's slow. It's methodical. It's exhausting. We don't all have the stomach for it.",
       "source": "Mr. Robot",
       "length": 942,
       "id": 5485
     },
     {
-      "text": "Hello. It's me, Choromatsu. I'm currently in Egypt. I heard that pieces of shit were more popular, so I tried being one, and... I was arrested. I'm scared. I didn't want to be held prisoner by anything anymore, so I left Japan, and now I'm literally a prisoner. Life's pretty funny isn't it? But some good things came out of this. I don't have time to think about anything other than eating, going to the bathroom, and sleeping, so I don't let the little things get me down. There's no envy, no self-loathing, and no hope. And because there's no hope, I'm in a lovely state where there's also no despair. I don't know how much happier I am being a prisoner physically versus being one mentally, but the fact that I'm thinking this way might be a sign that I'm still  a prisoner.I shouldn't feel trapped, but I do, but I also feel trapped by the fact that I don't feel trapped over feeling trapped. What the hell am I even saying? I feel like I might go insane. Anyway I'm going to try to live life without being held prisoner by anyone.",
+      "text": "Hello. It's me, Choromatsu. I'm currently in Egypt. I heard that pieces of shit were more popular, so I tried being one, and... I was arrested. I'm scared. I didn't want to be held prisoner by anything anymore, so I left Japan, and now I'm literally a prisoner. Life's pretty funny isn't it? But some good things came out of this. I don't have time to think about anything other than eating, going to the bathroom, and sleeping, so I don't let the little things get me down. There's no envy, no self-loathing, and no hope. And because there's no hope, I'm in a lovely state where there's also no despair. I don't know how much happier I am being a prisoner physically versus being one mentally, but the fact that I'm thinking this way might be a sign that I'm still a prisoner. I shouldn't feel trapped, but I do, but I also feel trapped by the fact that I don't feel trapped over feeling trapped. What the hell am I even saying? I feel like I might go insane. Anyway I'm going to try to live life without being held prisoner by anyone.",
       "source": "Osomatsu-san 3rd Season",
       "length": 1036,
-      "id": null
+      "id": 5486
     },
     {
       "text": "She wished she had cancer instead. She'd trade Alzheimer's for cancer in a heartbeat. She felt ashamed for wishing this, and it was certainly a pointless bargaining, but she permitted herself the fantasy anyway. With cancer, she'd have something to fight. There was surgery, radiation, and chemotherapy. There was the chance that she could win. Her family and the community at Harvard would rally behind her battle and consider it noble. And even if it defeated her in the end, she'd be able to look them knowingly in the eye and say good-bye before she left.",
       "source": "Lisa Genova, Still Alice",
       "length": 559,
-      "id": null
+      "id": 5487
     },
     {
       "text": "What about you? Why are you still alive? You wanted revenge against the Vanettis, right? And you finished that crap already, right? Hey, you listening to me? He never wanted to join the Family. Even when I told him how rich he could get, he wouldn't even think about it. It was stupid how damn straight-laced he was. But you... You drove him crazy. And you killed him. He'd never even been with a woman... How is it right that you live and he dies!? Hey, are you listening!?",
       "source": "91 days",
       "length": 474,
-      "id": null
+      "id": 5488
     },
     {
       "text": "We're all afraid, you know... to get up on the stage. Maybe you will mess up. Maybe they'll totally reject you. Even so, you grit your teeth and get up on the stage anyway.",
       "source": "Your Lie In April",
       "length": 172,
-      "id": null
+      "id": 5489
     },
     {
       "text": "A lump of steel, like a shooting star. Just seeing the same sky as you makes familiar scenery look different. I swing between hope and despair at your slightest gesture, and my heart starts to play a melody. What kind of feeling is this again? What do they call this kind of feeling? I think it's probably... called love. I'm sure this is what they call love.",
       "source": "Your Lie In April",
       "length": 359,
-      "id": null
+      "id": 5490
     },
     {
       "text": "What one programmer can do in one month, two programmers can do in two months.",
       "source": "Fred Brooks",
       "length": 78,
-      "id": null
+      "id": 5491
     },
     {
       "text": "An ideal is only an ideal after all. As long as you embrace that ideal, the friction with reality will continue to increase. So you will someday face reality and will have to pay the price for your compromises.",
       "source": "Archer, Fate/Stay Night Anime",
       "length": 210,
-      "id": null
+      "id": 5492
     },
     {
       "text": "When dreams become more important than reality, you give up travel, building, creating; you even forget how to repair the machines left behind by your ancestors. You just sit living and reliving other lives left behind in the thought records.",
       "source": "Star Trek: The Original Series",
       "length": 242,
-      "id": null
+      "id": 5493
     },
     {
       "text": "Genius doesn't work on an assembly line basis. Did Einstein, Kazanga or Sitar of Vulcan produce new and revolutionary theories on a regular schedule? You can't simply say, 'Today I will be brilliant'.",
       "source": "Star Trek: The Original Series",
       "length": 200,
-      "id": null
+      "id": 5494
     },
     {
       "text": "I speak of rights! A machine has none; a man must. If you do not grant him that right, you have brought us down to the level of the machine; indeed, you have elevated that machine above us!",
       "source": "Star Trek : The Original Series",
       "length": 189,
-      "id": null
+      "id": 5495
     },
     {
       "text": "Human beings do not survive on bread alone ... but on the nourishments of liberty. For what indeed is a man without freedom ... naught but a mechanism, trapped in the cogwheels of eternity.",
       "source": "Star Trek: The Original Series",
       "length": 189,
-      "id": null
+      "id": 5496
     },
     {
       "text": "Your will to survive, your love of life, your passion to know ... Everything that is truest and best in all species of beings has been revealed to you. Those are the qualities that make a civilization worthy to survive.",
       "source": "Star Trek: The Original Series",
       "length": 219,
-      "id": null
+      "id": 5497
     },
     {
       "text": "Now, I don't pretend to tell you how to find happiness and love, when every day is a struggle to survive. But I do insist that you do survive, because the days and the years ahead are worth living for!",
       "source": "Star Trek: The Original Series",
       "length": 201,
-      "id": null
+      "id": 5498
     },
     {
       "text": "With the first link, the chain is forged. The first speech censored, the first thought forbidden, the first freedom denied, chains us all irrevocably.",
       "source": "Star Trek: The Next Generation",
       "length": 150,
-      "id": null
+      "id": 5499
     },
     {
       "text": "Our species can only survive if we have obstacles to overcome. You remove those obstacles. Without them to strengthen us, we will weaken and die.",
       "source": "Star Trek: The Original Series",
       "length": 145,
-      "id": null
+      "id": 5500
     },
     {
       "text": "You know the greatest danger facing us is ourselves, and irrational fear of the unknown. There is no such thing as the unknown. Only things temporarily hidden, temporarily not understood.",
       "source": "Star Trek: The Original Series",
       "length": 187,
-      "id": null
+      "id": 5501
     },
     {
       "text": "You may find that having is not so pleasing a thing as wanting. This is not logical, but it is often true.",
       "source": "Star Trek: The Original Series",
       "length": 106,
-      "id": null
+      "id": 5502
     },
     {
       "text": "He taught me that being born with natural talent is not the greatest gift. The truly lucky ones are those with an unwavering belief in themselves. And the passion to keep striving to the very end.",
       "source": "Naruto",
       "length": 196,
-      "id": null
+      "id": 5503
     },
     {
       "text": "I cannot believe this shit! First I get a bullshit assignment, now Mr. Rice-a-Roni don't even speak American. C'mon, man, my ride over here. Put your bag in the back.",
       "source": "Rush Hour",
       "length": 166,
-      "id": null
+      "id": 5504
     },
     {
       "text": "It's like how hot dogs come in packs of 10, and buns come in packs of eight or 12; you have to buy nine packs to make it come out even.",
       "source": "Miss Rollings (Swoosie Kurtz) - True Stories",
       "length": 135,
-      "id": null
+      "id": 5505
     },
     {
       "text": "Physical wounds will definitely bleed and may look painful but over time they heal by themselves and if you apply medicine, they will heal faster. What's troublesome are wounds of the heart. Nothing is harder to heal. They're a bit different from physical injuries. You can't apply medicine for one thing and sometimes, they never heal. There's only one cure for a wound of the heart. It's a bit bothersome and you can only receive it from someone else. What is it? Love.",
       "source": "Yashamaru Character - Masashi Kishimoto, Naruto Shippuden",
       "length": 471,
-      "id": null
+      "id": 5506
     },
     {
       "text": "Normally, I don't condone leaving early, but I have an appointment with the horse doctor. How that horse became a doctor, I don't know.\\n No, I'm kidding. He's just a regular doctor... who shoots your horse in the head when its leg is broken.",
       "source": "Dwight K. Schrute - The Office (US)",
       "length": 242,
-      "id": null
+      "id": 5507
     },
     {
       "text": "This is me! Up to now, you still don't even see me for who I really am! I'm you, Dad. I tried to give you one last chance, like you said with Breeze, but you're in the way. You're in the way of my future, like you said he was in the way of yours. Ain't that what you said? In the way of your future right? Put the gun down. Tariq, if you do this, you can never go back. I'll do anything to go back, to go back to how it was before you left us for Angela. I just can't, it's too late.",
       "source": "Power, Tariq St Patrick , James St Patrick",
       "length": 483,
-      "id": null
+      "id": 5508
     },
     {
       "text": "Mental? Well, let me tell you something, Mr. 100% Tip-Top Mental. My daughter may be no spring chicken, and her jaw may crack when she chews, and she may have noticeable trouble digesting raw vegetables. But one thing she is not, is mental!",
       "source": "Sophia Petrillo, The Golden Girls",
       "length": 240,
-      "id": null
+      "id": 5509
     },
     {
       "text": "Picture this. Two young girls, best friends, who share three things: some dough and a dream. Everything is going great, until one day, a fast-talking pepperoni salesman gallops into town. Of course, both girls are impressed. He dates one one night, and the other the next night. Pretty soon, he drives a wedge between them. Before you know it, the pizza suffers, the business suffers, the friendship suffers. The girls part company and head for America, never to see one another again. Rose, one of those girls was me. The other one, you probably know as Mama Celeste.",
       "source": "Sophia Petrillo, The Golden Girls",
       "length": 568,
-      "id": null
+      "id": 5510
     },
     {
       "text": "No, Blanche. I'm not going to let you do that. I've been doing a lot of thinking. If, after all the years of love and companionship, Fernando and I are meant to part company, I'll just have to accept that. Time to time, life deals you an unfriendly hand; there's nothing you can do about it. I guess there's a lesson to be learned here. Sometimes life just isn't fair, kiddo.",
       "source": "Rose Nylund, The Golden Girls",
       "length": 375,
-      "id": null
+      "id": 5511
     },
     {
       "text": "The most romantic thing was when Stan proposed. I went to the powder room, and when I returned to the table, there was an open bottle of Dom Perignon and two filled glasses. We clinked the glasses in a toast and Stan gave me a coy smile, and I winked at him and I just downed the champagne in one gulp. And it didn't go down smoothly. Later, Stan told me that he put my engagement ring in the bottom of the glass.",
       "source": "Dorothy Zbornak, The Golden Girls",
       "length": 413,
-      "id": null
+      "id": 5512
     },
     {
       "text": "The serum amplifies everything that is inside, so good becomes great; bad becomes worse. This is why you were chosen. Because the strong man who has known power all his life, may lose respect for that power, but a weak man knows the value of strength, and knows compassion.",
       "source": "Abraham Erskine, Captain America: The First Avenger",
       "length": 273,
-      "id": null
+      "id": 5513
     },
     {
       "text": "I don't want to kill anyone. I don't like bullies; I don't care where they're from.",
       "source": "Steve Rogers, Captain America: The First Avenger",
       "length": 83,
-      "id": null
+      "id": 5514
     },
     {
       "text": "Let me tell you a story. Picture it: Sicily, 1922. An attractive peasant girl who has saved her lira embarks on a glorious vacation to a Crimean resort on the Black Sea. For weeks, she frolics at the seaside resorts, and enjoys the company of many young men, all of whom adore her. When it's time to return to Sicily, three different suitors beg her to stay. But she can't decide who to choose, so she chooses none of them. But she agrees to meet with them at the same resort many years later. To her trio of suitors, that eventful gathering was referred to as \"Rendezvous with Sophia.\" But to the rest of the world, it was better known as the Yalta Conference.",
       "source": "Sophia Petrillo, The Golden Girls",
       "length": 661,
-      "id": null
+      "id": 5515
     },
     {
       "text": "I'm not gonna kill myself because if my depression wants me dead THAT badly it's gonna have to start shutting my organs down like a REAL disease instead of being a coward and hiding in my brain and trying to get ME to do it's dirty work for it!",
       "source": "scottishsafehouse - Tumblr",
       "length": 244,
-      "id": null
+      "id": 5516
     },
     {
       "text": "Human touch. Our first form of communication. Safety, security, comfort, all in the gentle caress of a finger. Or the brush of lips on a soft cheek. It connects us when we're happy, bolsters us in times of fear, excites us in times of passion and love. We need that touch from the one we love, almost as much as we need air to breathe. But I never understood the importance of touch. His touch. Until I couldn't have it. So if you're watching this, and you're able, touch him. Touch her. Life's too short to waste a second.",
       "source": "Five Feet Apart",
       "length": 523,
-      "id": null
+      "id": 5517
     },
     {
       "text": "Tom, don't let anybody kid you. It's all personal, every bit of business. Every piece of shit every man has to eat every day of his life is personal. They call it business. OK. But it's personal as hell. You know where I learned that from? The Don. My old man. The Godfather. If a bolt of lightning hit a friend of his the old man would take it personal. He took my going into the Marines personal. That's what makes him great. The Great Don. He takes everything personal Like God. He knows every feather that falls from the tail of a sparrow or however the hell it goes? Right? And you know something? Accidents don't happen to people who take accidents as a personal insult.",
       "source": "The Godfather",
       "length": 677,
-      "id": null
+      "id": 5518
     },
     {
       "text": "One of the main differences between introverts and extroverts is that extroverts get their energy from hanging out with other people, and introverts are mentally ill.",
       "source": "Exurb1a",
       "length": 166,
-      "id": null
+      "id": 5519
     },
     {
       "text": "Unfortunately, my birthday has always been the lousiest day of the year. It all began on the day of my actual birth... both of my parents failed to show up. By the age of 5, I was forced to throw my own surprise party at Gunther Goat Cheese's: the goat-cheesiest place in all of Drusselstein. Many of my closest friends were there: Count Wolfgang,  Betty the She-Boar, Ratputin, and the licekins, Olga and Chicago Joe. But one should never walk the paths of Drusselstein with uncovered doonkleberry cake, lest the doonkleberry bats swarm.",
       "source": "Dr. Doofenshmirtz, Phineas and Ferb",
       "length": 538,
-      "id": null
+      "id": 5520
     },
     {
       "text": "I believe there's a hero in all of us that keeps us honest, gives us strength, makes us noble, and finally allows us to die with pride, even though sometimes we have to be steady and give up the things we want the most, even our dreams.",
       "source": "Aunt May, *Spider-Man 2*",
       "length": 236,
-      "id": null
+      "id": 5521
     },
     {
       "text": "I play Russian roulette every day, a man's sport with the bullet called life. Yeah, mama called life. Yeah and every time I try to go where I really want to be, it's already where I am, 'cause I'm already there!",
       "source": "Sugar, System of a Down",
       "length": 211,
-      "id": null
+      "id": 5522
     },
     {
       "text": "Back in Gimmelshtump in the days of my youth, the Doofenshmirtzes were a proud family. But those were lean times for my father, and our beloved lawn gnome was repossessed. Who would protect our zatzenfruit garden from those witches, spells, and wood trolls? From a tender age, my father decided that it would be me. While the other children played Kick-the-Shtumpel and ate doonkelberries, I would stand for hours. All through the cold night as the spitzenhound howled, my only companion was the moon. And my neighbor Kenny. And since my lawn gnome was taken away from me, I will destroy every lawn gnome in the entire tri-state area!",
       "source": "Heinz Doofenshmirtz, Phineas and Ferb",
       "length": 634,
-      "id": null
+      "id": 5523
     },
     {
       "text": "A good brass player spends many hours in front of a mirror watching and listening. A good rule to follow is to form the embouchure so that all the muscles around the aperture are working in unison. Picture a fireman's net - the center being the aperture of your embouchure. Around this net are eight firemen pulling out from the center to keep the net taut. Think of your muscles working in this same way to preserve the stability and openness of the aperture. Keep a close eye on the area just below the bottom lip, the goal being to have as little movement as possible and to maintain a flat chin. In addition, try to form your embouchure away from the mouthpiece and the instrument. A good brass player knows how to do this.",
       "source": "Joseph Alessi, Arban Complete Method for Trombone and Euphonium",
       "length": 727,
-      "id": null
+      "id": 5524
     },
     {
       "text": "Assist Mode allows you to modify the game's rules to fit your specific needs. This includes options such as slowing the game speed, granting yourself invincibility or infinite stamina, and skipping chapters entirely. Celeste is intended to be a challenging and rewarding experience. If the default game proves inaccessible to you, we hope that you can still find that experience with Assist Mode. Would you like to play with Assist Mode?",
       "source": "Celeste",
       "length": 437,
-      "id": null
+      "id": 5525
     },
     {
       "text": "When I was young, I entered a science fair with my very first Inator. I wasn't very clever with the names yet. It was just, you know, \"Inator.\" Just as I was about to demonstrate my invention to the judges, a kid with a baking soda volcano stole the show! The next year I tried again with my Even-Bigger-Inator. And again, my thunder was stolen by a baking soda volcano! I had enough of science. I decided to devote my life to poetry instead. Yet curiously, I still lost to a baking soda volcano!",
       "source": "Heinz Doofenshmirtz, Phineas and Ferb",
       "length": 496,
-      "id": null
+      "id": 5526
     },
     {
       "text": "Back in Gimmelshtump, in the depths of my childhood, my parents were expecting a brand new baby girl. My mother spent months knitting pretty dresses. Unfortunately the baby turned out to be a boy, and because we were out of material, I was forced to wear those same dresses for an entire year, drawing mockery and scorn from all of my manly classmates!",
       "source": "Heinz Doofenshmirtz, Phineas and Ferb",
       "length": 352,
-      "id": null
+      "id": 5527
     },
     {
       "text": "Wonder if I gave an Oreo to the Big Bad Wolf. How would the story go? Would he still go huff and puff? Or would he bring those pigs cool stuff to decorate the deck he helped them build? Would they not get killed? Wonder if I gave an Oreo to a vampire in a creepy show. Would he not act so undead? Would he thirst for milk instead? I've just got this feeling that it might work out all right. 'Cause cream does wondrous things inside a chocolate sandwich dream. If I gave 'em to great white sharks, would they share 'em with baby seals? Would they call up a giant squid for a friendly meal?",
       "source": "Oreo Wonderfilled Anthem",
       "length": 589,
-      "id": null
-    },
-    {
-      "text": "One thing only I know, and that is that I know nothing.",
-      "source": "Socrates",
-      "length": 55,
-      "id": null
+      "id": 5528
     },
     {
       "text": "I'm not the sweet, forebearing guy that I try to make out that I am. I get irritated at things. I feel like snapping at people, and I feel like being selfish at times; and I don't know why I should pretend I'm not that way.",
       "source": "Carl Rogers, On Becoming a Person",
       "length": 223,
-      "id": null
+      "id": 5529
     },
     {
       "text": "We as a nation are slowly realizing our enormous strength, and the power and responsibility which go with that strength. We are moving, somewhat ignorantly and clumsily, toward accepting a position of responsible world leadership. We make many mistakes. We are often inconsistent. We are far from perfect. We are deeply frightened by the strength of Communism, a view of life different from our own.",
       "source": "Carl Rogers, On Becoming a Person",
       "length": 399,
-      "id": null
+      "id": 5530
     },
     {
       "text": "The FitnessGram Pacer Test is a multistage aerobic capacity test that progressively gets more difficult as it continues. The 20 meter pacer test will begin in 30 seconds. Line up at the start. The running speed starts slowly, but gets faster each minute after you hear this signal. [beep] A single lap should be completed each time you hear this sound. [ding] Remember to run in a straight line, and run as long as possible. The second time you fail to complete a lap before the sound, your test is over. The test will begin on the word start. On your mark, get ready, start.",
       "source": "The Cooper Institute",
       "length": 575,
-      "id": null
+      "id": 5531
     },
     {
       "text": "I have little sympathy with the rather prevalent concept that man is basically irrational, and that his impulses, if not controlled, will lead to destruction of others and self. Man's behavior is exquisitely rational, moving with subtle and ordered complexity toward the goals his organism is endeavoring to achieve. The tragedy for most of us is that our defenses keep us from being aware of this rationality, so that conciously we are moving in one direction, while organismically we are moving in another.",
       "source": "Carl Rogers, On Becoming a Person",
       "length": 508,
-      "id": null
+      "id": 5532
     },
     {
       "text": "Often the learnings take such simple forms as \"I am different from others\"; \"I do feel hatred for him\"; \"I am fearful of feeling dependent\"; \"I do feel sorry for myself\"; \"I am self-centered\"; \"I do have tender and loving feelings\"; \"I could be what I want to be\"; etc. But in spite of their seeming simplicity these learnings are vastly significant in some new way which is very difficult to define. We can think of it in various ways. They are self-appropriated learnings, for one thing, based somehow in experience, not in symbols.",
       "source": "Carl Rogers, On Becoming a Person",
       "length": 534,
-      "id": null
+      "id": 5533
     },
     {
       "text": "How can you know that this account, or any account given at a previous or later time, is true? How do you know that it has any relationship to reality? If we are to rely on this inner and subjective experience as being the truth about human relationships or about ways of altering personality, then Yogi, Christian Science, dianetics, and the delusions of a psychotic individual who believes himself to be Jesus Christ, are all true, just as true as this account.",
       "source": "Carl Rogers, On Becoming a Person",
       "length": 463,
-      "id": null
+      "id": 5534
     }
   ]
 }

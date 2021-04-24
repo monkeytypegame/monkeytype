@@ -148,6 +148,10 @@
     "languages": ["maori_1k"]
   },
   {
+    "name": "catalan",
+    "languages": ["catalan", "catalan_1k"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",

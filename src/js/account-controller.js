@@ -298,7 +298,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     AccountButton.update();
     AccountButton.loading(true);
     Account.getDataAndInit();
-    var displayName = user.displayName;
+    // var displayName = user.displayName;
     // var email = user.email;
     // var emailVerified = user.emailVerified;
     // var photoURL = user.photoURL;
@@ -306,7 +306,6 @@ firebase.auth().onAuthStateChanged(function (user) {
     // var uid = user.uid;
     // var providerData = user.providerData;
     $(".pageLogin .preloader").addClass("hidden");
-    $("#menu .icon-button.account .text").text(displayName);
 
     // showFavouriteThemesAtTheTop();
     CommandlineLists.updateThemeCommands();

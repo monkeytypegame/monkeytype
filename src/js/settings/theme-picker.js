@@ -93,7 +93,7 @@ function toggleFavourite(themename) {
     newlist.push(themename);
     UpdateConfig.setFavThemes(newlist);
   }
-  UpdateConfig.saveToCookie();
+  UpdateConfig.saveToLocalStorage();
   refreshButtons();
   // showFavouriteThemesAtTheTop();
   CommandlineLists.updateThemeCommands();

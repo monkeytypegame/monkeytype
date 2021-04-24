@@ -664,8 +664,8 @@ export function updateColors(chart) {
   } catch {}
 
   try {
-    chart.options.scales.yAxes[2].ticks.minor.fontColor = ThemeColors.sub;
-    chart.options.scales.yAxes[2].scaleLabel.fontColor = ThemeColors.sub;
+    chart.options.scales.yAxes[1].ticks.minor.fontColor = ThemeColors.sub;
+    chart.options.scales.yAxes[1].scaleLabel.fontColor = ThemeColors.sub;
   } catch {}
 
   try {
