@@ -265,27 +265,23 @@
           Email:
           <a href="mailto: bartnikjack@gmail.com">bartnikjack@gmail.com</a>
         </p>
-        <!-- <script>
-          // FIXME: fix copyUserName()
-          function copyUserName() {
-            var text = "Miodec#1512";
-            text.select();
-            text.setSelectionRange(0, 99999);
-            document.execCommand("copy");
-            return text;
-            alert("Copied!");
-          }
-        </script> -->
+
         <p>
+          <!-- TODO: Find better way to implement username copy -->
           Discord:
-          <!-- <button
-            title="Click me to copy username"
-            id="copyButton"
-            value="Miodec#1512"
-            onclick="copyUserName()"
-          > -->
-          Miodec#1512
-          <!-- </button> -->
+          <input type="text" value="Miodec#1512" id="username" />
+          <button title="Click to copy username" onclick="copyUserName()">
+            Copy
+          </button>
+          <script>
+            function copyUserName() {
+              var text = document.getElementById("username");
+              text.select();
+              text.setSelectionRange(0, 99999);
+              document.execCommand("copy");
+              alert("Copied To Clipboard!");
+            }
+          </script>
         </p>
       </div>
     </div>
