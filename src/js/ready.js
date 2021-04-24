@@ -12,7 +12,11 @@ UpdateConfig.loadFromLocalStorage();
 Misc.getReleasesFromGitHub();
 
 $(document).ready(() => {
-  RouteController.handleInitialPageClasses(window.location.pathname);
+  let path = window.location.pathname;
+
+  path = path.split("_")[0];
+
+  RouteController.handleInitialPageClasses(path);
   if (window.location.pathname === "/") {
     $("#top .config").removeClass("hidden");
   }
