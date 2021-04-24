@@ -3525,6 +3525,9 @@ key {
     .link {
       font-size: 0.75rem;
       cursor: pointer;
+      &:hover {
+        color: var(--text-color);
+      }
     }
   }
   .chat {
@@ -3652,6 +3655,7 @@ key {
     display: grid;
     justify-items: center;
     gap: 1rem;
+    color: var(--main-color);
     .text {
       font-size: 1rem;
       color: var(--sub-color);
@@ -4278,6 +4282,7 @@ key {
   &.disabled {
     opacity: 0.5;
     cursor: default;
+    color: var(--sub-color);
     &:hover {
       color: var(--sub-color);
       background: rgba(0, 0, 0, 0.1);
