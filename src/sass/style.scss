@@ -3524,6 +3524,7 @@ key {
     }
     .link {
       font-size: 0.75rem;
+      transition: 0.25s;
       cursor: pointer;
       &:hover {
         color: var(--text-color);
