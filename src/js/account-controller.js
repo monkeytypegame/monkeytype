@@ -299,7 +299,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     AccountButton.update();
     AccountButton.loading(true);
     Account.getDataAndInit();
-    // var displayName = user.displayName;
+    var displayName = user.displayName;
     // var email = user.email;
     // var emailVerified = user.emailVerified;
     // var photoURL = user.photoURL;
