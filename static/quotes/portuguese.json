@@ -1,10 +1,22 @@
 {
   "language": "portuguese",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -132,6 +144,18 @@
       "source": "João Guimarães Rosa",
       "length": 31,
       "id": 20
+    },
+    {
+      "text": "O amor romântico é como um traje, que, como não é eterno, dura tanto quanto dura; e, em breve, sob a veste do ideal que formamos, que se esfacela, surge o corpo real da pessoa humana, em que o vestimos. O amor romântico, portanto, é um caminho de desilusão. Só o não é quando a desilusão, aceite desde o princípio, decide variar de ideal constantemente, tecer constantemente, nas oficinas da alma, novos trajes, com que constantemente se renove o aspecto da criatura, por eles vestida.",
+      "source": "Fernando Pessoa",
+      "length": 485,
+      "id": 21
+    },
+    {
+      "text": "Olhei pro céu além da fumaça cheia de gordura humana e Deus não estava lá. A escuridão fria e sufocante prossegue eternamente e a gente está sozinho. Levamos a vida sem nada melhor pra fazer. A razão, inventamos depois. Nascemos do nada, temos filhos condenados ao inferno como nós, voltamos ao nada. Só existe isso.",
+      "source": "Alan Moore, Watchmen",
+      "length": 316,
+      "id": 22
     }
   ]
 }
