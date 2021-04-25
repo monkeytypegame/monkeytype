@@ -54,6 +54,42 @@
         justify-content: center;
         display: flex;
       }
+      .tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
+
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    bottom: 120%;
+    left: 50%;
+    margin-left: -60px; 
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 2;
+  }
+  .tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: black transparent transparent transparent;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+}
     </style>
   </head>
 
@@ -267,17 +303,17 @@
         </p>
 
         <p>
-          <!-- TODO: Find better way to implement username copy -->
           Discord:
-          <input type="text" value="Miodec#1512" id="username" />
-          <button title="Click to copy" onclick="copyUserName()">
-            Copy
-          </button>
+          <!-- FIXME: Fix username copy -->
+  <div class="tooltip" onclick="copyUserName()">Miodec#1512
+    <span class="tooltiptext">Click to copy</span>
+  </div>
+
           <script>
             function copyUserName() {
-              var text = document.getElementById("username");
+              var text = "Miodec#1512";
               text.select();
-              text.setSelectionRange(0, 99999);
+              text.setSelectionRange(0, 99999);  
               document.execCommand("copy");
               alert("Copied To Clipboard!");
             }
