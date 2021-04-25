@@ -1,4 +1,3 @@
-
 @media only screen and (max-width: 1050px) {
   #centerContent {
     .pageSettings .section.themes .buttons,
@@ -9,8 +8,7 @@
     .pageSettings .section.fontFamily .buttons,
     .pageSettings .section.funbox .buttons,
     .pageSettings .section.keymapStyle .buttons,
-    .pageSettings .section.languageGroups .buttons
-     {
+    .pageSettings .section.languageGroups .buttons {
       grid-template-columns: 1fr 1fr 1fr;
     }
 
@@ -33,7 +31,7 @@
 }
 
 @media only screen and (max-width: 800px) {
-  .settingsGroup.quickNav{
+  .settingsGroup.quickNav {
     display: none;
   }
   #centerContent {
@@ -41,7 +39,7 @@
       grid-template-areas:
         "logo config"
         "menu config";
-        grid-template-columns: auto auto;
+      grid-template-columns: auto auto;
       .logo {
         margin-bottom: 0;
       }
@@ -57,15 +55,15 @@
       }
     }
   }
-  #bottom{
-    .leftright{
-      .left{
+  #bottom {
+    .leftright {
+      .left {
         gap: 0.25rem 1rem;
         display: grid;
         grid-template-rows: 1fr 1fr;
         grid-auto-flow: column;
       }
-      .right{
+      .right {
         display: grid;
         grid-template-rows: 1fr 1fr;
         gap: 0.25rem 1rem;
@@ -73,9 +71,9 @@
     }
   }
 
-  .pageAbout .section .supporters, .pageAbout .section .contributors{
+  .pageAbout .section .supporters,
+  .pageAbout .section .contributors {
     grid-template-columns: 1fr 1fr 1fr;
-
   }
 
   .pageSettings .section.customBackgroundFilter {
@@ -132,7 +130,6 @@
     }
   }
 
-
   #centerContent {
     .pageSettings .section.themes .buttons,
     .pageSettings .section.language .buttons,
@@ -149,10 +146,11 @@
 }
 
 @media only screen and (max-width: 600px) {
-  .pageAbout .section .supporters, .pageAbout .section .contributors{
+  .pageAbout .section .supporters,
+  .pageAbout .section .contributors {
     grid-template-columns: 1fr 1fr;
   }
-  #top .logo .bottom{
+  #top .logo .bottom {
     margin-top: 0;
   }
   #middle {
@@ -177,10 +175,9 @@
   }
 }
 
-
 @media only screen and (max-width: 500px) {
-
-  .pageAbout .section .supporters, .pageAbout .section .contributors{
+  .pageAbout .section .supporters,
+  .pageAbout .section .contributors {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -202,15 +199,15 @@
       }
     }
   }
-  #bottom{
-    .leftright{
-      .left{
+  #bottom {
+    .leftright {
+      .left {
         gap: 0.25rem 1rem;
         display: grid;
         grid-template-rows: 1fr 1fr 1fr;
         grid-auto-flow: column;
       }
-      .right{
+      .right {
         display: grid;
         grid-template-rows: 1fr 1fr 1fr;
         gap: 0.25rem 1rem;
@@ -237,30 +234,28 @@
 }
 
 @media only screen and (max-width: 400px) {
-
-  #top .logo .bottom{
+  #top .logo .bottom {
     font-size: 1.5rem;
     line-height: 1.5rem;
     margin-top: 0;
   }
 
   #top .config {
-    grid-gap: .25rem;
-    .group .buttons{
-      font-size: .65rem;
-      line-height: .65rem;
+    grid-gap: 0.25rem;
+    .group .buttons {
+      font-size: 0.65rem;
+      line-height: 0.65rem;
     }
   }
 
-  #bottom{
-    font-size: .65rem;
+  #bottom {
+    font-size: 0.65rem;
   }
 
   #commandLine,
   #commandLineInput {
     width: 300px !important;
   }
-
 }
 
 @media (hover: none) and (pointer: coarse) {

@@ -28,6 +28,7 @@ function resetCaretPosition() {
 }
 
 export async function init() {
+  $("#paceCaret").addClass("hidden");
   let mode2 = "";
   if (Config.mode === "time") {
     mode2 = Config.time;

@@ -114,7 +114,9 @@ export function getDataAndInit() {
             UpdateConfig.apply(DB.getSnapshot().config);
             Settings.update();
             UpdateConfig.saveToLocalStorage(true);
-            TestLogic.restart(false, true);
+            if ($(".page.pageTest").hasClass("active")) {
+              TestLogic.restart(false, true);
+            }
           }
         }
         UpdateConfig.setDbConfigLoaded(true);

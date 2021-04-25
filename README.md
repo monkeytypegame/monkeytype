@@ -32,7 +32,6 @@ Monkeytype is a minimalistic, customisable typing test, featuring many test mode
 
 On the [monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to autoassign roles on our server. You can find its code over at https://github.com/Miodec/monkey-bot
 
-
 # Bug report or Feature request
 
 If you encounter a bug, or have a feature request - [send me a message on Reddit](https://reddit.com/user/miodec), [create an issue](https://github.com/Miodec/monkeytype/issues), [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
@@ -56,5 +55,3 @@ All the [contributors](https://github.com/Miodec/monkeytype/graphs/contributors)
 # Support
 
 If you wish to support further development and feel extra awesome, you can do so [here](https://www.paypal.me/jackbartnik).
-
-
