@@ -55,41 +55,40 @@
         display: flex;
       }
       .tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-  }
+        position: relative;
+        display: inline-block;
+        border-bottom: 1px dotted black;
+      }
 
-  .tooltip .tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    bottom: 120%;
-    left: 70%;
-    margin-left: -60px; 
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
+      .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        bottom: 120%;
+        left: 70%;
+        margin-left: -60px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
 
-    /* Position the tooltip */
-    position: absolute;
-    z-index: 2;
-  }
-  .tooltip .tooltiptext::after {
-    content: " ";
-    position: absolute;
-    top: 100%; /* At the bottom of the tooltip */
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: black transparent transparent transparent;
-  }
+        position: absolute;
+        z-index: 2;
+      }
+      .tooltip .tooltiptext::after {
+        content: " ";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: black transparent transparent transparent;
+      }
 
-  .tooltip:hover .tooltiptext {
-    visibility: visible;
-}
+      .tooltip:hover .tooltiptext {
+        visibility: visible;
+      }
     </style>
   </head>
 
@@ -235,9 +234,11 @@
         </p>
         <p>
           For further information, visit
-          <a href="https://www.allaboutcookies.org/">allaboutcookies.org</a>
+          <a href="https://www.allaboutcookies.org/" target="_blank">
+            allaboutcookies.org
+          </a>
           or
-          <a href="https://en.wikipedia.org/wiki/HTTP_cookie">
+          <a href="https://en.wikipedia.org/wiki/HTTP_cookie" target="_blank">
             wikipedia.org/wiki/HTTP_cookie
           </a>
           .
@@ -299,25 +300,30 @@
         </p>
         <p>
           Email:
-          <a href="mailto: bartnikjack@gmail.com" target="_blank">bartnikjack@gmail.com</a>
+          <a
+            href="mailto: bartnikjack@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            bartnikjack@gmail.com
+          </a>
         </p>
 
-        <p>
-          <!-- FIXME: Fix username copy -->
-  <div class="tooltip" onclick="copyUserName()">Discord: Miodec#1512
-    <span class="tooltiptext">Click to copy</span>
-  </div>
+        <!-- FIXME: Fix username copy -->
+        <div class="tooltip" onclick="copyUserName()">
+          Discord: Miodec#1512
+          <span class="tooltiptext">Click to copy</span>
+        </div>
 
-          <script>
-            function copyUserName() {
-              const text = "Miodec#1512";
-              text.select();
-              text.setSelectionRange(0, 99999);  
-              document.execCommand("copy");
-              alert("Copied To Clipboard!");
-            }
-          </script>
-        </p>
+        <script>
+          function copyUserName() {
+            const text = "Miodec#1512";
+            text.select();
+            text.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            alert("Copied To Clipboard!");
+          }
+        </script>
       </div>
     </div>
   </body>
