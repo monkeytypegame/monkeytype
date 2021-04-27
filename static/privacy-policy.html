@@ -309,7 +309,6 @@
           </a>
         </p>
 
-        <!-- FIXME: Fix username copy -->
         <div class="tooltip" onclick="copyUserName()">
           Discord: Miodec#1512
           <span class="tooltiptext">Click to copy</span>
@@ -317,10 +316,7 @@
 
         <script>
           function copyUserName() {
-            const text = "Miodec#1512";
-            text.select();
-            text.setSelectionRange(0, 99999);
-            document.execCommand("copy");
+            navigator.clipboard.writeText("Miodec#1512");
             alert("Copied To Clipboard!");
           }
         </script>
