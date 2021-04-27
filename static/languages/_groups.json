@@ -1,7 +1,7 @@
 [
   {
     "name": "english",
-      "languages": ["english", "english_1k", "english_10k", "english_24k", "english_450k"]
+      "languages": ["english", "english_1k", "english_10k", "english_25k", "english_450k"]
   },
   {
     "name": "spanish",
