@@ -948,6 +948,10 @@ export function finish(difficultyFailed = false) {
   TimerProgress.hide();
   Keymap.hide();
   Funbox.activate("none", null);
+
+  if (Config.mode == "zen") {
+    TestStats.removeZenAfkData();
+  }
   let stats = TestStats.calculateStats();
   if (stats === undefined) {
     stats = {

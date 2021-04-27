@@ -17,6 +17,8 @@ export let currentKeypress = {
   words: [],
 };
 
+export let lastKeypress;
+
 // export let errorsPerSecond = [];
 // export let currentError = {
 //   count: 0,
@@ -97,7 +99,11 @@ export function setInvalid() {
 
 export function calculateTestSeconds(now) {
   if (now === undefined) {
-    return (end - start) / 1000;
+    if (Config.mode == "zen") {
+      return (lastKeypress - start) / 1000;
+    } else {
+      return (end - start) / 1000;
+    }
   } else {
     return (now - start) / 1000;
   }
@@ -109,6 +115,10 @@ export function setEnd(e) {
 
 export function setStart(s) {
   start = s;
+}
+
+export function updateLastKeypress() {
+  lastKeypress = performance.now();
 }
 
 export function pushToWpmHistory(word) {
@@ -214,6 +224,14 @@ export function pushMissedWord(word) {
   } else {
     missedWords[word]++;
   }
+}
+
+export function removeZenAfkData() {
+  let testSeconds = calculateTestSeconds();
+  keypressPerSecond.splice(testSeconds);
+  keypressTimings.duration.array.splice(testSeconds);
+  keypressTimings.spacing.array.splice(testSeconds);
+  wpmHistory.splice(testSeconds);
 }
 
 function countChars() {

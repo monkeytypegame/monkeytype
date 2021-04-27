@@ -232,6 +232,7 @@ function handleSpace(event, isEnter) {
     TestUI.updateActiveElement();
     Funbox.toggleScript(TestLogic.words.getCurrent());
     Caret.updatePosition();
+    TestStats.updateLastKeypress();
     TestStats.incrementKeypressCount();
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
     // currentKeypress.count++;
@@ -288,6 +289,7 @@ function handleSpace(event, isEnter) {
     // currentKeypress.words.push(TestLogic.words.currentIndex);
     TestStats.incrementKeypressCount();
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
+    TestStats.updateLastKeypress();
     if (Config.difficulty == "expert" || Config.difficulty == "master") {
       TestLogic.fail();
       return;
