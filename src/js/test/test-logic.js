@@ -422,7 +422,7 @@ export async function init() {
     if (Config.mode === "words" && Config.words === 0) {
       wordsBound = 100;
     }
-    if (Funbox.active === "plus_one") {
+    if (Funbox.funboxSaved === "plus_one") {
       wordsBound = 2;
     }
     let wordset = language.words;
