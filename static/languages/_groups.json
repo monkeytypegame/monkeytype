@@ -29,7 +29,7 @@
   },
   {
     "name": "portuguese",
-    "languages": ["portuguese"]
+    "languages": ["portuguese","portuguese_3k"]
   },
   {
     "name": "lithuanian",
