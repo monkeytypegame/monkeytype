@@ -55,6 +55,12 @@
         display: flex;
       }
     </style>
+    <script defer>
+      function copyUserName() {
+        navigator.clipboard.writeText("Miodec#1512");
+        // alert("Copied To Clipboard!");
+      }
+    </script>
   </head>
 
   <body>
@@ -199,9 +205,11 @@
         </p>
         <p>
           For further information, visit
-          <a href="https://www.allaboutcookies.org/">allaboutcookies.org</a>
+          <a href="https://www.allaboutcookies.org/" target="_blank">
+            allaboutcookies.org
+          </a>
           or
-          <a href="https://en.wikipedia.org/wiki/HTTP_cookie">
+          <a href="https://en.wikipedia.org/wiki/HTTP_cookie" target="_blank">
             wikipedia.org/wiki/HTTP_cookie
           </a>
           .
@@ -263,9 +271,28 @@
         </p>
         <p>
           Email:
-          <a href="mailto: bartnikjack@gmail.com">bartnikjack@gmail.com</a>
+          <a
+            href="mailto: bartnikjack@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            bartnikjack@gmail.com
+          </a>
         </p>
-        <p>Discord: Miodec#1512</p>
+
+        <!-- <div class="tooltip" onclick="copyUserName()">
+          Discord: Miodec#1512
+          <span class="tooltiptext">Click to copy</span>
+        </div> -->
+
+        Discord:
+        <span
+          aria-label="Click To Copy"
+          data-balloon-pos="up"
+          onclick="copyUserName()"
+        >
+          Miodec#1512
+        </span>
       </div>
     </div>
   </body>
