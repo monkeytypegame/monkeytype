@@ -232,7 +232,6 @@ function handleSpace(event, isEnter) {
     TestUI.updateActiveElement();
     Funbox.toggleScript(TestLogic.words.getCurrent());
     Caret.updatePosition();
-    TestStats.updateLastKeypress();
     TestStats.incrementKeypressCount();
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
     // currentKeypress.count++;
@@ -611,6 +610,7 @@ function handleAlpha(event) {
     }
   }
   TestStats.incrementKeypressCount();
+  TestStats.updateLastKeypress();
   TestStats.pushKeypressWord(TestLogic.words.currentIndex);
   // currentKeypress.count++;
   // currentKeypress.words.push(TestLogic.words.currentIndex);

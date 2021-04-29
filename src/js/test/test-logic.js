@@ -949,8 +949,8 @@ export function finish(difficultyFailed = false) {
   Keymap.hide();
   Funbox.activate("none", null);
 
-  if (Config.mode == "zen") {
-    TestStats.removeZenAfkData();
+  if (Config.mode == "zen" || bailout) {
+    TestStats.removeAfkData();
   }
   let stats = TestStats.calculateStats();
   if (stats === undefined) {
