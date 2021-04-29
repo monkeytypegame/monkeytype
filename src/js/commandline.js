@@ -43,11 +43,11 @@ function showFound() {
     try {
       $.each(list.list, (index, obj) => {
         if (obj.found) {
+          obj.hover();
           if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
             ThemeController.clearPreview();
           if (!/font/gi.test(obj.id))
             Config.previewFontFamily(Config.fontFamily);
-          obj.hover();
           return false;
         }
       });
@@ -362,10 +362,10 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
     let list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (index, obj) => {
       if (obj.id == hoverId) {
+        obj.hover();
         if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
           ThemeController.clearPreview();
         if (!/font/gi.test(obj.id)) Config.previewFontFamily(Config.fontFamily);
-        obj.hover();
       }
     });
   } catch (e) {}
@@ -483,11 +483,11 @@ $(document).keydown((e) => {
           CommandlineLists.current[CommandlineLists.current.length - 1];
         $.each(list.list, (index, obj) => {
           if (obj.id == hoverId) {
+            obj.hover();
             if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
               ThemeController.clearPreview();
             if (!/font/gi.test(obj.id))
               Config.previewFontFamily(Config.fontFamily);
-            obj.hover();
           }
         });
       } catch (e) {}
