@@ -54,42 +54,13 @@
         justify-content: center;
         display: flex;
       }
-      .tooltip {
-        position: relative;
-        display: inline-block;
-        border-bottom: 1px dotted black;
-      }
-
-      .tooltip .tooltiptext {
-        visibility: hidden;
-        width: 120px;
-        bottom: 120%;
-        left: 70%;
-        margin-left: -60px;
-        background-color: black;
-        color: #fff;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px 0;
-
-        position: absolute;
-        z-index: 2;
-      }
-      .tooltip .tooltiptext::after {
-        content: " ";
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        margin-left: -5px;
-        border-width: 5px;
-        border-style: solid;
-        border-color: black transparent transparent transparent;
-      }
-
-      .tooltip:hover .tooltiptext {
-        visibility: visible;
-      }
     </style>
+    <script defer>
+      function copyUserName() {
+        navigator.clipboard.writeText("Miodec#1512");
+        // alert("Copied To Clipboard!");
+      }
+    </script>
   </head>
 
   <body>
@@ -315,13 +286,13 @@
         </div> -->
 
         Discord:
-<button aria-label="Click To Copy" data-balloon-pos="up" onclick="copyUserName()">Miodec#1512</button>
-        <script>
-          function copyUserName() {
-            navigator.clipboard.writeText("Miodec#1512");
-            alert("Copied To Clipboard!");
-          }
-        </script>
+        <span
+          aria-label="Click To Copy"
+          data-balloon-pos="up"
+          onclick="copyUserName()"
+        >
+          Miodec#1512
+        </span>
       </div>
     </div>
   </body>
