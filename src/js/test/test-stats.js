@@ -99,7 +99,8 @@ export function setInvalid() {
 
 export function calculateTestSeconds(now) {
   if (now === undefined) {
-    if (Config.mode == "zen" || TestLogic.bailout) {
+    let endAfkSeconds = (end - lastKeypress) / 1000;
+    if ((Config.mode == "zen" || TestLogic.bailout) && endAfkSeconds < 7) {
       return (lastKeypress - start) / 1000;
     } else {
       return (end - start) / 1000;
@@ -228,13 +229,10 @@ export function pushMissedWord(word) {
 
 export function removeAfkData() {
   let testSeconds = calculateTestSeconds();
-  let fullTestSeconds = (end - start) / 1000;
-  if (fullTestSeconds - testSeconds <= 7) {
-    keypressPerSecond.splice(testSeconds);
-    keypressTimings.duration.array.splice(testSeconds);
-    keypressTimings.spacing.array.splice(testSeconds);
-    wpmHistory.splice(testSeconds);
-  }
+  keypressPerSecond.splice(testSeconds);
+  keypressTimings.duration.array.splice(testSeconds);
+  keypressTimings.spacing.array.splice(testSeconds);
+  wpmHistory.splice(testSeconds);
 }
 
 function countChars() {
