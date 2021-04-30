@@ -49,7 +49,7 @@ function showFound() {
           if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
             ThemeController.clearPreview();
           if (!/font/gi.test(obj.id))
-            Config.previewFontFamily(Config.fontFamily);
+            UpdateConfig.previewFontFamily(Config.fontFamily);
           obj.hover();
           return false;
         }
@@ -367,7 +367,8 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
       if (obj.id == hoverId) {
         if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
           ThemeController.clearPreview();
-        if (!/font/gi.test(obj.id)) Config.previewFontFamily(Config.fontFamily);
+        if (!/font/gi.test(obj.id))
+          UpdateConfig.previewFontFamily(Config.fontFamily);
         obj.hover();
       }
     });
@@ -489,7 +490,7 @@ $(document).keydown((e) => {
             if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
               ThemeController.clearPreview();
             if (!/font/gi.test(obj.id))
-              Config.previewFontFamily(Config.fontFamily);
+              UpdateConfig.previewFontFamily(Config.fontFamily);
             obj.hover();
           }
         });
