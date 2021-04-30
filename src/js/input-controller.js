@@ -625,10 +625,10 @@ function handleAlpha(event) {
     TestUI.setActiveWordTop(document.querySelector("#words .active").offsetTop);
   }
 
-  //max length of the input is 20 unless in zen mode
+  //max length of the input is 20 unless in zen mode then its 30
   if (
-    Config.mode == "zen" ||
-    TestLogic.input.current.length < TestLogic.words.getCurrent().length + 20
+    (Config.mode == "zen" && TestLogic.input.current.length < 30) ||
+    (Config.mode !== "zen" && TestLogic.input.current.length < TestLogic.words.getCurrent().length + 20)
   ) {
     TestLogic.input.appendCurrent(event["key"]);
   }
