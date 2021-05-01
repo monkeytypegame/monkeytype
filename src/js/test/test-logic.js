@@ -948,6 +948,14 @@ export function finish(difficultyFailed = false) {
   TimerProgress.hide();
   Keymap.hide();
   Funbox.activate("none", null);
+
+  if (Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0) {
+    TestStats.setLastSecondNotRound();
+  }
+
+  if (Config.mode == "zen" || bailout) {
+    TestStats.removeAfkData();
+  }
   let stats = TestStats.calculateStats();
   if (stats === undefined) {
     stats = {
@@ -1779,7 +1787,6 @@ export function fail() {
   input.pushHistory();
   corrected.pushHistory();
   TestStats.pushKeypressesToHistory();
-  TestStats.setLastSecondNotRound();
   finish(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());
   let afkseconds = TestStats.calculateAfkSeconds();

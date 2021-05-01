@@ -288,12 +288,12 @@ function handleSpace(event, isEnter) {
     // currentKeypress.words.push(TestLogic.words.currentIndex);
     TestStats.incrementKeypressCount();
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
+    TestStats.updateLastKeypress();
     if (Config.difficulty == "expert" || Config.difficulty == "master") {
       TestLogic.fail();
       return;
     } else if (TestLogic.words.currentIndex == TestLogic.words.length) {
       //submitted last word that is incorrect
-      TestStats.setLastSecondNotRound();
       TestLogic.finish();
       return;
     }
@@ -609,6 +609,7 @@ function handleAlpha(event) {
     }
   }
   TestStats.incrementKeypressCount();
+  TestStats.updateLastKeypress();
   TestStats.pushKeypressWord(TestLogic.words.currentIndex);
   // currentKeypress.count++;
   // currentKeypress.words.push(TestLogic.words.currentIndex);
@@ -672,7 +673,6 @@ function handleAlpha(event) {
       TestLogic.input.pushHistory();
 
       TestLogic.corrected.pushHistory();
-      TestStats.setLastSecondNotRound();
       TestLogic.finish();
     }
   }
