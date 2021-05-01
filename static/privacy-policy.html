@@ -57,9 +57,18 @@
     </style>
     <script defer>
       function copyUserName() {
-        navigator.clipboard.writeText("Miodec#1512");
-        // alert("Copied To Clipboard!");
+        if (true) {
+          navigator.clipboard.writeText("Miodec#1512");
+          // alert("Copied To Clipboard!");
+          console.log("Username copied");
+        }
+        else {
+          alert("Unable to copy username");
+          console.log("Failed to copy username")
+
+        }
       }
+
     </script>
   </head>
 
