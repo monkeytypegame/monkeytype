@@ -121,7 +121,9 @@ function updateSuggested() {
 function hide() {
   UpdateConfig.previewFontFamily(Config.fontFamily);
   // applyCustomThemeColors();
-  ThemeController.clearPreview();
+  if (!ThemeController.randomTheme) {
+    ThemeController.clearPreview();
+  }
   $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 1)
