@@ -6,7 +6,7 @@ import Config from "./config";
 import * as UI from "./ui";
 
 let isPreviewingTheme = false;
-let randomTheme = null;
+export let randomTheme = null;
 
 export const colorVars = [
   "--bg-color",

@@ -16,7 +16,7 @@ function showInput(command, placeholder, defaultValue = "") {
   $("#commandInput input").focus();
   $("#commandInput input").attr("command", "");
   $("#commandInput input").attr("command", command);
-  if (defaultValue != ""){
+  if (defaultValue != "") {
     $("#commandInput input").select();
   }
 }
@@ -46,7 +46,10 @@ function showFound() {
     try {
       $.each(list.list, (index, obj) => {
         if (obj.found) {
-          if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+          if (
+            (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
+            !ThemeController.randomTheme
+          )
             ThemeController.clearPreview();
           if (!/font/gi.test(obj.id))
             Config.previewFontFamily(Config.fontFamily);
