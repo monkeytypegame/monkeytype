@@ -121,7 +121,11 @@ export function set(themeName) {
 export function clearPreview() {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
-    apply(Config.theme);
+    if (Config.customTheme) {
+      apply("custom");
+    } else {
+      apply(Config.theme);
+    }
   }
 }
 
