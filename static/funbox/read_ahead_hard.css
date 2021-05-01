@@ -1,0 +1,5 @@
+#words .word.active:nth-of-type(n + 2),
+#words .word.active:nth-of-type(n + 2) + .word,
+#words .word.active:nth-of-type(n + 2) + .word + .word {
+  color: transparent;
+}

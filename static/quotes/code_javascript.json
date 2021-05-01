@@ -1,0 +1,53 @@
+{
+  "language": "code_javascript",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "//a function that generates random gibberish at random length\n\nexport function getGibberish() {\n\tlet randLen = Math.floor(Math.random() * 7) + 1;\n\tlet ret = \"\";\n\tfor (let i = 0; i < randLen; i++) {\n\t\tret += String.fromCharCode(97 + Math.floor(Math.random() * 26));\n\t}\n\treturn ret;\n}",
+      "source": "Monkeytype Sourcecode",
+      "id": 1,
+      "length": 64
+    },
+    {
+      "text": "export function capitalizeFirstLetter(str) {\\n\\treturn str.charAt(0).toUpperCase() + str.slice(1);\\n}",
+      "source": "Monkeytype Sourcecode",
+      "length": 101,
+      "id": 2
+    },
+    {
+      "text": "export function roundTo2(num) {\\n\\treturn Math.round((num + Number.EPSILON) * 100) / 100;\\n}",
+      "source": "Monkeytype Sourcecode",
+      "length": 92,
+      "id": 3
+    },
+    {
+      "text": "export default function App(props) {\\n\\treturn (\\n\\t\\t<div {...props}>\\n\\t\\t\\tHello World!\\n\\t\\t</div>\\n\\t);\\n}",
+      "source": "Basic React.js Example",
+      "length": 111,
+      "id": 4
+    },
+    {
+      "text": "const arrayToHtmlList = (arr, listID) =>\\n\\t(el => (\\n\\t\\t(el = document.querySelector('#' + listID)),\\n\\t\\t(el.innerHTML += arr.map(item => `<li>${item}</li>`).join(''))\\n\\t))();",
+      "source": "GitHub Gist - fatosmorina/array_to_html.js",
+      "length": 179,
+      "id": 5
+    },
+    {
+      "text": "subdivide(quadrant) {\\n\\tswitch (quadrant) {\\n\\t\\tcase 'ne':\\n\\t\\t\\treturn new Rectangle(this.x + this.w / 4, this.y - this.h / 4, this.w / 2, this.h / 2);\\n\\t\\tcase 'nw':\\n\\t\\t\\treturn new Rectangle(this.x - this.w / 4, this.y - this.h / 4, this.w / 2, this.h / 2);\\n\\t\\tcase 'se':\\n\\t\\t\\treturn new Rectangle(this.x + this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);\\n\\t\\tcase 'sw':\\n\\t\\treturn new Rectangle(this.x - this.w / 4, this.y + this.h / 4, this.w / 2, this.h / 2);\\n\\t}\\n}",
+      "source": "Github - CodingTrain/QuadTree",
+      "length": 494,
+      "id": 6
+    },
+    {
+      "text": "canvas.parent('rgb-Canvas');\\nlet colors = [];\\nlet labels = [];\\nfor (let record of data.entries) {\\n\\tlet col = [record.r / 255, record.g / 255, record.b / 255];\\n\\tcolors.push(col);\\n\\tlabels.push(labelList.indexOf(record.label));\\n}",
+      "source": "GitHub - CodingTrain/ColorClassifer-TensorFlow.js",
+      "length": 236,
+      "id": 7
+    }
+  ]
+}

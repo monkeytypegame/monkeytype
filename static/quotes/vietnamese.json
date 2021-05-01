@@ -1,0 +1,35 @@
+{
+  "language": "vietnamese",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Tất cả mọi người đều sinh ra có quyền bình đẳng. Tạo hóa cho họ những quyền không ai có thể xâm phạm được; trong những quyền ấy, có quyền được sống, quyền tự do và quyền mưu cầu hạnh phúc.",
+      "source": "Tuyên Ngôn Độc Lập",
+      "length": 188,
+      "id": 1
+    },
+    {
+      "text": "Nếu bạn không thể ngẩng cao đầu và thừa nhận lỗi lầm của mình thì lỗi lầm ấy sẽ khống chế bạn. Việc tự nhận lỗi lầm không chỉ làm cho người khác tôn trọng bạn hơn mà còn phát triển sự tự trọng của bản thân mình.",
+      "source": "Đắc Nhân Tâm",
+      "length": 213,
+      "id": 2
+    },
+    {
+    "text": "Trong quan hệ với con người, hãy luôn nhớ rằng chúng ta đang giao tiếp với những sinh vật không những có lý trí mà còn có cảm xúc, họ rất dễ bị tổn thương bởi định kiến nhưng luôn có động lực khi có niềm tự hào và lòng kiêu hãnh.",
+      "source": "Đắc Nhân Tâm",
+      "length": 229,
+      "id": 3
+    },
+    {
+      "text": "Nhiệm vụ quan trọng nhất của con người là sống và mang đến cho mình cũng như những người xung quanh những giây phút thanh bình và hạnh phúc, đánh thức mọi khả năng tiềm ẩn trong họ và giúp họ vượt qua những khó khăn của cuộc sống.",
+      "source": "Đắc Nhân Tâm",
+      "length": 230,
+      "id": 4
+    }
+  ]
+}

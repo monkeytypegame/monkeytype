@@ -1,0 +1,251 @@
+{
+  "language": "dutch",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "Je kunt beter struikelen op de goede weg, dan wandelen op de verkeerde weg.",
+      "source": "Visje",
+      "length": 75,
+      "id": 1
+    },
+    {
+      "text": "Als ik zou willen dat je het begreep, zou ik het beter hebben uitgelegd.",
+      "source": "Johan Cruijf",
+      "length": 72,
+      "id": 2
+    },
+    {
+      "text": "Het enige wat je met liegen bereikt is niet geloofd worden als je de waarheid spreekt.",
+      "source": "Aristoteles",
+      "length": 86,
+      "id": 3
+    },
+    {
+      "text": "Als je troebel water met rust laat, wordt het vanzelf helder.",
+      "source": "Lao-Tse",
+      "length": 61,
+      "id": 4
+    },
+    {
+      "text": "Logica brengt je van A naar B. Verbeelding brengt je overal.",
+      "source": "Albert Einstein",
+      "length": 60,
+      "id": 5
+    },
+    {
+      "text": "Een mens heeft twee oren en één mond om twee keer zoveel te luisteren dan te praten.",
+      "source": "Confucius",
+      "length": 86,
+      "id": 6
+    },
+    {
+      "text": "Een gepantserde ridder kan niet gekwetst worden maar ook niet gestreeld.",
+      "source": "Luc Versteylen",
+      "length": 72,
+      "id": 7
+    },
+    {
+      "text": "Ik zag de engel in het graniet en hakte tot ik hem bevrijd had",
+      "source": "Michelangelo",
+      "length": 62,
+      "id": 8
+    },
+    {
+      "text": "Men hoeft niet te hopen om iets te ondernemen, noch te slagen om te volharden.",
+      "source": "Willem van Oranje",
+      "length": 78,
+      "id": 9
+    },
+    {
+      "text": "Door niemand worden we zo grondig om de tuin geleid als door onszelf",
+      "source": "Seneca",
+      "length": 68,
+      "id": 10
+    },
+    {
+      "text": "Terreur is een uiting van nihilisme, een bekentenis van onmacht, het ultieme bewijs dat de eigen argumentatie waardeloos is.",
+      "source": "Rik Torfs",
+      "length": 124,
+      "id": 11
+    },
+    {
+      "text": "De intimiteit van de omgang, de vanzelfsprekendheid van het doen alsof, dat kan niet goed zijn voor een mens. Acteurs zijn buitengewoon gevaarlijk bezig met hun eigen persoon.",
+      "source": "Anton Koolhaas",
+      "length": 175,
+      "id": 12
+    },
+    {
+      "text": "Van geluk wordt je geen steek wijzer. Je leert slechts van pijn en verdriet en leed; je komt alleen maar verder door een ongeluk.",
+      "source": "Maarten 't Hart",
+      "length": 129,
+      "id": 13
+    },
+    {
+      "text": "Eerst met haar naar bed gaan, dacht ik, eerst met haar slapen en dan praten. Wat in het vlees begonnen wordt, wordt in de geest volbracht.",
+      "source": "Jan Wolkers",
+      "length": 138,
+      "id": 14
+    },
+    {
+      "text": "Degene die het verleden controleert, controleert de toekomst. Degene die het heden controleert, controleert het verleden.",
+      "source": "George Orwell",
+      "length": 121,
+      "id": 15
+    },
+    {
+      "text": "Afstand scheidt enkel de lichamen, niet de geesten.",
+      "source": "Erasmus",
+      "length": 51,
+      "id": 16
+    },
+    {
+      "text": "Kamperen: het hele jaar door geld opzij leggen om veertien dagen armoe te kunnen lijden. Het hele jaar krom liggen om twee weken krom te kunnen liggen.",
+      "source": "Fons Jansen",
+      "length": 151,
+      "id": 17
+    },
+    {
+      "text": "Geheel zichzelf zijn mag men slechts, zolang men alleen is; wie dus niet van de eenzaamheid houdt, houdt ook niet van de vrijheid, want slechts wanneer men alleen is, is men vrij.",
+      "source": "Arthur Schoppenhauer",
+      "length": 179,
+      "id": 18
+    },
+    {
+      "text": "Medelijden met dieren hangt met de goedheid van het karakter zó nauw samen, dat men gerust beweren kan: wie wreed is tegenover dieren, kan geen goed mens zijn.",
+      "source": "Arthur Schoppenhauer",
+      "length": 160,
+      "id": 19
+    },
+    {
+      "text": "Als je de beperkingen kent, kun je daarbinnen onbeperkt te werk gaan.",
+      "source": "Jules Deelder",
+      "length": 69,
+      "id": 20
+    },
+    {
+      "text": "Ik heb tot nog toe achttien keer een boek geschreven, maar ik heb veel vaker géén boek geschreven. Het is een rotgevoel om als je een schrijver bent, te beseffen dat je volop bezig bent geen boek te schrijven.",
+      "source": "Herman Brusselmans",
+      "length": 211,
+      "id": 21
+    },
+    {
+      "text": "De Honderdjarige oorlog was hét evenement van die eeuw.",
+      "source": "Herman Brusselmans",
+      "length": 56,
+      "id": 22
+    },
+    {
+      "text": "Hoe een mens verondersteld wordt zijn leed te dragen, leren we op de verkeerde plaats: in boeken, op het toneel en in de opera. Het diepste leed wordt stil gedragen.",
+      "source": "Marnix Gijsen",
+      "length": 165,
+      "id": 23
+    },
+    {
+      "text": "Liefde en haat zijn in wezen één; zij houden in de wereld een labiel evenwicht in stand en elk exces in de ene of de andere richting verstoort dat.",
+      "source": "Marnix Gijsen",
+      "length": 149,
+      "id": 24
+    },
+    {
+      "text": "'t Is 'n grote fout te menen dat iemand die prikkelbaar is voor wat ons klein toeschijnt, daarom zwak wezen zou in grote zaken. Vaak is juist die overgevoeligheid voor 't kleine, een blijk van kracht tot het grote.",
+      "source": "Multatuli",
+      "length": 214,
+      "id": 25
+    },
+    {
+      "text": "Conversatie-aandrang is een menselijke zwakheid; het bewegen der kaken en het voortbrengen van min of meer beduidenishebbende woorden, zinnen en peroraties is een fysieke behoefte zo goed als eten en slapen.",
+      "source": "Louis Couperus",
+      "length": 207,
+      "id": 26
+    },
+    {
+      "text": "Eigenlijk is het leven toch één zelfbedrog, één dwalen in illusie, dacht zij droef, melancholiek. Een groot doel, een werelddoel of een klein doel voor zichzelf, voor zijn eigen lijf en ziel. O God, wat is dat alles weinig! En wat dwalen wij rond, zonder iets te weten. En elk zoekt zijn eigen doeltje, zijn illusie.",
+      "source": "Louis Couperus",
+      "length": 320,
+      "id": 27
+    },
+    {
+      "text": "\"Nooit zeggen: \"Ik heb geen geld.\" Je moet altijd zeggen: \"Daar kan ik op het ogenblik nog geen geld voor vrijmaken.\"",
+      "source": "Gerard Reve",
+      "length": 117,
+      "id": 28
+    },
+    {
+      "text": "Een man moge veel weten: een vrouw begrijpt alles.",
+      "source": "Gerard Reve",
+      "length": 69,
+      "id": 29
+    },
+    {
+      "text": "Dood zal ik alleen voor de levenden zijn, niet voor mezelf. Ik bedoel, ik kan niet dood zijn. Dood zijn altijd anderen.",
+      "source": "Harry Mulisch",
+      "length": 119,
+      "id": 30
+    },
+    {
+      "text": "Een filosoof die verwonderd onderzoekt hoe de kosmos in elkaar zit, doet me altijd denken aan een lamp die zich verbaasd afvraagt hoe het komt dat de kamer zo mooi verlicht is.",
+      "source": "Harry Mulisch",
+      "length": 176,
+      "id": 31
+    },
+    {
+      "text": "De enige vorm van geluk die ik ken, is me ongelukken bedenken die me nog niet overkomen zijn.",
+      "source": "Willem Frederik Hermans",
+      "length": 93,
+      "id": 32
+    },
+    {
+      "text": "Er zijn geen goede schrijvers. Soms ontstaat in ons land een goed boek, dat op het gemiddelde peil geen invloed heeft. De goede boeken zijn meestal afkomstig van zonderlingen, liefhebbers die stiekem schrijven in het holst van de nacht en niets te maken hebben met het literaire leven, met de levende literatuur als geheel.",
+      "source": "Willem Frederik Hermans",
+      "length": 323,
+      "id": 33
+    },
+    {
+      "text": "Wij zijn bang voor seksualiteit omdat ze de basis van onze hele maatschappij ondergraaft: het idee dat ieder mens een uniek individu is met een georganiseerd leven. Maar als iedere man in principe met iedere vrouw naar bed kan en omgekeerd, dan zijn al die verhalen over voorbestemdheid, uitverkorenheid, lotsbestemming en eeuwige liefde lariekoek. Als deeltjes zweven we door de ruimte, plus en min. En waar die elkaar raken vindt soms versmelting plaats. Ieder mens weet dat maar verdringt het. De mens is niet in staat tot filantropische seksualiteit omdat er geen enkele reden meer zou zijn om nog iets anders te doen dan dit.",
+      "source": "J. Bernlef",
+      "length": 630,
+      "id": 34
+    },
+    {
+      "text": "Als het waar is, wat in vele boeken staat beschreven. Dat er ook iets is na dit aardse leven. Als al die dierbaren die zijn voorgegaan, nou echt op jou te wachten staan. Ach dan is de dood zo erg nog niet. Dan heb alleen ik die achterblijft verdriet.",
+      "source": "Franz Kafka",
+      "length": 250,
+      "id": 35
+    },
+    {
+      "text": "Het leven lijkt op een onhandige samengestelde feestmaaltijd: terwijl men met ongeduld op het voorgerecht zit te wachten, blijkt het hoofdgerecht al ongemerkt te zijn gepasseerd.",
+      "source": "Franz Kafka",
+      "length": 178,
+      "id": 36
+    },
+    {
+      "text": "Er schuilt een armoede in ieder mensenbestaan. En die armoede scheidt ze van elkaar in verbittering van onbegrepenheid of drijft ze naar elkaar toe in hulpeloosheid van verlangen, maar alle liefde vermag niet die leemte te vullen - eenzaam blijft ten slotte ieder naast degene, die hem 't liefst is.",
+      "source": "Ina Boudier Bakker",
+      "length": 299,
+      "id": 37
+    },
+    {
+      "text": "In je leven ben je voor jezelf een raadsel, maar na je dood weet iedereen opeens heel goed hoe je was - hadden ze je het maar eerder verteld.",
+      "source": "Remco Campert",
+      "length": 141,
+      "id": 38
+    },
+    {
+      "text": "Zelfklevende enveloppen doen het nooit, behalve als je vergeten bent de brief erin te stoppen.",
+      "source": "Gerard Cox",
+      "length": 94,
+      "id": 39
+    },
+    {
+      "text": "Als ik dronken ben, dan kijkt één oog naar God, het andere naar de Duivel.",
+      "source": "Ramses Shaffy",
+      "length": 76,
+      "id": 40
+    }
+  ]
+}

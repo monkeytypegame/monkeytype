@@ -1,0 +1,59 @@
+{
+  "language": "italian",
+  "groups": [
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
+  ],
+  "quotes": [
+    {
+      "text": "Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura, ché la diritta via era smarrita.",
+      "source": "Dante Alighieri",
+      "length": 102,
+      "id": 1
+    },
+    {
+      "text": "Ma come posso penetrare nell'essenza del deserto? Ascolta il tuo cuore. Esso conosce tutte le cose, perché è originato dall'Anima del Mondo, e un giorno vi farà ritorno.",
+      "source": "Paolo Coelho - The Alchemist",
+      "length": 169,
+      "id": 2
+    },
+    {
+      "text": "Ora volerai, Fortunata. Respira. Senti la pioggia, E' acqua. Nella tua vita avrai molti motivi per essere felice, uno di questi si chiama acqua, un altro si chiama vento, un altro ancora si chiama sole e arriva sempre come ricompensa dopo la pioggia. Senti la pioggia. Apri le ali.",
+      "source": "Luis Sepúlveda",
+      "length": 281,
+      "id": 3
+    },
+    {
+      "text": "Se però perverremo a scoprire una teoria completa, essa dovrebbe essere col tempo comprensibile a tutti nei suoi principi generali, e non solo a pochi scienziati. Noi tutti - filosofi, scienziati e gente comune - dovremmo allora essere in grado di partecipare alla discussione del problema del perché noi e l'universo esistiamo. Se riusciremo a trovare la risposta a questa domanda, decreteremo il trionfo della ragione umana: giacché allora conosceremmo la mente di Dio.",
+      "source": "Stephen W. Hawking - A Brief History Of Time: From Big Bang To Black Holes",
+      "length": 471,
+      "id": 4
+    },
+    {
+      "text": "Verrà un giorno, e non è molto lontano, in cui potremo concludere affari, studiare, conoscere il mondo e le sue culture, assistere a importanti spettacoli, stringere amicizie, visitare i negozi del quartiere e mostrare fotografie a parenti lontani, tutto senza muoverci dalla scrivania o dalla poltrona.",
+      "source": "Bill Gates",
+      "length": 303,
+      "id": 5
+    },
+    {
+      "text": "E' molto semplice: non vedo bene che col cuore. L'essenziale è invisibile agli occhi.",
+      "source": "Antoine De Saint-Exupéry - Little Prince",
+      "length": 85,
+      "id": 6
+    }
+  ]
+}
