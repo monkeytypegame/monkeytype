@@ -294,7 +294,6 @@ function handleSpace(event, isEnter) {
       return;
     } else if (TestLogic.words.currentIndex == TestLogic.words.length) {
       //submitted last word that is incorrect
-      TestStats.setLastSecondNotRound();
       TestLogic.finish();
       return;
     }
@@ -674,7 +673,6 @@ function handleAlpha(event) {
       TestLogic.input.pushHistory();
 
       TestLogic.corrected.pushHistory();
-      TestStats.setLastSecondNotRound();
       TestLogic.finish();
     }
   }
