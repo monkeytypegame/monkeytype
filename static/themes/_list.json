@@ -523,5 +523,10 @@
     "name": "grand_prix",
     "bgColor": "#36475c",
     "textColor": "#c0d036"
+  },
+  {
+    "name": "peaches",
+    "bgColor": "#d3cfc6",
+    "textColor": "#dd7a5f"
   }
 ]

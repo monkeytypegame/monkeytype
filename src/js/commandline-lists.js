@@ -1831,9 +1831,7 @@ export let defaultCommands = {
             {
               id: "bailOutNo",
               display: "Nevermind",
-              exec: () => {
-                Commandline.hide();
-              },
+              exec: () => {},
               available: () => {
                 return canBailOut();
               },
