@@ -494,7 +494,10 @@ $(document).keydown((e) => {
           CommandlineLists.current[CommandlineLists.current.length - 1];
         $.each(list.list, (index, obj) => {
           if (obj.id == hoverId) {
-            if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+            if (
+              (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
+              !ThemeController.randomTheme
+            )
               ThemeController.clearPreview();
             if (!/font/gi.test(obj.id))
               Config.previewFontFamily(Config.fontFamily);
