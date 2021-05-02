@@ -54,7 +54,8 @@ function handleTab(event) {
   } else if (
     !TestUI.resultCalculating &&
     $("#commandLineWrapper").hasClass("hidden") &&
-    $("#simplePopupWrapper").hasClass("hidden")
+    $("#simplePopupWrapper").hasClass("hidden") &&
+    !$(".page.pageLogin").hasClass("active")
   ) {
     if ($(".pageTest").hasClass("active")) {
       if (Config.quickTab) {
@@ -629,7 +630,8 @@ function handleAlpha(event) {
   //max length of the input is 20 unless in zen mode then its 30
   if (
     (Config.mode == "zen" && TestLogic.input.current.length < 30) ||
-    (Config.mode !== "zen" && TestLogic.input.current.length < TestLogic.words.getCurrent().length + 20)
+    (Config.mode !== "zen" &&
+      TestLogic.input.current.length < TestLogic.words.getCurrent().length + 20)
   ) {
     TestLogic.input.appendCurrent(event["key"]);
   }
