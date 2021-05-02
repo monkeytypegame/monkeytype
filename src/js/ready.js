@@ -5,6 +5,7 @@ import * as VerificationController from "./verification-controller";
 import * as Settings from "./settings";
 import * as RouteController from "./route-controller";
 import * as UI from "./ui";
+import * as SignOutButton from "./sign-out-button";
 
 ManualRestart.set();
 Misc.migrateFromCookies();
@@ -30,6 +31,9 @@ $(document).ready(() => {
     .removeClass("hidden")
     .stop(true, true)
     .animate({ opacity: 1 }, 250, () => {
+      if (window.location.pathname === "/account") {
+        SignOutButton.show();
+      }
       if (window.location.pathname === "/verify") {
         const fragment = new URLSearchParams(window.location.hash.slice(1));
         if (fragment.has("access_token")) {
