@@ -528,5 +528,10 @@
     "name": "peaches",
     "bgColor": "#d3cfc6",
     "textColor": "#dd7a5f"
+  },
+  {
+    "name": "bouquet",
+    "bgColor": "#38564a",
+    "textColor": "#ffbdb2"
   }
 ]
