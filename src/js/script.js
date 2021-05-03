@@ -3756,6 +3756,7 @@ function handleBackspace(event) {
           currentInput = currentInput.substring(0, currentInput.length - 1);
         }
       }
+      Replay.addReplayEvent("backWord");
       currentWordIndex--;
       TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
       TestUI.updateActiveElement(true);

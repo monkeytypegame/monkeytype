@@ -26,6 +26,7 @@ function replayGetWordsList(wordsListFromScript) {
 
 function initializeReplayPrompt(wordsList) {
   const replayWordsElement = document.getElementById("replayWords");
+  replayWordsElement.innerHTML = "";
   wordsList.forEach((item, i) => {
     let x = document.createElement("div");
     x.className = "word";
@@ -60,23 +61,18 @@ function addReplayEvent(action, letter = undefined) {
   const acceptedActions = [
     "correctLetter",
     "incorrectLetter",
-    "extraLetter",
     "deleteLetter",
     "submitErrorWord",
     "submitCorrectWord",
     "clearWord",
+    "backWord",
   ];
   let timeDelta = performance.now() - replayStartTime;
-  if (
-    action === "incorrectLetter" ||
-    action === "extraLetter" ||
-    action === "correctLetter"
-  ) {
+  if (action === "incorrectLetter" || action === "correctLetter") {
     replayData.push({ action: action, letter: letter, time: timeDelta });
   } else {
     replayData.push({ action: action, time: timeDelta });
   }
-  console.log(replayData);
 }
 
 function playReplay() {
@@ -86,13 +82,71 @@ function playReplay() {
   $(".pageTest #startReplayButton").click((event) => {
     stopReplay = true;
   });
+  initializeReplayPrompt(wordsList);
   replayData.forEach((item, i) => {
     setTimeout(() => {
       if (stopReplay == true) {
         return;
       }
-      console.log(item);
-      //Add logic here
+      if (item.action === "correctLetter") {
+        document
+          .getElementById("replayWords")
+          .children[wordPos].children[curPos].classList.add("correct");
+        curPos++;
+      } else if (item.action === "incorrectLetter") {
+        let myElement;
+        if (
+          curPos >=
+          document.getElementById("replayWords").children[wordPos].children
+            .length
+        ) {
+          //if letter is an extra
+          myElement = document.createElement("letter");
+          myElement.classList.add("extra");
+          myElement.innerHTML = item.letter;
+          document
+            .getElementById("replayWords")
+            .children[wordPos].appendChild(myElement);
+        }
+        myElement = document.getElementById("replayWords").children[wordPos]
+          .children[curPos];
+        myElement.classList.add("incorrect");
+        curPos++;
+      } else if (item.action === "deleteLetter") {
+        let myElement = document.getElementById("replayWords").children[wordPos]
+          .children[curPos - 1];
+        if (myElement.classList.contains("extra")) {
+          myElement.remove();
+        } else {
+          myElement.className = "";
+        }
+        curPos--;
+      } else if (item.action === "submitCorrectWord") {
+        wordPos++;
+        curPos = 0;
+      } else if (item.action === "submitErrorWord") {
+        document
+          .getElementById("replayWords")
+          .children[wordPos].classList.add("error");
+        wordPos++;
+        curPos = 0;
+      } else if (item.action === "clearWord") {
+        let promptWord = document.createElement("div");
+        let wordArr = wordsList[wordPos].split("");
+        wordArr.forEach((letter, i) => {
+          promptWord.innerHTML += `<letter>${letter}</letter>`;
+        });
+        document.getElementById("replayWords").children[wordPos].innerHTML =
+          promptWord.innerHTML; //should be set to prompt data
+        curPos = 0;
+      } else if (item.action === "backWord") {
+        wordPos--;
+        curPos = document.getElementById("replayWords").children[wordPos]
+          .children.length;
+        document
+          .getElementById("replayWords")
+          .children[wordPos].classList.remove("error");
+      }
     }, item.time);
   });
 }
