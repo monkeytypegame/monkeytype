@@ -1898,9 +1898,8 @@ function startTest() {
     console.log("Analytics unavailable");
   }
   testActive = true;
-  Replay.startReplayTracking();
+  Replay.startReplayRecording();
   Replay.replayGetWordsList(wordsList);
-  Replay.clearReplayData();
   TestStats.setStart(performance.now());
   TestStats.resetKeypressTimings();
   TimerProgress.restart();
@@ -2116,7 +2115,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
   Focus.set(false);
   Caret.hide();
   testActive = false;
-  Replay.stopReplayTracking();
+  Replay.stopReplayRecording();
   LiveWpm.hide();
   LiveAcc.hide();
   TimerProgress.hide();
@@ -2166,7 +2165,7 @@ function restartTest(withSameWordset = false, nosave = false, event) {
       } else {
         sameWordset = true;
         testActive = false;
-        Replay.stopReplayTracking();
+        Replay.stopReplayRecording();
         currentWordIndex = 0;
         inputHistory = [];
         currentInput = "";
@@ -3757,6 +3756,7 @@ function handleBackspace(event) {
           currentInput = currentInput.substring(0, currentInput.length - 1);
         }
       }
+      Replay.addReplayEvent("backWord");
       currentWordIndex--;
       TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
       TestUI.updateActiveElement(true);
@@ -3766,6 +3766,7 @@ function handleBackspace(event) {
   } else {
     if (Config.confidenceMode === "max") return;
     if (event["ctrlKey"] || event["altKey"]) {
+      Replay.addReplayEvent("clearWord");
       let limiter = " ";
       if (currentInput.lastIndexOf("-") > currentInput.lastIndexOf(" "))
         limiter = "-";
@@ -3788,6 +3789,7 @@ function handleBackspace(event) {
       currentInput = "";
     } else {
       currentInput = currentInput.substring(0, currentInput.length - 1);
+      Replay.addReplayEvent("deleteLetter");
     }
     updateWordElement(!Config.blindMode);
   }
@@ -3840,6 +3842,7 @@ function handleSpace(event, isEnter) {
   dontInsertSpace = true;
   if (currentWord == currentInput || Config.mode == "zen") {
     //correct word or in zen mode
+    Replay.addReplayEvent("submitCorrectWord");
     if (
       paceCaret !== null &&
       paceCaret.wordsStatus[currentWordIndex] === true &&
@@ -3865,6 +3868,7 @@ function handleSpace(event, isEnter) {
     }
   } else {
     //incorrect word
+    Replay.addReplayEvent("submitErrorWord");
     if (
       paceCaret !== null &&
       paceCaret.wordsStatus[currentWordIndex] === undefined &&
@@ -4186,6 +4190,7 @@ function handleAlpha(event) {
     // currentError.words.push(currentWordIndex);
     thisCharCorrect = false;
     TestStats.pushMissedWord(wordsList[currentWordIndex]);
+    Replay.addReplayEvent("incorrectLetter", event.key);
   } else {
     TestStats.incrementAccuracy(true);
     thisCharCorrect = true;
@@ -4195,6 +4200,7 @@ function handleAlpha(event) {
         `<letter class="correct">${event.key}</letter>`
       );
     }
+    Replay.addReplayEvent("correctLetter", event.key);
   }
 
   if (thisCharCorrect) {

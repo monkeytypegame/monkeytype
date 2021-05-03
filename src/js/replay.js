@@ -1,45 +1,159 @@
+/*
+TODO:
+  One method I could use to store data is store actions instead of keystrokes
+    Have an event for every possible action
+      This helps when using special settings like no backspace
+    Examples:
+      If the program detects a correct letter, write correct letter to the list with the time it occurred at
+      If removed last word, add that event
+  Fix critical bugs that break replay
+    Might want to rewrite with linked list or word and letter classes
+  Add a pause button
+  Support for ctrl-backspace deletes an entire word
+  When you click on a word, teh replay jumps to that word
+  Export replay as video
+  Export replay as typing test file?
+    And add ability to upload file to watch replay
+*/
 let wordsList = [];
-export function replayGetWordsList(wordsListFromScript) {
+let replayData = [];
+let replayStartTime = 0;
+let replayRecording = true;
+
+function replayGetWordsList(wordsListFromScript) {
   wordsList = wordsListFromScript;
 }
 
-function showReplayWords(wordsList) {
-  const wordsString = wordsList.join(" ");
-  $("#replayWords").text(wordsString);
+function initializeReplayPrompt(wordsList) {
+  const replayWordsElement = document.getElementById("replayWords");
+  replayWordsElement.innerHTML = "";
+  wordsList.forEach((item, i) => {
+    let x = document.createElement("div");
+    x.className = "word";
+    for (i = 0; i < item.length; i++) {
+      let letter = document.createElement("LETTER");
+      letter.innerHTML = item[i];
+      x.appendChild(letter);
+    }
+    replayWordsElement.appendChild(x);
+  });
 }
 
-let replayTrackingStarted = false; // mirrors testActive state, only exists because of es6 modules
-function startReplayTracking() {
-  replayTrackingStarted = true;
-}
-function stopReplayTracking() {
-  replayTrackingStarted = false;
+function startReplayRecording() {
+  replayData = [];
+  replayStartTime = performance.now();
+  replayRecording = true;
 }
 
-//save keys and time between keys to lists
-let keysPressed = [];
-let timeBetweenKeys = [];
-let lastInputTime = performance.now();
-const ignoredKeys = ["Tab", "Shift", "Control", "Alt", "Escape"];
-$(document).keydown((event) => {
-  //make sure that test is active and key is not forbidden
-  if (replayTrackingStarted && ignoredKeys.indexOf(event.key) < 0) {
-    keysPressed.push(event.key);
-    timeBetweenKeys.push(performance.now() - lastInputTime);
-    lastInputTime = performance.now();
+function stopReplayRecording() {
+  replayRecording = false;
+}
+
+function addReplayEvent(action, letter = undefined) {
+  if (replayRecording === false) {
+    return;
   }
-});
+  /*
+    This function is called whenever an event happens during a live test
+      The event is then stored in the replayData list as a json object
+    action is a string
+  */
+  const acceptedActions = [
+    "correctLetter",
+    "incorrectLetter",
+    "deleteLetter",
+    "submitErrorWord",
+    "submitCorrectWord",
+    "clearWord",
+    "backWord",
+  ];
+  let timeDelta = performance.now() - replayStartTime;
+  if (action === "incorrectLetter" || action === "correctLetter") {
+    replayData.push({ action: action, letter: letter, time: timeDelta });
+  } else {
+    replayData.push({ action: action, time: timeDelta });
+  }
+}
 
-function clearReplayData() {
-  //set to first letter of first word and 0ms to type first letter
-  keysPressed = [wordsList[0][0]];
-  timeBetweenKeys = [0];
-  lastInputTime = performance.now();
+function playReplay() {
+  let stopReplay = false;
+  let wordPos = 0;
+  let curPos = 0;
+  $(".pageTest #startReplayButton").click((event) => {
+    stopReplay = true;
+  });
+  initializeReplayPrompt(wordsList);
+  replayData.forEach((item, i) => {
+    setTimeout(() => {
+      if (stopReplay == true) {
+        return;
+      }
+      if (item.action === "correctLetter") {
+        document
+          .getElementById("replayWords")
+          .children[wordPos].children[curPos].classList.add("correct");
+        curPos++;
+      } else if (item.action === "incorrectLetter") {
+        let myElement;
+        if (
+          curPos >=
+          document.getElementById("replayWords").children[wordPos].children
+            .length
+        ) {
+          //if letter is an extra
+          myElement = document.createElement("letter");
+          myElement.classList.add("extra");
+          myElement.innerHTML = item.letter;
+          document
+            .getElementById("replayWords")
+            .children[wordPos].appendChild(myElement);
+        }
+        myElement = document.getElementById("replayWords").children[wordPos]
+          .children[curPos];
+        myElement.classList.add("incorrect");
+        curPos++;
+      } else if (item.action === "deleteLetter") {
+        let myElement = document.getElementById("replayWords").children[wordPos]
+          .children[curPos - 1];
+        if (myElement.classList.contains("extra")) {
+          myElement.remove();
+        } else {
+          myElement.className = "";
+        }
+        curPos--;
+      } else if (item.action === "submitCorrectWord") {
+        wordPos++;
+        curPos = 0;
+      } else if (item.action === "submitErrorWord") {
+        document
+          .getElementById("replayWords")
+          .children[wordPos].classList.add("error");
+        wordPos++;
+        curPos = 0;
+      } else if (item.action === "clearWord") {
+        let promptWord = document.createElement("div");
+        let wordArr = wordsList[wordPos].split("");
+        wordArr.forEach((letter, i) => {
+          promptWord.innerHTML += `<letter>${letter}</letter>`;
+        });
+        document.getElementById("replayWords").children[wordPos].innerHTML =
+          promptWord.innerHTML; //should be set to prompt data
+        curPos = 0;
+      } else if (item.action === "backWord") {
+        wordPos--;
+        curPos = document.getElementById("replayWords").children[wordPos]
+          .children.length;
+        document
+          .getElementById("replayWords")
+          .children[wordPos].classList.remove("error");
+      }
+    }, item.time);
+  });
 }
 
 function toggleReplayDisplay() {
   if ($("#resultReplay").stop(true, true).hasClass("hidden")) {
-    showReplayWords(wordsList);
+    initializeReplayPrompt(wordsList);
     //show
     if (!$("#watchReplayButton").hasClass("loaded")) {
       $("#words").html(
@@ -64,151 +178,8 @@ function toggleReplayDisplay() {
   }
 }
 
-function startReplay() {
-  showReplayWords(wordsList);
-  //show replay of the typing test
-  let promptPart = document.getElementById("replayWords").innerHTML;
-  let promptPartLast = ""; //passed letters will go here
-  let inputPart = '<div class="word">'; //html representation of input
-  let replayOutput = "</div>"; //combined inputPart and promptPart
-  let lastTime = 0;
-  let stopFunction = false;
-  $(".pageTest #startReplayButton").click((event) => {
-    stopFunction = true;
-  });
-  keysPressed.forEach((item, i) => {
-    setTimeout(() => {
-      if (stopFunction == true) {
-        return;
-      }
-      // TODO handle pressing backspace when last word was correct
-      if (keysPressed[i] == " " && promptPart[0] == " ") {
-        // if space was pressed and space was expected
-        inputPart += '</div><div class="word">'; //end word and create new word
-        promptPartLast += promptPart[0]; //add typed letter to last prompt
-        promptPart = promptPart.substring(1); //removed last typed character from prompt
-      } else if (keysPressed[i] == promptPart[0]) {
-        //if pressed key is correct:
-        inputPart += '<letter class="correct">' + keysPressed[i] + "</letter>";
-        promptPartLast += promptPart[0]; //add typed letter to last prompt
-        promptPart = promptPart.substring(1); //removed last typed character from prompt
-      } else if (keysPressed[i] == "Backspace") {
-        if (promptPartLast.slice(-1) == " ") {
-          //if the last character was a space, check if last word was error and remove
-          let nextWordIndex = inputPart.lastIndexOf('<div class="word');
-          let submittedWordIndex = inputPart.lastIndexOf(
-            '<div class="word',
-            nextWordIndex - 1
-          ); // get index of last submitted word
-          let submittedWordSubstring = inputPart.substring(
-            submittedWordIndex,
-            nextWordIndex
-          );
-          if (submittedWordSubstring.lastIndexOf("error" >= 0)) {
-            let newSubmittedWord =
-              submittedWordSubstring.slice(0, 16) +
-              submittedWordSubstring.slice(22);
-            inputPart = inputPart.replace(
-              submittedWordSubstring,
-              newSubmittedWord
-            );
-          }
-        }
-        let lastLetterIndex = inputPart.lastIndexOf("<letter"); //get index of last inputted letter
-        if (
-          inputPart.substring(lastLetterIndex).substring(15, 22) == "skipped"
-        ) {
-          //if the last word was skipped
-          let closeTagStart = inputPart
-            .substring(lastLetterIndex)
-            .lastIndexOf("</letter>");
-          let skippedLetters = inputPart
-            .substring(lastLetterIndex)
-            .substring(24, closeTagStart); //area between "incorrect"> and </letter>
-          promptPart = skippedLetters + " " + promptPart;
-          promptPartLast = promptPartLast.slice(0, skippedLetters.length + 1); //remove skippedLetters and space from lastletters
-        } else if (
-          inputPart.substring(lastLetterIndex).substring(25, 30) != "extra"
-        ) {
-          //if the last character was not an extra
-          promptPart = promptPartLast.slice(-1) + promptPart; // set as last removed character + current string
-          promptPartLast = promptPartLast.slice(0, -1); // remove last character from partlast
-        }
-        inputPart = inputPart.substring(0, lastLetterIndex); // remove last letter element
-      } else if (keysPressed[i] != " " && promptPart[0] == " ") {
-        // if a key other than space was pressed, but space was expected
-        inputPart +=
-          '<letter class="incorrect extra">' + keysPressed[i] + "</letter>";
-      } else if (keysPressed[i] == " " && promptPart[0] != " ") {
-        // if space is pressed but next character is not a space
-        let skipToIndex = promptPart.indexOf(" ");
-        let skippedText = promptPart.substring(0, skipToIndex); //-1 to remove the space
-        promptPart = promptPart.substring(skipToIndex + 1);
-        promptPartLast += skippedText + " ";
-        inputPart +=
-          '<letter class="skipped">' +
-          skippedText +
-          '</letter></div><div class="word">';
-      } else if (keysPressed[i] != promptPart[0]) {
-        //keyPressed is not correct
-        inputPart +=
-          '<letter class="incorrect">' + keysPressed[i] + "</letter>";
-        promptPartLast += promptPart[0]; //add typed letter to last prompt
-        promptPart = promptPart.substring(1); //removed next character from prompt
-      } else {
-        console.log("Invalid replay situation");
-      }
-
-      //check if last submitted word was an error
-      if (keysPressed[i] == " ") {
-        let nextWordIndex = inputPart.lastIndexOf('<div class="word"');
-        let submittedWordIndex = inputPart.lastIndexOf(
-          '<div class="word"',
-          nextWordIndex - 1
-        ); // get index of last submitted word
-        let submittedWordSubstring = inputPart.substring(
-          submittedWordIndex,
-          nextWordIndex
-        );
-        if (
-          submittedWordSubstring.indexOf("incorrect") >= 0 ||
-          submittedWordSubstring.indexOf("skipped") >= 0
-        ) {
-          let newSubmittedWord =
-            submittedWordSubstring.slice(0, 16) +
-            " error" +
-            submittedWordSubstring.slice(16);
-          inputPart = inputPart.replace(
-            submittedWordSubstring,
-            newSubmittedWord
-          ); //replace submittedWordSubstring with newSubmittedWord
-        } else if (submittedWordSubstring.indexOf("error") >= 0) {
-          //if there was an error but there isn't anymore
-          let newSubmittedWord = "";
-          if (
-            submittedWordSubstring.indexOf("incorrect") < 0 ||
-            submittedWordSubstring.indexOf("skipped") < 0
-          ) {
-            // if there are no incorrect or skipped words
-            newSubmittedWord =
-              submittedWordSubstring.slice(0, 16) +
-              submittedWordSubstring.slice(22);
-          }
-          inputPart = inputPart.replace(
-            submittedWordSubstring,
-            newSubmittedWord
-          );
-        }
-      }
-      replayOutput = inputPart + promptPart;
-      document.getElementById("replayWords").innerHTML = replayOutput;
-    }, lastTime + timeBetweenKeys[i]);
-    lastTime += timeBetweenKeys[i];
-  });
-}
-
 $(".pageTest #startReplayButton").click(async (event) => {
-  startReplay();
+  playReplay();
 });
 
 $(document).on("keypress", "#watchReplayButton", (event) => {
@@ -222,8 +193,8 @@ $(document.body).on("click", "#watchReplayButton", () => {
 });
 
 export {
-  clearReplayData,
-  replayTrackingStarted,
-  startReplayTracking,
-  stopReplayTracking,
+  startReplayRecording,
+  stopReplayRecording,
+  addReplayEvent,
+  replayGetWordsList,
 };
