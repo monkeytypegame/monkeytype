@@ -73,6 +73,7 @@ function addReplayEvent(action, letter = undefined) {
   } else {
     replayData.push({ action: action, time: timeDelta });
   }
+  console.log(replayData);
 }
 
 function playReplay() {
@@ -143,6 +144,13 @@ function playReplay() {
         wordPos--;
         curPos = document.getElementById("replayWords").children[wordPos]
           .children.length;
+        while (
+          document.getElementById("replayWords").children[wordPos].children[
+            curPos - 1
+          ].className === ""
+        ) {
+          curPos--;
+        }
         document
           .getElementById("replayWords")
           .children[wordPos].classList.remove("error");
