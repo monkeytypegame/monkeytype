@@ -19,6 +19,11 @@ let wordsList = [];
 let replayData = [];
 let replayStartTime = 0;
 let replayRecording = true;
+let wordPos = 0;
+let curPos = 0;
+let targetWordPos = 0;
+let targetCurPos = 0;
+let timeoutList = [];
 
 function replayGetWordsList(wordsListFromScript) {
   wordsList = wordsListFromScript;
@@ -53,110 +58,122 @@ function addReplayEvent(action, letter = undefined) {
   if (replayRecording === false) {
     return;
   }
-  /*
-    This function is called whenever an event happens during a live test
-      The event is then stored in the replayData list as a json object
-    action is a string
-  */
-  const acceptedActions = [
-    "correctLetter",
-    "incorrectLetter",
-    "deleteLetter",
-    "submitErrorWord",
-    "submitCorrectWord",
-    "clearWord",
-    "backWord",
-  ];
   let timeDelta = performance.now() - replayStartTime;
   if (action === "incorrectLetter" || action === "correctLetter") {
     replayData.push({ action: action, letter: letter, time: timeDelta });
   } else {
     replayData.push({ action: action, time: timeDelta });
   }
-  console.log(replayData);
+}
+
+function pauseReplay() {
+  timeoutList.forEach((item, i) => {
+    clearTimeout(item);
+  });
+  timeoutList = [];
+  targetCurPos = curPos;
+  targetWordPos = wordPos;
 }
 
 function playReplay() {
-  let stopReplay = false;
-  let wordPos = 0;
-  let curPos = 0;
-  $(".pageTest #startReplayButton").click((event) => {
-    stopReplay = true;
-  });
+  let targetTime = 0;
+  curPos = 0;
+  wordPos = 0;
   initializeReplayPrompt(wordsList);
   replayData.forEach((item, i) => {
-    setTimeout(() => {
-      if (stopReplay == true) {
-        return;
-      }
-      if (item.action === "correctLetter") {
-        document
-          .getElementById("replayWords")
-          .children[wordPos].children[curPos].classList.add("correct");
-        curPos++;
-      } else if (item.action === "incorrectLetter") {
-        let myElement;
-        if (
-          curPos >=
-          document.getElementById("replayWords").children[wordPos].children
-            .length
-        ) {
-          //if letter is an extra
-          myElement = document.createElement("letter");
-          myElement.classList.add("extra");
-          myElement.innerHTML = item.letter;
-          document
-            .getElementById("replayWords")
-            .children[wordPos].appendChild(myElement);
-        }
-        myElement = document.getElementById("replayWords").children[wordPos]
-          .children[curPos];
-        myElement.classList.add("incorrect");
-        curPos++;
-      } else if (item.action === "deleteLetter") {
-        let myElement = document.getElementById("replayWords").children[wordPos]
-          .children[curPos - 1];
-        if (myElement.classList.contains("extra")) {
-          myElement.remove();
-        } else {
-          myElement.className = "";
-        }
-        curPos--;
-      } else if (item.action === "submitCorrectWord") {
-        wordPos++;
-        curPos = 0;
-      } else if (item.action === "submitErrorWord") {
-        document
-          .getElementById("replayWords")
-          .children[wordPos].classList.add("error");
-        wordPos++;
-        curPos = 0;
-      } else if (item.action === "clearWord") {
-        let promptWord = document.createElement("div");
-        let wordArr = wordsList[wordPos].split("");
-        wordArr.forEach((letter, i) => {
-          promptWord.innerHTML += `<letter>${letter}</letter>`;
-        });
-        document.getElementById("replayWords").children[wordPos].innerHTML =
-          promptWord.innerHTML; //should be set to prompt data
-        curPos = 0;
-      } else if (item.action === "backWord") {
-        wordPos--;
-        curPos = document.getElementById("replayWords").children[wordPos]
-          .children.length;
-        while (
-          document.getElementById("replayWords").children[wordPos].children[
-            curPos - 1
-          ].className === ""
-        ) {
-          curPos--;
-        }
-        document
-          .getElementById("replayWords")
-          .children[wordPos].classList.remove("error");
-      }
-    }, item.time);
+    if (
+      wordPos < targetWordPos ||
+      (wordPos === targetWordPos && curPos < targetCurPos)
+    ) {
+      //quickly display everything up to the target
+      handleDisplayLogic(item);
+      targetTime = item.time;
+    } else {
+      timeoutList.push(
+        setTimeout(() => {
+          handleDisplayLogic(item);
+        }, item.time - targetTime)
+      );
+    }
   });
+  timeoutList.push(
+    setTimeout(() => {
+      //executes after completion, there's probably a better way to do this
+      targetCurPos = 0;
+      targetWordPos = 0;
+      let toggleReplayButton = document.getElementById("playpauseReplayButton");
+      toggleReplayButton.children[0].className = "fas fa-play";
+      toggleReplayButton.setAttribute("aria-label", "Start replay");
+    }, replayData[replayData.length - 1].time - targetTime)
+  );
+}
+
+function handleDisplayLogic(item) {
+  if (item.action === "correctLetter") {
+    document
+      .getElementById("replayWords")
+      .children[wordPos].children[curPos].classList.add("correct");
+    curPos++;
+  } else if (item.action === "incorrectLetter") {
+    let myElement;
+    if (
+      curPos >=
+      document.getElementById("replayWords").children[wordPos].children.length
+    ) {
+      //if letter is an extra
+      myElement = document.createElement("letter");
+      myElement.classList.add("extra");
+      myElement.innerHTML = item.letter;
+      document
+        .getElementById("replayWords")
+        .children[wordPos].appendChild(myElement);
+    }
+    myElement = document.getElementById("replayWords").children[wordPos]
+      .children[curPos];
+    myElement.classList.add("incorrect");
+    curPos++;
+  } else if (item.action === "deleteLetter") {
+    let myElement = document.getElementById("replayWords").children[wordPos]
+      .children[curPos - 1];
+    if (myElement.classList.contains("extra")) {
+      myElement.remove();
+    } else {
+      myElement.className = "";
+    }
+    curPos--;
+  } else if (item.action === "submitCorrectWord") {
+    wordPos++;
+    curPos = 0;
+  } else if (item.action === "submitErrorWord") {
+    document
+      .getElementById("replayWords")
+      .children[wordPos].classList.add("error");
+    wordPos++;
+    curPos = 0;
+  } else if (item.action === "clearWord") {
+    let promptWord = document.createElement("div");
+    let wordArr = wordsList[wordPos].split("");
+    wordArr.forEach((letter, i) => {
+      promptWord.innerHTML += `<letter>${letter}</letter>`;
+    });
+    document.getElementById("replayWords").children[wordPos].innerHTML =
+      promptWord.innerHTML; //should be set to prompt data
+    curPos = 0;
+  } else if (item.action === "backWord") {
+    wordPos--;
+    curPos = document.getElementById("replayWords").children[wordPos].children
+      .length;
+    while (
+      document.getElementById("replayWords").children[wordPos].children[
+        curPos - 1
+      ].className === ""
+    ) {
+      curPos--;
+    }
+    document
+      .getElementById("replayWords")
+      .children[wordPos].classList.remove("error");
+  }
 }
 
 function toggleReplayDisplay() {
@@ -167,7 +184,6 @@ function toggleReplayDisplay() {
       $("#words").html(
         `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
       );
-
       $("#resultReplay")
         .removeClass("hidden")
         .css("display", "none")
@@ -186,8 +202,18 @@ function toggleReplayDisplay() {
   }
 }
 
-$(".pageTest #startReplayButton").click(async (event) => {
-  playReplay();
+$(".pageTest #playpauseReplayButton").click(async (event) => {
+  const toggleButton = document.getElementById("playpauseReplayButton")
+    .children[0];
+  if (toggleButton.className === "fas fa-play") {
+    toggleButton.className = "fas fa-pause";
+    toggleButton.parentNode.setAttribute("aria-label", "Pause replay");
+    playReplay();
+  } else if (toggleButton.className === "fas fa-pause") {
+    toggleButton.className = "fas fa-play";
+    toggleButton.parentNode.setAttribute("aria-label", "Resume replay");
+    pauseReplay();
+  }
 });
 
 $(document).on("keypress", "#watchReplayButton", (event) => {
