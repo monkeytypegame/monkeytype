@@ -24,6 +24,8 @@ let curPos = 0;
 let targetWordPos = 0;
 let targetCurPos = 0;
 let timeoutList = [];
+const toggleButton = document.getElementById("playpauseReplayButton")
+  .children[0];
 
 function replayGetWordsList(wordsListFromScript) {
   wordsList = wordsListFromScript;
@@ -48,6 +50,8 @@ function startReplayRecording() {
   replayData = [];
   replayStartTime = performance.now();
   replayRecording = true;
+  targetCurPos = 0;
+  targetWordPos = 0;
 }
 
 function stopReplayRecording() {
@@ -73,12 +77,16 @@ function pauseReplay() {
   timeoutList = [];
   targetCurPos = curPos;
   targetWordPos = wordPos;
+  toggleButton.className = "fas fa-play";
+  toggleButton.parentNode.setAttribute("aria-label", "Resume replay");
 }
 
 function playReplay() {
   let targetTime = 0;
   curPos = 0;
   wordPos = 0;
+  toggleButton.className = "fas fa-pause";
+  toggleButton.parentNode.setAttribute("aria-label", "Pause replay");
   initializeReplayPrompt(wordsList);
   replayData.forEach((item, i) => {
     if (
@@ -196,6 +204,7 @@ function toggleReplayDisplay() {
     }
   } else {
     //hide
+    pauseReplay();
     $("#resultReplay").slideUp(250, () => {
       $("#resultReplay").addClass("hidden");
     });
@@ -203,15 +212,9 @@ function toggleReplayDisplay() {
 }
 
 $(".pageTest #playpauseReplayButton").click(async (event) => {
-  const toggleButton = document.getElementById("playpauseReplayButton")
-    .children[0];
   if (toggleButton.className === "fas fa-play") {
-    toggleButton.className = "fas fa-pause";
-    toggleButton.parentNode.setAttribute("aria-label", "Pause replay");
     playReplay();
   } else if (toggleButton.className === "fas fa-pause") {
-    toggleButton.className = "fas fa-play";
-    toggleButton.parentNode.setAttribute("aria-label", "Resume replay");
     pauseReplay();
   }
 });
