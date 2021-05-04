@@ -81,13 +81,10 @@ function pauseReplay() {
   toggleButton.parentNode.setAttribute("aria-label", "Resume replay");
 }
 
-function playReplay() {
-  let targetTime = 0;
+function loadOldReplay() {
+  let startingIndex = 0;
   curPos = 0;
   wordPos = 0;
-  toggleButton.className = "fas fa-pause";
-  toggleButton.parentNode.setAttribute("aria-label", "Pause replay");
-  initializeReplayPrompt(wordsList);
   replayData.forEach((item, i) => {
     if (
       wordPos < targetWordPos ||
@@ -95,24 +92,39 @@ function playReplay() {
     ) {
       //quickly display everything up to the target
       handleDisplayLogic(item);
-      targetTime = item.time;
-    } else {
-      timeoutList.push(
-        setTimeout(() => {
-          handleDisplayLogic(item);
-        }, item.time - targetTime)
-      );
+      startingIndex = i + 1;
     }
+  });
+  return startingIndex;
+}
+
+function playReplay() {
+  curPos = 0;
+  wordPos = 0;
+  toggleButton.className = "fas fa-pause";
+  toggleButton.parentNode.setAttribute("aria-label", "Pause replay");
+  initializeReplayPrompt(wordsList);
+  let startingIndex = loadOldReplay();
+  let lastTime = replayData[startingIndex].time;
+  replayData.forEach((item, i) => {
+    if (i < startingIndex) {
+      return;
+    }
+    timeoutList.push(
+      setTimeout(() => {
+        console.log(item);
+        handleDisplayLogic(item);
+      }, item.time - lastTime)
+    );
   });
   timeoutList.push(
     setTimeout(() => {
-      //executes after completion, there's probably a better way to do this
+      //after the replay has finished, this will run
       targetCurPos = 0;
       targetWordPos = 0;
-      let toggleReplayButton = document.getElementById("playpauseReplayButton");
-      toggleReplayButton.children[0].className = "fas fa-play";
-      toggleReplayButton.setAttribute("aria-label", "Start replay");
-    }, replayData[replayData.length - 1].time - targetTime)
+      toggleButton.className = "fas fa-play";
+      toggleButton.parentNode.setAttribute("aria-label", "Start replay");
+    }, replayData[replayData.length - 1].time - lastTime)
   );
 }
 
@@ -165,7 +177,7 @@ function handleDisplayLogic(item) {
       promptWord.innerHTML += `<letter>${letter}</letter>`;
     });
     document.getElementById("replayWords").children[wordPos].innerHTML =
-      promptWord.innerHTML; //should be set to prompt data
+      promptWord.innerHTML;
     curPos = 0;
   } else if (item.action === "backWord") {
     wordPos--;
@@ -187,6 +199,7 @@ function handleDisplayLogic(item) {
 function toggleReplayDisplay() {
   if ($("#resultReplay").stop(true, true).hasClass("hidden")) {
     initializeReplayPrompt(wordsList);
+    loadOldReplay();
     //show
     if (!$("#watchReplayButton").hasClass("loaded")) {
       $("#words").html(
