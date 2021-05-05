@@ -24,7 +24,20 @@ function replayGetWordsList(wordsListFromScript) {
 function initializeReplayPrompt() {
   const replayWordsElement = document.getElementById("replayWords");
   replayWordsElement.innerHTML = "";
+  let wordCount = 0;
+  replayData.forEach((item, i) => {
+    //trim wordsList for timed tests
+    if (item.action === "backWord") {
+      wordCount--;
+    } else if (
+      item.action === "submitCorrectWord" ||
+      item.action === "submitErrorWord"
+    ) {
+      wordCount++;
+    }
+  });
   wordsList.forEach((item, i) => {
+    if (i > wordCount) return;
     let x = document.createElement("div");
     x.className = "word";
     for (i = 0; i < item.length; i++) {
