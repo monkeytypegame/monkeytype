@@ -1,6 +1,8 @@
 import Config from "./config";
 import * as CustomText from "./custom-text";
 import * as Misc from "./misc";
+import * as TestLogic from "./test-logic";
+import * as TestTimer from "./test-timer";
 
 export function show() {
   let op = Config.showTimerProgress ? Config.timerOpacity : 0;
@@ -83,8 +85,8 @@ export function restart() {
   }
 }
 
-//TODO remove the parameters once they are inside a module
-export function update(time, wordsList, currentWordIndex, inputHistory) {
+export function update() {
+  let time = TestTimer.time;
   if (
     Config.mode === "time" ||
     (Config.mode === "custom" && CustomText.isTimeRandom)
@@ -123,7 +125,7 @@ export function update(time, wordsList, currentWordIndex, inputHistory) {
     Config.mode === "quote"
   ) {
     if (Config.timerStyle === "bar") {
-      let outof = wordsList.length;
+      let outof = TestLogic.words.length;
       if (Config.mode === "words") {
         outof = Config.words;
       }
@@ -134,7 +136,9 @@ export function update(time, wordsList, currentWordIndex, inputHistory) {
           outof = CustomText.text.length;
         }
       }
-      let percent = Math.floor(((currentWordIndex + 1) / outof) * 100);
+      let percent = Math.floor(
+        ((TestLogic.words.currentIndex + 1) / outof) * 100
+      );
       $("#timer")
         .stop(true, true)
         .animate(
@@ -144,7 +148,7 @@ export function update(time, wordsList, currentWordIndex, inputHistory) {
           250
         );
     } else if (Config.timerStyle === "text") {
-      let outof = wordsList.length;
+      let outof = TestLogic.words.length;
       if (Config.mode === "words") {
         outof = Config.words;
       }
@@ -156,14 +160,16 @@ export function update(time, wordsList, currentWordIndex, inputHistory) {
         }
       }
       if (outof === 0) {
-        $("#timerNumber").html("<div>" + `${inputHistory.length}` + "</div>");
+        $("#timerNumber").html(
+          "<div>" + `${TestLogic.input.history.length}` + "</div>"
+        );
       } else {
         $("#timerNumber").html(
-          "<div>" + `${inputHistory.length}/${outof}` + "</div>"
+          "<div>" + `${TestLogic.input.history.length}/${outof}` + "</div>"
         );
       }
     } else if (Config.timerStyle === "mini") {
-      let outof = wordsList.length;
+      let outof = TestLogic.words.length;
       if (Config.mode === "words") {
         outof = Config.words;
       }
@@ -175,16 +181,22 @@ export function update(time, wordsList, currentWordIndex, inputHistory) {
         }
       }
       if (Config.words === 0) {
-        $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}`);
+        $("#miniTimerAndLiveWpm .time").html(
+          `${TestLogic.input.history.length}`
+        );
       } else {
-        $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}/${outof}`);
+        $("#miniTimerAndLiveWpm .time").html(
+          `${TestLogic.input.history.length}/${outof}`
+        );
       }
     }
   } else if (Config.mode == "zen") {
     if (Config.timerStyle === "text") {
-      $("#timerNumber").html("<div>" + `${inputHistory.length}` + "</div>");
+      $("#timerNumber").html(
+        "<div>" + `${TestLogic.input.history.length}` + "</div>"
+      );
     } else {
-      $("#miniTimerAndLiveWpm .time").html(`${inputHistory.length}`);
+      $("#miniTimerAndLiveWpm .time").html(`${TestLogic.input.history.length}`);
     }
   }
 }

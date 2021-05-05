@@ -2,7 +2,6 @@ import * as Caret from "./caret";
 
 let state = false;
 
-//TODO remove testActive once in a module
 export function set(foc) {
   if (foc && !state) {
     state = true;
@@ -20,3 +19,12 @@ export function set(foc) {
     $("#middle").removeClass("focus");
   }
 }
+
+$(document).mousemove(function (event) {
+  if (
+    $("#top").hasClass("focus") &&
+    (event.originalEvent.movementX > 0 || event.originalEvent.movementY > 0)
+  ) {
+    set(false);
+  }
+});

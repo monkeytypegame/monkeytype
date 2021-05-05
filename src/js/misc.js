@@ -1,4 +1,10 @@
-import { showBackgroundLoader, hideBackgroundLoader } from "./dom-util";
+import * as Loader from "./loader";
+
+export function getuid() {
+  console.error("Only share this uid with Miodec and nobody else!");
+  console.log(firebase.auth().currentUser.uid);
+  console.error("Only share this uid with Miodec and nobody else!");
+}
 
 function hexToHSL(H) {
   // Convert hex to RGB first
@@ -105,10 +111,10 @@ export async function getFunboxList() {
 let quotes = null;
 export async function getQuotes(language) {
   if (quotes === null || quotes.language !== language.replace(/_\d*k$/g, "")) {
-    showBackgroundLoader();
+    Loader.show();
     try {
       let data = await $.getJSON(`quotes/${language}.json`);
-      hideBackgroundLoader();
+      Loader.hide();
       if (data.quotes === undefined || data.quotes.length === 0) {
         quotes = {
           quotes: [],
@@ -132,7 +138,7 @@ export async function getQuotes(language) {
       });
       return quotes;
     } catch {
-      hideBackgroundLoader();
+      Loader.hide();
       quotes = {
         quotes: [],
         length: 0,
@@ -281,39 +287,40 @@ export async function getLanguage(lang) {
   }
 }
 
-export function setCookie(cname, cvalue, exdays) {
-  var d = new Date();
-  d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
-  var expires = "expires=" + d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
+export function migrateFromCookies() {
+  ["resultFilters", "config", "merchbannerclosed", "activeTags"].forEach(
+    function (name) {
+      let decodedCookie = decodeURIComponent(document.cookie).split(";");
+      let value = null;
 
-export function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(";");
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == " ") {
-      c = c.substring(1);
+      for (var i = 0; i < decodedCookie.length; i++) {
+        var c = decodedCookie[i];
+        while (c.charAt(0) == " ") {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name + "=") == 0) {
+          value = c.substring(name.length + 1, c.length);
+        }
+      }
+
+      if (value) {
+        window.localStorage.setItem(name, value);
+        $.removeCookie(name, { path: "/" });
+      }
     }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
+  );
 }
 
 export function sendVerificationEmail() {
-  showBackgroundLoader();
+  Loader.show();
   let cu = firebase.auth().currentUser;
   cu.sendEmailVerification()
     .then(() => {
-      hideBackgroundLoader();
+      Loader.hide();
       showNotification("Email sent to " + cu.email, 4000);
     })
     .catch((e) => {
-      hideBackgroundLoader();
+      Loader.hide();
       showNotification("Error: " + e.message, 3000);
       console.error(e.message);
     });
@@ -622,12 +629,28 @@ export function toggleFullscreen(elem) {
   }
 }
 
+export function getWords() {
+  const words = [...document.querySelectorAll("#words .word")]
+    .map((word) => {
+      return [...word.querySelectorAll("letter")]
+        .map((letter) => letter.innerText)
+        .join("");
+    })
+    .join(" ");
+
+  return words;
+}
+
 //credit: https://www.w3resource.com/javascript-exercises/javascript-string-exercise-32.php
 export function remove_non_ascii(str) {
   if (str === null || str === "") return false;
   else str = str.toString();
 
   return str.replace(/[^\x20-\x7E]/g, "");
+}
+
+export function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 export function cleanTypographySymbols(textToClean) {
@@ -696,4 +719,10 @@ export function clearTimeouts(timeouts) {
     clearTimeout(to);
     to = null;
   });
+}
+
+//https://stackoverflow.com/questions/1431094/how-do-i-replace-a-character-at-a-particular-index-in-javascript
+export function setCharAt(str, index, chr) {
+  if (index > str.length - 1) return str;
+  return str.substring(0, index) + chr + str.substring(index + 1);
 }

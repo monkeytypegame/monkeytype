@@ -1,11 +1,8 @@
 import * as TestStats from "./test-stats";
-import * as Notifications from "./notification-center";
-import Config from "./config";
+import * as Notifications from "./notifications";
+import Config, * as UpdateConfig from "./config";
 import * as CustomText from "./custom-text";
-
-//TODO remove after adding them to modules
-let setMode;
-let restartTest;
+import * as TestLogic from "./test-logic";
 
 export let before = {
   mode: null,
@@ -13,10 +10,7 @@ export let before = {
   numbers: null,
 };
 
-export function init(setMode, restartTest) {
-  if (this.setMode === undefined) this.setMode = setMode;
-  if (this.restartTest === undefined) this.restartTest = restartTest;
-
+export function init() {
   if (Object.keys(TestStats.missedWords).length == 0) {
     Notifications.add("You haven't missed any words.", 0);
     return;
@@ -25,7 +19,7 @@ export function init(setMode, restartTest) {
   let punctuation =
     before.punctuation === null ? Config.punctuation : before.punctuation;
   let numbers = before.numbers === null ? Config.numbers : before.numbers;
-  setMode("custom");
+  UpdateConfig.setMode("custom");
   let newCustomText = [];
   Object.keys(TestStats.missedWords).forEach((missedWord) => {
     for (let i = 0; i < TestStats.missedWords[missedWord]; i++) {
@@ -36,7 +30,7 @@ export function init(setMode, restartTest) {
   CustomText.setIsWordRandom(true);
   CustomText.setWord(50);
 
-  restartTest();
+  TestLogic.restart();
   before.mode = mode;
   before.punctuation = punctuation;
   before.numbers = numbers;

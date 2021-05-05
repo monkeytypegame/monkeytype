@@ -866,8 +866,8 @@ function validateResult(result) {
     }
   }
 
-  if (result.chartData.wpm !== undefined) {
-    if (result.chartData.wpm.filter((w) => w > 400).length > 0) return false;
+  if (result.chartData.raw !== undefined) {
+    if (result.chartData.raw.filter((w) => w > 350).length > 0) return false;
   }
 
   if (result.wpm > 100 && result.consistency < 10) return false;
@@ -1383,7 +1383,7 @@ exports.testCompleted = functions.https.onRequest(async (request, response) => {
     //   .then((user) => {
     //     return user.emailVerified;
     //   });
-    emailVerified = true;
+    // emailVerified = true;
 
     // if (obj.funbox === "nospace") {
     //   response.status(200).send({ data: { resultCode: -1 } });
@@ -1782,6 +1782,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
       }
       if (err) return;
       if (key === "resultFilters") return;
+      if (key === "customBackground") return;
       let val = obj[key];
       if (Array.isArray(val)) {
         val.forEach((valarr) => {
@@ -2307,8 +2308,49 @@ exports.checkLeaderboards = functions.https.onRequest(
     }
     request = request.body.data;
 
+    function verifyValue(val) {
+      let errCount = 0;
+      if (val === null || val === undefined) {
+      } else if (Array.isArray(val)) {
+        //array
+        val.forEach((val2) => {
+          errCount += verifyValue(val2);
+        });
+      } else if (typeof val === "object" && !Array.isArray(val)) {
+        //object
+        Object.keys(val).forEach((valkey) => {
+          errCount += verifyValue(val[valkey]);
+        });
+      } else {
+        if (!/^[0-9a-zA-Z._\-\+]+$/.test(val)) errCount++;
+      }
+      return errCount;
+    }
+    let errCount = verifyValue(request);
+    if (errCount > 0) {
+      console.error(
+        `error checking leaderboard for ${
+          request.uid
+        } error count ${errCount} - bad input - ${JSON.stringify(request.obj)}`
+      );
+      response.status(200).send({
+        data: {
+          status: -999,
+          message: "Bad input",
+        },
+      });
+      return;
+    }
+
+    let emailVerified = await admin
+      .auth()
+      .getUser(request.uid)
+      .then((user) => {
+        return user.emailVerified;
+      });
+
     try {
-      if (request.emailVerified === false) {
+      if (emailVerified === false) {
         response.status(200).send({
           data: {
             needsToVerifyEmail: true,
@@ -2421,10 +2463,12 @@ exports.checkLeaderboards = functions.https.onRequest(
             console.error(
               `error in transaction checking leaderboards - ${error}`
             );
-            return {
-              status: -999,
-              message: error,
-            };
+            response.status(200).send({
+              data: {
+                status: -999,
+                message: error,
+              },
+            });
           });
 
         let daily = await db
@@ -2499,15 +2543,17 @@ exports.checkLeaderboards = functions.https.onRequest(
             console.error(
               `error in transaction checking leaderboards - ${error}`
             );
-            return {
-              status: -999,
-              message: error,
-            };
+            response.status(200).send({
+              data: {
+                status: -999,
+                message: error,
+              },
+            });
           });
 
         //send discord update
         let usr =
-          request.discordId !== undefined ? request.discordId : request.name;
+          request.discordId != undefined ? request.discordId : request.name;
 
         if (
           global !== null &&
@@ -2565,6 +2611,7 @@ exports.checkLeaderboards = functions.https.onRequest(
       } else {
         response.status(200).send({
           data: {
+            status: 1,
             daily: {
               insertedAt: null,
             },
@@ -2742,10 +2789,10 @@ exports.scheduledFunctionCrontab = functions.pubsub
     }
   });
 
-async function announceLbUpdate(discordId, pos, lb, wpm, raw, acc) {
+async function announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
   db.collection("bot-commands").add({
     command: "sayLbUpdate",
-    arguments: [discordId, pos, lb, wpm, raw, acc],
+    arguments: [discordId, pos, lb, wpm, raw, acc, con],
     executed: false,
     requestTimestamp: Date.now(),
   });
