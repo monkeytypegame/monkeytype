@@ -1580,6 +1580,8 @@ export function finish(difficultyFailed = false, mp_outOfTime = false) {
                   );
                 } else if (e.data.resultCode === -5) {
                   Notifications.add("Test too short. Result not saved.", -1);
+                } else if (e.data.resultCode === -500) {
+                  Notifications.add("Test saving disabled", 0, 1);
                 } else if (e.data.resultCode === -999) {
                   console.error("internal error: " + e.data.message);
                   Notifications.add(

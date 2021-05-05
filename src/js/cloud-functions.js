@@ -1,6 +1,9 @@
-export const testCompleted = firebase
-  .functions()
-  .httpsCallable("testCompleted");
+// export const testCompleted = firebase
+//   .functions()
+//   .httpsCallable("testCompleted");
+export const testCompleted = async () => {
+  return { data: { resultCode: -500 } };
+};
 export const addTag = firebase.functions().httpsCallable("addTag");
 export const editTag = firebase.functions().httpsCallable("editTag");
 export const removeTag = firebase.functions().httpsCallable("removeTag");
