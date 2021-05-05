@@ -5,16 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monkeytype</title>
     <!-- <link rel="stylesheet" href="css/fa.css" /> -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="css/balloon.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/media-queries.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="images/fav.png" />
-    <link rel="shortcut icon" href="images/fav.png" />
+    <link rel="shortcut icon" href="images/favicon/fav.png" />
+    <link
+      href="images/favicon/apple-touch-icon-180x180.png"
+      rel="apple-touch-icon"
+      sizes="180x180"
+    />
+    <link
+      href="images/favicon/apple-touch-icon-152x152.png"
+      rel="apple-touch-icon"
+      sizes="152x152"
+    />
+    <link
+      href="images/favicon/apple-touch-icon-120x120.png"
+      rel="apple-touch-icon"
+      sizes="120x120"
+    />
+
+    <link
+      href="images/favicon/apple-touch-icon-76x76.png"
+      rel="apple-touch-icon"
+      sizes="76x76"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="images/favicon/apple-touch-icon-60x60.png"
+    />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-      integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
       crossorigin="anonymous"
     />
     <meta name="name" content="Monkeytype" />
@@ -50,7 +80,7 @@
     </script>
     <script async src="https://s.nitropay.com/ads-693.js"></script>
   </head>
-
+  <div class="customBackground"></div>
   <body>
     <div id="backgroundLoader" style="display: none"></div>
     <div id="notificationCenter">
@@ -102,6 +132,10 @@
     </div>
     <div id="customTextPopupWrapper" class="hidden">
       <div id="customTextPopup" action="">
+        <div class="wordfilter button">
+          <i class="fas fa-filter"></i>
+          Words filter
+        </div>
         <textarea class="textarea" placeholder="Custom text"></textarea>
         <div class="inputs">
           <label class="check">
@@ -133,13 +167,63 @@
             </span>
           </label>
         </div>
+        <div class="button apply">ok</div>
+      </div>
+    </div>
+    <div id="wordFilterPopupWrapper" class="hidden">
+      <div id="wordFilterPopup">
+        <div class="group">
+          <div class="title">language</div>
+          <select class="languageInput" class=""></select>
+        </div>
+        <div class="group lengthgrid">
+          <div class="title">min length</div>
+          <div class="title">max length</div>
+          <input
+            class="wordLength wordMinInput"
+            autocomplete="off"
+            type="number"
+          />
+          <input
+            class="wordLength wordMaxInput"
+            autocomplete="off"
+            type="number"
+          />
+        </div>
+        <div class="group">
+          <div class="title">include</div>
+          <input class="wordIncludeInput" autocomplete="off" />
+        </div>
+        <div class="group">
+          <div class="title">exclude</div>
+          <input class="wordExcludeInput" autocomplete="off" />
+        </div>
+        <div class="tip">
+          Use the above filters to include and exclude words or characters
+          (separated by spaces)
+        </div>
+        <i
+          class="fas fa-fw fa-spin fa-circle-notch hidden loadingIndicator"
+        ></i>
         <div class="button">ok</div>
       </div>
     </div>
-    <div id="customMode2PopupWrapper" class="hidden">
-      <div id="customMode2Popup" mode="">
-        <div class="title">Test length</div>
+    <div id="customWordAmountPopupWrapper" class="hidden">
+      <div id="customWordAmountPopup">
+        <div class="title">Word amount</div>
         <input type="number" value="1" min="1" max="10000" />
+        <div class="tip">
+          You can start an infinite test by inputting 0. Then, to stop the test,
+          use the Bail Out feature (esc > Bail Out)
+        </div>
+        <div class="button">ok</div>
+      </div>
+    </div>
+    <div id="customTestDurationPopupWrapper" class="hidden">
+      <div id="customTestDurationPopup">
+        <div class="title">Test duration</div>
+        <div class="preview"></div>
+        <input value="1" />
         <div class="tip">
           You can start an infinite test by inputting 0. Then, to stop the test,
           use the Bail Out feature (esc > Bail Out)
@@ -817,7 +901,7 @@
       </div>
     </div>
     <div id="timerWrapper">
-      <div id="timer"></div>
+      <div id="timer" class="timerMain"></div>
     </div>
     <div style="display: flex; justify-content: space-around">
       <div id="nitropay_ad_left" class="hidden"></div>
@@ -977,7 +1061,7 @@
                   thicc
                 </div>
                 <div class="text-button" quoteLength="-2" tabindex="2">
-                  <i class="fas fa-tools"></i>
+                  <i class="fas fa-search"></i>
                 </div>
               </div>
             </div>
@@ -1004,14 +1088,15 @@
                 <i class="fas fa-lock"></i>
                 Caps Lock
               </div>
+              <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
               <div id="caret" class="default size15"></div>
               <div id="paceCaret" class="default size15 hidden"></div>
               <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
-              <div id="timerNumber">
+              <div id="timerNumber" class="timerMain">
                 <div>60</div>
               </div>
-              <div id="miniTimerAndLiveWpm">
+              <div id="miniTimerAndLiveWpm" class="timerMain size15">
                 <div class="time hidden">1:00</div>
                 <div class="wpm">60</div>
                 <div class="acc">100%</div>
@@ -1197,13 +1282,13 @@
                   </div>
                 </div>
               </div>
-              <div id="largeLiveWpmAndAcc">
+              <div id="largeLiveWpmAndAcc" class="timerMain">
                 <div id="liveWpm" class="hidden">123</div>
                 <div id="liveAcc" class="hidden">100%%</div>
               </div>
               <div
                 id="restartTestButton"
-                aria-label="Restart test"
+                aria-label="Restart Test"
                 data-balloon-pos="down"
                 class=""
                 tabindex="0"
@@ -1279,7 +1364,7 @@
                   <div class="top">characters</div>
                   <div
                     class="bottom"
-                    aria-label="Correct, incorrect, extra and missed"
+                    aria-label="correct, incorrect, extra, and missed"
                     data-balloon-break=""
                     data-balloon-pos="up"
                   >
@@ -1368,7 +1453,7 @@
                 </div>
                 <div
                   id="restartTestButtonWithSameWordset"
-                  aria-label="Repeat test"
+                  aria-label="Repeat Test"
                   data-balloon-pos="down"
                   tabindex="0"
                   onclick="this.blur();"
@@ -1415,8 +1500,16 @@
             </div>
           </div>
           <div class="page pageAbout hidden">
+            <div class="created">
+              Created with love by Miodec.
+              <a href="#supporters_title">Supported</a>
+              and
+              <a href="#contributors_title">expanded</a>
+              by many awesome people. Launched on 15th of May, 2020.
+            </div>
             <div class="section">
-              <h1>about</h1>
+              <div class="title">about</div>
+              <!-- <h1>about</h1> -->
               <p>
                 Monkeytype is a minimalistic typing test, featuring many test
                 modes, an account system to save your typing speed history and
@@ -1426,8 +1519,8 @@
             <div class="section">
               <h1>word set</h1>
               <p>
-                By default, the website uses the most common 200 words in the
-                english language to generate its tests. You can change to an
+                By default, this website uses the most common 200 words in the
+                English language to generate its tests. You can change to an
                 expanded set (1000 most common words) in the options, or change
                 the language entirely.
               </p>
@@ -1441,12 +1534,12 @@
                 <key>enter</key>
                 (or just
                 <key>tab</key>
-                if you have (
+                if you have
                 <a href="settings">quick tab mode enabled</a>
                 ) to restart the typing test. Open the command line by pressing
                 <key>esc</key>
                 - there you can access all the functionality you need without
-                touching your mouse.
+                touching your mouse
               </p>
             </div>
             <div class="section">
@@ -1488,9 +1581,16 @@
               <p>
                 If you encounter a bug, or have a feature request - join the
                 <a href="https://discord.gg/yENzqcB" target="_blank">Discord</a>
-                server, send me a message on Reddit or create an issue on
-                <a href="https://github.com/Miodec/monkeytype" target="_blank">
-                  GitHub.
+                server,
+                <a href="https://www.reddit.com/users/Miodec" target="_blank">
+                  send me a message on Reddit
+                </a>
+                or
+                <a
+                  href="https://github.com/Miodec/monkeytype/issues"
+                  target="_blank"
+                >
+                  create an issue on GitHub.
                 </a>
               </p>
             </div>
@@ -1509,12 +1609,12 @@
               </p>
             </div>
             <div class="section">
-              <h1>credits</h1>
+              <div class="title">credits</div>
               <p>
                 <a href="https://www.reddit.com/user/montydrei" target="_blank">
-                  montydrei
+                  Montydrei
                 </a>
-                - name suggestion
+                for the name suggestion
               </p>
               <p>
                 <a
@@ -1527,17 +1627,23 @@
                 the prototype of this website
               </p>
               <p>
+                <a href="#supporters_title">Supporters</a>
+                who helped financially by donating, enabling optional ads or
+                buying merch
+              </p>
+              <p>
                 <a
                   href="https://github.com/Miodec/monkeytype/graphs/contributors"
+                  target="_blank"
                 >
                   Contributors
                 </a>
                 on GitHub that have helped with implementing various features,
-                adding themes and more.
+                adding themes and more
               </p>
             </div>
             <div class="section">
-              <h1>supporters</h1>
+              <h1 id="supporters_title">supporters</h1>
               <div class="supporters">
                 <div>Not Gate</div>
                 <div>Corey</div>
@@ -1602,6 +1708,180 @@
                 <div>Robin</div>
                 <div>Sonicv6</div>
                 <div>Taran</div>
+                <div>Roux</div>
+                <div>Artem</div>
+                <div>DarkBlu</div>
+                <div>John</div>
+                <div>Gregory</div>
+                <div>Hopeless Love</div>
+                <div>Kalen</div>
+                <div>Ben</div>
+                <div>Jakub</div>
+                <div>Vincent</div>
+                <div>Connor</div>
+                <div>Zunaed</div>
+                <div>Emilio</div>
+                <div>Michael</div>
+              </div>
+            </div>
+            <div class="section">
+              <h1 id="contributors_title">contributors</h1>
+              <div class="contributors">
+                <div>typerqeo</div>
+                <div>bhomie</div>
+                <div>corey-b</div>
+                <div>UnrealApex</div>
+                <div>willerbee</div>
+                <div>dmartin-tech</div>
+                <div>SeerLite</div>
+                <div>FakeDazon</div>
+                <div>a1usha</div>
+                <div>Brachyurus</div>
+                <div>0x8b</div>
+                <div>seaerchin</div>
+                <div>ryan-harrington</div>
+                <div>Smithster</div>
+                <div>Marco-Pagani</div>
+                <div>CrumblyLiquid</div>
+                <div>Jack92829</div>
+                <div>xZa-k</div>
+                <div>avi123nash</div>
+                <div>bataak</div>
+                <div>Saint-dev</div>
+                <div>ThatOneCalculator</div>
+                <div>mwahlig</div>
+                <div>zachy-ho</div>
+                <div>aviegdown</div>
+                <div>ramnathk</div>
+                <div>GFruit</div>
+                <div>Killer8Hyper</div>
+                <div>MaticSulc</div>
+                <div>joshuamango</div>
+                <div>Ahmad-A0</div>
+                <div>christophersarmiento</div>
+                <div>71xn</div>
+                <div>jacekdobrowolski</div>
+                <div>leduyquang753</div>
+                <div>Maclogger</div>
+                <div>iwa</div>
+                <div>TayIorRobinson</div>
+                <div>vuong-buihv</div>
+                <div>barthakstege</div>
+                <div>l4ssc</div>
+                <div>throwawaywords</div>
+                <div>Jonny-exe</div>
+                <div>OctahedronV2</div>
+                <div>iitsalex</div>
+                <div>RealCyGuy</div>
+                <div>Inirdin</div>
+                <div>jkjrmlg</div>
+                <div>kunal-rp</div>
+                <div>KungPaoChick</div>
+                <div>MakerJake01</div>
+                <div>MysteriousLog6</div>
+                <div>Octarine-Phaneron</div>
+                <div>tawtis</div>
+                <div>Vitaman02</div>
+                <div>BarePotato</div>
+                <div>alegottu</div>
+                <div>s1mple-Lemon</div>
+                <div>Alenygam</div>
+                <div>fuwn</div>
+                <div>minerscale</div>
+                <div>aditya1rawat</div>
+                <div>ammarptn</div>
+                <div>ariebh</div>
+                <div>bsamseth</div>
+                <div>bool3max</div>
+                <div>dCubelic</div>
+                <div>elswenson</div>
+                <div>FabianSt305</div>
+                <div>Fraserbc</div>
+                <div>shinze</div>
+                <div>gkeep</div>
+                <div>JosueLeovani</div>
+                <div>dtuukkanen</div>
+                <div>lucas-fern</div>
+                <div>Magical-Penguin</div>
+                <div>mendelmaleh</div>
+                <div>NoCrypt</div>
+                <div>nullaf</div>
+                <div>chireia</div>
+                <div>sohamb117</div>
+                <div>stevep99</div>
+                <div>mintlodica</div>
+                <div>miyukowo</div>
+                <div>g-harel</div>
+                <div>kiriDevs</div>
+                <div>krsntn</div>
+                <div>baulml</div>
+                <div>ryevertigo</div>
+                <div>Fowl95</div>
+                <div>SoulNinja-dev</div>
+                <div>AfonsoVReis</div>
+                <div>popey456963</div>
+                <div>AlirezaTheBruh</div>
+                <div>anhduck14</div>
+                <div>cBachoo</div>
+                <div>beckxie</div>
+                <div>thescripted</div>
+                <div>CarinaChenot</div>
+                <div>Bregoliii</div>
+                <div>Cosmeeeen</div>
+                <div>danhogan</div>
+                <div>danii</div>
+                <div>David-Mordechai</div>
+                <div>EmNudge</div>
+                <div>kwfk</div>
+                <div>gavinmn</div>
+                <div>GioSDA</div>
+                <div>GuyClicking</div>
+                <div>HayataSama</div>
+                <div>zaxophone</div>
+                <div>Mollerz</div>
+                <div>jeremygautama</div>
+                <div>cincodenada</div>
+                <div>JonesSagabaen</div>
+                <div>kadenscott</div>
+                <div>GMKanat</div>
+                <div>lukew3</div>
+                <div>narze</div>
+                <div>Meimersdorfer</div>
+                <div>mia-cx</div>
+                <div>nikzzzz</div>
+                <div>OldMope</div>
+                <div>Oskar283</div>
+                <div>paulhchoi</div>
+                <div>pserey</div>
+                <div>pjrelex</div>
+                <div>18praneeth</div>
+                <div>RebonackAl</div>
+                <div>rhesamu</div>
+                <div>samyak039</div>
+                <div>sergiathanzo</div>
+                <div>phrohdoh</div>
+                <div>BlueGone</div>
+                <div>tsara27</div>
+                <div>vansul</div>
+                <div>zekth</div>
+                <div>voroskoi</div>
+                <div>andrewtran1995</div>
+                <div>angularorbit</div>
+                <div>aoaaceai</div>
+                <div>bilfri</div>
+                <div>gwenzek</div>
+                <div>iokiou</div>
+                <div>kikuKeii</div>
+                <div>kokaloo</div>
+                <div>nextZed</div>
+                <div>redarguireda</div>
+                <div>sudoerena</div>
+                <div>thuanpham2311</div>
+                <div>Rougemoot</div>
+                <div>wRadion</div>
+                <div>yaazkal</div>
+                <div>zigotica</div>
+                <div>cinoss</div>
               </div>
             </div>
           </div>
@@ -2711,6 +2991,35 @@
                   </div>
                 </div>
               </div>
+              <div class="section keymapLegendStyle">
+                <h1>keymap legend style</h1>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    keymapLegendStyle="lowercase"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    lowercase
+                  </div>
+                  <div
+                    class="button"
+                    keymapLegendStyle="uppercase"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    uppercase
+                  </div>
+                  <div
+                    class="button"
+                    keymapLegendStyle="blank"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    blank
+                  </div>
+                </div>
+              </div>
               <div class="section keymapLayout">
                 <h1>keymap layout</h1>
                 <div class="buttons"></div>
@@ -2884,6 +3193,92 @@
                     onclick="this.blur();"
                   >
                     fav
+                  </div>
+                </div>
+              </div>
+              <div class="section customBackgroundSize">
+                <h1>custom background</h1>
+                <div class="text">
+                  Set an image url to be a custom background image. Cover fits
+                  the image to cover the screen. Contain fits the image to be
+                  fully visible. Max fits the image corner to corner.
+                </div>
+                <div>
+                  <div class="inputAndButton">
+                    <input
+                      type="text"
+                      placeholder="image url"
+                      class="input"
+                      tabindex="0"
+                      onClick="this.select();"
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
+                  </div>
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      customBackgroundSize="cover"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      cover
+                    </div>
+                    <div
+                      class="button"
+                      customBackgroundSize="contain"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      contain
+                    </div>
+                    <div
+                      class="button"
+                      customBackGroundSize="max"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      max
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="section customBackgroundFilter">
+                <h1>custom background filter</h1>
+                <div class="text">
+                  Apply various effects to the custom background.
+                </div>
+                <div class="groups">
+                  <div class="group blur">
+                    <div class="title">blur</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="5" value="0" step="0.1" />
+                  </div>
+                  <div class="group brightness">
+                    <div class="title">brightness</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="2" value="1" step="0.1" />
+                  </div>
+                  <div class="group saturate">
+                    <div class="title">saturate</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="2" value="1" step="0.1" />
+                  </div>
+                  <div class="group opacity">
+                    <div class="title">opacity</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="1" value="1" step="0.1" />
+                  </div>
+                  <div class="saveContainer">
+                    <div class="save button" style="grid-column: 3">
+                      <!-- <i class="fas fa-save fa-fw"></i> -->
+                      save
+                    </div>
                   </div>
                 </div>
               </div>
@@ -3192,7 +3587,7 @@
                     class="button off danger"
                     id="resetPersonalBestsButton"
                     tabindex="0"
-                    onclick="this.blur();simplePopups.resetPersonalBests.show();"
+                    onclick="this.blur();"
                   >
                     reset personal bests
                   </div>
@@ -3208,7 +3603,7 @@
                     class="button off danger"
                     id="updateAccountEmail"
                     tabindex="0"
-                    onclick="this.blur();simplePopups.updateEmail.show();"
+                    onclick="this.blur();"
                   >
                     update email
                   </div>
@@ -3676,43 +4071,42 @@
             <key>tab</key>
             and
             <key>enter</key>
-            - restart test
+            - Restart Test
             <br />
             <key>esc</key>
-            - command line
+            - Command Line
           </div>
           <div class="leftright">
             <div class="left">
               <div>
-                <i class="far fa-fw fa-heart"></i>
-                Crafted by Miodec
-              </div>
-              <div>
                 <i class="fas fa-fw fa-code"></i>
-                Contribute on
                 <a href="https://github.com/Miodec/monkeytype" target="_blank">
                   GitHub
                 </a>
               </div>
               <div>
                 <i class="fab fa-fw fa-discord"></i>
-                Join the
-                <a href="https://www.discord.gg/monkeytype" class="discordLink">
-                  Discord server
+                <a
+                  href="https://www.discord.gg/monkeytype"
+                  target="_blank"
+                  class="discordLink"
+                >
+                  Discord
+                </a>
+              </div>
+              <div>
+                <i class="fab fa-fw fa-twitter"></i>
+                <a href="https://twitter.com/monkeytypegame" target="_blank">
+                  Twitter
                 </a>
               </div>
               <div>
                 <i class="fas fa-fw fa-donate"></i>
-                <span id="supportMeButton">Support this project</span>
-                <!-- <a href="https://www.patreon.com/monkeytype">Patreon</a>
-                , via
-                <a href="https://www.paypal.me/jackbartnik" target="_blank">
-                  PayPal
-                </a>
-                or by
-                <a href="https://monkeytype.store" target="_blank">
-                  buying merch
-                </a> -->
+                <span id="supportMeButton">Donate</span>
+              </div>
+              <div>
+                <i class="fas fa-user-shield"></i>
+                <a href="privacy-policy.html" target="_blank">Privacy Policy</a>
               </div>
             </div>
             <div class="right">
@@ -3729,10 +4123,6 @@
               <div>
                 <i class="fas fa-code-branch"></i>
                 <span class="version">version</span>
-              </div>
-              <div>
-                <i class="fas fa-user-shield"></i>
-                <a href="privacy-policy.html">Privacy Policy</a>
               </div>
               <!-- <div>
                 <i class="fas fa-file"></i>
@@ -3779,5 +4169,6 @@
   <script src="js/jquery.cookie-1.4.1.min.js"></script>
   <script src="js/moment.min.js"></script>
   <script src="js/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
   <script src="js/monkeytype.js"></script>
 </html>

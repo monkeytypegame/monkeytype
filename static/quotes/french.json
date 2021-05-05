@@ -120,6 +120,48 @@
       "source": "Max Boublil \"J'aime les moches\"",
       "length": 178,
       "id": 19
+    },
+    {
+      "text": "La principale critique vient du fait que l’arrangement AZERTY provient du QWERTY, lui-même optimisé pour pallier les contraintes mécaniques des premières machines à écrire et non pas pour la langue anglaise. L’origine de l’AZERTY est plutôt sombre mais il est clair qu’il n’a pas été pensé pour la langue française.",
+      "source": "Wikipedia - AZERTY",
+      "length": 315,
+      "id": 19
+    },
+    {
+      "text": "Les savants ont calculé que les chances d'exister d'un phénomène aussi manifestement absurde sont de une sur un million. Mais les magiciens, eux, ont calculé que les chances uniques sur un million se réalisent neuf fois sur dix.",
+      "source": "Terry Pratchett - Mortimer (les Annales du Disque-monde)",
+      "length": 228,
+      "id": 20
+    },
+    {
+      "text": "On vous l’a sûrement déjà dit, il faut apprendre à bien choisir ses lectures. Mal les choisir peut nuire gravement à la santé. Un exemple. Vous vous baladez en montagne et, tout en marchant, vous lisez les oeuvres complètes d’Hérodote au lieu de lire : ATTENTION, RAVIN. Vous n’irez pas au bout de cette lecture. Vous n’avez pas fait le bon choix.",
+      "source": "Lemony Snicket - Les Désastreuses aventures des orphelins Baudelaire, tome 7",
+      "length": 346,
+      "id": 21
+    },
+    {
+      "text": "Si tu savais le temps que fait une minute, écoute le son de mon coeur quand il explose comme une cocotte minute.",
+      "source": "Stupeflip - Nan?..Si?",
+      "length": 112,
+      "id": 22
+    },
+    {
+      "text": "Ce qui est élevé est destiné à être aplani... Ce qui est dense deviendra fluide... L'entropie fait son œuvre et, en définitive, toute chose tend vers l'uniformisation. C'est une loi inévitable et irréversible d'équilibre. L'homme croit toujours pouvoir inverser ce fleuve cosmique. Mais il n'est qu'un fétu de paille emporté par les flots.",
+      "source": "Katsuhiro Otomo - Akira, tome 4",
+      "length": 339,
+      "id": 23
+    },
+    {
+      "text": "Les Bacillidae forment une famille d'insectes phasmoptères de l'infra-ordre des Areolatae, de la super-famille des Bacilloidea, caractérisés par un thorax dont le dernier tergite n'est pas soudé avec le premier segment abdominal.",
+      "source": "Wikipedia - Bacillidae",
+      "length": 229,
+      "id": 24
+    },
+    {
+      "text": "Le Gouvernement français a demandé à l’ennemi à quelles conditions honorables un cessez-le-feu était possible. Il a déclaré que, si ces conditions étaient contraires à l’honneur, la dignité et l’indépendance de la France, la lutte devait continuer.",
+      "source": "Charles de Gaulle - Appel du 18 Juin",
+      "length": 248,
+      "id": 25
     }
   ]
 }
