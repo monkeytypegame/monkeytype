@@ -54,9 +54,6 @@ class Words {
   getLast() {
     return this.list[this.list.length - 1];
   }
-  getList() {
-    return this.list;
-  }
   push(word) {
     this.list.push(word);
     this.length = this.list.length;
@@ -323,7 +320,7 @@ export function startTest() {
   }
   setActive(true);
   Replay.startReplayRecording();
-  Replay.replayGetWordsList(words.getList());
+  Replay.replayGetWordsList(words.list);
   TestStats.resetKeypressTimings();
   TimerProgress.restart();
   TimerProgress.show();
@@ -941,6 +938,7 @@ export function finish(difficultyFailed = false) {
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
     corrected.pushHistory();
+    Replay.replayGetWordsList(input.history);
   }
 
   TestStats.recordKeypressSpacing();
