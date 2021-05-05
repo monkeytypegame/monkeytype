@@ -1,16 +1,6 @@
 /*
 TODO:
-  One method I could use to store data is store actions instead of keystrokes
-    Have an event for every possible action
-      This helps when using special settings like no backspace
-    Examples:
-      If the program detects a correct letter, write correct letter to the list with the time it occurred at
-      If removed last word, add that event
-  Fix critical bugs that break replay
-    Might want to rewrite with linked list or word and letter classes
-  Add a pause button
-  Support for ctrl-backspace deletes an entire word
-  When you click on a word, teh replay jumps to that word
+  Clicking on a certain spot sets the targetPositions to that spot
   Export replay as video
   Export replay as typing test file?
     And add ability to upload file to watch replay
@@ -31,7 +21,7 @@ function replayGetWordsList(wordsListFromScript) {
   wordsList = wordsListFromScript;
 }
 
-function initializeReplayPrompt(wordsList) {
+function initializeReplayPrompt() {
   const replayWordsElement = document.getElementById("replayWords");
   replayWordsElement.innerHTML = "";
   wordsList.forEach((item, i) => {
@@ -103,16 +93,13 @@ function playReplay() {
   wordPos = 0;
   toggleButton.className = "fas fa-pause";
   toggleButton.parentNode.setAttribute("aria-label", "Pause replay");
-  initializeReplayPrompt(wordsList);
+  initializeReplayPrompt();
   let startingIndex = loadOldReplay();
   let lastTime = replayData[startingIndex].time;
   replayData.forEach((item, i) => {
-    if (i < startingIndex) {
-      return;
-    }
+    if (i < startingIndex) return;
     timeoutList.push(
       setTimeout(() => {
-        console.log(item);
         handleDisplayLogic(item);
       }, item.time - lastTime)
     );
@@ -198,7 +185,7 @@ function handleDisplayLogic(item) {
 
 function toggleReplayDisplay() {
   if ($("#resultReplay").stop(true, true).hasClass("hidden")) {
-    initializeReplayPrompt(wordsList);
+    initializeReplayPrompt();
     loadOldReplay();
     //show
     if (!$("#watchReplayButton").hasClass("loaded")) {
@@ -230,6 +217,32 @@ $(".pageTest #playpauseReplayButton").click(async (event) => {
   } else if (toggleButton.className === "fas fa-pause") {
     pauseReplay();
   }
+});
+
+$("#replayWords").click((event) => {
+  //allows user to click on the place they want to start their replay at
+  pauseReplay();
+  const replayWords = document.querySelector("#replayWords");
+  let range;
+  let textNode;
+
+  if (document.caretPositionFromPoint) {
+    // standard
+    range = document.caretPositionFromPoint(event.pageX, event.pageY);
+    textNode = range.offsetNode;
+  } else if (document.caretRangeFromPoint) {
+    // WebKit
+    range = document.caretRangeFromPoint(event.pageX, event.pageY);
+    textNode = range.startContainer;
+  }
+
+  const words = [...replayWords.children];
+  targetWordPos = words.indexOf(textNode.parentNode.parentNode);
+  const letters = [...words[targetWordPos].children];
+  targetCurPos = letters.indexOf(textNode.parentNode);
+
+  initializeReplayPrompt();
+  loadOldReplay();
 });
 
 $(document).on("keypress", "#watchReplayButton", (event) => {
