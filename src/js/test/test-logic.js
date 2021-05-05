@@ -761,8 +761,16 @@ export function restart(withSameWordset = false, nosave = false, event) {
       $(".pageTest #premidSecondsLeft").text(Config.time);
 
       if (Funbox.active === "layoutfluid") {
-        UpdateConfig.setLayout("qwerty");
-        UpdateConfig.setKeymapLayout("qwerty");
+        UpdateConfig.setLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split(" ")[0]
+            : "qwerty"
+        );
+        UpdateConfig.setKeymapLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split(" ")[0]
+            : "qwerty"
+        );
         Keymap.highlightKey(
           words
             .getCurrent()

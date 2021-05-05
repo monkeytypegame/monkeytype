@@ -1658,6 +1658,25 @@ export let defaultCommands = {
       },
     },
     {
+      id: "changeCustomLayoutfluid",
+      display: "Change custom layoutfluid...",
+      defaultValue: "qwerty dvorak colemak",
+      input: true,
+      exec: (input) => {
+        UpdateConfig.setCustomLayoutfluid(input);
+        UpdateConfig.setLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split(" ")[0]
+            : "qwerty"
+        );
+        UpdateConfig.setKeymapLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split(" ")[0]
+            : "qwerty"
+        );
+      },
+    },
+    {
       id: "changeTheme",
       display: "Change theme...",
       subgroup: true,

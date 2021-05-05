@@ -2762,6 +2762,29 @@ key {
       }
     }
 
+    // I have no idea what I'm doing so I just copied the customBackgroundSize css and changed numbers so it magically worked.
+    &.customLayoutfluid {
+      .inputAndSave {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        input {
+          grid-column: 1/3;
+        }
+
+        .save {
+          grid-column: 3/4;
+          height: auto;
+
+          .fas {
+            margin-right: 0rem;
+            vertical-align: sub;
+          }
+        }
+      }
+    }
+
     &.customBackgroundSize {
       .inputAndButton {
         display: grid;

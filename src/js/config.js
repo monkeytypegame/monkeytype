@@ -1400,6 +1400,17 @@ export function setCustomBackground(value, nosave) {
   }
 }
 
+export function setCustomLayoutfluid(value, nosave) {
+  // scuffed solution
+  if (value == undefined) return;
+
+  config.customLayoutfluid = value;
+  CommandlineLists.defaultCommands.list.filter(
+    (command) => command.id == "changeCustomLayoutfluid"
+  )[0].defaultValue = value;
+  if (!nosave) saveToLocalStorage();
+}
+
 export function setCustomBackgroundSize(value, nosave) {
   if (value != "cover" && value != "contain" && value != "max") {
     value = "cover";
@@ -1430,6 +1441,7 @@ export function apply(configObj) {
     setTheme(configObj.theme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
     setCustomTheme(configObj.customTheme, true, true);
+    setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
