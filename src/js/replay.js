@@ -133,32 +133,24 @@ function playReplay() {
 }
 
 function handleDisplayLogic(item) {
+  let activeWord = document.getElementById("replayWords").children[wordPos];
   if (item.action === "correctLetter") {
-    document
-      .getElementById("replayWords")
-      .children[wordPos].children[curPos].classList.add("correct");
+    activeWord.children[curPos].classList.add("correct");
     curPos++;
   } else if (item.action === "incorrectLetter") {
     let myElement;
-    if (
-      curPos >=
-      document.getElementById("replayWords").children[wordPos].children.length
-    ) {
+    if (curPos >= activeWord.children.length) {
       //if letter is an extra
       myElement = document.createElement("letter");
       myElement.classList.add("extra");
       myElement.innerHTML = item.letter;
-      document
-        .getElementById("replayWords")
-        .children[wordPos].appendChild(myElement);
+      activeWord.appendChild(myElement);
     }
-    myElement = document.getElementById("replayWords").children[wordPos]
-      .children[curPos];
+    myElement = activeWord.children[curPos];
     myElement.classList.add("incorrect");
     curPos++;
   } else if (item.action === "deleteLetter") {
-    let myElement = document.getElementById("replayWords").children[wordPos]
-      .children[curPos - 1];
+    let myElement = activeWord.children[curPos - 1];
     if (myElement.classList.contains("extra")) {
       myElement.remove();
     } else {
@@ -169,9 +161,7 @@ function handleDisplayLogic(item) {
     wordPos++;
     curPos = 0;
   } else if (item.action === "submitErrorWord") {
-    document
-      .getElementById("replayWords")
-      .children[wordPos].classList.add("error");
+    activeWord.classList.add("error");
     wordPos++;
     curPos = 0;
   } else if (item.action === "clearWord") {
@@ -180,23 +170,14 @@ function handleDisplayLogic(item) {
     wordArr.forEach((letter, i) => {
       promptWord.innerHTML += `<letter>${letter}</letter>`;
     });
-    document.getElementById("replayWords").children[wordPos].innerHTML =
-      promptWord.innerHTML;
+    activeWord.innerHTML = promptWord.innerHTML;
     curPos = 0;
   } else if (item.action === "backWord") {
     wordPos--;
-    curPos = document.getElementById("replayWords").children[wordPos].children
-      .length;
-    while (
-      document.getElementById("replayWords").children[wordPos].children[
-        curPos - 1
-      ].className === ""
-    ) {
-      curPos--;
-    }
-    document
-      .getElementById("replayWords")
-      .children[wordPos].classList.remove("error");
+    activeWord = document.getElementById("replayWords").children[wordPos];
+    curPos = activeWord.children.length;
+    while (activeWord.children[curPos - 1].className === "") curPos--;
+    activeWord.classList.remove("error");
   }
 }
 
