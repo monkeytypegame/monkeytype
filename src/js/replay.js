@@ -50,6 +50,10 @@ function initializeReplayPrompt() {
 }
 
 function startReplayRecording() {
+  if (!$("#resultReplay").stop(true, true).hasClass("hidden")) {
+    //hide replay display if user left it open
+    toggleReplayDisplay();
+  }
   replayData = [];
   replayStartTime = performance.now();
   replayRecording = true;
@@ -217,7 +221,9 @@ function toggleReplayDisplay() {
     }
   } else {
     //hide
-    pauseReplay();
+    if (toggleButton.parentNode.getAttribute("aria-label") != "Start replay") {
+      pauseReplay();
+    }
     $("#resultReplay").slideUp(250, () => {
       $("#resultReplay").addClass("hidden");
     });
