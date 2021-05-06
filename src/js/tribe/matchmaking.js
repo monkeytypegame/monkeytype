@@ -1,6 +1,6 @@
 let banner = $("#tribeMatchmakingStatus");
 
-export let queues = [true, true, true, true];
+export let queues = [false, false, false, false];
 
 export function showBanner() {
   banner.removeClass("hidden");
@@ -82,9 +82,17 @@ function refreshQueueButtons() {
     $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").addClass(
       "disabled"
     );
+    $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").html(
+      `<i class="fas fa-times"></i>
+      Select at least one queue`
+    );
   } else {
     $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").removeClass(
       "disabled"
+    );
+    $(".pageTribe .prelobby .matchmaking .startMatchmakingButton").html(
+      `<i class="fas fa-search"></i>
+      Search`
     );
   }
 }
