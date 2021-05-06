@@ -55,7 +55,7 @@ let to = null;
 
 export function refresh() {
   showLoading();
-  Tribe.socket.emit("mp_get_online_stats");
+  Tribe.socket.emit("mp_get_online_stats", { pingStart: performance.now() });
   if (
     $(".pageTribe").hasClass("active") &&
     !$(".pageTribe .prelobby").hasClass("hidden") &&

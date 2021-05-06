@@ -32,7 +32,7 @@ export let socket = io(
 );
 export let activePage = "preloader";
 export let pageTransition = false;
-export let expectedVersion = "0.9.8";
+export let expectedVersion = "0.9.9";
 
 export let room = undefined;
 export let name = undefined;
@@ -1037,22 +1037,27 @@ socket.on("mp_room_name_update", (data) => {
 
 socket.on("mp_update_online_stats", (data) => {
   OnlineStats.hideLoading();
-  OnlineStats.setInQueue(data[2]);
-  OnlineStats.updateRaces(data[1]);
+  OnlineStats.setInQueue(data.stats[2]);
+  OnlineStats.updateRaces(data.stats[1]);
   $(".pageTribe .prelobby .welcome .stats").empty();
   $(".pageTribe .prelobby .welcome .stats").append(
-    `<div>Online <span class="num">${data[0]}</span></div>`
+    `<div>Online <span class="num">${data.stats[0]}</span></div>`
   );
   $(".pageTribe .prelobby .welcome .stats").append(
-    `<div class="small">Version ${data[3]}</div>`
+    `<div class="small">Version ${data.stats[3]}</div>`
   );
-  if (data[3] !== expectedVersion) {
+  $(".pageTribe .prelobby .welcome .stats").append(
+    `<div class="small">Ping ${Math.round(
+      performance.now() - data.pingStart
+    )}ms</div>`
+  );
+  if (data.stats[3] !== expectedVersion) {
     socket.disconnect();
     $(".pageTribe .preloader .icon").html(
       `<i class="fas fa-exclamation-triangle"></i>`
     );
     $(".pageTribe .preloader .text").html(
-      `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${data[3]}`
+      `Version mismatch.<br>Try refreshing or clearing cache.<br><br>Client version: ${expectedVersion}<br>Server version: ${data.stats[3]}`
     );
     $(".pageTribe .preloader .reconnectButton").addClass(`hidden`);
   }
