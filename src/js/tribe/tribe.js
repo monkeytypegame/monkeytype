@@ -198,6 +198,7 @@ function refreshUserList() {
 }
 
 function playSound(sound) {
+  if (TestLogic.active) return;
   tribeSounds[sound].currentTime = 0;
   tribeSounds[sound].play();
 }
@@ -239,7 +240,7 @@ function applyRoomConfig(cfg) {
   UpdateConfig.setDifficulty(cfg.difficulty, true, true);
   UpdateConfig.setBlindMode(cfg.blindMode, true, true);
   UpdateConfig.setLanguage(cfg.language, true, true);
-  Funbox.activate(cfg.funbox, null, true);
+  Funbox.setFunbox(cfg.funbox, null, true);
   UpdateConfig.setStopOnError(cfg.stopOnError, true, true);
   UpdateConfig.setConfidenceMode(cfg.confidenceMode, true, true);
   UpdateConfig.setPunctuation(cfg.punctuation, true, true);

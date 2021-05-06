@@ -588,7 +588,7 @@ export async function init(mp = false) {
   // } else {
   TestUI.showWords();
   // }
-  if ($(".pageTest").hasClass("active")) {
+  if ($(".pageTest").hasClass("active") || mp) {
     Funbox.activate();
   }
 }

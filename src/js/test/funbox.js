@@ -91,10 +91,7 @@ export function toggleScript(...params) {
   }
 }
 
-export async function activate(funbox, mode, mp = false) {
-  if (!Tribe.checkIfCanChangeConfig(mp)) {
-    return;
-  }
+export async function activate(funbox, mode) {
   if (funbox === undefined || funbox === null) {
     funbox = funboxSaved;
   }
@@ -225,12 +222,17 @@ export async function activate(funbox, mode, mp = false) {
   //     Settings.groups.layout.updateButton();
   //   }
   // }
-  Tribe.syncConfig();
   TestUI.updateModesNotice();
   return true;
 }
-export function setFunbox(funbox, mode) {
-  if (TestLogic.active || TestUI.resultVisible) {
+export function setFunbox(funbox, mode, mp = false) {
+  if (!Tribe.checkIfCanChangeConfig(mp)) {
+    return;
+  }
+  if (
+    TestLogic.active ||
+    (TestUI.resultVisible && $(".page.pageTest").hasClass("active"))
+  ) {
     Notifications.add(
       "You can only change the funbox before starting a test.",
       0
@@ -241,5 +243,6 @@ export function setFunbox(funbox, mode) {
   funboxSaved = funbox;
   modeSaved = mode;
   active = funbox;
+  Tribe.syncConfig();
   return true;
 }
