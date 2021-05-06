@@ -100,8 +100,16 @@
     "from": "pog",
     "to": "https://cdn.discordapp.com/emojis/486542144274825226.png?v=1"
   },
-
-  
+  {
+    "type": "image",
+    "from": "pogu",
+    "to": "https://cdn.discordapp.com/emojis/731211932387901473.png?v=1"
+  },
+  {
+    "type": "image",
+    "from": "ugh",
+    "to": "https://cdn.discordapp.com/emojis/829545048340168757.png?v=1"
+  },
 
   
   {
