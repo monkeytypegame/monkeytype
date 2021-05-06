@@ -226,6 +226,15 @@ export function resetRace() {
 export function resetResult() {
   $(".pageTest #result .tribeResult").addClass("hidden");
   $(".pageTest #result .tribeResultChat").addClass("hidden");
+  $(".pageTest #nextTestButton").removeClass("hidden");
+  $(".pageTest #backToLobbyButton").addClass("hidden");
+  $(".pageTest #readyButton").addClass("hidden");
+  $(".pageTest #restartTestButtonWithSameWordset").removeClass("hidden");
+  $(".pageTest #goBackToLobbyButton").addClass("hidden");
+  $(".pageTest #practiseMissedWordsButton").removeClass("hidden");
+  $(".pageTest #result .tribeResultChat").addClass("hidden");
+  $(".pageTest #readyButton").addClass("hidden");
+  $(".pageTest #queueAgainButton").addClass("hidden");
 }
 
 function applyRoomConfig(cfg) {
@@ -1169,6 +1178,7 @@ socket.on("mp_room_leave", () => {
   changeActiveSubpage("prelobby");
   resetLobby();
   resetRace();
+  resetResult();
   Matchmaking.enableLobbyButtons();
   Matchmaking.hideLeaveQueueButton();
   Matchmaking.showStartQueueButton();
