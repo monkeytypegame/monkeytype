@@ -281,7 +281,7 @@ export function checkIfCanChangeConfig(mp) {
       if (mp) return true;
       Notifications.add("You can't change settings during the test", 0, 1);
       return false;
-    } else if (room !== undefined && room.isLeader) {
+    } else if (room != undefined && room.isLeader) {
       return true;
     } else {
       if (mp) return true;
