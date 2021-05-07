@@ -156,6 +156,7 @@ html {
 .select2-selection {
   background: rgba(0, 0, 0, 0.1);
   height: fit-content;
+  height: -moz-fit-content;
   padding: 5px;
   border-radius: var(--roundness);
   color: var(--text-color);
@@ -199,6 +200,7 @@ html {
 
 .select2-selection:focus {
   height: fit-content;
+  height: -moz-fit-content;
   padding: 5px;
   border-radius: var(--roundness);
   color: var(--text-color);
@@ -208,6 +210,7 @@ html {
 }
 .select2-selection:active {
   height: fit-content;
+  height: -moz-fit-content;
   padding: 5px;
   border-radius: var(--roundness);
   color: var(--text-color);
@@ -1787,12 +1790,14 @@ key {
       grid-auto-flow: column;
       width: fit-content;
       gap: 1rem;
+      width: -moz-fit-content;
     }
     .right {
       text-align: right;
       display: grid;
       grid-auto-flow: column;
       width: fit-content;
+      width: -moz-fit-content;
       justify-self: right;
       gap: 1rem;
       // align-items: center;
@@ -2123,6 +2128,7 @@ key {
 
 #words {
   height: fit-content;
+  height: -moz-fit-content;
   display: flex;
   flex-wrap: wrap;
   width: 100%;
@@ -2582,6 +2588,7 @@ key {
         font-size: 0.75rem;
         line-height: 0.75rem;
         height: fit-content;
+        height: -moz-fit-content;
         align-self: center;
         justify-self: right;
         padding: 0.25rem 0;
@@ -3110,6 +3117,7 @@ key {
   // background: var(--sub-color);
   color: var(--sub-color);
   width: fit-content;
+  width: -moz-fit-content;
   padding: 0.5rem;
   border-radius: var(--roundness);
   cursor: pointer;
