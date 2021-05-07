@@ -56,9 +56,14 @@
       }
     </style>
     <script defer>
+      // TODO: Add banner that appears when username copy is successful
       function copyUserName() {
-        navigator.clipboard.writeText("Miodec#1512");
-        // alert("Copied To Clipboard!");
+        if (true) {
+          navigator.clipboard.writeText("Miodec#1512");
+          alert("Copied To Clipboard!");
+        } else {
+          alert("Unable to copy username");
+        }
       }
     </script>
   </head>
@@ -81,25 +86,24 @@
           This privacy policy explains how Monkeytype uses the data we collect
           from you when you use our website.
         </p>
-
         <p>Table of Contents</p>
         <ul>
-          <li>What data do we collect?</li>
-          <li>How do we collect your data?</li>
-          <li>How will we use your data?</li>
-          <li>How do we store your data?</li>
-          <li>What are your data protection rights?</li>
-          <li>What are cookies?</li>
-          <li>How do we use cookies?</li>
-          <li>What types of cookies do we use?</li>
-          <li>How to manage your cookies</li>
-          <li>Privacy policies of other websites</li>
-          <li>Changes to our privacy policy</li>
-          <li>How to contact us</li>
-          <li>How to contact the appropriate authorities</li>
+          <li><a href="#topic1">What data do we collect?</a></li>
+          <li><a href="#topic2">How do we collect your data?</a></li>
+          <li><a href="#topic3">How will we use your data?</a></li>
+          <li><a href="#topic4">How do we store your data?</a></li>
+          <li><a href="#topic5">What are your data protection rights?</a></li>
+          <li><a href="#topic6">What log data do we collect?</a></li>
+          <li><a href="#topic7">What are cookies?</a></li>
+          <li><a href="#topic8">How do we use cookies?</a></li>
+          <li><a href="#topic9">What types of cookies do we use?</a></li>
+          <li><a href="#topic10">How to manage your cookies</a></li>
+          <li><a href="#end">Privacy policies of other websites</a></li>
+          <li><a href="#end">Changes to our privacy policy</a></li>
+          <li><a href="#end">How to contact us</a></li>
         </ul>
 
-        <h1>What data do we collect?</h1>
+        <h1 id="topic1">What data do we collect?</h1>
         <p>Monkeytype collects the following data:</p>
         <ul>
           <li>Email</li>
@@ -110,7 +114,7 @@
           <li>How long you've been typing on the website</li>
         </ul>
 
-        <h1>How do we collect your data?</h1>
+        <h1 id="topic2">How do we collect your data?</h1>
 
         <p>
           You directly provide most of the data we collect. We collect data and
@@ -122,7 +126,7 @@
           <li>Change settings on the website</li>
         </ul>
 
-        <h1>How do we use your data?</h1>
+        <h1 id="topic3">How do we use your data?</h1>
         <p>Monkeytype collects your data so that we can:</p>
 
         <ul>
@@ -138,10 +142,10 @@
           <li>Display leaderboards</li>
         </ul>
 
-        <h1>How do we store your data?</h1>
+        <h1 id="topic4">How do we store your data?</h1>
         <p>Monkeytype securely stores your data using Firebase Firestore.</p>
 
-        <h1>What are your data protection rights?</h1>
+        <h1 id="topic5">What are your data protection rights?</h1>
         <p>
           Monkeytype would like to make sure you are fully aware of all of your
           data protection rights. Every user is entitled to the following:
@@ -180,7 +184,7 @@
         </ul>
         <!-- <p>If you make a request, we have one month to respond to you. If you would like to exercise any of these rights, please contact us at our email: jack@monkeytype.com</p> -->
 
-        <h1>Log Data</h1>
+        <h1 id="topic6">What log data do we collect?</h1>
         <p>
           Like most websites, Monkeytype collects information that your browser
           sends whenever you visit the website. This data may include internet
@@ -196,7 +200,7 @@
         </p>
         <p>In our case, this service is provided by Google Analytics.</p>
 
-        <h1>Cookies</h1>
+        <h1 id="topic7">Cookies</h1>
         <p>
           Cookies are text files placed on your computer to collect standard
           Internet log information and visitor behavior information. When you
@@ -215,7 +219,7 @@
           .
         </p>
 
-        <h1>How do we use cookies?</h1>
+        <h1 id="topic8">How do we use cookies?</h1>
         <p>
           Monkeytype uses cookies in a range of ways to improve your experience
           on our website, including:
@@ -225,25 +229,21 @@
           <li>Remembering your active settings</li>
           <li>Remembering your active tags</li>
         </ul>
-        <h1>What types of cookies do we use?</h1>
+        <h1 id="topic9">What types of cookies do we use?</h1>
         <p>
           There are a number of different types of cookies, however, our website
-          uses:
+          uses functionality cookies. Monkeytype uses these cookies so we
+          recognize you on our website and remember your previously selected
+          settings.
         </p>
-        <ul>
-          <li>
-            Functionality – Monkeytype uses these cookies so we recognize
-            you on our website and remember your previously selected settings.
-          </li>
-        </ul>
-        <h1>How to manage cookies</h1>
+        <h1 id="topic10">How to manage cookies</h1>
         <p>
           You can set your browser not to accept cookies, and the above website
           tells you how to remove cookies from your browser. However, in a few
           cases, some of our website features may behave unexpectedly or fail to
           function as a result.
         </p>
-        <h1>Privacy policies of other websites</h1>
+        <h1 id="end">Privacy policies of other websites</h1>
         <p>
           Monkeytype contains links to other websites.
           <b>
@@ -295,5 +295,6 @@
         </span>
       </div>
     </div>
+    <!-- TODO: Add image to go back to top of page -->
   </body>
 </html>
