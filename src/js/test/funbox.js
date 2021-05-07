@@ -176,7 +176,7 @@ export async function activate(funbox, mode) {
       rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
       UpdateConfig.setLayout(
         Config.customLayoutfluid
-          ? Config.customLayoutfluid.split("_")[0]
+          ? Config.customLayoutfluid.split("#")[0]
           : "qwerty"
       );
       Settings.groups.layout.updateButton();
@@ -187,7 +187,7 @@ export async function activate(funbox, mode) {
       );
       UpdateConfig.setKeymapLayout(
         Config.customLayoutfluid
-          ? Config.customLayoutfluid.split("_")[0]
+          ? Config.customLayoutfluid.split("#")[0]
           : "qwerty"
       );
       Settings.groups.keymapLayout.updateButton();

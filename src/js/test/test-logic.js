@@ -763,12 +763,12 @@ export function restart(withSameWordset = false, nosave = false, event) {
       if (Funbox.active === "layoutfluid") {
         UpdateConfig.setLayout(
           Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("_")[0]
+            ? Config.customLayoutfluid.split("#")[0]
             : "qwerty"
         );
         UpdateConfig.setKeymapLayout(
           Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("_")[0]
+            ? Config.customLayoutfluid.split("#")[0]
             : "qwerty"
         );
         Keymap.highlightKey(

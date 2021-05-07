@@ -389,7 +389,7 @@ async function fillSettingsPage() {
   );
 
   $(".pageSettings .section.customLayoutfluid input").val(
-    Config.customLayoutfluid
+    Config.customLayoutfluid.replace(/#/g, " ")
   );
 }
 
@@ -793,6 +793,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndSave .save").on(
     UpdateConfig.setCustomLayoutfluid(
       $(".pageSettings .section.customLayoutfluid .inputAndSave input").val()
     );
+    Notifications.add("Custom layoutfluid saved", 1);
   }
 );
 
@@ -802,6 +803,7 @@ $(".pageSettings .section.customLayoutfluid .inputAndSave .input").keypress(
       UpdateConfig.setCustomLayoutfluid(
         $(".pageSettings .section.customLayoutfluid .inputAndSave input").val()
       );
+      Notifications.add("Custom layoutfluid saved", 1);
     }
   }
 );
