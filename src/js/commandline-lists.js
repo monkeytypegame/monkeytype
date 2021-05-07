@@ -1664,16 +1664,17 @@ export let defaultCommands = {
       input: true,
       exec: (input) => {
         UpdateConfig.setCustomLayoutfluid(input);
-        UpdateConfig.setLayout(
-          Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("_")[0]
-            : "qwerty"
-        );
-        UpdateConfig.setKeymapLayout(
-          Config.customLayoutfluid
-            ? Config.customLayoutfluid.split("_")[0]
-            : "qwerty"
-        );
+        if (Funbox.active === "layoutfluid") TestLogic.restart();
+        // UpdateConfig.setLayout(
+        //   Config.customLayoutfluid
+        //     ? Config.customLayoutfluid.split("_")[0]
+        //     : "qwerty"
+        // );
+        // UpdateConfig.setKeymapLayout(
+        //   Config.customLayoutfluid
+        //     ? Config.customLayoutfluid.split("_")[0]
+        //     : "qwerty"
+        // );
       },
     },
     {
