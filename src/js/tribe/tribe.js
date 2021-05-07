@@ -1204,17 +1204,11 @@ socket.on("mp_room_user_left", (data) => {
     resetReadyButtons();
   } else {
     delete room.users[data.sid];
-    if (state <= 8) {
-      Matchmaking.setBannerText(
-        `Waiting for more players to join (${
-          Object.keys(room.users).length
-        }/2)...`
-      );
-    } else if (state >= 20 && state < 29) {
-      $(`.tribePlayers .player[sid=${data.sid}]`).addClass("failed");
-      $(`.tribeResult .player[sid=${data.sid}]`).addClass("failed");
-      $(`.tribeResult table .player[sid=${data.sid}] .other`).text("left");
-    }
+  }
+  if (state >= 20 && state < 29) {
+    $(`.tribePlayers .player[sid=${data.sid}]`).addClass("failed");
+    $(`.tribeResult .player[sid=${data.sid}]`).addClass("failed");
+    $(`.tribeResult table .player[sid=${data.sid}] .other`).text("left");
   }
 });
 
