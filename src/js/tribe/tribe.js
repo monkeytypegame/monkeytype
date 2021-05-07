@@ -276,7 +276,7 @@ function applyRoomConfig(cfg) {
 }
 
 export function checkIfCanChangeConfig(mp) {
-  if (state >= 6) {
+  if (state >= 8) {
     if (state >= 20 && state < 29) {
       if (mp) return true;
       Notifications.add("You can't change settings during the test", 0, 1);
@@ -285,11 +285,11 @@ export function checkIfCanChangeConfig(mp) {
       return true;
     } else {
       if (mp) return true;
-      if (room.private) {
+      if (room?.private) {
         Notifications.add("Only the leader can change this setting", 0, 1);
         return false;
       } else {
-        Notifications.add("You can't change settings when matchmaking", 0, 1);
+        Notifications.add("Race is about to start", 0, 1);
         return false;
       }
     }
