@@ -23,12 +23,14 @@ function rememberSetting(settingName, value, setFunction) {
 }
 
 function loadMemory() {
-  Notifications.add("Reverting funbox settings", 0);
-  Object.keys(settingsMemory).forEach((setting) => {
-    setting = settingsMemory[setting];
-    setting.setFunction(setting.value, true);
-  });
-  settingsMemory = {};
+  if (Object.keys(settingsMemory).length > 0) {
+    Notifications.add("Reverting funbox settings", 0);
+    Object.keys(settingsMemory).forEach((setting) => {
+      setting = settingsMemory[setting];
+      setting.setFunction(setting.value, true);
+    });
+    settingsMemory = {};
+  }
 }
 
 function showMemoryTimer() {
