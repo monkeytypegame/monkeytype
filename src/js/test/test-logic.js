@@ -641,8 +641,20 @@ export function restart(withSameWordset = false, nosave = false, event) {
     let testSeconds = TestStats.calculateTestSeconds(performance.now());
     let afkseconds = TestStats.calculateAfkSeconds();
     // incompleteTestSeconds += ;
-    TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
+    let tt = testSeconds - afkseconds;
+    console.log(
+      `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
+    );
+    TestStats.incrementIncompleteSeconds(tt);
     TestStats.incrementRestartCount();
+    if (tt > 600) {
+      Notifications.add(
+        `Your time typing just increased by ${Misc.roundTo2(
+          tt / 60
+        )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
+        -1
+      );
+    }
     // restartCount++;
   }
 
