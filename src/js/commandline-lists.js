@@ -1666,12 +1666,12 @@ export let defaultCommands = {
         UpdateConfig.setCustomLayoutfluid(input);
         UpdateConfig.setLayout(
           Config.customLayoutfluid
-            ? Config.customLayoutfluid.split(" ")[0]
+            ? Config.customLayoutfluid.split("_")[0]
             : "qwerty"
         );
         UpdateConfig.setKeymapLayout(
           Config.customLayoutfluid
-            ? Config.customLayoutfluid.split(" ")[0]
+            ? Config.customLayoutfluid.split("_")[0]
             : "qwerty"
         );
       },

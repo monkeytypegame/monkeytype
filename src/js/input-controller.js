@@ -203,7 +203,7 @@ function handleSpace(event, isEnter) {
   if (Funbox.active === "layoutfluid" && Config.mode !== "time") {
     // here I need to check if Config.customLayoutFluid exists because of my scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
     const layouts = Config.customLayoutfluid
-      ? Config.customLayoutfluid.split(" ")
+      ? Config.customLayoutfluid.split("_")
       : ["qwerty", "dvorak", "colemak"];
     let index = 0;
     let outof = TestLogic.words.length;

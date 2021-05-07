@@ -1401,9 +1401,10 @@ export function setCustomBackground(value, nosave) {
 }
 
 export function setCustomLayoutfluid(value, nosave) {
-  // scuffed solution
-  if (value == undefined) return;
-
+  if (value == null || value == undefined) {
+    value = "qwerty_dvorak_colemak";
+  }
+  value = value.replace(/ /g, "_");
   config.customLayoutfluid = value;
   CommandlineLists.defaultCommands.list.filter(
     (command) => command.id == "changeCustomLayoutfluid"

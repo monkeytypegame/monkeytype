@@ -277,10 +277,10 @@ async function initGroups() {
     "customBackgroundSize",
     UpdateConfig.setCustomBackgroundSize
   );
-  groups.customLayoutfluid = new SettingsGroup(
-    "customLayoutfluid",
-    UpdateConfig.setCustomLayoutfluid
-  );
+  // groups.customLayoutfluid = new SettingsGroup(
+  //   "customLayoutfluid",
+  //   UpdateConfig.setCustomLayoutfluid
+  // );
 }
 
 async function fillSettingsPage() {

@@ -42,7 +42,7 @@ export function start() {
 
       if (Funbox.active === "layoutfluid" && Config.mode === "time") {
         const layouts = Config.customLayoutfluid
-          ? Config.customLayoutfluid.split(" ")
+          ? Config.customLayoutfluid.split("_")
           : ["qwerty", "dvorak", "colemak"];
         console.log(Config.customLayoutfluid);
         console.log(layouts);
