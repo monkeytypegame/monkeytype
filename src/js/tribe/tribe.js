@@ -104,14 +104,14 @@ function changeActiveSubpage(newPage) {
     $(`.pageTribe .${newPage}`),
     250,
     () => {
+      pageTransition = false;
+      activePage = newPage;
       if (newPage === "prelobby") {
         OnlineStats.refresh();
       }
       if (newPage === "lobby") {
         $(".pageTribe .lobby .chat .input input").focus();
       }
-      pageTransition = false;
-      activePage = newPage;
     }
   );
 }
