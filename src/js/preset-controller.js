@@ -7,7 +7,7 @@ export function apply(id) {
   DB.getSnapshot().presets.forEach((preset) => {
     if (preset.id == id) {
       Config.apply(JSON.parse(JSON.stringify(preset.config)));
-      Notifications.add("Preset Applied", 1, 2);
+      Notifications.add("Preset applied", 1, 2);
       Config.saveToLocalStorage();
     }
   });
