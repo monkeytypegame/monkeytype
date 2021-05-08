@@ -1845,7 +1845,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
   }
 });
 
-exports.addPreset = functions.https.onCall((request, response) => {
+exports.addPreset = functions.https.onCall(async (request, response) => {
   try {
     if (request.uid === undefined || request.obj === undefined) {
       console.error(`error saving config for ${request.uid} - missing input`);
@@ -1894,6 +1894,14 @@ exports.addPreset = functions.https.onCall((request, response) => {
       return {
         resultCode: -1,
         message: "Bad input. " + errorMessage,
+      };
+    }
+
+    let presets = await db.collection(`users/${request.uid}/presets`).get();
+    if (presets.docs.length >= 10) {
+      return {
+        resultCode: -2,
+        message: "Preset limit",
       };
     }
 
