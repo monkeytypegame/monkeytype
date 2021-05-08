@@ -1864,7 +1864,8 @@ key {
     grid-column: 1/3;
   }
 
-  #resultWordsHistory {
+  #resultWordsHistory,
+  #resultReplay {
     // grid-area: wordsHistory;
     color: var(--sub-color);
     grid-column: 1/3;
@@ -1876,7 +1877,17 @@ key {
       user-select: none;
       .word {
         position: relative;
+        margin: 0.18rem 0.6rem 0.15rem 0;
       }
+    }
+    .correct {
+      color: var(--text-color);
+    }
+    .incorrect {
+      color: var(--error-color);
+    }
+    .incorrect.extra {
+      color: var(--error-extra-color);
     }
   }
 
@@ -2276,7 +2287,8 @@ key {
 #copyResultToClipboardButton,
 #restartTestButtonWithSameWordset,
 #nextTestButton,
-#practiseMissedWordsButton {
+#practiseMissedWordsButton,
+#watchReplayButton {
   position: relative;
   border-radius: var(--roundness);
   padding: 1rem 2rem;
@@ -2295,6 +2307,10 @@ key {
   &:focus {
     background: var(--sub-color);
   }
+}
+
+#replayWords {
+  cursor: pointer;
 }
 
 #restartTestButton {

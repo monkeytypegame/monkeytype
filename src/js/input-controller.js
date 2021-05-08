@@ -20,6 +20,7 @@ import * as TimerProgress from "./timer-progress";
 import * as TestTimer from "./test-timer";
 import * as Focus from "./focus";
 import * as ShiftTracker from "./shift-tracker";
+import * as Replay from "./replay.js";
 
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
@@ -130,6 +131,7 @@ function handleBackspace(event) {
         }
       }
       TestLogic.words.decreaseCurrentIndex();
+      Replay.addReplayEvent("backWord");
       TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
       TestUI.updateActiveElement(true);
       Funbox.toggleScript(TestLogic.words.getCurrent());
@@ -138,6 +140,7 @@ function handleBackspace(event) {
   } else {
     if (Config.confidenceMode === "max") return;
     if (event["ctrlKey"] || event["altKey"]) {
+      Replay.addReplayEvent("clearWord");
       let limiter = " ";
       if (
         TestLogic.input.current.lastIndexOf("-") >
@@ -165,6 +168,7 @@ function handleBackspace(event) {
       TestLogic.input.setCurrent(
         TestLogic.input.current.substring(0, TestLogic.input.current.length - 1)
       );
+      Replay.addReplayEvent("deleteLetter");
     }
     TestUI.updateWordElement(!Config.blindMode);
   }
@@ -230,6 +234,7 @@ function handleSpace(event, isEnter) {
   dontInsertSpace = true;
   if (currentWord == TestLogic.input.current || Config.mode == "zen") {
     //correct word or in zen mode
+    Replay.addReplayEvent("submitCorrectWord");
     PaceCaret.handleSpace(true, currentWord);
     TestStats.incrementAccuracy(true);
     TestLogic.input.pushHistory();
@@ -247,6 +252,7 @@ function handleSpace(event, isEnter) {
     }
   } else {
     //incorrect word
+    Replay.addReplayEvent("submitErrorWord");
     PaceCaret.handleSpace(false, currentWord);
     if (Funbox.active !== "nospace") {
       if (!Config.playSoundOnError || Config.blindMode) {
@@ -566,6 +572,7 @@ function handleAlpha(event) {
   }
 
   if (!thisCharCorrect) {
+    Replay.addReplayEvent("incorrectLetter", event.key);
     TestStats.incrementAccuracy(false);
     TestStats.incrementKeypressErrors();
     // currentError.count++;
@@ -573,6 +580,7 @@ function handleAlpha(event) {
     thisCharCorrect = false;
     TestStats.pushMissedWord(TestLogic.words.getCurrent());
   } else {
+    Replay.addReplayEvent("correctLetter", event.key);
     TestStats.incrementAccuracy(true);
     thisCharCorrect = true;
     if (Config.mode == "zen") {
