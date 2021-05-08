@@ -161,6 +161,7 @@ const refactoredSrc = [
   "./src/js/test/test-timer.js",
   "./src/js/test/test-config.js",
   "./src/js/test/layout-emulator.js",
+  "./src/js/replay.js",
 ];
 
 //legacy files

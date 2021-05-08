@@ -1424,6 +1424,23 @@
                 </div>
                 <div class="words"></div>
               </div>
+              <div id="resultReplay" class="hidden">
+                <div class="title">
+                  watch replay
+                  <span
+                    id="playpauseReplayButton"
+                    class="icon-button"
+                    aria-label="Start replay"
+                    data-balloon-pos="up"
+                    style="display: inline-block"
+                  >
+                    <i class="fas fa-play"></i>
+                  </span>
+                </div>
+                <div id="wordsWrapper">
+                  <div id="replayWords" class="words"></div>
+                </div>
+              </div>
               <div class="loginTip">
                 <a href="/login" tabindex="9">Sign in</a>
                 to save your results
@@ -1474,6 +1491,15 @@
                   onclick="this.blur();"
                 >
                   <i class="far fa-fw fa-image"></i>
+                </div>
+                <div
+                  id="watchReplayButton"
+                  aria-label="Watch Replay"
+                  data-balloon-pos="down"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="fas fa-fw fa-backward"></i>
                 </div>
               </div>
             </div>

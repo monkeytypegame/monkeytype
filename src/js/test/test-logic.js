@@ -27,6 +27,7 @@ import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
 import * as CloudFunctions from "./cloud-functions";
 import * as TestLeaderboards from "./test-leaderboards";
+import * as Replay from "./replay.js";
 
 export let notSignedInLastResult = null;
 
@@ -318,6 +319,8 @@ export function startTest() {
     console.log("Analytics unavailable");
   }
   setActive(true);
+  Replay.startReplayRecording();
+  Replay.replayGetWordsList(words.list);
   TestStats.resetKeypressTimings();
   TimerProgress.restart();
   TimerProgress.show();
@@ -343,6 +346,7 @@ export function startTest() {
 
 export async function init() {
   setActive(false);
+  Replay.stopReplayRecording();
   words.reset();
   TestUI.setCurrentWordElementIndex(0);
   // accuracy = {
@@ -678,6 +682,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
   Focus.set(false);
   Caret.hide();
   setActive(false);
+  Replay.stopReplayRecording();
   LiveWpm.hide();
   LiveAcc.hide();
   TimerProgress.hide();
@@ -727,6 +732,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
       } else {
         setRepeated(true);
         setActive(false);
+        Replay.stopReplayRecording();
         words.resetCurrentIndex();
         input.reset();
         PaceCaret.init();
@@ -952,6 +958,7 @@ export function finish(difficultyFailed = false) {
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
     corrected.pushHistory();
+    Replay.replayGetWordsList(input.history);
   }
 
   TestStats.recordKeypressSpacing();
@@ -960,6 +967,7 @@ export function finish(difficultyFailed = false) {
   TestUI.setResultVisible(true);
   TestStats.setEnd(performance.now());
   setActive(false);
+  Replay.stopReplayRecording();
   Focus.set(false);
   Caret.hide();
   LiveWpm.hide();
