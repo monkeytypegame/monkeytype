@@ -641,8 +641,20 @@ export function restart(withSameWordset = false, nosave = false, event) {
     let testSeconds = TestStats.calculateTestSeconds(performance.now());
     let afkseconds = TestStats.calculateAfkSeconds();
     // incompleteTestSeconds += ;
-    TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
+    let tt = testSeconds - afkseconds;
+    console.log(
+      `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
+    );
+    TestStats.incrementIncompleteSeconds(tt);
     TestStats.incrementRestartCount();
+    if (tt > 600) {
+      Notifications.add(
+        `Your time typing just increased by ${Misc.roundTo2(
+          tt / 60
+        )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
+        -1
+      );
+    }
     // restartCount++;
   }
 
@@ -761,8 +773,16 @@ export function restart(withSameWordset = false, nosave = false, event) {
       $(".pageTest #premidSecondsLeft").text(Config.time);
 
       if (Funbox.active === "layoutfluid") {
-        UpdateConfig.setLayout("qwerty");
-        UpdateConfig.setKeymapLayout("qwerty");
+        UpdateConfig.setLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty"
+        );
+        UpdateConfig.setKeymapLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty"
+        );
         Keymap.highlightKey(
           words
             .getCurrent()
@@ -1698,9 +1718,9 @@ export function finish(difficultyFailed = false) {
   $("#result .stats .testType .bottom").html(testType);
 
   let otherText = "";
-  if (Config.layout !== "default") {
-    otherText += "<br>" + Config.layout;
-  }
+  // if (Config.layout !== "default") {
+  //   otherText += "<br>" + Config.layout;
+  // }
   if (difficultyFailed) {
     otherText += "<br>failed";
   }
@@ -1742,6 +1762,10 @@ export function finish(difficultyFailed = false) {
   }
 
   if (Funbox.funboxSaved !== "none") {
+    let content = Funbox.funboxSaved;
+    if (Funbox.funboxSaved === "layoutfluid") {
+      content += " " + Config.customLayoutfluid.replace(/#/g, " ");
+    }
     ChartController.result.options.annotation.annotations.push({
       enabled: false,
       type: "line",
@@ -1762,7 +1786,7 @@ export function finish(difficultyFailed = false) {
         cornerRadius: 3,
         position: "left",
         enabled: true,
-        content: `${Funbox.funboxSaved}`,
+        content: `${content}`,
         yAdjust: -11,
       },
     });

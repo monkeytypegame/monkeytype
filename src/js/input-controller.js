@@ -54,7 +54,8 @@ function handleTab(event) {
   } else if (
     !TestUI.resultCalculating &&
     $("#commandLineWrapper").hasClass("hidden") &&
-    $("#simplePopupWrapper").hasClass("hidden")
+    $("#simplePopupWrapper").hasClass("hidden") &&
+    !$(".page.pageLogin").hasClass("active")
   ) {
     if ($(".pageTest").hasClass("active")) {
       if (Config.quickTab) {
@@ -200,10 +201,15 @@ function handleSpace(event, isEnter) {
 
   let currentWord = TestLogic.words.getCurrent();
   if (Funbox.active === "layoutfluid" && Config.mode !== "time") {
-    const layouts = ["qwerty", "dvorak", "colemak"];
+    // here I need to check if Config.customLayoutFluid exists because of my scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
+    const layouts = Config.customLayoutfluid
+      ? Config.customLayoutfluid.split("#")
+      : ["qwerty", "dvorak", "colemak"];
     let index = 0;
     let outof = TestLogic.words.length;
-    index = Math.floor((TestLogic.input.history.length + 1) / (outof / 3));
+    index = Math.floor(
+      (TestLogic.input.history.length + 1) / (outof / layouts.length)
+    );
     if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
       Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
     }
@@ -629,7 +635,8 @@ function handleAlpha(event) {
   //max length of the input is 20 unless in zen mode then its 30
   if (
     (Config.mode == "zen" && TestLogic.input.current.length < 30) ||
-    (Config.mode !== "zen" && TestLogic.input.current.length < TestLogic.words.getCurrent().length + 20)
+    (Config.mode !== "zen" &&
+      TestLogic.input.current.length < TestLogic.words.getCurrent().length + 20)
   ) {
     TestLogic.input.appendCurrent(event["key"]);
   }

@@ -202,10 +202,15 @@
           Use the above filters to include and exclude words or characters
           (separated by spaces)
         </div>
+        <div class="tip">
+          "Set" replaces the current custom word list with the filter result,
+          "Add" appends the filter result to the current custom word list
+        </div>
         <i
           class="fas fa-fw fa-spin fa-circle-notch hidden loadingIndicator"
         ></i>
-        <div class="button">ok</div>
+        <div class="button" id="set">set</div>
+        <div class="button">add</div>
       </div>
     </div>
     <div id="customWordAmountPopupWrapper" class="hidden">
@@ -2236,6 +2241,26 @@
                   website or the looks). Give each one of them a try!
                 </div>
                 <div class="buttons"></div>
+              </div>
+              <div class="sectionSpacer"></div>
+              <div class="section customLayoutfluid">
+                <h1>custom layoutfluid</h1>
+                <div class="text">
+                  Select which layouts you want the layoutfluid funbox to cycle
+                  through.
+                </div>
+                <div class="inputAndSave">
+                  <input
+                    type="text"
+                    placeholder="layouts (separated by space)"
+                    class="input"
+                    tabindex="0"
+                    onClick="this.select();"
+                  />
+                  <div class="button save" tabindex="0" onclick="this.blur();">
+                    <i class="fas fa-save fa-fw"></i>
+                  </div>
+                </div>
               </div>
               <div class="sectionSpacer"></div>
             </div>
