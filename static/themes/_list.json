@@ -533,5 +533,10 @@
     "name": "bouquet",
     "bgColor": "#38564a",
     "textColor": "#ffbdb2"
+  },
+  {
+    "name": "midnight",
+    "bgColor": "#0c0e12",
+    "textColor": "#525f7a"
   }
 ]
