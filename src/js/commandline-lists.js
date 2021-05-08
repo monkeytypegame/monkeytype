@@ -703,6 +703,13 @@ let commandsHighlightMode = {
   title: "Change highlight mode...",
   list: [
     {
+      id: "setHighlightModeOff",
+      display: "off",
+      exec: () => {
+        UpdateConfig.setHighlightMode("off");
+      },
+    },
+    {
       id: "setHighlightModeLetter",
       display: "letter",
       exec: () => {

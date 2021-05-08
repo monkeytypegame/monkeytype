@@ -334,6 +334,11 @@ export function updateWordElement(showError) {
           charCorrect = false;
         }
 
+        let correctClass = "correct";
+        if (Config.highlightMode == "off") {
+          correctClass = "";
+        }
+
         let currentLetter = currentWord[i];
         let tabChar = "";
         let nlChar = "";
@@ -346,11 +351,11 @@ export function updateWordElement(showError) {
         }
 
         if (charCorrect) {
-          ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
+          ret += `<letter class="${correctClass} ${tabChar}${nlChar}">${currentLetter}</letter>`;
         } else {
           if (!showError) {
             if (currentLetter !== undefined) {
-              ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
+              ret += `<letter class="${correctClass} ${tabChar}${nlChar}">${currentLetter}</letter>`;
             }
           } else {
             if (currentLetter == undefined) {
