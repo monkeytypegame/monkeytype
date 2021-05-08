@@ -87,7 +87,7 @@ export async function initSnapshot() {
       .get()
       .then((data) => {
         data.docs.forEach((doc) => {
-          console.log(doc);
+          // console.log(doc);
           let preset = doc.data();
           preset.id = doc.id;
           snap.presets.push(preset);
