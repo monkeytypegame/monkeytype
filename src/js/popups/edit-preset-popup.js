@@ -97,9 +97,6 @@ function apply() {
       }
     });
   } else if (action === "edit") {
-    let preset = DB.getSnapshot().presets.filter(
-      (preset) => preset.id == presetid
-    )[0];
     Loader.show();
     CloudFunctions.editPreset({
       uid: firebase.auth().currentUser.uid,
