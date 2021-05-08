@@ -129,7 +129,7 @@ export function clearPreview() {
   }
 }
 
-export function randomiseTheme() {
+export function randomizeTheme() {
   var randomList;
   Misc.getThemesList().then((themes) => {
     randomList = themes.map((t) => {
