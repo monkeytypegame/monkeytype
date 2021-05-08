@@ -6,7 +6,7 @@ labels: bug
 assignees: ""
 ---
 
-<!-- 
+<!--
 **DID YOU MAKE SURE TO CLEAR CACHE BEFORE OPENING AN ISSUE?**
 Sometimes your browser has old files cached and the bug you are experiencing might be already fixed, or is just a side effect of a new update. If you don't know how to do that, this website should help: https://www.pcmag.com/how-to/how-to-clear-your-cache-on-any-browser
 
@@ -14,12 +14,11 @@ Sometimes your browser has old files cached and the bug you are experiencing mig
 
 **Describe the bug** <!-- A clear and concise description of what the bug is. -->
 
-
-<!-- 
+<!--
 
 **Did it happen in incognito mode?**
 
-Sometimes things work in incognito mode, which allows me to further track down the issue. 
+Sometimes things work in incognito mode, which allows me to further track down the issue.
 
 -->
 
@@ -32,9 +31,7 @@ Sometimes things work in incognito mode, which allows me to further track down t
 
 **Expected behavior** <!-- A clear and concise description of what you expected to happen. -->
 
-
 **Screenshots** <!-- If applicable, add screenshots to further help explain your problem. -->
-
 
 **Desktop:** <!-- if you encountered an issue while using Monkeytype on your computer please complete the following information, delete this section if not-->
 
