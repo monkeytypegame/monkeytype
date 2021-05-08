@@ -779,8 +779,16 @@ export function restart(withSameWordset = false, nosave = false, event) {
       $(".pageTest #premidSecondsLeft").text(Config.time);
 
       if (Funbox.active === "layoutfluid") {
-        UpdateConfig.setLayout("qwerty");
-        UpdateConfig.setKeymapLayout("qwerty");
+        UpdateConfig.setLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty"
+        );
+        UpdateConfig.setKeymapLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty"
+        );
         Keymap.highlightKey(
           words
             .getCurrent()
@@ -1718,9 +1726,9 @@ export function finish(difficultyFailed = false) {
   $("#result .stats .testType .bottom").html(testType);
 
   let otherText = "";
-  if (Config.layout !== "default") {
-    otherText += "<br>" + Config.layout;
-  }
+  // if (Config.layout !== "default") {
+  //   otherText += "<br>" + Config.layout;
+  // }
   if (difficultyFailed) {
     otherText += "<br>failed";
   }
@@ -1762,6 +1770,10 @@ export function finish(difficultyFailed = false) {
   }
 
   if (Funbox.funboxSaved !== "none") {
+    let content = Funbox.funboxSaved;
+    if (Funbox.funboxSaved === "layoutfluid") {
+      content += " " + Config.customLayoutfluid.replace(/#/g, " ");
+    }
     ChartController.result.options.annotation.annotations.push({
       enabled: false,
       type: "line",
@@ -1782,7 +1794,7 @@ export function finish(difficultyFailed = false) {
         cornerRadius: 3,
         position: "left",
         enabled: true,
-        content: `${Funbox.funboxSaved}`,
+        content: `${content}`,
         yAdjust: -11,
       },
     });
