@@ -83,7 +83,7 @@ function apply() {
       Loader.hide();
       let status = e.data.resultCode;
       if (status === 1) {
-        Notifications.add("Preset Added", 1, 2);
+        Notifications.add("Preset added", 1, 2);
         DB.getSnapshot().presets.push({
           name: inputVal,
           config: configChanges,
@@ -110,13 +110,13 @@ function apply() {
       Loader.hide();
       let status = e.data.resultCode;
       if (status === 1) {
-        Notifications.add("Tag updated", 1);
+        Notifications.add("Preset updated", 1);
         DB.getSnapshot().presets.filter(
           (preset) => preset.id == presetid
         )[0].name = inputVal;
         Settings.update();
       } else if (status === -1) {
-        Notifications.add("Invalid tag name", 0);
+        Notifications.add("Invalid preset name", 0);
       } else if (status < -1) {
         Notifications.add("Unknown error: " + e.data.message, -1);
       }
