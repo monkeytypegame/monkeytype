@@ -1,0 +1,47 @@
+{
+  "language": "code_java",
+  "groups": [
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
+  ],
+  "quotes": [
+    {
+      "text": "System.out.println(\"Hello World\");",
+      "source": "Print Hello World - programming-idioms.org",
+      "id": 1,
+      "length": 34
+    },
+    {
+      "text": "void finish(String name){\n\tSystem.out.println(\"My job here is done. Goodbye \" + name);\n}",
+      "source": "Create a procedure - programming-idioms.org",
+      "id": 2,
+      "length": 89
+    },
+    {
+      "text": "int square(int x){\n\treturn x*x;\n}",
+      "source": "Create a function which returns the square of an integer - programming-idioms.org",
+      "id": 3,
+      "length": 33
+    },
+    {
+      "text": "for (int i=0; i<items.length; i++) {\n\tdoSomething(items[i]);\n}",
+      "source": "Iterate over list values - programming-idioms.org",
+      "id": 4,
+      "length": 33
+    },
+    {
+      "text": "public enum OperatingSystem {\n\tOSX, WIndows, LINUX;\n\tpublic String toString() {\n\t\tswitch(this) {\n\t\t\tcase OSX: return \"Mac OS\",\n\t\t\tcase WINDOWS: return \"Windows\";\n\t\t\tcase LINUX: return \"Linux\";\n\t\t}\\n\t}\n}",
+      "id": 5,
+      "source": "Community contribution",
+      "length": 202
+    },
+    {
+      "text": "boolean contains(int[] list, int x) {\n\tfor(int y: list)\n\t\tif (y == x)\n\t\t\treturn true;\n\treturn false;\n}",
+      "id": 6,
+      "source": "Check if list contains a value - programming-idioms.org",
+      "length": 55
+    }
+  ]
+}
