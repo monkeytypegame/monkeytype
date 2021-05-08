@@ -92,6 +92,8 @@ function apply() {
         Settings.update();
       } else if (status === -1) {
         Notifications.add("Invalid preset name", 0);
+      } else if (status === -2) {
+        Notifications.add("You can't add any more presets", 0);
       } else if (status < -1) {
         Notifications.add("Unknown error: " + e.data.message, -1);
       }
