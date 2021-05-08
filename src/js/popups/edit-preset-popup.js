@@ -1,0 +1,161 @@
+import * as ResultTagsPopup from "./result-tags-popup";
+import * as ResultFilters from "./result-filters";
+import * as Loader from "./loader";
+import * as DB from "./db";
+import * as CloudFunctions from "./cloud-functions";
+import * as Notifications from "./notifications";
+import * as Settings from "./settings";
+import * as Config from "./config";
+
+export function show(action, id, name) {
+  if (action === "add") {
+    $("#presetWrapper #presetEdit").attr("action", "add");
+    $("#presetWrapper #presetEdit .title").html("Create new preset");
+    $("#presetWrapper #presetEdit .button").html(`<i class="fas fa-plus"></i>`);
+    $("#presetWrapper #presetEdit input.text").val("");
+    $("#presetWrapper #presetEdit input.text").removeClass("hidden");
+    $("#presetWrapper #presetEdit label").addClass("hidden");
+  } else if (action === "edit") {
+    $("#presetWrapper #presetEdit").attr("action", "edit");
+    $("#presetWrapper #presetEdit").attr("presetid", id);
+    $("#presetWrapper #presetEdit .title").html("Edit preset");
+    $("#presetWrapper #presetEdit .button").html(`<i class="fas fa-pen"></i>`);
+    $("#presetWrapper #presetEdit input.text").val(name);
+    $("#presetWrapper #presetEdit input.text").removeClass("hidden");
+    $("#presetWrapper #presetEdit label input").prop("checked", false);
+    $("#presetWrapper #presetEdit label").removeClass("hidden");
+  } else if (action === "remove") {
+    $("#presetWrapper #presetEdit").attr("action", "remove");
+    $("#presetWrapper #presetEdit").attr("presetid", id);
+    $("#presetWrapper #presetEdit .title").html("Remove preset " + name);
+    $("#presetWrapper #presetEdit .button").html(
+      `<i class="fas fa-check"></i>`
+    );
+    $("#presetWrapper #presetEdit input.text").addClass("hidden");
+    $("#presetWrapper #presetEdit label").addClass("hidden");
+  }
+
+  if ($("#presetWrapper").hasClass("hidden")) {
+    $("#presetWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate({ opacity: 1 }, 100, () => {
+        $("#presetWrapper #presetEdit input").focus();
+      });
+  }
+}
+
+function hide() {
+  if (!$("#presetWrapper").hasClass("hidden")) {
+    $("#presetWrapper #presetEdit").attr("action", "");
+    $("#presetWrapper #presetEdit").attr("tagid", "");
+    $("#presetWrapper")
+      .stop(true, true)
+      .css("opacity", 1)
+      .animate(
+        {
+          opacity: 0,
+        },
+        100,
+        () => {
+          $("#presetWrapper").addClass("hidden");
+        }
+      );
+  }
+}
+
+function apply() {
+  let action = $("#presetWrapper #presetEdit").attr("action");
+  let inputVal = $("#presetWrapper #presetEdit input").val();
+  let presetid = $("#presetWrapper #presetEdit").attr("presetid");
+  let configChanges = Config.getConfigChanges();
+  hide();
+  if (action === "add") {
+    Loader.show();
+    CloudFunctions.addPreset({
+      uid: firebase.auth().currentUser.uid,
+      obj: {
+        name: inputVal,
+        config: configChanges,
+      },
+    }).then((e) => {
+      Loader.hide();
+      let status = e.data.resultCode;
+      if (status === 1) {
+        Notifications.add("Preset Added", 1, 2);
+        DB.getSnapshot().presets.push({
+          name: inputVal,
+          config: configChanges,
+          id: e.data.id,
+        });
+        Settings.update();
+      } else if (status === -1) {
+        Notifications.add("Invalid preset name", 0);
+      } else if (status < -1) {
+        Notifications.add("Unknown error: " + e.data.message, -1);
+      }
+    });
+  } else if (action === "edit") {
+    let preset = DB.getSnapshot().presets.filter(
+      (preset) => preset.id == presetid
+    )[0];
+    Loader.show();
+    CloudFunctions.editPreset({
+      uid: firebase.auth().currentUser.uid,
+      name: inputVal,
+      presetid,
+      config: preset.config,
+    }).then((e) => {
+      Loader.hide();
+      let status = e.data.resultCode;
+      if (status === 1) {
+        Notifications.add("Tag updated", 1);
+        DB.getSnapshot().presets.filter(
+          (preset) => preset.id == presetid
+        )[0].name = inputVal;
+        Settings.update();
+      } else if (status === -1) {
+        Notifications.add("Invalid tag name", 0);
+      } else if (status < -1) {
+        Notifications.add("Unknown error: " + e.data.message, -1);
+      }
+    });
+  } else if (action === "remove") {
+    Loader.show();
+    CloudFunctions.removePreset({
+      uid: firebase.auth().currentUser.uid,
+      presetid,
+    }).then((e) => {
+      Loader.hide();
+      let status = e.data.resultCode;
+      if (status === 1) {
+        Notifications.add("Preset removed", 1);
+        DB.getSnapshot().preset.forEach((preset, index) => {
+          if (preset.id === presetid) {
+            DB.getSnapshot().preset.splice(index, 1);
+          }
+        });
+        Settings.update();
+      } else if (status < -1) {
+        Notifications.add("Unknown error: " + e.data.message, -1);
+      }
+    });
+  }
+}
+
+$("#presetWrapper").click((e) => {
+  if ($(e.target).attr("id") === "presetWrapper") {
+    hide();
+  }
+});
+
+$("#presetWrapper #presetEdit .button").click(() => {
+  apply();
+});
+
+$("#presetWrapper #presetEdit input").keypress((e) => {
+  if (e.keyCode == 13) {
+    apply();
+  }
+});

@@ -1709,6 +1709,18 @@ export function loadFromLocalStorage() {
   loadDone();
 }
 
+export function getConfigChanges() {
+  let configChanges = {};
+  Object.keys(config)
+    .filter((key) => {
+      return config[key] != defaultConfig[key];
+    })
+    .forEach((key) => {
+      configChanges[key] = config[key];
+    });
+  return configChanges;
+}
+
 export function setConfig(newConfig) {
   config = newConfig;
 }

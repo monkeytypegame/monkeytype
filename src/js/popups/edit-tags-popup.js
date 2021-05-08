@@ -59,6 +59,7 @@ function hide() {
 }
 
 function apply() {
+  console.log(DB.getSnapshot());
   let action = $("#tagsWrapper #tagsEdit").attr("action");
   let inputVal = $("#tagsWrapper #tagsEdit input").val();
   let tagid = $("#tagsWrapper #tagsEdit").attr("tagid");
