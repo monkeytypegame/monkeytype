@@ -105,15 +105,17 @@ function apply() {
       uid: firebase.auth().currentUser.uid,
       name: inputVal,
       presetid,
-      config: preset.config,
+      config: configChanges,
     }).then((e) => {
       Loader.hide();
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Preset updated", 1);
-        DB.getSnapshot().presets.filter(
+        let preset = DB.getSnapshot().presets.filter(
           (preset) => preset.id == presetid
-        )[0].name = inputVal;
+        )[0];
+        preset.name = inputVal;
+        preset.config = configChanges;
         Settings.update();
       } else if (status === -1) {
         Notifications.add("Invalid preset name", 0);
