@@ -709,7 +709,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
       !UI.pageTransition &&
       !Config.customTheme
     ) {
-      ThemeController.randomiseTheme();
+      ThemeController.randomizeTheme();
     }
   }
   TestUI.setResultVisible(false);

@@ -1798,9 +1798,9 @@ export let defaultCommands = {
       },
     },
     {
-      id: "randomiseTheme",
+      id: "randomizeTheme",
       display: "Next random theme",
-      exec: () => ThemeController.randomiseTheme(),
+      exec: () => ThemeController.randomizeTheme(),
     },
     {
       id: "viewTypingPage",
