@@ -143,7 +143,7 @@ export async function initSnapshot() {
       .catch((e) => {
         throw e;
       });
-    console.log(snap.presets);
+    // console.log(snap.presets);
     dbSnapshot = snap;
   } catch (e) {
     console.error(e);
