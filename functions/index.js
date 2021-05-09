@@ -1847,7 +1847,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
 
 exports.addPreset = functions.https.onCall(async (request, response) => {
   try {
-    if (!isTagPresetNameValid(request.name)) {
+    if (!isTagPresetNameValid(request.obj.name)) {
       return { resultCode: -1 };
     } else if (request.uid === undefined || request.obj === undefined) {
       console.error(`error saving config for ${request.uid} - missing input`);
@@ -1969,7 +1969,7 @@ exports.editPreset = functions.https.onCall((request, response) => {
 exports.removePreset = functions.https.onCall((request, response) => {
   try {
     return db
-      .collection(`users/${request.uid}/preset`)
+      .collection(`users/${request.uid}/presets`)
       .doc(request.presetid)
       .delete()
       .then((e) => {
