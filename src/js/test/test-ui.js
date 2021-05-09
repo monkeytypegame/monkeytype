@@ -607,10 +607,14 @@ export function updateModesNotice() {
 
 export function arrangeCharactersRightToLeft() {
   $("#words").addClass("rightToLeftTest");
+  $("#resultWordsHistory .words").addClass("rightToLeftTest");
+  $("#resultReplay .words").addClass("rightToLeftTest");
 }
 
 export function arrangeCharactersLeftToRight() {
   $("#words").removeClass("rightToLeftTest");
+  $("#resultWordsHistory .words").removeClass("rightToLeftTest");
+  $("#resultReplay .words").removeClass("rightToLeftTest");
 }
 
 async function loadWordsHistory() {
@@ -822,7 +826,9 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
       $(e.currentTarget).append(
         `<div class="wordInputAfter">${input
           .replace(/\t/g, "_")
-          .replace(/\n/g, "_")}</div>`
+          .replace(/\n/g, "_")
+          .replace(/</g, "&lt")
+          .replace(/>/g, "&gt")}</div>`
       );
   }
 });
