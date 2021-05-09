@@ -409,6 +409,20 @@ let commandsRandomTheme = {
         UpdateConfig.setRandomTheme("fav");
       },
     },
+    {
+      id: "setRandomLight",
+      display: "light",
+      exec: () => {
+        UpdateConfig.setRandomTheme("light");
+      },
+    },
+    {
+      id: "setRandomDark",
+      display: "dark",
+      exec: () => {
+        UpdateConfig.setRandomTheme("dark");
+      },
+    },
   ],
 };
 

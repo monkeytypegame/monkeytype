@@ -3230,7 +3230,9 @@
                 <div class="text">
                   After completing a test, the theme will be set to a random
                   one. The random themes are not saved to your config. If set to
-                  'fav' only favourite themes will be randomized.
+                  'fav' only favourite themes will be randomized. If set to
+                  'light' or 'dark', only presets with light or dark background
+                  colors will be randomized, respectively.
                 </div>
                 <div class="buttons">
                   <div
@@ -3256,6 +3258,22 @@
                     onclick="this.blur();"
                   >
                     fav
+                  </div>
+                  <div
+                    class="button"
+                    randomTheme="light"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    light
+                  </div>
+                  <div
+                    class="button"
+                    randomTheme="dark"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    dark
                   </div>
                 </div>
               </div>
