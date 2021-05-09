@@ -2578,36 +2578,6 @@ key {
 
       form {
         grid-area: form;
-
-        #rememberMe {
-          color: var(--sub-color);
-          -moz-user-select: none;
-          user-select: none;
-          cursor: pointer;
-
-          input {
-            margin: 0 !important;
-            cursor: pointer;
-            width: 0;
-            height: 0;
-            display: none;
-
-            & ~ .customCheckbox {
-              width: 12px;
-              height: 12px;
-              background: rgba(0, 0, 0, 0.1);
-              border-radius: 2px;
-              box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-              display: inline-block;
-              margin: 0 0.5rem 0 0.25rem;
-              transition: 0.25s;
-            }
-
-            &:checked ~ .customCheckbox {
-              background: var(--main-color);
-            }
-          }
-        }
       }
     }
   }
