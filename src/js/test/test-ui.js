@@ -822,7 +822,9 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
       $(e.currentTarget).append(
         `<div class="wordInputAfter">${input
           .replace(/\t/g, "_")
-          .replace(/\n/g, "_")}</div>`
+          .replace(/\n/g, "_")
+          .replace(/</g, "&lt")
+          .replace(/>/g, "&gt")}</div>`
       );
   }
 });
