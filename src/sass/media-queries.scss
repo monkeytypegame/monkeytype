@@ -1,14 +1,6 @@
 @media only screen and (max-width: 1050px) {
   #centerContent {
-    .pageSettings .section.themes .buttons,
-    .pageSettings .section.language .buttons,
-    .pageSettings .section.layout .buttons,
-    .pageSettings .section.keymapLayout .buttons,
-    .pageSettings .section.keymapLegendStyle .buttons,
-    .pageSettings .section.fontFamily .buttons,
-    .pageSettings .section.funbox .buttons,
-    .pageSettings .section.keymapStyle .buttons,
-    .pageSettings .section.languageGroups .buttons {
+    .pageSettings .section.fullWidth .buttons {
       grid-template-columns: 1fr 1fr 1fr;
     }
 
@@ -131,15 +123,7 @@
   }
 
   #centerContent {
-    .pageSettings .section.themes .buttons,
-    .pageSettings .section.language .buttons,
-    .pageSettings .section.layout .buttons,
-    .pageSettings .section.keymapLayout .buttons,
-    .pageSettings .section.keymapLegendStyle .buttons,
-    .pageSettings .section.fontFamily .buttons,
-    .pageSettings .section.funbox .buttons,
-    .pageSettings .section.keymapStyle .buttons,
-    .pageSettings .section.languageGroups .buttons {
+    .pageSettings .section.fullWidth .buttons{
       grid-template-columns: 1fr 1fr;
     }
   }

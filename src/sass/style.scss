@@ -3069,16 +3069,7 @@ key {
       }
     }
 
-    &.themes,
-    &.language,
-    &.languageGroups,
-    &.layout,
-    &.keymapLayout,
-    &.keymapLegendStyle,
-    &.fontFamily,
-    &.funbox,
-    &.keymapStyle,
-    &.customBackgroundFilter {
+    &.themes{
       grid-template-columns: 2fr 1fr;
       grid-template-areas:
         "title tabs"
@@ -3127,6 +3118,31 @@ key {
         margin-top: 0.5rem;
       }
     }
+
+
+    &.fullWidth {
+      grid-template-columns: 2fr 1fr;
+      grid-template-areas:
+        "title tabs"
+        "text text"
+        "buttons buttons";
+      column-gap: 2rem;
+      // row-gap: 0.5rem;
+
+      .buttons {
+        margin-left: 0;
+        grid-auto-flow: dense;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+    }
+
+    &.randomTheme .buttons{
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    }
+
   }
 }
 
