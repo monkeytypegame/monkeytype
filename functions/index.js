@@ -1937,7 +1937,7 @@ exports.addPreset = functions.https.onCall(async (request, response) => {
 
 exports.editPreset = functions.https.onCall((request, response) => {
   try {
-    if (!isTagPresetValid(request.name)) {
+    if (!isTagPresetNameValid(request.name)) {
       return { resultCode: -1 };
     } else {
       return db
