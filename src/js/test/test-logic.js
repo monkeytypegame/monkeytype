@@ -588,8 +588,12 @@ export async function init() {
   }
   if (language.ligatures) {
     $("#words").addClass("withLigatures");
+    $("#resultWordsHistory .words").addClass("withLigatures");
+    $("#resultReplay .words").addClass("withLigatures");
   } else {
     $("#words").removeClass("withLigatures");
+    $("#resultWordsHistory .words").removeClass("withLigatures");
+    $("#resultReplay .words").removeClass("withLigatures");
   }
   // if (Config.mode == "zen") {
   //   // Creating an empty active word element for zen mode

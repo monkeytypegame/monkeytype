@@ -1854,6 +1854,19 @@ key {
         position: relative;
         margin: 0.18rem 0.6rem 0.15rem 0;
       }
+      &.rightToLeftTest {
+        //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
+        direction: rtl;
+        .word {
+          //flex-direction: row-reverse;
+          direction: rtl;
+        }
+      }
+      &.withLigatures {
+        letter {
+          display: inline;
+        }
+      }
     }
     .correct {
       color: var(--text-color);

@@ -607,10 +607,14 @@ export function updateModesNotice() {
 
 export function arrangeCharactersRightToLeft() {
   $("#words").addClass("rightToLeftTest");
+  $("#resultWordsHistory .words").addClass("rightToLeftTest");
+  $("#resultReplay .words").addClass("rightToLeftTest");
 }
 
 export function arrangeCharactersLeftToRight() {
   $("#words").removeClass("rightToLeftTest");
+  $("#resultWordsHistory .words").removeClass("rightToLeftTest");
+  $("#resultReplay .words").removeClass("rightToLeftTest");
 }
 
 async function loadWordsHistory() {
