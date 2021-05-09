@@ -138,9 +138,9 @@
         </div>
         <textarea class="textarea" placeholder="Custom text"></textarea>
         <div class="inputs">
-          <label class="check">
+          <label class="checkbox">
             <input type="checkbox" />
-            <div class="customTextRandomCheckbox"></div>
+            <div class="customTextCheckbox"></div>
             Random
             <span>
               randomize the above words, and control how many words are
@@ -158,9 +158,9 @@
               <input type="number" value="" min="1" max="10000" />
             </label>
           </div>
-          <label class="typographyCheck">
+          <label class="checkbox typographyCheck">
             <input type="checkbox" checked />
-            <div class="customTextTypographyCheckbox"></div>
+            <div class="customTextCheckbox customTextTypographyCheckbox"></div>
             Remove Fancy Typography
             <span>
               Standardises typography symbols (for example “ and ” become ")
@@ -250,7 +250,7 @@
         <div id="quoteSearchResults" class="quoteSearchResults"></div>
       </div>
     </div>
-    <div id="tagsWrapper" class="hidden">
+    <div id="tagsWrapper" class="wrapper hidden">
       <div id="tagsEdit" action="" tagid="">
         <div class="title"></div>
         <input type="text" />
@@ -261,6 +261,18 @@
       <div id="resultEditTagsPanel" resultid="">
         <div class="buttons"></div>
         <div class="button confirmButton"><i class="fas fa-check"></i></div>
+      </div>
+    </div>
+    <div id="presetWrapper" class="wrapper hidden">
+      <div id="presetEdit" action="" presetid="">
+        <div class="title"></div>
+        <input type="text" class="text" />
+        <label class="checkbox">
+          <input type="checkbox" />
+          <div class="customTextCheckbox"></div>
+          Change preset to current settings
+        </label>
+        <div class="button"><i class="fas fa-plus"></i></div>
       </div>
     </div>
     <div id="leaderboardsWrapper" class="hidden">
@@ -1982,6 +1994,28 @@
                   </div>
                 </div>
               </div>
+              <div class="section presets">
+                <h1>presets</h1>
+                <div class="text">
+                  Create settings presets that can be applied with one click
+                </div>
+                <div class="presetsListAndButton">
+                  <div class="presetsList">
+                    <div class="buttons preset" id="0">
+                      <div class="presetButton button">
+                        <div class="title">staggered</div>
+                      </div>
+                      <div class="editButton button">
+                        <i class="fas fa-pen"></i>
+                      </div>
+                      <div class="removeButton button">
+                        <i class="fas fa-trash"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="addPresetButton"><i class="fas fa-plus"></i></div>
+                </div>
+              </div>
               <div class="sectionSpacer"></div>
             </div>
 
@@ -3688,9 +3722,9 @@
                   autocomplete="password"
                 />
                 <div>
-                  <label id="rememberMe">
+                  <label id="rememberMe" class="checkbox">
                     <input type="checkbox" checked />
-                    <div class="customCheckbox"></div>
+                    <div class="customTextCheckbox"></div>
                     Remember me
                   </label>
                 </div>

@@ -13,6 +13,7 @@ import * as TestUI from "./test-ui";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
+import * as PresetController from "./preset-controller";
 import * as Commandline from "./commandline";
 import * as CustomText from "./custom-text";
 
@@ -238,6 +239,30 @@ export function updateTagCommands() {
       });
     });
     // defaultCommands.list[4].visible = true;
+  }
+}
+
+let commandsPresets = {
+  title: "Apply preset...",
+  list: [],
+};
+
+export function updatePresetCommands() {
+  if (DB.getSnapshot().presets.length > 0) {
+    commandsPresets.list = [];
+
+    DB.getSnapshot().presets.forEach((preset) => {
+      let dis = preset.name;
+
+      commandsPresets.list.push({
+        id: "applyPreset" + preset.id,
+        display: dis,
+        exec: () => {
+          PresetController.apply(preset.id);
+          TestUI.updateModesNotice();
+        },
+      });
+    });
   }
 }
 
@@ -1317,6 +1342,17 @@ export let defaultCommands = {
       exec: () => {
         updateTagCommands();
         current.push(commandsTags);
+        Commandline.show();
+      },
+    },
+    {
+      visible: false,
+      id: "applyPreset",
+      display: "Apply preset...",
+      subgroup: true,
+      exec: () => {
+        updatePresetCommands();
+        current.push(commandsPresets);
         Commandline.show();
       },
     },
