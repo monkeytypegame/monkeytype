@@ -117,6 +117,7 @@ export function getDataAndInit() {
             if ($(".page.pageTest").hasClass("active")) {
               TestLogic.restart(false, true);
             }
+            DB.saveConfig(Config);
           }
         }
         UpdateConfig.setDbConfigLoaded(true);
