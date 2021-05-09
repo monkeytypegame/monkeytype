@@ -977,7 +977,10 @@ export function finish(difficultyFailed = false) {
   Keymap.hide();
   Funbox.activate("none", null);
 
-  if (Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0) {
+  if (
+    Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0 &&
+    Config.mode !== "time"
+  ) {
     TestStats.setLastSecondNotRound();
   }
 
