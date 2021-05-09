@@ -134,7 +134,7 @@ function apply() {
         Notifications.add("Preset removed", 1);
         DB.getSnapshot().presets.forEach((preset, index) => {
           if (preset.id === presetid) {
-            DB.getSnapshot().preset.splice(index, 1);
+            DB.getSnapshot().presets.splice(index, 1);
           }
         });
         Settings.update();
