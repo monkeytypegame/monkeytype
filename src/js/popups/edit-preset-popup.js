@@ -132,7 +132,7 @@ function apply() {
       let status = e.data.resultCode;
       if (status === 1) {
         Notifications.add("Preset removed", 1);
-        DB.getSnapshot().preset.forEach((preset, index) => {
+        DB.getSnapshot().presets.forEach((preset, index) => {
           if (preset.id === presetid) {
             DB.getSnapshot().preset.splice(index, 1);
           }
