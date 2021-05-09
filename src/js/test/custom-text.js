@@ -1,4 +1,10 @@
-export let text = "The quick brown fox jumps over the lazy dog".split(" ");
+let wordParams = new URL(window.location.href).searchParams.get("custom");
+let defaultText = "The quick brown fox jumps over the lazy dog";
+
+export let urlWordSeparator = "|";
+export let text = wordParams
+  ? wordParams.split(urlWordSeparator)
+  : defaultText.split(" ");
 export let isWordRandom = false;
 export let isTimeRandom = false;
 export let word = "";

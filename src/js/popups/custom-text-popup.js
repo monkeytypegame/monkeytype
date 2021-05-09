@@ -7,6 +7,7 @@ import * as WordFilterPopup from "./word-filter-popup";
 
 let wrapper = "#customTextPopupWrapper";
 let popup = "#customTextPopup";
+let maxUrlEncodeLength = 10000;
 
 export function show() {
   if ($(wrapper).hasClass("hidden")) {
@@ -84,6 +85,7 @@ $(`${popup} .randomInputFields .time input`).keypress((e) => {
 
 $("#customTextPopup .apply").click(() => {
   let text = $("#customTextPopup textarea").val();
+
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
@@ -100,6 +102,17 @@ $("#customTextPopup .apply").click(() => {
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
+
+  let url = new URL(window.location.href);
+  url.searchParams.set(
+    "custom",
+    text.length <= maxUrlEncodeLength
+      ? text.replaceAll(" ", CustomText.urlWordSeparator)
+      : ""
+  );
+  url.search = decodeURI(url.search);
+  window.history.replaceState(null, null, url);
+
   text = text.split(" ");
   CustomText.setText(text);
   CustomText.setWord(parseInt($("#customTextPopup .wordcount input").val()));
