@@ -1407,10 +1407,7 @@ export function setCustomLayoutfluid(value, nosave) {
     value = "qwerty#dvorak#colemak";
   }
   value = value.replace(/ /g, "#");
-  value
-    .split("#")
-    .map((l) => (l = l.toLowerCase()))
-    .join("#");
+  value = value.toLowerCase();
 
   //validate the layouts
   let allGood = true;
@@ -1430,6 +1427,9 @@ export function setCustomLayoutfluid(value, nosave) {
   CommandlineLists.defaultCommands.list.filter(
     (command) => command.id == "changeCustomLayoutfluid"
   )[0].defaultValue = value.replace(/#/g, " ");
+  $(".pageSettings .section.customLayoutfluid input").val(
+    value.replace(/#/g, " ")
+  );
   if (!nosave) saveToLocalStorage();
 }
 
