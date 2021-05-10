@@ -1407,18 +1407,17 @@ export function setCustomLayoutfluid(value, nosave) {
     value = "qwerty#dvorak#colemak";
   }
   value = value.replace(/ /g, "#");
-  value = value.toLowerCase();
 
   //validate the layouts
   let allGood = true;
-  let list = Object.keys(LayoutList).map((l) => (l = l.toLowerCase()));
+  let list = Object.keys(LayoutList);
   value.split("#").forEach((customLayout) => {
     if (!list.includes(customLayout)) allGood = false;
   });
   if (!allGood) {
     Notifications.add(
-      "One of the layouts were not found. Reverting to default",
-      0
+      "One of the layouts was not found. Make sure the name matches exactly. Reverting to default",
+      0,4
     );
     value = "qwerty#dvorak#colemak";
     nosave = false;
