@@ -334,6 +334,11 @@ export function updateWordElement(showError) {
           charCorrect = false;
         }
 
+        let correctClass = "correct";
+        if (Config.highlightMode == "off") {
+          correctClass = "";
+        }
+
         let currentLetter = currentWord[i];
         let tabChar = "";
         let nlChar = "";
@@ -346,11 +351,11 @@ export function updateWordElement(showError) {
         }
 
         if (charCorrect) {
-          ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
+          ret += `<letter class="${correctClass} ${tabChar}${nlChar}">${currentLetter}</letter>`;
         } else {
           if (!showError) {
             if (currentLetter !== undefined) {
-              ret += `<letter class="correct ${tabChar}${nlChar}">${currentLetter}</letter>`;
+              ret += `<letter class="${correctClass} ${tabChar}${nlChar}">${currentLetter}</letter>`;
             }
           } else {
             if (currentLetter == undefined) {
@@ -602,10 +607,14 @@ export function updateModesNotice() {
 
 export function arrangeCharactersRightToLeft() {
   $("#words").addClass("rightToLeftTest");
+  $("#resultWordsHistory .words").addClass("rightToLeftTest");
+  $("#resultReplay .words").addClass("rightToLeftTest");
 }
 
 export function arrangeCharactersLeftToRight() {
   $("#words").removeClass("rightToLeftTest");
+  $("#resultWordsHistory .words").removeClass("rightToLeftTest");
+  $("#resultReplay .words").removeClass("rightToLeftTest");
 }
 
 async function loadWordsHistory() {
@@ -817,7 +826,9 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
       $(e.currentTarget).append(
         `<div class="wordInputAfter">${input
           .replace(/\t/g, "_")
-          .replace(/\n/g, "_")}</div>`
+          .replace(/\n/g, "_")
+          .replace(/</g, "&lt")
+          .replace(/>/g, "&gt")}</div>`
       );
   }
 });

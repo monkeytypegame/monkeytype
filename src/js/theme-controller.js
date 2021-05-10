@@ -4,6 +4,7 @@ import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import Config from "./config";
 import * as UI from "./ui";
+import tinycolor from "tinycolor2";
 
 let isPreviewingTheme = false;
 export let randomTheme = null;
@@ -129,15 +130,24 @@ export function clearPreview() {
   }
 }
 
-export function randomiseTheme() {
+export function randomizeTheme() {
   var randomList;
   Misc.getThemesList().then((themes) => {
-    randomList = themes.map((t) => {
-      return t.name;
-    });
-
-    if (Config.randomTheme === "fav" && Config.favThemes.length > 0)
+    if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
       randomList = Config.favThemes;
+    } else if (Config.randomTheme === "light") {
+      randomList = themes
+        .filter((t) => tinycolor(t.bgColor).isLight())
+        .map((t) => t.name);
+    } else if (Config.randomTheme === "dark") {
+      randomList = themes
+        .filter((t) => tinycolor(t.bgColor).isDark())
+        .map((t) => t.name);
+    } else {
+      randomList = themes.map((t) => {
+        return t.name;
+      });
+    }
 
     const previousTheme = randomTheme;
     randomTheme = randomList[Math.floor(Math.random() * randomList.length)];

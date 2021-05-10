@@ -1,14 +1,6 @@
 @media only screen and (max-width: 1050px) {
   #centerContent {
-    .pageSettings .section.themes .buttons,
-    .pageSettings .section.language .buttons,
-    .pageSettings .section.layout .buttons,
-    .pageSettings .section.keymapLayout .buttons,
-    .pageSettings .section.keymapLegendStyle .buttons,
-    .pageSettings .section.fontFamily .buttons,
-    .pageSettings .section.funbox .buttons,
-    .pageSettings .section.keymapStyle .buttons,
-    .pageSettings .section.languageGroups .buttons {
+    .pageSettings .section.fullWidth .buttons {
       grid-template-columns: 1fr 1fr 1fr;
     }
 
@@ -106,7 +98,7 @@
 
   #result {
     .buttons {
-      grid-template-rows: 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
       #nextTestButton {
         grid-column: 1/5;
         width: 100%;
@@ -131,15 +123,7 @@
   }
 
   #centerContent {
-    .pageSettings .section.themes .buttons,
-    .pageSettings .section.language .buttons,
-    .pageSettings .section.layout .buttons,
-    .pageSettings .section.keymapLayout .buttons,
-    .pageSettings .section.keymapLegendStyle .buttons,
-    .pageSettings .section.fontFamily .buttons,
-    .pageSettings .section.funbox .buttons,
-    .pageSettings .section.keymapStyle .buttons,
-    .pageSettings .section.languageGroups .buttons {
+    .pageSettings .section.fullWidth .buttons {
       grid-template-columns: 1fr 1fr;
     }
   }
@@ -219,7 +203,7 @@
   }
   #result {
     .buttons {
-      grid-template-rows: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr 1fr;
       #nextTestButton {
         grid-column: 1/3;
         width: 100%;

@@ -16,6 +16,7 @@ import * as PaceCaret from "./pace-caret";
 import * as UI from "./ui";
 import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
+import LayoutList from "./layouts";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -117,6 +118,7 @@ let defaultConfig = {
   customBackground: "",
   customBackgroundSize: "cover",
   customBackgroundFilter: [0, 1, 1, 1, 1],
+  customLayoutfluid: "qwerty#dvorak#colemak",
 };
 
 function isConfigKeyValid(name) {
@@ -1400,6 +1402,37 @@ export function setCustomBackground(value, nosave) {
   }
 }
 
+export function setCustomLayoutfluid(value, nosave) {
+  if (value == null || value == undefined) {
+    value = "qwerty#dvorak#colemak";
+  }
+  value = value.replace(/ /g, "#");
+
+  //validate the layouts
+  let allGood = true;
+  let list = Object.keys(LayoutList);
+  value.split("#").forEach((customLayout) => {
+    if (!list.includes(customLayout)) allGood = false;
+  });
+  if (!allGood) {
+    Notifications.add(
+      "One of the layouts was not found. Make sure the name matches exactly. Reverting to default",
+      0,
+      4
+    );
+    value = "qwerty#dvorak#colemak";
+    nosave = false;
+  }
+  config.customLayoutfluid = value;
+  CommandlineLists.defaultCommands.list.filter(
+    (command) => command.id == "changeCustomLayoutfluid"
+  )[0].defaultValue = value.replace(/#/g, " ");
+  $(".pageSettings .section.customLayoutfluid input").val(
+    value.replace(/#/g, " ")
+  );
+  if (!nosave) saveToLocalStorage();
+}
+
 export function setCustomBackgroundSize(value, nosave) {
   if (value != "cover" && value != "contain" && value != "max") {
     value = "cover";
@@ -1430,6 +1463,7 @@ export function apply(configObj) {
     setTheme(configObj.theme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
     setCustomTheme(configObj.customTheme, true, true);
+    setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
@@ -1707,6 +1741,18 @@ export function loadFromLocalStorage() {
   }
   TestLogic.restart(false, true);
   loadDone();
+}
+
+export function getConfigChanges() {
+  let configChanges = {};
+  Object.keys(config)
+    .filter((key) => {
+      return config[key] != defaultConfig[key];
+    })
+    .forEach((key) => {
+      configChanges[key] = config[key];
+    });
+  return configChanges;
 }
 
 export function setConfig(newConfig) {

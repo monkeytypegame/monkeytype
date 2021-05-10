@@ -25,6 +25,11 @@
     "textColor": "#ed6b21"
   },
   {
+    "name": "our_theme",
+    "bgColor": "#ce1226",
+    "textColor": "#fcd116"
+  },
+  {
     "name": "dots",
     "bgColor": "#121520",
     "textColor": "#7f88ab"

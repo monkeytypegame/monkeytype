@@ -1627,7 +1627,7 @@ function updateDiscordRole(discordId, wpm) {
   });
 }
 
-function isTagValid(name) {
+function isTagPresetNameValid(name) {
   if (name === null || name === undefined || name === "") return false;
   if (name.length > 16) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
@@ -1635,7 +1635,7 @@ function isTagValid(name) {
 
 exports.addTag = functions.https.onCall((request, response) => {
   try {
-    if (!isTagValid(request.name)) {
+    if (!isTagPresetNameValid(request.name)) {
       return { resultCode: -1 };
     } else {
       return db
@@ -1665,7 +1665,7 @@ exports.addTag = functions.https.onCall((request, response) => {
 
 exports.editTag = functions.https.onCall((request, response) => {
   try {
-    if (!isTagValid(request.name)) {
+    if (!isTagPresetNameValid(request.name)) {
       return { resultCode: -1 };
     } else {
       return db
@@ -1765,7 +1765,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
     if (request.uid === undefined || request.obj === undefined) {
       console.error(`error saving config for ${request.uid} - missing input`);
       return {
-        returnCode: -1,
+        resultCode: -1,
         message: "Missing input",
       };
     }
@@ -1807,7 +1807,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
         )}`
       );
       return {
-        returnCode: -1,
+        resultCode: -1,
         message: "Bad input. " + errorMessage,
       };
     }
@@ -1823,7 +1823,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
       )
       .then((e) => {
         return {
-          returnCode: 1,
+          resultCode: 1,
           message: "Saved",
         };
       })
@@ -1832,7 +1832,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
           `error saving config to DB for ${request.uid} - ${e.message}`
         );
         return {
-          returnCode: -1,
+          resultCode: -1,
           message: e.message,
         };
       });
@@ -1842,6 +1842,151 @@ exports.saveConfig = functions.https.onCall((request, response) => {
       resultCode: -999,
       message: e,
     };
+  }
+});
+
+exports.addPreset = functions.https.onCall(async (request, response) => {
+  try {
+    if (!isTagPresetNameValid(request.obj.name)) {
+      return { resultCode: -1 };
+    } else if (request.uid === undefined || request.obj === undefined) {
+      console.error(`error saving config for ${request.uid} - missing input`);
+      return {
+        resultCode: -1,
+        message: "Missing input",
+      };
+    } else {
+      let config = request.obj.config;
+      let errorMessage = "";
+      let err = false;
+      Object.keys(config).forEach((key) => {
+        if (err) return;
+        if (!isConfigKeyValid(key)) {
+          err = true;
+          console.error(`${key} failed regex check`);
+          errorMessage = `${key} failed regex check`;
+        }
+        if (err) return;
+        if (key === "resultFilters") return;
+        if (key === "customBackground") return;
+        let val = config[key];
+        if (Array.isArray(val)) {
+          val.forEach((valarr) => {
+            if (!isConfigKeyValid(valarr)) {
+              err = true;
+              console.error(`${key}: ${valarr} failed regex check`);
+              errorMessage = `${key}: ${valarr} failed regex check`;
+            }
+          });
+        } else {
+          if (!isConfigKeyValid(val)) {
+            err = true;
+            console.error(`${key}: ${val} failed regex check`);
+            errorMessage = `${key}: ${val} failed regex check`;
+          }
+        }
+      });
+      if (err) {
+        console.error(
+          `error adding preset for ${
+            request.uid
+          } - bad input - ${JSON.stringify(request.obj)}`
+        );
+        return {
+          resultCode: -1,
+          message: "Bad input. " + errorMessage,
+        };
+      }
+
+      let presets = await db.collection(`users/${request.uid}/presets`).get();
+      if (presets.docs.length >= 10) {
+        return {
+          resultCode: -2,
+          message: "Preset limit",
+        };
+      }
+
+      return db
+        .collection(`users/${request.uid}/presets`)
+        .add(request.obj)
+        .then((e) => {
+          return {
+            resultCode: 1,
+            message: "Saved",
+            id: e.id,
+          };
+        })
+        .catch((e) => {
+          console.error(
+            `error adding preset to DB for ${request.uid} - ${e.message}`
+          );
+          return {
+            resultCode: -1,
+            message: e.message,
+          };
+        });
+    }
+  } catch (e) {
+    console.error(`error adding preset for ${request.uid} - ${e}`);
+    return {
+      resultCode: -999,
+      message: e,
+    };
+  }
+});
+
+exports.editPreset = functions.https.onCall((request, response) => {
+  try {
+    if (!isTagPresetNameValid(request.name)) {
+      return { resultCode: -1 };
+    } else {
+      return db
+        .collection(`users/${request.uid}/presets`)
+        .doc(request.presetid)
+        .set({
+          config: request.config,
+          name: request.name,
+        })
+        .then((e) => {
+          console.log(`user ${request.uid} updated a preset: ${request.name}`);
+          return {
+            resultCode: 1,
+          };
+        })
+        .catch((e) => {
+          console.error(
+            `error while updating preset for user ${request.uid}: ${e.message}`
+          );
+          return { resultCode: -999, message: e.message };
+        });
+    }
+  } catch (e) {
+    console.error(`error updating preset for ${request.uid} - ${e}`);
+    return { resultCode: -999, message: e.message };
+  }
+});
+
+exports.removePreset = functions.https.onCall((request, response) => {
+  try {
+    return db
+      .collection(`users/${request.uid}/presets`)
+      .doc(request.presetid)
+      .delete()
+      .then((e) => {
+        console.log(`user ${request.uid} deleted a tag`);
+        return {
+          resultCode: 1,
+        };
+      })
+      .catch((e) => {
+        console.error(
+          `error deleting tag for user ${request.uid}: ${e.message}`
+        );
+        return { resultCode: -999 };
+      });
+  } catch (e) {
+    console.error(`error deleting tag for ${request.uid} - ${e}`);
+    return { resultCode: -999 };
   }
 });
 

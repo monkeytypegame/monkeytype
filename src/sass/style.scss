@@ -269,7 +269,7 @@ html {
 }
 
 ::-webkit-scrollbar-corner {
-  background: var(--subcolour);
+  background: var(--sub-color);
 }
 
 a {
@@ -499,7 +499,7 @@ a:hover {
   }
 }
 
-#tagsWrapper {
+.wrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -513,6 +513,15 @@ a:hover {
   padding: 5rem 0;
 
   #tagsEdit {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    overflow-y: scroll;
+  }
+
+  #presetEdit {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -579,71 +588,37 @@ a:hover {
       text-align: center;
       align-items: center;
     }
+  }
+}
 
-    .check {
-      span {
-        display: block;
-        font-size: 0.76rem;
-        color: var(--sub-color);
-        margin-left: 1.5rem;
-      }
+label.checkbox {
+  span {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--sub-color);
+    margin-left: 1.5rem;
+  }
 
-      input {
-        margin: 0 !important;
-        cursor: pointer;
-        width: 0;
-        height: 0;
-        display: none;
+  input {
+    margin: 0 !important;
+    cursor: pointer;
+    width: 0;
+    height: 0;
+    display: none;
 
-        & ~ .customTextRandomCheckbox {
-          width: 12px;
-          height: 12px;
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 2px;
-          box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-          display: inline-block;
-          margin: 0 0.5rem 0 0.25rem;
-          transition: 0.25s;
-        }
-
-        &:checked ~ .customTextRandomCheckbox {
-          background: var(--main-color);
-        }
-      }
+    & ~ .customTextCheckbox {
+      width: 12px;
+      height: 12px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      margin: 0 0.5rem 0 0.25rem;
+      transition: 0.25s;
     }
-    .typographyCheck {
-      grid-row: 2;
-      grid-column: 1/3;
 
-      span {
-        display: block;
-        font-size: 0.76rem;
-        color: var(--sub-color);
-        margin-left: 1.5rem;
-      }
-
-      input {
-        margin: 0 !important;
-        cursor: pointer;
-        width: 0;
-        height: 0;
-        display: none;
-
-        & ~ .customTextTypographyCheckbox {
-          width: 12px;
-          height: 12px;
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 2px;
-          box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-          display: inline-block;
-          margin: 0 0.5rem 0 0.25rem;
-          transition: 0.25s;
-        }
-
-        &:checked ~ .customTextTypographyCheckbox {
-          background: var(--main-color);
-        }
-      }
+    &:checked ~ .customTextCheckbox {
+      background: var(--main-color);
     }
   }
 }
@@ -1864,7 +1839,8 @@ key {
     grid-column: 1/3;
   }
 
-  #resultWordsHistory {
+  #resultWordsHistory,
+  #resultReplay {
     // grid-area: wordsHistory;
     color: var(--sub-color);
     grid-column: 1/3;
@@ -1876,7 +1852,30 @@ key {
       user-select: none;
       .word {
         position: relative;
+        margin: 0.18rem 0.6rem 0.15rem 0;
       }
+      &.rightToLeftTest {
+        //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
+        direction: rtl;
+        .word {
+          //flex-direction: row-reverse;
+          direction: rtl;
+        }
+      }
+      &.withLigatures {
+        letter {
+          display: inline;
+        }
+      }
+    }
+    .correct {
+      color: var(--text-color);
+    }
+    .incorrect {
+      color: var(--error-color);
+    }
+    .incorrect.extra {
+      color: var(--error-extra-color);
     }
   }
 
@@ -2276,7 +2275,8 @@ key {
 #copyResultToClipboardButton,
 #restartTestButtonWithSameWordset,
 #nextTestButton,
-#practiseMissedWordsButton {
+#practiseMissedWordsButton,
+#watchReplayButton {
   position: relative;
   border-radius: var(--roundness);
   padding: 1rem 2rem;
@@ -2295,6 +2295,10 @@ key {
   &:focus {
     background: var(--sub-color);
   }
+}
+
+#replayWords {
+  cursor: pointer;
 }
 
 #restartTestButton {
@@ -2603,36 +2607,6 @@ key {
 
       form {
         grid-area: form;
-
-        #rememberMe {
-          color: var(--sub-color);
-          -moz-user-select: none;
-          user-select: none;
-          cursor: pointer;
-
-          input {
-            margin: 0 !important;
-            cursor: pointer;
-            width: 0;
-            height: 0;
-            display: none;
-
-            & ~ .customCheckbox {
-              width: 12px;
-              height: 12px;
-              background: rgba(0, 0, 0, 0.1);
-              border-radius: 2px;
-              box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-              display: inline-block;
-              margin: 0 0.5rem 0 0.25rem;
-              transition: 0.25s;
-            }
-
-            &:checked ~ .customCheckbox {
-              background: var(--main-color);
-            }
-          }
-        }
       }
     }
   }
@@ -2766,6 +2740,29 @@ key {
       &:hover {
         background: var(--text-color);
         color: var(--bg-color);
+      }
+    }
+
+    // I have no idea what I'm doing so I just copied the customBackgroundSize css and changed numbers so it magically worked.
+    &.customLayoutfluid {
+      .inputAndSave {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        input {
+          grid-column: 1/3;
+        }
+
+        .save {
+          grid-column: 3/4;
+          height: auto;
+
+          .fas {
+            margin-right: 0rem;
+            vertical-align: sub;
+          }
+        }
       }
     }
 
@@ -2967,6 +2964,46 @@ key {
       }
     }
 
+    &.presets {
+      .presetsListAndButton {
+        grid-area: buttons;
+      }
+
+      .preset {
+        grid-template-columns: 5fr 1fr 1fr;
+        margin-bottom: 0.5rem;
+      }
+
+      .addPresetButton {
+        margin-top: 0.5rem;
+        color: var(--text-color);
+        cursor: pointer;
+        transition: 0.25s;
+        padding: 0.2rem 0.5rem;
+        border-radius: var(--roundness);
+
+        background: rgba(0, 0, 0, 0.1);
+        text-align: center;
+        -webkit-user-select: none;
+        display: grid;
+        align-content: center;
+        height: min-content;
+        height: -moz-min-content;
+
+        &.active {
+          background: var(--main-color);
+          color: var(--bg-color);
+        }
+
+        &:hover,
+        &:focus {
+          color: var(--bg-color);
+          background: var(--text-color);
+          outline: none;
+        }
+      }
+    }
+
     &.fontSize .buttons {
       grid-template-columns: 1fr 1fr 1fr 1fr;
     }
@@ -3045,16 +3082,7 @@ key {
       }
     }
 
-    &.themes,
-    &.language,
-    &.languageGroups,
-    &.layout,
-    &.keymapLayout,
-    &.keymapLegendStyle,
-    &.fontFamily,
-    &.funbox,
-    &.keymapStyle,
-    &.customBackgroundFilter {
+    &.themes {
       grid-template-columns: 2fr 1fr;
       grid-template-areas:
         "title tabs"
@@ -3102,6 +3130,29 @@ key {
         gap: 0.5rem;
         margin-top: 0.5rem;
       }
+    }
+
+    &.fullWidth {
+      grid-template-columns: 2fr 1fr;
+      grid-template-areas:
+        "title tabs"
+        "text text"
+        "buttons buttons";
+      column-gap: 2rem;
+      // row-gap: 0.5rem;
+
+      .buttons {
+        margin-left: 0;
+        grid-auto-flow: dense;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+    }
+
+    &.randomTheme .buttons {
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     }
   }
 }
@@ -3453,11 +3504,6 @@ key {
   height: min-content;
   height: -moz-min-content;
   line-height: 1rem;
-
-  .fas,
-  .far {
-    margin-right: 0.5rem;
-  }
 
   &:hover {
     color: var(--bg-color);

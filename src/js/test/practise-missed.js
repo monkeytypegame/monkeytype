@@ -28,7 +28,7 @@ export function init() {
   });
   CustomText.setText(newCustomText);
   CustomText.setIsWordRandom(true);
-  CustomText.setWord(50);
+  CustomText.setWord(Object.keys(TestStats.missedWords).length * 5);
 
   TestLogic.restart();
   before.mode = mode;

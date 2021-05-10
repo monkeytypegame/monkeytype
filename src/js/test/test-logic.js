@@ -27,6 +27,7 @@ import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
 import * as CloudFunctions from "./cloud-functions";
 import * as TestLeaderboards from "./test-leaderboards";
+import * as Replay from "./replay.js";
 
 export let notSignedInLastResult = null;
 
@@ -318,6 +319,8 @@ export function startTest() {
     console.log("Analytics unavailable");
   }
   setActive(true);
+  Replay.startReplayRecording();
+  Replay.replayGetWordsList(words.list);
   TestStats.resetKeypressTimings();
   TimerProgress.restart();
   TimerProgress.show();
@@ -343,6 +346,7 @@ export function startTest() {
 
 export async function init() {
   setActive(false);
+  Replay.stopReplayRecording();
   words.reset();
   TestUI.setCurrentWordElementIndex(0);
   // accuracy = {
@@ -584,8 +588,12 @@ export async function init() {
   }
   if (language.ligatures) {
     $("#words").addClass("withLigatures");
+    $("#resultWordsHistory .words").addClass("withLigatures");
+    $("#resultReplay .words").addClass("withLigatures");
   } else {
     $("#words").removeClass("withLigatures");
+    $("#resultWordsHistory .words").removeClass("withLigatures");
+    $("#resultReplay .words").removeClass("withLigatures");
   }
   // if (Config.mode == "zen") {
   //   // Creating an empty active word element for zen mode
@@ -678,6 +686,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
   Focus.set(false);
   Caret.hide();
   setActive(false);
+  Replay.stopReplayRecording();
   LiveWpm.hide();
   LiveAcc.hide();
   TimerProgress.hide();
@@ -704,7 +713,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
       !UI.pageTransition &&
       !Config.customTheme
     ) {
-      ThemeController.randomiseTheme();
+      ThemeController.randomizeTheme();
     }
   }
   TestUI.setResultVisible(false);
@@ -727,6 +736,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
       } else {
         setRepeated(true);
         setActive(false);
+        Replay.stopReplayRecording();
         words.resetCurrentIndex();
         input.reset();
         PaceCaret.init();
@@ -773,8 +783,16 @@ export function restart(withSameWordset = false, nosave = false, event) {
       $(".pageTest #premidSecondsLeft").text(Config.time);
 
       if (Funbox.active === "layoutfluid") {
-        UpdateConfig.setLayout("qwerty");
-        UpdateConfig.setKeymapLayout("qwerty");
+        UpdateConfig.setLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty"
+        );
+        UpdateConfig.setKeymapLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty"
+        );
         Keymap.highlightKey(
           words
             .getCurrent()
@@ -944,6 +962,7 @@ export function finish(difficultyFailed = false) {
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
     corrected.pushHistory();
+    Replay.replayGetWordsList(input.history);
   }
 
   TestStats.recordKeypressSpacing();
@@ -952,6 +971,7 @@ export function finish(difficultyFailed = false) {
   TestUI.setResultVisible(true);
   TestStats.setEnd(performance.now());
   setActive(false);
+  Replay.stopReplayRecording();
   Focus.set(false);
   Caret.hide();
   LiveWpm.hide();
@@ -961,7 +981,10 @@ export function finish(difficultyFailed = false) {
   Keymap.hide();
   Funbox.activate("none", null);
 
-  if (Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0) {
+  if (
+    Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0 &&
+    Config.mode !== "time"
+  ) {
     TestStats.setLastSecondNotRound();
   }
 
@@ -1104,8 +1127,7 @@ export function finish(difficultyFailed = false) {
     );
   }, 125);
 
-  $("#testModesNotice").addClass("hidden");
-
+  $("#testModesNotice").css("opacity", 0);
   $("#result .stats .leaderboards .bottom").text("");
   $("#result .stats .leaderboards").addClass("hidden");
 
@@ -1710,9 +1732,9 @@ export function finish(difficultyFailed = false) {
   $("#result .stats .testType .bottom").html(testType);
 
   let otherText = "";
-  if (Config.layout !== "default") {
-    otherText += "<br>" + Config.layout;
-  }
+  // if (Config.layout !== "default") {
+  //   otherText += "<br>" + Config.layout;
+  // }
   if (difficultyFailed) {
     otherText += "<br>failed";
   }
@@ -1754,6 +1776,10 @@ export function finish(difficultyFailed = false) {
   }
 
   if (Funbox.funboxSaved !== "none") {
+    let content = Funbox.funboxSaved;
+    if (Funbox.funboxSaved === "layoutfluid") {
+      content += " " + Config.customLayoutfluid.replace(/#/g, " ");
+    }
     ChartController.result.options.annotation.annotations.push({
       enabled: false,
       type: "line",
@@ -1774,7 +1800,7 @@ export function finish(difficultyFailed = false) {
         cornerRadius: 3,
         position: "left",
         enabled: true,
-        content: `${Funbox.funboxSaved}`,
+        content: `${content}`,
         yAdjust: -11,
       },
     });
@@ -1792,6 +1818,7 @@ export function finish(difficultyFailed = false) {
     if (Config.alwaysShowWordsHistory) {
       TestUI.toggleResultWords();
     }
+    $("#testModesNotice").addClass("hidden");
   });
 }
 

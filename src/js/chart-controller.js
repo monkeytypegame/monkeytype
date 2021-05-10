@@ -67,7 +67,13 @@ export let result = new Chart($("#wpmChart"), {
               let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
               let input = wordEl.attr("input");
               if (input != undefined)
-                wordEl.append(`<div class="wordInputAfter">${input}</div>`);
+                wordEl.append(
+                  `<div class="wordInputAfter">${input
+                    .replace(/\t/g, "_")
+                    .replace(/\n/g, "_")
+                    .replace(/</g, "&lt")
+                    .replace(/>/g, "&gt")}</div>`
+                );
             });
           } catch {}
         },
