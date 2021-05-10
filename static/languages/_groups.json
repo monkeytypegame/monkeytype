@@ -144,6 +144,10 @@
     "languages": ["swedish", "swedish_1k"]
   },
   {
+    "name": "bulgarian",
+    "languages": ["bulgarian"]
+  },
+  {
     "name": "serbian",
     "languages": ["serbian"]
   },
