@@ -25,6 +25,11 @@
     "textColor": "#ed6b21"
   },
   {
+    "name": "communism",
+    "bgColor": "#be1918",
+    "textColor": "#1C1C19"
+  },
+  {
     "name": "dots",
     "bgColor": "#121520",
     "textColor": "#7f88ab"
