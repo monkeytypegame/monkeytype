@@ -164,6 +164,10 @@
     "languages": ["catalan", "catalan_1k"]
   },
   {
+    "name": "bulgarian",
+    "languages": ["bulgarian"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
