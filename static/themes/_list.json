@@ -547,11 +547,11 @@
   {
     "name": "blueberry_light",
     "bgColor": "#c1daf3",
-    "textColor": "#516377"
+    "textColor": "#7390aa"
   },
   {
     "name": "blueberry_dark",
-    "bgColor": "#242939",
-    "textColor": "#add7ff"
+    "bgColor": "#2e3446",
+    "textColor": "#91b4d5"
   }
 ]
