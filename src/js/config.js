@@ -1417,7 +1417,8 @@ export function setCustomLayoutfluid(value, nosave) {
   if (!allGood) {
     Notifications.add(
       "One of the layouts was not found. Make sure the name matches exactly. Reverting to default",
-      0,4
+      0,
+      4
     );
     value = "qwerty#dvorak#colemak";
     nosave = false;

@@ -1127,7 +1127,7 @@ export function finish(difficultyFailed = false) {
     );
   }, 125);
 
-  $("#testModesNotice").css("opacity",0);
+  $("#testModesNotice").css("opacity", 0);
   $("#result .stats .leaderboards .bottom").text("");
   $("#result .stats .leaderboards").addClass("hidden");
 
