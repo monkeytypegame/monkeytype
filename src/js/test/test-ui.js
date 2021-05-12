@@ -782,7 +782,7 @@ export function highlightBadWord(index, showError) {
   $($("#words .word")[index]).addClass("error");
 }
 
-$(document.body).on("click", "#copyResultToClipboardButton", () => {
+$(document.body).on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
