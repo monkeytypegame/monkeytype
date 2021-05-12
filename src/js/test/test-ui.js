@@ -184,6 +184,7 @@ export function colorful(tc) {
 }
 
 export function screenshot() {
+  $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
   $(".pageTest .buttons").addClass("hidden");
   let src = $("#middle");
