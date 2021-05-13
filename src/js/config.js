@@ -836,6 +836,11 @@ export function setHighlightMode(mode, nosave) {
     mode = "letter";
   }
   config.highlightMode = mode;
+  // if(TestLogic.active){
+  try{
+  if (!nosave) TestUI.updateWordElement(config.blindMode);
+  }catch{}
+  // }
   if (!nosave) saveToLocalStorage();
 }
 
