@@ -158,9 +158,15 @@ export function getDataAndInit() {
 let filteredResults = [];
 let visibleTableLines = 0;
 
-function loadMoreLines() {
+function loadMoreLines(lineIndex) {
   if (filteredResults == [] || filteredResults.length == 0) return;
-  for (let i = visibleTableLines; i < visibleTableLines + 10; i++) {
+  let newVisibleLines;
+  if (lineIndex && lineIndex > visibleTableLines) {
+    newVisibleLines = Math.ceil(lineIndex / 10) * 10;
+  } else {
+    newVisibleLines = visibleTableLines + 10;
+  }
+  for (let i = visibleTableLines; i < newVisibleLines; i++) {
     const result = filteredResults[i];
     if (result == undefined) continue;
     let withpunc = "";
@@ -265,7 +271,7 @@ function loadMoreLines() {
     }
 
     $(".pageAccount .history table tbody").append(`
-    <tr>
+    <tr class="result-row" id="result-${i}">
     <td>${pb}</td>
     <td>${result.wpm.toFixed(2)}</td>
     <td>${raw}</td>
@@ -279,7 +285,7 @@ function loadMoreLines() {
     <td>${moment(result.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
     </tr>`);
   }
-  visibleTableLines += 10;
+  visibleTableLines = newVisibleLines;
   if (visibleTableLines >= filteredResults.length) {
     $(".pageAccount .loadMoreButton").addClass("hidden");
   } else {
@@ -815,6 +821,21 @@ $(".pageAccount .toggleChartStyle").click((e) => {
 
 $(".pageAccount .loadMoreButton").click((e) => {
   loadMoreLines();
+});
+
+$(".pageAccount #accountHistoryChart").click((e) => {
+  let activeElement = ChartController.accountHistory.getElementAtEvent(e);
+  if (activeElement == [] || activeElement.length == 0) return;
+  let index = activeElement[0]._index;
+  loadMoreLines(index);
+  $([document.documentElement, document.body]).animate(
+    {
+      scrollTop: $(`#result-${index}`).offset().top,
+    },
+    500
+  );
+  $(".result-row").removeClass("active");
+  $(`#result-${index}`).addClass("active");
 });
 
 $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
