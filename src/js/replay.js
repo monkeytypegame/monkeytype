@@ -53,7 +53,7 @@ function initializeReplayPrompt() {
   });
 }
 
-function pauseReplay() {
+export function pauseReplay() {
   timeoutList.forEach((item) => {
     clearTimeout(item);
   });
