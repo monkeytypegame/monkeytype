@@ -290,42 +290,16 @@ export function updateWordElement(showError) {
       }
     }
   } else {
-    if (Config.highlightMode == "word") {
-      //only for word highlight
-
       let correctSoFar = false;
       if (currentWord.slice(0, input.length) == input) {
         // this is when input so far is correct
         correctSoFar = true;
       }
-      let classString = correctSoFar ? "correct" : "incorrect";
+      let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
       if (Config.blindMode) {
-        classString = "correct";
+        wordHighlightClassString = "correct";
       }
 
-      //show letters in the current word
-      for (let i = 0; i < currentWord.length; i++) {
-        ret += `<letter class="${classString}">` + currentWord[i] + `</letter>`;
-      }
-
-      //show any extra letters if hide extra letters is disabled
-      if (
-        TestLogic.input.current.length > currentWord.length &&
-        !Config.hideExtraLetters
-      ) {
-        for (
-          let i = currentWord.length;
-          i < TestLogic.input.current.length;
-          i++
-        ) {
-          let letter = TestLogic.input.current[i];
-          if (letter == " ") {
-            letter = "_";
-          }
-          ret += `<letter class="${classString}">${letter}</letter>`;
-        }
-      }
-    } else {
       for (let i = 0; i < input.length; i++) {
         let charCorrect;
         if (currentWord[i] == input[i]) {
@@ -351,11 +325,11 @@ export function updateWordElement(showError) {
         }
 
         if (charCorrect) {
-          ret += `<letter class="${correctClass} ${tabChar}${nlChar}">${currentLetter}</letter>`;
+          ret += `<letter class="${Config.highlightMode == "word" ? wordHighlightClassString : correctClass} ${tabChar}${nlChar}">${currentLetter}</letter>`;
         } else {
           if (!showError) {
             if (currentLetter !== undefined) {
-              ret += `<letter class="${correctClass} ${tabChar}${nlChar}">${currentLetter}</letter>`;
+              ret += `<letter class="${Config.highlightMode == "word" ? wordHighlightClassString : correctClass} ${tabChar}${nlChar}">${currentLetter}</letter>`;
             }
           } else {
             if (currentLetter == undefined) {
@@ -364,11 +338,11 @@ export function updateWordElement(showError) {
                 if (letter == " " || letter == "\t" || letter == "\n") {
                   letter = "_";
                 }
-                ret += `<letter class="incorrect extra ${tabChar}${nlChar}">${letter}</letter>`;
+                ret += `<letter class="${Config.highlightMode == "word" ? wordHighlightClassString : 'incorrect'} extra ${tabChar}${nlChar}">${letter}</letter>`;
               }
             } else {
               ret +=
-                `<letter class="incorrect ${tabChar}${nlChar}">` +
+                `<letter class="${Config.highlightMode == "word" ? wordHighlightClassString : 'incorrect'} ${tabChar}${nlChar}">` +
                 currentLetter +
                 (Config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
                 "</letter>";
@@ -384,11 +358,10 @@ export function updateWordElement(showError) {
           } else if (currentWord[i] === "\n") {
             ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
           } else {
-            ret += "<letter>" + currentWord[i] + "</letter>";
+            ret += `<letter class="${Config.highlightMode == "word" ? wordHighlightClassString : ''}">` + currentWord[i] + "</letter>";
           }
         }
       }
-    }
   }
   wordAtIndex.innerHTML = ret;
   if (newlineafter) $("#words").append("<div class='newline'></div>");
