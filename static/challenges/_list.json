@@ -185,6 +185,11 @@
     "parameters": ["read_ahead","time",60]
   }
   ,{
+    "name": "iCanSeeTheFuture",
+    "type": "funbox",
+    "parameters": ["read_ahead_hard","time",60]
+  }
+  ,{
     "name": "whatAreWordsAtThisPoint",
     "type": "funbox",
     "parameters": ["gibberish","time",3600]
