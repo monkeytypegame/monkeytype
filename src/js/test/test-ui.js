@@ -13,6 +13,7 @@ import * as Commandline from "./commandline";
 import * as OutOfFocus from "./out-of-focus";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as PractiseMissed from "./practise-missed";
+import * as Replay from "./replay";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -183,7 +184,23 @@ export function colorful(tc) {
   }
 }
 
+
 export function screenshot() {
+  function revertScreenshot() {
+    $("#notificationCenter").removeClass("hidden");
+    $("#commandLineMobileButton").removeClass("hidden");
+    $(".pageTest .ssWatermark").addClass("hidden");
+    $(".pageTest .buttons").removeClass("hidden");
+    if (revealReplay) $("#resultReplay").removeClass("hidden");
+    if (firebase.auth().currentUser == null)
+      $(".pageTest .loginTip").removeClass("hidden");
+  }
+  let revealReplay = false;
+  if (!$("#resultReplay").hasClass('hidden')) {
+    revealReplay = true;
+    Replay.pauseReplay()
+  }
+  $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
   $(".pageTest .buttons").addClass("hidden");
   let src = $("#middle");
@@ -206,12 +223,7 @@ export function screenshot() {
         try {
           if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
             open(URL.createObjectURL(blob));
-            $("#notificationCenter").removeClass("hidden");
-            $("#commandLineMobileButton").removeClass("hidden");
-            $(".pageTest .ssWatermark").addClass("hidden");
-            $(".pageTest .buttons").removeClass("hidden");
-            if (firebase.auth().currentUser == null)
-              $(".pageTest .loginTip").removeClass("hidden");
+            revertScreenshot();
           } else {
             navigator.clipboard
               .write([
@@ -223,45 +235,25 @@ export function screenshot() {
                 ),
               ])
               .then(() => {
-                $("#notificationCenter").removeClass("hidden");
-                $("#commandLineMobileButton").removeClass("hidden");
                 Notifications.add("Copied to clipboard", 1, 2);
-                $(".pageTest .ssWatermark").addClass("hidden");
-                $(".pageTest .buttons").removeClass("hidden");
-                if (firebase.auth().currentUser == null)
-                  $(".pageTest .loginTip").removeClass("hidden");
+                revertScreenshot();
               });
           }
         } catch (e) {
-          $("#notificationCenter").removeClass("hidden");
-          $("#commandLineMobileButton").removeClass("hidden");
           Notifications.add(
             "Error saving image to clipboard: " + e.message,
             -1
           );
-          $(".pageTest .ssWatermark").addClass("hidden");
-          $(".pageTest .buttons").removeClass("hidden");
-          if (firebase.auth().currentUser == null)
-            $(".pageTest .loginTip").removeClass("hidden");
+          revertScreenshot();
         }
       });
     });
   } catch (e) {
-    $("#notificationCenter").removeClass("hidden");
-    $("#commandLineMobileButton").removeClass("hidden");
     Notifications.add("Error creating image: " + e.message, -1);
-    $(".pageTest .ssWatermark").addClass("hidden");
-    $(".pageTest .buttons").removeClass("hidden");
-    if (firebase.auth().currentUser == null)
-      $(".pageTest .loginTip").removeClass("hidden");
+    revertScreenshot();
   }
   setTimeout(() => {
-    $("#notificationCenter").removeClass("hidden");
-    $("#commandLineMobileButton").removeClass("hidden");
-    $(".pageTest .ssWatermark").addClass("hidden");
-    $(".pageTest .buttons").removeClass("hidden");
-    if (firebase.auth().currentUser == null)
-      $(".pageTest .loginTip").removeClass("hidden");
+    revertScreenshot();
   }, 3000);
 }
 
@@ -754,7 +746,7 @@ export function highlightBadWord(index, showError) {
   $($("#words .word")[index]).addClass("error");
 }
 
-$(document.body).on("click", "#copyResultToClipboardButton", () => {
+$(document.body).on("click", "#saveScreenshotButton", () => {
   screenshot();
 });
 
