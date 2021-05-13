@@ -546,12 +546,12 @@
   },
   {
     "name": "blueberry_light",
-    "bgColor": "#c1daf3",
-    "textColor": "#7390aa"
+    "bgColor": "#dae0f5",
+    "textColor": "#678198"
   },
   {
     "name": "blueberry_dark",
-    "bgColor": "#2e3446",
+    "bgColor": "#212b42",
     "textColor": "#91b4d5"
   }
 ]
