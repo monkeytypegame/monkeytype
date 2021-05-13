@@ -2736,7 +2736,7 @@ key {
 
     .button.danger {
       background: var(--error-color);
-      color: #eee;
+      color: var(--bg-color);
       &:hover {
         background: var(--text-color);
         color: var(--bg-color);
