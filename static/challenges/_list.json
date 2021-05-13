@@ -35,6 +35,11 @@
     "parameters": ["miodec",true,10000]
   }
   ,{
+    "name": "bigramSalad",
+    "type": "customText",
+    "parameters": ["to of in it is as at be we he so on an or do if up by my go",true,100]
+  }
+  ,{
     "name": "simp",
     "type": "customText",
     "parameters": ["miodec",true,1000]
