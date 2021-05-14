@@ -1783,6 +1783,7 @@ exports.saveConfig = functions.https.onCall((request, response) => {
       if (err) return;
       if (key === "resultFilters") return;
       if (key === "customBackground") return;
+      if (key === "customLayoutfluid") return;
       let val = obj[key];
       if (Array.isArray(val)) {
         val.forEach((valarr) => {
