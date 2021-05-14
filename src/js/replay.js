@@ -132,6 +132,8 @@ function loadOldReplay() {
       startingIndex = i + 1;
     }
   });
+  const time = Math.floor(replayData[startingIndex].time / 1000);
+  $("#replayStopwatch").text(time + "s");
   return startingIndex;
 }
 
