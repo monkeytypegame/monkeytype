@@ -72,7 +72,7 @@ function apply() {
   if (action === "add") {
     Loader.show();
     CloudFunctions.addPreset({
-      uid: firebase.auth().currentUser.uid,
+      uid: DB.currentUser().uid,
       obj: {
         name: inputVal,
         config: configChanges,
@@ -99,7 +99,7 @@ function apply() {
   } else if (action === "edit") {
     Loader.show();
     CloudFunctions.editPreset({
-      uid: firebase.auth().currentUser.uid,
+      uid: DB.currentUser().uid,
       name: inputVal,
       presetid,
       config: configChanges,
@@ -123,7 +123,7 @@ function apply() {
   } else if (action === "remove") {
     Loader.show();
     CloudFunctions.removePreset({
-      uid: firebase.auth().currentUser.uid,
+      uid: DB.currentUser().uid,
       presetid,
     }).then((e) => {
       Loader.hide();

@@ -211,7 +211,7 @@ export function screenshot() {
             $("#commandLineMobileButton").removeClass("hidden");
             $(".pageTest .ssWatermark").addClass("hidden");
             $(".pageTest .buttons").removeClass("hidden");
-            if (firebase.auth().currentUser == null)
+            if (DB.currentUser() == null)
               $(".pageTest .loginTip").removeClass("hidden");
           } else {
             navigator.clipboard
@@ -229,7 +229,7 @@ export function screenshot() {
                 Notifications.add("Copied to clipboard", 1, 2);
                 $(".pageTest .ssWatermark").addClass("hidden");
                 $(".pageTest .buttons").removeClass("hidden");
-                if (firebase.auth().currentUser == null)
+                if (DB.currentUser() == null)
                   $(".pageTest .loginTip").removeClass("hidden");
               });
           }
@@ -242,7 +242,7 @@ export function screenshot() {
           );
           $(".pageTest .ssWatermark").addClass("hidden");
           $(".pageTest .buttons").removeClass("hidden");
-          if (firebase.auth().currentUser == null)
+          if (DB.currentUser() == null)
             $(".pageTest .loginTip").removeClass("hidden");
         }
       });
@@ -253,7 +253,7 @@ export function screenshot() {
     Notifications.add("Error creating image: " + e.message, -1);
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .buttons").removeClass("hidden");
-    if (firebase.auth().currentUser == null)
+    if (DB.currentUser() == null)
       $(".pageTest .loginTip").removeClass("hidden");
   }
   setTimeout(() => {
@@ -261,7 +261,7 @@ export function screenshot() {
     $("#commandLineMobileButton").removeClass("hidden");
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .buttons").removeClass("hidden");
-    if (firebase.auth().currentUser == null)
+    if (DB.currentUser() == null)
       $(".pageTest .loginTip").removeClass("hidden");
   }, 3000);
 }

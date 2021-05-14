@@ -4,6 +4,7 @@ import Config, * as UpdateConfig from "./config";
 import * as Focus from "./focus";
 import * as CommandlineLists from "./commandline-lists";
 import * as TestUI from "./test-ui";
+import axios from "axios";
 
 let commandLineMouseMode = false;
 
@@ -163,13 +164,11 @@ function trigger(command) {
     }
   });
   if (!subgroup && !input && !sticky) {
-    try {
-      firebase.analytics().logEvent("usedCommandLine", {
-        command: command,
+    axios
+      .post("/api/analytics/usedCommandLine", { command: command })
+      .catch(() => {
+        console.log("Analytics unavailable");
       });
-    } catch (e) {
-      console.log("Analytics unavailable");
-    }
     hide();
   }
 }
@@ -325,13 +324,11 @@ $("#commandInput input").keydown((e) => {
         }
       }
     });
-    try {
-      firebase.analytics().logEvent("usedCommandLine", {
-        command: command,
+    axios
+      .post("/api/analytics/usedCommandLine", { command: command })
+      .catch(() => {
+        console.log("Analytics unavailable");
       });
-    } catch (e) {
-      console.log("Analytics unavailable");
-    }
     hide();
   }
   return;

@@ -14,6 +14,7 @@ import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
+import * as DB from "./db";
 
 export let pageTransition = false;
 
@@ -161,10 +162,8 @@ export function changePage(page) {
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "account") {
-    if (!firebase.auth().currentUser) {
-      console.log(
-        `current user is ${firebase.auth().currentUser}, going back to login`
-      );
+    if (!DB.currentUser()) {
+      console.log(`current user is ${DB.currentUser()}, going back to login`);
       changePage("login");
     } else {
       setPageTransition(true);
@@ -187,7 +186,7 @@ export function changePage(page) {
       TestConfig.hide();
     }
   } else if (page == "login") {
-    if (firebase.auth().currentUser != null) {
+    if (DB.currentUser() != null) {
       changePage("account");
     } else {
       setPageTransition(true);
@@ -204,6 +203,8 @@ export function changePage(page) {
   }
 }
 
+//checking if the project is the development site
+/*
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
   $("head title").text("Monkey Dev");
@@ -211,6 +212,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
     `<div class="devIndicator tr">DEV</div><div class="devIndicator bl">DEV</div>`
   );
 }
+*/
 
 if (window.location.hostname === "localhost") {
   window.onerror = function (error) {
@@ -218,7 +220,7 @@ if (window.location.hostname === "localhost") {
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
-  firebase.functions().useFunctionsEmulator("http://localhost:5001");
+  //firebase.functions().useFunctionsEmulator("http://localhost:5001");
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
   );

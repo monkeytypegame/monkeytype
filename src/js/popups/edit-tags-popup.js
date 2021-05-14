@@ -67,7 +67,7 @@ function apply() {
   if (action === "add") {
     Loader.show();
     CloudFunctions.addTag({
-      uid: firebase.auth().currentUser.uid,
+      uid: DB.currentUser().uid,
       name: inputVal,
     }).then((e) => {
       Loader.hide();
@@ -90,7 +90,7 @@ function apply() {
   } else if (action === "edit") {
     Loader.show();
     CloudFunctions.editTag({
-      uid: firebase.auth().currentUser.uid,
+      uid: DB.currentUser().uid,
       name: inputVal,
       tagid: tagid,
     }).then((e) => {
@@ -115,7 +115,7 @@ function apply() {
   } else if (action === "remove") {
     Loader.show();
     CloudFunctions.removeTag({
-      uid: firebase.auth().currentUser.uid,
+      uid: DB.currentUser().uid,
       tagid: tagid,
     }).then((e) => {
       Loader.hide();

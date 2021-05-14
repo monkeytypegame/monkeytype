@@ -17,6 +17,7 @@ import * as UI from "./ui";
 import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
 import LayoutList from "./layouts";
+import axios from "axios";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -479,7 +480,7 @@ export function setPaceCaret(val, nosave) {
     val = "off";
   }
   if (document.readyState === "complete") {
-    if (val == "pb" && firebase.auth().currentUser === null) {
+    if (val == "pb" && DB.currentUser() === null) {
       Notifications.add("PB pace caret is unavailable without an account", 0);
       return;
     }
@@ -1217,13 +1218,11 @@ export function setLanguage(language, nosave) {
     language = "english";
   }
   config.language = language;
-  try {
-    firebase.analytics().logEvent("changedLanguage", {
-      language: language,
+  axios
+    .post("/api/analytics/changedLanguage", { language: language })
+    .catch(() => {
+      console.log("Analytics unavailable");
     });
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1537,10 +1536,8 @@ export function apply(configObj) {
     try {
       setEnableAds(configObj.enableAds, true);
       let addemo = false;
-      if (
-        firebase.app().options.projectId === "monkey-type-dev-67af4" ||
-        window.location.hostname === "localhost"
-      ) {
+      //if the app is not running on production, play advertisement demo
+      if (window.location.hostname === "localhost") {
         addemo = true;
       }
 

@@ -114,7 +114,7 @@ export function show(data, mode2) {
     string = globalLbString + "<br>" + dailyLbString;
 
     // CloudFunctions.saveLbMemory({
-    //   uid: firebase.auth().currentUser.uid,
+    //   uid: DB.currentUser().uid,
     //   obj: DB.getSnapshot().lbMemory,
     // }).then((d) => {
     //   if (d.data.returnCode === 1) {

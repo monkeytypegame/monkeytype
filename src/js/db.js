@@ -2,14 +2,22 @@ import { loadTags } from "./result-filters";
 import * as AccountButton from "./account-button";
 import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
+import axios from "axios";
+import Cookies from "js-cookie";
 
-const db = firebase.firestore();
-db.settings({ experimentalForceLongPolling: true });
+//const db = firebase.firestore();
+//db.settings({ experimentalForceLongPolling: true });
 
 let dbSnapshot = null;
 
+//I think that a lot of these functions could be simplified by api calls
+
 export function updateName(uid, name) {
-  db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
+  //db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
+  axios.post("/api/updateName", {
+    uid: uid,
+    name: name,
+  });
 }
 
 export function getSnapshot() {
@@ -26,8 +34,29 @@ export function setSnapshot(newSnapshot) {
   dbSnapshot = newSnapshot;
 }
 
+export function currentUser() {
+  const token = Cookies.get("accessToken");
+  //probably don't need to request the server every time
+  //uid, email, and displayName could be stored in cookies
+  //however, this method proves that the token is valid
+  //might not be important
+  axios
+    .get("/api/currentUser", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => {
+      return response.data.user;
+    })
+    .catch(() => {
+      return null;
+    });
+}
+
 export async function initSnapshot() {
-  let user = firebase.auth().currentUser;
+  //get identity and token
+  //send api request with token that returns tags, presets, and data needed for snap
+  /*
+  let user = currentUser();
   if (user == null) return false;
   let snap = {
     results: undefined,
@@ -56,7 +85,15 @@ export async function initSnapshot() {
       completed: 0,
     },
   };
+  axios.get('/api/fetchSnapshot', {
+    uid: user.uid,
+    //not sure how I'm going to pass tokens right now
+    //token: user.token
+  }).then((response) => {
+    //set snapshot equal to response.data.snap or whatever I call it
+  })
   try {
+    //add tags to snap tags list
     await db
       .collection(`users/${user.uid}/tags/`)
       .get()
@@ -82,6 +119,7 @@ export async function initSnapshot() {
       .catch((e) => {
         throw e;
       });
+    //set presets? Not sure what this is at the moment
     await db
       .collection(`users/${user.uid}/presets/`)
       .get()
@@ -105,6 +143,7 @@ export async function initSnapshot() {
       .catch((e) => {
         throw e;
       });
+    //set snap data to the data found in the database
     await db
       .collection("users")
       .doc(user.uid)
@@ -150,15 +189,28 @@ export async function initSnapshot() {
   }
   loadTags(dbSnapshot.tags);
   return dbSnapshot;
+  */
 }
 
 export async function getUserResults() {
-  let user = firebase.auth().currentUser;
+  let user = currentUser();
   if (user == null) return false;
   if (dbSnapshot === null) return false;
   if (dbSnapshot.results !== undefined) {
     return true;
   } else {
+    axios
+      .get("/api/userResults", {
+        uid: user.uid,
+      })
+      .then((response) => {
+        dbSnapshot.results = response.data.results;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+  /*
     try {
       return await db
         .collection(`users/${user.uid}/results/`)
@@ -171,6 +223,7 @@ export async function getUserResults() {
             let result = doc.data();
             result.id = doc.id;
 
+            //this should be done server-side
             if (result.bailedOut === undefined) result.bailedOut = false;
             if (result.blindMode === undefined) result.blindMode = false;
             if (result.difficulty === undefined) result.difficulty = "normal";
@@ -191,6 +244,7 @@ export async function getUserResults() {
       return false;
     }
   }
+  */
 }
 
 export async function getUserHighestWpm(
@@ -500,22 +554,27 @@ export async function saveLocalTagPB(
 }
 
 export function updateLbMemory(mode, mode2, type, value) {
+  //could dbSnapshot just be used here instead of getSnapshot()
   getSnapshot().lbMemory[mode + mode2][type] = value;
 }
 
 export async function saveConfig(config) {
-  if (firebase.auth().currentUser !== null) {
+  if (currentUser() !== null) {
     AccountButton.loading(true);
-    CloudFunctions.saveConfig({
-      uid: firebase.auth().currentUser.uid,
-      obj: config,
-    }).then((d) => {
-      AccountButton.loading(false);
-      if (d.data.resultCode !== 1) {
-        Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
-      }
-      return;
-    });
+    axios
+      .post("/api/saveConfig", {
+        uid: currentUser().uid,
+      })
+      .then((response) => {
+        AccountButton.loading(false);
+        if (response.data.resultCode !== 1) {
+          Notifications.add(
+            `Error saving config to DB! ${response.data.message}`,
+            4000
+          );
+        }
+        return;
+      });
   }
 }
 

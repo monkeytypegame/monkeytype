@@ -7,12 +7,15 @@ import * as RouteController from "./route-controller";
 import * as UI from "./ui";
 import * as SignOutButton from "./sign-out-button";
 
+console.log("redy loaded");
 ManualRestart.set();
 Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
 Misc.getReleasesFromGitHub();
 
 $(document).ready(() => {
+  console.log("Ready started");
+  //this makes the center content visible
   RouteController.handleInitialPageClasses(window.location.pathname);
   if (window.location.pathname === "/") {
     $("#top .config").removeClass("hidden");

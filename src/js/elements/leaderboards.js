@@ -1,6 +1,7 @@
 import * as CloudFunctions from "./cloud-functions";
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
+import * as DB from "./db";
 
 let currentLeaderboard = "time_15";
 
@@ -28,8 +29,8 @@ function update() {
   let boardinfo = currentLeaderboard.split("_");
 
   let uid = null;
-  if (firebase.auth().currentUser !== null) {
-    uid = firebase.auth().currentUser.uid;
+  if (DB.currentUser() !== null) {
+    uid = DB.currentUser().uid;
   }
 
   Loader.show();

@@ -5,6 +5,7 @@ import * as Notifications from "./notifications";
 import Config from "./config";
 import * as UI from "./ui";
 import tinycolor from "tinycolor2";
+import axios from "axios";
 
 let isPreviewingTheme = false;
 export let randomTheme = null;
@@ -95,13 +96,13 @@ export function apply(themeName) {
     });
   }
 
-  try {
-    firebase.analytics().logEvent("changedTheme", {
+  axios
+    .post("/api/analytics/changedTheme", {
       theme: themeName,
+    })
+    .catch((e) => {
+      console.log("Analytics unavailable");
     });
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
   setTimeout(() => {
     $(".keymap-key").attr("style", "");
     ChartController.updateAllChartColors();

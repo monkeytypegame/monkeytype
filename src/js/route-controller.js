@@ -1,5 +1,6 @@
 import * as Funbox from "./funbox";
 import * as UI from "./ui";
+import * as DB from "./db";
 
 let mappedRoutes = {
   "/": "pageTest",
@@ -35,7 +36,7 @@ $(window).on("popstate", (e) => {
     // show about
     UI.changePage("about");
   } else if (state == "account" || state == "login") {
-    if (firebase.auth().currentUser) {
+    if (DB.currentUser()) {
       UI.changePage("account");
     } else {
       UI.changePage("login");

@@ -152,7 +152,7 @@ list.updateEmail = new SimplePopup(
     try {
       Loader.show();
       CloudFunctions.updateEmail({
-        uid: firebase.auth().currentUser.uid,
+        uid: DB.currentUser().uid,
         previousEmail: previousEmail,
         newEmail: newEmail,
       }).then((data) => {
@@ -189,7 +189,7 @@ list.clearTagPb = new SimplePopup(
     let tagid = eval("this.parameters[0]");
     Loader.show();
     CloudFunctions.clearTagPb({
-      uid: firebase.auth().currentUser.uid,
+      uid: DB.currentUser().uid,
       tagid: tagid,
     })
       .then((res) => {
@@ -247,7 +247,7 @@ list.resetPersonalBests = new SimplePopup(
       Loader.show();
 
       CloudFunctions.resetPersonalBests({
-        uid: firebase.auth().currentUser.uid,
+        uid: DB.currentUser().uid,
       }).then((res) => {
         if (res) {
           Loader.hide();

@@ -13,52 +13,41 @@ import * as AllTimeStats from "./all-time-stats";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
+import axios from "axios";
+import Cookies from "js-cookie";
 
-var gmailProvider = new firebase.auth.GoogleAuthProvider();
+//var gmailProvider = new firebase.auth.GoogleAuthProvider();
 
 export function signIn() {
   $(".pageLogin .preloader").removeClass("hidden");
   let email = $(".pageLogin .login input")[0].value;
   let password = $(".pageLogin .login input")[1].value;
-
-  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
-    //remember me
-    firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(function () {
-        return firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .then((e) => {
-            // UI.changePage("test");
-          })
-          .catch(function (error) {
-            Notifications.add(error.message, -1);
-            $(".pageLogin .preloader").addClass("hidden");
-          });
-      });
-  } else {
-    //dont remember
-    firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
-      .then(function () {
-        return firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .then((e) => {
-            // UI.changePage("test");
-          })
-          .catch(function (error) {
-            Notifications.add(error.message, -1);
-            $(".pageLogin .preloader").addClass("hidden");
-          });
-      });
-  }
+  axios
+    .post("/api/signIn", {
+      email: email,
+      password: password,
+    })
+    .then((response) => {
+      // UI.changePage("test");
+      if ($(".pageLogin .login #rememberMe input").prop("checked")) {
+        // TODO: set user login cookie that persists after session
+        Cookies.set("accessToken", response.data.accessToken);
+      } else {
+        //set user login cookie to persist only as long as the session lives
+        Cookies.set("accessToken", response.data.accessToken);
+      }
+      userStateChanged(response.data.user);
+    })
+    .catch((e) => {
+      console.log("Could not be signed in");
+      Notifications.add(e.message, -1);
+      $(".pageLogin .preloader").addClass("hidden");
+    });
 }
 
 export async function signInWithGoogle() {
+  console.log("Login with google temporarily unavailable");
+  /*
   $(".pageLogin .preloader").removeClass("hidden");
 
   if ($(".pageLogin .login #rememberMe input").prop("checked")) {
@@ -90,9 +79,12 @@ export async function signInWithGoogle() {
         $(".pageLogin .preloader").addClass("hidden");
       });
   }
+  */
 }
 
 export function linkWithGoogle() {
+  console.log("Link with google temporarily unavailable");
+  /*
   firebase
     .auth()
     .currentUser.linkWithPopup(gmailProvider)
@@ -102,21 +94,27 @@ export function linkWithGoogle() {
     .catch(function (error) {
       console.log(error);
     });
+    */
 }
 
 export function signOut() {
-  firebase
-    .auth()
-    .signOut()
-    .then(function () {
+  const uid = DB.currentUser().uid;
+  axios
+    .post("/api/signOut", {
+      uid: uid,
+      //should there be a token necessary to sign out?
+      //if you send the token, that would eliminate the need to send uid
+    })
+    .then(() => {
       Notifications.add("Signed out", 0, 2);
       AllTimeStats.clear();
       Settings.hideAccountSection();
       AccountButton.update();
       UI.changePage("login");
       DB.setSnapshot(null);
+      userStateChanged(null);
     })
-    .catch(function (error) {
+    .catch((error) => {
       Notifications.add(error.message, -1);
     });
 }
@@ -136,130 +134,62 @@ function signUp() {
     return;
   }
 
-  CloudFunctions.namecheck({ name: nname }).then((d) => {
-    if (d.data.resultCode === -1) {
-      Notifications.add("Name unavailable", -1);
+  axios
+    .post("/api/signUp", {
+      name: nname,
+      email: email,
+      password: password,
+    })
+    .then((response) => {
+      let usr = response.data.user;
+      Cookies.set("accessToken", response.data.accessToken);
+      //Cookies.set('refreshToken', response.data.refreshToken);
+      AllTimeStats.clear();
+      Notifications.add("Account created", 1, 3);
+      $("#menu .icon-button.account .text").text(nname);
       $(".pageLogin .preloader").addClass("hidden");
-      $(".pageLogin .register .button").removeClass("disabled");
-      return;
-    } else if (d.data.resultCode === -2) {
-      Notifications.add(
-        "Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
-        -1
-      );
-      $(".pageLogin .preloader").addClass("hidden");
-      $(".pageLogin .register .button").removeClass("disabled");
-      return;
-    } else if (d.data.resultCode === 1) {
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then((user) => {
-          // Account has been created here.
-          // dontCheckUserName = true;
-          let usr = user.user;
-          usr
-            .updateProfile({
-              displayName: nname,
-            })
-            .then(async function () {
-              // Update successful.
-              await firebase
-                .firestore()
-                .collection("users")
-                .doc(usr.uid)
-                .set({ name: nname }, { merge: true });
-              CloudFunctions.reserveName({ name: nname, uid: usr.uid }).catch(
-                (e) => {
-                  console.error("Could not reserve name " + e);
-                  throw "Could not reserve name";
-                }
-              );
-              usr.sendEmailVerification();
-              AllTimeStats.clear();
-              Notifications.add("Account created", 1, 3);
-              $("#menu .icon-button.account .text").text(nname);
-              try {
-                firebase.analytics().logEvent("accountCreated", usr.uid);
-              } catch (e) {
-                console.log("Analytics unavailable");
-              }
-              $(".pageLogin .preloader").addClass("hidden");
-              DB.setSnapshot({
-                results: [],
-                personalBests: {},
-                tags: [],
-                globalStats: {
-                  time: undefined,
-                  started: undefined,
-                  completed: undefined,
-                },
-              });
-              if (TestLogic.notSignedInLastResult !== null) {
-                TestLogic.setNotSignedInUid(usr.uid);
-                CloudFunctions.testCompleted({
-                  uid: usr.uid,
-                  obj: TestLogic.notSignedInLastResult,
-                });
-                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
-              }
-              UI.changePage("account");
-              usr.sendEmailVerification();
-              $(".pageLogin .register .button").removeClass("disabled");
-            })
-            .catch(function (error) {
-              // An error happened.
-              $(".pageLogin .register .button").removeClass("disabled");
-              console.error(error);
-              usr
-                .delete()
-                .then(function () {
-                  // User deleted.
-                  Notifications.add(
-                    "Account not created. " + error.message,
-                    -1
-                  );
-                  $(".pageLogin .preloader").addClass("hidden");
-                })
-                .catch(function (error) {
-                  // An error happened.
-                  $(".pageLogin .preloader").addClass("hidden");
-                  Notifications.add(
-                    "Something went wrong. " + error.message,
-                    -1
-                  );
-                  console.error(error);
-                });
-            });
-        })
-        .catch(function (error) {
-          // Handle Errors here.
-          $(".pageLogin .register .button").removeClass("disabled");
-          Notifications.add(error.message, -1);
-          $(".pageLogin .preloader").addClass("hidden");
+      DB.setSnapshot({
+        results: [],
+        personalBests: {},
+        tags: [],
+        globalStats: {
+          time: undefined,
+          started: undefined,
+          completed: undefined,
+        },
+      });
+      if (TestLogic.notSignedInLastResult !== null) {
+        TestLogic.setNotSignedInUid(usr.uid);
+        CloudFunctions.testCompleted({
+          uid: usr.uid,
+          obj: TestLogic.notSignedInLastResult,
         });
-    } else {
+        DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+      }
+      UI.changePage("account");
+      $(".pageLogin .register .button").removeClass("disabled");
+      userStateChanged(usr);
+    })
+    .catch((error) => {
+      //Notifications.add("Account not created. " + error.message, -1);
+      Notifications.add(error, -1);
       $(".pageLogin .preloader").addClass("hidden");
-      Notifications.add(
-        "Something went wrong when checking name: " + d.data.message,
-        -1
-      );
-    }
-  });
+      $(".pageLogin .register .button").removeClass("disabled");
+      return;
+    });
 }
 
 $(".pageLogin #forgotPasswordButton").click((e) => {
   let email = prompt("Email address");
   if (email) {
-    firebase
-      .auth()
-      .sendPasswordResetEmail(email)
-      .then(function () {
-        // Email sent.
+    axios
+      .post("/api/passwordReset", {
+        email: email,
+      })
+      .then(() => {
         Notifications.add("Email sent", 1, 2);
       })
-      .catch(function (error) {
-        // An error happened.
+      .catch((error) => {
         Notifications.add(error.message, -1);
       });
   }
@@ -286,7 +216,7 @@ $(".signOut").click((e) => {
   signOut();
 });
 
-firebase.auth().onAuthStateChanged(function (user) {
+function userStateChanged(user) {
   if (user) {
     // User is signed in.
     $(".pageAccount .content p.accountVerificatinNotice").remove();
@@ -348,7 +278,7 @@ firebase.auth().onAuthStateChanged(function (user) {
       ChallengeController.setup(challengeName);
     }, 1000);
   }
-});
+}
 
 $(".pageLogin .register input").keyup((e) => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;

@@ -1,5 +1,7 @@
 const { task, src, dest, series, watch } = require("gulp");
 const browserify = require("browserify");
+const axios = require("axios");
+const Cookies = require("js-cookie");
 const babelify = require("babelify");
 const concat = require("gulp-concat");
 const del = require("del");
@@ -15,7 +17,8 @@ let eslintConfig = {
   globals: [
     "jQuery",
     "$",
-    "firebase",
+    "axios",
+    "Cookies",
     "moment",
     "html2canvas",
     "ClipboardItem",

@@ -86,7 +86,7 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
   Loader.show();
   hide();
   CloudFunctions.updateResultTags({
-    uid: firebase.auth().currentUser.uid,
+    uid: DB.currentUser().uid,
     tags: newtags,
     resultid: resultid,
   }).then((r) => {

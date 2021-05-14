@@ -1,8 +1,10 @@
 import * as Loader from "./loader";
+import * as DB from "./db";
+import axios from "axios";
 
 export function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
-  console.log(firebase.auth().currentUser.uid);
+  console.log(DB.currentUser().uid);
   console.error("Only share this uid with Miodec and nobody else!");
 }
 
@@ -313,8 +315,11 @@ export function migrateFromCookies() {
 
 export function sendVerificationEmail() {
   Loader.show();
-  let cu = firebase.auth().currentUser;
-  cu.sendEmailVerification()
+  let cu = DB.currentUser();
+  axios
+    .post("/api/sendEmailVerification", {
+      uid: cu.uid,
+    })
     .then(() => {
       Loader.hide();
       showNotification("Email sent to " + cu.email, 4000);

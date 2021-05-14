@@ -1,45 +1,73 @@
-export const testCompleted = firebase
-  .functions()
-  .httpsCallable("testCompleted");
-export const addTag = firebase.functions().httpsCallable("addTag");
-export const editTag = firebase.functions().httpsCallable("editTag");
-export const removeTag = firebase.functions().httpsCallable("removeTag");
-export const updateResultTags = firebase
-  .functions()
-  .httpsCallable("updateResultTags");
-export const saveConfig = firebase.functions().httpsCallable("saveConfig");
-export const addPreset = firebase.functions().httpsCallable("addPreset");
-export const editPreset = firebase.functions().httpsCallable("editPreset");
-export const removePreset = firebase.functions().httpsCallable("removePreset");
-export const generatePairingCode = firebase
-  .functions()
-  .httpsCallable("generatePairingCode");
-export const saveLbMemory = firebase.functions().httpsCallable("saveLbMemory");
-export const unlinkDiscord = firebase
-  .functions()
-  .httpsCallable("unlinkDiscord");
-export const verifyUser = firebase.functions().httpsCallable("verifyUser");
-export const reserveName = firebase
-  .functions()
-  .httpsCallable("reserveDisplayName");
-export const updateEmail = firebase.functions().httpsCallable("updateEmail");
-export const namecheck = firebase
-  .functions()
-  .httpsCallable("checkNameAvailability");
-export const getLeaderboard = firebase
-  .functions()
-  .httpsCallable("getLeaderboard");
-export const clearTagPb = firebase.functions().httpsCallable("clearTagPb");
-export const changeDisplayName = firebase
-  .functions()
-  .httpsCallable("changeDisplayName");
+// all functions here should be changed into api calls
+//export function testCompleted = axios.post('/api/testCompleted', )firebase
+//  .functions()
+//  .httpsCallable("testCompleted");
+import axios from "axios";
 
-export const removeSmallTests = firebase
-  .functions()
-  .httpsCallable("removeSmallTestsAndQPB");
-export const resetPersonalBests = firebase
-  .functions()
-  .httpsCallable("resetPersonalBests");
-export const checkLeaderboards = firebase
-  .functions()
-  .httpsCallable("checkLeaderboards");
+export function testCompleted(input) {
+  console.log("testCompleted");
+}
+export function addTag(input) {
+  console.log("request data here");
+}
+export function editTag(input) {
+  console.log("request data here");
+}
+export function removeTag(input) {
+  console.log("request data here");
+}
+export function updateResultTags(input) {
+  console.log("request data here");
+}
+export function saveConfig(input) {
+  console.log("request data here");
+}
+export function addPreset(input) {
+  console.log("request data here");
+}
+export function editPreset(input) {
+  console.log("request data here");
+}
+export function removePreset(input) {
+  console.log("request data here");
+}
+export function generatePairingCode(input) {
+  console.log("request data here");
+}
+export function saveLbMemory(input) {
+  console.log("request data here");
+}
+export function unlinkDiscord(input) {
+  console.log("request data here");
+}
+export function verifyUser(input) {
+  console.log("request data here");
+}
+export function reserveName(input) {
+  console.log("request data here");
+}
+export function updateEmail(input) {
+  console.log("request data here");
+}
+export function namecheck(input) {
+  console.log("request data here");
+}
+export function getLeaderboard(input) {
+  console.log("request data here");
+}
+export function clearTagPb(input) {
+  console.log("request data here");
+}
+export function changeDisplayName(input) {
+  console.log("request data here");
+}
+
+export function removeSmallTests(input) {
+  console.log("request data here");
+}
+export function resetPersonalBests(input) {
+  console.log("request data here");
+}
+export function checkLeaderboards(input) {
+  console.log("request data here");
+}
