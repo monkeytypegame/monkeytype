@@ -35,18 +35,6 @@ function authenticateToken(req, res, next) {
 
 // API
 
-app.get("/api/currentUser", authenticateToken, (req, res) => {
-  User.findOne({ name: req.name }, (err, user) => {
-    //user must have uid, displayName, email properties
-    const retUser = {
-      uid: user._id,
-      displayName: user.name,
-      email: user.email,
-    };
-    res.json({ user: retUser });
-  });
-});
-
 app.post("/api/updateName", (req, res) => {
   //this might be a put/patch request
   //update the name of user with given uid
@@ -92,13 +80,6 @@ app.post("/api/signIn", (req, res) => {
       }
     });
   });
-});
-
-app.post("/api/signOut", (req, res) => {
-  /* Takes user id and token? */
-  //Logout user
-  //This route isn't necessary for jwt authentication
-  res.sendStatus(200);
 });
 
 app.post("/api/signUp", (req, res) => {
