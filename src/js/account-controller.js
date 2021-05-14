@@ -32,9 +32,15 @@ export function signIn() {
       if ($(".pageLogin .login #rememberMe input").prop("checked")) {
         // TODO: set user login cookie that persists after session
         Cookies.set("accessToken", response.data.accessToken);
+        Cookies.set("uid", response.data.user._id);
+        Cookies.set("displayName", response.data.user.name);
+        Cookies.set("email", response.data.user.email);
       } else {
         //set user login cookie to persist only as long as the session lives
         Cookies.set("accessToken", response.data.accessToken);
+        Cookies.set("uid", response.data.user._id);
+        Cookies.set("displayName", response.data.user.name);
+        Cookies.set("email", response.data.user.email);
       }
       userStateChanged(response.data.user);
     })
@@ -98,25 +104,18 @@ export function linkWithGoogle() {
 }
 
 export function signOut() {
-  const uid = DB.currentUser().uid;
-  axios
-    .post("/api/signOut", {
-      uid: uid,
-      //should there be a token necessary to sign out?
-      //if you send the token, that would eliminate the need to send uid
-    })
-    .then(() => {
-      Notifications.add("Signed out", 0, 2);
-      AllTimeStats.clear();
-      Settings.hideAccountSection();
-      AccountButton.update();
-      UI.changePage("login");
-      DB.setSnapshot(null);
-      userStateChanged(null);
-    })
-    .catch((error) => {
-      Notifications.add(error.message, -1);
-    });
+  //don't think I need an axios request here if I'm using jwt
+  Cookies.remove("accessToken");
+  Cookies.remove("uid");
+  Cookies.remove("displayName");
+  Cookies.remove("email");
+  Notifications.add("Signed out", 0, 2);
+  AllTimeStats.clear();
+  Settings.hideAccountSection();
+  AccountButton.update();
+  UI.changePage("login");
+  DB.setSnapshot(null);
+  userStateChanged(null);
 }
 
 function signUp() {
@@ -143,6 +142,9 @@ function signUp() {
     .then((response) => {
       let usr = response.data.user;
       Cookies.set("accessToken", response.data.accessToken);
+      Cookies.set("uid", usr._id);
+      Cookies.set("displayName", usr.name);
+      Cookies.set("email", usr.email);
       //Cookies.set('refreshToken', response.data.refreshToken);
       AllTimeStats.clear();
       Notifications.add("Account created", 1, 3);

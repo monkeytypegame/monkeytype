@@ -36,160 +36,34 @@ export function setSnapshot(newSnapshot) {
 
 export function currentUser() {
   const token = Cookies.get("accessToken");
-  //probably don't need to request the server every time
-  //uid, email, and displayName could be stored in cookies
-  //however, this method proves that the token is valid
-  //might not be important
-  axios
-    .get("/api/currentUser", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => {
-      return response.data.user;
-    })
-    .catch(() => {
-      return null;
-    });
+  if (token) {
+    const user = {
+      uid: Cookies.get("uid"),
+      displayName: Cookies.get("displayName"),
+      email: Cookies.get("email"),
+    };
+    return user;
+  } else {
+    return null;
+  }
 }
 
 export async function initSnapshot() {
-  //get identity and token
   //send api request with token that returns tags, presets, and data needed for snap
-  /*
-  let user = currentUser();
-  if (user == null) return false;
-  let snap = {
-    results: undefined,
-    personalBests: {},
-    name: undefined,
-    presets: [],
-    tags: [],
-    favouriteThemes: [],
-    refactored: false,
-    banned: undefined,
-    verified: undefined,
-    emailVerified: undefined,
-    lbMemory: {
-      time15: {
-        global: null,
-        daily: null,
-      },
-      time60: {
-        global: null,
-        daily: null,
-      },
-    },
-    globalStats: {
-      time: 0,
-      started: 0,
-      completed: 0,
-    },
-  };
-  axios.get('/api/fetchSnapshot', {
-    uid: user.uid,
-    //not sure how I'm going to pass tokens right now
-    //token: user.token
-  }).then((response) => {
-    //set snapshot equal to response.data.snap or whatever I call it
-  })
-  try {
-    //add tags to snap tags list
-    await db
-      .collection(`users/${user.uid}/tags/`)
-      .get()
-      .then((data) => {
-        data.docs.forEach((doc) => {
-          let tag = doc.data();
-          tag.id = doc.id;
-          if (tag.personalBests === undefined) {
-            tag.personalBests = {};
-          }
-          snap.tags.push(tag);
-        });
-        snap.tags = snap.tags.sort((a, b) => {
-          if (a.name > b.name) {
-            return 1;
-          } else if (a.name < b.name) {
-            return -1;
-          } else {
-            return 0;
-          }
-        });
-      })
-      .catch((e) => {
-        throw e;
-      });
-    //set presets? Not sure what this is at the moment
-    await db
-      .collection(`users/${user.uid}/presets/`)
-      .get()
-      .then((data) => {
-        data.docs.forEach((doc) => {
-          // console.log(doc);
-          let preset = doc.data();
-          preset.id = doc.id;
-          snap.presets.push(preset);
-        });
-        snap.presets = snap.presets.sort((a, b) => {
-          if (a.name > b.name) {
-            return 1;
-          } else if (a.name < b.name) {
-            return -1;
-          } else {
-            return 0;
-          }
-        });
-      })
-      .catch((e) => {
-        throw e;
-      });
-    //set snap data to the data found in the database
-    await db
-      .collection("users")
-      .doc(user.uid)
-      .get()
-      .then((res) => {
-        let data = res.data();
-        if (data === undefined) return;
-        if (data.personalBests !== undefined) {
-          snap.personalBests = data.personalBests;
-        }
-        snap.name = data.name;
-        snap.discordId = data.discordId;
-        snap.pairingCode =
-          data.discordPairingCode == null ? undefined : data.discordPairingCode;
-        snap.config = data.config;
-        snap.favouriteThemes =
-          data.favouriteThemes === undefined ? [] : data.favouriteThemes;
-        snap.refactored = data.refactored === true ? true : false;
-        snap.globalStats = {
-          time: data.timeTyping,
-          started: data.startedTests,
-          completed: data.completedTests,
-        };
-        snap.banned = data.banned;
-        snap.verified = data.verified;
-        snap.emailVerified = user.emailVerified;
-        try {
-          if (data.lbMemory.time15 !== undefined) {
-            snap.lbMemory.time15 = data.lbMemory.time15;
-          }
-          if (data.lbMemory.time60 !== undefined) {
-            snap.lbMemory.time60 = data.lbMemory.time60;
-          }
-        } catch {}
-      })
-      .catch((e) => {
-        throw e;
-      });
-    // console.log(snap.presets);
-    dbSnapshot = snap;
-  } catch (e) {
-    console.error(e);
-  }
-  loadTags(dbSnapshot.tags);
-  return dbSnapshot;
-  */
+  if (currentUser() == null) return false;
+  const token = Cookies.get("accessToken");
+  await axios
+    .get("/api/fetchSnapshot", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => {
+      dbSnapshot = response.data.snap;
+      loadTags(dbSnapshot.tags);
+      return dbSnapshot;
+    })
+    .catch((e) => {
+      console.error(e);
+    });
 }
 
 export async function getUserResults() {

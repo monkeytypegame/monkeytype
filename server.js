@@ -153,18 +153,23 @@ app.post("/api/passwordReset", (req, res) => {
   res.sendStatus(200);
 });
 
-app.get("/api/fetchSnapshot", (req, res) => {
-  const uid = req.body.uid;
-  const token = req.body.token; //should be passed through header authentication
-  //return a list of tags
-  //return list of presets
-  //return user data
-  //tags and presets should be included
-  res.sendStatus(200);
+app.get("/api/fetchSnapshot", authenticateToken, (req, res) => {
+  /* Takes token and returns snap */
+  //this is called in init snapshot
+  User.findOne({ name: req.name }, (err, user) => {
+    if (err) res.status(500).send({ error: err });
+    //populate snap object with data from user document
+    let snap = user;
+    delete snap.password;
+    //return user data
+    res.json({ snap: snap });
+  });
 });
 
-app.get("/api/userResults", (req, res) => {
-  const uid = req.body.uid; //might not need uid if token is given
+app.get("/api/userResults", authenticateToken, (req, res) => {
+  User.findOne({ name: req.name }, (err, user) => {
+    if (err) res.status(500).send({ error: err });
+  });
   //return list of results
   res.sendStatus(200);
 });
