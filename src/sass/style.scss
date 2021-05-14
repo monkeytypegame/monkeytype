@@ -2301,6 +2301,11 @@ key {
   cursor: pointer;
 }
 
+#replayStopwatch {
+  color: var(--main-color);
+  display: inline-block;
+}
+
 #restartTestButton {
   margin: 0 auto;
   margin-top: 1rem;
