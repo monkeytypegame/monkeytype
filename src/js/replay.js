@@ -172,6 +172,7 @@ function startReplayRecording() {
     //hide replay display if user left it open
     toggleReplayDisplay();
   }
+  $("#replayStopwatch").text(0 + "s");
   replayData = [];
   replayStartTime = performance.now();
   replayRecording = true;
