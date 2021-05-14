@@ -608,7 +608,12 @@ export async function init() {
   }
 }
 
-export function restart(withSameWordset = false, nosave = false, event) {
+export function restart(
+  withSameWordset = false,
+  nosave = false,
+  event,
+  practiseMissed = false
+) {
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     try {
       event.preventDefault();
@@ -670,7 +675,11 @@ export function restart(withSameWordset = false, nosave = false, event) {
     $("#words").empty();
   }
 
-  if (PractiseMissed.before.mode !== null && !withSameWordset) {
+  if (
+    PractiseMissed.before.mode !== null &&
+    !withSameWordset &&
+    !practiseMissed
+  ) {
     Notifications.add("Reverting to previous settings.", 0);
     UpdateConfig.setMode(PractiseMissed.before.mode);
     UpdateConfig.setPunctuation(PractiseMissed.before.punctuation);
