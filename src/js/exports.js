@@ -15,3 +15,8 @@ global.config = Config;
 global.link = AccountController.linkWithGoogle;
 
 global.filters = ResultFilters.getFilters();
+
+global.tribeSetNoAnim = Tribe.setNoAnim;
+
+global.tt = Tribe.timerTest;
+global.tts = Tribe.timerTestStop;

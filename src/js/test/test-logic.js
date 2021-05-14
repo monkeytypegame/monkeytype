@@ -329,7 +329,7 @@ export function startTest() {
     if (Config.paceCaret !== "off") PaceCaret.start();
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
-  TestStats.setStart(performance.now());
+  TestStats.setStart(Date.now());
   TestTimer.start();
   return true;
 }
@@ -637,7 +637,7 @@ export function restart(
   }
   if (active) {
     TestStats.pushKeypressesToHistory();
-    let testSeconds = TestStats.calculateTestSeconds(performance.now());
+    let testSeconds = TestStats.calculateTestSeconds(Date.now());
     let afkseconds = TestStats.calculateAfkSeconds();
     // incompleteTestSeconds += ;
     TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
@@ -839,7 +839,7 @@ export function calculateWpmAndRaw() {
     spaces = 0;
   }
   chars += input.current.length;
-  let testSeconds = TestStats.calculateTestSeconds(performance.now());
+  let testSeconds = TestStats.calculateTestSeconds(Date.now());
   let wpm = Math.round(((correctWordChars + spaces) * (60 / testSeconds)) / 5);
   let raw = Math.round(((chars + spaces) * (60 / testSeconds)) / 5);
   return {
@@ -947,7 +947,7 @@ export function finish(difficultyFailed = false, mp_outOfTime = false) {
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
-  TestStats.setEnd(performance.now());
+  TestStats.setEnd(Date.now());
   setActive(false);
   Focus.set(false);
   Caret.hide();
@@ -1854,7 +1854,7 @@ export function fail() {
   TestStats.pushKeypressesToHistory();
   TestStats.setLastSecondNotRound();
   finish(true);
-  let testSeconds = TestStats.calculateTestSeconds(performance.now());
+  let testSeconds = TestStats.calculateTestSeconds(Date.now());
   let afkseconds = TestStats.calculateAfkSeconds();
   TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
   TestStats.incrementRestartCount();

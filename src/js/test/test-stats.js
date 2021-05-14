@@ -96,6 +96,7 @@ export function setInvalid() {
 }
 
 export function calculateTestSeconds(now) {
+  console.log(`test seconds: ${end - start}ms`);
   if (now === undefined) {
     return (end - start) / 1000;
   } else {

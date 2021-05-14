@@ -34,6 +34,40 @@ export let activePage = "preloader";
 export let pageTransition = false;
 export let expectedVersion = "0.9.11";
 
+console.log("---------");
+console.log("---------");
+console.log("---------");
+console.log(
+  "different timer testing and no animation testing tribe stop lagging pls"
+);
+console.log(
+  "tt() to start timer, tts() to get results, tribeSetNoAnim(true) to disable tribe animations"
+);
+console.log("---------");
+console.log("---------");
+console.log("---------");
+
+let debugNoAnim = false;
+
+export function setNoAnim(bool) {
+  debugNoAnim = bool;
+}
+
+let test1 = null;
+let test2 = null;
+
+export function timerTest() {
+  console.log("test timer started");
+  test1 = performance.now();
+  test2 = Date.now();
+}
+
+export function timerTestStop() {
+  let t1 = performance.now() - test1;
+  let t2 = Date.now() - test2;
+  console.log(`timer test: ${t1}ms (${Math.round(t1)}ms) ${t2}ms`);
+}
+
 export let room = undefined;
 export let name = undefined;
 let autoJoin = undefined;
@@ -1600,30 +1634,51 @@ socket.on("mp_room_user_test_progress_update", (data) => {
   $(`.tribeResult table .player[sid=${data.sid}] .acc .text`).text(
     Math.floor(data.stats.acc) + "%"
   );
-  $(`.tribePlayers .player[sid=${data.sid}] .bar`)
-    .stop(true, false)
-    .animate(
-      {
+  if (debugNoAnim) {
+    if (TestLogic.active) {
+      $(`.tribePlayers .player[sid=${data.sid}] .bar`).css({
         width:
           Config.mode === "time"
             ? data.stats.wpmProgress + "%"
             : data.stats.progress + "%",
-      },
-      1000,
-      "linear"
-    );
-  $(`.tribeResult table .player[sid=${data.sid}] .bar`)
-    .stop(true, false)
-    .animate(
-      {
+      });
+    } else {
+      $(`.tribeResult table .player[sid=${data.sid}] .bar`).css({
         width:
           Config.mode === "time"
             ? data.stats.wpmProgress + "%"
             : data.stats.progress + "%",
-      },
-      1000,
-      "linear"
-    );
+      });
+    }
+  } else {
+    if (TestLogic.active) {
+      $(`.tribePlayers .player[sid=${data.sid}] .bar`)
+        .stop(true, false)
+        .animate(
+          {
+            width:
+              Config.mode === "time"
+                ? data.stats.wpmProgress + "%"
+                : data.stats.progress + "%",
+          },
+          1000,
+          "linear"
+        );
+    } else {
+      $(`.tribeResult table .player[sid=${data.sid}] .bar`)
+        .stop(true, false)
+        .animate(
+          {
+            width:
+              Config.mode === "time"
+                ? data.stats.wpmProgress + "%"
+                : data.stats.progress + "%",
+          },
+          1000,
+          "linear"
+        );
+    }
+  }
 });
 
 let graphs = [];
