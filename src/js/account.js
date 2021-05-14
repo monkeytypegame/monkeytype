@@ -823,10 +823,14 @@ $(".pageAccount .loadMoreButton").click((e) => {
   loadMoreLines();
 });
 
+let activeChartIndex;
+
+export function setActiveChartIndex(index) {
+  activeChartIndex = index;
+}
+
 $(".pageAccount #accountHistoryChart").click((e) => {
-  let activeElement = ChartController.accountHistory.getElementAtEvent(e);
-  if (activeElement == [] || activeElement.length == 0) return;
-  let index = activeElement[0]._index;
+  let index = activeChartIndex;
   loadMoreLines(index);
   $([document.documentElement, document.body]).animate(
     {
