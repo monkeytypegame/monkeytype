@@ -186,6 +186,7 @@ export function colorful(tc) {
 
 
 export function screenshot() {
+  let revealReplay = false;
   function revertScreenshot() {
     $("#notificationCenter").removeClass("hidden");
     $("#commandLineMobileButton").removeClass("hidden");
@@ -195,7 +196,6 @@ export function screenshot() {
     if (firebase.auth().currentUser == null)
       $(".pageTest .loginTip").removeClass("hidden");
   }
-  let revealReplay = false;
   if (!$("#resultReplay").hasClass('hidden')) {
     revealReplay = true;
     Replay.pauseReplay()
