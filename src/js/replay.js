@@ -18,6 +18,7 @@ let curPos = 0;
 let targetWordPos = 0;
 let targetCurPos = 0;
 let timeoutList = [];
+let stopwatchList = [];
 const toggleButton = document.getElementById("playpauseReplayButton")
   .children[0];
 
@@ -58,6 +59,10 @@ export function pauseReplay() {
     clearTimeout(item);
   });
   timeoutList = [];
+  stopwatchList.forEach((item) => {
+    clearTimeout(item);
+  });
+  stopwatchList = [];
   targetCurPos = curPos;
   targetWordPos = wordPos;
   toggleButton.className = "fas fa-play";
@@ -196,6 +201,17 @@ function playReplay() {
   initializeReplayPrompt();
   let startingIndex = loadOldReplay();
   let lastTime = replayData[startingIndex].time;
+  let swTime = Math.round(lastTime / 1000); //starting time
+  const swEndTime = Math.round(replayData[replayData.length - 1].time / 1000);
+  while (swTime <= swEndTime) {
+    const time = swTime;
+    stopwatchList.push(
+      setTimeout(() => {
+        $("#replayStopwatch").text(time);
+      }, time * 1000 - lastTime)
+    );
+    swTime++;
+  }
   replayData.forEach((item, i) => {
     if (i < startingIndex) return;
     timeoutList.push(
