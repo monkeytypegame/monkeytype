@@ -207,7 +207,7 @@ function playReplay() {
     const time = swTime;
     stopwatchList.push(
       setTimeout(() => {
-        $("#replayStopwatch").text(time);
+        $("#replayStopwatch").text(time + "s");
       }, time * 1000 - lastTime)
     );
     swTime++;
