@@ -15,10 +15,14 @@ export function init() {
     Notifications.add("You haven't missed any words.", 0);
     return;
   }
-  let mode = before.mode === null ? Config.mode : before.mode;
-  let punctuation =
-    before.punctuation === null ? Config.punctuation : before.punctuation;
-  let numbers = before.numbers === null ? Config.numbers : before.numbers;
+  before = {
+    mode: null,
+    punctuation: null,
+    numbers: null,
+  };
+  let mode = Config.mode;
+  let punctuation = Config.punctuation;
+  let numbers = Config.numbers;
   UpdateConfig.setMode("custom");
   let newCustomText = [];
   Object.keys(TestStats.missedWords).forEach((missedWord) => {
