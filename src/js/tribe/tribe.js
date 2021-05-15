@@ -1212,7 +1212,7 @@ socket.on("mp_room_leave", () => {
   changeActiveSubpage("prelobby");
   resetLobby();
   resetRace();
-  resetResult();
+  if (privateRoom) resetResult();
   Matchmaking.enableLobbyButtons();
   Matchmaking.hideLeaveQueueButton();
   Matchmaking.showStartQueueButton();
