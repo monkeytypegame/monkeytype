@@ -30,18 +30,26 @@ export function signIn() {
       // UI.changePage("test");
       if ($(".pageLogin .login #rememberMe input").prop("checked")) {
         // TODO: set user login cookie that persists after session
-        Cookies.set("accessToken", response.data.accessToken);
-        Cookies.set("refreshToken", response.data.refreshToken);
-        Cookies.set("uid", response.data.user._id);
-        Cookies.set("displayName", response.data.user.name);
-        Cookies.set("email", response.data.user.email);
+        Cookies.set("accessToken", response.data.accessToken, { expires: 1 });
+        Cookies.set("refreshToken", response.data.refreshToken, {
+          expires: 100000,
+        });
+        Cookies.set("uid", response.data.user._id, { expires: 100000 });
+        Cookies.set("displayName", response.data.user.name, {
+          expires: 100000,
+        });
+        Cookies.set("email", response.data.user.email, { expires: 100000 });
       } else {
         //set user login cookie to persist only as long as the session lives
-        Cookies.set("accessToken", response.data.accessToken);
-        Cookies.set("refreshToken", response.data.refreshToken);
-        Cookies.set("uid", response.data.user._id);
-        Cookies.set("displayName", response.data.user.name);
-        Cookies.set("email", response.data.user.email);
+        Cookies.set("accessToken", response.data.accessToken, { expires: 1 });
+        Cookies.set("refreshToken", response.data.refreshToken, {
+          expires: 100000,
+        });
+        Cookies.set("uid", response.data.user._id, { expires: 100000 });
+        Cookies.set("displayName", response.data.user.name, {
+          expires: 100000,
+        });
+        Cookies.set("email", response.data.user.email, { expires: 100000 });
       }
       userStateChanged(response.data.user);
     })
@@ -142,11 +150,13 @@ function signUp() {
     })
     .then((response) => {
       let usr = response.data.user;
-      Cookies.set("accessToken", response.data.accessToken);
-      Cookies.set("refreshToken", response.data.accessToken);
-      Cookies.set("uid", usr._id);
-      Cookies.set("displayName", usr.name);
-      Cookies.set("email", usr.email);
+      Cookies.set("accessToken", response.data.accessToken, { expires: 1 });
+      Cookies.set("refreshToken", response.data.refreshToken, {
+        expires: 100000,
+      });
+      Cookies.set("uid", usr._id, { expires: 100000 });
+      Cookies.set("displayName", usr.name, { expires: 100000 });
+      Cookies.set("email", usr.email, { expires: 100000 });
       //Cookies.set('refreshToken', response.data.refreshToken);
       AllTimeStats.clear();
       Notifications.add("Account created", 1, 3);

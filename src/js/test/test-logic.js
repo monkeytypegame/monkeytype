@@ -1542,23 +1542,12 @@ export function finish(difficultyFailed = false) {
                 `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
               );
             }
-            const token = Cookies.get("accessToken");
             axiosInstance
               .post("/api/testCompleted", {
                 obj: completedEvent,
               })
-              .then((response) => {
-                //return a result message that will be shown if there was an error
-              })
-              .catch((error) => {
-                Notifications.add(error, -1);
-              });
-
-            CloudFunctions.testCompleted({
-              uid: DB.currentUser().uid,
-              obj: completedEvent,
-            })
               .then((e) => {
+                //return a result message that will be shown if there was an error
                 AccountButton.loading(false);
                 if (e.data == null) {
                   Notifications.add(
