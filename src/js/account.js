@@ -271,7 +271,7 @@ function loadMoreLines(lineIndex) {
     }
 
     $(".pageAccount .history table tbody").append(`
-    <tr class="result-row" id="result-${i}">
+    <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
     <td>${result.wpm.toFixed(2)}</td>
     <td>${raw}</td>
@@ -838,7 +838,7 @@ $(".pageAccount #accountHistoryChart").click((e) => {
     },
     500
   );
-  $(".result-row").removeClass("active");
+  $(".resultRow").removeClass("active");
   $(`#result-${index}`).addClass("active");
 });
 

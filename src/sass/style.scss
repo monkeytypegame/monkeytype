@@ -3269,9 +3269,9 @@ key {
 
     &.history {
       .active {
-        background: var(--main-color);
-        color: var(--bg-color);
+        animation: flashHighlight 4s linear 0s 1;
       }
+
       .loadMoreButton {
         background: rgba(0, 0, 0, 0.1);
         color: var(--text-color);
@@ -3932,5 +3932,20 @@ key {
         opacity: 0;
       }
     }
+  }
+}
+
+@keyframes flashHighlight {
+  0% {
+    background-color: var(--bg-color);
+  }
+  10% {
+    background-color: var(--main-color);
+  }
+  40% {
+    background-color: var(--main-color);
+  }
+  100% {
+    background-color: var(--bg-color);
   }
 }
