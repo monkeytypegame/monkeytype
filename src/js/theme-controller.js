@@ -5,7 +5,7 @@ import * as Notifications from "./notifications";
 import Config from "./config";
 import * as UI from "./ui";
 import tinycolor from "tinycolor2";
-import axios from "axios";
+import axiosInstance from "./axios-instance";
 
 let isPreviewingTheme = false;
 export let randomTheme = null;
@@ -96,7 +96,7 @@ export function apply(themeName) {
     });
   }
 
-  axios
+  axiosInstance
     .post("/api/analytics/changedTheme", {
       theme: themeName,
     })

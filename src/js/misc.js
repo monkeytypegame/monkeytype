@@ -1,6 +1,6 @@
 import * as Loader from "./loader";
 import * as DB from "./db";
-import axios from "axios";
+import axiosInstance from "./axios-instance";
 
 export function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -316,7 +316,7 @@ export function migrateFromCookies() {
 export function sendVerificationEmail() {
   Loader.show();
   let cu = DB.currentUser();
-  axios
+  axiosInstance
     .post("/api/sendEmailVerification", {
       uid: cu.uid,
     })

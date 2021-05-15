@@ -36,6 +36,7 @@ const userSchema = new Schema(
     },
     email: { type: String, required: true },
     password: { type: String, required: true },
+    refreshTokens: [{ type: String, required: true }],
   },
   {
     timestamps: true,
@@ -46,4 +47,3 @@ const userSchema = new Schema(
 const User = mongoose.model("User", userSchema);
 
 module.exports = { User };
-//export User;

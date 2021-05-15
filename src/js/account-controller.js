@@ -13,16 +13,15 @@ import * as AllTimeStats from "./all-time-stats";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
-import axios from "axios";
 import Cookies from "js-cookie";
-
+import axiosInstance from "./axios-instance";
 //var gmailProvider = new firebase.auth.GoogleAuthProvider();
 
 export function signIn() {
   $(".pageLogin .preloader").removeClass("hidden");
   let email = $(".pageLogin .login input")[0].value;
   let password = $(".pageLogin .login input")[1].value;
-  axios
+  axiosInstance
     .post("/api/signIn", {
       email: email,
       password: password,
@@ -32,12 +31,14 @@ export function signIn() {
       if ($(".pageLogin .login #rememberMe input").prop("checked")) {
         // TODO: set user login cookie that persists after session
         Cookies.set("accessToken", response.data.accessToken);
+        Cookies.set("refreshToken", response.data.refreshToken);
         Cookies.set("uid", response.data.user._id);
         Cookies.set("displayName", response.data.user.name);
         Cookies.set("email", response.data.user.email);
       } else {
         //set user login cookie to persist only as long as the session lives
         Cookies.set("accessToken", response.data.accessToken);
+        Cookies.set("refreshToken", response.data.refreshToken);
         Cookies.set("uid", response.data.user._id);
         Cookies.set("displayName", response.data.user.name);
         Cookies.set("email", response.data.user.email);
@@ -133,7 +134,7 @@ function signUp() {
     return;
   }
 
-  axios
+  axiosInstance
     .post("/api/signUp", {
       name: nname,
       email: email,
@@ -142,6 +143,7 @@ function signUp() {
     .then((response) => {
       let usr = response.data.user;
       Cookies.set("accessToken", response.data.accessToken);
+      Cookies.set("refreshToken", response.data.accessToken);
       Cookies.set("uid", usr._id);
       Cookies.set("displayName", usr.name);
       Cookies.set("email", usr.email);
@@ -184,7 +186,7 @@ function signUp() {
 $(".pageLogin #forgotPasswordButton").click((e) => {
   let email = prompt("Email address");
   if (email) {
-    axios
+    axiosInstance
       .post("/api/passwordReset", {
         email: email,
       })

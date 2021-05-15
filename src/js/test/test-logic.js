@@ -28,6 +28,7 @@ import * as ThemeColors from "./theme-colors";
 import * as CloudFunctions from "./cloud-functions";
 import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
+import axiosInstance from "./axios-instance";
 
 export let notSignedInLastResult = null;
 
@@ -311,9 +312,9 @@ export function startTest() {
   }
   try {
     if (DB.currentUser() != null) {
-      axios.post("/api/analytics/testStarted");
+      axiosInstance.post("/api/analytics/testStarted");
     } else {
-      axios.post("/api/analytics/testStartedNoLogin");
+      axiosInstance.post("/api/analytics/testStartedNoLogin");
     }
   } catch (e) {
     console.log("Analytics unavailable");
@@ -1541,6 +1542,18 @@ export function finish(difficultyFailed = false) {
                 `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
               );
             }
+            const token = Cookies.get("accessToken");
+            axiosInstance
+              .post("/api/testCompleted", {
+                obj: completedEvent,
+              })
+              .then((response) => {
+                //return a result message that will be shown if there was an error
+              })
+              .catch((error) => {
+                Notifications.add(error, -1);
+              });
+
             CloudFunctions.testCompleted({
               uid: DB.currentUser().uid,
               obj: completedEvent,
@@ -1616,7 +1629,7 @@ export function finish(difficultyFailed = false) {
                     }
                   }
 
-                  axios
+                  axiosInstance
                     .post("/api/analytics/testCompleted", {
                       completedEvent: completedEvent,
                     })
@@ -1657,7 +1670,7 @@ export function finish(difficultyFailed = false) {
           });
         });
       } else {
-        axios
+        axiosInstance
           .post("/api/analytics/testCompletedNoLogin", {
             completedEvent: completedEvent,
           })
@@ -1669,7 +1682,7 @@ export function finish(difficultyFailed = false) {
     } else {
       Notifications.add("Test invalid", 0);
       TestStats.setInvalid();
-      axios
+      axiosInstance
         .post("/api/analytics/testCompletedInvalid", {
           completedEvent: completedEvent,
         })

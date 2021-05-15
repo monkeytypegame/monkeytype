@@ -17,7 +17,7 @@ import * as UI from "./ui";
 import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
 import LayoutList from "./layouts";
-import axios from "axios";
+import axiosInstance from "./axios-instance";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -1218,7 +1218,7 @@ export function setLanguage(language, nosave) {
     language = "english";
   }
   config.language = language;
-  axios
+  axiosInstance
     .post("/api/analytics/changedLanguage", { language: language })
     .catch(() => {
       console.log("Analytics unavailable");

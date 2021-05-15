@@ -2,7 +2,7 @@
 //export function testCompleted = axios.post('/api/testCompleted', )firebase
 //  .functions()
 //  .httpsCallable("testCompleted");
-import axios from "axios";
+import axiosInstance from "./axios-instance";
 
 export function testCompleted(input) {
   console.log("testCompleted");

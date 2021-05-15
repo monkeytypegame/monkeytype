@@ -66,6 +66,12 @@ app.post("/api/signIn", (req, res) => {
           { name: user.name },
           process.env.ACCESS_TOKEN_SECRET
         );
+        const refreshToken = jwt.sign(
+          { name: user.name },
+          process.env.REFRESH_TOKEN_SECRET
+        );
+        user.refreshTokens.push(refreshToken);
+        user.save();
         const retUser = {
           uid: user._id,
           displayName: user.name,
@@ -73,7 +79,11 @@ app.post("/api/signIn", (req, res) => {
           emailVerified: user.emailVerified,
           metadata: { creationTime: user.createdAt },
         };
-        res.json({ accessToken: accessToken, user: retUser });
+        res.json({
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          user: retUser,
+        });
       } else {
         //if password doesn't match hash
         res.status(500).send({ error: "Password invalid" });
@@ -111,6 +121,12 @@ app.post("/api/signUp", (req, res) => {
             { name: req.body.name },
             process.env.ACCESS_TOKEN_SECRET
           );
+          const refreshToken = jwt.sign(
+            { name: user.name },
+            process.env.REFRESH_TOKEN_SECRET
+          );
+          user.refreshTokens.push(refreshToken);
+          user.save();
           const retUser = {
             uid: user._id,
             displayName: user.name,
@@ -118,12 +134,33 @@ app.post("/api/signUp", (req, res) => {
             emailVerified: user.emailVerified,
             metadata: { creationTime: user.createdAt },
           };
-          res.json({ accessToken: accessToken, user: retUser });
+          res.json({
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            user: retUser,
+          });
         })
         .catch((e) => {
           console.log(e);
           res.status(500).send({ error: "Error when adding user" });
         });
+    });
+  });
+});
+
+app.post("/api/refreshToken", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.sendStatus(401);
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, identity) => {
+    if (err) return res.sendStatus(403);
+    User.findOne({ name: identity.name }, (err, user) => {
+      if (!user.refreshTokens.includes(token)) return res.sendStatus(403);
+      const accessToken = jwt.sign(
+        { name: identity.name },
+        process.env.ACCESS_TOKEN_SECRET
+      );
+      res.json({ accessToken: accessToken });
     });
   });
 });
@@ -136,12 +173,30 @@ app.post("/api/passwordReset", (req, res) => {
 
 app.get("/api/fetchSnapshot", authenticateToken, (req, res) => {
   /* Takes token and returns snap */
-  //this is called in init snapshot
   User.findOne({ name: req.name }, (err, user) => {
     if (err) res.status(500).send({ error: err });
     //populate snap object with data from user document
     let snap = user;
     delete snap.password;
+    //return user data
+    res.json({ snap: snap });
+  });
+});
+
+app.post("/api/testCompleted", authenticateToken, (req, res) => {
+  User.findOne({ name: req.name }, (err, user) => {
+    if (err) res.status(500).send({ error: err });
+
+    //Codes from legacy
+    //1 Saved: No personal best
+    //2 Saved: Personal best
+    //-1 Could not save result
+    //-2 Possible bot detected. Result not saved.
+    //-3 Could not verify keypress stats. Result not saved.
+    //-4 Result data does not make sense. Result not saved.
+    //-5 Test too short. Result not saved.
+    //-999 Internal error. Result might not be saved.
+    //return createdId
     //return user data
     res.json({ snap: snap });
   });

@@ -2,7 +2,7 @@ import { loadTags } from "./result-filters";
 import * as AccountButton from "./account-button";
 import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
-import axios from "axios";
+import axiosInstance from "./axios-instance";
 import Cookies from "js-cookie";
 
 //const db = firebase.firestore();
@@ -14,7 +14,7 @@ let dbSnapshot = null;
 
 export function updateName(uid, name) {
   //db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
-  axios.post("/api/updateName", {
+  axiosInstance.post("/api/updateName", {
     uid: uid,
     name: name,
   });
@@ -52,10 +52,8 @@ export async function initSnapshot() {
   //send api request with token that returns tags, presets, and data needed for snap
   if (currentUser() == null) return false;
   const token = Cookies.get("accessToken");
-  await axios
-    .get("/api/fetchSnapshot", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+  await axiosInstance
+    .get("/api/fetchSnapshot")
     .then((response) => {
       dbSnapshot = response.data.snap;
       loadTags(dbSnapshot.tags);
@@ -73,7 +71,7 @@ export async function getUserResults() {
   if (dbSnapshot.results !== undefined) {
     return true;
   } else {
-    axios
+    axiosInstance
       .get("/api/userResults", {
         uid: user.uid,
       })
@@ -435,7 +433,7 @@ export function updateLbMemory(mode, mode2, type, value) {
 export async function saveConfig(config) {
   if (currentUser() !== null) {
     AccountButton.loading(true);
-    axios
+    axiosInstance
       .post("/api/saveConfig", {
         uid: currentUser().uid,
       })

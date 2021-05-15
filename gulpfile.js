@@ -14,15 +14,7 @@ sass.compiler = require("dart-sass");
 
 let eslintConfig = {
   parser: "babel-eslint",
-  globals: [
-    "jQuery",
-    "$",
-    "axios",
-    "Cookies",
-    "moment",
-    "html2canvas",
-    "ClipboardItem",
-  ],
+  globals: ["jQuery", "$", "Cookies", "moment", "html2canvas", "ClipboardItem"],
   envs: ["es6", "browser", "node"],
   rules: {
     "constructor-super": "error",
@@ -89,6 +81,7 @@ let eslintConfig = {
 //refactored files, which should be es6 modules
 //once all files are moved here, then can we use a bundler to its full potential
 const refactoredSrc = [
+  "./src/js/axios-instance.js",
   "./src/js/db.js",
   "./src/js/cloud-functions.js",
   "./src/js/misc.js",

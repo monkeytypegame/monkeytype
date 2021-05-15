@@ -4,7 +4,7 @@ import Config, * as UpdateConfig from "./config";
 import * as Focus from "./focus";
 import * as CommandlineLists from "./commandline-lists";
 import * as TestUI from "./test-ui";
-import axios from "axios";
+import axiosInstance from "./axios-instance";
 
 let commandLineMouseMode = false;
 
@@ -164,7 +164,7 @@ function trigger(command) {
     }
   });
   if (!subgroup && !input && !sticky) {
-    axios
+    axiosInstance
       .post("/api/analytics/usedCommandLine", { command: command })
       .catch(() => {
         console.log("Analytics unavailable");
@@ -324,7 +324,7 @@ $("#commandInput input").keydown((e) => {
         }
       }
     });
-    axios
+    axiosInstance
       .post("/api/analytics/usedCommandLine", { command: command })
       .catch(() => {
         console.log("Analytics unavailable");
