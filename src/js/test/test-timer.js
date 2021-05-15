@@ -34,7 +34,7 @@ export function start() {
   function loop() {
     let dt = Date.now() - expected;
 
-    if (dt > interval) {
+    if (dt > stepIntervalMS) {
       Tribe.setNoAnim(true);
     }
 
