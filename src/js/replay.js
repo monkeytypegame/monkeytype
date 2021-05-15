@@ -132,6 +132,8 @@ function loadOldReplay() {
       startingIndex = i + 1;
     }
   });
+  const time = Math.floor(replayData[startingIndex].time / 1000);
+  $("#replayStopwatch").text(time + "s");
   return startingIndex;
 }
 
@@ -170,6 +172,7 @@ function startReplayRecording() {
     //hide replay display if user left it open
     toggleReplayDisplay();
   }
+  $("#replayStopwatch").text(0 + "s");
   replayData = [];
   replayStartTime = performance.now();
   replayRecording = true;
