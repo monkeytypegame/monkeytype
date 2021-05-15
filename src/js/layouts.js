@@ -235,6 +235,16 @@ const layouts = {
             " "
         ]
     },
+    handsdown: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "qQ", "cC", "hH", "pP", "vV", "kK", "yY", "oO", "jJ", "/?", "[{", "]}", "\\|",
+            "rR", "sS", "nN", "tT", "gG", "wW", "uU", "eE", "iI", "aA", ";:",
+            "\\|", "xX", "mM", "lL", "dD", "bB", "zZ", "fF", "'\"", ",<", ".>",
+            " "
+        ]
+    },
     handsdown_alt: {
         keymapShowTopRow: false,
         keys: [
