@@ -756,9 +756,9 @@ export function restart(
         Replay.stopReplayRecording();
         words.resetCurrentIndex();
         input.reset();
-        PaceCaret.init();
         TestUI.showWords();
         Funbox.activate();
+        PaceCaret.init();
       }
       if (Config.mode === "quote") {
         setRepeated(false);
