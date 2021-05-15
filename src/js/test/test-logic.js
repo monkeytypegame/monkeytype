@@ -164,6 +164,8 @@ export let input = new Input();
 export let corrected = new Corrected();
 export let currentWordIndex = 0;
 export let isRepeated = false;
+export let isPaceRepeat = false;
+export let lastTestWpm = 0;
 export let hasTab = false;
 export let randomQuote = null;
 export let bailout = false;
@@ -174,6 +176,10 @@ export function setActive(tf) {
 
 export function setRepeated(tf) {
   isRepeated = tf;
+}
+
+export function setPaceRepeat(tf) {
+  isPaceRepeat = tf;
 }
 
 export function setHasTab(tf) {
@@ -739,11 +745,13 @@ export function restart(
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         setRepeated(false);
+        setPaceRepeat(false);
         setHasTab(false);
         await init();
         PaceCaret.init(nosave);
       } else {
         setRepeated(true);
+        setPaceRepeat(true);
         setActive(false);
         Replay.stopReplayRecording();
         words.resetCurrentIndex();
@@ -1020,6 +1028,9 @@ export function finish(difficultyFailed = false) {
     inf = true;
   }
   TestTimer.clear();
+
+  lastTestWpm = stats.wpm;
+
   let testtime = stats.time;
   let afkseconds = TestStats.calculateAfkSeconds();
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);

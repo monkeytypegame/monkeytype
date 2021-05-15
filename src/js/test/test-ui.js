@@ -184,7 +184,6 @@ export function colorful(tc) {
   }
 }
 
-
 export function screenshot() {
   function revertScreenshot() {
     $("#notificationCenter").removeClass("hidden");
@@ -196,9 +195,9 @@ export function screenshot() {
       $(".pageTest .loginTip").removeClass("hidden");
   }
   let revealReplay = false;
-  if (!$("#resultReplay").hasClass('hidden')) {
+  if (!$("#resultReplay").hasClass("hidden")) {
     revealReplay = true;
-    Replay.pauseReplay()
+    Replay.pauseReplay();
   }
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
@@ -282,78 +281,99 @@ export function updateWordElement(showError) {
       }
     }
   } else {
-      let correctSoFar = false;
-      if (currentWord.slice(0, input.length) == input) {
-        // this is when input so far is correct
-        correctSoFar = true;
+    let correctSoFar = false;
+    if (currentWord.slice(0, input.length) == input) {
+      // this is when input so far is correct
+      correctSoFar = true;
+    }
+    let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
+    if (Config.blindMode) {
+      wordHighlightClassString = "correct";
+    }
+
+    for (let i = 0; i < input.length; i++) {
+      let charCorrect;
+      if (currentWord[i] == input[i]) {
+        charCorrect = true;
+      } else {
+        charCorrect = false;
       }
-      let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
-      if (Config.blindMode) {
-        wordHighlightClassString = "correct";
+
+      let correctClass = "correct";
+      if (Config.highlightMode == "off") {
+        correctClass = "";
       }
 
-      for (let i = 0; i < input.length; i++) {
-        let charCorrect;
-        if (currentWord[i] == input[i]) {
-          charCorrect = true;
+      let currentLetter = currentWord[i];
+      let tabChar = "";
+      let nlChar = "";
+      if (currentLetter === "\t") {
+        tabChar = "tabChar";
+        currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
+      } else if (currentLetter === "\n") {
+        nlChar = "nlChar";
+        currentLetter = `<i class="fas fa-angle-down"></i>`;
+      }
+
+      if (charCorrect) {
+        ret += `<letter class="${
+          Config.highlightMode == "word"
+            ? wordHighlightClassString
+            : correctClass
+        } ${tabChar}${nlChar}">${currentLetter}</letter>`;
+      } else {
+        if (!showError) {
+          if (currentLetter !== undefined) {
+            ret += `<letter class="${
+              Config.highlightMode == "word"
+                ? wordHighlightClassString
+                : correctClass
+            } ${tabChar}${nlChar}">${currentLetter}</letter>`;
+          }
         } else {
-          charCorrect = false;
-        }
-
-        let correctClass = "correct";
-        if (Config.highlightMode == "off") {
-          correctClass = "";
-        }
-
-        let currentLetter = currentWord[i];
-        let tabChar = "";
-        let nlChar = "";
-        if (currentLetter === "\t") {
-          tabChar = "tabChar";
-          currentLetter = `<i class="fas fa-long-arrow-alt-right"></i>`;
-        } else if (currentLetter === "\n") {
-          nlChar = "nlChar";
-          currentLetter = `<i class="fas fa-angle-down"></i>`;
-        }
-
-        if (charCorrect) {
-          ret += `<letter class="${Config.highlightMode == "word" ? wordHighlightClassString : correctClass} ${tabChar}${nlChar}">${currentLetter}</letter>`;
-        } else {
-          if (!showError) {
-            if (currentLetter !== undefined) {
-              ret += `<letter class="${Config.highlightMode == "word" ? wordHighlightClassString : correctClass} ${tabChar}${nlChar}">${currentLetter}</letter>`;
-            }
-          } else {
-            if (currentLetter == undefined) {
-              if (!Config.hideExtraLetters) {
-                let letter = input[i];
-                if (letter == " " || letter == "\t" || letter == "\n") {
-                  letter = "_";
-                }
-                ret += `<letter class="${Config.highlightMode == "word" ? wordHighlightClassString : 'incorrect'} extra ${tabChar}${nlChar}">${letter}</letter>`;
+          if (currentLetter == undefined) {
+            if (!Config.hideExtraLetters) {
+              let letter = input[i];
+              if (letter == " " || letter == "\t" || letter == "\n") {
+                letter = "_";
               }
-            } else {
-              ret +=
-                `<letter class="${Config.highlightMode == "word" ? wordHighlightClassString : 'incorrect'} ${tabChar}${nlChar}">` +
-                currentLetter +
-                (Config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
-                "</letter>";
+              ret += `<letter class="${
+                Config.highlightMode == "word"
+                  ? wordHighlightClassString
+                  : "incorrect"
+              } extra ${tabChar}${nlChar}">${letter}</letter>`;
             }
-          }
-        }
-      }
-
-      if (input.length < currentWord.length) {
-        for (let i = input.length; i < currentWord.length; i++) {
-          if (currentWord[i] === "\t") {
-            ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
-          } else if (currentWord[i] === "\n") {
-            ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
           } else {
-            ret += `<letter class="${Config.highlightMode == "word" ? wordHighlightClassString : ''}">` + currentWord[i] + "</letter>";
+            ret +=
+              `<letter class="${
+                Config.highlightMode == "word"
+                  ? wordHighlightClassString
+                  : "incorrect"
+              } ${tabChar}${nlChar}">` +
+              currentLetter +
+              (Config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
+              "</letter>";
           }
         }
       }
+    }
+
+    if (input.length < currentWord.length) {
+      for (let i = input.length; i < currentWord.length; i++) {
+        if (currentWord[i] === "\t") {
+          ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        } else if (currentWord[i] === "\n") {
+          ret += `<letter class='nlChar'><i class="fas fa-angle-down"></i></letter>`;
+        } else {
+          ret +=
+            `<letter class="${
+              Config.highlightMode == "word" ? wordHighlightClassString : ""
+            }">` +
+            currentWord[i] +
+            "</letter>";
+        }
+      }
+    }
   }
   wordAtIndex.innerHTML = ret;
   if (newlineafter) $("#words").append("<div class='newline'></div>");
@@ -477,7 +497,9 @@ export function updateModesNotice() {
     } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
-        Config.paceCaret === "average"
+        TestLogic.isPaceRepeat
+          ? "repeated"
+          : Config.paceCaret === "average"
           ? "average"
           : Config.paceCaret === "pb"
           ? "pb"

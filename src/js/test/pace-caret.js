@@ -40,7 +40,9 @@ export async function init() {
     mode2 = TestLogic.randomQuote.id;
   }
   let wpm;
-  if (Config.paceCaret === "pb") {
+  if (TestLogic.isPaceRepeat == true) {
+    wpm = TestLogic.lastTestWpm;
+  } else if (Config.paceCaret === "pb") {
     wpm = await DB.getLocalPB(
       Config.mode,
       mode2,
