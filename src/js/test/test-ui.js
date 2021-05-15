@@ -490,19 +490,19 @@ export function updateModesNotice() {
     );
   }
 
-  if (Config.paceCaret !== "off") {
+  if (Config.paceCaret !== "off" || TestLogic.isPaceRepeat) {
     let speed = "";
     try {
       speed = ` (${Math.round(PaceCaret.settings.wpm)} wpm)`;
     } catch {}
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsPaceCaret"><i class="fas fa-tachometer-alt"></i>${
-        TestLogic.isPaceRepeat
-          ? "repeated"
-          : Config.paceCaret === "average"
+        Config.paceCaret === "average"
           ? "average"
           : Config.paceCaret === "pb"
           ? "pb"
+          : Config.paceCaret == "off"
+          ? "repeated"
           : "custom"
       } pace${speed}</div>`
     );
