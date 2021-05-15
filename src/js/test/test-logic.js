@@ -342,7 +342,7 @@ export function startTest() {
   }
 
   try {
-    if (Config.paceCaret !== "off") PaceCaret.start();
+    if (Config.paceCaret !== "off" || isPaceRepeat) PaceCaret.start();
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(performance.now());

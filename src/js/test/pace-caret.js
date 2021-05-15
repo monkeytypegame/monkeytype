@@ -103,9 +103,6 @@ export function update(expectedStepEnd) {
   if ($("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").removeClass("hidden");
   }
-  if ($("#paceCaret").hasClass("off")) {
-    return;
-  }
   try {
     settings.currentLetterIndex++;
     if (
