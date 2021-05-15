@@ -543,5 +543,15 @@
     "name": "midnight",
     "bgColor": "#0c0e12",
     "textColor": "#525f7a"
+  },
+  {
+    "name": "blueberry_light",
+    "bgColor": "#dae0f5",
+    "textColor": "#678198"
+  },
+  {
+    "name": "blueberry_dark",
+    "bgColor": "#212b42",
+    "textColor": "#91b4d5"
   }
 ]
