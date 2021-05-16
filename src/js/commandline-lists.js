@@ -544,13 +544,6 @@ let commandsPaceCaretStyle = {
   title: "Change pace caret style...",
   list: [
     {
-      id: "setPaceCaretStyleOff",
-      display: "off",
-      exec: () => {
-        UpdateConfig.setPaceCaretStyle("off");
-      },
-    },
-    {
       id: "setPaceCaretStyleDefault",
       display: "line",
       exec: () => {

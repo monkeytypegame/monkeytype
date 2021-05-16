@@ -734,9 +734,7 @@ export function setPaceCaretStyle(caretStyle, nosave) {
   $("#paceCaret").removeClass("carrot");
   $("#paceCaret").removeClass("banana");
 
-  if (caretStyle == "off") {
-    $("#paceCaret").addClass("off");
-  } else if (caretStyle == "default") {
+  if (caretStyle == "default") {
     $("#paceCaret").addClass("default");
   } else if (caretStyle == "block") {
     $("#paceCaret").addClass("block");
