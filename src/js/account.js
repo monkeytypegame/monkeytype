@@ -834,7 +834,7 @@ $(".pageAccount #accountHistoryChart").click((e) => {
   loadMoreLines(index);
   $([document.documentElement, document.body]).animate(
     {
-      scrollTop: $(`#result-${index}`).offset().top,
+      scrollTop: $(`#result-${index}`).offset().top - ($(window).height()/2),
     },
     500
   );
