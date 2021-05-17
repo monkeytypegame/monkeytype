@@ -144,7 +144,11 @@ export async function saveToLocalStorage(noDbCheck = false) {
   // });
   let save = config;
   delete save.resultFilters;
-  window.localStorage.setItem("config", JSON.stringify(save));
+  let stringified = JSON.stringify(save);
+  window.localStorage.setItem("config", stringified);
+  CommandlineLists.defaultCommands.list.filter(
+    (command) => command.id == "exportSettingsJSON"
+  )[0].defaultValue = stringified;
   // restartCount = 0;
   if (!noDbCheck) await DB.saveConfig(save);
 }
