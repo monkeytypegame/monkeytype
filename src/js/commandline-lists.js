@@ -626,6 +626,7 @@ let commandsPaceCaret = {
   ],
 };
 
+
 let commandsMinWpm = {
   title: "Change min wpm mode...",
   list: [
@@ -1660,6 +1661,13 @@ export let defaultCommands = {
       exec: () => {
         current.push(commandsPaceCaretStyle);
         Commandline.show();
+      },
+    },
+    {
+      id: "toggleRepeatedPace",
+      display: "Toggle repeated pace",
+      exec: () => {
+        UpdateConfig.toggleRepeatedPace();
       },
     },
     {

@@ -99,6 +99,7 @@ let defaultConfig = {
   showOutOfFocusWarning: true,
   paceCaret: "off",
   paceCaretCustomSpeed: 100,
+  repeatedPace: true,
   pageWidth: "100",
   chartAccuracy: true,
   chartStyle: "line",
@@ -499,6 +500,24 @@ export function setPaceCaretCustomSpeed(val, nosave) {
     val = 100;
   }
   config.paceCaretCustomSpeed = val;
+  if (!nosave) saveToLocalStorage();
+}
+
+//repeated pace
+export function toggleRepeatedPace() {
+  let pace = !config.repeatedPace;
+  if (pace == undefined) {
+    pace = true;
+  }
+  config.repeatedPace = pace;
+  saveToLocalStorage();
+}
+
+export function setRepeatedPace(pace, nosave) {
+  if (pace == undefined) {
+    pace = true;
+  }
+  config.repeatedPace = pace;
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1516,6 +1535,7 @@ export function apply(configObj) {
     setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
     setPaceCaret(configObj.paceCaret, true);
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
+    setRepeatedPace(configObj.repeatedPace, true);
     setPageWidth(configObj.pageWidth, true);
     setChartAccuracy(configObj.chartAccuracy, true);
     setChartStyle(configObj.chartStyle, true);

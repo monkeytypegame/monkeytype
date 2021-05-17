@@ -195,8 +195,8 @@ export function screenshot() {
     if (firebase.auth().currentUser == null)
       $(".pageTest .loginTip").removeClass("hidden");
   }
-  
-  if (!$("#resultReplay").hasClass('hidden')) {
+
+  if (!$("#resultReplay").hasClass("hidden")) {
     revealReplay = true;
     Replay.pauseReplay();
   }
@@ -491,7 +491,10 @@ export function updateModesNotice() {
     );
   }
 
-  if (Config.paceCaret !== "off" || TestLogic.isPaceRepeat) {
+  if (
+    Config.paceCaret !== "off" ||
+    (Config.repeatedPace && TestLogic.isPaceRepeat)
+  ) {
     let speed = "";
     try {
       speed = ` (${Math.round(PaceCaret.settings.wpm)} wpm)`;
@@ -502,7 +505,7 @@ export function updateModesNotice() {
           ? "average"
           : Config.paceCaret === "pb"
           ? "pb"
-          : Config.paceCaret == "off"
+          : Config.paceCaret == "repeat"
           ? "repeated"
           : "custom"
       } pace${speed}</div>`
