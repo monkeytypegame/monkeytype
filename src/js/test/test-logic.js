@@ -343,8 +343,8 @@ export function startTest() {
 
   try {
     if (
-      Config.paceCaret !== "off" &&
-      (Config.paceCaret !== "repeat" || isPaceRepeat)
+      Config.paceCaret !== "off" ||
+      (Config.repeatedPace && isPaceRepeat)
     )
       PaceCaret.start();
   } catch (e) {}

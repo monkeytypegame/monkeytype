@@ -615,13 +615,6 @@ let commandsPaceCaret = {
       },
     },
     {
-      id: "setPaceCaretRepeat",
-      display: "repeat",
-      exec: () => {
-        UpdateConfig.setPaceCaret("repeat");
-      },
-    },
-    {
       id: "setPaceCaretCustom",
       display: "custom...",
       input: true,
@@ -632,6 +625,7 @@ let commandsPaceCaret = {
     },
   ],
 };
+
 
 let commandsMinWpm = {
   title: "Change min wpm mode...",
@@ -1667,6 +1661,13 @@ export let defaultCommands = {
       exec: () => {
         current.push(commandsPaceCaretStyle);
         Commandline.show();
+      },
+    },
+    {
+      id: "toggleRepeatedPace",
+      display: "Toggle repeated pace",
+      exec: () => {
+        UpdateConfig.toggleRepeatedPace();
       },
     },
     {

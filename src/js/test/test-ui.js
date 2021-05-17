@@ -492,8 +492,8 @@ export function updateModesNotice() {
   }
 
   if (
-    Config.paceCaret !== "off" &&
-    (Config.paceCaret !== "repeat" || TestLogic.isPaceRepeat)
+    Config.paceCaret !== "off" ||
+    (Config.repeatedPace && TestLogic.isPaceRepeat)
   ) {
     let speed = "";
     try {
