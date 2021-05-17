@@ -615,6 +615,13 @@ let commandsPaceCaret = {
       },
     },
     {
+      id: "setPaceCaretRepeat",
+      display: "repeat",
+      exec: () => {
+        UpdateConfig.setPaceCaret("repeat");
+      },
+    },
+    {
       id: "setPaceCaretCustom",
       display: "custom...",
       input: true,

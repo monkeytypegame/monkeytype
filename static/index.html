@@ -2648,7 +2648,9 @@
               <div class="section paceCaret" section="">
                 <h1>pace caret</h1>
                 <div class="text">
-                  Displays a second caret that moves at constant speed.
+                  Displays a second caret that moves at constant speed. The
+                  repeat option enables a pace caret when a test is repeated
+                  that will have the wpm of the previous test.
                 </div>
                 <div class="buttons">
                   <div
@@ -2677,6 +2679,14 @@
                   </div>
                   <div
                     class="button"
+                    paceCaret="repeat"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    repeat
+                  </div>
+                  <div
+                    class="button"
                     paceCaret="custom"
                     tabindex="0"
                     onclick="this.blur();"
@@ -2699,6 +2709,14 @@
                   Change the style of the pace caret during the test.
                 </div>
                 <div class="buttons">
+                  <div
+                    class="button"
+                    paceCaretStyle="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
                   <div
                     class="button"
                     paceCaretStyle="default"
@@ -3740,12 +3758,12 @@
                 </div>
                 <div class="button signIn">
                   <i class="fas fa-sign-in-alt"></i>
-                  Sign in with email
+                  Sign In
                 </div>
                 <div style="font-size: 0.75rem; text-align: center">or</div>
                 <div class="button signInWithGoogle">
                   <i class="fab fa-google"></i>
-                  Sign in with Google
+                  Google Sign In
                 </div>
               </form>
             </div>
