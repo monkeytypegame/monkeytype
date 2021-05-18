@@ -860,5 +860,8 @@ $(".pageSettings .section.customLayoutfluid .inputAndSave .input").keypress(
 
 $(".quickNav .links a").on("click", (e) => {
   const settingsGroup = e.target.innerText;
-  toggleSettingsGroup(settingsGroup);
+  const isOpen = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
+    "slideup"
+  );
+  isOpen && toggleSettingsGroup(settingsGroup);
 });
