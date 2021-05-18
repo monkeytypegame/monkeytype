@@ -233,7 +233,7 @@ export async function activate(funbox, mode) {
   return true;
 }
 export function setFunbox(funbox, mode) {
-  if (TestLogic.active || TestUI.resultVisible) {
+  if (TestLogic.active) {
     Notifications.add(
       "You can only change the funbox before starting a test.",
       0
