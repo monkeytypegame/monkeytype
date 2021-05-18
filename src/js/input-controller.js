@@ -234,7 +234,6 @@ function handleSpace(event, isEnter) {
   dontInsertSpace = true;
   if (currentWord == TestLogic.input.current || Config.mode == "zen") {
     //correct word or in zen mode
-    Replay.addReplayEvent("submitCorrectWord");
     PaceCaret.handleSpace(true, currentWord);
     TestStats.incrementAccuracy(true);
     TestLogic.input.pushHistory();
@@ -250,9 +249,9 @@ function handleSpace(event, isEnter) {
     if (Funbox.active !== "nospace") {
       Sound.playClick(Config.playSoundOnClick);
     }
+    Replay.addReplayEvent("submitCorrectWord");
   } else {
     //incorrect word
-    Replay.addReplayEvent("submitErrorWord");
     PaceCaret.handleSpace(false, currentWord);
     if (Funbox.active !== "nospace") {
       if (!Config.playSoundOnError || Config.blindMode) {
@@ -309,6 +308,7 @@ function handleSpace(event, isEnter) {
       TestLogic.finish();
       return;
     }
+    Replay.addReplayEvent("submitErrorWord");
   }
 
   TestLogic.corrected.pushHistory();
@@ -572,7 +572,6 @@ function handleAlpha(event) {
   }
 
   if (!thisCharCorrect) {
-    Replay.addReplayEvent("incorrectLetter", event.key);
     TestStats.incrementAccuracy(false);
     TestStats.incrementKeypressErrors();
     // currentError.count++;
@@ -580,7 +579,6 @@ function handleAlpha(event) {
     thisCharCorrect = false;
     TestStats.pushMissedWord(TestLogic.words.getCurrent());
   } else {
-    Replay.addReplayEvent("correctLetter", event.key);
     TestStats.incrementAccuracy(true);
     thisCharCorrect = true;
     if (Config.mode == "zen") {
@@ -631,6 +629,11 @@ function handleAlpha(event) {
   if (Config.stopOnError == "letter" && !thisCharCorrect) {
     return;
   }
+
+  Replay.addReplayEvent(
+    thisCharCorrect ? "correctLetter" : "incorrectLetter",
+    event.key
+  );
 
   //update the active word top, but only once
   if (
