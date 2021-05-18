@@ -562,6 +562,46 @@ export function update() {
   }
 }
 
+function toggleSettingsGroup(groupName) {
+  $(`.pageSettings .settingsGroup.${groupName}`)
+    .stop(true, true)
+    .slideToggle(250)
+    .toggleClass("slideup");
+  if ($(`.pageSettings .settingsGroup.${groupName}`).hasClass("slideup")) {
+    $(`.pageSettings .sectionGroupTitle[group=${groupName}] .fas`)
+      .stop(true, true)
+      .animate(
+        {
+          deg: -90,
+        },
+        {
+          duration: 250,
+          step: function (now) {
+            $(this).css({
+              transform: "rotate(" + now + "deg)",
+            });
+          },
+        }
+      );
+  } else {
+    $(`.pageSettings .sectionGroupTitle[group=${groupName}] .fas`)
+      .stop(true, true)
+      .animate(
+        {
+          deg: 0,
+        },
+        {
+          duration: 250,
+          step: function (now) {
+            $(this).css({
+              transform: "rotate(" + now + "deg)",
+            });
+          },
+        }
+      );
+  }
+}
+
 $(document).on(
   "focusout",
   ".pageSettings .section.paceCaret input.customPaceCaretSpeed",
@@ -763,44 +803,7 @@ $("#exportSettingsButton").click((e) => {
 });
 
 $(".pageSettings .sectionGroupTitle").click((e) => {
-  let group = $(e.currentTarget).attr("group");
-  $(`.pageSettings .settingsGroup.${group}`)
-    .stop(true, true)
-    .slideToggle(250)
-    .toggleClass("slideup");
-  if ($(`.pageSettings .settingsGroup.${group}`).hasClass("slideup")) {
-    $(`.pageSettings .sectionGroupTitle[group=${group}] .fas`)
-      .stop(true, true)
-      .animate(
-        {
-          deg: -90,
-        },
-        {
-          duration: 250,
-          step: function (now) {
-            $(this).css({
-              transform: "rotate(" + now + "deg)",
-            });
-          },
-        }
-      );
-  } else {
-    $(`.pageSettings .sectionGroupTitle[group=${group}] .fas`)
-      .stop(true, true)
-      .animate(
-        {
-          deg: 0,
-        },
-        {
-          duration: 250,
-          step: function (now) {
-            $(this).css({
-              transform: "rotate(" + now + "deg)",
-            });
-          },
-        }
-      );
-  }
+  toggleSettingsGroup($(e.currentTarget).attr("group"));
 });
 
 $(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
@@ -854,3 +857,11 @@ $(".pageSettings .section.customLayoutfluid .inputAndSave .input").keypress(
     }
   }
 );
+
+$(".quickNav .links a").on("click", (e) => {
+  const settingsGroup = e.target.innerText;
+  const isOpen = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
+    "slideup"
+  );
+  isOpen && toggleSettingsGroup(settingsGroup);
+});
