@@ -27,6 +27,7 @@ import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
 import * as CloudFunctions from "./cloud-functions";
 import * as TestLeaderboards from "./test-leaderboards";
+import * as Replay from "./replay.js";
 
 export let notSignedInLastResult = null;
 
@@ -163,6 +164,8 @@ export let input = new Input();
 export let corrected = new Corrected();
 export let currentWordIndex = 0;
 export let isRepeated = false;
+export let isPaceRepeat = false;
+export let lastTestWpm = 0;
 export let hasTab = false;
 export let randomQuote = null;
 export let bailout = false;
@@ -173,6 +176,10 @@ export function setActive(tf) {
 
 export function setRepeated(tf) {
   isRepeated = tf;
+}
+
+export function setPaceRepeat(tf) {
+  isPaceRepeat = tf;
 }
 
 export function setHasTab(tf) {
@@ -190,101 +197,113 @@ export function setRandomQuote(rq) {
 export function punctuateWord(previousWord, currentWord, index, maxindex) {
   let word = currentWord;
 
-  if (
-    (index == 0 ||
-      Misc.getLastChar(previousWord) == "." ||
-      Misc.getLastChar(previousWord) == "?" ||
-      Misc.getLastChar(previousWord) == "!") &&
-    Config.language.split("_")[0] != "code"
-  ) {
-    //always capitalise the first word or if there was a dot unless using a code alphabet
-    word = Misc.capitalizeFirstLetter(word);
-  } else if (
-    (Math.random() < 0.1 &&
-      Misc.getLastChar(previousWord) != "." &&
+  if (Funbox.funboxSaved === "58008") {
+    if (currentWord.length > 3) {
+      if (Math.random() < 0.75) {
+        let special = ["/", "*", "-", "+"][Math.floor(Math.random() * 4)];
+        word = Misc.setCharAt(word, Math.floor(word.length / 2), special);
+      }
+    }
+  } else {
+    if (
+      (index == 0 ||
+        Misc.getLastChar(previousWord) == "." ||
+        Misc.getLastChar(previousWord) == "?" ||
+        Misc.getLastChar(previousWord) == "!") &&
+      Config.language.split("_")[0] != "code"
+    ) {
+      //always capitalise the first word or if there was a dot unless using a code alphabet
+      word = Misc.capitalizeFirstLetter(word);
+    } else if (
+      (Math.random() < 0.1 &&
+        Misc.getLastChar(previousWord) != "." &&
+        Misc.getLastChar(previousWord) != "," &&
+        index != maxindex - 2) ||
+      index == maxindex - 1
+    ) {
+      let rand = Math.random();
+      if (rand <= 0.8) {
+        word += ".";
+      } else if (rand > 0.8 && rand < 0.9) {
+        if (Config.language.split("_")[0] == "french") {
+          word = "?";
+        } else {
+          word += "?";
+        }
+      } else {
+        if (Config.language.split("_")[0] == "french") {
+          word = "!";
+        } else {
+          word += "!";
+        }
+      }
+    } else if (
+      Math.random() < 0.01 &&
       Misc.getLastChar(previousWord) != "," &&
-      index != maxindex - 2) ||
-    index == maxindex - 1
-  ) {
-    let rand = Math.random();
-    if (rand <= 0.8) {
-      word += ".";
-    } else if (rand > 0.8 && rand < 0.9) {
-      if (Config.language.split("_")[0] == "french") {
-        word = "?";
+      Misc.getLastChar(previousWord) != "." &&
+      Config.language.split("_")[0] !== "russian"
+    ) {
+      word = `"${word}"`;
+    } else if (
+      Math.random() < 0.011 &&
+      Misc.getLastChar(previousWord) != "," &&
+      Misc.getLastChar(previousWord) != "." &&
+      Config.language.split("_")[0] !== "russian"
+    ) {
+      word = `'${word}'`;
+    } else if (
+      Math.random() < 0.012 &&
+      Misc.getLastChar(previousWord) != "," &&
+      Misc.getLastChar(previousWord) != "."
+    ) {
+      if (Config.language.split("_")[0] == "code") {
+        let r = Math.random();
+        if (r < 0.25) {
+          word = `(${word})`;
+        } else if (r < 0.5) {
+          word = `{${word}}`;
+        } else if (r < 0.75) {
+          word = `[${word}]`;
+        } else {
+          word = `<${word}>`;
+        }
       } else {
-        word += "?";
-      }
-    } else {
-      if (Config.language.split("_")[0] == "french") {
-        word = "!";
-      } else {
-        word += "!";
-      }
-    }
-  } else if (
-    Math.random() < 0.01 &&
-    Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "." &&
-    Config.language.split("_")[0] !== "russian"
-  ) {
-    word = `"${word}"`;
-  } else if (
-    Math.random() < 0.011 &&
-    Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "." &&
-    Config.language.split("_")[0] !== "russian"
-  ) {
-    word = `'${word}'`;
-  } else if (
-    Math.random() < 0.012 &&
-    Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "."
-  ) {
-    if (Config.language.split("_")[0] == "code") {
-      let r = Math.random();
-      if (r < 0.25) {
         word = `(${word})`;
-      } else if (r < 0.5) {
-        word = `{${word}}`;
-      } else if (r < 0.75) {
-        word = `[${word}]`;
-      } else {
-        word = `<${word}>`;
       }
-    } else {
-      word = `(${word})`;
-    }
-  } else if (Math.random() < 0.013) {
-    if (Config.language.split("_")[0] == "french") {
-      word = ":";
-    } else {
-      word += ":";
-    }
-  } else if (
-    Math.random() < 0.014 &&
-    Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "." &&
-    previousWord != "-"
-  ) {
-    word = "-";
-  } else if (
-    Math.random() < 0.015 &&
-    Misc.getLastChar(previousWord) != "," &&
-    Misc.getLastChar(previousWord) != "." &&
-    Misc.getLastChar(previousWord) != ";"
-  ) {
-    if (Config.language.split("_")[0] == "french") {
-      word = ";";
-    } else {
-      word += ";";
-    }
-  } else if (Math.random() < 0.2 && Misc.getLastChar(previousWord) != ",") {
-    word += ",";
-  } else if (Math.random() < 0.25 && Config.language.split("_")[0] == "code") {
-    let specials = ["{", "}", "[", "]", "(", ")", ";", "=", "%", "/"];
+    } else if (Math.random() < 0.013) {
+      if (Config.language.split("_")[0] == "french") {
+        word = ":";
+      } else {
+        word += ":";
+      }
+    } else if (
+      Math.random() < 0.014 &&
+      Misc.getLastChar(previousWord) != "," &&
+      Misc.getLastChar(previousWord) != "." &&
+      previousWord != "-"
+    ) {
+      word = "-";
+    } else if (
+      Math.random() < 0.015 &&
+      Misc.getLastChar(previousWord) != "," &&
+      Misc.getLastChar(previousWord) != "." &&
+      Misc.getLastChar(previousWord) != ";"
+    ) {
+      if (Config.language.split("_")[0] == "french") {
+        word = ";";
+      } else {
+        word += ";";
+      }
+    } else if (Math.random() < 0.2 && Misc.getLastChar(previousWord) != ",") {
+      word += ",";
+    } else if (
+      Math.random() < 0.25 &&
+      Config.language.split("_")[0] == "code"
+    ) {
+      let specials = ["{", "}", "[", "]", "(", ")", ";", "=", "%", "/"];
 
-    word = specials[Math.floor(Math.random() * 10)];
+      word = specials[Math.floor(Math.random() * 10)];
+    }
   }
   return word;
 }
@@ -306,6 +325,8 @@ export function startTest() {
     console.log("Analytics unavailable");
   }
   setActive(true);
+  Replay.startReplayRecording();
+  Replay.replayGetWordsList(words.list);
   TestStats.resetKeypressTimings();
   TimerProgress.restart();
   TimerProgress.show();
@@ -321,7 +342,11 @@ export function startTest() {
   }
 
   try {
-    if (Config.paceCaret !== "off") PaceCaret.start();
+    if (
+      Config.paceCaret !== "off" ||
+      (Config.repeatedPace && isPaceRepeat)
+    )
+      PaceCaret.start();
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(performance.now());
@@ -331,6 +356,7 @@ export function startTest() {
 
 export async function init() {
   setActive(false);
+  Replay.stopReplayRecording();
   words.reset();
   TestUI.setCurrentWordElementIndex(0);
   // accuracy = {
@@ -452,7 +478,7 @@ export async function init() {
       } else if (Funbox.funboxSaved === "gibberish") {
         randomWord = Misc.getGibberish();
       } else if (Funbox.funboxSaved === "58008") {
-        UpdateConfig.setPunctuation(false, true);
+        // UpdateConfig.setPunctuation(false, true);
         UpdateConfig.setNumbers(false, true);
         randomWord = Misc.getNumbers(7);
       } else if (Funbox.funboxSaved === "specials") {
@@ -469,8 +495,15 @@ export async function init() {
         randomWord = punctuateWord(previousWord, randomWord, i, wordsBound);
       }
       if (Config.numbers) {
-        if (Math.random() < 0.1) {
+        if (
+          Math.random() < 0.1 &&
+          i !== 0 &&
+          Misc.getLastChar(previousWord) !== "."
+        ) {
           randomWord = Misc.getNumbers(4);
+          if (i == wordsBound - 1) {
+            randomWord += ".";
+          }
         }
       }
 
@@ -565,8 +598,12 @@ export async function init() {
   }
   if (language.ligatures) {
     $("#words").addClass("withLigatures");
+    $("#resultWordsHistory .words").addClass("withLigatures");
+    $("#resultReplay .words").addClass("withLigatures");
   } else {
     $("#words").removeClass("withLigatures");
+    $("#resultWordsHistory .words").removeClass("withLigatures");
+    $("#resultReplay .words").removeClass("withLigatures");
   }
   // if (Config.mode == "zen") {
   //   // Creating an empty active word element for zen mode
@@ -581,7 +618,12 @@ export async function init() {
   }
 }
 
-export function restart(withSameWordset = false, nosave = false, event) {
+export function restart(
+  withSameWordset = false,
+  nosave = false,
+  event,
+  practiseMissed = false
+) {
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     try {
       event.preventDefault();
@@ -622,8 +664,20 @@ export function restart(withSameWordset = false, nosave = false, event) {
     let testSeconds = TestStats.calculateTestSeconds(performance.now());
     let afkseconds = TestStats.calculateAfkSeconds();
     // incompleteTestSeconds += ;
-    TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
+    let tt = testSeconds - afkseconds;
+    console.log(
+      `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
+    );
+    TestStats.incrementIncompleteSeconds(tt);
     TestStats.incrementRestartCount();
+    if (tt > 600) {
+      Notifications.add(
+        `Your time typing just increased by ${Misc.roundTo2(
+          tt / 60
+        )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
+        -1
+      );
+    }
     // restartCount++;
   }
 
@@ -631,7 +685,11 @@ export function restart(withSameWordset = false, nosave = false, event) {
     $("#words").empty();
   }
 
-  if (PractiseMissed.before.mode !== null && !withSameWordset) {
+  if (
+    PractiseMissed.before.mode !== null &&
+    !withSameWordset &&
+    !practiseMissed
+  ) {
     Notifications.add("Reverting to previous settings.", 0);
     UpdateConfig.setMode(PractiseMissed.before.mode);
     UpdateConfig.setPunctuation(PractiseMissed.before.punctuation);
@@ -647,6 +705,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
   Focus.set(false);
   Caret.hide();
   setActive(false);
+  Replay.stopReplayRecording();
   LiveWpm.hide();
   LiveAcc.hide();
   TimerProgress.hide();
@@ -673,7 +732,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
       !UI.pageTransition &&
       !Config.customTheme
     ) {
-      ThemeController.randomiseTheme();
+      ThemeController.randomizeTheme();
     }
   }
   TestUI.setResultVisible(false);
@@ -690,17 +749,20 @@ export function restart(withSameWordset = false, nosave = false, event) {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         setRepeated(false);
+        setPaceRepeat(false);
         setHasTab(false);
         await init();
         PaceCaret.init(nosave);
       } else {
         setRepeated(true);
+        setPaceRepeat(true);
         setActive(false);
+        Replay.stopReplayRecording();
         words.resetCurrentIndex();
         input.reset();
-        PaceCaret.init();
         TestUI.showWords();
         Funbox.activate();
+        PaceCaret.init();
       }
       if (Config.mode === "quote") {
         setRepeated(false);
@@ -742,8 +804,16 @@ export function restart(withSameWordset = false, nosave = false, event) {
       $(".pageTest #premidSecondsLeft").text(Config.time);
 
       if (Funbox.active === "layoutfluid") {
-        UpdateConfig.setLayout("qwerty");
-        UpdateConfig.setKeymapLayout("qwerty");
+        UpdateConfig.setLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty"
+        );
+        UpdateConfig.setKeymapLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty"
+        );
         Keymap.highlightKey(
           words
             .getCurrent()
@@ -913,6 +983,7 @@ export function finish(difficultyFailed = false) {
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
     corrected.pushHistory();
+    Replay.replayGetWordsList(input.history);
   }
 
   TestStats.recordKeypressSpacing();
@@ -921,6 +992,7 @@ export function finish(difficultyFailed = false) {
   TestUI.setResultVisible(true);
   TestStats.setEnd(performance.now());
   setActive(false);
+  Replay.stopReplayRecording();
   Focus.set(false);
   Caret.hide();
   LiveWpm.hide();
@@ -929,6 +1001,17 @@ export function finish(difficultyFailed = false) {
   TimerProgress.hide();
   Keymap.hide();
   Funbox.activate("none", null);
+
+  if (
+    Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0 &&
+    Config.mode !== "time"
+  ) {
+    TestStats.setLastSecondNotRound();
+  }
+
+  if (Config.mode == "zen" || bailout) {
+    TestStats.removeAfkData();
+  }
   let stats = TestStats.calculateStats();
   if (stats === undefined) {
     stats = {
@@ -949,6 +1032,9 @@ export function finish(difficultyFailed = false) {
     inf = true;
   }
   TestTimer.clear();
+
+  lastTestWpm = stats.wpm;
+
   let testtime = stats.time;
   let afkseconds = TestStats.calculateAfkSeconds();
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
@@ -1065,8 +1151,7 @@ export function finish(difficultyFailed = false) {
     );
   }, 125);
 
-  $("#testModesNotice").addClass("hidden");
-
+  $("#testModesNotice").css("opacity", 0);
   $("#result .stats .leaderboards .bottom").text("");
   $("#result .stats .leaderboards").addClass("hidden");
 
@@ -1297,7 +1382,7 @@ export function finish(difficultyFailed = false) {
       keyDuration: TestStats.keypressTimings.duration.array,
       consistency: consistency,
       keyConsistency: keyConsistency,
-      funbox: Funbox.active,
+      funbox: Funbox.funboxSaved,
       bailedOut: bailout,
       chartData: chartData,
       customText: cdata,
@@ -1644,8 +1729,9 @@ export function finish(difficultyFailed = false) {
   }
   if (
     Config.mode != "custom" &&
-    Funbox.active !== "gibberish" &&
-    Funbox.active !== "58008"
+    Funbox.funboxSaved !== "gibberish" &&
+    Funbox.funboxSaved !== "ascii" &&
+    Funbox.funboxSaved !== "58008"
   ) {
     testType += "<br>" + lang;
   }
@@ -1670,9 +1756,9 @@ export function finish(difficultyFailed = false) {
   $("#result .stats .testType .bottom").html(testType);
 
   let otherText = "";
-  if (Config.layout !== "default") {
-    otherText += "<br>" + Config.layout;
-  }
+  // if (Config.layout !== "default") {
+  //   otherText += "<br>" + Config.layout;
+  // }
   if (difficultyFailed) {
     otherText += "<br>failed";
   }
@@ -1713,6 +1799,37 @@ export function finish(difficultyFailed = false) {
     $("#result .stats .source").addClass("hidden");
   }
 
+  if (Funbox.funboxSaved !== "none") {
+    let content = Funbox.funboxSaved;
+    if (Funbox.funboxSaved === "layoutfluid") {
+      content += " " + Config.customLayoutfluid.replace(/#/g, " ");
+    }
+    ChartController.result.options.annotation.annotations.push({
+      enabled: false,
+      type: "line",
+      mode: "horizontal",
+      scaleID: "wpm",
+      value: 0,
+      borderColor: "transparent",
+      borderWidth: 1,
+      borderDash: [2, 2],
+      label: {
+        backgroundColor: "transparent",
+        fontFamily: Config.fontFamily.replace(/_/g, " "),
+        fontSize: 11,
+        fontStyle: "normal",
+        fontColor: ThemeColors.sub,
+        xPadding: 6,
+        yPadding: 6,
+        cornerRadius: 3,
+        position: "left",
+        enabled: true,
+        content: `${content}`,
+        yAdjust: -11,
+      },
+    });
+  }
+
   ChartController.result.options.scales.yAxes[0].ticks.max = maxChartVal;
   ChartController.result.options.scales.yAxes[1].ticks.max = maxChartVal;
 
@@ -1725,6 +1842,7 @@ export function finish(difficultyFailed = false) {
     if (Config.alwaysShowWordsHistory) {
       TestUI.toggleResultWords();
     }
+    $("#testModesNotice").addClass("hidden");
   });
 }
 
@@ -1732,7 +1850,6 @@ export function fail() {
   input.pushHistory();
   corrected.pushHistory();
   TestStats.pushKeypressesToHistory();
-  TestStats.setLastSecondNotRound();
   finish(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());
   let afkseconds = TestStats.calculateAfkSeconds();

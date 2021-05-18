@@ -33,12 +33,12 @@ function hide() {
 
 async function filter(language) {
   let filterin = $("#wordFilterPopup .wordIncludeInput").val();
-  filterin = filterin.trim();
-  filterin = filterin.replace(/ /gi, "|");
+  filterin = Misc.escapeRegExp(filterin.trim());
+  filterin = filterin.replace(/\s+/gi, "|");
   let regincl = new RegExp(filterin, "i");
   let filterout = $("#wordFilterPopup .wordExcludeInput").val();
-  filterout = filterout.trim();
-  filterout = filterout.replace(/ /gi, "|");
+  filterout = Misc.escapeRegExp(filterout.trim());
+  filterout = filterout.replace(/\s+/gi, "|");
   let regexcl = new RegExp(filterout, "i");
   let filteredWords = [];
   let languageWordList = await Misc.getLanguage(language);
@@ -65,15 +65,15 @@ async function filter(language) {
   return filteredWords;
 }
 
-async function apply() {
+async function apply(set) {
   let language = $("#wordFilterPopup .languageInput").val();
   let filteredWords = await filter(language);
-  let customText = "";
-  filteredWords.forEach((word) => {
-    customText += word + " ";
-  });
+  let customText = filteredWords.join(" ");
+
+  $("#customTextPopup textarea").val(
+    (index, val) => (set ? "" : val + " ") + customText
+  );
   hide();
-  $("#customTextPopup textarea").val(customText);
 }
 
 $("#wordFilterPopupWrapper").mousedown((e) => {
@@ -90,8 +90,9 @@ $("#wordFilterPopupWrapper .button").mousedown((e) => {
   $("#wordFilterPopupWrapper .loadingIndicator").removeClass("hidden");
   $("#wordFilterPopupWrapper .button").addClass("hidden");
   setTimeout(() => {
-    apply();
-    $("#wordFilterPopupWrapper .loadingIndicator").addClass("hidden");
-    $("#wordFilterPopupWrapper .button").removeClass("hidden");
+    apply($(e.target).is("#set")).then(() => {
+      $("#wordFilterPopupWrapper .loadingIndicator").addClass("hidden");
+      $("#wordFilterPopupWrapper .button").removeClass("hidden");
+    });
   }, 1);
 });

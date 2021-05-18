@@ -10,8 +10,10 @@ import * as Loader from "./loader";
 import * as CloudFunctions from "./cloud-functions";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
+import * as PresetController from "./preset-controller";
 import * as SimplePopups from "./simple-popups";
 import * as EditTagsPopup from "./edit-tags-popup";
+import * as EditPresetPopup from "./edit-preset-popup";
 import * as ThemePicker from "./theme-picker";
 
 export let groups = {};
@@ -51,9 +53,11 @@ async function initGroups() {
       if (Config.keymapMode === "off") {
         $(".pageSettings .section.keymapStyle").addClass("hidden");
         $(".pageSettings .section.keymapLayout").addClass("hidden");
+        $(".pageSettings .section.keymapLegendStyle").addClass("hidden");
       } else {
         $(".pageSettings .section.keymapStyle").removeClass("hidden");
         $(".pageSettings .section.keymapLayout").removeClass("hidden");
+        $(".pageSettings .section.keymapLegendStyle").removeClass("hidden");
       }
     }
   );
@@ -64,6 +68,10 @@ async function initGroups() {
   groups.keymapLayout = new SettingsGroup(
     "keymapLayout",
     UpdateConfig.setKeymapLayout
+  );
+  groups.keymapLegendStyle = new SettingsGroup(
+    "keymapLegendStyle",
+    UpdateConfig.setKeymapLegendStyle
   );
   groups.showKeyTips = new SettingsGroup(
     "showKeyTips",
@@ -185,6 +193,10 @@ async function initGroups() {
       }
     }
   );
+  groups.repeatedPace = new SettingsGroup(
+    "repeatedPace",
+    UpdateConfig.setRepeatedPace
+  );
   groups.minWpm = new SettingsGroup("minWpm", UpdateConfig.setMinWpm, () => {
     if (Config.minWpm === "custom") {
       $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
@@ -213,7 +225,7 @@ async function initGroups() {
     "capsLockBackspace",
     UpdateConfig.setCapsLockBackspace
   );
-  groups.layout = new SettingsGroup("layout", UpdateConfig.setSavedLayout);
+  groups.layout = new SettingsGroup("layout", UpdateConfig.setLayout);
   groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
   groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);
   groups.pageWidth = new SettingsGroup("pageWidth", UpdateConfig.setPageWidth);
@@ -267,6 +279,14 @@ async function initGroups() {
     "alwaysShowCPM",
     UpdateConfig.setAlwaysShowCPM
   );
+  groups.customBackgroundSize = new SettingsGroup(
+    "customBackgroundSize",
+    UpdateConfig.setCustomBackgroundSize
+  );
+  // groups.customLayoutfluid = new SettingsGroup(
+  //   "customLayoutfluid",
+  //   UpdateConfig.setCustomLayoutfluid
+  // );
 }
 
 async function fillSettingsPage() {
@@ -369,6 +389,14 @@ async function fillSettingsPage() {
       })
       .appendTo(fontsEl);
   });
+
+  $(".pageSettings .section.customBackgroundSize input").val(
+    Config.customBackground
+  );
+
+  $(".pageSettings .section.customLayoutfluid input").val(
+    Config.customLayoutfluid.replace(/#/g, " ")
+  );
 }
 
 export let settingsFillPromise = fillSettingsPage();
@@ -432,35 +460,18 @@ function refreshTagsSettingsSection() {
       if (tag.pb != undefined && tag.pb > 0) {
         tagPbString = `PB: ${tag.pb}`;
       }
-      if (tag.active === true) {
-        tagsEl.append(`
+      tagsEl.append(`
+        <div class="tag" id="${tag.id}">
+            <div class="active" active="${tag.active}">
+                <i class="fas fa-${tag.active ? "check-" : ""}square"></i>
+            </div>
+            <div class="title">${tag.name}</div>
+            <div class="editButton"><i class="fas fa-pen"></i></div>
+            <div class="clearPbButton hidden" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
+            <div class="removeButton"><i class="fas fa-trash"></i></div>
+        </div>
 
-              <div class="tag" id="${tag.id}">
-                  <div class="active" active="true">
-                      <i class="fas fa-check-square"></i>
-                  </div>
-                  <div class="title">${tag.name}</div>
-                  <div class="editButton"><i class="fas fa-pen"></i></div>
-                  <div class="clearPbButton hidden" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
-                  <div class="removeButton"><i class="fas fa-trash"></i></div>
-              </div>
-
-            `);
-      } else {
-        tagsEl.append(`
-
-              <div class="tag" id="${tag.id}">
-                  <div class="active" active="false">
-                      <i class="fas fa-square"></i>
-                  </div>
-                  <div class="title">${tag.name}</div>
-                  <div class="editButton"><i class="fas fa-pen"></i></div>
-                  <div class="clearPbButton hidden" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
-                  <div class="removeButton"><i class="fas fa-trash"></i></div>
-              </div>
-
-            `);
-      }
+      `);
     });
     $(".pageSettings .section.tags").removeClass("hidden");
   } else {
@@ -468,10 +479,36 @@ function refreshTagsSettingsSection() {
   }
 }
 
+function refreshPresetsSettingsSection() {
+  if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
+    let presetsEl = $(".pageSettings .section.presets .presetsList").empty();
+    DB.getSnapshot().presets.forEach((preset) => {
+      presetsEl.append(`
+      <div class="buttons preset" id="${preset.id}">
+        <div class="button presetButton">
+          <div class="title">${preset.name}</div>
+        </div>
+        <div class="editButton button">
+          <i class="fas fa-pen"></i>
+        </div>
+        <div class="removeButton button">
+          <i class="fas fa-trash"></i>
+        </div>
+      </div>
+
+      `);
+    });
+    $(".pageSettings .section.presets").removeClass("hidden");
+  } else {
+    $(".pageSettings .section.presets").addClass("hidden");
+  }
+}
+
 export function showAccountSection() {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
   $(`.settingsGroup.account`).removeClass("hidden");
   refreshTagsSettingsSection();
+  refreshPresetsSettingsSection();
   updateDiscordSection();
 }
 
@@ -481,6 +518,7 @@ export function update() {
   });
 
   refreshTagsSettingsSection();
+  refreshPresetsSettingsSection();
   LanguagePicker.setActiveGroup();
   setActiveFunboxButton();
   ThemePicker.updateActiveTab();
@@ -521,6 +559,46 @@ export function update() {
     );
   } else {
     $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
+  }
+}
+
+function toggleSettingsGroup(groupName) {
+  $(`.pageSettings .settingsGroup.${groupName}`)
+    .stop(true, true)
+    .slideToggle(250)
+    .toggleClass("slideup");
+  if ($(`.pageSettings .settingsGroup.${groupName}`).hasClass("slideup")) {
+    $(`.pageSettings .sectionGroupTitle[group=${groupName}] .fas`)
+      .stop(true, true)
+      .animate(
+        {
+          deg: -90,
+        },
+        {
+          duration: 250,
+          step: function (now) {
+            $(this).css({
+              transform: "rotate(" + now + "deg)",
+            });
+          },
+        }
+      );
+  } else {
+    $(`.pageSettings .sectionGroupTitle[group=${groupName}] .fas`)
+      .stop(true, true)
+      .animate(
+        {
+          deg: 0,
+        },
+        {
+          duration: 250,
+          step: function (now) {
+            $(this).css({
+              transform: "rotate(" + now + "deg)",
+            });
+          },
+        }
+      );
   }
 }
 
@@ -570,7 +648,9 @@ $(
   ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
 ).click((e) => {
   Loader.show();
-  CloudFunctions.generatePairingCode({ uid: firebase.auth().currentUser.uid })
+  CloudFunctions.generatePairingCode({
+    uid: firebase.auth().currentUser.uid,
+  })
     .then((ret) => {
       Loader.hide();
       if (ret.data.status === 1 || ret.data.status === 2) {
@@ -638,6 +718,37 @@ $(document).on("click", ".pageSettings .section.tags .addTagButton", (e) => {
 
 $(document).on(
   "click",
+  ".pageSettings .section.presets .addPresetButton",
+  (e) => {
+    EditPresetPopup.show("add");
+  }
+);
+
+$(document).on("click", ".pageSettings .section.presets .editButton", (e) => {
+  let presetid = $(e.currentTarget).parent(".preset").attr("id");
+  let name = $(e.currentTarget).siblings(".button").children(".title").text();
+  EditPresetPopup.show("edit", presetid, name);
+});
+
+$(document).on("click", ".pageSettings .section.presets .removeButton", (e) => {
+  let presetid = $(e.currentTarget).parent(".preset").attr("id");
+  let name = $(e.currentTarget).siblings(".button").children(".title").text();
+  EditPresetPopup.show("remove", presetid, name);
+});
+
+$(document).on(
+  "click",
+  ".pageSettings .section.presets .presetsList .preset .presetButton",
+  (e) => {
+    let target = e.currentTarget;
+    let presetid = $(target).parent(".preset").attr("id");
+    console.log("Applying Preset");
+    PresetController.apply(presetid);
+  }
+);
+
+$(document).on(
+  "click",
   ".pageSettings .section.tags .tagsList .tag .clearPbButton",
   (e) => {
     let target = e.currentTarget;
@@ -692,38 +803,65 @@ $("#exportSettingsButton").click((e) => {
 });
 
 $(".pageSettings .sectionGroupTitle").click((e) => {
-  let group = $(e.currentTarget).attr("group");
-  $(`.pageSettings .settingsGroup.${group}`)
-    .stop(true, true)
-    .slideToggle(250)
-    .toggleClass("slideup");
-  if ($(`.pageSettings .settingsGroup.${group}`).hasClass("slideup")) {
-    $(`.pageSettings .sectionGroupTitle[group=${group}] .fas`)
-      .stop(true, true)
-      .animate(
-        {
-          deg: -90,
-        },
-        {
-          duration: 250,
-          step: function (now) {
-            $(this).css({ transform: "rotate(" + now + "deg)" });
-          },
-        }
-      );
-  } else {
-    $(`.pageSettings .sectionGroupTitle[group=${group}] .fas`)
-      .stop(true, true)
-      .animate(
-        {
-          deg: 0,
-        },
-        {
-          duration: 250,
-          step: function (now) {
-            $(this).css({ transform: "rotate(" + now + "deg)" });
-          },
-        }
-      );
+  toggleSettingsGroup($(e.currentTarget).attr("group"));
+});
+
+$(".pageSettings #resetPersonalBestsButton").on("click", (e) => {
+  SimplePopups.list.resetPersonalBests.show();
+});
+
+$(".pageSettings #updateAccountEmail").on("click", (e) => {
+  SimplePopups.list.updateEmail.show();
+});
+
+$(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
+  "click",
+  (e) => {
+    UpdateConfig.setCustomBackground(
+      $(
+        ".pageSettings .section.customBackgroundSize .inputAndButton input"
+      ).val()
+    );
   }
+);
+
+$(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
+  (e) => {
+    if (e.keyCode == 13) {
+      UpdateConfig.setCustomBackground(
+        $(
+          ".pageSettings .section.customBackgroundSize .inputAndButton input"
+        ).val()
+      );
+    }
+  }
+);
+
+$(".pageSettings .section.customLayoutfluid .inputAndSave .save").on(
+  "click",
+  (e) => {
+    UpdateConfig.setCustomLayoutfluid(
+      $(".pageSettings .section.customLayoutfluid .inputAndSave input").val()
+    );
+    Notifications.add("Custom layoutfluid saved", 1);
+  }
+);
+
+$(".pageSettings .section.customLayoutfluid .inputAndSave .input").keypress(
+  (e) => {
+    if (e.keyCode == 13) {
+      UpdateConfig.setCustomLayoutfluid(
+        $(".pageSettings .section.customLayoutfluid .inputAndSave input").val()
+      );
+      Notifications.add("Custom layoutfluid saved", 1);
+    }
+  }
+);
+
+$(".quickNav .links a").on("click", (e) => {
+  const settingsGroup = e.target.innerText;
+  const isOpen = $(`.pageSettings .settingsGroup.${settingsGroup}`).hasClass(
+    "slideup"
+  );
+  isOpen && toggleSettingsGroup(settingsGroup);
 });

@@ -12,6 +12,24 @@ export let modeSaved = null;
 let memoryTimer = null;
 let memoryInterval = null;
 
+let settingsMemory = {};
+
+function rememberSetting(settingName, value, setFunction) {
+  settingsMemory[settingName] ??= {
+    value,
+    setFunction,
+  };
+}
+
+function loadMemory() {
+  Notifications.add("Reverting funbox settings", 0);
+  Object.keys(settingsMemory).forEach((setting) => {
+    setting = settingsMemory[setting];
+    setting.setFunction(setting.value, true);
+  });
+  settingsMemory = {};
+}
+
 function showMemoryTimer() {
   $("#typingTest #memoryTimer").stop(true, true).animate(
     {
@@ -112,6 +130,11 @@ export async function activate(funbox, mode) {
     }
 
     if (funbox === "simon_says") {
+      rememberSetting(
+        "keymapMode",
+        Config.keymapMode,
+        UpdateConfig.setKeymapMode
+      );
       UpdateConfig.setKeymapMode("next");
       Settings.groups.keymapMode.updateButton();
       TestLogic.restart();
@@ -122,45 +145,90 @@ export async function activate(funbox, mode) {
       funbox === "read_ahead_easy" ||
       funbox === "read_ahead_hard"
     ) {
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
       UpdateConfig.setHighlightMode("letter", true);
       TestLogic.restart();
     }
   } else if (mode === "script") {
     if (funbox === "tts") {
       $("#funBoxTheme").attr("href", `funbox/simon_says.css`);
+      rememberSetting(
+        "keymapMode",
+        Config.keymapMode,
+        UpdateConfig.setKeymapMode
+      );
       UpdateConfig.setKeymapMode("off");
       Settings.groups.keymapMode.updateButton();
       TestLogic.restart();
     } else if (funbox === "layoutfluid") {
+      rememberSetting(
+        "keymapMode",
+        Config.keymapMode,
+        UpdateConfig.setKeymapMode
+      );
       UpdateConfig.setKeymapMode("next");
       Settings.groups.keymapMode.updateButton();
-      UpdateConfig.setSavedLayout(Config.layout);
-      UpdateConfig.setLayout("qwerty");
+      // UpdateConfig.setSavedLayout(Config.layout);
+      rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
+      UpdateConfig.setLayout(
+        Config.customLayoutfluid
+          ? Config.customLayoutfluid.split("#")[0]
+          : "qwerty"
+      );
       Settings.groups.layout.updateButton();
-      UpdateConfig.setKeymapLayout("qwerty");
+      rememberSetting(
+        "keymapLayout",
+        Config.keymapLayout,
+        UpdateConfig.setKeymapLayout
+      );
+      UpdateConfig.setKeymapLayout(
+        Config.customLayoutfluid
+          ? Config.customLayoutfluid.split("#")[0]
+          : "qwerty"
+      );
       Settings.groups.keymapLayout.updateButton();
       TestLogic.restart();
     } else if (funbox === "memory") {
+      rememberSetting("mode", Config.mode, UpdateConfig.setMode);
       UpdateConfig.setMode("words");
+      rememberSetting(
+        "showAllLines",
+        Config.showAllLines,
+        UpdateConfig.setShowAllLines
+      );
       UpdateConfig.setShowAllLines(true, true);
       TestLogic.restart(false, true);
       if (Config.keymapMode === "next") {
+        rememberSetting(
+          "keymapMode",
+          Config.keymapMode,
+          UpdateConfig.setKeymapMode
+        );
         UpdateConfig.setKeymapMode("react");
       }
     } else if (funbox === "nospace") {
       $("#words").addClass("nospace");
+      rememberSetting(
+        "highlightMode",
+        Config.highlightMode,
+        UpdateConfig.setHighlightMode
+      );
       UpdateConfig.setHighlightMode("letter", true);
       TestLogic.restart(false, true);
     }
     active = funbox;
   }
 
-  if (funbox !== "layoutfluid" || mode !== "script") {
-    if (Config.layout !== Config.savedLayout) {
-      UpdateConfig.setLayout(Config.savedLayout);
-      Settings.groups.layout.updateButton();
-    }
-  }
+  // if (funbox !== "layoutfluid" || mode !== "script") {
+  //   if (Config.layout !== Config.savedLayout) {
+  //     UpdateConfig.setLayout(Config.savedLayout);
+  //     Settings.groups.layout.updateButton();
+  //   }
+  // }
   TestUI.updateModesNotice();
   return true;
 }
@@ -172,6 +240,7 @@ export function setFunbox(funbox, mode) {
     );
     return false;
   }
+  if (funbox === "none") loadMemory();
   funboxSaved = funbox;
   modeSaved = mode;
   active = funbox;

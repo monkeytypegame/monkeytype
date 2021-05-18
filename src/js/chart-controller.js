@@ -2,6 +2,7 @@ import Chart from "chart.js";
 import * as TestStats from "./test-stats";
 import * as ThemeColors from "./theme-colors";
 import * as Misc from "./misc";
+import * as Account from "./account";
 
 export let result = new Chart($("#wpmChart"), {
   type: "line",
@@ -67,7 +68,13 @@ export let result = new Chart($("#wpmChart"), {
               let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
               let input = wordEl.attr("input");
               if (input != undefined)
-                wordEl.append(`<div class="wordInputAfter">${input}</div>`);
+                wordEl.append(
+                  `<div class="wordInputAfter">${input
+                    .replace(/\t/g, "_")
+                    .replace(/\n/g, "_")
+                    .replace(/</g, "&lt")
+                    .replace(/>/g, "&gt")}</div>`
+                );
             });
           } catch {}
         },
@@ -241,7 +248,8 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
         label: function () {
           return;
         },
-        afterLabel: function () {
+        afterLabel: function (tooltip, data) {
+          Account.setActiveChartIndex(tooltip.index);
           return;
         },
       },
@@ -664,8 +672,8 @@ export function updateColors(chart) {
   } catch {}
 
   try {
-    chart.options.scales.yAxes[2].ticks.minor.fontColor = ThemeColors.sub;
-    chart.options.scales.yAxes[2].scaleLabel.fontColor = ThemeColors.sub;
+    chart.options.scales.yAxes[1].ticks.minor.fontColor = ThemeColors.sub;
+    chart.options.scales.yAxes[1].scaleLabel.fontColor = ThemeColors.sub;
   } catch {}
 
   try {

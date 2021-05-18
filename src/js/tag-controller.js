@@ -1,8 +1,7 @@
 import * as DB from "./db";
 import * as TestUI from "./test-ui";
-import * as Misc from "./misc";
 
-export function saveActiveToCookie() {
+export function saveActiveToLocalStorage() {
   let tags = [];
 
   try {
@@ -18,7 +17,7 @@ export function saveActiveToCookie() {
     //   expires: d,
     //   path: "/",
     // });
-    Misc.setCookie("activeTags", JSON.stringify(tags), 365);
+    window.localStorage.setItem("activeTags", JSON.stringify(tags));
   } catch (e) {}
 }
 
@@ -33,13 +32,13 @@ export function toggle(tagid, nosave = false) {
     }
   });
   TestUI.updateModesNotice();
-  if (!nosave) saveActiveToCookie();
+  if (!nosave) saveActiveToLocalStorage();
 }
 
-export function loadActiveFromCookie() {
+export function loadActiveFromLocalStorage() {
   // let newTags = $.cookie("activeTags");
-  let newTags = Misc.getCookie("activeTags");
-  if (newTags !== undefined && newTags !== "") {
+  let newTags = window.localStorage.getItem("activeTags");
+  if (newTags != undefined && newTags !== "") {
     try {
       newTags = JSON.parse(newTags);
     } catch (e) {
@@ -48,6 +47,6 @@ export function loadActiveFromCookie() {
     newTags.forEach((ntag) => {
       toggle(ntag, true);
     });
-    saveActiveToCookie();
+    saveActiveToLocalStorage();
   }
 }

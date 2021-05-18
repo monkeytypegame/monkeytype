@@ -1,10 +1,22 @@
 {
   "language": "german",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -708,6 +720,72 @@
       "source": "Harry Potter und der Stein der Weisen",
       "length": 571,
       "id": 117
+    },
+    {
+      "text": "Und wenn mich einer fragt, wie denn das mit den Schulden ist, dann sag' ich ihm das, was ich immer wieder sage: dass mir ein paar Milliarden mehr Schulden weniger schlaflose Nächte bereiten, als mir ein paar hunderttausend Arbeitslose mehr bereiten würden.",
+      "source": "Dr. Bruno Kreisky",
+      "length": 256,
+      "id": 118
+    },
+    {
+      "text": "Gegen die Krankheit des Schreibens muß man besondere Vorkehrungen treffen, denn sie ist eine gefährliche und ansteckende Krankheit.",
+      "source": "Peter Abaelard",
+      "length": 131,
+      "id": 119
+    },
+    {
+      "text": "Die Einheit Europas war ein Traum von wenigen. Sie wurde die Hoffnung für viele. Sie ist heute die Notwendigkeit für alle.",
+      "source": "Konrad Adenauer",
+      "length": 122,
+      "id": 120
+    },
+    {
+      "text": "Hass ist ein Unkraut, das tief wurzelt, ein Unkraut, das nicht ausgerissen werden kann. Es muss langsam verdorren dadurch, dass man ihm keinen Dünger mehr gibt. Der Boden, in dem es wuchert, wird dann langsam verarmen, und das Unkraut selbst wird absterben.",
+      "source": "Robert August Bosch",
+      "length": 257,
+      "id": 121
+    },
+    {
+      "text": "Es ist eine gefährliche Sache, Frodo, aus deiner Tür hinauszugehen. Du betrittst die Straße, und wenn du nicht auf deine Füße aufpasst, kann man nicht wissen, wohin sie dich tragen.",
+      "source": "Derr Herr der Ringe",
+      "length": 181,
+      "id": 122
+    },
+    {
+      "text": "Ich bin ein Diener des geheimen Feuers, Gebieter über die Flamme von Anor. Das dunkle Feuer wird dir nichts nützen, Flamme von Udun. Zurück zu den Schatten! Du kannst nicht vorbei!",
+      "source": "Der Herr der Ringe",
+      "length": 180,
+      "id": 123
+    },
+    {
+      "text": "Mir ist ein schöner Schluss für mein Buch eingefallen: Und so lebte er vergnügt bis ans Ende seiner Tage.",
+      "source": "Der Herr der Ringe",
+      "length": 105,
+      "id": 124
+    },
+    {
+      "text": "Ich kenne die Hälfte von euch nicht halb so gut, wie ich es gern möchte, und ich mag weniger als die Hälfte von euch auch nur halb so gern, wie ihr es verdient.",
+      "source": "Der Herr der Ringe",
+      "length": 160,
+      "id": 125
+    },
+    {
+      "text": "Viele, die leben verdienen den Tod. Und manche, die sterben, verdienen das Leben. Kannst du es ihnen geben? Dann sei auch nicht so rasch mit einem Todesurteil bei der Hand.",
+      "source": "Der Herr der Ringe",
+      "length": 172,
+      "id": 126
+    },
+    {
+      "text": "Das ist wie in den großen Geschichten, Herr Frodo, in denen, die wirklich wichtig waren. Voller Dunkelheit und Gefahren waren sie. Und manchmal wollte man das Ende gar nicht wissen, denn wie könnte so eine Geschichte gut ausgehen? Wie könnte die Welt wieder so wie vorher werden, wenn so viel Schlimmes passiert ist? Aber letzten Endes geht auch er vorüber, dieser Schatten. Selbst die Dunkelheit muss weichen. Ein neuer Tag wird kommen und wenn die Sonne scheint, wird sie umso heller scheinen. Das waren die Geschichten, die einem im Gedächtnis bleiben, selbst, wenn man noch zu klein war, um sie zu verstehen. Aber ich glaube, Herr Frodo, ich versteh' jetzt. Ich weiß jetzt: Die Leute in diesen Geschichten hatten stets die Gelegenheit umzukehren, nur taten sie's nicht. Sie gingen weiter, weil sie an irgendetwas geglaubt haben! Es gibt etwas Gutes in dieser Welt, Herr Frodo und dafür lohnt es sich zu kämpfen.",
+      "source": "Der Herr der Ringe",
+      "length": 915,
+      "id": 127
+    },
+    {
+      "text": "Die Macht ist keine Fähigkeit, die man besitzt. Es geht nicht darum, Steine hochzuheben. Es ist ein Energiefeld zwischen allen Dingen - eine Spannung, oder ein Gleichgewicht, dass die Galaxis zusammenhält.",
+      "source": "Star Wars Episode 8 – Die letzten Jedi",
+      "length": 205,
+      "id": 128
     }
   ]
 }

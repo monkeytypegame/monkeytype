@@ -13,8 +13,10 @@ import * as TestUI from "./test-ui";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
+import * as PresetController from "./preset-controller";
 import * as Commandline from "./commandline";
 import * as CustomText from "./custom-text";
+import * as Settings from "./settings";
 
 export let current = [];
 
@@ -22,14 +24,14 @@ function canBailOut() {
   return (
     (Config.mode === "custom" &&
       CustomText.isWordRandom &&
-      CustomText.word >= 5000) ||
+      (CustomText.word >= 5000 || CustomText.word == 0)) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
       !CustomText.isTimeRandom &&
       CustomText.text.length >= 5000) ||
     (Config.mode === "custom" &&
       CustomText.isTimeRandom &&
-      CustomText.time >= 3600) ||
+      (CustomText.time >= 3600 || CustomText.time == 0)) ||
     (Config.mode === "words" && Config.words >= 5000) ||
     Config.words === 0 ||
     (Config.mode === "time" && (Config.time >= 3600 || Config.time === 0)) ||
@@ -54,7 +56,8 @@ if (Object.keys(layouts).length > 0) {
       id: "changeLayout" + Misc.capitalizeFirstLetter(layout),
       display: layout.replace(/_/g, " "),
       exec: () => {
-        UpdateConfig.setSavedLayout(layout);
+        // UpdateConfig.setSavedLayout(layout);
+        UpdateConfig.setLayout(layout);
         TestLogic.restart();
       },
     });
@@ -197,7 +200,7 @@ export function updateTagCommands() {
           tag.active = false;
         });
         TestUI.updateModesNotice();
-        TagController.saveActiveToCookie();
+        TagController.saveActiveToLocalStorage();
       },
     });
 
@@ -237,6 +240,30 @@ export function updateTagCommands() {
       });
     });
     // defaultCommands.list[4].visible = true;
+  }
+}
+
+let commandsPresets = {
+  title: "Apply preset...",
+  list: [],
+};
+
+export function updatePresetCommands() {
+  if (DB.getSnapshot().presets.length > 0) {
+    commandsPresets.list = [];
+
+    DB.getSnapshot().presets.forEach((preset) => {
+      let dis = preset.name;
+
+      commandsPresets.list.push({
+        id: "applyPreset" + preset.id,
+        display: dis,
+        exec: () => {
+          PresetController.apply(preset.id);
+          TestUI.updateModesNotice();
+        },
+      });
+    });
   }
 }
 
@@ -383,6 +410,20 @@ let commandsRandomTheme = {
         UpdateConfig.setRandomTheme("fav");
       },
     },
+    {
+      id: "setRandomLight",
+      display: "light",
+      exec: () => {
+        UpdateConfig.setRandomTheme("light");
+      },
+    },
+    {
+      id: "setRandomDark",
+      display: "dark",
+      exec: () => {
+        UpdateConfig.setRandomTheme("dark");
+      },
+    },
   ],
 };
 
@@ -489,19 +530,20 @@ let commandsCaretStyle = {
         UpdateConfig.setCaretStyle("carrot");
       },
     },
+    {
+      id: "setCaretStyleBanana",
+      display: "banana",
+      visible: false,
+      exec: () => {
+        UpdateConfig.setCaretStyle("banana");
+      },
+    },
   ],
 };
 
 let commandsPaceCaretStyle = {
   title: "Change pace caret style...",
   list: [
-    {
-      id: "setPaceCaretStyleOff",
-      display: "off",
-      exec: () => {
-        UpdateConfig.setPaceCaretStyle("off");
-      },
-    },
     {
       id: "setPaceCaretStyleDefault",
       display: "line",
@@ -528,6 +570,22 @@ let commandsPaceCaretStyle = {
       display: "underline",
       exec: () => {
         UpdateConfig.setPaceCaretStyle("underline");
+      },
+    },
+    {
+      id: "setPaceCaretStyleCarrot",
+      display: "carrot",
+      visible: false,
+      exec: () => {
+        UpdateConfig.setPaceCaretStyle("carrot");
+      },
+    },
+    {
+      id: "setPaceCaretStyleBanana",
+      display: "banana",
+      visible: false,
+      exec: () => {
+        UpdateConfig.setPaceCaretStyle("banana");
       },
     },
   ],
@@ -568,6 +626,7 @@ let commandsPaceCaret = {
     },
   ],
 };
+
 
 let commandsMinWpm = {
   title: "Change min wpm mode...",
@@ -647,9 +706,43 @@ let commandsKeymapStyle = {
   ],
 };
 
+let commandsKeymapLegendStyle = {
+  title: "Change keymap legend style...",
+  list: [
+    {
+      id: "setKeymapLegendStyleLowercase",
+      display: "lowercase",
+      exec: () => {
+        UpdateConfig.setKeymapLegendStyle("lowercase");
+      },
+    },
+    {
+      id: "setKeymapLegendStyleUppercase",
+      display: "uppercase",
+      exec: () => {
+        UpdateConfig.setKeymapLegendStyle("uppercase");
+      },
+    },
+    {
+      id: "setKeymapLegendStyleBlank",
+      display: "blank",
+      exec: () => {
+        UpdateConfig.setKeymapLegendStyle("blank");
+      },
+    },
+  ],
+};
+
 let commandsHighlightMode = {
   title: "Change highlight mode...",
   list: [
+    {
+      id: "setHighlightModeOff",
+      display: "off",
+      exec: () => {
+        UpdateConfig.setHighlightMode("off");
+      },
+    },
     {
       id: "setHighlightModeLetter",
       display: "letter",
@@ -1262,6 +1355,17 @@ export let defaultCommands = {
       },
     },
     {
+      visible: false,
+      id: "applyPreset",
+      display: "Apply preset...",
+      subgroup: true,
+      exec: () => {
+        updatePresetCommands();
+        current.push(commandsPresets);
+        Commandline.show();
+      },
+    },
+    {
       id: "changeConfidenceMode",
       display: "Change confidence mode...",
       subgroup: true,
@@ -1561,6 +1665,13 @@ export let defaultCommands = {
       },
     },
     {
+      id: "toggleRepeatedPace",
+      display: "Toggle repeated pace",
+      exec: () => {
+        UpdateConfig.toggleRepeatedPace();
+      },
+    },
+    {
       id: "changeTimerStyle",
       display: "Change timer/progress style...",
       subgroup: true,
@@ -1594,6 +1705,15 @@ export let defaultCommands = {
       exec: () => {
         current.push(commandsHighlightMode);
         Commandline.show();
+      },
+    },
+    {
+      id: "changeCustomBackground",
+      display: "Change custom background...",
+      defaultValue: "",
+      input: true,
+      exec: (input) => {
+        UpdateConfig.setCustomBackground(input);
       },
     },
     {
@@ -1670,6 +1790,16 @@ export let defaultCommands = {
       },
     },
     {
+      id: "changeKeymapLegendStyle",
+      display: "Change keymap legend style...",
+      alias: "keyboard",
+      subgroup: true,
+      exec: () => {
+        current.push(commandsKeymapLegendStyle);
+        Commandline.show();
+      },
+    },
+    {
       id: "changeKeymapLayout",
       display: "Change keymap layout...",
       alias: "keyboard",
@@ -1677,6 +1807,26 @@ export let defaultCommands = {
       exec: () => {
         current.push(commandsKeymapLayouts);
         Commandline.show();
+      },
+    },
+    {
+      id: "changeCustomLayoutfluid",
+      display: "Change custom layoutfluid...",
+      defaultValue: "qwerty dvorak colemak",
+      input: true,
+      exec: (input) => {
+        UpdateConfig.setCustomLayoutfluid(input);
+        if (Funbox.active === "layoutfluid") TestLogic.restart();
+        // UpdateConfig.setLayout(
+        //   Config.customLayoutfluid
+        //     ? Config.customLayoutfluid.split("_")[0]
+        //     : "qwerty"
+        // );
+        // UpdateConfig.setKeymapLayout(
+        //   Config.customLayoutfluid
+        //     ? Config.customLayoutfluid.split("_")[0]
+        //     : "qwerty"
+        // );
       },
     },
     {
@@ -1707,9 +1857,9 @@ export let defaultCommands = {
       },
     },
     {
-      id: "randomiseTheme",
+      id: "randomizeTheme",
       display: "Next random theme",
-      exec: () => ThemeController.randomiseTheme(),
+      exec: () => ThemeController.randomizeTheme(),
     },
     {
       id: "viewTypingPage",
@@ -1760,9 +1910,7 @@ export let defaultCommands = {
             {
               id: "bailOutNo",
               display: "Nevermind",
-              exec: () => {
-                Commandline.hide();
-              },
+              exec: () => {},
               available: () => {
                 return canBailOut();
               },
@@ -1860,6 +2008,32 @@ export let defaultCommands = {
       exec: () => {
         current.push(commandsCopyWordsToClipboard);
         Commandline.show();
+      },
+    },
+    {
+      id: "importSettingsJSON",
+      display: "Import settings JSON",
+      input: true,
+      exec: (input) => {
+        try {
+          UpdateConfig.apply(JSON.parse(input));
+          UpdateConfig.saveToLocalStorage();
+          Settings.update();
+          Notifications.add("Done",1);
+        } catch (e) {
+          Notifications.add(
+            "An error occured while importing settings: " + e,
+            -1
+          );
+        }
+      },
+    },
+    {
+      id: "exportSettingsJSON",
+      display: "Export settings JSON",
+      input: true,
+      defaultValue:"",
+      exec: (input) => {
       },
     },
   ],

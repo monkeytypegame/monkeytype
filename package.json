@@ -45,6 +45,8 @@
     "@babel/runtime": "^7.12.5",
     "chart.js": "^2.9.4",
     "chartjs-plugin-annotation": "^0.5.7",
-    "chartjs-plugin-trendline": "^0.2.2"
+    "chartjs-plugin-trendline": "^0.2.2",
+    "howler": "^2.2.1",
+    "tinycolor2": "^1.4.2"
   }
 }

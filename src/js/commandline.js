@@ -7,15 +7,18 @@ import * as TestUI from "./test-ui";
 
 let commandLineMouseMode = false;
 
-function showInput(command, placeholder) {
+function showInput(command, placeholder, defaultValue = "") {
   $("#commandLineWrapper").removeClass("hidden");
   $("#commandLine").addClass("hidden");
   $("#commandInput").removeClass("hidden");
   $("#commandInput input").attr("placeholder", placeholder);
-  $("#commandInput input").val("");
+  $("#commandInput input").val(defaultValue);
   $("#commandInput input").focus();
   $("#commandInput input").attr("command", "");
   $("#commandInput input").attr("command", command);
+  if (defaultValue != "") {
+    $("#commandInput input").select();
+  }
 }
 
 function showFound() {
@@ -43,7 +46,10 @@ function showFound() {
     try {
       $.each(list.list, (index, obj) => {
         if (obj.found) {
-          if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+          if (
+            (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
+            !ThemeController.randomTheme
+          )
             ThemeController.clearPreview();
           if (!/font/gi.test(obj.id))
             UpdateConfig.previewFontFamily(Config.fontFamily);
@@ -115,7 +121,9 @@ function updateSuggested() {
 function hide() {
   UpdateConfig.previewFontFamily(Config.fontFamily);
   // applyCustomThemeColors();
-  ThemeController.clearPreview();
+  if (!ThemeController.randomTheme) {
+    ThemeController.clearPreview();
+  }
   $("#commandLineWrapper")
     .stop(true, true)
     .css("opacity", 1)
@@ -142,7 +150,7 @@ function trigger(command) {
     if (obj.id == command) {
       if (obj.input) {
         input = true;
-        showInput(obj.id, obj.display);
+        showInput(obj.id, obj.display, obj.defaultValue);
       } else {
         obj.exec();
         if (obj.subgroup !== null && obj.subgroup !== undefined) {
@@ -362,7 +370,10 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
     let list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (index, obj) => {
       if (obj.id == hoverId) {
-        if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+        if (
+          (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
+          !ThemeController.randomTheme
+        )
           ThemeController.clearPreview();
         if (!/font/gi.test(obj.id))
           UpdateConfig.previewFontFamily(Config.fontFamily);
@@ -484,7 +495,10 @@ $(document).keydown((e) => {
           CommandlineLists.current[CommandlineLists.current.length - 1];
         $.each(list.list, (index, obj) => {
           if (obj.id == hoverId) {
-            if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+            if (
+              (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
+              !ThemeController.randomTheme
+            )
               ThemeController.clearPreview();
             if (!/font/gi.test(obj.id))
               UpdateConfig.previewFontFamily(Config.fontFamily);

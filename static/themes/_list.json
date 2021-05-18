@@ -5,6 +5,11 @@
     "textColor": "#eee"
   },
   {
+    "name": "muted",
+    "bgColor": "#525252",
+    "textColor": "#B1E4E3"
+  },
+  {
     "name": "dark_magic_girl",
     "bgColor": "#091f2c",
     "textColor": "#a288d9"
@@ -18,6 +23,11 @@
     "name": "carbon",
     "bgColor": "#313131",
     "textColor": "#ed6b21"
+  },
+  {
+    "name": "our_theme",
+    "bgColor": "#ce1226",
+    "textColor": "#fcd116"
   },
   {
     "name": "dots",
@@ -68,6 +78,11 @@
     "name": "metropolis",
     "bgColor": "#0f1f2c",
     "textColor": "#56c3b7"
+  },
+  {
+    "name": "mountain",
+    "bgColor": "#0f0f0f",
+    "textColor": "#e7e7e7"
   },
   {
     "name": "laser",
@@ -302,7 +317,7 @@
   {
     "name": "luna",
     "bgColor": "#221C35",
-    "textColor": "#88dbdf"
+    "textColor": "#f67599"
   },
   {
     "name": "graen",
@@ -513,5 +528,30 @@
     "name": "grand_prix",
     "bgColor": "#36475c",
     "textColor": "#c0d036"
+  },
+  {
+    "name": "peaches",
+    "bgColor": "#d3cfc6",
+    "textColor": "#dd7a5f"
+  },
+  {
+    "name": "bouquet",
+    "bgColor": "#38564a",
+    "textColor": "#ffbdb2"
+  },
+  {
+    "name": "midnight",
+    "bgColor": "#0c0e12",
+    "textColor": "#525f7a"
+  },
+  {
+    "name": "blueberry_light",
+    "bgColor": "#dae0f5",
+    "textColor": "#df4576"
+  },
+  {
+    "name": "blueberry_dark",
+    "bgColor": "#212b42",
+    "textColor": "#df4576"
   }
 ]

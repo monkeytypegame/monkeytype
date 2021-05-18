@@ -6,7 +6,8 @@ import * as DB from "./db";
 export let settings = null;
 
 function resetCaretPosition() {
-  if (Config.paceCaret === "off") return;
+  if (Config.paceCaret === "off" && !TestLogic.isPaceRepeat)
+    return;
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
   }
@@ -28,6 +29,7 @@ function resetCaretPosition() {
 }
 
 export async function init() {
+  $("#paceCaret").addClass("hidden");
   let mode2 = "";
   if (Config.mode === "time") {
     mode2 = Config.time;
@@ -68,8 +70,9 @@ export async function init() {
     console.log("avg pace " + wpm);
   } else if (Config.paceCaret === "custom") {
     wpm = Config.paceCaretCustomSpeed;
+  } else if (TestLogic.isPaceRepeat == true) {
+    wpm = TestLogic.lastTestWpm;
   }
-
   if (wpm < 1 || wpm == false || wpm == undefined || Number.isNaN(wpm)) {
     settings = null;
     return;
@@ -100,9 +103,6 @@ export function update(expectedStepEnd) {
   }
   if ($("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").removeClass("hidden");
-  }
-  if ($("#paceCaret").hasClass("off")) {
-    return;
   }
   try {
     settings.currentLetterIndex++;

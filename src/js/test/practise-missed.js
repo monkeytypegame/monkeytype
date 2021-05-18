@@ -28,9 +28,9 @@ export function init() {
   });
   CustomText.setText(newCustomText);
   CustomText.setIsWordRandom(true);
-  CustomText.setWord(50);
+  CustomText.setWord(Object.keys(TestStats.missedWords).length * 5);
 
-  TestLogic.restart();
+  TestLogic.restart(false, false, false, true);
   before.mode = mode;
   before.punctuation = punctuation;
   before.numbers = numbers;

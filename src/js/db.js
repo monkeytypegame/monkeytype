@@ -17,8 +17,12 @@ export function getSnapshot() {
 }
 
 export function setSnapshot(newSnapshot) {
-  delete newSnapshot.banned;
-  delete newSnapshot.verified;
+  try {
+    delete newSnapshot.banned;
+  } catch {}
+  try {
+    delete newSnapshot.verified;
+  } catch {}
   dbSnapshot = newSnapshot;
 }
 
@@ -29,6 +33,7 @@ export async function initSnapshot() {
     results: undefined,
     personalBests: {},
     name: undefined,
+    presets: [],
     tags: [],
     favouriteThemes: [],
     refactored: false,
@@ -65,6 +70,29 @@ export async function initSnapshot() {
           snap.tags.push(tag);
         });
         snap.tags = snap.tags.sort((a, b) => {
+          if (a.name > b.name) {
+            return 1;
+          } else if (a.name < b.name) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+      })
+      .catch((e) => {
+        throw e;
+      });
+    await db
+      .collection(`users/${user.uid}/presets/`)
+      .get()
+      .then((data) => {
+        data.docs.forEach((doc) => {
+          // console.log(doc);
+          let preset = doc.data();
+          preset.id = doc.id;
+          snap.presets.push(preset);
+        });
+        snap.presets = snap.presets.sort((a, b) => {
           if (a.name > b.name) {
             return 1;
           } else if (a.name < b.name) {
@@ -115,6 +143,7 @@ export async function initSnapshot() {
       .catch((e) => {
         throw e;
       });
+    // console.log(snap.presets);
     dbSnapshot = snap;
   } catch (e) {
     console.error(e);
@@ -208,23 +237,46 @@ export async function getUserAverageWpm10(
   function cont() {
     let wpmSum = 0;
     let count = 0;
+    let last10Wpm = 0;
+    let last10Count = 0;
     // You have to use every so you can break out of the loop
     dbSnapshot.results.every((result) => {
       if (
         result.mode == mode &&
-        result.mode2 == mode2 &&
         result.punctuation == punctuation &&
         result.language == language &&
         result.difficulty == difficulty
       ) {
-        wpmSum += result.wpm;
-        count++;
-        if (count >= 10) {
-          return false;
+        // Continue if the mode2 doesn't match unless it's a quote.
+        if (result.mode2 != mode2 && mode != "quote") {
+          return true;
+        }
+
+        // Grab the most recent 10 wpm's for the current mode.
+        if (last10Count < 10) {
+          last10Wpm += result.wpm;
+          last10Count++;
+        }
+
+        // Check mode2 matches and append, for quotes this is the quote id.
+        if (result.mode2 == mode2) {
+          wpmSum += result.wpm;
+          count++;
+          if (count >= 10) {
+            // Break out of every loop since we a maximum of the last 10 wpm results.
+            return false;
+          }
         }
       }
       return true;
     });
+
+    // Return the last 10 average wpm for quote if the current quote id has never been completed before by the user.
+    if (count == 0 && mode == "quote") {
+      return Math.round(last10Wpm / last10Count);
+    }
+
+    // Return the average wpm of the last 10 completions for the targeted test mode.
     return Math.round(wpmSum / count);
   }
 
@@ -459,7 +511,7 @@ export async function saveConfig(config) {
       obj: config,
     }).then((d) => {
       AccountButton.loading(false);
-      if (d.data.returnCode !== 1) {
+      if (d.data.resultCode !== 1) {
         Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
       }
       return;

@@ -11,6 +11,8 @@
 :root {
   --roundness: 0.25rem;
   --font: "Roboto Mono";
+  // scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
 }
 
 ::placeholder {
@@ -42,6 +44,22 @@ input {
   font-size: 1rem;
   line-height: 1rem;
   font-family: var(--font);
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  padding: 0;
+  width: 100%;
+  height: 1rem;
+  border-radius: var(--roundness);
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    padding: 0;
+    width: 2rem;
+    height: 1rem;
+    border-radius: var(--roundness);
+    background-color: var(--main-color);
+  }
 }
 
 input[type="color"] {
@@ -107,10 +125,22 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background: var(--bg-color);
   font-family: var(--font);
-  color: var(--main-color);
+  color: var(--text-color);
   overflow-x: hidden;
+  background: var(--bg-color);
+}
+
+.customBackground {
+  content: "";
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: -999;
 }
 
 html {
@@ -126,6 +156,7 @@ html {
 .select2-selection {
   background: rgba(0, 0, 0, 0.1);
   height: fit-content;
+  height: -moz-fit-content;
   padding: 5px;
   border-radius: var(--roundness);
   color: var(--text-color);
@@ -169,6 +200,7 @@ html {
 
 .select2-selection:focus {
   height: fit-content;
+  height: -moz-fit-content;
   padding: 5px;
   border-radius: var(--roundness);
   color: var(--text-color);
@@ -178,6 +210,7 @@ html {
 }
 .select2-selection:active {
   height: fit-content;
+  height: -moz-fit-content;
   padding: 5px;
   border-radius: var(--roundness);
   color: var(--text-color);
@@ -236,7 +269,7 @@ html {
 }
 
 ::-webkit-scrollbar-corner {
-  background: var(--subcolour);
+  background: var(--sub-color);
 }
 
 a {
@@ -245,7 +278,7 @@ a {
 }
 
 a:hover {
-  color: var(--main-color);
+  color: var(--text-color);
 }
 
 .merchBanner {
@@ -466,7 +499,7 @@ a:hover {
   }
 }
 
-#tagsWrapper {
+.wrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -480,6 +513,15 @@ a:hover {
   padding: 5rem 0;
 
   #tagsEdit {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    overflow-y: scroll;
+  }
+
+  #presetEdit {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -546,71 +588,37 @@ a:hover {
       text-align: center;
       align-items: center;
     }
+  }
+}
 
-    .check {
-      span {
-        display: block;
-        font-size: 0.76rem;
-        color: var(--sub-color);
-        margin-left: 1.5rem;
-      }
+label.checkbox {
+  span {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--sub-color);
+    margin-left: 1.5rem;
+  }
 
-      input {
-        margin: 0 !important;
-        cursor: pointer;
-        width: 0;
-        height: 0;
-        display: none;
+  input {
+    margin: 0 !important;
+    cursor: pointer;
+    width: 0;
+    height: 0;
+    display: none;
 
-        & ~ .customTextRandomCheckbox {
-          width: 12px;
-          height: 12px;
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 2px;
-          box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-          display: inline-block;
-          margin: 0 0.5rem 0 0.25rem;
-          transition: 0.25s;
-        }
-
-        &:checked ~ .customTextRandomCheckbox {
-          background: var(--main-color);
-        }
-      }
+    & ~ .customTextCheckbox {
+      width: 12px;
+      height: 12px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      margin: 0 0.5rem 0 0.25rem;
+      transition: 0.25s;
     }
-    .typographyCheck {
-      grid-row: 2;
-      grid-column: 1/3;
 
-      span {
-        display: block;
-        font-size: 0.76rem;
-        color: var(--sub-color);
-        margin-left: 1.5rem;
-      }
-
-      input {
-        margin: 0 !important;
-        cursor: pointer;
-        width: 0;
-        height: 0;
-        display: none;
-
-        & ~ .customTextTypographyCheckbox {
-          width: 12px;
-          height: 12px;
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 2px;
-          box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-          display: inline-block;
-          margin: 0 0.5rem 0 0.25rem;
-          transition: 0.25s;
-        }
-
-        &:checked ~ .customTextTypographyCheckbox {
-          background: var(--main-color);
-        }
-      }
+    &:checked ~ .customTextCheckbox {
+      background: var(--main-color);
     }
   }
 }
@@ -629,6 +637,7 @@ a:hover {
   padding: 5rem 0;
 
   #wordFilterPopup {
+    color: var(--sub-color);
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -1183,7 +1192,7 @@ a:hover {
     input {
       background: var(--bg-color);
       padding: 1rem;
-      color: var(--main-color);
+      color: var(--text-color);
       border: none;
       outline: none;
       font-size: 1rem;
@@ -1200,7 +1209,7 @@ a:hover {
     }
 
     .listTitle {
-      color: var(--main-color);
+      color: var(--text-color);
       padding: 0.5rem 1rem;
       font-size: 0.75rem;
       line-height: 0.75rem;
@@ -1228,14 +1237,14 @@ a:hover {
         }
 
         &.activeMouse {
-          color: var(--text-color);
-          background: var(--sub-color);
+          color: var(--bg-color);
+          background: var(--text-color);
           cursor: pointer;
         }
 
         &.activeKeyboard {
           color: var(--bg-color);
-          background: var(--main-color);
+          background: var(--text-color);
         }
 
         // &:hover {
@@ -1428,6 +1437,21 @@ a:hover {
     }
   }
 
+  &.banana {
+    background-color: transparent;
+    background-image: url("../images/banana.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 1rem;
+    &.size2 {
+      margin-left: -0.1rem;
+    }
+    &.size3 {
+      margin-left: -0.5rem;
+    }
+  }
+
   &.block {
     width: 0.7em;
     margin-left: 0.25em;
@@ -1496,12 +1520,12 @@ a:hover {
 @keyframes caretFlashHard {
   0%,
   50% {
-    opacity: 0;
+    opacity: 1;
   }
 
   51%,
   100% {
-    opacity: 1;
+    opacity: 0;
   }
 }
 
@@ -1516,40 +1540,15 @@ a:hover {
   width: fit-content;
   width: -moz-fit-content;
 
-  /*   transition: 0.25s; */
-  .button.discord {
-    &.discord {
-      position: relative;
-
-      &::after {
-        transition: 0.25s;
-        width: 0.5rem;
-        height: 0.5rem;
-        content: "";
-        position: absolute;
-        background: var(--main-color);
-        border-radius: 1rem;
-        top: 0.25rem;
-        right: 0.25rem;
-        border: 2px solid var(--bg-color);
-      }
-
-      &.dotHidden::after {
-        background: transparent;
-        border-color: transparent;
-      }
-    }
-  }
-
   .icon-button {
-    .icon {
-      display: grid;
-      align-items: center;
-      justify-items: center;
-      text-align: center;
-      width: 1.25rem;
-      height: 1.25rem;
-    }
+    //   .icon {
+    //     display: grid;
+    //     align-items: center;
+    //     justify-items: center;
+    //     text-align: center;
+    //     width: 1.25rem;
+    //     height: 1.25rem;
+    //   }
 
     .text {
       font-size: 0.65rem;
@@ -1558,10 +1557,10 @@ a:hover {
       margin-left: 0.25rem;
     }
 
-    &:hover {
-      cursor: pointer;
-      color: var(--main-color);
-    }
+    //   &:hover {
+    //     cursor: pointer;
+    //     color: var(--main-color);
+    //   }
   }
 
   .separator {
@@ -1624,7 +1623,7 @@ a:hover {
     justify-self: right;
     display: grid;
     // grid-auto-flow: row;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-rows: 0.7rem 0.7rem 0.7rem;
     grid-gap: 0.2rem;
     // width: min-content;
     // width: -moz-min-content;
@@ -1742,38 +1741,46 @@ key {
 
   // margin-bottom: 2rem;
   .keyTips {
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
   }
 
   #supportMeButton {
     transition: 0.25s;
     &:hover {
-      color: var(--main-color);
+      color: var(--text-color);
       cursor: pointer;
     }
   }
 
   .leftright {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto auto;
     gap: 1rem;
     a {
       text-decoration: none;
     }
     .left {
       text-align: left;
+      display: grid;
+      grid-auto-flow: column;
+      width: fit-content;
+      gap: 1rem;
+      width: -moz-fit-content;
     }
     .right {
       text-align: right;
-      // display: flex;
-      // gap: 1rem;
+      display: grid;
+      grid-auto-flow: column;
+      width: fit-content;
+      width: -moz-fit-content;
+      justify-self: right;
+      gap: 1rem;
       // align-items: center;
-      // justify-content: flex-end;
       .current-theme {
         transition: 0.25s;
         text-decoration: none;
         &:hover {
-          color: var(--main-color);
+          color: var(--text-color);
           cursor: pointer;
         }
       }
@@ -1781,7 +1788,7 @@ key {
         transition: 0.25s;
         text-decoration: none;
         &:hover {
-          color: var(--main-color);
+          color: var(--text-color);
           cursor: pointer;
         }
       }
@@ -1793,7 +1800,7 @@ key {
     transition: 0.25s;
     &:hover {
       cursor: pointer;
-      color: var(--main-color);
+      color: var(--text-color);
     }
   }
 }
@@ -1832,7 +1839,8 @@ key {
     grid-column: 1/3;
   }
 
-  #resultWordsHistory {
+  #resultWordsHistory,
+  #resultReplay {
     // grid-area: wordsHistory;
     color: var(--sub-color);
     grid-column: 1/3;
@@ -1844,7 +1852,30 @@ key {
       user-select: none;
       .word {
         position: relative;
+        margin: 0.18rem 0.6rem 0.15rem 0;
       }
+      &.rightToLeftTest {
+        //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
+        direction: rtl;
+        .word {
+          //flex-direction: row-reverse;
+          direction: rtl;
+        }
+      }
+      &.withLigatures {
+        letter {
+          display: inline;
+        }
+      }
+    }
+    .correct {
+      color: var(--text-color);
+    }
+    .incorrect {
+      color: var(--error-color);
+    }
+    .incorrect.extra {
+      color: var(--error-extra-color);
     }
   }
 
@@ -2096,6 +2127,7 @@ key {
 
 #words {
   height: fit-content;
+  height: -moz-fit-content;
   display: flex;
   flex-wrap: wrap;
   width: 100%;
@@ -2240,10 +2272,11 @@ key {
 
 #restartTestButton,
 #showWordHistoryButton,
-#copyResultToClipboardButton,
+#saveScreenshotButton,
 #restartTestButtonWithSameWordset,
 #nextTestButton,
-#practiseMissedWordsButton {
+#practiseMissedWordsButton,
+#watchReplayButton {
   position: relative;
   border-radius: var(--roundness);
   padding: 1rem 2rem;
@@ -2262,6 +2295,15 @@ key {
   &:focus {
     background: var(--sub-color);
   }
+}
+
+#replayWords {
+  cursor: pointer;
+}
+
+#replayStopwatch {
+  color: var(--main-color);
+  display: inline-block;
 }
 
 #restartTestButton {
@@ -2309,6 +2351,7 @@ key {
       line-height: 1rem;
       transition: 0.125s;
       justify-content: center;
+      user-select: none;
 
       .fas {
         margin-right: 0.5rem;
@@ -2465,6 +2508,11 @@ key {
     1px 1px 0px var(--bg-color), -1px 1px 0px var(--bg-color);
 }
 
+#words.noErrorBorder {
+  .word.error {
+    text-shadow: none;
+  }
+}
 // .word letter {
 // transition: .1s;
 // height: 1rem;
@@ -2546,9 +2594,10 @@ key {
 
       #forgotPasswordButton {
         grid-area: forgotButton;
-        font-size: 0.5rem;
-        line-height: 0.5rem;
+        font-size: 0.75rem;
+        line-height: 0.75rem;
         height: fit-content;
+        height: -moz-fit-content;
         align-self: center;
         justify-self: right;
         padding: 0.25rem 0;
@@ -2557,42 +2606,12 @@ key {
         transition: 0.25s;
 
         &:hover {
-          color: var(--main-color);
+          color: var(--text-color);
         }
       }
 
       form {
         grid-area: form;
-
-        #rememberMe {
-          color: var(--sub-color);
-          -moz-user-select: none;
-          user-select: none;
-          cursor: pointer;
-
-          input {
-            margin: 0 !important;
-            cursor: pointer;
-            width: 0;
-            height: 0;
-            display: none;
-
-            & ~ .customCheckbox {
-              width: 12px;
-              height: 12px;
-              background: rgba(0, 0, 0, 0.1);
-              border-radius: 2px;
-              box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-              display: inline-block;
-              margin: 0 0.5rem 0 0.25rem;
-              transition: 0.25s;
-            }
-
-            &:checked ~ .customCheckbox {
-              background: var(--main-color);
-            }
-          }
-        }
       }
     }
   }
@@ -2618,14 +2637,29 @@ key {
   display: grid;
   gap: 2rem;
 
+  .created {
+    text-align: center;
+    color: var(--sub-color);
+    a {
+      text-decoration: none;
+    }
+  }
+
   .section {
     display: grid;
-    gap: 0.5rem;
+    gap: 0.25rem;
 
-    .supporters {
+    .title {
+      font-size: 2rem;
+      line-height: 2rem;
+      color: var(--sub-color);
+      margin: 1rem 0;
+    }
+
+    .supporters,
+    .contributors {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr 1fr;
-      justify-items: center;
       gap: 0.25rem;
       color: var(--text-color);
     }
@@ -2663,7 +2697,7 @@ key {
     transition: 0.25s;
 
     &:hover {
-      color: var(--main-color);
+      color: var(--text-color);
     }
 
     .fas {
@@ -2687,7 +2721,7 @@ key {
       justify-content: space-between;
       a {
         text-decoration: none;
-        opacity: 0.5;
+        // opacity: 0.5;
         &:hover {
           opacity: 1;
         }
@@ -2706,11 +2740,84 @@ key {
     align-items: center;
 
     .button.danger {
-      background: var(--error-color);
-      color: #eee;
+      box-shadow: 0px 0px 0px 2px var(--error-color);
+      color: var(--text-color);
       &:hover {
-        background: var(--main-color);
+        background: var(--text-color);
         color: var(--bg-color);
+      }
+    }
+
+    // I have no idea what I'm doing so I just copied the customBackgroundSize css and changed numbers so it magically worked.
+    &.customLayoutfluid {
+      .inputAndSave {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        input {
+          grid-column: 1/3;
+        }
+
+        .save {
+          grid-column: 3/4;
+          height: auto;
+
+          .fas {
+            margin-right: 0rem;
+            vertical-align: sub;
+          }
+        }
+      }
+    }
+
+    &.customBackgroundSize {
+      .inputAndButton {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        input {
+          grid-column: 1/3;
+        }
+
+        .save {
+          grid-column: 3/4;
+          height: auto;
+
+          .fas {
+            margin-right: 0rem;
+            vertical-align: sub;
+          }
+        }
+      }
+    }
+
+    &.customBackgroundFilter {
+      .groups {
+        grid-area: buttons;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+        .group {
+          display: grid;
+          grid-template-columns: 1fr auto 2fr;
+          gap: 1rem;
+          .title,
+          .value {
+            color: var(--text-color);
+          }
+        }
+      }
+      .saveContainer {
+        grid-column: -1/-3;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+      }
+      .fas {
+        margin-right: 0rem;
       }
     }
 
@@ -2766,31 +2873,19 @@ key {
     }
 
     &.discordIntegration {
-      #unlinkDiscordButton {
-        margin-top: 0.5rem;
-        font-size: 0.75rem;
-      }
-
-      .code {
-        grid-area: buttons;
-        justify-content: center;
-        display: grid;
-
-        .top {
-          font-size: 1rem;
-          line-height: 1rem;
-          color: var(--sub-color);
-        }
-
-        .bottom {
-          font-size: 2rem;
-          line-height: 2rem;
-        }
-      }
-
       .info {
         grid-area: buttons;
         text-align: center;
+        color: var(--main-color);
+      }
+
+      #unlinkDiscordButton {
+        margin-top: 0.5rem;
+        font-size: 0.75rem;
+        color: var(--sub-color);
+        &:hover {
+          color: var(--text-color);
+        }
       }
 
       .howto {
@@ -2831,15 +2926,14 @@ key {
             color: var(--sub-color);
 
             &:focus {
-              background: var(--sub-color);
-              color: var(--main-color);
+              color: var(--sub-color);
               border: none;
               outline: none;
             }
 
             &:hover {
               cursor: pointer;
-              color: var(--main-color);
+              color: var(--text-color);
             }
           }
         }
@@ -2869,7 +2963,47 @@ key {
         &:hover,
         &:focus {
           color: var(--bg-color);
+          background: var(--text-color);
+          outline: none;
+        }
+      }
+    }
+
+    &.presets {
+      .presetsListAndButton {
+        grid-area: buttons;
+      }
+
+      .preset {
+        grid-template-columns: 5fr 1fr 1fr;
+        margin-bottom: 0.5rem;
+      }
+
+      .addPresetButton {
+        margin-top: 0.5rem;
+        color: var(--text-color);
+        cursor: pointer;
+        transition: 0.25s;
+        padding: 0.2rem 0.5rem;
+        border-radius: var(--roundness);
+
+        background: rgba(0, 0, 0, 0.1);
+        text-align: center;
+        -webkit-user-select: none;
+        display: grid;
+        align-content: center;
+        height: min-content;
+        height: -moz-min-content;
+
+        &.active {
           background: var(--main-color);
+          color: var(--bg-color);
+        }
+
+        &:hover,
+        &:focus {
+          color: var(--bg-color);
+          background: var(--text-color);
           outline: none;
         }
       }
@@ -2953,14 +3087,7 @@ key {
       }
     }
 
-    &.themes,
-    &.language,
-    &.languageGroups,
-    &.layout,
-    &.keymapLayout,
-    &.fontFamily,
-    &.funbox,
-    &.keymapStyle {
+    &.themes {
       grid-template-columns: 2fr 1fr;
       grid-template-areas:
         "title tabs"
@@ -3009,6 +3136,29 @@ key {
         margin-top: 0.5rem;
       }
     }
+
+    &.fullWidth {
+      grid-template-columns: 2fr 1fr;
+      grid-template-areas:
+        "title tabs"
+        "text text"
+        "buttons buttons";
+      column-gap: 2rem;
+      // row-gap: 0.5rem;
+
+      .buttons {
+        margin-left: 0;
+        grid-auto-flow: dense;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+    }
+
+    &.randomTheme .buttons {
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    }
   }
 }
 
@@ -3023,6 +3173,7 @@ key {
   // background: var(--sub-color);
   color: var(--sub-color);
   width: fit-content;
+  width: -moz-fit-content;
   padding: 0.5rem;
   border-radius: var(--roundness);
   cursor: pointer;
@@ -3030,7 +3181,7 @@ key {
   float: right;
 
   &:hover {
-    color: var(--main-color);
+    color: var(--text-color);
   }
 
   .fas {
@@ -3083,6 +3234,7 @@ key {
   .preloader {
     font-size: 2rem;
     justify-self: center;
+    color: var(--main-color);
   }
 
   .doublegroup {
@@ -3121,6 +3273,10 @@ key {
     }
 
     &.history {
+      .active {
+        animation: flashHighlight 4s linear 0s 1;
+      }
+
       .loadMoreButton {
         background: rgba(0, 0, 0, 0.1);
         color: var(--text-color);
@@ -3140,7 +3296,7 @@ key {
         &:hover,
         &:focus {
           color: var(--bg-color);
-          background: var(--main-color);
+          background: var(--text-color);
         }
       }
     }
@@ -3241,12 +3397,11 @@ key {
 
   #resultEditTags {
     transition: 0.25s;
-  }
-
-  #resultEditTags:hover {
-    cursor: pointer;
-    color: var(--main-color);
-    opacity: 1 !important;
+    &:hover {
+      cursor: pointer;
+      color: var(--text-color);
+      opacity: 1 !important;
+    }
   }
 }
 
@@ -3358,32 +3513,50 @@ key {
   height: -moz-min-content;
   line-height: 1rem;
 
-  .fas,
-  .far {
-    margin-right: 0.5rem;
+  &:hover {
+    color: var(--bg-color);
+    background: var(--text-color);
+    outline: none;
+  }
+  &:focus {
+    color: var(--text-color);
+    background: rgba(0, 0, 0, 0.1);
+    outline: none;
   }
 
   &.active {
     background: var(--main-color);
     color: var(--bg-color);
-  }
-
-  &:hover,
-  &:focus {
-    color: var(--bg-color);
-    background: var(--main-color);
-    outline: none;
+    &:hover {
+      // color: var(--text-color);
+      background: var(--text-color);
+      outline: none;
+    }
+    &:focus {
+      color: var(--bg-color);
+      background: var(--main-color);
+      outline: none;
+    }
   }
 
   &.disabled {
+    opacity: 0.5;
+    cursor: default;
     &:hover {
       color: var(--sub-color);
-      background: var(--bg-color);
-      cursor: default;
+      background: rgba(0, 0, 0, 0.1);
+      outline: none;
     }
-    color: var(--sub-color);
-    background: var(--bg-color);
+  }
+
+  &.disabled.active {
+    opacity: 0.5;
     cursor: default;
+    &:hover {
+      color: var(--bg-color);
+      background: var(--main-color);
+      outline: none;
+    }
   }
 }
 
@@ -3395,13 +3568,13 @@ key {
   cursor: pointer;
   outline: none;
 
-  &:hover,
-  &:focus {
+  &.active {
     color: var(--main-color);
   }
 
-  &.active {
-    color: var(--main-color);
+  &:hover,
+  &:focus {
+    color: var(--text-color);
   }
 }
 
@@ -3415,11 +3588,11 @@ key {
   cursor: pointer;
 
   &:hover {
-    color: var(--main-color);
+    color: var(--text-color);
   }
   &:focus {
-    background: var(--sub-color);
-    color: var(--main-color);
+    // background: var(--sub-color);
+    color: var(--sub-color);
     border: none;
     outline: none;
   }
@@ -3441,7 +3614,7 @@ key {
   color: var(--sub-color);
   transition: 0.25s;
   &:hover {
-    color: var(--main-color);
+    color: var(--text-color);
   }
 }
 
@@ -3461,173 +3634,6 @@ key {
   cursor: pointer;
   color: var(--bg-color);
   transition: 0.25s;
-}
-
-@media only screen and (max-width: 1050px) {
-  #centerContent {
-    .pageSettings .section.themes .buttons,
-    .pageSettings .section.language .buttons,
-    .pageSettings .section.layout .buttons,
-    .pageSettings .section.keymapLayout .buttons,
-    .pageSettings .section.fontFamily .buttons,
-    .pageSettings .section.funbox .buttons,
-    .pageSettings .section.keymapStyle .buttons {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    #result .morestats {
-      gap: 1rem;
-      grid-template-rows: 1fr 1fr;
-    }
-  }
-  #supportMe {
-    width: 90vw !important;
-    .buttons {
-      .button {
-        .icon {
-          font-size: 3rem !important;
-          line-height: 3rem !important;
-        }
-      }
-    }
-  }
-}
-
-@media only screen and (max-width: 800px) {
-  #centerContent {
-    #top {
-      grid-template-areas:
-        "logo config"
-        "menu config";
-      .logo {
-        margin-bottom: 0;
-      }
-    }
-
-    #menu {
-      gap: 0.5rem;
-      font-size: 0.8rem;
-      line-height: 0.8rem;
-
-      .icon-button {
-        padding: 0.25rem;
-      }
-    }
-  }
-
-  #commandLine,
-  #commandLineInput {
-    width: 500px !important;
-  }
-}
-
-@media only screen and (max-width: 650px) {
-  .pageSettings .section {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "title title"
-      "text text"
-      "buttons buttons";
-
-    & > .text {
-      margin-bottom: 1rem;
-    }
-  }
-
-  #result {
-    .buttons {
-      grid-template-rows: 1fr 1fr;
-      #nextTestButton {
-        grid-column: 1/5;
-        width: 100%;
-        text-align: center;
-      }
-    }
-  }
-
-  #supportMe {
-    width: 80vw !important;
-    .buttons {
-      grid-template-columns: none !important;
-      .button {
-        grid-template-columns: auto auto;
-        align-items: center;
-        .icon {
-          font-size: 2rem !important;
-          line-height: 2rem !important;
-        }
-      }
-    }
-  }
-
-  #commandLine,
-  #commandLineInput {
-    width: 400px !important;
-  }
-
-  #centerContent {
-    .pageSettings .section.themes .buttons,
-    .pageSettings .section.language .buttons,
-    .pageSettings .section.layout .buttons,
-    .pageSettings .section.keymapLayout .buttons,
-    .pageSettings .section.fontFamily .buttons,
-    .pageSettings .section.funbox .buttons,
-    .pageSettings .section.keymapStyle .buttons {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  #middle {
-    #result {
-      grid-template-areas:
-        "stats stats"
-        "chart chart"
-        "morestats morestats";
-      .stats {
-        grid-template-areas: "wpm acc";
-        gap: 4rem;
-      }
-      .stats.morestats {
-        grid-template-rows: 1fr 1fr 1fr;
-        gap: 1rem;
-      }
-    }
-  }
-}
-
-@media only screen and (max-width: 500px) {
-  #top {
-    .logo {
-      .bottom {
-        font-size: 1.75rem;
-        line-height: 1.75rem;
-        margin-top: 0.5rem;
-      }
-      .top {
-        display: none;
-      }
-    }
-    #menu {
-      .icon-button {
-        padding: 0;
-      }
-    }
-  }
-  #centerContent {
-    padding: 1rem;
-  }
-  #result {
-    .buttons {
-      grid-template-rows: 1fr 1fr 1fr;
-      #nextTestButton {
-        grid-column: 1/3;
-        width: 100%;
-        text-align: center;
-      }
-    }
-  }
 }
 
 .keymap {
@@ -3816,11 +3822,10 @@ key {
   // }
 }
 
-// .matrix {
-//   display: flex;
-//   justify-content: left;
-//   margin-left: 4.51rem;
-// }
+#nitropay_ad_left,
+#nitropay_ad_right {
+  margin-top: 1rem;
+}
 
 .keymap {
   &.matrix {
@@ -3935,33 +3940,17 @@ key {
   }
 }
 
-@media (hover: none) and (pointer: coarse) {
-  #commandLineMobileButton {
-    display: block;
+@keyframes flashHighlight {
+  0% {
+    background-color: var(--bg-color);
+  }
+  10% {
+    background-color: var(--main-color);
+  }
+  40% {
+    background-color: var(--main-color);
+  }
+  100% {
+    background-color: var(--bg-color);
   }
 }
-
-#nitropay_ad_left,
-#nitropay_ad_right {
-  margin-top: 1rem;
-}
-
-// .adcontainer{
-//   position: relative;
-//   &>div{
-//     top: 0px;
-//     left: 0px;
-//     position: absolute;
-//   }
-//   .bg{
-//     background: var(--bg-color);
-//     color: var(--sub-color);
-//     display: grid;
-//     align-items: center;
-//     justify-content: center;
-//     height: 100%;
-//     width: 100%;
-//     font-size: .75rem;
-//     user-select: none;
-//   }
-// }

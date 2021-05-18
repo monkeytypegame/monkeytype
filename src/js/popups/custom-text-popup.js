@@ -10,7 +10,7 @@ let popup = "#customTextPopup";
 
 export function show() {
   if ($(wrapper).hasClass("hidden")) {
-    if ($(`${popup} .check input`).prop("checked")) {
+    if ($(`${popup} .checkbox input`).prop("checked")) {
       $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
     } else {
       $(`${popup} .inputs .randomInputFields`).addClass("hidden");
@@ -60,8 +60,8 @@ $(wrapper).mousedown((e) => {
   }
 });
 
-$(`${popup} .inputs .check input`).change(() => {
-  if ($(`${popup} .check input`).prop("checked")) {
+$(`${popup} .inputs .checkbox input`).change(() => {
+  if ($(`${popup} .checkbox input`).prop("checked")) {
     $(`${popup} .inputs .randomInputFields`).removeClass("hidden");
   } else {
     $(`${popup} .inputs .randomInputFields`).addClass("hidden");
@@ -70,7 +70,7 @@ $(`${popup} .inputs .check input`).change(() => {
 
 $(`${popup} textarea`).keypress((e) => {
   if (e.code === "Enter" && e.ctrlKey) {
-    $(`${popup} .button`).click();
+    $(`${popup} .button.apply`).click();
   }
 });
 
@@ -106,11 +106,11 @@ $("#customTextPopup .apply").click(() => {
   CustomText.setTime(parseInt($("#customTextPopup .time input").val()));
 
   CustomText.setIsWordRandom(
-    $("#customTextPopup .check input").prop("checked") &&
+    $("#customTextPopup .checkbox input").prop("checked") &&
       !isNaN(CustomText.word)
   );
   CustomText.setIsTimeRandom(
-    $("#customTextPopup .check input").prop("checked") &&
+    $("#customTextPopup .checkbox input").prop("checked") &&
       !isNaN(CustomText.time)
   );
 

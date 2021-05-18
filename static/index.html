@@ -11,14 +11,40 @@
     />
     <link rel="stylesheet" href="css/balloon.css" />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/media-queries.css" />
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="images/fav.png" />
-    <link rel="shortcut icon" href="images/fav.png" />
+    <link rel="shortcut icon" href="images/favicon/fav.png" />
+    <link
+      href="images/favicon/apple-touch-icon-180x180.png"
+      rel="apple-touch-icon"
+      sizes="180x180"
+    />
+    <link
+      href="images/favicon/apple-touch-icon-152x152.png"
+      rel="apple-touch-icon"
+      sizes="152x152"
+    />
+    <link
+      href="images/favicon/apple-touch-icon-120x120.png"
+      rel="apple-touch-icon"
+      sizes="120x120"
+    />
+
+    <link
+      href="images/favicon/apple-touch-icon-76x76.png"
+      rel="apple-touch-icon"
+      sizes="76x76"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="images/favicon/apple-touch-icon-60x60.png"
+    />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-      integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
       crossorigin="anonymous"
     />
     <meta name="name" content="Monkeytype" />
@@ -54,7 +80,7 @@
     </script>
     <script async src="https://s.nitropay.com/ads-693.js"></script>
   </head>
-
+  <div class="customBackground"></div>
   <body>
     <div id="backgroundLoader" style="display: none"></div>
     <div id="notificationCenter">
@@ -112,12 +138,12 @@
         </div>
         <textarea class="textarea" placeholder="Custom text"></textarea>
         <div class="inputs">
-          <label class="check">
+          <label class="checkbox">
             <input type="checkbox" />
-            <div class="customTextRandomCheckbox"></div>
+            <div class="customTextCheckbox"></div>
             Random
             <span>
-              Randomise the above words, and control how many words are
+              randomize the above words, and control how many words are
               generated.
             </span>
           </label>
@@ -132,9 +158,9 @@
               <input type="number" value="" min="1" max="10000" />
             </label>
           </div>
-          <label class="typographyCheck">
+          <label class="checkbox typographyCheck">
             <input type="checkbox" checked />
-            <div class="customTextTypographyCheckbox"></div>
+            <div class="customTextCheckbox customTextTypographyCheckbox"></div>
             Remove Fancy Typography
             <span>
               Standardises typography symbols (for example “ and ” become ")
@@ -176,10 +202,15 @@
           Use the above filters to include and exclude words or characters
           (separated by spaces)
         </div>
+        <div class="tip">
+          "Set" replaces the current custom word list with the filter result,
+          "Add" appends the filter result to the current custom word list
+        </div>
         <i
           class="fas fa-fw fa-spin fa-circle-notch hidden loadingIndicator"
         ></i>
-        <div class="button">ok</div>
+        <div class="button" id="set">set</div>
+        <div class="button">add</div>
       </div>
     </div>
     <div id="customWordAmountPopupWrapper" class="hidden">
@@ -219,7 +250,7 @@
         <div id="quoteSearchResults" class="quoteSearchResults"></div>
       </div>
     </div>
-    <div id="tagsWrapper" class="hidden">
+    <div id="tagsWrapper" class="wrapper hidden">
       <div id="tagsEdit" action="" tagid="">
         <div class="title"></div>
         <input type="text" />
@@ -230,6 +261,18 @@
       <div id="resultEditTagsPanel" resultid="">
         <div class="buttons"></div>
         <div class="button confirmButton"><i class="fas fa-check"></i></div>
+      </div>
+    </div>
+    <div id="presetWrapper" class="wrapper hidden">
+      <div id="presetEdit" action="" presetid="">
+        <div class="title"></div>
+        <input type="text" class="text" />
+        <label class="checkbox">
+          <input type="checkbox" />
+          <div class="customTextCheckbox"></div>
+          Change preset to current settings
+        </label>
+        <div class="button"><i class="fas fa-plus"></i></div>
       </div>
     </div>
     <div id="leaderboardsWrapper" class="hidden">
@@ -875,7 +918,7 @@
       </div>
     </div>
     <div id="timerWrapper">
-      <div id="timer"></div>
+      <div id="timer" class="timerMain"></div>
     </div>
     <div style="display: flex; justify-content: space-around">
       <div id="nitropay_ad_left" class="hidden"></div>
@@ -1067,10 +1110,10 @@
               <div id="caret" class="default size15"></div>
               <div id="paceCaret" class="default size15 hidden"></div>
               <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
-              <div id="timerNumber">
+              <div id="timerNumber" class="timerMain">
                 <div>60</div>
               </div>
-              <div id="miniTimerAndLiveWpm">
+              <div id="miniTimerAndLiveWpm" class="timerMain size15">
                 <div class="time hidden">1:00</div>
                 <div class="wpm">60</div>
                 <div class="acc">100%</div>
@@ -1256,7 +1299,7 @@
                   </div>
                 </div>
               </div>
-              <div id="largeLiveWpmAndAcc">
+              <div id="largeLiveWpmAndAcc" class="timerMain">
                 <div id="liveWpm" class="hidden">123</div>
                 <div id="liveAcc" class="hidden">100%%</div>
               </div>
@@ -1338,7 +1381,7 @@
                   <div class="top">characters</div>
                   <div
                     class="bottom"
-                    aria-label="Correct, incorrect, extra and missed"
+                    aria-label="correct, incorrect, extra, and missed"
                     data-balloon-break=""
                     data-balloon-pos="up"
                   >
@@ -1393,6 +1436,24 @@
                 </div>
                 <div class="words"></div>
               </div>
+              <div id="resultReplay" class="hidden">
+                <div class="title">
+                  watch replay
+                  <span
+                    id="playpauseReplayButton"
+                    class="icon-button"
+                    aria-label="Start replay"
+                    data-balloon-pos="up"
+                    style="display: inline-block"
+                  >
+                    <i class="fas fa-play"></i>
+                  </span>
+                  <p id="replayStopwatch">0s</p>
+                </div>
+                <div id="wordsWrapper">
+                  <div id="replayWords" class="words"></div>
+                </div>
+              </div>
               <div class="loginTip">
                 <a href="/login" tabindex="9">Sign in</a>
                 to save your results
@@ -1410,7 +1471,7 @@
                 </div>
                 <div
                   id="restartTestButtonWithSameWordset"
-                  aria-label="Repeat Test"
+                  aria-label="Repeat test"
                   data-balloon-pos="down"
                   tabindex="0"
                   onclick="this.blur();"
@@ -1436,7 +1497,16 @@
                   <i class="fas fa-fw fa-align-left"></i>
                 </div>
                 <div
-                  id="copyResultToClipboardButton"
+                  id="watchReplayButton"
+                  aria-label="Watch replay"
+                  data-balloon-pos="down"
+                  tabindex="0"
+                  onclick="this.blur();"
+                >
+                  <i class="fas fa-fw fa-backward"></i>
+                </div>
+                <div
+                  id="saveScreenshotButton"
                   aria-label="Save screenshot"
                   data-balloon-pos="down"
                   tabindex="0"
@@ -1448,8 +1518,16 @@
             </div>
           </div>
           <div class="page pageAbout hidden">
+            <div class="created">
+              Created with love by Miodec.
+              <a href="#supporters_title">Supported</a>
+              and
+              <a href="#contributors_title">expanded</a>
+              by many awesome people. Launched on 15th of May, 2020.
+            </div>
             <div class="section">
-              <h1>about</h1>
+              <div class="title">about</div>
+              <!-- <h1>about</h1> -->
               <p>
                 Monkeytype is a minimalistic typing test, featuring many test
                 modes, an account system to save your typing speed history and
@@ -1459,8 +1537,8 @@
             <div class="section">
               <h1>word set</h1>
               <p>
-                By default, the website uses the most common 200 words in the
-                english language to generate its tests. You can change to an
+                By default, this website uses the most common 200 words in the
+                English language to generate its tests. You can change to an
                 expanded set (1000 most common words) in the options, or change
                 the language entirely.
               </p>
@@ -1474,7 +1552,7 @@
                 <key>enter</key>
                 (or just
                 <key>tab</key>
-                if you have (
+                if you have
                 <a href="settings">quick tab mode enabled</a>
                 ) to restart the typing test. Open the command line by pressing
                 <key>esc</key>
@@ -1521,9 +1599,16 @@
               <p>
                 If you encounter a bug, or have a feature request - join the
                 <a href="https://discord.gg/yENzqcB" target="_blank">Discord</a>
-                server, send me a message on Reddit or create an issue on
-                <a href="https://github.com/Miodec/monkeytype" target="_blank">
-                  GitHub.
+                server,
+                <a href="https://www.reddit.com/users/Miodec" target="_blank">
+                  send me a message on Reddit
+                </a>
+                or
+                <a
+                  href="https://github.com/Miodec/monkeytype/issues"
+                  target="_blank"
+                >
+                  create an issue on GitHub.
                 </a>
               </p>
             </div>
@@ -1542,12 +1627,12 @@
               </p>
             </div>
             <div class="section">
-              <h1>credits</h1>
+              <div class="title">credits</div>
               <p>
                 <a href="https://www.reddit.com/user/montydrei" target="_blank">
-                  montydrei
+                  Montydrei
                 </a>
-                - name suggestion
+                for the name suggestion
               </p>
               <p>
                 <a
@@ -1560,17 +1645,23 @@
                 the prototype of this website
               </p>
               <p>
+                <a href="#supporters_title">Supporters</a>
+                who helped financially by donating, enabling optional ads or
+                buying merch
+              </p>
+              <p>
                 <a
                   href="https://github.com/Miodec/monkeytype/graphs/contributors"
+                  target="_blank"
                 >
                   Contributors
                 </a>
                 on GitHub that have helped with implementing various features,
-                adding themes and more.
+                adding themes and more
               </p>
             </div>
             <div class="section">
-              <h1>supporters</h1>
+              <h1 id="supporters_title">supporters</h1>
               <div class="supporters">
                 <div>Not Gate</div>
                 <div>Corey</div>
@@ -1635,6 +1726,180 @@
                 <div>Robin</div>
                 <div>Sonicv6</div>
                 <div>Taran</div>
+                <div>Roux</div>
+                <div>Artem</div>
+                <div>DarkBlu</div>
+                <div>John</div>
+                <div>Gregory</div>
+                <div>Hopeless Love</div>
+                <div>Kalen</div>
+                <div>Ben</div>
+                <div>Jakub</div>
+                <div>Vincent</div>
+                <div>Connor</div>
+                <div>Zunaed</div>
+                <div>Emilio</div>
+                <div>Michael</div>
+              </div>
+            </div>
+            <div class="section">
+              <h1 id="contributors_title">contributors</h1>
+              <div class="contributors">
+                <div>typerqeo</div>
+                <div>bhomie</div>
+                <div>corey-b</div>
+                <div>UnrealApex</div>
+                <div>willerbee</div>
+                <div>dmartin-tech</div>
+                <div>SeerLite</div>
+                <div>FakeDazon</div>
+                <div>a1usha</div>
+                <div>Brachyurus</div>
+                <div>0x8b</div>
+                <div>seaerchin</div>
+                <div>ryan-harrington</div>
+                <div>Smithster</div>
+                <div>Marco-Pagani</div>
+                <div>CrumblyLiquid</div>
+                <div>Jack92829</div>
+                <div>xZa-k</div>
+                <div>avi123nash</div>
+                <div>bataak</div>
+                <div>Saint-dev</div>
+                <div>ThatOneCalculator</div>
+                <div>mwahlig</div>
+                <div>zachy-ho</div>
+                <div>aviegdown</div>
+                <div>ramnathk</div>
+                <div>GFruit</div>
+                <div>Killer8Hyper</div>
+                <div>MaticSulc</div>
+                <div>joshuamango</div>
+                <div>Ahmad-A0</div>
+                <div>christophersarmiento</div>
+                <div>71xn</div>
+                <div>jacekdobrowolski</div>
+                <div>leduyquang753</div>
+                <div>Maclogger</div>
+                <div>iwa</div>
+                <div>TayIorRobinson</div>
+                <div>vuong-buihv</div>
+                <div>barthakstege</div>
+                <div>l4ssc</div>
+                <div>throwawaywords</div>
+                <div>Jonny-exe</div>
+                <div>OctahedronV2</div>
+                <div>iitsalex</div>
+                <div>RealCyGuy</div>
+                <div>Inirdin</div>
+                <div>jkjrmlg</div>
+                <div>kunal-rp</div>
+                <div>KungPaoChick</div>
+                <div>MakerJake01</div>
+                <div>MysteriousLog6</div>
+                <div>Octarine-Phaneron</div>
+                <div>tawtis</div>
+                <div>Vitaman02</div>
+                <div>BarePotato</div>
+                <div>alegottu</div>
+                <div>s1mple-Lemon</div>
+                <div>Alenygam</div>
+                <div>fuwn</div>
+                <div>minerscale</div>
+                <div>aditya1rawat</div>
+                <div>ammarptn</div>
+                <div>ariebh</div>
+                <div>bsamseth</div>
+                <div>bool3max</div>
+                <div>dCubelic</div>
+                <div>elswenson</div>
+                <div>FabianSt305</div>
+                <div>Fraserbc</div>
+                <div>shinze</div>
+                <div>gkeep</div>
+                <div>JosueLeovani</div>
+                <div>dtuukkanen</div>
+                <div>lucas-fern</div>
+                <div>Magical-Penguin</div>
+                <div>mendelmaleh</div>
+                <div>NoCrypt</div>
+                <div>nullaf</div>
+                <div>chireia</div>
+                <div>sohamb117</div>
+                <div>stevep99</div>
+                <div>mintlodica</div>
+                <div>miyukowo</div>
+                <div>g-harel</div>
+                <div>kiriDevs</div>
+                <div>krsntn</div>
+                <div>baulml</div>
+                <div>ryevertigo</div>
+                <div>Fowl95</div>
+                <div>SoulNinja-dev</div>
+                <div>AfonsoVReis</div>
+                <div>popey456963</div>
+                <div>AlirezaTheBruh</div>
+                <div>anhduck14</div>
+                <div>cBachoo</div>
+                <div>beckxie</div>
+                <div>thescripted</div>
+                <div>CarinaChenot</div>
+                <div>Bregoliii</div>
+                <div>Cosmeeeen</div>
+                <div>danhogan</div>
+                <div>danii</div>
+                <div>David-Mordechai</div>
+                <div>EmNudge</div>
+                <div>kwfk</div>
+                <div>gavinmn</div>
+                <div>GioSDA</div>
+                <div>GuyClicking</div>
+                <div>HayataSama</div>
+                <div>zaxophone</div>
+                <div>Mollerz</div>
+                <div>jeremygautama</div>
+                <div>cincodenada</div>
+                <div>JonesSagabaen</div>
+                <div>kadenscott</div>
+                <div>GMKanat</div>
+                <div>lukew3</div>
+                <div>narze</div>
+                <div>Meimersdorfer</div>
+                <div>mia-cx</div>
+                <div>nikzzzz</div>
+                <div>OldMope</div>
+                <div>Oskar283</div>
+                <div>paulhchoi</div>
+                <div>pserey</div>
+                <div>pjrelex</div>
+                <div>18praneeth</div>
+                <div>RebonackAl</div>
+                <div>rhesamu</div>
+                <div>samyak039</div>
+                <div>sergiathanzo</div>
+                <div>phrohdoh</div>
+                <div>BlueGone</div>
+                <div>tsara27</div>
+                <div>vansul</div>
+                <div>zekth</div>
+                <div>voroskoi</div>
+                <div>andrewtran1995</div>
+                <div>angularorbit</div>
+                <div>aoaaceai</div>
+                <div>bilfri</div>
+                <div>gwenzek</div>
+                <div>iokiou</div>
+                <div>kikuKeii</div>
+                <div>kokaloo</div>
+                <div>nextZed</div>
+                <div>redarguireda</div>
+                <div>sudoerena</div>
+                <div>thuanpham2311</div>
+                <div>Rougemoot</div>
+                <div>wRadion</div>
+                <div>yaazkal</div>
+                <div>zigotica</div>
+                <div>cinoss</div>
               </div>
             </div>
           </div>
@@ -1730,18 +1995,36 @@
                   </div>
                 </div>
               </div>
+              <div class="section presets">
+                <h1>presets</h1>
+                <div class="text">
+                  Create settings presets that can be applied with one click
+                </div>
+                <div class="presetsListAndButton">
+                  <div class="presetsList">
+                    <div class="buttons preset" id="0">
+                      <div class="presetButton button">
+                        <div class="title">staggered</div>
+                      </div>
+                      <div class="editButton button">
+                        <i class="fas fa-pen"></i>
+                      </div>
+                      <div class="removeButton button">
+                        <i class="fas fa-trash"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="addPresetButton"><i class="fas fa-plus"></i></div>
+                </div>
+              </div>
               <div class="sectionSpacer"></div>
             </div>
 
-            <div
-              id="group_behavior"
-              class="sectionGroupTitle"
-              group="behaviour"
-            >
-              behaviour
+            <div id="group_behavior" class="sectionGroupTitle" group="behavior">
+              behavior
               <i class="fas fa-chevron-down"></i>
             </div>
-            <div class="settingsGroup behaviour">
+            <div class="settingsGroup behavior">
               <div class="section difficulty">
                 <h1>test difficulty</h1>
                 <div class="text">
@@ -1798,7 +2081,7 @@
               <div class="section repeatQuotes" id="repeatQuotes">
                 <h1>repeat quotes</h1>
                 <div class="text">
-                  This setting changes the restarting behaviour when typing in
+                  This setting changes the restarting behavior when typing in
                   quote mode. Changing it to 'typing' will repeat the quote if
                   you restart while typing.
                 </div>
@@ -1965,22 +2248,41 @@
                   />
                 </div>
               </div>
-              <div class="section languageGroups">
+              <div class="section languageGroups fullWidth">
                 <h1>language groups</h1>
                 <div class="buttons"></div>
               </div>
-              <div class="section language">
+              <div class="section language fullWidth">
                 <h1>language</h1>
                 <div class="buttons"></div>
               </div>
-              <div class="section funbox">
+              <div class="section funbox fullWidth">
                 <h1>funbox</h1>
                 <div class="text">
                   These are special modes that change the website in some
-                  special way (by altering the word generation, behaviour of the
+                  special way (by altering the word generation, behavior of the
                   website or the looks). Give each one of them a try!
                 </div>
                 <div class="buttons"></div>
+              </div>
+              <div class="sectionSpacer"></div>
+              <div class="section customLayoutfluid">
+                <h1>custom layoutfluid</h1>
+                <div class="text">
+                  Select which layouts you want the layoutfluid funbox to cycle
+                  through.
+                </div>
+                <div class="inputAndSave">
+                  <input
+                    type="text"
+                    placeholder="layouts (separated by space)"
+                    class="input"
+                    tabindex="0"
+                  />
+                  <div class="button save" tabindex="0" onclick="this.blur();">
+                    <i class="fas fa-save fa-fw"></i>
+                  </div>
+                </div>
               </div>
               <div class="sectionSpacer"></div>
             </div>
@@ -2139,7 +2441,7 @@
               </div>
               <div class="section indicateTypos" section="">
                 <h1>indicate typos</h1>
-                <div class="text">Show typos underneath the letters</div>
+                <div class="text">Shows typos underneath the letters.</div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">
                     off
@@ -2168,7 +2470,7 @@
               <div class="section swapEscAndTab" section="">
                 <h1>swap esc and tab</h1>
                 <div class="text">
-                  Swap the behaviour of tab and escape keys.
+                  Swap the behavior of tab and escape keys.
                 </div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">
@@ -2191,7 +2493,7 @@
                   </div>
                 </div>
               </div>
-              <div class="section layout">
+              <div class="section layout fullWidth">
                 <h1>layout override</h1>
                 <div class="text">
                   With this setting you can emulate other layouts. This setting
@@ -2346,7 +2648,9 @@
               <div class="section paceCaret" section="">
                 <h1>pace caret</h1>
                 <div class="text">
-                  Displays a second caret that moves at constant speed.
+                  Displays a second caret that moves at constant speed. The
+                  repeat option enables a pace caret when a test is repeated
+                  that will have the wpm of the previous test.
                 </div>
                 <div class="buttons">
                   <div
@@ -2375,6 +2679,14 @@
                   </div>
                   <div
                     class="button"
+                    paceCaret="repeat"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    repeat
+                  </div>
+                  <div
+                    class="button"
                     paceCaret="custom"
                     tabindex="0"
                     onclick="this.blur();"
@@ -2389,6 +2701,20 @@
                     min="0"
                     value=""
                   />
+                </div>
+              </div>
+              <div class="section repeatedPace" section="">
+                <h1>repeated pace</h1>
+                <div class="text">
+                  When repeating a test, a pace caret will automatically be enabled for one test with the speed of your previous test. It does not override the pace caret if it's already enabled.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
                 </div>
               </div>
               <div class="section paceCaretStyle" section="">
@@ -2573,6 +2899,14 @@
                 <div class="buttons">
                   <div
                     class="button"
+                    highlightMode="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
                     highlightMode="letter"
                     tabindex="0"
                     onclick="this.blur();"
@@ -2665,89 +2999,6 @@
                   </div>
                 </div>
               </div>
-              <div class="section keymapMode">
-                <h1>keymap</h1>
-                <div class="text">
-                  Displays your current layout while taking a test. React shows
-                  what you pressed and Next shows what you need to press next.
-                </div>
-                <div class="buttons">
-                  <div
-                    class="button"
-                    keymapMode="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
-                  </div>
-                  <div
-                    class="button"
-                    keymapMode="static"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    static
-                  </div>
-                  <div
-                    class="button"
-                    keymapMode="react"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    react
-                  </div>
-                  <div
-                    class="button"
-                    keymapMode="next"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    next
-                  </div>
-                </div>
-              </div>
-              <div class="section keymapStyle">
-                <h1>keymap style</h1>
-                <!-- <div class="text">Displays the keymap in a different style.</div> -->
-                <div class="buttons">
-                  <div
-                    class="button"
-                    keymapStyle="staggered"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    staggered
-                  </div>
-                  <div
-                    class="button"
-                    keymapStyle="matrix"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    matrix
-                  </div>
-                  <div
-                    class="button"
-                    keymapStyle="split"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    split
-                  </div>
-                  <div
-                    class="button"
-                    keymapStyle="split_matrix"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    split matrix
-                  </div>
-                </div>
-              </div>
-              <div class="section keymapLayout">
-                <h1>keymap layout</h1>
-                <div class="buttons"></div>
-              </div>
               <div class="section fontSize">
                 <h1>font size</h1>
                 <div class="text">Change the font size of the test words.</div>
@@ -2794,7 +3045,7 @@
                   </div>
                 </div>
               </div>
-              <div class="section fontFamily">
+              <div class="section fontFamily fullWidth">
                 <h1>font family</h1>
                 <!-- <div class="text">Change the font family for the site</div> -->
                 <div class="buttons"></div>
@@ -2845,6 +3096,118 @@
                   </div>
                 </div>
               </div>
+              <div class="section keymapMode">
+                <h1>keymap</h1>
+                <div class="text">
+                  Displays your current layout while taking a test. React shows
+                  what you pressed and Next shows what you need to press next.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    keymapMode="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    keymapMode="static"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    static
+                  </div>
+                  <div
+                    class="button"
+                    keymapMode="react"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    react
+                  </div>
+                  <div
+                    class="button"
+                    keymapMode="next"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    next
+                  </div>
+                </div>
+              </div>
+              <div class="section keymapStyle fullWidth">
+                <h1>keymap style</h1>
+                <!-- <div class="text">Displays the keymap in a different style.</div> -->
+                <div class="buttons">
+                  <div
+                    class="button"
+                    keymapStyle="staggered"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    staggered
+                  </div>
+                  <div
+                    class="button"
+                    keymapStyle="matrix"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    matrix
+                  </div>
+                  <div
+                    class="button"
+                    keymapStyle="split"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    split
+                  </div>
+                  <div
+                    class="button"
+                    keymapStyle="split_matrix"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    split matrix
+                  </div>
+                </div>
+              </div>
+              <div class="section keymapLegendStyle fullWidth">
+                <h1>keymap legend style</h1>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    keymapLegendStyle="lowercase"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    lowercase
+                  </div>
+                  <div
+                    class="button"
+                    keymapLegendStyle="uppercase"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    uppercase
+                  </div>
+                  <div
+                    class="button"
+                    keymapLegendStyle="blank"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    blank
+                  </div>
+                </div>
+              </div>
+              <div class="section keymapLayout fullWidth">
+                <h1>keymap layout</h1>
+                <div class="buttons"></div>
+              </div>
               <div class="sectionSpacer"></div>
             </div>
 
@@ -2886,12 +3249,100 @@
                   </div>
                 </div>
               </div>
-              <div class="section randomTheme">
-                <h1>randomise theme</h1>
+              <div class="section customBackgroundSize">
+                <h1>custom background</h1>
+                <div class="text">
+                  Set an image url to be a custom background image. Cover fits
+                  the image to cover the screen. Contain fits the image to be
+                  fully visible. Max fits the image corner to corner.
+                </div>
+                <div>
+                  <div class="inputAndButton">
+                    <input
+                      type="text"
+                      placeholder="image url"
+                      class="input"
+                      tabindex="0"
+                      onClick="this.select();"
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
+                  </div>
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      customBackgroundSize="cover"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      cover
+                    </div>
+                    <div
+                      class="button"
+                      customBackgroundSize="contain"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      contain
+                    </div>
+                    <div
+                      class="button"
+                      customBackGroundSize="max"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      max
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="section customBackgroundFilter fullWidth">
+                <h1>custom background filter</h1>
+                <div class="text">
+                  Apply various effects to the custom background.
+                </div>
+                <div class="groups">
+                  <div class="group blur">
+                    <div class="title">blur</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="5" value="0" step="0.1" />
+                  </div>
+                  <div class="group brightness">
+                    <div class="title">brightness</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="2" value="1" step="0.1" />
+                  </div>
+                  <div class="group saturate">
+                    <div class="title">saturate</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="2" value="1" step="0.1" />
+                  </div>
+                  <div class="group opacity">
+                    <div class="title">opacity</div>
+                    <div class="value"></div>
+                    <input type="range" min="0" max="1" value="1" step="0.1" />
+                  </div>
+                  <div class="saveContainer">
+                    <div class="save button" style="grid-column: 3">
+                      <!-- <i class="fas fa-save fa-fw"></i> -->
+                      save
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="section randomTheme fullWidth">
+                <h1>randomize theme</h1>
                 <div class="text">
                   After completing a test, the theme will be set to a random
                   one. The random themes are not saved to your config. If set to
-                  'fav' only favourite themes will be randomised.
+                  'fav' only favourite themes will be randomized. If set to
+                  'light' or 'dark', only presets with light or dark background
+                  colors will be randomized, respectively.
                 </div>
                 <div class="buttons">
                   <div
@@ -2916,7 +3367,23 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    fav
+                    favorite
+                  </div>
+                  <div
+                    class="button"
+                    randomTheme="light"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    light
+                  </div>
+                  <div
+                    class="button"
+                    randomTheme="dark"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    dark
                   </div>
                 </div>
               </div>
@@ -3225,7 +3692,7 @@
                     class="button off danger"
                     id="resetPersonalBestsButton"
                     tabindex="0"
-                    onclick="this.blur();simplePopups.resetPersonalBests.show();"
+                    onclick="this.blur();"
                   >
                     reset personal bests
                   </div>
@@ -3241,7 +3708,7 @@
                     class="button off danger"
                     id="updateAccountEmail"
                     tabindex="0"
-                    onclick="this.blur();simplePopups.updateEmail.show();"
+                    onclick="this.blur();"
                   >
                     update email
                   </div>
@@ -3297,9 +3764,9 @@
                   autocomplete="password"
                 />
                 <div>
-                  <label id="rememberMe">
+                  <label id="rememberMe" class="checkbox">
                     <input type="checkbox" checked />
-                    <div class="customCheckbox"></div>
+                    <div class="customTextCheckbox"></div>
                     Remember me
                   </label>
                 </div>
@@ -3717,35 +4184,34 @@
           <div class="leftright">
             <div class="left">
               <div>
-                <i class="far fa-fw fa-heart"></i>
-                Crafted by Miodec
-              </div>
-              <div>
                 <i class="fas fa-fw fa-code"></i>
-                Contribute on
                 <a href="https://github.com/Miodec/monkeytype" target="_blank">
                   GitHub
                 </a>
               </div>
               <div>
                 <i class="fab fa-fw fa-discord"></i>
-                Join the
-                <a href="https://www.discord.gg/monkeytype" class="discordLink">
-                  Discord server
+                <a
+                  href="https://www.discord.gg/monkeytype"
+                  target="_blank"
+                  class="discordLink"
+                >
+                  Discord
+                </a>
+              </div>
+              <div>
+                <i class="fab fa-fw fa-twitter"></i>
+                <a href="https://twitter.com/monkeytypegame" target="_blank">
+                  Twitter
                 </a>
               </div>
               <div>
                 <i class="fas fa-fw fa-donate"></i>
-                <span id="supportMeButton">Support this project</span>
-                <!-- <a href="https://www.patreon.com/monkeytype">Patreon</a>
-                , via
-                <a href="https://www.paypal.me/jackbartnik" target="_blank">
-                  PayPal
-                </a>
-                or by
-                <a href="https://monkeytype.store" target="_blank">
-                  buying merch
-                </a> -->
+                <span id="supportMeButton">Donate</span>
+              </div>
+              <div>
+                <i class="fas fa-user-shield"></i>
+                <a href="privacy-policy.html" target="_blank">Privacy Policy</a>
               </div>
             </div>
             <div class="right">
@@ -3762,10 +4228,6 @@
               <div>
                 <i class="fas fa-code-branch"></i>
                 <span class="version">version</span>
-              </div>
-              <div>
-                <i class="fas fa-user-shield"></i>
-                <a href="privacy-policy.html">Privacy Policy</a>
               </div>
               <!-- <div>
                 <i class="fas fa-file"></i>
