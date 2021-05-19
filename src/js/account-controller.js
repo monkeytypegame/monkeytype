@@ -39,6 +39,12 @@ export function signIn() {
           expires: 100000,
         });
         Cookies.set("email", response.data.user.email, { expires: 100000 });
+        Cookies.set("emailVerified", response.data.user.emailVerified, {
+          expires: 100000,
+        });
+        Cookies.set("creationTime", response.data.user.metadata.creationTime, {
+          expires: 100000,
+        });
       } else {
         //set user login cookie to persist only as long as the session lives
         Cookies.set("accessToken", response.data.accessToken, { expires: 1 });
@@ -50,6 +56,12 @@ export function signIn() {
           expires: 100000,
         });
         Cookies.set("email", response.data.user.email, { expires: 100000 });
+        Cookies.set("emailVerified", response.data.user.emailVerified, {
+          expires: 100000,
+        });
+        Cookies.set("creationTime", response.data.user.metadata.creationTime, {
+          expires: 100000,
+        });
       }
       userStateChanged(response.data.user);
     })
@@ -157,6 +169,10 @@ function signUp() {
       Cookies.set("uid", usr._id, { expires: 100000 });
       Cookies.set("displayName", usr.name, { expires: 100000 });
       Cookies.set("email", usr.email, { expires: 100000 });
+      Cookies.set("emailVerified", usr.emailVerified, { expires: 100000 });
+      Cookies.set("creationTime", response.data.user.metadata.creationTime, {
+        expires: 100000,
+      });
       //Cookies.set('refreshToken', response.data.refreshToken);
       AllTimeStats.clear();
       Notifications.add("Account created", 1, 3);
@@ -230,7 +246,7 @@ $(".signOut").click((e) => {
   signOut();
 });
 
-function userStateChanged(user) {
+export function userStateChanged(user) {
   if (user) {
     // User is signed in.
     $(".pageAccount .content p.accountVerificatinNotice").remove();

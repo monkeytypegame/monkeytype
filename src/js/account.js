@@ -293,10 +293,16 @@ export function update() {
   function cont() {
     console.log("updating account page");
     ThemeColors.update();
+    console.log("step 1");
     ChartController.accountHistory.updateColors();
+    console.log("step 2");
     ChartController.accountActivity.updateColors();
+    console.log("step 3");
     AllTimeStats.update();
+    console.log("step 4");
+
     PbTables.update();
+    console.log("step 5");
 
     let chartData = [];
     let wpmChartData = [];
@@ -335,6 +341,7 @@ export function update() {
     filteredResults = [];
     $(".pageAccount .history table tbody").empty();
     DB.getSnapshot().results.forEach((result) => {
+      console.log(result);
       let tt = 0;
       if (result.testDuration == undefined) {
         //test finished before testDuration field was introduced - estimate
@@ -353,6 +360,7 @@ export function update() {
       }
       totalSeconds += tt;
 
+      console.log("before before");
       //apply filters
       try {
         let resdiff = result.difficulty;
@@ -361,7 +369,7 @@ export function update() {
         }
         if (!ResultFilters.getFilter("difficulty", resdiff)) return;
         if (!ResultFilters.getFilter("mode", result.mode)) return;
-
+        console.log("Check 1");
         if (result.mode == "time") {
           let timefilter = "custom";
           if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
@@ -375,6 +383,7 @@ export function update() {
           }
           if (!ResultFilters.getFilter("words", wordfilter)) return;
         }
+        console.log("Check 2");
 
         if (result.quoteLength != null) {
           let filter = null;
@@ -393,6 +402,7 @@ export function update() {
           )
             return;
         }
+        console.log("Check 3");
 
         let langFilter = ResultFilters.getFilter("language", result.language);
 
@@ -403,13 +413,13 @@ export function update() {
           langFilter = true;
         }
         if (!langFilter) return;
-
+        console.log("Check 4");
         let puncfilter = "off";
         if (result.punctuation) {
           puncfilter = "on";
         }
         if (!ResultFilters.getFilter("punctuation", puncfilter)) return;
-
+        console.log("Check 5");
         let numfilter = "off";
         if (result.numbers) {
           numfilter = "on";
@@ -423,7 +433,7 @@ export function update() {
         }
 
         let tagHide = true;
-
+        console.log("Check 6");
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
           if (DB.getSnapshot().tags.length > 0) {
@@ -454,6 +464,7 @@ export function update() {
 
         let datehide = true;
 
+        console.log("Made it before here");
         if (
           ResultFilters.getFilter("date", "all") ||
           (ResultFilters.getFilter("date", "last_day") &&
@@ -479,7 +490,7 @@ export function update() {
         ResultFilters.reset();
         ResultFilters.updateActive();
       }
-
+      console.log("Made it here");
       //filters done
       //=======================================
 
@@ -599,6 +610,7 @@ export function update() {
     let activityChartData_time = [];
     let activityChartData_avgWpm = [];
     let lastTimestamp = 0;
+    console.log("here 6");
     Object.keys(activityChartData).forEach((date) => {
       let datecheck;
       if (lastTimestamp > 0) {
@@ -642,7 +654,7 @@ export function update() {
       });
       lastTimestamp = date;
     });
-
+    console.log("here 7");
     ChartController.accountActivity.data.datasets[0].data = activityChartData_time;
     ChartController.accountActivity.data.datasets[1].data = activityChartData_avgWpm;
 
@@ -731,9 +743,11 @@ export function update() {
         Math.round(totalCons10 / Math.min(last10, consCount)) + "%"
       );
     }
-
+    console.log("here 8");
     $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
-
+    console.log(testCount);
+    console.log(testRestarts);
+    console.log("here 9");
     $(".pageAccount .testsCompleted .val").text(
       `${testCount}(${Math.floor(
         (testCount / (testCount + testRestarts)) * 100
@@ -781,6 +795,7 @@ export function update() {
       250
     );
   }
+  console.log("here last");
   if (DB.getSnapshot() === null) {
     Notifications.add(`Missing account data. Please refresh.`, -1);
     $(".pageAccount .preloader").html("Missing account data. Please refresh.");

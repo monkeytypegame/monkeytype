@@ -37,10 +37,16 @@ export function setSnapshot(newSnapshot) {
 export function currentUser() {
   const token = Cookies.get("accessToken");
   if (token) {
+    //maybe user object could be stored in localStorage
+    // I think tokens should continue to stay in cookies though
     const user = {
       uid: Cookies.get("uid"),
       displayName: Cookies.get("displayName"),
       email: Cookies.get("email"),
+      metadata: {
+        creationTime: Cookies.get("creationTime"),
+      },
+      emailVerified: Cookies.get("emailVerified"),
     };
     return user;
   } else {

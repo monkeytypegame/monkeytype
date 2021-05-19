@@ -14,7 +14,7 @@ const userSchema = new Schema(
     presets: [{ type: Schema.Types.Mixed, default: {} }],
     tags: [{ type: Schema.Types.Mixed, default: {} }],
     favouriteThemes: [],
-    refactored: { type: Boolean, default: false },
+    refactored: { type: Boolean, default: true },
     banned: { type: Boolean, default: false },
     verified: { type: Boolean, default: false }, //what's the difference between verified and email verified
     emailVerified: { type: Boolean, default: false },

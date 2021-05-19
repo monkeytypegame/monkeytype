@@ -6,6 +6,8 @@ import * as Settings from "./settings";
 import * as RouteController from "./route-controller";
 import * as UI from "./ui";
 import * as SignOutButton from "./sign-out-button";
+import * as AccountController from "./account-controller";
+import * as DB from "./db";
 
 console.log("redy loaded");
 ManualRestart.set();
@@ -59,4 +61,6 @@ $(document).ready(() => {
       }
     });
   Settings.settingsFillPromise.then(Settings.update);
+  let user = DB.currentUser();
+  if (user) AccountController.userStateChanged(user);
 });
