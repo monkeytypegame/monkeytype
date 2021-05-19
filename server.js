@@ -369,7 +369,10 @@ async function stripAndSave(uid, obj) {
   if (obj.blindMode === false) delete obj.blindMode;
   if (obj.difficulty === "normal") delete obj.difficulty;
   if (obj.funbox === "none") delete obj.funbox;
-  if (obj.language === "english") delete obj.language;
+  //stripping english causes issues in result filtering; this line:
+  //let langFilter = ResultFilters.getFilter("language", result.language);
+  //returns false if language isn't defined in result
+  //if (obj.language === "english") delete obj.language;
   if (obj.numbers === false) delete obj.numbers;
   if (obj.punctuation === false) delete obj.punctuation;
 
