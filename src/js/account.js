@@ -726,8 +726,8 @@ export function update() {
       );
     }
     $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
-    console.log(testCount);
-    console.log(testRestarts);
+    console.log("Test count: " + testCount);
+    console.log("Test restarts: " + testRestarts);
     $(".pageAccount .testsCompleted .val").text(
       `${testCount}(${Math.floor(
         (testCount / (testCount + testRestarts)) * 100

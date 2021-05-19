@@ -384,6 +384,7 @@ async function stripAndSave(uid, obj) {
 }
 
 async function getIncrementedTypingStats(userData, resultObj) {
+  let userGlobalStats = userData.globalStats;
   try {
     let newStarted;
     let newCompleted;
@@ -403,20 +404,20 @@ async function getIncrementedTypingStats(userData, resultObj) {
         )}`
       );
 
-    if (userData.startedTests === undefined) {
+    if (userGlobalStats.started === undefined) {
       newStarted = resultObj.restartCount + 1;
     } else {
-      newStarted = userData.startedTests + resultObj.restartCount + 1;
+      newStarted = userGlobalStats.started + resultObj.restartCount + 1;
     }
-    if (userData.completedTests === undefined) {
+    if (userGlobalStats.completed === undefined) {
       newCompleted = 1;
     } else {
-      newCompleted = userData.completedTests + 1;
+      newCompleted = userGlobalStats.completed + 1;
     }
-    if (userData.timeTyping === undefined) {
+    if (userGlobalStats.time === undefined) {
       newTime = tt;
     } else {
-      newTime = userData.timeTyping + tt;
+      newTime = userGlobalStats.time + tt;
     }
     // db.collection("users")
     //   .doc(uid)
@@ -428,9 +429,9 @@ async function getIncrementedTypingStats(userData, resultObj) {
     incrementPublicTypingStats(resultObj.restartCount + 1, 1, tt);
 
     return {
-      newStarted: newStarted,
-      newCompleted: newCompleted,
-      newTime: roundTo2(newTime),
+      started: newStarted,
+      completed: newCompleted,
+      time: roundTo2(newTime),
     };
   } catch (e) {
     console.error(`Error while incrementing stats for user ${uid}: ${e}`);
