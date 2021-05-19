@@ -7,6 +7,8 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { User } = require("./usermodel");
 
+// MIDDLEWARE &  SETUP
+
 const app = express();
 const { Schema } = mongoose;
 
@@ -33,155 +35,7 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// API
-
-app.post("/api/updateName", (req, res) => {
-  //this might be a put/patch request
-  //update the name of user with given uid
-  const uid = req.body.uid;
-  const name = req.body.name;
-});
-
-app.post("/api/sendEmailVerification", (req, res) => {
-  const uid = req.body.uid;
-  //Add send Email verification code here
-  //should be a seperate sendEmailVerification function that can be called from sign up as well
-  res.sendStatus(200);
-});
-
-app.post("/api/signIn", (req, res) => {
-  /* Takes email and password */
-  //Login and send tokens
-  User.findOne({ email: req.body.email }, (err, user) => {
-    if (err) res.status(500).send({ error: err });
-    if (user == null) {
-      res.status(500).send({ error: "No user found with that email" });
-    }
-    bcrypt.compare(req.body.password, user.password, (err, result) => {
-      if (err)
-        res.status(500).send({ error: "Error during password validation" });
-      if (result) {
-        //if password matches hash
-        const accessToken = jwt.sign(
-          { name: user.name },
-          process.env.ACCESS_TOKEN_SECRET
-        );
-        const refreshToken = jwt.sign(
-          { name: user.name },
-          process.env.REFRESH_TOKEN_SECRET
-        );
-        user.refreshTokens.push(refreshToken);
-        user.save();
-        const retUser = {
-          uid: user._id,
-          displayName: user.name,
-          email: user.email,
-          emailVerified: user.emailVerified,
-          metadata: { creationTime: user.createdAt },
-        };
-        res.json({
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-          user: retUser,
-        });
-      } else {
-        //if password doesn't match hash
-        res.status(500).send({ error: "Password invalid" });
-      }
-    });
-  });
-});
-
-app.post("/api/signUp", (req, res) => {
-  /* Takes name, email, password */
-  //check if name has been taken
-  User.exists({ name: req.body.name }).then((exists) => {
-    //should also check if email is used
-    if (exists) {
-      //user with that name already exists
-      res.status(500).send({ error: "Username taken" });
-    }
-    bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-      if (err) console.log(err);
-      const newuser = new User({
-        name: req.body.name,
-        email: req.body.email,
-        emailVerified: false,
-        password: hash,
-      });
-      newuser
-        .save()
-        .then((user) => {
-          //send email verification
-
-          //add account created event to analytics
-
-          //return user data and access token
-          const accessToken = jwt.sign(
-            { name: req.body.name },
-            process.env.ACCESS_TOKEN_SECRET
-          );
-          const refreshToken = jwt.sign(
-            { name: user.name },
-            process.env.REFRESH_TOKEN_SECRET
-          );
-          user.refreshTokens.push(refreshToken);
-          user.save();
-          const retUser = {
-            uid: user._id,
-            displayName: user.name,
-            email: user.email,
-            emailVerified: user.emailVerified,
-            metadata: { creationTime: user.createdAt },
-          };
-          res.json({
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-            user: retUser,
-          });
-        })
-        .catch((e) => {
-          console.log(e);
-          res.status(500).send({ error: "Error when adding user" });
-        });
-    });
-  });
-});
-
-app.post("/api/refreshToken", (req, res) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.sendStatus(401);
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, identity) => {
-    if (err) return res.sendStatus(403);
-    User.findOne({ name: identity.name }, (err, user) => {
-      if (!user.refreshTokens.includes(token)) return res.sendStatus(403);
-      const accessToken = jwt.sign(
-        { name: identity.name },
-        process.env.ACCESS_TOKEN_SECRET
-      );
-      res.json({ accessToken: accessToken });
-    });
-  });
-});
-
-app.post("/api/passwordReset", (req, res) => {
-  const email = req.body.email;
-  //send email to the passed email requesting password reset
-  res.sendStatus(200);
-});
-
-app.get("/api/fetchSnapshot", authenticateToken, (req, res) => {
-  /* Takes token and returns snap */
-  User.findOne({ name: req.name }, (err, user) => {
-    if (err) res.status(500).send({ error: err });
-    //populate snap object with data from user document
-    let snap = user;
-    delete snap.password;
-    //return user data
-    res.json({ snap: snap });
-  });
-});
+// NON-ROUTE FUNCTIONS
 
 function validateResult(result) {
   if (result.wpm > result.rawWpm) {
@@ -382,6 +236,42 @@ async function stripAndSave(uid, obj) {
   });
 }
 
+function incrementT60Bananas(uid, result, userData) {
+  try {
+    let best60;
+    try {
+      best60 = Math.max(
+        ...userData.personalBests.time[60].map((best) => best.wpm)
+      );
+      if (!Number.isFinite(best60)) {
+        throw "Not finite";
+      }
+    } catch (e) {
+      best60 = undefined;
+    }
+
+    if (best60 != undefined && result.wpm < best60 - best60 * 0.25) {
+      // console.log("returning");
+      return;
+    } else {
+      //increment
+      // console.log("checking");
+      User.findOne({ _id: uid }, (err, user) => {
+        if (user.bananas === undefined) {
+          user.bananas.t60bananas = 1;
+        } else {
+          user.bananas.t60bananas += 1;
+        }
+        user.save();
+      });
+    }
+  } catch (e) {
+    console.log(
+      "something went wrong when trying to increment bananas " + e.message
+    );
+  }
+}
+
 async function incrementGlobalTypingStats(userData, resultObj) {
   let userGlobalStats = userData.globalStats;
   try {
@@ -457,6 +347,156 @@ async function incrementPublicTypingStats(started, completed, time) {
   }
   */
 }
+
+// API
+
+app.post("/api/updateName", (req, res) => {
+  //this might be a put/patch request
+  //update the name of user with given uid
+  const uid = req.body.uid;
+  const name = req.body.name;
+});
+
+app.post("/api/sendEmailVerification", (req, res) => {
+  const uid = req.body.uid;
+  //Add send Email verification code here
+  //should be a seperate sendEmailVerification function that can be called from sign up as well
+  res.sendStatus(200);
+});
+
+app.post("/api/signIn", (req, res) => {
+  /* Takes email and password */
+  //Login and send tokens
+  User.findOne({ email: req.body.email }, (err, user) => {
+    if (err) res.status(500).send({ error: err });
+    if (user == null) {
+      res.status(500).send({ error: "No user found with that email" });
+    }
+    bcrypt.compare(req.body.password, user.password, (err, result) => {
+      if (err)
+        res.status(500).send({ error: "Error during password validation" });
+      if (result) {
+        //if password matches hash
+        const accessToken = jwt.sign(
+          { name: user.name },
+          process.env.ACCESS_TOKEN_SECRET
+        );
+        const refreshToken = jwt.sign(
+          { name: user.name },
+          process.env.REFRESH_TOKEN_SECRET
+        );
+        user.refreshTokens.push(refreshToken);
+        user.save();
+        const retUser = {
+          uid: user._id,
+          displayName: user.name,
+          email: user.email,
+          emailVerified: user.emailVerified,
+          metadata: { creationTime: user.createdAt },
+        };
+        res.json({
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          user: retUser,
+        });
+      } else {
+        //if password doesn't match hash
+        res.status(500).send({ error: "Password invalid" });
+      }
+    });
+  });
+});
+
+app.post("/api/signUp", (req, res) => {
+  /* Takes name, email, password */
+  //check if name has been taken
+  User.exists({ name: req.body.name }).then((exists) => {
+    //should also check if email is used
+    if (exists) {
+      //user with that name already exists
+      res.status(500).send({ error: "Username taken" });
+    }
+    bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+      if (err) console.log(err);
+      const newuser = new User({
+        name: req.body.name,
+        email: req.body.email,
+        emailVerified: false,
+        password: hash,
+      });
+      newuser
+        .save()
+        .then((user) => {
+          //send email verification
+
+          //add account created event to analytics
+
+          //return user data and access token
+          const accessToken = jwt.sign(
+            { name: req.body.name },
+            process.env.ACCESS_TOKEN_SECRET
+          );
+          const refreshToken = jwt.sign(
+            { name: user.name },
+            process.env.REFRESH_TOKEN_SECRET
+          );
+          user.refreshTokens.push(refreshToken);
+          user.save();
+          const retUser = {
+            uid: user._id,
+            displayName: user.name,
+            email: user.email,
+            emailVerified: user.emailVerified,
+            metadata: { creationTime: user.createdAt },
+          };
+          res.json({
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            user: retUser,
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+          res.status(500).send({ error: "Error when adding user" });
+        });
+    });
+  });
+});
+
+app.post("/api/refreshToken", (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token == null) return res.sendStatus(401);
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, identity) => {
+    if (err) return res.sendStatus(403);
+    User.findOne({ name: identity.name }, (err, user) => {
+      if (!user.refreshTokens.includes(token)) return res.sendStatus(403);
+      const accessToken = jwt.sign(
+        { name: identity.name },
+        process.env.ACCESS_TOKEN_SECRET
+      );
+      res.json({ accessToken: accessToken });
+    });
+  });
+});
+
+app.post("/api/passwordReset", (req, res) => {
+  const email = req.body.email;
+  //send email to the passed email requesting password reset
+  res.sendStatus(200);
+});
+
+app.get("/api/fetchSnapshot", authenticateToken, (req, res) => {
+  /* Takes token and returns snap */
+  User.findOne({ name: req.name }, (err, user) => {
+    if (err) res.status(500).send({ error: err });
+    //populate snap object with data from user document
+    let snap = user;
+    delete snap.password;
+    //return user data
+    res.json({ snap: snap });
+  });
+});
 
 app.post("/api/testCompleted", authenticateToken, (req, res) => {
   //return createdId
@@ -847,8 +887,6 @@ app.post("/api/analytics/testCompletedInvalid", (req, res) => {
   const completedEvent = req.body.completedEvent;
   res.sendStatus(200);
 });
-
-// CLOUD FUNCTIONS
 
 // STATIC FILES
 app.get("/privacy-policy", (req, res) => {
