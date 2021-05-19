@@ -379,11 +379,10 @@ async function stripAndSave(uid, obj) {
   await User.findOne({ _id: uid }, (err, user) => {
     user.results.push(obj);
     user.save();
-    return user._id;
   });
 }
 
-async function getIncrementedTypingStats(userData, resultObj) {
+async function incrementGlobalTypingStats(userData, resultObj) {
   let userGlobalStats = userData.globalStats;
   try {
     let newStarted;
@@ -427,12 +426,14 @@ async function getIncrementedTypingStats(userData, resultObj) {
     //     timeTyping: roundTo2(newTime),
     //   });
     incrementPublicTypingStats(resultObj.restartCount + 1, 1, tt);
-
-    return {
-      started: newStarted,
-      completed: newCompleted,
-      time: roundTo2(newTime),
-    };
+    User.findOne({ name: userData.name }, (err, user) => {
+      user.globalStats = {
+        started: newStarted,
+        completed: newCompleted,
+        time: roundTo2(newTime),
+      };
+      user.save();
+    });
   } catch (e) {
     console.error(`Error while incrementing stats for user ${uid}: ${e}`);
   }
@@ -699,17 +700,13 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
           // let dailylb = values[1].insertedAt;
           let ispb = values[0];
           let tagPbs = values[1];
-          let createdDocId = await stripAndSave(request.uid, request.obj);
           // console.log(values);
 
           if (obj.mode === "time" && String(obj.mode2) === "60") {
             incrementT60Bananas(request.uid, obj, userdata);
           }
 
-          let newTypingStats = await getIncrementedTypingStats(userdata, obj);
-
-          user.globalStats = newTypingStats;
-          user.save();
+          await incrementGlobalTypingStats(userdata, obj);
 
           let returnobj = {
             resultCode: null,
@@ -717,7 +714,6 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
             // dailyLeaderboard: dailylb,
             // lbBanned: banned,
             name: name,
-            createdId: createdDocId,
             needsToVerify: values[0].needsToVerify,
             needsToVerifyEmail: values[0].needsToVerifyEmail,
             tagPbs: tagPbs,
@@ -731,11 +727,15 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
                 logobj
               )}`
             );
-
-            await db
-              .collection(`users/${request.uid}/results/`)
-              .doc(createdDocId)
-              .update({ isPb: true });
+            /*
+            User.findOne({ name: userdata.name }, (err, user2) => {
+              console.log(user2.results[user2.results.length-1])
+              console.log(user2.results[user2.results.length-1]).isPb
+              user2.results[user2.results.length-1].isPb = true;
+              user2.save();
+            })
+            */
+            request.obj.isPb = true;
             if (
               obj.mode === "time" &&
               String(obj.mode2) === "60" &&
@@ -754,11 +754,13 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
             let logobj = request.obj;
             logobj.keySpacing = "removed";
             logobj.keyDuration = "removed";
+            request.obj.isPb = false;
             console.log(
               `saved result for ${request.uid} - ${JSON.stringify(logobj)}`
             );
             returnobj.resultCode = 1;
           }
+          stripAndSave(request.uid, request.obj);
           res.status(200).send({ data: returnobj });
           return;
         })
