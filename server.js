@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
-const { User } = require("./models");
+const { User } = require("./usermodel");
 
 const app = express();
 const { Schema } = mongoose;
