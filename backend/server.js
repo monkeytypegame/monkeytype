@@ -1186,51 +1186,66 @@ app.post("/api/checkLeaderboards", (req, res) => {
 
 // ANALYTICS API
 
-function newAnalyticsEvent() {}
+function newAnalyticsEvent(event, data) {
+  let newEvent = {
+    event: event,
+  };
+  if (data) newEvent.data = data;
+  const newEventObj = new Analytics(newEvent);
+  newEventObj.save();
+}
 
 app.post("/api/analytics/usedCommandLine", (req, res) => {
   //save command used from command line to analytics
-  const command = req.body.command;
+  newAnalyticsEvent("usedCommandLine", { command: req.body.command });
   res.sendStatus(200);
 });
 
 app.post("/api/analytics/changedLanguage", (req, res) => {
   //save what a user changed their language to
-  const language = req.body.language;
+  newAnalyticsEvent("changedLanguage", { language: req.body.language });
   res.sendStatus(200);
 });
 
 app.post("/api/analytics/changedTheme", (req, res) => {
   //save what a user changed their theme to
-  const theme = req.body.theme;
+  newAnalyticsEvent("changedTheme", { theme: req.body.theme });
   res.sendStatus(200);
 });
 
 app.post("/api/analytics/testStarted", (req, res) => {
   //log that a test was started
+  newAnalyticsEvent("testStarted");
   res.sendStatus(200);
 });
 
 app.post("/api/analytics/testStartedNoLogin", (req, res) => {
   //log that a test was started without login
+  newAnalyticsEvent("testStartedNoLogin");
   res.sendStatus(200);
 });
 
 app.post("/api/analytics/testCompleted", (req, res) => {
   //log that a test was completed
-  const completedEvent = req.body.completedEvent;
+  newAnalyticsEvent("testCompleted", {
+    completedEvent: req.body.completedEvent,
+  });
   res.sendStatus(200);
 });
 
 app.post("/api/analytics/testCompletedNoLogin", (req, res) => {
   //log that a test was completed and user was not logged in
-  const completedEvent = req.body.completedEvent;
+  newAnalyticsEvent("testCompletedNoLogin", {
+    completedEvent: req.body.completedEvent,
+  });
   res.sendStatus(200);
 });
 
 app.post("/api/analytics/testCompletedInvalid", (req, res) => {
   //log that a test was completed and is invalid
-  const completedEvent = req.body.completedEvent;
+  newAnalyticsEvent("testCompletedInvalid", {
+    completedEvent: req.body.completedEvent,
+  });
   res.sendStatus(200);
 });
 

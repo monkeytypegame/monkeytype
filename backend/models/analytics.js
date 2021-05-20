@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const analyticsSchema = new Schema(
   {
     event: { type: String, required: true },
-    data: { type: Schema.Types.Mixed, default: {} },
+    data: { type: Schema.Types.Mixed },
   },
   {
     timestamps: true,

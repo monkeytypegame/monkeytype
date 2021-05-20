@@ -8,6 +8,11 @@
 - Personal bests items should not be arrays
   - should be objects that are set on new pb
 - Move user data to localstorage instead of cookies
+- Result is duplicated in analytics
+
+  - Should results be moved to a seperate collection
+
+    - Does the entire test need to be in the analytics collection?
 
   - make sure refresh token won't expire
     - make refresh token expire after session if don't remeber me is set?
