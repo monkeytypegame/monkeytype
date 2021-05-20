@@ -1,3 +1,0 @@
-- Reverse list of results on account page
-- spinning wheel on account page should dissapear after data is loaded
-- Account data should be updated when new result is added/test completed
