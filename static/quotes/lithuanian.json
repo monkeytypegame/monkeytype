@@ -139,17 +139,23 @@
       "length": 22,
 	  "id": 22
     }
-	  {
+    {
       "text": "Šaly diendaržio durų, ant didžiulės spalių krūvos, guli senas Brisius - žilas, apžabalęs. Matyti jisai dar mato, bet tik kaip per dūmus, ir savo žmogaus labai dažnai nebepažįsta. Sunki senatvė ir jam: visų užmirštas, apleistas. Patsai gerai jaučia, kad mažai kam bereikalingas.",
       "source": "Brisiaus galas",
       "length": 42,
       "id": 23
     }
-	  {
+    {
       "text": "Nusiminęs, nebežinodamas, ką daryti, atžagaria ranka numečiau lanką ir strėlas ir neatsigręždamas parlėkiau namo. Širdyje jaučiau skausmą ir sunkumą: tarsi didelė didelė našta slėgė krūtinę. Tik trečią dieną drįsau išeiti laukan: katytė gulėjo aukštielninka, nebegyva. Čia pat prie jos buvo numesti lankas ir strėlos. Nutvėręs nuo žemės, lanką ir strėlas sulaužiau į šipulius ir toli išmėčiau po lauką.",
       "source": "Kliudžiau",
       "length": 58,
       "id": 24
+    }
+    {
+      "text": "Geri vyrai geroj girioj gerą girą gėrė ir gerdami gyrė: geriems vyrams geroj girioj gerą girą gera gert.",
+      "source": "Lietuviškos greitakalbės",
+      "length": 18,
+      "id": 25
     }
   ]
 }
