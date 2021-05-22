@@ -499,6 +499,14 @@ app.get("/api/fetchSnapshot", authenticateToken, (req, res) => {
   });
 });
 
+function stdDev(array) {
+  const n = array.length;
+  const mean = array.reduce((a, b) => a + b) / n;
+  return Math.sqrt(
+    array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
+  );
+}
+
 app.post("/api/testCompleted", authenticateToken, (req, res) => {
   //return createdId
   //return user data
