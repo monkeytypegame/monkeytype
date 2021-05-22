@@ -16,6 +16,8 @@
 
   - Should be a setting in the .env
 
+- Are personal bests calculated from actual result data?
+  - Setting a low pb after resetting personal bests doesn't register on the scoreboard
 - make sure refresh token won't expire
   - make refresh token expire after session if don't remeber me is set?
 - Keep jwt and refresh in cookies?

@@ -4,6 +4,7 @@ import * as Notifications from "./notifications";
 import * as AccountController from "./account-controller";
 import * as DB from "./db";
 import * as Settings from "./settings";
+import axiosInstance from "./axios-instance";
 
 export let list = {};
 class SimplePopup {
@@ -245,10 +246,7 @@ list.resetPersonalBests = new SimplePopup(
   () => {
     try {
       Loader.show();
-
-      CloudFunctions.resetPersonalBests({
-        uid: DB.currentUser().uid,
-      }).then((res) => {
+      axiosInstance.post("/api/resetPersonalBests").then((res) => {
         if (res) {
           Loader.hide();
           Notifications.add(

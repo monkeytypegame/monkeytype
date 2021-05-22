@@ -106,30 +106,6 @@ function isUsernameValid(name) {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-exports.reserveDisplayName = functions.https.onCall(
-  async (request, response) => {
-    try {
-      let udata = await db.collection("users").doc(request.uid).get();
-      udata = udata.data();
-      if (request.name.toLowerCase() === udata.name.toLowerCase()) {
-        db.collection("takenNames").doc(request.name.toLowerCase()).set(
-          {
-            taken: true,
-          },
-          { merge: true }
-        );
-        console.log(`Reserved name ${request.name}`);
-      } else {
-        console.error(
-          `Could not reserve name. ${request.name.toLowerCase()} != ${udata.name.toLowerCase()}`
-        );
-      }
-    } catch (e) {
-      console.error(`Could not reserve name. ${e}`);
-    }
-  }
-);
-
 exports.changeDisplayName = functions.https.onCall(
   async (request, response) => {
     try {
@@ -164,94 +140,6 @@ exports.changeDisplayName = functions.https.onCall(
       }
     } catch (e) {
       return { status: -999, message: "Error: " + e.message };
-    }
-  }
-);
-
-exports.clearName = functions.auth.user().onDelete((user) => {
-  db.collection("takenNames").doc(user.displayName.toLowerCase()).delete();
-  db.collection("users").doc(user.uid).delete();
-});
-
-exports.checkNameAvailability = functions.https.onRequest(
-  async (request, response) => {
-    response.set("Access-Control-Allow-Origin", origin);
-    if (request.method === "OPTIONS") {
-      // Send response to OPTIONS requests
-      response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-      response.set(
-        "Access-Control-Allow-Headers",
-        "Authorization,Content-Type"
-      );
-      response.set("Access-Control-Max-Age", "3600");
-      response.status(204).send("");
-      return;
-    }
-    request = request.body.data;
-
-    // 1 - available
-    // -1 - unavailable (taken)
-    // -2 - not valid name
-    // -999 - unknown error
-    try {
-      if (!isUsernameValid(request.name)) {
-        response.status(200).send({
-          data: {
-            resultCode: -2,
-            message: "Username is not valid",
-          },
-        });
-        return;
-      }
-
-      let takendata = await db
-        .collection("takenNames")
-        .doc(request.name.toLowerCase())
-        .get();
-
-      takendata = takendata.data();
-
-      if (takendata !== undefined && takendata.taken) {
-        response.status(200).send({
-          data: {
-            resultCode: -1,
-            message: "Username is taken",
-          },
-        });
-        return;
-      } else {
-        response.status(200).send({
-          data: {
-            resultCode: 1,
-            message: "Username is available",
-          },
-        });
-        return;
-      }
-
-      // return getAllNames().then((data) => {
-      //   let available = 1;
-      //   data.forEach((name) => {
-      //     try {
-      //       if (name.toLowerCase() === request.name.toLowerCase()) available = -1;
-      //     } catch (e) {
-      //       //
-      //     }
-      //   });
-      //   return available;
-      // });
-    } catch (e) {
-      console.error(
-        `Error while checking name availability for ${request.name}:` +
-          e.message
-      );
-      response.status(200).send({
-        data: {
-          resultCode: -999,
-          message: "Unexpected error: " + e,
-        },
-      });
-      return;
     }
   }
 );
@@ -300,23 +188,6 @@ exports.removeSmallTestsAndQPB = functions.https.onCall(
       console.log("removed small tests for " + uid);
     } catch (e) {
       console.log(`something went wrong for ${uid}: ${e.message}`);
-    }
-  }
-);
-
-exports.resetPersonalBests = functions.https.onCall(
-  async (request, response) => {
-    let uid = request.uid;
-
-    try {
-      var user = await db.collection("users").doc(uid);
-      await user.update({ personalBests: {} });
-      return true;
-    } catch (e) {
-      console.log(
-        `something went wrong when deleting personal bests for ${uid}: ${e.message}`
-      );
-      return false;
     }
   }
 );
@@ -486,47 +357,6 @@ function stdDev(array) {
     array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
   );
 }
-
-exports.requestTest = functions.https.onRequest((request, response) => {
-  response.set("Access-Control-Allow-Origin", origin);
-  response.set("Access-Control-Allow-Headers", "*");
-  response.set("Access-Control-Allow-Credentials", "true");
-  response.status(200).send({ data: "test" });
-});
-
-exports.getPatreons = functions.https.onRequest(async (request, response) => {
-  response.set("Access-Control-Allow-Origin", origin);
-  response.set("Access-Control-Allow-Headers", "*");
-  response.set("Access-Control-Allow-Credentials", "true");
-  if (request.method === "OPTIONS") {
-    // Send response to OPTIONS requests
-    response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-    response.set("Access-Control-Allow-Headers", "Authorization,Content-Type");
-    response.set("Access-Control-Max-Age", "3600");
-    response.status(204).send("");
-    return;
-  }
-  request = request.body.data;
-  try {
-    let patreon = await db.collection("patreon").doc("patreons").get();
-    let data = patreon.data().list;
-
-    data = data.sort((a, b) => {
-      return b.value - a.value;
-    });
-
-    let ret = [];
-    data.forEach((pdoc) => {
-      ret.push(pdoc.name);
-    });
-
-    response.status(200).send({ data: ret });
-    return;
-  } catch (e) {
-    response.status(200).send({ e });
-    return;
-  }
-});
 
 exports.verifyUser = functions.https.onRequest(async (request, response) => {
   response.set("Access-Control-Allow-Origin", origin);

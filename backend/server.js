@@ -1361,6 +1361,21 @@ app.post("/api/removeTag", authenticateToken, (req, res) => {
   }
 });
 
+app.post("/api/resetPersonalBests", authenticateToken, (req, res) => {
+  try {
+    User.findOne({ name: req.name }, (err, user) => {
+      if (err) res.status(500).send({ error: err });
+      user.personalBests = {};
+      user.save();
+    });
+    return true;
+  } catch (e) {
+    console.log(
+      `something went wrong when deleting personal bests for ${uid}: ${e.message}`
+    );
+    return false;
+  }
+});
 // ANALYTICS API
 
 function newAnalyticsEvent(event, data) {
