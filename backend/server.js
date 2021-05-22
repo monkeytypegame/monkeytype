@@ -1184,6 +1184,101 @@ app.post("/api/checkLeaderboards", (req, res) => {
 });
 */
 
+function isTagPresetNameValid(name) {
+  if (name === null || name === undefined || name === "") return false;
+  if (name.length > 16) return false;
+  return /^[0-9a-zA-Z_.-]+$/.test(name);
+}
+
+//could use /api/tags/add instead
+app.post("/api/addTag", authenticateToken, (req, res) => {
+  try {
+    if (!isTagPresetNameValid(req.body.tagName)) return { resultCode: -1 };
+    User.findOne({ name: req.name }, (err, user) => {
+      if (err) res.status(500).send({ error: err });
+      if (user.tags.includes(req.body.tagName)) {
+        return { resultCode: -999, message: "Duplicate tag" };
+      }
+      const tagObj = { name: req.body.tagName };
+      user.tags.push(tagObj);
+      user.save();
+    })
+      .then((updatedUser) => {
+        console.log(`user ${req.name} created a tag: ${req.body.tagName}`);
+        return {
+          resultCode: 1,
+          id: updatedUser.tags[updatedUser.tags.length - 1]._id,
+        };
+      })
+      .catch((e) => {
+        console.error(
+          `error while creating tag for user ${req.name}: ${e.message}`
+        );
+        return { resultCode: -999, message: e.message };
+      });
+  } catch (e) {
+    console.error(`error adding tag for ${req.name} - ${e}`);
+    return { resultCode: -999, message: e.message };
+  }
+});
+
+app.post("/api/editTag", authenticateToken, (req, res) => {
+  try {
+    if (!isTagPresetNameValid(req.body.tagName)) return { resultCode: -1 };
+    User.findOne({ name: req.name }, (err, user) => {
+      if (err) res.status(500).send({ error: err });
+      for (var i = 0; i < user.tags.length; i++) {
+        if (user.tags[i]._id == req.body.tagId) {
+          user.tags[i].name = req.body.tagName;
+        }
+      }
+      user.save();
+    })
+      .then((updatedUser) => {
+        console.log(`user ${req.name} updated a tag: ${req.name}`);
+        return {
+          resultCode: 1,
+        };
+      })
+      .catch((e) => {
+        console.error(
+          `error while updating tag for user ${req.name}: ${e.message}`
+        );
+        return { resultCode: -999, message: e.message };
+      });
+  } catch (e) {
+    console.error(`error updating tag for ${req.name} - ${e}`);
+    return { resultCode: -999, message: e.message };
+  }
+});
+
+app.post("/api/removeTag", authenticateToken, (req, res) => {
+  try {
+    User.findOne({ name: req.name }, (err, user) => {
+      if (err) res.status(500).send({ error: err });
+      for (var i = 0; i < user.tags.length; i++) {
+        if (user.tags[i]._id == req.body.tagId) {
+          user.tags.splice(i, 1);
+        }
+      }
+      user.save();
+    })
+      .then((updatedUser) => {
+        console.log(`user ${req.name} deleted a tag`);
+        return {
+          resultCode: 1,
+        };
+      })
+      .catch((e) => {
+        console.error(`error deleting tag for user ${req.name}: ${e.message}`);
+        return { resultCode: -999 };
+      });
+  } catch (e) {
+    console.error(`error deleting tag for ${req.name} - ${e}`);
+    return { resultCode: -999 };
+  }
+});
+
 // ANALYTICS API
 
 function newAnalyticsEvent(event, data) {

@@ -759,96 +759,6 @@ function updateDiscordRole(discordId, wpm) {
   });
 }
 
-function isTagPresetNameValid(name) {
-  if (name === null || name === undefined || name === "") return false;
-  if (name.length > 16) return false;
-  return /^[0-9a-zA-Z_.-]+$/.test(name);
-}
-
-exports.addTag = functions.https.onCall((request, response) => {
-  try {
-    if (!isTagPresetNameValid(request.name)) {
-      return { resultCode: -1 };
-    } else {
-      return db
-        .collection(`users/${request.uid}/tags`)
-        .add({
-          name: request.name,
-        })
-        .then((e) => {
-          console.log(`user ${request.uid} created a tag: ${request.name}`);
-          return {
-            resultCode: 1,
-            id: e.id,
-          };
-        })
-        .catch((e) => {
-          console.error(
-            `error while creating tag for user ${request.uid}: ${e.message}`
-          );
-          return { resultCode: -999, message: e.message };
-        });
-    }
-  } catch (e) {
-    console.error(`error adding tag for ${request.uid} - ${e}`);
-    return { resultCode: -999, message: e.message };
-  }
-});
-
-exports.editTag = functions.https.onCall((request, response) => {
-  try {
-    if (!isTagPresetNameValid(request.name)) {
-      return { resultCode: -1 };
-    } else {
-      return db
-        .collection(`users/${request.uid}/tags`)
-        .doc(request.tagid)
-        .update({
-          name: request.name,
-        })
-        .then((e) => {
-          console.log(`user ${request.uid} updated a tag: ${request.name}`);
-          return {
-            resultCode: 1,
-          };
-        })
-        .catch((e) => {
-          console.error(
-            `error while updating tag for user ${request.uid}: ${e.message}`
-          );
-          return { resultCode: -999, message: e.message };
-        });
-    }
-  } catch (e) {
-    console.error(`error updating tag for ${request.uid} - ${e}`);
-    return { resultCode: -999, message: e.message };
-  }
-});
-
-exports.removeTag = functions.https.onCall((request, response) => {
-  try {
-    return db
-      .collection(`users/${request.uid}/tags`)
-      .doc(request.tagid)
-      .delete()
-      .then((e) => {
-        console.log(`user ${request.uid} deleted a tag`);
-        return {
-          resultCode: 1,
-        };
-      })
-      .catch((e) => {
-        console.error(
-          `error deleting tag for user ${request.uid}: ${e.message}`
-        );
-        return { resultCode: -999 };
-      });
-  } catch (e) {
-    console.error(`error deleting tag for ${request.uid} - ${e}`);
-    return { resultCode: -999 };
-  }
-});
-
 exports.updateResultTags = functions.https.onCall((request, response) => {
   try {
     let validTags = true;
@@ -1121,21 +1031,6 @@ exports.removePreset = functions.https.onCall((request, response) => {
     return { resultCode: -999 };
   }
 });
-
-function generate(n) {
-  var add = 1,
-    max = 12 - add;
-
-  if (n > max) {
-    return generate(max) + generate(n - max);
-  }
-
-  max = Math.pow(10, n + add);
-  var min = max / 10; // Math.pow(10, n) basically
-  var number = Math.floor(Math.random() * (max - min + 1)) + min;
-
-  return ("" + number).substring(add);
-}
 
 class Leaderboard {
   constructor(size, mode, mode2, type, starting) {

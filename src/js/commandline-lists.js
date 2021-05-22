@@ -213,11 +213,11 @@ export function updateTagCommands() {
       }
 
       commandsTags.list.push({
-        id: "toggleTag" + tag.id,
+        id: "toggleTag" + tag._id,
         display: dis,
         sticky: true,
         exec: () => {
-          TagController.toggle(tag.id);
+          TagController.toggle(tag._id);
           TestUI.updateModesNotice();
           let txt = tag.name;
 
@@ -228,11 +228,11 @@ export function updateTagCommands() {
           }
           if (Commandline.isSingleListCommandLineActive()) {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html("Change tags > " + txt);
           } else {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(txt);
           }
         },

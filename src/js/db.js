@@ -480,7 +480,7 @@ export async function saveConfig(config) {
 // export async functio(tagId, wpm) {
 //   function cont() {
 //     dbSnapshot.tags.forEach((tag) => {
-//       if (tag.id === tagId) {
+//       if (tag._id === tagId) {
 //         tag.pb = wpm;
 //       }
 //     });

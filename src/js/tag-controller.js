@@ -7,7 +7,7 @@ export function saveActiveToLocalStorage() {
   try {
     DB.getSnapshot().tags.forEach((tag) => {
       if (tag.active === true) {
-        tags.push(tag.id);
+        tags.push(tag._id);
       }
     });
     // let d = new Date();
@@ -23,7 +23,7 @@ export function saveActiveToLocalStorage() {
 
 export function toggle(tagid, nosave = false) {
   DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.id === tagid) {
+    if (tag._id === tagid) {
       if (tag.active === undefined) {
         tag.active = true;
       } else {

@@ -98,7 +98,7 @@ export function getFilter(group, filter) {
 
 export function loadTags(tags) {
   tags.forEach((tag) => {
-    defaultResultFilters.tags[tag.id] = true;
+    defaultResultFilters.tags[tag._id] = true;
   });
 }
 
@@ -301,7 +301,7 @@ export function updateTags() {
     DB.getSnapshot().tags.forEach((tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-      ).append(`<div class="button" filter="${tag.id}">${tag.name}</div>`);
+      ).append(`<div class="button" filter="${tag._id}">${tag.name}</div>`);
     });
   } else {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
@@ -408,7 +408,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
       filters["tags"]["none"] = false;
-      filters["tags"][tag.id] = true;
+      filters["tags"][tag._id] = true;
     }
   });
 

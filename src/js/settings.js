@@ -406,11 +406,11 @@ function showActiveTags() {
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
       $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
+        `.pageSettings .section.tags .tagsList .tag[id='${tag._id}'] .active`
       ).html('<i class="fas fa-check-square"></i>');
     } else {
       $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
+        `.pageSettings .section.tags .tagsList .tag[id='${tag._id}'] .active`
       ).html('<i class="fas fa-square"></i>');
     }
   });
@@ -457,7 +457,7 @@ function refreshTagsSettingsSection() {
         tagPbString = `PB: ${tag.pb}`;
       }
       tagsEl.append(`
-        <div class="tag" id="${tag.id}">
+        <div class="tag" id="${tag._id}">
             <div class="active" active="${tag.active}">
                 <i class="fas fa-${tag.active ? "check-" : ""}square"></i>
             </div>
