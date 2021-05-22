@@ -553,5 +553,10 @@
     "name": "blueberry_dark",
     "bgColor": "#212b42",
     "textColor": "#df4576"
+  },
+  {
+    "name": "fledgling",
+    "bgColor": "#3b363f",
+    "textColor": "#fc6e83"
   }
 ]
