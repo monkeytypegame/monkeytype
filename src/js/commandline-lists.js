@@ -13,8 +13,10 @@ import * as TestUI from "./test-ui";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
+import * as PresetController from "./preset-controller";
 import * as Commandline from "./commandline";
 import * as CustomText from "./custom-text";
+import * as Settings from "./settings";
 
 export let current = [];
 
@@ -241,6 +243,30 @@ export function updateTagCommands() {
   }
 }
 
+let commandsPresets = {
+  title: "Apply preset...",
+  list: [],
+};
+
+export function updatePresetCommands() {
+  if (DB.getSnapshot().presets.length > 0) {
+    commandsPresets.list = [];
+
+    DB.getSnapshot().presets.forEach((preset) => {
+      let dis = preset.name;
+
+      commandsPresets.list.push({
+        id: "applyPreset" + preset.id,
+        display: dis,
+        exec: () => {
+          PresetController.apply(preset.id);
+          TestUI.updateModesNotice();
+        },
+      });
+    });
+  }
+}
+
 let commandsRepeatQuotes = {
   title: "Change repeat quotes...",
   list: [
@@ -384,6 +410,20 @@ let commandsRandomTheme = {
         UpdateConfig.setRandomTheme("fav");
       },
     },
+    {
+      id: "setRandomLight",
+      display: "light",
+      exec: () => {
+        UpdateConfig.setRandomTheme("light");
+      },
+    },
+    {
+      id: "setRandomDark",
+      display: "dark",
+      exec: () => {
+        UpdateConfig.setRandomTheme("dark");
+      },
+    },
   ],
 };
 
@@ -505,13 +545,6 @@ let commandsPaceCaretStyle = {
   title: "Change pace caret style...",
   list: [
     {
-      id: "setPaceCaretStyleOff",
-      display: "off",
-      exec: () => {
-        UpdateConfig.setPaceCaretStyle("off");
-      },
-    },
-    {
       id: "setPaceCaretStyleDefault",
       display: "line",
       exec: () => {
@@ -593,6 +626,7 @@ let commandsPaceCaret = {
     },
   ],
 };
+
 
 let commandsMinWpm = {
   title: "Change min wpm mode...",
@@ -702,6 +736,13 @@ let commandsKeymapLegendStyle = {
 let commandsHighlightMode = {
   title: "Change highlight mode...",
   list: [
+    {
+      id: "setHighlightModeOff",
+      display: "off",
+      exec: () => {
+        UpdateConfig.setHighlightMode("off");
+      },
+    },
     {
       id: "setHighlightModeLetter",
       display: "letter",
@@ -1314,6 +1355,17 @@ export let defaultCommands = {
       },
     },
     {
+      visible: false,
+      id: "applyPreset",
+      display: "Apply preset...",
+      subgroup: true,
+      exec: () => {
+        updatePresetCommands();
+        current.push(commandsPresets);
+        Commandline.show();
+      },
+    },
+    {
       id: "changeConfidenceMode",
       display: "Change confidence mode...",
       subgroup: true,
@@ -1613,6 +1665,13 @@ export let defaultCommands = {
       },
     },
     {
+      id: "toggleRepeatedPace",
+      display: "Toggle repeated pace",
+      exec: () => {
+        UpdateConfig.toggleRepeatedPace();
+      },
+    },
+    {
       id: "changeTimerStyle",
       display: "Change timer/progress style...",
       subgroup: true,
@@ -1751,6 +1810,26 @@ export let defaultCommands = {
       },
     },
     {
+      id: "changeCustomLayoutfluid",
+      display: "Change custom layoutfluid...",
+      defaultValue: "qwerty dvorak colemak",
+      input: true,
+      exec: (input) => {
+        UpdateConfig.setCustomLayoutfluid(input);
+        if (Funbox.active === "layoutfluid") TestLogic.restart();
+        // UpdateConfig.setLayout(
+        //   Config.customLayoutfluid
+        //     ? Config.customLayoutfluid.split("_")[0]
+        //     : "qwerty"
+        // );
+        // UpdateConfig.setKeymapLayout(
+        //   Config.customLayoutfluid
+        //     ? Config.customLayoutfluid.split("_")[0]
+        //     : "qwerty"
+        // );
+      },
+    },
+    {
       id: "changeFontSize",
       display: "Change font size...",
       subgroup: true,
@@ -1778,9 +1857,9 @@ export let defaultCommands = {
       },
     },
     {
-      id: "randomiseTheme",
+      id: "randomizeTheme",
       display: "Next random theme",
-      exec: () => ThemeController.randomiseTheme(),
+      exec: () => ThemeController.randomizeTheme(),
     },
     {
       id: "viewTypingPage",
@@ -1929,6 +2008,32 @@ export let defaultCommands = {
       exec: () => {
         current.push(commandsCopyWordsToClipboard);
         Commandline.show();
+      },
+    },
+    {
+      id: "importSettingsJSON",
+      display: "Import settings JSON",
+      input: true,
+      exec: (input) => {
+        try {
+          UpdateConfig.apply(JSON.parse(input));
+          UpdateConfig.saveToLocalStorage();
+          Settings.update();
+          Notifications.add("Done",1);
+        } catch (e) {
+          Notifications.add(
+            "An error occured while importing settings: " + e,
+            -1
+          );
+        }
+      },
+    },
+    {
+      id: "exportSettingsJSON",
+      display: "Export settings JSON",
+      input: true,
+      defaultValue:"",
+      exec: (input) => {
       },
     },
   ],

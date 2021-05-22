@@ -277,7 +277,7 @@ export function toggle(group, filter) {
     save();
   } catch (e) {
     Notifications.add(
-      "Something went wrong toggling filter. Reverting to defaults",
+      "Something went wrong toggling filter. Reverting to defaults.",
       0
     );
     console.log("toggling filter error");

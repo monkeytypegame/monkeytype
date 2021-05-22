@@ -174,14 +174,22 @@ export async function activate(funbox, mode) {
       Settings.groups.keymapMode.updateButton();
       // UpdateConfig.setSavedLayout(Config.layout);
       rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
-      UpdateConfig.setLayout("qwerty");
+      UpdateConfig.setLayout(
+        Config.customLayoutfluid
+          ? Config.customLayoutfluid.split("#")[0]
+          : "qwerty"
+      );
       Settings.groups.layout.updateButton();
       rememberSetting(
         "keymapLayout",
         Config.keymapLayout,
         UpdateConfig.setKeymapLayout
       );
-      UpdateConfig.setKeymapLayout("qwerty");
+      UpdateConfig.setKeymapLayout(
+        Config.customLayoutfluid
+          ? Config.customLayoutfluid.split("#")[0]
+          : "qwerty"
+      );
       Settings.groups.keymapLayout.updateButton();
       TestLogic.restart();
     } else if (funbox === "memory") {
@@ -225,7 +233,7 @@ export async function activate(funbox, mode) {
   return true;
 }
 export function setFunbox(funbox, mode) {
-  if (TestLogic.active || TestUI.resultVisible) {
+  if (TestLogic.active) {
     Notifications.add(
       "You can only change the funbox before starting a test.",
       0

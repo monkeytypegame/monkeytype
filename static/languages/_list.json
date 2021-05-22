@@ -41,6 +41,7 @@
   ,"czech_10k"
   ,"slovak"
   ,"slovak_1k"
+  ,"slovak_10k"
   ,"slovenian"
   ,"croatian"
   ,"dutch"
@@ -78,6 +79,7 @@
   ,"lithuanian"
   ,"lithuanian_1k"
   ,"lithuanian_3k"
+  ,"bulgarian"
   ,"toki_pona"
   ,"twitch_emotes"
   ,"pig_latin"
@@ -92,4 +94,6 @@
   ,"code_go"
   ,"code_rust"
   ,"code_ruby"
+  ,"code_r"
+  ,"code_swift"
 ]

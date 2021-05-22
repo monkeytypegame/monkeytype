@@ -1,7 +1,13 @@
 [
   {
     "name": "english",
-      "languages": ["english", "english_1k", "english_10k", "english_25k", "english_450k"]
+    "languages": [
+      "english",
+      "english_1k",
+      "english_10k",
+      "english_25k",
+      "english_450k"
+    ]
   },
   {
     "name": "spanish",
@@ -29,7 +35,7 @@
   },
   {
     "name": "portuguese",
-    "languages": ["portuguese","portuguese_3k"]
+    "languages": ["portuguese", "portuguese_3k"]
   },
   {
     "name": "lithuanian",
@@ -41,7 +47,13 @@
   },
   {
     "name": "german",
-    "languages": ["german", "german_1k", "german_10k", "swiss_german", "swiss_german_1k"]
+    "languages": [
+      "german",
+      "german_1k",
+      "german_10k",
+      "swiss_german",
+      "swiss_german_1k"
+    ]
   },
   {
     "name": "greek",
@@ -69,7 +81,7 @@
   },
   {
     "name": "slovak",
-    "languages": ["slovak", "slovak_1k"]
+    "languages": ["slovak", "slovak_1k", "slovak_10k"]
   },
   {
     "name": "slovenian",
@@ -152,6 +164,10 @@
     "languages": ["catalan", "catalan_1k"]
   },
   {
+    "name": "bulgarian",
+    "languages": ["bulgarian"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
@@ -164,7 +180,9 @@
       "code_java",
       "code_go",
       "code_rust",
-      "code_ruby"
+      "code_ruby",
+      "code_r",
+      "code_swift"
     ]
   },
   {

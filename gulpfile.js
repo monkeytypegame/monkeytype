@@ -96,6 +96,7 @@ const refactoredSrc = [
   "./src/js/theme-controller.js",
   "./src/js/config.js",
   "./src/js/tag-controller.js",
+  "./src/js/preset-controller.js",
   "./src/js/ui.js",
   "./src/js/commandline.js",
   "./src/js/commandline-lists.js",
@@ -131,6 +132,7 @@ const refactoredSrc = [
   "./src/js/popups/word-filter-popup.js",
   "./src/js/popups/result-tags-popup.js",
   "./src/js/popups/edit-tags-popup.js",
+  "./src/js/popups/edit-preset-popup.js",
   "./src/js/popups/custom-theme-popup.js",
   "./src/js/popups/import-settings-popup.js",
   "./src/js/popups/custom-background-filter.js",
@@ -161,6 +163,7 @@ const refactoredSrc = [
   "./src/js/test/test-timer.js",
   "./src/js/test/test-config.js",
   "./src/js/test/layout-emulator.js",
+  "./src/js/replay.js",
 ];
 
 //legacy files

@@ -27,6 +27,7 @@ import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
 import * as CloudFunctions from "./cloud-functions";
 import * as TestLeaderboards from "./test-leaderboards";
+import * as Replay from "./replay.js";
 
 export let notSignedInLastResult = null;
 
@@ -163,6 +164,8 @@ export let input = new Input();
 export let corrected = new Corrected();
 export let currentWordIndex = 0;
 export let isRepeated = false;
+export let isPaceRepeat = false;
+export let lastTestWpm = 0;
 export let hasTab = false;
 export let randomQuote = null;
 export let bailout = false;
@@ -173,6 +176,10 @@ export function setActive(tf) {
 
 export function setRepeated(tf) {
   isRepeated = tf;
+}
+
+export function setPaceRepeat(tf) {
+  isPaceRepeat = tf;
 }
 
 export function setHasTab(tf) {
@@ -318,6 +325,8 @@ export function startTest() {
     console.log("Analytics unavailable");
   }
   setActive(true);
+  Replay.startReplayRecording();
+  Replay.replayGetWordsList(words.list);
   TestStats.resetKeypressTimings();
   TimerProgress.restart();
   TimerProgress.show();
@@ -333,7 +342,11 @@ export function startTest() {
   }
 
   try {
-    if (Config.paceCaret !== "off") PaceCaret.start();
+    if (
+      Config.paceCaret !== "off" ||
+      (Config.repeatedPace && isPaceRepeat)
+    )
+      PaceCaret.start();
   } catch (e) {}
   //use a recursive self-adjusting timer to avoid time drift
   TestStats.setStart(performance.now());
@@ -343,6 +356,7 @@ export function startTest() {
 
 export async function init() {
   setActive(false);
+  Replay.stopReplayRecording();
   words.reset();
   TestUI.setCurrentWordElementIndex(0);
   // accuracy = {
@@ -584,8 +598,12 @@ export async function init() {
   }
   if (language.ligatures) {
     $("#words").addClass("withLigatures");
+    $("#resultWordsHistory .words").addClass("withLigatures");
+    $("#resultReplay .words").addClass("withLigatures");
   } else {
     $("#words").removeClass("withLigatures");
+    $("#resultWordsHistory .words").removeClass("withLigatures");
+    $("#resultReplay .words").removeClass("withLigatures");
   }
   // if (Config.mode == "zen") {
   //   // Creating an empty active word element for zen mode
@@ -600,7 +618,12 @@ export async function init() {
   }
 }
 
-export function restart(withSameWordset = false, nosave = false, event) {
+export function restart(
+  withSameWordset = false,
+  nosave = false,
+  event,
+  practiseMissed = false
+) {
   if (TestUI.testRestarting || TestUI.resultCalculating) {
     try {
       event.preventDefault();
@@ -641,8 +664,20 @@ export function restart(withSameWordset = false, nosave = false, event) {
     let testSeconds = TestStats.calculateTestSeconds(performance.now());
     let afkseconds = TestStats.calculateAfkSeconds();
     // incompleteTestSeconds += ;
-    TestStats.incrementIncompleteSeconds(testSeconds - afkseconds);
+    let tt = testSeconds - afkseconds;
+    console.log(
+      `increasing incomplete time by ${tt}s (${testSeconds}s - ${afkseconds}s afk)`
+    );
+    TestStats.incrementIncompleteSeconds(tt);
     TestStats.incrementRestartCount();
+    if (tt > 600) {
+      Notifications.add(
+        `Your time typing just increased by ${Misc.roundTo2(
+          tt / 60
+        )} minutes. If you think this is incorrect please contact Miodec and dont refresh the website.`,
+        -1
+      );
+    }
     // restartCount++;
   }
 
@@ -650,7 +685,11 @@ export function restart(withSameWordset = false, nosave = false, event) {
     $("#words").empty();
   }
 
-  if (PractiseMissed.before.mode !== null && !withSameWordset) {
+  if (
+    PractiseMissed.before.mode !== null &&
+    !withSameWordset &&
+    !practiseMissed
+  ) {
     Notifications.add("Reverting to previous settings.", 0);
     UpdateConfig.setMode(PractiseMissed.before.mode);
     UpdateConfig.setPunctuation(PractiseMissed.before.punctuation);
@@ -666,6 +705,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
   Focus.set(false);
   Caret.hide();
   setActive(false);
+  Replay.stopReplayRecording();
   LiveWpm.hide();
   LiveAcc.hide();
   TimerProgress.hide();
@@ -692,7 +732,7 @@ export function restart(withSameWordset = false, nosave = false, event) {
       !UI.pageTransition &&
       !Config.customTheme
     ) {
-      ThemeController.randomiseTheme();
+      ThemeController.randomizeTheme();
     }
   }
   TestUI.setResultVisible(false);
@@ -709,17 +749,20 @@ export function restart(withSameWordset = false, nosave = false, event) {
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         setRepeated(false);
+        setPaceRepeat(false);
         setHasTab(false);
         await init();
         PaceCaret.init(nosave);
       } else {
         setRepeated(true);
+        setPaceRepeat(true);
         setActive(false);
+        Replay.stopReplayRecording();
         words.resetCurrentIndex();
         input.reset();
-        PaceCaret.init();
         TestUI.showWords();
         Funbox.activate();
+        PaceCaret.init();
       }
       if (Config.mode === "quote") {
         setRepeated(false);
@@ -761,8 +804,16 @@ export function restart(withSameWordset = false, nosave = false, event) {
       $(".pageTest #premidSecondsLeft").text(Config.time);
 
       if (Funbox.active === "layoutfluid") {
-        UpdateConfig.setLayout("qwerty");
-        UpdateConfig.setKeymapLayout("qwerty");
+        UpdateConfig.setLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty"
+        );
+        UpdateConfig.setKeymapLayout(
+          Config.customLayoutfluid
+            ? Config.customLayoutfluid.split("#")[0]
+            : "qwerty"
+        );
         Keymap.highlightKey(
           words
             .getCurrent()
@@ -932,6 +983,7 @@ export function finish(difficultyFailed = false) {
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
     corrected.pushHistory();
+    Replay.replayGetWordsList(input.history);
   }
 
   TestStats.recordKeypressSpacing();
@@ -940,6 +992,7 @@ export function finish(difficultyFailed = false) {
   TestUI.setResultVisible(true);
   TestStats.setEnd(performance.now());
   setActive(false);
+  Replay.stopReplayRecording();
   Focus.set(false);
   Caret.hide();
   LiveWpm.hide();
@@ -949,7 +1002,10 @@ export function finish(difficultyFailed = false) {
   Keymap.hide();
   Funbox.activate("none", null);
 
-  if (Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0) {
+  if (
+    Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0 &&
+    Config.mode !== "time"
+  ) {
     TestStats.setLastSecondNotRound();
   }
 
@@ -976,6 +1032,9 @@ export function finish(difficultyFailed = false) {
     inf = true;
   }
   TestTimer.clear();
+
+  lastTestWpm = stats.wpm;
+
   let testtime = stats.time;
   let afkseconds = TestStats.calculateAfkSeconds();
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
@@ -1092,8 +1151,7 @@ export function finish(difficultyFailed = false) {
     );
   }, 125);
 
-  $("#testModesNotice").addClass("hidden");
-
+  $("#testModesNotice").css("opacity", 0);
   $("#result .stats .leaderboards .bottom").text("");
   $("#result .stats .leaderboards").addClass("hidden");
 
@@ -1698,9 +1756,9 @@ export function finish(difficultyFailed = false) {
   $("#result .stats .testType .bottom").html(testType);
 
   let otherText = "";
-  if (Config.layout !== "default") {
-    otherText += "<br>" + Config.layout;
-  }
+  // if (Config.layout !== "default") {
+  //   otherText += "<br>" + Config.layout;
+  // }
   if (difficultyFailed) {
     otherText += "<br>failed";
   }
@@ -1742,6 +1800,10 @@ export function finish(difficultyFailed = false) {
   }
 
   if (Funbox.funboxSaved !== "none") {
+    let content = Funbox.funboxSaved;
+    if (Funbox.funboxSaved === "layoutfluid") {
+      content += " " + Config.customLayoutfluid.replace(/#/g, " ");
+    }
     ChartController.result.options.annotation.annotations.push({
       enabled: false,
       type: "line",
@@ -1762,7 +1824,7 @@ export function finish(difficultyFailed = false) {
         cornerRadius: 3,
         position: "left",
         enabled: true,
-        content: `${Funbox.funboxSaved}`,
+        content: `${content}`,
         yAdjust: -11,
       },
     });
@@ -1780,6 +1842,7 @@ export function finish(difficultyFailed = false) {
     if (Config.alwaysShowWordsHistory) {
       TestUI.toggleResultWords();
     }
+    $("#testModesNotice").addClass("hidden");
   });
 }
 

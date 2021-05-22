@@ -33,6 +33,7 @@ export async function initSnapshot() {
     results: undefined,
     personalBests: {},
     name: undefined,
+    presets: [],
     tags: [],
     favouriteThemes: [],
     refactored: false,
@@ -69,6 +70,29 @@ export async function initSnapshot() {
           snap.tags.push(tag);
         });
         snap.tags = snap.tags.sort((a, b) => {
+          if (a.name > b.name) {
+            return 1;
+          } else if (a.name < b.name) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+      })
+      .catch((e) => {
+        throw e;
+      });
+    await db
+      .collection(`users/${user.uid}/presets/`)
+      .get()
+      .then((data) => {
+        data.docs.forEach((doc) => {
+          // console.log(doc);
+          let preset = doc.data();
+          preset.id = doc.id;
+          snap.presets.push(preset);
+        });
+        snap.presets = snap.presets.sort((a, b) => {
           if (a.name > b.name) {
             return 1;
           } else if (a.name < b.name) {
@@ -119,6 +143,7 @@ export async function initSnapshot() {
       .catch((e) => {
         throw e;
       });
+    // console.log(snap.presets);
     dbSnapshot = snap;
   } catch (e) {
     console.error(e);
@@ -486,7 +511,7 @@ export async function saveConfig(config) {
       obj: config,
     }).then((d) => {
       AccountButton.loading(false);
-      if (d.data.returnCode !== 1) {
+      if (d.data.resultCode !== 1) {
         Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
       }
       return;

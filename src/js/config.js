@@ -16,6 +16,7 @@ import * as PaceCaret from "./pace-caret";
 import * as UI from "./ui";
 import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
+import LayoutList from "./layouts";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -98,6 +99,7 @@ let defaultConfig = {
   showOutOfFocusWarning: true,
   paceCaret: "off",
   paceCaretCustomSpeed: 100,
+  repeatedPace: true,
   pageWidth: "100",
   chartAccuracy: true,
   chartStyle: "line",
@@ -117,6 +119,7 @@ let defaultConfig = {
   customBackground: "",
   customBackgroundSize: "cover",
   customBackgroundFilter: [0, 1, 1, 1, 1],
+  customLayoutfluid: "qwerty#dvorak#colemak",
 };
 
 function isConfigKeyValid(name) {
@@ -141,7 +144,11 @@ export async function saveToLocalStorage(noDbCheck = false) {
   // });
   let save = config;
   delete save.resultFilters;
-  window.localStorage.setItem("config", JSON.stringify(save));
+  let stringified = JSON.stringify(save);
+  window.localStorage.setItem("config", stringified);
+  CommandlineLists.defaultCommands.list.filter(
+    (command) => command.id == "exportSettingsJSON"
+  )[0].defaultValue = stringified;
   // restartCount = 0;
   if (!noDbCheck) await DB.saveConfig(save);
 }
@@ -500,6 +507,24 @@ export function setPaceCaretCustomSpeed(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+//repeated pace
+export function toggleRepeatedPace() {
+  let pace = !config.repeatedPace;
+  if (pace == undefined) {
+    pace = true;
+  }
+  config.repeatedPace = pace;
+  saveToLocalStorage();
+}
+
+export function setRepeatedPace(pace, nosave) {
+  if (pace == undefined) {
+    pace = true;
+  }
+  config.repeatedPace = pace;
+  if (!nosave) saveToLocalStorage();
+}
+
 //min wpm
 export function setMinWpm(minwpm, nosave) {
   if (minwpm == undefined) {
@@ -732,9 +757,7 @@ export function setPaceCaretStyle(caretStyle, nosave) {
   $("#paceCaret").removeClass("carrot");
   $("#paceCaret").removeClass("banana");
 
-  if (caretStyle == "off") {
-    $("#paceCaret").addClass("off");
-  } else if (caretStyle == "default") {
+  if (caretStyle == "default") {
     $("#paceCaret").addClass("default");
   } else if (caretStyle == "block") {
     $("#paceCaret").addClass("block");
@@ -834,6 +857,11 @@ export function setHighlightMode(mode, nosave) {
     mode = "letter";
   }
   config.highlightMode = mode;
+  // if(TestLogic.active){
+  try{
+  if (!nosave) TestUI.updateWordElement(config.blindMode);
+  }catch{}
+  // }
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1400,6 +1428,37 @@ export function setCustomBackground(value, nosave) {
   }
 }
 
+export function setCustomLayoutfluid(value, nosave) {
+  if (value == null || value == undefined) {
+    value = "qwerty#dvorak#colemak";
+  }
+  value = value.replace(/ /g, "#");
+
+  //validate the layouts
+  let allGood = true;
+  let list = Object.keys(LayoutList);
+  value.split("#").forEach((customLayout) => {
+    if (!list.includes(customLayout)) allGood = false;
+  });
+  if (!allGood) {
+    Notifications.add(
+      "One of the layouts was not found. Make sure the name matches exactly. Reverting to default",
+      0,
+      4
+    );
+    value = "qwerty#dvorak#colemak";
+    nosave = false;
+  }
+  config.customLayoutfluid = value;
+  CommandlineLists.defaultCommands.list.filter(
+    (command) => command.id == "changeCustomLayoutfluid"
+  )[0].defaultValue = value.replace(/#/g, " ");
+  $(".pageSettings .section.customLayoutfluid input").val(
+    value.replace(/#/g, " ")
+  );
+  if (!nosave) saveToLocalStorage();
+}
+
 export function setCustomBackgroundSize(value, nosave) {
   if (value != "cover" && value != "contain" && value != "max") {
     value = "cover";
@@ -1430,6 +1489,7 @@ export function apply(configObj) {
     setTheme(configObj.theme, true);
     setCustomThemeColors(configObj.customThemeColors, true);
     setCustomTheme(configObj.customTheme, true, true);
+    setCustomLayoutfluid(configObj.customLayoutfluid, true);
     setCustomBackground(configObj.customBackground, true);
     setCustomBackgroundSize(configObj.customBackgroundSize, true);
     setCustomBackgroundFilter(configObj.customBackgroundFilter, true);
@@ -1479,6 +1539,7 @@ export function apply(configObj) {
     setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
     setPaceCaret(configObj.paceCaret, true);
     setPaceCaretCustomSpeed(configObj.paceCaretCustomSpeed, true);
+    setRepeatedPace(configObj.repeatedPace, true);
     setPageWidth(configObj.pageWidth, true);
     setChartAccuracy(configObj.chartAccuracy, true);
     setChartStyle(configObj.chartStyle, true);
@@ -1707,6 +1768,18 @@ export function loadFromLocalStorage() {
   }
   TestLogic.restart(false, true);
   loadDone();
+}
+
+export function getConfigChanges() {
+  let configChanges = {};
+  Object.keys(config)
+    .filter((key) => {
+      return config[key] != defaultConfig[key];
+    })
+    .forEach((key) => {
+      configChanges[key] = config[key];
+    });
+  return configChanges;
 }
 
 export function setConfig(newConfig) {

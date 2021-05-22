@@ -20,6 +20,7 @@ import * as TimerProgress from "./timer-progress";
 import * as TestTimer from "./test-timer";
 import * as Focus from "./focus";
 import * as ShiftTracker from "./shift-tracker";
+import * as Replay from "./replay.js";
 
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
@@ -130,6 +131,7 @@ function handleBackspace(event) {
         }
       }
       TestLogic.words.decreaseCurrentIndex();
+      Replay.addReplayEvent("backWord");
       TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
       TestUI.updateActiveElement(true);
       Funbox.toggleScript(TestLogic.words.getCurrent());
@@ -138,6 +140,7 @@ function handleBackspace(event) {
   } else {
     if (Config.confidenceMode === "max") return;
     if (event["ctrlKey"] || event["altKey"]) {
+      Replay.addReplayEvent("clearWord");
       let limiter = " ";
       if (
         TestLogic.input.current.lastIndexOf("-") >
@@ -165,6 +168,7 @@ function handleBackspace(event) {
       TestLogic.input.setCurrent(
         TestLogic.input.current.substring(0, TestLogic.input.current.length - 1)
       );
+      Replay.addReplayEvent("deleteLetter");
     }
     TestUI.updateWordElement(!Config.blindMode);
   }
@@ -201,10 +205,15 @@ function handleSpace(event, isEnter) {
 
   let currentWord = TestLogic.words.getCurrent();
   if (Funbox.active === "layoutfluid" && Config.mode !== "time") {
-    const layouts = ["qwerty", "dvorak", "colemak"];
+    // here I need to check if Config.customLayoutFluid exists because of my scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
+    const layouts = Config.customLayoutfluid
+      ? Config.customLayoutfluid.split("#")
+      : ["qwerty", "dvorak", "colemak"];
     let index = 0;
     let outof = TestLogic.words.length;
-    index = Math.floor((TestLogic.input.history.length + 1) / (outof / 3));
+    index = Math.floor(
+      (TestLogic.input.history.length + 1) / (outof / layouts.length)
+    );
     if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
       Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
     }
@@ -240,6 +249,7 @@ function handleSpace(event, isEnter) {
     if (Funbox.active !== "nospace") {
       Sound.playClick(Config.playSoundOnClick);
     }
+    Replay.addReplayEvent("submitCorrectWord");
   } else {
     //incorrect word
     PaceCaret.handleSpace(false, currentWord);
@@ -298,6 +308,7 @@ function handleSpace(event, isEnter) {
       TestLogic.finish();
       return;
     }
+    Replay.addReplayEvent("submitErrorWord");
   }
 
   TestLogic.corrected.pushHistory();
@@ -618,6 +629,11 @@ function handleAlpha(event) {
   if (Config.stopOnError == "letter" && !thisCharCorrect) {
     return;
   }
+
+  Replay.addReplayEvent(
+    thisCharCorrect ? "correctLetter" : "incorrectLetter",
+    event.key
+  );
 
   //update the active word top, but only once
   if (
