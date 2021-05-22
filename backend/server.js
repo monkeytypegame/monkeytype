@@ -834,10 +834,92 @@ app.get("/api/userResults", authenticateToken, (req, res) => {
   res.sendStatus(200);
 });
 
-app.post("/api/saveConfig", (req, res) => {
-  const config = req.body.config;
-  //parse config object to prevent errors
-  //save passed config object to database
+function isConfigKeyValid(name) {
+  if (name === null || name === undefined || name === "") return false;
+  if (name.length > 30) return false;
+  return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
+}
+
+app.post("/api/saveConfig", authenticateToken, (req, res) => {
+  try {
+    if (req.name === undefined || req.body.obj === undefined) {
+      console.error(`error saving config for ${req.name} - missing input`);
+      return {
+        resultCode: -1,
+        message: "Missing input",
+      };
+    }
+
+    let obj = req.body.obj;
+    let errorMessage = "";
+    let err = false;
+    Object.keys(obj).forEach((key) => {
+      if (err) return;
+      if (!isConfigKeyValid(key)) {
+        err = true;
+        console.error(`${key} failed regex check`);
+        errorMessage = `${key} failed regex check`;
+      }
+      if (err) return;
+      if (key === "resultFilters") return;
+      if (key === "customBackground") return;
+      let val = obj[key];
+      if (Array.isArray(val)) {
+        val.forEach((valarr) => {
+          if (!isConfigKeyValid(valarr)) {
+            err = true;
+            console.error(`${key}: ${valarr} failed regex check`);
+            errorMessage = `${key}: ${valarr} failed regex check`;
+          }
+        });
+      } else {
+        if (!isConfigKeyValid(val)) {
+          err = true;
+          console.error(`${key}: ${val} failed regex check`);
+          errorMessage = `${key}: ${val} failed regex check`;
+        }
+      }
+    });
+    if (err) {
+      console.error(
+        `error saving config for ${request.uid} - bad input - ${JSON.stringify(
+          request.obj
+        )}`
+      );
+      return {
+        resultCode: -1,
+        message: "Bad input. " + errorMessage,
+      };
+    }
+
+    User.findOne({ name: req.name }, (err, user) => {
+      if (err) res.status(500).send({ error: err });
+      user.config = obj;
+      //what does {merge: true} do in firebase
+      user.save();
+    })
+      .then(() => {
+        return {
+          resultCode: 1,
+          message: "Saved",
+        };
+      })
+      .catch((e) => {
+        console.error(
+          `error saving config to DB for ${req.name} - ${e.message}`
+        );
+        return {
+          resultCode: -1,
+          message: e.message,
+        };
+      });
+  } catch (e) {
+    console.error(`error saving config for ${req.name} - ${e}`);
+    return {
+      resultCode: -999,
+      message: e,
+    };
+  }
 });
 
 /*

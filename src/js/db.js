@@ -441,7 +441,7 @@ export async function saveConfig(config) {
     AccountButton.loading(true);
     axiosInstance
       .post("/api/saveConfig", {
-        uid: currentUser().uid,
+        obj: config,
       })
       .then((response) => {
         AccountButton.loading(false);

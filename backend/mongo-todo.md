@@ -9,14 +9,16 @@
   - should be objects that are set on new pb
 - Move user data to localstorage instead of cookies
 - Result is duplicated in analytics
+  - Does entire result need to be stored in analytics
+  - Should result be stored in seperate collection and then referenced in user doc and analytics?
+- Loader should hide after tag is added, deleted, or edited
+- Fix localhost, production, development server detection
 
-  - Should results be moved to a seperate collection
+  - Should be a setting in the .env
 
-    - Does the entire test need to be in the analytics collection?
-
-  - make sure refresh token won't expire
-    - make refresh token expire after session if don't remeber me is set?
-  - Keep jwt and refresh in cookies?
+- make sure refresh token won't expire
+  - make refresh token expire after session if don't remeber me is set?
+- Keep jwt and refresh in cookies?
 
 - Get somebody else to check over security due to my lack of expertise
 
