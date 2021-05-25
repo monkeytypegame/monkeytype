@@ -137,6 +137,7 @@ export async function activate(funbox, mode) {
       );
       UpdateConfig.setKeymapMode("next");
       Settings.groups.keymapMode.updateButton();
+      TestUI.showWords();
       TestLogic.restart();
     }
 
