@@ -20,6 +20,8 @@
 - Tests started and completed doesn't increment when quitting a running test
   - Doesn't work as I expected in live version either, no issue
 - Create configSchema
+- Figure out if filteredResults.reverse(); in account.js is going to cause efficiency issues
+  - Could reverse processing of results, but that would add more complexity to code
 
 ## After beta is ready
 

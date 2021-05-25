@@ -580,6 +580,7 @@ export function update() {
 
       totalWpm += result.wpm;
     });
+    filteredResults.reverse();
     loadMoreLines();
     ////////
 
