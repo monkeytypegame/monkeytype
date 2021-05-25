@@ -19,6 +19,7 @@
     - When a specific script is run, a certain mode will be activated
 - Tests started and completed doesn't increment when quitting a running test
   - Doesn't work as I expected in live version either, no issue
+- Create configSchema
 
 ## After beta is ready
 

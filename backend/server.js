@@ -173,16 +173,18 @@ async function checkIfPB(uid, obj, userdata) {
     });
     //checked all pbs, nothing found - meaning this is a new pb
     if (!found) {
-      pbs[obj.mode][obj.mode2] = {
-        language: obj.language,
-        difficulty: obj.difficulty,
-        punctuation: obj.punctuation,
-        wpm: obj.wpm,
-        acc: obj.acc,
-        raw: obj.rawWpm,
-        timestamp: Date.now(),
-        consistency: obj.consistency,
-      };
+      pbs[obj.mode][obj.mode2] = [
+        {
+          language: obj.language,
+          difficulty: obj.difficulty,
+          punctuation: obj.punctuation,
+          wpm: obj.wpm,
+          acc: obj.acc,
+          raw: obj.rawWpm,
+          timestamp: Date.now(),
+          consistency: obj.consistency,
+        },
+      ];
       toUpdate = true;
     }
   } catch (e) {
