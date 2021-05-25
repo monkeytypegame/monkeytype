@@ -6,6 +6,11 @@ const tagSchema = new Schema({
   personalBests: { type: Schema.Types.Mixed },
 });
 
+const presetSchema = new Schema({
+  name: { type: String, required: true },
+  config: { type: Schema.Types.Mixed }, //will be config schema after it's created
+});
+
 const resultSchema = new Schema({
   wpm: { type: Number, required: true },
   rawWpm: { type: Number, required: true },
@@ -52,7 +57,7 @@ const userSchema = new Schema(
       zen: { type: Schema.Types.Mixed, default: {} },
     },
     name: { type: String, required: true },
-    presets: [{ type: Schema.Types.Mixed, default: {} }],
+    presets: [{ type: presetSchema, default: {} }],
     tags: [{ type: tagSchema, default: {} }],
     favouriteThemes: [],
     refactored: { type: Boolean, default: true },

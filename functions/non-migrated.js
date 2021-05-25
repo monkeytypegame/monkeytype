@@ -39,6 +39,35 @@ exports.getPatreons = functions.https.onRequest(async (request, response) => {
   }
 });
 
+exports.clearTagPb = functions.https.onCall((request, response) => {
+  //It looks like this button is not used anymore
+  try {
+    return db
+      .collection(`users/${request.uid}/tags`)
+      .doc(request.tagid)
+      .update({
+        pb: 0,
+      })
+      .then((e) => {
+        return {
+          resultCode: 1,
+        };
+      })
+      .catch((e) => {
+        console.error(
+          `error deleting tag pb for user ${request.uid}: ${e.message}`
+        );
+        return {
+          resultCode: -999,
+          message: e.message,
+        };
+      });
+  } catch (e) {
+    console.error(`error deleting tag pb for ${request.uid} - ${e}`);
+    return { resultCode: -999 };
+  }
+});
+
 async function getAllNames() {
   // return admin
   //   .auth()

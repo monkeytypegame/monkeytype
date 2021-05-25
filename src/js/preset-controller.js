@@ -6,7 +6,7 @@ import * as Settings from "./settings";
 export function apply(id) {
   // console.log(DB.getSnapshot().presets);
   DB.getSnapshot().presets.forEach((preset) => {
-    if (preset.id == id) {
+    if (preset._id == id) {
       Config.apply(JSON.parse(JSON.stringify(preset.config)));
       Notifications.add("Preset applied", 1, 2);
       Config.saveToLocalStorage();
