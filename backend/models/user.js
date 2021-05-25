@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const tagSchema = new Schema({
   name: { type: String, required: true },
-  //should be pb storage here i think
+  personalBests: { type: Schema.Types.Mixed },
 });
 
 const resultSchema = new Schema({
@@ -35,7 +35,7 @@ const resultSchema = new Schema({
     err: [{ type: Number }],
   },
   customText: { type: Schema.Types.Mixed },
-  keySpacingStats: String, //not sure that this needs to exist, it's set as null in all of mine
+  keySpacingStats: { type: Schema.Types.Mixed }, //not sure that this needs to exist, it's set as null in all of mine
   name: { type: String, required: true }, //name of the user who took the test //should probably be typistName/username or something
   isPb: { type: Boolean, required: true },
 });

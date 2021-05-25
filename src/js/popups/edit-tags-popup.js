@@ -2,7 +2,6 @@ import * as ResultTagsPopup from "./result-tags-popup";
 import * as ResultFilters from "./result-filters";
 import * as Loader from "./loader";
 import * as DB from "./db";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as Settings from "./settings";
 import axiosInstance from "./axios-instance";

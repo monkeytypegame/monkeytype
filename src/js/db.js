@@ -1,16 +1,10 @@
 import { loadTags } from "./result-filters";
 import * as AccountButton from "./account-button";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import axiosInstance from "./axios-instance";
 import Cookies from "js-cookie";
 
-//const db = firebase.firestore();
-//db.settings({ experimentalForceLongPolling: true });
-
 let dbSnapshot = null;
-
-//I think that a lot of these functions could be simplified by api calls
 
 export function updateName(uid, name) {
   //db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
@@ -57,7 +51,6 @@ export function currentUser() {
 export async function initSnapshot() {
   //send api request with token that returns tags, presets, and data needed for snap
   if (currentUser() == null) return false;
-  const token = Cookies.get("accessToken");
   await axiosInstance
     .get("/api/fetchSnapshot")
     .then((response) => {
@@ -335,21 +328,20 @@ export async function getLocalTagPB(
 ) {
   function cont() {
     let ret = 0;
-    let filteredtag = dbSnapshot.tags.filter((t) => t.id === tagId)[0];
+    let filteredtag = dbSnapshot.tags.filter((t) => t._id === tagId)[0];
     try {
-      filteredtag.personalBests[mode][mode2].forEach((pb) => {
-        if (
-          pb.punctuation == punctuation &&
-          pb.difficulty == difficulty &&
-          pb.language == language
-        ) {
-          ret = pb.wpm;
-        }
-      });
-      return ret;
+      const pb = filteredtag.personalBests[mode][mode2];
+      if (
+        pb.punctuation == punctuation &&
+        pb.difficulty == difficulty &&
+        pb.language == language
+      ) {
+        ret = pb.wpm;
+      }
     } catch (e) {
-      return ret;
+      console.log(e);
     }
+    return ret;
   }
 
   let retval;
@@ -375,7 +367,7 @@ export async function saveLocalTagPB(
 ) {
   if (mode == "quote") return;
   function cont() {
-    let filteredtag = dbSnapshot.tags.filter((t) => t.id === tagId)[0];
+    let filteredtag = dbSnapshot.tags.filter((t) => t._id === tagId)[0];
     try {
       let found = false;
       if (filteredtag.personalBests[mode][mode2] === undefined) {
