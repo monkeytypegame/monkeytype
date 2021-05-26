@@ -25,25 +25,24 @@ app.use(express.static(mtRootDir + "/dist"));
 app.use(bodyParser.json());
 
 // Initialize database leaderboards if no leaderboards exist
-function createBlankLeaderboards() {
-  let lb = {
-    size: 999,
-    board: [],
-    mode: "time",
-    mode2: 15,
-    type: "global",
-  };
-  Leaderboard.create(lb);
-  lb.mode2 = 60;
-  Leaderboard.create(lb);
-  lb.type = "daily";
-  lb.size = 100;
-  Leaderboard.create(lb);
-  lb.mode2 = 15;
-  Leaderboard.create(lb);
-}
 Leaderboard.findOne((err, lb) => {
-  if (lb === null) createBlankLeaderboards();
+  if (lb === null) {
+    let lb = {
+      size: 999,
+      board: [],
+      mode: "time",
+      mode2: 15,
+      type: "global",
+    };
+    Leaderboard.create(lb);
+    lb.mode2 = 60;
+    Leaderboard.create(lb);
+    lb.type = "daily";
+    lb.size = 100;
+    Leaderboard.create(lb);
+    lb.mode2 = 15;
+    Leaderboard.create(lb);
+  }
 });
 
 function authenticateToken(req, res, next) {
