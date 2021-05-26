@@ -29,11 +29,6 @@ function update() {
 
   let boardinfo = currentLeaderboard.split("_");
 
-  let uid = null;
-  if (DB.currentUser() !== null) {
-    uid = DB.currentUser().uid;
-  }
-
   Loader.show();
   Promise.all([
     axiosInstance.get(
@@ -87,7 +82,7 @@ function update() {
         dailyData.board.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (entry.name == DB.currentUser().displayName) {
+          if (entry.name == DB.currentUser().name) {
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.daily tfoot").html(`
             <tr>
@@ -170,7 +165,12 @@ function update() {
         globalData.board.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (entry.name == DB.currentUser().displayName) {
+          console.log("Should be setting my leaderboard");
+          console.log(entry.name);
+          console.log(DB.currentUser());
+          console.log(DB.currentUser().name);
+          if (entry.name == DB.currentUser().name) {
+            console.log("Setting my leaderboard now");
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.global tfoot").html(`
             <tr>

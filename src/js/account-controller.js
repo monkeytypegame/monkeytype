@@ -13,7 +13,6 @@ import * as AllTimeStats from "./all-time-stats";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
-import Cookies from "js-cookie";
 import axiosInstance from "./axios-instance";
 //var gmailProvider = new firebase.auth.GoogleAuthProvider();
 
@@ -30,38 +29,14 @@ export function signIn() {
       // UI.changePage("test");
       if ($(".pageLogin .login #rememberMe input").prop("checked")) {
         // TODO: set user login cookie that persists after session
-        Cookies.set("accessToken", response.data.accessToken, { expires: 1 });
-        Cookies.set("refreshToken", response.data.refreshToken, {
-          expires: 100000,
-        });
-        Cookies.set("uid", response.data.user._id, { expires: 100000 });
-        Cookies.set("displayName", response.data.user.name, {
-          expires: 100000,
-        });
-        Cookies.set("email", response.data.user.email, { expires: 100000 });
-        Cookies.set("emailVerified", response.data.user.emailVerified, {
-          expires: 100000,
-        });
-        Cookies.set("creationTime", response.data.user.metadata.creationTime, {
-          expires: 100000,
-        });
+        window.localStorage.setItem("accessToken", response.data.accessToken);
+        window.localStorage.setItem("refreshToken", response.data.refreshToken);
+        window.localStorage.setItem("user", JSON.stringify(response.data.user));
       } else {
         //set user login cookie to persist only as long as the session lives
-        Cookies.set("accessToken", response.data.accessToken, { expires: 1 });
-        Cookies.set("refreshToken", response.data.refreshToken, {
-          expires: 100000,
-        });
-        Cookies.set("uid", response.data.user._id, { expires: 100000 });
-        Cookies.set("displayName", response.data.user.name, {
-          expires: 100000,
-        });
-        Cookies.set("email", response.data.user.email, { expires: 100000 });
-        Cookies.set("emailVerified", response.data.user.emailVerified, {
-          expires: 100000,
-        });
-        Cookies.set("creationTime", response.data.user.metadata.creationTime, {
-          expires: 100000,
-        });
+        window.localStorage.setItem("accessToken", response.data.accessToken);
+        window.localStorage.setItem("refreshToken", response.data.refreshToken);
+        window.localStorage.setItem("user", JSON.stringify(response.data.user));
       }
       userStateChanged(response.data.user);
     })
@@ -126,10 +101,9 @@ export function linkWithGoogle() {
 
 export function signOut() {
   //don't think I need an axios request here if I'm using jwt
-  Cookies.remove("accessToken");
-  Cookies.remove("uid");
-  Cookies.remove("displayName");
-  Cookies.remove("email");
+  window.localStorage.removeItem("accessToken");
+  window.localStorage.removeItem("refreshToken");
+  window.localStorage.removeItem("user");
   Notifications.add("Signed out", 0, 2);
   AllTimeStats.clear();
   Settings.hideAccountSection();
@@ -162,17 +136,9 @@ function signUp() {
     })
     .then((response) => {
       let usr = response.data.user;
-      Cookies.set("accessToken", response.data.accessToken, { expires: 1 });
-      Cookies.set("refreshToken", response.data.refreshToken, {
-        expires: 100000,
-      });
-      Cookies.set("uid", usr._id, { expires: 100000 });
-      Cookies.set("displayName", usr.name, { expires: 100000 });
-      Cookies.set("email", usr.email, { expires: 100000 });
-      Cookies.set("emailVerified", usr.emailVerified, { expires: 100000 });
-      Cookies.set("creationTime", response.data.user.metadata.creationTime, {
-        expires: 100000,
-      });
+      window.localStorage.setItem("accessToken", response.data.accessToken);
+      window.localStorage.setItem("refreshToken", response.data.refreshToken);
+      window.localStorage.setItem("user", JSON.stringify(response.data.user));
       //Cookies.set('refreshToken', response.data.refreshToken);
       AllTimeStats.clear();
       Notifications.add("Account created", 1, 3);
@@ -258,7 +224,7 @@ export function userStateChanged(user) {
     AccountButton.update();
     AccountButton.loading(true);
     Account.getDataAndInit();
-    // var displayName = user.displayName;
+    // var name = user.name;
     // var email = user.email;
     // var emailVerified = user.emailVerified;
     // var photoURL = user.photoURL;

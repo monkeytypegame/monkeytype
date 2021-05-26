@@ -30,11 +30,11 @@ export function getDataAndInit() {
       let user = DB.currentUser(); // I think that this should be stored in cookie
       if (snap.name === undefined) {
         //verify username
-        if (Misc.isUsernameValid(user.displayName)) {
+        if (Misc.isUsernameValid(user.name)) {
           //valid, just update
-          snap.name = user.displayName;
+          snap.name = user.name;
           DB.setSnapshot(snap);
-          DB.updateName(user.uid, user.displayName);
+          DB.updateName(user.uid, user.name);
         } else {
           //invalid, get new
           // Notifications.add("Invalid name", 0);
@@ -49,7 +49,7 @@ export function getDataAndInit() {
             promptVal = prompt(
               "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
             );
-            cdnVal = await CloudFunctions.changeDisplayName({
+            cdnVal = await CloudFunctions.changename({
               uid: user.uid,
               name: promptVal,
             });

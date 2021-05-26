@@ -589,7 +589,7 @@ app.post("/api/signIn", (req, res) => {
         user.save();
         const retUser = {
           uid: user._id,
-          displayName: user.name,
+          name: user.name,
           email: user.email,
           emailVerified: user.emailVerified,
           metadata: { creationTime: user.createdAt },
@@ -644,7 +644,7 @@ app.post("/api/signUp", (req, res) => {
           user.save();
           const retUser = {
             uid: user._id,
-            displayName: user.name,
+            name: user.name,
             email: user.email,
             emailVerified: user.emailVerified,
             metadata: { creationTime: user.createdAt },
@@ -1405,6 +1405,7 @@ function addToLeaderboard(lb, result, username) {
       }
     }
   }
+  if (!retData.foundAt) retData.foundAt = 0;
   //determine if the entry should be hidden
 
   //add item to leaderboard
@@ -1419,8 +1420,12 @@ function addToLeaderboard(lb, result, username) {
     timestamp: Date.now(),
     hidden: false,
   };
-  if (lb.board.length == 0 || lbitem.wpm < lb.board.slice(-1)[0].wpm) {
+  if (lb.board.length == 0) {
     lb.board.push(lbitem);
+    retData.insertedAt = 1;
+  } else if (lbitem.wpm < lb.board.slice(-1)[0].wpm) {
+    lb.board.push(lbitem);
+    retData.insertedAt = lb.board.length + 1;
   } else {
     for (i = 0; i < lb.board.length; i++) {
       //start from top, if item wpm > lb item wpm, insert before it

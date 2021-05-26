@@ -2,7 +2,6 @@ import { loadTags } from "./result-filters";
 import * as AccountButton from "./account-button";
 import * as Notifications from "./notifications";
 import axiosInstance from "./axios-instance";
-import Cookies from "js-cookie";
 
 let dbSnapshot = null;
 
@@ -29,19 +28,9 @@ export function setSnapshot(newSnapshot) {
 }
 
 export function currentUser() {
-  const token = Cookies.get("accessToken");
+  const token = window.localStorage.getItem("accessToken");
   if (token) {
-    //maybe user object could be stored in localStorage
-    // I think tokens should continue to stay in cookies though
-    const user = {
-      uid: Cookies.get("uid"),
-      displayName: Cookies.get("displayName"),
-      email: Cookies.get("email"),
-      metadata: {
-        creationTime: Cookies.get("creationTime"),
-      },
-      emailVerified: Cookies.get("emailVerified"),
-    };
+    const user = JSON.parse(window.localStorage.getItem("user"));
     return user;
   } else {
     return null;

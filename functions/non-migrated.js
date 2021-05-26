@@ -123,7 +123,7 @@ async function getAllNames() {
   //   .then((data) => {
   //     let names = [];
   //     data.users.forEach((user) => {
-  //       names.push(user.displayName);
+  //       names.push(user.name);
   //     });
   //     return names;
   //   });
@@ -134,7 +134,7 @@ async function getAllNames() {
     // List batch of users, 1000 at a time.
     let listUsersResult = await admin.auth().listUsers(1000, nextPageToken);
     for (let i = 0; i < listUsersResult.users.length; i++) {
-      ret.push(listUsersResult.users[i].displayName);
+      ret.push(listUsersResult.users[i].name);
     }
     if (listUsersResult.pageToken) {
       // List next batch of users.
@@ -153,7 +153,7 @@ async function getAllUsers() {
   //   .then((data) => {
   //     let names = [];
   //     data.users.forEach((user) => {
-  //       names.push(user.displayName);
+  //       names.push(user.name);
   //     });
   //     return names;
   //   });

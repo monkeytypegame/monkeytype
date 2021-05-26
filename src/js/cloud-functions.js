@@ -58,7 +58,7 @@ export function getLeaderboard(input) {
 export function clearTagPb(input) {
   console.log("request data here");
 }
-export function changeDisplayName(input) {
+export function changename(input) {
   console.log("request data here");
 }
 

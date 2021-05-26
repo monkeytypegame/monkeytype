@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import axios from "axios";
 
 const axiosInstance = axios.create();
@@ -6,9 +5,7 @@ const axiosInstance = axios.create();
 // Request interceptor for API calls
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const accessToken = Cookies.get("accessToken")
-      ? Cookies.get("accessToken")
-      : null;
+    const accessToken = window.localStorage.getItem("accessToken");
     if (accessToken) {
       config.headers = {
         Authorization: `Bearer ${accessToken}`,
@@ -37,10 +34,7 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      //console.log("Refreshing access token");
-      const refreshToken = Cookies.get("refreshToken")
-        ? Cookies.get("refreshToken")
-        : null;
+      const refreshToken = window.localStorage.getItem("refreshToken");
       await axios
         .post(
           `/api/refreshToken`,
@@ -48,7 +42,7 @@ axiosInstance.interceptors.response.use(
           { headers: { Authorization: `Bearer ${refreshToken}` } }
         )
         .then((response) => {
-          Cookies.set("accessToken", response.data.accessToken);
+          window.localStorage.setItem("accessToken", response.data.accessToken);
           axios.defaults.headers.common["Authorization"] =
             "Bearer " + response.data.accessToken;
         })
