@@ -25,10 +25,11 @@
 ### leaderboard
 
 - Add boardcleartime
-  - How will boards be cleared
+  - How will boards be cleared?
     - Can there be a function that runs outside of requests
       - Wait until desired time with setTimeout and then set next timeout
 - Identify bugs
+- Username not highlighted and added to the bottom if current user made the leaderboard
 
 ## After beta is ready
 
@@ -40,6 +41,7 @@
 - Work on transfering data from firebase to mongo
 - Make sure that development can be done on mac and windows computers as well
   - directories in server.js might cause issues
+- Create admin panel or public stats page to make use of analytics data
 
 ## User transfer
 

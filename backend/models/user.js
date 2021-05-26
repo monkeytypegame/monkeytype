@@ -43,6 +43,9 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     refreshTokens: [{ type: String, required: true }],
     config: { type: configSchema, default: {} },
+    bananas: {
+      t60bananas: { type: Number, default: 0 },
+    },
   },
   {
     timestamps: true,

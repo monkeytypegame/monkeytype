@@ -127,7 +127,7 @@ function roundTo2(num) {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }
 
-async function checkIfPB(uid, obj, userdata) {
+async function checkIfPB(obj, userdata) {
   let pbs = null;
   if (obj.mode == "quote") {
     return false;
@@ -141,7 +141,7 @@ async function checkIfPB(uid, obj, userdata) {
       throw new Error("pb is undefined");
     }
   } catch (e) {
-    User.findOne({ _id: uid }, (err, user) => {
+    User.findOne({ name: userdata.name }, (err, user) => {
       user.personalBests = {
         [obj.mode]: {
           [obj.mode2]: [
@@ -227,7 +227,7 @@ async function checkIfPB(uid, obj, userdata) {
   }
 
   if (toUpdate) {
-    User.findOne({ _id: uid }, (err, user) => {
+    User.findOne({ name: userdata.name }, (err, user) => {
       user.personalBests = pbs;
       user.save();
     });
@@ -237,7 +237,7 @@ async function checkIfPB(uid, obj, userdata) {
   }
 }
 
-async function checkIfTagPB(uid, obj, userdata) {
+async function checkIfTagPB(obj, userdata) {
   //function returns a list of tag ids where a pb was set //i think
   if (obj.tags.length === 0) {
     return [];
@@ -393,7 +393,7 @@ async function checkIfTagPB(uid, obj, userdata) {
   return ret;
 }
 
-async function stripAndSave(uid, obj) {
+async function stripAndSave(username, obj) {
   if (obj.bailedOut === false) delete obj.bailedOut;
   if (obj.blindMode === false) delete obj.blindMode;
   if (obj.difficulty === "normal") delete obj.difficulty;
@@ -405,13 +405,13 @@ async function stripAndSave(uid, obj) {
   if (obj.numbers === false) delete obj.numbers;
   if (obj.punctuation === false) delete obj.punctuation;
 
-  await User.findOne({ _id: uid }, (err, user) => {
+  await User.findOne({ name: username }, (err, user) => {
     user.results.push(obj);
     user.save();
   });
 }
 
-function incrementT60Bananas(uid, result, userData) {
+function incrementT60Bananas(username, result, userData) {
   try {
     let best60;
     try {
@@ -431,7 +431,7 @@ function incrementT60Bananas(uid, result, userData) {
     } else {
       //increment
       // console.log("checking");
-      User.findOne({ _id: uid }, (err, user) => {
+      User.findOne({ name: username }, (err, user) => {
         if (user.bananas === undefined) {
           user.bananas.t60bananas = 1;
         } else {
@@ -694,13 +694,12 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
   User.findOne({ name: req.name }, (err, user) => {
     if (err) res.status(500).send({ error: err });
     request = req.body;
-    request.uid = user._id;
     if (request === undefined) {
       res.status(200).send({ data: { resultCode: -999 } });
       return;
     }
     try {
-      if (request.uid === undefined || request.obj === undefined) {
+      if (req.name === undefined || request.obj === undefined) {
         console.error(`error saving result for - missing input`);
         res.status(200).send({ data: { resultCode: -999 } });
         return;
@@ -710,7 +709,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
 
       if (obj.incompleteTestSeconds > 500)
         console.log(
-          `FUCK, HIGH INCOMPLETE TEST SECONDS ${request.uid}: ${JSON.stringify(
+          `FUCK, HIGH INCOMPLETE TEST SECONDS ${req.name}: ${JSON.stringify(
             obj
           )}`
         );
@@ -737,7 +736,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
       if (errCount > 0) {
         console.error(
           `error saving result for ${
-            request.uid
+            req.name
           } error count ${errCount} - bad input - ${JSON.stringify(
             request.obj
           )}`
@@ -816,7 +815,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
         };
       } catch (e) {
         console.error(
-          `cant verify key spacing or duration for user ${request.uid}! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
+          `cant verify key spacing or duration for user ${req.name}! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
         );
       }
 
@@ -831,7 +830,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
 
       // emailVerified = await admin
       //   .auth()
-      //   .getUser(request.uid)
+      //   .getUser(req.name)
       //   .then((user) => {
       //     return user.emailVerified;
       //   });
@@ -861,7 +860,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
               console.error(
                 `possible bot detected by user (${obj.wpm} ${obj.rawWpm} ${
                   obj.acc
-                }) ${request.uid} ${name} - spacing ${JSON.stringify(
+                }) ${req.name} ${name} - spacing ${JSON.stringify(
                   keySpacing
                 )} duration ${JSON.stringify(keyDuration)}`
               );
@@ -876,7 +875,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
               console.error(
                 `very close to bot detected threshold by user (${obj.wpm} ${
                   obj.rawWpm
-                } ${obj.acc}) ${request.uid} ${name} - spacing ${JSON.stringify(
+                } ${obj.acc}) ${req.name} ${name} - spacing ${JSON.stringify(
                   keySpacing
                 )} duration ${JSON.stringify(keyDuration)}`
               );
@@ -899,7 +898,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
       } catch (e) {}
 
       // return db
-      //   .collection(`users/${request.uid}/results`)
+      //   .collection(`users/${req.name}/results`)
       //   .add(obj)
       //   .then((e) => {
 
@@ -921,8 +920,8 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
         //   verified,
         //   emailVerified
         // ),
-        checkIfPB(request.uid, request.obj, userdata),
-        checkIfTagPB(request.uid, request.obj, userdata),
+        checkIfPB(request.obj, userdata),
+        checkIfTagPB(request.obj, userdata),
       ])
         .then(async (values) => {
           // let globallb = values[0].insertedAt;
@@ -932,7 +931,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
           // console.log(values);
 
           if (obj.mode === "time" && String(obj.mode2) === "60") {
-            incrementT60Bananas(request.uid, obj, userdata);
+            incrementT60Bananas(req.name, obj, userdata);
           }
 
           await incrementGlobalTypingStats(userdata, obj);
@@ -952,7 +951,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
             logobj.keySpacing = "removed";
             logobj.keyDuration = "removed";
             console.log(
-              `saved result for ${request.uid} (new PB) - ${JSON.stringify(
+              `saved result for ${req.name} (new PB) - ${JSON.stringify(
                 logobj
               )}`
             );
@@ -973,7 +972,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
             ) {
               if (verified !== false) {
                 console.log(
-                  `sending command to the bot to update the role for user ${request.uid} with wpm ${obj.wpm}`
+                  `sending command to the bot to update the role for user ${req.name} with wpm ${obj.wpm}`
                 );
                 updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
               }
@@ -985,17 +984,17 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
             logobj.keyDuration = "removed";
             request.obj.isPb = false;
             console.log(
-              `saved result for ${request.uid} - ${JSON.stringify(logobj)}`
+              `saved result for ${req.name} - ${JSON.stringify(logobj)}`
             );
             returnobj.resultCode = 1;
           }
-          stripAndSave(request.uid, request.obj);
+          stripAndSave(req.name, request.obj);
           res.status(200).send({ data: returnobj });
           return;
         })
         .catch((e) => {
           console.error(
-            `error saving result when checking for PB / checking leaderboards for ${request.uid} - ${e.message}`
+            `error saving result when checking for PB / checking leaderboards for ${req.name} - ${e.message}`
           );
           res
             .status(200)
@@ -1004,7 +1003,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
         });
     } catch (e) {
       console.error(
-        `error saving result for ${request.uid} - ${JSON.stringify(
+        `error saving result for ${req.name} - ${JSON.stringify(
           request.obj
         )} - ${e}`
       );
@@ -1070,7 +1069,7 @@ app.post("/api/saveConfig", authenticateToken, (req, res) => {
     });
     if (err) {
       console.error(
-        `error saving config for ${request.uid} - bad input - ${JSON.stringify(
+        `error saving config for ${req.name} - bad input - ${JSON.stringify(
           request.obj
         )}`
       );
@@ -1233,7 +1232,7 @@ app.post("/api/editPreset", authenticateToken, (req, res) => {
         });
     }
   } catch (e) {
-    console.error(`error updating preset for ${request.uid} - ${e}`);
+    console.error(`error updating preset for ${req.name} - ${e}`);
     return { resultCode: -999, message: e.message };
   }
 });
