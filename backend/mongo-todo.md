@@ -2,7 +2,6 @@
 
 - Get google login working
 - Transfer leaderboard and other cloud functions
-- Reverse list of results on account page
 - spinning wheel on account page should dissapear after data is loaded
 - Account data should be updated when new result is added/test completed
 - Add email verification
@@ -22,6 +21,10 @@
 - Create configSchema
 - Figure out if filteredResults.reverse(); in account.js is going to cause efficiency issues
   - Could reverse processing of results, but that would add more complexity to code
+- In order to transfer users over, users should be able to be validated through firebase until they login again, when they will use their password to login. If firebase confirms that the password and email are valid, the new password will be hashed and saved to the new database
+  - All data is moved and retrieved via the mongo server, just authentication uses firebase
+  - Could force users to sign in again immediately in order to transfer users' passwords faster
+    - Is it worth the inconvenience though.
 
 ## After beta is ready
 
