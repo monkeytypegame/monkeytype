@@ -21,10 +21,14 @@
 - Create configSchema
 - Figure out if filteredResults.reverse(); in account.js is going to cause efficiency issues
   - Could reverse processing of results, but that would add more complexity to code
-- In order to transfer users over, users should be able to be validated through firebase until they login again, when they will use their password to login. If firebase confirms that the password and email are valid, the new password will be hashed and saved to the new database
-  - All data is moved and retrieved via the mongo server, just authentication uses firebase
-  - Could force users to sign in again immediately in order to transfer users' passwords faster
-    - Is it worth the inconvenience though.
+
+### leaderboard
+
+- Add boardcleartime
+  - How will boards be cleared
+    - Can there be a function that runs outside of requests
+      - Wait until desired time with setTimeout and then set next timeout
+- Identify bugs
 
 ## After beta is ready
 
@@ -34,6 +38,19 @@
 
 - Get somebody else to check over security due to my lack of expertise
 - Work on transfering data from firebase to mongo
+- Make sure that development can be done on mac and windows computers as well
+  - directories in server.js might cause issues
+
+## User transfer
+
+- Create a script to pull all data from monkeytype and move it to the new mongo server
+- In order to transfer users over, users should be able to be validated through firebase until they login again, when they will use their password to login. If firebase confirms that the password and email are valid, the new password will be hashed and saved to the new database
+  - All data is moved and retrieved via the mongo server, just authentication uses firebase
+  - Could force users to sign in again immediately in order to transfer users' passwords faster
+    - Is it worth the inconvenience though.
+    - Probably the best option would be to have a notification that asks users to log out and log back in again
+      - Could have a set date that firebase usage will expire and users must log out and back in again before they are forcibly logged out
+        - Still can't completely remove firebase dependency unless ALL users are transferred
 
 ## After release
 
@@ -42,3 +59,6 @@
   - Users who have been requested in the last hour will be stored in the redis database so that their data can be sent again without having to search a large database
     - After an hour without a new request they can be removed from memory
 - User data should not be requested from the server every time a test is submitted, result should just be appended to results
+- Create a backup system to prevent loss of data
+  - Users should be able to export their data themselves
+    - It's convenient because they would just have to download their user document, only one query for the server

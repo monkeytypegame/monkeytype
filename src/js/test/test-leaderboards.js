@@ -3,6 +3,7 @@ import * as DB from "./db";
 import * as Notifications from "./notifications";
 import Config from "./config";
 import * as Misc from "./misc";
+import axiosInstance from "./axios-instance";
 
 let textTimeouts = [];
 
@@ -131,6 +132,7 @@ export function show(data, mode2) {
 }
 
 export function check(completedEvent) {
+  console.log("starting lb checking");
   try {
     if (
       completedEvent.funbox === "none" &&
@@ -160,6 +162,7 @@ export function check(completedEvent) {
       delete lbRes.keySpacing;
       delete lbRes.keyDuration;
       delete lbRes.chartData;
+      /*
       CloudFunctions.checkLeaderboards({
         uid: completedEvent.uid,
         lbMemory: DB.getSnapshot().lbMemory,
@@ -170,6 +173,12 @@ export function check(completedEvent) {
         discordId: DB.getSnapshot().discordId,
         result: lbRes,
       })
+      */
+      axiosInstance
+        .post("/api/attemptAddToLeaderboards", {
+          //user data can be retrieved from the database
+          result: lbRes,
+        })
         .then((data) => {
           Misc.clearTimeouts(textTimeouts);
           show(data.data, completedEvent.mode2);

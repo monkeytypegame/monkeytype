@@ -1545,6 +1545,7 @@ export function finish(difficultyFailed = false) {
                 obj: completedEvent,
               })
               .then((e) => {
+                e = e.data;
                 //return a result message that will be shown if there was an error
                 AccountButton.loading(false);
                 if (e.data == null) {

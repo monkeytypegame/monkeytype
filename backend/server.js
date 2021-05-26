@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { User } = require("./models/user");
 const { Analytics } = require("./models/analytics");
+const { Leaderboard } = require("./models/leaderboard");
 
 // MIDDLEWARE &  SETUP
 
@@ -14,15 +15,36 @@ const app = express();
 
 const port = process.env.PORT || "5000";
 
-//let dbConn = mongodb.MongoClient.connect('mongodb://localhost:27017/monkeytype');
 mongoose.connect("mongodb://localhost:27017/monkeytype", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-const mtRootDir = __dirname.substring(0, __dirname.length - 8);
+const mtRootDir = __dirname.substring(0, __dirname.length - 8); //will this work for windows and mac computers?
 app.use(express.static(mtRootDir + "/dist"));
 app.use(bodyParser.json());
+
+// Initialize database leaderboards if no leaderboards exist
+function createBlankLeaderboards() {
+  let lb = {
+    size: 999,
+    board: [],
+    mode: "time",
+    mode2: 15,
+    type: "global",
+  };
+  Leaderboard.create(lb);
+  lb.mode2 = 60;
+  Leaderboard.create(lb);
+  lb.type = "daily";
+  lb.size = 100;
+  Leaderboard.create(lb);
+  lb.mode2 = 15;
+  Leaderboard.create(lb);
+}
+Leaderboard.findOne((err, lb) => {
+  if (lb === null) createBlankLeaderboards();
+});
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -1243,349 +1265,6 @@ app.post("/api/removePreset", authenticateToken, (req, res) => {
     res.send({ resultCode: -999 });
   }
 });
-/*
-app.post("/api/checkLeaderboards", (req, res) => {
-  //not sure if the allow origin and options are necessary
-  res.set("Access-Control-Allow-Origin", origin);
-  if (req.method === "OPTIONS") {
-    // Send response to OPTIONS requests
-    res.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-    res.set(
-      "Access-Control-Allow-Headers",
-      "Authorization,Content-Type"
-    );
-    res.set("Access-Control-Max-Age", "3600");
-    res.status(204).send("");
-    return;
-  }
-  const request = req.body.data;
-
-  function verifyValue(val) {
-    let errCount = 0;
-    if (val === null || val === undefined) {
-    } else if (Array.isArray(val)) {
-      //array
-      val.forEach((val2) => {
-        errCount += verifyValue(val2);
-      });
-    } else if (typeof val === "object" && !Array.isArray(val)) {
-      //object
-      Object.keys(val).forEach((valkey) => {
-        errCount += verifyValue(val[valkey]);
-      });
-    } else {
-      if (!/^[0-9a-zA-Z._\-\+]+$/.test(val)) errCount++;
-    }
-    return errCount;
-  }
-  let errCount = verifyValue(request);
-  if (errCount > 0) {
-    console.error(
-      `error checking leaderboard for ${
-        request.uid
-      } error count ${errCount} - bad input - ${JSON.stringify(request.obj)}`
-    );
-    response.status(200).send({
-      data: {
-        status: -999,
-        message: "Bad input",
-      },
-    });
-    return;
-  }
-
-  let emailVerified = await admin
-    .auth()
-    .getUser(request.uid)
-    .then((user) => {
-      return user.emailVerified;
-    });
-
-  try {
-    if (emailVerified === false) {
-      response.status(200).send({
-        data: {
-          needsToVerifyEmail: true,
-        },
-      });
-      return;
-    }
-    if (request.name === undefined) {
-      response.status(200).send({
-        data: {
-          noName: true,
-        },
-      });
-      return;
-    }
-    if (request.banned) {
-      response.status(200).send({
-        data: {
-          banned: true,
-        },
-      });
-      return;
-    }
-    if (request.verified === false) {
-      response.status(200).send({
-        data: {
-          needsToVerify: true,
-        },
-      });
-      return;
-    }
-
-    request.result.name = request.name;
-
-    if (
-      request.result.mode === "time" &&
-      ["15", "60"].includes(String(request.result.mode2)) &&
-      request.result.language === "english" &&
-      request.result.funbox === "none"
-    ) {
-      let global = await db
-        .runTransaction(async (t) => {
-          const lbdoc = await t.get(
-            db
-              .collection("leaderboards")
-              .where("mode", "==", String(request.result.mode))
-              .where("mode2", "==", String(request.result.mode2))
-              .where("type", "==", "global")
-          );
-          // let lbData;
-          let docid = `${String(request.result.mode)}_${String(
-            request.result.mode2
-          )}_${"global"}`;
-          // if (lbdoc.docs.length === 0) {
-          //   console.log(
-          //     `no ${request.mode} ${request.mode2} ${type} leaderboard found - creating`
-          //   );
-          //   let toAdd = {
-          //     size: 20,
-          //     mode: String(request.mode),
-          //     mode2: String(request.mode2),
-          //     type: type,
-          //   };
-          //   t.set(
-          //     db
-          //       .collection("leaderboards")
-          //       .doc(
-          //         `${String(request.mode)}_${String(request.mode2)}_${type}`
-          //       ),
-          //     toAdd
-          //   );
-          //   lbData = toAdd;
-          // } else {
-          //   lbData = lbdoc.docs[0].data();
-          // }
-          let boardInfo = lbdoc.docs[0].data();
-          if (
-            boardInfo.minWpm === undefined ||
-            boardInfo.board.length !== boardInfo.size ||
-            (boardInfo.minWpm !== undefined &&
-              request.result.wpm > boardInfo.minWpm &&
-              boardInfo.board.length === boardInfo.size)
-          ) {
-            let boardData = boardInfo.board;
-            let lb = new Leaderboard(
-              boardInfo.size,
-              request.result.mode,
-              request.result.mode2,
-              boardInfo.type,
-              boardData
-            );
-            let insertResult = lb.insert(request.result);
-            if (insertResult.insertedAt >= 0) {
-              t.update(db.collection("leaderboards").doc(docid), {
-                size: lb.size,
-                type: lb.type,
-                board: lb.board,
-                minWpm: lb.getMinWpm(),
-              });
-            }
-            return insertResult;
-          } else {
-            //not above leaderboard minwpm
-            return {
-              insertedAt: -1,
-            };
-          }
-        })
-        .catch((error) => {
-          console.error(
-            `error in transaction checking leaderboards - ${error}`
-          );
-          response.status(200).send({
-            data: {
-              status: -999,
-              message: error,
-            },
-          });
-        });
-
-      let daily = await db
-        .runTransaction(async (t) => {
-          const lbdoc = await t.get(
-            db
-              .collection("leaderboards")
-              .where("mode", "==", String(request.result.mode))
-              .where("mode2", "==", String(request.result.mode2))
-              .where("type", "==", "daily")
-          );
-          // let lbData;
-          let docid = `${String(request.result.mode)}_${String(
-            request.result.mode2
-          )}_${"daily"}`;
-          // if (lbdoc.docs.length === 0) {
-          //   console.log(
-          //     `no ${request.mode} ${request.mode2} ${type} leaderboard found - creating`
-          //   );
-          //   let toAdd = {
-          //     size: 20,
-          //     mode: String(request.mode),
-          //     mode2: String(request.mode2),
-          //     type: type,
-          //   };
-          //   t.set(
-          //     db
-          //       .collection("leaderboards")
-          //       .doc(
-          //         `${String(request.mode)}_${String(request.mode2)}_${type}`
-          //       ),
-          //     toAdd
-          //   );
-          //   lbData = toAdd;
-          // } else {
-          //   lbData = lbdoc.docs[0].data();
-          // }
-          let boardInfo = lbdoc.docs[0].data();
-          if (
-            boardInfo.minWpm === undefined ||
-            boardInfo.board.length !== boardInfo.size ||
-            (boardInfo.minWpm !== undefined &&
-              request.result.wpm > boardInfo.minWpm &&
-              boardInfo.board.length === boardInfo.size)
-          ) {
-            let boardData = boardInfo.board;
-            let lb = new Leaderboard(
-              boardInfo.size,
-              request.result.mode,
-              request.result.mode2,
-              boardInfo.type,
-              boardData
-            );
-            let insertResult = lb.insert(request.result);
-            if (insertResult.insertedAt >= 0) {
-              t.update(db.collection("leaderboards").doc(docid), {
-                size: lb.size,
-                type: lb.type,
-                board: lb.board,
-                minWpm: lb.getMinWpm(),
-              });
-            }
-            return insertResult;
-          } else {
-            //not above leaderboard minwpm
-            return {
-              insertedAt: -1,
-            };
-          }
-        })
-        .catch((error) => {
-          console.error(
-            `error in transaction checking leaderboards - ${error}`
-          );
-          response.status(200).send({
-            data: {
-              status: -999,
-              message: error,
-            },
-          });
-        });
-
-      //send discord update
-      let usr =
-        request.discordId != undefined ? request.discordId : request.name;
-
-      if (
-        global !== null &&
-        global.insertedAt >= 0 &&
-        global.insertedAt <= 9 &&
-        global.newBest
-      ) {
-        let lbstring = `${request.result.mode} ${request.result.mode2} global`;
-        console.log(
-          `sending command to the bot to announce lb update ${usr} ${
-            global.insertedAt + 1
-          } ${lbstring} ${request.result.wpm}`
-        );
-
-        announceLbUpdate(
-          usr,
-          global.insertedAt + 1,
-          lbstring,
-          request.result.wpm,
-          request.result.rawWpm,
-          request.result.acc,
-          request.result.consistency
-        );
-      }
-
-      //
-
-      if (
-        // obj.mode === "time" &&
-        // (obj.mode2 == "15" || obj.mode2 == "60") &&
-        // obj.language === "english"
-        global !== null ||
-        daily !== null
-      ) {
-        let updatedLbMemory = await getUpdatedLbMemory(
-          request.lbMemory,
-          request.result.mode,
-          request.result.mode2,
-          global,
-          daily
-        );
-        db.collection("users").doc(request.uid).update({
-          lbMemory: updatedLbMemory,
-        });
-      }
-
-      response.status(200).send({
-        data: {
-          status: 2,
-          daily: daily,
-          global: global,
-        },
-      });
-      return;
-    } else {
-      response.status(200).send({
-        data: {
-          status: 1,
-          daily: {
-            insertedAt: null,
-          },
-          global: {
-            insertedAt: null,
-          },
-        },
-      });
-      return;
-    }
-  } catch (e) {
-    console.log(e);
-    response.status(200).send({
-      data: {
-        status: -999,
-        message: e,
-      },
-    });
-    return;
-  }
-});
-*/
 
 function isTagPresetNameValid(name) {
   if (name === null || name === undefined || name === "") return false;
@@ -1693,6 +1372,99 @@ app.post("/api/resetPersonalBests", authenticateToken, (req, res) => {
     res.status(500).send({ status: "Reset Pbs successfully" });
   }
 });
+
+function addToLeaderboard(lb, result, username) {
+  retData = {};
+  //check for duplicate user
+  for (i = 0; i < lb.board.length; i++) {
+    if (lb.board[i].name == username) {
+      if (lb.board[i].wpm <= result.wpm) {
+        //delete old entry if speed is faster this time
+        lb.board.splice(i, 1);
+        retData.foundAt = i;
+      } else {
+        //don't add new entry if slower than last time
+        return lb, { insertedAt: -1 };
+      }
+    }
+  }
+  //determine if the entry should be hidden
+
+  //add item to leaderboard
+  const lbitem = {
+    name: username,
+    wpm: result.wpm,
+    raw: result.rawWpm,
+    acc: result.acc,
+    consistency: result.consistency,
+    mode: result.mode,
+    mode2: result.mode2,
+    timestamp: Date.now(),
+    hidden: false,
+  };
+  if (lb.board.length == 0 || lbitem.wpm < lb.board.slice(-1)[0].wpm) {
+    lb.board.push(lbitem);
+  } else {
+    for (i = 0; i < lb.board.length; i++) {
+      //start from top, if item wpm > lb item wpm, insert before it
+      if (lbitem.wpm >= lb.board[i].wpm) {
+        console.log("adding to daily lb position " + i);
+        lb.board.splice(i, 0, lbitem);
+        retData.insertedAt = i + 1;
+        break;
+      }
+    }
+    if (lb.board.length > lb.size) {
+      lb.pop();
+    }
+  }
+  return lb, retData;
+}
+
+app.post("/api/attemptAddToLeaderboards", authenticateToken, (req, res) => {
+  const result = req.body.result;
+  let retData = {};
+  //check daily first, if on daily, check global
+  Leaderboard.find(
+    {
+      mode: result.mode,
+      mode2: result.mode2,
+    },
+    (err, lbs) => {
+      //for all leaderboards queried, determine if it qualifies, and add if it does
+      lbs.forEach((lb) => {
+        if (
+          lb.board.length == 0 ||
+          lb.board.length < lb.size ||
+          result.wpm > lb.board.slice(-1)[0].wpm
+        ) {
+          lb, (lbPosData = addToLeaderboard(lb, result, req.name));
+          retData[lb.type] = lbPosData;
+          lb.save();
+        }
+      });
+    }
+  ).then((e) => {
+    retData.status = 2;
+    res.json(retData);
+  });
+  res.status(200);
+});
+
+app.get("/api/getLeaderboard/:type/:mode/:mode2", (req, res) => {
+  Leaderboard.findOne(
+    { mode: req.params.mode, mode2: req.params.mode2, type: req.params.type },
+    (err, lb) => {
+      if (lb.type == "daily") {
+        date = new Date();
+        date.setDate(date.getDate() + 1);
+        lb.resetTime = date;
+      }
+      res.send(lb);
+    }
+  );
+});
+
 // ANALYTICS API
 
 function newAnalyticsEvent(event, data) {

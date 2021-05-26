@@ -2,6 +2,7 @@ import * as CloudFunctions from "./cloud-functions";
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
 import * as DB from "./db";
+import axiosInstance from "./axios-instance";
 
 let currentLeaderboard = "time_15";
 
@@ -35,18 +36,12 @@ function update() {
 
   Loader.show();
   Promise.all([
-    CloudFunctions.getLeaderboard({
-      mode: boardinfo[0],
-      mode2: boardinfo[1],
-      type: "daily",
-      uid: uid,
-    }),
-    CloudFunctions.getLeaderboard({
-      mode: boardinfo[0],
-      mode2: boardinfo[1],
-      type: "global",
-      uid: uid,
-    }),
+    axiosInstance.get(
+      `/api/getLeaderboard/daily/${boardinfo[0]}/${boardinfo[1]}`
+    ),
+    axiosInstance.get(
+      `/api/getLeaderboard/global/${boardinfo[0]}/${boardinfo[1]}`
+    ),
   ])
     .then((lbdata) => {
       Loader.hide();
@@ -92,7 +87,7 @@ function update() {
         dailyData.board.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (entry.currentUser) {
+          if (entry.name == DB.currentUser().displayName) {
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.daily tfoot").html(`
             <tr>
@@ -175,7 +170,7 @@ function update() {
         globalData.board.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (entry.currentUser) {
+          if (entry.name == DB.currentUser().displayName) {
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.global tfoot").html(`
             <tr>
