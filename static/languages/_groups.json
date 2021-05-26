@@ -64,6 +64,10 @@
     "languages": ["turkish"]
   },
   {
+    "name": "irish",
+    "languages": ["irish"]
+  },
+  {
     "name": "italian",
     "languages": ["italian", "italian_1k", "italian_7k"]
   },
