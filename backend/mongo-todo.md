@@ -24,10 +24,8 @@
 
 ### leaderboard
 
-- Add boardcleartime
-  - How will boards be cleared?
-    - Can there be a function that runs outside of requests
-      - Wait until desired time with setTimeout and then set next timeout
+- Does clearDailyLeaderboards cause a memory leak?
+  - Try commenting it out and seeing if it makes a difference
 - Identify bugs
 - Username not highlighted and added to the bottom if current user made the leaderboard
 

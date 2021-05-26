@@ -24,7 +24,24 @@ const mtRootDir = __dirname.substring(0, __dirname.length - 8); //will this work
 app.use(express.static(mtRootDir + "/dist"));
 app.use(bodyParser.json());
 
-// Initialize database leaderboards if no leaderboards exist
+// Daily leaderboard clear function
+function clearDailyLeaderboards() {
+  var nextClear = new Date();
+  nextClear.setHours(24, 0, 0, 0); //next occurrence of 12am
+  let currentTime = new Date();
+  setTimeout(() => {
+    Leaderboard.find({ type: "daily" }, (err, lbs) => {
+      lbs.forEach((lb) => {
+        lb.board = [];
+        lb.resetTime = nextClear;
+        lb.save();
+      });
+    });
+    clearDailyLeaderboards();
+  }, nextClear.getTime() - currentTime.getTime());
+}
+
+// Initialize database leaderboards if no leaderboards exist and start clearDailyLeaderboards
 Leaderboard.findOne((err, lb) => {
   if (lb === null) {
     let lb = {
@@ -43,6 +60,8 @@ Leaderboard.findOne((err, lb) => {
     lb.mode2 = 15;
     Leaderboard.create(lb);
   }
+}).then(() => {
+  clearDailyLeaderboards();
 });
 
 function authenticateToken(req, res, next) {
