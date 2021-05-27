@@ -611,11 +611,12 @@ export async function init() {
   //   $("#words").css("height", "auto");
   //   $("#wordsWrapper").css("height", "auto");
   // } else {
+  if ($(".pageTest").hasClass("active")) {
+    await Funbox.activate();
+  }
   TestUI.showWords();
   // }
-  if ($(".pageTest").hasClass("active")) {
-    Funbox.activate();
-  }
+
 }
 
 export function restart(
@@ -760,8 +761,8 @@ export function restart(
         Replay.stopReplayRecording();
         words.resetCurrentIndex();
         input.reset();
+        await Funbox.activate();
         TestUI.showWords();
-        Funbox.activate();
         PaceCaret.init();
       }
       if (Config.mode === "quote") {
