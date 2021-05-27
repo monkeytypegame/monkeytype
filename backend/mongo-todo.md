@@ -1,8 +1,7 @@
-## Todo
+# Todo
 
 - Get google login working
 - Account data should be updated when new result is added/test completed
-- Add email verification
 - Fix localhost, production, development server detection
   - Should be a setting in the .env
   - Maybe it could be set through package.json
@@ -12,13 +11,17 @@
   - Check for tag pb doesn't always work
   - Leaderboard doesn't show the time until the daily reset
   - User's Leaderboard history is not edited, and therefore distance moved on leaderboard does not work properly
+- Graph bugs out when new result is added but page is not refreshed
+  - Graph loops back from earliest point to the new points
+  - Results list isn't updated either
 
 ### leaderboard
 
 - Does clearDailyLeaderboards cause a memory leak?
   - Try commenting it out and seeing if it makes a difference
 - Identify bugs
-- Username not highlighted and added to the bottom if current user made the leaderboard
+  - Leaderboard says glb is undefined on first item
+    - No global or daily items are returned
 
 ## After beta is ready
 

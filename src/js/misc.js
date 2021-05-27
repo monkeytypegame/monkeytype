@@ -317,9 +317,7 @@ export function sendVerificationEmail() {
   Loader.show();
   let cu = DB.currentUser();
   axiosInstance
-    .post("/api/sendEmailVerification", {
-      uid: cu.uid,
-    })
+    .post("/api/sendEmailVerification", {})
     .then(() => {
       Loader.hide();
       showNotification("Email sent to " + cu.email, 4000);

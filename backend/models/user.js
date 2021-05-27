@@ -21,8 +21,9 @@ const userSchema = new Schema(
     favouriteThemes: [],
     refactored: { type: Boolean, default: true },
     banned: { type: Boolean, default: false },
-    verified: { type: Boolean, default: false }, //what's the difference between verified and email verified
+    verified: { type: Boolean, default: false }, //Verified is actually whether or not discord account is connected
     emailVerified: { type: Boolean, default: false },
+    verificationHashes: [{ type: String }],
     lbMemory: {
       //short for leaderboard memory
       time15: {

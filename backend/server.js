@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { User } = require("./models/user");
@@ -18,6 +19,19 @@ const port = process.env.PORT || "5000";
 mongoose.connect("mongodb://localhost:27017/monkeytype", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+});
+
+let transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    //should use OAuth in production
+    //type: 'OAuth2',
+    user: process.env.MAIL_ADDRESS,
+    pass: process.env.MAIL_PASSWORD,
+    //clientId: process.env.OAUTH_CLIENTID,
+    //clientSecret: process.env.OAUTH_CLIENT_SECRET,
+    //refreshToken: process.env.OAUTH_REFRESH_TOKEN
+  },
 });
 
 const mtRootDir = __dirname.substring(0, __dirname.length - 8); //will this work for windows and mac computers?
@@ -557,10 +571,57 @@ app.post("/api/updateName", (req, res) => {
   const name = req.body.name;
 });
 
-app.post("/api/sendEmailVerification", (req, res) => {
-  const uid = req.body.uid;
-  //Add send Email verification code here
-  //should be a seperate sendEmailVerification function that can be called from sign up as well
+function sendVerificationEmail(username, email) {
+  const host = "localhost:5000";
+  const hash = Math.random().toString(16).substr(2, 12);
+  const link = `http://${host}/verifyEmail?name=${username}&hash=${hash}`;
+  User.findOne({ name: username }, (err, user) => {
+    user.verificationHashes.push(hash);
+    user.save();
+  });
+  const mailOptions = {
+    from: process.env.MAIL_ADDRESS,
+    to: email,
+    subject: "Monkeytype User Verification",
+    text: `Hello ${username},\nFollow this link to verify your email address:\n${link}\nIf you didn’t ask to verify this address, you can ignore this email.\nThanks,\nYour monkeytype team`,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+}
+
+app.get("/verifyEmail", (req, res) => {
+  let success = false;
+  User.findOne({ name: req.query.name }, (err, user) => {
+    if (user.verificationHashes.includes(req.query.hash)) {
+      success = true;
+      user.verificationHashes = [];
+      user.verified = true;
+      user.emailVerified = true;
+      user.save();
+    }
+  }).then(() => {
+    if (success) {
+      res.send(
+        "<h3>Email verified successfully</h3><p>Go back to <a href='https://monkeytype.com'>monkeytype</a></p>"
+      );
+    } else {
+      res.send(
+        "<h3>Email verification failed</h3><p>Go back to <a href='https://monkeytype.com'>monkeytype</a></p>"
+      );
+    }
+  });
+});
+
+app.post("/api/sendEmailVerification", authenticateToken, (req, res) => {
+  User.findOne({ name: req.name }, (err, user) => {
+    sendVerificationEmail(req.name, user.email);
+  });
   res.sendStatus(200);
 });
 
@@ -569,8 +630,9 @@ app.post("/api/signIn", (req, res) => {
   //Login and send tokens
   User.findOne({ email: req.body.email }, (err, user) => {
     if (err) res.status(500).send({ error: err });
-    if (user == null) {
+    if (user === null) {
       res.status(500).send({ error: "No user found with that email" });
+      return;
     }
     bcrypt.compare(req.body.password, user.password, (err, result) => {
       if (err)
@@ -628,7 +690,7 @@ app.post("/api/signUp", (req, res) => {
         .save()
         .then((user) => {
           //send email verification
-
+          sendVerificationEmail(user.name, user.email);
           //add account created event to analytics
 
           //return user data and access token
