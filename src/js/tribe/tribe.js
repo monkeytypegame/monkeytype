@@ -1129,6 +1129,9 @@ socket.on("disconnect", (f) => {
   // $(".pageTribe .preloader").removeClass("hidden").css("opacity", 1);
   // $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
   // $(".pageTribe .preloader .text").text(`Disconnected from Tribe`);
+  $(".pageTribe .preloader .icon").html(`<i class="fas fa-fw fa-times"></i>`);
+  $(".pageTribe .preloader .text").text(`Disconnected`);
+  $(".pageTribe .preloader .reconnectButton").removeClass(`hidden`);
 });
 
 socket.on("connect_failed", (f) => {
