@@ -543,5 +543,20 @@
     "name": "midnight",
     "bgColor": "#0c0e12",
     "textColor": "#525f7a"
+  },
+  {
+    "name": "blueberry_light",
+    "bgColor": "#dae0f5",
+    "textColor": "#df4576"
+  },
+  {
+    "name": "blueberry_dark",
+    "bgColor": "#212b42",
+    "textColor": "#df4576"
+  },
+  {
+    "name": "fledgling",
+    "bgColor": "#3b363f",
+    "textColor": "#fc6e83"
   }
 ]

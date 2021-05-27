@@ -37,13 +37,13 @@ Sometimes things work in incognito mode, which allows me to further track down t
 
 - OS: [] <!-- e.g. Windows 10, MacOS, Linux-->
 - Browser [] <!-- e.g. Chrome, Firefox, Safari, etc... -->
-- Version [] <!-- e.g. 22 -->
+- Browser Version [] <!-- e.g. 22 -->
 
 **Smartphone:** <!-- if you encountered an issue while using Monkeytype on your smartphone please complete the following information, delete this section if not -->
 
 - Device: [] <!-- e.g. iPhone6, Google Pixel 4, etc... -->
 - OS: [] <!-- e.g. IOS 8.1, Android 11, etc...  -->
 - Browser [] <!-- e.g. stock browser, Safari, Chrome -->
-- Version [] <!-- e.g. 22 -->
+- Browser Version [] <!-- e.g. 22 -->
 
 **Additional context** <!-- Add any other context about the problem here. -->
