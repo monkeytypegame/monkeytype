@@ -236,7 +236,8 @@ export function userStateChanged(user) {
     // showFavouriteThemesAtTheTop();
     CommandlineLists.updateThemeCommands();
 
-    let text = "Account created on " + user.metadata.creationTime;
+    let text =
+      "Account created on " + user.metadata.creationTime.substring(0, 10);
 
     const date1 = new Date(user.metadata.creationTime);
     const date2 = new Date();

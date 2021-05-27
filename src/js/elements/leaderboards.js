@@ -165,12 +165,7 @@ function update() {
         globalData.board.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          console.log("Should be setting my leaderboard");
-          console.log(entry.name);
-          console.log(DB.currentUser());
-          console.log(DB.currentUser().name);
           if (entry.name == DB.currentUser().name) {
-            console.log("Setting my leaderboard now");
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.global tfoot").html(`
             <tr>

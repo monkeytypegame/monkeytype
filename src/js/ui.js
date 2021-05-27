@@ -109,6 +109,8 @@ export function swapElements(
 }
 
 export function changePage(page) {
+  //next line fixes endless loading when accessing account via url
+  if (page == "account") pageTransition = false;
   if (pageTransition) {
     return;
   }
