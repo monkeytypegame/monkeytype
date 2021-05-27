@@ -35,6 +35,11 @@
     "parameters": ["miodec",true,10000]
   }
   ,{
+    "name": "bigramSalad",
+    "type": "customText",
+    "parameters": ["to of in it is as at be we he so on an or do if up by my go",true,100]
+  }
+  ,{
     "name": "simp",
     "type": "customText",
     "parameters": ["miodec",true,1000]
@@ -178,6 +183,11 @@
     "name": "hidden",
     "type": "funbox",
     "parameters": ["read_ahead","time",60]
+  }
+  ,{
+    "name": "iCanSeeTheFuture",
+    "type": "funbox",
+    "parameters": ["read_ahead_hard","time",60]
   }
   ,{
     "name": "whatAreWordsAtThisPoint",

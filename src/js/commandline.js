@@ -96,10 +96,8 @@ function updateSuggested() {
         let escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
         let re = new RegExp("\\b" + escaped, "g");
         let res = obj.display.toLowerCase().match(re);
-        let res2 = null;
-        if (obj.alias !== undefined) {
-          res2 = obj.alias.toLowerCase().match(re);
-        }
+        let res2 =
+          obj.alias !== undefined ? obj.alias.toLowerCase().match(re) : null;
         if (
           (res != null && res.length > 0) ||
           (res2 != null && res2.length > 0)
@@ -109,7 +107,7 @@ function updateSuggested() {
           foundcount--;
         }
       });
-      if (foundcount > 0) {
+      if (foundcount > inputVal.length - 1) {
         obj.found = true;
       } else {
         obj.found = false;

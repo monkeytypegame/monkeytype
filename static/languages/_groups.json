@@ -64,6 +64,10 @@
     "languages": ["turkish"]
   },
   {
+    "name": "irish",
+    "languages": ["irish"]
+  },
+  {
     "name": "italian",
     "languages": ["italian", "italian_1k", "italian_7k"]
   },
@@ -81,7 +85,7 @@
   },
   {
     "name": "slovak",
-    "languages": ["slovak", "slovak_1k"]
+    "languages": ["slovak", "slovak_1k", "slovak_10k"]
   },
   {
     "name": "slovenian",
@@ -164,11 +168,15 @@
     "languages": ["catalan", "catalan_1k"]
   },
   {
+    "name": "bulgarian",
+    "languages": ["bulgarian"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
       "code_c",
-      "code_c#",
+      "code_csharp",
       "code_c++",
       "code_javascript",
       "code_javascript_1k",
@@ -177,7 +185,8 @@
       "code_go",
       "code_rust",
       "code_ruby",
-      "code_r"
+      "code_r",
+      "code_swift"
     ]
   },
   {

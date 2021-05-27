@@ -2301,6 +2301,11 @@ key {
   cursor: pointer;
 }
 
+#replayStopwatch {
+  color: var(--main-color);
+  display: inline-block;
+}
+
 #restartTestButton {
   margin: 0 auto;
   margin-top: 1rem;
@@ -2735,8 +2740,8 @@ key {
     align-items: center;
 
     .button.danger {
-      background: var(--error-color);
-      color: #eee;
+      box-shadow: 0px 0px 0px 2px var(--error-color);
+      color: var(--text-color);
       &:hover {
         background: var(--text-color);
         color: var(--bg-color);
@@ -3268,6 +3273,10 @@ key {
     }
 
     &.history {
+      .active {
+        animation: flashHighlight 4s linear 0s 1;
+      }
+
       .loadMoreButton {
         background: rgba(0, 0, 0, 0.1);
         color: var(--text-color);
@@ -3388,12 +3397,11 @@ key {
 
   #resultEditTags {
     transition: 0.25s;
-  }
-
-  #resultEditTags:hover {
-    cursor: pointer;
-    color: var(--text-color);
-    opacity: 1 !important;
+    &:hover {
+      cursor: pointer;
+      color: var(--text-color);
+      opacity: 1 !important;
+    }
   }
 }
 
@@ -3929,5 +3937,20 @@ key {
         opacity: 0;
       }
     }
+  }
+}
+
+@keyframes flashHighlight {
+  0% {
+    background-color: var(--bg-color);
+  }
+  10% {
+    background-color: var(--main-color);
+  }
+  40% {
+    background-color: var(--main-color);
+  }
+  100% {
+    background-color: var(--bg-color);
   }
 }

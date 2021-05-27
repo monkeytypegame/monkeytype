@@ -51,6 +51,7 @@
     "chartjs-plugin-trendline": "^0.2.2",
     "dotenv": "^9.0.2",
     "express": "^4.17.1",
+    "howler": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.8",
     "nodemailer": "^6.6.1",
