@@ -1080,6 +1080,7 @@ socket.on("mp_room_name_update", (data) => {
 });
 
 socket.on("mp_update_online_stats", (data) => {
+  let ping = Math.round(performance.now() - data.pingStart);
   OnlineStats.hideLoading();
   OnlineStats.setInQueue(data.stats[2]);
   OnlineStats.updateRaces(data.stats[1]);
@@ -1091,9 +1092,7 @@ socket.on("mp_update_online_stats", (data) => {
     `<div class="small">Version ${data.stats[3]}</div>`
   );
   $(".pageTribe .prelobby .welcome .stats").append(
-    `<div class="small">Ping ${Math.round(
-      performance.now() - data.pingStart
-    )}ms</div>`
+    `<div class="small">Ping ${ping}ms</div>`
   );
   if (data.stats[3] !== expectedVersion) {
     socket.disconnect();
