@@ -413,6 +413,8 @@ export function startTest(override = false) {
 export function sendTestProgress(wpm, raw, acc, progress) {
   if (state >= 21 && state <= 28 && TestLogic.active) {
     socket.emit("mp_room_test_progress_update", {
+      sid: socket.id,
+      roomId: room.id,
       stats: {
         wpm: wpm,
         raw: raw,
@@ -955,7 +957,9 @@ export function setName(newname) {
 
 export function sendIsTypingUpdate(truefalse) {
   socket.emit("mp_room_user_istypingupdate", {
+    sid: socket.id,
     typing: truefalse,
+    name: name,
   });
 }
 
@@ -1966,7 +1970,13 @@ $(".pageTest #result .tribeResultChat .chat .input input").keyup((e) => {
     lastMessageTimestamp = performance.now();
     sendIsTypingUpdate(false);
     socket.emit("mp_chat_message", {
+      isSystem: false,
+      isLeader: room.isLeader,
       message: msg,
+      from: {
+        id: socket.id,
+        name: name,
+      },
     });
     resultSuggestions.hide();
     $(".pageTest #result .tribeResultChat .chat .input input").val("");
@@ -1992,7 +2002,13 @@ $(".pageTribe .lobby .chat .input input").keyup((e) => {
     lastMessageTimestamp = performance.now();
     sendIsTypingUpdate(false);
     socket.emit("mp_chat_message", {
+      isSystem: false,
+      isLeader: room.isLeader,
       message: msg,
+      from: {
+        id: socket.id,
+        name: name,
+      },
     });
     lobbySuggestions.hide();
     $(".pageTribe .lobby .chat .input input").val("");
