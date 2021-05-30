@@ -627,7 +627,6 @@ let commandsPaceCaret = {
   ],
 };
 
-
 let commandsMinWpm = {
   title: "Change min wpm mode...",
   list: [
@@ -667,6 +666,26 @@ let commandsMinAcc = {
       exec: (input) => {
         UpdateConfig.setMinAccCustom(input);
         UpdateConfig.setMinAcc("custom");
+      },
+    },
+  ],
+};
+
+let commandsMinAccGrace = {
+  title: "Change min accuracy grace option...",
+  list: [
+    {
+      id: "setMinAccGraceOff",
+      display: "off",
+      exec: () => {
+        UpdateConfig.setMinAccGrace("off");
+      },
+    },
+    {
+      id: "setMinAccGraceOn",
+      display: "on",
+      exec: () => {
+        UpdateConfig.setMinAccGrace("on");
       },
     },
   ],
@@ -1534,6 +1553,16 @@ export let defaultCommands = {
       },
     },
     {
+      id: "changeMinAccGrace",
+      display: "Change min accuracy grace option...",
+      alias: "mingrace",
+      subgroup: true,
+      exec: () => {
+        current.push(commandsMinAccGrace);
+        Commandline.show();
+      },
+    },
+    {
       id: "changeOppositeShiftMode",
       display: "Change opposite shift mode...",
       subgroup: true,
@@ -2019,7 +2048,7 @@ export let defaultCommands = {
           UpdateConfig.apply(JSON.parse(input));
           UpdateConfig.saveToLocalStorage();
           Settings.update();
-          Notifications.add("Done",1);
+          Notifications.add("Done", 1);
         } catch (e) {
           Notifications.add(
             "An error occured while importing settings: " + e,
@@ -2032,9 +2061,8 @@ export let defaultCommands = {
       id: "exportSettingsJSON",
       display: "Export settings JSON",
       input: true,
-      defaultValue:"",
-      exec: (input) => {
-      },
+      defaultValue: "",
+      exec: (input) => {},
     },
   ],
 };
