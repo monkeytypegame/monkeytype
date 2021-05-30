@@ -168,10 +168,20 @@ export function calculateAccuracy() {
   return (accuracy.correct / (accuracy.correct + accuracy.incorrect)) * 100;
 }
 export function calculateAccuracyWithGrace() {
-  const period = Math.min(accuracy.correct + accuracy.incorrect, 15) / 15;
-  const grace = Math.pow(period, 2.5);
+  const graceCharacters = Config.minAccCustom / 2.5;
+  const grace =
+    Math.min(accuracy.correct + accuracy.incorrect, graceCharacters) /
+    graceCharacters;
   const incorrect = accuracy.incorrect * grace;
-  return (accuracy.correct / (accuracy.correct + incorrect)) * 100;
+  const acc = (accuracy.correct / (accuracy.correct + incorrect)) * 100;
+  console.log("[calculateAccuracyWithGrace()]", {
+    graceCharacters,
+    grace,
+    original: accuracy.incorrect,
+    modified: incorrect,
+    acc,
+  });
+  return acc;
 }
 
 export function incrementAccuracy(correctincorrect) {
