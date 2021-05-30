@@ -2248,6 +2248,31 @@
                   />
                 </div>
               </div>
+              <div class="section minAccGrace" section="">
+                <h1>min accuracy grace</h1>
+                <div class="text">
+                  When min accuracy is on, turning this setting on as well will
+                  forgive a few errors at the begining of each test.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    minAccGrace="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    minAccGrace="on"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    on
+                  </div>
+                </div>
+              </div>
               <div class="section languageGroups fullWidth">
                 <h1>language groups</h1>
                 <div class="buttons"></div>
@@ -2706,7 +2731,9 @@
               <div class="section repeatedPace" section="">
                 <h1>repeated pace</h1>
                 <div class="text">
-                  When repeating a test, a pace caret will automatically be enabled for one test with the speed of your previous test. It does not override the pace caret if it's already enabled.
+                  When repeating a test, a pace caret will automatically be
+                  enabled for one test with the speed of your previous test. It
+                  does not override the pace caret if it's already enabled.
                 </div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">

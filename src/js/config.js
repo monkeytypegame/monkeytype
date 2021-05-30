@@ -112,6 +112,7 @@ let defaultConfig = {
   strictSpace: false,
   minAcc: "off",
   minAccCustom: 90,
+  minAccGrace: "off",
   showLiveAcc: false,
   monkey: false,
   repeatQuotes: "off",
@@ -561,6 +562,14 @@ export function setMinAccCustom(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+export function setMinAccGrace(val, nosave) {
+  if (val !== "on") {
+    val = "off";
+  }
+  config.minAccGrace = val;
+  if (!nosave) saveToLocalStorage();
+}
+
 //always show words history
 export function setAlwaysShowWordsHistory(val, nosave) {
   if (val == undefined) {
@@ -858,9 +867,9 @@ export function setHighlightMode(mode, nosave) {
   }
   config.highlightMode = mode;
   // if(TestLogic.active){
-  try{
-  if (!nosave) TestUI.updateWordElement(config.blindMode);
-  }catch{}
+  try {
+    if (!nosave) TestUI.updateWordElement(config.blindMode);
+  } catch {}
   // }
   if (!nosave) saveToLocalStorage();
 }
@@ -1547,6 +1556,7 @@ export function apply(configObj) {
     setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
     setMinAcc(configObj.minAcc, true);
     setMinAccCustom(configObj.minAccCustom, true);
+    setMinAccGrace(configObj.minAccGrace, true);
     setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);

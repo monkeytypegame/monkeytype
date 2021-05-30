@@ -217,6 +217,7 @@ async function initGroups() {
       $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
     }
   });
+  groups.minAcc = new SettingsGroup("minAccGrace", UpdateConfig.setMinAccGrace);
   groups.smoothLineScroll = new SettingsGroup(
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll
