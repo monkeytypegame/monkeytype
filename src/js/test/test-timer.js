@@ -38,7 +38,11 @@ export function start() {
       TestStats.pushToRawHistory(wpmAndRaw.raw);
       Monkey.updateFastOpacity(wpmAndRaw.wpm);
 
-      let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+      let acc = Misc.roundTo2(
+        Config.minAccGrace === "on"
+          ? TestStats.calculateAccuracyWithGrace()
+          : TestStats.calculateAccuracy()
+      );
 
       if (Funbox.active === "layoutfluid" && Config.mode === "time") {
         const layouts = Config.customLayoutfluid
