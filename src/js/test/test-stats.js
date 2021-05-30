@@ -173,15 +173,7 @@ export function calculateAccuracyWithGrace() {
     Math.min(accuracy.correct + accuracy.incorrect, graceCharacters) /
     graceCharacters;
   const incorrect = accuracy.incorrect * grace;
-  const acc = (accuracy.correct / (accuracy.correct + incorrect)) * 100;
-  console.log("[calculateAccuracyWithGrace()]", {
-    graceCharacters,
-    grace,
-    original: accuracy.incorrect,
-    modified: incorrect,
-    acc,
-  });
-  return acc;
+  return (accuracy.correct / (accuracy.correct + incorrect)) * 100;
 }
 
 export function incrementAccuracy(correctincorrect) {
