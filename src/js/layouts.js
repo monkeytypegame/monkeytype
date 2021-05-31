@@ -335,5 +335,15 @@ const layouts = {
             " "
         ],
     },
+    engram: {
+        keymapShowTopRow: true,
+        keys: [
+            "[{", "1|", "2=", "3~", "4+", "5<", "6>", "7^", "8&", "9%", "0*", "]}", "/\\",
+            "bB", "yY", "oO", "uU", "'(", "\")", "lL", "dD", "wW", "vV", "zZ", "#$", "@`",
+            "cC", "iI", "eE", "aA", ",;", ".:", "hH", "tT", "sS", "nN", "qQ",
+            "\\|", "gG", "xX", "jJ", "kK", "-_", "?!", "rR", "mM", "fF", "pP",
+            " "
+        ]
+    }
 }
 export default layouts;

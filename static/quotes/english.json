@@ -32896,6 +32896,12 @@
 	  "source": "Steins;Gate",
 	  "length": 247,
 	  "id": 5538
-	}
+	},
+  {
+    "text": "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
+	  "source": "Martin Fowler",
+	  "length": 111,
+	  "id": 5539
+  }
   ]
 }
