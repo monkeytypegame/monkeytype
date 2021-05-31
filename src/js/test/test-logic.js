@@ -1563,6 +1563,7 @@ export function finish(difficultyFailed = false) {
               );
             }
             if (!window.navigator.onLine) {
+              AccountButton.loading(false);
               Notifications.add("You are offline. Result not saved.", -1);
             } else {
               CloudFunctions.testCompleted({
