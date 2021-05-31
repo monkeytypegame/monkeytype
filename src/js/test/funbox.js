@@ -7,8 +7,6 @@ import Config, * as UpdateConfig from "./config";
 import * as Settings from "./settings";
 
 export let active = "none";
-export let funboxSaved = "none";
-export let modeSaved = null;
 let memoryTimer = null;
 let memoryInterval = null;
 
@@ -92,7 +90,7 @@ export function toggleScript(...params) {
 
 export async function activate(funbox, mode) {
   if (funbox === undefined || funbox === null) {
-    funbox = funboxSaved;
+    funbox = Config.funbox;
   }
   if (Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
@@ -220,7 +218,6 @@ export async function activate(funbox, mode) {
       UpdateConfig.setHighlightMode("letter", true);
       TestLogic.restart(false, true);
     }
-    active = funbox;
   }
 
   // if (funbox !== "layoutfluid" || mode !== "script") {
@@ -232,17 +229,8 @@ export async function activate(funbox, mode) {
   TestUI.updateModesNotice();
   return true;
 }
-export function setFunbox(funbox, mode) {
-  if (TestLogic.active) {
-    Notifications.add(
-      "You can only change the funbox before starting a test.",
-      0
-    );
-    return false;
-  }
+export function setFunbox(funbox) {
   if (funbox === "none") loadMemory();
-  funboxSaved = funbox;
-  modeSaved = mode;
-  active = funbox;
+  UpdateConfig.setFunbox(funbox);
   return true;
 }

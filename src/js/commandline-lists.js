@@ -143,7 +143,7 @@ Misc.getFunboxList().then((funboxes) => {
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
       exec: () => {
-        if (Funbox.setFunbox(funbox.name, funbox.type)) {
+        if (Funbox.setFunbox(funbox.name)) {
           TestLogic.restart();
         }
       },
@@ -626,7 +626,6 @@ let commandsPaceCaret = {
     },
   ],
 };
-
 
 let commandsMinWpm = {
   title: "Change min wpm mode...",
@@ -1816,7 +1815,7 @@ export let defaultCommands = {
       input: true,
       exec: (input) => {
         UpdateConfig.setCustomLayoutfluid(input);
-        if (Funbox.active === "layoutfluid") TestLogic.restart();
+        if (Config.funbox === "layoutfluid") TestLogic.restart();
         // UpdateConfig.setLayout(
         //   Config.customLayoutfluid
         //     ? Config.customLayoutfluid.split("_")[0]
@@ -2019,7 +2018,7 @@ export let defaultCommands = {
           UpdateConfig.apply(JSON.parse(input));
           UpdateConfig.saveToLocalStorage();
           Settings.update();
-          Notifications.add("Done",1);
+          Notifications.add("Done", 1);
         } catch (e) {
           Notifications.add(
             "An error occured while importing settings: " + e,
@@ -2032,9 +2031,8 @@ export let defaultCommands = {
       id: "exportSettingsJSON",
       display: "Export settings JSON",
       input: true,
-      defaultValue:"",
-      exec: (input) => {
-      },
+      defaultValue: "",
+      exec: (input) => {},
     },
   ],
 };
