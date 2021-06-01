@@ -16,6 +16,7 @@ const userSchema = new Schema(
       zen: { type: Schema.Types.Mixed, default: {} },
     },
     name: { type: String, required: true },
+    uid: { type: String, required: true },
     presets: [{ type: presetSchema, default: {} }],
     tags: [{ type: tagSchema, default: {} }],
     favouriteThemes: [],
@@ -40,9 +41,7 @@ const userSchema = new Schema(
       started: { type: Number, default: 0 }, //number of started tests
       completed: { type: Number, default: 0 },
     },
-    email: { type: String, required: true },
-    password: { type: String, required: true },
-    refreshTokens: [{ type: String, required: true }],
+    email: { type: String },
     config: { type: configSchema, default: {} },
     bananas: {
       t60bananas: { type: Number, default: 0 },

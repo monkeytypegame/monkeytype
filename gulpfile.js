@@ -1,6 +1,6 @@
 const { task, src, dest, series, watch } = require("gulp");
-const browserify = require("browserify");
 const axios = require("axios");
+const browserify = require("browserify");
 const babelify = require("babelify");
 const concat = require("gulp-concat");
 const del = require("del");
@@ -13,7 +13,14 @@ sass.compiler = require("dart-sass");
 
 let eslintConfig = {
   parser: "babel-eslint",
-  globals: ["jQuery", "$", "moment", "html2canvas", "ClipboardItem"],
+  globals: [
+    "jQuery",
+    "$",
+    "firebase",
+    "moment",
+    "html2canvas",
+    "ClipboardItem",
+  ],
   envs: ["es6", "browser", "node"],
   rules: {
     "constructor-super": "error",

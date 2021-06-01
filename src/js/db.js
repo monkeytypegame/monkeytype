@@ -27,19 +27,9 @@ export function setSnapshot(newSnapshot) {
   dbSnapshot = newSnapshot;
 }
 
-export function currentUser() {
-  const token = window.localStorage.getItem("accessToken");
-  if (token) {
-    const user = JSON.parse(window.localStorage.getItem("user"));
-    return user;
-  } else {
-    return null;
-  }
-}
-
 export async function initSnapshot() {
   //send api request with token that returns tags, presets, and data needed for snap
-  if (currentUser() == null) return false;
+  if (firebase.auth().currentUser == null) return false;
   await axiosInstance
     .get("/api/fetchSnapshot")
     .then((response) => {
@@ -53,7 +43,7 @@ export async function initSnapshot() {
 }
 
 export async function getUserResults() {
-  let user = currentUser();
+  let user = firebase.auth().currentUser;
   if (user == null) return false;
   if (dbSnapshot === null) return false;
   if (dbSnapshot.results !== undefined) {
@@ -418,7 +408,7 @@ export function updateLbMemory(mode, mode2, type, value) {
 }
 
 export async function saveConfig(config) {
-  if (currentUser() !== null) {
+  if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
     axiosInstance
       .post("/api/saveConfig", {

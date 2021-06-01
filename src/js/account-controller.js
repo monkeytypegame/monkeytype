@@ -14,42 +14,52 @@ import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
-//var gmailProvider = new firebase.auth.GoogleAuthProvider();
+
+var gmailProvider = new firebase.auth.GoogleAuthProvider();
 
 export function signIn() {
   $(".pageLogin .preloader").removeClass("hidden");
   let email = $(".pageLogin .login input")[0].value;
   let password = $(".pageLogin .login input")[1].value;
-  axiosInstance
-    .post("/api/signIn", {
-      email: email,
-      password: password,
-    })
-    .then((response) => {
-      // UI.changePage("test");
-      if ($(".pageLogin .login #rememberMe input").prop("checked")) {
-        // TODO: set user login cookie that persists after session
-        window.localStorage.setItem("accessToken", response.data.accessToken);
-        window.localStorage.setItem("refreshToken", response.data.refreshToken);
-        window.localStorage.setItem("user", JSON.stringify(response.data.user));
-      } else {
-        //set user login cookie to persist only as long as the session lives
-        window.localStorage.setItem("accessToken", response.data.accessToken);
-        window.localStorage.setItem("refreshToken", response.data.refreshToken);
-        window.localStorage.setItem("user", JSON.stringify(response.data.user));
-      }
-      userStateChanged(response.data.user);
-    })
-    .catch((e) => {
-      console.log("Could not be signed in");
-      Notifications.add(e.message, -1);
-      $(".pageLogin .preloader").addClass("hidden");
-    });
+
+  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
+    //remember me
+    firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(function () {
+        return firebase
+          .auth()
+          .signInWithEmailAndPassword(email, password)
+          .then((e) => {
+            // UI.changePage("test");
+          })
+          .catch(function (error) {
+            Notifications.add(error.message, -1);
+            $(".pageLogin .preloader").addClass("hidden");
+          });
+      });
+  } else {
+    //dont remember
+    firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
+      .then(function () {
+        return firebase
+          .auth()
+          .signInWithEmailAndPassword(email, password)
+          .then((e) => {
+            // UI.changePage("test");
+          })
+          .catch(function (error) {
+            Notifications.add(error.message, -1);
+            $(".pageLogin .preloader").addClass("hidden");
+          });
+      });
+  }
 }
 
 export async function signInWithGoogle() {
-  console.log("Login with google temporarily unavailable");
-  /*
   $(".pageLogin .preloader").removeClass("hidden");
 
   if ($(".pageLogin .login #rememberMe input").prop("checked")) {
@@ -81,12 +91,9 @@ export async function signInWithGoogle() {
         $(".pageLogin .preloader").addClass("hidden");
       });
   }
-  */
 }
 
 export function linkWithGoogle() {
-  console.log("Link with google temporarily unavailable");
-  /*
   firebase
     .auth()
     .currentUser.linkWithPopup(gmailProvider)
@@ -96,21 +103,23 @@ export function linkWithGoogle() {
     .catch(function (error) {
       console.log(error);
     });
-    */
 }
 
 export function signOut() {
-  //don't think I need an axios request here if I'm using jwt
-  window.localStorage.removeItem("accessToken");
-  window.localStorage.removeItem("refreshToken");
-  window.localStorage.removeItem("user");
-  Notifications.add("Signed out", 0, 2);
-  AllTimeStats.clear();
-  Settings.hideAccountSection();
-  AccountButton.update();
-  UI.changePage("login");
-  DB.setSnapshot(null);
-  userStateChanged(null);
+  firebase
+    .auth()
+    .signOut()
+    .then(function () {
+      Notifications.add("Signed out", 0, 2);
+      AllTimeStats.clear();
+      Settings.hideAccountSection();
+      AccountButton.update();
+      UI.changePage("login");
+      DB.setSnapshot(null);
+    })
+    .catch(function (error) {
+      Notifications.add(error.message, -1);
+    });
 }
 
 function signUp() {
@@ -127,65 +136,131 @@ function signUp() {
     $(".pageLogin .register .button").removeClass("disabled");
     return;
   }
-
-  axiosInstance
-    .post("/api/signUp", {
-      name: nname,
-      email: email,
-      password: password,
-    })
-    .then((response) => {
-      let usr = response.data.user;
-      window.localStorage.setItem("accessToken", response.data.accessToken);
-      window.localStorage.setItem("refreshToken", response.data.refreshToken);
-      window.localStorage.setItem("user", JSON.stringify(response.data.user));
-      //Cookies.set('refreshToken', response.data.refreshToken);
-      AllTimeStats.clear();
-      Notifications.add("Account created", 1, 3);
-      $("#menu .icon-button.account .text").text(nname);
-      $(".pageLogin .preloader").addClass("hidden");
-      DB.setSnapshot({
-        results: [],
-        personalBests: {},
-        tags: [],
-        globalStats: {
-          time: undefined,
-          started: undefined,
-          completed: undefined,
-        },
-      });
-      if (TestLogic.notSignedInLastResult !== null) {
-        TestLogic.setNotSignedInUid(usr.uid);
-        CloudFunctions.testCompleted({
-          uid: usr.uid,
-          obj: TestLogic.notSignedInLastResult,
-        });
-        DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
-      }
-      UI.changePage("account");
-      $(".pageLogin .register .button").removeClass("disabled");
-      userStateChanged(usr);
-    })
-    .catch((error) => {
-      //Notifications.add("Account not created. " + error.message, -1);
-      Notifications.add(error, -1);
+  axiosInstance.get(`/api/nameCheck/${nname}`).then((d) => {
+    console.log(d.data);
+    if (d.data.resultCode === -1) {
+      Notifications.add("Name unavailable", -1);
       $(".pageLogin .preloader").addClass("hidden");
       $(".pageLogin .register .button").removeClass("disabled");
       return;
-    });
+    } else if (d.data.resultCode === -2) {
+      Notifications.add(
+        "Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
+        -1
+      );
+      $(".pageLogin .preloader").addClass("hidden");
+      $(".pageLogin .register .button").removeClass("disabled");
+      return;
+    } else if (d.data.resultCode === 1) {
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then((user) => {
+          // Account has been created here.
+          // dontCheckUserName = true;
+          let usr = user.user;
+          //maybe there's a better place for the api call
+          axiosInstance.post("/api/signUp", {
+            name: nname,
+            uid: usr.uid,
+            email: email,
+          });
+          usr
+            .updateProfile({
+              displayName: nname,
+            })
+            .then(async function () {
+              // Update successful.
+              await firebase
+                .firestore()
+                .collection("users")
+                .doc(usr.uid)
+                .set({ name: nname }, { merge: true });
+              usr.sendEmailVerification();
+              AllTimeStats.clear();
+              Notifications.add("Account created", 1, 3);
+              $("#menu .icon-button.account .text").text(nname);
+              try {
+                firebase.analytics().logEvent("accountCreated", usr.uid);
+              } catch (e) {
+                console.log("Analytics unavailable");
+              }
+              $(".pageLogin .preloader").addClass("hidden");
+              DB.setSnapshot({
+                results: [],
+                personalBests: {},
+                tags: [],
+                globalStats: {
+                  time: undefined,
+                  started: undefined,
+                  completed: undefined,
+                },
+              });
+              if (TestLogic.notSignedInLastResult !== null) {
+                TestLogic.setNotSignedInUid(usr.uid);
+                CloudFunctions.testCompleted({
+                  uid: usr.uid,
+                  obj: TestLogic.notSignedInLastResult,
+                });
+                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+              }
+              UI.changePage("account");
+              usr.sendEmailVerification();
+              $(".pageLogin .register .button").removeClass("disabled");
+            })
+            .catch(function (error) {
+              // An error happened.
+              $(".pageLogin .register .button").removeClass("disabled");
+              console.error(error);
+              usr
+                .delete()
+                .then(function () {
+                  // User deleted.
+                  Notifications.add(
+                    "Account not created. " + error.message,
+                    -1
+                  );
+                  $(".pageLogin .preloader").addClass("hidden");
+                })
+                .catch(function (error) {
+                  // An error happened.
+                  $(".pageLogin .preloader").addClass("hidden");
+                  Notifications.add(
+                    "Something went wrong. " + error.message,
+                    -1
+                  );
+                  console.error(error);
+                });
+            });
+        })
+        .catch(function (error) {
+          // Handle Errors here.
+          $(".pageLogin .register .button").removeClass("disabled");
+          Notifications.add(error.message, -1);
+          $(".pageLogin .preloader").addClass("hidden");
+        });
+    } else {
+      $(".pageLogin .preloader").addClass("hidden");
+      Notifications.add(
+        "Something went wrong when checking name: " + d.data.message,
+        -1
+      );
+    }
+  });
 }
 
 $(".pageLogin #forgotPasswordButton").click((e) => {
   let email = prompt("Email address");
   if (email) {
-    axiosInstance
-      .post("/api/passwordReset", {
-        email: email,
-      })
-      .then(() => {
+    firebase
+      .auth()
+      .sendPasswordResetEmail(email)
+      .then(function () {
+        // Email sent.
         Notifications.add("Email sent", 1, 2);
       })
-      .catch((error) => {
+      .catch(function (error) {
+        // An error happened.
         Notifications.add(error.message, -1);
       });
   }
@@ -212,7 +287,7 @@ $(".signOut").click((e) => {
   signOut();
 });
 
-export function userStateChanged(user) {
+firebase.auth().onAuthStateChanged(function (user) {
   if (user) {
     // User is signed in.
     $(".pageAccount .content p.accountVerificatinNotice").remove();
@@ -224,7 +299,7 @@ export function userStateChanged(user) {
     AccountButton.update();
     AccountButton.loading(true);
     Account.getDataAndInit();
-    // var name = user.name;
+    // var displayName = user.displayName;
     // var email = user.email;
     // var emailVerified = user.emailVerified;
     // var photoURL = user.photoURL;
@@ -236,8 +311,7 @@ export function userStateChanged(user) {
     // showFavouriteThemesAtTheTop();
     CommandlineLists.updateThemeCommands();
 
-    let text =
-      "Account created on " + user.metadata.creationTime.substring(0, 10);
+    let text = "Account created on " + user.metadata.creationTime;
 
     const date1 = new Date(user.metadata.creationTime);
     const date2 = new Date();
@@ -275,7 +349,7 @@ export function userStateChanged(user) {
       ChallengeController.setup(challengeName);
     }, 1000);
   }
-}
+});
 
 $(".pageLogin .register input").keyup((e) => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;

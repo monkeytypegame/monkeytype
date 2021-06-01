@@ -1,4 +1,3 @@
-import * as CloudFunctions from "./cloud-functions";
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
 import * as DB from "./db";
@@ -82,7 +81,8 @@ function update() {
         dailyData.board.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (entry.name == DB.currentUser().name) {
+          //hacky way to get username because auth().currentUser.name isn't working after mongo switch
+          if (DB.getSnapshot() && entry.name == DB.getSnapshot().name) {
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.daily tfoot").html(`
             <tr>
@@ -165,7 +165,7 @@ function update() {
         globalData.board.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (entry.name == DB.currentUser().name) {
+          if (DB.getSnapshot() && entry.name == DB.getSnapshot().name) {
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.global tfoot").html(`
             <tr>

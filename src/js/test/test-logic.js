@@ -316,10 +316,10 @@ export function startTest() {
     UpdateConfig.setChangedBeforeDb(true);
   }
   try {
-    if (DB.currentUser() != null) {
-      axiosInstance.post("/api/analytics/testStarted");
+    if (firebase.auth().currentUser != null) {
+      firebase.analytics().logEvent("testStarted");
     } else {
-      axiosInstance.post("/api/analytics/testStartedNoLogin");
+      firebase.analytics().logEvent("testStartedNoLogin");
     }
   } catch (e) {
     console.log("Analytics unavailable");
@@ -1404,8 +1404,8 @@ export function finish(difficultyFailed = false) {
       stats.acc > 50 &&
       stats.acc <= 100
     ) {
-      if (DB.currentUser() != null) {
-        completedEvent.uid = DB.currentUser().uid;
+      if (firebase.auth().currentUser != null) {
+        completedEvent.uid = firebase.auth().currentUser.uid;
         //check local pb
         AccountButton.loading(true);
         let dontShowCrown = false;
@@ -1638,13 +1638,13 @@ export function finish(difficultyFailed = false) {
                     }
                   }
 
-                  axiosInstance
-                    .post("/api/analytics/testCompleted", {
-                      completedEvent: completedEvent,
-                    })
-                    .catch(() => {
-                      console.log("Analytics unavailable");
-                    });
+                  try {
+                    firebase
+                      .analytics()
+                      .logEvent("testCompleted", completedEvent);
+                  } catch (e) {
+                    console.log("Analytics unavailable");
+                  }
 
                   if (e.data.resultCode === 2) {
                     //new pb
@@ -1679,29 +1679,25 @@ export function finish(difficultyFailed = false) {
           });
         });
       } else {
-        axiosInstance
-          .post("/api/analytics/testCompletedNoLogin", {
-            completedEvent: completedEvent,
-          })
-          .catch((e) => {
-            console.log("Analytics unavailable");
-          });
+        try {
+          firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
+        } catch (e) {
+          console.log("Analytics unavailable");
+        }
         notSignedInLastResult = completedEvent;
       }
     } else {
       Notifications.add("Test invalid", 0);
       TestStats.setInvalid();
-      axiosInstance
-        .post("/api/analytics/testCompletedInvalid", {
-          completedEvent: completedEvent,
-        })
-        .catch((e) => {
-          console.log("Analytics unavailable");
-        });
+      try {
+        firebase.analytics().logEvent("testCompletedInvalid", completedEvent);
+      } catch (e) {
+        console.log("Analytics unavailable");
+      }
     }
   }
 
-  if (DB.currentUser() != null) {
+  if (firebase.auth().currentUser != null) {
     $("#result .loginTip").addClass("hidden");
   } else {
     $("#result .stats .leaderboards").addClass("hidden");

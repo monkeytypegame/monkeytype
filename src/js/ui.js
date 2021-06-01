@@ -14,7 +14,6 @@ import * as Settings from "./settings";
 import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
-import * as DB from "./db";
 
 export let pageTransition = false;
 
@@ -164,8 +163,10 @@ export function changePage(page) {
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "account") {
-    if (!DB.currentUser()) {
-      console.log(`current user is ${DB.currentUser()}, going back to login`);
+    if (!firebase.auth().currentUser) {
+      console.log(
+        `current user is ${firebase.auth().currentUser}, going back to login`
+      );
       changePage("login");
     } else {
       setPageTransition(true);
@@ -188,7 +189,7 @@ export function changePage(page) {
       TestConfig.hide();
     }
   } else if (page == "login") {
-    if (DB.currentUser() != null) {
+    if (firebase.auth().currentUser != null) {
       changePage("account");
     } else {
       setPageTransition(true);

@@ -27,7 +27,7 @@ export function getDataAndInit() {
       if (snap === null) {
         throw "Missing db snapshot. Client likely could not connect to the backend.";
       }
-      let user = DB.currentUser(); // I think that this should be stored in cookie
+      let user = firebase.auth().currentUser; // I think that this should be stored in cookie
       if (snap.name === undefined) {
         //verify username
         if (Misc.isUsernameValid(user.name)) {

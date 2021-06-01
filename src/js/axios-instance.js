@@ -1,14 +1,21 @@
 import axios from "axios";
 
-const axiosInstance = axios.create();
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:5005",
+});
 
 // Request interceptor for API calls
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const accessToken = window.localStorage.getItem("accessToken");
-    if (accessToken) {
+    let idToken;
+    if (firebase.auth().currentUser != null) {
+      idToken = await firebase.auth().currentUser.getIdToken();
+    } else {
+      idToken = null;
+    }
+    if (idToken) {
       config.headers = {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${idToken}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       };
@@ -22,37 +29,6 @@ axiosInstance.interceptors.request.use(
   },
   (error) => {
     Promise.reject(error);
-  }
-);
-
-// Response interceptor for API calls
-axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async function (error) {
-    const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const refreshToken = window.localStorage.getItem("refreshToken");
-      await axios
-        .post(
-          `/api/refreshToken`,
-          {},
-          { headers: { Authorization: `Bearer ${refreshToken}` } }
-        )
-        .then((response) => {
-          window.localStorage.setItem("accessToken", response.data.accessToken);
-          axios.defaults.headers.common["Authorization"] =
-            "Bearer " + response.data.accessToken;
-        })
-        .catch((error) => {
-          console.log(error);
-          axios.defaults.headers.common["Authorization"] = "Bearer failed";
-        });
-      return axiosInstance(originalRequest);
-    }
-    return Promise.reject(error);
   }
 );
 

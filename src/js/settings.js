@@ -422,7 +422,7 @@ function showActiveTags() {
 
 export function updateDiscordSection() {
   //no code and no discord
-  if (DB.currentUser() == null) {
+  if (firebase.auth().currentUser == null) {
     $(".pageSettings .section.discordIntegration").addClass("hidden");
   } else {
     if (DB.getSnapshot() == null) return;
@@ -453,7 +453,7 @@ function setActiveFunboxButton() {
 }
 
 function refreshTagsSettingsSection() {
-  if (DB.currentUser() !== null && DB.getSnapshot() !== null) {
+  if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot().tags.forEach((tag) => {
       let tagPbString = "No PB found";
@@ -480,7 +480,7 @@ function refreshTagsSettingsSection() {
 }
 
 function refreshPresetsSettingsSection() {
-  if (DB.currentUser() !== null && DB.getSnapshot() !== null) {
+  if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     let presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot().presets.forEach((preset) => {
       presetsEl.append(`
@@ -649,7 +649,7 @@ $(
 ).click((e) => {
   Loader.show();
   CloudFunctions.generatePairingCode({
-    uid: DB.currentUser().uid,
+    uid: firebase.auth().currentUser.uid,
   })
     .then((ret) => {
       Loader.hide();
@@ -675,7 +675,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
     if (confirm("Are you sure?")) {
       Loader.show();
       CloudFunctions.unlinkDiscord({
-        uid: DB.currentUser().uid,
+        uid: firebase.auth().currentUser.uid,
       }).then((ret) => {
         Loader.hide();
         console.log(ret);

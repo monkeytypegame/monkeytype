@@ -96,13 +96,13 @@ export function apply(themeName) {
     });
   }
 
-  axiosInstance
-    .post("/api/analytics/changedTheme", {
+  try {
+    firebase.analytics().logEvent("changedTheme", {
       theme: themeName,
-    })
-    .catch((e) => {
-      console.log("Analytics unavailable");
     });
+  } catch (e) {
+    console.log("Analytics unavailable");
+  }
   setTimeout(() => {
     $(".keymap-key").attr("style", "");
     ChartController.updateAllChartColors();

@@ -1,4 +1,3 @@
-import * as CloudFunctions from "./cloud-functions";
 import * as DB from "./db";
 import * as Notifications from "./notifications";
 import Config from "./config";
@@ -115,7 +114,7 @@ export function show(data, mode2) {
     string = globalLbString + "<br>" + dailyLbString;
 
     // CloudFunctions.saveLbMemory({
-    //   uid: DB.currentUser().uid,
+    //   uid: firebase.auth().currentUser.uid,
     //   obj: DB.getSnapshot().lbMemory,
     // }).then((d) => {
     //   if (d.data.returnCode === 1) {

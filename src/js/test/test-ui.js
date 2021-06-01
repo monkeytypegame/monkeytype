@@ -192,7 +192,7 @@ export function screenshot() {
     $(".pageTest .ssWatermark").addClass("hidden");
     $(".pageTest .buttons").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
-    if (DB.currentUser() == null)
+    if (firebase.auth().currentUser == null)
       $(".pageTest .loginTip").removeClass("hidden");
   }
 

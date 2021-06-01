@@ -153,7 +153,7 @@ list.updateEmail = new SimplePopup(
     try {
       Loader.show();
       CloudFunctions.updateEmail({
-        uid: DB.currentUser().uid,
+        uid: firebase.auth().currentUser.uid,
         previousEmail: previousEmail,
         newEmail: newEmail,
       }).then((data) => {
@@ -190,7 +190,7 @@ list.clearTagPb = new SimplePopup(
     let tagid = eval("this.parameters[0]");
     Loader.show();
     CloudFunctions.clearTagPb({
-      uid: DB.currentUser().uid,
+      uid: firebase.auth().currentUser.uid,
       tagid: tagid,
     })
       .then((res) => {

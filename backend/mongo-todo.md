@@ -1,19 +1,15 @@
 # Todo
 
-- Get google login working
-- Account data should be updated when new result is added/test completed
-- Fix localhost, production, development server detection
-  - Should be a setting in the .env
-  - Maybe it could be set through package.json
-    - When a specific script is run, a certain mode will be activated
 - Tags and leaderboard are still buggy
   - Creating the first tag shows error "Unknown error, cannot read property \_id of undefined"
   - Check for tag pb doesn't always work
   - Leaderboard doesn't show the time until the daily reset
   - User's Leaderboard history is not edited, and therefore distance moved on leaderboard does not work properly
+- Account data should be updated when new result is added/test completed
 - Graph bugs out when new result is added but page is not refreshed
   - Graph loops back from earliest point to the new points
   - Results list isn't updated either
+- Save config doesn't actually return data?
 
 ### leaderboard
 
@@ -25,26 +21,12 @@
 
 ## After beta is ready
 
-- Get somebody else to check over security due to my lack of expertise
 - Work on transfering data from firebase to mongo
 - Make sure that development can be done on mac and windows computers as well
   - directories in server.js might cause issues
 - Figure out if filteredResults.reverse(); in account.js is going to cause efficiency issues
   - Could reverse processing of results, but that would add more complexity to code
 - Figure out why if (page == "account") pageTransition = false; gets rid of endless account loading bug when accessing via url
-
-### Analytics / Admin panel
-
-- Create admin panel or public stats page to make use of analytics data
-  - What data needs to be in the analytics table
-    - New Account, sessions, number of tests started, which tests people take and how fast they are taking them
-      - Things like theme, popular languages, etc can be derived from user models
-        - Wouldn't be able to see change over time if you went with this method
-          - Could check and save once a day
-      - Could use google analytics for easy data analysis
-  - Result is duplicated in analytics
-    - Does entire result need to be stored in analytics
-    - Should result be stored in seperate collection and then referenced in user doc and analytics?
 
 ## User transfer
 

@@ -1,37 +1,27 @@
-require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
+const cors = require("cors");
+const admin = require("firebase-admin");
 const { User } = require("./models/user");
-const { Analytics } = require("./models/analytics");
 const { Leaderboard } = require("./models/leaderboard");
 
+// Firebase admin setup
+//currently uses account key in functions to prevent repetition
+const serviceAccount = require("../functions/serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 // MIDDLEWARE &  SETUP
-
 const app = express();
+app.use(cors());
 
-const port = process.env.PORT || "5000";
+const port = process.env.PORT || "5005";
 
 mongoose.connect("mongodb://localhost:27017/monkeytype", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
-
-let transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    //should use OAuth in production
-    //type: 'OAuth2',
-    user: process.env.MAIL_ADDRESS,
-    pass: process.env.MAIL_PASSWORD,
-    //clientId: process.env.OAUTH_CLIENTID,
-    //clientSecret: process.env.OAUTH_CLIENT_SECRET,
-    //refreshToken: process.env.OAUTH_REFRESH_TOKEN
-  },
 });
 
 const mtRootDir = __dirname.substring(0, __dirname.length - 8); //will this work for windows and mac computers?
@@ -78,16 +68,18 @@ Leaderboard.findOne((err, lb) => {
   clearDailyLeaderboards();
 });
 
-function authenticateToken(req, res, next) {
+async function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, identity) => {
-    if (err) return res.sendStatus(403);
-    req.name = identity.name;
+  const token = await admin
+    .auth()
+    .verifyIdToken(req.headers.authorization.split(" ")[1]);
+  if (token == null) {
+    return res.sendStatus(401);
+  } else {
+    req.name = token.name;
+    req.uid = token.user_id;
     next();
-  });
+  }
 }
 
 // NON-ROUTE FUNCTIONS
@@ -174,7 +166,7 @@ async function checkIfPB(obj, userdata) {
       throw new Error("pb is undefined");
     }
   } catch (e) {
-    User.findOne({ name: userdata.name }, (err, user) => {
+    User.findOne({ uid: userdata.uid }, (err, user) => {
       user.personalBests = {
         [obj.mode]: {
           [obj.mode2]: [
@@ -260,7 +252,7 @@ async function checkIfPB(obj, userdata) {
   }
 
   if (toUpdate) {
-    User.findOne({ name: userdata.name }, (err, user) => {
+    User.findOne({ uid: userdata.uid }, (err, user) => {
       user.personalBests = pbs;
       user.save();
     });
@@ -282,7 +274,7 @@ async function checkIfTagPB(obj, userdata) {
   let restags = obj.tags; //result tags
   try {
     let snap;
-    await User.findOne({ name: userdata.name }, (err, user) => {
+    await User.findOne({ uid: userdata.uid }, (err, user) => {
       snap = user.tags;
     });
     snap.forEach((doc) => {
@@ -312,7 +304,7 @@ async function checkIfTagPB(obj, userdata) {
     } catch (e) {
       console.log("PBs undefined");
       //undefined personal best = new personal best
-      await User.findOne({ name: userdata.name }, (err, user) => {
+      await User.findOne({ uid: userdata.uid }, (err, user) => {
         //it might be more convenient if tags was an object with ids as the keys
         for (let j = 0; j < user.tags.length; j++) {
           console.log(user.tags[j]);
@@ -407,7 +399,7 @@ async function checkIfTagPB(obj, userdata) {
 
     if (toUpdate) {
       console.log("Adding new pb at end");
-      await User.findOne({ name: userdata.name }, (err, user) => {
+      await User.findOne({ uid: userdata.uid }, (err, user) => {
         //it might be more convenient if tags was an object with ids as the keys
         for (let j = 0; j < user.tags.length; j++) {
           console.log(user.tags[j]);
@@ -426,7 +418,7 @@ async function checkIfTagPB(obj, userdata) {
   return ret;
 }
 
-async function stripAndSave(username, obj) {
+async function stripAndSave(uid, obj) {
   if (obj.bailedOut === false) delete obj.bailedOut;
   if (obj.blindMode === false) delete obj.blindMode;
   if (obj.difficulty === "normal") delete obj.difficulty;
@@ -438,13 +430,13 @@ async function stripAndSave(username, obj) {
   if (obj.numbers === false) delete obj.numbers;
   if (obj.punctuation === false) delete obj.punctuation;
 
-  await User.findOne({ name: username }, (err, user) => {
+  await User.findOne({ uid: uid }, (err, user) => {
     user.results.push(obj);
     user.save();
   });
 }
 
-function incrementT60Bananas(username, result, userData) {
+function incrementT60Bananas(uid, result, userData) {
   try {
     let best60;
     try {
@@ -464,7 +456,7 @@ function incrementT60Bananas(username, result, userData) {
     } else {
       //increment
       // console.log("checking");
-      User.findOne({ name: username }, (err, user) => {
+      User.findOne({ uid: uid }, (err, user) => {
         if (user.bananas === undefined) {
           user.bananas.t60bananas = 1;
         } else {
@@ -524,7 +516,7 @@ async function incrementGlobalTypingStats(userData, resultObj) {
     //     timeTyping: roundTo2(newTime),
     //   });
     incrementPublicTypingStats(resultObj.restartCount + 1, 1, tt);
-    User.findOne({ name: userData.name }, (err, user) => {
+    User.findOne({ uid: userData.uid }, (err, user) => {
       user.globalStats = {
         started: newStarted,
         completed: newCompleted,
@@ -538,8 +530,6 @@ async function incrementGlobalTypingStats(userData, resultObj) {
 }
 
 async function incrementPublicTypingStats(started, completed, time) {
-  //maybe this should be added to analytics
-  //analytics should be able to track usage over time and show a graph
   /*
   try {
     time = roundTo2(time);
@@ -562,184 +552,59 @@ function isTagPresetNameValid(name) {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
+function isUsernameValid(name) {
+  if (name === null || name === undefined || name === "") return false;
+  if (/miodec/.test(name.toLowerCase())) return false;
+  if (/bitly/.test(name.toLowerCase())) return false;
+  if (name.length > 14) return false;
+  if (/^\..*/.test(name.toLowerCase())) return false;
+  return /^[0-9a-zA-Z_.-]+$/.test(name);
+}
+
 // API
+
+app.get("/api/nameCheck/:name", (req, res) => {
+  if (!isUsernameValid(req.params.name)) {
+    res.status(200).send({
+      resultCode: -2,
+      message: "Username is not valid",
+    });
+    return;
+  }
+  User.findOne({ name: req.params.name }, (err, user) => {
+    if (user) {
+      res.status(200).send({
+        resultCode: -1,
+        message: "Username is taken",
+      });
+      return;
+    } else {
+      res.status(200).send({
+        resultCode: 1,
+        message: "Username is available",
+      });
+      return;
+    }
+  });
+});
+
+app.post("/api/signUp", (req, res) => {
+  const newuser = new User({
+    name: req.body.name,
+    email: req.body.email,
+    uid: req.body.uid,
+  });
+  newuser.save();
+  res.status(200);
+  res.json({ user: newuser });
+  return;
+});
 
 app.post("/api/updateName", (req, res) => {
   //this might be a put/patch request
   //update the name of user with given uid
   const uid = req.body.uid;
   const name = req.body.name;
-});
-
-function sendVerificationEmail(username, email) {
-  const host = "localhost:5000";
-  const hash = Math.random().toString(16).substr(2, 12);
-  const link = `http://${host}/verifyEmail?name=${username}&hash=${hash}`;
-  User.findOne({ name: username }, (err, user) => {
-    user.verificationHashes.push(hash);
-    user.save();
-  });
-  const mailOptions = {
-    from: process.env.MAIL_ADDRESS,
-    to: email,
-    subject: "Monkeytype User Verification",
-    text: `Hello ${username},\nFollow this link to verify your email address:\n${link}\nIf you didn’t ask to verify this address, you can ignore this email.\nThanks,\nYour monkeytype team`,
-  };
-
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Email sent: " + info.response);
-    }
-  });
-}
-
-app.get("/verifyEmail", (req, res) => {
-  let success = false;
-  User.findOne({ name: req.query.name }, (err, user) => {
-    if (user.verificationHashes.includes(req.query.hash)) {
-      success = true;
-      user.verificationHashes = [];
-      user.verified = true;
-      user.emailVerified = true;
-      user.save();
-    }
-  }).then(() => {
-    if (success) {
-      res.send(
-        "<h3>Email verified successfully</h3><p>Go back to <a href='https://monkeytype.com'>monkeytype</a></p>"
-      );
-    } else {
-      res.send(
-        "<h3>Email verification failed</h3><p>Go back to <a href='https://monkeytype.com'>monkeytype</a></p>"
-      );
-    }
-  });
-});
-
-app.post("/api/sendEmailVerification", authenticateToken, (req, res) => {
-  User.findOne({ name: req.name }, (err, user) => {
-    sendVerificationEmail(req.name, user.email);
-  });
-  res.sendStatus(200);
-});
-
-app.post("/api/signIn", (req, res) => {
-  /* Takes email and password */
-  //Login and send tokens
-  User.findOne({ email: req.body.email }, (err, user) => {
-    if (err) res.status(500).send({ error: err });
-    if (user === null) {
-      res.status(500).send({ error: "No user found with that email" });
-      return;
-    }
-    bcrypt.compare(req.body.password, user.password, (err, result) => {
-      if (err)
-        res.status(500).send({ error: "Error during password validation" });
-      if (result) {
-        //if password matches hash
-        const accessToken = jwt.sign(
-          { name: user.name },
-          process.env.ACCESS_TOKEN_SECRET
-        );
-        const refreshToken = jwt.sign(
-          { name: user.name },
-          process.env.REFRESH_TOKEN_SECRET
-        );
-        user.refreshTokens.push(refreshToken);
-        user.save();
-        const retUser = {
-          uid: user._id,
-          name: user.name,
-          email: user.email,
-          emailVerified: user.emailVerified,
-          metadata: { creationTime: user.createdAt },
-        };
-        res.json({
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-          user: retUser,
-        });
-      } else {
-        //if password doesn't match hash
-        res.status(500).send({ error: "Password invalid" });
-      }
-    });
-  });
-});
-
-app.post("/api/signUp", (req, res) => {
-  /* Takes name, email, password */
-  //check if name has been taken
-  User.exists({ name: req.body.name }).then((exists) => {
-    //should also check if email is used
-    if (exists) {
-      //user with that name already exists
-      res.status(500).send({ error: "Username taken" });
-    }
-    bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-      if (err) console.log(err);
-      const newuser = new User({
-        name: req.body.name,
-        email: req.body.email,
-        emailVerified: false,
-        password: hash,
-      });
-      newuser
-        .save()
-        .then((user) => {
-          //send email verification
-          sendVerificationEmail(user.name, user.email);
-          //add account created event to analytics
-
-          //return user data and access token
-          const accessToken = jwt.sign(
-            { name: req.body.name },
-            process.env.ACCESS_TOKEN_SECRET
-          );
-          const refreshToken = jwt.sign(
-            { name: user.name },
-            process.env.REFRESH_TOKEN_SECRET
-          );
-          user.refreshTokens.push(refreshToken);
-          user.save();
-          const retUser = {
-            uid: user._id,
-            name: user.name,
-            email: user.email,
-            emailVerified: user.emailVerified,
-            metadata: { creationTime: user.createdAt },
-          };
-          res.json({
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-            user: retUser,
-          });
-        })
-        .catch((e) => {
-          console.log(e);
-          res.status(500).send({ error: "Error when adding user" });
-        });
-    });
-  });
-});
-
-app.post("/api/refreshToken", (req, res) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.sendStatus(401);
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, identity) => {
-    if (err) return res.sendStatus(403);
-    User.findOne({ name: identity.name }, (err, user) => {
-      if (!user.refreshTokens.includes(token)) return res.sendStatus(403);
-      const accessToken = jwt.sign(
-        { name: identity.name },
-        process.env.ACCESS_TOKEN_SECRET
-      );
-      res.json({ accessToken: accessToken });
-    });
-  });
 });
 
 app.post("/api/passwordReset", (req, res) => {
@@ -750,13 +615,15 @@ app.post("/api/passwordReset", (req, res) => {
 
 app.get("/api/fetchSnapshot", authenticateToken, (req, res) => {
   /* Takes token and returns snap */
-  User.findOne({ name: req.name }, (err, user) => {
+  console.log("UID: " + req.uid);
+  User.findOne({ uid: req.uid }, (err, user) => {
     if (err) res.status(500).send({ error: err });
+    if (!user) res.status(200).send({ message: "No user found" }); //client doesn't do anything with this
     //populate snap object with data from user document
     let snap = user;
-    delete snap.password;
     //return user data
     res.send({ snap: snap });
+    return;
   });
 });
 
@@ -769,10 +636,7 @@ function stdDev(array) {
 }
 
 app.post("/api/testCompleted", authenticateToken, (req, res) => {
-  //return createdId
-  //return user data
-  //this is actually REALLY hard
-  User.findOne({ name: req.name }, (err, user) => {
+  User.findOne({ uid: req.uid }, (err, user) => {
     if (err) res.status(500).send({ error: err });
     request = req.body;
     if (request === undefined) {
@@ -780,7 +644,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
       return;
     }
     try {
-      if (req.name === undefined || request.obj === undefined) {
+      if (req.uid === undefined || request.obj === undefined) {
         console.error(`error saving result for - missing input`);
         res.status(200).send({ data: { resultCode: -999 } });
         return;
@@ -790,7 +654,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
 
       if (obj.incompleteTestSeconds > 500)
         console.log(
-          `FUCK, HIGH INCOMPLETE TEST SECONDS ${req.name}: ${JSON.stringify(
+          `FUCK, HIGH INCOMPLETE TEST SECONDS ${req.uid}: ${JSON.stringify(
             obj
           )}`
         );
@@ -817,7 +681,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
       if (errCount > 0) {
         console.error(
           `error saving result for ${
-            req.name
+            req.uid
           } error count ${errCount} - bad input - ${JSON.stringify(
             request.obj
           )}`
@@ -896,7 +760,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
         };
       } catch (e) {
         console.error(
-          `cant verify key spacing or duration for user ${req.name}! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
+          `cant verify key spacing or duration for user ${req.uid}! - ${e} - ${obj.keySpacing} ${obj.keyDuration}`
         );
       }
 
@@ -911,7 +775,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
 
       // emailVerified = await admin
       //   .auth()
-      //   .getUser(req.name)
+      //   .getUser(req.uid)
       //   .then((user) => {
       //     return user.emailVerified;
       //   });
@@ -956,7 +820,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
               console.error(
                 `very close to bot detected threshold by user (${obj.wpm} ${
                   obj.rawWpm
-                } ${obj.acc}) ${req.name} ${name} - spacing ${JSON.stringify(
+                } ${obj.acc}) ${req.uid} ${name} - spacing ${JSON.stringify(
                   keySpacing
                 )} duration ${JSON.stringify(keyDuration)}`
               );
@@ -979,7 +843,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
       } catch (e) {}
 
       // return db
-      //   .collection(`users/${req.name}/results`)
+      //   .collection(`users/${req.uid}/results`)
       //   .add(obj)
       //   .then((e) => {
 
@@ -1012,7 +876,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
           // console.log(values);
 
           if (obj.mode === "time" && String(obj.mode2) === "60") {
-            incrementT60Bananas(req.name, obj, userdata);
+            incrementT60Bananas(req.uid, obj, userdata);
           }
 
           await incrementGlobalTypingStats(userdata, obj);
@@ -1032,9 +896,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
             logobj.keySpacing = "removed";
             logobj.keyDuration = "removed";
             console.log(
-              `saved result for ${req.name} (new PB) - ${JSON.stringify(
-                logobj
-              )}`
+              `saved result for ${req.uid} (new PB) - ${JSON.stringify(logobj)}`
             );
             /*
             User.findOne({ name: userdata.name }, (err, user2) => {
@@ -1053,7 +915,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
             ) {
               if (verified !== false) {
                 console.log(
-                  `sending command to the bot to update the role for user ${req.name} with wpm ${obj.wpm}`
+                  `sending command to the bot to update the role for user ${req.uid} with wpm ${obj.wpm}`
                 );
                 updateDiscordRole(userdata.discordId, Math.round(obj.wpm));
               }
@@ -1065,17 +927,17 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
             logobj.keyDuration = "removed";
             request.obj.isPb = false;
             console.log(
-              `saved result for ${req.name} - ${JSON.stringify(logobj)}`
+              `saved result for ${req.uid} - ${JSON.stringify(logobj)}`
             );
             returnobj.resultCode = 1;
           }
-          stripAndSave(req.name, request.obj);
+          stripAndSave(req.uid, request.obj);
           res.status(200).send({ data: returnobj });
           return;
         })
         .catch((e) => {
           console.error(
-            `error saving result when checking for PB / checking leaderboards for ${req.name} - ${e.message}`
+            `error saving result when checking for PB / checking leaderboards for ${req.uid} - ${e.message}`
           );
           res
             .status(200)
@@ -1084,7 +946,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
         });
     } catch (e) {
       console.error(
-        `error saving result for ${req.name} - ${JSON.stringify(
+        `error saving result for ${req.uid} - ${JSON.stringify(
           request.obj
         )} - ${e}`
       );
@@ -1095,7 +957,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
 });
 
 app.get("/api/userResults", authenticateToken, (req, res) => {
-  User.findOne({ name: req.name }, (err, user) => {
+  User.findOne({ uid: req.uid }, (err, user) => {
     if (err) res.status(500).send({ error: err });
   });
   //return list of results
@@ -1110,8 +972,8 @@ function isConfigKeyValid(name) {
 
 app.post("/api/saveConfig", authenticateToken, (req, res) => {
   try {
-    if (req.name === undefined || req.body.obj === undefined) {
-      console.error(`error saving config for ${req.name} - missing input`);
+    if (req.uid === undefined || req.body.obj === undefined) {
+      console.error(`error saving config for ${req.uid} - missing input`);
       return {
         resultCode: -1,
         message: "Missing input",
@@ -1150,7 +1012,7 @@ app.post("/api/saveConfig", authenticateToken, (req, res) => {
     });
     if (err) {
       console.error(
-        `error saving config for ${req.name} - bad input - ${JSON.stringify(
+        `error saving config for ${req.uid} - bad input - ${JSON.stringify(
           request.obj
         )}`
       );
@@ -1160,7 +1022,7 @@ app.post("/api/saveConfig", authenticateToken, (req, res) => {
       };
     }
 
-    User.findOne({ name: req.name }, (err, user) => {
+    User.findOne({ uid: req.uid }, (err, user) => {
       if (err) res.status(500).send({ error: err });
       user.config = obj;
       //what does {merge: true} do in firebase
@@ -1174,7 +1036,7 @@ app.post("/api/saveConfig", authenticateToken, (req, res) => {
       })
       .catch((e) => {
         console.error(
-          `error saving config to DB for ${req.name} - ${e.message}`
+          `error saving config to DB for ${req.uid} - ${e.message}`
         );
         return {
           resultCode: -1,
@@ -1182,7 +1044,7 @@ app.post("/api/saveConfig", authenticateToken, (req, res) => {
         };
       });
   } catch (e) {
-    console.error(`error saving config for ${req.name} - ${e}`);
+    console.error(`error saving config for ${req.uid} - ${e}`);
     return {
       resultCode: -999,
       message: e,
@@ -1194,8 +1056,8 @@ app.post("/api/addPreset", authenticateToken, (req, res) => {
   try {
     if (!isTagPresetNameValid(req.body.obj.name)) {
       return { resultCode: -1 };
-    } else if (req.name === undefined || req.body.obj === undefined) {
-      console.error(`error saving config for ${req.name} - missing input`);
+    } else if (req.uid === undefined || req.body.obj === undefined) {
+      console.error(`error saving config for ${req.uid} - missing input`);
       res.json({
         resultCode: -1,
         message: "Missing input",
@@ -1233,7 +1095,7 @@ app.post("/api/addPreset", authenticateToken, (req, res) => {
       });
       if (err) {
         console.error(
-          `error adding preset for ${req.name} - bad input - ${JSON.stringify(
+          `error adding preset for ${req.uid} - bad input - ${JSON.stringify(
             req.body.obj
           )}`
         );
@@ -1243,7 +1105,7 @@ app.post("/api/addPreset", authenticateToken, (req, res) => {
         });
       }
 
-      User.findOne({ name: req.name }, (err, user) => {
+      User.findOne({ uid: req.uid }, (err, user) => {
         if (user.presets.length >= 10) {
           res.json({
             resultCode: -2,
@@ -1263,7 +1125,7 @@ app.post("/api/addPreset", authenticateToken, (req, res) => {
         })
         .catch((e) => {
           console.error(
-            `error adding preset to DB for ${req.name} - ${e.message}`
+            `error adding preset to DB for ${req.uid} - ${e.message}`
           );
           res.json({
             resultCode: -1,
@@ -1272,7 +1134,7 @@ app.post("/api/addPreset", authenticateToken, (req, res) => {
         });
     }
   } catch (e) {
-    console.error(`error adding preset for ${req.name} - ${e}`);
+    console.error(`error adding preset for ${req.uid} - ${e}`);
     res.json({
       resultCode: -999,
       message: e,
@@ -1285,7 +1147,7 @@ app.post("/api/editPreset", authenticateToken, (req, res) => {
     if (!isTagPresetNameValid(req.body.presetName)) {
       return { resultCode: -1 };
     } else {
-      User.findOne({ name: req.name }, (err, user) => {
+      User.findOne({ uid: req.uid }, (err, user) => {
         for (i = 0; i < user.presets.length; i++) {
           if (user.presets[i]._id.toString() == req.body.presetid.toString()) {
             user.presets[i] = {
@@ -1299,7 +1161,7 @@ app.post("/api/editPreset", authenticateToken, (req, res) => {
       })
         .then((e) => {
           console.log(
-            `user ${req.name} updated a preset: ${req.body.presetName}`
+            `user ${req.uid} updated a preset: ${req.body.presetName}`
           );
           res.send({
             resultCode: 1,
@@ -1307,20 +1169,20 @@ app.post("/api/editPreset", authenticateToken, (req, res) => {
         })
         .catch((e) => {
           console.error(
-            `error while updating preset for user ${req.name}: ${e.message}`
+            `error while updating preset for user ${req.uid}: ${e.message}`
           );
           res.send({ resultCode: -999, message: e.message });
         });
     }
   } catch (e) {
-    console.error(`error updating preset for ${req.name} - ${e}`);
+    console.error(`error updating preset for ${req.uid} - ${e}`);
     return { resultCode: -999, message: e.message };
   }
 });
 
 app.post("/api/removePreset", authenticateToken, (req, res) => {
   try {
-    User.findOne({ name: req.name }, (err, user) => {
+    User.findOne({ uid: req.uid }, (err, user) => {
       for (i = 0; i < user.presets.length; i++) {
         if (user.presets[i]._id.toString() == req.body.presetid.toString()) {
           user.presets.splice(i, 1);
@@ -1330,17 +1192,17 @@ app.post("/api/removePreset", authenticateToken, (req, res) => {
       user.save();
     })
       .then((e) => {
-        console.log(`user ${req.name} deleted a preset`);
+        console.log(`user ${req.uid} deleted a preset`);
         res.send({ resultCode: 1 });
       })
       .catch((e) => {
         console.error(
-          `error deleting preset for user ${req.name}: ${e.message}`
+          `error deleting preset for user ${req.uid}: ${e.message}`
         );
         res.send({ resultCode: -999 });
       });
   } catch (e) {
-    console.error(`error deleting preset for ${req.name} - ${e}`);
+    console.error(`error deleting preset for ${req.uid} - ${e}`);
     res.send({ resultCode: -999 });
   }
 });
@@ -1355,7 +1217,7 @@ function isTagPresetNameValid(name) {
 app.post("/api/addTag", authenticateToken, (req, res) => {
   try {
     if (!isTagPresetNameValid(req.body.tagName)) return { resultCode: -1 };
-    User.findOne({ name: req.name }, (err, user) => {
+    User.findOne({ uid: req.uid }, (err, user) => {
       if (err) res.status(500).send({ error: err });
       if (user.tags.includes(req.body.tagName)) {
         return { resultCode: -999, message: "Duplicate tag" };
@@ -1365,7 +1227,7 @@ app.post("/api/addTag", authenticateToken, (req, res) => {
       user.save();
     })
       .then((updatedUser) => {
-        console.log(`user ${req.name} created a tag: ${req.body.tagName}`);
+        console.log(`user ${req.uid} created a tag: ${req.body.tagName}`);
         res.json({
           resultCode: 1,
           id: updatedUser.tags[updatedUser.tags.length - 1]._id,
@@ -1373,12 +1235,12 @@ app.post("/api/addTag", authenticateToken, (req, res) => {
       })
       .catch((e) => {
         console.error(
-          `error while creating tag for user ${req.name}: ${e.message}`
+          `error while creating tag for user ${req.uid}: ${e.message}`
         );
         res.json({ resultCode: -999, message: e.message });
       });
   } catch (e) {
-    console.error(`error adding tag for ${req.name} - ${e}`);
+    console.error(`error adding tag for ${req.uid} - ${e}`);
     res.json({ resultCode: -999, message: e.message });
   }
 });
@@ -1386,7 +1248,7 @@ app.post("/api/addTag", authenticateToken, (req, res) => {
 app.post("/api/editTag", authenticateToken, (req, res) => {
   try {
     if (!isTagPresetNameValid(req.body.tagName)) return { resultCode: -1 };
-    User.findOne({ name: req.name }, (err, user) => {
+    User.findOne({ uid: req.uid }, (err, user) => {
       if (err) res.status(500).send({ error: err });
       for (var i = 0; i < user.tags.length; i++) {
         if (user.tags[i]._id == req.body.tagId) {
@@ -1396,24 +1258,24 @@ app.post("/api/editTag", authenticateToken, (req, res) => {
       user.save();
     })
       .then((updatedUser) => {
-        console.log(`user ${req.name} updated a tag: ${req.name}`);
+        console.log(`user ${req.uid} updated a tag: ${req.body.tagName}`);
         res.json({ resultCode: 1 });
       })
       .catch((e) => {
         console.error(
-          `error while updating tag for user ${req.name}: ${e.message}`
+          `error while updating tag for user ${req.uid}: ${e.message}`
         );
         res.json({ resultCode: -999, message: e.message });
       });
   } catch (e) {
-    console.error(`error updating tag for ${req.name} - ${e}`);
+    console.error(`error updating tag for ${req.uid} - ${e}`);
     res.json({ resultCode: -999, message: e.message });
   }
 });
 
 app.post("/api/removeTag", authenticateToken, (req, res) => {
   try {
-    User.findOne({ name: req.name }, (err, user) => {
+    User.findOne({ uid: req.uid }, (err, user) => {
       if (err) res.status(500).send({ error: err });
       for (var i = 0; i < user.tags.length; i++) {
         if (user.tags[i]._id == req.body.tagId) {
@@ -1423,22 +1285,22 @@ app.post("/api/removeTag", authenticateToken, (req, res) => {
       user.save();
     })
       .then((updatedUser) => {
-        console.log(`user ${req.name} deleted a tag`);
+        console.log(`user ${req.uid} deleted a tag`);
         res.json({ resultCode: 1 });
       })
       .catch((e) => {
-        console.error(`error deleting tag for user ${req.name}: ${e.message}`);
+        console.error(`error deleting tag for user ${req.uid}: ${e.message}`);
         res.json({ resultCode: -999 });
       });
   } catch (e) {
-    console.error(`error deleting tag for ${req.name} - ${e}`);
+    console.error(`error deleting tag for ${req.uid} - ${e}`);
     res.json({ resultCode: -999 });
   }
 });
 
 app.post("/api/resetPersonalBests", authenticateToken, (req, res) => {
   try {
-    User.findOne({ name: req.name }, (err, user) => {
+    User.findOne({ uid: req.uid }, (err, user) => {
       if (err) res.status(500).send({ error: err });
       user.personalBests = {};
       user.save();
@@ -1522,9 +1384,11 @@ app.post("/api/attemptAddToLeaderboards", authenticateToken, (req, res) => {
           lb.board.length < lb.size ||
           result.wpm > lb.board.slice(-1)[0].wpm
         ) {
-          lb, (lbPosData = addToLeaderboard(lb, result, req.name));
-          retData[lb.type] = lbPosData;
-          lb.save();
+          User.findOne({ uid: req.uid }, (err, user) => {
+            lb, (lbPosData = addToLeaderboard(lb, result, user.name)); //should uid be added instead of name
+            retData[lb.type] = lbPosData;
+            lb.save();
+          });
         }
       });
     }
@@ -1547,81 +1411,6 @@ app.get("/api/getLeaderboard/:type/:mode/:mode2", (req, res) => {
       res.send(lb);
     }
   );
-});
-
-// ANALYTICS API
-
-function newAnalyticsEvent(event, data) {
-  let newEvent = {
-    event: event,
-  };
-  if (data) newEvent.data = data;
-  const newEventObj = new Analytics(newEvent);
-  newEventObj.save();
-}
-
-app.post("/api/analytics/usedCommandLine", (req, res) => {
-  //save command used from command line to analytics
-  newAnalyticsEvent("usedCommandLine", { command: req.body.command });
-  res.sendStatus(200);
-});
-
-app.post("/api/analytics/changedLanguage", (req, res) => {
-  //save what a user changed their language to
-  newAnalyticsEvent("changedLanguage", { language: req.body.language });
-  res.sendStatus(200);
-});
-
-app.post("/api/analytics/changedTheme", (req, res) => {
-  //save what a user changed their theme to
-  newAnalyticsEvent("changedTheme", { theme: req.body.theme });
-  res.sendStatus(200);
-});
-
-app.post("/api/analytics/testStarted", (req, res) => {
-  //log that a test was started
-  newAnalyticsEvent("testStarted");
-  res.sendStatus(200);
-});
-
-app.post("/api/analytics/testStartedNoLogin", (req, res) => {
-  //log that a test was started without login
-  newAnalyticsEvent("testStartedNoLogin");
-  res.sendStatus(200);
-});
-
-app.post("/api/analytics/testCompleted", (req, res) => {
-  //log that a test was completed
-  newAnalyticsEvent("testCompleted", {
-    completedEvent: req.body.completedEvent,
-  });
-  res.sendStatus(200);
-});
-
-app.post("/api/analytics/testCompletedNoLogin", (req, res) => {
-  //log that a test was completed and user was not logged in
-  newAnalyticsEvent("testCompletedNoLogin", {
-    completedEvent: req.body.completedEvent,
-  });
-  res.sendStatus(200);
-});
-
-app.post("/api/analytics/testCompletedInvalid", (req, res) => {
-  //log that a test was completed and is invalid
-  newAnalyticsEvent("testCompletedInvalid", {
-    completedEvent: req.body.completedEvent,
-  });
-  res.sendStatus(200);
-});
-
-// STATIC FILES
-app.get("/privacy-policy", (req, res) => {
-  res.sendFile(mtRootDir + "/dist/privacy-policy.html");
-});
-
-app.use((req, res, next) => {
-  //sends index.html if the route is not found above
-  res.sendFile(mtRootDir + "/dist/index.html");
 });
 
 // LISTENER

@@ -1,5 +1,4 @@
 import * as UI from "./ui";
-import * as DB from "./db";
 
 export function loading(truefalse) {
   if (truefalse) {
@@ -14,7 +13,7 @@ export function loading(truefalse) {
 }
 
 export function update() {
-  if (DB.currentUser() != null) {
+  if (firebase.auth().currentUser != null) {
     UI.swapElements(
       $("#menu .icon-button.login"),
       $("#menu .icon-button.account"),
