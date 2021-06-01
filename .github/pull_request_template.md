@@ -8,8 +8,7 @@ If your change is visual (mainly themes) it would be extra awesome if you could 
 
 ### Checklist <!-- please check the items you have completed -->
 
-- [] I have read the [`Code Of Conduct`](/CODE_OF_CONDUCT.md)
-- [] I viewed the [`Contributing file`](/CONTRIBUTING.md)
+- [] I have read the [`CODE_OF_CONDUCT.md`](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md) and the [`CONTRIBUTING.md`](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)
 - [] If my PR is a new language or theme I modified the appropriate files to incorporate the language or theme
 - [] I checked if my PR has any bugs or other issues that could reduce the stability of the project
 - [] I understand that the maintainer has the right to reject my PR and it may not get accepted.

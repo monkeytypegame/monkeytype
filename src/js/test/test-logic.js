@@ -1561,121 +1561,125 @@ export function finish(difficultyFailed = false) {
                 `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
               );
             }
-            axiosInstance
-              .post("/api/testCompleted", {
-                obj: completedEvent,
-              })
-              .then((e) => {
-                e = e.data;
-                //return a result message that will be shown if there was an error
-                AccountButton.loading(false);
-                if (e.data == null) {
-                  Notifications.add(
-                    "Unexpected response from the server: " + e.data,
-                    -1
-                  );
-                  return;
-                }
-                if (e.data.resultCode === -1) {
-                  Notifications.add("Could not save result", -1);
-                } else if (e.data.resultCode === -2) {
-                  Notifications.add(
-                    "Possible bot detected. Result not saved.",
-                    -1
-                  );
-                } else if (e.data.resultCode === -3) {
-                  Notifications.add(
-                    "Could not verify keypress stats. Result not saved.",
-                    -1
-                  );
-                } else if (e.data.resultCode === -4) {
-                  Notifications.add(
-                    "Result data does not make sense. Result not saved.",
-                    -1
-                  );
-                } else if (e.data.resultCode === -5) {
-                  Notifications.add("Test too short. Result not saved.", -1);
-                } else if (e.data.resultCode === -999) {
-                  console.error("internal error: " + e.data.message);
-                  Notifications.add(
-                    "Internal error. Result might not be saved. " +
-                      e.data.message,
-                    -1
-                  );
-                } else if (e.data.resultCode === 1 || e.data.resultCode === 2) {
-                  completedEvent.id = e.data.createdId;
-                  TestLeaderboards.check(completedEvent);
-                  if (e.data.resultCode === 2) {
-                    completedEvent.isPb = true;
-                  }
-                  if (
-                    DB.getSnapshot() !== null &&
-                    DB.getSnapshot().results !== undefined
-                  ) {
-                    DB.getSnapshot().results.unshift(completedEvent);
-                    if (DB.getSnapshot().globalStats.time == undefined) {
-                      DB.getSnapshot().globalStats.time =
-                        testtime +
-                        completedEvent.incompleteTestSeconds -
-                        afkseconds;
-                    } else {
-                      DB.getSnapshot().globalStats.time +=
-                        testtime +
-                        completedEvent.incompleteTestSeconds -
-                        afkseconds;
-                    }
-                    if (DB.getSnapshot().globalStats.started == undefined) {
-                      DB.getSnapshot().globalStats.started =
-                        TestStats.restartCount + 1;
-                    } else {
-                      DB.getSnapshot().globalStats.started +=
-                        TestStats.restartCount + 1;
-                    }
-                    if (DB.getSnapshot().globalStats.completed == undefined) {
-                      DB.getSnapshot().globalStats.completed = 1;
-                    } else {
-                      DB.getSnapshot().globalStats.completed += 1;
-                    }
-                  }
-
-                  try {
-                    firebase
-                      .analytics()
-                      .logEvent("testCompleted", completedEvent);
-                  } catch (e) {
-                    console.log("Analytics unavailable");
-                  }
-
-                  if (e.data.resultCode === 2) {
-                    //new pb
-                    PbCrown.show();
-                    DB.saveLocalPB(
-                      Config.mode,
-                      mode2,
-                      Config.punctuation,
-                      Config.language,
-                      Config.difficulty,
-                      stats.wpm,
-                      stats.acc,
-                      stats.wpmRaw,
-                      consistency
+            if (!window.navigator.onLine) {
+              Notifications.add("You are offline. Result not saved.", -1);
+            } else {
+              axiosInstance
+                .post("/api/testCompleted", {
+                  obj: completedEvent,
+                })
+                .then((e) => {
+                  AccountButton.loading(false);
+                  if (e.data == null) {
+                    Notifications.add(
+                      "Unexpected response from the server: " + e.data,
+                      -1
                     );
-                  } else if (e.data.resultCode === 1) {
-                    PbCrown.hide();
-                    // if (localPb) {
-                    //   Notifications.add(
-                    //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
-                    //     15000
-                    //   );
-                    // }
+                    return;
                   }
-                }
-              })
-              .catch((e) => {
-                AccountButton.loading(false);
-                console.error(e);
-                Notifications.add("Could not save result. " + e, -1);
-              });
+                  if (e.data.resultCode === -1) {
+                    Notifications.add("Could not save result", -1);
+                  } else if (e.data.resultCode === -2) {
+                    Notifications.add(
+                      "Possible bot detected. Result not saved.",
+                      -1
+                    );
+                  } else if (e.data.resultCode === -3) {
+                    Notifications.add(
+                      "Could not verify keypress stats. Result not saved.",
+                      -1
+                    );
+                  } else if (e.data.resultCode === -4) {
+                    Notifications.add(
+                      "Result data does not make sense. Result not saved.",
+                      -1
+                    );
+                  } else if (e.data.resultCode === -5) {
+                    Notifications.add("Test too short. Result not saved.", -1);
+                  } else if (e.data.resultCode === -999) {
+                    console.error("internal error: " + e.data.message);
+                    Notifications.add(
+                      "Internal error. Result might not be saved. " +
+                        e.data.message,
+                      -1
+                    );
+                  } else if (
+                    e.data.resultCode === 1 ||
+                    e.data.resultCode === 2
+                  ) {
+                    completedEvent.id = e.data.createdId;
+                    TestLeaderboards.check(completedEvent);
+                    if (e.data.resultCode === 2) {
+                      completedEvent.isPb = true;
+                    }
+                    if (
+                      DB.getSnapshot() !== null &&
+                      DB.getSnapshot().results !== undefined
+                    ) {
+                      DB.getSnapshot().results.unshift(completedEvent);
+                      if (DB.getSnapshot().globalStats.time == undefined) {
+                        DB.getSnapshot().globalStats.time =
+                          testtime +
+                          completedEvent.incompleteTestSeconds -
+                          afkseconds;
+                      } else {
+                        DB.getSnapshot().globalStats.time +=
+                          testtime +
+                          completedEvent.incompleteTestSeconds -
+                          afkseconds;
+                      }
+                      if (DB.getSnapshot().globalStats.started == undefined) {
+                        DB.getSnapshot().globalStats.started =
+                          TestStats.restartCount + 1;
+                      } else {
+                        DB.getSnapshot().globalStats.started +=
+                          TestStats.restartCount + 1;
+                      }
+                      if (DB.getSnapshot().globalStats.completed == undefined) {
+                        DB.getSnapshot().globalStats.completed = 1;
+                      } else {
+                        DB.getSnapshot().globalStats.completed += 1;
+                      }
+                    }
+                    try {
+                      firebase
+                        .analytics()
+                        .logEvent("testCompleted", completedEvent);
+                    } catch (e) {
+                      console.log("Analytics unavailable");
+                    }
+
+                    if (e.data.resultCode === 2) {
+                      //new pb
+                      PbCrown.show();
+                      DB.saveLocalPB(
+                        Config.mode,
+                        mode2,
+                        Config.punctuation,
+                        Config.language,
+                        Config.difficulty,
+                        stats.wpm,
+                        stats.acc,
+                        stats.wpmRaw,
+                        consistency
+                      );
+                    } else if (e.data.resultCode === 1) {
+                      PbCrown.hide();
+                      // if (localPb) {
+                      //   Notifications.add(
+                      //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
+                      //     15000
+                      //   );
+                      // }
+                    }
+                  }
+                })
+                .catch((e) => {
+                  AccountButton.loading(false);
+                  console.error(e);
+                  Notifications.add("Could not save result. " + e, -1);
+                });
+            }
           });
         });
       } else {
