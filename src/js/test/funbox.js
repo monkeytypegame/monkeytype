@@ -6,7 +6,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Settings from "./settings";
 
-export let active = "none";
+let modeSaved = null;
 let memoryTimer = null;
 let memoryInterval = null;
 
@@ -74,13 +74,13 @@ export function startMemoryTimer() {
 }
 
 export function reset() {
-  active = "none";
   resetMemoryTimer();
 }
 
 export function toggleScript(...params) {
-  if (active === "tts") {
+  if (Config.funbox === "tts") {
     var msg = new SpeechSynthesisUtterance();
+    console.log("Speaking");
     msg.text = params[0];
     msg.lang = "en-US";
     window.speechSynthesis.cancel();
@@ -88,7 +88,9 @@ export function toggleScript(...params) {
   }
 }
 
-export async function activate(funbox, mode) {
+export async function activate(funbox) {
+  let mode = modeSaved;
+
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
   }
@@ -122,10 +124,8 @@ export async function activate(funbox, mode) {
 
   ManualRestart.set();
   if (mode === "style") {
-    if (funbox != undefined) {
+    if (funbox != undefined)
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
-      active = funbox;
-    }
 
     if (funbox === "simon_says") {
       rememberSetting(
@@ -229,8 +229,9 @@ export async function activate(funbox, mode) {
   TestUI.updateModesNotice();
   return true;
 }
-export function setFunbox(funbox) {
+export function setFunbox(funbox, mode) {
   if (funbox === "none") loadMemory();
+  modeSaved = mode;
   UpdateConfig.setFunbox(funbox);
   return true;
 }

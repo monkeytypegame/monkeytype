@@ -143,7 +143,7 @@ Misc.getFunboxList().then((funboxes) => {
       id: "changeFunbox" + funbox.name,
       display: funbox.name.replace(/_/g, " "),
       exec: () => {
-        if (Funbox.setFunbox(funbox.name)) {
+        if (Funbox.setFunbox(funbox.name, funbox.type)) {
           TestLogic.restart();
         }
       },
