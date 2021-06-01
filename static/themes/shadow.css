@@ -43,7 +43,7 @@ a:hover {
 }
 
 #logo,
-.word letter.correct {
+#typingTest .word letter.correct {
   animation-name: shadow;
   animation-duration: 5s;
   animation-iteration-count: 1;
