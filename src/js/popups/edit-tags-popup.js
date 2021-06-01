@@ -77,7 +77,7 @@ function apply() {
           Notifications.add("Tag added", 1, 2);
           DB.getSnapshot().tags.push({
             name: inputVal,
-            id: e.data.id,
+            _id: e.data.id,
           });
           ResultTagsPopup.updateButtons();
           Settings.update();

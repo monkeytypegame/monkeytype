@@ -1228,11 +1228,16 @@ app.post("/api/addTag", authenticateToken, (req, res) => {
       user.tags.push(tagObj);
       user.save();
     })
-      .then((updatedUser) => {
+      .then(() => {
         console.log(`user ${req.uid} created a tag: ${req.body.tagName}`);
-        res.json({
-          resultCode: 1,
-          id: updatedUser.tags[updatedUser.tags.length - 1]._id,
+        let newTagId;
+        User.findOne({ uid: req.uid }, (err, user) => {
+          newTagId = user.tags[user.tags.length - 1]._id;
+        }).then(() => {
+          res.json({
+            resultCode: 1,
+            id: newTagId,
+          });
         });
       })
       .catch((e) => {

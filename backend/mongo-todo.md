@@ -6,7 +6,6 @@
 
 ## Bugs
 
-- Creating the first tag shows error "Unknown error, cannot read property \_id of undefined"
 - Server side tagPb save overwrites same mode, different language/difficulty pb
 - Leaderboard doesn't show the time until the daily reset
 - lbmemory is not edited by mongo/express so it leaderboard doesn't show change in placement like it's supposed to
@@ -30,6 +29,7 @@
 - Name is not passed in user token/auth().currentUser
 - Firestore read operations seem high
   - Does this include index.html serving as well as user authentication or is there more?
+- Account created on date doesn't look the same as it used to
 
 ### Possibilities
 
