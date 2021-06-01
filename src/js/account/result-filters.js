@@ -74,6 +74,7 @@ Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
     defaultResultFilters.funbox[funbox.name] = true;
   });
   // filters = defaultResultFilters;
+  load();
 });
 
 export function getFilters() {
@@ -110,7 +111,12 @@ export function load() {
   // let newTags = $.cookie("activeTags");
   try {
     let newResultFilters = window.localStorage.getItem("resultFilters");
-    if (newResultFilters != undefined && newResultFilters !== "") {
+    if (
+      newResultFilters != undefined &&
+      newResultFilters !== "" &&
+      Misc.countAllKeys(newResultFilters) >=
+        Misc.countAllKeys(defaultResultFilters)
+    ) {
       filters = JSON.parse(newResultFilters);
       save();
     } else {
@@ -128,8 +134,6 @@ export function reset() {
   filters = defaultResultFilters;
   save();
 }
-
-load();
 
 export function updateActive() {
   let aboveChartDisplay = {};
