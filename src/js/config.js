@@ -74,6 +74,7 @@ let defaultConfig = {
   flipTestColors: false,
   capsLockBackspace: false,
   layout: "default",
+  funbox: "none",
   confidenceMode: "off",
   indicateTypos: false,
   timerStyle: "mini",
@@ -209,7 +210,7 @@ export function togglePunctuation() {
 
 export function setMode(mode, nosave) {
   if (TestUI.testRestarting) return;
-  if (mode !== "words" && Funbox.active === "memory") {
+  if (mode !== "words" && config.funbox === "memory") {
     Notifications.add("Memory funbox can only be used with words mode.", 0);
     return;
   }
@@ -237,11 +238,11 @@ export function setMode(mode, nosave) {
     $("#top .config .quoteLength").addClass("hidden");
   } else if (config.mode == "custom") {
     if (
-      Funbox.active === "58008" ||
-      Funbox.active === "gibberish" ||
-      Funbox.active === "ascii"
+      config.funbox === "58008" ||
+      config.funbox === "gibberish" ||
+      config.funbox === "ascii"
     ) {
-      Funbox.setAcitve("none");
+      Funbox.setActive("none");
       TestUI.updateModesNotice();
     }
     $("#top .config .wordCount").addClass("hidden");
@@ -322,6 +323,13 @@ export function setDifficulty(diff, nosave) {
 //set fav themes
 export function setFavThemes(themes, nosave) {
   config.favThemes = themes;
+  if (!nosave) {
+    saveToLocalStorage();
+  }
+}
+
+export function setFunbox(funbox, nosave) {
+  config.funbox = funbox ? funbox : "none";
   if (!nosave) {
     saveToLocalStorage();
   }
@@ -845,10 +853,10 @@ export function toggleLiveAcc() {
 export function setHighlightMode(mode, nosave) {
   if (
     mode === "word" &&
-    (Funbox.active === "nospace" ||
-      Funbox.active === "read_ahead" ||
-      Funbox.active === "read_ahead_easy" ||
-      Funbox.active === "read_ahead_hard")
+    (config.funbox === "nospace" ||
+      config.funbox === "read_ahead" ||
+      config.funbox === "read_ahead_easy" ||
+      config.funbox === "read_ahead_hard")
   ) {
     Notifications.add("Can't use word highlight with this funbox", 0);
     return;
@@ -858,9 +866,9 @@ export function setHighlightMode(mode, nosave) {
   }
   config.highlightMode = mode;
   // if(TestLogic.active){
-  try{
-  if (!nosave) TestUI.updateWordElement(config.blindMode);
-  }catch{}
+  try {
+    if (!nosave) TestUI.updateWordElement(config.blindMode);
+  } catch {}
   // }
   if (!nosave) saveToLocalStorage();
 }
@@ -1533,6 +1541,7 @@ export function apply(configObj) {
     setPlaySoundOnClick(configObj.playSoundOnClick, true);
     setStopOnError(configObj.stopOnError, true);
     setFavThemes(configObj.favThemes, true);
+    setFunbox(configObj.funbox, true);
     setRandomTheme(configObj.randomTheme, true);
     setShowAllLines(configObj.showAllLines, true);
     setSwapEscAndTab(configObj.swapEscAndTab, true);

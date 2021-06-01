@@ -310,7 +310,7 @@ function countChars() {
       spaces++;
     }
   }
-  if (Funbox.active === "nospace") {
+  if (Config.funbox === "nospace") {
     spaces = 0;
     correctspaces = 0;
   }

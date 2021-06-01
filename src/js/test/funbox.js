@@ -6,9 +6,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Settings from "./settings";
 
-export let active = "none";
-export let funboxSaved = "none";
-export let modeSaved = null;
+let modeSaved = null;
 let memoryTimer = null;
 let memoryInterval = null;
 
@@ -76,13 +74,13 @@ export function startMemoryTimer() {
 }
 
 export function reset() {
-  active = "none";
   resetMemoryTimer();
 }
 
 export function toggleScript(...params) {
-  if (active === "tts") {
+  if (Config.funbox === "tts") {
     var msg = new SpeechSynthesisUtterance();
+    console.log("Speaking");
     msg.text = params[0];
     msg.lang = "en-US";
     window.speechSynthesis.cancel();
@@ -90,9 +88,11 @@ export function toggleScript(...params) {
   }
 }
 
-export async function activate(funbox, mode) {
+export async function activate(funbox) {
+  let mode = modeSaved;
+
   if (funbox === undefined || funbox === null) {
-    funbox = funboxSaved;
+    funbox = Config.funbox;
   }
   if (Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
@@ -124,10 +124,8 @@ export async function activate(funbox, mode) {
 
   ManualRestart.set();
   if (mode === "style") {
-    if (funbox != undefined) {
+    if (funbox != undefined)
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
-      active = funbox;
-    }
 
     if (funbox === "simon_says") {
       rememberSetting(
@@ -220,7 +218,6 @@ export async function activate(funbox, mode) {
       UpdateConfig.setHighlightMode("letter", true);
       TestLogic.restart(false, true);
     }
-    active = funbox;
   }
 
   // if (funbox !== "layoutfluid" || mode !== "script") {
@@ -233,16 +230,8 @@ export async function activate(funbox, mode) {
   return true;
 }
 export function setFunbox(funbox, mode) {
-  if (TestLogic.active) {
-    Notifications.add(
-      "You can only change the funbox before starting a test.",
-      0
-    );
-    return false;
-  }
   if (funbox === "none") loadMemory();
-  funboxSaved = funbox;
   modeSaved = mode;
-  active = funbox;
+  UpdateConfig.setFunbox(funbox);
   return true;
 }

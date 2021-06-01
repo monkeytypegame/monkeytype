@@ -40,7 +40,7 @@ export function start() {
 
       let acc = Misc.roundTo2(TestStats.calculateAccuracy());
 
-      if (Funbox.active === "layoutfluid" && Config.mode === "time") {
+      if (Config.funbox === "layoutfluid" && Config.mode === "time") {
         const layouts = Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")
           : ["qwerty", "dvorak", "colemak"];
