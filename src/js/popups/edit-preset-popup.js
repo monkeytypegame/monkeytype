@@ -89,7 +89,7 @@ function apply() {
           DB.getSnapshot().presets.push({
             name: inputVal,
             config: configChanges,
-            id: e.data.id,
+            _id: e.data.id,
           });
           Settings.update();
         } else if (status === -1) {

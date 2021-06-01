@@ -302,32 +302,31 @@ async function checkIfTagPB(obj, userdata) {
         throw new Error("pb is undefined");
       }
     } catch (e) {
-      console.log("PBs undefined");
-      //undefined personal best = new personal best
+      //if pb is undefined, create a new personalBests field with only specified value
       await User.findOne({ uid: userdata.uid }, (err, user) => {
         //it might be more convenient if tags was an object with ids as the keys
-        for (let j = 0; j < user.tags.length; j++) {
-          console.log(user.tags[j]);
-          if (user.tags[j]._id.toString() == dbtags[i]._id.toString()) {
-            user.tags[j].personalBests = {
-              [obj.mode]: {
-                [obj.mode2]: [
-                  {
-                    language: obj.language,
-                    difficulty: obj.difficulty,
-                    punctuation: obj.punctuation,
-                    wpm: obj.wpm,
-                    acc: obj.acc,
-                    raw: obj.rawWpm,
-                    timestamp: Date.now(),
-                    consistency: obj.consistency,
-                  },
-                ],
+        //find tag index in tags list
+        // save that tags personal bests as object
+        let j = user.tags.findIndex((tag) => {
+          return tag._id.toString() == dbtags[i]._id.toString();
+        });
+        user.tags[j].personalBests = {
+          [obj.mode]: {
+            [obj.mode2]: [
+              {
+                language: obj.language,
+                difficulty: obj.difficulty,
+                punctuation: obj.punctuation,
+                wpm: obj.wpm,
+                acc: obj.acc,
+                raw: obj.rawWpm,
+                timestamp: Date.now(),
+                consistency: obj.consistency,
               },
-            };
-          }
-          pbs = user.tags[j].personalBests;
-        }
+            ],
+          },
+        };
+        pbs = user.tags[j].personalBests;
         user.save();
       }).then((updatedUser) => {
         ret.push(dbtags[i]._id.toString());
@@ -351,7 +350,7 @@ async function checkIfTagPB(obj, userdata) {
           //entry like this already exists, compare wpm
           found = true;
           if (pb.wpm < obj.wpm) {
-            //new pb
+            //replace old pb with new obj
             pb.wpm = obj.wpm;
             pb.acc = obj.acc;
             pb.raw = obj.rawWpm;
@@ -367,18 +366,17 @@ async function checkIfTagPB(obj, userdata) {
       //checked all pbs, nothing found - meaning this is a new pb
       if (!found) {
         console.log("Semi-new pb");
-        pbs[obj.mode][obj.mode2] = [
-          {
-            language: obj.language,
-            difficulty: obj.difficulty,
-            punctuation: obj.punctuation,
-            wpm: obj.wpm,
-            acc: obj.acc,
-            raw: obj.rawWpm,
-            timestamp: Date.now(),
-            consistency: obj.consistency,
-          },
-        ];
+        //push this pb to array
+        pbs[obj.mode][obj.mode2].push({
+          language: obj.language,
+          difficulty: obj.difficulty,
+          punctuation: obj.punctuation,
+          wpm: obj.wpm,
+          acc: obj.acc,
+          raw: obj.rawWpm,
+          timestamp: Date.now(),
+          consistency: obj.consistency,
+        });
         toUpdate = true;
       }
     } catch (e) {
@@ -402,15 +400,12 @@ async function checkIfTagPB(obj, userdata) {
     }
 
     if (toUpdate) {
-      console.log("Adding new pb at end");
+      //push working pb array to user tags pbs
       await User.findOne({ uid: userdata.uid }, (err, user) => {
         //it might be more convenient if tags was an object with ids as the keys
         for (let j = 0; j < user.tags.length; j++) {
-          console.log(user.tags[j]);
-          console.log(dbtags[i]);
           if (user.tags[j]._id.toString() === dbtags[i]._id.toString()) {
-            console.log("Made it inside the if");
-            user.tags[j].personalBests = dbtags[i].personalBests;
+            user.tags[j].personalBests = pbs;
           }
         }
         user.save();
@@ -1119,10 +1114,12 @@ app.post("/api/addPreset", authenticateToken, (req, res) => {
         }
       })
         .then((updatedUser) => {
-          res.json({
-            resultCode: 1,
-            message: "Saved",
-            id: updatedUser.presets[updatedUser.presets.length - 1]._id,
+          User.findOne({ uid: req.uid }, (err, user) => {
+            res.json({
+              resultCode: 1,
+              message: "Saved",
+              id: user.presets[user.presets.length - 1]._id,
+            });
           });
         })
         .catch((e) => {
@@ -1147,7 +1144,7 @@ app.post("/api/addPreset", authenticateToken, (req, res) => {
 app.post("/api/editPreset", authenticateToken, (req, res) => {
   try {
     if (!isTagPresetNameValid(req.body.presetName)) {
-      return { resultCode: -1 };
+      res.json({ resultCode: -1 });
     } else {
       User.findOne({ uid: req.uid }, (err, user) => {
         for (i = 0; i < user.presets.length; i++) {
@@ -1165,7 +1162,7 @@ app.post("/api/editPreset", authenticateToken, (req, res) => {
           console.log(
             `user ${req.uid} updated a preset: ${req.body.presetName}`
           );
-          res.send({
+          res.json({
             resultCode: 1,
           });
         })
@@ -1173,12 +1170,12 @@ app.post("/api/editPreset", authenticateToken, (req, res) => {
           console.error(
             `error while updating preset for user ${req.uid}: ${e.message}`
           );
-          res.send({ resultCode: -999, message: e.message });
+          res.json({ resultCode: -999, message: e.message });
         });
     }
   } catch (e) {
     console.error(`error updating preset for ${req.uid} - ${e}`);
-    return { resultCode: -999, message: e.message };
+    res.json({ resultCode: -999, message: e.message });
   }
 });
 

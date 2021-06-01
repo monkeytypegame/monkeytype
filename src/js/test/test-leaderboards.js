@@ -131,7 +131,6 @@ export function show(data, mode2) {
 }
 
 export function check(completedEvent) {
-  console.log("starting lb checking");
   try {
     if (
       completedEvent.funbox === "none" &&
