@@ -398,10 +398,10 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
     filters["language"][Config.language] = true;
   }
 
-  if (Funbox.active === "none") {
+  if (Config.funbox === "none") {
     filters.funbox.none = true;
   } else {
-    filters.funbox[Funbox.active] = true;
+    filters.funbox[Config.funbox] = true;
   }
 
   filters["tags"]["none"] = true;

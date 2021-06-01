@@ -121,7 +121,7 @@ function handleBackspace(event) {
       } else {
         TestLogic.input.setCurrent(TestLogic.input.popHistory());
         TestLogic.corrected.setCurrent(TestLogic.corrected.popHistory());
-        if (Funbox.active === "nospace") {
+        if (Config.funbox === "nospace") {
           TestLogic.input.setCurrent(
             TestLogic.input.current.substring(
               0,
@@ -194,7 +194,7 @@ function handleSpace(event, isEnter) {
   if (!TestLogic.active) return;
   if (TestLogic.input.current === "") return;
   // let nextWord = wordsList[TestLogic.words.currentIndex + 1];
-  // if ((isEnter && nextWord !== "\n") && (isEnter && Funbox.active !== "58008")) return;
+  // if ((isEnter && nextWord !== "\n") && (isEnter && Config.funbox !== "58008")) return;
   // if (!isEnter && nextWord === "\n") return;
   event.preventDefault();
 
@@ -204,7 +204,7 @@ function handleSpace(event, isEnter) {
   }
 
   let currentWord = TestLogic.words.getCurrent();
-  if (Funbox.active === "layoutfluid" && Config.mode !== "time") {
+  if (Config.funbox === "layoutfluid" && Config.mode !== "time") {
     // here I need to check if Config.customLayoutFluid exists because of my scuffed solution of returning whenever value is undefined in the setCustomLayoutfluid function
     const layouts = Config.customLayoutfluid
       ? Config.customLayoutfluid.split("#")
@@ -246,14 +246,14 @@ function handleSpace(event, isEnter) {
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
     // currentKeypress.count++;
     // currentKeypress.words.push(TestLogic.words.currentIndex);
-    if (Funbox.active !== "nospace") {
+    if (Config.funbox !== "nospace") {
       Sound.playClick(Config.playSoundOnClick);
     }
     Replay.addReplayEvent("submitCorrectWord");
   } else {
     //incorrect word
     PaceCaret.handleSpace(false, currentWord);
-    if (Funbox.active !== "nospace") {
+    if (Config.funbox !== "nospace") {
       if (!Config.playSoundOnError || Config.blindMode) {
         Sound.playClick(Config.playSoundOnClick);
       } else {
@@ -697,7 +697,7 @@ function handleAlpha(event) {
 
   //simulate space press in nospace funbox
   if (
-    (Funbox.active === "nospace" &&
+    (Config.funbox === "nospace" &&
       TestLogic.input.current.length === TestLogic.words.getCurrent().length) ||
     (event.key === "\n" && thisCharCorrect)
   ) {
@@ -814,7 +814,7 @@ $(document).keydown(function (event) {
     handleBackspace(event);
   }
 
-  if (event.key === "Enter" && Funbox.active === "58008" && wordsFocused) {
+  if (event.key === "Enter" && Config.funbox === "58008" && wordsFocused) {
     event.key = " ";
   }
 

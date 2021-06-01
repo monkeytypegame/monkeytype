@@ -524,9 +524,9 @@ export function updateModesNotice() {
     );
   }
 
-  if (Funbox.active !== "none") {
+  if (Config.funbox !== "none") {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsFunbox"><i class="fas fa-gamepad"></i>${Funbox.active.replace(
+      `<div class="text-button" commands="commandsFunbox"><i class="fas fa-gamepad"></i>${Config.funbox.replace(
         /_/g,
         " "
       )}</div>`
