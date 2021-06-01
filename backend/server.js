@@ -311,16 +311,18 @@ async function checkIfTagPB(obj, userdata) {
           if (user.tags[j]._id.toString() == dbtags[i]._id.toString()) {
             user.tags[j].personalBests = {
               [obj.mode]: {
-                [obj.mode2]: {
-                  language: obj.language,
-                  difficulty: obj.difficulty,
-                  punctuation: obj.punctuation,
-                  wpm: obj.wpm,
-                  acc: obj.acc,
-                  raw: obj.rawWpm,
-                  timestamp: Date.now(),
-                  consistency: obj.consistency,
-                },
+                [obj.mode2]: [
+                  {
+                    language: obj.language,
+                    difficulty: obj.difficulty,
+                    punctuation: obj.punctuation,
+                    wpm: obj.wpm,
+                    acc: obj.acc,
+                    raw: obj.rawWpm,
+                    timestamp: Date.now(),
+                    consistency: obj.consistency,
+                  },
+                ],
               },
             };
           }
@@ -365,16 +367,18 @@ async function checkIfTagPB(obj, userdata) {
       //checked all pbs, nothing found - meaning this is a new pb
       if (!found) {
         console.log("Semi-new pb");
-        pbs[obj.mode][obj.mode2] = {
-          language: obj.language,
-          difficulty: obj.difficulty,
-          punctuation: obj.punctuation,
-          wpm: obj.wpm,
-          acc: obj.acc,
-          raw: obj.rawWpm,
-          timestamp: Date.now(),
-          consistency: obj.consistency,
-        };
+        pbs[obj.mode][obj.mode2] = [
+          {
+            language: obj.language,
+            difficulty: obj.difficulty,
+            punctuation: obj.punctuation,
+            wpm: obj.wpm,
+            acc: obj.acc,
+            raw: obj.rawWpm,
+            timestamp: Date.now(),
+            consistency: obj.consistency,
+          },
+        ];
         toUpdate = true;
       }
     } catch (e) {
@@ -640,13 +644,13 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
     if (err) res.status(500).send({ error: err });
     request = req.body;
     if (request === undefined) {
-      res.status(200).send({ data: { resultCode: -999 } });
+      res.status(200).send({ resultCode: -999 });
       return;
     }
     try {
       if (req.uid === undefined || request.obj === undefined) {
         console.error(`error saving result for - missing input`);
-        res.status(200).send({ data: { resultCode: -999 } });
+        res.status(200).send({ resultCode: -999 });
         return;
       }
 
@@ -686,7 +690,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
             request.obj
           )}`
         );
-        res.status(200).send({ data: { resultCode: -1 } });
+        res.status(200).send({ resultCode: -1 });
         return;
       }
 
@@ -697,7 +701,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
         obj.acc > 100 ||
         obj.consistency > 100
       ) {
-        res.status(200).send({ data: { resultCode: -1 } });
+        res.status(200).send({ resultCode: -1 });
         return;
       }
       if (
@@ -721,9 +725,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
           obj.customText.isTimeRandom &&
           obj.customText.time < 15)
       ) {
-        res
-          .status(200)
-          .send({ data: { resultCode: -5, message: "Test too short" } });
+        res.status(200).send({ resultCode: -5, message: "Test too short" });
         return;
       }
       if (!validateResult(obj)) {
@@ -735,7 +737,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
         ) {
           //dont give an error
         } else {
-          res.status(200).send({ data: { resultCode: -4 } });
+          res.status(200).send({ resultCode: -4 });
           return;
         }
       }
@@ -809,7 +811,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
                   keySpacing
                 )} duration ${JSON.stringify(keyDuration)}`
               );
-              res.status(200).send({ data: { resultCode: -2 } });
+              res.status(200).send({ resultCode: -2 });
               return;
             }
             if (
@@ -826,7 +828,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
               );
             }
           } else {
-            res.status(200).send({ data: { resultCode: -3 } });
+            res.status(200).send({ resultCode: -3 });
             return;
           }
         }
@@ -932,7 +934,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
             returnobj.resultCode = 1;
           }
           stripAndSave(req.uid, request.obj);
-          res.status(200).send({ data: returnobj });
+          res.status(200).send(returnobj);
           return;
         })
         .catch((e) => {
@@ -950,7 +952,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
           request.obj
         )} - ${e}`
       );
-      res.status(200).send({ data: { resultCode: -999, message: e.message } });
+      res.status(200).send({ resultCode: -999, message: e.message });
       return;
     }
   });
@@ -1370,7 +1372,6 @@ function addToLeaderboard(lb, result, username) {
 app.post("/api/attemptAddToLeaderboards", authenticateToken, (req, res) => {
   const result = req.body.result;
   let retData = {};
-  //check daily first, if on daily, check global
   Leaderboard.find(
     {
       mode: result.mode,

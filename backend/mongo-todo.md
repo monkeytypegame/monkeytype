@@ -7,8 +7,7 @@
 ## Bugs
 
 - Creating the first tag shows error "Unknown error, cannot read property \_id of undefined"
-- Check for tag pb doesn't always work
-  - error probably in checkIfTagPB method in server.js
+- Server side tagPb save overwrites same mode, different language/difficulty pb
 - Leaderboard doesn't show the time until the daily reset
 - lbmemory is not edited by mongo/express so it leaderboard doesn't show change in placement like it's supposed to
 - Graph bugs out when new result is added but page is not refreshed
@@ -16,6 +15,11 @@
   - Results list isn't updated either
 - Save config doesn't actually return data?
 - Leaderboard says glb is undefined on first item
+- Account button sometimes shows loading after new pr is set
+  - Can't navigate to user until page is refreshed
+  - After refresh, pr is not saved
+- Some methods in functions/index.js may be broken
+  - I think bot commands like lbUpdate and such
 
 ### Minor/efficiency bugs
 
@@ -23,6 +27,9 @@
 - Is filteredResults.reverse(); in account.js going to cause efficiency issues?
   - For loop in account could work backwards instead, but this would add complexity
 - Why does `if (page == "account") pageTransition = false;` get rid of endless account loading bug when accessing via url
+- Name is not passed in user token/auth().currentUser
+- Firestore read operations seem high
+  - Does this include index.html serving as well as user authentication or is there more?
 
 ### Possibilities
 

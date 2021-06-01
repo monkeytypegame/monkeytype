@@ -309,14 +309,15 @@ export async function getLocalTagPB(
     let ret = 0;
     let filteredtag = dbSnapshot.tags.filter((t) => t._id === tagId)[0];
     try {
-      const pb = filteredtag.personalBests[mode][mode2];
-      if (
-        pb.punctuation == punctuation &&
-        pb.difficulty == difficulty &&
-        pb.language == language
-      ) {
-        ret = pb.wpm;
-      }
+      filteredtag.personalBests[mode][mode2].forEach((pb) => {
+        if (
+          pb.punctuation == punctuation &&
+          pb.difficulty == difficulty &&
+          pb.language == language
+        ) {
+          ret = pb.wpm;
+        }
+      });
     } catch (e) {
       console.log(e);
     }
