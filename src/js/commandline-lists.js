@@ -671,26 +671,6 @@ let commandsMinAcc = {
   ],
 };
 
-let commandsMinAccGrace = {
-  title: "Change min accuracy grace option...",
-  list: [
-    {
-      id: "setMinAccGraceOff",
-      display: "off",
-      exec: () => {
-        UpdateConfig.setMinAccGrace("off");
-      },
-    },
-    {
-      id: "setMinAccGraceOn",
-      display: "on",
-      exec: () => {
-        UpdateConfig.setMinAccGrace("on");
-      },
-    },
-  ],
-};
-
 let commandsKeymapStyle = {
   title: "Change keymap style...",
   list: [
@@ -1549,16 +1529,6 @@ export let defaultCommands = {
       subgroup: true,
       exec: () => {
         current.push(commandsMinAcc);
-        Commandline.show();
-      },
-    },
-    {
-      id: "changeMinAccGrace",
-      display: "Change min accuracy grace option...",
-      alias: "mingrace",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsMinAccGrace);
         Commandline.show();
       },
     },

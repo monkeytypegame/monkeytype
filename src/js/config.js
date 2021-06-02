@@ -112,7 +112,6 @@ let defaultConfig = {
   strictSpace: false,
   minAcc: "off",
   minAccCustom: 90,
-  minAccGrace: "off",
   showLiveAcc: false,
   monkey: false,
   repeatQuotes: "off",
@@ -559,14 +558,6 @@ export function setMinAccCustom(val, nosave) {
     val = 90;
   }
   config.minAccCustom = val;
-  if (!nosave) saveToLocalStorage();
-}
-
-export function setMinAccGrace(val, nosave) {
-  if (val !== "on") {
-    val = "off";
-  }
-  config.minAccGrace = val;
   if (!nosave) saveToLocalStorage();
 }
 
@@ -1556,7 +1547,6 @@ export function apply(configObj) {
     setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
     setMinAcc(configObj.minAcc, true);
     setMinAccCustom(configObj.minAccCustom, true);
-    setMinAccGrace(configObj.minAccGrace, true);
     setNumbers(configObj.numbers, true);
     setPunctuation(configObj.punctuation, true);
     setHighlightMode(configObj.highlightMode, true);
