@@ -1,5 +1,6 @@
 import * as TestLogic from "./test-logic";
 import * as ThemeColors from "./theme-colors";
+import * as UI from "./ui";
 
 /**
  * @typedef {{ x: number, y: number }} vec2
@@ -140,14 +141,21 @@ function render() {
   }
 }
 
-export function reset() {
+export function reset(immediate = false) {
   if (!ctx.resetTimeOut) return;
 
   clearTimeout(ctx.resetTimeOut);
   const body = $(document.body);
-  body.css("transition", "all .25s, transform 1s");
-  body.css("transform", `none`);
-  setTimeout(() => body.css("transition", "all .25s, transform .05s"), 1000);
+  body.css("transition", "all .25s, transform 0.8s");
+  body.css("transform", `translate(0,0)`);
+  setTimeout(
+    () => {
+      body.css("transition", "all .25s, transform .05s");
+      $("html").css("overflow", "inherit");
+      $("html").css("overflow-y", "scroll");
+    },
+    immediate || UI.pageTransition ? 0 : 1000
+  );
 }
 
 function startRender() {
@@ -159,21 +167,20 @@ function startRender() {
  */
 export function addPower(good) {
   if (!TestLogic.active) return;
-  const offset = ctx.caret.offset();
-  const coords = [offset.left, offset.top + ctx.caret.height()];
 
+  // Shake
+  $("html").css("overflow", "hidden");
   const shake = [
     Math.round(shakeAmount - Math.random() * shakeAmount),
     Math.round(shakeAmount - Math.random() * shakeAmount),
   ];
   $(document.body).css("transform", `translate(${shake[0]}px, ${shake[1]}px)`);
   if (ctx.resetTimeOut) clearTimeout(ctx.resetTimeOut);
-  ctx.resetTimeOut = setTimeout(() => {
-    const body = $(document.body);
-    body.css("transition", "all .25s, transform 1s");
-    body.css("transform", `none`);
-    setTimeout(() => body.css("transition", "all .25s, transform .05s"), 1000);
-  }, 2000);
+  ctx.resetTimeOut = setTimeout(reset, 2000);
+
+  // Sparks
+  const offset = ctx.caret.offset();
+  const coords = [offset.left, offset.top + ctx.caret.height()];
 
   for (
     let i = Math.round(
