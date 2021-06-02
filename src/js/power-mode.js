@@ -141,7 +141,9 @@ function render() {
 }
 
 export function reset() {
-  if (ctx.resetTimeOut) clearTimeout(ctx.resetTimeOut);
+  if (!ctx.resetTimeOut) return;
+
+  clearTimeout(ctx.resetTimeOut);
   const body = $(document.body);
   body.css("transition", "all .25s, transform 1s");
   body.css("transform", `none`);
