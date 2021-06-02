@@ -6,18 +6,12 @@
 
 ## Bugs
 
-- Leaderboard doesn't show the time until the daily reset
-- lbmemory is not edited by mongo/express so it leaderboard doesn't show change in placement like it's supposed to
 - Graph bugs out when new result is added but page is not refreshed
   - Graph loops back from earliest point to the new points
   - Results list isn't updated either
-- Save config doesn't actually return data?
-- Leaderboard says glb is undefined on first item
-- Account button sometimes shows loading after new pr is set
-  - Can't navigate to user until page is refreshed
-  - After refresh, pr is not saved
 - Some methods in functions/index.js may be broken
   - I think bot commands like lbUpdate and such
+- Leaderboard entries that should be hidden are not
 
 ### Minor/efficiency bugs
 
@@ -28,6 +22,11 @@
 - Name is not passed in user token/auth().currentUser
 - Firestore read operations seem high
   - Does this include index.html serving as well as user authentication or is there more?
+- Account button sometimes shows loading infinitely after a test
+  - Can't navigate to user until page is refreshed
+  - After refresh, pr is not saved
+  - Can't induce this error and doesn't occur often so adding it as minor bug
+- Does lbMemory work exactly like it did before
 
 ### Possibilities
 

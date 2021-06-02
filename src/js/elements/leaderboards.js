@@ -43,7 +43,8 @@ function update() {
       let globalData = lbdata[1].data;
 
       //daily
-      let diffAsDate = new Date(dailyData.resetTime - Date.now());
+      let nextReset = new Date(dailyData.resetTime);
+      let diffAsDate = new Date(nextReset - Date.now());
 
       let diffHours = diffAsDate.getUTCHours();
       let diffMinutes = diffAsDate.getUTCMinutes();

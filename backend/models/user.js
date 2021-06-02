@@ -28,12 +28,12 @@ const userSchema = new Schema(
     lbMemory: {
       //short for leaderboard memory
       time15: {
-        global: { type: Number, default: 0 }, //might not be an Number, I'm not sure
-        daily: { type: Number, default: 0 },
+        global: { type: Number, default: -1 }, //might not be an Number, I'm not sure
+        daily: { type: Number, default: -1 },
       },
       time60: {
-        global: { type: Number, default: 0 },
-        daily: { type: Number, default: 0 },
+        global: { type: Number, default: -1 },
+        daily: { type: Number, default: -1 },
       },
     },
     globalStats: {

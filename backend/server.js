@@ -33,11 +33,16 @@ function clearDailyLeaderboards() {
   var nextClear = new Date();
   nextClear.setHours(24, 0, 0, 0); //next occurrence of 12am
   let currentTime = new Date();
+  Leaderboard.find({ type: "daily" }, (err, lbs) => {
+    lbs.forEach((lb) => {
+      lb.resetTime = nextClear;
+      lb.save();
+    });
+  });
   setTimeout(() => {
     Leaderboard.find({ type: "daily" }, (err, lbs) => {
       lbs.forEach((lb) => {
         lb.board = [];
-        lb.resetTime = nextClear;
         lb.save();
       });
     });
@@ -971,10 +976,10 @@ app.post("/api/saveConfig", authenticateToken, (req, res) => {
   try {
     if (req.uid === undefined || req.body.obj === undefined) {
       console.error(`error saving config for ${req.uid} - missing input`);
-      return {
+      res.send({
         resultCode: -1,
         message: "Missing input",
-      };
+      });
     }
 
     let obj = req.body.obj;
@@ -1013,10 +1018,10 @@ app.post("/api/saveConfig", authenticateToken, (req, res) => {
           request.obj
         )}`
       );
-      return {
+      res.send({
         resultCode: -1,
         message: "Bad input. " + errorMessage,
-      };
+      });
     }
 
     User.findOne({ uid: req.uid }, (err, user) => {
@@ -1026,26 +1031,26 @@ app.post("/api/saveConfig", authenticateToken, (req, res) => {
       user.save();
     })
       .then(() => {
-        return {
+        res.send({
           resultCode: 1,
           message: "Saved",
-        };
+        });
       })
       .catch((e) => {
         console.error(
           `error saving config to DB for ${req.uid} - ${e.message}`
         );
-        return {
+        res.send({
           resultCode: -1,
           message: e.message,
-        };
+        });
       });
   } catch (e) {
     console.error(`error saving config for ${req.uid} - ${e}`);
-    return {
+    res.send({
       resultCode: -999,
       message: e,
-    };
+    });
   }
 });
 
@@ -1319,21 +1324,25 @@ app.post("/api/resetPersonalBests", authenticateToken, (req, res) => {
 });
 
 function addToLeaderboard(lb, result, username) {
-  retData = {};
+  //insertedAt is index of array inserted position, 1 is added after
+  retData = { insertedAt: -1 };
   //check for duplicate user
   for (i = 0; i < lb.board.length; i++) {
     if (lb.board[i].name == username) {
       if (lb.board[i].wpm <= result.wpm) {
         //delete old entry if speed is faster this time
         lb.board.splice(i, 1);
-        retData.foundAt = i;
+        retData.foundAt = i + 1;
+        retData.newBest = true;
       } else {
         //don't add new entry if slower than last time
-        return lb, { insertedAt: -1 };
+        return lb, { insertedAt: -1, foundAt: i + 1 };
       }
     }
   }
-  if (!retData.foundAt) retData.foundAt = 0;
+  //when is newBest not true?
+  retData.newBest = true;
+  if (!retData.foundAt) retData.foundAt = -1;
   //determine if the entry should be hidden
 
   //add item to leaderboard
@@ -1349,18 +1358,22 @@ function addToLeaderboard(lb, result, username) {
     hidden: false,
   };
   if (lb.board.length == 0) {
+    console.log("adding to first position");
     lb.board.push(lbitem);
-    retData.insertedAt = 1;
+    retData.insertedAt = 0;
   } else if (lbitem.wpm < lb.board.slice(-1)[0].wpm) {
+    console.log("adding to the end");
+    console.log(lb.board.slice(-1)[0].wpm);
     lb.board.push(lbitem);
-    retData.insertedAt = lb.board.length + 1;
+    retData.insertedAt = lb.board.length - 1;
   } else {
+    console.log("searching for addition spot");
     for (i = 0; i < lb.board.length; i++) {
       //start from top, if item wpm > lb item wpm, insert before it
       if (lbitem.wpm >= lb.board[i].wpm) {
         console.log("adding to daily lb position " + i);
         lb.board.splice(i, 0, lbitem);
-        retData.insertedAt = i + 1;
+        retData.insertedAt = i;
         break;
       }
     }
@@ -1374,30 +1387,35 @@ function addToLeaderboard(lb, result, username) {
 app.post("/api/attemptAddToLeaderboards", authenticateToken, (req, res) => {
   const result = req.body.result;
   let retData = {};
-  Leaderboard.find(
-    {
-      mode: result.mode,
-      mode2: result.mode2,
-    },
-    (err, lbs) => {
-      //for all leaderboards queried, determine if it qualifies, and add if it does
-      lbs.forEach((lb) => {
-        if (
-          lb.board.length == 0 ||
-          lb.board.length < lb.size ||
-          result.wpm > lb.board.slice(-1)[0].wpm
-        ) {
-          User.findOne({ uid: req.uid }, (err, user) => {
-            lb, (lbPosData = addToLeaderboard(lb, result, user.name)); //should uid be added instead of name
+  User.findOne({ uid: req.uid }, (err, user) => {
+    Leaderboard.find(
+      {
+        mode: result.mode,
+        mode2: result.mode2,
+      },
+      (err, lbs) => {
+        //for all leaderboards queried, determine if it qualifies, and add if it does
+        lbs.forEach((lb) => {
+          if (
+            lb.board.length == 0 ||
+            lb.board.length < lb.size ||
+            result.wpm > lb.board.slice(-1)[0].wpm
+          ) {
+            lb, (lbPosData = addToLeaderboard(lb, result, user.name)); //should uid be added instead of name?
+            console.log(user.lbMemory[lb.mode + lb.mode2][lb.type]);
+            //lbPosData.foundAt = user.lbMemory[lb.mode+lb.mode2][lb.type];
             retData[lb.type] = lbPosData;
             lb.save();
-          });
-        }
-      });
-    }
-  ).then((e) => {
-    retData.status = 2;
-    res.json(retData);
+            user.lbMemory[lb.mode + lb.mode2][lb.type] =
+              retData[lb.type].insertedAt;
+          }
+        });
+      }
+    ).then((e) => {
+      retData.status = 2;
+      user.save();
+      res.json(retData);
+    });
   });
   res.status(200);
 });
@@ -1406,11 +1424,6 @@ app.get("/api/getLeaderboard/:type/:mode/:mode2", (req, res) => {
   Leaderboard.findOne(
     { mode: req.params.mode, mode2: req.params.mode2, type: req.params.type },
     (err, lb) => {
-      if (lb.type == "daily") {
-        date = new Date();
-        date.setDate(date.getDate() + 1);
-        lb.resetTime = date;
-      }
       res.send(lb);
     }
   );
