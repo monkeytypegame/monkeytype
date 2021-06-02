@@ -28,6 +28,7 @@ import * as ThemeColors from "./theme-colors";
 import * as CloudFunctions from "./cloud-functions";
 import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
+import * as PowerMode from "./power-mode";
 
 export let notSignedInLastResult = null;
 
@@ -172,6 +173,7 @@ export let bailout = false;
 
 export function setActive(tf) {
   active = tf;
+  if (!tf) PowerMode.reset();
 }
 
 export function setRepeated(tf) {
