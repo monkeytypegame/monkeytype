@@ -14,13 +14,9 @@ Sometimes your browser has old files cached and the bug you are experiencing mig
 
 **Describe the bug** <!-- A clear and concise description of what the bug is. -->
 
-<!--
+<!-- **Did it happen in incognito mode?**
+Sometimes things work in incognito mode, which allows me to further track down the issue. -->
 
-**Did it happen in incognito mode?**
-
-Sometimes things work in incognito mode, which allows me to further track down the issue.
-
--->
 
 **To Reproduce** <!-- Steps to reproduce the behavior: -->
 
@@ -39,11 +35,5 @@ Sometimes things work in incognito mode, which allows me to further track down t
 - Browser [] <!-- e.g. Chrome, Firefox, Safari, etc... -->
 - Browser Version [] <!-- e.g. 22 -->
 
-**Smartphone:** <!-- if you encountered an issue while using Monkeytype on your smartphone please complete the following information, delete this section if not -->
-
-- Device: [] <!-- e.g. iPhone6, Google Pixel 4, etc... -->
-- OS: [] <!-- e.g. IOS 8.1, Android 11, etc...  -->
-- Browser [] <!-- e.g. stock browser, Safari, Chrome -->
-- Browser Version [] <!-- e.g. 22 -->
 
 **Additional context** <!-- Add any other context about the problem here. -->
