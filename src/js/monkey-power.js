@@ -179,12 +179,12 @@ export function addPower(good = true, extra = false) {
   if (
     !TestLogic.active ||
     !Config.monkeyPowerUnlocked ||
-    Config.monkeyPowerLevel === 0
+    Config.monkeyPowerLevel === "off"
   )
     return;
 
   // Shake
-  if (Config.monkeyPowerLevel > 2) {
+  if (["ultra", ">9000"].includes(Config.monkeyPowerLevel)) {
     $("html").css("overflow", "hidden");
     const shake = [
       Math.round(shakeAmount - Math.random() * shakeAmount),
@@ -210,12 +210,11 @@ export function addPower(good = true, extra = false) {
     i > 0;
     i--
   ) {
-    const color =
-      Config.monkeyPowerLevel > 1
-        ? randomColor()
-        : good
-        ? ThemeColors.caret
-        : ThemeColors.error;
+    const color = ["high", ">9000"].includes(Config.monkeyPowerLevel)
+      ? randomColor()
+      : good
+      ? ThemeColors.caret
+      : ThemeColors.error;
     ctx.particles.push(createParticle(...coords, color));
   }
 
