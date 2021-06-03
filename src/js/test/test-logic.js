@@ -1566,7 +1566,7 @@ export function finish(difficultyFailed = false) {
               Notifications.add("You are offline. Result not saved.", -1);
             } else {
               axiosInstance
-                .post("/api/testCompleted", {
+                .post("/testCompleted", {
                   obj: completedEvent,
                 })
                 .then((e) => {

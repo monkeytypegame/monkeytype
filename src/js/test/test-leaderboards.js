@@ -174,7 +174,7 @@ export async function check(completedEvent) {
       })
       */
       axiosInstance
-        .post("/api/attemptAddToLeaderboards", {
+        .post("/attemptAddToLeaderboards", {
           //user data can be retrieved from the database
           result: lbRes,
         })

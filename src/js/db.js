@@ -7,7 +7,7 @@ let dbSnapshot = null;
 
 export function updateName(uid, name) {
   //db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
-  axiosInstance.post("/api/updateName", {
+  axiosInstance.post("/updateName", {
     uid: uid,
     name: name,
   });
@@ -31,7 +31,7 @@ export async function initSnapshot() {
   //send api request with token that returns tags, presets, and data needed for snap
   if (firebase.auth().currentUser == null) return false;
   await axiosInstance
-    .get("/api/fetchSnapshot")
+    .get("/fetchSnapshot")
     .then((response) => {
       dbSnapshot = response.data.snap;
       loadTags(dbSnapshot.tags);
@@ -50,7 +50,7 @@ export async function getUserResults() {
     return true;
   } else {
     axiosInstance
-      .get("/api/userResults", {
+      .get("/userResults", {
         uid: user.uid,
       })
       .then((response) => {
@@ -412,7 +412,7 @@ export async function saveConfig(config) {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
     axiosInstance
-      .post("/api/saveConfig", {
+      .post("/saveConfig", {
         obj: config,
       })
       .then((response) => {

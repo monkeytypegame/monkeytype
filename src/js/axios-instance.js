@@ -1,7 +1,14 @@
 import axios from "axios";
 
+let baseURL;
+if (window.location.hostname === "localhost") {
+  baseURL = "http://localhost:5005";
+} else {
+  baseURL = "https://api.monkeytype.com";
+}
+
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5005",
+  baseURL: baseURL,
 });
 
 // Request interceptor for API calls

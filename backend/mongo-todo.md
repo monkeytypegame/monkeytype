@@ -5,10 +5,9 @@
 Make sure that the branch is ready for deployment
 
 - Add deploy script(s) to package.json
-- Make sure that firebase hosted app can connect to api when deployed
 - Create a plan for apache/nginx server
-  - Api should probably be accessible via api.monkeytype.com or monkeytype.com/api
-    - Probably the previous since firebase might not work with seperate linux server
+  - Api should be accessible via api.monkeytype.com
+- Add helmet middleware to express api?
 
 ## Bugs
 

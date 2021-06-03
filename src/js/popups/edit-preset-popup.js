@@ -73,7 +73,7 @@ function apply() {
   if (action === "add") {
     Loader.show();
     axiosInstance
-      .post("/api/addPreset", {
+      .post("/addPreset", {
         obj: {
           name: inputVal,
           config: configChanges,
@@ -103,7 +103,7 @@ function apply() {
   } else if (action === "edit") {
     Loader.show();
     axiosInstance
-      .post("/api/editPreset", {
+      .post("/editPreset", {
         presetName: inputVal,
         presetid: presetid,
         config: configChanges,
@@ -128,7 +128,7 @@ function apply() {
   } else if (action === "remove") {
     Loader.show();
     axiosInstance
-      .post("/api/removePreset", {
+      .post("/removePreset", {
         presetid,
       })
       .then((e) => {

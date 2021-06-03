@@ -246,7 +246,7 @@ list.resetPersonalBests = new SimplePopup(
   () => {
     try {
       Loader.show();
-      axiosInstance.post("/api/resetPersonalBests").then((res) => {
+      axiosInstance.post("/resetPersonalBests").then((res) => {
         if (res) {
           Loader.hide();
           Notifications.add(

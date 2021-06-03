@@ -1,5 +1,5 @@
 // all functions here should be changed into api calls
-//export function testCompleted = axios.post('/api/testCompleted', )firebase
+//export function testCompleted = axios.post('/testCompleted', )firebase
 //  .functions()
 //  .httpsCallable("testCompleted");
 import axiosInstance from "./axios-instance";

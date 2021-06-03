@@ -50,6 +50,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "firebase-admin": "^9.9.0",
+    "helmet": "^4.6.0",
     "howler": "^2.2.1",
     "mongoose": "^5.12.12",
     "nodemon": "^2.0.7",

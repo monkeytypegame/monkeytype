@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const admin = require("firebase-admin");
+const helmet = require("helmet");
 const { User } = require("./models/user");
 const { Leaderboard } = require("./models/leaderboard");
 
@@ -16,6 +17,7 @@ admin.initializeApp({
 // MIDDLEWARE &  SETUP
 const app = express();
 app.use(cors());
+app.use(helmet());
 
 const port = process.env.PORT || "5005";
 
@@ -567,7 +569,7 @@ function isUsernameValid(name) {
 
 // API
 
-app.get("/api/nameCheck/:name", (req, res) => {
+app.get("/nameCheck/:name", (req, res) => {
   if (!isUsernameValid(req.params.name)) {
     res.status(200).send({
       resultCode: -2,
@@ -598,7 +600,7 @@ app.get("/api/nameCheck/:name", (req, res) => {
   });
 });
 
-app.post("/api/signUp", (req, res) => {
+app.post("/signUp", (req, res) => {
   const newuser = new User({
     name: req.body.name,
     email: req.body.email,
@@ -610,20 +612,20 @@ app.post("/api/signUp", (req, res) => {
   return;
 });
 
-app.post("/api/updateName", (req, res) => {
+app.post("/updateName", (req, res) => {
   //this might be a put/patch request
   //update the name of user with given uid
   const uid = req.body.uid;
   const name = req.body.name;
 });
 
-app.post("/api/passwordReset", (req, res) => {
+app.post("/passwordReset", (req, res) => {
   const email = req.body.email;
   //send email to the passed email requesting password reset
   res.sendStatus(200);
 });
 
-app.get("/api/fetchSnapshot", authenticateToken, (req, res) => {
+app.get("/fetchSnapshot", authenticateToken, (req, res) => {
   /* Takes token and returns snap */
   User.findOne({ uid: req.uid }, (err, user) => {
     if (err) res.status(500).send({ error: err });
@@ -644,7 +646,7 @@ function stdDev(array) {
   );
 }
 
-app.post("/api/testCompleted", authenticateToken, (req, res) => {
+app.post("/testCompleted", authenticateToken, (req, res) => {
   User.findOne({ uid: req.uid }, (err, user) => {
     if (err) res.status(500).send({ error: err });
     request = req.body;
@@ -963,7 +965,7 @@ app.post("/api/testCompleted", authenticateToken, (req, res) => {
   });
 });
 
-app.get("/api/userResults", authenticateToken, (req, res) => {
+app.get("/userResults", authenticateToken, (req, res) => {
   User.findOne({ uid: req.uid }, (err, user) => {
     if (err) res.status(500).send({ error: err });
   });
@@ -977,7 +979,7 @@ function isConfigKeyValid(name) {
   return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
 }
 
-app.post("/api/saveConfig", authenticateToken, (req, res) => {
+app.post("/saveConfig", authenticateToken, (req, res) => {
   try {
     if (req.uid === undefined || req.body.obj === undefined) {
       console.error(`error saving config for ${req.uid} - missing input`);
@@ -1059,7 +1061,7 @@ app.post("/api/saveConfig", authenticateToken, (req, res) => {
   }
 });
 
-app.post("/api/addPreset", authenticateToken, (req, res) => {
+app.post("/addPreset", authenticateToken, (req, res) => {
   try {
     if (!isTagPresetNameValid(req.body.obj.name)) {
       return { resultCode: -1 };
@@ -1151,7 +1153,7 @@ app.post("/api/addPreset", authenticateToken, (req, res) => {
   }
 });
 
-app.post("/api/editPreset", authenticateToken, (req, res) => {
+app.post("/editPreset", authenticateToken, (req, res) => {
   try {
     if (!isTagPresetNameValid(req.body.presetName)) {
       res.json({ resultCode: -1 });
@@ -1189,7 +1191,7 @@ app.post("/api/editPreset", authenticateToken, (req, res) => {
   }
 });
 
-app.post("/api/removePreset", authenticateToken, (req, res) => {
+app.post("/removePreset", authenticateToken, (req, res) => {
   try {
     User.findOne({ uid: req.uid }, (err, user) => {
       for (i = 0; i < user.presets.length; i++) {
@@ -1222,8 +1224,8 @@ function isTagPresetNameValid(name) {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-//could use /api/tags/add instead
-app.post("/api/addTag", authenticateToken, (req, res) => {
+//could use /tags/add instead
+app.post("/addTag", authenticateToken, (req, res) => {
   try {
     if (!isTagPresetNameValid(req.body.tagName)) return { resultCode: -1 };
     User.findOne({ uid: req.uid }, (err, user) => {
@@ -1259,7 +1261,7 @@ app.post("/api/addTag", authenticateToken, (req, res) => {
   }
 });
 
-app.post("/api/editTag", authenticateToken, (req, res) => {
+app.post("/editTag", authenticateToken, (req, res) => {
   try {
     if (!isTagPresetNameValid(req.body.tagName)) return { resultCode: -1 };
     User.findOne({ uid: req.uid }, (err, user) => {
@@ -1287,7 +1289,7 @@ app.post("/api/editTag", authenticateToken, (req, res) => {
   }
 });
 
-app.post("/api/removeTag", authenticateToken, (req, res) => {
+app.post("/removeTag", authenticateToken, (req, res) => {
   try {
     User.findOne({ uid: req.uid }, (err, user) => {
       if (err) res.status(500).send({ error: err });
@@ -1312,7 +1314,7 @@ app.post("/api/removeTag", authenticateToken, (req, res) => {
   }
 });
 
-app.post("/api/resetPersonalBests", authenticateToken, (req, res) => {
+app.post("/resetPersonalBests", authenticateToken, (req, res) => {
   try {
     User.findOne({ uid: req.uid }, (err, user) => {
       if (err) res.status(500).send({ error: err });
@@ -1389,7 +1391,7 @@ function addToLeaderboard(lb, result, username) {
   return lb, retData;
 }
 
-app.post("/api/attemptAddToLeaderboards", authenticateToken, (req, res) => {
+app.post("/attemptAddToLeaderboards", authenticateToken, (req, res) => {
   const result = req.body.result;
   let retData = {};
   User.findOne({ uid: req.uid }, (err, user) => {
@@ -1455,7 +1457,7 @@ app.post("/api/attemptAddToLeaderboards", authenticateToken, (req, res) => {
   res.status(200);
 });
 
-app.get("/api/getLeaderboard/:type/:mode/:mode2", (req, res) => {
+app.get("/getLeaderboard/:type/:mode/:mode2", (req, res) => {
   Leaderboard.findOne(
     { mode: req.params.mode, mode2: req.params.mode2, type: req.params.type },
     (err, lb) => {

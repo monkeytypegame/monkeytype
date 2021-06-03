@@ -67,7 +67,7 @@ function apply() {
   if (action === "add") {
     Loader.show();
     axiosInstance
-      .post("/api/addTag", {
+      .post("/addTag", {
         tagName: inputVal,
       })
       .then((e) => {
@@ -91,7 +91,7 @@ function apply() {
   } else if (action === "edit") {
     Loader.show();
     axiosInstance
-      .post("/api/editTag", {
+      .post("/editTag", {
         tagName: inputVal,
         tagId: tagid,
       })
@@ -117,7 +117,7 @@ function apply() {
   } else if (action === "remove") {
     Loader.show();
     axiosInstance
-      .post("/api/removeTag", {
+      .post("/removeTag", {
         tagId: tagid,
       })
       .then((e) => {

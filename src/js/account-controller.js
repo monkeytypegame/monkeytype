@@ -136,7 +136,7 @@ function signUp() {
     $(".pageLogin .register .button").removeClass("disabled");
     return;
   }
-  axiosInstance.get(`/api/nameCheck/${nname}`).then((d) => {
+  axiosInstance.get(`/nameCheck/${nname}`).then((d) => {
     console.log(d.data);
     if (d.data.resultCode === -1) {
       Notifications.add("Name unavailable", -1);
@@ -160,7 +160,7 @@ function signUp() {
           // dontCheckUserName = true;
           let usr = user.user;
           //maybe there's a better place for the api call
-          axiosInstance.post("/api/signUp", {
+          axiosInstance.post("/signUp", {
             name: nname,
             uid: usr.uid,
             email: email,
