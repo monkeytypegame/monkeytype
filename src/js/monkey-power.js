@@ -185,14 +185,19 @@ export function addPower(good) {
     return;
 
   // Shake
-  $("html").css("overflow", "hidden");
-  const shake = [
-    Math.round(shakeAmount - Math.random() * shakeAmount),
-    Math.round(shakeAmount - Math.random() * shakeAmount),
-  ];
-  $(document.body).css("transform", `translate(${shake[0]}px, ${shake[1]}px)`);
-  if (ctx.resetTimeOut) clearTimeout(ctx.resetTimeOut);
-  ctx.resetTimeOut = setTimeout(reset, 2000);
+  if (Config.monkeyPowerLevel > 2) {
+    $("html").css("overflow", "hidden");
+    const shake = [
+      Math.round(shakeAmount - Math.random() * shakeAmount),
+      Math.round(shakeAmount - Math.random() * shakeAmount),
+    ];
+    $(document.body).css(
+      "transform",
+      `translate(${shake[0]}px, ${shake[1]}px)`
+    );
+    if (ctx.resetTimeOut) clearTimeout(ctx.resetTimeOut);
+    ctx.resetTimeOut = setTimeout(reset, 2000);
+  }
 
   // Sparks
   const offset = ctx.caret.offset();
