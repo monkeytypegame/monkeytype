@@ -121,6 +121,7 @@ let defaultConfig = {
   customBackgroundSize: "cover",
   customBackgroundFilter: [0, 1, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
+  monkeyPowerUnlocked: false,
 };
 
 function isConfigKeyValid(name) {

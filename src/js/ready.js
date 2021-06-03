@@ -6,7 +6,7 @@ import * as Settings from "./settings";
 import * as RouteController from "./route-controller";
 import * as UI from "./ui";
 import * as SignOutButton from "./sign-out-button";
-import * as PowerMode from "./power-mode";
+import * as MonkeyPower from "./monkey-power";
 
 ManualRestart.set();
 Misc.migrateFromCookies();
@@ -57,5 +57,5 @@ $(document).ready(() => {
       }
     });
   Settings.settingsFillPromise.then(Settings.update);
-  PowerMode.init();
+  MonkeyPower.init();
 });

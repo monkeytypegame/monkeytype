@@ -109,7 +109,7 @@ const refactoredSrc = [
   "./src/js/input-controller.js",
   "./src/js/route-controller.js",
   "./src/js/ready.js",
-  "./src/js/power-mode.js",
+  "./src/js/monkey-power.js",
 
   "./src/js/account/all-time-stats.js",
   "./src/js/account/pb-tables.js",

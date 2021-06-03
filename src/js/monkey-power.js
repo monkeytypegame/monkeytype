@@ -99,7 +99,7 @@ export function init() {
   ctx.canvas = createCanvas();
   ctx.context2d = ctx.canvas.getContext("2d");
 
-  console.log("PowerMode Init:", ctx);
+  console.log("MonkeyPower Init:", ctx);
 }
 
 function render() {

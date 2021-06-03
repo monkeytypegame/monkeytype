@@ -21,7 +21,7 @@ import * as TestTimer from "./test-timer";
 import * as Focus from "./focus";
 import * as ShiftTracker from "./shift-tracker";
 import * as Replay from "./replay.js";
-import * as PowerMode from "./power-mode";
+import * as MonkeyPower from "./monkey-power";
 
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
@@ -572,7 +572,7 @@ function handleAlpha(event) {
     thisCharCorrect = false;
   }
 
-  PowerMode.addPower(thisCharCorrect);
+  MonkeyPower.addPower(thisCharCorrect);
 
   if (!thisCharCorrect) {
     TestStats.incrementAccuracy(false);
