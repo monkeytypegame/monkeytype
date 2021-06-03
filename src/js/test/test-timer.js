@@ -91,7 +91,9 @@ export function start() {
         (Config.minWpm === "custom" &&
           wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
           TestLogic.words.currentIndex > 3) ||
-        (Config.minAcc === "custom" && acc < parseInt(Config.minAccCustom))
+        (Config.minAcc === "custom" &&
+          acc < parseInt(Config.minAccCustom) &&
+          TestLogic.words.currentIndex > 3)
       ) {
         clearTimeout(timer);
         TestLogic.fail();
