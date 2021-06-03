@@ -16,6 +16,7 @@ import * as PaceCaret from "./pace-caret";
 import * as UI from "./ui";
 import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
+import * as Settings from "./settings";
 import LayoutList from "./layouts";
 
 export let localStorageConfig = null;
@@ -1488,6 +1489,11 @@ export function setCustomBackgroundFilter(array, nosave) {
 export function setMonkeyPowerUnlocked(val, nosave) {
   if (val !== true) val = false;
   config.monkeyPowerUnlocked = val;
+
+  if (val) setMonkeyPowerLevel(9001);
+  Settings.groups.monkeyPowerLevel?.updateButton();
+  $(".section.monkeyPowerLevel")[val ? "removeClass" : "addClass"]("hidden");
+
   if (!nosave) saveToLocalStorage();
 }
 
