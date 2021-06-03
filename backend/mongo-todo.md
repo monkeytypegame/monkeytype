@@ -1,17 +1,21 @@
 # Mongo todo
 
+## Todo
+
+Make sure that the branch is ready for deployment
+
+- Add deploy script(s) to package.json
+- Make sure that firebase hosted app can connect to api when deployed
+- Create a plan for apache/nginx server
+  - Api should probably be accessible via api.monkeytype.com or monkeytype.com/api
+    - Probably the previous since firebase might not work with seperate linux server
+
 ## Bugs
 
-- Graph bugs out when new result is added but page is not refreshed
-  - Graph loops back from earliest point to the new points
-  - Results list isn't updated either
-  - Result is added to end of list instead of front I think
-    - Could be fixed if list wasn't reversed and results were just rendered backwards
 - Some methods in functions/index.js may be broken
   - I think bot commands like lbUpdate and such
-- Leaderboard entries that should be hidden are not
-- If you are in first place and you place on the leaderboard but not above yourself, you get glb undefined error
-  - Might also occur if you are simply on the leaderboard and make the leaderboard but not above your current position
+  - Make sure discord can work
+    - Might just want to call the api from discord bot instead of firebase functions
 
 ### Minor/efficiency bugs
 
@@ -24,7 +28,15 @@
   - Can't navigate to user until page is refreshed
   - After refresh, pr is not saved
   - Can't induce this error and doesn't occur often so adding it as minor bug
-- Does lbMemory work exactly like it did before
+- lbmemory undefined if page not refreshed after user sign up?
+- If you are in first place and you place on the leaderboard but not above yourself, you get glb undefined error
+  - Might also occur if you are simply on the leaderboard and make the leaderboard but not above your current position
+  - Doesn't happen all the time
+- Hidden property of leaderboard is unused
+- Verified property of user is unused, set at false by default
+  - Can't find where the property would be set in the code
+  - Is this discord verified, if so, why do you need discord verified to be on leaderboard?
+    - Temporarily removed from leaderboard requirements
 
 ### Possibilities
 
@@ -33,3 +45,4 @@
     - After an hour without a new request they can be removed from memory
 - Create a backup system to prevent loss of data
   - Users should be able to export their data themselves
+    - Pretty much is just the user snap but without uid

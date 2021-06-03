@@ -171,11 +171,6 @@ function signUp() {
             })
             .then(async function () {
               // Update successful.
-              await firebase
-                .firestore()
-                .collection("users")
-                .doc(usr.uid)
-                .set({ name: nname }, { merge: true });
               usr.sendEmailVerification();
               AllTimeStats.clear();
               Notifications.add("Account created", 1, 3);

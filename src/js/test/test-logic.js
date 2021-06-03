@@ -1616,7 +1616,7 @@ export function finish(difficultyFailed = false) {
                       DB.getSnapshot() !== null &&
                       DB.getSnapshot().results !== undefined
                     ) {
-                      DB.getSnapshot().results.unshift(completedEvent);
+                      DB.getSnapshot().results.push(completedEvent);
                       if (DB.getSnapshot().globalStats.time == undefined) {
                         DB.getSnapshot().globalStats.time =
                           testtime +

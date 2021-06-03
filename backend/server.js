@@ -625,7 +625,6 @@ app.post("/api/passwordReset", (req, res) => {
 
 app.get("/api/fetchSnapshot", authenticateToken, (req, res) => {
   /* Takes token and returns snap */
-  console.log("UID: " + req.uid);
   User.findOne({ uid: req.uid }, (err, user) => {
     if (err) res.status(500).send({ error: err });
     if (!user) res.status(200).send({ message: "No user found" }); //client doesn't do anything with this
@@ -1394,34 +1393,64 @@ app.post("/api/attemptAddToLeaderboards", authenticateToken, (req, res) => {
   const result = req.body.result;
   let retData = {};
   User.findOne({ uid: req.uid }, (err, user) => {
-    Leaderboard.find(
-      {
-        mode: result.mode,
-        mode2: result.mode2,
-      },
-      (err, lbs) => {
-        //for all leaderboards queried, determine if it qualifies, and add if it does
-        lbs.forEach((lb) => {
-          if (
-            lb.board.length == 0 ||
-            lb.board.length < lb.size ||
-            result.wpm > lb.board.slice(-1)[0].wpm
-          ) {
-            lb, (lbPosData = addToLeaderboard(lb, result, user.name)); //should uid be added instead of name?
-            console.log(user.lbMemory[lb.mode + lb.mode2][lb.type]);
-            //lbPosData.foundAt = user.lbMemory[lb.mode+lb.mode2][lb.type];
-            retData[lb.type] = lbPosData;
-            lb.save();
-            user.lbMemory[lb.mode + lb.mode2][lb.type] =
-              retData[lb.type].insertedAt;
+    admin
+      .auth()
+      .getUser(req.uid)
+      .then((fbUser) => {
+        return fbUser.emailVerified;
+      })
+      .then((emailVerified) => {
+        if (user.emailVerified === false) {
+          if (emailVerified === true) {
+            user.emailVerified = true;
+          } else {
+            res.status(200).send({ needsToVerifyEmail: true });
+            return;
           }
+        }
+        if (user.name === undefined) {
+          //cannot occur since name is required, why is this here?
+          res.status(200).send({ noName: true });
+          return;
+        }
+        if (user.banned) {
+          res.status(200).send({ banned: true });
+          return;
+        }
+        /*
+      if (user.verified === false) {
+        res.status(200).send({ needsToVerify: true });
+        return;
+      }*/
+        Leaderboard.find(
+          {
+            mode: result.mode,
+            mode2: result.mode2,
+          },
+          (err, lbs) => {
+            //for all leaderboards queried, determine if it qualifies, and add if it does
+            lbs.forEach((lb) => {
+              if (
+                lb.board.length == 0 ||
+                lb.board.length < lb.size ||
+                result.wpm > lb.board.slice(-1)[0].wpm
+              ) {
+                lb, (lbPosData = addToLeaderboard(lb, result, user.name)); //should uid be added instead of name?
+                console.log(user.lbMemory[lb.mode + lb.mode2][lb.type]);
+                //lbPosData.foundAt = user.lbMemory[lb.mode+lb.mode2][lb.type];
+                retData[lb.type] = lbPosData;
+                lb.save();
+                user.lbMemory[lb.mode + lb.mode2][lb.type] =
+                  retData[lb.type].insertedAt;
+              }
+            });
+          }
+        ).then((e) => {
+          retData.status = 2;
+          user.save();
+          res.json(retData);
         });
-      }
-    ).then((e) => {
-      retData.status = 2;
-      user.save();
-      res.json(retData);
-    });
+      });
   });
   res.status(200);
 });
