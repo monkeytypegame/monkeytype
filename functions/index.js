@@ -2643,7 +2643,7 @@ exports.checkLeaderboards = functions.https.onRequest(
             response.status(200).send({
               data: {
                 status: -999,
-                message: error,
+                message: error.message,
               },
             });
           });
@@ -2723,7 +2723,7 @@ exports.checkLeaderboards = functions.https.onRequest(
             response.status(200).send({
               data: {
                 status: -999,
-                message: error,
+                message: error.message,
               },
             });
           });
@@ -2804,7 +2804,7 @@ exports.checkLeaderboards = functions.https.onRequest(
       response.status(200).send({
         data: {
           status: -999,
-          message: e,
+          message: e.message,
         },
       });
       return;
