@@ -6,9 +6,7 @@ import axiosInstance from "./axios-instance";
 let dbSnapshot = null;
 
 export function updateName(uid, name) {
-  //db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
   axiosInstance.post("/updateName", {
-    uid: uid,
     name: name,
   });
 }

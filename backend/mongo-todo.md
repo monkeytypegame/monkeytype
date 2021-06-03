@@ -7,14 +7,11 @@ Make sure that the branch is ready for deployment
 - Add deploy script(s) to package.json
 - Create a plan for apache/nginx server
   - Api should be accessible via api.monkeytype.com
-- Add helmet middleware to express api?
 
 ## Bugs
 
-- Some methods in functions/index.js may be broken
-  - I think bot commands like lbUpdate and such
-  - Make sure discord can work
-    - Might just want to call the api from discord bot instead of firebase functions
+- Make sure that the bot is able to interact with the mongo database
+  - If bot is on same server, it could work with mongo directly, otherwise, more api routes are needed
 
 ### Minor/efficiency bugs
 
@@ -28,7 +25,7 @@ Make sure that the branch is ready for deployment
   - After refresh, pr is not saved
   - Can't induce this error and doesn't occur often so adding it as minor bug
 - lbmemory undefined if page not refreshed after user sign up?
-- If you are in first place and you place on the leaderboard but not above yourself, you get glb undefined error
+- If you are in first place and you place on the leaderboard but not above yourself, you may get glb undefined error
   - Might also occur if you are simply on the leaderboard and make the leaderboard but not above your current position
   - Doesn't happen all the time
 - Hidden property of leaderboard is unused

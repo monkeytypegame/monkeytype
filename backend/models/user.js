@@ -17,6 +17,7 @@ const userSchema = new Schema(
     },
     name: { type: String, required: true },
     uid: { type: String, required: true },
+    discordId: { type: String },
     presets: [{ type: presetSchema, default: {} }],
     tags: [{ type: tagSchema, default: {} }],
     favouriteThemes: [],
@@ -43,6 +44,10 @@ const userSchema = new Schema(
     config: { type: configSchema, default: {} },
     bananas: {
       t60bananas: { type: Number, default: 0 },
+    },
+    dailyLbWins: {
+      time15: { type: Number },
+      time60: { type: Number },
     },
   },
   {

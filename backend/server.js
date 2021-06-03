@@ -6,6 +6,7 @@ const admin = require("firebase-admin");
 const helmet = require("helmet");
 const { User } = require("./models/user");
 const { Leaderboard } = require("./models/leaderboard");
+const { BotCommand } = require("./models/bot-command");
 
 // Firebase admin setup
 //currently uses account key in functions to prevent repetition
@@ -14,6 +15,7 @@ const serviceAccount = require("../functions/serviceAccountKey.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
+
 // MIDDLEWARE &  SETUP
 const app = express();
 app.use(cors());
@@ -44,8 +46,24 @@ function clearDailyLeaderboards() {
   setTimeout(() => {
     Leaderboard.find({ type: "daily" }, (err, lbs) => {
       lbs.forEach((lb) => {
-        lb.board = [];
-        lb.save();
+        User.findOne({ name: lb.board[0].name }, (err, user) => {
+          if (user) {
+            if (user.dailyLbWins === undefined) {
+              user.dailyLbWins = {
+                [lb.mode + lb.mode2]: 1,
+              };
+            } else if (user.dailyLbWins[lb.mode + lb.mode2] === undefined) {
+              user.dailyLbWins[lb.mode + lb.mode2] = 1;
+            } else {
+              user.dailyLbWins[lb.mode + lb.mode2]++;
+            }
+            user.save();
+          }
+        }).then(() => {
+          announceDailyLbResult(lb);
+          lb.board = [];
+          lb.save();
+        });
       });
     });
     clearDailyLeaderboards();
@@ -90,6 +108,36 @@ async function authenticateToken(req, res, next) {
 }
 
 // NON-ROUTE FUNCTIONS
+
+function updateDiscordRole(discordId, wpm) {
+  newBotCommand = new BotCommand({
+    command: "updateRole",
+    arguments: [discordId, wpm],
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
+  newBotCommand.save();
+}
+
+async function announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
+  newBotCommand = new BotCommand({
+    command: "sayLbUpdate",
+    arguments: [discordId, pos, lb, wpm, raw, acc, con],
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
+  newBotCommand.save();
+}
+
+async function announceDailyLbResult(lbdata) {
+  newBotCommand = new BotCommand({
+    command: "announceDailyLbResult",
+    arguments: [lbdata],
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
+  newBotCommand.save();
+}
 
 function validateResult(result) {
   if (result.wpm > result.rawWpm) {
@@ -409,7 +457,6 @@ async function checkIfTagPB(obj, userdata) {
     if (toUpdate) {
       //push working pb array to user tags pbs
       await User.findOne({ uid: userdata.uid }, (err, user) => {
-        //it might be more convenient if tags was an object with ids as the keys
         for (let j = 0; j < user.tags.length; j++) {
           if (user.tags[j]._id.toString() === dbtags[i]._id.toString()) {
             user.tags[j].personalBests = pbs;
@@ -612,27 +659,19 @@ app.post("/signUp", (req, res) => {
   return;
 });
 
-app.post("/updateName", (req, res) => {
-  //this might be a put/patch request
-  //update the name of user with given uid
-  const uid = req.body.uid;
-  const name = req.body.name;
-});
-
-app.post("/passwordReset", (req, res) => {
-  const email = req.body.email;
-  //send email to the passed email requesting password reset
-  res.sendStatus(200);
+app.post("/updateName", authenticateToken, (req, res) => {
+  User.findOne({ uid: req.uid }, (err, user) => {
+    user.name = req.body.name;
+    user.save();
+  });
+  res.status(200);
 });
 
 app.get("/fetchSnapshot", authenticateToken, (req, res) => {
-  /* Takes token and returns snap */
   User.findOne({ uid: req.uid }, (err, user) => {
     if (err) res.status(500).send({ error: err });
     if (!user) res.status(200).send({ message: "No user found" }); //client doesn't do anything with this
-    //populate snap object with data from user document
     let snap = user;
-    //return user data
     res.send({ snap: snap });
     return;
   });
@@ -1034,7 +1073,6 @@ app.post("/saveConfig", authenticateToken, (req, res) => {
     User.findOne({ uid: req.uid }, (err, user) => {
       if (err) res.status(500).send({ error: err });
       user.config = obj;
-      //what does {merge: true} do in firebase
       user.save();
     })
       .then(() => {
@@ -1314,6 +1352,74 @@ app.post("/removeTag", authenticateToken, (req, res) => {
   }
 });
 
+app.post("/verifyDiscord", authenticateToken, (req, res) => {
+  /* Not tested yet */
+  response.set("Access-Control-Allow-Origin", origin);
+  response.set("Access-Control-Allow-Headers", "*");
+  response.set("Access-Control-Allow-Credentials", "true");
+  if (request.method === "OPTIONS") {
+    // Send response to OPTIONS requests
+    response.set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    response.set("Access-Control-Allow-Headers", "Authorization,Content-Type");
+    response.set("Access-Control-Max-Age", "3600");
+    response.status(204).send("");
+    return;
+  }
+  request = req.body.data;
+  if (request.uid == undefined) {
+    response.status(200).send({ status: -1, message: "Need to provide uid" });
+    return;
+  }
+  try {
+    return fetch("https://discord.com/api/users/@me", {
+      headers: {
+        authorization: `${request.tokenType} ${request.accessToken}`,
+      },
+    })
+      .then((res) => res.json())
+      .then(async (res2) => {
+        let did = res2.id;
+        User.findOne({ discordId: did }, (err, user) => {
+          if (user) {
+            res.status(200).send({
+              status: -1,
+              message:
+                "This Discord account is already paired to a different Monkeytype account",
+            });
+            return;
+          } else {
+            User.findOne({ uid: req.uid }, (err, user2) => {
+              user2.discordId = did;
+              user2.save();
+              newCommand = new BotCommand({
+                command: "verify",
+                arguments: [did, req.uid],
+                executed: false,
+                requestTimestamp: Date.now(),
+              });
+              newCommand.save();
+              res
+                .status(200)
+                .send({ status: 1, message: "Verified", did: did });
+              return;
+            });
+          }
+        });
+      })
+      .catch((e) => {
+        console.error(
+          "Something went wrong when trying to verify discord of user " +
+            e.message
+        );
+        response.status(200).send({ status: -1, message: e.message });
+        return;
+      });
+  } catch (e) {
+    response.status(200).send({ status: -1, message: e });
+    return;
+  }
+});
+
 app.post("/resetPersonalBests", authenticateToken, (req, res) => {
   try {
     User.findOne({ uid: req.uid }, (err, user) => {
@@ -1437,13 +1543,41 @@ app.post("/attemptAddToLeaderboards", authenticateToken, (req, res) => {
                 lb.board.length < lb.size ||
                 result.wpm > lb.board.slice(-1)[0].wpm
               ) {
-                lb, (lbPosData = addToLeaderboard(lb, result, user.name)); //should uid be added instead of name?
+                lb, (lbPosData = addToLeaderboard(lb, result, user.name)); //should uid be added instead of name? //or together
                 console.log(user.lbMemory[lb.mode + lb.mode2][lb.type]);
                 //lbPosData.foundAt = user.lbMemory[lb.mode+lb.mode2][lb.type];
                 retData[lb.type] = lbPosData;
                 lb.save();
                 user.lbMemory[lb.mode + lb.mode2][lb.type] =
                   retData[lb.type].insertedAt;
+                //check if made global top 10 and send to discord if it did
+                if (lb.type == "global") {
+                  let usr =
+                    user.discordId != undefined ? user.discordId : user.name;
+                  if (
+                    retData.global !== null &&
+                    retData.global.insertedAt >= 0 &&
+                    retData.global.insertedAt <= 9 &&
+                    retData.global.newBest
+                  ) {
+                    let lbstring = `${result.mode} ${result.mode2} global`;
+                    console.log(
+                      `sending command to the bot to announce lb update ${usr} ${
+                        retData.global.insertedAt + 1
+                      } ${lbstring} ${result.wpm}`
+                    );
+
+                    announceLbUpdate(
+                      usr,
+                      retData.global.insertedAt + 1,
+                      lbstring,
+                      result.wpm,
+                      result.rawWpm,
+                      result.acc,
+                      result.consistency
+                    );
+                  }
+                }
               }
             });
           }
