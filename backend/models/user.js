@@ -24,11 +24,9 @@ const userSchema = new Schema(
     banned: { type: Boolean, default: false },
     verified: { type: Boolean, default: false }, //Verified is actually whether or not discord account is connected
     emailVerified: { type: Boolean, default: false },
-    verificationHashes: [{ type: String }],
     lbMemory: {
-      //short for leaderboard memory
       time15: {
-        global: { type: Number, default: -1 }, //might not be an Number, I'm not sure
+        global: { type: Number, default: -1 },
         daily: { type: Number, default: -1 },
       },
       time60: {

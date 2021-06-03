@@ -16,7 +16,7 @@ const configSchema = new Schema({
   words: { type: Number },
   time: { type: Number },
   mode: { type: String },
-  quoteLength: [{ type: Number }], //not sure why this is an array
+  quoteLength: [{ type: Number }],
   language: { type: String },
   fontSize: { type: Number },
   freedomMode: { type: Boolean },

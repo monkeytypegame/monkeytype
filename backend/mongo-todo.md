@@ -1,17 +1,17 @@
 # Mongo todo
 
-## Todo
-
-- Create a script to pull all data from monkeytype and move it to the new mongo server
-
 ## Bugs
 
 - Graph bugs out when new result is added but page is not refreshed
   - Graph loops back from earliest point to the new points
   - Results list isn't updated either
+  - Result is added to end of list instead of front I think
+    - Could be fixed if list wasn't reversed and results were just rendered backwards
 - Some methods in functions/index.js may be broken
   - I think bot commands like lbUpdate and such
 - Leaderboard entries that should be hidden are not
+- If you are in first place and you place on the leaderboard but not above yourself, you get glb undefined error
+  - Might also occur if you are simply on the leaderboard and make the leaderboard but not above your current position
 
 ### Minor/efficiency bugs
 
@@ -20,8 +20,6 @@
   - For loop in account could work backwards instead, but this would add complexity
 - Why does `if (page == "account") pageTransition = false;` get rid of endless account loading bug when accessing via url
 - Name is not passed in user token/auth().currentUser
-- Firestore read operations seem high
-  - Does this include index.html serving as well as user authentication or is there more?
 - Account button sometimes shows loading infinitely after a test
   - Can't navigate to user until page is refreshed
   - After refresh, pr is not saved

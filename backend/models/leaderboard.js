@@ -16,11 +16,11 @@ const leaderboardEntrySchema = new Schema({
 const leaderboardSchema = new Schema(
   {
     resetTime: { type: Date }, //or Number, only on daily lb
-    size: { type: Number },
+    size: { type: Number, required: true },
     board: [{ type: leaderboardEntrySchema }], //contents of leaderbaord
-    mode: { type: String }, //only equal to 'time' for now
-    mode2: { type: Number }, //only equal to 15 and 60 for now
-    type: { type: String }, //global or local
+    mode: { type: String, required: true }, //only equal to 'time' for now
+    mode2: { type: Number, required: true }, //only equal to 15 and 60 for now
+    type: { type: String, required: true }, //global or local
   },
   {
     timestamps: true,

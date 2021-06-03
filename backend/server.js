@@ -576,6 +576,7 @@ app.get("/api/nameCheck/:name", (req, res) => {
     return;
   }
   User.findOne({ name: req.params.name }, (err, user) => {
+    console.log(err);
     if (user) {
       res.status(200).send({
         resultCode: -1,
@@ -589,6 +590,11 @@ app.get("/api/nameCheck/:name", (req, res) => {
       });
       return;
     }
+  }).catch(() => {
+    res.status(200).send({
+      resultCode: -1,
+      message: "Error when checking for names",
+    });
   });
 });
 
