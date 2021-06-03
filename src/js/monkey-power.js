@@ -1,7 +1,7 @@
 import * as TestLogic from "./test-logic";
 import * as ThemeColors from "./theme-colors";
 import * as UI from "./ui";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 
 /**
  * @typedef {{ x: number, y: number }} vec2
