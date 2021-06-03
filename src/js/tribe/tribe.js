@@ -32,7 +32,7 @@ export let socket = io(
 );
 export let activePage = "preloader";
 export let pageTransition = false;
-export let expectedVersion = "0.9.11";
+export let expectedVersion = "0.9.12";
 
 console.log("---------");
 console.log("---------");
