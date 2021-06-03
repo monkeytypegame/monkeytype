@@ -599,6 +599,7 @@ let commandsPaceCaret = {
       display: "off",
       exec: () => {
         UpdateConfig.setPaceCaret("off");
+        TestLogic.restart();
       },
     },
     {
@@ -606,6 +607,7 @@ let commandsPaceCaret = {
       display: "pb",
       exec: () => {
         UpdateConfig.setPaceCaret("pb");
+        TestLogic.restart();
       },
     },
     {
@@ -613,6 +615,7 @@ let commandsPaceCaret = {
       display: "average",
       exec: () => {
         UpdateConfig.setPaceCaret("average");
+        TestLogic.restart();
       },
     },
     {
@@ -622,6 +625,7 @@ let commandsPaceCaret = {
       exec: (input) => {
         UpdateConfig.setPaceCaretCustomSpeed(input);
         UpdateConfig.setPaceCaret("custom");
+        TestLogic.restart();
       },
     },
   ],
