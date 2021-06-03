@@ -144,6 +144,7 @@ function render() {
 
 export function reset(immediate = false) {
   if (!ctx.resetTimeOut) return;
+  delete ctx.resetTimeOut;
 
   clearTimeout(ctx.resetTimeOut);
   const body = $(document.body);
