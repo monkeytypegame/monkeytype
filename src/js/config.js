@@ -121,6 +121,7 @@ let defaultConfig = {
   customBackgroundSize: "cover",
   customBackgroundFilter: [0, 1, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
+  monkeyPowerLevel: "off",
 };
 
 function isConfigKeyValid(name) {
@@ -1483,6 +1484,12 @@ export function setCustomBackgroundFilter(array, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+export function setMonkeyPowerLevel(level, nosave) {
+  if (!["off", "1", "2", "3", "4"].includes(level)) level = "off";
+  config.monkeyPowerLevel = level;
+  if (!nosave) saveToLocalStorage();
+}
+
 export function apply(configObj) {
   if (configObj == null || configObj == undefined) {
     Notifications.add("Could not apply config", -1, 3);
@@ -1567,6 +1574,7 @@ export function apply(configObj) {
     setMode(configObj.mode, true);
     setMonkey(configObj.monkey, true);
     setRepeatQuotes(configObj.repeatQuotes, true);
+    setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
 
     LanguagePicker.setActiveGroup();
 

@@ -21,6 +21,7 @@ import * as TestTimer from "./test-timer";
 import * as Focus from "./focus";
 import * as ShiftTracker from "./shift-tracker";
 import * as Replay from "./replay.js";
+import * as MonkeyPower from "./monkey-power";
 
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
@@ -234,6 +235,7 @@ function handleSpace(event, isEnter) {
   dontInsertSpace = true;
   if (currentWord == TestLogic.input.current || Config.mode == "zen") {
     //correct word or in zen mode
+    MonkeyPower.addPower(true, true);
     PaceCaret.handleSpace(true, currentWord);
     TestStats.incrementAccuracy(true);
     TestLogic.input.pushHistory();
@@ -252,6 +254,7 @@ function handleSpace(event, isEnter) {
     Replay.addReplayEvent("submitCorrectWord");
   } else {
     //incorrect word
+    MonkeyPower.addPower(false, true);
     PaceCaret.handleSpace(false, currentWord);
     if (Config.funbox !== "nospace") {
       if (!Config.playSoundOnError || Config.blindMode) {
@@ -485,6 +488,7 @@ function handleAlpha(event) {
     !TestLogic.active
   ) {
     if (!TestLogic.startTest()) return;
+    MonkeyPower.addPower();
   } else {
     if (!TestLogic.active) return;
   }
@@ -570,6 +574,8 @@ function handleAlpha(event) {
   ) {
     thisCharCorrect = false;
   }
+
+  MonkeyPower.addPower(thisCharCorrect);
 
   if (!thisCharCorrect) {
     TestStats.incrementAccuracy(false);

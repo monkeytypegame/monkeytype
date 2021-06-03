@@ -1297,6 +1297,37 @@ let commandsCopyWordsToClipboard = {
   ],
 };
 
+let commandsMonkeyPowerLevel = {
+  title: "Power mode...",
+  list: [
+    {
+      id: "monkeyPowerLevelOff",
+      display: "off",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("off"),
+    },
+    {
+      id: "monkeyPowerLevel1",
+      display: "1",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("1"),
+    },
+    {
+      id: "monkeyPowerLevel2",
+      display: "2",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("2"),
+    },
+    {
+      id: "monkeyPowerLevel3",
+      display: "3",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("3"),
+    },
+    {
+      id: "monkeyPowerLevel4",
+      display: "4",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("4"),
+    },
+  ],
+};
+
 export let defaultCommands = {
   title: "",
   list: [
@@ -2037,6 +2068,16 @@ export let defaultCommands = {
       input: true,
       defaultValue: "",
       exec: (input) => {},
+    },
+    {
+      id: "monkeyPower",
+      display: "Power mode...",
+      alias: "powermode",
+      subgroup: true,
+      exec: () => {
+        current.push(commandsMonkeyPowerLevel);
+        Commandline.show();
+      },
     },
   ],
 };
