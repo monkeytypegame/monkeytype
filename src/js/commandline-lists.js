@@ -1293,6 +1293,37 @@ let commandsCopyWordsToClipboard = {
   ],
 };
 
+let commandsMonkeyPowerLevel = {
+  title: "You control the power",
+  list: [
+    {
+      id: "monkeyPowerLevelOff",
+      display: "off",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("off"),
+    },
+    {
+      id: "monkeyPowerLevelMellow",
+      display: "mellow",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("mellow"),
+    },
+    {
+      id: "monkeyPowerLevelHigh",
+      display: "high",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("high"),
+    },
+    {
+      id: "monkeyPowerLevelUltra",
+      display: "ultra",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("ultra"),
+    },
+    {
+      id: "monkeyPowerLevelOver9000",
+      display: "over 9000",
+      exec: () => UpdateConfig.setMonkeyPowerLevel(">9000"),
+    },
+  ],
+};
+
 export let defaultCommands = {
   title: "",
   list: [
@@ -2050,6 +2081,17 @@ export let defaultCommands = {
       available: () => Config.monkeyPowerUnlocked,
       exec: () => {
         UpdateConfig.setMonkeyPowerUnlocked(false);
+      },
+    },
+    {
+      id: "monkeyPowerLevel",
+      display: "Is the monkey power to much? You can tone it down.",
+      alias: "monkeypwrlvl",
+      available: () => Config.monkeyPowerUnlocked,
+      subgroup: true,
+      exec: () => {
+        current.push(commandsMonkeyPowerLevel);
+        Commandline.show();
       },
     },
   ],
