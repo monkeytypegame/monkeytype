@@ -177,7 +177,7 @@ function randomColor() {
 /**
  * @param {boolean} good Good power or not?
  */
-export function addPower(good) {
+export function addPower(good = true, extra = false) {
   if (
     !TestLogic.active ||
     !Config.monkeyPowerUnlocked ||
@@ -206,7 +206,8 @@ export function addPower(good) {
 
   for (
     let i = Math.round(
-      particleCreateCount[0] + Math.random() * particleCreateCount[1]
+      (particleCreateCount[0] + Math.random() * particleCreateCount[1]) *
+        (extra ? 2 : 1)
     );
     i > 0;
     i--
