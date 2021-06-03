@@ -1093,9 +1093,7 @@ async function getIncrementedTypingStats(userData, resultObj) {
   }
 }
 
-async function getUpdatedLbMemory(userdata, mode, mode2, globallb, dailylb) {
-  let lbmemory = userdata.lbMemory;
-
+async function getUpdatedLbMemory(lbmemory, mode, mode2, globallb, dailylb) {
   if (lbmemory === undefined) {
     lbmemory = {};
   }
