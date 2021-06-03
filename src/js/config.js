@@ -16,7 +16,6 @@ import * as PaceCaret from "./pace-caret";
 import * as UI from "./ui";
 import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
-import * as Settings from "./settings";
 import LayoutList from "./layouts";
 
 export let localStorageConfig = null;
@@ -123,7 +122,7 @@ let defaultConfig = {
   customBackgroundFilter: [0, 1, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
   monkeyPowerUnlocked: false,
-  monkeyPowerLevel: 9001,
+  monkeyPowerLevel: ">9000",
 };
 
 function isConfigKeyValid(name) {
@@ -1486,21 +1485,17 @@ export function setCustomBackgroundFilter(array, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
-export function setMonkeyPowerUnlocked(val, nosave) {
-  if (val !== true) val = false;
-  config.monkeyPowerUnlocked = val;
-
-  if (val) setMonkeyPowerLevel(9001);
-  Settings.groups.monkeyPowerLevel?.updateButton();
-  $(".section.monkeyPowerLevel")[val ? "removeClass" : "addClass"]("hidden");
-
+export function setMonkeyPowerLevel(level, nosave) {
+  if (!["off", "mellow", "high", "ultra", ">9000"].includes(level))
+    level = "off";
+  config.monkeyPowerLevel = level;
   if (!nosave) saveToLocalStorage();
 }
 
-export function setMonkeyPowerLevel(level, nosave) {
-  level = parseInt(level);
-  if (![1, 2, 9001].includes(level)) level = 0;
-  config.monkeyPowerLevel = level;
+export function setMonkeyPowerUnlocked(val, nosave) {
+  if (val !== true) val = false;
+  config.monkeyPowerUnlocked = val;
+  if (val) setMonkeyPowerLevel(">9000");
   if (!nosave) saveToLocalStorage();
 }
 
