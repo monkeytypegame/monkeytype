@@ -1,6 +1,7 @@
 import * as TestLogic from "./test-logic";
 import * as ThemeColors from "./theme-colors";
 import * as UI from "./ui";
+import Config, * as UpdateConfig from "./config";
 
 /**
  * @typedef {{ x: number, y: number }} vec2
@@ -165,11 +166,23 @@ function startRender() {
   }
 }
 
+function randomColor() {
+  const r = Math.floor(Math.random() * 256).toString(16);
+  const g = Math.floor(Math.random() * 256).toString(16);
+  const b = Math.floor(Math.random() * 256).toString(16);
+  return `#${r}${g}${b}`;
+}
+
 /**
  * @param {boolean} good Good power or not?
  */
 export function addPower(good) {
-  if (!TestLogic.active) return;
+  if (
+    !TestLogic.active ||
+    !Config.monkeyPowerUnlocked ||
+    Config.monkeyPowerLevel === 0
+  )
+    return;
 
   // Shake
   $("html").css("overflow", "hidden");
@@ -192,9 +205,13 @@ export function addPower(good) {
     i > 0;
     i--
   ) {
-    ctx.particles.push(
-      createParticle(...coords, good ? ThemeColors.caret : ThemeColors.error)
-    );
+    const color =
+      Config.monkeyPowerLevel > 1
+        ? randomColor()
+        : good
+        ? ThemeColors.caret
+        : ThemeColors.error;
+    ctx.particles.push(createParticle(...coords, color));
   }
 
   startRender();

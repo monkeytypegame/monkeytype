@@ -2034,6 +2034,24 @@ export let defaultCommands = {
       defaultValue: "",
       exec: (input) => {},
     },
+    {
+      id: "unlockMonkeyPower",
+      display: "Unlock the MONKEY POWER!!",
+      alias: "monkeypower",
+      available: () => !Config.monkeyPowerUnlocked,
+      exec: () => {
+        UpdateConfig.setMonkeyPowerUnlocked(true);
+      },
+    },
+    {
+      id: "lockMonkeyPower",
+      display: "Lock away the Monkey Power.. Its to much!",
+      alias: "monkeypower",
+      available: () => Config.monkeyPowerUnlocked,
+      exec: () => {
+        UpdateConfig.setMonkeyPowerUnlocked(false);
+      },
+    },
   ],
 };
 

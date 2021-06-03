@@ -122,6 +122,7 @@ let defaultConfig = {
   customBackgroundFilter: [0, 1, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
   monkeyPowerUnlocked: false,
+  monkeyPowerLevel: 9001,
 };
 
 function isConfigKeyValid(name) {
@@ -1484,6 +1485,19 @@ export function setCustomBackgroundFilter(array, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+export function setMonkeyPowerUnlocked(val, nosave) {
+  if (val !== true) val = false;
+  config.monkeyPowerUnlocked = val;
+  if (!nosave) saveToLocalStorage();
+}
+
+export function setMonkeyPowerLevel(level, nosave) {
+  level = parseInt(level);
+  if (![1, 2, 9001].includes(level)) level = 0;
+  config.monkeyPowerLevel = level;
+  if (!nosave) saveToLocalStorage();
+}
+
 export function apply(configObj) {
   if (configObj == null || configObj == undefined) {
     Notifications.add("Could not apply config", -1, 3);
@@ -1568,6 +1582,8 @@ export function apply(configObj) {
     setMode(configObj.mode, true);
     setMonkey(configObj.monkey, true);
     setRepeatQuotes(configObj.repeatQuotes, true);
+    setMonkeyPowerUnlocked(configObj.monkeyPowerUnlocked, true);
+    setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
 
     LanguagePicker.setActiveGroup();
 
