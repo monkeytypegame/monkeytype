@@ -287,6 +287,10 @@ async function initGroups() {
   //   "customLayoutfluid",
   //   UpdateConfig.setCustomLayoutfluid
   // );
+  groups.monkeyPowerLevel = new SettingsGroup(
+    "monkeyPowerLevel",
+    UpdateConfig.setMonkeyPowerLevel
+  );
 }
 
 async function fillSettingsPage() {
