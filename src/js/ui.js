@@ -138,7 +138,7 @@ export function changePage(page) {
     TestStats.resetIncomplete();
     ManualRestart.set();
     TestLogic.restart();
-    Funbox.activate(Funbox.funboxSaved, Funbox.modeSaved);
+    Funbox.activate(Config.funbox);
   } else if (page == "about") {
     setPageTransition(true);
     TestLogic.restart();
@@ -147,7 +147,7 @@ export function changePage(page) {
       history.pushState("about", null, "about");
       $(".page.pageAbout").addClass("active");
     });
-    Funbox.activate("none", null);
+    Funbox.activate("none");
     TestConfig.hide();
     SignOutButton.hide();
   } else if (page == "settings") {
@@ -158,7 +158,7 @@ export function changePage(page) {
       history.pushState("settings", null, "settings");
       $(".page.pageSettings").addClass("active");
     });
-    Funbox.activate("none", null);
+    Funbox.activate("none");
     Settings.update();
     TestConfig.hide();
     SignOutButton.hide();
@@ -184,7 +184,7 @@ export function changePage(page) {
           SignOutButton.show();
         }
       );
-      Funbox.activate("none", null);
+      Funbox.activate("none");
       Account.update();
       TestConfig.hide();
     }
@@ -199,7 +199,7 @@ export function changePage(page) {
         history.pushState("login", null, "login");
         $(".page.pageLogin").addClass("active");
       });
-      Funbox.activate("none", null);
+      Funbox.activate("none");
       TestConfig.hide();
       SignOutButton.hide();
     }

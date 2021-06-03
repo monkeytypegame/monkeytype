@@ -130,7 +130,7 @@ export function show(data, mode2) {
   $("#result .stats .leaderboards .bottom").html(string);
 }
 
-export function check(completedEvent) {
+export async function check(completedEvent) {
   try {
     if (
       completedEvent.funbox === "none" &&
@@ -162,13 +162,14 @@ export function check(completedEvent) {
       delete lbRes.chartData;
       /*
       CloudFunctions.checkLeaderboards({
-        uid: completedEvent.uid,
-        lbMemory: DB.getSnapshot().lbMemory,
+        // uid: completedEvent.uid,
+        token: await firebase.auth().currentUser.getIdToken(),
+        // lbMemory: DB.getSnapshot().lbMemory,
         // emailVerified: DB.getSnapshot().emailVerified,
-        name: DB.getSnapshot().name,
-        banned: DB.getSnapshot().banned,
-        verified: DB.getSnapshot().verified,
-        discordId: DB.getSnapshot().discordId,
+        // name: DB.getSnapshot().name,
+        // banned: DB.getSnapshot().banned,
+        // verified: DB.getSnapshot().verified,
+        // discordId: DB.getSnapshot().discordId,
         result: lbRes,
       })
       */
@@ -178,8 +179,21 @@ export function check(completedEvent) {
           result: lbRes,
         })
         .then((data) => {
-          Misc.clearTimeouts(textTimeouts);
-          show(data.data, completedEvent.mode2);
+          if (data.data.status === -999) {
+            if (data.data.message === "Bad token") {
+              $("#result .stats .leaderboards").addClass("hidden");
+              Notifications.add(
+                "Bad token. This could mean your client is out of date and is sending data in the old format. Please refresh and clear your cache.",
+                -1
+              );
+            } else {
+              $("#result .stats .leaderboards").addClass("hidden");
+              Notifications.add(data.data.message, -1);
+            }
+          } else {
+            Misc.clearTimeouts(textTimeouts);
+            show(data.data, completedEvent.mode2);
+          }
         })
         .catch((e) => {
           $("#result .stats .leaderboards").addClass("hidden");

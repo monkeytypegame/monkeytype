@@ -2454,6 +2454,44 @@ exports.checkLeaderboards = functions.https.onRequest(
     }
     request = request.body.data;
 
+    if (request.token === undefined) {
+      response.status(200).send({
+        data: {
+          status: -999,
+          message: "No token",
+        },
+      });
+      return;
+    }
+    let tokenDecoded;
+    try {
+      tokenDecoded = await admin.auth().verifyIdToken(request.token);
+    } catch (e) {
+      response.status(200).send({
+        data: {
+          status: -999,
+          message: "Bad token",
+        },
+      });
+      return;
+    }
+    request.emailVerified = tokenDecoded.email_verified;
+    request.uid = tokenDecoded.uid;
+
+    // name:
+    // banned:
+    // verified:
+    // discordId
+
+    let userData = await db.collection("users").doc(request.uid).get();
+    userData = userData.data();
+
+    request.name = userData.name;
+    request.banned = userData.banned;
+    request.verified = userData.verified;
+    request.discordId = userData.discordId;
+    request.lbMemory = userData.lbMemory;
+
     function verifyValue(val) {
       let errCount = 0;
       if (val === null || val === undefined) {
@@ -2488,15 +2526,8 @@ exports.checkLeaderboards = functions.https.onRequest(
       return;
     }
 
-    let emailVerified = await admin
-      .auth()
-      .getUser(request.uid)
-      .then((user) => {
-        return user.emailVerified;
-      });
-
     try {
-      if (emailVerified === false) {
+      if (request.emailVerified === false) {
         response.status(200).send({
           data: {
             needsToVerifyEmail: true,

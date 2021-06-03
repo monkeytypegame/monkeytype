@@ -22,6 +22,10 @@
     "languages": ["arabic"]
   },
   {
+    "name": "malagasy",
+    "languages": ["malagasy", "malagasy_1k"]
+  },
+  {
     "name": "malay",
     "languages": ["malay"]
   },

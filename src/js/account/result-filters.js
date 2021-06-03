@@ -74,6 +74,7 @@ Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
     defaultResultFilters.funbox[funbox.name] = true;
   });
   // filters = defaultResultFilters;
+  load();
 });
 
 export function getFilters() {
@@ -110,7 +111,12 @@ export function load() {
   // let newTags = $.cookie("activeTags");
   try {
     let newResultFilters = window.localStorage.getItem("resultFilters");
-    if (newResultFilters != undefined && newResultFilters !== "") {
+    if (
+      newResultFilters != undefined &&
+      newResultFilters !== "" &&
+      Misc.countAllKeys(newResultFilters) >=
+        Misc.countAllKeys(defaultResultFilters)
+    ) {
       filters = JSON.parse(newResultFilters);
       save();
     } else {
@@ -128,8 +134,6 @@ export function reset() {
   filters = defaultResultFilters;
   save();
 }
-
-load();
 
 export function updateActive() {
   let aboveChartDisplay = {};
@@ -398,10 +402,10 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
     filters["language"][Config.language] = true;
   }
 
-  if (Funbox.active === "none") {
+  if (Config.funbox === "none") {
     filters.funbox.none = true;
   } else {
-    filters.funbox[Funbox.active] = true;
+    filters.funbox[Config.funbox] = true;
   }
 
   filters["tags"]["none"] = true;

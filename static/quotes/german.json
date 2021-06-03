@@ -1,22 +1,10 @@
 {
   "language": "german",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -698,7 +686,7 @@
       "id": 113
     },
     {
-      "text": "Um halb neun griff Mr Dursley nach der Aktentasche, gab seiner Frau einen Schmatz auf die Wange und versuchte es auch bei Dudley mit einem Abschiedskuss. Der ging jedoch daneben, weil Dudley gerade einen Wutanfall hatte und die Wände mit seinem Haferbrei bewarf. >>Kleiner Schlingel<<, gluckste Mr Dursley, während er nach draußen ging. Er setzte sich in den Wagen und fuhr rückwärts die Einfahrt zu Nummer 4 hinaus.",
+      "text": "Um halb neun griff Mr Dursley nach der Aktentasche, gab seiner Frau einen Schmatz auf die Wange und versuchte es auch bei Dudley mit einem Abschiedskuss. Der ging jedoch daneben, weil Dudley gerade einen Wutanfall hatte und die Wände mit seinem Haferbrei bewarf. \"Kleiner Schlingel\", gluckste Mr Dursley, während er nach draußen ging. Er setzte sich in den Wagen und fuhr rückwärts die Einfahrt zu Nummer 4 hinaus.",
       "source": "Harry Potter und der Stein der Weisen",
       "length": 414,
       "id": 114

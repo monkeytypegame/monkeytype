@@ -448,7 +448,7 @@ export function updateDiscordSection() {
 function setActiveFunboxButton() {
   $(`.pageSettings .section.funbox .button`).removeClass("active");
   $(
-    `.pageSettings .section.funbox .button[funbox='${Funbox.funboxSaved}']`
+    `.pageSettings .section.funbox .button[funbox='${Config.funbox}']`
   ).addClass("active");
 }
 

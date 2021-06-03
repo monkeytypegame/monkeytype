@@ -1815,7 +1815,7 @@ export let defaultCommands = {
       input: true,
       exec: (input) => {
         UpdateConfig.setCustomLayoutfluid(input);
-        if (Funbox.active === "layoutfluid") TestLogic.restart();
+        if (Config.funbox === "layoutfluid") TestLogic.restart();
         // UpdateConfig.setLayout(
         //   Config.customLayoutfluid
         //     ? Config.customLayoutfluid.split("_")[0]
