@@ -176,15 +176,10 @@ function randomColor() {
  * @param {boolean} good Good power or not?
  */
 export function addPower(good = true, extra = false) {
-  if (
-    !TestLogic.active ||
-    !Config.monkeyPowerUnlocked ||
-    Config.monkeyPowerLevel === "off"
-  )
-    return;
+  if (!TestLogic.active || Config.monkeyPowerLevel === "off") return;
 
   // Shake
-  if (["ultra", ">9000"].includes(Config.monkeyPowerLevel)) {
+  if (["3", "4"].includes(Config.monkeyPowerLevel)) {
     $("html").css("overflow", "hidden");
     const shake = [
       Math.round(shakeAmount - Math.random() * shakeAmount),
@@ -210,7 +205,7 @@ export function addPower(good = true, extra = false) {
     i > 0;
     i--
   ) {
-    const color = ["high", ">9000"].includes(Config.monkeyPowerLevel)
+    const color = ["2", "4"].includes(Config.monkeyPowerLevel)
       ? randomColor()
       : good
       ? ThemeColors.caret

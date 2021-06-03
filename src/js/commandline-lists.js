@@ -1294,7 +1294,7 @@ let commandsCopyWordsToClipboard = {
 };
 
 let commandsMonkeyPowerLevel = {
-  title: "You control the power",
+  title: "Power mode...",
   list: [
     {
       id: "monkeyPowerLevelOff",
@@ -1302,24 +1302,24 @@ let commandsMonkeyPowerLevel = {
       exec: () => UpdateConfig.setMonkeyPowerLevel("off"),
     },
     {
-      id: "monkeyPowerLevelMellow",
-      display: "mellow",
-      exec: () => UpdateConfig.setMonkeyPowerLevel("mellow"),
+      id: "monkeyPowerLevel1",
+      display: "1",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("1"),
     },
     {
-      id: "monkeyPowerLevelHigh",
-      display: "high",
-      exec: () => UpdateConfig.setMonkeyPowerLevel("high"),
+      id: "monkeyPowerLevel2",
+      display: "2",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("2"),
     },
     {
-      id: "monkeyPowerLevelUltra",
-      display: "ultra",
-      exec: () => UpdateConfig.setMonkeyPowerLevel("ultra"),
+      id: "monkeyPowerLevel3",
+      display: "3",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("3"),
     },
     {
-      id: "monkeyPowerLevelOver9000",
-      display: "over 9000",
-      exec: () => UpdateConfig.setMonkeyPowerLevel(">9000"),
+      id: "monkeyPowerLevel4",
+      display: "4",
+      exec: () => UpdateConfig.setMonkeyPowerLevel("4"),
     },
   ],
 };
@@ -2066,28 +2066,9 @@ export let defaultCommands = {
       exec: (input) => {},
     },
     {
-      id: "unlockMonkeyPower",
-      display: "Unlock the MONKEY POWER!!",
-      alias: "monkeypower",
-      available: () => !Config.monkeyPowerUnlocked,
-      exec: () => {
-        UpdateConfig.setMonkeyPowerUnlocked(true);
-      },
-    },
-    {
-      id: "lockMonkeyPower",
-      display: "Lock away the Monkey Power.. Its to much!",
-      alias: "monkeypower",
-      available: () => Config.monkeyPowerUnlocked,
-      exec: () => {
-        UpdateConfig.setMonkeyPowerUnlocked(false);
-      },
-    },
-    {
-      id: "monkeyPowerLevel",
-      display: "Is the monkey power to much? You can tone it down.",
-      alias: "monkeypwrlvl",
-      available: () => Config.monkeyPowerUnlocked,
+      id: "monkeyPower",
+      display: "Power mode...",
+      alias: "powermode",
       subgroup: true,
       exec: () => {
         current.push(commandsMonkeyPowerLevel);
