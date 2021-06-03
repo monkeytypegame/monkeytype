@@ -159,7 +159,10 @@ export function reset(immediate = false) {
 }
 
 function startRender() {
-  if (!ctx.rendering) render();
+  if (!ctx.rendering) {
+    ctx.lastFrame = Date.now();
+    render();
+  }
 }
 
 /**
