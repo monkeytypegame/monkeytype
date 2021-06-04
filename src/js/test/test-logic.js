@@ -1036,6 +1036,19 @@ export function finish(difficultyFailed = false) {
   lastTestWpm = stats.wpm;
 
   let testtime = stats.time;
+
+  if (TestStats.lastSecondNotRound) {
+    let wpmAndRaw = calculateWpmAndRaw();
+    TestStats.pushToWpmHistory(wpmAndRaw.wpm);
+    TestStats.pushToRawHistory(wpmAndRaw.raw);
+    TestStats.pushKeypressesToHistory();
+    // errorsPerSecond.push(currentError);
+    // currentError = {
+    //   count: 0,
+    //   words: [],
+    // };
+  }
+
   let afkseconds = TestStats.calculateAfkSeconds(testtime);
   let afkSecondsPercent = Misc.roundTo2((afkseconds / testtime) * 100);
 
@@ -1166,18 +1179,6 @@ export function finish(difficultyFailed = false) {
     mode2 = randomQuote.id;
   } else if (Config.mode === "zen") {
     mode2 = "zen";
-  }
-
-  if (TestStats.lastSecondNotRound) {
-    let wpmAndRaw = calculateWpmAndRaw();
-    TestStats.pushToWpmHistory(wpmAndRaw.wpm);
-    TestStats.pushToRawHistory(wpmAndRaw.raw);
-    TestStats.pushKeypressesToHistory();
-    // errorsPerSecond.push(currentError);
-    // currentError = {
-    //   count: 0,
-    //   words: [],
-    // };
   }
 
   let labels = [];
@@ -1857,7 +1858,7 @@ export function finish(difficultyFailed = false) {
 export function fail() {
   input.pushHistory();
   corrected.pushHistory();
-  TestStats.pushKeypressesToHistory();
+  // TestStats.pushKeypressesToHistory();
   finish(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());
   let afkseconds = TestStats.calculateAfkSeconds(testSeconds);

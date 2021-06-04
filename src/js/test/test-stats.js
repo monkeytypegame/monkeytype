@@ -160,6 +160,7 @@ export function calculateAfkSeconds(testSeconds) {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
     extraAfk = Math.ceil(testSeconds) - keypressPerSecond.length;
+    if (extraAfk < 0) extraAfk = 0;
     console.log("-- extra afk debug");
     console.log("should be " + Math.ceil(testSeconds));
     console.log(keypressPerSecond.length);
