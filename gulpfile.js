@@ -111,6 +111,7 @@ const refactoredSrc = [
   "./src/js/input-controller.js",
   "./src/js/route-controller.js",
   "./src/js/ready.js",
+  "./src/js/monkey-power.js",
 
   "./src/js/account/all-time-stats.js",
   "./src/js/account/pb-tables.js",
@@ -124,6 +125,7 @@ const refactoredSrc = [
   "./src/js/elements/account-button.js",
   "./src/js/elements/loader.js",
   "./src/js/elements/sign-out-button.js",
+  "./src/js/elements/about-page.js",
 
   "./src/js/popups/custom-text-popup.js",
   "./src/js/popups/quote-search-popup.js",
