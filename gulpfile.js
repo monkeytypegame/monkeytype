@@ -189,7 +189,7 @@ task("sass", function () {
 });
 
 task("static", function () {
-  return src("./static/**/*").pipe(dest("./dist/"));
+  return src("./static/**/*", { dot: true }).pipe(dest("./dist/"));
 });
 
 //copies refactored js files to dist/gen so that they can be required by dist/gen/index.js
