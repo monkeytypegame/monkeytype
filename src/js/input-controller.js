@@ -801,3 +801,8 @@ $("#wordsInput").on("input", (event) => {
     }
   }, 0);
 });
+
+$("#wordsInput").focus((event) => {
+  event.target.selectionStart = event.target.selectionEnd =
+    event.target.value.length;
+});
