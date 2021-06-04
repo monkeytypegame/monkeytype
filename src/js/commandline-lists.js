@@ -1303,22 +1303,22 @@ let commandsMonkeyPowerLevel = {
     },
     {
       id: "monkeyPowerLevel1",
-      display: "1",
+      display: "mellow",
       exec: () => UpdateConfig.setMonkeyPowerLevel("1"),
     },
     {
       id: "monkeyPowerLevel2",
-      display: "2",
+      display: "high",
       exec: () => UpdateConfig.setMonkeyPowerLevel("2"),
     },
     {
       id: "monkeyPowerLevel3",
-      display: "3",
+      display: "ultra",
       exec: () => UpdateConfig.setMonkeyPowerLevel("3"),
     },
     {
       id: "monkeyPowerLevel4",
-      display: "4",
+      display: "over 9000",
       exec: () => UpdateConfig.setMonkeyPowerLevel("4"),
     },
   ],
