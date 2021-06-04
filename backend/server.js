@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const { User } = require("./models/user");
 const { Leaderboard } = require("./models/leaderboard");
 const { BotCommand } = require("./models/bot-command");
+const { Stats } = require("./models/stats");
 
 // Firebase admin setup
 //currently uses account key in functions to prevent repetition
@@ -91,6 +92,18 @@ Leaderboard.findOne((err, lb) => {
   }
 }).then(() => {
   clearDailyLeaderboards();
+});
+
+// Initialize stats database if none exists
+Stats.findOne((err, stats) => {
+  if (!stats) {
+    let newStats = new Stats({
+      completedTests: 0,
+      startedTests: 0,
+      timeTyping: 0,
+    });
+    newStats.save();
+  }
 });
 
 async function authenticateToken(req, res, next) {
@@ -525,7 +538,7 @@ function incrementT60Bananas(uid, result, userData) {
   }
 }
 
-async function incrementGlobalTypingStats(userData, resultObj) {
+async function incrementUserGlobalTypingStats(userData, resultObj) {
   let userGlobalStats = userData.globalStats;
   try {
     let newStarted;
@@ -561,13 +574,6 @@ async function incrementGlobalTypingStats(userData, resultObj) {
     } else {
       newTime = userGlobalStats.time + tt;
     }
-    // db.collection("users")
-    //   .doc(uid)
-    //   .update({
-    //     startedTests: newStarted,
-    //     completedTests: newCompleted,
-    //     timeTyping: roundTo2(newTime),
-    //   });
     incrementPublicTypingStats(resultObj.restartCount + 1, 1, tt);
     User.findOne({ uid: userData.uid }, (err, user) => {
       user.globalStats = {
@@ -583,20 +589,17 @@ async function incrementGlobalTypingStats(userData, resultObj) {
 }
 
 async function incrementPublicTypingStats(started, completed, time) {
-  /*
   try {
     time = roundTo2(time);
-    db.collection("public")
-      .doc("stats")
-      .update({
-        completedTests: admin.firestore.FieldValue.increment(completed),
-        startedTests: admin.firestore.FieldValue.increment(started),
-        timeTyping: admin.firestore.FieldValue.increment(time),
-      });
+    Stats.findOne({}, (err, stats) => {
+      stats.completedTests += completed;
+      stats.startedTests += started;
+      stats.timeTyping += time;
+      stats.save();
+    });
   } catch (e) {
     console.error(`Error while incrementing public stats: ${e}`);
   }
-  */
 }
 
 function isTagPresetNameValid(name) {
@@ -660,11 +663,21 @@ app.post("/signUp", (req, res) => {
 });
 
 app.post("/updateName", authenticateToken, (req, res) => {
-  User.findOne({ uid: req.uid }, (err, user) => {
-    user.name = req.body.name;
-    user.save();
-  });
-  res.status(200);
+  if (isUsernameValid(name)) {
+    User.findOne({ uid: req.uid }, (err, user) => {
+      User.findOne({ name: req.body.name }, (err2, user2) => {
+        if (!user2) {
+          user.name = req.body.name;
+          user.save();
+          res.status(200).send({ status: 1 });
+        } else {
+          res.status(200).send({ status: -1, message: "Username taken" });
+        }
+      });
+    });
+  } else {
+    res.status(200).send({ status: -1, message: "Username invalid" });
+  }
 });
 
 app.get("/fetchSnapshot", authenticateToken, (req, res) => {
@@ -927,7 +940,7 @@ app.post("/testCompleted", authenticateToken, (req, res) => {
             incrementT60Bananas(req.uid, obj, userdata);
           }
 
-          await incrementGlobalTypingStats(userdata, obj);
+          await incrementUserGlobalTypingStats(userdata, obj); //equivalent to getIncrementedTypingStats
 
           let returnobj = {
             resultCode: null,
@@ -1007,9 +1020,148 @@ app.post("/testCompleted", authenticateToken, (req, res) => {
 app.get("/userResults", authenticateToken, (req, res) => {
   User.findOne({ uid: req.uid }, (err, user) => {
     if (err) res.status(500).send({ error: err });
+    res.status(200).send({ results: user.results });
   });
-  //return list of results
   res.sendStatus(200);
+});
+
+app.post("/clearTagPb", authenticateToken, (req, res) => {
+  User.findOne({ uid: req.uid }, (err, user) => {
+    for (let i = 0; i < user.tags.length; i++) {
+      if (user.tags[i]._id.toString() === req.body.tagid.toString()) {
+        user.tags[i].personalBests = {};
+        user.save();
+        res.send({ resultCode: 1 });
+        return;
+      }
+    }
+  }).catch((e) => {
+    console.error(`error deleting tag pb for user ${req.uid}: ${e.message}`);
+    res.send({
+      resultCode: -999,
+      message: e.message,
+    });
+    return;
+  });
+  res.sendStatus(200);
+});
+
+app.post("/unlinkDiscord", authenticateToken, (req, res) => {
+  request = req.body.data;
+  try {
+    if (request === null || req.uid === undefined) {
+      res.status(200).send({ status: -999, message: "Empty request" });
+      return;
+    }
+    User.findOne({ uid: req.uid }, (err, user) => {
+      user.discordId = null;
+      user.save();
+    })
+      .then((f) => {
+        res.status(200).send({
+          status: 1,
+          message: "Unlinked",
+        });
+        return;
+      })
+      .catch((e) => {
+        res.status(200).send({
+          status: -999,
+          message: e.message,
+        });
+        return;
+      });
+  } catch (e) {
+    res.status(200).send({
+      status: -999,
+      message: e,
+    });
+    return;
+  }
+});
+
+app.post("/removeSmallTestsAndQPB", authenticateToken, (req, res) => {
+  User.findOne({ uid: req.uid }, (err, user) => {
+    user.results.forEach((result, index) => {
+      if (
+        (result.mode == "time" && result.mode2 < 15) ||
+        (result.mode == "words" && result.mode2 < 10) ||
+        (result.mode == "custom" && result.testDuration < 10)
+      ) {
+        user.results.splice(index, 1);
+      }
+    });
+    try {
+      delete user.personalBests.quote;
+    } catch {}
+    user.refactored = true;
+    user.save();
+    console.log("removed small tests for " + req.uid);
+    res.status(200);
+  }).catch((e) => {
+    console.log(`something went wrong for ${req.uid}: ${e.message}`);
+    res.status(200);
+  });
+});
+
+app.post("/updateResultTags", authenticateToken, (req, res) => {
+  try {
+    let validTags = true;
+    req.body.tags.forEach((tag) => {
+      if (!/^[0-9a-zA-Z]+$/.test(tag)) validTags = false;
+    });
+    if (validTags) {
+      User.findOne({ uid: req.uid }, (err, user) => {
+        for (let i = 0; i < user.results.length; i++) {
+          if (user.results[i]._id.toString() === req.body.resultid.toString()) {
+            user.results[i].tags = req.body.tags;
+            user.save();
+            console.log(
+              `user ${request.uid} updated tags for result ${request.resultid}`
+            );
+            res.send({ resultCode: 1 });
+            return;
+          }
+        }
+        console.error(
+          `error while updating tags for result by user ${req.uid}: ${e.message}`
+        );
+        res.send({ resultCode: -999 });
+      });
+    } else {
+      console.error(`invalid tags for user ${req.uid}: ${req.body.tags}`);
+      res.send({ resultCode: -1 });
+    }
+  } catch (e) {
+    console.error(`error updating tags by ${req.uid} - ${e}`);
+    res.send({ resultCode: -999, message: e });
+  }
+});
+
+app.post("/updateEmail", authenticateToken, (req, res) => {
+  try {
+    admin
+      .auth()
+      .getUser(req.uid)
+      .then((previous) => {
+        if (previous.email !== req.body.previousEmail) {
+          res.send({ resultCode: -1 });
+        } else {
+          User.findOne({ uid: req.uid }, (err, user) => {
+            user.email = req.body.newEmail;
+            user.emailVerified = false;
+            user.save();
+            res.send({ resultCode: 1 });
+          });
+        }
+      });
+  } catch (e) {
+    console.error(`error updating email for ${req.uid} - ${e}`);
+    res.send({
+      resultCode: -999,
+      message: e.message,
+    });
+  }
 });
 
 function isConfigKeyValid(name) {

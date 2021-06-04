@@ -160,22 +160,8 @@ export async function check(completedEvent) {
       delete lbRes.keySpacing;
       delete lbRes.keyDuration;
       delete lbRes.chartData;
-      /*
-      CloudFunctions.checkLeaderboards({
-        // uid: completedEvent.uid,
-        token: await firebase.auth().currentUser.getIdToken(),
-        // lbMemory: DB.getSnapshot().lbMemory,
-        // emailVerified: DB.getSnapshot().emailVerified,
-        // name: DB.getSnapshot().name,
-        // banned: DB.getSnapshot().banned,
-        // verified: DB.getSnapshot().verified,
-        // discordId: DB.getSnapshot().discordId,
-        result: lbRes,
-      })
-      */
       axiosInstance
         .post("/attemptAddToLeaderboards", {
-          //user data can be retrieved from the database
           result: lbRes,
         })
         .then((data) => {

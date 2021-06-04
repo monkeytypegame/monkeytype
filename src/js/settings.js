@@ -8,6 +8,7 @@ import * as Notifications from "./notifications";
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as CloudFunctions from "./cloud-functions";
+import axiosInstance from "./axios-instance";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as PresetController from "./preset-controller";
@@ -674,9 +675,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   (e) => {
     if (confirm("Are you sure?")) {
       Loader.show();
-      CloudFunctions.unlinkDiscord({
-        uid: firebase.auth().currentUser.uid,
-      }).then((ret) => {
+      axiosInstance.post("/unlinkDiscord").then((ret) => {
         Loader.hide();
         console.log(ret);
         if (ret.data.status === 1) {

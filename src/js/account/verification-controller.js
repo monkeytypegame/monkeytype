@@ -1,4 +1,3 @@
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as Settings from "./settings";
 import * as DB from "./db";

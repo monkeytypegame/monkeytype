@@ -2,6 +2,8 @@ const admin = require("firebase-admin");
 const mongoose = require("mongoose");
 const { User } = require("./models/user");
 const { Leaderboard } = require("./models/leaderboard");
+const { Stats } = require("./models/stats");
+const { BotCommand } = require("./models/bot-command");
 
 const serviceAccount = require("../functions/serviceAccountKey.json");
 
@@ -18,6 +20,8 @@ mongoose.connect("mongodb://localhost:27017/monkeytype", {
   useUnifiedTopology: true,
 });
 
+// Database should be completely clear before this is ran in order to prevent overlapping documents
+// Migrate users
 userCount = 1;
 db.collection("users")
   .get()
@@ -74,8 +78,27 @@ db.collection("leaderboards")
   .get()
   .then((leaderboardsSnapshot) => {
     leaderboardsSnapshot.forEach((lbDoc) => {
-      console.log(lbDoc);
       let newLb = new Leaderboard(lbDoc);
       newLb.save();
     });
+  });
+
+//migrate bot-commands
+db.collection("bot-commands")
+  .get()
+  .then((botCommandsSnapshot) => {
+    botCommandsSnapshot.forEach((bcDoc) => {
+      let newBotCommand = new BotCommand(botCommandDoc);
+      newBotCommand.save();
+    });
+  });
+
+//migrate public stats
+db.collection("public")
+  .doc("stats")
+  .get()
+  .then((ret) => {
+    let stats = ret.data();
+    let newStats = new Stats(stats);
+    newStats.save();
   });

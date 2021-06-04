@@ -1,6 +1,5 @@
 import * as DB from "./db";
 import * as Misc from "./misc";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as ResultFilters from "./result-filters";
 import * as ThemeColors from "./theme-colors";
@@ -18,6 +17,7 @@ import * as Settings from "./settings";
 import * as ThemePicker from "./theme-picker";
 import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
+import axiosInstance from "./axios-instance";
 
 export function getDataAndInit() {
   DB.initSnapshot()
@@ -27,7 +27,7 @@ export function getDataAndInit() {
       if (snap === null) {
         throw "Missing db snapshot. Client likely could not connect to the backend.";
       }
-      let user = firebase.auth().currentUser; // I think that this should be stored in cookie
+      let user = firebase.auth().currentUser;
       if (snap.name === undefined) {
         //verify username
         if (Misc.isUsernameValid(user.name)) {
@@ -49,21 +49,23 @@ export function getDataAndInit() {
             promptVal = prompt(
               "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
             );
-            cdnVal = await CloudFunctions.changename({
-              uid: user.uid,
-              name: promptVal,
-            });
-            if (cdnVal.data.status === 1) {
-              alert("Name updated", 1);
-              location.reload();
-            } else if (cdnVal.data.status < 0) {
-              alert(cdnVal.data.message, 0);
-            }
+            axiosInstance
+              .post("/updateName", {
+                name: promptVal,
+              })
+              .then((cdnVal) => {
+                if (cdnVal.data.status === 1) {
+                  alert("Name updated", 1);
+                  location.reload();
+                } else if (cdnVal.data.status < 0) {
+                  alert(cdnVal.data.message, 0);
+                }
+              });
           }
         }
       }
       if (snap.refactored === false) {
-        CloudFunctions.removeSmallTests({ uid: user.uid });
+        axiosInstance.post("/removeSmallTestsAndQPB");
       }
       if (!UpdateConfig.changedBeforeDb) {
         if (Config.localStorageConfig === null) {

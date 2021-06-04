@@ -6,7 +6,6 @@ import * as Settings from "./settings";
 import * as RouteController from "./route-controller";
 import * as UI from "./ui";
 import * as SignOutButton from "./sign-out-button";
-import * as AccountController from "./account-controller";
 
 ManualRestart.set();
 Misc.migrateFromCookies();
@@ -59,5 +58,4 @@ $(document).ready(() => {
       }
     });
   Settings.settingsFillPromise.then(Settings.update);
-  let user = firebase.auth().currentUser;
 });

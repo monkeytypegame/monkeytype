@@ -8,7 +8,6 @@ import * as Misc from "./misc";
 import * as Settings from "./settings";
 import * as ChallengeController from "./challenge-controller";
 import Config from "./config";
-import * as CloudFunctions from "./cloud-functions";
 import * as AllTimeStats from "./all-time-stats";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
@@ -193,11 +192,15 @@ function signUp() {
               });
               if (TestLogic.notSignedInLastResult !== null) {
                 TestLogic.setNotSignedInUid(usr.uid);
-                CloudFunctions.testCompleted({
-                  uid: usr.uid,
-                  obj: TestLogic.notSignedInLastResult,
-                });
-                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+                axiosInstance
+                  .post("/testCompleted", {
+                    obj: TestLogic.notSignedInLastResult,
+                  })
+                  .then(() => {
+                    DB.getSnapshot().results.push(
+                      TestLogic.notSignedInLastResult
+                    );
+                  });
               }
               UI.changePage("account");
               usr.sendEmailVerification();

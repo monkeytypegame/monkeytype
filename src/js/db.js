@@ -48,9 +48,7 @@ export async function getUserResults() {
     return true;
   } else {
     axiosInstance
-      .get("/userResults", {
-        uid: user.uid,
-      })
+      .get("/userResults")
       .then((response) => {
         dbSnapshot.results = response.data.results;
       })
