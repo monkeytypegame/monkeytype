@@ -2069,6 +2069,7 @@ export let defaultCommands = {
       id: "monkeyPower",
       display: "Power mode...",
       alias: "powermode",
+      visible: false,
       subgroup: true,
       exec: () => {
         current.push(commandsMonkeyPowerLevel);
