@@ -1752,6 +1752,117 @@ app.get("/getLeaderboard/:type/:mode/:mode2", (req, res) => {
   );
 });
 
+// BOT API
+// Might want to move this to a seperate file and add some sort of middleware that can send error if the user is not found
+
+app.get("/getBananas/:discordId", (req, res) => {
+  User.findOne({ discordId: req.params.discordId }, (err, user) => {
+    if (user) {
+      res.send({ t60bananas: user.bananas.t60bananas });
+    } else {
+      res.send({ t60bananas: 0, message: "User not found" });
+    }
+  });
+});
+
+app.get("/getUserDiscordData/:uid", (req, res) => {
+  //for announceDailyLbResult
+  User.findOne({ uid: req.body.uid }, (err, user) => {
+    res.send({ name: user.name, discordId: user.discordId });
+    return;
+  });
+});
+
+app.get("/getUserPbs/:discordId", (req, res) => {
+  //for fix wpm role
+  User.findOne({ discordId: req.params.discordId }, (err, user) => {
+    if (user) {
+      res.send({ personalBests: user.personalBests });
+      return;
+    } else {
+      res.send({ error: "No user found with that id" });
+      return;
+    }
+  });
+});
+
+app.get("/getUserPbsByUid/:uid", (req, res) => {
+  //for verify
+  User.findOne({ uid: req.params.uid }, (err, user) => {
+    if (user) {
+      res.send({ personalBests: user.personalBests });
+      return;
+    } else {
+      res.send({ error: "No user found with that id" });
+      return;
+    }
+  });
+});
+
+app.get("/getTimeLeaderboard/:mode2/:type", (req, res) => {
+  //for lb
+  Leaderboard.findOne({
+    mode: "time",
+    mode2: req.params.mode2,
+    type: req.params.type,
+  }).then((err, lb) => {
+    //get top 10 leaderboard
+    lb.board.length = 10;
+    res.send({ board: lb.board });
+    return;
+  });
+});
+
+app.get("/getUserByDiscordId/:discordId", (req, res) => {
+  //for lb
+  User.findOne({ discordId: req.params.discordId }, (err, user) => {
+    if (user) {
+      res.send({ uid: user.uid });
+    } else {
+      res.send({ error: "No user found with that id" });
+    }
+    return;
+  });
+});
+
+app.get("/getRecentScore/:discordId", (req, res) => {
+  User.findOne({ discordId: req.params.discordId }, (err, user) => {
+    if (user) {
+      if (user.results.length == 0) {
+        res.send({ recentScore: -1 });
+      } else {
+        res.send({ recentScore: user.results[user.results.length - 1] });
+      }
+    } else {
+      res.send({ error: "No user found with that id" });
+    }
+    return;
+  });
+});
+
+app.get("/getUserStats/:discordId", (req, res) => {
+  //for stats
+  User.findOne({ discordId: req.params.discordId }, (err, user) => {
+    if (user) {
+      res.send({ stats: user.globalStats });
+    } else {
+      res.send({ error: "No user found with that id" });
+    }
+    return;
+  });
+});
+
+app.post("/newBotCommand", (req, res) => {
+  let newBotCommand = new BotCommand({
+    command: req.body.command, //is always "updateRole"
+    arguments: req.body.arguments,
+    executed: req.body.executed, //is always false
+    requestTimestamp: req.body.requestTimestamp,
+  });
+  newBotCommand.save();
+  res.status(200);
+});
+
 // LISTENER
 app.listen(port, () => {
   console.log(`Listening to requests on http://localhost:${port}`);
