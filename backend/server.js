@@ -1755,7 +1755,19 @@ app.get("/getLeaderboard/:type/:mode/:mode2", (req, res) => {
 // BOT API
 // Might want to move this to a seperate file and add some sort of middleware that can send error if the user is not found
 
-app.get("/getBananas/:discordId", (req, res) => {
+async function botAuth(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = await admin
+    .auth()
+    .verifyIdToken(req.headers.authorization.split(" ")[1]);
+  if (token.isDiscordBot == null || token.isDiscordBot == false) {
+    return res.sendStatus(401);
+  } else {
+    next();
+  }
+}
+
+app.get("/getBananas/:discordId", botAuth, (req, res) => {
   User.findOne({ discordId: req.params.discordId }, (err, user) => {
     if (user) {
       res.send({ t60bananas: user.bananas.t60bananas });
@@ -1765,7 +1777,7 @@ app.get("/getBananas/:discordId", (req, res) => {
   });
 });
 
-app.get("/getUserDiscordData/:uid", (req, res) => {
+app.get("/getUserDiscordData/:uid", botAuth, (req, res) => {
   //for announceDailyLbResult
   User.findOne({ uid: req.body.uid }, (err, user) => {
     res.send({ name: user.name, discordId: user.discordId });
@@ -1773,7 +1785,7 @@ app.get("/getUserDiscordData/:uid", (req, res) => {
   });
 });
 
-app.get("/getUserPbs/:discordId", (req, res) => {
+app.get("/getUserPbs/:discordId", botAuth, (req, res) => {
   //for fix wpm role
   User.findOne({ discordId: req.params.discordId }, (err, user) => {
     if (user) {
@@ -1786,7 +1798,7 @@ app.get("/getUserPbs/:discordId", (req, res) => {
   });
 });
 
-app.get("/getUserPbsByUid/:uid", (req, res) => {
+app.get("/getUserPbsByUid/:uid", botAuth, (req, res) => {
   //for verify
   User.findOne({ uid: req.params.uid }, (err, user) => {
     if (user) {
@@ -1799,7 +1811,7 @@ app.get("/getUserPbsByUid/:uid", (req, res) => {
   });
 });
 
-app.get("/getTimeLeaderboard/:mode2/:type", (req, res) => {
+app.get("/getTimeLeaderboard/:mode2/:type", botAuth, (req, res) => {
   //for lb
   Leaderboard.findOne({
     mode: "time",
@@ -1813,7 +1825,7 @@ app.get("/getTimeLeaderboard/:mode2/:type", (req, res) => {
   });
 });
 
-app.get("/getUserByDiscordId/:discordId", (req, res) => {
+app.get("/getUserByDiscordId/:discordId", botAuth, (req, res) => {
   //for lb
   User.findOne({ discordId: req.params.discordId }, (err, user) => {
     if (user) {
@@ -1825,7 +1837,7 @@ app.get("/getUserByDiscordId/:discordId", (req, res) => {
   });
 });
 
-app.get("/getRecentScore/:discordId", (req, res) => {
+app.get("/getRecentScore/:discordId", botAuth, (req, res) => {
   User.findOne({ discordId: req.params.discordId }, (err, user) => {
     if (user) {
       if (user.results.length == 0) {
@@ -1840,7 +1852,7 @@ app.get("/getRecentScore/:discordId", (req, res) => {
   });
 });
 
-app.get("/getUserStats/:discordId", (req, res) => {
+app.get("/getUserStats/:discordId", botAuth, (req, res) => {
   //for stats
   User.findOne({ discordId: req.params.discordId }, (err, user) => {
     if (user) {
@@ -1852,7 +1864,7 @@ app.get("/getUserStats/:discordId", (req, res) => {
   });
 });
 
-app.post("/newBotCommand", (req, res) => {
+app.post("/newBotCommand", botAuth, (req, res) => {
   let newBotCommand = new BotCommand({
     command: req.body.command, //is always "updateRole"
     arguments: req.body.arguments,
