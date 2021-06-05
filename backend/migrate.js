@@ -78,7 +78,7 @@ db.collection("leaderboards")
   .get()
   .then((leaderboardsSnapshot) => {
     leaderboardsSnapshot.forEach((lbDoc) => {
-      let newLb = new Leaderboard(lbDoc);
+      let newLb = new Leaderboard(lbDoc.data());
       newLb.save();
     });
   });
@@ -88,7 +88,7 @@ db.collection("bot-commands")
   .get()
   .then((botCommandsSnapshot) => {
     botCommandsSnapshot.forEach((bcDoc) => {
-      let newBotCommand = new BotCommand(bcDoc);
+      let newBotCommand = new BotCommand(bcDoc.data());
       newBotCommand.save();
     });
   });
