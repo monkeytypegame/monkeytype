@@ -2,7 +2,7 @@
 
 ## Technologies
 
-- NodeJS v10
+- NodeJS < 14
 - Firebase
 
 ## Prerequisite - Firebase Setup
