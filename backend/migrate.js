@@ -88,7 +88,7 @@ db.collection("bot-commands")
   .get()
   .then((botCommandsSnapshot) => {
     botCommandsSnapshot.forEach((bcDoc) => {
-      let newBotCommand = new BotCommand(botCommandDoc);
+      let newBotCommand = new BotCommand(bcDoc);
       newBotCommand.save();
     });
   });
