@@ -182,7 +182,12 @@
       "esperanto_1k",
       "esperanto_10k",
       "esperanto_25k",
-      "esperanto_36k"
+      "esperanto_36k",
+      "esperanto_x_sistemo",
+      "esperanto_x_sistemo_1k",
+      "esperanto_x_sistemo_10k",
+      "esperanto_x_sistemo_25k",
+      "esperanto_x_sistemo_36k"
     ]
   },
   {
