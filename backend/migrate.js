@@ -28,8 +28,10 @@ db.collection("users")
   .get()
   .then((querySnapshot) => {
     // console.log('start of foreach');
-    querySnapshot.forEach((userDoc) => {
-        let newUser = new User(userDoc.data());
+    querySnapshot.forEach( async (userDoc) => {
+      let newUser;
+      try{
+        newUser = new User(userDoc.data());
         newUser.uid = userDoc.id;
         newUser.globalStats = {
           started: userDoc.data().startedTests,
@@ -37,45 +39,40 @@ db.collection("users")
           time: userDoc.data().timeTyping,
         };
         let tagIdDict = {};
-        db.collection(`users/${userDoc.id}/tags`)
-          .get()
-          .then((tagsSnapshot) => {
-            tagsSnapshot.forEach((tagDoc) => {
-              let formattedTag = tagDoc.data();
-              formattedTag._id = mongoose.Types.ObjectId(); //generate new objectId
-              tagIdDict[tagDoc.id] = formattedTag._id; //save pair of ids in memory to determine what to set new id as in result tags
-              newUser.tags.push(formattedTag);
-              console.log(`Tag ${tagDoc.id} saved for user ${userCount}`);
-            });
-            db.collection(`users/${userDoc.id}/results`)
-              .get()
-              .then((resultsSnapshot) => {
-                let resCount = 1;
-                resultsSnapshot.forEach((result) => {
-                  let formattedResult = result.data();
-                  formattedResult.tags.forEach((tag, index) => {
-                    if (tagIdDict[tag])
-                      formattedResult.tags[index] = tagIdDict[tag];
-                  });
-                  newUser.results.push(formattedResult);
-                  console.log(`Result ${resCount} saved for user ${userCount}`);
-                  resCount++;
-                });
-                newUser.results.sort((a, b) => {
-                  return a.timestamp - b.timestamp;
-                });
-                db.collection(`users/${userDoc.id}/presets`)
-                  .get()
-                  .then((presetsSnapshot) => {
-                    presetsSnapshot.forEach((preset) => {
-                      newUser.presets.push(preset.data());
-                    });
-                    newUser.save();
-                    console.log(`User ${userCount} (${newUser.uid}) saved`);
-                    userCount++;
-                  });
-              });
+        let tagsSnapshot = await db.collection(`users/${userDoc.id}/tags`).get();
+        tagsSnapshot.forEach((tagDoc) => {
+          let formattedTag = tagDoc.data();
+          formattedTag._id = mongoose.Types.ObjectId(); //generate new objectId
+          tagIdDict[tagDoc.id] = formattedTag._id; //save pair of ids in memory to determine what to set new id as in result tags
+          newUser.tags.push(formattedTag);
+          console.log(`Tag ${tagDoc.id} saved for user ${userCount}`);
+        });
+        let resultsSnapshot = await db.collection(`users/${userDoc.id}/results`).get();
+        let resCount = 1;
+        resultsSnapshot.forEach((result) => {
+          let formattedResult = result.data();
+          formattedResult.tags.forEach((tag, index) => {
+            if (tagIdDict[tag])
+              formattedResult.tags[index] = tagIdDict[tag];
           });
+          newUser.results.push(formattedResult);
+          // console.log(`Result ${resCount} saved for user ${userCount}`);
+          resCount++;
+        });
+        newUser.results.sort((a, b) => {
+          return a.timestamp - b.timestamp;
+        });
+        let presetsSnapshot = await db.collection(`users/${userDoc.id}/presets`).get();
+        presetsSnapshot.forEach((preset) => {
+          newUser.presets.push(preset.data());
+        });
+        await newUser.save();
+        console.log(`User ${userCount} (${newUser.uid}) saved`);
+        userCount++;
+      }catch(e){
+        console.log(`User ${userCount} (${newUser.uid}) failed`);
+        userCount++;
+      }
     });
     // console.log('end of foreach');
   });
