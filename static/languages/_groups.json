@@ -202,5 +202,9 @@
       "pig_latin",
       "twitch_emotes"
     ]
+  },
+  {
+    "name": "urdu",
+    "languages": ["urdu"]
   }
 ]
