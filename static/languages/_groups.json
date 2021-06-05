@@ -176,6 +176,16 @@
     "languages": ["bulgarian"]
   },
   {
+    "name": "esperanto",
+    "languages": [
+      "esperanto",
+      "esperanto_1k",
+      "esperanto_10k",
+      "esperanto_25k",
+      "esperanto_36k"
+    ]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
