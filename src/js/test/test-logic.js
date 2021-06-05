@@ -1007,7 +1007,6 @@ export function finish(difficultyFailed = false) {
   PbCrown.hide();
   LiveAcc.hide();
   TimerProgress.hide();
-  Keymap.hide();
   Funbox.activate("none", null);
 
   if (
@@ -1883,6 +1882,8 @@ export function finish(difficultyFailed = false) {
       TestUI.toggleResultWords();
     }
     $("#testModesNotice").addClass("hidden");
+  }, () => {
+    Keymap.hide();
   });
 }
 
