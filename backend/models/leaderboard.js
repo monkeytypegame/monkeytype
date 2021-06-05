@@ -6,7 +6,7 @@ const leaderboardEntrySchema = new Schema({
   wpm: { type: Number },
   raw: { type: Number },
   acc: { type: Number },
-  consistency: { type: Number }, //can be null
+  consistency: { type: {} }, //can be null
   mode: { type: String }, //not sure why mode and mode2 are needed
   mode2: { type: Number },
   timestamp: { type: Date },

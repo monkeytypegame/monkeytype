@@ -9,8 +9,8 @@ const resultSchema = new Schema({
   allChars: { type: Number, required: true },
   acc: { type: Number, required: true },
   mode: { type: String, required: true }, //is this always string type?
-  mode2: { type: Number, required: true }, //is this always number type?
-  quoteLength: { type: Number, required: true },
+  mode2: { type: String, required: true }, //is this always number type? not always
+  quoteLength: { type: Number, required: false },
   timestamp: { type: Number, required: true }, //can this be removed if timestamps are added to mongoose
   language: { type: String, default: "english" },
   restartCount: { type: Number, required: true },
