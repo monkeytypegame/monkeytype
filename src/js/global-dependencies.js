@@ -13,6 +13,7 @@ import * as ResultFilters from "./result-filters";
 import Config from "./config";
 import * as SimplePopups from "./simple-popups";
 import * as AccountController from "./account-controller";
+import {toggleGlarses} from "./test-logic";
 import "./caps-warning";
 import "./support-popup";
 import "./version-popup";

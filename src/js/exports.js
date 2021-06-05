@@ -12,3 +12,5 @@ global.config = Config;
 global.link = AccountController.linkWithGoogle;
 
 global.filters = ResultFilters.getFilters();
+
+global.glarsesMode = toggleGlarses;
