@@ -176,6 +176,10 @@
     "languages": ["bulgarian"]
   },
   {
+    "name": "bangla",
+    "languages": ["bangla"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
