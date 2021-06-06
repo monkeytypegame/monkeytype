@@ -1,6 +1,5 @@
 import * as DB from "./db";
 import * as Misc from "./misc";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as ResultFilters from "./result-filters";
 import * as ThemeColors from "./theme-colors";
@@ -18,6 +17,7 @@ import * as Settings from "./settings";
 import * as ThemePicker from "./theme-picker";
 import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
+import axiosInstance from "./axios-instance";
 
 export function getDataAndInit() {
   DB.initSnapshot()
@@ -30,11 +30,11 @@ export function getDataAndInit() {
       let user = firebase.auth().currentUser;
       if (snap.name === undefined) {
         //verify username
-        if (Misc.isUsernameValid(user.displayName)) {
+        if (Misc.isUsernameValid(user.name)) {
           //valid, just update
-          snap.name = user.displayName;
+          snap.name = user.name;
           DB.setSnapshot(snap);
-          DB.updateName(user.uid, user.displayName);
+          DB.updateName(user.uid, user.name);
         } else {
           //invalid, get new
           // Notifications.add("Invalid name", 0);
@@ -49,21 +49,23 @@ export function getDataAndInit() {
             promptVal = prompt(
               "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
             );
-            cdnVal = await CloudFunctions.changeDisplayName({
-              uid: user.uid,
-              name: promptVal,
-            });
-            if (cdnVal.data.status === 1) {
-              alert("Name updated", 1);
-              location.reload();
-            } else if (cdnVal.data.status < 0) {
-              alert(cdnVal.data.message, 0);
-            }
+            axiosInstance
+              .post("/updateName", {
+                name: promptVal,
+              })
+              .then((cdnVal) => {
+                if (cdnVal.data.status === 1) {
+                  alert("Name updated", 1);
+                  location.reload();
+                } else if (cdnVal.data.status < 0) {
+                  alert(cdnVal.data.message, 0);
+                }
+              });
           }
         }
       }
       if (snap.refactored === false) {
-        CloudFunctions.removeSmallTests({ uid: user.uid });
+        axiosInstance.post("/removeSmallTestsAndQPB");
       }
       if (!UpdateConfig.changedBeforeDb) {
         if (Config.localStorageConfig === null) {
@@ -230,7 +232,7 @@ function loadMoreLines(lineIndex) {
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
         DB.getSnapshot().tags.forEach((snaptag) => {
-          if (tag === snaptag.id) {
+          if (tag === snaptag._id) {
             tagNames += snaptag.name + ", ";
           }
         });
@@ -302,6 +304,7 @@ export function update() {
     ChartController.accountHistory.updateColors();
     ChartController.accountActivity.updateColors();
     AllTimeStats.update();
+
     PbTables.update();
 
     let chartData = [];
@@ -367,7 +370,6 @@ export function update() {
         }
         if (!ResultFilters.getFilter("difficulty", resdiff)) return;
         if (!ResultFilters.getFilter("mode", result.mode)) return;
-
         if (result.mode == "time") {
           let timefilter = "custom";
           if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
@@ -399,7 +401,6 @@ export function update() {
           )
             return;
         }
-
         let langFilter = ResultFilters.getFilter("language", result.language);
 
         if (
@@ -409,13 +410,11 @@ export function update() {
           langFilter = true;
         }
         if (!langFilter) return;
-
         let puncfilter = "off";
         if (result.punctuation) {
           puncfilter = "on";
         }
         if (!ResultFilters.getFilter("punctuation", puncfilter)) return;
-
         let numfilter = "off";
         if (result.numbers) {
           numfilter = "on";
@@ -429,7 +428,6 @@ export function update() {
         }
 
         let tagHide = true;
-
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
           if (DB.getSnapshot().tags.length > 0) {
@@ -485,7 +483,6 @@ export function update() {
         ResultFilters.reset();
         ResultFilters.updateActive();
       }
-
       //filters done
       //=======================================
 
@@ -591,6 +588,7 @@ export function update() {
 
       totalWpm += result.wpm;
     });
+    filteredResults.reverse();
     loadMoreLines();
     ////////
 
@@ -648,7 +646,6 @@ export function update() {
       });
       lastTimestamp = date;
     });
-
     ChartController.accountActivity.data.datasets[0].data = activityChartData_time;
     ChartController.accountActivity.data.datasets[1].data = activityChartData_avgWpm;
 
@@ -737,9 +734,9 @@ export function update() {
         Math.round(totalCons10 / Math.min(last10, consCount)) + "%"
       );
     }
-
     $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
-
+    console.log("Test count: " + testCount);
+    console.log("Test restarts: " + testRestarts);
     $(".pageAccount .testsCompleted .val").text(
       `${testCount}(${Math.floor(
         (testCount / (testCount + testRestarts)) * 100
@@ -834,7 +831,7 @@ $(".pageAccount #accountHistoryChart").click((e) => {
   loadMoreLines(index);
   $([document.documentElement, document.body]).animate(
     {
-      scrollTop: $(`#result-${index}`).offset().top - ($(window).height()/2),
+      scrollTop: $(`#result-${index}`).offset().top - $(window).height() / 2,
     },
     500
   );

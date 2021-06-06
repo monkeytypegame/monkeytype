@@ -108,6 +108,8 @@ export function swapElements(
 }
 
 export function changePage(page) {
+  //next line fixes endless loading when accessing account via url
+  if (page == "account") pageTransition = false;
   if (pageTransition) {
     return;
   }
@@ -204,6 +206,8 @@ export function changePage(page) {
   }
 }
 
+//checking if the project is the development site
+/*
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
   $("head title").text("Monkey Dev");
@@ -211,6 +215,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
     `<div class="devIndicator tr">DEV</div><div class="devIndicator bl">DEV</div>`
   );
 }
+*/
 
 if (window.location.hostname === "localhost") {
   window.onerror = function (error) {
@@ -218,7 +223,7 @@ if (window.location.hostname === "localhost") {
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
-  firebase.functions().useFunctionsEmulator("http://localhost:5001");
+  //firebase.functions().useFunctionsEmulator("http://localhost:5001");
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
   );

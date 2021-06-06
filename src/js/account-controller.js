@@ -8,11 +8,11 @@ import * as Misc from "./misc";
 import * as Settings from "./settings";
 import * as ChallengeController from "./challenge-controller";
 import Config from "./config";
-import * as CloudFunctions from "./cloud-functions";
 import * as AllTimeStats from "./all-time-stats";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
+import axiosInstance from "./axios-instance";
 
 var gmailProvider = new firebase.auth.GoogleAuthProvider();
 
@@ -135,8 +135,8 @@ function signUp() {
     $(".pageLogin .register .button").removeClass("disabled");
     return;
   }
-
-  CloudFunctions.namecheck({ name: nname }).then((d) => {
+  axiosInstance.get(`/nameCheck/${nname}`).then((d) => {
+    console.log(d.data);
     if (d.data.resultCode === -1) {
       Notifications.add("Name unavailable", -1);
       $(".pageLogin .preloader").addClass("hidden");
@@ -158,23 +158,18 @@ function signUp() {
           // Account has been created here.
           // dontCheckUserName = true;
           let usr = user.user;
+          //maybe there's a better place for the api call
+          axiosInstance.post("/signUp", {
+            name: nname,
+            uid: usr.uid,
+            email: email,
+          });
           usr
             .updateProfile({
               displayName: nname,
             })
             .then(async function () {
               // Update successful.
-              await firebase
-                .firestore()
-                .collection("users")
-                .doc(usr.uid)
-                .set({ name: nname }, { merge: true });
-              CloudFunctions.reserveName({ name: nname, uid: usr.uid }).catch(
-                (e) => {
-                  console.error("Could not reserve name " + e);
-                  throw "Could not reserve name";
-                }
-              );
               usr.sendEmailVerification();
               AllTimeStats.clear();
               Notifications.add("Account created", 1, 3);
@@ -197,11 +192,15 @@ function signUp() {
               });
               if (TestLogic.notSignedInLastResult !== null) {
                 TestLogic.setNotSignedInUid(usr.uid);
-                CloudFunctions.testCompleted({
-                  uid: usr.uid,
-                  obj: TestLogic.notSignedInLastResult,
-                });
-                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+                axiosInstance
+                  .post("/testCompleted", {
+                    obj: TestLogic.notSignedInLastResult,
+                  })
+                  .then(() => {
+                    DB.getSnapshot().results.push(
+                      TestLogic.notSignedInLastResult
+                    );
+                  });
               }
               UI.changePage("account");
               usr.sendEmailVerification();

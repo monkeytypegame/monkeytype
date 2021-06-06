@@ -1,4 +1,5 @@
 const { task, src, dest, series, watch } = require("gulp");
+const axios = require("axios");
 const browserify = require("browserify");
 const babelify = require("babelify");
 const concat = require("gulp-concat");
@@ -86,6 +87,7 @@ let eslintConfig = {
 //refactored files, which should be es6 modules
 //once all files are moved here, then can we use a bundler to its full potential
 const refactoredSrc = [
+  "./src/js/axios-instance.js",
   "./src/js/db.js",
   "./src/js/cloud-functions.js",
   "./src/js/misc.js",

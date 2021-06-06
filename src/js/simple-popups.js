@@ -1,9 +1,9 @@
 import * as Loader from "./loader";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as AccountController from "./account-controller";
 import * as DB from "./db";
 import * as Settings from "./settings";
+import axiosInstance from "./axios-instance";
 
 export let list = {};
 class SimplePopup {
@@ -151,26 +151,27 @@ list.updateEmail = new SimplePopup(
   (previousEmail, newEmail) => {
     try {
       Loader.show();
-      CloudFunctions.updateEmail({
-        uid: firebase.auth().currentUser.uid,
-        previousEmail: previousEmail,
-        newEmail: newEmail,
-      }).then((data) => {
-        Loader.hide();
-        if (data.data.resultCode === 1) {
-          Notifications.add("Email updated", 0);
-          setTimeout(() => {
-            AccountController.signOut();
-          }, 1000);
-        } else if (data.data.resultCode === -1) {
-          Notifications.add("Current email doesn't match", 0);
-        } else {
-          Notifications.add(
-            "Something went wrong: " + JSON.stringify(data.data),
-            -1
-          );
-        }
-      });
+      axiosInstance
+        .post("/updateEmail", {
+          previousEmail: previousEmail,
+          newEmail: newEmail,
+        })
+        .then((data) => {
+          Loader.hide();
+          if (data.data.resultCode === 1) {
+            Notifications.add("Email updated", 0);
+            setTimeout(() => {
+              AccountController.signOut();
+            }, 1000);
+          } else if (data.data.resultCode === -1) {
+            Notifications.add("Current email doesn't match", 0);
+          } else {
+            Notifications.add(
+              "Something went wrong: " + JSON.stringify(data.data),
+              -1
+            );
+          }
+        });
     } catch (e) {
       Notifications.add("Something went wrong: " + e, -1);
     }
@@ -188,10 +189,10 @@ list.clearTagPb = new SimplePopup(
   () => {
     let tagid = eval("this.parameters[0]");
     Loader.show();
-    CloudFunctions.clearTagPb({
-      uid: firebase.auth().currentUser.uid,
-      tagid: tagid,
-    })
+    axiosInstance
+      .post("/clearTagPb", {
+        tagid: tagid,
+      })
       .then((res) => {
         Loader.hide();
         if (res.data.resultCode === 1) {
@@ -245,10 +246,7 @@ list.resetPersonalBests = new SimplePopup(
   () => {
     try {
       Loader.show();
-
-      CloudFunctions.resetPersonalBests({
-        uid: firebase.auth().currentUser.uid,
-      }).then((res) => {
+      axiosInstance.post("/resetPersonalBests").then((res) => {
         if (res) {
           Loader.hide();
           Notifications.add(

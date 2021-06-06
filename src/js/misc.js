@@ -1,4 +1,5 @@
 import * as Loader from "./loader";
+import axiosInstance from "./axios-instance";
 
 export function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -314,7 +315,8 @@ export function migrateFromCookies() {
 export function sendVerificationEmail() {
   Loader.show();
   let cu = firebase.auth().currentUser;
-  cu.sendEmailVerification()
+  axiosInstance
+    .post("/sendEmailVerification", {})
     .then(() => {
       Loader.hide();
       showNotification("Email sent to " + cu.email, 4000);

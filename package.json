@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "cd functions && npm install",
     "build": "npx gulp build",
-    "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve\"",
+    "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"nodemon ./backend/server.js\" \"firebase serve\"",
     "deploy:live:hosting": "npm run build && firebase deploy -P monkey-type --only hosting",
     "deploy:live:functions": "npm run build && firebase deploy -P monkey-type --only functions",
     "deploy:live": "npm run build && firebase deploy -P live"
@@ -43,10 +43,17 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.12.5",
+    "axios": "^0.21.1",
     "chart.js": "^2.9.4",
     "chartjs-plugin-annotation": "^0.5.7",
     "chartjs-plugin-trendline": "^0.2.2",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "firebase-admin": "^9.9.0",
+    "helmet": "^4.6.0",
     "howler": "^2.2.1",
+    "mongoose": "^5.12.12",
+    "nodemon": "^2.0.7",
     "tinycolor2": "^1.4.2"
   }
 }

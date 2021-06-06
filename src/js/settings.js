@@ -8,6 +8,7 @@ import * as Notifications from "./notifications";
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as CloudFunctions from "./cloud-functions";
+import axiosInstance from "./axios-instance";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as PresetController from "./preset-controller";
@@ -410,11 +411,11 @@ function showActiveTags() {
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
       $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
+        `.pageSettings .section.tags .tagsList .tag[id='${tag._id}'] .active`
       ).html('<i class="fas fa-check-square"></i>');
     } else {
       $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
+        `.pageSettings .section.tags .tagsList .tag[id='${tag._id}'] .active`
       ).html('<i class="fas fa-square"></i>');
     }
   });
@@ -461,7 +462,7 @@ function refreshTagsSettingsSection() {
         tagPbString = `PB: ${tag.pb}`;
       }
       tagsEl.append(`
-        <div class="tag" id="${tag.id}">
+        <div class="tag" id="${tag._id}">
             <div class="active" active="${tag.active}">
                 <i class="fas fa-${tag.active ? "check-" : ""}square"></i>
             </div>
@@ -484,7 +485,7 @@ function refreshPresetsSettingsSection() {
     let presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot().presets.forEach((preset) => {
       presetsEl.append(`
-      <div class="buttons preset" id="${preset.id}">
+      <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
           <div class="title">${preset.name}</div>
         </div>
@@ -674,9 +675,7 @@ $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   (e) => {
     if (confirm("Are you sure?")) {
       Loader.show();
-      CloudFunctions.unlinkDiscord({
-        uid: firebase.auth().currentUser.uid,
-      }).then((ret) => {
+      axiosInstance.post("/unlinkDiscord").then((ret) => {
         Loader.hide();
         console.log(ret);
         if (ret.data.status === 1) {

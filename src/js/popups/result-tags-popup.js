@@ -1,7 +1,7 @@
 import * as DB from "./db";
 import * as Loader from "./loader";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
+import axiosInstance from "./axios-instance";
 
 function show() {
   if ($("#resultEditTagsPanelWrapper").hasClass("hidden")) {
@@ -34,7 +34,7 @@ export function updateButtons() {
   $("#resultEditTagsPanel .buttons").empty();
   DB.getSnapshot().tags.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
-      `<div class="button tag" tagid="${tag.id}">${tag.name}</div>`
+      `<div class="button tag" tagid="${tag._id}">${tag.name}</div>`
     );
   });
 }
@@ -85,65 +85,66 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
   });
   Loader.show();
   hide();
-  CloudFunctions.updateResultTags({
-    uid: firebase.auth().currentUser.uid,
-    tags: newtags,
-    resultid: resultid,
-  }).then((r) => {
-    Loader.hide();
-    if (r.data.resultCode === 1) {
-      Notifications.add("Tags updated.", 1, 2);
-      DB.getSnapshot().results.forEach((result) => {
-        if (result.id === resultid) {
-          result.tags = newtags;
-        }
-      });
-
-      let tagNames = "";
-
-      if (newtags.length > 0) {
-        newtags.forEach((tag) => {
-          DB.getSnapshot().tags.forEach((snaptag) => {
-            if (tag === snaptag.id) {
-              tagNames += snaptag.name + ", ";
-            }
-          });
+  axiosInstance
+    .post("/updateResultTags", {
+      tags: newtags,
+      resultid: resultid,
+    })
+    .then((r) => {
+      Loader.hide();
+      if (r.data.resultCode === 1) {
+        Notifications.add("Tags updated.", 1, 2);
+        DB.getSnapshot().results.forEach((result) => {
+          if (result.id === resultid) {
+            result.tags = newtags;
+          }
         });
-        tagNames = tagNames.substring(0, tagNames.length - 2);
-      }
 
-      let restags;
-      if (newtags === undefined) {
-        restags = "[]";
-      } else {
-        restags = JSON.stringify(newtags);
-      }
+        let tagNames = "";
 
-      $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
-        "tags",
-        restags
-      );
-      if (newtags.length > 0) {
-        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).css(
-          "opacity",
-          1
-        );
+        if (newtags.length > 0) {
+          newtags.forEach((tag) => {
+            DB.getSnapshot().tags.forEach((snaptag) => {
+              if (tag === snaptag._id) {
+                tagNames += snaptag.name + ", ";
+              }
+            });
+          });
+          tagNames = tagNames.substring(0, tagNames.length - 2);
+        }
+
+        let restags;
+        if (newtags === undefined) {
+          restags = "[]";
+        } else {
+          restags = JSON.stringify(newtags);
+        }
+
         $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
-          "aria-label",
-          tagNames
+          "tags",
+          restags
         );
+        if (newtags.length > 0) {
+          $(`.pageAccount #resultEditTags[resultid='${resultid}']`).css(
+            "opacity",
+            1
+          );
+          $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
+            "aria-label",
+            tagNames
+          );
+        } else {
+          $(`.pageAccount #resultEditTags[resultid='${resultid}']`).css(
+            "opacity",
+            0.25
+          );
+          $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
+            "aria-label",
+            "no tags"
+          );
+        }
       } else {
-        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).css(
-          "opacity",
-          0.25
-        );
-        $(`.pageAccount #resultEditTags[resultid='${resultid}']`).attr(
-          "aria-label",
-          "no tags"
-        );
+        Notifications.add("Error updating tags: " + r.data.message, -1);
       }
-    } else {
-      Notifications.add("Error updating tags: " + r.data.message, -1);
-    }
-  });
+    });
 });

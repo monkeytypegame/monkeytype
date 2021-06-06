@@ -2,9 +2,9 @@ import * as ResultTagsPopup from "./result-tags-popup";
 import * as ResultFilters from "./result-filters";
 import * as Loader from "./loader";
 import * as DB from "./db";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as Settings from "./settings";
+import axiosInstance from "./axios-instance";
 
 export function show(action, id, name) {
   if (action === "add") {
@@ -66,74 +66,77 @@ function apply() {
   hide();
   if (action === "add") {
     Loader.show();
-    CloudFunctions.addTag({
-      uid: firebase.auth().currentUser.uid,
-      name: inputVal,
-    }).then((e) => {
-      Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("Tag added", 1, 2);
-        DB.getSnapshot().tags.push({
-          name: inputVal,
-          id: e.data.id,
-        });
-        ResultTagsPopup.updateButtons();
-        Settings.update();
-        ResultFilters.updateTags();
-      } else if (status === -1) {
-        Notifications.add("Invalid tag name", 0);
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+    axiosInstance
+      .post("/addTag", {
+        tagName: inputVal,
+      })
+      .then((e) => {
+        Loader.hide();
+        let status = e.data.resultCode;
+        if (status === 1) {
+          Notifications.add("Tag added", 1, 2);
+          DB.getSnapshot().tags.push({
+            name: inputVal,
+            _id: e.data.id,
+          });
+          ResultTagsPopup.updateButtons();
+          Settings.update();
+          ResultFilters.updateTags();
+        } else if (status === -1) {
+          Notifications.add("Invalid tag name", 0);
+        } else if (status < -1) {
+          Notifications.add("Unknown error: " + e.data.message, -1);
+        }
+      });
   } else if (action === "edit") {
     Loader.show();
-    CloudFunctions.editTag({
-      uid: firebase.auth().currentUser.uid,
-      name: inputVal,
-      tagid: tagid,
-    }).then((e) => {
-      Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("Tag updated", 1);
-        DB.getSnapshot().tags.forEach((tag) => {
-          if (tag.id === tagid) {
-            tag.name = inputVal;
-          }
-        });
-        ResultTagsPopup.updateButtons();
-        Settings.update();
-        ResultFilters.updateTags();
-      } else if (status === -1) {
-        Notifications.add("Invalid tag name", 0);
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+    axiosInstance
+      .post("/editTag", {
+        tagName: inputVal,
+        tagId: tagid,
+      })
+      .then((e) => {
+        Loader.hide();
+        let status = e.data.resultCode;
+        if (status === 1) {
+          Notifications.add("Tag updated", 1);
+          DB.getSnapshot().tags.forEach((tag) => {
+            if (tag._id === tagid) {
+              tag.name = inputVal;
+            }
+          });
+          ResultTagsPopup.updateButtons();
+          Settings.update();
+          ResultFilters.updateTags();
+        } else if (status === -1) {
+          Notifications.add("Invalid tag name", 0);
+        } else if (status < -1) {
+          Notifications.add("Unknown error: " + e.data.message, -1);
+        }
+      });
   } else if (action === "remove") {
     Loader.show();
-    CloudFunctions.removeTag({
-      uid: firebase.auth().currentUser.uid,
-      tagid: tagid,
-    }).then((e) => {
-      Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("Tag removed", 1);
-        DB.getSnapshot().tags.forEach((tag, index) => {
-          if (tag.id === tagid) {
-            DB.getSnapshot().tags.splice(index, 1);
-          }
-        });
-        ResultTagsPopup.updateButtons();
-        Settings.update();
-        ResultFilters.updateTags();
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+    axiosInstance
+      .post("/removeTag", {
+        tagId: tagid,
+      })
+      .then((e) => {
+        Loader.hide();
+        let status = e.data.resultCode;
+        if (status === 1) {
+          Notifications.add("Tag removed", 1);
+          DB.getSnapshot().tags.forEach((tag, index) => {
+            if (tag._id === tagid) {
+              DB.getSnapshot().tags.splice(index, 1);
+            }
+          });
+          ResultTagsPopup.updateButtons();
+          Settings.update();
+          ResultFilters.updateTags();
+        } else if (status < -1) {
+          Notifications.add("Unknown error: " + e.data.message, -1);
+        }
+      });
   }
 }
 

@@ -1,8 +1,8 @@
-import * as CloudFunctions from "./cloud-functions";
 import * as DB from "./db";
 import * as Notifications from "./notifications";
 import Config from "./config";
 import * as Misc from "./misc";
+import axiosInstance from "./axios-instance";
 
 let textTimeouts = [];
 
@@ -160,17 +160,10 @@ export async function check(completedEvent) {
       delete lbRes.keySpacing;
       delete lbRes.keyDuration;
       delete lbRes.chartData;
-      CloudFunctions.checkLeaderboards({
-        // uid: completedEvent.uid,
-        token: await firebase.auth().currentUser.getIdToken(),
-        // lbMemory: DB.getSnapshot().lbMemory,
-        // emailVerified: DB.getSnapshot().emailVerified,
-        // name: DB.getSnapshot().name,
-        // banned: DB.getSnapshot().banned,
-        // verified: DB.getSnapshot().verified,
-        // discordId: DB.getSnapshot().discordId,
-        result: lbRes,
-      })
+      axiosInstance
+        .post("/attemptAddToLeaderboards", {
+          result: lbRes,
+        })
         .then((data) => {
           if (data.data.status === -999) {
             if (data.data.message === "Bad token") {

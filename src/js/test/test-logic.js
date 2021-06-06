@@ -25,9 +25,9 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "./account-button";
 import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
-import * as CloudFunctions from "./cloud-functions";
 import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
+import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
 
 let glarsesMode = false;
@@ -1329,7 +1329,7 @@ export function finish(difficultyFailed = false) {
       DB.getSnapshot().tags.forEach((tag) => {
         if (tag.active === true) {
           activeTags.push(tag);
-          activeTagsIds.push(tag.id);
+          activeTagsIds.push(tag._id);
         }
       });
     } catch (e) {}
@@ -1497,7 +1497,7 @@ export function finish(difficultyFailed = false) {
             let annotationSide = "left";
             activeTags.forEach(async (tag) => {
               let tpb = await DB.getLocalTagPB(
-                tag.id,
+                tag._id,
                 Config.mode,
                 mode2,
                 Config.punctuation,
@@ -1505,13 +1505,13 @@ export function finish(difficultyFailed = false) {
                 Config.difficulty
               );
               $("#result .stats .tags .bottom").append(`
-                <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
+                <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
               `);
               if (Config.mode != "quote") {
                 if (tpb < stats.wpm) {
                   //new pb for that tag
                   DB.saveLocalTagPB(
-                    tag.id,
+                    tag._id,
                     Config.mode,
                     mode2,
                     Config.punctuation,
@@ -1523,12 +1523,11 @@ export function finish(difficultyFailed = false) {
                     consistency
                   );
                   $(
-                    `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
+                    `#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`
                   ).removeClass("hidden");
-                  $(`#result .stats .tags .bottom div[tagid="${tag.id}"]`).attr(
-                    "aria-label",
-                    "+" + Misc.roundTo2(stats.wpm - tpb)
-                  );
+                  $(
+                    `#result .stats .tags .bottom div[tagid="${tag._id}"]`
+                  ).attr("aria-label", "+" + Misc.roundTo2(stats.wpm - tpb));
                   // console.log("new pb for tag " + tag.name);
                 } else {
                   ChartController.result.options.annotation.annotations.push({
@@ -1577,10 +1576,10 @@ export function finish(difficultyFailed = false) {
               AccountButton.loading(false);
               Notifications.add("You are offline. Result not saved.", -1);
             } else {
-              CloudFunctions.testCompleted({
-                uid: firebase.auth().currentUser.uid,
-                obj: completedEvent,
-              })
+              axiosInstance
+                .post("/testCompleted", {
+                  obj: completedEvent,
+                })
                 .then((e) => {
                   AccountButton.loading(false);
                   if (e.data == null) {
@@ -1629,7 +1628,7 @@ export function finish(difficultyFailed = false) {
                       DB.getSnapshot() !== null &&
                       DB.getSnapshot().results !== undefined
                     ) {
-                      DB.getSnapshot().results.unshift(completedEvent);
+                      DB.getSnapshot().results.push(completedEvent);
                       if (DB.getSnapshot().globalStats.time == undefined) {
                         DB.getSnapshot().globalStats.time =
                           testtime +

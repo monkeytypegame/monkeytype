@@ -41,16 +41,16 @@
    - Click on `Email/Password`, enable it and save
    - Click on `Google`, add a support email and save
 
-1. Enable Firebase Firestore
+## Prerequisite - Mongo Setup
 
-   - In the Firebase console, go to Cloud Firestore
-   - Create database
-   - Start in test mode
-   - Select default location and enable
+1. Install [Mongodb Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running
+
+1. Optional - Install [Mongodb-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
+   1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown` after the server is started.
 
 ## Building and Running
 
-1. Run `npm install` in the project root directory to install dependencies.
+1. Run `npm ci` in the project root directory to install dependencies.
 1. Run `npm run start:dev` to start a local dev server on port 5000. It will watch for changes and rebuild when you edit files in `src/` or `public/`. Use ctrl+c to stop it.
    - Run `firebase use <your-project-id>` if you run into any errors for this.
 
