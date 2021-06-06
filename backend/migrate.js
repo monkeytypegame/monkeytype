@@ -31,7 +31,9 @@ db.collection("users")
     querySnapshot.forEach( async (userDoc) => {
       let newUser;
       try{
-        newUser = new User(userDoc.data());
+        let data = userDoc.data();
+        data._id = userDoc.id;
+        newUser = new User(data);
         newUser.uid = userDoc.id;
         newUser.globalStats = {
           started: userDoc.data().startedTests,
@@ -51,12 +53,14 @@ db.collection("users")
         let resCount = 1;
         resultsSnapshot.forEach((result) => {
           let formattedResult = result.data();
-          formattedResult.tags.forEach((tag, index) => {
-            if (tagIdDict[tag])
-              formattedResult.tags[index] = tagIdDict[tag];
-          });
+          if(formattedResult.tags != undefined){
+            formattedResult.tags.forEach((tag, index) => {
+              if (tagIdDict[tag])
+                formattedResult.tags[index] = tagIdDict[tag];
+            });
+          }
           newUser.results.push(formattedResult);
-          // console.log(`Result ${resCount} saved for user ${userCount}`);
+          console.log(`Result ${resCount} saved for user ${userCount}`);
           resCount++;
         });
         newUser.results.sort((a, b) => {
@@ -70,7 +74,8 @@ db.collection("users")
         console.log(`User ${userCount} (${newUser.uid}) saved`);
         userCount++;
       }catch(e){
-        console.log(`User ${userCount} (${newUser.uid}) failed`);
+        // throw e;
+        console.log(`User ${userCount} (${newUser.uid}) failed: ${e.message}`);
         userCount++;
       }
     });
