@@ -1,3 +1,4 @@
+const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
 class UsersDAO {
   static async addUser(name, email, uid) {
@@ -10,7 +11,7 @@ class UsersDAO {
     const nameDoc = await mongoDB()
       .collection("users")
       .findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
-    if (nameDoc) throw new Error("Username already taken");
+    if (nameDoc) throw new MonkeyError(409, "Username already taken");
     return await mongoDB()
       .collection("users")
       .updateOne({ uid }, { $set: { name } });
@@ -18,7 +19,7 @@ class UsersDAO {
 
   static async getUser(uid) {
     const user = await mongoDB().collection("users").findOne({ uid });
-    if (!user) throw new Error("User not found");
+    if (!user) throw new MonkeyError(404, "User not found");
     return user;
   }
 }

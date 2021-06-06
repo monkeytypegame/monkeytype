@@ -1785,7 +1785,7 @@ app.post("/newBotCommand", botAuth, (req, res) => {
   res.status(200);
 });
 
-// LISTENER
-app.listen(port, () => {
-  console.log(`Listening to requests on http://localhost:${port}`);
+app.use(function (e, req, res, next) {
+  console.log("Error", e);
+  return res.status(e.status || 500).json(e || {});
 });
