@@ -8,6 +8,7 @@ const { presetSchema } = require("./subschemas/preset");
 
 const userSchema = new Schema(
   {
+    _id: { type: String },
     results: [{ type: resultSchema, default: {} }],
     personalBests: {
       custom: { type: Schema.Types.Mixed, default: {} },
