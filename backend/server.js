@@ -1,6 +1,10 @@
 const express = require("express");
+const { config } = require("dotenv");
+const path = require("path");
+config({ path: path.join(__dirname, ".env") });
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const { MongoClient } = require("mongodb");
 const cors = require("cors");
 const admin = require("firebase-admin");
 const helmet = require("helmet");
@@ -11,7 +15,8 @@ const { Stats } = require("./models/stats");
 
 // Firebase admin setup
 //currently uses account key in functions to prevent repetition
-const serviceAccount = require("../functions/serviceAccountKey.json");
+const serviceAccount = require("./credentials/serviceAccountKey.json");
+const { connectDB } = require("./init/mongodb");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -19,19 +24,24 @@ admin.initializeApp({
 
 // MIDDLEWARE &  SETUP
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cors());
 app.use(helmet());
 
 const port = process.env.PORT || "5005";
 
-mongoose.connect("mongodb://localhost:27017/monkeytype", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-const mtRootDir = __dirname.substring(0, __dirname.length - 8); //will this work for windows and mac computers?
-app.use(express.static(mtRootDir + "/dist"));
-app.use(bodyParser.json());
+connectDB()
+  .then(() => {
+    app.listen(process.env.PORT, () => {
+      console.log(`listening on port ${process.env.PORT}`);
+    });
+  })
+  .catch((e) => {
+    console.log(e);
+  });
+const authRouter = require("./api/routes/auth");
+app.use("/auth", authRouter);
 
 // Daily leaderboard clear function
 function clearDailyLeaderboards() {
@@ -351,10 +361,10 @@ async function checkIfTagPB(obj, userdata) {
       if (restags.includes(doc._id.toString())) {
         //not sure what this is supposed to do
         /*
-        let data = doc.data();
-        data.id = doc.id;
-        dbtags.push(data);
-        */
+                let data = doc.data();
+                data.id = doc.id;
+                dbtags.push(data);
+                */
         dbtags.push(doc);
       }
     });
@@ -518,7 +528,6 @@ function incrementT60Bananas(uid, result, userData) {
 
     if (best60 != undefined && result.wpm < best60 - best60 * 0.25) {
       // console.log("returning");
-      return;
     } else {
       //increment
       // console.log("checking");
@@ -608,87 +617,7 @@ function isTagPresetNameValid(name) {
   return /^[0-9a-zA-Z_.-]+$/.test(name);
 }
 
-function isUsernameValid(name) {
-  if (name === null || name === undefined || name === "") return false;
-  if (/miodec/.test(name.toLowerCase())) return false;
-  if (/bitly/.test(name.toLowerCase())) return false;
-  if (name.length > 14) return false;
-  if (/^\..*/.test(name.toLowerCase())) return false;
-  return /^[0-9a-zA-Z_.-]+$/.test(name);
-}
-
 // API
-
-app.get("/nameCheck/:name", (req, res) => {
-  if (!isUsernameValid(req.params.name)) {
-    res.status(200).send({
-      resultCode: -2,
-      message: "Username is not valid",
-    });
-    return;
-  }
-  User.findOne({ name: req.params.name }, (err, user) => {
-    console.log(err);
-    if (user) {
-      res.status(200).send({
-        resultCode: -1,
-        message: "Username is taken",
-      });
-      return;
-    } else {
-      res.status(200).send({
-        resultCode: 1,
-        message: "Username is available",
-      });
-      return;
-    }
-  }).catch(() => {
-    res.status(200).send({
-      resultCode: -1,
-      message: "Error when checking for names",
-    });
-  });
-});
-
-app.post("/signUp", (req, res) => {
-  const newuser = new User({
-    name: req.body.name,
-    email: req.body.email,
-    uid: req.body.uid,
-  });
-  newuser.save();
-  res.status(200);
-  res.json({ user: newuser });
-  return;
-});
-
-app.post("/updateName", authenticateToken, (req, res) => {
-  if (isUsernameValid(name)) {
-    User.findOne({ uid: req.uid }, (err, user) => {
-      User.findOne({ name: req.body.name }, (err2, user2) => {
-        if (!user2) {
-          user.name = req.body.name;
-          user.save();
-          res.status(200).send({ status: 1 });
-        } else {
-          res.status(200).send({ status: -1, message: "Username taken" });
-        }
-      });
-    });
-  } else {
-    res.status(200).send({ status: -1, message: "Username invalid" });
-  }
-});
-
-app.get("/fetchSnapshot", authenticateToken, (req, res) => {
-  User.findOne({ uid: req.uid }, (err, user) => {
-    if (err) res.status(500).send({ error: err });
-    if (!user) res.status(200).send({ message: "No user found" }); //client doesn't do anything with this
-    let snap = user;
-    res.send({ snap: snap });
-    return;
-  });
-});
 
 function stdDev(array) {
   const n = array.length;
@@ -740,6 +669,7 @@ app.post("/testCompleted", authenticateToken, (req, res) => {
         }
         return errCount;
       }
+
       let errCount = verifyValue(obj);
       if (errCount > 0) {
         console.error(
@@ -960,13 +890,13 @@ app.post("/testCompleted", authenticateToken, (req, res) => {
               `saved result for ${req.uid} (new PB) - ${JSON.stringify(logobj)}`
             );
             /*
-            User.findOne({ name: userdata.name }, (err, user2) => {
-              console.log(user2.results[user2.results.length-1])
-              console.log(user2.results[user2.results.length-1]).isPb
-              user2.results[user2.results.length-1].isPb = true;
-              user2.save();
-            })
-            */
+                        User.findOne({ name: userdata.name }, (err, user2) => {
+                          console.log(user2.results[user2.results.length-1])
+                          console.log(user2.results[user2.results.length-1]).isPb
+                          user2.results[user2.results.length-1].isPb = true;
+                          user2.save();
+                        })
+                        */
             request.obj.isPb = true;
             if (
               obj.mode === "time" &&
@@ -994,7 +924,6 @@ app.post("/testCompleted", authenticateToken, (req, res) => {
           }
           stripAndSave(req.uid, request.obj);
           res.status(200).send(returnobj);
-          return;
         })
         .catch((e) => {
           console.error(
@@ -1003,7 +932,6 @@ app.post("/testCompleted", authenticateToken, (req, res) => {
           res
             .status(200)
             .send({ data: { resultCode: -999, message: e.message } });
-          return;
         });
     } catch (e) {
       console.error(
@@ -1012,7 +940,6 @@ app.post("/testCompleted", authenticateToken, (req, res) => {
         )} - ${e}`
       );
       res.status(200).send({ resultCode: -999, message: e.message });
-      return;
     }
   });
 });
@@ -1041,7 +968,6 @@ app.post("/clearTagPb", authenticateToken, (req, res) => {
       resultCode: -999,
       message: e.message,
     });
-    return;
   });
   res.sendStatus(200);
 });
@@ -1062,21 +988,18 @@ app.post("/unlinkDiscord", authenticateToken, (req, res) => {
           status: 1,
           message: "Unlinked",
         });
-        return;
       })
       .catch((e) => {
         res.status(200).send({
           status: -999,
           message: e.message,
         });
-        return;
       });
   } catch (e) {
     res.status(200).send({
       status: -999,
       message: e,
     });
-    return;
   }
 });
 
@@ -1538,7 +1461,6 @@ app.post("/verifyDiscord", authenticateToken, (req, res) => {
               message:
                 "This Discord account is already paired to a different Monkeytype account",
             });
-            return;
           } else {
             User.findOne({ uid: req.uid }, (err, user2) => {
               user2.discordId = did;
@@ -1553,7 +1475,6 @@ app.post("/verifyDiscord", authenticateToken, (req, res) => {
               res
                 .status(200)
                 .send({ status: 1, message: "Verified", did: did });
-              return;
             });
           }
         });
@@ -1564,11 +1485,9 @@ app.post("/verifyDiscord", authenticateToken, (req, res) => {
             e.message
         );
         response.status(200).send({ status: -1, message: e.message });
-        return;
       });
   } catch (e) {
     response.status(200).send({ status: -1, message: e });
-    return;
   }
 });
 
@@ -1678,10 +1597,10 @@ app.post("/attemptAddToLeaderboards", authenticateToken, (req, res) => {
           return;
         }
         /*
-      if (user.verified === false) {
-        res.status(200).send({ needsToVerify: true });
-        return;
-      }*/
+              if (user.verified === false) {
+                res.status(200).send({ needsToVerify: true });
+                return;
+              }*/
         Leaderboard.find(
           {
             mode: result.mode,
@@ -1781,7 +1700,6 @@ app.get("/getUserDiscordData/:uid", botAuth, (req, res) => {
   //for announceDailyLbResult
   User.findOne({ uid: req.body.uid }, (err, user) => {
     res.send({ name: user.name, discordId: user.discordId });
-    return;
   });
 });
 
@@ -1790,10 +1708,8 @@ app.get("/getUserPbs/:discordId", botAuth, (req, res) => {
   User.findOne({ discordId: req.params.discordId }, (err, user) => {
     if (user) {
       res.send({ personalBests: user.personalBests });
-      return;
     } else {
       res.send({ error: "No user found with that id" });
-      return;
     }
   });
 });
@@ -1803,10 +1719,8 @@ app.get("/getUserPbsByUid/:uid", botAuth, (req, res) => {
   User.findOne({ uid: req.params.uid }, (err, user) => {
     if (user) {
       res.send({ personalBests: user.personalBests });
-      return;
     } else {
       res.send({ error: "No user found with that id" });
-      return;
     }
   });
 });
@@ -1821,7 +1735,6 @@ app.get("/getTimeLeaderboard/:mode2/:type", botAuth, (req, res) => {
     //get top 10 leaderboard
     lb.board.length = 10;
     res.send({ board: lb.board });
-    return;
   });
 });
 
@@ -1833,7 +1746,6 @@ app.get("/getUserByDiscordId/:discordId", botAuth, (req, res) => {
     } else {
       res.send({ error: "No user found with that id" });
     }
-    return;
   });
 });
 
@@ -1848,7 +1760,6 @@ app.get("/getRecentScore/:discordId", botAuth, (req, res) => {
     } else {
       res.send({ error: "No user found with that id" });
     }
-    return;
   });
 });
 
@@ -1860,7 +1771,6 @@ app.get("/getUserStats/:discordId", botAuth, (req, res) => {
     } else {
       res.send({ error: "No user found with that id" });
     }
-    return;
   });
 });
 
