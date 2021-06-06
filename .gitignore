@@ -74,10 +74,8 @@ node_modules/
 .idea
 
 #firebase
-functions/serviceAccountKey.json
-functions/serviceAccountKey_live.json
-functions/serviceAccountKey_copy.json
-functions/serviceAccountKey_live_copy.json
+serviceAccountKey*.json
+
 .firebaserc
 .firebaserc_copy
 
