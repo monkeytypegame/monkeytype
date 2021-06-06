@@ -335,7 +335,7 @@ async function checkIfTagPB(obj, userdata) {
   if (obj.tags.length === 0) {
     return [];
   }
-  if (obj.mode == "quote") {
+  if (obj.mode === "quote") {
     return [];
   }
   let dbtags = []; //tags from database: include entire document: name, id, pbs
