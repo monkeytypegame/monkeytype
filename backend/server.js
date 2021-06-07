@@ -162,73 +162,6 @@ async function announceDailyLbResult(lbdata) {
   newBotCommand.save();
 }
 
-function validateResult(result) {
-  if (result.wpm > result.rawWpm) {
-    console.error(
-      `Could not validate result for ${result.uid}. ${result.wpm} > ${result.rawWpm}`
-    );
-    return false;
-  }
-  let wpm = roundTo2((result.correctChars * (60 / result.testDuration)) / 5);
-  if (
-    wpm < result.wpm - result.wpm * 0.01 ||
-    wpm > result.wpm + result.wpm * 0.01
-  ) {
-    console.error(
-      `Could not validate result for ${result.uid}. wpm ${wpm} != ${result.wpm}`
-    );
-    return false;
-  }
-  // if (result.allChars != undefined) {
-  //   let raw = roundTo2((result.allChars * (60 / result.testDuration)) / 5);
-  //   if (
-  //     raw < result.rawWpm - result.rawWpm * 0.01 ||
-  //     raw > result.rawWpm + result.rawWpm * 0.01
-  //   ) {
-  //     console.error(
-  //       `Could not validate result for ${result.uid}. raw ${raw} != ${result.rawWpm}`
-  //     );
-  //     return false;
-  //   }
-  // }
-  if (result.mode === "time" && (result.mode2 === 15 || result.mode2 === 60)) {
-    let keyPressTimeSum =
-      result.keySpacing.reduce((total, val) => {
-        return total + val;
-      }) / 1000;
-    if (
-      keyPressTimeSum < result.testDuration - 1 ||
-      keyPressTimeSum > result.testDuration + 1
-    ) {
-      console.error(
-        `Could not validate key spacing sum for ${result.uid}. ${keyPressTimeSum} !~ ${result.testDuration}`
-      );
-      return false;
-    }
-
-    if (
-      result.testDuration < result.mode2 - 1 ||
-      result.testDuration > result.mode2 + 1
-    ) {
-      console.error(
-        `Could not validate test duration for ${result.uid}. ${result.testDuration} !~ ${result.mode2}`
-      );
-      return false;
-    }
-  }
-
-  if (result.chartData.raw !== undefined) {
-    if (result.chartData.raw.filter((w) => w > 350).length > 0) return false;
-  }
-
-  if (result.wpm > 100 && result.consistency < 10) return false;
-
-  return true;
-}
-
-function roundTo2(num) {
-  return Math.round((num + Number.EPSILON) * 100) / 100;
-}
 
 async function checkIfPB(obj, userdata) {
   let pbs = null;
@@ -494,23 +427,24 @@ async function checkIfTagPB(obj, userdata) {
   return ret;
 }
 
-async function stripAndSave(uid, obj) {
-  if (obj.bailedOut === false) delete obj.bailedOut;
-  if (obj.blindMode === false) delete obj.blindMode;
-  if (obj.difficulty === "normal") delete obj.difficulty;
-  if (obj.funbox === "none") delete obj.funbox;
-  //stripping english causes issues in result filtering; this line:
-  //let langFilter = ResultFilters.getFilter("language", result.language);
-  //returns false if language isn't defined in result
-  //if (obj.language === "english") delete obj.language;
-  if (obj.numbers === false) delete obj.numbers;
-  if (obj.punctuation === false) delete obj.punctuation;
+//
+// async function stripAndSave(uid, obj) {
+//   if (obj.bailedOut === false) delete obj.bailedOut;
+//   if (obj.blindMode === false) delete obj.blindMode;
+//   if (obj.difficulty === "normal") delete obj.difficulty;
+//   if (obj.funbox === "none") delete obj.funbox;
+//   //stripping english causes issues in result filtering; this line:
+//   //let langFilter = ResultFilters.getFilter("language", result.language);
+//   //returns false if language isn't defined in result
+//   //if (obj.language === "english") delete obj.language;
+//   if (obj.numbers === false) delete obj.numbers;
+//   if (obj.punctuation === false) delete obj.punctuation;
 
-  await User.findOne({ uid: uid }, (err, user) => {
-    user.results.push(obj);
-    user.save();
-  });
-}
+//   await User.findOne({ uid: uid }, (err, user) => {
+//     user.results.push(obj);
+//     user.save();
+//   });
+// }
 
 function incrementT60Bananas(uid, result, userData) {
   try {
@@ -611,21 +545,11 @@ async function incrementPublicTypingStats(started, completed, time) {
   }
 }
 
-function isTagPresetNameValid(name) {
-  if (name === null || name === undefined || name === "") return false;
-  if (name.length > 16) return false;
-  return /^[0-9a-zA-Z_.-]+$/.test(name);
-}
+
 
 // API
 
-function stdDev(array) {
-  const n = array.length;
-  const mean = array.reduce((a, b) => a + b) / n;
-  return Math.sqrt(
-    array.map((x) => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n
-  );
-}
+
 
 app.post("/testCompleted", authenticateToken, (req, res) => {
   User.findOne({ uid: req.uid }, (err, user) => {
@@ -1087,11 +1011,6 @@ app.post("/updateEmail", authenticateToken, (req, res) => {
   }
 });
 
-function isConfigKeyValid(name) {
-  if (name === null || name === undefined || name === "") return false;
-  if (name.length > 30) return false;
-  return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
-}
 
 app.post("/saveConfig", authenticateToken, (req, res) => {
   try {
@@ -1330,12 +1249,6 @@ app.post("/removePreset", authenticateToken, (req, res) => {
     res.send({ resultCode: -999 });
   }
 });
-
-function isTagPresetNameValid(name) {
-  if (name === null || name === undefined || name === "") return false;
-  if (name.length > 16) return false;
-  return /^[0-9a-zA-Z_.-]+$/.test(name);
-}
 
 //could use /tags/add instead
 app.post("/addTag", authenticateToken, (req, res) => {
