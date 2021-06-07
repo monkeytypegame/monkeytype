@@ -177,7 +177,7 @@
   },
   {
     "name": "bangla",
-    "languages": ["bangla"]
+    "languages": ["bangla", "bangla_letters"]
   },
   {
     "name": "code",
