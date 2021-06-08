@@ -60,6 +60,25 @@ class UsersDAO {
       .collection("users")
       .updateOne({ uid }, { $pull: { id } });
   }
+
+  static async removeTagPb(uid, id) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+    if (
+      user.tags === undefined ||
+      user.tags.filter((t) => t._id === id).length === 0
+    )
+      throw new MonkeyError(404, "Tag not found");
+    return await mongoDB()
+      .collection("users")
+      .updateOne(
+        {
+          uid: uid,
+          "tags._id": id,
+        },
+        { $pull: { tags: { personalBests } } }
+      );
+  }
 }
 
 module.exports = UsersDAO;
