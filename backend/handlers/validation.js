@@ -73,7 +73,7 @@ module.exports = {
   validateConfig(config){
     Object.keys(config).forEach((key) => {
       if (!isConfigKeyValid(key)) {
-        throw `InvalidConfig: ${key} failed regex check`;
+        throw new MonkeyError(500,`Invalid config: ${key} failed regex check`);
       }
       if (key === "resultFilters") return;
       if (key === "customBackground") return;
@@ -81,12 +81,12 @@ module.exports = {
       if (Array.isArray(val)) {
         val.forEach((valarr) => {
           if (!isConfigKeyValid(valarr)) {
-            throw `InvalidConfig: ${key}:${valarr} failed regex check`;
+            throw new MonkeyError(500,`Invalid config: ${key}:${valarr} failed regex check`);
           }
         });
       } else {
         if (!isConfigKeyValid(val)) {
-          throw `InvalidConfig: ${key}:${val} failed regex check`;
+          throw new MonkeyError(500,`Invalid config: ${key}:${val} failed regex check`);
         }
       }
     });
