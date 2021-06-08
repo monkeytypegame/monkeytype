@@ -89,3 +89,5 @@ purgeCfCache.sh
 
 backend/credentials
 backend/.env
+
+static/adtest.html
