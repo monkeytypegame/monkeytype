@@ -22,6 +22,44 @@ class UsersDAO {
     if (!user) throw new MonkeyError(404, "User not found");
     return user;
   }
+
+  static async addTag(uid, name) {
+    return await mongoDB()
+      .collection("users")
+      .updateOne({ uid }, { $push: { tags: { name } } });
+  }
+
+  static async editTag(uid, id, name) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+    if (
+      user.tags === undefined ||
+      user.tags.filter((t) => t._id === id).length === 0
+    )
+      throw new MonkeyError(404, "Tag not found");
+    return await mongoDB()
+      .collection("users")
+      .updateOne(
+        {
+          uid: uid,
+          "tags._id": id,
+        },
+        { $set: { tags: { name } } }
+      );
+  }
+
+  static async removeTag(uid, id) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+    if (
+      user.tags === undefined ||
+      user.tags.filter((t) => t._id === id).length === 0
+    )
+      throw new MonkeyError(404, "Tag not found");
+    return await mongoDB()
+      .collection("users")
+      .updateOne({ uid }, { $pull: { id } });
+  }
 }
 
 module.exports = UsersDAO;
