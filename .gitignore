@@ -83,3 +83,5 @@ dist/
 .cloudflareKey.txt
 .cloudflareKey_copy.txt
 purgeCfCache.sh
+
+static/adtest.html
