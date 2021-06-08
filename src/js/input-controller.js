@@ -263,6 +263,7 @@ function handleSpace(event, isEnter) {
         Sound.playError(Config.playSoundOnError);
       }
     }
+    TestStats.pushMissedWord(TestLogic.words.getCurrent());
     TestStats.incrementAccuracy(false);
     TestStats.incrementKeypressErrors();
     let cil = TestLogic.input.current.length;
