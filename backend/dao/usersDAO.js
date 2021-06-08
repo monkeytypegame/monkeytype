@@ -1,6 +1,7 @@
 const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
 const { checkAndUpdatePb } = require("../handlers/pb");
+const { updateAuthEmail } = require("../handlers/auth");
 
 class UsersDAO {
   static async addUser(name, email, uid) {
@@ -17,6 +18,12 @@ class UsersDAO {
     return await mongoDB()
       .collection("users")
       .updateOne({ uid }, { $set: { name } });
+  }
+
+  static async updateEmail(uid, email) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+    return await updateAuthEmail(uid, email);
   }
 
   static async getUser(uid) {
@@ -164,6 +171,40 @@ class UsersDAO {
     });
 
     return ret;
+  }
+
+  static async resetPb(uid) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+    return await mongoDB()
+      .collection("users")
+      .updateOne({ uid }, { $set: { personalBests: {} } });
+  }
+
+  static async updateTypingStats(uid, restartCount, timeTyping) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+
+    return await mongoDB()
+      .collection("users")
+      .updateOne(
+        { uid },
+        {
+          $inc: {
+            startedTests: restartCount,
+            completedTests: 1,
+            timeTyping,
+          },
+        }
+      );
+  }
+
+  static async unlinkDiscord(uid) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+    return await mongoDB()
+      .collection("users")
+      .updateOne({ uid }, { $set: { discordId: null } });
   }
 }
 
