@@ -19,7 +19,7 @@
   },
   {
     "name": "arabic",
-    "languages": ["arabic"]
+    "languages": ["arabic", "arabic_10k"]
   },
   {
     "name": "malagasy",
@@ -176,6 +176,34 @@
     "languages": ["bulgarian"]
   },
   {
+    "name": "esperanto",
+    "languages": [
+      "esperanto",
+      "esperanto_1k",
+      "esperanto_10k",
+      "esperanto_25k",
+      "esperanto_36k",
+      "esperanto_x_sistemo",
+      "esperanto_x_sistemo_1k",
+      "esperanto_x_sistemo_10k",
+      "esperanto_x_sistemo_25k",
+      "esperanto_x_sistemo_36k",
+      "esperanto_h_sistemo",
+      "esperanto_h_sistemo_1k",
+      "esperanto_h_sistemo_10k",
+      "esperanto_h_sistemo_25k",
+      "esperanto_h_sistemo_36k"
+    ]
+  },
+  {
+    "name": "bangla",
+    "languages": ["bangla", "bangla_letters", "bangla_10k"]
+  },
+  {
+    "name": "urdu",
+    "languages": ["urdu"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
@@ -202,9 +230,5 @@
       "pig_latin",
       "twitch_emotes"
     ]
-  },
-  {
-    "name": "urdu",
-    "languages": ["urdu"]
   }
 ]

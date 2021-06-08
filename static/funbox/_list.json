@@ -98,6 +98,11 @@
     "name": "nospace",
     "type": "script",
     "info": "Whoneedsspacesanyway?"
+  },
+  {
+    "name": "poetry",
+    "type": "script",
+    "info": "Practice typing some beautiful prose."
   }
 ]
 
