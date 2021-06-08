@@ -30,6 +30,14 @@ import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
 import * as MonkeyPower from "./monkey-power";
 
+let glarsesMode = false;
+
+export function toggleGlarses(){
+  glarsesMode = true;
+  console.log('Glarses Mode On - test result will be hidden. You can check the stats in the console (here)');
+  console.log('To disable Glarses Mode refresh the page.');
+}
+
 export let notSignedInLastResult = null;
 
 export function setNotSignedInUid(uid) {
@@ -999,7 +1007,6 @@ export function finish(difficultyFailed = false) {
   PbCrown.hide();
   LiveAcc.hide();
   TimerProgress.hide();
-  Keymap.hide();
   Funbox.activate("none", null);
 
   if (
@@ -1844,6 +1851,29 @@ export function finish(difficultyFailed = false) {
 
   ChartController.result.update({ duration: 0 });
   ChartController.result.resize();
+
+  if(glarsesMode){
+    $("#middle #result .glarsesmessage").remove();
+    $("#middle #result").prepend(`
+
+      <div class='glarsesmessage' style="
+        text-align: center;
+        grid-column: 1/3;
+        font-size: 2rem;
+        padding: 2rem 0;
+      ">Test completed</div>
+    
+    `);
+    $("#middle #result .stats").remove();
+    $("#middle #result .chart").remove();
+    $("#middle #result #resultWordsHistory").remove();
+    $("#middle #result #resultReplay").remove();
+    $("#middle #result .loginTip").remove();
+
+    console.log(`Test Completed: ${stats.wpm} wpm ${stats.acc}% acc ${stats.wpmRaw} raw ${consistency}% consistency`);
+
+  }
+
   UI.swapElements($("#typingTest"), $("#result"), 250, () => {
     TestUI.setResultCalculating(false);
     $("#words").empty();
@@ -1852,6 +1882,8 @@ export function finish(difficultyFailed = false) {
       TestUI.toggleResultWords();
     }
     $("#testModesNotice").addClass("hidden");
+  }, () => {
+    Keymap.hide();
   });
 }
 

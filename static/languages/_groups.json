@@ -196,6 +196,14 @@
     ]
   },
   {
+    "name": "bangla",
+    "languages": ["bangla", "bangla_letters", "bangla_10k"]
+  },
+  {
+    "name": "urdu",
+    "languages": ["urdu"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
