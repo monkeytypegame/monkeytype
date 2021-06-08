@@ -19,7 +19,7 @@
   },
   {
     "name": "arabic",
-    "languages": ["arabic"]
+    "languages": ["arabic", "arabic_10k"]
   },
   {
     "name": "malagasy",
