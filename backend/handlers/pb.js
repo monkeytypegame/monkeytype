@@ -1,119 +1,104 @@
-module.exports = {
-  check(result, userdata) {
-    let pbs = null;
-    if (result.mode == "quote") {
-      return false;
-    }
-    if (result.funbox !== "none") {
-      return false;
-    }
+/*
 
-    pbs = userdata?.personalBests;
-    if(pbs === undefined){
-      //userdao set personal best
-      return true;
-    }
 
-    // try {
-    //   pbs = userdata.personalBests;
-    //   if (pbs === undefined) {
-    //     throw new Error("pb is undefined");
-    //   }
-    // } catch (e) {
-      // User.findOne({ uid: userdata.uid }, (err, user) => {
-      //   user.personalBests = {
-      //     [result.mode]: {
-      //       [result.mode2]: [
-      //         {
-      //           language: result.language,
-      //           difficulty: result.difficulty,
-      //           punctuation: result.punctuation,
-      //           wpm: result.wpm,
-      //           acc: result.acc,
-      //           raw: result.rawWpm,
-      //           timestamp: Date.now(),
-      //           consistency: result.consistency,
-      //         },
-      //       ],
-      //     },
-      //   };
-      // }).then(() => {
-      //   return true;
-      // });
-    // }
+obj structure
 
-    let toUpdate = false;
-    let found = false;
-    try {
-      if (pbs[result.mode][result.mode2] === undefined) {
-        pbs[result.mode][result.mode2] = [];
-      }
-      pbs[result.mode][result.mode2].forEach((pb) => {
-        if (
-          pb.punctuation === result.punctuation &&
-          pb.difficulty === result.difficulty &&
-          pb.language === result.language
-        ) {
-          //entry like this already exists, compare wpm
-          found = true;
-          if (pb.wpm < result.wpm) {
-            //new pb
-            pb.wpm = result.wpm;
-            pb.acc = result.acc;
-            pb.raw = result.rawWpm;
-            pb.timestamp = Date.now();
-            pb.consistency = result.consistency;
-            toUpdate = true;
-          } else {
-            //no pb
-            return false;
-          }
-        }
-      });
-      //checked all pbs, nothing found - meaning this is a new pb
-      if (!found) {
-        pbs[result.mode][result.mode2] = [
-          {
-            language: result.language,
-            difficulty: result.difficulty,
-            punctuation: result.punctuation,
-            wpm: result.wpm,
-            acc: result.acc,
-            raw: result.rawWpm,
-            timestamp: Date.now(),
-            consistency: result.consistency,
-          },
-        ];
-        toUpdate = true;
-      }
-    } catch (e) {
-      // console.log(e);
-      pbs[result.mode] = {};
-      pbs[result.mode][result.mode2] = [
-        {
-          language: result.language,
-          difficulty: result.difficulty,
-          punctuation: result.punctuation,
-          wpm: result.wpm,
-          acc: result.acc,
-          raw: result.rawWpm,
-          timestamp: Date.now(),
-          consistency: result.consistency,
-        },
-      ];
-      toUpdate = true;
+time: {
+  10: [ - this is a list because there can be
+    different personal bests for different difficulties, languages and punctuation
+    {
+      acc,
+      consistency,
+      difficulty,
+      language,
+      punctuation,
+      raw,
+      timestamp,
+      wpm
     }
-  
-    if (toUpdate) {
-      // User.findOne({ uid: userdata.uid }, (err, user) => {
-      //   user.personalBests = pbs;
-      //   user.save();
-      // });
-
-      //userdao update the whole personalBests parameter with pbs object
-      return true;
-    } else {
-      return false;
-    }
+  ]
+},
+words: {
+  10: [
+    {}
+  ]
+},
+zen: {
+  zen: [
+    {}
+  ]
+},
+custom: {
+  custom: {
+    []
   }
 }
+
+
+
+
+
+*/
+
+module.exports = {
+  checkAndUpdatePb(
+    obj,
+    mode,
+    mode2,
+    acc,
+    consistency,
+    difficulty,
+    language,
+    punctuation,
+    raw,
+    wpm
+  ) {
+    //verify structure first
+    if (obj === undefined) obj = {};
+    if (obj[mode] === undefined) obj[mode] = {};
+    if (obj[mode][mode2] === undefined) obj[mode][mode2] = [];
+
+    let isPb = false;
+    let found = false;
+    //find a pb
+    obj[mode][mode2].forEach((pb) => {
+      //check if we should compare first
+      if (
+        pb.difficulty === difficulty &&
+        pb.language === language &&
+        pb.punctuation === punctuation
+      ) {
+        found = true;
+        //compare
+        if (pb.wpm < wpm) {
+          //update
+          isPb = true;
+          pb.acc = acc;
+          pb.consistency = consistency;
+          pb.raw = raw;
+          pb.wpm = wpm;
+          pb.timestamp = Date.now();
+        }
+      }
+    });
+    //if not found push a new one
+    if (!found) {
+      isPb = true;
+      obj[mode][mode2].push({
+        acc,
+        consistency,
+        difficulty,
+        language,
+        punctuation,
+        raw,
+        wpm,
+        timestamp: Date.now(),
+      });
+    }
+
+    return {
+      isPb,
+      obj,
+    };
+  },
+};

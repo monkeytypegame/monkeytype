@@ -1,5 +1,7 @@
 const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
+const { checkAndUpdatePb } = require("../handlers/pb");
+
 class UsersDAO {
   static async addUser(name, email, uid) {
     return await mongoDB()
@@ -78,6 +80,90 @@ class UsersDAO {
         },
         { $pull: { tags: { personalBests } } }
       );
+  }
+
+  static async checkIfPb(
+    uid,
+    mode,
+    mode2,
+    acc,
+    consistency,
+    difficulty,
+    language,
+    punctuation,
+    raw,
+    wpm
+  ) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+
+    let pb = checkAndUpdatePb(
+      user.personalBests,
+      mode,
+      mode2,
+      acc,
+      consistency,
+      difficulty,
+      language,
+      punctuation,
+      raw,
+      wpm
+    );
+
+    if (pb.isPb) {
+      await mongoDB()
+        .collection("users")
+        .updateOne({ uid }, { $set: { personalBests: pb.obj } });
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  static async checkIfTagPb(
+    uid,
+    tags,
+    mode,
+    mode2,
+    acc,
+    consistency,
+    difficulty,
+    language,
+    punctuation,
+    raw,
+    wpm
+  ) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+
+    if (user.tags === undefined || user.tags.length === 0) {
+      return [];
+    }
+
+    let ret = [];
+
+    tags.forEach(async (tag) => {
+      let tagpb = checkAndUpdatePb(
+        tag.personalBests,
+        mode,
+        mode2,
+        acc,
+        consistency,
+        difficulty,
+        language,
+        punctuation,
+        raw,
+        wpm
+      );
+      if (tagpb.isPb) {
+        ret.push(tag._id);
+        await mongoDB()
+          .collection("users")
+          .updateOne({ uid }, { $set: { tags: { personalBests: tagpb.obj } } });
+      }
+    });
+
+    return ret;
   }
 }
 
