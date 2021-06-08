@@ -1,3 +1,5 @@
+const MonkeyError = require("./error");
+
 module.exports = {
   isUsernameValid(name) {
     if (name === null || name === undefined || name === "") return false;
@@ -67,5 +69,27 @@ module.exports = {
     if (name === null || name === undefined || name === "") return false;
     if (name.length > 30) return false;
     return /^[0-9a-zA-Z_.\-#+]+$/.test(name);
+  },
+  validateConfig(config){
+    Object.keys(config).forEach((key) => {
+      if (!isConfigKeyValid(key)) {
+        throw `InvalidConfig: ${key} failed regex check`;
+      }
+      if (key === "resultFilters") return;
+      if (key === "customBackground") return;
+      let val = config[key];
+      if (Array.isArray(val)) {
+        val.forEach((valarr) => {
+          if (!isConfigKeyValid(valarr)) {
+            throw `InvalidConfig: ${key}:${valarr} failed regex check`;
+          }
+        });
+      } else {
+        if (!isConfigKeyValid(val)) {
+          throw `InvalidConfig: ${key}:${val} failed regex check`;
+        }
+      }
+    });
+    return true;
   }
 };
