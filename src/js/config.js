@@ -858,9 +858,9 @@ export function setHighlightMode(mode, nosave) {
   }
   config.highlightMode = mode;
   // if(TestLogic.active){
-  try{
-  if (!nosave) TestUI.updateWordElement(config.blindMode);
-  }catch{}
+  try {
+    if (!nosave) TestUI.updateWordElement(config.blindMode);
+  } catch {}
   // }
   if (!nosave) saveToLocalStorage();
 }
@@ -1743,10 +1743,7 @@ export function apply(configObj) {
 }
 
 export function reset() {
-  config = {
-    ...defaultConfig,
-  };
-  apply();
+  apply(defaultConfig);
   saveToLocalStorage();
 }
 
