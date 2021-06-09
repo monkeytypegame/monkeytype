@@ -22808,7 +22808,7 @@
       "length": 293
     },
     {
-      "text": "God, we have not spoken this long or as often as we should. I've often been about other business. If I wanted forgiveness I should ask for it, but for all that I have done and for all that I am yet to do, there can be no forgiveness. And yet I think I'm not an evil man. Evil men pray louder, seek penance, and stick themselves closer to Heaven than I am. I shall not see its gates Lord. Nor hear your sweet words of salvation. I have seen eternity, I swear. But it was in dream and in the morning all was gone. I know myself for what I am. And I throw my poor soul upon your forgiveness, in the full knowledge that I deserve none at your loving hands.",
+      "text": "God, we have not spoken as long or as often as we should. I've often been about other business. If I wanted forgiveness I should ask for it, but for all that I have done and for all that I am yet to do, there can be no forgiveness. And yet I think I'm not an evil man. Evil men pray louder, seek penance, and stick themselves closer to Heaven than I am. I shall not see its gates Lord. Nor hear your sweet words of salvation. I have seen eternity, I swear. But it was in dream and in the morning all was gone. I know myself for what I am. And I throw my poor soul upon your forgiveness, in the full knowledge that I deserve none at your loving hands.",
       "source": "The Tudors - Wolsey's Last Prayer",
       "id": 3844,
       "length": 652
@@ -32873,35 +32873,35 @@
       "length": 463,
       "id": 5534
     },
-	{
+    {
       "text": "It is those who possess wisdom who are the greatest fools. History has shown us this. You could say that this is the final warning from God to those who resist.",
-	  "source": "Steins;Gate",
-	  "length": 160,
-	  "id": 5535
-	},
-	{
+      "source": "Steins;Gate",
+      "length": 160,
+      "id": 5535
+    },
+    {
       "text": "Remembering something that no one else can is a painful thing. You can't talk to anyone about it. No one will understand you. You'll be alone.",
-	  "source": "Steins;Gate",
-	  "length": 142,
-	  "id": 5536
-	},
-	{
+      "source": "Steins;Gate",
+      "length": 142,
+      "id": 5536
+    },
+    {
       "text": "No one knows what the future holds. That's why its potential is infinite.",
-	  "source": "Steins;Gate",
-	  "length": 73,
-	  "id": 5537
-	},
-	{
+      "source": "Steins;Gate",
+      "length": 73,
+      "id": 5537
+    },
+    {
       "text": "It feels like time is passing so quickly. Damn you, Einstein! Your science is crowding in on our kiss! He was right. The passage of time depends entirely on where you're standing. Relativity Theory... it's so romantic. But it's just so tragic too.",
-	  "source": "Steins;Gate",
-	  "length": 247,
-	  "id": 5538
-	},
-  {
-    "text": "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
-	  "source": "Martin Fowler",
-	  "length": 111,
-	  "id": 5539
-  }
+      "source": "Steins;Gate",
+      "length": 247,
+      "id": 5538
+    },
+    {
+      "text": "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
+      "source": "Martin Fowler",
+      "length": 111,
+      "id": 5539
+    }
   ]
 }
