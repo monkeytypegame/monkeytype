@@ -449,6 +449,9 @@ export async function init() {
     if (Config.funbox === "plus_one") {
       wordsBound = 2;
     }
+    if (Config.funbox === "plus_two") {
+      wordsBound = 3;
+    }
     let wordset = language.words;
     if (Config.mode == "custom") {
       wordset = CustomText.text;
@@ -912,6 +915,7 @@ export function calculateWpmAndRaw() {
 export function addWord() {
   let bound = 100;
   if (Config.funbox === "plus_one") bound = 1;
+  if (Config.funbox === "plus_two") bound = 2;
   if (
     words.length - input.history.length > bound ||
     (Config.mode === "words" &&
