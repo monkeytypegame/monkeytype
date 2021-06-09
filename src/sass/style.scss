@@ -1435,6 +1435,9 @@ label.checkbox {
     &.size3 {
       margin-left: -0.2rem;
     }
+    &.size4 {
+      margin-left: -0.3rem;
+    }
   }
 
   &.banana {
@@ -1449,6 +1452,9 @@ label.checkbox {
     }
     &.size3 {
       margin-left: -0.5rem;
+    }
+    &.size4 {
+      margin-left: -0.3rem;
     }
   }
 
@@ -1487,6 +1493,9 @@ label.checkbox {
     &.size3 {
       margin-top: 3.9em;
     }
+    &.size4 {
+      margin-top: 4.7em;
+    }
   }
 
   &.size125 {
@@ -1503,6 +1512,10 @@ label.checkbox {
 
   &.size3 {
     transform: scale(2.8);
+  }
+
+  &.size4 {
+    transform: scale(3.7);
   }
 }
 
@@ -2413,6 +2426,11 @@ key {
         font-size: 3rem;
         line-height: 3rem;
       }
+      &.size4 {
+        margin-top: -4.5rem;
+        font-size: 4rem;
+        line-height: 4rem;
+      }
     }
   }
 
@@ -2489,6 +2507,12 @@ key {
   line-height: 3rem;
   font-size: 3rem;
   margin: 0.75rem;
+}
+
+#words.size4 .word {
+  line-height: 4rem;
+  font-size: 4rem;
+  margin: 1rem;
 }
 
 #words.nospace {

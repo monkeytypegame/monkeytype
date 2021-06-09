@@ -1169,6 +1169,14 @@ let commandsFontSize = {
         TestLogic.restart();
       },
     },
+    {
+      id: "changeFontSize4",
+      display: "4x",
+      exec: () => {
+        UpdateConfig.setFontSize(4);
+        TestLogic.restart();
+      },
+    },
   ],
 };
 

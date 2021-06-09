@@ -1389,11 +1389,17 @@ export function setFontSize(fontSize, nosave) {
   $("#caret, #paceCaret").removeClass("size2");
   $("#words").removeClass("size3");
   $("#caret, #paceCaret").removeClass("size3");
+  $("#words").removeClass("size35");
+  $("#caret, #paceCaret").removeClass("size35");
+  $("#words").removeClass("size4");
+  $("#caret, #paceCaret").removeClass("size4");
 
   $("#miniTimerAndLiveWpm").removeClass("size125");
   $("#miniTimerAndLiveWpm").removeClass("size15");
   $("#miniTimerAndLiveWpm").removeClass("size2");
   $("#miniTimerAndLiveWpm").removeClass("size3");
+  $("#miniTimerAndLiveWpm").removeClass("size35");
+  $("#miniTimerAndLiveWpm").removeClass("size4");
 
   if (fontSize == 125) {
     $("#words").addClass("size125");
@@ -1411,6 +1417,14 @@ export function setFontSize(fontSize, nosave) {
     $("#words").addClass("size3");
     $("#caret, #paceCaret").addClass("size3");
     $("#miniTimerAndLiveWpm").addClass("size3");
+  } else if (fontSize == 35) {
+    $("#words").addClass("size34");
+    $("#caret, #paceCaret").addClass("size35");
+    $("#miniTimerAndLiveWpm").addClass("size35");
+  } else if (fontSize == 4) {
+    $("#words").addClass("size4");
+    $("#caret, #paceCaret").addClass("size4");
+    $("#miniTimerAndLiveWpm").addClass("size4");
   }
   if (!nosave) saveToLocalStorage();
 }
