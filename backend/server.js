@@ -43,19 +43,7 @@ connectDB()
 const authRouter = require("./api/routes/auth");
 app.use("/auth", authRouter);
 
-async function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = await admin
-    .auth()
-    .verifyIdToken(req.headers.authorization.split(" ")[1]);
-  if (token == null) {
-    return res.sendStatus(401);
-  } else {
-    req.name = token.name;
-    req.uid = token.user_id;
-    next();
-  }
-}
+
 
 // NON-ROUTE FUNCTIONS
 
