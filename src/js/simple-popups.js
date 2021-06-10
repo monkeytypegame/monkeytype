@@ -289,28 +289,12 @@ list.resetSettings = new SimplePopup(
   () => {}
 );
 
-list.resetSettings = new SimplePopup(
-  "resetSettings",
-  "text",
-  "Reset Settings",
-  [],
-  "Are you sure you want to reset all your settings?",
-  "Reset",
-  () => {
-    UpdateConfig.reset();
-    setTimeout(() => {
-      location.reload();
-    }, 1000);
-  },
-  () => {}
-);
-
 list.unlinkDiscord = new SimplePopup(
   "unlinkDiscord",
   "text",
   "Unlink Discord",
   [],
-  "Are you sure you want to unlink discord?",
+  "Are you sure you want to unlink your Discord account?",
   "Unlink",
   () => {
     Loader.show();
