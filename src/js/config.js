@@ -1774,10 +1774,7 @@ export function apply(configObj) {
 }
 
 export function reset() {
-  config = {
-    ...defaultConfig,
-  };
-  apply();
+  apply(defaultConfig);
   saveToLocalStorage();
 }
 

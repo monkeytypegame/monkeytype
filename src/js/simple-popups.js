@@ -4,6 +4,7 @@ import * as Notifications from "./notifications";
 import * as AccountController from "./account-controller";
 import * as DB from "./db";
 import * as Settings from "./settings";
+import * as UpdateConfig from "./config";
 
 export let list = {};
 class SimplePopup {
@@ -268,6 +269,49 @@ list.resetPersonalBests = new SimplePopup(
     } catch (e) {
       Notifications.add("Something went wrong: " + e, -1);
     }
+  },
+  () => {}
+);
+
+list.resetSettings = new SimplePopup(
+  "resetSettings",
+  "text",
+  "Reset Settings",
+  [],
+  "Are you sure you want to reset all your settings?",
+  "Reset",
+  () => {
+    UpdateConfig.reset();
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+  },
+  () => {}
+);
+
+list.unlinkDiscord = new SimplePopup(
+  "unlinkDiscord",
+  "text",
+  "Unlink Discord",
+  [],
+  "Are you sure you want to unlink your Discord account?",
+  "Unlink",
+  () => {
+    Loader.show();
+    CloudFunctions.unlinkDiscord({
+      uid: firebase.auth().currentUser.uid,
+    }).then((ret) => {
+      Loader.hide();
+      console.log(ret);
+      if (ret.data.status === 1) {
+        DB.getSnapshot().discordId = null;
+        Notifications.add("Accounts unlinked", 0);
+        Settings.updateDiscordSection();
+      } else {
+        Notifications.add("Something went wrong: " + ret.data.message, -1);
+        Settings.updateDiscordSection();
+      }
+    });
   },
   () => {}
 );
