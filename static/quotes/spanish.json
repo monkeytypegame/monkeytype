@@ -99,7 +99,7 @@
     },
     {
       "text": "La mecanografía es el proceso de introducir caracteres alfanuméricos en un dispositivo por medio de un teclado como los que poseen las máquinas de escribir, los ordenadores o las calculadoras.",
-      "source": "WIkipedia, Mecanografía",
+      "source": "Wikipedia, Mecanografía",
       "length": 192,
       "id": 14
     },
@@ -110,7 +110,7 @@
       "id": 15
     },
     {
-      "text": "La verdad es que, aquí como en todo, Gorgias se debate entre la exposición de una doctrina propia y la crítica, por exageración y reducción al absurdo, de doctrinas ajenas. Es este último interés el que ocupa el primer lugar, el que domina, por así decirlo,el primer nivel de la exposición.",
+      "text": "La verdad es que, aquí como en todo, Gorgias se debate entre la exposición de una doctrina propia y la crítica, por exageración y reducción al absurdo, de doctrinas ajenas. Es este último interés el que ocupa el primer lugar, el que domina, por así decirlo, el primer nivel de la exposición.",
       "source": "Nuevos estudios de lingüística general y de teoría literaria",
       "length": 291,
       "id": 16
@@ -246,6 +246,18 @@
       "source": "Elbert Hubbard",
       "length": 88,
       "id": 38
+    },
+    {
+      "text": "Al que no crea en Dios ni en el rey ni en la familia, le pagaremos el viaje y lo enviaremos a Bulgaria. Tsahula, una cría de cuatro años, lloraba sin descanso y llamaba a su madre, que se hallaba muy lejos, en Grecia.",
+      "source": "Manuel Leguineche, Los ángeles perdidos",
+      "length": 44,
+      "id": 39
+    },
+    {
+      "text": "El día en que lo iban a matar, Santiago Nasar se levantó a las 5.30 de la mañana para esperar el buque en que llegaba el obispo. Había soñado que atravesaba un bosque de higuerones donde caía una llovizna tierna, y por un instante fue feliz en el sueño, pero al despertar se sintió por completo salpicado de cagada de pájaros.",
+      "source": "Gabriel García Marquéz, Crónica de una muerte anunciada",
+      "length": 61,
+      "id": 40
     }
   ]
 }
