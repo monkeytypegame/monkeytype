@@ -417,6 +417,8 @@ function handleAlpha(event) {
       "PrintScreen",
       "Clear",
       "End",
+      "GroupPrevious",
+      "GroupNext",
       undefined,
     ].includes(event.key)
   ) {
