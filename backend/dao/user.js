@@ -44,6 +44,12 @@ class UsersDAO {
       .updateOne({ uid }, { $push: { tags: { name } } });
   }
 
+  static async getTags(uid){
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+    return user.tags;
+  }
+
   static async editTag(uid, id, name) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
@@ -91,7 +97,7 @@ class UsersDAO {
           uid: uid,
           "tags._id": id,
         },
-        { $pull: { tags: { personalBests } } }
+        { $pull: { tags: { personalBests: "" } } }
       );
   }
 
@@ -234,12 +240,7 @@ class UsersDAO {
 
     if(best60 === undefined || wpm >= (best60 - best60 * 0.25)){
       //increment when no record found or wpm is within 25% of the record
-      return await mongoDB()
-      .collection("users")
-      .updateOne(
-        { uid },
-        { $inc: { bananas: 1 } }
-      );
+      return await mongoDB().collection("users").updateOne({ uid },{ $inc: { bananas: 1 } });
     }else{
       return null;
     }
