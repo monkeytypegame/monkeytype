@@ -32,6 +32,12 @@ class UsersDAO {
     return user;
   }
 
+  static async getUserByDiscordId(discordId) {
+    const user = await mongoDB().collection("users").findOne({ discordId });
+    if (!user) throw new MonkeyError(404, "User not found");
+    return user;
+  }
+
   static async addTag(uid, name) {
     return await mongoDB()
       .collection("users")
@@ -197,6 +203,14 @@ class UsersDAO {
           },
         }
       );
+  }
+
+  static async linkDiscord(uid, discordId) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+    return await mongoDB()
+      .collection("users")
+      .updateOne({ uid }, { $set: { discordId } });
   }
 
   static async unlinkDiscord(uid) {

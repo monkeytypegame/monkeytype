@@ -17,6 +17,10 @@ class BotDAO {
     return await addCommand("updateRole", [discordId, wpm]);
   }
 
+  static async linkDiscord(uid, discordId) {
+    return await addCommand("linkDiscord", [discordId, uid]);
+  }
+
   static async announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
     return await addCommand("sayLbUpdate", [
       discordId,
