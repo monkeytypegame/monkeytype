@@ -1,4 +1,4 @@
-import ConfigDAO from "../../dao/configDAO";
+import ConfigDAO from "../../dao/config";
 import { validateConfig } from "../../handlers/validation";
 
 class ConfigController {
