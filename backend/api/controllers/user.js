@@ -1,4 +1,3 @@
-import { toNamespacedPath } from "path";
 import UsersDAO from "../../dao/usersDAO";
 import BotDAO from "../../dao/botDAO";
 import { isUsernameValid } from "../../handlers/validation";
