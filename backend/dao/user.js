@@ -103,18 +103,22 @@ class UsersDAO {
 
   static async checkIfPb(
     uid,
-    mode,
-    mode2,
-    acc,
-    consistency,
-    difficulty,
-    language,
-    punctuation,
-    raw,
-    wpm
+    result
   ) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
+
+    const {
+      mode,
+      mode2,
+      acc,
+      consistency,
+      difficulty,
+      language,
+      punctuation,
+      raw,
+      wpm
+    } = result;
 
     let pb = checkAndUpdatePb(
       user.personalBests,
@@ -141,16 +145,7 @@ class UsersDAO {
 
   static async checkIfTagPb(
     uid,
-    tags,
-    mode,
-    mode2,
-    acc,
-    consistency,
-    difficulty,
-    language,
-    punctuation,
-    raw,
-    wpm
+    result
   ) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
@@ -158,6 +153,18 @@ class UsersDAO {
     if (user.tags === undefined || user.tags.length === 0) {
       return [];
     }
+
+    const {
+      mode,
+      mode2,
+      acc,
+      consistency,
+      difficulty,
+      language,
+      punctuation,
+      raw,
+      wpm
+    } = result;
 
     let ret = [];
 
