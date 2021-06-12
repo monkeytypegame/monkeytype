@@ -4,6 +4,13 @@ const UserDAO = require("./user");
 
 class ResultDAO {
   static async addResult(uid, result) {
+    let user;
+    try{
+      user = await UserDAO.getUser(uid);
+    }catch(e){
+      user = null;
+    }
+    if (!user) throw new MonkeyError(404, "User not found");
     if (result.uid === undefined) result.uid = uid;
     return await mongoDB().collection("results").insertOne(result);
   }
