@@ -1,3 +1,4 @@
+/* eslint-disable */
 
 app.post("/testCompleted", authenticateToken, (req, res) => {
   User.findOne({ uid: req.uid }, (err, user) => {
@@ -309,37 +310,3 @@ app.post("/testCompleted", authenticateToken, (req, res) => {
   });
 });
 
-
-app.post("/updateResultTags", authenticateToken, (req, res) => {
-  try {
-    let validTags = true;
-    req.body.tags.forEach((tag) => {
-      if (!/^[0-9a-zA-Z]+$/.test(tag)) validTags = false;
-    });
-    if (validTags) {
-      User.findOne({ uid: req.uid }, (err, user) => {
-        for (let i = 0; i < user.results.length; i++) {
-          if (user.results[i]._id.toString() === req.body.resultid.toString()) {
-            user.results[i].tags = req.body.tags;
-            user.save();
-            console.log(
-              `user ${request.uid} updated tags for result ${request.resultid}`
-            );
-            res.send({ resultCode: 1 });
-            return;
-          }
-        }
-        console.error(
-          `error while updating tags for result by user ${req.uid}: ${e.message}`
-        );
-        res.send({ resultCode: -999 });
-      });
-    } else {
-      console.error(`invalid tags for user ${req.uid}: ${req.body.tags}`);
-      res.send({ resultCode: -1 });
-    }
-  } catch (e) {
-    console.error(`error updating tags by ${req.uid} - ${e}`);
-    res.send({ resultCode: -999, message: e });
-  }
-});
