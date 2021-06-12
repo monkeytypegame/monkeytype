@@ -1,5 +1,6 @@
 const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
+const UserDAO = require("./user");
 
 class ResultDAO {
   static async addResult(uid, result) {
@@ -10,6 +11,12 @@ class ResultDAO {
   static async editResultTags(uid, id, tags) {
     const result = await mongoDB().collection("result").findOne({ id, uid });
     if (!result) throw new MonkeyError(404, "Result not found");
+    const userTags = await UserDAO.getTags(uid);
+    let validTags = true;
+    tags.forEach(tagId => {
+      if(!userTags.includes(tagId)) validTags = false;
+    });
+    if (!validTags) throw new MonkeyError(400, "One of the tag id's is not vaild");
     return await mongoDB()
       .collection("results")
       .updateOne({ id, uid }, { $set: { tags } });
@@ -26,8 +33,8 @@ class ResultDAO {
     end = end ?? 1000;
     const result = await mongoDB()
       .collection("result")
-      .find({ id, uid })
-      .sort({ timestamp })
+      .find({ uid })
+      .sort({ timestamp: -1 })
       .skip(start)
       .limit(end); // this needs to be changed to later take patreon into consideration
     if (!result) throw new MonkeyError(404, "Result not found");
