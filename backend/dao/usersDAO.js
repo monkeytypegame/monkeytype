@@ -206,6 +206,31 @@ class UsersDAO {
       .collection("users")
       .updateOne({ uid }, { $set: { discordId: null } });
   }
+
+  static async incrementBananas(uid, wpm){
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found");
+
+    let best60;
+    try{
+      best60 = Math.max(...user.personalBests.time[60].map((best) => best.wpm));
+    }catch(e){
+      best60 = undefined;
+    }
+
+    if(best60 === undefined || wpm >= (best60 - best60 * 0.25)){
+      //increment when no record found or wpm is within 25% of the record
+      return await mongoDB()
+      .collection("users")
+      .updateOne(
+        { uid },
+        { $inc: { bananas: 1 } }
+      );
+    }else{
+      return null;
+    }
+  }
+
 }
 
 module.exports = UsersDAO;
