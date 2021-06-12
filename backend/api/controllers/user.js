@@ -1,7 +1,7 @@
 import UsersDAO from "../../dao/usersDAO";
 import { isUsernameValid } from "../../handlers/validation";
 
-class AuthController {
+class UserController {
   static async createNewUser(req, res, next) {
     try {
       const { name, email, uid } = req.body;
@@ -34,4 +34,4 @@ class AuthController {
   }
 }
 
-module.exports = AuthController;
+module.exports = UserController;
