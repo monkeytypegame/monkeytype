@@ -91,5 +91,24 @@ module.exports = {
       }
     });
     return true;
+  },
+  validateObjectValues(val){
+    let errCount = 0;
+    if (val === null || val === undefined) {
+      //
+    } else if (Array.isArray(val)) {
+      //array
+      val.forEach((val2) => {
+        errCount += validateObjectValues(val2);
+      });
+    } else if (typeof val === "object" && !Array.isArray(val)) {
+      //object
+      Object.keys(val).forEach((valkey) => {
+        errCount += validateObjectValues(val[valkey]);
+      });
+    } else {
+      if (!/^[0-9a-zA-Z._\-\+]+$/.test(val)) errCount++;
+    }
+    return errCount == 0;
   }
 };
