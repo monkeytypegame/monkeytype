@@ -100,9 +100,18 @@ export async function activate(funbox) {
         "Current language does not support this funbox mode",
         0
       );
-      activate("none", null);
+      setFunbox("none", null);
       return;
     }
+  }
+  if (Config.mode === "zen" && (funbox == "layoutfluid")) {
+    Notifications.add(
+      `Zen mode does not support the ${funbox} funbox`,
+      0
+    );
+    setFunbox("none", null);
+    TestLogic.restart();
+    return;
   }
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
