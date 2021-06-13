@@ -313,7 +313,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       Math.random() < 0.25 &&
       Config.language.split("_")[0] == "code"
     ) {
-      let specials = ["{", "}", "[", "]", "(", ")", ";", "=", "%", "/"];
+      let specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
 
       word = specials[Math.floor(Math.random() * 10)];
     }

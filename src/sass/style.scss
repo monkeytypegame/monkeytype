@@ -1290,7 +1290,8 @@ label.checkbox {
   line-height: 0;
   top: 5rem;
   position: relative;
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
   justify-content: center;
   gap: 5rem;
 }
