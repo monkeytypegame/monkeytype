@@ -163,7 +163,8 @@ class UsersDAO {
       language,
       punctuation,
       raw,
-      wpm
+      wpm,
+      tags
     } = result;
 
     let ret = [];
