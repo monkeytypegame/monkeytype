@@ -719,6 +719,11 @@ export function restart(
     PractiseMissed.resetBefore();
   }
 
+  let repeatWithPace = false;
+  if (TestUI.resultVisible) {
+    repeatWithPace = true;
+  }
+
   ManualRestart.reset();
   TestTimer.clear();
   TestStats.restart();
@@ -771,13 +776,13 @@ export function restart(
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         setRepeated(false);
-        setPaceRepeat(false);
+        if (repeatWithPace) setPaceRepeat(false);
         setHasTab(false);
         await init();
         PaceCaret.init(nosave);
       } else {
         setRepeated(true);
-        setPaceRepeat(true);
+        if (repeatWithPace) setPaceRepeat(true);
         setActive(false);
         Replay.stopReplayRecording();
         words.resetCurrentIndex();

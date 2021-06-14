@@ -446,7 +446,7 @@ export function updateModesNotice() {
 
   $(".pageTest #testModesNotice").empty();
 
-  if (TestLogic.isRepeated) {
+  if (TestLogic.isRepeated && Config.mode !== "quote") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button restart" style="color:var(--error-color);"><i class="fas fa-sync-alt"></i>repeated</div>`
     );
