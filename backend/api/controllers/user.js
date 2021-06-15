@@ -1,6 +1,11 @@
-import UsersDAO from "../../dao/usersDAO";
-import BotDAO from "../../dao/botDAO";
-import { isUsernameValid } from "../../handlers/validation";
+const UsersDAO = require("../../dao/user");
+const BotDAO = require("../../dao/bot");
+const { isUsernameValid } = require("../../handlers/validation");
+
+
+// import UsersDAO from "../../dao/user";
+// import BotDAO from "../../dao/bot";
+// import { isUsernameValid } from "../../handlers/validation";
 
 class UserController {
   static async createNewUser(req, res, next) {
@@ -16,8 +21,20 @@ class UserController {
   static async updateName(req, res, next) {
     try {
       const { name } = req.body;
-      if (!isUsernameValid(name)) return next("Username unavailable!");
+      if (!isUsernameValid(name)) return next("Username invalid!");
       await UsersDAO.updateName();
+      return res.sendStatus(200);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  static async checkName(req, res, next) {
+    try {
+      const { name } = req.body;
+      if (!isUsernameValid(name)) return next("Username invalid");
+      const available = await UsersDAO.isNameAvailable(name);
+      if(!available) return next("Username unavailable");
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
