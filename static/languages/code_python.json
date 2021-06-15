@@ -80,7 +80,7 @@
     "isalpha",
     "isdecimal",
     "isdigit",
-    "isidentifie",
+    "isidentifier",
     "isinstance",
     "islower",
     "isnumeric",
