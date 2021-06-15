@@ -1,8 +1,8 @@
 const express = require("express");
 const { config } = require("dotenv");
+const path = require("path");
 config({ path: path.join(__dirname, ".env") });
 
-const path = require("path");
 const cors = require("cors");
 const admin = require("firebase-admin");
 
@@ -15,8 +15,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
-const authRouter = require("./api/routes/auth");
-app.use("/auth", authRouter);
+const userRouter = require("./api/routes/user");
+app.use("/user", userRouter);
 
 app.use(function (e, req, res, next) {
   console.log("Error", e);
