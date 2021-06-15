@@ -20,6 +20,17 @@ class UsersDAO {
       .updateOne({ uid }, { $set: { name } });
   }
 
+  static async isNameAvailable(name) {
+    const nameDoc = await mongoDB()
+      .collection("users")
+      .findOne({ name });
+    if (nameDoc){
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   static async updateEmail(uid, email) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
