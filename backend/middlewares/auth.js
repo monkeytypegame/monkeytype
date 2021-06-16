@@ -10,7 +10,7 @@ module.exports = {
           new MonkeyError(404, "Unauthorized", "No authorization header")
         );
       const token = authorization.split(" ");
-      if (token[0] !== "Bearer ")
+      if (token[0].trim() !== "Bearer")
         return next(
           new MonkeyError(
             400,
