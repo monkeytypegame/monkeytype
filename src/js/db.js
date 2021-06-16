@@ -28,16 +28,53 @@ export function setSnapshot(newSnapshot) {
 export async function initSnapshot() {
   //send api request with token that returns tags, presets, and data needed for snap
   if (firebase.auth().currentUser == null) return false;
-  await axiosInstance
-    .get("/fetchSnapshot")
-    .then((response) => {
-      dbSnapshot = response.data.snap;
-      loadTags(dbSnapshot.tags);
-      return dbSnapshot;
-    })
-    .catch((e) => {
-      console.error(e);
-    });
+  let snap = {
+    results: undefined,
+    personalBests: {},
+    name: undefined,
+    presets: [],
+    tags: [],
+    favouriteThemes: [],
+    banned: undefined,
+    verified: undefined,
+    emailVerified: undefined,
+    lbMemory: {
+      time15: {
+        global: null,
+        daily: null,
+      },
+      time60: {
+        global: null,
+        daily: null,
+      },
+    },
+    globalStats: {
+      time: 0,
+      started: 0,
+      completed: 0,
+    },
+  };
+  let userData = await axiosInstance.get("/user");
+  userData = userData.data;
+  snap.name = userData.name;
+  snap.personalBests = userData.personalBests;
+  snap.banned = userData.banned;
+  snap.verified = userData.verified;
+  if(userData.globalStats){
+    snap.globalStats = userData.globalStats;
+  }
+  snap.favouriteThemes = userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
+  try {
+    if (userData.lbMemory.time15 !== undefined) {
+      snap.lbMemory.time15 = userData.lbMemory.time15;
+    }
+    if (userData.lbMemory.time60 !== undefined) {
+      snap.lbMemory.time60 = userData.lbMemory.time60;
+    }
+  } catch {}
+  dbSnapshot = snap;
+  loadTags(dbSnapshot.tags);
+  return dbSnapshot;
 }
 
 export async function getUserResults() {

@@ -13,6 +13,6 @@ router.post("/delete", UserController.deleteUser);
 
 router.post("/user/updateName", authenticateRequest, UserController.updateName);
 
-router.get("/user", authenticateRequest, UserController.getUser);
+router.get("/", authenticateRequest, UserController.getUser);
 
 module.exports = router;
