@@ -39,4 +39,16 @@ axiosInstance.interceptors.request.use(
   }
 );
 
+axiosInstance.interceptors.response.use((response) => response, (error) => {
+  // whatever you want to do with the error
+  // console.log('interctepted');
+  // if(error.response.data.message){
+  //   Notifications.add(`${error.response.data.message}`);
+  // }else{
+  //   Notifications.add(`${error.response.status} ${error.response.statusText}`);
+  // }
+  // return error.response;
+  throw error;
+});
+
 export default axiosInstance;
