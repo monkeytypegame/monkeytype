@@ -136,8 +136,74 @@ async function signUp() {
     return;
   }
 
-  const checkName = await axiosInstance.get("/user/checkName");
-  console.log(checkName);
+  try{
+    const checkNameResponse = await axiosInstance.post("/user/checkName",{name: nname});
+  }catch(e){
+    let txt;
+    if(e.response){
+      txt = e.response.data.message || (e.response.status + ' ' + e.response.statusText);
+    }else{
+      txt = e.message;
+    }
+    Notifications.add(txt,-1);
+    $(".pageLogin .preloader").addClass("hidden");
+    $(".pageLogin .register .button").removeClass("disabled");
+    return;
+  }
+  
+  let createdAuthUser;
+  try{
+    createdAuthUser = await firebase.auth().createUserWithEmailAndPassword(email, password);
+    const createdDbUser = await axiosInstance.post("/user/signup",{name: nname, email, uid: createdAuthUser.user.uid});
+    await createdAuthUser.user.updateProfile({displayName: nname});
+    await createdAuthUser.user.sendEmailVerification();
+    AllTimeStats.clear();
+    Notifications.add("Account created", 1, 3);
+    $("#menu .icon-button.account .text").text(nname);
+    $(".pageLogin .register .button").removeClass("disabled");
+    $(".pageLogin .preloader").addClass("hidden");
+    DB.setSnapshot({
+      results: [],
+      personalBests: {},
+      tags: [],
+      globalStats: {
+        time: undefined,
+        started: undefined,
+        completed: undefined,
+      },
+    });
+    if (TestLogic.notSignedInLastResult !== null) {
+      TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
+      //TODO: use new system
+      // axiosInstance
+      //   .post("/testCompleted", {
+      //     obj: TestLogic.notSignedInLastResult,
+      //   })
+      //   .then(() => {
+      //     DB.getSnapshot().results.push(
+      //       TestLogic.notSignedInLastResult
+      //     );
+      //   });
+    }
+    UI.changePage("account");
+  }catch(e){
+    //make sure to do clean up here
+    await createdAuthUser.user.delete();
+    axiosInstance.post("/user/delete",{uid: createdAuthUser.user.uid});
+    let txt;
+    if(e.response){
+      txt = e.response.data.message || (e.response.status + ' ' + e.response.statusText);
+    }else{
+      txt = e.message;
+    }
+    Notifications.add(txt,-1);
+    $(".pageLogin .preloader").addClass("hidden");
+    $(".pageLogin .register .button").removeClass("disabled");
+    return;
+  }
+
+
+
   return;
 
   // axiosInstance.get(`/nameCheck/${nname}`).then((d) => {
