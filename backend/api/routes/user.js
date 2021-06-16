@@ -5,9 +5,11 @@ const UserController = require("../controllers/user");
 
 const router = Router();
 
-router.post("/user/signup", UserController.createNewUser);
+router.post("/signup", UserController.createNewUser);
 
-router.post("/user/checkName", authenticateRequest, UserController.checkName);
+router.post("/checkName", UserController.checkName);
+
+router.post("/delete", UserController.deleteUser);
 
 router.post("/user/updateName", authenticateRequest, UserController.updateName);
 

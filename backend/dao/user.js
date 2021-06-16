@@ -10,6 +10,12 @@ class UsersDAO {
       .insertOne({ name, email, uid, addedAt: Date.now() });
   }
 
+  static async deleteUser(uid) {
+    return await mongoDB()
+      .collection("users")
+      .deleteOne({uid});
+  }
+
   static async updateName(uid, name) {
     const nameDoc = await mongoDB()
       .collection("users")

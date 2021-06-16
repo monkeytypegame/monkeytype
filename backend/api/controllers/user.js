@@ -18,10 +18,20 @@ class UserController {
     }
   }
 
+  static async deleteUser(req, res, next) {
+    try {
+      const { uid } = req.body;
+      await UsersDAO.deleteUser(uid);
+      return res.sendStatus(200);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
   static async updateName(req, res, next) {
     try {
       const { name } = req.body;
-      if (!isUsernameValid(name)) return next("Username invalid!");
+      if (!isUsernameValid(name)) return res.status(400).json({message:"Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -"});
       await UsersDAO.updateName();
       return res.sendStatus(200);
     } catch (e) {
@@ -32,9 +42,9 @@ class UserController {
   static async checkName(req, res, next) {
     try {
       const { name } = req.body;
-      if (!isUsernameValid(name)) return next("Username invalid");
+      if (!isUsernameValid(name)) return next({status: 400, message: "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -"});
       const available = await UsersDAO.isNameAvailable(name);
-      if(!available) return next("Username unavailable");
+      if(!available) return res.status(400).json({message:"Username unavailable"});
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
