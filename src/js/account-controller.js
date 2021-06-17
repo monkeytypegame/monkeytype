@@ -295,6 +295,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
       );
     }
+    UI.setPageTransition(false);
     AccountButton.update();
     AccountButton.loading(true);
     Account.getDataAndInit();
@@ -324,6 +325,9 @@ firebase.auth().onAuthStateChanged(function (user) {
     if (VerificationController.data !== null) {
       VerificationController.verify(user);
     }
+  }else{
+    UI.setPageTransition(false);
+    if($(".pageLoading").hasClass('active')) UI.changePage('');
   }
   let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {

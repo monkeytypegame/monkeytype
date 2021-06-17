@@ -1794,7 +1794,7 @@ export function loadFromLocalStorage() {
     saveToLocalStorage(true);
     console.log("saving localStorage config");
   }
-  TestLogic.restart(false, true);
+  // TestLogic.restart(false, true);
   loadDone();
 }
 

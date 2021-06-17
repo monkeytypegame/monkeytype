@@ -3,7 +3,7 @@ import * as UI from "./ui";
 import Config from "./config";
 
 let mappedRoutes = {
-  "/": "pageTest",
+  "/": "pageLoading",
   "/login": "pageLogin",
   "/settings": "pageSettings",
   "/about": "pageAbout",

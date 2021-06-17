@@ -16,7 +16,7 @@ Misc.getReleasesFromGitHub();
 $(document).ready(() => {
   RouteController.handleInitialPageClasses(window.location.pathname);
   if (window.location.pathname === "/") {
-    $("#top .config").removeClass("hidden");
+    // $("#top .config").removeClass("hidden");
   }
   $("body").css("transition", "all .25s, transform .05s");
   if (Config.quickTab) {
