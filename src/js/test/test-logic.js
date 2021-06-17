@@ -956,11 +956,11 @@ export function addWord() {
 
   if (
     Config.mode === "custom" &&
-    CustomText.isWordRandom &&
+    (CustomText.isWordRandom || CustomText.isTimeRandom) &&
     wordset.length < 3
   ) {
     randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  } else if (Config.mode == "custom" && !CustomText.isWordRandom) {
+  } else if (Config.mode == "custom" && (!CustomText.isWordRandom && !CustomText.isTimeRandom)) {
     randomWord = CustomText.text[words.length];
   } else {
     while (
