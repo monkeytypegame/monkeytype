@@ -793,6 +793,10 @@ $(".pageSettings #updateAccountEmail").on("click", (e) => {
   SimplePopups.list.updateEmail.show();
 });
 
+$(".pageSettings #updateAccountPassword").on("click", (e) => {
+  SimplePopups.list.updatePassword.show();
+});
+
 $(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
   "click",
   (e) => {
