@@ -13,8 +13,8 @@ Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
 Misc.getReleasesFromGitHub();
 
+RouteController.handleInitialPageClasses(window.location.pathname);
 $(document).ready(() => {
-  RouteController.handleInitialPageClasses(window.location.pathname);
   if (window.location.pathname === "/") {
     // $("#top .config").removeClass("hidden");
   }
