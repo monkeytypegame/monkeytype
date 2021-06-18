@@ -469,10 +469,15 @@ export async function init() {
         const previousWord2 = words.get(i - 2);
         if (
           Config.mode == "custom" &&
-          (CustomText.isWordRandom || CustomText.isTimeRandom)
+          (CustomText.isWordRandom || CustomText.isTimeRandom) &&
+          wordset.length < 3
         ) {
           randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-        } else if (Config.mode == "custom" && !CustomText.isWordRandom) {
+        } else if (
+          Config.mode == "custom" &&
+          !CustomText.isWordRandom &&
+          !CustomText.isTimeRandom
+        ) {
           randomWord = CustomText.text[i];
         } else {
           while (
@@ -483,6 +488,10 @@ export async function init() {
           ) {
             randomWord = wordset[Math.floor(Math.random() * wordset.length)];
           }
+        }
+
+        if (randomWord === undefined) {
+          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
         }
 
         if (Config.funbox === "rAnDoMcAsE") {
@@ -960,7 +969,11 @@ export function addWord() {
     wordset.length < 3
   ) {
     randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-  } else if (Config.mode == "custom" && (!CustomText.isWordRandom && !CustomText.isTimeRandom)) {
+  } else if (
+    Config.mode == "custom" &&
+    !CustomText.isWordRandom &&
+    !CustomText.isTimeRandom
+  ) {
     randomWord = CustomText.text[words.length];
   } else {
     while (
@@ -971,6 +984,10 @@ export function addWord() {
     ) {
       randomWord = wordset[Math.floor(Math.random() * wordset.length)];
     }
+  }
+
+  if (randomWord === undefined) {
+    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
   }
 
   if (Config.funbox === "rAnDoMcAsE") {
