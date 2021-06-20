@@ -469,23 +469,23 @@ export async function init() {
         const previousWord2 = words.get(i - 2);
         if (
           Config.mode == "custom" &&
-          (CustomText.isWordRandom || CustomText.isTimeRandom) &&
-          wordset.length < 3
-        ) {
-          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-        } else if (
-          Config.mode == "custom" &&
           !CustomText.isWordRandom &&
           !CustomText.isTimeRandom
         ) {
           randomWord = CustomText.text[i];
-        } else {
+        } else if (
+          Config.mode == "custom" &&
+          (wordset.length < 3 || PractiseMissed.before.mode !== null)
+        ) {
+          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+        } else  {
           while (
             randomWord == previousWord ||
             randomWord == previousWord2 ||
             (!Config.punctuation && randomWord == "I") ||
             randomWord.indexOf(" ") > -1
           ) {
+            console.log('rerandomising');
             randomWord = wordset[Math.floor(Math.random() * wordset.length)];
           }
         }
