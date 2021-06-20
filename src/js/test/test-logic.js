@@ -926,7 +926,7 @@ export function calculateWpmAndRaw() {
   };
 }
 
-export function addWord() {
+export async function addWord() {
   let bound = 100;
   if (Config.funbox === "plus_one") bound = 1;
   if (Config.funbox === "plus_two") bound = 2;
@@ -946,10 +946,10 @@ export function addWord() {
     return;
   const language =
     Config.mode !== "custom"
-      ? Misc.getCurrentLanguage()
+      ? await Misc.getCurrentLanguage()
       : {
           //borrow the direction of the current language
-          leftToRight: Misc.getCurrentLanguage().leftToRight,
+          leftToRight: await Misc.getCurrentLanguage().leftToRight,
           words: CustomText.text,
         };
   const wordset = language.words;
