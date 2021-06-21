@@ -205,7 +205,7 @@
   },
   {
     "name": "urdu",
-    "languages": ["urdu"]
+    "languages": ["urdu", "urdu_1k"]
   },
   {
     "name": "code",
