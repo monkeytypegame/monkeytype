@@ -469,23 +469,23 @@ export async function init() {
         const previousWord2 = words.get(i - 2);
         if (
           Config.mode == "custom" &&
-          (CustomText.isWordRandom || CustomText.isTimeRandom) &&
-          wordset.length < 3
-        ) {
-          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-        } else if (
-          Config.mode == "custom" &&
           !CustomText.isWordRandom &&
           !CustomText.isTimeRandom
         ) {
           randomWord = CustomText.text[i];
-        } else {
+        } else if (
+          Config.mode == "custom" &&
+          (wordset.length < 3 || PractiseMissed.before.mode !== null)
+        ) {
+          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+        } else  {
           while (
             randomWord == previousWord ||
             randomWord == previousWord2 ||
             (!Config.punctuation && randomWord == "I") ||
             randomWord.indexOf(" ") > -1
           ) {
+            console.log('rerandomising');
             randomWord = wordset[Math.floor(Math.random() * wordset.length)];
           }
         }
@@ -926,7 +926,7 @@ export function calculateWpmAndRaw() {
   };
 }
 
-export function addWord() {
+export async function addWord() {
   let bound = 100;
   if (Config.funbox === "plus_one") bound = 1;
   if (Config.funbox === "plus_two") bound = 2;
@@ -946,10 +946,10 @@ export function addWord() {
     return;
   const language =
     Config.mode !== "custom"
-      ? Misc.getCurrentLanguage()
+      ? await Misc.getCurrentLanguage()
       : {
           //borrow the direction of the current language
-          leftToRight: Misc.getCurrentLanguage().leftToRight,
+          leftToRight: await Misc.getCurrentLanguage().leftToRight,
           words: CustomText.text,
         };
   const wordset = language.words;

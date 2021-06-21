@@ -1,4 +1,5 @@
 import * as Loader from "./loader";
+import Config from "./config";
 
 export function getuid() {
   console.error("Only share this uid with Miodec and nobody else!");
@@ -262,9 +263,9 @@ export function showNotification(text, time) {
   );
 }
 
-let currentLanguage = null;
-export function getCurrentLanguage() {
-  return currentLanguage;
+let currentLanguage;
+export async function getCurrentLanguage() {
+  return await getLanguage(Config.language);
 }
 
 export async function getLanguage(lang) {

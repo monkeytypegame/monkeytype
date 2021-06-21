@@ -168,7 +168,7 @@ list.updateEmail = new SimplePopup(
           pass
       );
       Loader.show();
-      user.reauthenticateWithCredential(pass).then(() => {
+      user.reauthenticateWithCredential(credential).then(() => {
         CloudFunctions.updateEmail({
           uid: user.uid,
           previousEmail: previousEmail,

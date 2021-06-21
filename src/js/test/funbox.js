@@ -94,7 +94,8 @@ export async function activate(funbox) {
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
   }
-  if (Misc.getCurrentLanguage().ligatures) {
+
+  if (await Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
         "Current language does not support this funbox mode",
