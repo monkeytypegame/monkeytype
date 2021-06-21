@@ -38,6 +38,10 @@
     "languages": ["russian", "russian_1k", "russian_10k"]
   },
   {
+    "name": "ukranian",
+    "languages": ["ukranian", "ukranian_1k", "ukranian_10k", "ukranian_50k"]
+  },
+  {
     "name": "portuguese",
     "languages": ["portuguese", "portuguese_3k"]
   },
