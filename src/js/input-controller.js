@@ -344,7 +344,7 @@ function handleSpace(event, isEnter) {
     }
   } //end of line wrap
 
-  Caret.updatePosition();
+  // Caret.updatePosition();
 
   if (Config.keymapMode === "react") {
     Keymap.flashKey(event.code, true);
