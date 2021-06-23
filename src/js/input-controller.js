@@ -756,6 +756,10 @@ $(document).keyup((event) => {
 });
 
 $(document).keydown(function (event) {
+  console.log(
+    `left ${ShiftTracker.leftState} right ${ShiftTracker.rightState}`
+  );
+
   if (!(event.key == " ") && !event.originalEvent.isTrusted) return;
 
   if (!TestUI.resultVisible) {
