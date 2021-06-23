@@ -2,7 +2,6 @@ export let leftState = false;
 export let rightState = false;
 
 $(document).keydown((e) => {
-  console.log(e);
   if (e.code === "ShiftLeft") {
     leftState = true;
     rightState = false;
@@ -13,7 +12,6 @@ $(document).keydown((e) => {
 });
 
 $(document).keyup((e) => {
-  console.log(e);
   if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
     leftState = false;
     rightState = false;
