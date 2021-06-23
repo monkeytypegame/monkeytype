@@ -478,14 +478,14 @@ export async function init() {
           (wordset.length < 3 || PractiseMissed.before.mode !== null)
         ) {
           randomWord = wordset[Math.floor(Math.random() * wordset.length)];
-        } else  {
+        } else {
           while (
             randomWord == previousWord ||
             randomWord == previousWord2 ||
             (!Config.punctuation && randomWord == "I") ||
             randomWord.indexOf(" ") > -1
           ) {
-            console.log('rerandomising');
+            console.log("rerandomising");
             randomWord = wordset[Math.floor(Math.random() * wordset.length)];
           }
         }
@@ -1600,7 +1600,9 @@ export function finish(difficultyFailed = false) {
               }
             });
             if (
-              completedEvent.funbox === "none" &&
+              (completedEvent.funbox === "none" ||
+                completedEvent.funbox === "plus_one" ||
+                completedEvent.funbox === "plus_two") &&
               completedEvent.language === "english" &&
               completedEvent.mode === "time" &&
               ["15", "60"].includes(String(completedEvent.mode2))

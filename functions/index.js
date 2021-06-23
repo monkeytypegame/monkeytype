@@ -477,7 +477,11 @@ async function checkIfPB(uid, obj, userdata) {
   if (obj.mode == "quote") {
     return false;
   }
-  if (obj.funbox !== "none") {
+  if (
+    obj.funbox !== "none" &&
+    obj.funbox !== "plus_one" &&
+    obj.funbox !== "plus_two"
+  ) {
     return false;
   }
   try {
