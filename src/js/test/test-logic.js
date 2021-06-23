@@ -1935,7 +1935,7 @@ export function finish(difficultyFailed = false) {
 export function fail() {
   input.pushHistory();
   corrected.pushHistory();
-  // TestStats.pushKeypressesToHistory();
+  TestStats.pushKeypressesToHistory();
   finish(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());
   let afkseconds = TestStats.calculateAfkSeconds(testSeconds);
