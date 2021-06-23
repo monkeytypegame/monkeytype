@@ -485,7 +485,6 @@ export async function init() {
             (!Config.punctuation && randomWord == "I") ||
             randomWord.indexOf(" ") > -1
           ) {
-            console.log("rerandomising");
             randomWord = wordset[Math.floor(Math.random() * wordset.length)];
           }
         }
