@@ -261,7 +261,8 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       Math.random() < 0.011 &&
       Misc.getLastChar(previousWord) != "," &&
       Misc.getLastChar(previousWord) != "." &&
-      Config.language.split("_")[0] !== "russian"
+      Config.language.split("_")[0] !== "russian" &&
+      Config.language.split("_")[0] !== "ukranian"
     ) {
       word = `'${word}'`;
     } else if (
