@@ -14,7 +14,8 @@ import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
 
-var gmailProvider = new firebase.auth.GoogleAuthProvider();
+const gmailProvider = new firebase.auth.GoogleAuthProvider();
+const githubProvider = new firebase.auth.GithubAuthProvider();
 
 export function signIn() {
   $(".pageLogin .preloader").removeClass("hidden");
@@ -82,6 +83,40 @@ export async function signInWithGoogle() {
     firebase
       .auth()
       .signInWithPopup(gmailProvider)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        Notifications.add(error.message, -1);
+        $(".pageLogin .preloader").addClass("hidden");
+      });
+  }
+}
+
+export async function signInWithGitHub() {
+  $(".pageLogin .preloader").removeClass("hidden");
+
+  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
+    //remember me
+    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    firebase
+      .auth()
+      .signInWithPopup(githubProvider)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        Notifications.add(error.message, -1);
+        $(".pageLogin .preloader").addClass("hidden");
+      });
+  } else {
+    //dont remember
+    await firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.SESSION);
+    firebase
+      .auth()
+      .signInWithPopup(githubProvider)
       .then((result) => {
         console.log(result);
       })
@@ -282,6 +317,11 @@ $(".pageLogin .login .button.signInWithGoogle").click((e) => {
   signInWithGoogle();
 });
 
+$(".pageLogin .login .button.signInWithGitHub").click((e) => {
+  UpdateConfig.setChangedBeforeDb(false);
+  signInWithGitHub();
+});
+
 $(".signOut").click((e) => {
   signOut();
 });
@@ -325,9 +365,9 @@ firebase.auth().onAuthStateChanged(function (user) {
     if (VerificationController.data !== null) {
       VerificationController.verify(user);
     }
-  }else{
+  } else {
     UI.setPageTransition(false);
-    if($(".pageLoading").hasClass('active')) UI.changePage('');
+    if ($(".pageLoading").hasClass("active")) UI.changePage("");
   }
   let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {
