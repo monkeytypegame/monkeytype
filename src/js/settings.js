@@ -406,20 +406,6 @@ export function hideAccountSection() {
   $(`.settingsGroup.account`).addClass("hidden");
 }
 
-function showActiveTags() {
-  DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.active === true) {
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
-      ).html('<i class="fas fa-check-square"></i>');
-    } else {
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag.id}'] .active`
-      ).html('<i class="fas fa-square"></i>');
-    }
-  });
-}
-
 export function updateDiscordSection() {
   //no code and no discord
   if (firebase.auth().currentUser == null) {
@@ -461,15 +447,20 @@ function refreshTagsSettingsSection() {
         tagPbString = `PB: ${tag.pb}`;
       }
       tagsEl.append(`
-        <div class="tag" id="${tag.id}">
-            <div class="active" active="${tag.active}">
-                <i class="fas fa-${tag.active ? "check-" : ""}square"></i>
-            </div>
-            <div class="title">${tag.name}</div>
-            <div class="editButton"><i class="fas fa-pen"></i></div>
-            <div class="clearPbButton hidden" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
-            <div class="removeButton"><i class="fas fa-trash"></i></div>
+
+      <div class="buttons tag" id="${tag.id}">
+        <div class="button tagButton ${tag.active ? "active" : ""}" active="${
+        tag.active
+      }">
+          <div class="title">${tag.name}</div>
         </div>
+        <div class="editButton button">
+          <i class="fas fa-pen"></i>
+        </div>
+        <div class="removeButton button">
+          <i class="fas fa-trash"></i>
+        </div>
+      </div>
 
       `);
     });
@@ -495,7 +486,7 @@ function refreshPresetsSettingsSection() {
           <i class="fas fa-trash"></i>
         </div>
       </div>
-
+      
       `);
     });
     $(".pageSettings .section.presets").removeClass("hidden");
@@ -687,12 +678,12 @@ $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
 //tags
 $(document).on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .active",
+  ".pageSettings .section.tags .tagsList .tag .tagButton",
   (e) => {
     let target = e.currentTarget;
     let tagid = $(target).parent(".tag").attr("id");
     TagController.toggle(tagid);
-    showActiveTags();
+    $(target).toggleClass("active");
   }
 );
 
