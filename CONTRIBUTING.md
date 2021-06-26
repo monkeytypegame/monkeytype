@@ -15,7 +15,7 @@
 1. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
 1. Run `firebase login` on your terminal to log in to the same google account as you just used to create the project.
 1. Git clone this project.
-1. Duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
+3. Duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
@@ -49,14 +49,16 @@
    - Select default location and enable
 
 ## Building and Running
+<!-- https://en.wikipedia.org/wiki/Control-C#:~:text=In%20many%20command,to%20the%20user. -->
 
 1. Run `npm install` in the project root directory to install dependencies.
-1. Run `npm run start:dev` to start a local dev server on port 5000. It will watch for changes and rebuild when you edit files in `src/` or `public/`. Use ctrl+c to stop it.
-   - Run `firebase use <your-project-id>` if you run into any errors for this.
+1. Run `npm run start:dev` to start a local dev server on port 5000. It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use `control c` or `command c` to abort it.
+   - Run `firebase use {your-project-id}` if you run into any errors for this.
 
 ## Standards and Conventions
 
 1. Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically ran every time you `git commit` (if you've followed the above instructions properly).
+1. If you are unsure of the best practices and conventions of Javascript, please take a look at the [JavaScript Best Practices](https://www.w3schools.com/js/js_best_practices.asp) and [JavaScript Coding Conventions](https://www.w3schools.com/js/js_conventions.asp)
 
 ## Questions
 
