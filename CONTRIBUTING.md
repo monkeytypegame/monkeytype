@@ -15,7 +15,7 @@
 1. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
 1. Run `firebase login` on your terminal to log in to the same google account as you just used to create the project.
 1. Git clone this project.
-3. Duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
+1. Duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
    - If `.firebaserc_example` does not exist after cloning, create your own with:
 
