@@ -375,6 +375,14 @@ export function updateWordElement(showError) {
         }
       }
     }
+
+    if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
+      if (input.length > currentWord.length) {
+        $(wordAtIndex).addClass("error");
+      } else if (input.length == currentWord.length) {
+        $(wordAtIndex).removeClass("error");
+      }
+    }
   }
   wordAtIndex.innerHTML = ret;
   if (newlineafter) $("#words").append("<div class='newline'></div>");
