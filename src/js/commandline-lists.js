@@ -1484,8 +1484,8 @@ export let defaultCommands = {
       },
     },
     {
-      id: "toggleTimerBar",
-      display: "Toggle timer display",
+      id: "toggleTimerProgressBar",
+      display: "Toggle timer/progress display",
       exec: () => {
         UpdateConfig.toggleShowTimerProgress();
       },
