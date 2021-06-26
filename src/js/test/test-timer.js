@@ -40,6 +40,8 @@ export function start() {
 
       let acc = Misc.roundTo2(TestStats.calculateAccuracy());
 
+      let burst = TestStats.calculateBurst();
+
       if (Config.funbox === "layoutfluid" && Config.mode === "time") {
         const layouts = Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")
@@ -93,6 +95,9 @@ export function start() {
           TestLogic.words.currentIndex > 3) ||
         (Config.minAcc === "custom" &&
           acc < parseInt(Config.minAccCustom) &&
+          TestLogic.words.currentIndex > 3) ||
+        (Config.minBurst === "custom" &&
+          burst > parseInt(Config.minBurstCustomSpeed) &&
           TestLogic.words.currentIndex > 3)
       ) {
         clearTimeout(timer);

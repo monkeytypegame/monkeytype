@@ -39,6 +39,10 @@ async function initGroups() {
     "showLiveAcc",
     UpdateConfig.setShowLiveAcc
   );
+  groups.showLiveBurst = new SettingsGroup(
+    "showLiveBurst",
+    UpdateConfig.setShowLiveBurst
+  );
   groups.showTimerProgress = new SettingsGroup(
     "showTimerProgress",
     UpdateConfig.setShowTimerProgress
@@ -215,6 +219,15 @@ async function initGroups() {
       );
     } else {
       $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
+    }
+  });
+  groups.minBurst = new SettingsGroup("minBurst", UpdateConfig.setMinBurst, () => {
+    if (Config.minBurst === "custom") {
+      $(".pageSettings .section.minBurst input.customMinBurst").removeClass(
+        "hidden"
+      );
+    } else {
+      $(".pageSettings .section.minBurst input.customMinBurst").addClass("hidden");
     }
   });
   groups.smoothLineScroll = new SettingsGroup(
@@ -551,6 +564,15 @@ export function update() {
   } else {
     $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
   }
+
+  if (Config.minBurst === "custom") {
+    $(".pageSettings .section.minBurst input.customMinBurst").removeClass("hidden");
+    $(".pageSettings .section.minBurst input.customMinBurst").val(
+      Config.minBurstCustomSpeed
+    );
+  } else {
+    $(".pageSettings .section.minBurst input.customMinBurst").addClass("hidden");
+  }
 }
 
 function toggleSettingsGroup(groupName) {
@@ -621,6 +643,16 @@ $(document).on(
   (e) => {
     UpdateConfig.setMinAccCustom(
       parseInt($(".pageSettings .section.minAcc input.customMinAcc").val())
+    );
+  }
+);
+
+$(document).on(
+  "focusout",
+  ".pageSettings .section.minBurst input.customMinBurst",
+  (e) => {
+    UpdateConfig.setMinBurstCustomSpeed(
+      parseInt($(".pageSettings .section.minBurst input.customMinBurst").val())
     );
   }
 );

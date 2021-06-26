@@ -180,6 +180,12 @@ export function setLastSecondNotRound() {
   lastSecondNotRound = true;
 }
 
+export function calculateBurst() {
+  // change the way burst is calculated, then change '>' to '<' in line 100 of test timer
+  let burst = accuracy.incorrect;
+  return burst;
+}
+
 export function calculateAccuracy() {
   return (accuracy.correct / (accuracy.correct + accuracy.incorrect)) * 100;
 }
@@ -357,10 +363,12 @@ export function calculateStats() {
       5
   );
   let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  let burst = TestStats.calculateBurst();
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
     acc: acc,
+    burst: burst,
     correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars,
     missedChars: chars.missedChars,

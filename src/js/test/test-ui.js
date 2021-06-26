@@ -532,6 +532,12 @@ export function updateModesNotice() {
     );
   }
 
+  if (Config.minBurst !== "off") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsMinBurst"><i class="fas fa-bomb"></i>min ${Config.minBurstCustomSpeed} burst speed</div>`
+    );
+  }
+
   if (Config.funbox !== "none") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsFunbox"><i class="fas fa-gamepad"></i>${Config.funbox.replace(

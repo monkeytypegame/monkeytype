@@ -1304,6 +1304,10 @@ label.checkbox {
   opacity: 0;
 }
 
+#liveBurst {
+  opacity: 0;
+}
+
 #timerNumber {
   pointer-events: none;
   transition: 0.25s;
@@ -1939,7 +1943,8 @@ key {
     //   "wpm raw time nothing infoAndTags leaderboards source";
     grid-template-areas:
       "wpm"
-      "acc";
+      "acc"
+      "burst";
 
     &.morestats {
       display: grid;
@@ -2077,6 +2082,20 @@ key {
 
     .acc {
       grid-area: acc;
+
+      .top {
+        font-size: 2rem;
+        line-height: 1.5rem;
+      }
+
+      .bottom {
+        font-size: 4rem;
+        line-height: 4rem;
+      }
+    }
+
+    .burst {
+      grid-area: burst;
 
       .top {
         font-size: 2rem;
@@ -2385,13 +2404,15 @@ key {
         margin-right: 2rem;
       }
 
-      .wpm {
+      .wpm,
+      .acc {
         margin-right: 2rem;
       }
 
       .time,
       .wpm,
-      .acc {
+      .acc,
+      .burst {
         opacity: 0;
       }
 

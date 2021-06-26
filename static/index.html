@@ -1122,6 +1122,7 @@
                 <div class="time hidden">1:00</div>
                 <div class="wpm">60</div>
                 <div class="acc">100%</div>
+                <div class="burst">1</div>
               </div>
               <div class="outOfFocusWarning hidden">
                 <i class="fas fa-mouse-pointer"></i>
@@ -1307,6 +1308,7 @@
               <div id="largeLiveWpmAndAcc" class="timerMain">
                 <div id="liveWpm" class="hidden">123</div>
                 <div id="liveAcc" class="hidden">100%%</div>
+                <div id="liveBurst" class="hidden">1</div>
               </div>
               <div
                 id="restartTestButton"
@@ -1354,6 +1356,12 @@
                 </div>
                 <div class="group acc">
                   <div class="top">acc</div>
+                  <div class="bottom" aria-label="" data-balloon-pos="up">
+                    -
+                  </div>
+                </div>
+                <div class="group burst">
+                  <div class="top">burst</div>
                   <div class="bottom" aria-label="" data-balloon-pos="up">
                     -
                   </div>
@@ -2303,6 +2311,39 @@
                     step="1"
                     class="customMinAcc"
                     placeholder="acc"
+                    min="0"
+                    value=""
+                  />
+                </div>
+              </div>
+              <div class="section minBurst" section="">
+                <h1>min burst</h1>
+                <div class="text">
+                  Automatically fails a test if your burst speed falls below a
+                  threshold.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button"
+                    minBurst="off"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    off
+                  </div>
+                  <div
+                    class="button"
+                    minBurst="custom"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    custom
+                  </div>
+                  <input
+                    type="number"
+                    step="1"
+                    class="customMinBurst"
+                    placeholder="burst"
                     min="0"
                     value=""
                   />
@@ -3608,6 +3649,21 @@
                 <h1>live accuracy</h1>
                 <div class="text">
                   Displays live accuracy during the test. Updates once every
+                  second.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
+              <div class="section showLiveBurst">
+                <h1>live burst</h1>
+                <div class="text">
+                  Displays live burst during the test. Updates once every
                   second.
                 </div>
                 <div class="buttons">

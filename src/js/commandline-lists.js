@@ -675,6 +675,28 @@ let commandsMinAcc = {
   ],
 };
 
+let commandsMinBurst = {
+  title: "Change min burst mode...",
+  list: [
+    {
+      id: "setMinBurstOff",
+      display: "off",
+      exec: () => {
+        UpdateConfig.setMinBurst("off");
+      },
+    },
+    {
+      id: "setMinBurstCustom",
+      display: "custom...",
+      input: true,
+      exec: (input) => {
+        UpdateConfig.setMinBurstCustomSpeed(input);
+        UpdateConfig.setMinBurst("custom");
+      },
+    },
+  ],
+};
+
 let commandsKeymapStyle = {
   title: "Change keymap style...",
   list: [
@@ -1484,6 +1506,13 @@ export let defaultCommands = {
       },
     },
     {
+      id: "toggleShowLiveBurst",
+      display: "Toggle live burst display",
+      exec: () => {
+        UpdateConfig.toggleShowLiveBurst();
+      },
+    },
+    {
       id: "toggleTimerProgressBar",
       display: "Toggle timer/progress display",
       exec: () => {
@@ -1572,6 +1601,16 @@ export let defaultCommands = {
       subgroup: true,
       exec: () => {
         current.push(commandsMinAcc);
+        Commandline.show();
+      },
+    },
+    {
+      id: "changeMinBurst",
+      display: "Change min burst mode...",
+      alias: "minimum",
+      subgroup: true,
+      exec: () => {
+        current.push(commandsMinBurst);
         Commandline.show();
       },
     },
