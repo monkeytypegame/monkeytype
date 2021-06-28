@@ -835,7 +835,7 @@ export function restart(
         fbtext = " " + Config.funbox;
       }
       $(".pageTest #premidTestMode").text(
-        `${Config.mode} ${mode2} ${Config.language}${fbtext}`
+        `${Config.mode} ${mode2} ${Config.language.replace(/_/g, " ")}${fbtext}`
       );
       $(".pageTest #premidSecondsLeft").text(Config.time);
 
@@ -1788,7 +1788,7 @@ export function finish(difficultyFailed = false) {
     Config.funbox !== "ascii" &&
     Config.funbox !== "58008"
   ) {
-    testType += "<br>" + lang;
+    testType += "<br>" + lang.replace(/_/g, " ");
   }
   if (Config.punctuation) {
     testType += "<br>punctuation";
