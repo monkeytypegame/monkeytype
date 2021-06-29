@@ -7,8 +7,8 @@ const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint");
-var sass = require("gulp-sass");
-sass.compiler = require("dart-sass");
+var sass = require("gulp-sass")(require("dart-sass"));
+// sass.compiler = require("dart-sass");
 
 let eslintConfig = {
   parser: "babel-eslint",
