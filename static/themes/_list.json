@@ -561,7 +561,7 @@
   },
   {
     "name": "ez_mode",
-    "bgColor": "#f5f5f5",
-    "textColor": "#0171cd"
+    "bgColor": "#0171cd",
+    "textColor": "#f5f5f5"
   }
 ]
