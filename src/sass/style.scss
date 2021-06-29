@@ -2585,10 +2585,10 @@ key {
   opacity: 0.5;
 }
 
-.pageLoading{
+.pageLoading {
   display: grid;
   justify-content: center;
-  .preloader{
+  .preloader {
     font-size: 2rem;
     justify-self: center;
     color: var(--main-color);
@@ -2951,44 +2951,9 @@ key {
         grid-area: buttons;
       }
 
-      .tagsList {
-        display: grid;
-        gap: 0.5rem;
-
-        .tag {
-          display: grid;
-          display: grid;
-          grid-template-columns: auto 1fr auto auto auto;
-          color: var(--text-color);
-
-          .title {
-            align-self: center;
-          }
-
-          .editButton,
-          .clearPbButton,
-          .removeButton,
-          .active {
-            display: grid;
-            grid-auto-flow: column;
-            align-content: center;
-            transition: 0.25s;
-            padding: 0 0.5rem;
-            border-radius: var(--roundness);
-            color: var(--sub-color);
-
-            &:focus {
-              color: var(--sub-color);
-              border: none;
-              outline: none;
-            }
-
-            &:hover {
-              cursor: pointer;
-              color: var(--text-color);
-            }
-          }
-        }
+      .tag {
+        grid-template-columns: 5fr 1fr 1fr;
+        margin-bottom: 0.5rem;
       }
 
       .addTagButton {

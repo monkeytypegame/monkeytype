@@ -38,8 +38,8 @@
     "languages": ["russian", "russian_1k", "russian_10k"]
   },
   {
-    "name": "ukranian",
-    "languages": ["ukranian", "ukranian_1k", "ukranian_10k", "ukranian_50k"]
+    "name": "ukrainian",
+    "languages": ["ukrainian", "ukrainian_1k", "ukrainian_10k", "ukrainian_50k"]
   },
   {
     "name": "portuguese",
@@ -152,6 +152,10 @@
     "languages": ["vietnamese", "vietnamese_1k", "vietnamese_5k"]
   },
   {
+    "name": "pinyin",
+    "languages": ["pinyin", "pinyin_1k", "pinyin_10k"]
+  },
+  {
     "name": "swedish",
     "languages": ["swedish", "swedish_1k"]
   },
@@ -205,7 +209,7 @@
   },
   {
     "name": "urdu",
-    "languages": ["urdu"]
+    "languages": ["urdu", "urdu_1k"]
   },
   {
     "name": "code",

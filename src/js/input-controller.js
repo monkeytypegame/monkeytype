@@ -344,7 +344,7 @@ function handleSpace(event, isEnter) {
     }
   } //end of line wrap
 
-  Caret.updatePosition();
+  // Caret.updatePosition();
 
   if (Config.keymapMode === "react") {
     Keymap.flashKey(event.code, true);
@@ -736,8 +736,7 @@ function handleAlpha(event) {
       TestUI.updateWordElement(!Config.blindMode);
     }
   }
-
-  Caret.updatePosition();
+  if (originalEvent.code !== "Enter") Caret.updatePosition();
 }
 
 $(document).keyup((event) => {
