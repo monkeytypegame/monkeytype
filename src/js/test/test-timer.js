@@ -93,9 +93,6 @@ export function start() {
           TestLogic.words.currentIndex > 3) ||
         (Config.minAcc === "custom" &&
           acc < parseInt(Config.minAccCustom) &&
-          TestLogic.words.currentIndex > 3) ||
-        (Config.minBurst === "custom" &&
-          burst > parseInt(Config.minBurstCustomSpeed) &&
           TestLogic.words.currentIndex > 3)
       ) {
         clearTimeout(timer);
