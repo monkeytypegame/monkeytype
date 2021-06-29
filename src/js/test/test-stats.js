@@ -18,10 +18,7 @@ export let currentKeypress = {
   words: [],
 };
 export let lastKeypress;
-export let currentBurst = {
-  start: 0,
-  end: 0,
-};
+export let currentBurstStart = 0;
 
 // export let errorsPerSecond = [];
 // export let currentError = {
@@ -59,10 +56,7 @@ export function restart() {
     errors: 0,
     words: [],
   };
-  currentBurst = {
-    start: 0,
-    end: 0,
-  };
+  currentBurstStart = 0;
   // errorsPerSecond = [];
   // currentError = {
   //   count: 0,
@@ -190,11 +184,11 @@ export function setLastSecondNotRound() {
 }
 
 export function setBurstStart(time) {
-  currentBurst.start = time;
+  currentBurstStart = time;
 }
 
 export function calculateBurst() {
-  let timeToWrite = (performance.now() - currentBurst.start) / 1000;
+  let timeToWrite = (performance.now() - currentBurstStart) / 1000;
   let speed = Misc.roundTo2(
     (TestLogic.words.getCurrent().length * (60 / timeToWrite)) / 5
   );
