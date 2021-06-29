@@ -8,7 +8,7 @@ export let invalid = false;
 export let start, end;
 export let wpmHistory = [];
 export let rawHistory = [];
-export let burstHisotry = [];
+export let burstHistory = [];
 
 export let keypressPerSecond = [];
 export let currentKeypress = {
@@ -51,7 +51,7 @@ export function restart() {
   invalid = false;
   wpmHistory = [];
   rawHistory = [];
-  burstHisotry = [];
+  burstHistory = [];
   keypressPerSecond = [];
   currentKeypress = {
     count: 0,
@@ -193,12 +193,22 @@ export function setBurstStart(time) {
   currentBurst.start = time;
 }
 
-export function setBurstEnd(time) {
-  currentBurst.start = time;
+export function calculateBurst() {
+  let timeToWrite = (performance.now() - currentBurst.start) / 1000;
+  let speed = Misc.roundTo2(
+    (TestLogic.words.getCurrent().length * (60 / timeToWrite)) / 5
+  );
+  Notifications.add(timeToWrite);
+  return speed;
 }
 
 export function pushBurstToHistory(speed) {
-  burstHisotry.push(word);
+  if (burstHistory[TestLogic.words.currentIndex] === undefined) {
+    burstHistory.push(speed);
+  } else {
+    //repeated word - override
+    burstHistory[TestLogic.words.currentIndex] = speed;
+  }
 }
 
 export function calculateAccuracy() {
@@ -382,7 +392,6 @@ export function calculateStats() {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
     acc: acc,
-    burst: burst,
     correctChars: chars.correctWordChars,
     incorrectChars: chars.incorrectChars,
     missedChars: chars.missedChars,
