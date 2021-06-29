@@ -30,8 +30,7 @@ export async function setup(challengeName) {
         UpdateConfig.setNumbers(true, true);
         UpdateConfig.setPunctuation(true, true);
       }
-    }
-    if (challenge.type === "customWords") {
+    } else if (challenge.type === "customWords") {
       UpdateConfig.setWordCount(challenge.parameters[0], true);
       UpdateConfig.setMode("words", true);
       UpdateConfig.setDifficulty("normal", true);
@@ -72,6 +71,18 @@ export async function setup(challengeName) {
       UpdateConfig.setMode(challenge.parameters[1], true);
       if (challenge.parameters[3] !== undefined) {
         UpdateConfig.setDifficulty(challenge.parameters[3], true);
+      }
+    } else if (challenge.type === "special") {
+      if (challenge.name === "semimak") {
+        // so can you make a link that sets up 120s, 10k, punct, stop on word, and semimak as the layout?
+        UpdateConfig.setMode("time", true);
+        UpdateConfig.setTimeConfig(120, true);
+        UpdateConfig.setLanguage("english_10k", true);
+        UpdateConfig.setPunctuation(true, true);
+        UpdateConfig.setStopOnError("word", true);
+        UpdateConfig.setLayout("semimak", true);
+        UpdateConfig.setKeymapLayout("overrideSync", true);
+        UpdateConfig.setKeymapMode("static", true);
       }
     }
     ManualRestart.set();
