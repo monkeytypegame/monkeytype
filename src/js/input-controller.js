@@ -234,6 +234,9 @@ function handleSpace(event, isEnter) {
     Settings.groups.layout.updateButton();
   }
   dontInsertSpace = true;
+  let burst = TestStats.calculateBurst();
+  LiveBurst.update(Math.round(burst));
+  TestStats.pushBurstToHistory(burst);
   if (currentWord == TestLogic.input.current || Config.mode == "zen") {
     //correct word or in zen mode
     MonkeyPower.addPower(true, true);
@@ -495,6 +498,10 @@ function handleAlpha(event) {
     MonkeyPower.addPower();
   } else {
     if (!TestLogic.active) return;
+  }
+
+  if (TestLogic.input.current == "") {
+    TestStats.setBurstStart(performance.now());
   }
 
   Focus.set(true);
