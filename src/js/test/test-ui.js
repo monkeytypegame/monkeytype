@@ -514,8 +514,6 @@ export function updateModesNotice() {
           ? "average"
           : Config.paceCaret === "pb"
           ? "pb"
-          : Config.paceCaret == "repeat"
-          ? "repeated"
           : "custom"
       } pace${speed}</div>`
     );
