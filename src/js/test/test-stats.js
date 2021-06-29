@@ -8,6 +8,7 @@ export let invalid = false;
 export let start, end;
 export let wpmHistory = [];
 export let rawHistory = [];
+export let burstHisotry = [];
 
 export let keypressPerSecond = [];
 export let currentKeypress = {
@@ -16,8 +17,11 @@ export let currentKeypress = {
   errors: 0,
   words: [],
 };
-
 export let lastKeypress;
+export let currentBurst = {
+  start: 0,
+  end: 0,
+};
 
 // export let errorsPerSecond = [];
 // export let currentError = {
@@ -47,12 +51,17 @@ export function restart() {
   invalid = false;
   wpmHistory = [];
   rawHistory = [];
+  burstHisotry = [];
   keypressPerSecond = [];
   currentKeypress = {
     count: 0,
     mod: 0,
     errors: 0,
     words: [],
+  };
+  currentBurst = {
+    start: 0,
+    end: 0,
   };
   // errorsPerSecond = [];
   // currentError = {
@@ -159,9 +168,9 @@ export function pushKeypressesToHistory() {
 export function calculateAfkSeconds(testSeconds) {
   let extraAfk = 0;
   if (testSeconds !== undefined) {
-    if(Config.mode === "time"){
+    if (Config.mode === "time") {
       extraAfk = Math.round(testSeconds) - keypressPerSecond.length;
-    }else{
+    } else {
       extraAfk = Math.ceil(testSeconds) - keypressPerSecond.length;
     }
     if (extraAfk < 0) extraAfk = 0;
@@ -180,10 +189,16 @@ export function setLastSecondNotRound() {
   lastSecondNotRound = true;
 }
 
-export function calculateBurst() {
-  // change the way burst is calculated, then change '>' to '<' in line 100 of test timer
-  let burst = accuracy.incorrect;
-  return burst;
+export function setBurstStart(time) {
+  currentBurst.start = time;
+}
+
+export function setBurstEnd(time) {
+  currentBurst.start = time;
+}
+
+export function pushBurstToHistory(speed) {
+  burstHisotry.push(word);
 }
 
 export function calculateAccuracy() {
@@ -363,7 +378,6 @@ export function calculateStats() {
       5
   );
   let acc = Misc.roundTo2(TestStats.calculateAccuracy());
-  let burst = TestStats.calculateBurst();
   return {
     wpm: isNaN(wpm) ? 0 : wpm,
     wpmRaw: isNaN(wpmraw) ? 0 : wpmraw,
