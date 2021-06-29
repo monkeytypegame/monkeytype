@@ -127,7 +127,11 @@ class Input {
   }
 
   getHistory(i) {
-    return this.history[i];
+    if (i === undefined) {
+      return this.history;
+    } else {
+      return this.history[i];
+    }
   }
 }
 
@@ -1051,6 +1055,12 @@ export function finish(difficultyFailed = false) {
   LiveBurst.hide();
   TimerProgress.hide();
   Funbox.activate("none", null);
+
+  if (TestStats.burstHistory.length !== input.getHistory().length) {
+    //auto ended test, need one more calculation for the last word
+    let burst = TestStats.calculateBurst();
+    TestStats.pushBurstToHistory(burst);
+  }
 
   if (
     Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0 &&
