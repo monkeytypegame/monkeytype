@@ -2314,7 +2314,8 @@
                 <h1>min burst</h1>
                 <div class="text">
                   Automatically fails a test if your burst speed falls below a
-                  threshold.
+                  threshold. Selecting 'flex' allows for this threshold to
+                  automatically decrease for longer words.
                 </div>
                 <div>
                   <div class="inputAndSave">
@@ -2347,11 +2348,19 @@
                     </div>
                     <div
                       class="button"
-                      minBurst="custom"
+                      minBurst="fixed"
                       tabindex="0"
                       onclick="this.blur();"
                     >
-                      custom
+                      fixed
+                    </div>
+                    <div
+                      class="button"
+                      minBurst="flex"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      flex
                     </div>
                   </div>
                 </div>

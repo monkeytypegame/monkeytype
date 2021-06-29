@@ -225,15 +225,15 @@ async function initGroups() {
     "minBurst",
     UpdateConfig.setMinBurst,
     () => {
-      if (Config.minBurst === "custom") {
-        $(".pageSettings .section.minBurst input.customMinBurst").removeClass(
-          "hidden"
-        );
-      } else {
-        $(".pageSettings .section.minBurst input.customMinBurst").addClass(
-          "hidden"
-        );
-      }
+      // if (Config.minBurst === "custom") {
+      //   $(".pageSettings .section.minBurst input.customMinBurst").removeClass(
+      //     "hidden"
+      //   );
+      // } else {
+      //   $(".pageSettings .section.minBurst input.customMinBurst").addClass(
+      //     "hidden"
+      //   );
+      // }
     }
   );
   groups.smoothLineScroll = new SettingsGroup(
@@ -571,18 +571,9 @@ export function update() {
     $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
   }
 
-  if (Config.minBurst === "custom") {
-    $(".pageSettings .section.minBurst input.customMinBurst").removeClass(
-      "hidden"
-    );
-    $(".pageSettings .section.minBurst input.customMinBurst").val(
-      Config.minBurstCustomSpeed
-    );
-  } else {
-    $(".pageSettings .section.minBurst input.customMinBurst").addClass(
-      "hidden"
-    );
-  }
+  $(".pageSettings .section.minBurst input.customMinBurst").val(
+    Config.minBurstCustomSpeed
+  );
 }
 
 function toggleSettingsGroup(groupName) {
@@ -666,6 +657,12 @@ $(document).on(
     );
   }
 );
+
+$(document).on("click", ".pageSettings .section.minBurst .button.save", (e) => {
+  UpdateConfig.setMinBurstCustomSpeed(
+    parseInt($(".pageSettings .section.minBurst input.customMinBurst").val())
+  );
+});
 
 $(document).on(
   "click",
