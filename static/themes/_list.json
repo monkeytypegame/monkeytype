@@ -558,5 +558,10 @@
     "name": "fledgling",
     "bgColor": "#3b363f",
     "textColor": "#fc6e83"
+  },
+  {
+    "name": "ez_mode",
+    "bgColor": "#0171cd",
+    "textColor": "#f5f5f5"
   }
 ]
