@@ -287,7 +287,7 @@ function handleSpace(event, isEnter) {
     if (Config.stopOnError != "off") {
       if (Config.difficulty == "expert" || Config.difficulty == "master") {
         //failed due to diff when pressing space
-        TestLogic.fail();
+        TestLogic.fail("difficulty");
         return;
       }
       if (Config.stopOnError == "word") {
@@ -311,7 +311,7 @@ function handleSpace(event, isEnter) {
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
     TestStats.updateLastKeypress();
     if (Config.difficulty == "expert" || Config.difficulty == "master") {
-      TestLogic.fail();
+      TestLogic.fail("difficulty");
       return;
     } else if (TestLogic.words.currentIndex == TestLogic.words.length) {
       //submitted last word that is incorrect
@@ -329,7 +329,7 @@ function handleSpace(event, isEnter) {
     (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
     (Config.minBurst === "flex" && burst < flex)
   ) {
-    TestLogic.fail();
+    TestLogic.fail("min burst");
     return;
   }
 
@@ -684,7 +684,7 @@ function handleAlpha(event) {
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
-    TestLogic.fail();
+    TestLogic.fail("difficulty");
     return;
   }
 

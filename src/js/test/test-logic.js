@@ -1350,7 +1350,7 @@ export function finish(difficultyFailed = false) {
   }
 
   if (difficultyFailed) {
-    Notifications.add("Test failed", 0, 1);
+    Notifications.add(`Test failed - ${failReason}`, 0, 1);
   } else if (afkDetected) {
     Notifications.add("Test invalid - AFK detected", 0);
   } else if (isRepeated) {
@@ -1831,7 +1831,7 @@ export function finish(difficultyFailed = false) {
   //   otherText += "<br>" + Config.layout;
   // }
   if (difficultyFailed) {
-    otherText += "<br>failed";
+    otherText += `<br>failed (${failReason})`;
   }
   if (afkDetected) {
     otherText += "<br>afk detected";
@@ -1949,7 +1949,9 @@ export function finish(difficultyFailed = false) {
   );
 }
 
-export function fail() {
+let failReason = "";
+export function fail(reason) {
+  failReason = reason;
   input.pushHistory();
   corrected.pushHistory();
   TestStats.pushKeypressesToHistory();
