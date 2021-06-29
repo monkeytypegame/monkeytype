@@ -6,6 +6,7 @@ import Config, * as UpdateConfig from "./config";
 import * as Keymap from "./keymap";
 import * as Misc from "./misc";
 import * as LiveAcc from "./live-acc";
+import * as LiveBurst from "./live-burst";
 import * as Funbox from "./funbox";
 import * as Sound from "./sound";
 import * as Caret from "./caret";
@@ -233,6 +234,11 @@ function handleSpace(event, isEnter) {
     Settings.groups.layout.updateButton();
   }
   dontInsertSpace = true;
+
+  let burst = TestStats.calculateBurst();
+  LiveBurst.update(Math.round(burst));
+  TestStats.pushBurstToHistory(burst);
+
   if (currentWord == TestLogic.input.current || Config.mode == "zen") {
     //correct word or in zen mode
     MonkeyPower.addPower(true, true);
@@ -313,6 +319,18 @@ function handleSpace(event, isEnter) {
       return;
     }
     Replay.addReplayEvent("submitErrorWord");
+  }
+
+  let flex = Misc.whorf(
+    Config.minBurstCustomSpeed,
+    TestLogic.words.getLast().length
+  );
+  if (
+    (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
+    (Config.minBurst === "flex" && burst < flex)
+  ) {
+    TestLogic.fail();
+    return;
   }
 
   TestLogic.corrected.pushHistory();
@@ -494,6 +512,10 @@ function handleAlpha(event) {
     MonkeyPower.addPower();
   } else {
     if (!TestLogic.active) return;
+  }
+
+  if (TestLogic.input.current == "") {
+    TestStats.setBurstStart(performance.now());
   }
 
   Focus.set(true);

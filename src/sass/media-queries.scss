@@ -144,7 +144,7 @@
         "chart chart"
         "morestats morestats";
       .stats {
-        grid-template-areas: "wpm acc";
+        grid-template-areas: "wpm acc burst";
         gap: 4rem;
       }
       .stats.morestats {

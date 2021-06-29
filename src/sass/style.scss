@@ -1304,6 +1304,10 @@ label.checkbox {
   opacity: 0;
 }
 
+#liveBurst {
+  opacity: 0;
+}
+
 #timerNumber {
   pointer-events: none;
   transition: 0.25s;
@@ -1939,7 +1943,8 @@ key {
     //   "wpm raw time nothing infoAndTags leaderboards source";
     grid-template-areas:
       "wpm"
-      "acc";
+      "acc"
+      "burst";
 
     &.morestats {
       display: grid;
@@ -2077,6 +2082,20 @@ key {
 
     .acc {
       grid-area: acc;
+
+      .top {
+        font-size: 2rem;
+        line-height: 1.5rem;
+      }
+
+      .bottom {
+        font-size: 4rem;
+        line-height: 4rem;
+      }
+    }
+
+    .burst {
+      grid-area: burst;
 
       .top {
         font-size: 2rem;
@@ -2385,13 +2404,15 @@ key {
         margin-right: 2rem;
       }
 
-      .wpm {
+      .wpm,
+      .acc {
         margin-right: 2rem;
       }
 
       .time,
       .wpm,
-      .acc {
+      .acc,
+      .burst {
         opacity: 0;
       }
 
@@ -2483,6 +2504,11 @@ key {
     transition: 0.25s;
     text-shadow: none;
     top: -0.5rem;
+    z-index: 10;
+    cursor: text;
+    .speed {
+      font-size: 0.75rem;
+    }
   }
 }
 
@@ -2800,47 +2826,22 @@ key {
       }
     }
 
-    // I have no idea what I'm doing so I just copied the customBackgroundSize css and changed numbers so it magically worked.
-    &.customLayoutfluid {
-      .inputAndSave {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        input {
-          grid-column: 1/3;
-        }
-
-        .save {
-          grid-column: 3/4;
-          height: auto;
-
-          .fas {
-            margin-right: 0rem;
-            vertical-align: sub;
-          }
-        }
+    .inputAndSave {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      input {
+        grid-column: 1/3;
       }
-    }
 
-    &.customBackgroundSize {
-      .inputAndButton {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        input {
-          grid-column: 1/3;
-        }
+      .save {
+        grid-column: 3/4;
+        height: auto;
 
-        .save {
-          grid-column: 3/4;
-          height: auto;
-
-          .fas {
-            margin-right: 0rem;
-            vertical-align: sub;
-          }
+        .fas {
+          margin-right: 0rem;
+          vertical-align: sub;
         }
       }
     }
@@ -2885,13 +2886,6 @@ key {
 
       & .spacer {
         grid-column: 3 / 5;
-      }
-    }
-
-    &.paceCaret {
-      .customPaceCaretSpeed {
-        width: 4rem;
-        padding: 0 0.5rem;
       }
     }
 

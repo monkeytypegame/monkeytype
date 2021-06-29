@@ -1122,6 +1122,7 @@
                 <div class="time hidden">1:00</div>
                 <div class="wpm">60</div>
                 <div class="acc">100%</div>
+                <div class="burst">1</div>
               </div>
               <div class="outOfFocusWarning hidden">
                 <i class="fas fa-mouse-pointer"></i>
@@ -1307,6 +1308,7 @@
               <div id="largeLiveWpmAndAcc" class="timerMain">
                 <div id="liveWpm" class="hidden">123</div>
                 <div id="liveAcc" class="hidden">100%%</div>
+                <div id="liveBurst" class="hidden">1</div>
               </div>
               <div
                 id="restartTestButton"
@@ -2248,31 +2250,43 @@
                   Automatically fails a test if your WPM falls below a
                   threshold.
                 </div>
-                <div class="buttons">
-                  <div
-                    class="button"
-                    minWpm="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="min wpm"
+                      class="input customMinWpmSpeed"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    minWpm="custom"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    custom
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      minWpm="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      minWpm="custom"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      custom
+                    </div>
                   </div>
-                  <input
-                    type="number"
-                    step="1"
-                    class="customMinWpmSpeed"
-                    placeholder="wpm"
-                    min="0"
-                    value=""
-                  />
                 </div>
               </div>
               <div class="section minAcc" section="">
@@ -2281,31 +2295,97 @@
                   Automatically fails a test if your accuracy falls below a
                   threshold.
                 </div>
-                <div class="buttons">
-                  <div
-                    class="button"
-                    minAcc="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="min accuracy"
+                      class="input customMinAcc"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    minAcc="custom"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    custom
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      minAcc="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      minAcc="custom"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      custom
+                    </div>
                   </div>
-                  <input
-                    type="number"
-                    step="1"
-                    class="customMinAcc"
-                    placeholder="acc"
-                    min="0"
-                    value=""
-                  />
+                </div>
+              </div>
+              <div class="section minBurst" section="">
+                <h1>min burst</h1>
+                <div class="text">
+                  Automatically fails a test if your burst speed falls below a
+                  threshold. Selecting 'flex' allows for this threshold to
+                  automatically decrease for longer words.
+                </div>
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="min burst"
+                      class="input customMinBurst"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
+                  </div>
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      minBurst="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      minBurst="fixed"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      fixed
+                    </div>
+                    <div
+                      class="button"
+                      minBurst="flex"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      flex
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="section languageGroups fullWidth">
@@ -2709,58 +2789,61 @@
                 <h1>pace caret</h1>
                 <div class="text">
                   Displays a second caret that moves at constant speed. The
-                  repeat option enables a pace caret when a test is repeated
-                  that will have the wpm of the previous test.
+                  'average' option average the speed of last 10 results.
                 </div>
-                <div class="buttons">
-                  <div
-                    class="button"
-                    paceCaret="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="wpm"
+                      class="input customPaceCaretSpeed"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    paceCaret="average"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    average
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      paceCaret="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      paceCaret="average"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      average
+                    </div>
+                    <div
+                      class="button"
+                      paceCaret="pb"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      pb
+                    </div>
+                    <div
+                      class="button"
+                      paceCaret="custom"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      custom
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    paceCaret="pb"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    pb
-                  </div>
-                  <div
-                    class="button"
-                    paceCaret="repeat"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    repeat
-                  </div>
-                  <div
-                    class="button"
-                    paceCaret="custom"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    custom
-                  </div>
-                  <input
-                    type="number"
-                    step="1"
-                    class="customPaceCaretSpeed"
-                    placeholder="wpm"
-                    min="0"
-                    value=""
-                  />
                 </div>
               </div>
               <div class="section repeatedPace" section="">
@@ -3327,7 +3410,7 @@
                   fully visible. Max fits the image corner to corner.
                 </div>
                 <div>
-                  <div class="inputAndButton">
+                  <div class="inputAndSave">
                     <input
                       type="text"
                       placeholder="image url"
@@ -3609,6 +3692,21 @@
                 <div class="text">
                   Displays live accuracy during the test. Updates once every
                   second.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
+              <div class="section showLiveBurst">
+                <h1>live burst</h1>
+                <div class="text">
+                  Displays live burst during the test of the last word you
+                  typed.
                 </div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">

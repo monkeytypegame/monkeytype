@@ -15,6 +15,7 @@ import * as PaceCaret from "./pace-caret";
 import * as Caret from "./caret";
 import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
+import * as LiveBurst from "./live-burst";
 import * as TimerProgress from "./timer-progress";
 import * as ChartController from "./chart-controller";
 import * as UI from "./ui";
@@ -126,7 +127,11 @@ class Input {
   }
 
   getHistory(i) {
-    return this.history[i];
+    if (i === undefined) {
+      return this.history;
+    } else {
+      return this.history[i];
+    }
   }
 }
 
@@ -347,6 +352,7 @@ export function startTest() {
   $("#liveWpm").text("0");
   LiveWpm.show();
   LiveAcc.show();
+  LiveBurst.show();
   TimerProgress.update(TestTimer.time);
   TestTimer.clear();
 
@@ -744,6 +750,7 @@ export function restart(
   Replay.stopReplayRecording();
   LiveWpm.hide();
   LiveAcc.hide();
+  LiveBurst.hide();
   TimerProgress.hide();
   setBailout(false);
   PaceCaret.reset();
@@ -810,8 +817,10 @@ export function restart(
       }
       document.querySelector("#miniTimerAndLiveWpm .wpm").innerHTML = "0";
       document.querySelector("#miniTimerAndLiveWpm .acc").innerHTML = "100%";
+      document.querySelector("#miniTimerAndLiveWpm .burst").innerHTML = "0";
       document.querySelector("#liveWpm").innerHTML = "0";
       document.querySelector("#liveAcc").innerHTML = "100%";
+      document.querySelector("#liveBurst").innerHTML = "0";
 
       if (Config.funbox === "memory") {
         Funbox.startMemoryTimer();
@@ -1043,8 +1052,15 @@ export function finish(difficultyFailed = false) {
   LiveWpm.hide();
   PbCrown.hide();
   LiveAcc.hide();
+  LiveBurst.hide();
   TimerProgress.hide();
   Funbox.activate("none", null);
+
+  if (TestStats.burstHistory.length !== input.getHistory().length) {
+    //auto ended test, need one more calculation for the last word
+    let burst = TestStats.calculateBurst();
+    TestStats.pushBurstToHistory(burst);
+  }
 
   if (
     Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0 &&
