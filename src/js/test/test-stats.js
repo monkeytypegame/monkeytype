@@ -198,7 +198,6 @@ export function calculateBurst() {
   let speed = Misc.roundTo2(
     (TestLogic.words.getCurrent().length * (60 / timeToWrite)) / 5
   );
-  Notifications.add(timeToWrite);
   return speed;
 }
 
