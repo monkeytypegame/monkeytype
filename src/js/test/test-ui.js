@@ -535,7 +535,9 @@ export function updateModesNotice() {
 
   if (Config.minBurst !== "off") {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button" commands="commandsMinBurst"><i class="fas fa-bomb"></i>min ${Config.minBurstCustomSpeed} burst</div>`
+      `<div class="text-button" commands="commandsMinBurst"><i class="fas fa-bomb"></i>min ${
+        Config.minBurstCustomSpeed
+      } burst ${Config.minBurst === "flex" ? "(flex)" : ""}</div>`
     );
   }
 

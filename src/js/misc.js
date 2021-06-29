@@ -429,6 +429,13 @@ export function kogasa(cov) {
   );
 }
 
+export function whorf(speed, wordlen) {
+  return Math.min(
+    speed,
+    Math.floor(speed * Math.pow(1.03, -2 * (wordlen - 3)))
+  );
+}
+
 export function roundTo2(num) {
   return Math.round((num + Number.EPSILON) * 100) / 100;
 }

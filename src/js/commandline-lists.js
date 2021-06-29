@@ -686,12 +686,17 @@ let commandsMinBurst = {
       },
     },
     {
-      id: "setMinBurstCustom",
-      display: "custom...",
-      input: true,
-      exec: (input) => {
-        UpdateConfig.setMinBurstCustomSpeed(input);
-        UpdateConfig.setMinBurst("custom");
+      id: "setMinBurstFixed",
+      display: "fixed",
+      exec: () => {
+        UpdateConfig.setMinBurst("fixed");
+      },
+    },
+    {
+      id: "setMinBurstFlex",
+      display: "flex",
+      exec: () => {
+        UpdateConfig.setMinBurst("flex");
       },
     },
   ],
@@ -1612,6 +1617,15 @@ export let defaultCommands = {
       exec: () => {
         current.push(commandsMinBurst);
         Commandline.show();
+      },
+    },
+    {
+      id: "changeMinBurstSpeed",
+      display: "Change min burst speed...",
+      alias: "minimum",
+      input: true,
+      exec: (input) => {
+        UpdateConfig.setMinBurstCustomSpeed(input);
       },
     },
     {

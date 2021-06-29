@@ -321,7 +321,14 @@ function handleSpace(event, isEnter) {
     Replay.addReplayEvent("submitErrorWord");
   }
 
-  if (Config.minBurst === "custom" && burst < Config.minBurstCustomSpeed) {
+  let flex = Misc.whorf(
+    Config.minBurstCustomSpeed,
+    TestLogic.words.getLast().length
+  );
+  if (
+    (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
+    (Config.minBurst === "flex" && burst < flex)
+  ) {
     TestLogic.fail();
     return;
   }
