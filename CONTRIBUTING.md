@@ -49,14 +49,16 @@
    - Select default location and enable
 
 ## Building and Running
+<!-- https://en.wikipedia.org/wiki/Control-C#:~:text=In%20many%20command,to%20the%20user. -->
 
 1. Run `npm install` in the project root directory to install dependencies.
-1. Run `npm run start:dev` to start a local dev server on port 5000. It will watch for changes and rebuild when you edit files in `src/` or `public/`. Use ctrl+c to stop it.
-   - Run `firebase use <your-project-id>` if you run into any errors for this.
+1. Run `npm run start:dev` to start a local dev server on port 5000. It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use <kbd>control c</kbd> to abort it.
+   - Run `firebase use {your-project-id}` if you run into any errors for this.
 
 ## Standards and Conventions
 
 1. Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically ran every time you `git commit` (if you've followed the above instructions properly).
+1. If you are unsure of the best practices and conventions of Javascript, please take a look at the [JavaScript Best Practices](https://www.w3schools.com/js/js_best_practices.asp) and [JavaScript Coding Conventions](https://www.w3schools.com/js/js_conventions.asp)
 
 ## Questions
 
