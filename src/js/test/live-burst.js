@@ -11,7 +11,7 @@ export function update(burst) {
 }
 
 export function show() {
-  if (!Config.showLiveWpm) return;
+  if (!Config.showLiveBurst) return;
   if (!TestLogic.active) return;
   if (Config.timerStyle === "mini") {
     if (!$("#miniTimerAndLiveWpm .burst").hasClass("hidden")) return;
@@ -38,20 +38,20 @@ export function show() {
 export function hide() {
   $("#liveBurst").animate(
     {
-        opacity: Config.timerOpacity,
+      opacity: Config.timerOpacity,
     },
     125,
     () => {
-        $("#liveBurst").addClass("hidden");
+      $("#liveBurst").addClass("hidden");
     }
   );
   $("#miniTimerAndLiveWpm .burst").animate(
     {
-        opacity: Config.timerOpacity,
+      opacity: Config.timerOpacity,
     },
     125,
     () => {
-        $("#miniTimerAndLiveWpm .burst").addClass("hidden");
+      $("#miniTimerAndLiveWpm .burst").addClass("hidden");
     }
   );
 }
