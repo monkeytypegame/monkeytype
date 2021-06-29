@@ -838,7 +838,4 @@ $(document).keydown(function (event) {
 
   let acc = Misc.roundTo2(TestStats.calculateAccuracy());
   LiveAcc.update(acc);
-
-  let burst = TestStats.calculateBurst();
-  LiveBurst.update(burst);
 });
