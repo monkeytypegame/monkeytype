@@ -221,15 +221,21 @@ async function initGroups() {
       $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
     }
   });
-  groups.minBurst = new SettingsGroup("minBurst", UpdateConfig.setMinBurst, () => {
-    if (Config.minBurst === "custom") {
-      $(".pageSettings .section.minBurst input.customMinBurst").removeClass(
-        "hidden"
-      );
-    } else {
-      $(".pageSettings .section.minBurst input.customMinBurst").addClass("hidden");
+  groups.minBurst = new SettingsGroup(
+    "minBurst",
+    UpdateConfig.setMinBurst,
+    () => {
+      if (Config.minBurst === "custom") {
+        $(".pageSettings .section.minBurst input.customMinBurst").removeClass(
+          "hidden"
+        );
+      } else {
+        $(".pageSettings .section.minBurst input.customMinBurst").addClass(
+          "hidden"
+        );
+      }
     }
-  });
+  );
   groups.smoothLineScroll = new SettingsGroup(
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll
@@ -566,12 +572,16 @@ export function update() {
   }
 
   if (Config.minBurst === "custom") {
-    $(".pageSettings .section.minBurst input.customMinBurst").removeClass("hidden");
+    $(".pageSettings .section.minBurst input.customMinBurst").removeClass(
+      "hidden"
+    );
     $(".pageSettings .section.minBurst input.customMinBurst").val(
       Config.minBurstCustomSpeed
     );
   } else {
-    $(".pageSettings .section.minBurst input.customMinBurst").addClass("hidden");
+    $(".pageSettings .section.minBurst input.customMinBurst").addClass(
+      "hidden"
+    );
   }
 }
 
@@ -820,23 +830,21 @@ $(".pageSettings #updateAccountPassword").on("click", (e) => {
   SimplePopups.list.updatePassword.show();
 });
 
-$(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
+$(".pageSettings .section.customBackgroundSize .inputAndSave .save").on(
   "click",
   (e) => {
     UpdateConfig.setCustomBackground(
-      $(
-        ".pageSettings .section.customBackgroundSize .inputAndButton input"
-      ).val()
+      $(".pageSettings .section.customBackgroundSize .inputAndSave input").val()
     );
   }
 );
 
-$(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
+$(".pageSettings .section.customBackgroundSize .inputAndSave input").keypress(
   (e) => {
     if (e.keyCode == 13) {
       UpdateConfig.setCustomBackground(
         $(
-          ".pageSettings .section.customBackgroundSize .inputAndButton input"
+          ".pageSettings .section.customBackgroundSize .inputAndSave input"
         ).val()
       );
     }

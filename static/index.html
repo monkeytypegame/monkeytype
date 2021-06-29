@@ -2317,30 +2317,43 @@
                   threshold.
                 </div>
                 <div class="buttons">
-                  <div
-                    class="button"
-                    minBurst="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="min burst"
+                      class="input customMinBurst"
+                      tabindex="0"
+                      onClick="this.select();"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    minBurst="custom"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    custom
+                  <div>
+                    <div
+                      class="button"
+                      minBurst="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      minBurst="custom"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      custom
+                    </div>
                   </div>
-                  <input
-                    type="number"
-                    step="1"
-                    class="customMinBurst"
-                    placeholder="burst"
-                    min="0"
-                    value=""
-                  />
                 </div>
               </div>
               <div class="section languageGroups fullWidth">
@@ -3362,7 +3375,7 @@
                   fully visible. Max fits the image corner to corner.
                 </div>
                 <div>
-                  <div class="inputAndButton">
+                  <div class="inputAndSave">
                     <input
                       type="text"
                       placeholder="image url"
