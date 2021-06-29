@@ -40,8 +40,6 @@ export function start() {
 
       let acc = Misc.roundTo2(TestStats.calculateAccuracy());
 
-      let burst = TestStats.calculateBurst();
-
       if (Config.funbox === "layoutfluid" && Config.mode === "time") {
         const layouts = Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")
