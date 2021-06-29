@@ -486,12 +486,15 @@ export async function init() {
         ) {
           randomWord = wordset[Math.floor(Math.random() * wordset.length)];
         } else {
+          let regenarationCount = 0; //infinite loop emergency stop button
           while (
-            randomWord == previousWord ||
-            randomWord == previousWord2 ||
-            (!Config.punctuation && randomWord == "I") ||
-            randomWord.indexOf(" ") > -1
+            regenarationCount < 100 &&
+            (randomWord == previousWord ||
+              randomWord == previousWord2 ||
+              (!Config.punctuation && randomWord == "I") ||
+              randomWord.indexOf(" ") > -1)
           ) {
+            regenarationCount++;
             randomWord = wordset[Math.floor(Math.random() * wordset.length)];
           }
         }
