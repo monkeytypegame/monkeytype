@@ -907,10 +907,12 @@ let commandsTimerOpacity = {
 
 let commandsWordCount = {
   title: "Change word count...",
+  configKey: "words",
   list: [
     {
       id: "changeWordCount10",
       display: "10",
+      configValue: 10,
       exec: () => {
         UpdateConfig.setWordCount("10");
         TestLogic.restart();
@@ -919,6 +921,7 @@ let commandsWordCount = {
     {
       id: "changeWordCount25",
       display: "25",
+      configValue: 25,
       exec: () => {
         UpdateConfig.setWordCount("25");
         TestLogic.restart();
@@ -927,6 +930,7 @@ let commandsWordCount = {
     {
       id: "changeWordCount50",
       display: "50",
+      configValue: 50,
       exec: () => {
         UpdateConfig.setWordCount("50");
         TestLogic.restart();
@@ -935,6 +939,7 @@ let commandsWordCount = {
     {
       id: "changeWordCount100",
       display: "100",
+      configValue: 100,
       exec: () => {
         UpdateConfig.setWordCount("100");
         TestLogic.restart();
@@ -943,6 +948,7 @@ let commandsWordCount = {
     {
       id: "changeWordCount200",
       display: "200",
+      configValue: 200,
       exec: () => {
         UpdateConfig.setWordCount("200");
         TestLogic.restart();
@@ -1033,10 +1039,12 @@ let commandsPunctuation = {
 
 let commandsMode = {
   title: "Change mode...",
+  configKey: "mode",
   list: [
     {
       id: "changeModeTime",
       display: "time",
+      configValue: "time",
       exec: () => {
         UpdateConfig.setMode("time");
         TestLogic.restart();
@@ -1045,6 +1053,7 @@ let commandsMode = {
     {
       id: "changeModeWords",
       display: "words",
+      configValue: "words",
       exec: () => {
         UpdateConfig.setMode("words");
         TestLogic.restart();
@@ -1053,6 +1062,7 @@ let commandsMode = {
     {
       id: "changeModeQuote",
       display: "quote",
+      configValue: "quote",
       exec: () => {
         UpdateConfig.setMode("quote");
         TestLogic.restart();
@@ -1061,6 +1071,7 @@ let commandsMode = {
     {
       id: "changeModeCustom",
       display: "custom",
+      configValue: "custom",
       exec: () => {
         UpdateConfig.setMode("custom");
         TestLogic.restart();
@@ -1069,6 +1080,7 @@ let commandsMode = {
     {
       id: "changeModeZen",
       display: "zen",
+      configValue: "zen",
       exec: () => {
         UpdateConfig.setMode("zen");
         ManualRestart.set();
@@ -1080,10 +1092,12 @@ let commandsMode = {
 
 let commandsTimeConfig = {
   title: "Change time config...",
+  configKey: "time",
   list: [
     {
       id: "changeTimeConfig15",
       display: "15",
+      configValue: 15,
       exec: () => {
         UpdateConfig.setTimeConfig("15");
         TestLogic.restart();
@@ -1092,6 +1106,7 @@ let commandsTimeConfig = {
     {
       id: "changeTimeConfig30",
       display: "30",
+      configValue: 30,
       exec: () => {
         UpdateConfig.setTimeConfig("30");
         TestLogic.restart();
@@ -1100,6 +1115,7 @@ let commandsTimeConfig = {
     {
       id: "changeTimeConfig60",
       display: "60",
+      configValue: 60,
       exec: () => {
         UpdateConfig.setTimeConfig("60");
         TestLogic.restart();
@@ -1108,6 +1124,7 @@ let commandsTimeConfig = {
     {
       id: "changeTimeConfig120",
       display: "120",
+      configValue: 120,
       exec: () => {
         UpdateConfig.setTimeConfig("120");
         TestLogic.restart();
@@ -1394,7 +1411,7 @@ export let defaultCommands = {
   list: [
     {
       id: "changePunctuation",
-      display: "Change punctuation...",
+      display: "Punctuation...",
       subgroup: commandsPunctuation,
       icon: "!?",
       // exec: () => {
@@ -1404,35 +1421,29 @@ export let defaultCommands = {
     },
     {
       id: "changeMode",
-      display: "Change mode...",
+      display: "Mode...",
       icon: "fa-bars",
       subgroup: commandsMode,
     },
     {
       id: "changeTimeConfig",
-      display: "Change time config...",
+      display: "Time...",
       icon: "fa-clock",
       subgroup: commandsTimeConfig,
     },
     {
       id: "changeWordCount",
-      display: "Change word count...",
+      display: "Words...",
       alias: "words",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsWordCount);
-        Commandline.show();
-      },
+      icon: "fa-font",
+      subgroup: commandsWordCount,
     },
     {
       id: "changeQuoteLength",
-      display: "Change quote length...",
+      display: "Quote length...",
+      icon: "fa-quote-right",
       alias: "quotes",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsQuoteLengthConfig);
-        Commandline.show();
-      },
+      subgroup: commandsQuoteLengthConfig,
     },
     {
       visible: false,
