@@ -35,7 +35,7 @@ function showFound() {
         icon = `<i class="fas fa-fw ${icon}"></i>`;
       }
       if (list.configKey) {
-        if (Config[list.configKey] === obj.configValue) {
+        if (Config[list.configKey] !== obj.configValue) {
           icon = `<i class="fas fa-fw"></i>`;
         } else {
           icon = `<i class="fas fa-fw fa-check"></i>`;
@@ -405,10 +405,14 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   } catch (e) {}
 });
 
-$("#commandLineWrapper #commandLine .suggestions").click((e) => {
-  $(".suggestions .entry").removeClass("activeKeyboard");
-  trigger($(e.target).attr("command"));
-});
+$(document).on(
+  "click",
+  "#commandLineWrapper #commandLine .suggestions .entry",
+  (e) => {
+    $(".suggestions .entry").removeClass("activeKeyboard");
+    trigger($(e.currentTarget).attr("command"));
+  }
+);
 
 $("#commandLineWrapper").click((e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {

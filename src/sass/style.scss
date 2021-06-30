@@ -1221,6 +1221,7 @@ label.checkbox {
       overflow-y: scroll;
       max-height: calc(100vh - 10rem - 3rem);
       display: grid;
+      cursor: pointer;
 
       .entry {
         padding: 0.5rem 1rem;
@@ -1229,6 +1230,10 @@ label.checkbox {
         color: var(--sub-color);
         display: grid;
         grid-template-columns: auto 1fr;
+
+        div {
+          pointer-events: none;
+        }
 
         .textIcon {
           font-weight: 900;
