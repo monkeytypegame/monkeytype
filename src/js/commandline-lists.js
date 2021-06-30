@@ -968,10 +968,12 @@ let commandsWordCount = {
 
 let commandsQuoteLengthConfig = {
   title: "Change quote length...",
+  configKey: "quoteLength",
   list: [
     {
       id: "changeQuoteLengthAll",
       display: "all",
+      configValue: [0, 1, 2, 3],
       exec: () => {
         UpdateConfig.setQuoteLength([0, 1, 2, 3]);
         TestLogic.restart();
@@ -980,6 +982,8 @@ let commandsQuoteLengthConfig = {
     {
       id: "changeQuoteLengthShort",
       display: "short",
+      configValue: 0,
+      configValueMode: "include",
       exec: () => {
         UpdateConfig.setQuoteLength(0);
         TestLogic.restart();
@@ -988,6 +992,8 @@ let commandsQuoteLengthConfig = {
     {
       id: "changeQuoteLengthMedium",
       display: "medium",
+      configValue: 1,
+      configValueMode: "include",
       exec: () => {
         UpdateConfig.setQuoteLength(1);
         TestLogic.restart();
@@ -996,6 +1002,8 @@ let commandsQuoteLengthConfig = {
     {
       id: "changeQuoteLengthLong",
       display: "long",
+      configValue: 2,
+      configValueMode: "include",
       exec: () => {
         UpdateConfig.setQuoteLength(2);
         TestLogic.restart();
@@ -1004,6 +1012,8 @@ let commandsQuoteLengthConfig = {
     {
       id: "changeQuoteLengthThicc",
       display: "thicc",
+      configValue: 3,
+      configValueMode: "include",
       exec: () => {
         UpdateConfig.setQuoteLength(3);
         TestLogic.restart();
