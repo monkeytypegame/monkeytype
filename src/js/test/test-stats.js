@@ -189,9 +189,13 @@ export function setBurstStart(time) {
 
 export function calculateBurst() {
   let timeToWrite = (performance.now() - currentBurstStart) / 1000;
-  let speed = Misc.roundTo2(
-    (TestLogic.words.getCurrent().length * (60 / timeToWrite)) / 5
-  );
+  let wordLength;
+  if (Config.mode === "zen") {
+    wordLength = TestLogic.input.getCurrent().length;
+  } else {
+    wordLength = TestLogic.words.getCurrent().length;
+  }
+  let speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
   return Math.round(speed);
 }
 

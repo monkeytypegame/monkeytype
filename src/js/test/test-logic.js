@@ -116,6 +116,10 @@ class Input {
     this.current = "";
   }
 
+  getCurrent() {
+    return this.current;
+  }
+
   pushHistory() {
     this.history.push(this.current);
     this.historyLength = this.history.length;
