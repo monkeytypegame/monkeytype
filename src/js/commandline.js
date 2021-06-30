@@ -35,7 +35,12 @@ function showFound() {
         icon = `<i class="fas fa-fw ${icon}"></i>`;
       }
       if (list.configKey) {
-        if (Config[list.configKey] !== obj.configValue) {
+        if (
+          (obj.configValueMode &&
+            obj.configValueMode === "include" &&
+            Config[list.configKey].includes(obj.configValue)) ||
+          Config[list.configKey] !== obj.configValue
+        ) {
           icon = `<i class="fas fa-fw"></i>`;
         } else {
           icon = `<i class="fas fa-fw fa-check"></i>`;
