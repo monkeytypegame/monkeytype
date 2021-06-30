@@ -268,11 +268,13 @@ export function updatePresetCommands() {
 }
 
 let commandsRepeatQuotes = {
-  title: "Change repeat quotes...",
+  title: "Repeat quotes...",
+  configKey: "repeatQuotes",
   list: [
     {
       id: "setRepeatQuotesOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setRepeatQuotes("off");
       },
@@ -280,8 +282,216 @@ let commandsRepeatQuotes = {
     {
       id: "setRepeatQuotesTyping",
       display: "typing",
+      configValue: "typing",
       exec: () => {
         UpdateConfig.setRepeatQuotes("typing");
+      },
+    },
+  ],
+};
+
+let commandsLiveWpm = {
+  title: "Live wpm...",
+  configKey: "showLiveWpm",
+  list: [
+    {
+      id: "setLiveWpmOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setShowLiveWpm(false);
+      },
+    },
+    {
+      id: "setLiveWpmOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setShowLiveWpm(true);
+      },
+    },
+  ],
+};
+
+let commandsLiveAcc = {
+  title: "Live accuracy...",
+  configKey: "showLiveAcc",
+  list: [
+    {
+      id: "setLiveAccOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setShowLiveAcc(false);
+      },
+    },
+    {
+      id: "setLiveAccOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setShowLiveAcc(true);
+      },
+    },
+  ],
+};
+
+let commandsLiveBurst = {
+  title: "Live burst...",
+  configKey: "showLiveBurst",
+  list: [
+    {
+      id: "setLiveBurstOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setShowLiveBurst(false);
+      },
+    },
+    {
+      id: "setLiveBurstOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setShowLiveBurst(true);
+      },
+    },
+  ],
+};
+
+let commandsShowTimer = {
+  title: "Timer/progress...",
+  configKey: "showTimerProgress",
+  list: [
+    {
+      id: "setTimerProgressOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setShowTimerProgress(false);
+      },
+    },
+    {
+      id: "setTimerProgressOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setShowTimerProgress(true);
+      },
+    },
+  ],
+};
+
+let commandsKeyTips = {
+  title: "Key tips...",
+  configKey: "showKeyTips",
+  list: [
+    {
+      id: "setKeyTipsOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setShowKeyTips(false);
+      },
+    },
+    {
+      id: "setKeyTipsOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setShowKeyTips(true);
+      },
+    },
+  ],
+};
+
+let commandsFreedomMode = {
+  title: "Freedome mode...",
+  configKey: "freedomMode",
+  list: [
+    {
+      id: "setfreedomModeOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setFreedomMode(false);
+      },
+    },
+    {
+      id: "setfreedomModeOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setFreedomMode(true);
+      },
+    },
+  ],
+};
+
+let commandsStrictSpace = {
+  title: "Strict space...",
+  configKey: "strictSpace",
+  list: [
+    {
+      id: "setStrictSpaceOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setStrictSpace(false);
+      },
+    },
+    {
+      id: "setStrictSpaceOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setStrictSpace(true);
+      },
+    },
+  ],
+};
+
+let commandsBlindMode = {
+  title: "Blind mode...",
+  configKey: "blindMode",
+  list: [
+    {
+      id: "setBlindModeOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setBlindMode(false);
+      },
+    },
+    {
+      id: "setBlindModeOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setBlindMode(true);
+      },
+    },
+  ],
+};
+
+let commandsShowWordsHistory = {
+  title: "Always show words history...",
+  configKey: "alwaysShowWordsHistory",
+  list: [
+    {
+      id: "setAlwaysShowWordsHistoryOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setAlwaysShowWordsHistory(false);
+      },
+    },
+    {
+      id: "setAlwaysShowWordsHistoryOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setAlwaysShowWordsHistory(true);
       },
     },
   ],
@@ -1600,75 +1810,62 @@ export let defaultCommands = {
     },
     {
       id: "changeRepeatQuotes",
-      display: "Change repeat quotes...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsRepeatQuotes);
-        Commandline.show();
-      },
+      display: "Repeat quotes...",
+      icon: "fa-sync-alt",
+      subgroup: commandsRepeatQuotes,
     },
     {
-      id: "toggleShowLiveWpm",
-      display: "Toggle live wpm display",
-      exec: () => {
-        UpdateConfig.toggleShowLiveWpm();
-      },
+      id: "changeLiveWpm",
+      display: "Live wpm...",
+      icon: "fa-tachometer-alt",
+      subgroup: commandsLiveWpm,
     },
     {
-      id: "toggleShowLiveAcc",
-      display: "Toggle live accuracy display",
-      exec: () => {
-        UpdateConfig.toggleLiveAcc();
-      },
+      id: "changeLiveAcc",
+      display: "Live accuracy...",
+      icon: "fa-percentage",
+      subgroup: commandsLiveAcc,
     },
     {
-      id: "toggleShowLiveBurst",
-      display: "Toggle live burst display",
-      exec: () => {
-        UpdateConfig.toggleShowLiveBurst();
-      },
+      id: "changeLiveBurst",
+      display: "Live burst...",
+      icon: "fa-fire-alt",
+      subgroup: commandsLiveBurst,
     },
     {
-      id: "toggleTimerProgressBar",
-      display: "Toggle timer/progress display",
-      exec: () => {
-        UpdateConfig.toggleShowTimerProgress();
-      },
+      id: "changeShowTimer",
+      display: "Timer/progress...",
+      icon: "fa-clock",
+      subgroup: commandsShowTimer,
     },
     {
-      id: "toggleKeyTips",
-      display: "Toggle keybind tips",
-      exec: () => {
-        UpdateConfig.toggleKeyTips();
-      },
+      id: "changeKeyTips",
+      display: "Key tips...",
+      icon: "fa-question",
+      subgroup: commandsKeyTips,
     },
     {
-      id: "toggleFreedom",
-      display: "Toggle freedom mode",
-      exec: () => {
-        UpdateConfig.toggleFreedomMode();
-      },
+      id: "changeFreedomMode",
+      display: "Freedome mode...",
+      subgroup: commandsFreedomMode,
     },
     {
-      id: "toggleStrictSpace",
-      display: "Toggle strict space",
-      exec: () => {
-        UpdateConfig.toggleStrictSpace();
-      },
+      id: "changeStrictSpace",
+      display: "Strict space...",
+      icon: "fa-minus",
+      subgroup: commandsStrictSpace,
     },
     {
-      id: "toggleBlindMode",
-      display: "Toggle blind mode",
-      exec: () => {
-        UpdateConfig.toggleBlindMode();
-      },
+      id: "changeBlindMode",
+      display: "Blind mode...",
+      icon: "fa-eye-slash",
+      subgroup: commandsBlindMode,
     },
     {
-      id: "toggleAlwaysShowWordsHistory",
-      display: "Toggle always show words history",
-      exec: () => {
-        UpdateConfig.toggleAlwaysShowWordsHistory();
-      },
+      id: "changeShowWordsHistory",
+      display: "Always show words history...",
+      icon: "fa-align-left",
+      subgroup: commandsShowWordsHistory,
     },
     {
       id: "toggleIndicateTypos",
