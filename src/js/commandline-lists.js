@@ -342,11 +342,13 @@ let commandsKeymapMode = {
 };
 
 let commandsSoundOnClick = {
-  title: "Change sound on click...",
+  title: "Sound on click...",
+  configKey: "playSoundOnClick",
   list: [
     {
       id: "setSoundOnClickOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("off");
       },
@@ -354,6 +356,7 @@ let commandsSoundOnClick = {
     {
       id: "setSoundOnClick1",
       display: "1",
+      configValue: "1",
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("1");
         Sound.playClick(Config.playSoundOnClick);
@@ -362,6 +365,7 @@ let commandsSoundOnClick = {
     {
       id: "setSoundOnClick2",
       display: "2",
+      configValue: "2",
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("2");
         Sound.playClick(Config.playSoundOnClick);
@@ -370,6 +374,7 @@ let commandsSoundOnClick = {
     {
       id: "setSoundOnClick3",
       display: "3",
+      configValue: "3",
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("3");
         Sound.playClick(Config.playSoundOnClick);
@@ -378,6 +383,7 @@ let commandsSoundOnClick = {
     {
       id: "setSoundOnClick4",
       display: "4",
+      configValue: "4",
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("4");
         Sound.playClick(Config.playSoundOnClick);
@@ -1047,6 +1053,77 @@ let commandsPunctuation = {
   ],
 };
 
+let commandsNumbers = {
+  title: "Numbers...",
+  configKey: "numbers",
+  list: [
+    {
+      id: "changeNumbersOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setNumbers(true);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "changeNumbersOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setNumbers(false);
+        TestLogic.restart();
+      },
+    },
+  ],
+};
+
+let commandsSmoothCaret = {
+  title: "Smooth caret...",
+  configKey: "smoothCaret",
+  list: [
+    {
+      id: "changeSmoothCaretOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setSmoothCaret(true);
+      },
+    },
+    {
+      id: "changeSmoothCaretOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setSmoothCaret(false);
+      },
+    },
+  ],
+};
+
+let commandsQuickTab = {
+  title: "Quick tab...",
+  configKey: "quickTab",
+  list: [
+    {
+      id: "changeQuickTabOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setQuickTabMode(true);
+      },
+    },
+    {
+      id: "changeQuickTabOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setQuickTabMode(false);
+      },
+    },
+  ],
+};
+
 let commandsMode = {
   title: "Change mode...",
   configKey: "mode",
@@ -1153,11 +1230,13 @@ let commandsTimeConfig = {
 };
 
 let commandsConfidenceMode = {
-  title: "Change confidence mode...",
+  title: "Confidence mode...",
+  configKey: "confidenceMode",
   list: [
     {
       id: "changeConfidenceModeOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setConfidenceMode("off");
       },
@@ -1165,6 +1244,7 @@ let commandsConfidenceMode = {
     {
       id: "changeConfidenceModeOn",
       display: "on",
+      configValue: "on",
       exec: () => {
         UpdateConfig.setConfidenceMode("on");
       },
@@ -1172,6 +1252,7 @@ let commandsConfidenceMode = {
     {
       id: "changeConfidenceModeMax",
       display: "max",
+      configValue: "max",
       exec: () => {
         UpdateConfig.setConfidenceMode("max");
       },
@@ -1180,11 +1261,13 @@ let commandsConfidenceMode = {
 };
 
 let commandsStopOnError = {
-  title: "Change stop on error...",
+  title: "Stop on error...",
+  configKey: "stopOnError",
   list: [
     {
       id: "changeStopOnErrorOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setStopOnError("off");
       },
@@ -1192,6 +1275,7 @@ let commandsStopOnError = {
     {
       id: "changeStopOnErrorLetter",
       display: "letter",
+      configValue: "letter",
       exec: () => {
         UpdateConfig.setStopOnError("letter");
       },
@@ -1199,6 +1283,7 @@ let commandsStopOnError = {
     {
       id: "changeStopOnErrorWord",
       display: "word",
+      configValue: "word",
       exec: () => {
         UpdateConfig.setStopOnError("word");
       },
@@ -1479,56 +1564,39 @@ export let defaultCommands = {
     },
     {
       id: "changeConfidenceMode",
-      display: "Change confidence mode...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsConfidenceMode);
-        Commandline.show();
-      },
+      display: "Confidence mode...",
+      icon: "fa-backspace",
+      subgroup: commandsConfidenceMode,
     },
     {
       id: "changeStopOnError",
-      display: "Change stop on error...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsStopOnError);
-        Commandline.show();
-      },
+      display: "Stop on error...",
+      icon: "fa-hand-paper",
+      subgroup: commandsStopOnError,
     },
     {
       id: "changeSoundOnClick",
-      display: "Change sound on click...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsSoundOnClick);
-        Commandline.show();
-      },
+      display: "Sound on click...",
+      icon: "fa-volume-up",
+      subgroup: commandsSoundOnClick,
     },
     {
-      id: "toggleNumbers",
-      display: "Toggle numbers",
-      exec: () => {
-        UpdateConfig.toggleNumbers();
-        TestLogic.restart();
-      },
+      id: "changeNumbers",
+      display: "Numbers...",
+      icon: "15",
+      subgroup: commandsNumbers,
     },
     {
-      id: "toggleSmoothCaret",
-      display: "Toggle smooth caret",
-      exec: () => {
-        UpdateConfig.toggleSmoothCaret();
-      },
+      id: "changeSmoothCaret",
+      display: "Smooth caret...",
+      icon: "fa-i-cursor",
+      subgroup: commandsSmoothCaret,
     },
     {
-      id: "toggleQuickTab",
-      display: "Toggle quick tab mode",
-      exec: () => {
-        console.log("before command");
-        console.log(Config.quickTab);
-        UpdateConfig.toggleQuickTabMode();
-        console.log("after command");
-        console.log(Config.quickTab);
-      },
+      id: "changeQuickTab",
+      display: "Quick tab...",
+      icon: "fa-redo-alt",
+      subgroup: commandsQuickTab,
     },
     {
       id: "changeRepeatQuotes",
