@@ -1006,6 +1006,31 @@ let commandsQuoteLengthConfig = {
   ],
 };
 
+let commandsPunctuation = {
+  title: "Change punctuation...",
+  configKey: "punctuation",
+  list: [
+    {
+      id: "changePunctuationOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setPunctuation(true);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "changePunctuationOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setPunctuation(false);
+        TestLogic.restart();
+      },
+    },
+  ],
+};
+
 let commandsMode = {
   title: "Change mode...",
   list: [
@@ -1052,6 +1077,7 @@ let commandsMode = {
     },
   ],
 };
+
 let commandsTimeConfig = {
   title: "Change time config...",
   list: [
@@ -1367,30 +1393,26 @@ export let defaultCommands = {
   title: "",
   list: [
     {
-      id: "togglePunctuation",
-      display: "Toggle punctuation",
-      exec: () => {
-        UpdateConfig.togglePunctuation();
-        TestLogic.restart();
-      },
+      id: "changePunctuation",
+      display: "Change punctuation...",
+      subgroup: commandsPunctuation,
+      icon: "!?",
+      // exec: () => {
+      //   UpdateConfig.togglePunctuation();
+      //   TestLogic.restart();
+      // },
     },
     {
       id: "changeMode",
       display: "Change mode...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsMode);
-        Commandline.show();
-      },
+      icon: "fa-bars",
+      subgroup: commandsMode,
     },
     {
       id: "changeTimeConfig",
       display: "Change time config...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsTimeConfig);
-        Commandline.show();
-      },
+      icon: "fa-clock",
+      subgroup: commandsTimeConfig,
     },
     {
       id: "changeWordCount",

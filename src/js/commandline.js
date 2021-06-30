@@ -27,8 +27,21 @@ function showFound() {
   let list = CommandlineLists.current[CommandlineLists.current.length - 1];
   $.each(list.list, (index, obj) => {
     if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
-      commandsHTML +=
-        '<div class="entry" command="' + obj.id + '">' + obj.display + "</div>";
+      let icon = obj.icon ?? "fa-chevron-right";
+      let faIcon = /^fa-/g.test(icon);
+      if (!faIcon) {
+        icon = `<div class="textIcon">${icon}</div>`;
+      } else {
+        icon = `<i class="fas fa-fw ${icon}"></i>`;
+      }
+      if (list.configKey) {
+        if (Config[list.configKey] === obj.configValue) {
+          icon = `<i class="fas fa-fw"></i>`;
+        } else {
+          icon = `<i class="fas fa-fw fa-check"></i>`;
+        }
+      }
+      commandsHTML += `<div class="entry" command="${obj.id}"><div class="icon">${icon}</div><div>${obj.display}</div></div>`;
     }
   });
   $("#commandLine .suggestions").html(commandsHTML);
@@ -149,11 +162,12 @@ function trigger(command) {
       if (obj.input) {
         input = true;
         showInput(obj.id, obj.display, obj.defaultValue);
+      } else if (obj.subgroup) {
+        subgroup = true;
+        CommandlineLists.current.push(obj.subgroup);
+        show();
       } else {
         obj.exec();
-        if (obj.subgroup !== null && obj.subgroup !== undefined) {
-          subgroup = obj.subgroup;
-        }
         if (obj.sticky === true) {
           sticky = true;
         }
@@ -196,23 +210,33 @@ export let show = () => {
 function addChildCommands(
   unifiedCommands,
   commandItem,
-  parentCommandDisplay = ""
+  parentCommandDisplay = "",
+  parentIcon = ""
 ) {
   let commandItemDisplay = commandItem.display.replace(/\s?\.\.\.$/g, "");
   if (parentCommandDisplay)
     commandItemDisplay = parentCommandDisplay + " > " + commandItemDisplay;
   if (commandItem.subgroup) {
     try {
-      commandItem.exec();
-      const currentCommandsIndex = CommandlineLists.current.length - 1;
-      CommandlineLists.current[currentCommandsIndex].list.forEach((cmd) => {
-        if (cmd.alias === undefined) cmd.alias = commandItem.alias;
-        addChildCommands(unifiedCommands, cmd, commandItemDisplay);
+      commandItem.subgroup.list.forEach((cmd) => {
+        addChildCommands(
+          unifiedCommands,
+          cmd,
+          commandItemDisplay,
+          commandItem.icon
+        );
       });
-      CommandlineLists.current.pop();
+      // commandItem.exec();
+      // const currentCommandsIndex = CommandlineLists.current.length - 1;
+      // CommandlineLists.current[currentCommandsIndex].list.forEach((cmd) => {
+      //   if (cmd.alias === undefined) cmd.alias = commandItem.alias;
+      //   addChildCommands(unifiedCommands, cmd, commandItemDisplay);
+      // });
+      // CommandlineLists.current.pop();
     } catch (e) {}
   } else {
     let tempCommandItem = { ...commandItem };
+    tempCommandItem.icon = parentIcon;
     if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
     unifiedCommands.push(tempCommandItem);
   }
