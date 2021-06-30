@@ -39,11 +39,11 @@ function showFound() {
           (obj.configValueMode &&
             obj.configValueMode === "include" &&
             Config[list.configKey].includes(obj.configValue)) ||
-          Config[list.configKey] !== obj.configValue
+          Config[list.configKey] === obj.configValue
         ) {
-          icon = `<i class="fas fa-fw"></i>`;
-        } else {
           icon = `<i class="fas fa-fw fa-check"></i>`;
+        } else {
+          icon = `<i class="fas fa-fw"></i>`;
         }
       }
       commandsHTML += `<div class="entry" command="${obj.id}"><div class="icon">${icon}</div><div>${obj.display}</div></div>`;
