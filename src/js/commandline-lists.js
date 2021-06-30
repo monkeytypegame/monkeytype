@@ -497,12 +497,83 @@ let commandsShowWordsHistory = {
   ],
 };
 
+let commandsIndicateTypos = {
+  title: "Indicate typos...",
+  configKey: "indicateTypos",
+  list: [
+    {
+      id: "setIndicateTyposOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setIndicateTypos(false);
+      },
+    },
+    {
+      id: "setIndicateTyposOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setIndicateTypos(true);
+      },
+    },
+  ],
+};
+
+let commandsHideExtraLetters = {
+  title: "Hide extra letters...",
+  configKey: "hideExtraLetters",
+  list: [
+    {
+      id: "setHideExtraLettersOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setHideExtraLetters(false);
+      },
+    },
+    {
+      id: "setHideExtraLettersOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setHideExtraLetters(true);
+      },
+    },
+  ],
+};
+
+let commandsQuickEnd = {
+  title: "Quick end...",
+  configKey: "quickEnd",
+  list: [
+    {
+      id: "setQuickEndOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setQuickEnd(false);
+      },
+    },
+    {
+      id: "setQuickEndOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setQuickEnd(true);
+      },
+    },
+  ],
+};
+
 let commandsOppositeShiftMode = {
   title: "Change opposite shift mode...",
+  configKey: "oppositeShiftMode",
   list: [
     {
       id: "setOppositeShiftModeOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setOppositeShiftMode("off");
       },
@@ -510,8 +581,32 @@ let commandsOppositeShiftMode = {
     {
       id: "setOppositeShiftModeOn",
       display: "on",
+      configValue: "on",
       exec: () => {
         UpdateConfig.setOppositeShiftMode("on");
+      },
+    },
+  ],
+};
+
+let commandsSoundOnError = {
+  title: "Sound on error...",
+  configKey: "playSoundOnError",
+  list: [
+    {
+      id: "setPlaySoundOnErrorOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setPlaySoundOnError(false);
+      },
+    },
+    {
+      id: "setPlaySoundOnErrorOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setPlaySoundOnError(true);
       },
     },
   ],
@@ -849,10 +944,12 @@ let commandsPaceCaret = {
 
 let commandsMinWpm = {
   title: "Change min wpm mode...",
+  configKey: "minWpm",
   list: [
     {
       id: "setMinWpmOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setMinWpm("off");
       },
@@ -860,6 +957,7 @@ let commandsMinWpm = {
     {
       id: "setMinWpmCustom",
       display: "custom...",
+      configValue: "custom",
       input: true,
       exec: (input) => {
         UpdateConfig.setMinWpmCustomSpeed(input);
@@ -871,10 +969,12 @@ let commandsMinWpm = {
 
 let commandsMinAcc = {
   title: "Change min accuracy mode...",
+  configKey: "minAcc",
   list: [
     {
       id: "setMinAccOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setMinAcc("off");
       },
@@ -882,6 +982,7 @@ let commandsMinAcc = {
     {
       id: "setMinAccCustom",
       display: "custom...",
+      configValue: "custom",
       input: true,
       exec: (input) => {
         UpdateConfig.setMinAccCustom(input);
@@ -893,26 +994,34 @@ let commandsMinAcc = {
 
 let commandsMinBurst = {
   title: "Change min burst mode...",
+  configKey: "minBurst",
   list: [
     {
       id: "setMinBurstOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setMinBurst("off");
       },
     },
     {
       id: "setMinBurstFixed",
-      display: "fixed",
-      exec: () => {
+      display: "fixed...",
+      configValue: "fixed",
+      input: true,
+      exec: (input) => {
         UpdateConfig.setMinBurst("fixed");
+        UpdateConfig.setMinBurstCustomSpeed(input);
       },
     },
     {
       id: "setMinBurstFlex",
-      display: "flex",
-      exec: () => {
+      display: "flex...",
+      configValue: "flex",
+      input: true,
+      exec: (input) => {
         UpdateConfig.setMinBurst("flex");
+        UpdateConfig.setMinBurstCustomSpeed(input);
       },
     },
   ],
@@ -1069,10 +1178,12 @@ let commandsTimerColor = {
 
 let commandsSingleListCommandLine = {
   title: "Single list command line...",
+  configKey: "singleListCommandLine",
   list: [
     {
       id: "singleListCommandLineManual",
       display: "manual",
+      configValue: "manual",
       exec: () => {
         UpdateConfig.setSingleListCommandLine("manual");
       },
@@ -1080,6 +1191,7 @@ let commandsSingleListCommandLine = {
     {
       id: "singleListCommandLineOn",
       display: "on",
+      configValue: "on",
       exec: () => {
         UpdateConfig.setSingleListCommandLine("on");
       },
@@ -1868,82 +1980,61 @@ export let defaultCommands = {
       subgroup: commandsShowWordsHistory,
     },
     {
-      id: "toggleIndicateTypos",
-      display: "Toggle indicate typos",
-      exec: () => {
-        UpdateConfig.toggleIndicateTypos();
-      },
+      id: "changeIndicateTypos",
+      display: "Indicate typos...",
+      icon: "fa-exclamation",
+      subgroup: commandsIndicateTypos,
     },
     {
-      id: "toggleHideExtraLetters",
-      display: "Toggle hide extra letters",
-      exec: () => {
-        UpdateConfig.toggleHideExtraLetters();
-      },
+      id: "changeHideExtraLetters",
+      display: "Hide extra letters...",
+      icon: "fa-eye-slash",
+      subgroup: commandsHideExtraLetters,
     },
     {
-      id: "toggleQuickEnd",
-      display: "Toggle quick end",
-      exec: () => {
-        UpdateConfig.toggleQuickEnd();
-      },
+      id: "changeQuickEnd",
+      display: "Quick end...",
+      icon: "fa-step-forward",
+      subgroup: commandsQuickEnd,
     },
     {
       id: "singleListCommandLine",
       display: "Single list command line...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsSingleListCommandLine);
-        Commandline.show();
-      },
+      icon: "fa-list",
+      subgroup: commandsSingleListCommandLine,
     },
     {
       id: "changeMinWpm",
-      display: "Change min wpm mode...",
+      display: "Minimum wpm...",
       alias: "minimum",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsMinWpm);
-        Commandline.show();
-      },
+      icon: "fa-bomb",
+      subgroup: commandsMinWpm,
     },
     {
       id: "changeMinAcc",
-      display: "Change min accuracy mode...",
+      display: "Minimum accuracy...",
       alias: "minimum",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsMinAcc);
-        Commandline.show();
-      },
+      icon: "fa-bomb",
+      subgroup: commandsMinAcc,
     },
     {
       id: "changeMinBurst",
-      display: "Change min burst mode...",
+      display: "Minimum burst...",
       alias: "minimum",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsMinBurst);
-        Commandline.show();
-      },
-    },
-    {
-      id: "changeMinBurstSpeed",
-      display: "Change min burst speed...",
-      alias: "minimum",
-      input: true,
-      exec: (input) => {
-        UpdateConfig.setMinBurstCustomSpeed(input);
-      },
+      icon: "fa-bomb",
+      subgroup: commandsMinBurst,
     },
     {
       id: "changeOppositeShiftMode",
       display: "Change opposite shift mode...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsOppositeShiftMode);
-        Commandline.show();
-      },
+      icon: "fa-exchange-alt",
+      subgroup: commandsOppositeShiftMode,
+    },
+    {
+      id: "changeSoundOnError",
+      display: "Sound on error...",
+      icon: "fa-volume-mute",
+      subgroup: commandsSoundOnError,
     },
     {
       id: "togglePlaySoundOnError",
