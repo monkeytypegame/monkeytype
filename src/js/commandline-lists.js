@@ -291,7 +291,7 @@ let commandsRepeatQuotes = {
 };
 
 let commandsLiveWpm = {
-  title: "Live wpm...",
+  title: "Live WPM...",
   configKey: "showLiveWpm",
   list: [
     {
@@ -612,6 +612,213 @@ let commandsSoundOnError = {
   ],
 };
 
+let commandsFlipTestColors = {
+  title: "Flip test colors...",
+  configKey: "flipTestColors",
+  list: [
+    {
+      id: "setFlipTestColorsOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setFlipTestColors(false);
+      },
+    },
+    {
+      id: "setFlipTestColorsOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setFlipTestColors(true);
+      },
+    },
+  ],
+};
+
+let commandsSmoothLineScroll = {
+  title: "Smooth line scroll...",
+  configKey: "smoothLineScroll",
+  list: [
+    {
+      id: "setSmoothLineScrollOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setSmoothLineScroll(false);
+      },
+    },
+    {
+      id: "setSmoothLineScrollOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setSmoothLineScroll(true);
+      },
+    },
+  ],
+};
+
+let commandsAlwaysShowDecimal = {
+  title: "Always show decimal places...",
+  configKey: "alwaysShowDecimalPlaces",
+  list: [
+    {
+      id: "setAlwaysShowDecimalPlacesOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setAlwaysShowDecimalPlaces(false);
+      },
+    },
+    {
+      id: "setAlwaysShowDecimalPlacesOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setAlwaysShowDecimalPlaces(true);
+      },
+    },
+  ],
+};
+
+let commandsAlwaysShowCPM = {
+  title: "Always show CPM...",
+  configKey: "alwaysShowCPM",
+  list: [
+    {
+      id: "setAlwaysShowCPMOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setAlwaysShowCPM(false);
+      },
+    },
+    {
+      id: "setAlwaysShowCPMOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setAlwaysShowCPM(true);
+      },
+    },
+  ],
+};
+
+let commandsStartGraphsAtZero = {
+  title: "Start graphs at zero...",
+  configKey: "startGraphsAtZero",
+  list: [
+    {
+      id: "setStartGraphsAtZeroOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setStartGraphsAtZero(false);
+      },
+    },
+    {
+      id: "setStartGraphsAtZeroOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setStartGraphsAtZero(true);
+      },
+    },
+  ],
+};
+
+let commandsSwapEscAndTab = {
+  title: "Swap esc and tab...",
+  configKey: "swapEscAndTab",
+  list: [
+    {
+      id: "setSwapEscAndTabOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setSwapEscAndTab(false);
+      },
+    },
+    {
+      id: "setSwapEscAndTabOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setSwapEscAndTab(true);
+      },
+    },
+  ],
+};
+
+let commandsShowAllLines = {
+  title: "Show all lines...",
+  configKey: "showAllLines",
+  list: [
+    {
+      id: "setShowAllLinesOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setShowAllLines(false);
+      },
+    },
+    {
+      id: "setShowAllLinesOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setShowAllLines(true);
+      },
+    },
+  ],
+};
+
+let commandsColorfulMode = {
+  title: "Colorful mode...",
+  configKey: "colorfulMode",
+  list: [
+    {
+      id: "setColorfulModeOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setColorfulMode(false);
+      },
+    },
+    {
+      id: "setColorfulModeOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setColorfulMode(true);
+      },
+    },
+  ],
+};
+
+let commandsOutOfFocusWarning = {
+  title: "Colorful mode...",
+  configKey: "showOutOfFocusWarning",
+  list: [
+    {
+      id: "setShowOutOfFocusWarningOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setShowOutOfFocusWarning(false);
+      },
+    },
+    {
+      id: "setShowOutOfFocusWarningOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setShowOutOfFocusWarning(true);
+      },
+    },
+  ],
+};
+
 let commandsKeymapMode = {
   title: "Change keymap mode...",
   list: [
@@ -739,25 +946,29 @@ let commandsRandomTheme = {
 };
 
 let commandsDifficulty = {
-  title: "Change difficulty...",
+  title: "Difficulty...",
+  configKey: "difficulty",
   list: [
     {
       id: "setDifficultyNormal",
-      display: "Normal",
+      display: "normal",
+      configValue: "normal",
       exec: () => {
         UpdateConfig.setDifficulty("normal");
       },
     },
     {
       id: "setDifficultyExpert",
-      display: "Expert",
+      display: "expert",
+      configValue: "expert",
       exec: () => {
         UpdateConfig.setDifficulty("expert");
       },
     },
     {
       id: "setDifficultyMaster",
-      display: "Master",
+      display: "master",
+      configValue: "master",
       exec: () => {
         UpdateConfig.setDifficulty("master");
       },
@@ -767,10 +978,12 @@ let commandsDifficulty = {
 
 export let commandsEnableAds = {
   title: "Set enable ads...",
+  configKey: "enableAds",
   list: [
     {
       id: "setEnableAdsOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setEnableAds("off");
         Notifications.add("Don't forget to refresh the page!", 0);
@@ -779,6 +992,7 @@ export let commandsEnableAds = {
     {
       id: "setEnableAdsOn",
       display: "on",
+      configValue: "on",
       exec: () => {
         UpdateConfig.setEnableAds("on");
         Notifications.add("Don't forget to refresh the page!", 0);
@@ -786,7 +1000,8 @@ export let commandsEnableAds = {
     },
     {
       id: "setEnableMax",
-      display: "Sellout",
+      display: "sellout",
+      configValue: "max",
       exec: () => {
         UpdateConfig.setEnableAds("max");
         Notifications.add("Don't forget to refresh the page!", 0);
@@ -795,12 +1010,37 @@ export let commandsEnableAds = {
   ],
 };
 
+let commandsCustomTheme = {
+  title: "Custom theme...",
+  configKey: "customTheme",
+  list: [
+    {
+      id: "setCustomThemeOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setCustomTheme(false);
+      },
+    },
+    {
+      id: "setCustomThemeOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setCustomTheme(true);
+      },
+    },
+  ],
+};
+
 let commandsCaretStyle = {
   title: "Change caret style...",
+  configKey: "caretStyle",
   list: [
     {
       id: "setCaretStyleOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setCaretStyle("off");
       },
@@ -808,6 +1048,7 @@ let commandsCaretStyle = {
     {
       id: "setCaretStyleDefault",
       display: "line",
+      configValue: "default",
       exec: () => {
         UpdateConfig.setCaretStyle("default");
       },
@@ -815,6 +1056,7 @@ let commandsCaretStyle = {
     {
       id: "setCaretStyleBlock",
       display: "block",
+      configValue: "block",
       exec: () => {
         UpdateConfig.setCaretStyle("block");
       },
@@ -822,6 +1064,7 @@ let commandsCaretStyle = {
     {
       id: "setCaretStyleOutline",
       display: "outline-block",
+      configValue: "outline",
       exec: () => {
         UpdateConfig.setCaretStyle("outline");
       },
@@ -829,6 +1072,7 @@ let commandsCaretStyle = {
     {
       id: "setCaretStyleUnderline",
       display: "underline",
+      configValue: "underliner",
       exec: () => {
         UpdateConfig.setCaretStyle("underline");
       },
@@ -836,6 +1080,7 @@ let commandsCaretStyle = {
     {
       id: "setCaretStyleCarrot",
       display: "carrot",
+      configValue: "carrot",
       visible: false,
       exec: () => {
         UpdateConfig.setCaretStyle("carrot");
@@ -844,6 +1089,7 @@ let commandsCaretStyle = {
     {
       id: "setCaretStyleBanana",
       display: "banana",
+      configValue: "banana",
       visible: false,
       exec: () => {
         UpdateConfig.setCaretStyle("banana");
@@ -854,10 +1100,12 @@ let commandsCaretStyle = {
 
 let commandsPaceCaretStyle = {
   title: "Change pace caret style...",
+  configKey: "paceCaretStyle",
   list: [
     {
       id: "setPaceCaretStyleDefault",
       display: "line",
+      configValue: "default",
       exec: () => {
         UpdateConfig.setPaceCaretStyle("default");
       },
@@ -865,6 +1113,7 @@ let commandsPaceCaretStyle = {
     {
       id: "setPaceCaretStyleBlock",
       display: "block",
+      configValue: "block",
       exec: () => {
         UpdateConfig.setPaceCaretStyle("block");
       },
@@ -872,6 +1121,7 @@ let commandsPaceCaretStyle = {
     {
       id: "setPaceCaretStyleOutline",
       display: "outline-block",
+      configValue: "outline",
       exec: () => {
         UpdateConfig.setPaceCaretStyle("outline");
       },
@@ -879,6 +1129,7 @@ let commandsPaceCaretStyle = {
     {
       id: "setPaceCaretStyleUnderline",
       display: "underline",
+      configValue: "underline",
       exec: () => {
         UpdateConfig.setPaceCaretStyle("underline");
       },
@@ -886,6 +1137,7 @@ let commandsPaceCaretStyle = {
     {
       id: "setPaceCaretStyleCarrot",
       display: "carrot",
+      configValue: "carrot",
       visible: false,
       exec: () => {
         UpdateConfig.setPaceCaretStyle("carrot");
@@ -894,6 +1146,7 @@ let commandsPaceCaretStyle = {
     {
       id: "setPaceCaretStyleBanana",
       display: "banana",
+      configValue: "banana",
       visible: false,
       exec: () => {
         UpdateConfig.setPaceCaretStyle("banana");
@@ -903,11 +1156,13 @@ let commandsPaceCaretStyle = {
 };
 
 let commandsPaceCaret = {
-  title: "Change pace caret mode...",
+  title: "Pace caret mode...",
+  configKey: "paceCaret",
   list: [
     {
       id: "setPaceCaretOff",
       display: "off",
+      configValue: "off",
       exec: () => {
         UpdateConfig.setPaceCaret("off");
         TestLogic.restart();
@@ -916,6 +1171,7 @@ let commandsPaceCaret = {
     {
       id: "setPaceCaretPb",
       display: "pb",
+      configValue: "pb",
       exec: () => {
         UpdateConfig.setPaceCaret("pb");
         TestLogic.restart();
@@ -924,6 +1180,7 @@ let commandsPaceCaret = {
     {
       id: "setPaceCaretAverage",
       display: "average",
+      configValue: "average",
       exec: () => {
         UpdateConfig.setPaceCaret("average");
         TestLogic.restart();
@@ -932,6 +1189,7 @@ let commandsPaceCaret = {
     {
       id: "setPaceCaretCustom",
       display: "custom...",
+      configValue: "custom",
       input: true,
       exec: (input) => {
         UpdateConfig.setPaceCaretCustomSpeed(input);
@@ -1928,7 +2186,7 @@ export let defaultCommands = {
     },
     {
       id: "changeLiveWpm",
-      display: "Live wpm...",
+      display: "Live WPM...",
       icon: "fa-tachometer-alt",
       subgroup: commandsLiveWpm,
     },
@@ -2037,126 +2295,94 @@ export let defaultCommands = {
       subgroup: commandsSoundOnError,
     },
     {
-      id: "togglePlaySoundOnError",
-      display: "Toggle play sound on error",
-      exec: () => {
-        UpdateConfig.togglePlaySoundOnError();
-      },
+      id: "changeFlipTestColors",
+      display: "Flip test colors...",
+      icon: "fa-adjust",
+      subgroup: commandsFlipTestColors,
     },
     {
-      id: "toggleFlipTestColors",
-      display: "Toggle flip test colors",
-      exec: () => {
-        UpdateConfig.toggleFlipTestColors();
-      },
+      id: "changeSmoothLineScroll",
+      display: "Smooth line scroll...",
+      icon: "fa-align-left",
+      subgroup: commandsSmoothLineScroll,
     },
     {
-      id: "toggleSmoothLineScroll",
-      display: "Toggle smooth line scroll",
-      exec: () => {
-        UpdateConfig.toggleSmoothLineScroll();
-      },
+      id: "changeAlwaysShowDecimal",
+      display: "Always show decimal places...",
+      icon: "00",
+      subgroup: commandsAlwaysShowDecimal,
     },
     {
-      id: "toggleAlwaysShowDecimalPlaces",
-      display: "Toggle always show decimal places",
-      exec: () => {
-        UpdateConfig.toggleAlwaysShowDecimalPlaces();
-      },
+      id: "changeAlwaysShowCPM",
+      display: "Always show CPM...",
+      icon: "fa-tachometer-alt",
+      subgroup: commandsAlwaysShowCPM,
     },
     {
-      id: "toggleAlwaysShowCPM",
-      display: "Toggle always show CPM",
-      exec: () => {
-        UpdateConfig.toggleAlwaysShowCPM();
-      },
+      id: "changeStartGraphsAtZero",
+      display: "Start graphs at zero...",
+      icon: "fa-chart-line",
+      subgroup: commandsStartGraphsAtZero,
     },
     {
-      id: "toggleStartGraphsAtZero",
-      display: "Toggle start graphs at zero",
-      exec: () => {
-        UpdateConfig.toggleStartGraphsAtZero();
-      },
+      id: "changeSwapEscAndTab",
+      display: "Swap esc and tab...",
+      icon: "fa-exchange-alt",
+      subgroup: commandsSwapEscAndTab,
     },
     {
-      id: "toggleSwapEscAndTab",
-      display: "Toggle swap esc and tab",
-      exec: () => {
-        UpdateConfig.toggleSwapEscAndTab();
-      },
+      id: "changeShowAllLines",
+      display: "Show all lines...",
+      icon: "fa-align-left",
+      subgroup: commandsShowAllLines,
     },
     {
-      id: "toggleShowAllLines",
-      display: "Toggle show all lines",
-      exec: () => {
-        UpdateConfig.toggleShowAllLines();
-      },
+      id: "changeColorfulMode",
+      display: "Colorful mode...",
+      icon: "fa-fill-drip",
+      subgroup: commandsColorfulMode,
     },
     {
-      id: "toggleColorfulMode",
-      display: "Toggle colorful mode",
-      exec: () => {
-        UpdateConfig.toggleColorfulMode();
-      },
-    },
-    {
-      id: "toggleShowOutOfFocusWarning",
-      display: "Toggle out of focus warning",
-      exec: () => {
-        UpdateConfig.toggleShowOutOfFocusWarning();
-      },
+      id: "changeOutOfFocusWarning",
+      display: "Out of focus warning...",
+      icon: "fa-exclamation",
+      subgroup: commandsOutOfFocusWarning,
     },
     {
       id: "setEnableAds",
-      display: "Set enable ads...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsEnableAds);
-        Commandline.show();
-      },
+      display: "Enable ads...",
+      icon: "fa-ad",
+      subgroup: commandsEnableAds,
     },
     {
-      id: "toggleCustomTheme",
-      display: "Toggle preset/custom theme",
-      exec: () => {
-        UpdateConfig.toggleCustomTheme();
-      },
+      id: "setCustomTheme",
+      display: "Custom theme...",
+      icon: "fa-palette",
+      subgroup: commandsCustomTheme,
     },
     {
       id: "changeDifficulty",
-      display: "Change difficulty...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsDifficulty);
-        Commandline.show();
-      },
+      display: "Difficulty...",
+      icon: "fa-star",
+      subgroup: commandsDifficulty,
     },
     {
       id: "changeCaretStyle",
-      display: "Change caret style...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsCaretStyle);
-        Commandline.show();
-      },
+      display: "Caret style...",
+      icon: "fa-i-cursor",
+      subgroup: commandsCaretStyle,
     },
     {
       id: "changePaceCaret",
-      display: "Change pace caret mode...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsPaceCaret);
-        Commandline.show();
-      },
+      display: "Pace caret mode...",
+      icon: "fa-i-cursor",
+      subgroup: commandsPaceCaret,
     },
     {
       id: "changePaceCaretStyle",
-      display: "Change pace caret style...",
-      subgroup: true,
-      exec: () => {
-        current.push(commandsPaceCaretStyle);
-        Commandline.show();
-      },
+      display: "Pace caret style...",
+      icon: "fa-i-cursor",
+      subgroup: commandsPaceCaretStyle,
     },
     {
       id: "toggleRepeatedPace",
