@@ -441,7 +441,7 @@ let commandsKeyTips = {
 };
 
 let commandsFreedomMode = {
-  title: "Freedome mode...",
+  title: "Freedom mode...",
   configKey: "freedomMode",
   list: [
     {
@@ -611,6 +611,7 @@ let commandsOppositeShiftMode = {
       configValue: "off",
       exec: () => {
         UpdateConfig.setOppositeShiftMode("off");
+        TestUI.updateModesNotice();
       },
     },
     {
@@ -619,6 +620,7 @@ let commandsOppositeShiftMode = {
       configValue: "on",
       exec: () => {
         UpdateConfig.setOppositeShiftMode("on");
+        TestUI.updateModesNotice();
       },
     },
   ],
@@ -2327,7 +2329,7 @@ export let defaultCommands = {
     },
     {
       id: "changeFreedomMode",
-      display: "Freedome mode...",
+      display: "Freedom mode...",
       subgroup: commandsFreedomMode,
     },
     {
