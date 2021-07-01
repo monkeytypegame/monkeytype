@@ -392,7 +392,7 @@ $(document).on(
 
 $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   if (!commandLineMouseMode) return;
-  console.log("clearing keyboard active");
+  // console.log("clearing keyboard active");
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeKeyboard"
   );
