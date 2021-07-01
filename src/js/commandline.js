@@ -216,20 +216,24 @@ function addChildCommands(
   unifiedCommands,
   commandItem,
   parentCommandDisplay = "",
-  parentIcon = ""
+  parentCommand = ""
 ) {
   let commandItemDisplay = commandItem.display.replace(/\s?\.\.\.$/g, "");
+  let icon = `<i class="fas fa-fw"></i>`;
+  if (
+    commandItem.configValue !== undefined &&
+    Config[parentCommand.configKey] === commandItem.configValue
+  ) {
+    icon = `<i class="fas fa-fw fa-check"></i>`;
+  }
   if (parentCommandDisplay)
-    commandItemDisplay = parentCommandDisplay + " > " + commandItemDisplay;
+    commandItemDisplay =
+      parentCommandDisplay + " > " + icon + commandItemDisplay;
   if (commandItem.subgroup) {
     try {
       commandItem.subgroup.list.forEach((cmd) => {
-        addChildCommands(
-          unifiedCommands,
-          cmd,
-          commandItemDisplay,
-          commandItem.icon
-        );
+        commandItem.configKey = commandItem.subgroup.configKey;
+        addChildCommands(unifiedCommands, cmd, commandItemDisplay, commandItem);
       });
       // commandItem.exec();
       // const currentCommandsIndex = CommandlineLists.current.length - 1;
@@ -241,7 +245,7 @@ function addChildCommands(
     } catch (e) {}
   } else {
     let tempCommandItem = { ...commandItem };
-    tempCommandItem.icon = parentIcon;
+    tempCommandItem.icon = parentCommand.icon;
     if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
     unifiedCommands.push(tempCommandItem);
   }
