@@ -1,22 +1,10 @@
 {
   "language": "portuguese",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -68,7 +56,7 @@
       "id": 7
     },
     {
-      "text": "A primeira condição para modificar a realidade consiste em conhece-la.",
+      "text": "A primeira condição para modificar a realidade consiste em conhecê-la.",
       "source": "Eduardo Galeano",
       "length": 70,
       "id": 8
@@ -110,7 +98,7 @@
       "id": 14
     },
     {
-      "text": "Escrevo sem pensar, tudo o que o meu inconsciente grita. Penso depois: nao só para corrigir, mas para justificar o que escrevi.",
+      "text": "Escrevo sem pensar, tudo o que o meu inconsciente grita. Penso depois: não só para corrigir, mas para justificar o que escrevi.",
       "source": "Mário de Andrade",
       "length": 127,
       "id": 15

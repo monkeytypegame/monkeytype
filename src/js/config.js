@@ -6,6 +6,7 @@ import * as OutOfFocus from "./out-of-focus";
 import * as TimerProgress from "./timer-progress";
 import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
+import * as LiveBurst from "./live-burst";
 import * as Funbox from "./funbox";
 import * as Notifications from "./notifications";
 import * as ThemeController from "./theme-controller";
@@ -570,6 +571,24 @@ export function setMinAccCustom(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+//min burst
+export function setMinBurst(min, nosave) {
+  if (min == undefined) {
+    min = "off";
+  }
+  config.minBurst = min;
+  TestUI.updateModesNotice();
+  if (!nosave) saveToLocalStorage();
+}
+
+export function setMinBurstCustomSpeed(val, nosave) {
+  if (val == undefined || Number.isNaN(parseInt(val))) {
+    val = 100;
+  }
+  config.minBurstCustomSpeed = val;
+  if (!nosave) saveToLocalStorage();
+}
+
 //always show words history
 export function setAlwaysShowWordsHistory(val, nosave) {
   if (val == undefined) {
@@ -847,6 +866,29 @@ export function toggleLiveAcc() {
     LiveAcc.show();
   } else {
     LiveAcc.hide();
+  }
+  saveToLocalStorage();
+}
+
+export function setShowLiveBurst(live, nosave) {
+  if (live == null || live == undefined) {
+    live = false;
+  }
+  config.showLiveBurst = live;
+  if (live) {
+    LiveBurst.show();
+  } else {
+    LiveAcc.hide();
+  }
+  if (!nosave) saveToLocalStorage();
+}
+
+export function toggleShowLiveBurst() {
+  config.showLiveBurst = !config.showLiveBurst;
+  if (config.showLiveBurst) {
+    LiveBurst.show();
+  } else {
+    LiveBurst.hide();
   }
   saveToLocalStorage();
 }
@@ -1554,6 +1596,7 @@ export function apply(configObj) {
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setShowLiveWpm(configObj.showLiveWpm, true);
     setShowLiveAcc(configObj.showLiveAcc, true);
+    setShowLiveBurst(configObj.showLiveBurst, true);
     setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
@@ -1573,6 +1616,8 @@ export function apply(configObj) {
     setPageWidth(configObj.pageWidth, true);
     setChartAccuracy(configObj.chartAccuracy, true);
     setChartStyle(configObj.chartStyle, true);
+    setMinBurst(configObj.minBurst, true);
+    setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
     setMinWpm(configObj.minWpm, true);
     setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
     setMinAcc(configObj.minAcc, true);
