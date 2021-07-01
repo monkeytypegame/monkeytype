@@ -206,7 +206,8 @@ export function updateTagCommands() {
 
     commandsTags.list.push({
       id: "clearTags",
-      display: "Clear tags",
+      display: `Clear tags`,
+      icon: "fa-times",
       exec: () => {
         DB.getSnapshot().tags.forEach((tag) => {
           tag.active = false;
@@ -220,13 +221,14 @@ export function updateTagCommands() {
       let dis = tag.name;
 
       if (tag.active === true) {
-        dis = '<i class="fas fa-check-square"></i>' + dis;
+        dis = '<i class="fas fa-fw fa-check"></i>' + dis;
       } else {
-        dis = '<i class="fas fa-square"></i>' + dis;
+        dis = '<i class="fas fa-fw"></i>' + dis;
       }
 
       commandsTags.list.push({
         id: "toggleTag" + tag.id,
+        noIcon: true,
         display: dis,
         sticky: true,
         exec: () => {
@@ -235,14 +237,17 @@ export function updateTagCommands() {
           let txt = tag.name;
 
           if (tag.active === true) {
-            txt = '<i class="fas fa-check-square"></i>' + txt;
+            txt = '<i class="fas fa-fw fa-check"></i>' + txt;
           } else {
-            txt = '<i class="fas fa-square"></i>' + txt;
+            txt = '<i class="fas fa-fw"></i>' + txt;
           }
           if (Commandline.isSingleListCommandLineActive()) {
             $(
               `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
-            ).html("Change tags > " + txt);
+            ).html(
+              `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
+                txt
+            );
           } else {
             $(
               `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
@@ -256,7 +261,7 @@ export function updateTagCommands() {
 }
 
 let commandsPresets = {
-  title: "Apply preset...",
+  title: "Presets...",
   list: [],
 };
 
@@ -2208,10 +2213,6 @@ export let defaultCommands = {
           UpdateConfig.togglePunctuation();
         },
       },
-      // exec: () => {
-      //   UpdateConfig.togglePunctuation();
-      //   TestLogic.restart();
-      // },
     },
     {
       id: "changeMode",
@@ -2242,24 +2243,32 @@ export let defaultCommands = {
     {
       visible: false,
       id: "changeTags",
-      display: "Change tags...",
-      subgroup: true,
-      exec: () => {
+      display: "Tags...",
+      icon: "fa-tag",
+      subgroup: commandsTags,
+      beforeSubgroup: () => {
         updateTagCommands();
-        current.push(commandsTags);
-        Commandline.show();
       },
+      // exec: () => {
+      //   updateTagCommands();
+      //   current.push();
+      //   Commandline.show();
+      // },
     },
     {
       visible: false,
       id: "applyPreset",
-      display: "Apply preset...",
-      subgroup: true,
-      exec: () => {
+      display: "Presets...",
+      icon: "fa-sliders-h",
+      subgroup: commandsPresets,
+      beforeSubgroup: () => {
         updatePresetCommands();
-        current.push(commandsPresets);
-        Commandline.show();
       },
+      // exec: () => {
+      //   updatePresetCommands();
+      //   current.push(commandsPresets);
+      //   Commandline.show();
+      // },
     },
     {
       id: "changeConfidenceMode",
