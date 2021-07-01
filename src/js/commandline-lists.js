@@ -2202,6 +2202,12 @@ export let defaultCommands = {
       display: "Punctuation...",
       subgroup: commandsPunctuation,
       icon: "!?",
+      shift: {
+        display: "Toggle punctuation",
+        exec: () => {
+          UpdateConfig.togglePunctuation();
+        },
+      },
       // exec: () => {
       //   UpdateConfig.togglePunctuation();
       //   TestLogic.restart();

@@ -435,6 +435,40 @@ $("#commandLineWrapper").click((e) => {
   }
 });
 
+//might come back to it later
+// function shiftCommand(){
+//   let activeEntries = $("#commandLineWrapper #commandLine .suggestions .entry.activeKeyboard, #commandLineWrapper #commandLine .suggestions .entry.activeMouse");
+//   activeEntries.each((index, activeEntry) => {
+//     let commandId = activeEntry.getAttribute('command');
+//     let foundCommand = null;
+//     CommandlineLists.defaultCommands.list.forEach(command => {
+//       if(foundCommand === null && command.id === commandId){
+//         foundCommand = command;
+//       }
+//     })
+//     if(foundCommand.shift){
+//       $(activeEntry).find('div').text(foundCommand.shift.display);
+//     }
+//   })
+// }
+
+// let shiftedCommands = false;
+// $(document).keydown((e) => {
+//   if (e.key === "Shift") {
+//     if(shiftedCommands === false){
+//       shiftedCommands = true;
+//       shiftCommand();
+//     }
+
+//   }
+// });
+
+// $(document).keyup((e) => {
+//   if (e.key === "Shift") {
+//     shiftedCommands = false;
+//   }
+// });
+
 $(document).keydown((e) => {
   // if (isPreviewingTheme) {
   // console.log("applying theme");
