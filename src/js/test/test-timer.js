@@ -88,15 +88,21 @@ export function start() {
 
       TestStats.pushKeypressesToHistory();
       if (
-        (Config.minWpm === "custom" &&
-          wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
-          TestLogic.words.currentIndex > 3) ||
-        (Config.minAcc === "custom" &&
-          acc < parseInt(Config.minAccCustom) &&
-          TestLogic.words.currentIndex > 3)
+        Config.minWpm === "custom" &&
+        wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
+        TestLogic.words.currentIndex > 3
       ) {
         clearTimeout(timer);
-        TestLogic.fail();
+        TestLogic.fail("min wpm");
+        return;
+      }
+      if (
+        Config.minAcc === "custom" &&
+        acc < parseInt(Config.minAccCustom) &&
+        TestLogic.words.currentIndex > 3
+      ) {
+        clearTimeout(timer);
+        TestLogic.fail("min accuracy");
         return;
       }
       if (

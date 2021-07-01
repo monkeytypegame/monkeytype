@@ -6,6 +6,7 @@ import Config, * as UpdateConfig from "./config";
 import * as Keymap from "./keymap";
 import * as Misc from "./misc";
 import * as LiveAcc from "./live-acc";
+import * as LiveBurst from "./live-burst";
 import * as Funbox from "./funbox";
 import * as Sound from "./sound";
 import * as Caret from "./caret";
@@ -233,6 +234,11 @@ function handleSpace(event, isEnter) {
     Settings.groups.layout.updateButton();
   }
   dontInsertSpace = true;
+
+  let burst = TestStats.calculateBurst();
+  LiveBurst.update(Math.round(burst));
+  TestStats.pushBurstToHistory(burst);
+
   if (currentWord == TestLogic.input.current || Config.mode == "zen") {
     //correct word or in zen mode
     MonkeyPower.addPower(true, true);
@@ -281,7 +287,7 @@ function handleSpace(event, isEnter) {
     if (Config.stopOnError != "off") {
       if (Config.difficulty == "expert" || Config.difficulty == "master") {
         //failed due to diff when pressing space
-        TestLogic.fail();
+        TestLogic.fail("difficulty");
         return;
       }
       if (Config.stopOnError == "word") {
@@ -305,7 +311,7 @@ function handleSpace(event, isEnter) {
     TestStats.pushKeypressWord(TestLogic.words.currentIndex);
     TestStats.updateLastKeypress();
     if (Config.difficulty == "expert" || Config.difficulty == "master") {
-      TestLogic.fail();
+      TestLogic.fail("difficulty");
       return;
     } else if (TestLogic.words.currentIndex == TestLogic.words.length) {
       //submitted last word that is incorrect
@@ -313,6 +319,22 @@ function handleSpace(event, isEnter) {
       return;
     }
     Replay.addReplayEvent("submitErrorWord");
+  }
+
+  let wordLength;
+  if (Config.mode === "zen") {
+    wordLength = TestLogic.input.getCurrent().length;
+  } else {
+    wordLength = TestLogic.words.getCurrent().length;
+  }
+
+  let flex = Misc.whorf(Config.minBurstCustomSpeed, wordLength);
+  if (
+    (Config.minBurst === "fixed" && burst < Config.minBurstCustomSpeed) ||
+    (Config.minBurst === "flex" && burst < flex)
+  ) {
+    TestLogic.fail("min burst");
+    return;
   }
 
   TestLogic.corrected.pushHistory();
@@ -496,6 +518,10 @@ function handleAlpha(event) {
     if (!TestLogic.active) return;
   }
 
+  if (TestLogic.input.current == "") {
+    TestStats.setBurstStart(performance.now());
+  }
+
   Focus.set(true);
   Caret.stopAnimation();
 
@@ -662,7 +688,7 @@ function handleAlpha(event) {
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
-    TestLogic.fail();
+    TestLogic.fail("difficulty");
     return;
   }
 

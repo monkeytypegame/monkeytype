@@ -14,6 +14,7 @@ import * as OutOfFocus from "./out-of-focus";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as PractiseMissed from "./practise-missed";
 import * as Replay from "./replay";
+import * as TestStats from "./test-stats";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -513,8 +514,6 @@ export function updateModesNotice() {
           ? "average"
           : Config.paceCaret === "pb"
           ? "pb"
-          : Config.paceCaret == "repeat"
-          ? "repeated"
           : "custom"
       } pace${speed}</div>`
     );
@@ -529,6 +528,14 @@ export function updateModesNotice() {
   if (Config.minAcc !== "off") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsMinAcc"><i class="fas fa-bomb"></i>min ${Config.minAccCustom}% acc</div>`
+    );
+  }
+
+  if (Config.minBurst !== "off") {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsMinBurst"><i class="fas fa-bomb"></i>min ${
+        Config.minBurstCustomSpeed
+      } burst ${Config.minBurst === "flex" ? "(flex)" : ""}</div>`
     );
   }
 
@@ -629,14 +636,16 @@ async function loadWordsHistory() {
         TestLogic.corrected.getHistory(i) !== undefined &&
         TestLogic.corrected.getHistory(i) !== ""
       ) {
-        wordEl = `<div class='word' input="${TestLogic.corrected
+        wordEl = `<div class='word' burst="${
+          TestStats.burstHistory[i]
+        }" input="${TestLogic.corrected
           .getHistory(i)
           .replace(/"/g, "&quot;")
           .replace(/ /g, "_")}">`;
       } else {
-        wordEl = `<div class='word' input="${input
-          .replace(/"/g, "&quot;")
-          .replace(/ /g, "_")}">`;
+        wordEl = `<div class='word' burst="${
+          TestStats.burstHistory[i]
+        }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
       }
       if (i === TestLogic.input.history.length - 1) {
         //last word
@@ -661,16 +670,16 @@ async function loadWordsHistory() {
         }
         if (wordstats.incorrect !== 0 || Config.mode !== "time") {
           if (Config.mode != "zen" && input !== word) {
-            wordEl = `<div class='word error' input="${input
-              .replace(/"/g, "&quot;")
-              .replace(/ /g, "_")}">`;
+            wordEl = `<div class='word error' burst="${
+              TestStats.burstHistory[i]
+            }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
           }
         }
       } else {
         if (Config.mode != "zen" && input !== word) {
-          wordEl = `<div class='word error' input="${input
-            .replace(/"/g, "&quot;")
-            .replace(/ /g, "_")}">`;
+          wordEl = `<div class='word error' burst="${
+            TestStats.burstHistory[i]
+          }" input="${input.replace(/"/g, "&quot;").replace(/ /g, "_")}">`;
         }
       }
 
@@ -821,13 +830,21 @@ $("#wpmChart").on("mouseleave", (e) => {
 $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
   if (resultVisible) {
     let input = $(e.currentTarget).attr("input");
+    let burst = $(e.currentTarget).attr("burst");
     if (input != undefined)
       $(e.currentTarget).append(
-        `<div class="wordInputAfter">${input
-          .replace(/\t/g, "_")
-          .replace(/\n/g, "_")
-          .replace(/</g, "&lt")
-          .replace(/>/g, "&gt")}</div>`
+        `<div class="wordInputAfter">
+          <div class="text">
+          ${input
+            .replace(/\t/g, "_")
+            .replace(/\n/g, "_")
+            .replace(/</g, "&lt")
+            .replace(/>/g, "&gt")}
+          </div>
+          <div class="speed">
+          ${burst}wpm
+          </div>
+          </div>`
       );
   }
 });
