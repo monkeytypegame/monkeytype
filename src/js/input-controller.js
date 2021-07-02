@@ -141,31 +141,59 @@ function handleBackspace(event) {
     }
   } else {
     if (Config.confidenceMode === "max") return;
-    if (event["ctrlKey"] || event["altKey"]) {
+    if (event["ctrlKey"] || event["altKey"] || event.metaKey) {
       Replay.addReplayEvent("clearWord");
-      let limiter = " ";
-      if (
-        TestLogic.input.current.lastIndexOf("-") >
-        TestLogic.input.current.lastIndexOf(" ")
-      )
-        limiter = "-";
+      // let limiter = " ";
+      // if (
+      //   TestLogic.input.current.lastIndexOf("-") >
+      //   TestLogic.input.current.lastIndexOf(" ")
+      // )
+      //   limiter = "-";
 
-      let split = TestLogic.input.current.replace(/ +/g, " ").split(limiter);
-      if (split[split.length - 1] == "") {
-        split.pop();
-      }
-      let addlimiter = false;
-      if (split.length > 1) {
-        addlimiter = true;
-      }
-      split.pop();
-      TestLogic.input.setCurrent(split.join(limiter));
+      // let split = TestLogic.input.current.replace(/ +/g, " ").split(limiter);
+      // if (split[split.length - 1] == "") {
+      //   split.pop();
+      // }
+      // let addlimiter = false;
+      // if (split.length > 1) {
+      //   addlimiter = true;
+      // }
+      // split.pop();
+      // TestLogic.input.setCurrent(split.join(limiter));
 
-      if (addlimiter) {
-        TestLogic.input.appendCurrent(limiter);
+      // if (addlimiter) {
+      //   TestLogic.input.appendCurrent(limiter);
+      // }
+
+      if (/^\W*$/g.test(TestLogic.input.getCurrent())) {
+        //pop current and previous
+        TestLogic.input.resetCurrent();
+        TestLogic.input.popHistory();
+        TestLogic.corrected.popHistory();
+        TestUI.updateWordElement(!Config.blindMode);
+        TestLogic.words.decreaseCurrentIndex();
+        Replay.addReplayEvent("backWord");
+        TestUI.setCurrentWordElementIndex(TestUI.currentWordElementIndex - 1);
+        TestUI.updateActiveElement(true);
+        Funbox.toggleScript(TestLogic.words.getCurrent());
+        TestUI.updateWordElement(!Config.blindMode);
+        TestLogic.input.resetCurrent();
+        TestLogic.input.popHistory();
+        TestLogic.corrected.popHistory();
+      } else {
+        const regex = new RegExp("\\W", "g");
+
+        let input = TestLogic.input.getCurrent();
+
+        regex.test(input);
+        // let puncIndex = regex.lastIndex;
+        let puncIndex = input.lastIndexOfRegex(/\W/g);
+        while (/\W/g.test(input.slice(-1))) {
+          input = input.substring(0, input.length - 1);
+        }
+        puncIndex = input.lastIndexOfRegex(/\W/g);
+        TestLogic.input.setCurrent(input.substring(0, puncIndex + 1));
       }
-    } else if (event.metaKey) {
-      TestLogic.input.resetCurrent();
     } else {
       TestLogic.input.setCurrent(
         TestLogic.input.current.substring(0, TestLogic.input.current.length - 1)

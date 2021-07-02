@@ -745,3 +745,14 @@ function countAllKeys(obj) {
   keys.forEach((key) => (sum += countAllKeys(obj[key])));
   return sum;
 }
+
+//https://stackoverflow.com/questions/273789/is-there-a-version-of-javascripts-string-indexof-that-allows-for-regular-expr
+export function regexIndexOf(string, regex, startpos) {
+  var indexOf = string.substring(startpos || 0).search(regex);
+  return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
+}
+
+String.prototype.lastIndexOfRegex = function (regex) {
+  var match = this.match(regex);
+  return match ? this.lastIndexOf(match[match.length - 1]) : -1;
+};

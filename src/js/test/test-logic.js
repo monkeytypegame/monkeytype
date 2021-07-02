@@ -1104,7 +1104,7 @@ export function finish(difficultyFailed = false) {
 
   let testtime = stats.time;
 
-  if (TestStats.lastSecondNotRound) {
+  if (TestStats.lastSecondNotRound && !difficultyFailed) {
     let wpmAndRaw = calculateWpmAndRaw();
     TestStats.pushToWpmHistory(wpmAndRaw.wpm);
     TestStats.pushToRawHistory(wpmAndRaw.raw);
