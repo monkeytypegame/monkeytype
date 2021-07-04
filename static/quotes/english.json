@@ -33009,7 +33009,265 @@
       "text": "Tonight we dance around de flame. Then we get to play de spirit game. Spirit names we shout out loud. Shake de thunder from de spirit cloud. All de songbirds in de tree. Chant a tune to let de spirits free. Den we see dem in de night. Spirits jumping by de firelight",
       "source": "Banana Man, Tally Hall",
       "length": 50,
-      "id": 5567
+      "id":  5567
+    },
+    {
+      "text": "Play is the highest form of research.",
+      "source": "Albert Einstein",
+      "length": 37,
+      "id": 5568
+    },
+    {
+      "text": "We can only see a short distance ahead, but we can see plenty there that needs to be done.",
+      "source": "Alan Turing",
+      "length": 90,
+      "id": 5569
+    },
+    {
+      "text": "Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time.",
+      "source": "Thomas A. Edison",
+      "length": 109,
+      "id": 5570
+    },
+    {
+      "text": "You are never too old to set another goal, or to dream a new dream.",
+      "source": "C.S Lewis",
+      "length": 67,
+      "id": 5571
+    },
+    {
+      "text": "It is not the strongest of the species that survive, nor the most intelligent, but the one most responsive to change.",
+      "source": "Charles Darwin",
+      "length": 117,
+      "id": 5572
+    },
+    {
+      "text": "You can, you should, and if you're brave enough to start, you will",
+      "source": "Stephen King",
+      "length": 66,
+      "id": 5573
+    },
+    {
+      "text": "We know what we are, but not what we may be.",
+      "source": "William Shakespeare",
+      "length": 44,
+      "id": 5574
+    },
+    {
+      "text": "The work of today is the history of tomorrow, and we are its makers.",
+      "source": "Juliette Gordon Low",
+      "length": 68,
+      "id": 5575
+    },
+    {
+      "text": "Pain is inevitable. Suffering is optional.",
+      "source": "Haruki Murakami",
+      "length": 42,
+      "id": 5576
+    },
+    {
+      "text": "The greatest enemy of knowledge is not ignorance, it is the illusion of knowledge.",
+      "source": "Stephen Hawking",
+      "length": 82,
+      "id": 5577
+    },
+    {
+      "text": "We may encounter many defeats, but we must not be defeated.",
+      "source": "Maya Angelou",
+      "length": 59,
+      "id": 5578
+    },
+    {
+      "text": "Perseverance is failing 19 times and succeeding the 20th.",
+      "source": "Julie Andrews",
+      "length": 57,
+      "id": 5579
+    },
+    {
+      "text": "There is no elevator to success, you have to take the stairs.",
+      "source": "Zig Ziglar",
+      "length": 61,
+      "id": 5580
+    },
+    {
+      "text": "Be yourself; everyone else is already taken.",
+      "source": "Oscar Wilde",
+      "length": 44,
+      "id": 5581
+    },
+    {
+      "text": "I'm selfish, impatient and a little insecure. I make mistakes, I am out of control and at times hard to handle. But if you can't handle me at my worst, then you sure as hell don't deserve me at my best.",
+      "source": "Marilyn Monroe",
+      "length": 202,
+      "id": 5582
+    },
+    {
+      "text": "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe.",
+      "source": "Albert Einstein",
+      "length": 95,
+      "id": 5583
+    },
+    {
+      "text": "In theory there is no difference between theory and practice. In practice there is.",
+      "source": "Yogi Berra",
+      "length": 83,
+      "id": 5584
+    },
+    {
+      "text": "So many books, so little time.",
+      "source": "Frank Zappa",
+      "length": 30,
+      "id": 5585
+    },
+    {
+      "text": "A room without books is like a body without a soul.",
+      "source": "Marcus Tullius Cicero",
+      "length": 51,
+      "id": 5586
+    },
+    {
+      "text": "Be who you are and say what you feel, because those who mind don't matter, and those who matter don't mind.",
+      "source": "Bernard M. Baruch",
+      "length": 107,
+      "id": 5587
+    },
+    {
+      "text": "You've gotta dance like there's nobody watching, Love like you'll never be hurt, Sing like there's nobody listening, And live like it's heaven on earth.",
+      "source": "William W. Purkey",
+      "length": 152,
+      "id": 5588
+    },
+    {
+      "text": "Today's accomplishments were yesterday's impossibilities.",
+      "source": "Robert H. Schuller",
+      "length": 58,
+      "id": 5589
+    },
+    {
+      "text": "You can't cross the sea merely by standing and staring at the water.",
+      "source": "Rabindranath Tagore",
+      "length": 68,
+      "id": 5590
+    },
+    {
+      "text": "I have not failed. I've just found 10,000 ways that won't work.",
+      "source": "Thomas A. Edison",
+      "length": 63,
+      "id": 5591
+    },
+    {
+      "text": "The Web as I envisaged it, we have not seen it yet. The future is still so much bigger than the past.",
+      "source": "Tim Berners-Lee",
+      "length": 101,
+      "id": 5592
+    },
+    {
+      "text": "Be the change that you wish to see in the world.",
+      "source": "Mahatma Gandhi",
+      "length": 48,
+      "id": 5593
+    },
+    {
+      "text": "In three words I can sum up everything I've learned about life: it goes on.",
+      "source": "Robert Frost",
+      "length": 75,
+      "id": 5594
+    },
+    {
+      "text": "I've learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.",
+      "source": "Maya Angelou",
+      "length": 137,
+      "id": 5595
+    },
+    {
+      "text": "Always forgive your enemies; nothing annoys them so much.",
+      "source": "Oscar Wilde",
+      "length": 57,
+      "id": 5596
+    },
+    {
+      "text": "Live as if you were to die tomorrow. Learn as if you were to live forever.",
+      "source": "Mahatma Gandhi",
+      "length": 74,
+      "id": 5597
+    },
+    {
+      "text": "Here's to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes. The ones who see things differently. They're not fond of rules. And they have no respect for the status quo. You can quote them, disagree with them, glorify or vilify them. About the only thing you can't do is ignore them. Because they change things. They push the human race forward. And while some may see them as the crazy ones, we see genius. Because the people who are crazy enough to think they can change the world, are the ones who do.",
+      "source": "Rob Siltanen",
+      "length": 549,
+      "id": 5598
+    },
+    {
+      "text": "I believe that everything happens for a reason. People change so that you can learn to let go, things go wrong so that you appreciate them when they're right, you believe lies so you eventually learn to trust no one but yourself, and sometimes good things fall apart so better things can fall together.",
+      "source": "Marilyn Monroe",
+      "length": 302,
+      "id": 5599
+    },
+    {
+      "text": "Only once in your life, I truly believe, you find someone who can completely turn your world around. You tell them things that you’ve never shared with another soul and they absorb everything you say and actually want to hear more. You share hopes for the future, dreams that will never come true, goals that were never achieved and the many disappointments life has thrown at you. When something wonderful happens, you can’t wait to tell them about it, knowing they will share in your excitement. They are not embarrassed to cry with you when you are hurting or laugh with you when you make a fool of yourself. Never do they hurt your feelings or make you feel like you are not good enough, but rather they build you up and show you the things about yourself that make you special and even beautiful. There is never any pressure, jealousy or competition but only a quiet calmness when they are around. You can be yourself and not worry about what they will think of you because they love you for who you are. The things that seem insignificant to most people such as a note, song or walk become invaluable treasures kept safe in your heart to cherish forever. Memories of your childhood come back and are so clear and vivid it’s like being young again. Colours seem brighter and more brilliant. Laughter seems part of daily life where before it was infrequent or didn’t exist at all. A phone call or two during the day helps to get you through a long day’s work and always brings a smile to your face. In their presence, there’s no need for continuous conversation, but you find you’re quite content in just having them nearby. Things that never interested you before become fascinating because you know they are important to this person who is so special to you. You think of this person on every occasion and in everything you do. Simple things bring them to mind like a pale blue sky, gentle wind or even a storm cloud on the horizon. You open your heart knowing that there’s a chance it may be broken one day and in opening your heart, you experience a love and joy that you never dreamed possible. You find that being vulnerable is the only way to allow your heart to feel true pleasure that’s so real it scares you. You find strength in knowing you have a true friend and possibly a soul mate who will remain loyal to the end. Life seems completely different, exciting and worthwhile. Your only hope and security is in knowing that they are a part of your life.",
+      "source": "Bob Marley",
+      "length": 2468,
+      "id": 5600
+    },
+    {
+      "text": "All that is gold does not glitter, Not all those who wander are lost; The old that is strong does not wither, Deep roots are not reached by the frost. From the ashes a fire shall be woken, A light from the shadows shall spring; Renewed shall be blade that was broken, The crownless again shall be king.",
+      "source": "J.R.R. Tolkien, The Fellowship of the Ring",
+      "length": 303,
+      "id": 5601
+    },
+    {
+      "text": "The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.",
+      "source": "Jane Austen, Northanger Abbey",
+      "length": 102,
+      "id": 5602
+    },
+    {
+      "text": "Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.",
+      "source": "Marilyn Monroe",
+      "length": 109,
+      "id": 5603
+    },
+    {
+      "text": "There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.",
+      "source": "Albert Einstein",
+      "length": 129,
+      "id": 5604
+    },
+    {
+      "text": "Good friends, good books, and a sleepy conscience: this is the ideal life.",
+      "source": "Mark Twain",
+      "length": 74,
+      "id": 5605
+    },
+    {
+      "text": "The fool doth think he is wise, but the wise man knows himself to be a fool.",
+      "source": "William Shakespeare, As You Like It",
+      "length": 76,
+      "id": 5606
+    },
+    {
+      "text": "I am enough of an artist to draw freely upon my imagination. Imagination is more important than knowledge. Knowledge is limited. Imagination encircles the world.",
+      "source": "Albert Einstein",
+      "length": 161,
+      "id": 5607
+    },
+    {
+      "text": "I like nonsense, it wakes up the brain cells. Fantasy is a necessary ingredient in living.",
+      "source": "Dr. Seuss",
+      "length": 90,
+      "id": 5608
+    },
+    {
+      "text": "Love all, trust a few, do wrong to none.",
+      "source": "William Shakespeare, All's Well That Ends Well",
+      "length": 40,
+      "id": 5609
+    },
+    {
+      "text": "That which does not kill us makes us stronger.",
+      "source": "Friedrich Nietzsche",
+      "length": 46,
+      "id": 5610
     }
   ]
 }
