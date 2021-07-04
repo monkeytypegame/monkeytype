@@ -320,6 +320,7 @@ function handleSpace(event, isEnter) {
       }
       if (Config.stopOnError == "word") {
         TestLogic.input.appendCurrent(" ");
+        Replay.addReplayEvent("incorrectLetter", "_");
         TestUI.updateWordElement(true);
         Caret.updatePosition();
       }
