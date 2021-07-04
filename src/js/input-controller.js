@@ -165,7 +165,7 @@ function handleBackspace(event) {
       //   TestLogic.input.appendCurrent(limiter);
       // }
 
-      if (/^\W*$/g.test(TestLogic.input.getCurrent())) {
+      if (/^[ £§`~!@#$%^&*()_+-=[]{};':"\|,.\/<>\?]*$/g.test(TestLogic.input.getCurrent())) {
         //pop current and previous
         TestLogic.input.resetCurrent();
         TestLogic.input.popHistory();
@@ -181,7 +181,7 @@ function handleBackspace(event) {
         TestLogic.input.popHistory();
         TestLogic.corrected.popHistory();
       } else {
-        const regex = new RegExp("\\W", "g");
+        const regex = new RegExp(/[ £§`~!@#$%^&*()_+-=[]{};':"\|,.\/<>\?]/, "g");
 
         let input = TestLogic.input.getCurrent();
 
