@@ -355,5 +355,15 @@ const layouts = {
             " "
         ],
     },
+    boo: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "[{", "]}",
+            ",<", ".>", "uU", "cC", "vV", "zZ", "fF", "dD", "lL", "yY", "?/", "=+", "\\|",
+            "aA", "oO", "eE", "sS", "gG", "pP", "nN", "tT", "rR", "iI", "-_",
+            "\\|", ";:", "xX", "'\"", "wW", "jJ", "bB", "hH", "mM", "kK", "qQ",
+            " "
+        ],
+    },
 }
 export default layouts;
