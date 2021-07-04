@@ -775,7 +775,7 @@
       "length": 205,
       "id": 128
     }
-    				{
+    		{
 			"text": "Will betrachtete den Ort über das ruhige Wasser des Hafens hinweg. Zu einer anderen Zeit und unter anderen Umständen hätte er die ordentlich in Reih und Glied stehenden Häusern mit den riesigen schneebedeckten Bergen dahinter wahrscheinlich sehr schön gefunden.",
 			"source": "Die Chroniken von Araluen – Der Eiserne Ritter",
 			"length": 261,
@@ -795,7 +795,7 @@
 		},
 		{
 			"text": "Leider war Eraks Art und Weise, wie er seine Aufgabe erledigte, in Borsas und Ragnaks Augen unschlagbar. Da ihn die Aufgabe langweilte und ihm fast peinlich war, sorgte er dafür, dass er so wenig Zeit damit verlor wie nur möglich. Erak ließ sich auf keinerlei Gespräche mit den säumigen Steuerzahlern ein. Er schlug einen direkteren Kurs ein, der darin bestand, den Betreffenden zu packen, ihm eine Streitaxt unters Kinn zu rammen und ihm mit dem Verlust von wichtigen Körperteilen zu drohen, wenn nicht alle Steuern sofort bezahlt würden.",
-			"source": "",
+			"source": "Die Chroniken von Araluen - Der Eiserne Ritter",
 			"length": 539,
 			"id": 133
 		},
@@ -922,28 +922,33 @@
 			"source": "Die Känguru Trilogie",
 			"length": 136,
 			"id": 154
-		},{
+		},
+		{
 			"text": "Wenn wir niemals krank wären, würden wir nicht begreifen, was Gesundheit bedeutet. Wenn wir niemals hungrig wären, hätten wir keine Freude am satt sein. Wenn niemals Krieg wäre, wüssten wir den Frieden nicht zu schätzen, und wenn niemals Winter wäre, könnten wir nicht sehen, dass der Frühling kommt.",
 			"source": "Sofies Welt",
 			"length": 300,
 			"id": 155
-		},{
+		},
+		{
 			"text": "Ich denke, wir sollten schlafen, um nicht so lange auseinander zu sein. Denn wenn wir jeweils in den Träumen des anderen sind, können wir die ganze Zeit zusammen sein.",
 			"source": "A.A. Milne - Puh der Bär",
 			"length": 167,
 			"id": 156
-		},{
+		},
+		{
 			"text": "Der, der einst so groß war endet als Hofnarr. Doch ich erhebe mich, strebe zum Licht. Fühl mich wie ein neues Wesen, das zum ersten Mal spricht. Ich bin bereit auf das zu hören was mein Leben mir zu sagen hat. Erkenntnis zu erfahren die man am Ende aller Fragen hat.",
 			"source": "Thomas D. - Lektionen in Demut",
 			"length": 266,
 			"id": 157
-		},{
-			"text": "Energie ist keine Frage des Alters. Sondern die Frage ist: Wie viel Energie kreieren wir jeden Tag? Wir können es nicht dem Zufall überlassen und "hoffen", dass wir eine gute Energie haben. Die bessere Idee ist: Selbst die Energie zu kreieren, die wir brauchen und dann - egal, wie alt wir sind - voller Fröhlichkeit und Pixa Duba unseren Unterschied in der Welt zu machen.",
+		},
+		{
+			"text": "Energie ist keine Frage des Alters. Sondern die Frage ist: Wie viel Energie kreieren wir jeden Tag? Wir können es nicht dem Zufall überlassen und \"hoffen\", dass wir eine gute Energie haben. Die bessere Idee ist: Selbst die Energie zu kreieren, die wir brauchen und dann - egal, wie alt wir sind - voller Fröhlichkeit und Pixa Duba unseren Unterschied in der Welt zu machen.",
 			"source": "André Loibl - Blockaden Lösen",
 			"length": 373,
 			"id": 158
-		},{
-			"text": "Dein Erfolg wird zu 100% davon bestimmt, welche Glaubenssätze Du hast: Über Dich selbst, über Deine Möglichkeiten, über Geld und Wohlstand (und wie viel davon Du Deiner Meinung nach "verdient" hast). Denn Deine Glaubenssätze bestimmen, wie Du morgens, mittags und abends handelst. (Und dazwischen auch.)",
+		},
+		{
+			"text": "Dein Erfolg wird zu 100% davon bestimmt, welche Glaubenssätze Du hast: Über Dich selbst, über Deine Möglichkeiten, über Geld und Wohlstand (und wie viel davon Du Deiner Meinung nach \"verdient\" hast). Denn Deine Glaubenssätze bestimmen, wie Du morgens, mittags und abends handelst. (Und dazwischen auch.)",
 			"source": "André Loibl - Blockaden lösen",
 			"length": 303,
 			"id": 159
@@ -991,7 +996,7 @@
 			"id": 166
 		},
 		{
-			"text": "",Die Welt braucht Dich und Dein Lachen. Dich und Deine positive Ausstrahlung. Dich und Deinen Drang, einen positiven Unterschied in der Welt zu machen. Dich und Dein Verlangen, das Leben von anderen Menschen besser, heller, leichter, bunter und hüpfiger zu machen. Die Welt braucht Dich, damit Du Deinen Anteil an Freude in die Welt bringst!
+			"text": "Die Welt braucht Dich und Dein Lachen. Dich und Deine positive Ausstrahlung. Dich und Deinen Drang, einen positiven Unterschied in der Welt zu machen. Dich und Dein Verlangen, das Leben von anderen Menschen besser, heller, leichter, bunter und hüpfiger zu machen. Die Welt braucht Dich, damit Du Deinen Anteil an Freude in die Welt bringst!",
 			"source": "André Loibl - Blockaden Lösen",
 			"length": 340,
 			"id": 167
@@ -1099,7 +1104,7 @@
 			"id": 184
 		},
 		{
-			"text": "Den Song von Notorious BIG "More Money More Problems" habe ich bis heute nicht verstanden. Denn es ist nicht die Anwesenheit, sondern die Abwesenheit von Geld, die dafür sorgt, dass Menschen weit hinter Ihrem Potential zurückbleiben.",
+			"text": "Den Song von Notorious BIG \"More Money More Problems\" habe ich bis heute nicht verstanden. Denn es ist nicht die Anwesenheit, sondern die Abwesenheit von Geld, die dafür sorgt, dass Menschen weit hinter Ihrem Potential zurückbleiben.",
 			"source": "André Loibl - Blockaden Lösen",
 			"length": 233,
 			"id": 185
