@@ -170,7 +170,8 @@ function trigger(command) {
     if (obj.id == command) {
       if (obj.input) {
         input = true;
-        showInput(obj.id, obj.display, obj.defaultValue);
+        let escaped = obj.display.split("</i>")[1] ?? obj.display;
+        showInput(obj.id, escaped, obj.defaultValue);
       } else if (obj.subgroup) {
         subgroup = true;
         if (obj.beforeSubgroup) {
