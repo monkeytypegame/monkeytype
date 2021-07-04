@@ -371,6 +371,17 @@ export function mean(array) {
   }
 }
 
+//https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-88.php
+export function median (arr) {
+  try{
+    const mid = Math.floor(arr.length / 2),
+      nums = [...arr].sort((a, b) => a - b);
+    return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+  }catch(e){
+    return 0;
+  }
+}
+
 export function getReleasesFromGitHub() {
   $.getJSON(
     "https://api.github.com/repos/Miodec/monkeytype/releases",

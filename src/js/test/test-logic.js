@@ -1945,8 +1945,12 @@ export function finish(difficultyFailed = false) {
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
+
       if (Config.alwaysShowWordsHistory) {
         TestUI.toggleResultWords();
+      }
+      if(TestUI.heatmapEnabled){
+        TestUI.applyBurstHeatmap();
       }
       $("#testModesNotice").addClass("hidden");
     },
