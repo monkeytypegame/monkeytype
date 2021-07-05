@@ -31,7 +31,7 @@ import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
-import * as TodayTracker from './today-tracker';
+import * as TodayTracker from "./today-tracker";
 
 let glarsesMode = false;
 
@@ -743,7 +743,7 @@ export function restart(
   }
 
   let repeatWithPace = false;
-  if (TestUI.resultVisible) {
+  if (TestUI.resultVisible && Config.repeatedPace && withSameWordset) {
     repeatWithPace = true;
   }
 
@@ -800,13 +800,13 @@ export function restart(
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         setRepeated(false);
-        if (repeatWithPace) setPaceRepeat(false);
+        setPaceRepeat(repeatWithPace);
         setHasTab(false);
         await init();
         PaceCaret.init(nosave);
       } else {
         setRepeated(true);
-        if (repeatWithPace) setPaceRepeat(true);
+        setPaceRepeat(repeatWithPace);
         setActive(false);
         Replay.stopReplayRecording();
         words.resetCurrentIndex();
@@ -1209,9 +1209,13 @@ export function finish(difficultyFailed = false) {
   if (afkSecondsPercent > 0) {
     $("#result .stats .time .bottom .afk").text(afkSecondsPercent + "% afk");
   }
-  TodayTracker.addSeconds(testtime + (TestStats.incompleteSeconds < 0
-    ? 0
-    : Misc.roundTo2(TestStats.incompleteSeconds)) - afkseconds);
+  TodayTracker.addSeconds(
+    testtime +
+      (TestStats.incompleteSeconds < 0
+        ? 0
+        : Misc.roundTo2(TestStats.incompleteSeconds)) -
+      afkseconds
+  );
   $("#result .stats .time .bottom .timeToday").text(TodayTracker.getString());
   $("#result .stats .key .bottom").text(testtime + "s");
   $("#words").removeClass("blurred");
@@ -1958,7 +1962,7 @@ export function finish(difficultyFailed = false) {
       if (Config.alwaysShowWordsHistory) {
         TestUI.toggleResultWords();
       }
-      if(TestUI.heatmapEnabled){
+      if (TestUI.heatmapEnabled) {
         TestUI.applyBurstHeatmap();
       }
       $("#testModesNotice").addClass("hidden");
