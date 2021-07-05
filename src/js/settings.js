@@ -428,13 +428,13 @@ function refreshTagsSettingsSection() {
           <div class="title">${tag.name}</div>
         </div>
         <div class="clearPbButton button">
-          <i class="fas fa-crown"></i>
+          <i class="fas fa-crown fa-fw"></i>
         </div>
         <div class="editButton button">
-          <i class="fas fa-pen"></i>
+          <i class="fas fa-pen fa-fw"></i>
         </div>
         <div class="removeButton button">
-          <i class="fas fa-trash"></i>
+          <i class="fas fa-trash fa-fw"></i>
         </div>
       </div>
 
@@ -456,10 +456,10 @@ function refreshPresetsSettingsSection() {
           <div class="title">${preset.name}</div>
         </div>
         <div class="editButton button">
-          <i class="fas fa-pen"></i>
+          <i class="fas fa-pen fa-fw"></i>
         </div>
         <div class="removeButton button">
-          <i class="fas fa-trash"></i>
+          <i class="fas fa-trash fa-fw"></i>
         </div>
       </div>
       
