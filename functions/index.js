@@ -781,7 +781,7 @@ exports.clearTagPb = functions.https.onCall((request, response) => {
       .collection(`users/${request.uid}/tags`)
       .doc(request.tagid)
       .update({
-        pb: 0,
+        personalBests: admin.firestore.FieldValue.delete(),
       })
       .then((e) => {
         return {

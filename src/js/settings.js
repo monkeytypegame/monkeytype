@@ -427,6 +427,9 @@ function refreshTagsSettingsSection() {
       }">
           <div class="title">${tag.name}</div>
         </div>
+        <div class="clearPbButton button">
+          <i class="fas fa-crown"></i>
+        </div>
         <div class="editButton button">
           <i class="fas fa-pen"></i>
         </div>
@@ -715,22 +718,27 @@ $(document).on(
 
 $(document).on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
+  ".pageSettings .section.tags .tagsList .tag .editButton",
   (e) => {
-    let target = e.currentTarget;
-    let tagid = $(target).parent(".tag").attr("id");
-    let tagname = $(target).siblings(".title")[0].innerHTML;
-    SimplePopups.list.clearTagPb.show([tagid, tagname]);
+    let tagid = $(e.currentTarget).parent(".tag").attr("id");
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
+    EditTagsPopup.show("edit", tagid, name);
   }
 );
 
 $(document).on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .editButton",
+  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
   (e) => {
     let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget).siblings(".title").text();
-    EditTagsPopup.show("edit", tagid, name);
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
+    EditTagsPopup.show("clearPb", tagid, name);
   }
 );
 
@@ -739,7 +747,10 @@ $(document).on(
   ".pageSettings .section.tags .tagsList .tag .removeButton",
   (e) => {
     let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget).siblings(".title").text();
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
     EditTagsPopup.show("remove", tagid, name);
   }
 );
