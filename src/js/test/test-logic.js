@@ -1959,15 +1959,15 @@ export function finish(difficultyFailed = false) {
       $("#words").empty();
       ChartController.result.resize();
 
-      if (Config.alwaysShowWordsHistory) {
-        TestUI.toggleResultWords();
-      }
       if (TestUI.heatmapEnabled) {
         TestUI.applyBurstHeatmap();
       }
       $("#testModesNotice").addClass("hidden");
     },
     () => {
+      if (Config.alwaysShowWordsHistory) {
+        TestUI.toggleResultWords();
+      }
       Keymap.hide();
     }
   );
