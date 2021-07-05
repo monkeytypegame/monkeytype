@@ -1497,6 +1497,8 @@ export function finish(difficultyFailed = false) {
           ).then((highestwpm) => {
             PbCrown.hide();
             $("#result .stats .wpm .crown").attr("aria-label", "");
+            console.log(`crown debug: local pb ${lpb}`);
+            console.log(`crown debug: local highest wpm ${highestwpm}`);
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
               dontShowCrown = true;
             }
