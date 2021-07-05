@@ -20,6 +20,13 @@
       }
     }
   }
+  #customTextPopup {
+    width: 80vw !important;
+
+    .wordfilter.button {
+      width: 50% !important;
+    }
+  }
 }
 
 @media only screen and (max-width: 800px) {
@@ -156,6 +163,20 @@
   #commandLine,
   #commandLineInput {
     width: 500px !important;
+  }
+  #customTextPopupWrapper {
+    #customTextPopup {
+      .wordfilter.button {
+        width: 100% !important;
+        justify-self: auto;
+      }
+
+      .inputs {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+    }
   }
 }
 
