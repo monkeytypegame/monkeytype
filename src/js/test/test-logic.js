@@ -31,6 +31,7 @@ import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
+import * as TodayTracker from './today-tracker';
 
 let glarsesMode = false;
 
@@ -1208,6 +1209,10 @@ export function finish(difficultyFailed = false) {
   if (afkSecondsPercent > 0) {
     $("#result .stats .time .bottom .afk").text(afkSecondsPercent + "% afk");
   }
+  TodayTracker.addSeconds(testtime + (TestStats.incompleteSeconds < 0
+    ? 0
+    : Misc.roundTo2(TestStats.incompleteSeconds)) - afkseconds);
+  $("#result .stats .time .bottom .timeToday").text(TodayTracker.getString());
   $("#result .stats .key .bottom").text(testtime + "s");
   $("#words").removeClass("blurred");
   OutOfFocus.hide();
