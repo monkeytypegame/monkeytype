@@ -141,6 +141,10 @@
     "languages": ["finnish", "finnish_1k", "finnish_10k"]
   },
   {
+    "name": "welsh",
+    "languages": ["welsh", "welsh_1k"]
+  },
+  {
     "name": "persian",
     "languages": ["persian"]
   },
