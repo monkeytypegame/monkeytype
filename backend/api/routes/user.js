@@ -1,5 +1,4 @@
 const { authenticateRequest } = require("../../middlewares/auth");
-
 const { Router } = require("express");
 const UserController = require("../controllers/user");
 
@@ -11,7 +10,7 @@ router.post("/checkName", UserController.checkName);
 
 router.post("/delete", UserController.deleteUser);
 
-router.post("/user/updateName", authenticateRequest, UserController.updateName);
+router.post("/updateName", authenticateRequest, UserController.updateName);
 
 router.get("/", authenticateRequest, UserController.getUser);
 
