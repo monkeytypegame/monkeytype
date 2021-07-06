@@ -5,9 +5,9 @@ const UserDAO = require("./user");
 class ResultDAO {
   static async addResult(uid, result) {
     let user;
-    try{
+    try {
       user = await UserDAO.getUser(uid);
-    }catch(e){
+    } catch (e) {
       user = null;
     }
     if (!user) throw new MonkeyError(404, "User not found");
@@ -20,10 +20,11 @@ class ResultDAO {
     if (!result) throw new MonkeyError(404, "Result not found");
     const userTags = await UserDAO.getTags(uid);
     let validTags = true;
-    tags.forEach(tagId => {
-      if(!userTags.includes(tagId)) validTags = false;
+    tags.forEach((tagId) => {
+      if (!userTags.includes(tagId)) validTags = false;
     });
-    if (!validTags) throw new MonkeyError(400, "One of the tag id's is not vaild");
+    if (!validTags)
+      throw new MonkeyError(400, "One of the tag id's is not vaild");
     return await mongoDB()
       .collection("results")
       .updateOne({ id, uid }, { $set: { tags } });
@@ -43,7 +44,8 @@ class ResultDAO {
       .find({ uid })
       .sort({ timestamp: -1 })
       .skip(start)
-      .limit(end); // this needs to be changed to later take patreon into consideration
+      .limit(end)
+      .toArray(); // this needs to be changed to later take patreon into consideration
     if (!result) throw new MonkeyError(404, "Result not found");
     return result;
   }

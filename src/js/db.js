@@ -90,14 +90,14 @@ export async function getUserResults() {
   if (dbSnapshot.results !== undefined) {
     return true;
   } else {
-    axiosInstance
-      .get("/userResults")
-      .then((response) => {
-        dbSnapshot.results = response.data.results;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      let results = await axiosInstance.get("/result");
+      dbSnapshot.results = results.data;
+      return true;
+    } catch (e) {
+      Notifications.add("Error getting results", -1);
+      return false;
+    }
   }
   /*
     try {

@@ -1,15 +1,29 @@
-import ResultDAO from "../../dao/result";
-import UserDAO from "../../dao/user";
-import PublicStatsDAO from "../../dao/public-stats";
-import { validateObjectValues, validateResult } from "../../handlers/validation";
-import { stdDev, roundTo2 } from "../../handlers/misc";
+const ResultDAO = require("../../dao/result");
+const UserDAO = require("../../dao/user");
+const PublicStatsDAO = require("../../dao/public-stats");
+const {
+  validateObjectValues,
+  validateResult,
+} = require("../../handlers/validation");
+const { stdDev, roundTo2 } = require("../../handlers/misc");
 
 class ResultController {
-  static async addResult(req, res, next){
+  static async getResults(req, res, next) {
+    try {
+      const { uid } = req.decodedToken;
+      const results = await ResultDAO.getResults(uid);
+      return res.status(200).json(results);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async addResult(req, res, next) {
     try {
       const { uid } = req.decodedToken;
       let result = req.result;
-      if(!validateObjectValues(result)) return res.sendStatus(400).json({message: "Bad input"});
+      if (!validateObjectValues(result))
+        return res.sendStatus(400).json({ message: "Bad input" });
       if (
         result.wpm <= 0 ||
         result.wpm > 350 ||
@@ -17,13 +31,17 @@ class ResultController {
         result.acc > 100 ||
         result.consistency > 100
       ) {
-        return res.sendStatus(400).json({message: "Bad input"});
+        return res.sendStatus(400).json({ message: "Bad input" });
       }
       if (
         (result.mode === "time" && result.mode2 < 15 && result.mode2 > 0) ||
-        (result.mode === "time" && result.mode2 == 0 && result.testDuration < 15) ||
+        (result.mode === "time" &&
+          result.mode2 == 0 &&
+          result.testDuration < 15) ||
         (result.mode === "words" && result.mode2 < 10 && result.mode2 > 0) ||
-        (result.mode === "words" && result.mode2 == 0 && result.testDuration < 15) ||
+        (result.mode === "words" &&
+          result.mode2 == 0 &&
+          result.testDuration < 15) ||
         (result.mode === "custom" &&
           result.customText !== undefined &&
           !result.customText.isWordRandom &&
@@ -40,10 +58,12 @@ class ResultController {
           result.customText.isTimeRandom &&
           result.customText.time < 15)
       ) {
-        return res.sendStatus(400).json({message: "Test too short"});
+        return res.sendStatus(400).json({ message: "Test too short" });
       }
       if (!validateResult(result)) {
-        return res.sendStatus(400).json({message: "Result data doesn't make sense"});
+        return res
+          .sendStatus(400)
+          .json({ message: "Result data doesn't make sense" });
       }
 
       result.keySpacingStats = {
@@ -66,27 +86,39 @@ class ResultController {
       result.name = user.name;
 
       //check keyspacing and duration here for bots
-      if (result.mode === "time" && result.wpm > 130 && result.testDuration < 122) {
+      if (
+        result.mode === "time" &&
+        result.wpm > 130 &&
+        result.testDuration < 122
+      ) {
         if (user.verified === false || user.verified === undefined) {
-          if (result.keySpacingStats !== null && result.keyDurationStats !== null) {
+          if (
+            result.keySpacingStats !== null &&
+            result.keyDurationStats !== null
+          ) {
             if (
               result.keySpacingStats.sd <= 15 ||
               result.keyDurationStats.sd <= 10 ||
               result.keyDurationStats.average < 15 ||
               (result.wpm > 200 && result.consistency < 70)
             ) {
-              //possible bot 
-              return res.sendStatus(400).json({message: "Possible bot detected"});
+              //possible bot
+              return res
+                .sendStatus(400)
+                .json({ message: "Possible bot detected" });
             }
             if (
-              (result.keySpacingStats.sd > 15 && result.keySpacingStats.sd <= 25) ||
-              (result.keyDurationStats.sd > 10 && result.keyDurationStats.sd <= 15) ||
-              (result.keyDurationStats.average > 15 && result.keyDurationStats.average <= 20)
+              (result.keySpacingStats.sd > 15 &&
+                result.keySpacingStats.sd <= 25) ||
+              (result.keyDurationStats.sd > 10 &&
+                result.keyDurationStats.sd <= 15) ||
+              (result.keyDurationStats.average > 15 &&
+                result.keyDurationStats.average <= 20)
             ) {
               //close to the bot detection threshold
             }
           } else {
-            return res.sendStatus(400).json({message: "Missing key data"});
+            return res.sendStatus(400).json({ message: "Missing key data" });
           }
         }
       }
@@ -94,7 +126,9 @@ class ResultController {
       delete result.keySpacing;
       delete result.keyDuration;
 
-      result.keyDurationStats.average = roundTo2(result.keyDurationStats.average);
+      result.keyDurationStats.average = roundTo2(
+        result.keyDurationStats.average
+      );
       result.keyDurationStats.sd = roundTo2(result.keyDurationStats.sd);
       result.keySpacingStats.average = roundTo2(result.keySpacingStats.average);
       result.keySpacingStats.sd = roundTo2(result.keySpacingStats.sd);
@@ -103,7 +137,7 @@ class ResultController {
       const tagPbs = await UserDAO.checkIfTagPb(uid, result);
 
       if (result.mode === "time" && String(result.mode2) === "60") {
-        UserDAO.incrementBananas(uid,result.wpm);
+        UserDAO.incrementBananas(uid, result.wpm);
       }
 
       let tt = 0;
@@ -117,8 +151,9 @@ class ResultController {
 
       await ResultDAO.addResult(uid, result);
 
-      return res.sendStatus(200).json({message: "Result saved", isPb, name, tagPbs});
-
+      return res
+        .sendStatus(200)
+        .json({ message: "Result saved", isPb, name, tagPbs });
     } catch (e) {
       next(e);
     }
