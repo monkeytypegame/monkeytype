@@ -60,10 +60,11 @@ export async function initSnapshot() {
   snap.personalBests = userData.personalBests;
   snap.banned = userData.banned;
   snap.verified = userData.verified;
-  if(userData.globalStats){
+  if (userData.globalStats) {
     snap.globalStats = userData.globalStats;
   }
-  snap.favouriteThemes = userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
+  snap.favouriteThemes =
+    userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
   try {
     if (userData.lbMemory.time15 !== undefined) {
       snap.lbMemory.time15 = userData.lbMemory.time15;
@@ -72,6 +73,11 @@ export async function initSnapshot() {
       snap.lbMemory.time60 = userData.lbMemory.time60;
     }
   } catch {}
+
+  let configData = await axiosInstance.get("/config");
+  configData = configData.data;
+  snap.config = configData.config;
+
   dbSnapshot = snap;
   loadTags(dbSnapshot.tags);
   return dbSnapshot;
@@ -444,20 +450,12 @@ export function updateLbMemory(mode, mode2, type, value) {
 export async function saveConfig(config) {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
-    axiosInstance
-      .post("/saveConfig", {
-        obj: config,
-      })
-      .then((response) => {
-        AccountButton.loading(false);
-        if (response.data.resultCode !== 1) {
-          Notifications.add(
-            `Error saving config to DB! ${response.data.message}`,
-            4000
-          );
-        }
-        return;
-      });
+    try {
+      let response = await axiosInstance.post("/config/save", { config });
+    } catch (e) {
+      Notifications.add(e.message, -1);
+    }
+    AccountButton.loading(false);
   }
 }
 

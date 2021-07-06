@@ -1,10 +1,11 @@
-import { authenticateRequest } from "../../middlewares/auth";
-
+const { authenticateRequest } = require("../../middlewares/auth");
 const { Router } = require("express");
-import ConfigController from "../controllers/auth";
+const ConfigController = require("../controllers/config");
 
 const router = Router();
 
-router.post("/config/save", authenticateRequest, ConfigController.saveConfig);
+router.get("/", authenticateRequest, ConfigController.getConfig);
+
+router.post("/save", authenticateRequest, ConfigController.saveConfig);
 
 module.exports = router;
