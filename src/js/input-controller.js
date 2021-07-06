@@ -166,7 +166,7 @@ function handleBackspace(event) {
       // }
 
       if (
-        /^[ £§`~!@#$%^&*()_+-=[]{};':"\|,.\/<>\?]*$/g.test(
+        /^[ £§`~!@#$%^&*()_+-=[\]{};':"|,./<>?]*$/g.test(
           TestLogic.input.getCurrent()
         )
       ) {
@@ -185,20 +185,21 @@ function handleBackspace(event) {
         TestLogic.input.popHistory();
         TestLogic.corrected.popHistory();
       } else {
-        const regex = new RegExp(
-          /[ £§`~!@#$%^&*()_+-=[]{};':"\|,.\/<>\?]/,
-          "g"
-        );
+        const regex = new RegExp(/[ £§`~!@#$%^&*()_+-=[\]{};':"|,./<>?]/, "g");
 
         let input = TestLogic.input.getCurrent();
 
         regex.test(input);
         // let puncIndex = regex.lastIndex;
-        let puncIndex = input.lastIndexOfRegex(/\W/g);
-        while (/\W/g.test(input.slice(-1))) {
+        let puncIndex = input.lastIndexOfRegex(
+          /[ £§`~!@#$%^&*()_+-=[\]{};':"|,./<>?]/g
+        );
+        while (/[ £§`~!@#$%^&*()_+-=[\]{};':"|,./<>?]/g.test(input.slice(-1))) {
           input = input.substring(0, input.length - 1);
         }
-        puncIndex = input.lastIndexOfRegex(/\W/g);
+        puncIndex = input.lastIndexOfRegex(
+          /[ £§`~!@#$%^&*()_+-=[\]{};':"|,./<>?]/g
+        );
         TestLogic.input.setCurrent(input.substring(0, puncIndex + 1));
       }
     } else {
