@@ -64,9 +64,6 @@ export function getDataAndInit() {
           }
         }
       }
-      if (snap.refactored === false) {
-        axiosInstance.post("/removeSmallTestsAndQPB");
-      }
       if (!UpdateConfig.changedBeforeDb) {
         if (Config.localStorageConfig === null) {
           AccountButton.loading(false);
