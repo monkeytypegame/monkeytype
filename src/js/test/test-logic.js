@@ -31,6 +31,7 @@ import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
+import * as TodayTracker from "./today-tracker";
 
 let glarsesMode = false;
 
@@ -216,8 +217,11 @@ export function setRandomQuote(rq) {
   randomQuote = rq;
 }
 
+let spanishSentenceTracker = "";
 export function punctuateWord(previousWord, currentWord, index, maxindex) {
   let word = currentWord;
+
+  let currentLanguage = Config.language.split("_")[0];
 
   if (Config.funbox === "58008") {
     if (currentWord.length > 3) {
@@ -232,10 +236,22 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
         Misc.getLastChar(previousWord) == "." ||
         Misc.getLastChar(previousWord) == "?" ||
         Misc.getLastChar(previousWord) == "!") &&
-      Config.language.split("_")[0] != "code"
+      currentLanguage != "code"
     ) {
       //always capitalise the first word or if there was a dot unless using a code alphabet
+
       word = Misc.capitalizeFirstLetter(word);
+
+      if (currentLanguage == "spanish" || currentLanguage == "catalan") {
+        let rand = Math.random();
+        if (rand > 0.9) {
+          word = "¿" + word;
+          spanishSentenceTracker = "?";
+        } else if (rand > 0.8) {
+          word = "¡" + word;
+          spanishSentenceTracker = "!";
+        }
+      }
     } else if (
       (Math.random() < 0.1 &&
         Misc.getLastChar(previousWord) != "." &&
@@ -243,35 +259,50 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
         index != maxindex - 2) ||
       index == maxindex - 1
     ) {
-      let rand = Math.random();
-      if (rand <= 0.8) {
-        word += ".";
-      } else if (rand > 0.8 && rand < 0.9) {
-        if (Config.language.split("_")[0] == "french") {
-          word = "?";
-        } else {
-          word += "?";
+      if (currentLanguage == "spanish" || currentLanguage == "catalan") {
+        if (spanishSentenceTracker == "?" || spanishSentenceTracker == "!") {
+          word += spanishSentenceTracker;
+          spanishSentenceTracker = "";
         }
       } else {
-        if (Config.language.split("_")[0] == "french") {
-          word = "!";
+        let rand = Math.random();
+        if (rand <= 0.8) {
+          word += ".";
+        } else if (rand > 0.8 && rand < 0.9) {
+          if (currentLanguage == "french") {
+            word = "?";
+          } else if (
+            currentLanguage == "arabic" ||
+            currentLanguage == "persian" ||
+            currentLanguage == "urdu"
+          ) {
+            word += "؟";
+          } else if (currentLanguage == "greek") {
+            word += ";";
+          } else {
+            word += "?";
+          }
         } else {
-          word += "!";
+          if (currentLanguage == "french") {
+            word = "!";
+          } else {
+            word += "!";
+          }
         }
       }
     } else if (
       Math.random() < 0.01 &&
       Misc.getLastChar(previousWord) != "," &&
       Misc.getLastChar(previousWord) != "." &&
-      Config.language.split("_")[0] !== "russian"
+      currentLanguage !== "russian"
     ) {
       word = `"${word}"`;
     } else if (
       Math.random() < 0.011 &&
       Misc.getLastChar(previousWord) != "," &&
       Misc.getLastChar(previousWord) != "." &&
-      Config.language.split("_")[0] !== "russian" &&
-      Config.language.split("_")[0] !== "ukrainian"
+      currentLanguage !== "russian" &&
+      currentLanguage !== "ukrainian"
     ) {
       word = `'${word}'`;
     } else if (
@@ -279,7 +310,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       Misc.getLastChar(previousWord) != "," &&
       Misc.getLastChar(previousWord) != "."
     ) {
-      if (Config.language.split("_")[0] == "code") {
+      if (currentLanguage == "code") {
         let r = Math.random();
         if (r < 0.25) {
           word = `(${word})`;
@@ -294,8 +325,11 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
         word = `(${word})`;
       }
     } else if (Math.random() < 0.013) {
-      if (Config.language.split("_")[0] == "french") {
+      if (currentLanguage == "french") {
         word = ":";
+      }
+      if (currentLanguage == "greek") {
+        word = "·";
       } else {
         word += ":";
       }
@@ -312,17 +346,25 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       Misc.getLastChar(previousWord) != "." &&
       Misc.getLastChar(previousWord) != ";"
     ) {
-      if (Config.language.split("_")[0] == "french") {
+      if (currentLanguage == "french") {
         word = ";";
+      }
+      if (currentLanguage == "greek") {
+        word = "·";
       } else {
         word += ";";
       }
     } else if (Math.random() < 0.2 && Misc.getLastChar(previousWord) != ",") {
-      word += ",";
-    } else if (
-      Math.random() < 0.25 &&
-      Config.language.split("_")[0] == "code"
-    ) {
+      if (
+        currentLanguage == "arabic" ||
+        currentLanguage == "urdu" ||
+        currentLanguage == "persian"
+      ) {
+        word += "،";
+      } else {
+        word += ",";
+      }
+    } else if (Math.random() < 0.25 && currentLanguage == "code") {
       let specials = ["{", "}", "[", "]", "(", ")", ";", "=", "+", "%", "/"];
 
       word = specials[Math.floor(Math.random() * 10)];
@@ -742,7 +784,7 @@ export function restart(
   }
 
   let repeatWithPace = false;
-  if (TestUI.resultVisible) {
+  if (TestUI.resultVisible && Config.repeatedPace && withSameWordset) {
     repeatWithPace = true;
   }
 
@@ -799,13 +841,13 @@ export function restart(
       $("#typingTest").css("opacity", 0).removeClass("hidden");
       if (!withSameWordset) {
         setRepeated(false);
-        if (repeatWithPace) setPaceRepeat(false);
+        setPaceRepeat(repeatWithPace);
         setHasTab(false);
         await init();
         PaceCaret.init(nosave);
       } else {
         setRepeated(true);
-        if (repeatWithPace) setPaceRepeat(true);
+        setPaceRepeat(repeatWithPace);
         setActive(false);
         Replay.stopReplayRecording();
         words.resetCurrentIndex();
@@ -1208,6 +1250,14 @@ export function finish(difficultyFailed = false) {
   if (afkSecondsPercent > 0) {
     $("#result .stats .time .bottom .afk").text(afkSecondsPercent + "% afk");
   }
+  TodayTracker.addSeconds(
+    testtime +
+      (TestStats.incompleteSeconds < 0
+        ? 0
+        : Misc.roundTo2(TestStats.incompleteSeconds)) -
+      afkseconds
+  );
+  $("#result .stats .time .bottom .timeToday").text(TodayTracker.getString());
   $("#result .stats .key .bottom").text(testtime + "s");
   $("#words").removeClass("blurred");
   OutOfFocus.hide();
@@ -1727,6 +1777,10 @@ export function finish(difficultyFailed = false) {
                     if (e.data.resultCode === 2) {
                       //new pb
                       PbCrown.show();
+                      $("#result .stats .wpm .crown").attr(
+                        "aria-label",
+                        "+" + Misc.roundTo2(pbDiff)
+                      );
                       DB.saveLocalPB(
                         Config.mode,
                         mode2,
@@ -1945,12 +1999,16 @@ export function finish(difficultyFailed = false) {
       TestUI.setResultCalculating(false);
       $("#words").empty();
       ChartController.result.resize();
-      if (Config.alwaysShowWordsHistory) {
-        TestUI.toggleResultWords();
+
+      if (TestUI.heatmapEnabled) {
+        TestUI.applyBurstHeatmap();
       }
       $("#testModesNotice").addClass("hidden");
     },
     () => {
+      if (Config.alwaysShowWordsHistory) {
+        TestUI.toggleResultWords();
+      }
       Keymap.hide();
     }
   );

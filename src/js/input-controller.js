@@ -165,7 +165,11 @@ function handleBackspace(event) {
       //   TestLogic.input.appendCurrent(limiter);
       // }
 
-      if (/^\W*$/g.test(TestLogic.input.getCurrent())) {
+      if (
+        /^[ £§`~!@#$%^&*()_+-=[]{};':"\|,.\/<>\?]*$/g.test(
+          TestLogic.input.getCurrent()
+        )
+      ) {
         //pop current and previous
         TestLogic.input.resetCurrent();
         TestLogic.input.popHistory();
@@ -181,7 +185,10 @@ function handleBackspace(event) {
         TestLogic.input.popHistory();
         TestLogic.corrected.popHistory();
       } else {
-        const regex = new RegExp("\\W", "g");
+        const regex = new RegExp(
+          /[ £§`~!@#$%^&*()_+-=[]{};':"\|,.\/<>\?]/,
+          "g"
+        );
 
         let input = TestLogic.input.getCurrent();
 
@@ -289,7 +296,6 @@ function handleSpace(event, isEnter) {
   } else {
     //incorrect word
     MonkeyPower.addPower(false, true);
-    PaceCaret.handleSpace(false, currentWord);
     if (Config.funbox !== "nospace") {
       if (!Config.playSoundOnError || Config.blindMode) {
         Sound.playClick(Config.playSoundOnClick);
@@ -320,11 +326,13 @@ function handleSpace(event, isEnter) {
       }
       if (Config.stopOnError == "word") {
         TestLogic.input.appendCurrent(" ");
+        Replay.addReplayEvent("incorrectLetter", "_");
         TestUI.updateWordElement(true);
         Caret.updatePosition();
       }
       return;
     }
+    PaceCaret.handleSpace(false, currentWord);
     if (Config.blindMode) $("#words .word.active letter").addClass("correct");
     TestLogic.input.pushHistory();
     TestUI.highlightBadWord(TestUI.currentWordElementIndex, !Config.blindMode);
@@ -820,6 +828,7 @@ $(document).keydown(function (event) {
   //autofocus
   let pageTestActive = !$(".pageTest").hasClass("hidden");
   let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
+  let leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
   let wordsFocused = $("#wordsInput").is(":focus");
   let modePopupVisible =
     !$("#customTextPopupWrapper").hasClass("hidden") ||
@@ -830,6 +839,7 @@ $(document).keydown(function (event) {
   if (
     pageTestActive &&
     !commandLineVisible &&
+    !leaderboardsVisible &&
     !modePopupVisible &&
     !TestUI.resultVisible &&
     !wordsFocused &&
@@ -885,7 +895,7 @@ $(document).keydown(function (event) {
     handleSpace(event, false);
   }
 
-  if (wordsFocused && !commandLineVisible) {
+  if (wordsFocused && !commandLineVisible && !leaderboardsVisible) {
     handleAlpha(event);
   }
 

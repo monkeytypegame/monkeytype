@@ -563,5 +563,10 @@
     "name": "ez_mode",
     "bgColor": "#0171cd",
     "textColor": "#fa62d5"
+  },
+  {
+    "name": "vscode",
+    "bgColor": "#1E1E1E",
+    "textColor": "#007acc"
   }
 ]

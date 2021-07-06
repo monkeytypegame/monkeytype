@@ -46,7 +46,11 @@ function showFound() {
           icon = `<i class="fas fa-fw"></i>`;
         }
       }
-      commandsHTML += `<div class="entry" command="${obj.id}"><div class="icon">${icon}</div><div>${obj.display}</div></div>`;
+      let iconHTML = `<div class="icon">${icon}</div>`;
+      if (obj.noIcon && !isSingleListCommandLineActive()) {
+        iconHTML = "";
+      }
+      commandsHTML += `<div class="entry" command="${obj.id}">${iconHTML}<div>${obj.display}</div></div>`;
     }
   });
   $("#commandLine .suggestions").html(commandsHTML);
@@ -166,9 +170,13 @@ function trigger(command) {
     if (obj.id == command) {
       if (obj.input) {
         input = true;
-        showInput(obj.id, obj.display, obj.defaultValue);
+        let escaped = obj.display.split("</i>")[1] ?? obj.display;
+        showInput(obj.id, escaped, obj.defaultValue);
       } else if (obj.subgroup) {
         subgroup = true;
+        if (obj.beforeSubgroup) {
+          obj.beforeSubgroup();
+        }
         CommandlineLists.current.push(obj.subgroup);
         show();
       } else {
@@ -226,6 +234,10 @@ function addChildCommands(
   ) {
     icon = `<i class="fas fa-fw fa-check"></i>`;
   }
+  if (commandItem.noIcon) {
+    icon = "";
+  }
+
   if (parentCommandDisplay)
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
