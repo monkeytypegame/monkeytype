@@ -19,6 +19,8 @@ app.use(cors());
 
 const userRouter = require("./api/routes/user");
 app.use("/user", userRouter);
+const configRouter = require("./api/routes/config");
+app.use("/config", configRouter);
 
 app.use(function (e, req, res, next) {
   console.log("Error", e);
