@@ -1,5 +1,7 @@
 const MonkeyError = require("./error");
 
+const { roundTo2 } = require("./misc");
+
 function isUsernameValid(name) {
   if (name === null || name === undefined || name === "") return false;
   if (/miodec/.test(name.toLowerCase())) return false;
@@ -117,9 +119,11 @@ function validateObjectValues(val) {
       errCount += validateObjectValues(val[valkey]);
     });
   } else {
-    if (!/^[0-9a-zA-Z._\-\+]+$/.test(val)) errCount++;
+    if (!/^[0-9a-zA-Z._\-+]+$/.test(val)) {
+      errCount++;
+    }
   }
-  return errCount == 0;
+  return errCount;
 }
 
 module.exports = {
