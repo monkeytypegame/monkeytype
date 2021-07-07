@@ -16,7 +16,7 @@ class ResultDAO {
   }
 
   static async editResultTags(uid, id, tags) {
-    const result = await mongoDB().collection("result").findOne({ id, uid });
+    const result = await mongoDB().collection("results").findOne({ id, uid });
     if (!result) throw new MonkeyError(404, "Result not found");
     const userTags = await UserDAO.getTags(uid);
     let validTags = true;
@@ -31,7 +31,7 @@ class ResultDAO {
   }
 
   static async getResult(uid, id) {
-    const result = await mongoDB().collection("result").findOne({ id, uid });
+    const result = await mongoDB().collection("results").findOne({ id, uid });
     if (!result) throw new MonkeyError(404, "Result not found");
     return result;
   }
@@ -40,7 +40,7 @@ class ResultDAO {
     start = start ?? 0;
     end = end ?? 1000;
     const result = await mongoDB()
-      .collection("result")
+      .collection("results")
       .find({ uid })
       .sort({ timestamp: -1 })
       .skip(start)
