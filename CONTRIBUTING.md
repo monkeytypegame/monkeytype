@@ -1,5 +1,12 @@
 # Contributing
 
+### **Table of Contents**
+- [Technologies](#technologies)
+- [Prerequisite - Firebase Setup](#prerequisite---firebase-setup)
+- [Building and Running](#building-and-running)
+- [Standards and Conventions](#standards-and-conventions)
+
+
 ## Technologies
 
 - NodeJS < 14
