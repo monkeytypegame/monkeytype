@@ -5,6 +5,7 @@
 - [Prerequisite - Firebase Setup](#prerequisite---firebase-setup)
 - [Building and Running](#building-and-running)
 - [Standards and Conventions](#standards-and-conventions)
+- [Questions](#questions)
 
 
 ## Technologies
@@ -16,7 +17,7 @@
 
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
 
-   - The project name doesn't really matter, but just name it `monkeytype`.
+   - The project name doesn't really matter, but the name `monkeytype` would be prefered.
    - Google Analytics is not necessary.
 
 1. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
@@ -68,4 +69,4 @@
 
 ## Questions
 
-If you run into any problems, let me know on [GitHub](https://github.com/Miodec) or [Discord](https://discord.gg/monkeytype) in the `#development` channel.
+If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec) or [Discord](https://discord.gg/monkeytype) in the `#development` channel.
