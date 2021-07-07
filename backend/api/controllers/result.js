@@ -1,6 +1,6 @@
 const ResultDAO = require("../../dao/result");
 const UserDAO = require("../../dao/user");
-const PublicStatsDAO = require("../../dao/public-stats");
+// const PublicStatsDAO = require("../../dao/public-stats");
 const {
   validateObjectValues,
   validateResult,
@@ -21,9 +21,9 @@ class ResultController {
   static async addResult(req, res, next) {
     try {
       const { uid } = req.decodedToken;
-      let result = req.result;
-      if (!validateObjectValues(result))
-        return res.sendStatus(400).json({ message: "Bad input" });
+      const { result } = req.body;
+      if (validateObjectValues(result) > 0)
+        return res.status(400).json({ message: "Bad input" });
       if (
         result.wpm <= 0 ||
         result.wpm > 350 ||
@@ -31,7 +31,7 @@ class ResultController {
         result.acc > 100 ||
         result.consistency > 100
       ) {
-        return res.sendStatus(400).json({ message: "Bad input" });
+        return res.status(400).json({ message: "Bad input" });
       }
       if (
         (result.mode === "time" && result.mode2 < 15 && result.mode2 > 0) ||
@@ -58,11 +58,11 @@ class ResultController {
           result.customText.isTimeRandom &&
           result.customText.time < 15)
       ) {
-        return res.sendStatus(400).json({ message: "Test too short" });
+        return res.status(400).json({ message: "Test too short" });
       }
       if (!validateResult(result)) {
         return res
-          .sendStatus(400)
+          .status(400)
           .json({ message: "Result data doesn't make sense" });
       }
 
@@ -103,9 +103,7 @@ class ResultController {
               (result.wpm > 200 && result.consistency < 70)
             ) {
               //possible bot
-              return res
-                .sendStatus(400)
-                .json({ message: "Possible bot detected" });
+              return res.status(400).json({ message: "Possible bot detected" });
             }
             if (
               (result.keySpacingStats.sd > 15 &&
@@ -118,7 +116,7 @@ class ResultController {
               //close to the bot detection threshold
             }
           } else {
-            return res.sendStatus(400).json({ message: "Missing key data" });
+            return res.status(400).json({ message: "Missing key data" });
           }
         }
       }
@@ -147,13 +145,13 @@ class ResultController {
       }
       tt = result.testDuration + result.incompleteTestSeconds - afk;
 
-      await PublicStatsDAO.increment(result.restartCount, 1, tt);
+      await UserDAO.updateTypingStats(uid, result.restartCount, tt);
 
       await ResultDAO.addResult(uid, result);
 
       return res
-        .sendStatus(200)
-        .json({ message: "Result saved", isPb, name, tagPbs });
+        .status(200)
+        .json({ message: "Result saved", isPb, name: result.name, tagPbs });
     } catch (e) {
       next(e);
     }

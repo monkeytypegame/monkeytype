@@ -6,4 +6,6 @@ const router = Router();
 
 router.get("/", authenticateRequest, ResultController.getResults);
 
+router.post("/add", authenticateRequest, ResultController.addResult);
+
 module.exports = router;

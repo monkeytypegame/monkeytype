@@ -32,10 +32,12 @@ import * as MonkeyPower from "./monkey-power";
 
 let glarsesMode = false;
 
-export function toggleGlarses(){
+export function toggleGlarses() {
   glarsesMode = true;
-  console.log('Glarses Mode On - test result will be hidden. You can check the stats in the console (here)');
-  console.log('To disable Glarses Mode refresh the page.');
+  console.log(
+    "Glarses Mode On - test result will be hidden. You can check the stats in the console (here)"
+  );
+  console.log("To disable Glarses Mode refresh the page.");
 }
 
 export let notSignedInLastResult = null;
@@ -1009,17 +1011,15 @@ export function finish(difficultyFailed = false) {
   TimerProgress.hide();
   Funbox.activate("none", null);
 
-  if (
-    Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0 &&
-    Config.mode !== "time"
-  ) {
+  let stats = TestStats.calculateStats();
+
+  if (stats.time % 1 != 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
 
   if (Config.mode == "zen" || bailout) {
     TestStats.removeAfkData();
   }
-  let stats = TestStats.calculateStats();
   if (stats === undefined) {
     stats = {
       wpm: 0,
@@ -1577,51 +1577,21 @@ export function finish(difficultyFailed = false) {
               Notifications.add("You are offline. Result not saved.", -1);
             } else {
               axiosInstance
-                .post("/testCompleted", {
-                  obj: completedEvent,
+                .post("/result/add", {
+                  result: completedEvent,
                 })
-                .then((e) => {
+                .then((response) => {
                   AccountButton.loading(false);
-                  if (e.data == null) {
+
+                  if (response.status !== 200) {
                     Notifications.add(
-                      "Unexpected response from the server: " + e.data,
+                      "Result not saved. " + response.data.message,
                       -1
                     );
-                    return;
-                  }
-                  if (e.data.resultCode === -1) {
-                    Notifications.add("Could not save result", -1);
-                  } else if (e.data.resultCode === -2) {
-                    Notifications.add(
-                      "Possible bot detected. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -3) {
-                    Notifications.add(
-                      "Could not verify keypress stats. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -4) {
-                    Notifications.add(
-                      "Result data does not make sense. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -5) {
-                    Notifications.add("Test too short. Result not saved.", -1);
-                  } else if (e.data.resultCode === -999) {
-                    console.error("internal error: " + e.data.message);
-                    Notifications.add(
-                      "Internal error. Result might not be saved. " +
-                        e.data.message,
-                      -1
-                    );
-                  } else if (
-                    e.data.resultCode === 1 ||
-                    e.data.resultCode === 2
-                  ) {
-                    completedEvent.id = e.data.createdId;
+                  } else {
+                    completedEvent.id = response.data.createdId;
                     TestLeaderboards.check(completedEvent);
-                    if (e.data.resultCode === 2) {
+                    if (response.data.isPb) {
                       completedEvent.isPb = true;
                     }
                     if (
@@ -1661,7 +1631,7 @@ export function finish(difficultyFailed = false) {
                       console.log("Analytics unavailable");
                     }
 
-                    if (e.data.resultCode === 2) {
+                    if (response.data.isPb) {
                       //new pb
                       PbCrown.show();
                       DB.saveLocalPB(
@@ -1675,7 +1645,7 @@ export function finish(difficultyFailed = false) {
                         stats.wpmRaw,
                         consistency
                       );
-                    } else if (e.data.resultCode === 1) {
+                    } else {
                       PbCrown.hide();
                       // if (localPb) {
                       //   Notifications.add(
@@ -1851,7 +1821,7 @@ export function finish(difficultyFailed = false) {
   ChartController.result.update({ duration: 0 });
   ChartController.result.resize();
 
-  if(glarsesMode){
+  if (glarsesMode) {
     $("#middle #result .glarsesmessage").remove();
     $("#middle #result").prepend(`
 
@@ -1869,21 +1839,28 @@ export function finish(difficultyFailed = false) {
     $("#middle #result #resultReplay").remove();
     $("#middle #result .loginTip").remove();
 
-    console.log(`Test Completed: ${stats.wpm} wpm ${stats.acc}% acc ${stats.wpmRaw} raw ${consistency}% consistency`);
-
+    console.log(
+      `Test Completed: ${stats.wpm} wpm ${stats.acc}% acc ${stats.wpmRaw} raw ${consistency}% consistency`
+    );
   }
 
-  UI.swapElements($("#typingTest"), $("#result"), 250, () => {
-    TestUI.setResultCalculating(false);
-    $("#words").empty();
-    ChartController.result.resize();
-    if (Config.alwaysShowWordsHistory) {
-      TestUI.toggleResultWords();
+  UI.swapElements(
+    $("#typingTest"),
+    $("#result"),
+    250,
+    () => {
+      TestUI.setResultCalculating(false);
+      $("#words").empty();
+      ChartController.result.resize();
+      if (Config.alwaysShowWordsHistory) {
+        TestUI.toggleResultWords();
+      }
+      $("#testModesNotice").addClass("hidden");
+    },
+    () => {
+      Keymap.hide();
     }
-    $("#testModesNotice").addClass("hidden");
-  }, () => {
-    Keymap.hide();
-  });
+  );
 }
 
 export function fail() {
