@@ -11,7 +11,8 @@
     "deploy:live": "npm run build && firebase deploy -P live"
   },
   "engines": {
-    "node": "10"
+    "node": "14.17.3",
+    "npm": "7.19.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
