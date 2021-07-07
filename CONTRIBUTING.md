@@ -85,20 +85,28 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 
 ## Standards, Conventions, and Best Practices
 
-1. Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically ran every time you `git commit` (if you've followed the above instructions properly).
+Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically ran every time you `git commit` (if you've followed the above instructions properly).
 
+Following the guidelines below will increase your chance of getting your change accepted.
 
-
-### Themes
+### Theme Guidelines
 <!-- TODO: add screenshots to provide examples for dos and don'ts -->
-Following the theme guidelines will better increase your chance of getting your change accepted. Make sure that 
-- themes must keep their text color monochrome
-- themes button text color must be the themes main color
-- You didn't forget to add the theme to the list file
+- Make sure your theme is unique and a simmilar looking one is not already avaiable
+- The text color is either black or white (or very close to)
+- Your theme has been added to the `_list` file and the `textColor` property is the theme's main color
+- Your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disbled
 
-### Languages and Quotes
-   - For quotes and languages don't forget to remove the trailing comma at the end of the last JSON entry.
-   - Ensure that your contribution meets JSON standards.
+### Language Guidelines
+- Do not include swear words
+- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
+- Be sure to add your language to the `_list` and `_groups` files
+- Make sure the number of words corresponds to the file name (for example: `languageName.json` is 200 words, `langugeName_1k.json` is 1000 words, and so on)
+
+### Quote Guidelines
+- Do not include swear words
+- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
+- Verify the `length` property is correct (length of the text in characters)
+- Verify the `id` property is incremented correctly
 
 ## Questions
 
