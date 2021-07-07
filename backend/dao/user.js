@@ -11,9 +11,7 @@ class UsersDAO {
   }
 
   static async deleteUser(uid) {
-    return await mongoDB()
-      .collection("users")
-      .deleteOne({uid});
+    return await mongoDB().collection("users").deleteOne({ uid });
   }
 
   static async updateName(uid, name) {
@@ -27,10 +25,8 @@ class UsersDAO {
   }
 
   static async isNameAvailable(name) {
-    const nameDoc = await mongoDB()
-      .collection("users")
-      .findOne({ name });
-    if (nameDoc){
+    const nameDoc = await mongoDB().collection("users").findOne({ name });
+    if (nameDoc) {
       return false;
     } else {
       return true;
@@ -61,7 +57,7 @@ class UsersDAO {
       .updateOne({ uid }, { $push: { tags: { name } } });
   }
 
-  static async getTags(uid){
+  static async getTags(uid) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
     return user.tags;
@@ -118,10 +114,7 @@ class UsersDAO {
       );
   }
 
-  static async checkIfPb(
-    uid,
-    result
-  ) {
+  static async checkIfPb(uid, result) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
 
@@ -133,8 +126,8 @@ class UsersDAO {
       difficulty,
       language,
       punctuation,
-      raw,
-      wpm
+      rawWpm,
+      wpm,
     } = result;
 
     let pb = checkAndUpdatePb(
@@ -146,7 +139,7 @@ class UsersDAO {
       difficulty,
       language,
       punctuation,
-      raw,
+      rawWpm,
       wpm
     );
 
@@ -160,10 +153,7 @@ class UsersDAO {
     }
   }
 
-  static async checkIfTagPb(
-    uid,
-    result
-  ) {
+  static async checkIfTagPb(uid, result) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
 
@@ -179,9 +169,9 @@ class UsersDAO {
       difficulty,
       language,
       punctuation,
-      raw,
+      rawWpm,
       wpm,
-      tags
+      tags,
     } = result;
 
     let ret = [];
@@ -196,7 +186,7 @@ class UsersDAO {
         difficulty,
         language,
         punctuation,
-        raw,
+        rawWpm,
         wpm
       );
       if (tagpb.isPb) {
@@ -228,7 +218,7 @@ class UsersDAO {
         { uid },
         {
           $inc: {
-            startedTests: restartCount,
+            startedTests: restartCount + 1,
             completedTests: 1,
             timeTyping,
           },
@@ -252,25 +242,26 @@ class UsersDAO {
       .updateOne({ uid }, { $set: { discordId: null } });
   }
 
-  static async incrementBananas(uid, wpm){
+  static async incrementBananas(uid, wpm) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
 
     let best60;
-    try{
+    try {
       best60 = Math.max(...user.personalBests.time[60].map((best) => best.wpm));
-    }catch(e){
+    } catch (e) {
       best60 = undefined;
     }
 
-    if(best60 === undefined || wpm >= (best60 - best60 * 0.25)){
+    if (best60 === undefined || wpm >= best60 - best60 * 0.25) {
       //increment when no record found or wpm is within 25% of the record
-      return await mongoDB().collection("users").updateOne({ uid },{ $inc: { bananas: 1 } });
-    }else{
+      return await mongoDB()
+        .collection("users")
+        .updateOne({ uid }, { $inc: { bananas: 1 } });
+    } else {
       return null;
     }
   }
-
 }
 
 module.exports = UsersDAO;
