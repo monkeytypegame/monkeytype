@@ -2,6 +2,7 @@ import { loadTags } from "./result-filters";
 import * as AccountButton from "./account-button";
 import * as Notifications from "./notifications";
 import axiosInstance from "./axios-instance";
+import * as TodayTracker from "./today-tracker";
 
 let dbSnapshot = null;
 
@@ -108,7 +109,7 @@ export async function getUserResults() {
         .orderBy("timestamp", "desc")
         .limit(1000)
         .get()
-        .then((data) => {
+        .then(async (data) => {
           dbSnapshot.results = [];
           data.docs.forEach((doc) => {
             let result = doc.data();
@@ -125,6 +126,7 @@ export async function getUserResults() {
 
             dbSnapshot.results.push(result);
           });
+          await TodayTracker.addAllFromToday();
           return true;
         })
         .catch((e) => {

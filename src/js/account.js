@@ -64,6 +64,8 @@ export function getDataAndInit() {
           }
         }
       }
+      // if($(".pageAccount").hasClass('active')) update();
+      if ($(".pageLogin").hasClass("active")) UI.changePage("account");
       if (!UpdateConfig.changedBeforeDb) {
         if (Config.localStorageConfig === null) {
           AccountButton.loading(false);
@@ -141,6 +143,8 @@ export function getDataAndInit() {
       TagController.loadActiveFromLocalStorage();
       ResultTagsPopup.updateButtons();
       Settings.showAccountSection();
+      UI.setPageTransition(false);
+      if ($(".pageLoading").hasClass("active")) UI.changePage("");
     })
     .catch((e) => {
       AccountButton.loading(false);

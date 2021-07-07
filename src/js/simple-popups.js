@@ -4,6 +4,7 @@ import * as AccountController from "./account-controller";
 import * as DB from "./db";
 import * as Settings from "./settings";
 import axiosInstance from "./axios-instance";
+import * as UpdateConfig from "./config";
 
 export let list = {};
 class SimplePopup {
@@ -58,14 +59,20 @@ class SimplePopup {
       if (this.type === "number") {
         this.inputs.forEach((input) => {
           el.find(".inputs").append(`
-        <input type="number" min="1" val="${input.initVal}" placeholder="${input.placeholder}" required>
+        <input type="number" min="1" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
         `);
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
-          el.find(".inputs").append(`
-        <input type="text" val="${input.initVal}" placeholder="${input.placeholder}" required>
-        `);
+          if(input.type){
+            el.find(".inputs").append(`
+            <input type="${input.type}" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
+            `);
+          }else{
+            el.find(".inputs").append(`
+            <input type="text" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
+            `);
+          }
         });
       }
       el.find(".inputs").removeClass("hidden");
@@ -107,7 +114,7 @@ class SimplePopup {
   }
 }
 
-$("#simplePopupWrapper").click((e) => {
+$("#simplePopupWrapper").mousedown((e) => {
   if ($(e.target).attr("id") === "simplePopupWrapper") {
     $("#simplePopupWrapper")
       .stop(true, true)
@@ -138,6 +145,11 @@ list.updateEmail = new SimplePopup(
   "Update Email",
   [
     {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+    {
       placeholder: "Current email",
       initVal: "",
     },
@@ -146,13 +158,21 @@ list.updateEmail = new SimplePopup(
       initVal: "",
     },
   ],
-  "Don't mess this one up or you won't be able to login!",
+  "",
   "Update",
-  (previousEmail, newEmail) => {
+  (pass,previousEmail, newEmail) => {
     try {
+      const user = firebase.auth().currentUser;
+      const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email, 
+          pass
+      );
       Loader.show();
+      user.reauthenticateWithCredential(credential).then(() => {
+
       axiosInstance
         .post("/updateEmail", {
+          uid: user.uid,
           previousEmail: previousEmail,
           newEmail: newEmail,
         })
@@ -172,12 +192,65 @@ list.updateEmail = new SimplePopup(
             );
           }
         });
+      }).catch(e => {
+        Loader.hide();
+        Notifications.add("Incorrect current password", -1);
+      })
     } catch (e) {
       Notifications.add("Something went wrong: " + e, -1);
     }
   },
   () => {}
 );
+
+
+list.updatePassword = new SimplePopup(
+  "updatePassword",
+  "text",
+  "Update Password",
+  [
+    {
+      placeholder: "Current password",
+      type: "password",
+      initVal: "",
+    },
+    {
+      placeholder: "New password",
+      type: "password",
+      initVal: "",
+    },
+    {
+      placeholder: "Confirm new password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "",
+  "Update",
+  async (previousPass, newPass, newPassConfirm) => {
+    try {
+      const user = firebase.auth().currentUser;
+      const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email, 
+          previousPass
+      );
+      if(newPass !== newPassConfirm){
+        Notifications.add("New passwords don't match",0);
+        return;
+      }
+      Loader.show();
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPass);
+      Loader.hide();
+      Notifications.add("Password updated", 1);
+    } catch (e) {
+      Loader.hide();
+      Notifications.add(e, -1);
+    }
+  },
+  () => {}
+);
+
 
 list.clearTagPb = new SimplePopup(
   "clearTagPb",
@@ -266,6 +339,49 @@ list.resetPersonalBests = new SimplePopup(
     } catch (e) {
       Notifications.add("Something went wrong: " + e, -1);
     }
+  },
+  () => {}
+);
+
+list.resetSettings = new SimplePopup(
+  "resetSettings",
+  "text",
+  "Reset Settings",
+  [],
+  "Are you sure you want to reset all your settings?",
+  "Reset",
+  () => {
+    UpdateConfig.reset();
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+  },
+  () => {}
+);
+
+list.unlinkDiscord = new SimplePopup(
+  "unlinkDiscord",
+  "text",
+  "Unlink Discord",
+  [],
+  "Are you sure you want to unlink your Discord account?",
+  "Unlink",
+  () => {
+    Loader.show();
+    CloudFunctions.unlinkDiscord({
+      uid: firebase.auth().currentUser.uid,
+    }).then((ret) => {
+      Loader.hide();
+      console.log(ret);
+      if (ret.data.status === 1) {
+        DB.getSnapshot().discordId = null;
+        Notifications.add("Accounts unlinked", 0);
+        Settings.updateDiscordSection();
+      } else {
+        Notifications.add("Something went wrong: " + ret.data.message, -1);
+        Settings.updateDiscordSection();
+      }
+    });
   },
   () => {}
 );

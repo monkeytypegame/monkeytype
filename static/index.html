@@ -1099,6 +1099,11 @@
           </div>
         </div>
         <div id="middle">
+          <div class="page pageLoading hidden">
+            <div class="preloader">
+              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+            </div>
+          </div>
           <div class="page pageTest hidden">
             <div id="typingTest">
               <div id="capsWarning" class="hidden">
@@ -1117,6 +1122,7 @@
                 <div class="time hidden">1:00</div>
                 <div class="wpm">60</div>
                 <div class="acc">100%</div>
+                <div class="burst">1</div>
               </div>
               <div class="outOfFocusWarning hidden">
                 <i class="fas fa-mouse-pointer"></i>
@@ -1302,6 +1308,7 @@
               <div id="largeLiveWpmAndAcc" class="timerMain">
                 <div id="liveWpm" class="hidden">123</div>
                 <div id="liveAcc" class="hidden">100%%</div>
+                <div id="liveBurst" class="hidden">1</div>
               </div>
               <div
                 id="restartTestButton"
@@ -1403,6 +1410,7 @@
                   <div class="bottom" aria-label="" data-balloon-pos="up">
                     <div class="text">-</div>
                     <div class="afk"></div>
+                    <div class="timeToday"></div>
                   </div>
                 </div>
                 <!-- </div> -->
@@ -1433,6 +1441,26 @@
                   >
                     <i class="fas fa-copy"></i>
                   </span>
+                  <span
+                    id="toggleBurstHeatmap"
+                    class="icon-button"
+                    aria-label="Toggle burst heatmap"
+                    data-balloon-pos="up"
+                    style="display: inline-block"
+                  >
+                    <i class="fas fa-fire-alt"></i>
+                  </span>
+                  <div class="heatmapLegend hidden">
+                    <div>slow</div>
+                    <div class="boxes">
+                      <div class="box"></div>
+                      <div class="box"></div>
+                      <div class="box"></div>
+                      <div class="box"></div>
+                      <div class="box"></div>
+                    </div>
+                    <div>fast</div>
+                  </div>
                 </div>
                 <div class="words"></div>
               </div>
@@ -1677,7 +1705,7 @@
                   target="_blank"
                 >
                   <div class="fab fa-github"></div>
-                  Github
+                  GitHub
                 </a>
               </div>
             </div>
@@ -1990,6 +2018,41 @@
               account
               <i class="fas fa-chevron-down"></i>
             </div>
+            <div class="section discordIntegration">
+              <h1>discord integration</h1>
+              <div class="text">
+                When you connect your monkeytype account to your Discord
+                account, you will be automatically assigned a new role every
+                time you achieve a new personal best in a 60 second test.
+                <br />
+                <br />
+                Don't pair your account before joining the Discord server, as it
+                might result in the bot not being able to give you a role.
+              </div>
+              <div class="buttons">
+                <a
+                  class="button"
+                  href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
+                  style="text-decoration: none"
+                >
+                  Link with Discord
+                </a>
+              </div>
+              <div class="info hidden">
+                <div>
+                  <i class="fas fa-check"></i>
+                  Your accounts are paired!
+                </div>
+                <div
+                  id="unlinkDiscordButton"
+                  class="text-button"
+                  aria-label="Unlink"
+                  data-balloon-pos="up"
+                >
+                  <i class="fas fa-unlink" aria-hidden="true"></i>
+                </div>
+              </div>
+            </div>
             <div class="settingsGroup account hidden">
               <div class="section tags">
                 <h1>tags</h1>
@@ -2013,41 +2076,6 @@
                     </div>
                   </div>
                   <div class="addTagButton"><i class="fas fa-plus"></i></div>
-                </div>
-              </div>
-              <div class="section discordIntegration">
-                <h1>discord integration</h1>
-                <div class="text">
-                  When you connect your monkeytype account to your Discord
-                  account, you will be automatically assigned a new role every
-                  time you achieve a new personal best in a 60 second test.
-                  <br />
-                  <br />
-                  Don't pair your account before joining the Discord server, as
-                  it might result in the bot not being able to give you a role.
-                </div>
-                <div class="buttons">
-                  <a
-                    class="button"
-                    href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
-                    style="text-decoration: none"
-                  >
-                    Verify with Discord
-                  </a>
-                </div>
-                <div class="info hidden">
-                  <div>
-                    <i class="fas fa-check"></i>
-                    Your accounts are paired!
-                  </div>
-                  <div
-                    id="unlinkDiscordButton"
-                    class="text-button"
-                    aria-label="Unlink"
-                    data-balloon-pos="up"
-                  >
-                    <i class="fas fa-unlink" aria-hidden="true"></i>
-                  </div>
                 </div>
               </div>
               <div class="section presets">
@@ -2243,31 +2271,43 @@
                   Automatically fails a test if your WPM falls below a
                   threshold.
                 </div>
-                <div class="buttons">
-                  <div
-                    class="button"
-                    minWpm="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="min wpm"
+                      class="input customMinWpmSpeed"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    minWpm="custom"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    custom
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      minWpm="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      minWpm="custom"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      custom
+                    </div>
                   </div>
-                  <input
-                    type="number"
-                    step="1"
-                    class="customMinWpmSpeed"
-                    placeholder="wpm"
-                    min="0"
-                    value=""
-                  />
                 </div>
               </div>
               <div class="section minAcc" section="">
@@ -2276,31 +2316,97 @@
                   Automatically fails a test if your accuracy falls below a
                   threshold.
                 </div>
-                <div class="buttons">
-                  <div
-                    class="button"
-                    minAcc="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="min accuracy"
+                      class="input customMinAcc"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    minAcc="custom"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    custom
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      minAcc="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      minAcc="custom"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      custom
+                    </div>
                   </div>
-                  <input
-                    type="number"
-                    step="1"
-                    class="customMinAcc"
-                    placeholder="acc"
-                    min="0"
-                    value=""
-                  />
+                </div>
+              </div>
+              <div class="section minBurst" section="">
+                <h1>min burst</h1>
+                <div class="text">
+                  Automatically fails a test if your raw for a single word falls
+                  below this threshold. Selecting 'flex' allows for this
+                  threshold to automatically decrease for longer words.
+                </div>
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="min burst"
+                      class="input customMinBurst"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
+                  </div>
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      minBurst="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      minBurst="fixed"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      fixed
+                    </div>
+                    <div
+                      class="button"
+                      minBurst="flex"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      flex
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="section languageGroups fullWidth">
@@ -2704,58 +2810,61 @@
                 <h1>pace caret</h1>
                 <div class="text">
                   Displays a second caret that moves at constant speed. The
-                  repeat option enables a pace caret when a test is repeated
-                  that will have the wpm of the previous test.
+                  'average' option average the speed of last 10 results.
                 </div>
-                <div class="buttons">
-                  <div
-                    class="button"
-                    paceCaret="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="wpm"
+                      class="input customPaceCaretSpeed"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    paceCaret="average"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    average
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      paceCaret="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      paceCaret="average"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      average
+                    </div>
+                    <div
+                      class="button"
+                      paceCaret="pb"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      pb
+                    </div>
+                    <div
+                      class="button"
+                      paceCaret="custom"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      custom
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    paceCaret="pb"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    pb
-                  </div>
-                  <div
-                    class="button"
-                    paceCaret="repeat"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    repeat
-                  </div>
-                  <div
-                    class="button"
-                    paceCaret="custom"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    custom
-                  </div>
-                  <input
-                    type="number"
-                    step="1"
-                    class="customPaceCaretSpeed"
-                    placeholder="wpm"
-                    min="0"
-                    value=""
-                  />
                 </div>
               </div>
               <div class="section repeatedPace" section="">
@@ -3100,6 +3209,14 @@
                   >
                     3
                   </div>
+                  <div
+                    class="button"
+                    fontsize="4"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    4
+                  </div>
                 </div>
               </div>
               <div class="section fontFamily fullWidth">
@@ -3314,7 +3431,7 @@
                   fully visible. Max fits the image corner to corner.
                 </div>
                 <div>
-                  <div class="inputAndButton">
+                  <div class="inputAndSave">
                     <input
                       type="text"
                       placeholder="image url"
@@ -3606,6 +3723,21 @@
                   </div>
                 </div>
               </div>
+              <div class="section showLiveBurst">
+                <h1>live burst</h1>
+                <div class="text">
+                  Displays live burst during the test of the last word you
+                  typed.
+                </div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
               <div class="section showTimerProgress">
                 <h1>timer/progress</h1>
                 <div class="text">
@@ -3771,6 +3903,20 @@
                   </div>
                 </div>
               </div>
+              <div class="section updateAccountPassword">
+                <h1>update account password</h1>
+                <div class="text">Change the password you use to sign in.</div>
+                <div class="buttons">
+                  <div
+                    class="button off danger"
+                    id="updateAccountPassword"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    update password
+                  </div>
+                </div>
+              </div>
               <div class="section deleteAccount hidden">
                 <h1>delete account</h1>
                 <div class="text">
@@ -3800,10 +3946,18 @@
             <div class="register side">
               <div class="title">register</div>
               <form action="" autocomplete="off">
-                <input type="text" placeholder="username" />
-                <input type="text" placeholder="email" />
-                <input type="password" placeholder="password" />
-                <input type="password" placeholder="verify password" />
+                <input type="text" placeholder="username" autocomplete="off" />
+                <input type="text" placeholder="email" autocomplete="off" />
+                <input
+                  type="password"
+                  placeholder="password"
+                  autocomplete="off"
+                />
+                <input
+                  type="password"
+                  placeholder="verify password"
+                  autocomplete="off"
+                />
                 <div class="button">
                   <i class="fas fa-user-plus"></i>
                   Sign Up
@@ -3836,6 +3990,10 @@
                   <i class="fab fa-google"></i>
                   Google Sign In
                 </div>
+                <!-- <div class="button signInWithGitHub">
+                  <i class="fab fa-github"></i>
+                  GitHub Sign In
+                </div> -->
               </form>
             </div>
           </div>
@@ -4318,14 +4476,14 @@
     </div>
   </body>
   <!-- The core Firebase JS SDK is always required and must be listed first -->
-  <script src="/__/firebase/8.0.2/firebase-app.js"></script>
+  <script src="/__/firebase/8.4.2/firebase-app.js"></script>
 
   <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
-  <script src="/__/firebase/8.0.2/firebase-analytics.js"></script>
-  <script src="/__/firebase/8.0.2/firebase-auth.js"></script>
-  <script src="/__/firebase/8.0.2/firebase-firestore.js"></script>
-  <script src="/__/firebase/8.0.2/firebase-functions.js"></script>
+  <script src="/__/firebase/8.4.2/firebase-analytics.js"></script>
+  <script src="/__/firebase/8.4.2/firebase-auth.js"></script>
+  <script src="/__/firebase/8.4.2/firebase-firestore.js"></script>
+  <script src="/__/firebase/8.4.2/firebase-functions.js"></script>
 
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js"></script>

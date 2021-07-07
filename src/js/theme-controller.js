@@ -155,7 +155,7 @@ export function randomizeTheme() {
     preview(randomTheme);
 
     if (previousTheme != randomTheme) {
-      Notifications.add(randomTheme.replace(/_/g, " "), 0);
+      // Notifications.add(randomTheme.replace(/_/g, " "), 0);
     }
   });
 }

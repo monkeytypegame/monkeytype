@@ -68,6 +68,13 @@ function apply() {
   let inputVal = $("#presetWrapper #presetEdit input").val();
   let presetid = $("#presetWrapper #presetEdit").attr("presetid");
   let configChanges = Config.getConfigChanges();
+  let activeTagIds = [];
+  DB.getSnapshot().tags.forEach((tag) => {
+    if (tag.active) {
+      activeTagIds.push(tag.id);
+    }
+  });
+  configChanges.tags = activeTagIds;
   hide();
   if (action === "add") {
     Loader.show();

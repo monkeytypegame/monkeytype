@@ -14,7 +14,8 @@ import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
 
-var gmailProvider = new firebase.auth.GoogleAuthProvider();
+const gmailProvider = new firebase.auth.GoogleAuthProvider();
+const githubProvider = new firebase.auth.GithubAuthProvider();
 
 export function signIn() {
   $(".pageLogin .preloader").removeClass("hidden");
@@ -92,6 +93,40 @@ export async function signInWithGoogle() {
   }
 }
 
+export async function signInWithGitHub() {
+  $(".pageLogin .preloader").removeClass("hidden");
+
+  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
+    //remember me
+    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    firebase
+      .auth()
+      .signInWithPopup(githubProvider)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        Notifications.add(error.message, -1);
+        $(".pageLogin .preloader").addClass("hidden");
+      });
+  } else {
+    //dont remember
+    await firebase
+      .auth()
+      .setPersistence(firebase.auth.Auth.Persistence.SESSION);
+    firebase
+      .auth()
+      .signInWithPopup(githubProvider)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        Notifications.add(error.message, -1);
+        $(".pageLogin .preloader").addClass("hidden");
+      });
+  }
+}
+
 export function linkWithGoogle() {
   firebase
     .auth()
@@ -136,26 +171,36 @@ async function signUp() {
     return;
   }
 
-  try{
-    const checkNameResponse = await axiosInstance.post("/user/checkName",{name: nname});
-  }catch(e){
+  try {
+    const checkNameResponse = await axiosInstance.post("/user/checkName", {
+      name: nname,
+    });
+  } catch (e) {
     let txt;
-    if(e.response){
-      txt = e.response.data.message || (e.response.status + ' ' + e.response.statusText);
-    }else{
+    if (e.response) {
+      txt =
+        e.response.data.message ||
+        e.response.status + " " + e.response.statusText;
+    } else {
       txt = e.message;
     }
-    Notifications.add(txt,-1);
+    Notifications.add(txt, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .register .button").removeClass("disabled");
     return;
   }
-  
+
   let createdAuthUser;
-  try{
-    createdAuthUser = await firebase.auth().createUserWithEmailAndPassword(email, password);
-    const createdDbUser = await axiosInstance.post("/user/signup",{name: nname, email, uid: createdAuthUser.user.uid});
-    await createdAuthUser.user.updateProfile({displayName: nname});
+  try {
+    createdAuthUser = await firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password);
+    const createdDbUser = await axiosInstance.post("/user/signup", {
+      name: nname,
+      email,
+      uid: createdAuthUser.user.uid,
+    });
+    await createdAuthUser.user.updateProfile({ displayName: nname });
     await createdAuthUser.user.sendEmailVerification();
     AllTimeStats.clear();
     Notifications.add("Account created", 1, 3);
@@ -186,23 +231,23 @@ async function signUp() {
       //   });
     }
     UI.changePage("account");
-  }catch(e){
+  } catch (e) {
     //make sure to do clean up here
     await createdAuthUser.user.delete();
-    axiosInstance.post("/user/delete",{uid: createdAuthUser.user.uid});
+    axiosInstance.post("/user/delete", { uid: createdAuthUser.user.uid });
     let txt;
-    if(e.response){
-      txt = e.response.data.message || (e.response.status + ' ' + e.response.statusText);
-    }else{
+    if (e.response) {
+      txt =
+        e.response.data.message ||
+        e.response.status + " " + e.response.statusText;
+    } else {
       txt = e.message;
     }
-    Notifications.add(txt,-1);
+    Notifications.add(txt, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .register .button").removeClass("disabled");
     return;
   }
-
-
 
   return;
 
@@ -352,6 +397,11 @@ $(".pageLogin .login .button.signInWithGoogle").click((e) => {
   signInWithGoogle();
 });
 
+$(".pageLogin .login .button.signInWithGitHub").click((e) => {
+  UpdateConfig.setChangedBeforeDb(false);
+  signInWithGitHub();
+});
+
 $(".signOut").click((e) => {
   signOut();
 });
@@ -365,6 +415,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
       );
     }
+    UI.setPageTransition(false);
     AccountButton.update();
     AccountButton.loading(true);
     Account.getDataAndInit();
@@ -394,6 +445,9 @@ firebase.auth().onAuthStateChanged(function (user) {
     if (VerificationController.data !== null) {
       VerificationController.verify(user);
     }
+  } else {
+    UI.setPageTransition(false);
+    if ($(".pageLoading").hasClass("active")) UI.changePage("");
   }
   let theme = Misc.findGetParameter("customTheme");
   if (theme !== null) {

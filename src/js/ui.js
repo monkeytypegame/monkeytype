@@ -15,7 +15,7 @@ import * as Account from "./account";
 import * as Leaderboards from "./leaderboards";
 import * as Funbox from "./funbox";
 
-export let pageTransition = false;
+export let pageTransition = true;
 
 export function setPageTransition(val) {
   pageTransition = val;
@@ -108,8 +108,7 @@ export function swapElements(
 }
 
 export function changePage(page) {
-  //next line fixes endless loading when accessing account via url
-  if (page == "account") pageTransition = false;
+  console.log('change');
   if (pageTransition) {
     return;
   }

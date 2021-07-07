@@ -40,6 +40,10 @@ async function initGroups() {
     "showLiveAcc",
     UpdateConfig.setShowLiveAcc
   );
+  groups.showLiveBurst = new SettingsGroup(
+    "showLiveBurst",
+    UpdateConfig.setShowLiveBurst
+  );
   groups.showTimerProgress = new SettingsGroup(
     "showTimerProgress",
     UpdateConfig.setShowTimerProgress
@@ -179,45 +183,14 @@ async function initGroups() {
     "showAllLines",
     UpdateConfig.setShowAllLines
   );
-  groups.paceCaret = new SettingsGroup(
-    "paceCaret",
-    UpdateConfig.setPaceCaret,
-    () => {
-      if (Config.paceCaret === "custom") {
-        $(
-          ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
-        ).removeClass("hidden");
-      } else {
-        $(
-          ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
-        ).addClass("hidden");
-      }
-    }
-  );
+  groups.paceCaret = new SettingsGroup("paceCaret", UpdateConfig.setPaceCaret);
   groups.repeatedPace = new SettingsGroup(
     "repeatedPace",
     UpdateConfig.setRepeatedPace
   );
-  groups.minWpm = new SettingsGroup("minWpm", UpdateConfig.setMinWpm, () => {
-    if (Config.minWpm === "custom") {
-      $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
-        "hidden"
-      );
-    } else {
-      $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
-        "hidden"
-      );
-    }
-  });
-  groups.minAcc = new SettingsGroup("minAcc", UpdateConfig.setMinAcc, () => {
-    if (Config.minAcc === "custom") {
-      $(".pageSettings .section.minAcc input.customMinAcc").removeClass(
-        "hidden"
-      );
-    } else {
-      $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
-    }
-  });
+  groups.minWpm = new SettingsGroup("minWpm", UpdateConfig.setMinWpm);
+  groups.minAcc = new SettingsGroup("minAcc", UpdateConfig.setMinAcc);
+  groups.minBurst = new SettingsGroup("minBurst", UpdateConfig.setMinBurst);
   groups.smoothLineScroll = new SettingsGroup(
     "smoothLineScroll",
     UpdateConfig.setSmoothLineScroll
@@ -407,20 +380,6 @@ export function hideAccountSection() {
   $(`.settingsGroup.account`).addClass("hidden");
 }
 
-function showActiveTags() {
-  DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.active === true) {
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag._id}'] .active`
-      ).html('<i class="fas fa-check-square"></i>');
-    } else {
-      $(
-        `.pageSettings .section.tags .tagsList .tag[id='${tag._id}'] .active`
-      ).html('<i class="fas fa-square"></i>');
-    }
-  });
-}
-
 export function updateDiscordSection() {
   //no code and no discord
   if (firebase.auth().currentUser == null) {
@@ -462,15 +421,23 @@ function refreshTagsSettingsSection() {
         tagPbString = `PB: ${tag.pb}`;
       }
       tagsEl.append(`
-        <div class="tag" id="${tag._id}">
-            <div class="active" active="${tag.active}">
-                <i class="fas fa-${tag.active ? "check-" : ""}square"></i>
-            </div>
-            <div class="title">${tag.name}</div>
-            <div class="editButton"><i class="fas fa-pen"></i></div>
-            <div class="clearPbButton hidden" aria-label="${tagPbString}" data-balloon-pos="up"><i class="fas fa-crown"></i></div>
-            <div class="removeButton"><i class="fas fa-trash"></i></div>
+
+      <div class="buttons tag" id="${tag.id}">
+        <div class="button tagButton ${tag.active ? "active" : ""}" active="${
+        tag.active
+      }">
+          <div class="title">${tag.name}</div>
         </div>
+        <div class="clearPbButton button">
+          <i class="fas fa-crown fa-fw"></i>
+        </div>
+        <div class="editButton button">
+          <i class="fas fa-pen fa-fw"></i>
+        </div>
+        <div class="removeButton button">
+          <i class="fas fa-trash fa-fw"></i>
+        </div>
+      </div>
 
       `);
     });
@@ -490,13 +457,13 @@ function refreshPresetsSettingsSection() {
           <div class="title">${preset.name}</div>
         </div>
         <div class="editButton button">
-          <i class="fas fa-pen"></i>
+          <i class="fas fa-pen fa-fw"></i>
         </div>
         <div class="removeButton button">
-          <i class="fas fa-trash"></i>
+          <i class="fas fa-trash fa-fw"></i>
         </div>
       </div>
-
+      
       `);
     });
     $(".pageSettings .section.presets").removeClass("hidden");
@@ -527,40 +494,18 @@ export function update() {
   updateDiscordSection();
   ThemePicker.refreshButtons();
 
-  if (Config.paceCaret === "custom") {
-    $(
-      ".pageSettings .section.paceCaret input.customPaceCaretSpeed"
-    ).removeClass("hidden");
-    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
-      Config.paceCaretCustomSpeed
-    );
-  } else {
-    $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").addClass(
-      "hidden"
-    );
-  }
-
-  if (Config.minWpm === "custom") {
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").removeClass(
-      "hidden"
-    );
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
-      Config.minWpmCustomSpeed
-    );
-  } else {
-    $(".pageSettings .section.minWpm input.customMinWpmSpeed").addClass(
-      "hidden"
-    );
-  }
-
-  if (Config.minAcc === "custom") {
-    $(".pageSettings .section.minAcc input.customMinAcc").removeClass("hidden");
-    $(".pageSettings .section.minAcc input.customMinAcc").val(
-      Config.minAccCustom
-    );
-  } else {
-    $(".pageSettings .section.minAcc input.customMinAcc").addClass("hidden");
-  }
+  $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val(
+    Config.paceCaretCustomSpeed
+  );
+  $(".pageSettings .section.minWpm input.customMinWpmSpeed").val(
+    Config.minWpmCustomSpeed
+  );
+  $(".pageSettings .section.minAcc input.customMinAcc").val(
+    Config.minAccCustom
+  );
+  $(".pageSettings .section.minBurst input.customMinBurst").val(
+    Config.minBurstCustomSpeed
+  );
 }
 
 function toggleSettingsGroup(groupName) {
@@ -616,6 +561,18 @@ $(document).on(
 );
 
 $(document).on(
+  "click",
+  ".pageSettings .section.paceCaret .button.save",
+  (e) => {
+    UpdateConfig.setMinBurstCustomSpeed(
+      parseInt(
+        $(".pageSettings .section.paceCaret input.customPaceCaretSpeed").val()
+      )
+    );
+  }
+);
+
+$(document).on(
   "focusout",
   ".pageSettings .section.minWpm input.customMinWpmSpeed",
   (e) => {
@@ -624,6 +581,12 @@ $(document).on(
     );
   }
 );
+
+$(document).on("click", ".pageSettings .section.minWpm .button.save", (e) => {
+  UpdateConfig.setMinBurstCustomSpeed(
+    parseInt($(".pageSettings .section.minWpm input.customMinWpmSpeed").val())
+  );
+});
 
 $(document).on(
   "focusout",
@@ -634,6 +597,28 @@ $(document).on(
     );
   }
 );
+
+$(document).on("click", ".pageSettings .section.minAcc .button.save", (e) => {
+  UpdateConfig.setMinBurstCustomSpeed(
+    parseInt($(".pageSettings .section.minAcc input.customMinAcc").val())
+  );
+});
+
+$(document).on(
+  "focusout",
+  ".pageSettings .section.minBurst input.customMinBurst",
+  (e) => {
+    UpdateConfig.setMinBurstCustomSpeed(
+      parseInt($(".pageSettings .section.minBurst input.customMinBurst").val())
+    );
+  }
+);
+
+$(document).on("click", ".pageSettings .section.minBurst .button.save", (e) => {
+  UpdateConfig.setMinBurstCustomSpeed(
+    parseInt($(".pageSettings .section.minBurst input.customMinBurst").val())
+  );
+});
 
 $(document).on(
   "click",
@@ -673,21 +658,7 @@ $(
 
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   (e) => {
-    if (confirm("Are you sure?")) {
-      Loader.show();
-      axiosInstance.post("/unlinkDiscord").then((ret) => {
-        Loader.hide();
-        console.log(ret);
-        if (ret.data.status === 1) {
-          DB.getSnapshot().discordId = null;
-          Notifications.add("Accounts unlinked", 0);
-          updateDiscordSection();
-        } else {
-          Notifications.add("Something went wrong: " + ret.data.message, -1);
-          updateDiscordSection();
-        }
-      });
-    }
+    SimplePopups.list.unlinkDiscord.show();
   }
 );
 
@@ -702,12 +673,12 @@ $(document).on("click", ".pageSettings .section.funbox .button", (e) => {
 //tags
 $(document).on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .active",
+  ".pageSettings .section.tags .tagsList .tag .tagButton",
   (e) => {
     let target = e.currentTarget;
     let tagid = $(target).parent(".tag").attr("id");
     TagController.toggle(tagid);
-    showActiveTags();
+    $(target).toggleClass("active");
   }
 );
 
@@ -748,22 +719,27 @@ $(document).on(
 
 $(document).on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
+  ".pageSettings .section.tags .tagsList .tag .editButton",
   (e) => {
-    let target = e.currentTarget;
-    let tagid = $(target).parent(".tag").attr("id");
-    let tagname = $(target).siblings(".title")[0].innerHTML;
-    SimplePopups.list.clearTagPb.show([tagid, tagname]);
+    let tagid = $(e.currentTarget).parent(".tag").attr("id");
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
+    EditTagsPopup.show("edit", tagid, name);
   }
 );
 
 $(document).on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .editButton",
+  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
   (e) => {
     let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget).siblings(".title").text();
-    EditTagsPopup.show("edit", tagid, name);
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
+    EditTagsPopup.show("clearPb", tagid, name);
   }
 );
 
@@ -772,18 +748,16 @@ $(document).on(
   ".pageSettings .section.tags .tagsList .tag .removeButton",
   (e) => {
     let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget).siblings(".title").text();
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
     EditTagsPopup.show("remove", tagid, name);
   }
 );
 
 $("#resetSettingsButton").click((e) => {
-  if (confirm("Press OK to confirm.")) {
-    UpdateConfig.reset();
-    setTimeout(() => {
-      location.reload();
-    }, 1000);
-  }
+  SimplePopups.list.resetSettings.show();
 });
 
 $("#exportSettingsButton").click((e) => {
@@ -813,23 +787,25 @@ $(".pageSettings #updateAccountEmail").on("click", (e) => {
   SimplePopups.list.updateEmail.show();
 });
 
-$(".pageSettings .section.customBackgroundSize .inputAndButton .save").on(
+$(".pageSettings #updateAccountPassword").on("click", (e) => {
+  SimplePopups.list.updatePassword.show();
+});
+
+$(".pageSettings .section.customBackgroundSize .inputAndSave .save").on(
   "click",
   (e) => {
     UpdateConfig.setCustomBackground(
-      $(
-        ".pageSettings .section.customBackgroundSize .inputAndButton input"
-      ).val()
+      $(".pageSettings .section.customBackgroundSize .inputAndSave input").val()
     );
   }
 );
 
-$(".pageSettings .section.customBackgroundSize .inputAndButton input").keypress(
+$(".pageSettings .section.customBackgroundSize .inputAndSave input").keypress(
   (e) => {
     if (e.keyCode == 13) {
       UpdateConfig.setCustomBackground(
         $(
-          ".pageSettings .section.customBackgroundSize .inputAndButton input"
+          ".pageSettings .section.customBackgroundSize .inputAndSave input"
         ).val()
       );
     }

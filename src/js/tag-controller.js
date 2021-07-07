@@ -21,6 +21,24 @@ export function saveActiveToLocalStorage() {
   } catch (e) {}
 }
 
+export function clear(nosave = false) {
+  DB.getSnapshot().tags.forEach((tag) => {
+    tag.active = false;
+  });
+  TestUI.updateModesNotice();
+  if (!nosave) saveActiveToLocalStorage();
+}
+
+export function set(tagid, state, nosave = false) {
+  DB.getSnapshot().tags.forEach((tag) => {
+    if (tag.id === tagid) {
+      tag.active = state;
+    }
+  });
+  TestUI.updateModesNotice();
+  if (!nosave) saveActiveToLocalStorage();
+}
+
 export function toggle(tagid, nosave = false) {
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag._id === tagid) {

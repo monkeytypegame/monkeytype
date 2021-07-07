@@ -6,6 +6,7 @@ import * as OutOfFocus from "./out-of-focus";
 import * as TimerProgress from "./timer-progress";
 import * as LiveWpm from "./live-wpm";
 import * as LiveAcc from "./live-acc";
+import * as LiveBurst from "./live-burst";
 import * as Funbox from "./funbox";
 import * as Notifications from "./notifications";
 import * as ThemeController from "./theme-controller";
@@ -570,6 +571,24 @@ export function setMinAccCustom(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+//min burst
+export function setMinBurst(min, nosave) {
+  if (min == undefined) {
+    min = "off";
+  }
+  config.minBurst = min;
+  TestUI.updateModesNotice();
+  if (!nosave) saveToLocalStorage();
+}
+
+export function setMinBurstCustomSpeed(val, nosave) {
+  if (val == undefined || Number.isNaN(parseInt(val))) {
+    val = 100;
+  }
+  config.minBurstCustomSpeed = val;
+  if (!nosave) saveToLocalStorage();
+}
+
 //always show words history
 export function setAlwaysShowWordsHistory(val, nosave) {
   if (val == undefined) {
@@ -847,6 +866,29 @@ export function toggleLiveAcc() {
     LiveAcc.show();
   } else {
     LiveAcc.hide();
+  }
+  saveToLocalStorage();
+}
+
+export function setShowLiveBurst(live, nosave) {
+  if (live == null || live == undefined) {
+    live = false;
+  }
+  config.showLiveBurst = live;
+  if (live) {
+    LiveBurst.show();
+  } else {
+    LiveAcc.hide();
+  }
+  if (!nosave) saveToLocalStorage();
+}
+
+export function toggleShowLiveBurst() {
+  config.showLiveBurst = !config.showLiveBurst;
+  if (config.showLiveBurst) {
+    LiveBurst.show();
+  } else {
+    LiveBurst.hide();
   }
   saveToLocalStorage();
 }
@@ -1389,11 +1431,17 @@ export function setFontSize(fontSize, nosave) {
   $("#caret, #paceCaret").removeClass("size2");
   $("#words").removeClass("size3");
   $("#caret, #paceCaret").removeClass("size3");
+  $("#words").removeClass("size35");
+  $("#caret, #paceCaret").removeClass("size35");
+  $("#words").removeClass("size4");
+  $("#caret, #paceCaret").removeClass("size4");
 
   $("#miniTimerAndLiveWpm").removeClass("size125");
   $("#miniTimerAndLiveWpm").removeClass("size15");
   $("#miniTimerAndLiveWpm").removeClass("size2");
   $("#miniTimerAndLiveWpm").removeClass("size3");
+  $("#miniTimerAndLiveWpm").removeClass("size35");
+  $("#miniTimerAndLiveWpm").removeClass("size4");
 
   if (fontSize == 125) {
     $("#words").addClass("size125");
@@ -1411,6 +1459,14 @@ export function setFontSize(fontSize, nosave) {
     $("#words").addClass("size3");
     $("#caret, #paceCaret").addClass("size3");
     $("#miniTimerAndLiveWpm").addClass("size3");
+  } else if (fontSize == 35) {
+    $("#words").addClass("size34");
+    $("#caret, #paceCaret").addClass("size35");
+    $("#miniTimerAndLiveWpm").addClass("size35");
+  } else if (fontSize == 4) {
+    $("#words").addClass("size4");
+    $("#caret, #paceCaret").addClass("size4");
+    $("#miniTimerAndLiveWpm").addClass("size4");
   }
   if (!nosave) saveToLocalStorage();
 }
@@ -1540,6 +1596,7 @@ export function apply(configObj) {
     setSmoothLineScroll(configObj.smoothLineScroll, true);
     setShowLiveWpm(configObj.showLiveWpm, true);
     setShowLiveAcc(configObj.showLiveAcc, true);
+    setShowLiveBurst(configObj.showLiveBurst, true);
     setShowTimerProgress(configObj.showTimerProgress, true);
     setAlwaysShowDecimalPlaces(configObj.alwaysShowDecimalPlaces, true);
     setAlwaysShowWordsHistory(configObj.alwaysShowWordsHistory, true);
@@ -1559,6 +1616,8 @@ export function apply(configObj) {
     setPageWidth(configObj.pageWidth, true);
     setChartAccuracy(configObj.chartAccuracy, true);
     setChartStyle(configObj.chartStyle, true);
+    setMinBurst(configObj.minBurst, true);
+    setMinBurstCustomSpeed(configObj.minBurstCustomSpeed, true);
     setMinWpm(configObj.minWpm, true);
     setMinWpmCustomSpeed(configObj.minWpmCustomSpeed, true);
     setMinAcc(configObj.minAcc, true);
@@ -1760,10 +1819,7 @@ export function apply(configObj) {
 }
 
 export function reset() {
-  config = {
-    ...defaultConfig,
-  };
-  apply();
+  apply(defaultConfig);
   saveToLocalStorage();
 }
 
@@ -1783,7 +1839,7 @@ export function loadFromLocalStorage() {
     saveToLocalStorage(true);
     console.log("saving localStorage config");
   }
-  TestLogic.restart(false, true);
+  // TestLogic.restart(false, true);
   loadDone();
 }
 

@@ -74,10 +74,9 @@ node_modules/
 .idea
 
 #firebase
-serviceAccountKey*.json
-
 .firebaserc
 .firebaserc_copy
+serviceAccountKey*.json
 
 #generated files
 dist/

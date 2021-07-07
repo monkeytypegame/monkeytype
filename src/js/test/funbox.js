@@ -94,15 +94,25 @@ export async function activate(funbox) {
   if (funbox === undefined || funbox === null) {
     funbox = Config.funbox;
   }
-  if (Misc.getCurrentLanguage().ligatures) {
+
+  if (await Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
       );
-      activate("none", null);
+      setFunbox("none", null);
       return;
     }
+  }
+  if (Config.mode === "zen" && (funbox == "layoutfluid")) {
+    Notifications.add(
+      `Zen mode does not support the ${funbox} funbox`,
+      0
+    );
+    setFunbox("none", null);
+    TestLogic.restart();
+    return;
   }
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");

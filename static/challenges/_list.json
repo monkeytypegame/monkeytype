@@ -260,4 +260,8 @@
     "type": "customTime",
     "parameters": [3600]
   }
+  ,{
+    "name": "semimak",
+    "type": "special"
+  }
 ]
