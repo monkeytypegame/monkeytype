@@ -60,9 +60,11 @@ export async function initSnapshot() {
   snap.personalBests = userData.personalBests;
   snap.banned = userData.banned;
   snap.verified = userData.verified;
-  if (userData.globalStats) {
-    snap.globalStats = userData.globalStats;
-  }
+  snap.globalStats = {
+    time: userData.timeTyping,
+    started: userData.startedTests,
+    completed: userData.completedTests,
+  };
   snap.favouriteThemes =
     userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
   try {
