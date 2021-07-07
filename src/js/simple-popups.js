@@ -64,11 +64,11 @@ class SimplePopup {
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
-          if(input.type){
+          if (input.type) {
             el.find(".inputs").append(`
             <input type="${input.type}" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
             `);
-          }else{
+          } else {
             el.find(".inputs").append(`
             <input type="text" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
             `);
@@ -160,49 +160,50 @@ list.updateEmail = new SimplePopup(
   ],
   "",
   "Update",
-  (pass,previousEmail, newEmail) => {
+  (pass, previousEmail, newEmail) => {
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
-          user.email, 
-          pass
+        user.email,
+        pass
       );
       Loader.show();
-      user.reauthenticateWithCredential(credential).then(() => {
-
-      axiosInstance
-        .post("/updateEmail", {
-          uid: user.uid,
-          previousEmail: previousEmail,
-          newEmail: newEmail,
+      user
+        .reauthenticateWithCredential(credential)
+        .then(() => {
+          axiosInstance
+            .post("/updateEmail", {
+              uid: user.uid,
+              previousEmail: previousEmail,
+              newEmail: newEmail,
+            })
+            .then((data) => {
+              Loader.hide();
+              if (data.data.resultCode === 1) {
+                Notifications.add("Email updated", 0);
+                setTimeout(() => {
+                  AccountController.signOut();
+                }, 1000);
+              } else if (data.data.resultCode === -1) {
+                Notifications.add("Current email doesn't match", 0);
+              } else {
+                Notifications.add(
+                  "Something went wrong: " + JSON.stringify(data.data),
+                  -1
+                );
+              }
+            });
         })
-        .then((data) => {
+        .catch((e) => {
           Loader.hide();
-          if (data.data.resultCode === 1) {
-            Notifications.add("Email updated", 0);
-            setTimeout(() => {
-              AccountController.signOut();
-            }, 1000);
-          } else if (data.data.resultCode === -1) {
-            Notifications.add("Current email doesn't match", 0);
-          } else {
-            Notifications.add(
-              "Something went wrong: " + JSON.stringify(data.data),
-              -1
-            );
-          }
+          Notifications.add("Incorrect current password", -1);
         });
-      }).catch(e => {
-        Loader.hide();
-        Notifications.add("Incorrect current password", -1);
-      })
     } catch (e) {
       Notifications.add("Something went wrong: " + e, -1);
     }
   },
   () => {}
 );
-
 
 list.updatePassword = new SimplePopup(
   "updatePassword",
@@ -231,11 +232,11 @@ list.updatePassword = new SimplePopup(
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
-          user.email, 
-          previousPass
+        user.email,
+        previousPass
       );
-      if(newPass !== newPassConfirm){
-        Notifications.add("New passwords don't match",0);
+      if (newPass !== newPassConfirm) {
+        Notifications.add("New passwords don't match", 0);
         return;
       }
       Loader.show();
@@ -250,7 +251,6 @@ list.updatePassword = new SimplePopup(
   },
   () => {}
 );
-
 
 list.clearTagPb = new SimplePopup(
   "clearTagPb",
@@ -368,20 +368,21 @@ list.unlinkDiscord = new SimplePopup(
   "Unlink",
   () => {
     Loader.show();
-    CloudFunctions.unlinkDiscord({
-      uid: firebase.auth().currentUser.uid,
-    }).then((ret) => {
-      Loader.hide();
-      console.log(ret);
-      if (ret.data.status === 1) {
-        DB.getSnapshot().discordId = null;
-        Notifications.add("Accounts unlinked", 0);
-        Settings.updateDiscordSection();
-      } else {
-        Notifications.add("Something went wrong: " + ret.data.message, -1);
-        Settings.updateDiscordSection();
-      }
-    });
+    //todo rewrite to axios
+    // CloudFunctions.unlinkDiscord({
+    //   uid: firebase.auth().currentUser.uid,
+    // }).then((ret) => {
+    //   Loader.hide();
+    //   console.log(ret);
+    //   if (ret.data.status === 1) {
+    //     DB.getSnapshot().discordId = null;
+    //     Notifications.add("Accounts unlinked", 0);
+    //     Settings.updateDiscordSection();
+    //   } else {
+    //     Notifications.add("Something went wrong: " + ret.data.message, -1);
+    //     Settings.updateDiscordSection();
+    //   }
+    // });
   },
   () => {}
 );

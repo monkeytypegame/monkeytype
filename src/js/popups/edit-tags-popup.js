@@ -145,27 +145,28 @@ function apply() {
       });
   } else if (action === "clearPb") {
     //TODO: rewrite to axios
-    Loader.show();
-    CloudFunctions.clearTagPb({
-      uid: firebase.auth().currentUser.uid,
-      tagid: tagid,
-    }).then((e) => {
-      Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("PB cleared", 1);
-        DB.getSnapshot().tags.forEach((tag, index) => {
-          if (tag.id === tagid) {
-            tag.personalBests = {};
-          }
-        });
-        ResultTagsPopup.updateButtons();
-        Settings.update();
-        ResultFilters.updateTags();
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+    // Loader.show();
+    // CloudFunctions.clearTagPb({
+    //   uid: firebase.auth().currentUser.uid,
+    //   tagid: tagid,
+    // }).then((e) => {
+    //   Loader.hide();
+    //   let status = e.data.resultCode;
+    //   if (status === 1) {
+    //     Notifications.add("PB cleared", 1);
+    //     DB.getSnapshot().tags.forEach((tag, index) => {
+    //       if (tag.id === tagid) {
+    //         tag.personalBests = {};
+    //       }
+    //     });
+    //     ResultTagsPopup.updateButtons();
+    //     Settings.update();
+    //     ResultFilters.updateTags();
+    //   } else if (status < -1) {
+    //     Notifications.add("Unknown error: " + e.data.message, -1);
+    //   }
+    // });
+  }
 }
 
 $("#tagsWrapper").click((e) => {
