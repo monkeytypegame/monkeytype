@@ -1,15 +1,48 @@
 # Contributing
 
-## Technologies
+### **Table of Contents**
+<!-- TODO: check if all anchor links work -->
+- [Getting Started](#getting-started)
+- [Prerequisites](#prerequisites)
+    - [Prerequisite - Text Editor](#prerequisite---text-editor)
+    - [Prerequisite - Git ](#prerequisite---git )
+    - [Prerequisite - NodeJS](#prerequisite---nodejs)
+    - [Prerequisite - Firebase Setup](#prerequisite---firebase)
+- [Building and Running](#building-and-running-monkeytype)
+- [Standards and Guidelines](#standards-and-guidelines)
+    -[]()
+    -[]()
+    -[]()
+    -[]()
+- [Questions](#questions)
 
-- NodeJS < 14
-- Firebase
 
-## Prerequisite - Firebase Setup
 
+## Getting Started
+
+When contributing to Monkeytype, it's good to know our best practices, tips, and tricks. First, Monkeytype is written in JavaScript; thus we assume you are comfortable in JavaScript or have basic knowledge of it. We use Prettier to format our code. Our backend is in NodeJS and we use Firebase to store our user data. 
+
+
+### Prerequisites
+While most contributions don't require that you install dependancies, there are a few minimum requirements you will need to meet to be able to run the project(this is useful and almost always nessicary for tasks like creating features and fixing bugs, running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with stable internet connection, NodeJS with a version < 14 and Firebase, and a text editor.
+
+#### Prerequisite - Text Editor
+If you are not a developer and wish to contribute themes, new languages or quotes, having a text editor will make the process *much* easier. A popular and relativly light-weight editor is the free and open source [Visual Studio Code](https://code.visualstudio.com/) or VS Code for short from Microsoft. Once you have downloaded the binary for your operating system, run the installer and follow the prompts. You will be given some options, but enabling them is just preference. Once you have VS Code installed, you are ready to start contributing.
+
+#### Prerequisite - Git 
+Git is optional, but is one thing that is highly recommended. Monkeytype used the Git source control management system for its version control. Without Git, you will be limited to using GitHub's basic online editor for making commits, or will need to make changes and copy-paste them into GitHub. You also won't be able to create save points in your code that you can revert back to (`git revert [commit hash]`)Using Git allows you to make that process more seemless. Assuming you don't have experience with using a command line, I suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Note that using Git from the a Git client won't give you access to its full functionality. Once you have downloaded Sourcetree, run the installer. If you don't have Git installed and get the option to installed it in the Sourcetree installer, install it. Once you have completed that, you are one step closer to contributing your change. 
+
+#### Prerequisite - NodeJS
+Note that this section only covers the installation of NodeJS
+The installation process of NodeJS is fairly simple, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `xx.xx.x LTS`. Your operating system will be detected and the website will ask to save a binary relevant to your operating system. Run the binary and follow the installer. 
+
+#### Prerequisite - Firebase
+
+Note that you will need to create a Firebase account to ensure the further steps are successful.
+1. Create a Firebase account if you already haven't done so. 
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
 
-   - The project name doesn't really matter, but just name it `monkeytype`.
+   - The project name doesn't really matter, but the name `monkeytype` would be prefered.
    - Google Analytics is not necessary.
 
 1. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
@@ -48,18 +81,38 @@
    - Start in test mode
    - Select default location and enable
 
-## Building and Running
-<!-- https://en.wikipedia.org/wiki/Control-C#:~:text=In%20many%20command,to%20the%20user. -->
+### Building and Running Monkeytype
 
+Once you have completed the above steps, you are ready to build and run Monkeytype. 
 1. Run `npm install` in the project root directory to install dependencies.
 1. Run `npm run start:dev` to start a local dev server on port 5000. It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use <kbd>control c</kbd> to abort it.
    - Run `firebase use {your-project-id}` if you run into any errors for this.
 
-## Standards and Conventions
+### Standards and Guidelines
 
-1. Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically ran every time you `git commit` (if you've followed the above instructions properly).
-1. If you are unsure of the best practices and conventions of Javascript, please take a look at the [JavaScript Best Practices](https://www.w3schools.com/js/js_best_practices.asp) and [JavaScript Coding Conventions](https://www.w3schools.com/js/js_conventions.asp)
+Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically ran every time you `git commit` (if you've followed the above instructions properly).
+
+Following the guidelines below will increase your chance of getting your change accepted.
+
+#### Theme Guidelines
+<!-- TODO: add screenshots to provide examples for dos and don'ts -->
+- Make sure your theme is unique and a simmilar looking one is not already avaiable
+- The text color is either black or white (or very close to)
+- Your theme has been added to the `_list` file and the `textColor` property is the theme's main color
+- Your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disbled
+
+#### Language Guidelines
+- Do not include swear words
+- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
+- Be sure to add your language to the `_list` and `_groups` files
+- Make sure the number of words corresponds to the file name (for example: `languageName.json` is 200 words, `langugeName_1k.json` is 1000 words, and so on)
+
+#### Quote Guidelines
+- Do not include swear words
+- Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
+- Verify the `length` property is correct (length of the text in characters)
+- Verify the `id` property is incremented correctly
 
 ## Questions
 
-If you run into any problems, let me know on [GitHub](https://github.com/Miodec) or [Discord](https://discord.gg/monkeytype) in the `#development` channel.
+If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec) or [Discord](https://discord.gg/monkeytype) in the `#development` channel.
