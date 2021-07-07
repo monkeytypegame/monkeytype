@@ -339,7 +339,7 @@ function countChars() {
 }
 
 export function calculateStats() {
-  let testSeconds = TestStats.calculateTestSeconds();
+  let testSeconds = Misc.roundTo2(TestStats.calculateTestSeconds());
   let chars = countChars();
   let wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
