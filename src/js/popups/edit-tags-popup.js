@@ -144,7 +144,7 @@ function apply() {
         }
       });
   } else if (action === "clearPb") {
-    //rewrite to axios
+    //TODO: rewrite to axios
     Loader.show();
     CloudFunctions.clearTagPb({
       uid: firebase.auth().currentUser.uid,
