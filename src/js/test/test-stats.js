@@ -80,6 +80,7 @@ export function restart() {
       array: [],
     },
   };
+  // Don't reset weaknessScores, they should be kept across tests.
 }
 
 export let restartCount = 0;
