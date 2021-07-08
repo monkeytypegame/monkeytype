@@ -24,6 +24,8 @@ const configRouter = require("./api/routes/config");
 app.use("/config", configRouter);
 const resultRouter = require("./api/routes/result");
 app.use("/results", resultRouter);
+const presetRouter = require("./api/routes/preset");
+app.use("/presets", presetRouter);
 
 app.use(function (e, req, res, next) {
   console.log("Error", e);
