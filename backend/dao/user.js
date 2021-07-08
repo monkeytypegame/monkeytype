@@ -135,7 +135,12 @@ class UsersDAO {
       punctuation,
       rawWpm,
       wpm,
+      funbox,
     } = result;
+
+    if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+      return false;
+    }
 
     let pb = checkAndUpdatePb(
       user.personalBests,
