@@ -23,7 +23,7 @@ app.use("/user", userRouter);
 const configRouter = require("./api/routes/config");
 app.use("/config", configRouter);
 const resultRouter = require("./api/routes/result");
-app.use("/result", resultRouter);
+app.use("/results", resultRouter);
 
 app.use(function (e, req, res, next) {
   console.log("Error", e);

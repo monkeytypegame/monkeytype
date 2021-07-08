@@ -112,7 +112,7 @@ export async function getUserResults() {
     return true;
   } else {
     try {
-      let results = await axiosInstance.get("/result");
+      let results = await axiosInstance.get("/results");
       dbSnapshot.results = results.data;
       return true;
     } catch (e) {
