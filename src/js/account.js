@@ -24,19 +24,10 @@ export async function getDataAndInit() {
     await DB.initSnapshot();
   } catch (e) {
     AccountButton.loading(false);
-    let message = "";
 
-    if (e?.response?.data) {
-      message =
-        "Could not download user data: " +
-        e?.response?.data?.message +
-        " ErrorID: " +
-        e?.response?.data?.errorID;
-    } else {
-      message = "Could not parse user data: " + e.message;
-    }
+    let msg = e?.response?.data?.message ?? e.message;
+    Notifications.add("Failed to get user data: " + msg, -1);
 
-    Notifications.add(message, -1);
     $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
     if ($(".pageLoading").hasClass("active")) UI.changePage("");
