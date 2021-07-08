@@ -573,6 +573,16 @@ export async function init() {
           UpdateConfig.setPunctuation(false, true);
           UpdateConfig.setNumbers(false, true);
           randomWord = Misc.getASCII();
+        } else if (Config.funbox === "weakspot") {
+          let highScore = TestStats.weaknessScore(randomWord);
+          for (let i = 0; i < 20; i++) {
+            let newWord = wordset[Math.floor(Math.random() * wordset.length)];
+            let newScore = TestStats.weaknessScore(newWord);
+            if (newScore > highScore) {
+              randomWord = newWord;
+              highScore = newScore;
+            }
+          }
         }
 
         if (Config.punctuation) {

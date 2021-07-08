@@ -660,6 +660,7 @@ function handleAlpha(event) {
       );
     }
   }
+  TestStats.updateWeaknessScore(nextCharInWord, thisCharCorrect);
 
   if (thisCharCorrect) {
     Sound.playClick(Config.playSoundOnClick);
