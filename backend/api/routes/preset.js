@@ -1,18 +1,16 @@
-import { authenticateRequest } from "../../middlewares/auth";
-import PresetController from "../controllers/preset";
+const { authenticateRequest } = require("../../middlewares/auth");
+const PresetController = require("../controllers/preset");
 
 const { Router } = require("express");
 
 const router = Router();
 
-router.post("/presets/add", authenticateRequest, PresetController.addPreset);
+router.get("/", authenticateRequest, PresetController.getPresets);
 
-router.post("/presets/edit", authenticateRequest, PresetController.editPreset);
+router.post("/add", authenticateRequest, PresetController.addPreset);
 
-router.get(
-  "/presets/remove",
-  authenticateRequest,
-  PresetController.removePreset
-);
+router.post("/edit", authenticateRequest, PresetController.editPreset);
+
+router.post("/remove", authenticateRequest, PresetController.removePreset);
 
 module.exports = router;

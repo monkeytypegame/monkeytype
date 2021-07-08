@@ -8,7 +8,7 @@ import * as TagController from "./tag-controller";
 export function apply(id) {
   // console.log(DB.getSnapshot().presets);
   DB.getSnapshot().presets.forEach((preset) => {
-    if (preset._id == id) {
+    if (preset.id == id) {
       Config.apply(JSON.parse(JSON.stringify(preset.config)));
       TagController.clear(true);
       if (preset.config.tags) {

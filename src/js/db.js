@@ -95,6 +95,18 @@ export async function initSnapshot() {
       }
     });
 
+    let presetsData = await axiosInstance.get("/presets");
+    snap.presets = presetsData.data;
+    snap.presets = snap.presets.sort((a, b) => {
+      if (a.name > b.name) {
+        return 1;
+      } else if (a.name < b.name) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+
     dbSnapshot = snap;
     loadTags(dbSnapshot.tags);
     return dbSnapshot;

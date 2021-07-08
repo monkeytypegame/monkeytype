@@ -4,6 +4,7 @@ import * as Notifications from "./notifications";
 import * as Settings from "./settings";
 import * as Config from "./config";
 import axiosInstance from "./axios-instance";
+import { config } from "dotenv";
 
 export function show(action, id, name) {
   if (action === "add") {
@@ -63,10 +64,11 @@ function hide() {
   }
 }
 
-function apply() {
+async function apply() {
   let action = $("#presetWrapper #presetEdit").attr("action");
   let inputVal = $("#presetWrapper #presetEdit input").val();
   let presetid = $("#presetWrapper #presetEdit").attr("presetid");
+  let override = $("#presetWrapper #presetEdit label input").prop("checked");
   let configChanges = Config.getConfigChanges();
   let activeTagIds = [];
   DB.getSnapshot().tags.forEach((tag) => {
@@ -78,80 +80,126 @@ function apply() {
   hide();
   if (action === "add") {
     Loader.show();
-    axiosInstance
-      .post("/addPreset", {
-        obj: {
-          name: inputVal,
-          config: configChanges,
-        },
-      })
-      .then((e) => {
-        console.log(e);
-        console.log("Should be ready to go away");
-        Loader.hide();
-        let status = e.data.resultCode;
-        if (status === 1) {
-          Notifications.add("Preset added", 1, 2);
-          DB.getSnapshot().presets.push({
-            name: inputVal,
-            config: configChanges,
-            _id: e.data.id,
-          });
-          Settings.update();
-        } else if (status === -1) {
-          Notifications.add("Invalid preset name", 0);
-        } else if (status === -2) {
-          Notifications.add("You can't add any more presets", 0);
-        } else if (status < -1) {
-          Notifications.add("Unknown error: " + e.data.message, -1);
-        }
-      });
-  } else if (action === "edit") {
-    Loader.show();
-    axiosInstance
-      .post("/editPreset", {
-        presetName: inputVal,
-        presetid: presetid,
+    let response;
+    try {
+      response = await axiosInstance.post("/presets/add", {
+        name: inputVal,
         config: configChanges,
-      })
-      .then((e) => {
-        Loader.hide();
-        let status = e.data.resultCode;
-        if (status === 1) {
-          Notifications.add("Preset updated", 1);
-          let preset = DB.getSnapshot().presets.filter(
-            (preset) => preset._id == presetid
-          )[0];
-          preset.name = inputVal;
-          preset.config = configChanges;
-          Settings.update();
-        } else if (status === -1) {
-          Notifications.add("Invalid preset name", 0);
-        } else if (status < -1) {
-          Notifications.add("Unknown error: " + e.data.message, -1);
-        }
       });
-  } else if (action === "remove") {
+    } catch (e) {
+      Loader.hide();
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to add preset: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Preset added", 1, 2);
+      DB.getSnapshot().presets.push({
+        name: inputVal,
+        config: configChanges,
+        id: response.data.id,
+      });
+      Settings.update();
+    }
+  } else if (action === "edit") {
+    // Loader.show();
+    // axiosInstance
+    //   .post("/editPreset", {
+    //     presetName: inputVal,
+    //     presetid: presetid,
+    //     config: configChanges,
+    //   })
+    //   .then((e) => {
+    //     Loader.hide();
+    //     let status = e.data.resultCode;
+    //     if (status === 1) {
+    //       Notifications.add("Preset updated", 1);
+    //       let preset = DB.getSnapshot().presets.filter(
+    //         (preset) => preset._id == presetid
+    //       )[0];
+    //       preset.name = inputVal;
+    //       preset.config = configChanges;
+    //       Settings.update();
+    //     } else if (status === -1) {
+    //       Notifications.add("Invalid preset name", 0);
+    //     } else if (status < -1) {
+    //       Notifications.add("Unknown error: " + e.data.message, -1);
+    //     }
+    //   });
     Loader.show();
-    axiosInstance
-      .post("/removePreset", {
-        presetid,
-      })
-      .then((e) => {
-        Loader.hide();
-        let status = e.data.resultCode;
-        if (status === 1) {
-          Notifications.add("Preset removed", 1);
-          DB.getSnapshot().presets.forEach((preset, index) => {
-            if (preset._id === presetid) {
-              DB.getSnapshot().presets.splice(index, 1);
-            }
-          });
-          Settings.update();
-        } else if (status < -1) {
-          Notifications.add("Unknown error: " + e.data.message, -1);
+    let response;
+    try {
+      response = await axiosInstance.post("/presets/edit", {
+        name: inputVal,
+        id: presetid,
+        config: override === true ? configChanges : null,
+      });
+    } catch (e) {
+      Loader.hide();
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to edit preset: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Preset updated", 1);
+      let preset = DB.getSnapshot().presets.filter(
+        (preset) => preset.id == presetid
+      )[0];
+      preset.name = inputVal;
+      if (override === true) preset.config = configChanges;
+      Settings.update();
+    }
+  } else if (action === "remove") {
+    // Loader.show();
+    // axiosInstance
+    //   .post("/removePreset", {
+    //     presetid,
+    //   })
+    //   .then((e) => {
+    //     Loader.hide();
+    //     let status = e.data.resultCode;
+    //     if (status === 1) {
+    //       Notifications.add("Preset removed", 1);
+    //       DB.getSnapshot().presets.forEach((preset, index) => {
+    //         if (preset.id === presetid) {
+    //           DB.getSnapshot().presets.splice(index, 1);
+    //         }
+    //       });
+    //       Settings.update();
+    //     } else if (status < -1) {
+    //       Notifications.add("Unknown error: " + e.data.message, -1);
+    //     }
+    //   });
+    Loader.show();
+    let response;
+    try {
+      response = await axiosInstance.post("/presets/remove", {
+        id: presetid,
+      });
+    } catch (e) {
+      Loader.hide();
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to remove preset: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Preset removed", 1);
+      DB.getSnapshot().presets.forEach((preset, index) => {
+        if (preset.id === presetid) {
+          DB.getSnapshot().presets.splice(index, 1);
         }
       });
+      Settings.update();
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-const PresetDAO = require("../../dao/presetDAO");
+const PresetDAO = require("../../dao/preset");
 const {
   isTagPresetNameValid,
   validateConfig,
@@ -6,6 +6,16 @@ const {
 const MonkeyError = require("../../handlers/error");
 
 class PresetController {
+  static async getPresets(req, res, next) {
+    try {
+      const { uid } = req.decodedToken;
+      let presets = await PresetDAO.getPresets(uid);
+      return res.status(200).json(presets);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
   static async addPreset(req, res, next) {
     try {
       const { name, config } = req.body;
@@ -13,8 +23,8 @@ class PresetController {
       if (!isTagPresetNameValid(name))
         throw new MonkeyError(400, "Invalid preset name.");
       validateConfig(config);
-      await PresetDAO.addPreset(uid, name, config);
-      return res.sendStatus(200);
+      let preset = await PresetDAO.addPreset(uid, name, config);
+      return res.status(200).json(preset);
     } catch (e) {
       return next(e);
     }
@@ -26,7 +36,7 @@ class PresetController {
       const { uid } = req.decodedToken;
       if (!isTagPresetNameValid(name))
         throw new MonkeyError(400, "Invalid preset name.");
-      validateConfig(config);
+      if (config) validateConfig(config);
       await PresetDAO.editPreset(uid, id, name, config);
       return res.sendStatus(200);
     } catch (e) {
