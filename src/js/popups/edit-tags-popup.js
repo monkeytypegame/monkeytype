@@ -89,7 +89,7 @@ async function apply() {
     } else {
       Notifications.add("Tag added", 1);
       DB.getSnapshot().tags.push({
-        name: inputVal,
+        name: response.data.name,
         id: response.data.id,
       });
       ResultTagsPopup.updateButtons();
