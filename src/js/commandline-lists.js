@@ -232,7 +232,7 @@ export function updateTagCommands() {
         display: dis,
         sticky: true,
         exec: () => {
-          TagController.toggle(tag._id);
+          TagController.toggle(tag.id);
           TestUI.updateModesNotice();
           let txt = tag.name;
 
@@ -250,7 +250,7 @@ export function updateTagCommands() {
             );
           } else {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
             ).html(txt);
           }
         },

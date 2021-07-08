@@ -242,7 +242,7 @@ function loadMoreLines(lineIndex) {
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
         DB.getSnapshot().tags.forEach((snaptag) => {
-          if (tag === snaptag._id) {
+          if (tag === snaptag.id) {
             tagNames += snaptag.name + ", ";
           }
         });
