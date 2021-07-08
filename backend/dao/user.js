@@ -53,9 +53,14 @@ class UsersDAO {
   }
 
   static async addTag(uid, name) {
-    return await mongoDB()
+    let id = uuid.v4();
+    await mongoDB()
       .collection("users")
-      .updateOne({ uid }, { $push: { tags: { id: uuid.v4(), name } } });
+      .updateOne({ uid }, { $push: { tags: { id, name } } });
+    return {
+      id,
+      name,
+    };
   }
 
   static async getTags(uid) {
