@@ -28,8 +28,7 @@ export function setSnapshot(newSnapshot) {
 
 export async function initSnapshot() {
   //send api request with token that returns tags, presets, and data needed for snap
-  if (firebase.auth().currentUser == null) return false;
-  let snap = {
+  let defaultSnap = {
     results: undefined,
     personalBests: {},
     name: undefined,
@@ -55,35 +54,54 @@ export async function initSnapshot() {
       completed: 0,
     },
   };
-  let userData = await axiosInstance.get("/user");
-  userData = userData.data;
-  snap.name = userData.name;
-  snap.personalBests = userData.personalBests;
-  snap.banned = userData.banned;
-  snap.verified = userData.verified;
-  snap.globalStats = {
-    time: userData.timeTyping,
-    started: userData.startedTests,
-    completed: userData.completedTests,
-  };
-  snap.favouriteThemes =
-    userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
+  let snap = defaultSnap;
   try {
-    if (userData.lbMemory.time15 !== undefined) {
-      snap.lbMemory.time15 = userData.lbMemory.time15;
-    }
-    if (userData.lbMemory.time60 !== undefined) {
-      snap.lbMemory.time60 = userData.lbMemory.time60;
-    }
-  } catch {}
+    if (firebase.auth().currentUser == null) return false;
+    let userData = await axiosInstance.get("/user");
+    userData = userData.data;
+    snap.name = userData.name;
+    snap.personalBests = userData.personalBests;
+    snap.banned = userData.banned;
+    snap.verified = userData.verified;
+    snap.globalStats = {
+      time: userData.timeTyping,
+      started: userData.startedTests,
+      completed: userData.completedTests,
+    };
+    snap.favouriteThemes =
+      userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
+    try {
+      if (userData.lbMemory.time15 !== undefined) {
+        snap.lbMemory.time15 = userData.lbMemory.time15;
+      }
+      if (userData.lbMemory.time60 !== undefined) {
+        snap.lbMemory.time60 = userData.lbMemory.time60;
+      }
+    } catch {}
 
-  let configData = await axiosInstance.get("/config");
-  configData = configData.data;
-  snap.config = configData.config;
+    let configData = await axiosInstance.get("/config");
+    configData = configData.data;
+    snap.config = configData.config;
 
-  dbSnapshot = snap;
-  loadTags(dbSnapshot.tags);
-  return dbSnapshot;
+    let tagsData = await axiosInstance.get("/user/tags");
+    snap.tags = tagsData.data;
+    snap.tags = snap.tags.sort((a, b) => {
+      if (a.name > b.name) {
+        return 1;
+      } else if (a.name < b.name) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+
+    dbSnapshot = snap;
+    loadTags(dbSnapshot.tags);
+    return dbSnapshot;
+  } catch (e) {
+    dbSnapshot = defaultSnap;
+    throw e;
+  }
 }
 
 export async function getUserResults() {
