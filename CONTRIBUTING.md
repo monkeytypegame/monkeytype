@@ -23,13 +23,13 @@ When contributing to Monkeytype, it's good to know our best practices, tips, and
 
 
 ### Prerequisites
-While most contributions don't require that you install dependancies, there are a few minimum requirements you will need to meet to be able to run the project(this is useful and almost always nessicary for tasks like creating features and fixing bugs, running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with stable internet connection, NodeJS with a version < 14 and Firebase, and a text editor.
+While most contributions don't require that you install dependencies, there are a few minimum requirements you will need to meet to be able to run the project(this is useful and almost always necessary for tasks like creating features and fixing bugs, running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, NodeJS with a version < 14 and Firebase, and a text editor.
 
 #### Prerequisite - Text Editor
-If you are not a developer and wish to contribute themes, new languages or quotes, having a text editor will make the process *much* easier. A popular and relativly light-weight editor is the free and open source [Visual Studio Code](https://code.visualstudio.com/) or VS Code for short from Microsoft. Once you have downloaded the binary for your operating system, run the installer and follow the prompts. You will be given some options, but enabling them is just preference. Once you have VS Code installed, you are ready to start contributing.
+If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make the process *much* easier. A popular and relatively lightweight editor is the free and open-source [Visual Studio Code](https://code.visualstudio.com/) or VS Code for short from Microsoft. Once you have downloaded the binary for your operating system, run the installer and follow the prompts. You will be given some options, but enabling them is just preference. Once you have VS Code installed, you are ready to start contributing.
 
 #### Prerequisite - Git 
-Git is optional, but is one thing that is highly recommended. Monkeytype used the Git source control management system for its version control. Without Git, you will be limited to using GitHub's basic online editor for making commits, or will need to make changes and copy-paste them into GitHub. You also won't be able to create save points in your code that you can revert back to (`git revert [commit hash]`)Using Git allows you to make that process more seemless. Assuming you don't have experience with using a command line, I suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Note that using Git from the a Git client won't give you access to its full functionality. Once you have downloaded Sourcetree, run the installer. If you don't have Git installed and get the option to installed it in the Sourcetree installer, install it. Once you have completed that, you are one step closer to contributing your change. 
+Git is optional but is one thing that is highly recommended. Monkeytype used the Git source control management system for its version control. Without Git, you will be limited to using GitHub's basic online editor for making commits or will need to make changes and copy-paste them into GitHub. You also won't be able to create save points in your code that you can revert to (`git revert [commit hash]`)Using Git allows you to make that process more seamless. Assuming you don't have experience with using a command line, I suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Note that using Git from a Git client won't give you access to its full functionality. Once you have downloaded Sourcetree, run the installer. If you don't have Git installed and get the option to install it in the Sourcetree installer, install it. Once you have completed that, you are one step closer to contributing your change. 
 
 #### Prerequisite - NodeJS
 Note that this section only covers the installation of NodeJS
@@ -41,7 +41,7 @@ Note that you will need to create a Firebase account to ensure the further steps
 1. Create a Firebase account if you already haven't done so. 
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
 
-   - The project name doesn't really matter, but the name `monkeytype` would be prefered.
+   - The project name doesn't matter, but the name `monkeytype` would be preferred.
    - Google Analytics is not necessary.
 
 1. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
@@ -70,7 +70,7 @@ Note that you will need to create a Firebase account to ensure the further steps
 1. Enable Firebase Authentication
 
    - In the Firebase console, go to Authentication
-   - Click on `Email/Password`, enable it and save
+   - Click on `Email/Password`, enable it, and save
    - Click on `Google`, add a support email and save
 
 1. Enable Firebase Firestore
@@ -89,16 +89,16 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 
 ### Standards and Guidelines
 
-Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which is automatically ran every time you `git commit` (if you've followed the above instructions properly).
+Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you `git commit` (if you've followed the above instructions properly).
 
 Following the guidelines below will increase your chance of getting your change accepted.
 
 #### Theme Guidelines
 <!-- TODO: add screenshots to provide examples for dos and don'ts -->
-- Make sure your theme is unique and a simmilar looking one is not already avaiable
+- Make sure your theme is unique and a similar looking one is not already available
 - The text color is either black or white (or very close to)
 - Your theme has been added to the `_list` file and the `textColor` property is the theme's main color
-- Your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disbled
+- Your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
 
 #### Language Guidelines
 - Do not include swear words
