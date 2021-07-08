@@ -27,7 +27,7 @@ app.use("/result", resultRouter);
 
 app.use(function (e, req, res, next) {
   console.log("Error", e);
-  let monkeyError = new MonkeyError(e.status, undefined, e.stack);
+  let monkeyError = new MonkeyError(e.status, e.message, e.stack);
   return res.status(e.status || 500).json(monkeyError);
 });
 
