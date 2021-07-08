@@ -1,6 +1,7 @@
 const express = require("express");
 const { config } = require("dotenv");
 const path = require("path");
+const MonkeyError = require("./handlers/error");
 config({ path: path.join(__dirname, ".env") });
 
 const cors = require("cors");
@@ -26,7 +27,8 @@ app.use("/result", resultRouter);
 
 app.use(function (e, req, res, next) {
   console.log("Error", e);
-  return res.status(e.status || 500).json(e || {});
+  let monkeyError = new MonkeyError(e.status, undefined, e.stack);
+  return res.status(e.status || 500).json(monkeyError);
 });
 
 app.listen(PORT, async () => {

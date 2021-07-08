@@ -1,19 +1,11 @@
 const uuid = require("uuid");
 
 class MonkeyError {
-  status = 500;
-  message = "Internal Server Error";
-  errorID = "";
-
-  constructor(status, message, stack = null) {
-    this.status = status;
-    this.message =
-      process.env.MODE === "DEVELOPMENT"
-        ? stack
-          ? String(stack)
-          : message
-        : message;
+  constructor(status, message = "Internal Server Error", stack = null) {
+    this.status = status ?? 500;
     this.errorID = uuid.v4();
+    this.message =
+      process.env.MODE === "dev" ? (stack ? String(stack) : message) : message;
     console.log(`ErrorID: ${this.errorID} logged...`);
   }
 }
