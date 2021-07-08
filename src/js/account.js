@@ -19,143 +19,146 @@ import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
 import axiosInstance from "./axios-instance";
 
-export function getDataAndInit() {
-  DB.initSnapshot()
-    .then(async (e) => {
-      let snap = DB.getSnapshot();
-      $("#menu .icon-button.account .text").text(snap.name);
-      if (snap === null) {
-        throw "Missing db snapshot. Client likely could not connect to the backend.";
-      }
-      let user = firebase.auth().currentUser;
-      if (snap.name === undefined) {
-        //verify username
-        if (Misc.isUsernameValid(user.name)) {
-          //valid, just update
-          snap.name = user.name;
-          DB.setSnapshot(snap);
-          DB.updateName(user.uid, user.name);
-        } else {
-          //invalid, get new
-          // Notifications.add("Invalid name", 0);
-          let promptVal = null;
-          let cdnVal = undefined;
+export async function getDataAndInit() {
+  try {
+    await DB.initSnapshot();
+  } catch (e) {
+    AccountButton.loading(false);
+    Notifications.add(
+      "Could not download user data: " +
+        e.response.data.message +
+        " ErrorID: " +
+        e.response.data.errorID,
+      -1
+    );
+    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
+    $("#top #menu .account").css("opacity", 1);
+    if ($(".pageLoading").hasClass("active")) UI.changePage("");
+    return;
+  }
+  let snap = DB.getSnapshot();
+  $("#menu .icon-button.account .text").text(snap.name);
+  // if (snap === null) {
+  //   throw "Missing db snapshot. Client likely could not connect to the backend.";
+  // }
+  let user = firebase.auth().currentUser;
+  if (snap.name === undefined) {
+    //verify username
+    if (Misc.isUsernameValid(user.name)) {
+      //valid, just update
+      snap.name = user.name;
+      DB.setSnapshot(snap);
+      DB.updateName(user.uid, user.name);
+    } else {
+      //invalid, get new
+      // Notifications.add("Invalid name", 0);
+      let promptVal = null;
+      let cdnVal = undefined;
 
-          while (
-            promptVal === null ||
-            cdnVal === undefined ||
-            cdnVal.data.status < 0
-          ) {
-            promptVal = prompt(
-              "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
-            );
-            axiosInstance
-              .post("/updateName", {
-                name: promptVal,
-              })
-              .then((cdnVal) => {
-                if (cdnVal.data.status === 1) {
-                  alert("Name updated", 1);
-                  location.reload();
-                } else if (cdnVal.data.status < 0) {
-                  alert(cdnVal.data.message, 0);
-                }
-              });
-          }
-        }
-      }
-      // if($(".pageAccount").hasClass('active')) update();
-      if ($(".pageLogin").hasClass("active")) UI.changePage("account");
-      if (!UpdateConfig.changedBeforeDb) {
-        if (Config.localStorageConfig === null) {
-          AccountButton.loading(false);
-          UpdateConfig.apply(DB.getSnapshot().config);
-          Settings.update();
-          UpdateConfig.saveToLocalStorage(true);
-          TestLogic.restart(false, true);
-        } else if (DB.getSnapshot().config !== undefined) {
-          //loading db config, keep for now
-          let configsDifferent = false;
-          Object.keys(Config).forEach((key) => {
-            if (!configsDifferent) {
-              try {
-                if (key !== "resultFilters") {
-                  if (Array.isArray(Config[key])) {
-                    Config[key].forEach((arrval, index) => {
-                      if (arrval != DB.getSnapshot().config[key][index]) {
-                        configsDifferent = true;
-                        console.log(
-                          `.config is different: ${arrval} != ${
-                            DB.getSnapshot().config[key][index]
-                          }`
-                        );
-                      }
-                    });
-                  } else {
-                    if (Config[key] != DB.getSnapshot().config[key]) {
-                      configsDifferent = true;
-                      console.log(
-                        `..config is different ${key}: ${Config[key]} != ${
-                          DB.getSnapshot().config[key]
-                        }`
-                      );
-                    }
-                  }
-                }
-              } catch (e) {
-                console.log(e);
-                configsDifferent = true;
-                console.log(`...config is different: ${e.message}`);
-              }
+      while (
+        promptVal === null ||
+        cdnVal === undefined ||
+        cdnVal.data.status < 0
+      ) {
+        promptVal = prompt(
+          "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
+        );
+        axiosInstance
+          .post("/updateName", {
+            name: promptVal,
+          })
+          .then((cdnVal) => {
+            if (cdnVal.data.status === 1) {
+              alert("Name updated", 1);
+              location.reload();
+            } else if (cdnVal.data.status < 0) {
+              alert(cdnVal.data.message, 0);
             }
           });
-          if (configsDifferent) {
-            console.log("applying config from db");
-            AccountButton.loading(false);
-            UpdateConfig.apply(DB.getSnapshot().config);
-            Settings.update();
-            UpdateConfig.saveToLocalStorage(true);
-            if ($(".page.pageTest").hasClass("active")) {
-              TestLogic.restart(false, true);
+      }
+    }
+  }
+  // if($(".pageAccount").hasClass('active')) update();
+  if ($(".pageLogin").hasClass("active")) UI.changePage("account");
+  if (!UpdateConfig.changedBeforeDb) {
+    if (Config.localStorageConfig === null) {
+      AccountButton.loading(false);
+      UpdateConfig.apply(DB.getSnapshot().config);
+      Settings.update();
+      UpdateConfig.saveToLocalStorage(true);
+      TestLogic.restart(false, true);
+    } else if (DB.getSnapshot().config !== undefined) {
+      //loading db config, keep for now
+      let configsDifferent = false;
+      Object.keys(Config).forEach((key) => {
+        if (!configsDifferent) {
+          try {
+            if (key !== "resultFilters") {
+              if (Array.isArray(Config[key])) {
+                Config[key].forEach((arrval, index) => {
+                  if (arrval != DB.getSnapshot().config[key][index]) {
+                    configsDifferent = true;
+                    console.log(
+                      `.config is different: ${arrval} != ${
+                        DB.getSnapshot().config[key][index]
+                      }`
+                    );
+                  }
+                });
+              } else {
+                if (Config[key] != DB.getSnapshot().config[key]) {
+                  configsDifferent = true;
+                  console.log(
+                    `..config is different ${key}: ${Config[key]} != ${
+                      DB.getSnapshot().config[key]
+                    }`
+                  );
+                }
+              }
             }
-            DB.saveConfig(Config);
+          } catch (e) {
+            console.log(e);
+            configsDifferent = true;
+            console.log(`...config is different: ${e.message}`);
           }
         }
-        UpdateConfig.setDbConfigLoaded(true);
-      } else {
+      });
+      if (configsDifferent) {
+        console.log("applying config from db");
         AccountButton.loading(false);
-      }
-      if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-        if (!TestLogic.active) {
-          PaceCaret.init(true);
+        UpdateConfig.apply(DB.getSnapshot().config);
+        Settings.update();
+        UpdateConfig.saveToLocalStorage(true);
+        if ($(".page.pageTest").hasClass("active")) {
+          TestLogic.restart(false, true);
         }
+        DB.saveConfig(Config);
       }
-      if (
-        $(".pageLogin").hasClass("active") ||
-        window.location.pathname === "/account"
-      ) {
-        UI.changePage("account");
-      }
-      ThemePicker.refreshButtons();
-      AccountButton.loading(false);
-      ResultFilters.updateTags();
-      CommandlineLists.updateTagCommands();
-      TagController.loadActiveFromLocalStorage();
-      ResultTagsPopup.updateButtons();
-      Settings.showAccountSection();
-      UI.setPageTransition(false);
-      if ($(".pageLoading").hasClass("active")) UI.changePage("");
-    })
-    .catch((e) => {
-      AccountButton.loading(false);
-      console.error(e);
-      Notifications.add(
-        "Error downloading user data. Client likely could not connect to the backend  - refresh to try again. If error persists try clearing your cache and website data or contact Miodec.",
-        -1
-      );
-      $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
-      $("#top #menu .account").css("opacity", 1);
-    });
+    }
+    UpdateConfig.setDbConfigLoaded(true);
+  } else {
+    AccountButton.loading(false);
+  }
+  if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
+    if (!TestLogic.active) {
+      PaceCaret.init(true);
+    }
+  }
+  if (
+    $(".pageLogin").hasClass("active") ||
+    window.location.pathname === "/account"
+  ) {
+    UI.changePage("account");
+  }
+  ThemePicker.refreshButtons();
+  AccountButton.loading(false);
+  ResultFilters.updateTags();
+  CommandlineLists.updateTagCommands();
+  TagController.loadActiveFromLocalStorage();
+  ResultTagsPopup.updateButtons();
+  Settings.showAccountSection();
+  UI.setPageTransition(false);
+  if ($(".pageLoading").hasClass("active")) UI.changePage("");
 }
 
 let filteredResults = [];
