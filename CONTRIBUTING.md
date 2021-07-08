@@ -10,10 +10,9 @@
     - [Prerequisite - Firebase Setup](#prerequisite---firebase)
 - [Building and Running](#building-and-running-monkeytype)
 - [Standards and Guidelines](#standards-and-guidelines)
-    -[]()
-    -[]()
-    -[]()
-    -[]()
+    - [Theme Guidelines](#theme-guidelines)
+    - [Language Guidelines](#language-guidelines)
+    - [Quote Guidelines](#quote-guidelines)
 - [Questions](#questions)
 
 
