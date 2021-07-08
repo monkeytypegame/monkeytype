@@ -90,7 +90,7 @@ async function apply() {
       Notifications.add("Tag added", 1);
       DB.getSnapshot().tags.push({
         name: inputVal,
-        _id: response.data._id,
+        id: response.data.id,
       });
       ResultTagsPopup.updateButtons();
       Settings.update();
