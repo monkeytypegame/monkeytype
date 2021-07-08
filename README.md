@@ -11,7 +11,7 @@
 
 # About
 
-Monkeytype is a minimalistic, customisable typing test, featuring many test modes, an account system to save your typing speed history and user-configurable features like themes, sounds, a smooth caret and more.
+Monkeytype is a minimalistic, customizable typing test, featuring many test modes, an account system to save your typing speed history, and user-configurable features like themes, sounds, a smooth caret, and more.
 
 # Features
 
@@ -30,7 +30,7 @@ Monkeytype is a minimalistic, customisable typing test, featuring many test mode
 
 # Discord bot
 
-On the [monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to autoassign roles on our server. You can find its code over at https://github.com/Miodec/monkey-bot
+On the [monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to auto-assign roles on our server. You can find its code over at https://github.com/Miodec/monkey-bot
 
 # Bug report or Feature request
 
@@ -48,7 +48,7 @@ Before contributing to this repository please carefully read and understand the 
 
 [Montydrei](https://www.reddit.com/user/montydrei) for the name suggestion.
 
-Everyone who provided valuable feedback on the [original reddit post](https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/) for the prototype of this website.
+Everyone who provided valuable feedback on the [original Reddit post](https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/) for the prototype of this website.
 
 All the [contributors](https://github.com/Miodec/monkeytype/graphs/contributors) that have helped with implementing various features, adding themes, fixing bugs, and more.
 
