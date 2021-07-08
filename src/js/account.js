@@ -24,13 +24,19 @@ export async function getDataAndInit() {
     await DB.initSnapshot();
   } catch (e) {
     AccountButton.loading(false);
-    Notifications.add(
-      "Could not download user data: " +
-        e.response.data.message +
+    let message = "";
+
+    if (e?.response?.data) {
+      message =
+        "Could not download user data: " +
+        e?.response?.data?.message +
         " ErrorID: " +
-        e.response.data.errorID,
-      -1
-    );
+        e?.response?.data?.errorID;
+    } else {
+      message = "Could not parse user data: " + e.message;
+    }
+
+    Notifications.add(message, -1);
     $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
     if ($(".pageLoading").hasClass("active")) UI.changePage("");
