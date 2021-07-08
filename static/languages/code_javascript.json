@@ -40,7 +40,7 @@
     "isNaN()",
     "Object.is()",
     "parseInt()",
-    "parseFloat(),
+    "parseFloat()",
     "includes()",
     "startsWith()",
     "endsWith()",
