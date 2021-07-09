@@ -4,6 +4,8 @@ const {
   isUsernameValid,
   isTagPresetNameValid,
 } = require("../../handlers/validation");
+const MonkeyError = require("../../handlers/error");
+const fetch = require("node-fetch");
 
 // import UsersDAO from "../../dao/user";
 // import BotDAO from "../../dao/bot";
@@ -78,11 +80,18 @@ class UserController {
       const { uid } = req.decodedToken;
       let discordFetch = await fetch("https://discord.com/api/users/@me", {
         headers: {
-          authorization: `${req.tokenType} ${req.accessToken}`,
+          authorization: `${req.body.data.tokenType} ${req.body.data.accessToken}`,
         },
       });
       discordFetch = await discordFetch.json();
       const did = discordFetch.id;
+      if (!did) {
+        throw new MonkeyError(
+          500,
+          "Could not get Discord account info",
+          "did is undefined"
+        );
+      }
       let user;
       try {
         user = await UsersDAO.getUserByDiscordId(did);
@@ -90,13 +99,27 @@ class UserController {
         user = null;
       }
       if (user !== null) {
-        return next(
+        throw new MonkeyError(
+          400,
           "This Discord account is already linked to a different account"
         );
       }
       await UsersDAO.linkDiscord(uid, did);
       await BotDAO.linkDiscord(uid, did);
-      return res.sendStatus(200);
+      return res.status(200).json({
+        message: "Discord account linked",
+        did,
+      });
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  static async unlinkDiscord(req, res, next) {
+    try {
+      const { uid } = req.decodedToken;
+      await UsersDAO.unlinkDiscord(uid);
+      return res.status(200).send();
     } catch (e) {
       return next(e);
     }

@@ -8,7 +8,7 @@ let mappedRoutes = {
   "/settings": "pageSettings",
   "/about": "pageAbout",
   "/account": "pageAccount",
-  "/verify": "pageTest",
+  "/verify": "pageLoading",
 };
 
 export function handleInitialPageClasses(pathname) {

@@ -2,27 +2,32 @@ import * as Notifications from "./notifications";
 import * as Settings from "./settings";
 import * as DB from "./db";
 import axiosInstance from "./axios-instance";
+import * as Loader from "./loader";
 
 export let data = null;
 export function set(val) {
   data = val;
 }
 
-export function verify(user) {
-  Notifications.add("Verifying", 0, 3);
+export async function verify(user) {
+  Notifications.add("Linking Discord account", 0, 3);
+  Loader.show();
   data.uid = user.uid;
-
-  axiosInstance
-    .post("/verifyDiscord", {
-      data: data,
-    })
-    .then((response) => {
-      if (response.data.status === 1) {
-        Notifications.add(response.data.message, 1);
-        DB.getSnapshot().discordId = response.data.did;
-        Settings.updateDiscordSection();
-      } else {
-        Notifications.add(response.data.message, -1);
-      }
-    });
+  let response;
+  try {
+    response = await axiosInstance.post("/user/discord/link", { data: data });
+  } catch (e) {
+    Loader.hide();
+    let msg = e?.response?.data?.message ?? e.message;
+    Notifications.add("Failed to link Discord: " + msg, -1);
+    return;
+  }
+  Loader.hide();
+  if (response.status !== 200) {
+    Notifications.add(response.data.message);
+  } else {
+    Notifications.add("Accounts linked", 1);
+    DB.getSnapshot().discordId = response.data.did;
+    Settings.updateDiscordSection();
+  }
 }

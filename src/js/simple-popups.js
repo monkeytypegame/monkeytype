@@ -366,8 +366,26 @@ list.unlinkDiscord = new SimplePopup(
   [],
   "Are you sure you want to unlink your Discord account?",
   "Unlink",
-  () => {
+  async () => {
     Loader.show();
+    let response;
+    try {
+      response = await axiosInstance.post("/user/discord/unlink", {});
+    } catch (e) {
+      Loader.hide();
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to unlink Discord: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Accounts unlinked", 1);
+      DB.getSnapshot().discordId = undefined;
+      Settings.updateDiscordSection();
+    }
+
     //todo rewrite to axios
     // CloudFunctions.unlinkDiscord({
     //   uid: firebase.auth().currentUser.uid,

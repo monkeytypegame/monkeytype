@@ -63,6 +63,7 @@ export async function initSnapshot() {
     snap.personalBests = userData.personalBests;
     snap.banned = userData.banned;
     snap.verified = userData.verified;
+    snap.discordId = userData.discordId;
     snap.globalStats = {
       time: userData.timeTyping,
       started: userData.startedTests,

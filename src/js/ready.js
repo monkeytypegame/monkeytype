@@ -46,6 +46,8 @@ $(document).ready(() => {
           });
           history.replaceState("/", null, "/");
         }
+        let page = window.location.pathname.replace("/", "");
+        UI.changePage(page);
       } else if (window.location.pathname === "/account") {
         // history.replaceState("/", null, "/");
       } else if (/challenge_.+/g.test(window.location.pathname)) {

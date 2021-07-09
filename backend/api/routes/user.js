@@ -24,4 +24,12 @@ router.post("/tags/remove", authenticateRequest, UserController.removeTag);
 
 router.post("/tags/edit", authenticateRequest, UserController.editTag);
 
+router.post("/discord/link", authenticateRequest, UserController.linkDiscord);
+
+router.post(
+  "/discord/unlink",
+  authenticateRequest,
+  UserController.unlinkDiscord
+);
+
 module.exports = router;
