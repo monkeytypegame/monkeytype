@@ -350,6 +350,7 @@ export async function saveLocalPB(
       }
     } catch (e) {
       //that mode or mode2 is not found
+      dbSnapshot.personalBests = {};
       dbSnapshot.personalBests[mode] = {};
       dbSnapshot.personalBests[mode][mode2] = [
         {
@@ -456,6 +457,7 @@ export async function saveLocalTagPB(
       }
     } catch (e) {
       //that mode or mode2 is not found
+      filteredtag.personalBests = {};
       filteredtag.personalBests[mode] = {};
       filteredtag.personalBests[mode][mode2] = [
         {

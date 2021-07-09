@@ -189,7 +189,12 @@ class UsersDAO {
       rawWpm,
       wpm,
       tags,
+      funbox,
     } = result;
+
+    if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+      return [];
+    }
 
     if (mode === "quote") {
       return [];
@@ -197,9 +202,11 @@ class UsersDAO {
 
     let tagsToCheck = [];
     user.tags.forEach((tag) => {
-      if (tags.includes(tag._id)) {
-        tagsToCheck.push(tag);
-      }
+      tags.forEach((resultTag) => {
+        if (resultTag == tag._id) {
+          tagsToCheck.push(tag);
+        }
+      });
     });
 
     let ret = [];
