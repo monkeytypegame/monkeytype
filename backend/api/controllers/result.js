@@ -18,6 +18,17 @@ class ResultController {
     }
   }
 
+  static async updateTags(req, res, next) {
+    try {
+      const { uid } = req.decodedToken;
+      const { tags, resultid } = req.body;
+      await ResultDAO.updateTags(uid, resultid, tags);
+      return res.sendStatus(200);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   static async addResult(req, res, next) {
     try {
       const { uid } = req.decodedToken;
@@ -149,15 +160,13 @@ class ResultController {
 
       let addedResult = await ResultDAO.addResult(uid, result);
 
-      return res
-        .status(200)
-        .json({
-          message: "Result saved",
-          isPb,
-          name: result.name,
-          tagPbs,
-          insertedId: addedResult.insertedId,
-        });
+      return res.status(200).json({
+        message: "Result saved",
+        isPb,
+        name: result.name,
+        tagPbs,
+        insertedId: addedResult.insertedId,
+      });
     } catch (e) {
       next(e);
     }

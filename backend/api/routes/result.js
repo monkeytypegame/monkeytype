@@ -8,4 +8,6 @@ router.get("/", authenticateRequest, ResultController.getResults);
 
 router.post("/add", authenticateRequest, ResultController.addResult);
 
+router.post("/updateTags", authenticateRequest, ResultController.updateTags);
+
 module.exports = router;

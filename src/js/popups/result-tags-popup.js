@@ -86,13 +86,16 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
   Loader.show();
   hide();
   axiosInstance
-    .post("/updateResultTags", {
+    .post("/results/updateTags", {
       tags: newtags,
       resultid: resultid,
     })
-    .then((r) => {
+    .then((response) => {
       Loader.hide();
-      if (r.data.resultCode === 1) {
+
+      if (response.status !== 200) {
+        Notifications.add(response.data.message);
+      } else {
         Notifications.add("Tags updated.", 1, 2);
         DB.getSnapshot().results.forEach((result) => {
           if (result.id === resultid) {
@@ -143,8 +146,11 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
             "no tags"
           );
         }
-      } else {
-        Notifications.add("Error updating tags: " + r.data.message, -1);
       }
+    })
+    .catch((e) => {
+      Loader.hide();
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to update result tags: " + msg, -1);
     });
 });

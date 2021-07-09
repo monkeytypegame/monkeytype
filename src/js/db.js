@@ -126,6 +126,7 @@ export async function getUserResults() {
     try {
       let results = await axiosInstance.get("/results");
       dbSnapshot.results = results.data;
+      await TodayTracker.addAllFromToday();
       return true;
     } catch (e) {
       Notifications.add("Error getting results", -1);
