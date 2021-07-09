@@ -1,6 +1,6 @@
 const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
-const uuid = require("uuid");
+const { ObjectID } = require("mongodb");
 
 class PresetDAO {
   static async getPresets(uid) {
@@ -15,36 +15,39 @@ class PresetDAO {
   static async addPreset(uid, name, config) {
     const count = await mongoDB().collection("presets").find({ uid }).count();
     if (count >= 10) throw new MonkeyError(409, "Too many presets");
-    const id = uuid.v4();
-    await mongoDB()
+    let preset = await mongoDB()
       .collection("presets")
-      .insertOne({ _id: id, uid, name, config });
+      .insertOne({ uid, name, config });
     return {
-      id,
-      name,
+      insertedId: preset.insertedId,
     };
   }
 
-  static async editPreset(uid, id, name, config) {
-    const preset = await mongoDB().collection("presets").findOne({ uid, id });
+  static async editPreset(uid, _id, name, config) {
+    console.log(_id);
+    const preset = await mongoDB()
+      .collection("presets")
+      .findOne({ uid, _id: ObjectID(_id) });
     if (!preset) throw new MonkeyError(404, "Preset not found");
     if (config) {
       return await mongoDB()
         .collection("presets")
-        .updateOne({ uid, _id: id }, { $set: { name, config } });
+        .updateOne({ uid, _id: ObjectID(_id) }, { $set: { name, config } });
     } else {
       return await mongoDB()
         .collection("presets")
-        .updateOne({ uid, _id: id }, { $set: { name } });
+        .updateOne({ uid, _id: ObjectID(_id) }, { $set: { name } });
     }
   }
 
-  static async removePreset(uid, id) {
+  static async removePreset(uid, _id) {
     const preset = await mongoDB()
       .collection("presets")
-      .findOne({ uid, _id: id });
+      .findOne({ uid, _id: ObjectID(_id) });
     if (!preset) throw new MonkeyError(404, "Preset not found");
-    return await mongoDB().collection("presets").remove({ uid, _id: id });
+    return await mongoDB()
+      .collection("presets")
+      .deleteOne({ uid, _id: ObjectID(_id) });
   }
 }
 

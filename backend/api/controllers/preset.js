@@ -32,12 +32,12 @@ class PresetController {
 
   static async editPreset(req, res, next) {
     try {
-      const { id, name, config } = req.body;
+      const { _id, name, config } = req.body;
       const { uid } = req.decodedToken;
       if (!isTagPresetNameValid(name))
         throw new MonkeyError(400, "Invalid preset name.");
       if (config) validateConfig(config);
-      await PresetDAO.editPreset(uid, id, name, config);
+      await PresetDAO.editPreset(uid, _id, name, config);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
@@ -46,9 +46,9 @@ class PresetController {
 
   static async removePreset(req, res, next) {
     try {
-      const { id } = req.body;
+      const { _id } = req.body;
       const { uid } = req.decodedToken;
-      await PresetDAO.removePreset(uid, id);
+      await PresetDAO.removePreset(uid, _id);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);

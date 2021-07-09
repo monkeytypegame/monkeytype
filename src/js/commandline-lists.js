@@ -273,10 +273,10 @@ export function updatePresetCommands() {
       let dis = preset.name;
 
       commandsPresets.list.push({
-        id: "applyPreset" + preset.id,
+        id: "applyPreset" + preset._id,
         display: dis,
         exec: () => {
-          PresetController.apply(preset.id);
+          PresetController.apply(preset._id);
           TestUI.updateModesNotice();
         },
       });

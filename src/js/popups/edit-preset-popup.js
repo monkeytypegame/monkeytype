@@ -73,7 +73,7 @@ async function apply() {
   let activeTagIds = [];
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active) {
-      activeTagIds.push(tag.id);
+      activeTagIds.push(tag._id);
     }
   });
   configChanges.tags = activeTagIds;
@@ -100,41 +100,17 @@ async function apply() {
       DB.getSnapshot().presets.push({
         name: inputVal,
         config: configChanges,
-        id: response.data.id,
+        _id: response.data.insertedId,
       });
       Settings.update();
     }
   } else if (action === "edit") {
-    // Loader.show();
-    // axiosInstance
-    //   .post("/editPreset", {
-    //     presetName: inputVal,
-    //     presetid: presetid,
-    //     config: configChanges,
-    //   })
-    //   .then((e) => {
-    //     Loader.hide();
-    //     let status = e.data.resultCode;
-    //     if (status === 1) {
-    //       Notifications.add("Preset updated", 1);
-    //       let preset = DB.getSnapshot().presets.filter(
-    //         (preset) => preset._id == presetid
-    //       )[0];
-    //       preset.name = inputVal;
-    //       preset.config = configChanges;
-    //       Settings.update();
-    //     } else if (status === -1) {
-    //       Notifications.add("Invalid preset name", 0);
-    //     } else if (status < -1) {
-    //       Notifications.add("Unknown error: " + e.data.message, -1);
-    //     }
-    //   });
     Loader.show();
     let response;
     try {
       response = await axiosInstance.post("/presets/edit", {
         name: inputVal,
-        id: presetid,
+        _id: presetid,
         config: override === true ? configChanges : null,
       });
     } catch (e) {
@@ -149,38 +125,18 @@ async function apply() {
     } else {
       Notifications.add("Preset updated", 1);
       let preset = DB.getSnapshot().presets.filter(
-        (preset) => preset.id == presetid
+        (preset) => preset._id == presetid
       )[0];
       preset.name = inputVal;
       if (override === true) preset.config = configChanges;
       Settings.update();
     }
   } else if (action === "remove") {
-    // Loader.show();
-    // axiosInstance
-    //   .post("/removePreset", {
-    //     presetid,
-    //   })
-    //   .then((e) => {
-    //     Loader.hide();
-    //     let status = e.data.resultCode;
-    //     if (status === 1) {
-    //       Notifications.add("Preset removed", 1);
-    //       DB.getSnapshot().presets.forEach((preset, index) => {
-    //         if (preset.id === presetid) {
-    //           DB.getSnapshot().presets.splice(index, 1);
-    //         }
-    //       });
-    //       Settings.update();
-    //     } else if (status < -1) {
-    //       Notifications.add("Unknown error: " + e.data.message, -1);
-    //     }
-    //   });
     Loader.show();
     let response;
     try {
       response = await axiosInstance.post("/presets/remove", {
-        id: presetid,
+        _id: presetid,
       });
     } catch (e) {
       Loader.hide();
@@ -194,7 +150,7 @@ async function apply() {
     } else {
       Notifications.add("Preset removed", 1);
       DB.getSnapshot().presets.forEach((preset, index) => {
-        if (preset.id === presetid) {
+        if (preset._id === presetid) {
           DB.getSnapshot().presets.splice(index, 1);
         }
       });
