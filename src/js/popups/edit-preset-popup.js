@@ -73,7 +73,7 @@ async function apply() {
   let activeTagIds = [];
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active) {
-      activeTagIds.push(tag.id);
+      activeTagIds.push(tag._id);
     }
   });
   configChanges.tags = activeTagIds;

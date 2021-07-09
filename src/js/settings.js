@@ -422,7 +422,7 @@ function refreshTagsSettingsSection() {
       }
       tagsEl.append(`
 
-      <div class="buttons tag" id="${tag.id}">
+      <div class="buttons tag" id="${tag._id}">
         <div class="button tagButton ${tag.active ? "active" : ""}" active="${
         tag.active
       }">

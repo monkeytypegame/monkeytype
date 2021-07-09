@@ -90,7 +90,7 @@ async function apply() {
       Notifications.add("Tag added", 1);
       DB.getSnapshot().tags.push({
         name: response.data.name,
-        id: response.data.id,
+        _id: response.data._id,
       });
       ResultTagsPopup.updateButtons();
       Settings.update();
@@ -116,7 +116,7 @@ async function apply() {
     } else {
       Notifications.add("Tag updated", 1);
       DB.getSnapshot().tags.forEach((tag) => {
-        if (tag.id === tagid) {
+        if (tag._id === tagid) {
           tag.name = inputVal;
         }
       });
@@ -141,7 +141,7 @@ async function apply() {
     } else {
       Notifications.add("Tag removed", 1);
       DB.getSnapshot().tags.forEach((tag, index) => {
-        if (tag.id === tagid) {
+        if (tag._id === tagid) {
           DB.getSnapshot().tags.splice(index, 1);
         }
       });
@@ -166,7 +166,7 @@ async function apply() {
     } else {
       Notifications.add("Tag PB cleared", 1);
       DB.getSnapshot().tags.forEach((tag, index) => {
-        if (tag.id === tagid) {
+        if (tag._id === tagid) {
           tag.personalBests = {};
         }
       });

@@ -34,7 +34,7 @@ export function updateButtons() {
   $("#resultEditTagsPanel .buttons").empty();
   DB.getSnapshot().tags.forEach((tag) => {
     $("#resultEditTagsPanel .buttons").append(
-      `<div class="button tag" tagid="${tag.id}">${tag.name}</div>`
+      `<div class="button tag" tagid="${tag._id}">${tag.name}</div>`
     );
   });
 }
@@ -105,7 +105,7 @@ $("#resultEditTagsPanel .confirmButton").click((e) => {
         if (newtags.length > 0) {
           newtags.forEach((tag) => {
             DB.getSnapshot().tags.forEach((snaptag) => {
-              if (tag === snaptag.id) {
+              if (tag === snaptag._id) {
                 tagNames += snaptag.name + ", ";
               }
             });

@@ -1,8 +1,8 @@
 const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
+const { ObjectID } = require("mongodb");
 const { checkAndUpdatePb } = require("../handlers/pb");
 const { updateAuthEmail } = require("../handlers/auth");
-const uuid = require("uuid");
 
 class UsersDAO {
   static async addUser(name, email, uid) {
@@ -53,12 +53,12 @@ class UsersDAO {
   }
 
   static async addTag(uid, name) {
-    let id = uuid.v4();
+    let _id = ObjectID();
     await mongoDB()
       .collection("users")
-      .updateOne({ uid }, { $push: { tags: { id, name } } });
+      .updateOne({ uid }, { $push: { tags: { _id, name } } });
     return {
-      id,
+      _id,
       name,
     };
   }
@@ -69,12 +69,12 @@ class UsersDAO {
     return user.tags;
   }
 
-  static async editTag(uid, id, name) {
+  static async editTag(uid, _id, name) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
     if (
       user.tags === undefined ||
-      user.tags.filter((t) => t.id === id).length === 0
+      user.tags.filter((t) => t._id == _id).length === 0
     )
       throw new MonkeyError(404, "Tag not found");
     return await mongoDB()
@@ -82,18 +82,18 @@ class UsersDAO {
       .updateOne(
         {
           uid: uid,
-          "tags.id": id,
+          "tags._id": ObjectID(_id),
         },
         { $set: { "tags.$.name": name } }
       );
   }
 
-  static async removeTag(uid, id) {
+  static async removeTag(uid, _id) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
     if (
       user.tags === undefined ||
-      user.tags.filter((t) => t.id === id).length === 0
+      user.tags.filter((t) => t._id == _id).length === 0
     )
       throw new MonkeyError(404, "Tag not found");
     return await mongoDB()
@@ -101,18 +101,18 @@ class UsersDAO {
       .updateOne(
         {
           uid: uid,
-          "tags.id": id,
+          "tags._id": ObjectID(_id),
         },
-        { $pull: { tags: { id } } }
+        { $pull: { tags: { _id: ObjectID(_id) } } }
       );
   }
 
-  static async removeTagPb(uid, id) {
+  static async removeTagPb(uid, _id) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found");
     if (
       user.tags === undefined ||
-      user.tags.filter((t) => t.id === id).length === 0
+      user.tags.filter((t) => t._id == _id).length === 0
     )
       throw new MonkeyError(404, "Tag not found");
     return await mongoDB()
@@ -120,7 +120,7 @@ class UsersDAO {
       .updateOne(
         {
           uid: uid,
-          "tags.id": id,
+          "tags._id": ObjectID(_id),
         },
         { $set: { "tags.$.personalBests": {} } }
       );
@@ -197,7 +197,7 @@ class UsersDAO {
 
     let tagsToCheck = [];
     user.tags.forEach((tag) => {
-      if (tags.includes(tag.id)) {
+      if (tags.includes(tag._id)) {
         tagsToCheck.push(tag);
       }
     });
@@ -218,11 +218,11 @@ class UsersDAO {
         wpm
       );
       if (tagpb.isPb) {
-        ret.push(tag.id);
+        ret.push(tag._id);
         await mongoDB()
           .collection("users")
           .updateOne(
-            { uid, "tags.id": tag.id },
+            { uid, "tags._id": ObjectID(tag._id) },
             { $set: { "tags.$.personalBests": tagpb.obj } }
           );
       }

@@ -1437,7 +1437,7 @@ export function finish(difficultyFailed = false) {
       DB.getSnapshot().tags.forEach((tag) => {
         if (tag.active === true) {
           activeTags.push(tag);
-          activeTagsIds.push(tag.id);
+          activeTagsIds.push(tag._id);
         }
       });
     } catch (e) {}
@@ -1605,7 +1605,7 @@ export function finish(difficultyFailed = false) {
             let annotationSide = "left";
             activeTags.forEach(async (tag) => {
               let tpb = await DB.getLocalTagPB(
-                tag.id,
+                tag._id,
                 Config.mode,
                 mode2,
                 Config.punctuation,
@@ -1613,13 +1613,13 @@ export function finish(difficultyFailed = false) {
                 Config.difficulty
               );
               $("#result .stats .tags .bottom").append(`
-                <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
+                <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
               `);
               if (Config.mode != "quote") {
                 if (tpb < stats.wpm) {
                   //new pb for that tag
                   DB.saveLocalTagPB(
-                    tag.id,
+                    tag._id,
                     Config.mode,
                     mode2,
                     Config.punctuation,
@@ -1631,12 +1631,11 @@ export function finish(difficultyFailed = false) {
                     consistency
                   );
                   $(
-                    `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
+                    `#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`
                   ).removeClass("hidden");
-                  $(`#result .stats .tags .bottom div[tagid="${tag.id}"]`).attr(
-                    "aria-label",
-                    "+" + Misc.roundTo2(stats.wpm - tpb)
-                  );
+                  $(
+                    `#result .stats .tags .bottom div[tagid="${tag._id}"]`
+                  ).attr("aria-label", "+" + Misc.roundTo2(stats.wpm - tpb));
                   // console.log("new pb for tag " + tag.name);
                 } else {
                   ChartController.result.options.annotation.annotations.push({
