@@ -1,7 +1,8 @@
 const uuid = require("uuid");
+const { mongoDB } = require("../init/mongodb");
 
 class MonkeyError {
-  constructor(status, message, stack = null) {
+  constructor(status, message, stack = null, uid) {
     this.status = status ?? 500;
     this.errorID = uuid.v4();
     if (this.status === 500) {
@@ -19,7 +20,18 @@ class MonkeyError {
             : message
           : message;
     }
-    console.log(`ErrorID: ${this.errorID} logged...`);
+    console.log("Error", message, stack);
+    if (process.env.MODE !== "dev" && this.status === 500) {
+      mongoDB()
+        .collection("errors")
+        .insertOne({
+          _id: this.errorID,
+          timestamp: Date.now(),
+          uid,
+          message,
+          stack,
+        });
+    }
   }
 }
 
