@@ -15,7 +15,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import * as PractiseMissed from "./practise-missed";
 import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
-import * as Misc from './misc';
+import * as Misc from "./misc";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -192,6 +192,7 @@ export function screenshot() {
     $("#notificationCenter").removeClass("hidden");
     $("#commandLineMobileButton").removeClass("hidden");
     $(".pageTest .ssWatermark").addClass("hidden");
+    $(".pageTest .ssWatermark").text("monkeytype.com");
     $(".pageTest .buttons").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (firebase.auth().currentUser == null)
@@ -204,6 +205,11 @@ export function screenshot() {
   }
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
+  if (firebase.auth().currentUser != null) {
+    $(".pageTest .ssWatermark").text(
+      DB.getSnapshot().name + " | monkeytype.com"
+    );
+  }
   $(".pageTest .buttons").addClass("hidden");
   let src = $("#middle");
   var sourceX = src.position().left; /*X position from div#target*/
@@ -785,24 +791,23 @@ export function toggleResultWords() {
   }
 }
 export let heatmapEnabled = false;
-function toggleBurstHeatmap(){
-  if(!heatmapEnabled){
+function toggleBurstHeatmap() {
+  if (!heatmapEnabled) {
     applyBurstHeatmap();
-  }else{
+  } else {
     //clear all classes
-    $("#resultWordsHistory .heatmapLegend").addClass('hidden');
-    $('#resultWordsHistory .words .word').removeClass("heatmap-0");
-    $('#resultWordsHistory .words .word').removeClass("heatmap-1");
-    $('#resultWordsHistory .words .word').removeClass("heatmap-2");
-    $('#resultWordsHistory .words .word').removeClass("heatmap-3");
-    $('#resultWordsHistory .words .word').removeClass("heatmap-4");
-
+    $("#resultWordsHistory .heatmapLegend").addClass("hidden");
+    $("#resultWordsHistory .words .word").removeClass("heatmap-0");
+    $("#resultWordsHistory .words .word").removeClass("heatmap-1");
+    $("#resultWordsHistory .words .word").removeClass("heatmap-2");
+    $("#resultWordsHistory .words .word").removeClass("heatmap-3");
+    $("#resultWordsHistory .words .word").removeClass("heatmap-4");
   }
   heatmapEnabled = !heatmapEnabled;
 }
 
-export function applyBurstHeatmap(){
-  $("#resultWordsHistory .heatmapLegend").removeClass('hidden');
+export function applyBurstHeatmap() {
+  $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
   let min = Math.min(...TestStats.burstHistory);
   let max = Math.max(...TestStats.burstHistory);
   // let step = (max - min) / 5;
@@ -830,41 +835,41 @@ export function applyBurstHeatmap(){
   // ];
   let median = Misc.median(TestStats.burstHistory);
   let adatm = [];
-  TestStats.burstHistory.forEach(burst => {
+  TestStats.burstHistory.forEach((burst) => {
     adatm.push(Math.abs(median - burst));
-  })
+  });
   let step = Misc.mean(adatm);
   // let step = Misc.stdDev(TestStats.burstHistory)/2;
   let steps = [
     {
       val: 0,
-      class: 'heatmap-0'
+      class: "heatmap-0",
     },
     {
-      val: median - (step * 1.5),
-      class: 'heatmap-1'
+      val: median - step * 1.5,
+      class: "heatmap-1",
     },
     {
-      val: median - (step * 0.5),
-      class: 'heatmap-2'
+      val: median - step * 0.5,
+      class: "heatmap-2",
     },
     {
-      val: median + (step * 0.5),
-      class: 'heatmap-3'
+      val: median + step * 0.5,
+      class: "heatmap-3",
     },
     {
-      val: median + (step * 1.5),
-      class: 'heatmap-4'
+      val: median + step * 1.5,
+      class: "heatmap-4",
     },
   ];
-  $('#resultWordsHistory .words .word').each((index, word) => {
-    let wordBurstVal = parseInt($(word).attr('burst'));
-    let cls = '';
-    steps.forEach(step => {
-      if(wordBurstVal > step.val) cls = step.class;
-    })
+  $("#resultWordsHistory .words .word").each((index, word) => {
+    let wordBurstVal = parseInt($(word).attr("burst"));
+    let cls = "";
+    steps.forEach((step) => {
+      if (wordBurstVal > step.val) cls = step.class;
+    });
     $(word).addClass(cls);
-  })
+  });
 }
 
 export function highlightBadWord(index, showError) {
@@ -901,7 +906,6 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
 });
-
 
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {
   toggleBurstHeatmap();
