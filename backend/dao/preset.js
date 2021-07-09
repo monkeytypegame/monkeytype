@@ -16,7 +16,9 @@ class PresetDAO {
     const count = await mongoDB().collection("presets").find({ uid }).count();
     if (count >= 10) throw new MonkeyError(409, "Too many presets");
     const id = uuid.v4();
-    await mongoDB().collection("presets").insertOne({ id, uid, name, config });
+    await mongoDB()
+      .collection("presets")
+      .insertOne({ _id: id, uid, name, config });
     return {
       id,
       name,
@@ -29,18 +31,20 @@ class PresetDAO {
     if (config) {
       return await mongoDB()
         .collection("presets")
-        .updateOne({ uid, id }, { $set: { name, config } });
+        .updateOne({ uid, _id: id }, { $set: { name, config } });
     } else {
       return await mongoDB()
         .collection("presets")
-        .updateOne({ uid, id }, { $set: { name } });
+        .updateOne({ uid, _id: id }, { $set: { name } });
     }
   }
 
   static async removePreset(uid, id) {
-    const preset = await mongoDB().collection("presets").findOne({ uid, id });
+    const preset = await mongoDB()
+      .collection("presets")
+      .findOne({ uid, _id: id });
     if (!preset) throw new MonkeyError(404, "Preset not found");
-    return await mongoDB().collection("presets").remove({ uid, id });
+    return await mongoDB().collection("presets").remove({ uid, _id: id });
   }
 }
 
