@@ -147,11 +147,17 @@ class ResultController {
 
       await UserDAO.updateTypingStats(uid, result.restartCount, tt);
 
-      await ResultDAO.addResult(uid, result);
+      let addedResult = await ResultDAO.addResult(uid, result);
 
       return res
         .status(200)
-        .json({ message: "Result saved", isPb, name: result.name, tagPbs });
+        .json({
+          message: "Result saved",
+          isPb,
+          name: result.name,
+          tagPbs,
+          insertedId: addedResult.insertedId,
+        });
     } catch (e) {
       next(e);
     }

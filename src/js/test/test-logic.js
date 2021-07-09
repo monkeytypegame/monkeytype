@@ -1700,7 +1700,7 @@ export function finish(difficultyFailed = false) {
                       -1
                     );
                   } else {
-                    completedEvent.id = response.data.createdId;
+                    completedEvent._id = response.data.insertedId;
                     TestLeaderboards.check(completedEvent);
                     if (response.data.isPb) {
                       completedEvent.isPb = true;
@@ -1773,8 +1773,8 @@ export function finish(difficultyFailed = false) {
                 })
                 .catch((e) => {
                   AccountButton.loading(false);
-                  console.error(e);
-                  Notifications.add("Could not save result. " + e, -1);
+                  let msg = e?.response?.data?.message ?? e.message;
+                  Notifications.add("Failed to save result: " + msg, -1);
                 });
             }
           });

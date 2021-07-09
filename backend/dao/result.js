@@ -12,7 +12,10 @@ class ResultDAO {
     }
     if (!user) throw new MonkeyError(404, "User not found");
     if (result.uid === undefined) result.uid = uid;
-    return await mongoDB().collection("results").insertOne(result);
+    let res = await mongoDB().collection("results").insertOne(result);
+    return {
+      insertedId: res.insertedId,
+    };
   }
 
   static async editResultTags(uid, id, tags) {
