@@ -1,10 +1,20 @@
 import * as TestStats from "./test-stats";
 
+// Changes how quickly it 'learns' scores - very roughly the score for a char
+// is based on last 1/adjustRate occurrences. Make it larger to adjust faster.
+// Should be between 0 and 1.
 const adjustRate = 0.02;
+
+// Choose the highest scoring word from this many random words. Higher values
+// will choose words with more weak letters on average.
 const wordSamples = 20;
 
-// TODO: base these on WPM or something instead of constants
+// The score that every character starts on. The ideal value would be the
+// average spacing in milliseconds, but since we don't know that at the start,
+// pick something little high and it'll converge as the user types.
 const defaultScore = 500;
+
+// Score penatly (in milliseconds) for getting a letter wrong.
 const incorrectPenalty = 5000;
 
 let scores = {};
