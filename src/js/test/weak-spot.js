@@ -22,8 +22,7 @@ export function updateScore(char, isCorrect) {
     scores[char] = defaultScore;
   }
   // Keep an exponential moving average of the score over time.
-  scores[char] =
-    score * adjustRate + scores[char] * (1 - adjustRate);
+  scores[char] = score * adjustRate + scores[char] * (1 - adjustRate);
 }
 
 export function getWord(wordset) {
