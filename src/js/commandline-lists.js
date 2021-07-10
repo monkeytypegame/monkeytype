@@ -2483,10 +2483,28 @@ export let defaultCommands = {
       subgroup: commandsEnableAds,
     },
     {
+      id: "changeTheme",
+      display: "Theme...",
+      icon: "fa-palette",
+      subgroup: themeCommands,
+    },
+    {
       id: "setCustomTheme",
       display: "Custom theme...",
       icon: "fa-palette",
       subgroup: commandsCustomTheme,
+    },
+    {
+      id: "changeRandomTheme",
+      display: "Random theme...",
+      icon: "fa-random",
+      subgroup: commandsRandomTheme,
+    },
+    {
+      id: "randomizeTheme",
+      display: "Next random theme",
+      icon: "fa-random",
+      exec: () => ThemeController.randomizeTheme(),
     },
     {
       id: "changeDifficulty",
@@ -2551,18 +2569,6 @@ export let defaultCommands = {
       exec: (input) => {
         UpdateConfig.setCustomBackground(input);
       },
-    },
-    {
-      id: "changeTheme",
-      display: "Theme...",
-      icon: "fa-palette",
-      subgroup: themeCommands,
-    },
-    {
-      id: "changeRandomTheme",
-      display: "Random theme...",
-      icon: "fa-random",
-      subgroup: commandsRandomTheme,
     },
     {
       id: "changeLanguage",
@@ -2655,12 +2661,6 @@ export let defaultCommands = {
       display: "Page width...",
       icon: "fa-arrows-alt-h",
       subgroup: commandsPageWidth,
-    },
-    {
-      id: "randomizeTheme",
-      display: "Next random theme",
-      icon: "fa-palette",
-      exec: () => ThemeController.randomizeTheme(),
     },
     {
       id: "viewTypingPage",
