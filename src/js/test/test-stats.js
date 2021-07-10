@@ -42,8 +42,6 @@ export let keypressTimings = {
   },
 };
 
-export let weaknessScores = {};
-
 export function restart() {
   start = 0;
   end = 0;
@@ -80,7 +78,6 @@ export function restart() {
       array: [],
     },
   };
-  // Don't reset weaknessScores, they should be kept across tests.
 }
 
 export let restartCount = 0;
@@ -221,37 +218,6 @@ export function incrementAccuracy(correctincorrect) {
   } else {
     accuracy.incorrect++;
   }
-}
-
-// Parameters for per-char weakness scores.
-const adjustRate = 0.02;
-// TODO: base these on WPM or something instead of constants
-const defaultScore = 500;
-const incorrectPenalty = 5000;
-
-export function updateWeaknessScore(char, isCorrect) {
-  let score = 0.0;
-  if (keypressTimings.spacing.array.length > 0) {
-    score +=
-      keypressTimings.spacing.array[keypressTimings.spacing.array.length - 1];
-  }
-  if (!isCorrect) {
-    score += incorrectPenalty;
-  }
-  if (!(char in weaknessScores)) {
-    weaknessScores[char] = defaultScore;
-  }
-  // Keep an exponential moving average of the score over time.
-  weaknessScores[char] =
-    score * adjustRate + weaknessScores[char] * (1 - adjustRate);
-}
-
-export function weaknessScore(word) {
-  let total = 0.0;
-  for (const c of word) {
-    total += c in weaknessScores ? weaknessScores[c] : defaultScore;
-  }
-  return total / word.length;
 }
 
 export function setKeypressTimingsTooLong() {

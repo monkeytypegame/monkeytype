@@ -32,6 +32,7 @@ import * as Replay from "./replay.js";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
 import * as TodayTracker from "./today-tracker";
+import * as WeakSpot from "./weak-spot";
 
 let glarsesMode = false;
 
@@ -574,15 +575,7 @@ export async function init() {
           UpdateConfig.setNumbers(false, true);
           randomWord = Misc.getASCII();
         } else if (Config.funbox === "weakspot") {
-          let highScore = TestStats.weaknessScore(randomWord);
-          for (let i = 0; i < 20; i++) {
-            let newWord = wordset[Math.floor(Math.random() * wordset.length)];
-            let newScore = TestStats.weaknessScore(newWord);
-            if (newScore > highScore) {
-              randomWord = newWord;
-              highScore = newScore;
-            }
-          }
+          randomWord = WeakSpot.getWord(wordset);
         }
 
         if (Config.punctuation) {
