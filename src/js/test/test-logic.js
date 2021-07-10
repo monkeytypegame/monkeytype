@@ -1553,6 +1553,13 @@ export function finish(difficultyFailed = false) {
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
               dontShowCrown = true;
             }
+            if (
+              Config.funbox !== "none" &&
+              Config.funbox !== "plus_one" &&
+              Config.funbox !== "plus_two"
+            ) {
+              dontShowCrown = true;
+            }
             if (Config.mode == "quote") dontShowCrown = true;
             if (lpb < stats.wpm) {
               //new pb based on local
