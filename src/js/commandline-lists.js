@@ -431,7 +431,7 @@ let commandsKeyTips = {
       display: "off",
       configValue: false,
       exec: () => {
-        UpdateConfig.setShowKeyTips(false);
+        UpdateConfig.setKeyTips(false);
       },
     },
     {
@@ -439,7 +439,7 @@ let commandsKeyTips = {
       display: "on",
       configValue: true,
       exec: () => {
-        UpdateConfig.setShowKeyTips(true);
+        UpdateConfig.setKeyTips(true);
       },
     },
   ],
