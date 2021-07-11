@@ -23,6 +23,7 @@ import * as Focus from "./focus";
 import * as ShiftTracker from "./shift-tracker";
 import * as Replay from "./replay.js";
 import * as MonkeyPower from "./monkey-power";
+import * as WeakSpot from "./weak-spot";
 
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
@@ -660,6 +661,7 @@ function handleAlpha(event) {
       );
     }
   }
+  WeakSpot.updateScore(nextCharInWord, thisCharCorrect);
 
   if (thisCharCorrect) {
     Sound.playClick(Config.playSoundOnClick);
