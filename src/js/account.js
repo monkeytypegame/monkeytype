@@ -60,6 +60,7 @@ export async function getDataAndInit() {
         promptVal = prompt(
           "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
         );
+        //TODO update
         axiosInstance
           .post("/updateName", {
             name: promptVal,

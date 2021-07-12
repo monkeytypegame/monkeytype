@@ -7,6 +7,7 @@ import * as TodayTracker from "./today-tracker";
 let dbSnapshot = null;
 
 export function updateName(uid, name) {
+  //TODO update
   axiosInstance.post("/updateName", {
     name: name,
   });
