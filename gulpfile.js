@@ -168,6 +168,7 @@ const refactoredSrc = [
   "./src/js/test/layout-emulator.js",
   "./src/js/test/poetry.js",
   "./src/js/test/today-tracker.js",
+  "./src/js/test/weak-spot.js",
   "./src/js/replay.js",
 ];
 

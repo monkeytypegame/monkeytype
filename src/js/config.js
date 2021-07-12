@@ -123,6 +123,8 @@ let defaultConfig = {
   customBackgroundFilter: [0, 1, 1, 1, 1],
   customLayoutfluid: "qwerty#dvorak#colemak",
   monkeyPowerLevel: "off",
+  minBurst: "off",
+  minBurstCustomSpeed: 100,
 };
 
 function isConfigKeyValid(name) {

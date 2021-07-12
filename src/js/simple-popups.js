@@ -64,11 +64,11 @@ class SimplePopup {
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
-          if(input.type){
+          if (input.type) {
             el.find(".inputs").append(`
             <input type="${input.type}" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
             `);
-          }else{
+          } else {
             el.find(".inputs").append(`
             <input type="text" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
             `);
@@ -150,49 +150,56 @@ list.updateEmail = new SimplePopup(
       initVal: "",
     },
     {
-      placeholder: "Current email",
+      placeholder: "New email",
       initVal: "",
     },
     {
-      placeholder: "New email",
+      placeholder: "Confirm new email",
       initVal: "",
     },
   ],
   "",
   "Update",
-  (pass,previousEmail, newEmail) => {
+  (pass, email, emailConfirm) => {
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
-          user.email, 
-          pass
+        user.email,
+        pass
       );
+      if (email !== emailConfirm) {
+        Notifications.add("Emails don't match", 0);
+        return;
+      }
       Loader.show();
-      user.reauthenticateWithCredential(credential).then(() => {
-        CloudFunctions.updateEmail({
-          uid: user.uid,
-          previousEmail: previousEmail,
-          newEmail: newEmail,
-        }).then((data) => {
+      user
+        .reauthenticateWithCredential(credential)
+        .then(() => {
+          CloudFunctions.updateEmail({
+            uid: user.uid,
+            previousEmail: user.email,
+            newEmail: email,
+          }).then((data) => {
+            Loader.hide();
+            if (data.data.resultCode === 1) {
+              Notifications.add("Email updated", 0);
+              setTimeout(() => {
+                AccountController.signOut();
+              }, 1000);
+            } else if (data.data.resultCode === -1) {
+              Notifications.add("Current email doesn't match", 0);
+            } else {
+              Notifications.add(
+                "Something went wrong: " + JSON.stringify(data.data),
+                -1
+              );
+            }
+          });
+        })
+        .catch((e) => {
           Loader.hide();
-          if (data.data.resultCode === 1) {
-            Notifications.add("Email updated", 0);
-            setTimeout(() => {
-              AccountController.signOut();
-            }, 1000);
-          } else if (data.data.resultCode === -1) {
-            Notifications.add("Current email doesn't match", 0);
-          } else {
-            Notifications.add(
-              "Something went wrong: " + JSON.stringify(data.data),
-              -1
-            );
-          }
+          Notifications.add("Incorrect current password", -1);
         });
-      }).catch(e => {
-        Loader.hide();
-        Notifications.add("Incorrect current password", -1);
-      })
     } catch (e) {
       Notifications.add("Something went wrong: " + e, -1);
     }
@@ -200,14 +207,13 @@ list.updateEmail = new SimplePopup(
   () => {}
 );
 
-
 list.updatePassword = new SimplePopup(
   "updatePassword",
   "text",
   "Update Password",
   [
     {
-      placeholder: "Current password",
+      placeholder: "Password",
       type: "password",
       initVal: "",
     },
@@ -228,11 +234,11 @@ list.updatePassword = new SimplePopup(
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
-          user.email, 
-          previousPass
+        user.email,
+        previousPass
       );
-      if(newPass !== newPassConfirm){
-        Notifications.add("New passwords don't match",0);
+      if (newPass !== newPassConfirm) {
+        Notifications.add("New passwords don't match", 0);
         return;
       }
       Loader.show();
@@ -247,7 +253,6 @@ list.updatePassword = new SimplePopup(
   },
   () => {}
 );
-
 
 list.clearTagPb = new SimplePopup(
   "clearTagPb",
@@ -310,34 +315,42 @@ list.resetPersonalBests = new SimplePopup(
   "resetPersonalBests",
   "text",
   "Reset Personal Bests",
-  [],
-  "Are you sure you want to reset all your personal bests?",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "",
   "Reset",
-  () => {
+  async (password) => {
     try {
+      const user = firebase.auth().currentUser;
+      const credential = firebase.auth.EmailAuthProvider.credential(
+        user.email,
+        password
+      );
       Loader.show();
-
-      CloudFunctions.resetPersonalBests({
+      await user.reauthenticateWithCredential(credential);
+      let resetResult = await CloudFunctions.resetPersonalBests({
         uid: firebase.auth().currentUser.uid,
-      }).then((res) => {
-        if (res) {
-          Loader.hide();
-          Notifications.add(
-            "Personal bests removed, refreshing the page...",
-            0
-          );
-          setTimeout(() => {
-            location.reload();
-          }, 1500);
-        } else {
-          Notifications.add(
-            "Something went wrong while removing personal bests...",
-            -1
-          );
-        }
       });
+      if (resetResult) {
+        Loader.hide();
+        Notifications.add("Personal bests removed, refreshing the page...", 0);
+        setTimeout(() => {
+          location.reload();
+        }, 1500);
+      } else {
+        Notifications.add(
+          "Something went wrong while removing personal bests...",
+          -1
+        );
+      }
     } catch (e) {
-      Notifications.add("Something went wrong: " + e, -1);
+      Loader.hide();
+      Notifications.add(e, -1);
     }
   },
   () => {}
