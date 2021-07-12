@@ -4,6 +4,8 @@ const UserController = require("../controllers/user");
 
 const router = Router();
 
+router.get("/", authenticateRequest, UserController.getUser);
+
 router.post("/signup", UserController.createNewUser);
 
 router.post("/checkName", UserController.checkName);
@@ -14,7 +16,7 @@ router.post("/updateName", authenticateRequest, UserController.updateName);
 
 router.post("/updateEmail", authenticateRequest, UserController.updateEmail);
 
-router.get("/", authenticateRequest, UserController.getUser);
+router.post("/clearPb", authenticateRequest, UserController.clearPb);
 
 router.post("/tags/add", authenticateRequest, UserController.addTag);
 

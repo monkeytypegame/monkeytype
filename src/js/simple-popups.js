@@ -179,7 +179,7 @@ list.updateEmail = new SimplePopup(
             .post("/user/updateEmail", {
               uid: user.uid,
               previousEmail: user.email,
-              newEmail: newEmail,
+              newEmail: email,
             })
             .then((data) => {
               Loader.hide();
@@ -333,7 +333,7 @@ list.resetPersonalBests = new SimplePopup(
 
       let response;
       try {
-        response = await axiosInstance.post("/user/resetPbs");
+        response = await axiosInstance.post("/user/clearPb");
       } catch (e) {
         Loader.hide();
         let msg = e?.response?.data?.message ?? e.message;
@@ -344,10 +344,8 @@ list.resetPersonalBests = new SimplePopup(
       if (response.status !== 200) {
         Notifications.add(response.data.message);
       } else {
-        Notifications.add("Personal bests removed, refreshing the page...", 0);
-        setTimeout(() => {
-          location.reload();
-        }, 1500);
+        Notifications.add("Personal bests have been reset", 1);
+        DB.getSnapshot().personalBests = {};
       }
     } catch (e) {
       Loader.hide();

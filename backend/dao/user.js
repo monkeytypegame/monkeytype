@@ -25,6 +25,12 @@ class UsersDAO {
       .updateOne({ uid }, { $set: { name } });
   }
 
+  static async clearPb(uid) {
+    return await mongoDB()
+      .collection("users")
+      .updateOne({ uid }, { $set: { personalBests: {} } });
+  }
+
   static async isNameAvailable(name) {
     const nameDoc = await mongoDB().collection("users").findOne({ name });
     if (nameDoc) {

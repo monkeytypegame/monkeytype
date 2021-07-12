@@ -47,6 +47,16 @@ class UserController {
     }
   }
 
+  static async clearPb(req, res, next) {
+    try {
+      const { uid } = req.decodedToken;
+      await UsersDAO.clearPb(uid);
+      return res.sendStatus(200);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
   static async checkName(req, res, next) {
     try {
       const { name } = req.body;
