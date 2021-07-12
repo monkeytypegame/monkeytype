@@ -219,18 +219,17 @@ async function signUp() {
     });
     if (TestLogic.notSignedInLastResult !== null) {
       TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
-      //TODO: use new system
-      // axiosInstance
-      //   .post("/testCompleted", {
-      //     obj: TestLogic.notSignedInLastResult,
-      //   })
-      //   .then(() => {
-      //     DB.getSnapshot().results.push(
-      //       TestLogic.notSignedInLastResult
-      //     );
-      //   });
+      axiosInstance
+        .post("/results/add", {
+          result: TestLogic.notSignedInLastResult,
+        })
+        .then((result) => {
+          if (result.status === 200) {
+            DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+          }
+        });
+      UI.changePage("account");
     }
-    UI.changePage("account");
   } catch (e) {
     //make sure to do clean up here
     await createdAuthUser.user.delete();
