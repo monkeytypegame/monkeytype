@@ -262,7 +262,7 @@ list.clearTagPb = new SimplePopup(
     let tagid = eval("this.parameters[0]");
     Loader.show();
     axiosInstance
-      .post("/clearTagPb", {
+      .post("/user/tags/clearPb", {
         tagid: tagid,
       })
       .then((res) => {
