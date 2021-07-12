@@ -397,22 +397,6 @@ list.unlinkDiscord = new SimplePopup(
       DB.getSnapshot().discordId = undefined;
       Settings.updateDiscordSection();
     }
-
-    //todo rewrite to axios
-    // CloudFunctions.unlinkDiscord({
-    //   uid: firebase.auth().currentUser.uid,
-    // }).then((ret) => {
-    //   Loader.hide();
-    //   console.log(ret);
-    //   if (ret.data.status === 1) {
-    //     DB.getSnapshot().discordId = null;
-    //     Notifications.add("Accounts unlinked", 0);
-    //     Settings.updateDiscordSection();
-    //   } else {
-    //     Notifications.add("Something went wrong: " + ret.data.message, -1);
-    //     Settings.updateDiscordSection();
-    //   }
-    // });
   },
   () => {}
 );
