@@ -12,6 +12,8 @@ router.post("/delete", UserController.deleteUser);
 
 router.post("/updateName", authenticateRequest, UserController.updateName);
 
+router.post("/updateEmail", authenticateRequest, UserController.updateEmail);
+
 router.get("/", authenticateRequest, UserController.getUser);
 
 router.post("/tags/add", authenticateRequest, UserController.addTag);

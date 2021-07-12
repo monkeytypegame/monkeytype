@@ -172,25 +172,20 @@ list.updateEmail = new SimplePopup(
         .reauthenticateWithCredential(credential)
         .then(() => {
           axiosInstance
-            .post("/updateEmail", {
+            .post("/user/updateEmail", {
               uid: user.uid,
               previousEmail: previousEmail,
               newEmail: newEmail,
             })
             .then((data) => {
               Loader.hide();
-              if (data.data.resultCode === 1) {
+              if (data.status === 200) {
                 Notifications.add("Email updated", 0);
                 setTimeout(() => {
                   AccountController.signOut();
                 }, 1000);
-              } else if (data.data.resultCode === -1) {
-                Notifications.add("Current email doesn't match", 0);
               } else {
-                Notifications.add(
-                  "Something went wrong: " + JSON.stringify(data.data),
-                  -1
-                );
+                Notifications.add(data.message);
               }
             });
         })

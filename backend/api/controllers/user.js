@@ -65,6 +65,17 @@ class UserController {
     }
   }
 
+  static async updateEmail(req, res, next) {
+    try {
+      const { uid } = req.decodedToken;
+      const { newEmail } = req.body;
+      await UsersDAO.updateEmail(uid, newEmail);
+      return res.sendStatus(200);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
   static async getUser(req, res, next) {
     try {
       const { uid } = req.decodedToken;
