@@ -150,23 +150,27 @@ list.updateEmail = new SimplePopup(
       initVal: "",
     },
     {
-      placeholder: "Current email",
+      placeholder: "New email",
       initVal: "",
     },
     {
-      placeholder: "New email",
+      placeholder: "Confirm new email",
       initVal: "",
     },
   ],
   "",
   "Update",
-  (pass, previousEmail, newEmail) => {
+  (pass, email, emailConfirm) => {
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
         user.email,
         pass
       );
+      if (email !== emailConfirm) {
+        Notifications.add("Emails don't match", 0);
+        return;
+      }
       Loader.show();
       user
         .reauthenticateWithCredential(credential)
@@ -174,7 +178,7 @@ list.updateEmail = new SimplePopup(
           axiosInstance
             .post("/user/updateEmail", {
               uid: user.uid,
-              previousEmail: previousEmail,
+              previousEmail: user.email,
               newEmail: newEmail,
             })
             .then((data) => {
@@ -206,7 +210,7 @@ list.updatePassword = new SimplePopup(
   "Update Password",
   [
     {
-      placeholder: "Current password",
+      placeholder: "Password",
       type: "password",
       initVal: "",
     },
@@ -308,31 +312,45 @@ list.resetPersonalBests = new SimplePopup(
   "resetPersonalBests",
   "text",
   "Reset Personal Bests",
-  [],
-  "Are you sure you want to reset all your personal bests?",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "",
   "Reset",
-  () => {
+  async (password) => {
     try {
+      const user = firebase.auth().currentUser;
+      const credential = firebase.auth.EmailAuthProvider.credential(
+        user.email,
+        password
+      );
       Loader.show();
-      axiosInstance.post("/resetPersonalBests").then((res) => {
-        if (res) {
-          Loader.hide();
-          Notifications.add(
-            "Personal bests removed, refreshing the page...",
-            0
-          );
-          setTimeout(() => {
-            location.reload();
-          }, 1500);
-        } else {
-          Notifications.add(
-            "Something went wrong while removing personal bests...",
-            -1
-          );
-        }
+      await user.reauthenticateWithCredential(credential);
+      let resetResult = await CloudFunctions.resetPersonalBests({
+        uid: firebase.auth().currentUser.uid,
       });
+      let resetResult = await axiosInstance.post("/resetPersonalBests");
+
+      if (resetResult.status === 200) {
+        Loader.hide();
+        Notifications.add("Personal bests removed, refreshing the page...", 0);
+        setTimeout(() => {
+          location.reload();
+        }, 1500);
+      } else {
+        Loader.hide();
+        Notifications.add(
+          "Something went wrong while removing personal bests...",
+          -1
+        );
+      }
     } catch (e) {
-      Notifications.add("Something went wrong: " + e, -1);
+      Loader.hide();
+      Notifications.add(e, -1);
     }
   },
   () => {}

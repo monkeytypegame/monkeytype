@@ -1170,7 +1170,6 @@ label.checkbox {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
     }
@@ -1196,7 +1195,6 @@ label.checkbox {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
     }
@@ -3185,29 +3183,6 @@ key {
         grid-auto-columns: 1fr;
         gap: 0.5rem;
         grid-area: tabs;
-
-        .tab {
-          will-change: color;
-          transition: 0.2s ease-in-out color;
-          outline: 0;
-          cursor: pointer;
-          padding: 0;
-          font-size: 1rem;
-          color: var(--sub-color);
-          text-align: left;
-          border: 0;
-          background: 0;
-          font-family: var(--font);
-
-          &:first-child {
-            margin-right: 0.5rem;
-          }
-
-          &.active,
-          &:hover {
-            color: var(--main-color);
-          }
-        }
       }
 
       .buttons {

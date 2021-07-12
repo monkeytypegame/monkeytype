@@ -32,6 +32,7 @@ import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
 import * as TodayTracker from "./today-tracker";
+import * as WeakSpot from "./weak-spot";
 
 let glarsesMode = false;
 
@@ -573,6 +574,8 @@ export async function init() {
           UpdateConfig.setPunctuation(false, true);
           UpdateConfig.setNumbers(false, true);
           randomWord = Misc.getASCII();
+        } else if (Config.funbox === "weakspot") {
+          randomWord = WeakSpot.getWord(wordset);
         }
 
         if (Config.punctuation) {
@@ -1548,6 +1551,13 @@ export function finish(difficultyFailed = false) {
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
               dontShowCrown = true;
             }
+            if (
+              Config.funbox !== "none" &&
+              Config.funbox !== "plus_one" &&
+              Config.funbox !== "plus_two"
+            ) {
+              dontShowCrown = true;
+            }
             if (Config.mode == "quote") dontShowCrown = true;
             if (lpb < stats.wpm) {
               //new pb based on local
@@ -1967,7 +1977,7 @@ export function finish(difficultyFailed = false) {
       $("#words").empty();
       ChartController.result.resize();
 
-      if (TestUI.heatmapEnabled) {
+      if (Config.burstHeatmap) {
         TestUI.applyBurstHeatmap();
       }
       $("#testModesNotice").addClass("hidden");
