@@ -1186,7 +1186,7 @@ export function setFontFamily(font, nosave) {
   config.fontFamily = font;
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '"'
+    `"${font.replace(/_/g, " ")}", "Roboto Mono"`
   );
   ChartController.setDefaultFontFamily(font);
   if (!nosave) saveToLocalStorage();
