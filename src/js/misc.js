@@ -316,8 +316,7 @@ export function migrateFromCookies() {
 export function sendVerificationEmail() {
   Loader.show();
   let cu = firebase.auth().currentUser;
-  axiosInstance
-    .post("/sendEmailVerification", {})
+  cu.sendEmailVerification()
     .then(() => {
       Loader.hide();
       showNotification("Email sent to " + cu.email, 4000);
