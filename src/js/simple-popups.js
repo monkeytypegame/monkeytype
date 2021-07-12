@@ -330,23 +330,24 @@ list.resetPersonalBests = new SimplePopup(
       );
       Loader.show();
       await user.reauthenticateWithCredential(credential);
-      let resetResult = await CloudFunctions.resetPersonalBests({
-        uid: firebase.auth().currentUser.uid,
-      });
-      let resetResult = await axiosInstance.post("/resetPersonalBests");
 
-      if (resetResult.status === 200) {
+      let response;
+      try {
+        response = await axiosInstance.post("/user/resetPbs");
+      } catch (e) {
         Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to reset personal bests: " + msg, -1);
+        return;
+      }
+      Loader.hide();
+      if (response.status !== 200) {
+        Notifications.add(response.data.message);
+      } else {
         Notifications.add("Personal bests removed, refreshing the page...", 0);
         setTimeout(() => {
           location.reload();
         }, 1500);
-      } else {
-        Loader.hide();
-        Notifications.add(
-          "Something went wrong while removing personal bests...",
-          -1
-        );
       }
     } catch (e) {
       Loader.hide();
