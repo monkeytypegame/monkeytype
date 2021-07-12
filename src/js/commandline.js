@@ -242,6 +242,7 @@ function addChildCommands(
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
   if (commandItem.subgroup) {
+    if (commandItem.beforeSubgroup) commandItem.beforeSubgroup();
     try {
       commandItem.subgroup.list.forEach((cmd) => {
         commandItem.configKey = commandItem.subgroup.configKey;

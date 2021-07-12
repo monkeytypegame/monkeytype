@@ -108,6 +108,11 @@
     "name": "poetry",
     "type": "script",
     "info": "Practice typing some beautiful prose."
+  },
+  {
+    "name": "weakspot",
+    "type": "script",
+    "info": "Focus on slow and mistyped letters."
   }
 ]
 
