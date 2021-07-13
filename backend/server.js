@@ -28,7 +28,10 @@ const presetRouter = require("./api/routes/preset");
 app.use("/presets", presetRouter);
 
 app.use(function (e, req, res, next) {
-  const { uid } = req.decodedToken;
+  let uid = undefined;
+  if (req.decodedToken) {
+    uid = req.decodedToken.uid;
+  }
   let monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
   return res.status(e.status || 500).json(monkeyError);
 });
