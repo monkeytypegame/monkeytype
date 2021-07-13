@@ -10,7 +10,7 @@ class ConfigDAO {
 
   static async getConfig(uid) {
     let config = await mongoDB().collection("configs").findOne({ uid });
-    if (!config) throw new MonkeyError(404, "Config not found");
+    // if (!config) throw new MonkeyError(404, "Config not found");
     return config;
   }
 }

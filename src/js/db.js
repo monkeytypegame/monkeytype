@@ -83,7 +83,9 @@ export async function initSnapshot() {
 
     let configData = await axiosInstance.get("/config");
     configData = configData.data;
-    snap.config = configData.config;
+    if (configData) {
+      snap.config = configData.config;
+    }
 
     let tagsData = await axiosInstance.get("/user/tags");
     snap.tags = tagsData.data;
