@@ -2010,7 +2010,7 @@ export function finish(difficultyFailed = false) {
       $("#words").empty();
       ChartController.result.resize();
 
-      if (TestUI.heatmapEnabled) {
+      if (Config.burstHeatmap) {
         TestUI.applyBurstHeatmap();
       }
       $("#testModesNotice").addClass("hidden");
