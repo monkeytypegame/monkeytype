@@ -17,6 +17,8 @@ import axiosInstance from "./axios-instance";
 const gmailProvider = new firebase.auth.GoogleAuthProvider();
 const githubProvider = new firebase.auth.GithubAuthProvider();
 
+let newSignUp = false;
+
 export function signIn() {
   $(".pageLogin .preloader").removeClass("hidden");
   let email = $(".pageLogin .login input")[0].value;
@@ -62,70 +64,117 @@ export function signIn() {
 export async function signInWithGoogle() {
   $(".pageLogin .preloader").removeClass("hidden");
 
-  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
-    //remember me
-    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    firebase
-      .auth()
-      .signInWithPopup(gmailProvider)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        Notifications.add(error.message, -1);
-        $(".pageLogin .preloader").addClass("hidden");
+  let signedInUser;
+  try {
+    if ($(".pageLogin .login #rememberMe input").prop("checked")) {
+      //remember me
+      await firebase
+        .auth()
+        .setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+      signedInUser = await firebase.auth().signInWithPopup(gmailProvider);
+    } else {
+      //dont remember
+      await firebase
+        .auth()
+        .setPersistence(firebase.auth.Auth.Persistence.SESSION);
+      signedInUser = await firebase.auth().signInWithPopup(gmailProvider);
+    }
+    if (signedInUser.additionalUserInfo.isNewUser) {
+      //ask for username
+      newSignUp = true;
+
+      let nameGood = false;
+      let name = "";
+
+      while (nameGood === false) {
+        name = await prompt(
+          "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
+        );
+
+        let response;
+        try {
+          response = await axiosInstance.post("/user/checkName", { name });
+        } catch (e) {
+          let msg = e?.response?.data?.message ?? e.message;
+          if (e.response.status >= 500) {
+            Notifications.add("Failed to check name: " + msg, -1);
+            throw e;
+          } else {
+            alert(msg);
+          }
+        }
+        if (response?.status == 200) {
+          nameGood = true;
+        }
+      }
+      //create database object for the new user
+      let response;
+      // try {
+      response = await axiosInstance.post("/user/signUp", {
+        name,
+        email: signedInUser.user.email,
+        uid: signedInUser.user.uid,
       });
-  } else {
-    //dont remember
-    await firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.SESSION);
-    firebase
-      .auth()
-      .signInWithPopup(gmailProvider)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        Notifications.add(error.message, -1);
+      // } catch (e) {
+      //   let msg = e?.response?.data?.message ?? e.message;
+      //   Notifications.add("Failed to create account: " + msg, -1);
+      //   return;
+      // }
+      if (response.status == 200) {
+        await signedInUser.user.updateProfile({ displayName: name });
+        await signedInUser.user.sendEmailVerification();
+        AllTimeStats.clear();
+        Notifications.add("Account created", 1, 3);
+        $("#menu .icon-button.account .text").text(name);
+        $(".pageLogin .register .button").removeClass("disabled");
         $(".pageLogin .preloader").addClass("hidden");
-      });
+        await loadUser(signedInUser.user);
+        if (TestLogic.notSignedInLastResult !== null) {
+          TestLogic.setNotSignedInUid(signedInUser.user.uid);
+          axiosInstance
+            .post("/results/add", {
+              result: TestLogic.notSignedInLastResult,
+            })
+            .then((result) => {
+              if (result.status === 200) {
+                DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
+              }
+            });
+          UI.changePage("account");
+        }
+      }
+    }
+  } catch (e) {
+    newSignUp = false;
+    console.log(e);
+    Notifications.add("Failed to sign in with Google: " + e.message, -1);
+    $(".pageLogin .preloader").addClass("hidden");
+    signedInUser.user.delete();
+    axiosInstance.post("/user/delete", { uid: signedInUser.user.uid });
+    return;
   }
 }
 
-export async function signInWithGitHub() {
-  $(".pageLogin .preloader").removeClass("hidden");
+// export async function signInWithGitHub() {
+//   $(".pageLogin .preloader").removeClass("hidden");
 
-  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
-    //remember me
-    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    firebase
-      .auth()
-      .signInWithPopup(githubProvider)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        Notifications.add(error.message, -1);
-        $(".pageLogin .preloader").addClass("hidden");
-      });
-  } else {
-    //dont remember
-    await firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.SESSION);
-    firebase
-      .auth()
-      .signInWithPopup(githubProvider)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        Notifications.add(error.message, -1);
-        $(".pageLogin .preloader").addClass("hidden");
-      });
-  }
-}
+//   try{
+//     if ($(".pageLogin .login #rememberMe input").prop("checked")) {
+//       //remember me
+//       await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+//       let signedInUser = await firebase.auth().signInWithPopup(githubProvider);
+//       console.log(signedInUser);
+//     } else {
+//       //dont remember
+//       await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+//       let signedInUser = await firebase.auth().signInWithPopup(githubProvider);
+//       console.log(signedInUser);
+//     }
+//   }catch(e){
+//     Notifications.add("Failed to sign in with GitHub: " + e.message, -1);
+//     $(".pageLogin .preloader").addClass("hidden");
+//   }
+// }
 
 export function linkWithGoogle() {
   firebase
@@ -171,6 +220,8 @@ async function signUp() {
     return;
   }
 
+  newSignUp = true;
+
   try {
     const checkNameResponse = await axiosInstance.post("/user/checkName", {
       name: nname,
@@ -187,6 +238,7 @@ async function signUp() {
     Notifications.add(txt, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .register .button").removeClass("disabled");
+    newSignUp = false;
     return;
   }
 
@@ -207,16 +259,7 @@ async function signUp() {
     $("#menu .icon-button.account .text").text(nname);
     $(".pageLogin .register .button").removeClass("disabled");
     $(".pageLogin .preloader").addClass("hidden");
-    DB.setSnapshot({
-      results: [],
-      personalBests: {},
-      tags: [],
-      globalStats: {
-        time: undefined,
-        started: undefined,
-        completed: undefined,
-      },
-    });
+    await loadUser(createdAuthUser.user);
     if (TestLogic.notSignedInLastResult !== null) {
       TestLogic.setNotSignedInUid(createdAuthUser.user.uid);
       axiosInstance
@@ -231,6 +274,7 @@ async function signUp() {
       UI.changePage("account");
     }
   } catch (e) {
+    newSignUp = false;
     //make sure to do clean up here
     await createdAuthUser.user.delete();
     axiosInstance.post("/user/delete", { uid: createdAuthUser.user.uid });
@@ -396,54 +440,58 @@ $(".pageLogin .login .button.signInWithGoogle").click((e) => {
   signInWithGoogle();
 });
 
-$(".pageLogin .login .button.signInWithGitHub").click((e) => {
-  UpdateConfig.setChangedBeforeDb(false);
-  signInWithGitHub();
-});
+// $(".pageLogin .login .button.signInWithGitHub").click((e) => {
+// UpdateConfig.setChangedBeforeDb(false);
+// signInWithGitHub();
+// });
 
 $(".signOut").click((e) => {
   signOut();
 });
 
+async function loadUser(user) {
+  // User is signed in.
+  $(".pageAccount .content p.accountVerificatinNotice").remove();
+  if (user.emailVerified === false) {
+    $(".pageAccount .content").prepend(
+      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
+    );
+  }
+  UI.setPageTransition(false);
+  AccountButton.update();
+  AccountButton.loading(true);
+  Account.getDataAndInit();
+  // var displayName = user.displayName;
+  // var email = user.email;
+  // var emailVerified = user.emailVerified;
+  // var photoURL = user.photoURL;
+  // var isAnonymous = user.isAnonymous;
+  // var uid = user.uid;
+  // var providerData = user.providerData;
+  $(".pageLogin .preloader").addClass("hidden");
+
+  // showFavouriteThemesAtTheTop();
+  CommandlineLists.updateThemeCommands();
+
+  let text = "Account created on " + user.metadata.creationTime;
+
+  const date1 = new Date(user.metadata.creationTime);
+  const date2 = new Date();
+  const diffTime = Math.abs(date2 - date1);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
+
+  $(".pageAccount .group.createdDate").text(text);
+
+  if (VerificationController.data !== null) {
+    VerificationController.verify(user);
+  }
+}
+
 firebase.auth().onAuthStateChanged(function (user) {
-  if (user) {
-    // User is signed in.
-    $(".pageAccount .content p.accountVerificatinNotice").remove();
-    if (user.emailVerified === false) {
-      $(".pageAccount .content").prepend(
-        `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
-      );
-    }
-    UI.setPageTransition(false);
-    AccountButton.update();
-    AccountButton.loading(true);
-    Account.getDataAndInit();
-    // var displayName = user.displayName;
-    // var email = user.email;
-    // var emailVerified = user.emailVerified;
-    // var photoURL = user.photoURL;
-    // var isAnonymous = user.isAnonymous;
-    // var uid = user.uid;
-    // var providerData = user.providerData;
-    $(".pageLogin .preloader").addClass("hidden");
-
-    // showFavouriteThemesAtTheTop();
-    CommandlineLists.updateThemeCommands();
-
-    let text = "Account created on " + user.metadata.creationTime;
-
-    const date1 = new Date(user.metadata.creationTime);
-    const date2 = new Date();
-    const diffTime = Math.abs(date2 - date1);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
-
-    $(".pageAccount .group.createdDate").text(text);
-
-    if (VerificationController.data !== null) {
-      VerificationController.verify(user);
-    }
+  if (user && !newSignUp) {
+    loadUser(user);
   } else {
     UI.setPageTransition(false);
     if ($(".pageLoading").hasClass("active")) UI.changePage("");
