@@ -1254,12 +1254,12 @@ export function finish(difficultyFailed = false) {
     $("#result .stats .time .bottom .afk").text(afkSecondsPercent + "% afk");
   }
   let ttseconds = testtime - afkseconds;
-  if (!difficultyFailed) {
-    ttseconds +=
-      TestStats.incompleteSeconds < 0
-        ? 0
-        : Misc.roundTo2(TestStats.incompleteSeconds);
-  }
+  // if (!difficultyFailed) {
+  //   ttseconds +=
+  //     TestStats.incompleteSeconds < 0
+  //       ? 0
+  //       : Misc.roundTo2(TestStats.incompleteSeconds);
+  // }
   TodayTracker.addSeconds(ttseconds);
   $("#result .stats .time .bottom .timeToday").text(TodayTracker.getString());
   $("#result .stats .key .bottom").text(testtime + "s");
