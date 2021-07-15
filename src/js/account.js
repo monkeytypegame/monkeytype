@@ -505,7 +505,7 @@ export function update() {
         activityChartData[resultDate].time +=
           result.testDuration +
           result.incompleteTestSeconds -
-          result.afkDuration;
+          (result.afkDuration ?? 0);
         activityChartData[resultDate].totalWpm += result.wpm;
       } else {
         activityChartData[resultDate] = {
@@ -513,7 +513,7 @@ export function update() {
           time:
             result.testDuration +
             result.incompleteTestSeconds -
-            result.afkDuration,
+            (result.afkDuration ?? 0),
           totalWpm: result.wpm,
         };
       }
