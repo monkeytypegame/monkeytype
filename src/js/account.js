@@ -66,7 +66,7 @@ export function getDataAndInit() {
         CloudFunctions.removeSmallTests({ uid: user.uid });
       }
       // if($(".pageAccount").hasClass('active')) update();
-      if($(".pageLogin").hasClass('active')) UI.changePage('account');
+      if ($(".pageLogin").hasClass("active")) UI.changePage("account");
       if (!UpdateConfig.changedBeforeDb) {
         if (Config.localStorageConfig === null) {
           AccountButton.loading(false);
@@ -145,7 +145,7 @@ export function getDataAndInit() {
       ResultTagsPopup.updateButtons();
       Settings.showAccountSection();
       UI.setPageTransition(false);
-      if($(".pageLoading").hasClass('active')) UI.changePage('');
+      if ($(".pageLoading").hasClass("active")) UI.changePage("");
     })
     .catch((e) => {
       AccountButton.loading(false);
@@ -503,12 +503,17 @@ export function update() {
       if (Object.keys(activityChartData).includes(String(resultDate))) {
         activityChartData[resultDate].amount++;
         activityChartData[resultDate].time +=
-          result.testDuration + result.incompleteTestSeconds;
+          result.testDuration +
+          result.incompleteTestSeconds -
+          result.afkDuration;
         activityChartData[resultDate].totalWpm += result.wpm;
       } else {
         activityChartData[resultDate] = {
           amount: 1,
-          time: result.testDuration + result.incompleteTestSeconds,
+          time:
+            result.testDuration +
+            result.incompleteTestSeconds -
+            result.afkDuration,
           totalWpm: result.wpm,
         };
       }
@@ -838,7 +843,7 @@ $(".pageAccount #accountHistoryChart").click((e) => {
   loadMoreLines(index);
   $([document.documentElement, document.body]).animate(
     {
-      scrollTop: $(`#result-${index}`).offset().top - ($(window).height()/2),
+      scrollTop: $(`#result-${index}`).offset().top - $(window).height() / 2,
     },
     500
   );
