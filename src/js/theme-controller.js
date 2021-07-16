@@ -165,10 +165,11 @@ export function clearRandom() {
 }
 
 export function applyCustomBackground() {
-  $(".customBackground").css({
-    backgroundImage: `url(${Config.customBackground})`,
-    backgroundAttachment: "fixed",
-  });
+  // $(".customBackground").css({
+  //   backgroundImage: `url(${Config.customBackground})`,
+  //   backgroundAttachment: "fixed",
+  // });
+  $(".customBackground").html(`<img src="${Config.customBackground}"></img>`);
   if (Config.customBackground === "") {
     $("#words").removeClass("noErrorBorder");
   } else {
@@ -178,12 +179,14 @@ export function applyCustomBackground() {
 
 export function applyCustomBackgroundSize() {
   if (Config.customBackgroundSize == "max") {
-    $(".customBackground").css({
-      backgroundSize: "100% 100%",
+    $(".customBackground img").css({
+      // width: "calc(100%)",
+      // height: "calc(100%)",
+      objectFit: "",
     });
   } else if (Config.customBackgroundSize != "") {
-    $(".customBackground").css({
-      backgroundSize: Config.customBackgroundSize,
+    $(".customBackground img").css({
+      objectFit: Config.customBackgroundSize,
     });
   }
 }

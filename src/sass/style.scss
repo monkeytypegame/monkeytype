@@ -141,6 +141,9 @@ body {
   background-position: center center;
   background-repeat: no-repeat;
   z-index: -999;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 html {
