@@ -527,13 +527,16 @@ export function update() {
           tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
         }
       } else {
-        tt = parseFloat(result.testDuration);
+        tt = result.testDuration;
       }
-      if (result.incompleteTestSeconds != undefined) {
-        tt += result.incompleteTestSeconds;
-      } else if (result.restartCount != undefined && result.restartCount > 0) {
-        tt += (tt / 4) * result.restartCount;
-      }
+
+      tt += (result.incompleteTestSeconds ?? 0) - (result.afkDuration ?? 0);
+
+      // if (result.incompleteTestSeconds != undefined) {
+      //   tt += result.incompleteTestSeconds;
+      // } else if (result.restartCount != undefined && result.restartCount > 0) {
+      //   tt += (tt / 4) * result.restartCount;
+      // }
       totalSecondsFiltered += tt;
 
       if (last10 < 10) {
@@ -694,24 +697,9 @@ export function update() {
       $(".pageAccount .triplegroup.stats").removeClass("hidden");
     }
 
-    let th = Math.floor(totalSeconds / 3600);
-    let tm = Math.floor((totalSeconds % 3600) / 60);
-    let ts = Math.floor((totalSeconds % 3600) % 60);
-    $(".pageAccount .timeTotal .val").text(`
-
-      ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
-      ts < 10 ? "0" + ts : ts
-    }
-    `);
-    let tfh = Math.floor(totalSecondsFiltered / 3600);
-    let tfm = Math.floor((totalSecondsFiltered % 3600) / 60);
-    let tfs = Math.floor((totalSecondsFiltered % 3600) % 60);
-    $(".pageAccount .timeTotalFiltered .val").text(`
-
-    ${tfh < 10 ? "0" + tfh : tfh}:${tfm < 10 ? "0" + tfm : tfm}:${
-      tfs < 10 ? "0" + tfs : tfs
-    }
-  `);
+    $(".pageAccount .timeTotalFiltered .val").text(
+      Misc.secondsToString(Math.round(totalSecondsFiltered), true)
+    );
 
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm / testCount));
