@@ -169,11 +169,12 @@ export function applyCustomBackground() {
   //   backgroundImage: `url(${Config.customBackground})`,
   //   backgroundAttachment: "fixed",
   // });
-  $(".customBackground").html(`<img src="${Config.customBackground}"></img>`);
   if (Config.customBackground === "") {
     $("#words").removeClass("noErrorBorder");
+    $(".customBackground img").remove();
   } else {
     $("#words").addClass("noErrorBorder");
+    $(".customBackground").html(`<img src="${Config.customBackground}"></img>`);
   }
 }
 
