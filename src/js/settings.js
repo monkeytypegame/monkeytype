@@ -155,6 +155,7 @@ async function initGroups() {
     "startGraphsAtZero",
     UpdateConfig.setStartGraphsAtZero
   );
+  groups.autoTheme = new SettingsGroup("autoTheme", UpdateConfig.setAutoTheme);
   groups.randomTheme = new SettingsGroup(
     "randomTheme",
     UpdateConfig.setRandomTheme

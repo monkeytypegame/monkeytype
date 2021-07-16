@@ -135,8 +135,8 @@ export function clearPreview() {
 // gets the current theme from the system, and then
 // based of the button clicked from the user
 // satisfy the usecase.
-export function autoTheme() {
-  //...
+export function autoThemeSwitchFunction() {
+  console.log("Auto theme function has been set");
 }
 
 export function randomizeTheme() {

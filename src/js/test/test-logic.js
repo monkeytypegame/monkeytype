@@ -829,6 +829,14 @@ export function restart(
     ) {
       ThemeController.randomizeTheme();
     }
+    if (
+      Config.autoTheme !== "off" &&
+      !Config.randomTheme &&
+      !UI.pageTransition &&
+      !Config.customTheme
+    ) {
+      ThemeController.autoTheme();
+    }
   }
   TestUI.setResultVisible(false);
   UI.setPageTransition(true);
