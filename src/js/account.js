@@ -404,7 +404,10 @@ export function update() {
             return;
         }
 
-        let langFilter = ResultFilters.getFilter("language", result.language);
+        let langFilter = ResultFilters.getFilter(
+          "language",
+          result.language ?? "english"
+        );
 
         if (
           result.language === "english_expanded" &&
