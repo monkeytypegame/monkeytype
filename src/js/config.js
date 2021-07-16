@@ -81,6 +81,7 @@ let defaultConfig = {
   timerStyle: "mini",
   colorfulMode: false,
   randomTheme: "off",
+  autoTheme: "off",
   timerColor: "main",
   timerOpacity: "1",
   stopOnError: "off",
@@ -1258,6 +1259,17 @@ export function setTheme(name, nosave) {
   config.theme = name;
   setCustomTheme(false, true, true);
   ThemeController.set(config.theme);
+  if (!nosave) saveToLocalStorage();
+}
+
+export function setAutoTheme(val, nosave) {
+  if (val === undefined || val === true || val === false) {
+    val = "off";
+  }
+  if (val === "off") {
+    ThemeController.clearAutoTheme();
+  }
+  config.autoTheme = val;
   if (!nosave) saveToLocalStorage();
 }
 

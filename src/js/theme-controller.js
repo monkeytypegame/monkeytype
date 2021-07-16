@@ -8,6 +8,7 @@ import tinycolor from "tinycolor2";
 
 let isPreviewingTheme = false;
 export let randomTheme = null;
+export let autoTheme = null;
 
 export const colorVars = [
   "--bg-color",
@@ -130,6 +131,14 @@ export function clearPreview() {
   }
 }
 
+// TODO: Write the function that
+// gets the current theme from the system, and then
+// based of the button clicked from the user
+// satisfy the usecase.
+export function autoTheme() {
+  //...
+}
+
 export function randomizeTheme() {
   var randomList;
   Misc.getThemesList().then((themes) => {
@@ -158,6 +167,10 @@ export function randomizeTheme() {
       // Notifications.add(randomTheme.replace(/_/g, " "), 0);
     }
   });
+}
+
+export function clearAutoTheme() {
+  autoTheme = null;
 }
 
 export function clearRandom() {
