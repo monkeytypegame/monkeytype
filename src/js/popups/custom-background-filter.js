@@ -34,9 +34,15 @@ export function getCSS() {
 
 export function apply() {
   let filterCSS = getCSS();
-  $(".customBackground").css({
+  let css = {
     filter: filterCSS,
-  });
+    width: `calc(100% + ${filters.blur.value * 4}rem)`,
+    height: `calc(100% + ${filters.blur.value * 4}rem)`,
+    left: `-${filters.blur.value * 2}rem`,
+    top: `-${filters.blur.value * 2}rem`,
+    position: "absolute",
+  };
+  $(".customBackground img").css(css);
 }
 
 function syncSliders() {
