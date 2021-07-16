@@ -1631,6 +1631,7 @@ export function apply(configObj) {
     setFavThemes(configObj.favThemes, true);
     setFunbox(configObj.funbox, true);
     setRandomTheme(configObj.randomTheme, true);
+    setAutoTheme(configObj.randomTheme, true);
     setShowAllLines(configObj.showAllLines, true);
     setSwapEscAndTab(configObj.swapEscAndTab, true);
     setShowOutOfFocusWarning(configObj.showOutOfFocusWarning, true);
