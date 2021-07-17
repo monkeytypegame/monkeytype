@@ -746,9 +746,9 @@ export function update() {
       )}%)`
     );
 
-    $(".pageAccount .avgRestart .val").text(
-      (testRestarts / testCount).toFixed(1)
-    );
+    $(".pageAccount .testsCompleted .avgres").text(`
+      ${(testRestarts / testCount).toFixed(1)} restarts per completed test
+    `);
 
     if (ChartController.accountHistory.data.datasets[0].data.length > 0) {
       ChartController.accountHistory.options.plugins.trendlineLinear = true;
