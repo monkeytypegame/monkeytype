@@ -790,12 +790,73 @@ export function toggleResultWords() {
     }
   }
 }
-export let heatmapEnabled = false;
-function toggleBurstHeatmap() {
-  if (!heatmapEnabled) {
-    applyBurstHeatmap();
+
+export function applyBurstHeatmap() {
+  if (Config.burstHeatmap) {
+    $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
+    let min = Math.min(...TestStats.burstHistory);
+    let max = Math.max(...TestStats.burstHistory);
+    // let step = (max - min) / 5;
+    // let steps = [
+    //   {
+    //     val: min,
+    //     class: 'heatmap-0'
+    //   },
+    //   {
+    //     val: min + (step * 1),
+    //     class: 'heatmap-1'
+    //   },
+    //   {
+    //     val: min + (step * 2),
+    //     class: 'heatmap-2'
+    //   },
+    //   {
+    //     val: min + (step * 3),
+    //     class: 'heatmap-3'
+    //   },
+    //   {
+    //     val: min + (step * 4),
+    //     class: 'heatmap-4'
+    //   },
+    // ];
+    let median = Misc.median(TestStats.burstHistory);
+    let adatm = [];
+    TestStats.burstHistory.forEach((burst) => {
+      adatm.push(Math.abs(median - burst));
+    });
+    let step = Misc.mean(adatm);
+    // let step = Misc.stdDev(TestStats.burstHistory)/2;
+    let steps = [
+      {
+        val: 0,
+        class: "heatmap-0",
+      },
+      {
+        val: median - step * 1.5,
+        class: "heatmap-1",
+      },
+      {
+        val: median - step * 0.5,
+        class: "heatmap-2",
+      },
+      {
+        val: median + step * 0.5,
+        class: "heatmap-3",
+      },
+      {
+        val: median + step * 1.5,
+        class: "heatmap-4",
+      },
+    ];
+    $("#resultWordsHistory .words .word").each((index, word) => {
+      let wordBurstVal = parseInt($(word).attr("burst"));
+      let cls = "";
+      steps.forEach((step) => {
+        if (wordBurstVal > step.val) cls = step.class;
+      });
+      $(word).addClass(cls);
+    });
   } else {
-    //clear all classes
     $("#resultWordsHistory .heatmapLegend").addClass("hidden");
     $("#resultWordsHistory .words .word").removeClass("heatmap-0");
     $("#resultWordsHistory .words .word").removeClass("heatmap-1");
@@ -803,73 +864,6 @@ function toggleBurstHeatmap() {
     $("#resultWordsHistory .words .word").removeClass("heatmap-3");
     $("#resultWordsHistory .words .word").removeClass("heatmap-4");
   }
-  heatmapEnabled = !heatmapEnabled;
-}
-
-export function applyBurstHeatmap() {
-  $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
-  let min = Math.min(...TestStats.burstHistory);
-  let max = Math.max(...TestStats.burstHistory);
-  // let step = (max - min) / 5;
-  // let steps = [
-  //   {
-  //     val: min,
-  //     class: 'heatmap-0'
-  //   },
-  //   {
-  //     val: min + (step * 1),
-  //     class: 'heatmap-1'
-  //   },
-  //   {
-  //     val: min + (step * 2),
-  //     class: 'heatmap-2'
-  //   },
-  //   {
-  //     val: min + (step * 3),
-  //     class: 'heatmap-3'
-  //   },
-  //   {
-  //     val: min + (step * 4),
-  //     class: 'heatmap-4'
-  //   },
-  // ];
-  let median = Misc.median(TestStats.burstHistory);
-  let adatm = [];
-  TestStats.burstHistory.forEach((burst) => {
-    adatm.push(Math.abs(median - burst));
-  });
-  let step = Misc.mean(adatm);
-  // let step = Misc.stdDev(TestStats.burstHistory)/2;
-  let steps = [
-    {
-      val: 0,
-      class: "heatmap-0",
-    },
-    {
-      val: median - step * 1.5,
-      class: "heatmap-1",
-    },
-    {
-      val: median - step * 0.5,
-      class: "heatmap-2",
-    },
-    {
-      val: median + step * 0.5,
-      class: "heatmap-3",
-    },
-    {
-      val: median + step * 1.5,
-      class: "heatmap-4",
-    },
-  ];
-  $("#resultWordsHistory .words .word").each((index, word) => {
-    let wordBurstVal = parseInt($(word).attr("burst"));
-    let cls = "";
-    steps.forEach((step) => {
-      if (wordBurstVal > step.val) cls = step.class;
-    });
-    $(word).addClass(cls);
-  });
 }
 
 export function highlightBadWord(index, showError) {
@@ -908,7 +902,7 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
 });
 
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {
-  toggleBurstHeatmap();
+  UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
 });
 
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
