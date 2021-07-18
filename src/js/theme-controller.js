@@ -165,25 +165,29 @@ export function clearRandom() {
 }
 
 export function applyCustomBackground() {
-  $(".customBackground").css({
-    backgroundImage: `url(${Config.customBackground})`,
-    backgroundAttachment: "fixed",
-  });
+  // $(".customBackground").css({
+  //   backgroundImage: `url(${Config.customBackground})`,
+  //   backgroundAttachment: "fixed",
+  // });
   if (Config.customBackground === "") {
     $("#words").removeClass("noErrorBorder");
+    $(".customBackground img").remove();
   } else {
     $("#words").addClass("noErrorBorder");
+    $(".customBackground").html(`<img src="${Config.customBackground}"></img>`);
   }
 }
 
 export function applyCustomBackgroundSize() {
   if (Config.customBackgroundSize == "max") {
-    $(".customBackground").css({
-      backgroundSize: "100% 100%",
+    $(".customBackground img").css({
+      // width: "calc(100%)",
+      // height: "calc(100%)",
+      objectFit: "",
     });
   } else if (Config.customBackgroundSize != "") {
-    $(".customBackground").css({
-      backgroundSize: Config.customBackgroundSize,
+    $(".customBackground img").css({
+      objectFit: Config.customBackgroundSize,
     });
   }
 }

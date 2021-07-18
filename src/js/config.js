@@ -125,6 +125,7 @@ let defaultConfig = {
   monkeyPowerLevel: "off",
   minBurst: "off",
   minBurstCustomSpeed: 100,
+  burstHeatmap: false,
 };
 
 function isConfigKeyValid(name) {
@@ -1186,7 +1187,7 @@ export function setFontFamily(font, nosave) {
   config.fontFamily = font;
   document.documentElement.style.setProperty(
     "--font",
-    '"' + font.replace(/_/g, " ") + '"'
+    `"${font.replace(/_/g, " ")}", "Roboto Mono"`
   );
   ChartController.setDefaultFontFamily(font);
   if (!nosave) saveToLocalStorage();
@@ -1548,6 +1549,15 @@ export function setMonkeyPowerLevel(level, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+export function setBurstHeatmap(value, nosave) {
+  if (!value) {
+    value = false;
+  }
+  config.burstHeatmap = value;
+  TestUI.applyBurstHeatmap();
+  if (!nosave) saveToLocalStorage();
+}
+
 export function apply(configObj) {
   if (configObj == null || configObj == undefined) {
     Notifications.add("Could not apply config", -1, 3);
@@ -1636,6 +1646,7 @@ export function apply(configObj) {
     setMonkey(configObj.monkey, true);
     setRepeatQuotes(configObj.repeatQuotes, true);
     setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
+    setBurstHeatmap(configObj.burstHeatmap, true);
 
     LanguagePicker.setActiveGroup();
 

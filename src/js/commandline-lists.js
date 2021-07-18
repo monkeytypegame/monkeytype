@@ -201,7 +201,7 @@ let commandsTags = {
 };
 
 export function updateTagCommands() {
-  if (DB.getSnapshot().tags.length > 0) {
+  if (DB.getSnapshot()?.tags?.length > 0) {
     commandsTags.list = [];
 
     commandsTags.list.push({
@@ -266,7 +266,7 @@ let commandsPresets = {
 };
 
 export function updatePresetCommands() {
-  if (DB.getSnapshot().presets.length > 0) {
+  if (DB.getSnapshot()?.presets?.length > 0) {
     commandsPresets.list = [];
 
     DB.getSnapshot().presets.forEach((preset) => {

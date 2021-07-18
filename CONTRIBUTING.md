@@ -1,43 +1,37 @@
 # Contributing
 
 ### **Table of Contents**
-<!-- TODO: check if all anchor links work -->
 - [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
-    - [Prerequisite - Text Editor](#prerequisite---text-editor)
-    - [Prerequisite - Git ](#prerequisite---git )
-    - [Prerequisite - NodeJS](#prerequisite---nodejs)
-    - [Prerequisite - Firebase Setup](#prerequisite---firebase)
-- [Building and Running](#building-and-running-monkeytype)
+    - [Text Editor](#text-editor)
+    - [Git ](#git )
+    - [NodeJS](#nodejs)
+    - [Firebase](#firebase)
+- [Building and Running Monkeytype](#building-and-running-monkeytype)
 - [Standards and Guidelines](#standards-and-guidelines)
     - [Theme Guidelines](#theme-guidelines)
     - [Language Guidelines](#language-guidelines)
     - [Quote Guidelines](#quote-guidelines)
 - [Questions](#questions)
 
-
+----
 
 ## Getting Started
 
-When contributing to Monkeytype, it's good to know our best practices, tips, and tricks. First, Monkeytype is written in JavaScript; thus we assume you are comfortable in JavaScript or have basic knowledge of it. We use Prettier to format our code. Our backend is in NodeJS and we use Firebase to store our user data. 
-
+When contributing to Monkeytype, it's good to know our best practices, tips, and tricks. First, Monkeytype is written in Javascript, CSS and HTML(in order of how much of the project is in what language); thus we assume you are comfortable in in these languages or have basic knowledge of them. Our backend is in NodeJS and we use Firebase to store our user data. We use Prettier to format our code.
 
 ### Prerequisites
-While most contributions don't require that you install dependencies, there are a few minimum requirements you will need to meet to be able to run the project(this is useful and almost always necessary for tasks like creating features and fixing bugs, running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, NodeJS with a version < 14 and Firebase, and a text editor.
+While most contributions don't require that you install dependencies, there are a few minimum requirements you will need to meet to be able to run the project(this is useful and almost always necessary for tasks like creating features and fixing bugs, running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, Git, NodeJS with a version < 14 and Firebase, and a text editor.
 
-#### Prerequisite - Text Editor
-If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make the process *much* easier. A popular and relatively lightweight editor is the free and open-source [Visual Studio Code](https://code.visualstudio.com/) or VS Code for short from Microsoft. Once you have downloaded the binary for your operating system, run the installer and follow the prompts. You will be given some options, but enabling them is just preference. Once you have VS Code installed, you are ready to start contributing.
+#### Text Editor
+If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions *much* easier. A popular and relatively lightweight editor [Visual Studio Code](https://code.visualstudio.com/) or VS Code. Is is the free and open-source from Microsoft. Run the installer and follow the prompts. Once you have VS Code installed, you are ready to start contributing.
 
-#### Prerequisite - Git 
-Git is optional but is one thing that is highly recommended. Monkeytype used the Git source control management system for its version control. Without Git, you will be limited to using GitHub's basic online editor for making commits or will need to make changes and copy-paste them into GitHub. You also won't be able to create save points in your code that you can revert to (`git revert [commit hash]`)Using Git allows you to make that process more seamless. Assuming you don't have experience with using a command line, I suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. Note that using Git from a Git client won't give you access to its full functionality. Once you have downloaded Sourcetree, run the installer. If you don't have Git installed and get the option to install it in the Sourcetree installer, install it. Once you have completed that, you are one step closer to contributing your change. 
+#### Git 
+Git is optional but we *highly* recommend you use it. Monkeytype used the Git source control management system for its version control. Assuming you don't have experience typing commmands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. However using a Git client won't give you access to the full functionality of Git but provides an easy to understand graphical user interface(GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
+#### NodeJS
+The installation process of NodeJS is fairly simple, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `xx.xx.x LTS`. Run the installer once the download has finished.
 
-#### Prerequisite - NodeJS
-Note that this section only covers the installation of NodeJS
-The installation process of NodeJS is fairly simple, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `xx.xx.x LTS`. Your operating system will be detected and the website will ask to save a binary relevant to your operating system. Run the binary and follow the installer. 
-
-#### Prerequisite - Firebase
-
-Note that you will need to create a Firebase account to ensure the further steps are successful.
+#### Firebase
 1. Create a Firebase account if you already haven't done so. 
 1. [Create a new Firebase project.](https://console.firebase.google.com/u/0/)
 
@@ -84,7 +78,7 @@ Note that you will need to create a Firebase account to ensure the further steps
 
 Once you have completed the above steps, you are ready to build and run Monkeytype. 
 1. Run `npm install` in the project root directory to install dependencies.
-1. Run `npm run start:dev` to start a local dev server on port 5000. It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use <kbd>control c</kbd> to abort it.
+1. Run `npm run start:dev` to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use <kbd>Ctrl+ C</kbd> to abort it.
    - Run `firebase use {your-project-id}` if you run into any errors for this.
 
 ### Standards and Guidelines
@@ -114,4 +108,4 @@ Following the guidelines below will increase your chance of getting your change 
 
 ## Questions
 
-If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec) or [Discord](https://discord.gg/monkeytype) in the `#development` channel.
+If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec), [Discord](https://discord.gg/monkeytype) in the `#development` channel, or on Monkeytype's [GitHub discussions](https://github.com/Miodec/monkeytype/discussions).

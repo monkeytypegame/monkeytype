@@ -141,6 +141,9 @@ body {
   background-position: center center;
   background-repeat: no-repeat;
   z-index: -999;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 html {
@@ -1170,7 +1173,6 @@ label.checkbox {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
     }
@@ -1196,7 +1198,6 @@ label.checkbox {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
     }
@@ -2093,7 +2094,7 @@ key {
     }
 
     .source {
-      width: 25vw;
+      max-width: 30rem;
     }
 
     .tags .bottom .fas {
@@ -3185,29 +3186,6 @@ key {
         grid-auto-columns: 1fr;
         gap: 0.5rem;
         grid-area: tabs;
-
-        .tab {
-          will-change: color;
-          transition: 0.2s ease-in-out color;
-          outline: 0;
-          cursor: pointer;
-          padding: 0;
-          font-size: 1rem;
-          color: var(--sub-color);
-          text-align: left;
-          border: 0;
-          background: 0;
-          font-family: var(--font);
-
-          &:first-child {
-            margin-right: 0.5rem;
-          }
-
-          &.active,
-          &:hover {
-            color: var(--main-color);
-          }
-        }
       }
 
       .buttons {
@@ -3390,7 +3368,7 @@ key {
 
     .val {
       font-size: 3rem;
-      line-height: 3rem;
+      line-height: 3.5rem;
     }
 
     &.chart {

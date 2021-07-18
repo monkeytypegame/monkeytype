@@ -364,7 +364,8 @@ export let accountActivity = new Chart(
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (tooltipItem.datasetIndex === 0) {
               return `Time Typing: ${Misc.secondsToString(
-                resultData.y
+                Math.round(resultData.y),
+                true
               )}\nTests Completed: ${resultData.amount}`;
             } else if (tooltipItem.datasetIndex === 1) {
               return `Average Wpm: ${Misc.roundTo2(resultData.y)}`;
