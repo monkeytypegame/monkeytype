@@ -364,9 +364,9 @@ list.resetSettings = new SimplePopup(
   "Reset",
   () => {
     UpdateConfig.reset();
-    setTimeout(() => {
-      location.reload();
-    }, 1000);
+    // setTimeout(() => {
+    //   location.reload();
+    // }, 1000);
   },
   () => {}
 );
