@@ -1717,6 +1717,7 @@ export function apply(configObj) {
         );
         $("#ad_account").removeClass("hidden");
       } else {
+        $("#adScript").remove();
         $(".footerads").remove();
         $("#ad_left").remove();
         $("#ad_right").remove();
