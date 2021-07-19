@@ -141,6 +141,9 @@ body {
   background-position: center center;
   background-repeat: no-repeat;
   z-index: -999;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 html {
@@ -2091,7 +2094,7 @@ key {
     }
 
     .source {
-      width: 25vw;
+      max-width: 30rem;
     }
 
     .tags .bottom .fas {
@@ -3365,7 +3368,7 @@ key {
 
     .val {
       font-size: 3rem;
-      line-height: 3rem;
+      line-height: 3.5rem;
     }
 
     &.chart {

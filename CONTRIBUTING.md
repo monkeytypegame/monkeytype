@@ -86,7 +86,7 @@ The installation process of NodeJS is fairly simple, navigate to the NodeJS [web
 Once you have completed the above steps, you are ready to build and run Monkeytype.
 
 1. Run `npm install` in the project root directory to install dependencies.
-1. Run `npm run start:dev` to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use <kbd>Ctrl+ C</kbd> to abort it.
+1. Run `npm run start:dev` to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Use <kbd>Ctrl+C</kbd> to abort it.
    - Run `firebase use {your-project-id}` if you run into any errors for this.
 
 ### Standards and Guidelines

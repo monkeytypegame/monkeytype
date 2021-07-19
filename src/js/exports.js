@@ -25,3 +25,5 @@ global.crownTest = async () => {
     await DB.getUserHighestWpm("time", 60, false, "english", "normal")
   );
 };
+
+global.filterDebug = Account.toggleFilterDebug;
