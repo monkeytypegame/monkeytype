@@ -494,7 +494,7 @@ export function update() {
           }
         } else {
           //tags exist
-          let validTags = DB.getSnapshot().tags.map((t) => t.id);
+          let validTags = DB.getSnapshot().tags.map((t) => t._id);
           result.tags.forEach((tag) => {
             //check if i even need to check tags anymore
             if (!tagHide) return;
