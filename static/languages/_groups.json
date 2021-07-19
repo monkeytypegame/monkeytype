@@ -217,6 +217,10 @@
     "languages": ["urdu", "urdu_1k"]
   },
   {
+    "name": "albanian",
+    "languanges": ["albanian", "albanian_1k"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",

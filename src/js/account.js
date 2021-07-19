@@ -657,7 +657,10 @@ export function update() {
           ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
           : "";
         topWpm = result.wpm;
-        topMode = result.mode + " " + result.mode2 + puncsctring + numbsctring;
+        if (result.mode == "custom") topMode = result.mode;
+        else
+          topMode =
+            result.mode + " " + result.mode2 + puncsctring + numbsctring;
       }
 
       totalWpm += result.wpm;

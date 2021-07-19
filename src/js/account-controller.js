@@ -14,7 +14,7 @@ import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
 
-const gmailProvider = new firebase.auth.GoogleAuthProvider();
+export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 const githubProvider = new firebase.auth.GithubAuthProvider();
 
 export function signIn() {
