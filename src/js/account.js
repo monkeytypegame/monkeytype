@@ -943,6 +943,11 @@ $(document).on("click", ".history-consistency-header", (event) => {
   $(".history-consistency-header").addClass("header-sorted");
 });
 
+$(document).on("click", ".history-date-header", (event) => {
+  sortResultsBy("timestamp");
+  $(".history-date-header").addClass("header-sorted");
+});
+
 function sortResultsBy(key) {
   // Removes styling from previous sorting requests:
   $("td").removeClass("header-sorted");
@@ -961,19 +966,23 @@ function sortResultsBy(key) {
   let temp = [];
   let parsedIndexes = [];
 
+  console.log(descending);
+
   while (temp.length < filteredResults.length) {
-    let lowest = 500;
+    let lowest = Number.MAX_VALUE;
     let highest = -1;
     let idx = -1;
+
     for (let i = 0; i < filteredResults.length; i++) {
       //find the lowest wpm with index not already parsed
+      console.log(filteredResults[i][key]);
       if (!descending) {
-        if (filteredResults[i][key] < lowest && !parsedIndexes.includes(i)) {
+        if (filteredResults[i][key] <= lowest && !parsedIndexes.includes(i)) {
           lowest = filteredResults[i][key];
           idx = i;
         }
       } else {
-        if (filteredResults[i][key] > highest && !parsedIndexes.includes(i)) {
+        if (filteredResults[i][key] >= highest && !parsedIndexes.includes(i)) {
           highest = filteredResults[i][key];
           idx = i;
         }
@@ -984,6 +993,7 @@ function sortResultsBy(key) {
     parsedIndexes.push(idx);
   }
   filteredResults = temp;
+  console.log(filteredResults[0]);
 
   $(".pageAccount .history table tbody").empty();
   visibleTableLines = 0;
