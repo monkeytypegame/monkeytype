@@ -1,6 +1,6 @@
 import * as Notifications from "./notifications";
 
-export function copyUserName() {
+function copyUserName() {
     if (true) {
         navigator.clipboard.writeText("Miodec#1512");
         Notifications.add("Copied To Clipboard!", 0);
