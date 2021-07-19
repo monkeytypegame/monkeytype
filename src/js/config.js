@@ -1652,180 +1652,101 @@ export function apply(configObj) {
 
     try {
       setEnableAds(configObj.enableAds, true);
-      let addemo = false;
-      if (
-        firebase.app().options.projectId === "monkey-type-dev-67af4" ||
-        window.location.hostname === "localhost"
-      ) {
-        addemo = true;
-      }
+      // let addemo = false;
+      // if (
+      //   firebase.app().options.projectId === "monkey-type-dev-67af4" ||
+      //   window.location.hostname === "localhost"
+      // ) {
+      //   addemo = true;
+      // }
 
       if (config.enableAds === "max" || config.enableAds === "on") {
         if (config.enableAds === "max") {
-          window["nitroAds"].createAd("nitropay_ad_left", {
-            refreshLimit: 10,
-            refreshTime: 30,
-            renderVisibleOnly: false,
-            refreshVisibleOnly: true,
-            sizes: [["160", "600"]],
-            report: {
-              enabled: true,
-              wording: "Report Ad",
-              position: "bottom-right",
-            },
-            mediaQuery: "(min-width: 1330px)",
-            demo: addemo,
-          });
-          $("#nitropay_ad_left").removeClass("hidden");
+          //
 
-          window["nitroAds"].createAd("nitropay_ad_right", {
-            refreshLimit: 10,
-            refreshTime: 30,
-            renderVisibleOnly: false,
-            refreshVisibleOnly: true,
-            sizes: [["160", "600"]],
-            report: {
-              enabled: true,
-              wording: "Report Ad",
-              position: "bottom-right",
-            },
-            mediaQuery: "(min-width: 1330px)",
-            demo: addemo,
-          });
-          $("#nitropay_ad_right").removeClass("hidden");
+          $("#ad_rich_media").removeClass("hidden");
+          $("#ad_rich_media").html(
+            `<div class="vm-placement" data-id="60bf737ee04cb761c88aafb1" style="display:none"></div>`
+          );
         } else {
-          $("#nitropay_ad_left").remove();
-          $("#nitropay_ad_right").remove();
+          $("#ad_rich_media").remove();
         }
 
-        window["nitroAds"].createAd("nitropay_ad_footer", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          sizes: [["970", "90"]],
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          mediaQuery: "(min-width: 1025px)",
-          demo: addemo,
-        });
-        $("#nitropay_ad_footer").removeClass("hidden");
+        //<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>
 
-        window["nitroAds"].createAd("nitropay_ad_footer2", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          sizes: [["728", "90"]],
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          mediaQuery: "(min-width: 730px) and (max-width: 1024px)",
-          demo: addemo,
-        });
-        $("#nitropay_ad_footer2").removeClass("hidden");
+        $("#ad_footer").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_footer").removeClass("hidden");
 
-        window["nitroAds"].createAd("nitropay_ad_footer3", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          sizes: [["320", "50"]],
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          mediaQuery: "(max-width: 730px)",
-          demo: addemo,
-        });
-        $("#nitropay_ad_footer3").removeClass("hidden");
+        // $("#ad_footer2").html(`<div class="vm-placement" data-id="60bf73e9e04cb761c88aafb7"></div>`);
+        // $("#ad_footer2").removeClass("hidden");
 
-        window["nitroAds"].createAd("nitropay_ad_about", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          demo: addemo,
-        });
-        $("#nitropay_ad_about").removeClass("hidden");
+        $("#ad_about1").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_about1").removeClass("hidden");
 
-        window["nitroAds"].createAd("nitropay_ad_settings1", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          demo: addemo,
-        });
-        $("#nitropay_ad_settings1").removeClass("hidden");
+        $("#ad_about2").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_about2").removeClass("hidden");
 
-        window["nitroAds"].createAd("nitropay_ad_settings2", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          demo: addemo,
-        });
-        $("#nitropay_ad_settings2").removeClass("hidden");
+        $("#ad_settings0").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_settings0").removeClass("hidden");
 
-        window["nitroAds"].createAd("nitropay_ad_account", {
-          refreshLimit: 10,
-          refreshTime: 30,
-          renderVisibleOnly: false,
-          refreshVisibleOnly: true,
-          report: {
-            enabled: true,
-            wording: "Report Ad",
-            position: "bottom-right",
-          },
-          demo: addemo,
-        });
-        $("#nitropay_ad_account").removeClass("hidden");
+        $("#ad_settings1").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_settings1").removeClass("hidden");
+
+        $("#ad_settings2").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_settings2").removeClass("hidden");
+
+        $("#ad_settings3").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_settings3").removeClass("hidden");
+
+        $("#ad_account").html(
+          `<div class="vm-placement" data-id="60bf73dae04cb761c88aafb5"></div>`
+        );
+        $("#ad_account").removeClass("hidden");
       } else {
         $(".footerads").remove();
-        $("#nitropay_ad_left").remove();
-        $("#nitropay_ad_right").remove();
-        $("#nitropay_ad_footer").remove();
-        $("#nitropay_ad_footer2").remove();
-        $("#nitropay_ad_footer3").remove();
-        $("#nitropay_ad_settings1").remove();
-        $("#nitropay_ad_settings2").remove();
-        $("#nitropay_ad_account").remove();
-        $("#nitropay_ad_about").remove();
+        $("#ad_left").remove();
+        $("#ad_right").remove();
+        $("#ad_footer").remove();
+        $("#ad_footer2").remove();
+        $("#ad_footer3").remove();
+        $("#ad_settings0").remove();
+        $("#ad_settings1").remove();
+        $("#ad_settings2").remove();
+        $("#ad_settings3").remove();
+        $("#ad_account").remove();
+        $("#ad_about1").remove();
+        $("#ad_about2").remove();
       }
     } catch (e) {
       Notifications.add("Error initialising ads: " + e.message);
       console.log("error initialising ads " + e.message);
       $(".footerads").remove();
-      $("#nitropay_ad_left").remove();
-      $("#nitropay_ad_right").remove();
-      $("#nitropay_ad_footer").remove();
-      $("#nitropay_ad_footer2").remove();
-      $("#nitropay_ad_footer3").remove();
-      $("#nitropay_ad_settings1").remove();
-      $("#nitropay_ad_settings2").remove();
-      $("#nitropay_ad_account").remove();
-      $("#nitropay_ad_about").remove();
+      $("#ad_left").remove();
+      $("#ad_right").remove();
+      $("#ad_footer").remove();
+      $("#ad_footer2").remove();
+      $("#ad_footer3").remove();
+      $("#ad_settings0").remove();
+      $("#ad_settings1").remove();
+      $("#ad_settings2").remove();
+      $("#ad_settings3").remove();
+      $("#ad_account").remove();
+      $("#ad_about1").remove();
+      $("#ad_about2").remove();
     }
   }
   TestUI.updateModesNotice();
