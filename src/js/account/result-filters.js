@@ -206,9 +206,9 @@ export function updateActive() {
         ret += aboveChartDisplay.tags.array
           .map((id) => {
             if (id == "none") return id;
-            let name = DB.getSnapshot().tags.filter((t) => t.id == id)[0];
+            let name = DB.getSnapshot().tags.filter((t) => t._id == id)[0];
             if (name !== undefined) {
-              return DB.getSnapshot().tags.filter((t) => t.id == id)[0].name;
+              return DB.getSnapshot().tags.filter((t) => t._id == id)[0].name;
             }
           })
           .join(", ");
