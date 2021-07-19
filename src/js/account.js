@@ -912,3 +912,80 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
     event.pageY + 30
   );
 });
+
+$(document).on("click", ".history-wpm-header", (event) => {
+  sortResultsBy("wpm");
+  $(".history-wpm-header").addClass("header-sorted");
+});
+
+$(document).on("click", ".history-raw-header", (event) => {
+  sortResultsBy("rawWpm");
+  $(".history-raw-header").addClass("header-sorted");
+});
+
+$(document).on("click", ".history-acc-header", (event) => {
+  sortResultsBy("acc");
+  $(".history-acc-header").addClass("header-sorted");
+});
+
+$(document).on("click", ".history-correct-chars-header", (event) => {
+  sortResultsBy("correctChars");
+  $(".history-correct-chars-header").addClass("header-sorted");
+});
+
+$(document).on("click", ".history-incorrect-chars-header", (event) => {
+  sortResultsBy("incorrectChars");
+  $(".history-incorrect-chars-header").addClass("header-sorted");
+});
+
+$(document).on("click", ".history-consistency-header", (event) => {
+  sortResultsBy("consistency");
+  $(".history-consistency-header").addClass("header-sorted");
+});
+
+function sortResultsBy(key) {
+  // Removes styling from previous sorting requests:
+  $("td").removeClass("header-sorted");
+
+  if (filteredResults.length < 2) return;
+
+  // This allows to reverse the sorting order when clicking multiple times on the table header
+  let descending = true;
+  if (
+    filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
+  )
+    descending = true;
+  else descending = false;
+
+  console.log("Sorting by " + key);
+  let temp = [];
+  let parsedIndexes = [];
+
+  while (temp.length < filteredResults.length) {
+    let lowest = 500;
+    let highest = -1;
+    let idx = -1;
+    for (let i = 0; i < filteredResults.length; i++) {
+      //find the lowest wpm with index not already parsed
+      if (!descending) {
+        if (filteredResults[i][key] < lowest && !parsedIndexes.includes(i)) {
+          lowest = filteredResults[i][key];
+          idx = i;
+        }
+      } else {
+        if (filteredResults[i][key] > highest && !parsedIndexes.includes(i)) {
+          highest = filteredResults[i][key];
+          idx = i;
+        }
+      }
+    }
+
+    temp.push(filteredResults[idx]);
+    parsedIndexes.push(idx);
+  }
+  filteredResults = temp;
+
+  $(".pageAccount .history table tbody").empty();
+  visibleTableLines = 0;
+  loadMoreLines();
+}
