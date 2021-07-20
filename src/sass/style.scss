@@ -4018,10 +4018,10 @@ key {
 
 .header-sorted {
   font-weight: bold;
-  text-decoration: underline;
 }
 
 .sortable:hover {
   cursor: pointer;
+  user-select: none;
   background-color: rgba(0, 0, 0, 0.1);
 }

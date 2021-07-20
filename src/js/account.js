@@ -914,43 +914,38 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
 });
 
 $(document).on("click", ".history-wpm-header", (event) => {
-  sortResultsBy("wpm");
-  $(".history-wpm-header").addClass("header-sorted");
+  sortAndRefreshHistory("wpm", ".history-wpm-header");
 });
 
 $(document).on("click", ".history-raw-header", (event) => {
-  sortResultsBy("rawWpm");
-  $(".history-raw-header").addClass("header-sorted");
+  sortAndRefreshHistory("rawWpm", ".history-raw-header");
 });
 
 $(document).on("click", ".history-acc-header", (event) => {
-  sortResultsBy("acc");
-  $(".history-acc-header").addClass("header-sorted");
+  sortAndRefreshHistory("acc", ".history-acc-header");
 });
 
 $(document).on("click", ".history-correct-chars-header", (event) => {
-  sortResultsBy("correctChars");
-  $(".history-correct-chars-header").addClass("header-sorted");
+  sortAndRefreshHistory("correctChars", ".history-correct-chars-header");
 });
 
 $(document).on("click", ".history-incorrect-chars-header", (event) => {
-  sortResultsBy("incorrectChars");
-  $(".history-incorrect-chars-header").addClass("header-sorted");
+  sortAndRefreshHistory("incorrectChars", ".history-incorrect-chars-header");
 });
 
 $(document).on("click", ".history-consistency-header", (event) => {
-  sortResultsBy("consistency");
-  $(".history-consistency-header").addClass("header-sorted");
+  sortAndRefreshHistory("consistency", ".history-consistency-header");
 });
 
 $(document).on("click", ".history-date-header", (event) => {
-  sortResultsBy("timestamp");
-  $(".history-date-header").addClass("header-sorted");
+  sortAndRefreshHistory("timestamp", ".history-date-header");
 });
 
-function sortResultsBy(key) {
+function sortAndRefreshHistory(key, headerClass) {
   // Removes styling from previous sorting requests:
   $("td").removeClass("header-sorted");
+  $("td").children("i").remove();
+  $(headerClass).addClass("header-sorted");
 
   if (filteredResults.length < 2) return;
 
@@ -958,9 +953,17 @@ function sortResultsBy(key) {
   let descending = true;
   if (
     filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
-  )
+  ) {
     descending = true;
-  else descending = false;
+    $(headerClass).append(
+      '<i class="fas fa-sort-down fa-2x" aria-hidden="true"></i>'
+    );
+  } else {
+    descending = false;
+    $(headerClass).append(
+      '<i class="fas fa-sort-up fa-2x", aria-hidden="true"></i>'
+    );
+  }
 
   console.log("Sorting by " + key);
   let temp = [];
