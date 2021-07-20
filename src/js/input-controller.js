@@ -460,6 +460,7 @@ function handleChar(char, charIndex) {
 
   if (!thisCharCorrect && Misc.trailingComposeChars.test(resultingWord)) {
     TestLogic.input.current = resultingWord;
+    $("#wordsInput").val(" " + TestLogic.input.current);
     TestUI.updateWordElement();
     Caret.updatePosition();
     return;
@@ -539,6 +540,7 @@ function handleChar(char, charIndex) {
     (Config.mode !== "zen" && charIndex < TestLogic.words.getCurrent().length + 20)
   ) {
     TestLogic.input.current = resultingWord;
+    $("#wordsInput").val(" " + TestLogic.input.current);
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
@@ -617,7 +619,7 @@ function handleChar(char, charIndex) {
     Caret.updatePosition();
   }
 
-  $("#wordsInput").val(TestLogic.input.current);
+  $("#wordsInput").val(" " + TestLogic.input.current);
 }
 
 $(document).keydown((event) => {
@@ -682,7 +684,7 @@ $(document).keydown((event) => {
 
   if (event.key === "Backspace" && TestLogic.input.current.length === 0) {
     backspaceToPrevious();
-    if (TestLogic.input.current) $("#wordsInput").val(TestLogic.input.current + " ");
+    if (TestLogic.input.current) $("#wordsInput").val(" " + TestLogic.input.current + " ");
   }
 
   if (event.key === "Enter") {
@@ -738,14 +740,28 @@ $("#wordsInput").keyup((event) => {
   Monkey.stop();
 });
 
+$("#wordsInput").on("beforeinput", (event) => {
+  if (!event.originalEvent?.isTrusted) return;
+  if (event.target.value === "") {
+    event.target.value = " ";
+  }
+});
+
 $("#wordsInput").on("input", (event) => {
-  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) return;
+  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
+    event.target.value = " ";
+    return;
+  }
 
   TestStats.setKeypressNotAfk();
 
-  const inputValue = event.target.value.normalize();
+  const realInputValue = event.target.value.normalize();
+  const inputValue = realInputValue.slice(1);
 
-  if (inputValue.length < TestLogic.input.current.length) {
+  if (realInputValue.length === 0 && TestLogic.input.current.length === 0) {
+    // fallback for when no Backspace keydown event (mobile)
+    backspaceToPrevious();
+  } else if (inputValue.length < TestLogic.input.current.length) {
     TestLogic.input.current = inputValue;
     TestUI.updateWordElement();
     Caret.updatePosition();
@@ -765,7 +781,7 @@ $("#wordsInput").on("input", (event) => {
     }
   }
 
-  event.target.value = TestLogic.input.current;
+  event.target.value = " " + TestLogic.input.current;
 
   let acc = Misc.roundTo2(TestStats.calculateAccuracy());
   LiveAcc.update(acc);
