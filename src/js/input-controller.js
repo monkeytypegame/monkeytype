@@ -749,6 +749,12 @@ $("#wordsInput").on("input", (event) => {
     TestLogic.input.current = inputValue;
     TestUI.updateWordElement();
     Caret.updatePosition();
+    if (!Misc.trailingComposeChars.test(TestLogic.input.current)) {
+      Replay.addReplayEvent(
+        "setLetterIndex",
+        TestLogic.input.current.length
+      );
+    }
   } else if (inputValue !== TestLogic.input.current) {
     let diffStart = 0;
     while (inputValue[diffStart] === TestLogic.input.current[diffStart])
