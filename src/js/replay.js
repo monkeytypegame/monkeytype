@@ -110,15 +110,6 @@ function handleDisplayLogic(item, nosound = false) {
     activeWord.classList.add("error");
     wordPos++;
     curPos = 0;
-  } else if (item.action === "clearWord") {
-    if (!nosound) playSound();
-    let promptWord = document.createElement("div");
-    let wordArr = wordsList[wordPos].split("");
-    wordArr.forEach((letter) => {
-      promptWord.innerHTML += `<letter>${letter}</letter>`;
-    });
-    activeWord.innerHTML = promptWord.innerHTML;
-    curPos = 0;
   } else if (item.action === "backWord") {
     if (!nosound) playSound();
     wordPos--;

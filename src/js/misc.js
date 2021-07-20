@@ -764,3 +764,5 @@ String.prototype.lastIndexOfRegex = function (regex) {
   var match = this.match(regex);
   return match ? this.lastIndexOf(match[match.length - 1]) : -1;
 };
+
+export const trailingComposeChars = /[\u02B0-\u02FF`´^¨~]+$|⎄.*$/;
