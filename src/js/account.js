@@ -941,7 +941,13 @@ $(document).on("click", ".history-date-header", (event) => {
   sortAndRefreshHistory("timestamp", ".history-date-header");
 });
 
-function sortAndRefreshHistory(key, headerClass) {
+// Resets sorting to by date' when applying filers (normal or advanced)
+$(document).on("click", ".buttonsAndTitle .buttons .button", (event) => {
+  // We want to 'force' descending sort:
+  sortAndRefreshHistory("timestamp", ".history-date-header", true);
+});
+
+function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
   // Removes styling from previous sorting requests:
   $("td").removeClass("header-sorted");
   $("td").children("i").remove();
@@ -951,7 +957,18 @@ function sortAndRefreshHistory(key, headerClass) {
 
   // This allows to reverse the sorting order when clicking multiple times on the table header
   let descending = true;
-  if (
+  if (forceDescending !== null) {
+    if (forceDescending == true) {
+      $(headerClass).append(
+        '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+      );
+    } else {
+      descending = false;
+      $(headerClass).append(
+        '<i class="fas fa-sort-up" aria-hidden="true"></i>'
+      );
+    }
+  } else if (
     filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
   ) {
     descending = true;
