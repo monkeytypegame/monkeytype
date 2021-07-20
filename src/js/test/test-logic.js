@@ -1072,10 +1072,10 @@ export async function addWord() {
     randomWord = Misc.getASCII();
   }
 
-  if (Config.punctuation && Config.mode != "custom") {
+  if (Config.punctuation) {
     randomWord = punctuateWord(previousWord, randomWord, words.length, 0);
   }
-  if (Config.numbers && Config.mode != "custom") {
+  if (Config.numbers) {
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
     }
