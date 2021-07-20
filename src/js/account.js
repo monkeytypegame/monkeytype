@@ -956,13 +956,11 @@ function sortAndRefreshHistory(key, headerClass) {
   ) {
     descending = true;
     $(headerClass).append(
-      '<i class="fas fa-sort-down fa-2x" aria-hidden="true"></i>'
+      '<i class="fas fa-sort-down" aria-hidden="true"></i>'
     );
   } else {
     descending = false;
-    $(headerClass).append(
-      '<i class="fas fa-sort-up fa-2x", aria-hidden="true"></i>'
-    );
+    $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
   }
 
   console.log("Sorting by " + key);
