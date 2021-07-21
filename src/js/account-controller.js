@@ -19,46 +19,64 @@ const githubProvider = new firebase.auth.GithubAuthProvider();
 
 let newSignUp = false;
 
+const authListener = firebase.auth().onAuthStateChanged(function (user) {
+  if (user && !newSignUp) {
+    loadUser(user);
+  } else {
+    UI.setPageTransition(false);
+    if ($(".pageLoading").hasClass("active")) UI.changePage("");
+  }
+  let theme = Misc.findGetParameter("customTheme");
+  if (theme !== null) {
+    try {
+      theme = theme.split(",");
+      UpdateConfig.setCustomThemeColors(theme);
+      Notifications.add("Custom theme applied.", 1);
+    } catch (e) {
+      Notifications.add(
+        "Something went wrong. Reverting to default custom colors.",
+        0
+      );
+      UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
+    }
+    UpdateConfig.setCustomTheme(true);
+    Settings.setCustomThemeInputs();
+  }
+  if (/challenge_.+/g.test(window.location.pathname)) {
+    Notifications.add("Loading challenge", 0);
+    let challengeName = window.location.pathname.split("_")[1];
+    setTimeout(() => {
+      ChallengeController.setup(challengeName);
+    }, 1000);
+  }
+});
+
 export function signIn() {
+  authListener();
   $(".pageLogin .preloader").removeClass("hidden");
   let email = $(".pageLogin .login input")[0].value;
   let password = $(".pageLogin .login input")[1].value;
 
-  if ($(".pageLogin .login #rememberMe input").prop("checked")) {
-    //remember me
-    firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(function () {
-        return firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .then((e) => {
-            // UI.changePage("test");
-          })
-          .catch(function (error) {
-            Notifications.add(error.message, -1);
-            $(".pageLogin .preloader").addClass("hidden");
-          });
-      });
-  } else {
-    //dont remember
-    firebase
-      .auth()
-      .setPersistence(firebase.auth.Auth.Persistence.SESSION)
-      .then(function () {
-        return firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .then((e) => {
-            // UI.changePage("test");
-          })
-          .catch(function (error) {
-            Notifications.add(error.message, -1);
-            $(".pageLogin .preloader").addClass("hidden");
-          });
-      });
-  }
+  const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
+    ? firebase.auth.Auth.Persistence.LOCAL
+    : firebase.auth.Auth.Persistence.SESSION;
+
+  firebase
+    .auth()
+    .setPersistence(persistence)
+    .then(function () {
+      return firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then((e) => {
+          // UI.changePage("test");
+          //TODO: redirect user to relevant page
+        })
+        .catch(function (error) {
+          Notifications.add(error.message, -1);
+          $(".pageLogin .preloader").addClass("hidden");
+        });
+    });
 }
 
 export async function signInWithGoogle() {
@@ -488,38 +506,6 @@ async function loadUser(user) {
     VerificationController.verify(user);
   }
 }
-
-firebase.auth().onAuthStateChanged(function (user) {
-  if (user && !newSignUp) {
-    loadUser(user);
-  } else {
-    UI.setPageTransition(false);
-    if ($(".pageLoading").hasClass("active")) UI.changePage("");
-  }
-  let theme = Misc.findGetParameter("customTheme");
-  if (theme !== null) {
-    try {
-      theme = theme.split(",");
-      UpdateConfig.setCustomThemeColors(theme);
-      Notifications.add("Custom theme applied.", 1);
-    } catch (e) {
-      Notifications.add(
-        "Something went wrong. Reverting to default custom colors.",
-        0
-      );
-      UpdateConfig.setCustomThemeColors(Config.defaultConfig.customThemeColors);
-    }
-    UpdateConfig.setCustomTheme(true);
-    Settings.setCustomThemeInputs();
-  }
-  if (/challenge_.+/g.test(window.location.pathname)) {
-    Notifications.add("Loading challenge", 0);
-    let challengeName = window.location.pathname.split("_")[1];
-    setTimeout(() => {
-      ChallengeController.setup(challengeName);
-    }, 1000);
-  }
-});
 
 $(".pageLogin .register input").keyup((e) => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;
