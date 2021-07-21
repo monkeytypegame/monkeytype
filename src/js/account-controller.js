@@ -81,22 +81,16 @@ export function signIn() {
 
 export async function signInWithGoogle() {
   $(".pageLogin .preloader").removeClass("hidden");
-
+  authListener();
   let signedInUser;
   try {
-    if ($(".pageLogin .login #rememberMe input").prop("checked")) {
-      //remember me
-      await firebase
-        .auth()
-        .setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-      signedInUser = await firebase.auth().signInWithPopup(gmailProvider);
-    } else {
-      //dont remember
-      await firebase
-        .auth()
-        .setPersistence(firebase.auth.Auth.Persistence.SESSION);
-      signedInUser = await firebase.auth().signInWithPopup(gmailProvider);
-    }
+    const persistence = $(".pageLogin .login #rememberMe input").prop("checked")
+      ? firebase.auth.Auth.Persistence.LOCAL
+      : firebase.auth.Auth.Persistence.SESSION;
+
+    await firebase.auth().setPersistence(persistence);
+    signedInUser = await firebase.auth().signInWithPopup(gmailProvider);
+
     if (signedInUser.additionalUserInfo.isNewUser) {
       //ask for username
       newSignUp = true;
