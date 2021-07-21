@@ -980,11 +980,8 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
     $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
   }
 
-  console.log("Sorting by " + key);
   let temp = [];
   let parsedIndexes = [];
-
-  console.log(descending);
 
   while (temp.length < filteredResults.length) {
     let lowest = Number.MAX_VALUE;
@@ -993,7 +990,6 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
 
     for (let i = 0; i < filteredResults.length; i++) {
       //find the lowest wpm with index not already parsed
-      console.log(filteredResults[i][key]);
       if (!descending) {
         if (filteredResults[i][key] <= lowest && !parsedIndexes.includes(i)) {
           lowest = filteredResults[i][key];
@@ -1011,7 +1007,6 @@ function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
     parsedIndexes.push(idx);
   }
   filteredResults = temp;
-  console.log(filteredResults[0]);
 
   $(".pageAccount .history table tbody").empty();
   visibleTableLines = 0;
