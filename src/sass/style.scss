@@ -4015,3 +4015,13 @@ key {
     background-color: var(--bg-color);
   }
 }
+
+.header-sorted {
+  font-weight: bold;
+}
+
+.sortable:hover {
+  cursor: pointer;
+  user-select: none;
+  background-color: rgba(0, 0, 0, 0.1);
+}
