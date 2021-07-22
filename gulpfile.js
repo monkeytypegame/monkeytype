@@ -150,7 +150,7 @@ const refactoredSrc = [
   "./src/js/test/manual-restart-tracker.js",
   "./src/js/test/test-stats.js",
   "./src/js/test/focus.js",
-  "./src/js/test/practise-missed.js",
+  "./src/js/test/practise-words.js",
   "./src/js/test/test-ui.js",
   "./src/js/test/keymap.js",
   "./src/js/test/live-wpm.js",

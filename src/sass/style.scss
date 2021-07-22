@@ -714,7 +714,8 @@ label.checkbox {
 }
 
 #customWordAmountPopupWrapper,
-#customTestDurationPopupWrapper {
+#customTestDurationPopupWrapper,
+#practiseWordsPopupWrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -728,7 +729,8 @@ label.checkbox {
   padding: 5rem 0;
 
   #customWordAmountPopup,
-  #customTestDurationPopup {
+  #customTestDurationPopup,
+  #practiseWordsPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -744,6 +746,11 @@ label.checkbox {
     .tip {
       font-size: 0.75rem;
       color: var(--sub-color);
+    }
+
+    .text {
+      font-size: 1rem;
+      color: var(--text-color);
     }
   }
 
@@ -2381,7 +2388,7 @@ key {
 #saveScreenshotButton,
 #restartTestButtonWithSameWordset,
 #nextTestButton,
-#practiseMissedWordsButton,
+#practiseWordsButton,
 #watchReplayButton {
   position: relative;
   border-radius: var(--roundness);
