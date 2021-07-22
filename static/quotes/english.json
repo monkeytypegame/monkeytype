@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -32902,6 +32914,366 @@
       "source": "Carl Rogers, On Becoming a Person",
       "length": 463,
       "id": 5534
+    },
+    {
+      "text": "Real eyes realize real lies",
+      "source": "Tupac Shakur",
+      "length": 27,
+      "id": null
+    },
+    {
+      "text": "There is nothing. Only warm, primordial blackness. Your conscience ferments in it, no larger than a single grain of malt.",
+      "source": "Disco Elysium",
+      "length": 122,
+      "id": null
+    },
+    {
+      "text": "Time without purpose is a prison. I have glimpsed into the mind of eternity, perhaps the mind of God, and found nothing but silence. I think we should just be friends.",
+      "source": "Jessica, Rick and Morty Season 5 Episode 1",
+      "length": 167,
+      "id": null
+    },
+    {
+      "text": "Now I am become Death, the destroyer of worlds.",
+      "source": "J. Robert Oppenheimer",
+      "length": 47,
+      "id": null
+    },
+    {
+      "text": "The believers, in their mutual love, compassion, and sympathy are like a single body; if one of its organs suffers, the whole body will respond to it with sleeplessness and fever.",
+      "source": "Prophet Mohammed (PBUH)",
+      "length": 179,
+      "id": null
+    },
+    {
+      "text": "Many people were increasingly of the opinion that they'd all made a big mistake in coming down from the trees in the first place. And some said that even the trees had been a bad move, and that no one should ever have left the oceans to begin with.",
+      "source": "Hitchhiker's Guide to the Galaxy",
+      "length": 248,
+      "id": null
+    },
+    {
+      "text": "We are all just prisoners here, of our own device.",
+      "source": "Hotel California - The Eagles",
+      "length": 50,
+      "id": null
+    },
+    {
+      "text": "If you get news of the outbreak of a plague in a land, do not enter it, and if it breaks out in a land in which you are, do not leave it.",
+      "source": "Prophet Mohammed (PBUH)",
+      "length": 137,
+      "id": null
+    },
+    {
+      "text": "I can't erase all the things that I've done but all the mistakes made me who I've become.",
+      "source": "Fletcher, Healing",
+      "length": 89,
+      "id": null
+    },
+    {
+      "text": "The life of this world is made up of three days: yesterday has gone with all that was done; tomorrow, you may never reach; but today is for you so do what you should do today.",
+      "source": "Hasan Al-Basri",
+      "length": 175,
+      "id": null
+    },
+    {
+      "text": "One generation sows, the next shall reap. But laugh not too soon or praises heap. Beware the reapers who behind you creep.",
+      "source": "Liu Xie, Romance Of The Three Kingdoms",
+      "length": 122,
+      "id": null
+    },
+    {
+      "text": "The most exciting phrase to hear in science, the one that heralds the most discoveries, is not \"Eureka!\" (I found it!) but 'That's funny...'",
+      "source": "Isaac Asimov",
+      "length": 140,
+      "id": null
+    },
+    {
+      "text": "He, who is possessed of plenty, and is miserly with his great wealth toward his people, will be dispensed with, and abused. He who keeps his word, will not be reviled; and he whose heart is guided to self-satisfying benevolence will not stammer.",
+      "source": "Zuhair Ibn Abi Sulma, Hanging Odes",
+      "length": 245,
+      "id": null
+    },
+    {
+      "text": "In the shooter hypothesis, a good marksman shoots at a target, creating a hole every ten centimeters. Now suppose the surface of the target is inhabited by intelligent, two-dimensional creatures. Their scientists, after observing the universe, discover a great law: \"There exists a hole in the universe every ten centimeters.\" They have mistaken the result of the marksman's momentary whim for an unalterable law of the universe. The farmer hypothesis, on the other hand, has the flavor of a horror story: Every morning on a turkey farm, the farmer comes to feed the turkeys. A scientist turkey, having observed this pattern to hold without change for almost a year, makes the following discovery: \"Every morning at eleven, food arrives.\" On the morning of Thanksgiving, the scientist announces this law to the other turkeys. But that morning at eleven, food doesn't arrive; instead, the farmer comes and kills the entire flock.",
+      "source": "The Three-Body Problem",
+      "length": 928,
+      "id": null
+    },
+    {
+      "text": "Don't worry about the world coming to an end today. It's already tomorrow in Australia.",
+      "source": "Charles M. Schulz",
+      "length": 87,
+      "id": null
+    },
+    {
+      "text": "God put me on this earth to accomplish a certain number of things. Right now I am so far behind that I will never die.",
+      "source": "Bill Watterson",
+      "length": 118,
+      "id": null
+    },
+    {
+      "text": "This is a valley of ashes; a fantastic farm where ashes grow like wheat into ridges and hills and grotesque gardens; where ashes take the forms of houses and chimneys and rising smoke and, finally, with a transcendent effort, of men who move dimly and already crumbling through the powdery air.",
+      "source": "The Great Gatsby, F. Scott Fitzgerald",
+      "length": 294,
+      "id": null
+    },
+    {
+      "text": "The rain feels very cold. You look down as the men carry the body past you. You realise you have been holding Peggy's letter in your left hand the whole time. The ink is hopelessly blurred. You crumple it into a ball and drop it into the mud and begin to walk back to your tent.",
+      "source": "Charles Coe, Young Man in Vietnam",
+      "length": 278,
+      "id": null
+    },
+    {
+      "text": "And as I watch the drops of rain weave their weary paths and die, I know that I am like the rain: there but for the grace of you go I.",
+      "source": "Kathy's Song",
+      "length": 134,
+      "id": null
+    },
+    {
+      "text": "He died doing what he wanted, no matter what, right? I bet he was happy.",
+      "source": "Guts, Berserk, Kentaro Miura",
+      "length": 72,
+      "id": null
+    },
+    {
+      "text": "If you want to be happy, do not dwell in the past, do not worry about the future, focus on living fully in the present.",
+      "source": "Roy T. Bennett",
+      "length": 119,
+      "id": null
+    },
+    {
+      "text": "Human suffering anywhere concerns men and women everywhere.",
+      "source": "Night, Elie Wiesel",
+      "length": 59,
+      "id": null
+    },
+    {
+      "text": "Music is a science that would have us laugh, sing, and dance.",
+      "source": "Guillaume de Machaut, \"The Fountain of Love\"",
+      "length": 61,
+      "id": null
+    },
+    {
+      "text": "New Crystal Gems! Congregate! That means come over here and do a cool pose.",
+      "source": "Rebecca sugar",
+      "length": 75,
+      "id": null
+    },
+    {
+      "text": "I'm sick of following my dreams. I'm just going to ask them where they're going and hook up with them later.",
+      "source": "Mitch Hedberg",
+      "length": 108,
+      "id": null
+    },
+    {
+      "text": "Know what I pray for? The strength to change what I can, the inability to accept what I can't, and the incapacity to tell the difference.",
+      "source": "Calvin & Hobbes",
+      "length": 137,
+      "id": null
+    },
+    {
+      "text": "But we must not follow those who advise us, being men, to think of human things, and, being mortal, of mortal things, but must, so far as we can, make ourselves immortal, and strain every nerve to live in accordance with the best thing in us; for even if it be small in bulk, much more does it in power and worth surpass everything.",
+      "source": "Nicomachean Ethics, W.D. Ross translation",
+      "length": 332,
+      "id": null
+    },
+    {
+      "text": "Rather than love, than money, than fame, give me truth.",
+      "source": "Walden",
+      "length": 55,
+      "id": null
+    },
+    {
+      "text": "You are not a drop in the ocean. You are the entire ocean in a drop.",
+      "source": "Rumi",
+      "length": 68,
+      "id": null
+    },
+    {
+      "text": "There is nothing more deceptive than an obvious fact.",
+      "source": "Arthur Conan Doyle, The Boscombe Valley Mystery",
+      "length": 53,
+      "id": null
+    },
+    {
+      "text": "Where are you? And I'm so sorry, I cannot sleep I cannot dream tonight.",
+      "source": "Blink-182, I Miss You",
+      "length": 71,
+      "id": null
+    },
+    {
+      "text": "There is matter to everything even air or shadow, too small to see. The Cut is something a Summoner can do, but it requires tremendous skill and I would only use it as a last resort. Like that ambush.",
+      "source": "Shadow and Bone",
+      "length": 200,
+      "id": null
+    },
+    {
+      "text": "I have squandered my resistance for a pocketful of mumbles, such are promises.",
+      "source": "The Boxer",
+      "length": 78,
+      "id": null
+    },
+    {
+      "text": "I want to enjoy not getting recognized while it lasts. But the mask is a symbol of unity. Anyone can be a Walker.",
+      "source": "Alan Walker",
+      "length": 113,
+      "id": null
+    },
+    {
+      "text": "Such a person must be careful, he must be aware of the limitations of his knowledge, he must acknowledge his personal prejudices because he is being asked to speak for a whole realm of thought, he must be aware of the huge possible consequences of what he says and writes and does. He has become, in a sense, public property because he represents something large to the public. He has become an idea himself, a human striving. He has enormous power to influence and change, and he must wield that power with respect.",
+      "source": "Alan Lightman, The Role of the Public Intellectual",
+      "length": 516,
+      "id": null
+    },
+    {
+      "text": "If we could change ourselves, the tendencies in the world would also change. As a man changes his own nature, so does the attitude of the world change towards him. We need not wait to see what others do.",
+      "source": "Mahatma Gandhi",
+      "length": 203,
+      "id": null
+    },
+    {
+      "text": "Some dance to remember, some dance to forget.",
+      "source": "Hotel California",
+      "length": 45,
+      "id": null
+    },
+    {
+      "text": "The night sky over the planet Krikkit is the least interesting sight in the entire Universe.",
+      "source": "Life, The Universe, and Everything",
+      "length": 93,
+      "id": null
+    },
+    {
+      "text": "My capacity for happiness, you could fit into a matchbox without taking out the matches first.",
+      "source": "Marvin; Life, The Universe, and Everything",
+      "length": 94,
+      "id": null
+    },
+    {
+      "text": "And every time I've held a rose, it seems I only felt the thorns.",
+      "source": "And So It Goes",
+      "length": 65,
+      "id": null
+    },
+    {
+      "text": "The dead man resists, upon which the other kills him by means of the chloroform which he had with him, and being afraid that the cab will stop, and he will be found out, snatches what he wants out of the pocket so quickly that he tears the waistcoat, and then makes off. That's clear enough, but the question is, What was it he wanted? A case with jewels? No! It could not have been anything so bulky, or the dead man would never have carried it about inside his waistcoat. It was something flat, which could easily lie in the pocket - a paper - some valuable paper which the assassin wanted, and for which he killed the other.",
+      "source": "Mystery of a Hansom Cab, Fergus Hume",
+      "length": 627,
+      "id": null
+    },
+    {
+      "text": "When we hear any other speaker, even a very good one, he produces absolutely no effect upon us, or not much, whereas the mere fragments of you and your words, even at second-hand, and however imperfectly repeated, amaze and possess the souls of every man, woman, and child who comes within hearing of them. And if I were not afraid that you would think me hopelessly drunk, I would have sworn as well as spoken to the influence which they have always had and still have over me. For my heart leaps within me more than that of any Corybantian reveller, and my eyes rain tears when I hear them.",
+      "source": "The Symposium",
+      "length": 592,
+      "id": null
+    },
+    {
+      "text": "You bear witness to the end of your journey. It is not always a happy thing.",
+      "source": "Skull Knight, Berserk, Kentaro Miura",
+      "length": 76,
+      "id": null
+    },
+    {
+      "text": "Farewell. We will likely meet again, should destiny dictate. If you mean to pursue the inhumans, follow the guidance of that brand. It reacts strongly to evil. But mind this: Yours is a black path through the night. When you confront those who lurk in the darkness, you also envelop yourself in it. Good journey, struggler.",
+      "source": "Skull Knight, Berserk, Kentaro Miura",
+      "length": 323,
+      "id": null
+    },
+    {
+      "text": "Everybody is a genius, but if you judge a fish by its ability to climb a tree, it will live its whole life thinking it's stupid",
+      "source": "Einstein",
+      "length": 127,
+      "id": null
+    },
+    {
+      "text": "Hello there, the angel from my nightmare, the shadow in the background of the morgue. The unsuspecting victim of darkness in the valley. We can live like Jack and Sally if we want. Where you can always find me, and we'll have Halloween on Christmas. And in the night we'll wish this never ends, we'll wish this never ends.",
+      "source": "Blink-182, I Miss You",
+      "length": 322,
+      "id": null
+    },
+    {
+      "text": "If I profane with my unworthiest hand\\nThis holy shrine, the gentle fine is this:\\nMy lips, two blushing pilgrims, ready stand\\nTo smooth that rough touch with a tender kiss.",
+      "source": "Romeo, Romeo and Juliet",
+      "length": 174,
+      "id": null
+    },
+    {
+      "text": "The tongue of a man is one half, and the other half is his mind, and here is nothing besides these two, except the shape of the blood and the flesh. And verily, as to the folly of an old man there is no wisdom after it, but the young man after his folly may become wise.",
+      "source": "Zuhair Ibn Abi Sulma, Hanging Odes",
+      "length": 270,
+      "id": null
+    },
+    {
+      "text": "To forget the dead would be akin to killing them a second time.",
+      "source": "Night, Elie Wiesel",
+      "length": 63,
+      "id": null
+    },
+    {
+      "text": "I pray to the God within me that He will give me the strength to ask Him the right questions.",
+      "source": "Night, Elie Wiesel",
+      "length": 93,
+      "id": null
+    },
+    {
+      "text": "You've gotta know what death is to know life.",
+      "source": "Jack Kevorkian",
+      "length": 45,
+      "id": null
+    },
+    {
+      "text": "Don't let yesterday take up too much of today.",
+      "source": "Will Roger",
+      "length": 46,
+      "id": null
+    },
+    {
+      "text": "Life is a question and how we live it is our answer.",
+      "source": "Gary Keller",
+      "length": 52,
+      "id": null
+    },
+    {
+      "text": "There are those who give with joy, and that joy is their reward.",
+      "source": "Kahlil Gibran",
+      "length": 64,
+      "id": null
+    },
+    {
+      "text": "With her green hair sticking out the hood of her yellow raincoat, she looked like a punk spokesperson for frozen fish sticks.",
+      "source": "The Ship of the Dead",
+      "length": 125,
+      "id": null
+    },
+    {
+      "text": "It is better to live one day as a lion, than a thousand days as a lamb.",
+      "source": "Proverbs",
+      "length": 71,
+      "id": null
+    },
+    {
+      "text": "Go forth on your path, as it exists only through your walking.",
+      "source": "Augustine of Hippo",
+      "length": 62,
+      "id": null
+    },
+    {
+      "text": "Solitary trees, if they grow at all, grow strong.",
+      "source": "Winston Churchill",
+      "length": 49,
+      "id": null
+    },
+    {
+      "text": "Don't tell people your plans. Show them your results.",
+      "source": "Unknown",
+      "length": 53,
+      "id": null
+    },
+    {
+      "text": "Time is just a construct, if you allow it to consume you, it will. It will wear you down until you are nothing but dust. You must learn to transcend and rise beyond such linear and limited fabrics of existence and this creature of unknown origin has done exactly that. You can scream all you want but nobody will hear you. You may call him a God but if you could perceive your own reality as he could, you would know there really are no words to describe such a being.",
+      "source": "Unknown",
+      "length": 468,
+      "id": null
     }
   ]
 }
