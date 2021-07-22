@@ -1,10 +1,22 @@
 {
   "language": "vietnamese",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -20,7 +32,7 @@
       "id": 2
     },
     {
-    "text": "Trong quan hệ với con người, hãy luôn nhớ rằng chúng ta đang giao tiếp với những sinh vật không những có lý trí mà còn có cảm xúc, họ rất dễ bị tổn thương bởi định kiến nhưng luôn có động lực khi có niềm tự hào và lòng kiêu hãnh.",
+      "text": "Trong quan hệ với con người, hãy luôn nhớ rằng chúng ta đang giao tiếp với những sinh vật không những có lý trí mà còn có cảm xúc, họ rất dễ bị tổn thương bởi định kiến nhưng luôn có động lực khi có niềm tự hào và lòng kiêu hãnh.",
       "source": "Đắc Nhân Tâm",
       "length": 229,
       "id": 3
@@ -30,6 +42,12 @@
       "source": "Đắc Nhân Tâm",
       "length": 230,
       "id": 4
+    },
+    {
+      "text": "Ngày mai anh không còn em nữa, không cho ai là tất cả. Để nỗi cô đơn theo anh đến một miền trời xa. Để nhắc cho anh biết bao ngày hạnh phúc êm đềm. Nhắc cho anh luôn còn lại một trái tim yêu em.",
+      "source": "Ngày mai em đi, Lê Hiếu",
+      "length": 194,
+      "id": 5
     }
   ]
 }
