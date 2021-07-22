@@ -12,7 +12,7 @@ import * as CommandlineLists from "./commandline-lists";
 import * as Commandline from "./commandline";
 import * as OutOfFocus from "./out-of-focus";
 import * as ManualRestart from "./manual-restart-tracker";
-import * as PractiseMissed from "./practise-missed";
+import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
@@ -994,14 +994,16 @@ $(document.body).on("click", "#restartTestButton", () => {
   }
 });
 
-$(document).on("keypress", "#practiseMissedWordsButton", (event) => {
-  if (event.keyCode == 13) {
-    PractiseMissed.init();
-  }
+$(document).on("keypress", "#practiseWordsButton", (event) => {
+  // if (event.keyCode == 13) {
+  //   PractiseWords.init();
+  // }
+  PractiseWords.showPopup();
 });
 
-$(document.body).on("click", "#practiseMissedWordsButton", () => {
-  PractiseMissed.init();
+$(document.body).on("click", "#practiseWordsButton", () => {
+  // PractiseWords.init();
+  PractiseWords.showPopup();
 });
 
 $(document).on("keypress", "#nextTestButton", (event) => {

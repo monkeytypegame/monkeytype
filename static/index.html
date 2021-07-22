@@ -126,6 +126,20 @@
       <div id="simplePopup" popupId=""></div>
     </div>
 
+    <div id="practiseWordsPopupWrapper" class="hidden">
+      <div id="practiseWordsPopup" action="">
+        <div class="title">Practice words</div>
+        <div class="text">
+          This will start a new test in custom mode. Words that you mistyped
+          more often or words that you typed much slower will be weighted higher
+          and appear more often.
+        </div>
+        <div class="button missed">Practice missed</div>
+        <div class="button slow">Practice slow</div>
+        <div class="button both">Practice both</div>
+      </div>
+    </div>
+
     <div id="settingsImportWrapper" class="hidden">
       <div id="settingsImport" action="">
         <input type="text" />
@@ -1515,8 +1529,8 @@
                   <i class="fas fa-fw fa-sync-alt"></i>
                 </div>
                 <div
-                  id="practiseMissedWordsButton"
-                  aria-label="Practice missed words"
+                  id="practiseWordsButton"
+                  aria-label="Practice words"
                   data-balloon-pos="down"
                   tabindex="0"
                   onclick="this.blur();"

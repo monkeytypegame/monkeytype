@@ -5,7 +5,7 @@ import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import * as CustomText from "./custom-text";
 import * as TestStats from "./test-stats";
-import * as PractiseMissed from "./practise-missed";
+import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
 import * as Focus from "./focus";
 import * as Funbox from "./funbox";
@@ -529,7 +529,7 @@ export async function init() {
           randomWord = CustomText.text[i];
         } else if (
           Config.mode == "custom" &&
-          (wordset.length < 3 || PractiseMissed.before.mode !== null)
+          (wordset.length < 3 || PractiseWords.before.mode !== null)
         ) {
           randomWord = wordset[Math.floor(Math.random() * wordset.length)];
         } else {
@@ -775,15 +775,15 @@ export function restart(
   }
 
   if (
-    PractiseMissed.before.mode !== null &&
+    PractiseWords.before.mode !== null &&
     !withSameWordset &&
     !practiseMissed
   ) {
     Notifications.add("Reverting to previous settings.", 0);
-    UpdateConfig.setMode(PractiseMissed.before.mode);
-    UpdateConfig.setPunctuation(PractiseMissed.before.punctuation);
-    UpdateConfig.setNumbers(PractiseMissed.before.numbers);
-    PractiseMissed.resetBefore();
+    UpdateConfig.setMode(PractiseWords.before.mode);
+    UpdateConfig.setPunctuation(PractiseWords.before.punctuation);
+    UpdateConfig.setNumbers(PractiseWords.before.numbers);
+    PractiseWords.resetBefore();
   }
 
   let repeatWithPace = false;
