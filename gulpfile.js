@@ -7,8 +7,8 @@ const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint");
-var sass = require("gulp-sass");
-sass.compiler = require("dart-sass");
+var sass = require("gulp-sass")(require("dart-sass"));
+// sass.compiler = require("dart-sass");
 
 let eslintConfig = {
   parser: "babel-eslint",
@@ -96,6 +96,7 @@ const refactoredSrc = [
   "./src/js/theme-controller.js",
   "./src/js/config.js",
   "./src/js/tag-controller.js",
+  "./src/js/preset-controller.js",
   "./src/js/ui.js",
   "./src/js/commandline.js",
   "./src/js/commandline-lists.js",
@@ -108,6 +109,7 @@ const refactoredSrc = [
   "./src/js/input-controller.js",
   "./src/js/route-controller.js",
   "./src/js/ready.js",
+  "./src/js/monkey-power.js",
 
   "./src/js/account/all-time-stats.js",
   "./src/js/account/pb-tables.js",
@@ -121,6 +123,7 @@ const refactoredSrc = [
   "./src/js/elements/account-button.js",
   "./src/js/elements/loader.js",
   "./src/js/elements/sign-out-button.js",
+  "./src/js/elements/about-page.js",
 
   "./src/js/popups/custom-text-popup.js",
   "./src/js/popups/quote-search-popup.js",
@@ -131,6 +134,7 @@ const refactoredSrc = [
   "./src/js/popups/word-filter-popup.js",
   "./src/js/popups/result-tags-popup.js",
   "./src/js/popups/edit-tags-popup.js",
+  "./src/js/popups/edit-preset-popup.js",
   "./src/js/popups/custom-theme-popup.js",
   "./src/js/popups/import-settings-popup.js",
   "./src/js/popups/custom-background-filter.js",
@@ -152,6 +156,7 @@ const refactoredSrc = [
   "./src/js/test/live-wpm.js",
   "./src/js/test/caps-warning.js",
   "./src/js/test/live-acc.js",
+  "./src/js/test/live-burst.js",
   "./src/js/test/test-leaderboards.js",
   "./src/js/test/timer-progress.js",
   "./src/js/test/test-logic.js",
@@ -161,6 +166,10 @@ const refactoredSrc = [
   "./src/js/test/test-timer.js",
   "./src/js/test/test-config.js",
   "./src/js/test/layout-emulator.js",
+  "./src/js/test/poetry.js",
+  "./src/js/test/today-tracker.js",
+  "./src/js/test/weak-spot.js",
+  "./src/js/replay.js",
 ];
 
 //legacy files
@@ -184,7 +193,7 @@ task("sass", function () {
 });
 
 task("static", function () {
-  return src("./static/**/*").pipe(dest("./dist/"));
+  return src("./static/**/*", { dot: true }).pipe(dest("./dist/"));
 });
 
 //copies refactored js files to dist/gen so that they can be required by dist/gen/index.js

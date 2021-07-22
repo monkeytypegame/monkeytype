@@ -28,7 +28,7 @@
     "gulp": "^4.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-eslint": "^6.0.0",
-    "gulp-sass": "^4.1.0",
+    "gulp-sass": "^5.0.0",
     "husky": "^4.3.0",
     "prettier": "2.1.2",
     "pretty-quick": "^3.1.0",
@@ -45,6 +45,9 @@
     "@babel/runtime": "^7.12.5",
     "chart.js": "^2.9.4",
     "chartjs-plugin-annotation": "^0.5.7",
-    "chartjs-plugin-trendline": "^0.2.2"
+    "chartjs-plugin-trendline": "^0.2.2",
+    "howler": "^2.2.1",
+    "node-sass": "^4.14.1",
+    "tinycolor2": "^1.4.2"
   }
 }

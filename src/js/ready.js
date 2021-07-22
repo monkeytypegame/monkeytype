@@ -5,18 +5,20 @@ import * as VerificationController from "./verification-controller";
 import * as Settings from "./settings";
 import * as RouteController from "./route-controller";
 import * as UI from "./ui";
+import * as SignOutButton from "./sign-out-button";
+import * as MonkeyPower from "./monkey-power";
 
 ManualRestart.set();
 Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
 Misc.getReleasesFromGitHub();
 
+RouteController.handleInitialPageClasses(window.location.pathname);
 $(document).ready(() => {
-  RouteController.handleInitialPageClasses(window.location.pathname);
   if (window.location.pathname === "/") {
-    $("#top .config").removeClass("hidden");
+    // $("#top .config").removeClass("hidden");
   }
-  $("body").css("transition", ".25s");
+  $("body").css("transition", "all .25s, transform .05s");
   if (Config.quickTab) {
     $("#restartTestButton").addClass("hidden");
   }
@@ -30,6 +32,9 @@ $(document).ready(() => {
     .removeClass("hidden")
     .stop(true, true)
     .animate({ opacity: 1 }, 250, () => {
+      if (window.location.pathname === "/account") {
+        SignOutButton.show();
+      }
       if (window.location.pathname === "/verify") {
         const fragment = new URLSearchParams(window.location.hash.slice(1));
         if (fragment.has("access_token")) {
@@ -52,4 +57,5 @@ $(document).ready(() => {
       }
     });
   Settings.settingsFillPromise.then(Settings.update);
+  MonkeyPower.init();
 });

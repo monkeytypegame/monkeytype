@@ -2,6 +2,7 @@ import Chart from "chart.js";
 import * as TestStats from "./test-stats";
 import * as ThemeColors from "./theme-colors";
 import * as Misc from "./misc";
+import * as Account from "./account";
 
 export let result = new Chart($("#wpmChart"), {
   type: "line",
@@ -67,7 +68,13 @@ export let result = new Chart($("#wpmChart"), {
               let wordEl = $($("#resultWordsHistory .words .word")[wordIndex]);
               let input = wordEl.attr("input");
               if (input != undefined)
-                wordEl.append(`<div class="wordInputAfter">${input}</div>`);
+                wordEl.append(
+                  `<div class="wordInputAfter">${input
+                    .replace(/\t/g, "_")
+                    .replace(/\n/g, "_")
+                    .replace(/</g, "&lt")
+                    .replace(/>/g, "&gt")}</div>`
+                );
             });
           } catch {}
         },
@@ -241,7 +248,8 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
         label: function () {
           return;
         },
-        afterLabel: function () {
+        afterLabel: function (tooltip, data) {
+          Account.setActiveChartIndex(tooltip.index);
           return;
         },
       },
@@ -356,7 +364,8 @@ export let accountActivity = new Chart(
               data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
             if (tooltipItem.datasetIndex === 0) {
               return `Time Typing: ${Misc.secondsToString(
-                resultData.y
+                Math.round(resultData.y),
+                true
               )}\nTests Completed: ${resultData.amount}`;
             } else if (tooltipItem.datasetIndex === 1) {
               return `Average Wpm: ${Misc.roundTo2(resultData.y)}`;

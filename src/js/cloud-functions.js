@@ -8,6 +8,9 @@ export const updateResultTags = firebase
   .functions()
   .httpsCallable("updateResultTags");
 export const saveConfig = firebase.functions().httpsCallable("saveConfig");
+export const addPreset = firebase.functions().httpsCallable("addPreset");
+export const editPreset = firebase.functions().httpsCallable("editPreset");
+export const removePreset = firebase.functions().httpsCallable("removePreset");
 export const generatePairingCode = firebase
   .functions()
   .httpsCallable("generatePairingCode");

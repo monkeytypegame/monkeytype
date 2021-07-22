@@ -4,6 +4,7 @@ import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import Config from "./config";
 import * as UI from "./ui";
+import tinycolor from "tinycolor2";
 
 let isPreviewingTheme = false;
 export let randomTheme = null;
@@ -121,19 +122,32 @@ export function set(themeName) {
 export function clearPreview() {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
-    apply(Config.theme);
+    if (Config.customTheme) {
+      apply("custom");
+    } else {
+      apply(Config.theme);
+    }
   }
 }
 
-export function randomiseTheme() {
+export function randomizeTheme() {
   var randomList;
   Misc.getThemesList().then((themes) => {
-    randomList = themes.map((t) => {
-      return t.name;
-    });
-
-    if (Config.randomTheme === "fav" && Config.favThemes.length > 0)
+    if (Config.randomTheme === "fav" && Config.favThemes.length > 0) {
       randomList = Config.favThemes;
+    } else if (Config.randomTheme === "light") {
+      randomList = themes
+        .filter((t) => tinycolor(t.bgColor).isLight())
+        .map((t) => t.name);
+    } else if (Config.randomTheme === "dark") {
+      randomList = themes
+        .filter((t) => tinycolor(t.bgColor).isDark())
+        .map((t) => t.name);
+    } else {
+      randomList = themes.map((t) => {
+        return t.name;
+      });
+    }
 
     const previousTheme = randomTheme;
     randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
@@ -141,7 +155,7 @@ export function randomiseTheme() {
     preview(randomTheme);
 
     if (previousTheme != randomTheme) {
-      Notifications.add(randomTheme.replace(/_/g, " "), 0);
+      // Notifications.add(randomTheme.replace(/_/g, " "), 0);
     }
   });
 }
@@ -151,25 +165,29 @@ export function clearRandom() {
 }
 
 export function applyCustomBackground() {
-  $(".customBackground").css({
-    backgroundImage: `url(${Config.customBackground})`,
-    backgroundAttachment: "fixed",
-  });
+  // $(".customBackground").css({
+  //   backgroundImage: `url(${Config.customBackground})`,
+  //   backgroundAttachment: "fixed",
+  // });
   if (Config.customBackground === "") {
     $("#words").removeClass("noErrorBorder");
+    $(".customBackground img").remove();
   } else {
     $("#words").addClass("noErrorBorder");
+    $(".customBackground").html(`<img src="${Config.customBackground}"></img>`);
   }
 }
 
 export function applyCustomBackgroundSize() {
   if (Config.customBackgroundSize == "max") {
-    $(".customBackground").css({
-      backgroundSize: "100% 100%",
+    $(".customBackground img").css({
+      // width: "calc(100%)",
+      // height: "calc(100%)",
+      objectFit: "",
     });
   } else if (Config.customBackgroundSize != "") {
-    $(".customBackground").css({
-      backgroundSize: Config.customBackgroundSize,
+    $(".customBackground img").css({
+      objectFit: Config.customBackgroundSize,
     });
   }
 }

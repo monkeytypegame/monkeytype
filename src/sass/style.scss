@@ -141,6 +141,9 @@ body {
   background-position: center center;
   background-repeat: no-repeat;
   z-index: -999;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 html {
@@ -156,6 +159,7 @@ html {
 .select2-selection {
   background: rgba(0, 0, 0, 0.1);
   height: fit-content;
+  height: -moz-fit-content;
   padding: 5px;
   border-radius: var(--roundness);
   color: var(--text-color);
@@ -199,6 +203,7 @@ html {
 
 .select2-selection:focus {
   height: fit-content;
+  height: -moz-fit-content;
   padding: 5px;
   border-radius: var(--roundness);
   color: var(--text-color);
@@ -208,6 +213,7 @@ html {
 }
 .select2-selection:active {
   height: fit-content;
+  height: -moz-fit-content;
   padding: 5px;
   border-radius: var(--roundness);
   color: var(--text-color);
@@ -266,7 +272,7 @@ html {
 }
 
 ::-webkit-scrollbar-corner {
-  background: var(--subcolour);
+  background: var(--sub-color);
 }
 
 a {
@@ -496,7 +502,7 @@ a:hover {
   }
 }
 
-#tagsWrapper {
+.wrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -510,6 +516,15 @@ a:hover {
   padding: 5rem 0;
 
   #tagsEdit {
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 1rem;
+    overflow-y: scroll;
+  }
+
+  #presetEdit {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -576,71 +591,37 @@ a:hover {
       text-align: center;
       align-items: center;
     }
+  }
+}
 
-    .check {
-      span {
-        display: block;
-        font-size: 0.76rem;
-        color: var(--sub-color);
-        margin-left: 1.5rem;
-      }
+label.checkbox {
+  span {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--sub-color);
+    margin-left: 1.5rem;
+  }
 
-      input {
-        margin: 0 !important;
-        cursor: pointer;
-        width: 0;
-        height: 0;
-        display: none;
+  input {
+    margin: 0 !important;
+    cursor: pointer;
+    width: 0;
+    height: 0;
+    display: none;
 
-        & ~ .customTextRandomCheckbox {
-          width: 12px;
-          height: 12px;
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 2px;
-          box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-          display: inline-block;
-          margin: 0 0.5rem 0 0.25rem;
-          transition: 0.25s;
-        }
-
-        &:checked ~ .customTextRandomCheckbox {
-          background: var(--main-color);
-        }
-      }
+    & ~ .customTextCheckbox {
+      width: 12px;
+      height: 12px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      margin: 0 0.5rem 0 0.25rem;
+      transition: 0.25s;
     }
-    .typographyCheck {
-      grid-row: 2;
-      grid-column: 1/3;
 
-      span {
-        display: block;
-        font-size: 0.76rem;
-        color: var(--sub-color);
-        margin-left: 1.5rem;
-      }
-
-      input {
-        margin: 0 !important;
-        cursor: pointer;
-        width: 0;
-        height: 0;
-        display: none;
-
-        & ~ .customTextTypographyCheckbox {
-          width: 12px;
-          height: 12px;
-          background: rgba(0, 0, 0, 0.1);
-          border-radius: 2px;
-          box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-          display: inline-block;
-          margin: 0 0.5rem 0 0.25rem;
-          transition: 0.25s;
-        }
-
-        &:checked ~ .customTextTypographyCheckbox {
-          background: var(--main-color);
-        }
-      }
+    &:checked ~ .customTextCheckbox {
+      background: var(--main-color);
     }
   }
 }
@@ -1192,7 +1173,6 @@ a:hover {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
     }
@@ -1218,7 +1198,6 @@ a:hover {
       border: none;
       outline: none;
       font-size: 1rem;
-      font-family: var(--font);
       width: 100%;
       border-radius: var(--roundness);
     }
@@ -1243,12 +1222,29 @@ a:hover {
       overflow-y: scroll;
       max-height: calc(100vh - 10rem - 3rem);
       display: grid;
+      cursor: pointer;
 
       .entry {
         padding: 0.5rem 1rem;
         font-size: 0.75rem;
         line-height: 0.75rem;
         color: var(--sub-color);
+        display: grid;
+        grid-template-columns: auto 1fr;
+
+        div {
+          pointer-events: none;
+        }
+
+        .textIcon {
+          font-weight: 900;
+          /* width: 1.25rem; */
+          display: inline-block;
+          letter-spacing: -0.1rem;
+          margin-right: 0.5rem;
+          text-align: center;
+          width: 1.25em;
+        }
 
         .fas {
           margin-right: 0.5rem;
@@ -1312,7 +1308,8 @@ a:hover {
   line-height: 0;
   top: 5rem;
   position: relative;
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
   justify-content: center;
   gap: 5rem;
 }
@@ -1322,6 +1319,10 @@ a:hover {
 }
 
 #liveAcc {
+  opacity: 0;
+}
+
+#liveBurst {
   opacity: 0;
 }
 
@@ -1457,6 +1458,9 @@ a:hover {
     &.size3 {
       margin-left: -0.2rem;
     }
+    &.size4 {
+      margin-left: -0.3rem;
+    }
   }
 
   &.banana {
@@ -1471,6 +1475,9 @@ a:hover {
     }
     &.size3 {
       margin-left: -0.5rem;
+    }
+    &.size4 {
+      margin-left: -0.3rem;
     }
   }
 
@@ -1509,6 +1516,9 @@ a:hover {
     &.size3 {
       margin-top: 3.9em;
     }
+    &.size4 {
+      margin-top: 4.7em;
+    }
   }
 
   &.size125 {
@@ -1525,6 +1535,10 @@ a:hover {
 
   &.size3 {
     transform: scale(2.8);
+  }
+
+  &.size4 {
+    transform: scale(3.7);
   }
 }
 
@@ -1787,12 +1801,14 @@ key {
       grid-auto-flow: column;
       width: fit-content;
       gap: 1rem;
+      width: -moz-fit-content;
     }
     .right {
       text-align: right;
       display: grid;
       grid-auto-flow: column;
       width: fit-content;
+      width: -moz-fit-content;
       justify-self: right;
       gap: 1rem;
       // align-items: center;
@@ -1859,10 +1875,48 @@ key {
     grid-column: 1/3;
   }
 
-  #resultWordsHistory {
+  #resultWordsHistory,
+  #resultReplay {
     // grid-area: wordsHistory;
     color: var(--sub-color);
     grid-column: 1/3;
+    .heatmapLegend {
+      display: inline-grid;
+      grid-template-columns: auto auto auto;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--sub-color);
+      width: min-content;
+      .boxes {
+        display: flex;
+        .box {
+          width: 1rem;
+          height: 1rem;
+        }
+        .box:nth-child(1) {
+          background: var(--colorful-error-color);
+          border-radius: var(--roundness) 0 0 var(--roundness);
+        }
+        .box:nth-child(2) {
+          background: var(--colorful-error-color);
+          filter: opacity(0.6);
+        }
+        .box:nth-child(3) {
+          background: var(--sub-color);
+        }
+        .box:nth-child(4) {
+          background: var(--main-color);
+          filter: opacity(0.6);
+        }
+        .box:nth-child(5) {
+          background: var(--main-color);
+          border-radius: 0 var(--roundness) var(--roundness) 0;
+        }
+      }
+    }
+    .title {
+      user-select: none;
+    }
     .words {
       display: flex;
       flex-wrap: wrap;
@@ -1871,6 +1925,46 @@ key {
       user-select: none;
       .word {
         position: relative;
+        margin: 0.18rem 0.6rem 0.15rem 0;
+        letter.correct {
+          color: var(--text-color);
+        }
+        letter.incorrect {
+          color: var(--error-color);
+        }
+        letter.incorrect.extra {
+          color: var(--error-extra-color);
+        }
+        &.heatmap-0 letter {
+          color: var(--colorful-error-color);
+        }
+        &.heatmap-1 letter {
+          color: var(--colorful-error-color);
+          filter: opacity(0.6);
+        }
+        &.heatmap-2 letter {
+          color: var(--sub-color);
+        }
+        &.heatmap-3 letter {
+          color: var(--main-color);
+          filter: opacity(0.6);
+        }
+        &.heatmap-4 letter {
+          color: var(--main-color);
+        }
+      }
+      &.rightToLeftTest {
+        //flex-direction: row-reverse; // no need for hacking 😉, CSS fully support right-to-left languages
+        direction: rtl;
+        .word {
+          //flex-direction: row-reverse;
+          direction: rtl;
+        }
+      }
+      &.withLigatures {
+        letter {
+          display: inline;
+        }
       }
     }
   }
@@ -1921,7 +2015,8 @@ key {
     //   "wpm raw time nothing infoAndTags leaderboards source";
     grid-template-areas:
       "wpm"
-      "acc";
+      "acc"
+      "burst";
 
     &.morestats {
       display: grid;
@@ -1956,7 +2051,8 @@ key {
       }
 
       &.time {
-        .afk {
+        .afk,
+        .timeToday {
           color: var(--sub-color);
           font-size: 0.75rem;
           line-height: 0.75rem;
@@ -1998,7 +2094,7 @@ key {
     }
 
     .source {
-      width: 25vw;
+      max-width: 30rem;
     }
 
     .tags .bottom .fas {
@@ -2071,6 +2167,20 @@ key {
       }
     }
 
+    .burst {
+      grid-area: burst;
+
+      .top {
+        font-size: 2rem;
+        line-height: 1.5rem;
+      }
+
+      .bottom {
+        font-size: 4rem;
+        line-height: 4rem;
+      }
+    }
+
     // .key {
     //   grid-area: key;
     // }
@@ -2123,6 +2233,7 @@ key {
 
 #words {
   height: fit-content;
+  height: -moz-fit-content;
   display: flex;
   flex-wrap: wrap;
   width: 100%;
@@ -2267,10 +2378,11 @@ key {
 
 #restartTestButton,
 #showWordHistoryButton,
-#copyResultToClipboardButton,
+#saveScreenshotButton,
 #restartTestButtonWithSameWordset,
 #nextTestButton,
-#practiseMissedWordsButton {
+#practiseMissedWordsButton,
+#watchReplayButton {
   position: relative;
   border-radius: var(--roundness);
   padding: 1rem 2rem;
@@ -2289,6 +2401,15 @@ key {
   &:focus {
     background: var(--sub-color);
   }
+}
+
+#replayWords {
+  cursor: pointer;
+}
+
+#replayStopwatch {
+  color: var(--main-color);
+  display: inline-block;
 }
 
 #restartTestButton {
@@ -2356,13 +2477,15 @@ key {
         margin-right: 2rem;
       }
 
-      .wpm {
+      .wpm,
+      .acc {
         margin-right: 2rem;
       }
 
       .time,
       .wpm,
-      .acc {
+      .acc,
+      .burst {
         opacity: 0;
       }
 
@@ -2397,6 +2520,11 @@ key {
         margin-top: -3.5rem;
         font-size: 3rem;
         line-height: 3rem;
+      }
+      &.size4 {
+        margin-top: -4.5rem;
+        font-size: 4rem;
+        line-height: 4rem;
       }
     }
   }
@@ -2449,6 +2577,11 @@ key {
     transition: 0.25s;
     text-shadow: none;
     top: -0.5rem;
+    z-index: 10;
+    cursor: text;
+    .speed {
+      font-size: 0.75rem;
+    }
   }
 }
 
@@ -2474,6 +2607,12 @@ key {
   line-height: 3rem;
   font-size: 3rem;
   margin: 0.75rem;
+}
+
+#words.size4 .word {
+  line-height: 4rem;
+  font-size: 4rem;
+  margin: 1rem;
 }
 
 #words.nospace {
@@ -2545,6 +2684,16 @@ key {
   opacity: 0.5;
 }
 
+.pageLoading {
+  display: grid;
+  justify-content: center;
+  .preloader {
+    font-size: 2rem;
+    justify-self: center;
+    color: var(--main-color);
+  }
+}
+
 .pageTest {
   position: relative;
 
@@ -2582,6 +2731,7 @@ key {
         font-size: 0.75rem;
         line-height: 0.75rem;
         height: fit-content;
+        height: -moz-fit-content;
         align-self: center;
         justify-self: right;
         padding: 0.25rem 0;
@@ -2596,36 +2746,6 @@ key {
 
       form {
         grid-area: form;
-
-        #rememberMe {
-          color: var(--sub-color);
-          -moz-user-select: none;
-          user-select: none;
-          cursor: pointer;
-
-          input {
-            margin: 0 !important;
-            cursor: pointer;
-            width: 0;
-            height: 0;
-            display: none;
-
-            & ~ .customCheckbox {
-              width: 12px;
-              height: 12px;
-              background: rgba(0, 0, 0, 0.1);
-              border-radius: 2px;
-              box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
-              display: inline-block;
-              margin: 0 0.5rem 0 0.25rem;
-              transition: 0.25s;
-            }
-
-            &:checked ~ .customCheckbox {
-              background: var(--main-color);
-            }
-          }
-        }
       }
     }
   }
@@ -2668,6 +2788,23 @@ key {
       line-height: 2rem;
       color: var(--sub-color);
       margin: 1rem 0;
+    }
+
+    .contactButtons,
+    .supportButtons {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 1rem;
+      .button {
+        text-decoration: none;
+        font-size: 1.5rem;
+        padding: 2rem 0;
+        .fas,
+        .fab {
+          margin-right: 1rem;
+        }
+      }
     }
 
     .supporters,
@@ -2754,32 +2891,30 @@ key {
     align-items: center;
 
     .button.danger {
-      background: var(--error-color);
-      color: #eee;
+      box-shadow: 0px 0px 0px 2px var(--error-color);
+      color: var(--text-color);
       &:hover {
         background: var(--text-color);
         color: var(--bg-color);
       }
     }
 
-    &.customBackgroundSize {
-      .inputAndButton {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        input {
-          grid-column: 1/3;
-        }
+    .inputAndSave {
+      display: grid;
+      grid-template-columns: 8fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      input {
+        // grid-column: 1/3;
+      }
 
-        .save {
-          grid-column: 3/4;
-          height: auto;
+      .save {
+        // grid-column: 3/4;
+        height: auto;
 
-          .fas {
-            margin-right: 0rem;
-            vertical-align: sub;
-          }
+        .fas {
+          margin-right: 0rem;
+          vertical-align: sub;
         }
       }
     }
@@ -2824,13 +2959,6 @@ key {
 
       & .spacer {
         grid-column: 3 / 5;
-      }
-    }
-
-    &.paceCaret {
-      .customPaceCaretSpeed {
-        width: 4rem;
-        padding: 0 0.5rem;
       }
     }
 
@@ -2890,47 +3018,52 @@ key {
         grid-area: buttons;
       }
 
-      .tagsList {
-        display: grid;
-        gap: 0.5rem;
-
-        .tag {
-          display: grid;
-          display: grid;
-          grid-template-columns: auto 1fr auto auto auto;
-          color: var(--text-color);
-
-          .title {
-            align-self: center;
-          }
-
-          .editButton,
-          .clearPbButton,
-          .removeButton,
-          .active {
-            display: grid;
-            grid-auto-flow: column;
-            align-content: center;
-            transition: 0.25s;
-            padding: 0 0.5rem;
-            border-radius: var(--roundness);
-            color: var(--sub-color);
-
-            &:focus {
-              color: var(--sub-color);
-              border: none;
-              outline: none;
-            }
-
-            &:hover {
-              cursor: pointer;
-              color: var(--text-color);
-            }
-          }
-        }
+      .tag {
+        grid-template-columns: 6fr 1fr 1fr 1fr;
+        margin-bottom: 0.5rem;
       }
 
       .addTagButton {
+        margin-top: 0.5rem;
+        color: var(--text-color);
+        cursor: pointer;
+        transition: 0.25s;
+        padding: 0.2rem 0.5rem;
+        border-radius: var(--roundness);
+
+        background: rgba(0, 0, 0, 0.1);
+        text-align: center;
+        -webkit-user-select: none;
+        display: grid;
+        align-content: center;
+        height: min-content;
+        height: -moz-min-content;
+
+        &.active {
+          background: var(--main-color);
+          color: var(--bg-color);
+        }
+
+        &:hover,
+        &:focus {
+          color: var(--bg-color);
+          background: var(--text-color);
+          outline: none;
+        }
+      }
+    }
+
+    &.presets {
+      .presetsListAndButton {
+        grid-area: buttons;
+      }
+
+      .preset {
+        grid-template-columns: 7fr 1fr 1fr;
+        margin-bottom: 0.5rem;
+      }
+
+      .addPresetButton {
         margin-top: 0.5rem;
         color: var(--text-color);
         cursor: pointer;
@@ -3038,16 +3171,7 @@ key {
       }
     }
 
-    &.themes,
-    &.language,
-    &.languageGroups,
-    &.layout,
-    &.keymapLayout,
-    &.keymapLegendStyle,
-    &.fontFamily,
-    &.funbox,
-    &.keymapStyle,
-    &.customBackgroundFilter {
+    &.themes {
       grid-template-columns: 2fr 1fr;
       grid-template-areas:
         "title tabs"
@@ -3062,29 +3186,6 @@ key {
         grid-auto-columns: 1fr;
         gap: 0.5rem;
         grid-area: tabs;
-
-        .tab {
-          will-change: color;
-          transition: 0.2s ease-in-out color;
-          outline: 0;
-          cursor: pointer;
-          padding: 0;
-          font-size: 1rem;
-          color: var(--sub-color);
-          text-align: left;
-          border: 0;
-          background: 0;
-          font-family: var(--font);
-
-          &:first-child {
-            margin-right: 0.5rem;
-          }
-
-          &.active,
-          &:hover {
-            color: var(--main-color);
-          }
-        }
       }
 
       .buttons {
@@ -3095,6 +3196,29 @@ key {
         gap: 0.5rem;
         margin-top: 0.5rem;
       }
+    }
+
+    &.fullWidth {
+      grid-template-columns: 2fr 1fr;
+      grid-template-areas:
+        "title tabs"
+        "text text"
+        "buttons buttons";
+      column-gap: 2rem;
+      // row-gap: 0.5rem;
+
+      .buttons {
+        margin-left: 0;
+        grid-auto-flow: dense;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+    }
+
+    &.randomTheme .buttons {
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     }
   }
 }
@@ -3110,6 +3234,7 @@ key {
   // background: var(--sub-color);
   color: var(--sub-color);
   width: fit-content;
+  width: -moz-fit-content;
   padding: 0.5rem;
   border-radius: var(--roundness);
   cursor: pointer;
@@ -3209,6 +3334,10 @@ key {
     }
 
     &.history {
+      .active {
+        animation: flashHighlight 4s linear 0s 1;
+      }
+
       .loadMoreButton {
         background: rgba(0, 0, 0, 0.1);
         color: var(--text-color);
@@ -3239,7 +3368,7 @@ key {
 
     .val {
       font-size: 3rem;
-      line-height: 3rem;
+      line-height: 3.5rem;
     }
 
     &.chart {
@@ -3329,12 +3458,11 @@ key {
 
   #resultEditTags {
     transition: 0.25s;
-  }
-
-  #resultEditTags:hover {
-    cursor: pointer;
-    color: var(--text-color);
-    opacity: 1 !important;
+    &:hover {
+      cursor: pointer;
+      color: var(--text-color);
+      opacity: 1 !important;
+    }
   }
 }
 
@@ -3445,11 +3573,6 @@ key {
   height: min-content;
   height: -moz-min-content;
   line-height: 1rem;
-
-  .fas,
-  .far {
-    margin-right: 0.5rem;
-  }
 
   &:hover {
     color: var(--bg-color);
@@ -3876,4 +3999,29 @@ key {
       }
     }
   }
+}
+
+@keyframes flashHighlight {
+  0% {
+    background-color: var(--bg-color);
+  }
+  10% {
+    background-color: var(--main-color);
+  }
+  40% {
+    background-color: var(--main-color);
+  }
+  100% {
+    background-color: var(--bg-color);
+  }
+}
+
+.header-sorted {
+  font-weight: bold;
+}
+
+.sortable:hover {
+  cursor: pointer;
+  user-select: none;
+  background-color: rgba(0, 0, 0, 0.1);
 }

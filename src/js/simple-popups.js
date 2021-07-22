@@ -4,6 +4,7 @@ import * as Notifications from "./notifications";
 import * as AccountController from "./account-controller";
 import * as DB from "./db";
 import * as Settings from "./settings";
+import * as UpdateConfig from "./config";
 
 export let list = {};
 class SimplePopup {
@@ -48,7 +49,12 @@ class SimplePopup {
 
     this.initInputs();
 
-    el.find(".button").text(this.buttonText);
+    if (!this.buttonText) {
+      el.find(".button").remove();
+    } else {
+      el.find(".button").text(this.buttonText);
+    }
+
     // }
   }
 
@@ -58,14 +64,20 @@ class SimplePopup {
       if (this.type === "number") {
         this.inputs.forEach((input) => {
           el.find(".inputs").append(`
-        <input type="number" min="1" val="${input.initVal}" placeholder="${input.placeholder}" required>
+        <input type="number" min="1" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
         `);
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
-          el.find(".inputs").append(`
-        <input type="text" val="${input.initVal}" placeholder="${input.placeholder}" required>
-        `);
+          if (input.type) {
+            el.find(".inputs").append(`
+            <input type="${input.type}" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
+            `);
+          } else {
+            el.find(".inputs").append(`
+            <input type="text" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
+            `);
+          }
         });
       }
       el.find(".inputs").removeClass("hidden");
@@ -107,7 +119,7 @@ class SimplePopup {
   }
 }
 
-$("#simplePopupWrapper").click((e) => {
+$("#simplePopupWrapper").mousedown((e) => {
   if ($(e.target).attr("id") === "simplePopupWrapper") {
     $("#simplePopupWrapper")
       .stop(true, true)
@@ -138,23 +150,40 @@ list.updateEmail = new SimplePopup(
   "Update Email",
   [
     {
-      placeholder: "Current email",
+      placeholder: "Password",
+      type: "password",
       initVal: "",
     },
     {
       placeholder: "New email",
       initVal: "",
     },
+    {
+      placeholder: "Confirm new email",
+      initVal: "",
+    },
   ],
-  "Don't mess this one up or you won't be able to login!",
+  "",
   "Update",
-  (previousEmail, newEmail) => {
+  async (password, email, emailConfirm) => {
     try {
+      const user = firebase.auth().currentUser;
+      if (email !== emailConfirm) {
+        Notifications.add("Emails don't match", 0);
+        return;
+      }
+      if (user.providerData[0].providerId === "password") {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          password
+        );
+        await user.reauthenticateWithCredential(credential);
+      }
       Loader.show();
       CloudFunctions.updateEmail({
-        uid: firebase.auth().currentUser.uid,
-        previousEmail: previousEmail,
-        newEmail: newEmail,
+        uid: user.uid,
+        previousEmail: user.email,
+        newEmail: email,
       }).then((data) => {
         Loader.hide();
         if (data.data.resultCode === 1) {
@@ -175,7 +204,72 @@ list.updateEmail = new SimplePopup(
       Notifications.add("Something went wrong: " + e, -1);
     }
   },
-  () => {}
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = undefined`);
+      eval(
+        `this.text = "You can't change your email when using Google Authentication";`
+      );
+    }
+  }
+);
+
+list.updatePassword = new SimplePopup(
+  "updatePassword",
+  "text",
+  "Update Password",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+    {
+      placeholder: "New password",
+      type: "password",
+      initVal: "",
+    },
+    {
+      placeholder: "Confirm new password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "",
+  "Update",
+  async (previousPass, newPass, newPassConfirm) => {
+    try {
+      const user = firebase.auth().currentUser;
+      const credential = firebase.auth.EmailAuthProvider.credential(
+        user.email,
+        previousPass
+      );
+      if (newPass !== newPassConfirm) {
+        Notifications.add("New passwords don't match", 0);
+        return;
+      }
+      Loader.show();
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPass);
+      Loader.hide();
+      Notifications.add("Password updated", 1);
+    } catch (e) {
+      Loader.hide();
+      Notifications.add(e, -1);
+    }
+  },
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = undefined`);
+      eval(
+        `this.text = "You can't change your password when using Google Authentication";`
+      );
+    }
+  }
 );
 
 list.clearTagPb = new SimplePopup(
@@ -239,35 +333,96 @@ list.resetPersonalBests = new SimplePopup(
   "resetPersonalBests",
   "text",
   "Reset Personal Bests",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "",
+  "Reset",
+  async (password) => {
+    try {
+      const user = firebase.auth().currentUser;
+      if (user.providerData[0].providerId === "password") {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          password
+        );
+        await user.reauthenticateWithCredential(credential);
+      } else if (user.providerData[0].providerId === "google.com") {
+        await user.reauthenticateWithPopup(AccountController.gmailProvider);
+      }
+      Loader.show();
+      let resetResult = await CloudFunctions.resetPersonalBests({
+        uid: firebase.auth().currentUser.uid,
+      });
+      if (resetResult) {
+        Loader.hide();
+        Notifications.add("Personal bests removed, refreshing the page...", 0);
+        setTimeout(() => {
+          location.reload();
+        }, 1500);
+      } else {
+        Notifications.add(
+          "Something went wrong while removing personal bests...",
+          -1
+        );
+      }
+    } catch (e) {
+      Loader.hide();
+      Notifications.add(e, -1);
+    }
+  },
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = "Reauthenticate to reset"`);
+    }
+  }
+);
+
+list.resetSettings = new SimplePopup(
+  "resetSettings",
+  "text",
+  "Reset Settings",
   [],
-  "Are you sure you want to reset all your personal bests?",
+  "Are you sure you want to reset all your settings?",
   "Reset",
   () => {
-    try {
-      Loader.show();
+    UpdateConfig.reset();
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+  },
+  () => {}
+);
 
-      CloudFunctions.resetPersonalBests({
-        uid: firebase.auth().currentUser.uid,
-      }).then((res) => {
-        if (res) {
-          Loader.hide();
-          Notifications.add(
-            "Personal bests removed, refreshing the page...",
-            0
-          );
-          setTimeout(() => {
-            location.reload();
-          }, 1500);
-        } else {
-          Notifications.add(
-            "Something went wrong while removing personal bests...",
-            -1
-          );
-        }
-      });
-    } catch (e) {
-      Notifications.add("Something went wrong: " + e, -1);
-    }
+list.unlinkDiscord = new SimplePopup(
+  "unlinkDiscord",
+  "text",
+  "Unlink Discord",
+  [],
+  "Are you sure you want to unlink your Discord account?",
+  "Unlink",
+  () => {
+    Loader.show();
+    CloudFunctions.unlinkDiscord({
+      uid: firebase.auth().currentUser.uid,
+    }).then((ret) => {
+      Loader.hide();
+      console.log(ret);
+      if (ret.data.status === 1) {
+        DB.getSnapshot().discordId = null;
+        Notifications.add("Accounts unlinked", 0);
+        Settings.updateDiscordSection();
+      } else {
+        Notifications.add("Something went wrong: " + ret.data.message, -1);
+        Settings.updateDiscordSection();
+      }
+    });
   },
   () => {}
 );

@@ -26,6 +26,12 @@ export function show(action, id, name) {
     $("#tagsWrapper #tagsEdit .title").html("Remove tag " + name);
     $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-check"></i>`);
     $("#tagsWrapper #tagsEdit input").addClass("hidden");
+  } else if (action === "clearPb") {
+    $("#tagsWrapper #tagsEdit").attr("action", "clearPb");
+    $("#tagsWrapper #tagsEdit").attr("tagid", id);
+    $("#tagsWrapper #tagsEdit .title").html("Clear PB for tag " + name);
+    $("#tagsWrapper #tagsEdit .button").html(`<i class="fas fa-check"></i>`);
+    $("#tagsWrapper #tagsEdit input").addClass("hidden");
   }
 
   if ($("#tagsWrapper").hasClass("hidden")) {
@@ -59,6 +65,7 @@ function hide() {
 }
 
 function apply() {
+  // console.log(DB.getSnapshot());
   let action = $("#tagsWrapper #tagsEdit").attr("action");
   let inputVal = $("#tagsWrapper #tagsEdit input").val();
   let tagid = $("#tagsWrapper #tagsEdit").attr("tagid");
@@ -124,6 +131,28 @@ function apply() {
         DB.getSnapshot().tags.forEach((tag, index) => {
           if (tag.id === tagid) {
             DB.getSnapshot().tags.splice(index, 1);
+          }
+        });
+        ResultTagsPopup.updateButtons();
+        Settings.update();
+        ResultFilters.updateTags();
+      } else if (status < -1) {
+        Notifications.add("Unknown error: " + e.data.message, -1);
+      }
+    });
+  } else if (action === "clearPb") {
+    Loader.show();
+    CloudFunctions.clearTagPb({
+      uid: firebase.auth().currentUser.uid,
+      tagid: tagid,
+    }).then((e) => {
+      Loader.hide();
+      let status = e.data.resultCode;
+      if (status === 1) {
+        Notifications.add("PB cleared", 1);
+        DB.getSnapshot().tags.forEach((tag, index) => {
+          if (tag.id === tagid) {
+            tag.personalBests = {};
           }
         });
         ResultTagsPopup.updateButtons();

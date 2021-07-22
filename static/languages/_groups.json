@@ -1,7 +1,14 @@
 [
   {
     "name": "english",
-      "languages": ["english", "english_1k", "english_10k", "english_25k", "english_450k"]
+    "languages": [
+      "english",
+      "english_1k",
+      "english_5k",
+      "english_10k",
+      "english_25k",
+      "english_450k"
+    ]
   },
   {
     "name": "spanish",
@@ -13,7 +20,11 @@
   },
   {
     "name": "arabic",
-    "languages": ["arabic"]
+    "languages": ["arabic", "arabic_10k"]
+  },
+  {
+    "name": "malagasy",
+    "languages": ["malagasy", "malagasy_1k"]
   },
   {
     "name": "malay",
@@ -28,12 +39,16 @@
     "languages": ["russian", "russian_1k", "russian_10k"]
   },
   {
+    "name": "ukrainian",
+    "languages": ["ukrainian", "ukrainian_1k", "ukrainian_10k", "ukrainian_50k"]
+  },
+  {
     "name": "portuguese",
-    "languages": ["portuguese","portuguese_3k"]
+    "languages": ["portuguese", "portuguese_3k"]
   },
   {
     "name": "lithuanian",
-    "languages": ["lithuanian", "lithuanian_1k"]
+    "languages": ["lithuanian", "lithuanian_1k", "lithuanian_3k"]
   },
   {
     "name": "indonesian",
@@ -41,7 +56,13 @@
   },
   {
     "name": "german",
-    "languages": ["german", "german_1k", "german_10k", "swiss_german", "swiss_german_1k"]
+    "languages": [
+      "german",
+      "german_1k",
+      "german_10k",
+      "swiss_german",
+      "swiss_german_1k"
+    ]
   },
   {
     "name": "greek",
@@ -50,6 +71,10 @@
   {
     "name": "turkish",
     "languages": ["turkish"]
+  },
+  {
+    "name": "irish",
+    "languages": ["irish"]
   },
   {
     "name": "italian",
@@ -69,7 +94,7 @@
   },
   {
     "name": "slovak",
-    "languages": ["slovak", "slovak_1k"]
+    "languages": ["slovak", "slovak_1k", "slovak_10k"]
   },
   {
     "name": "slovenian",
@@ -116,6 +141,10 @@
     "languages": ["finnish", "finnish_1k", "finnish_10k"]
   },
   {
+    "name": "welsh",
+    "languages": ["welsh", "welsh_1k"]
+  },
+  {
     "name": "persian",
     "languages": ["persian"]
   },
@@ -126,6 +155,10 @@
   {
     "name": "vietnamese",
     "languages": ["vietnamese", "vietnamese_1k", "vietnamese_5k"]
+  },
+  {
+    "name": "pinyin",
+    "languages": ["pinyin", "pinyin_1k", "pinyin_10k"]
   },
   {
     "name": "swedish",
@@ -152,6 +185,42 @@
     "languages": ["catalan", "catalan_1k"]
   },
   {
+    "name": "bulgarian",
+    "languages": ["bulgarian"]
+  },
+  {
+    "name": "esperanto",
+    "languages": [
+      "esperanto",
+      "esperanto_1k",
+      "esperanto_10k",
+      "esperanto_25k",
+      "esperanto_36k",
+      "esperanto_x_sistemo",
+      "esperanto_x_sistemo_1k",
+      "esperanto_x_sistemo_10k",
+      "esperanto_x_sistemo_25k",
+      "esperanto_x_sistemo_36k",
+      "esperanto_h_sistemo",
+      "esperanto_h_sistemo_1k",
+      "esperanto_h_sistemo_10k",
+      "esperanto_h_sistemo_25k",
+      "esperanto_h_sistemo_36k"
+    ]
+  },
+  {
+    "name": "bangla",
+    "languages": ["bangla", "bangla_letters", "bangla_10k"]
+  },
+  {
+    "name": "urdu",
+    "languages": ["urdu", "urdu_1k"]
+  },
+  {
+    "name": "albanian",
+    "languanges": ["albanian", "albanian_1k"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
@@ -163,7 +232,10 @@
       "code_html",
       "code_java",
       "code_go",
-      "code_rust"
+      "code_rust",
+      "code_ruby",
+      "code_r",
+      "code_swift"
     ]
   },
   {

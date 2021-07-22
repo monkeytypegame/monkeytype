@@ -25,6 +25,11 @@
     "textColor": "#ed6b21"
   },
   {
+    "name": "our_theme",
+    "bgColor": "#ce1226",
+    "textColor": "#fcd116"
+  },
+  {
     "name": "dots",
     "bgColor": "#121520",
     "textColor": "#7f88ab"
@@ -528,5 +533,40 @@
     "name": "peaches",
     "bgColor": "#d3cfc6",
     "textColor": "#dd7a5f"
+  },
+  {
+    "name": "bouquet",
+    "bgColor": "#38564a",
+    "textColor": "#ffbdb2"
+  },
+  {
+    "name": "midnight",
+    "bgColor": "#0c0e12",
+    "textColor": "#525f7a"
+  },
+  {
+    "name": "blueberry_light",
+    "bgColor": "#dae0f5",
+    "textColor": "#df4576"
+  },
+  {
+    "name": "blueberry_dark",
+    "bgColor": "#212b42",
+    "textColor": "#df4576"
+  },
+  {
+    "name": "fledgling",
+    "bgColor": "#3b363f",
+    "textColor": "#fc6e83"
+  },
+  {
+    "name": "ez_mode",
+    "bgColor": "#0171cd",
+    "textColor": "#fa62d5"
+  },
+  {
+    "name": "vscode",
+    "bgColor": "#1E1E1E",
+    "textColor": "#007acc"
   }
 ]

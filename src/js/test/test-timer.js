@@ -40,26 +40,31 @@ export function start() {
 
       let acc = Misc.roundTo2(TestStats.calculateAccuracy());
 
-      if (Funbox.active === "layoutfluid" && Config.mode === "time") {
-        const layouts = ["qwerty", "dvorak", "colemak"];
+      if (Config.funbox === "layoutfluid" && Config.mode === "time") {
+        const layouts = Config.customLayoutfluid
+          ? Config.customLayoutfluid.split("#")
+          : ["qwerty", "dvorak", "colemak"];
+        console.log(Config.customLayoutfluid);
+        console.log(layouts);
+        const numLayouts = layouts.length;
         let index = 0;
-        index = Math.floor(time / (Config.time / 3));
+        index = Math.floor(time / (Config.time / numLayouts));
 
         if (
-          time == Math.floor(Config.time / 3) - 3 ||
-          time == (Config.time / 3) * 2 - 3
+          time == Math.floor(Config.time / numLayouts) - 3 ||
+          time == (Config.time / numLayouts) * 2 - 3
         ) {
           Notifications.add("3", 0, 1);
         }
         if (
-          time == Math.floor(Config.time / 3) - 2 ||
-          time == Math.floor(Config.time / 3) * 2 - 2
+          time == Math.floor(Config.time / numLayouts) - 2 ||
+          time == Math.floor(Config.time / numLayouts) * 2 - 2
         ) {
           Notifications.add("2", 0, 1);
         }
         if (
-          time == Math.floor(Config.time / 3) - 1 ||
-          time == Math.floor(Config.time / 3) * 2 - 1
+          time == Math.floor(Config.time / numLayouts) - 1 ||
+          time == Math.floor(Config.time / numLayouts) * 2 - 1
         ) {
           Notifications.add("1", 0, 1);
         }
@@ -83,13 +88,21 @@ export function start() {
 
       TestStats.pushKeypressesToHistory();
       if (
-        (Config.minWpm === "custom" &&
-          wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
-          TestLogic.words.currentIndex > 3) ||
-        (Config.minAcc === "custom" && acc < parseInt(Config.minAccCustom))
+        Config.minWpm === "custom" &&
+        wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
+        TestLogic.words.currentIndex > 3
       ) {
         clearTimeout(timer);
-        TestLogic.fail();
+        TestLogic.fail("min wpm");
+        return;
+      }
+      if (
+        Config.minAcc === "custom" &&
+        acc < parseInt(Config.minAccCustom) &&
+        TestLogic.words.currentIndex > 3
+      ) {
+        clearTimeout(timer);
+        TestLogic.fail("min accuracy");
         return;
       }
       if (

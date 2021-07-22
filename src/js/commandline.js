@@ -27,8 +27,30 @@ function showFound() {
   let list = CommandlineLists.current[CommandlineLists.current.length - 1];
   $.each(list.list, (index, obj) => {
     if (obj.found && (obj.available !== undefined ? obj.available() : true)) {
-      commandsHTML +=
-        '<div class="entry" command="' + obj.id + '">' + obj.display + "</div>";
+      let icon = obj.icon ?? "fa-chevron-right";
+      let faIcon = /^fa-/g.test(icon);
+      if (!faIcon) {
+        icon = `<div class="textIcon">${icon}</div>`;
+      } else {
+        icon = `<i class="fas fa-fw ${icon}"></i>`;
+      }
+      if (list.configKey) {
+        if (
+          (obj.configValueMode &&
+            obj.configValueMode === "include" &&
+            Config[list.configKey].includes(obj.configValue)) ||
+          Config[list.configKey] === obj.configValue
+        ) {
+          icon = `<i class="fas fa-fw fa-check"></i>`;
+        } else {
+          icon = `<i class="fas fa-fw"></i>`;
+        }
+      }
+      let iconHTML = `<div class="icon">${icon}</div>`;
+      if (obj.noIcon && !isSingleListCommandLineActive()) {
+        iconHTML = "";
+      }
+      commandsHTML += `<div class="entry" command="${obj.id}">${iconHTML}<div>${obj.display}</div></div>`;
     }
   });
   $("#commandLine .suggestions").html(commandsHTML);
@@ -95,10 +117,8 @@ function updateSuggested() {
         let escaped = obj2.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
         let re = new RegExp("\\b" + escaped, "g");
         let res = obj.display.toLowerCase().match(re);
-        let res2 = null;
-        if (obj.alias !== undefined) {
-          res2 = obj.alias.toLowerCase().match(re);
-        }
+        let res2 =
+          obj.alias !== undefined ? obj.alias.toLowerCase().match(re) : null;
         if (
           (res != null && res.length > 0) ||
           (res2 != null && res2.length > 0)
@@ -108,7 +128,7 @@ function updateSuggested() {
           foundcount--;
         }
       });
-      if (foundcount > 0) {
+      if (foundcount > inputVal.length - 1) {
         obj.found = true;
       } else {
         obj.found = false;
@@ -150,12 +170,17 @@ function trigger(command) {
     if (obj.id == command) {
       if (obj.input) {
         input = true;
-        showInput(obj.id, obj.display, obj.defaultValue);
+        let escaped = obj.display.split("</i>")[1] ?? obj.display;
+        showInput(obj.id, escaped, obj.defaultValue);
+      } else if (obj.subgroup) {
+        subgroup = true;
+        if (obj.beforeSubgroup) {
+          obj.beforeSubgroup();
+        }
+        CommandlineLists.current.push(obj.subgroup);
+        show();
       } else {
         obj.exec();
-        if (obj.subgroup !== null && obj.subgroup !== undefined) {
-          subgroup = obj.subgroup;
-        }
         if (obj.sticky === true) {
           sticky = true;
         }
@@ -198,23 +223,42 @@ export let show = () => {
 function addChildCommands(
   unifiedCommands,
   commandItem,
-  parentCommandDisplay = ""
+  parentCommandDisplay = "",
+  parentCommand = ""
 ) {
   let commandItemDisplay = commandItem.display.replace(/\s?\.\.\.$/g, "");
+  let icon = `<i class="fas fa-fw"></i>`;
+  if (
+    commandItem.configValue !== undefined &&
+    Config[parentCommand.configKey] === commandItem.configValue
+  ) {
+    icon = `<i class="fas fa-fw fa-check"></i>`;
+  }
+  if (commandItem.noIcon) {
+    icon = "";
+  }
+
   if (parentCommandDisplay)
-    commandItemDisplay = parentCommandDisplay + " > " + commandItemDisplay;
+    commandItemDisplay =
+      parentCommandDisplay + " > " + icon + commandItemDisplay;
   if (commandItem.subgroup) {
+    if (commandItem.beforeSubgroup) commandItem.beforeSubgroup();
     try {
-      commandItem.exec();
-      const currentCommandsIndex = CommandlineLists.current.length - 1;
-      CommandlineLists.current[currentCommandsIndex].list.forEach((cmd) => {
-        if (cmd.alias === undefined) cmd.alias = commandItem.alias;
-        addChildCommands(unifiedCommands, cmd, commandItemDisplay);
+      commandItem.subgroup.list.forEach((cmd) => {
+        commandItem.configKey = commandItem.subgroup.configKey;
+        addChildCommands(unifiedCommands, cmd, commandItemDisplay, commandItem);
       });
-      CommandlineLists.current.pop();
+      // commandItem.exec();
+      // const currentCommandsIndex = CommandlineLists.current.length - 1;
+      // CommandlineLists.current[currentCommandsIndex].list.forEach((cmd) => {
+      //   if (cmd.alias === undefined) cmd.alias = commandItem.alias;
+      //   addChildCommands(unifiedCommands, cmd, commandItemDisplay);
+      // });
+      // CommandlineLists.current.pop();
     } catch (e) {}
   } else {
     let tempCommandItem = { ...commandItem };
+    tempCommandItem.icon = parentCommand.icon;
     if (parentCommandDisplay) tempCommandItem.display = commandItemDisplay;
     unifiedCommands.push(tempCommandItem);
   }
@@ -361,7 +405,7 @@ $(document).on(
 
 $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   if (!commandLineMouseMode) return;
-  console.log("clearing keyboard active");
+  // console.log("clearing keyboard active");
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeKeyboard"
   );
@@ -370,7 +414,10 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
     let list = CommandlineLists.current[CommandlineLists.current.length - 1];
     $.each(list.list, (index, obj) => {
       if (obj.id == hoverId) {
-        if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+        if (
+          (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
+          !ThemeController.randomTheme
+        )
           ThemeController.clearPreview();
         if (!/font/gi.test(obj.id))
           UpdateConfig.previewFontFamily(Config.fontFamily);
@@ -380,10 +427,14 @@ $("#commandLineWrapper #commandLine .suggestions").on("mouseover", (e) => {
   } catch (e) {}
 });
 
-$("#commandLineWrapper #commandLine .suggestions").click((e) => {
-  $(".suggestions .entry").removeClass("activeKeyboard");
-  trigger($(e.target).attr("command"));
-});
+$(document).on(
+  "click",
+  "#commandLineWrapper #commandLine .suggestions .entry",
+  (e) => {
+    $(".suggestions .entry").removeClass("activeKeyboard");
+    trigger($(e.currentTarget).attr("command"));
+  }
+);
 
 $("#commandLineWrapper").click((e) => {
   if ($(e.target).attr("id") === "commandLineWrapper") {
@@ -396,6 +447,40 @@ $("#commandLineWrapper").click((e) => {
     // }
   }
 });
+
+//might come back to it later
+// function shiftCommand(){
+//   let activeEntries = $("#commandLineWrapper #commandLine .suggestions .entry.activeKeyboard, #commandLineWrapper #commandLine .suggestions .entry.activeMouse");
+//   activeEntries.each((index, activeEntry) => {
+//     let commandId = activeEntry.getAttribute('command');
+//     let foundCommand = null;
+//     CommandlineLists.defaultCommands.list.forEach(command => {
+//       if(foundCommand === null && command.id === commandId){
+//         foundCommand = command;
+//       }
+//     })
+//     if(foundCommand.shift){
+//       $(activeEntry).find('div').text(foundCommand.shift.display);
+//     }
+//   })
+// }
+
+// let shiftedCommands = false;
+// $(document).keydown((e) => {
+//   if (e.key === "Shift") {
+//     if(shiftedCommands === false){
+//       shiftedCommands = true;
+//       shiftCommand();
+//     }
+
+//   }
+// });
+
+// $(document).keyup((e) => {
+//   if (e.key === "Shift") {
+//     shiftedCommands = false;
+//   }
+// });
 
 $(document).keydown((e) => {
   // if (isPreviewingTheme) {
@@ -492,7 +577,10 @@ $(document).keydown((e) => {
           CommandlineLists.current[CommandlineLists.current.length - 1];
         $.each(list.list, (index, obj) => {
           if (obj.id == hoverId) {
-            if (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme")
+            if (
+              (!/theme/gi.test(obj.id) || obj.id === "toggleCustomTheme") &&
+              !ThemeController.randomTheme
+            )
               ThemeController.clearPreview();
             if (!/font/gi.test(obj.id))
               UpdateConfig.previewFontFamily(Config.fontFamily);

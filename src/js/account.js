@@ -19,6 +19,15 @@ import * as ThemePicker from "./theme-picker";
 import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
 
+let filterDebug = false;
+//toggle filterdebug
+export function toggleFilterDebug() {
+  filterDebug = !filterDebug;
+  if (filterDebug) {
+    console.log("filterDebug is on");
+  }
+}
+
 export function getDataAndInit() {
   DB.initSnapshot()
     .then(async (e) => {
@@ -65,6 +74,8 @@ export function getDataAndInit() {
       if (snap.refactored === false) {
         CloudFunctions.removeSmallTests({ uid: user.uid });
       }
+      // if($(".pageAccount").hasClass('active')) update();
+      if ($(".pageLogin").hasClass("active")) UI.changePage("account");
       if (!UpdateConfig.changedBeforeDb) {
         if (Config.localStorageConfig === null) {
           AccountButton.loading(false);
@@ -117,6 +128,7 @@ export function getDataAndInit() {
             if ($(".page.pageTest").hasClass("active")) {
               TestLogic.restart(false, true);
             }
+            DB.saveConfig(Config);
           }
         }
         UpdateConfig.setDbConfigLoaded(true);
@@ -141,6 +153,8 @@ export function getDataAndInit() {
       TagController.loadActiveFromLocalStorage();
       ResultTagsPopup.updateButtons();
       Settings.showAccountSection();
+      UI.setPageTransition(false);
+      if ($(".pageLoading").hasClass("active")) UI.changePage("");
     })
     .catch((e) => {
       AccountButton.loading(false);
@@ -157,9 +171,15 @@ export function getDataAndInit() {
 let filteredResults = [];
 let visibleTableLines = 0;
 
-function loadMoreLines() {
+function loadMoreLines(lineIndex) {
   if (filteredResults == [] || filteredResults.length == 0) return;
-  for (let i = visibleTableLines; i < visibleTableLines + 10; i++) {
+  let newVisibleLines;
+  if (lineIndex && lineIndex > visibleTableLines) {
+    newVisibleLines = Math.ceil(lineIndex / 10) * 10;
+  } else {
+    newVisibleLines = visibleTableLines + 10;
+  }
+  for (let i = visibleTableLines; i < newVisibleLines; i++) {
     const result = filteredResults[i];
     if (result == undefined) continue;
     let withpunc = "";
@@ -264,7 +284,7 @@ function loadMoreLines() {
     }
 
     $(".pageAccount .history table tbody").append(`
-    <tr>
+    <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
     <td>${result.wpm.toFixed(2)}</td>
     <td>${raw}</td>
@@ -278,7 +298,7 @@ function loadMoreLines() {
     <td>${moment(result.timestamp).format("DD MMM YYYY<br>HH:mm")}</td>
     </tr>`);
   }
-  visibleTableLines += 10;
+  visibleTableLines = newVisibleLines;
   if (visibleTableLines >= filteredResults.length) {
     $(".pageAccount .loadMoreButton").addClass("hidden");
   } else {
@@ -358,21 +378,37 @@ export function update() {
         if (resdiff == undefined) {
           resdiff = "normal";
         }
-        if (!ResultFilters.getFilter("difficulty", resdiff)) return;
-        if (!ResultFilters.getFilter("mode", result.mode)) return;
+        if (!ResultFilters.getFilter("difficulty", resdiff)) {
+          if (filterDebug)
+            console.log(`skipping result due to difficulty filter`, result);
+          return;
+        }
+        if (!ResultFilters.getFilter("mode", result.mode)) {
+          if (filterDebug)
+            console.log(`skipping result due to mode filter`, result);
+          return;
+        }
 
         if (result.mode == "time") {
           let timefilter = "custom";
           if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
             timefilter = result.mode2;
           }
-          if (!ResultFilters.getFilter("time", timefilter)) return;
+          if (!ResultFilters.getFilter("time", timefilter)) {
+            if (filterDebug)
+              console.log(`skipping result due to time filter`, result);
+            return;
+          }
         } else if (result.mode == "words") {
           let wordfilter = "custom";
           if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
             wordfilter = result.mode2;
           }
-          if (!ResultFilters.getFilter("words", wordfilter)) return;
+          if (!ResultFilters.getFilter("words", wordfilter)) {
+            if (filterDebug)
+              console.log(`skipping result due to word filter`, result);
+            return;
+          }
         }
 
         if (result.quoteLength != null) {
@@ -389,11 +425,17 @@ export function update() {
           if (
             filter !== null &&
             !ResultFilters.getFilter("quoteLength", filter)
-          )
+          ) {
+            if (filterDebug)
+              console.log(`skipping result due to quoteLength filter`, result);
             return;
+          }
         }
 
-        let langFilter = ResultFilters.getFilter("language", result.language);
+        let langFilter = ResultFilters.getFilter(
+          "language",
+          result.language ?? "english"
+        );
 
         if (
           result.language === "english_expanded" &&
@@ -401,24 +443,44 @@ export function update() {
         ) {
           langFilter = true;
         }
-        if (!langFilter) return;
+        if (!langFilter) {
+          if (filterDebug)
+            console.log(`skipping result due to language filter`, result);
+          return;
+        }
 
         let puncfilter = "off";
         if (result.punctuation) {
           puncfilter = "on";
         }
-        if (!ResultFilters.getFilter("punctuation", puncfilter)) return;
+        if (!ResultFilters.getFilter("punctuation", puncfilter)) {
+          if (filterDebug)
+            console.log(`skipping result due to punctuation filter`, result);
+          return;
+        }
 
         let numfilter = "off";
         if (result.numbers) {
           numfilter = "on";
         }
-        if (!ResultFilters.getFilter("numbers", numfilter)) return;
+        if (!ResultFilters.getFilter("numbers", numfilter)) {
+          if (filterDebug)
+            console.log(`skipping result due to numbers filter`, result);
+          return;
+        }
 
         if (result.funbox === "none" || result.funbox === undefined) {
-          if (!ResultFilters.getFilter("funbox", "none")) return;
+          if (!ResultFilters.getFilter("funbox", "none")) {
+            if (filterDebug)
+              console.log(`skipping result due to funbox filter`, result);
+            return;
+          }
         } else {
-          if (!ResultFilters.getFilter("funbox", result.funbox)) return;
+          if (!ResultFilters.getFilter("funbox", result.funbox)) {
+            if (filterDebug)
+              console.log(`skipping result due to funbox filter`, result);
+            return;
+          }
         }
 
         let tagHide = true;
@@ -447,7 +509,11 @@ export function update() {
           });
         }
 
-        if (tagHide) return;
+        if (tagHide) {
+          if (filterDebug)
+            console.log(`skipping result due to tag filter`, result);
+          return;
+        }
 
         let timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
 
@@ -465,7 +531,11 @@ export function update() {
           datehide = false;
         }
 
-        if (datehide) return;
+        if (datehide) {
+          if (filterDebug)
+            console.log(`skipping result due to date filter`, result);
+          return;
+        }
 
         filteredResults.push(result);
       } catch (e) {
@@ -492,12 +562,17 @@ export function update() {
       if (Object.keys(activityChartData).includes(String(resultDate))) {
         activityChartData[resultDate].amount++;
         activityChartData[resultDate].time +=
-          result.testDuration + result.incompleteTestSeconds;
+          result.testDuration +
+          result.incompleteTestSeconds -
+          (result.afkDuration ?? 0);
         activityChartData[resultDate].totalWpm += result.wpm;
       } else {
         activityChartData[resultDate] = {
           amount: 1,
-          time: result.testDuration + result.incompleteTestSeconds,
+          time:
+            result.testDuration +
+            result.incompleteTestSeconds -
+            (result.afkDuration ?? 0),
           totalWpm: result.wpm,
         };
       }
@@ -511,13 +586,16 @@ export function update() {
           tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
         }
       } else {
-        tt = parseFloat(result.testDuration);
+        tt = result.testDuration;
       }
-      if (result.incompleteTestSeconds != undefined) {
-        tt += result.incompleteTestSeconds;
-      } else if (result.restartCount != undefined && result.restartCount > 0) {
-        tt += (tt / 4) * result.restartCount;
-      }
+
+      tt += (result.incompleteTestSeconds ?? 0) - (result.afkDuration ?? 0);
+
+      // if (result.incompleteTestSeconds != undefined) {
+      //   tt += result.incompleteTestSeconds;
+      // } else if (result.restartCount != undefined && result.restartCount > 0) {
+      //   tt += (tt / 4) * result.restartCount;
+      // }
       totalSecondsFiltered += tt;
 
       if (last10 < 10) {
@@ -579,7 +657,10 @@ export function update() {
           ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
           : "";
         topWpm = result.wpm;
-        topMode = result.mode + " " + result.mode2 + puncsctring + numbsctring;
+        if (result.mode == "custom") topMode = result.mode;
+        else
+          topMode =
+            result.mode + " " + result.mode2 + puncsctring + numbsctring;
       }
 
       totalWpm += result.wpm;
@@ -678,24 +759,9 @@ export function update() {
       $(".pageAccount .triplegroup.stats").removeClass("hidden");
     }
 
-    let th = Math.floor(totalSeconds / 3600);
-    let tm = Math.floor((totalSeconds % 3600) / 60);
-    let ts = Math.floor((totalSeconds % 3600) % 60);
-    $(".pageAccount .timeTotal .val").text(`
-
-      ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
-      ts < 10 ? "0" + ts : ts
-    }
-    `);
-    let tfh = Math.floor(totalSecondsFiltered / 3600);
-    let tfm = Math.floor((totalSecondsFiltered % 3600) / 60);
-    let tfs = Math.floor((totalSecondsFiltered % 3600) % 60);
-    $(".pageAccount .timeTotalFiltered .val").text(`
-
-    ${tfh < 10 ? "0" + tfh : tfh}:${tfm < 10 ? "0" + tfm : tfm}:${
-      tfs < 10 ? "0" + tfs : tfs
-    }
-  `);
+    $(".pageAccount .timeTotalFiltered .val").text(
+      Misc.secondsToString(Math.round(totalSecondsFiltered), true)
+    );
 
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm / testCount));
@@ -739,9 +805,9 @@ export function update() {
       )}%)`
     );
 
-    $(".pageAccount .avgRestart .val").text(
-      (testRestarts / testCount).toFixed(1)
-    );
+    $(".pageAccount .testsCompleted .avgres").text(`
+      ${(testRestarts / testCount).toFixed(1)} restarts per completed test
+    `);
 
     if (ChartController.accountHistory.data.datasets[0].data.length > 0) {
       ChartController.accountHistory.options.plugins.trendlineLinear = true;
@@ -816,6 +882,25 @@ $(".pageAccount .loadMoreButton").click((e) => {
   loadMoreLines();
 });
 
+let activeChartIndex;
+
+export function setActiveChartIndex(index) {
+  activeChartIndex = index;
+}
+
+$(".pageAccount #accountHistoryChart").click((e) => {
+  let index = activeChartIndex;
+  loadMoreLines(index);
+  $([document.documentElement, document.body]).animate(
+    {
+      scrollTop: $(`#result-${index}`).offset().top - $(window).height() / 2,
+    },
+    500
+  );
+  $(".resultRow").removeClass("active");
+  $(`#result-${index}`).addClass("active");
+});
+
 $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
   console.log("updating");
   let filteredId = $(event.currentTarget).attr("filteredResultsId");
@@ -827,3 +912,103 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
     event.pageY + 30
   );
 });
+
+$(document).on("click", ".history-wpm-header", (event) => {
+  sortAndRefreshHistory("wpm", ".history-wpm-header");
+});
+
+$(document).on("click", ".history-raw-header", (event) => {
+  sortAndRefreshHistory("rawWpm", ".history-raw-header");
+});
+
+$(document).on("click", ".history-acc-header", (event) => {
+  sortAndRefreshHistory("acc", ".history-acc-header");
+});
+
+$(document).on("click", ".history-correct-chars-header", (event) => {
+  sortAndRefreshHistory("correctChars", ".history-correct-chars-header");
+});
+
+$(document).on("click", ".history-incorrect-chars-header", (event) => {
+  sortAndRefreshHistory("incorrectChars", ".history-incorrect-chars-header");
+});
+
+$(document).on("click", ".history-consistency-header", (event) => {
+  sortAndRefreshHistory("consistency", ".history-consistency-header");
+});
+
+$(document).on("click", ".history-date-header", (event) => {
+  sortAndRefreshHistory("timestamp", ".history-date-header");
+});
+
+// Resets sorting to by date' when applying filers (normal or advanced)
+$(document).on("click", ".buttonsAndTitle .buttons .button", (event) => {
+  // We want to 'force' descending sort:
+  sortAndRefreshHistory("timestamp", ".history-date-header", true);
+});
+
+function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
+  // Removes styling from previous sorting requests:
+  $("td").removeClass("header-sorted");
+  $("td").children("i").remove();
+  $(headerClass).addClass("header-sorted");
+
+  if (filteredResults.length < 2) return;
+
+  // This allows to reverse the sorting order when clicking multiple times on the table header
+  let descending = true;
+  if (forceDescending !== null) {
+    if (forceDescending == true) {
+      $(headerClass).append(
+        '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+      );
+    } else {
+      descending = false;
+      $(headerClass).append(
+        '<i class="fas fa-sort-up" aria-hidden="true"></i>'
+      );
+    }
+  } else if (
+    filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
+  ) {
+    descending = true;
+    $(headerClass).append(
+      '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+    );
+  } else {
+    descending = false;
+    $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
+  }
+
+  let temp = [];
+  let parsedIndexes = [];
+
+  while (temp.length < filteredResults.length) {
+    let lowest = Number.MAX_VALUE;
+    let highest = -1;
+    let idx = -1;
+
+    for (let i = 0; i < filteredResults.length; i++) {
+      //find the lowest wpm with index not already parsed
+      if (!descending) {
+        if (filteredResults[i][key] <= lowest && !parsedIndexes.includes(i)) {
+          lowest = filteredResults[i][key];
+          idx = i;
+        }
+      } else {
+        if (filteredResults[i][key] >= highest && !parsedIndexes.includes(i)) {
+          highest = filteredResults[i][key];
+          idx = i;
+        }
+      }
+    }
+
+    temp.push(filteredResults[idx]);
+    parsedIndexes.push(idx);
+  }
+  filteredResults = temp;
+
+  $(".pageAccount .history table tbody").empty();
+  visibleTableLines = 0;
+  loadMoreLines();
+}
