@@ -796,6 +796,16 @@ export function applyBurstHeatmap() {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
     let min = Math.min(...TestStats.burstHistory);
     let max = Math.max(...TestStats.burstHistory);
+
+    let burstlist = TestStats.burstHistory;
+
+    if (
+      TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
+        .length !== TestLogic.words.getCurrent().length
+    ) {
+      burstlist = burstlist.splice(0, burstlist.length - 1);
+    }
+
     // let step = (max - min) / 5;
     // let steps = [
     //   {
@@ -819,13 +829,13 @@ export function applyBurstHeatmap() {
     //     class: 'heatmap-4'
     //   },
     // ];
-    let median = Misc.median(TestStats.burstHistory);
+    let median = Misc.median(burstlist);
     let adatm = [];
-    TestStats.burstHistory.forEach((burst) => {
+    burstlist.forEach((burst) => {
       adatm.push(Math.abs(median - burst));
     });
     let step = Misc.mean(adatm);
-    // let step = Misc.stdDev(TestStats.burstHistory)/2;
+    // let step = Misc.stdDev(burstlist)/2;
     let steps = [
       {
         val: 0,
