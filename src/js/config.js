@@ -1480,9 +1480,10 @@ export function setCustomBackground(value, nosave) {
   }
   value = value.trim();
   if (
-    /(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
+    (/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
       value
-    ) ||
+    ) &&
+      !/[<>]/.test(value)) ||
     value == ""
   ) {
     config.customBackground = value;
