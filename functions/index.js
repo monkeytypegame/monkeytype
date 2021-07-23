@@ -1784,19 +1784,29 @@ exports.saveConfig = functions.https.onCall((request, response) => {
       }
       if (err) return;
       if (key === "resultFilters") return;
-      if (key === "customBackground") return;
-      if (key === "customLayoutfluid") return;
       let val = obj[key];
       if (Array.isArray(val)) {
         val.forEach((valarr) => {
-          if (!isConfigKeyValid(valarr)) {
+          if (key === "customBackground" || key === "customLayoutfluid") {
+            if (/[<>]/.test(valarr)) {
+              err = true;
+              console.error(`${key}: ${valarr} failed regex check`);
+              errorMessage = `${key}: ${valarr} failed regex check`;
+            }
+          } else if (!isConfigKeyValid(valarr)) {
             err = true;
             console.error(`${key}: ${valarr} failed regex check`);
             errorMessage = `${key}: ${valarr} failed regex check`;
           }
         });
       } else {
-        if (!isConfigKeyValid(val)) {
+        if (key === "customBackground" || key === "customLayoutfluid") {
+          if (/[<>]/.test(val)) {
+            err = true;
+            console.error(`${key}: ${valarr} failed regex check`);
+            errorMessage = `${key}: ${valarr} failed regex check`;
+          }
+        } else if (!isConfigKeyValid(val)) {
           err = true;
           console.error(`${key}: ${val} failed regex check`);
           errorMessage = `${key}: ${val} failed regex check`;
