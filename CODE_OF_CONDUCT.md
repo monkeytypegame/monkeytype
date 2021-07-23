@@ -5,9 +5,9 @@
 In the interest of fostering an open and welcoming environment, we as
 contributors and maintainers pledge to make participation in our project and
 our community a harassment-free experience for everyone, regardless of age, body
-size, disability, ethnicity, sex characteristics, gender identity, and expression,
+size, disability, ethnicity, sexual characteristics, gender identity and expression,
 level of experience, education, socio-economic status, nationality, personal
-appearance, race, religion, or sexual identity and orientation.
+appearance, race, religion, and or sexual identity and orientation.
 
 ## Our Standards
 
@@ -56,8 +56,8 @@ further defined and clarified by project maintainers.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported by contacting the project team at bartnikjack@gmail.com. All
-complaints will be reviewed and investigated and will result in a response that
-is deemed necessary and appropriate to the circumstances. The project team is
+complaints will be reviewed and investigated, resulting in a response that
+is deemed necessary and appropriate in the circumstances. The project team is
 obligated to maintain confidentiality concerning the reporter of an incident.
 Further details of specific enforcement policies may be posted separately.
 
