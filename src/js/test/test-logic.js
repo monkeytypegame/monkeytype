@@ -550,6 +550,7 @@ export async function init() {
           randomWord = wordset[Math.floor(Math.random() * wordset.length)];
         }
 
+        console.log(Config.funbox);
         if (Config.funbox === "rAnDoMcAsE") {
           let randomcaseword = "";
           for (let i = 0; i < randomWord.length; i++) {
