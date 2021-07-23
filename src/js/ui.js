@@ -108,7 +108,7 @@ export function swapElements(
 }
 
 export function changePage(page) {
-  console.log('change');
+  console.log("change");
   if (pageTransition) {
     return;
   }
@@ -240,11 +240,11 @@ $(".merchBanner a").click((event) => {
 $(".merchBanner .fas").click((event) => {
   $(".merchBanner").remove();
   window.localStorage.setItem("merchbannerclosed", true);
-  Notifications.add(
-    "Won't remind you anymore. Thanks for continued support <3",
-    0,
-    5
-  );
+  // Notifications.add(
+  //   "Won't remind you anymore. Thanks for continued support <3",
+  //   0,
+  //   5
+  // );
 });
 
 $(".scrollToTopButton").click((event) => {

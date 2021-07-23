@@ -286,15 +286,23 @@ a:hover {
 
 .merchBanner {
   background-color: var(--main-color);
-  padding: 0.5rem;
+  /* padding: .5rem; */
   text-align: center;
   color: var(--bg-color);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-auto-flow: column;
+  gap: 1rem;
+  img {
+    height: 2rem;
+  }
   a:hover {
     color: var(--bg-color);
   }
   .closeButton {
     transition: 0.25s;
-    margin-left: 1rem;
+    // margin-left: 1rem;
     &:hover {
       color: var(--text-color);
       cursor: pointer;
