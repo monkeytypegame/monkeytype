@@ -89,7 +89,7 @@ Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), 
 Following the guidelines below will increase your chances of getting your change accepted.
 
 #### Theme Guidelines
-<!-- TODO: add screenshots to provide examples for dos and dont's -->
+<!-- TODO: add screenshots to provide examples for dos and don'ts -->
 - Make sure your theme is unique and a similar looking one is not already available
 - The text color is either black or white (or very close to)
 - Your theme has been added to the `_list` file and the `textColor` property is the theme's main color
