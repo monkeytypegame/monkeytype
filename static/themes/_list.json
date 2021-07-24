@@ -568,5 +568,10 @@
     "name": "vscode",
     "bgColor": "#1E1E1E",
     "textColor": "#007acc"
+  },
+  {
+    "name": "material",
+    "bgColor": "#263238",
+    "textColor": "#80cbc4"
   }
 ]

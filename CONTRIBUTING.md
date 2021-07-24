@@ -19,23 +19,19 @@
 
 ## Getting Started
 
-When contributing to Monkeytype, it's good to know our best practices, tips, and tricks. First, Monkeytype is written in Javascript, CSS and HTML(in order of how much of the project is in what language); thus we assume you are comfortable in in these languages or have basic knowledge of them. Our backend is in NodeJS and we use Firebase to store our user data. We use Prettier to format our code.
+When contributing to Monkeytype, it's good to know our best practices, tips, and tricks. First, Monkeytype is written in Javascript, CSS, and HTML (in order of language usage within the project); thus, we assume you are comfortable in these languages or have basic knowledge of them. Our backend is in NodeJS and we use Firebase to store our user data. Furthermore, we use Prettier to format our code.
 
 ### Prerequisites
 
-While most contributions don't require that you install dependencies, there are a few minimum requirements you will need to meet to be able to run the project(this is useful and almost always necessary for tasks like creating features and fixing bugs, running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, Git, NodeJS with a version < 14 and Firebase, and a text editor.
+While most contributions don't require that you install dependencies, there are a few minimum requirements you will need to meet to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with a version < 14.
 
 #### Text Editor
 
-If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. A popular and relatively lightweight editor [Visual Studio Code](https://code.visualstudio.com/) or VS Code. Is is the free and open-source from Microsoft. Run the installer and follow the prompts. Once you have VS Code installed, you are ready to start contributing.
+If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. A popular and relatively lightweight editor that we recommend is [Visual Studio Code](https://code.visualstudio.com/) or VS Code. It is free and open-source from Microsoft. Simply run the installer and follow the prompts. Once you have VS Code installed, you are ready to start contributing.
 
 #### Git
 
-Git is optional but we _highly_ recommend you use it. Monkeytype used the Git source control management system for its version control. Assuming you don't have experience typing commmands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. However using a Git client won't give you access to the full functionality of Git but provides an easy to understand graphical user interface(GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
-
-#### NodeJS
-
-The installation process of NodeJS is fairly simple, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `xx.xx.x LTS`. Run the installer once the download has finished.
+Git is optional but we _highly_ recommend you use it. Monkeytype uses the Git source control management system for its version control. Assuming you don't have experience typing commmands in the command line, we suggest installing [Sourcetree](https://www.sourcetreeapp.com/). You will be able to utilize the power of Git without needing to remember any cryptic commands. However using a Git client won't give you access to the full functionality of Git but provides an easy to understand graphical user interface (GUI). Once you have downloaded Sourcetree, run the installer. While installing Sourcetree, keep your eyes peeled for the option to also install Git with Sourcetree. This is the option you will need to look for in order to install Git. **Make sure to click yes in the installer to install Git with Sourcetree.**
 
 #### Firebase
 
@@ -46,7 +42,7 @@ The installation process of NodeJS is fairly simple, navigate to the NodeJS [web
    - Google Analytics is not necessary.
 
 1. [Install the Firebase CLI](https://firebase.google.com/docs/cli)
-1. Run `firebase login` on your terminal to log in to the same google account as you just used to create the project.
+1. Run `firebase login` on your terminal to log in to the same google account you just used to create the project.
 1. Git clone this project.
 1. Duplicate `.firebaserc_example`, rename the new file to `.firebaserc` and change the project name of default to the firebase project id you just created.
 
@@ -81,6 +77,10 @@ The installation process of NodeJS is fairly simple, navigate to the NodeJS [web
 1. Optional - Install [Mongodb-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown` after the server is started.
 
+#### NodeJS
+
+The installation process of NodeJS is fairly simple, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `xx.xx.x LTS`. Run the installer once the download has finished.
+
 ### Building and Running Monkeytype
 
 Once you have completed the above steps, you are ready to build and run Monkeytype.
@@ -93,7 +93,7 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 
 Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you `git commit` (if you've followed the above instructions properly).
 
-Following the guidelines below will increase your chance of getting your change accepted.
+Following the guidelines below will increase your chances of getting your change accepted.
 
 #### Theme Guidelines
 

@@ -34,13 +34,13 @@ On the [monkeytype Discord server](https://www.discord.gg/monkeytype), we added 
 
 # Bug report or Feature request
 
-If you encounter a bug, or have a feature request [send me a message on Reddit](https://reddit.com/user/miodec), [create an issue](https://github.com/Miodec/monkeytype/issues), [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
+If you encounter a bug or have a feature request, [send me a message on Reddit](https://reddit.com/user/miodec), [create an issue](https://github.com/Miodec/monkeytype/issues), [create a discussion thread](https://github.com/Miodec/monkeytype/discussions), or [join the Discord server](https://www.discord.gg/monkeytype).
 
 # Contribute
 
 Refer to [CONTRIBUTING.md.](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)
 
-# Code Of Conduct
+# Code of Conduct
 
 Before contributing to this repository please carefully read and understand the [code of conduct.](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)
 
@@ -50,7 +50,7 @@ Before contributing to this repository please carefully read and understand the 
 
 Everyone who provided valuable feedback on the [original Reddit post](https://www.reddit.com/r/MechanicalKeyboards/comments/gc6wx3/experimenting_with_a_completely_new_type_of/) for the prototype of this website.
 
-All the [contributors](https://github.com/Miodec/monkeytype/graphs/contributors) that have helped with implementing various features, adding themes, fixing bugs, and more.
+All of the [contributors](https://github.com/Miodec/monkeytype/graphs/contributors) that have helped with implementing various features, adding themes, fixing bugs, and more.
 
 # Support
 

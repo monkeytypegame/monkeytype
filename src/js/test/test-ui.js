@@ -12,10 +12,11 @@ import * as CommandlineLists from "./commandline-lists";
 import * as Commandline from "./commandline";
 import * as OutOfFocus from "./out-of-focus";
 import * as ManualRestart from "./manual-restart-tracker";
-import * as PractiseMissed from "./practise-missed";
+import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
+import * as TestUI from "./test-ui";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -770,12 +771,22 @@ export function toggleResultWords() {
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
         loadWordsHistory().then(() => {
+          if (Config.burstHeatmap) {
+            TestUI.applyBurstHeatmap();
+          }
           $("#resultWordsHistory")
             .removeClass("hidden")
             .css("display", "none")
-            .slideDown(250);
+            .slideDown(250, () => {
+              if (Config.burstHeatmap) {
+                TestUI.applyBurstHeatmap();
+              }
+            });
         });
       } else {
+        if (Config.burstHeatmap) {
+          TestUI.applyBurstHeatmap();
+        }
         $("#resultWordsHistory")
           .removeClass("hidden")
           .css("display", "none")
@@ -796,6 +807,16 @@ export function applyBurstHeatmap() {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
     let min = Math.min(...TestStats.burstHistory);
     let max = Math.max(...TestStats.burstHistory);
+
+    let burstlist = [...TestStats.burstHistory];
+
+    if (
+      TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
+        .length !== TestLogic.words.getCurrent().length
+    ) {
+      burstlist = burstlist.splice(0, burstlist.length - 1);
+    }
+
     // let step = (max - min) / 5;
     // let steps = [
     //   {
@@ -819,13 +840,13 @@ export function applyBurstHeatmap() {
     //     class: 'heatmap-4'
     //   },
     // ];
-    let median = Misc.median(TestStats.burstHistory);
+    let median = Misc.median(burstlist);
     let adatm = [];
-    TestStats.burstHistory.forEach((burst) => {
+    burstlist.forEach((burst) => {
       adatm.push(Math.abs(median - burst));
     });
     let step = Misc.mean(adatm);
-    // let step = Misc.stdDev(TestStats.burstHistory)/2;
+    // let step = Misc.stdDev(burstlist)/2;
     let steps = [
       {
         val: 0,
@@ -994,14 +1015,15 @@ $(document.body).on("click", "#restartTestButton", () => {
   }
 });
 
-$(document).on("keypress", "#practiseMissedWordsButton", (event) => {
+$(document).on("keypress", "#practiseWordsButton", (event) => {
   if (event.keyCode == 13) {
-    PractiseMissed.init();
+    PractiseWords.showPopup(true);
   }
 });
 
-$(document.body).on("click", "#practiseMissedWordsButton", () => {
-  PractiseMissed.init();
+$(document.body).on("click", "#practiseWordsButton", () => {
+  // PractiseWords.init();
+  PractiseWords.showPopup();
 });
 
 $(document).on("keypress", "#nextTestButton", (event) => {

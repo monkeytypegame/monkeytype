@@ -49,7 +49,12 @@ class SimplePopup {
 
     this.initInputs();
 
-    el.find(".button").text(this.buttonText);
+    if (!this.buttonText) {
+      el.find(".button").remove();
+    } else {
+      el.find(".button").text(this.buttonText);
+    }
+
     // }
   }
 
@@ -160,48 +165,52 @@ list.updateEmail = new SimplePopup(
   ],
   "",
   "Update",
-  (pass, email, emailConfirm) => {
+  async (password, email, emailConfirm) => {
     try {
       const user = firebase.auth().currentUser;
-      const credential = firebase.auth.EmailAuthProvider.credential(
-        user.email,
-        pass
-      );
       if (email !== emailConfirm) {
         Notifications.add("Emails don't match", 0);
         return;
       }
+      if (user.providerData[0].providerId === "password") {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          password
+        );
+        await user.reauthenticateWithCredential(credential);
+      }
       Loader.show();
-      user
-        .reauthenticateWithCredential(credential)
-        .then(() => {
-          axiosInstance
-            .post("/user/updateEmail", {
-              uid: user.uid,
-              previousEmail: user.email,
-              newEmail: email,
-            })
-            .then((data) => {
-              Loader.hide();
-              if (data.status === 200) {
-                Notifications.add("Email updated", 0);
-                setTimeout(() => {
-                  AccountController.signOut();
-                }, 1000);
-              } else {
-                Notifications.add(data.message);
-              }
-            });
+      axiosInstance
+        .post("/user/updateEmail", {
+          uid: user.uid,
+          previousEmail: user.email,
+          newEmail: email,
         })
-        .catch((e) => {
+        .then((data) => {
           Loader.hide();
-          Notifications.add("Incorrect current password", -1);
+          if (data.status === 200) {
+            Notifications.add("Email updated", 0);
+            setTimeout(() => {
+              AccountController.signOut();
+            }, 1000);
+          } else {
+            Notifications.add(data.message);
+          }
         });
     } catch (e) {
       Notifications.add("Something went wrong: " + e, -1);
     }
   },
-  () => {}
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = undefined`);
+      eval(
+        `this.text = "You can't change your email when using Google Authentication";`
+      );
+    }
+  }
 );
 
 list.updatePassword = new SimplePopup(
@@ -248,7 +257,16 @@ list.updatePassword = new SimplePopup(
       Notifications.add(e, -1);
     }
   },
-  () => {}
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = undefined`);
+      eval(
+        `this.text = "You can't change your password when using Google Authentication";`
+      );
+    }
+  }
 );
 
 list.clearTagPb = new SimplePopup(
@@ -324,12 +342,16 @@ list.resetPersonalBests = new SimplePopup(
   async (password) => {
     try {
       const user = firebase.auth().currentUser;
-      const credential = firebase.auth.EmailAuthProvider.credential(
-        user.email,
-        password
-      );
+      if (user.providerData[0].providerId === "password") {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          password
+        );
+        await user.reauthenticateWithCredential(credential);
+      } else if (user.providerData[0].providerId === "google.com") {
+        await user.reauthenticateWithPopup(AccountController.gmailProvider);
+      }
       Loader.show();
-      await user.reauthenticateWithCredential(credential);
 
       let response;
       try {
@@ -352,7 +374,13 @@ list.resetPersonalBests = new SimplePopup(
       Notifications.add(e, -1);
     }
   },
-  () => {}
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = "Reauthenticate to reset"`);
+    }
+  }
 );
 
 list.resetSettings = new SimplePopup(

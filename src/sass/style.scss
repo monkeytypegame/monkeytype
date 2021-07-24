@@ -286,15 +286,23 @@ a:hover {
 
 .merchBanner {
   background-color: var(--main-color);
-  padding: 0.5rem;
+  /* padding: .5rem; */
   text-align: center;
   color: var(--bg-color);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-auto-flow: column;
+  gap: 1rem;
+  img {
+    height: 2rem;
+  }
   a:hover {
     color: var(--bg-color);
   }
   .closeButton {
     transition: 0.25s;
-    margin-left: 1rem;
+    // margin-left: 1rem;
     &:hover {
       color: var(--text-color);
       cursor: pointer;
@@ -714,7 +722,8 @@ label.checkbox {
 }
 
 #customWordAmountPopupWrapper,
-#customTestDurationPopupWrapper {
+#customTestDurationPopupWrapper,
+#practiseWordsPopupWrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -728,7 +737,8 @@ label.checkbox {
   padding: 5rem 0;
 
   #customWordAmountPopup,
-  #customTestDurationPopup {
+  #customTestDurationPopup,
+  #practiseWordsPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -744,6 +754,11 @@ label.checkbox {
     .tip {
       font-size: 0.75rem;
       color: var(--sub-color);
+    }
+
+    .text {
+      font-size: 1rem;
+      color: var(--text-color);
     }
   }
 
@@ -1812,32 +1827,22 @@ key {
       justify-self: right;
       gap: 1rem;
       // align-items: center;
-      .current-theme {
-        transition: 0.25s;
-        text-decoration: none;
-        &:hover {
-          color: var(--text-color);
-          cursor: pointer;
-        }
-      }
-      .discordLink {
-        transition: 0.25s;
-        text-decoration: none;
-        &:hover {
-          color: var(--text-color);
-          cursor: pointer;
-        }
+    }
+    .left a,
+    .right a {
+      display: grid;
+      grid-auto-flow: column;
+      gap: 0.5rem;
+      align-items: center;
+      &:hover {
+        color: var(--text-color);
+        cursor: pointer;
       }
     }
   }
 
   .version {
     opacity: 0;
-    transition: 0.25s;
-    &:hover {
-      cursor: pointer;
-      color: var(--text-color);
-    }
   }
 }
 
@@ -1879,7 +1884,11 @@ key {
   #resultReplay {
     // grid-area: wordsHistory;
     color: var(--sub-color);
-    grid-column: 1/3;
+    // grid-column: 1/3;
+    margin-bottom: 1rem;
+    .icon-button {
+      padding: 0 0.5rem;
+    }
     .heatmapLegend {
       display: inline-grid;
       grid-template-columns: auto auto auto;
@@ -1916,6 +1925,7 @@ key {
     }
     .title {
       user-select: none;
+      margin-bottom: 0.25rem;
     }
     .words {
       display: flex;
@@ -2381,7 +2391,7 @@ key {
 #saveScreenshotButton,
 #restartTestButtonWithSameWordset,
 #nextTestButton,
-#practiseMissedWordsButton,
+#practiseWordsButton,
 #watchReplayButton {
   position: relative;
   border-radius: var(--roundness);
@@ -3580,8 +3590,8 @@ key {
     outline: none;
   }
   &:focus {
-    color: var(--text-color);
-    background: rgba(0, 0, 0, 0.1);
+    color: var(--main-color);
+    background: var(--sub-color);
     outline: none;
   }
 
@@ -4014,4 +4024,14 @@ key {
   100% {
     background-color: var(--bg-color);
   }
+}
+
+.header-sorted {
+  font-weight: bold;
+}
+
+.sortable:hover {
+  cursor: pointer;
+  user-select: none;
+  background-color: rgba(0, 0, 0, 0.1);
 }

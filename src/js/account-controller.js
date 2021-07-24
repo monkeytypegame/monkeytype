@@ -14,7 +14,7 @@ import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
 
-const gmailProvider = new firebase.auth.GoogleAuthProvider();
+export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 const githubProvider = new firebase.auth.GithubAuthProvider();
 
 const authListener = firebase.auth().onAuthStateChanged(function (user) {

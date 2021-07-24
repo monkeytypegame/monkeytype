@@ -140,7 +140,7 @@ function handleBackspace(event) {
       Funbox.toggleScript(TestLogic.words.getCurrent());
       TestUI.updateWordElement(!Config.blindMode);
     }
-  } else {
+  } else if (TestLogic.input.current !== "") {
     if (Config.confidenceMode === "max") return;
     if (event["ctrlKey"] || event["altKey"] || event.metaKey) {
       Replay.addReplayEvent("clearWord");

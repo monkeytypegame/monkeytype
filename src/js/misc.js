@@ -387,7 +387,8 @@ export function getReleasesFromGitHub() {
   $.getJSON(
     "https://api.github.com/repos/Miodec/monkeytype/releases",
     (data) => {
-      $("#bottom .version").text(data[0].name).css("opacity", 1);
+      $("#bottom .version .text").text(data[0].name);
+      $("#bottom .version").css("opacity", 1);
       $("#versionHistory .releases").empty();
       data.forEach((release) => {
         if (!release.draft && !release.prerelease) {
