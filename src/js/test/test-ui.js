@@ -797,7 +797,7 @@ export function applyBurstHeatmap() {
     let min = Math.min(...TestStats.burstHistory);
     let max = Math.max(...TestStats.burstHistory);
 
-    let burstlist = TestStats.burstHistory;
+    let burstlist = [...TestStats.burstHistory];
 
     if (
       TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
