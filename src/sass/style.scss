@@ -1827,32 +1827,22 @@ key {
       justify-self: right;
       gap: 1rem;
       // align-items: center;
-      .current-theme {
-        transition: 0.25s;
-        text-decoration: none;
-        &:hover {
-          color: var(--text-color);
-          cursor: pointer;
-        }
-      }
-      .discordLink {
-        transition: 0.25s;
-        text-decoration: none;
-        &:hover {
-          color: var(--text-color);
-          cursor: pointer;
-        }
+    }
+    .left a,
+    .right a {
+      display: grid;
+      grid-auto-flow: column;
+      gap: 0.5rem;
+      align-items: center;
+      &:hover {
+        color: var(--text-color);
+        cursor: pointer;
       }
     }
   }
 
   .version {
     opacity: 0;
-    transition: 0.25s;
-    &:hover {
-      cursor: pointer;
-      color: var(--text-color);
-    }
   }
 }
 
