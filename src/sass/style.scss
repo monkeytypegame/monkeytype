@@ -3585,8 +3585,8 @@ key {
     outline: none;
   }
   &:focus {
-    color: var(--text-color);
-    background: rgba(0, 0, 0, 0.1);
+    color: var(--main-color);
+    background: var(--sub-color);
     outline: none;
   }
 

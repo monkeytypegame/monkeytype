@@ -90,13 +90,18 @@ export function resetBefore() {
   before.numbers = null;
 }
 
-export function showPopup() {
+export function showPopup(focus = false) {
   if ($("#practiseWordsPopupWrapper").hasClass("hidden")) {
     $("#practiseWordsPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100);
+      .animate({ opacity: 1 }, 100, () => {
+        if (focus) {
+          console.log("focusing");
+          $("#practiseWordsPopup .missed").focus();
+        }
+      });
   }
 }
 

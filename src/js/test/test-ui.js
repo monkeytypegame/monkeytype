@@ -1005,10 +1005,9 @@ $(document.body).on("click", "#restartTestButton", () => {
 });
 
 $(document).on("keypress", "#practiseWordsButton", (event) => {
-  // if (event.keyCode == 13) {
-  //   PractiseWords.init();
-  // }
-  PractiseWords.showPopup();
+  if (event.keyCode == 13) {
+    PractiseWords.showPopup(true);
+  }
 });
 
 $(document.body).on("click", "#practiseWordsButton", () => {
