@@ -69,6 +69,7 @@ export function signIn() {
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then((e) => {
+          loadUser(e);
           // UI.changePage("test");
           //TODO: redirect user to relevant page
         })
@@ -155,6 +156,8 @@ export async function signInWithGoogle() {
           UI.changePage("account");
         }
       }
+    } else {
+      loadUser(signedInUser.user);
     }
   } catch (e) {
     newSignUp = false;
@@ -288,8 +291,10 @@ async function signUp() {
   } catch (e) {
     newSignUp = false;
     //make sure to do clean up here
-    await createdAuthUser.user.delete();
-    axiosInstance.post("/user/delete", { uid: createdAuthUser.user.uid });
+    if (createdAuthUser) {
+      await createdAuthUser.user.delete();
+      axiosInstance.post("/user/delete", { uid: createdAuthUser.user.uid });
+    }
     let txt;
     if (e.response) {
       txt =
