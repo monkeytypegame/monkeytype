@@ -2014,7 +2014,7 @@ export function finish(difficultyFailed = false) {
       $("#words").empty();
       ChartController.result.resize();
 
-      if (Config.burstHeatmap) {
+      if (Config.alwaysShowWordsHistory && Config.burstHeatmap) {
         TestUI.applyBurstHeatmap();
       }
       $("#testModesNotice").addClass("hidden");
