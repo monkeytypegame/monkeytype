@@ -18,6 +18,16 @@ class ResultController {
     }
   }
 
+  static async deleteAll(req, res, next) {
+    try {
+      const { uid } = req.decodedToken;
+      await ResultDAO.deleteAll(uid);
+      return res.sendStatus(200);
+    } catch (e) {
+      next(e);
+    }
+  }
+
   static async updateTags(req, res, next) {
     try {
       const { uid } = req.decodedToken;

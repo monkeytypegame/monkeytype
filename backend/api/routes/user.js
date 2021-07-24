@@ -10,7 +10,7 @@ router.post("/signup", UserController.createNewUser);
 
 router.post("/checkName", UserController.checkName);
 
-router.post("/delete", UserController.deleteUser);
+router.post("/delete", authenticateRequest, UserController.deleteUser);
 
 router.post("/updateName", authenticateRequest, UserController.updateName);
 

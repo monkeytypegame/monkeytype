@@ -10,4 +10,6 @@ router.post("/add", authenticateRequest, ResultController.addResult);
 
 router.post("/updateTags", authenticateRequest, ResultController.updateTags);
 
+router.post("/deleteAll", authenticateRequest, ResultController.deleteAll);
+
 module.exports = router;

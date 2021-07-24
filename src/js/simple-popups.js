@@ -269,6 +269,83 @@ list.updatePassword = new SimplePopup(
   }
 );
 
+list.deleteAccount = new SimplePopup(
+  "deleteAccount",
+  "text",
+  "Delete Account",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "This is the last time you can change your mind. After pressing the button everything is gone.",
+  "Update",
+  async (password) => {
+    //
+    try {
+      const user = firebase.auth().currentUser;
+      if (user.providerData[0].providerId === "password") {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          password
+        );
+        await user.reauthenticateWithCredential(credential);
+      } else if (user.providerData[0].providerId === "google.com") {
+        await user.reauthenticateWithPopup(AccountController.gmailProvider);
+      }
+      Loader.show();
+
+      Notifications.add("Deleting stats...", 0);
+      let response;
+      try {
+        response = await axiosInstance.post("/user/delete");
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to delete user stats: " + msg, -1);
+        return;
+      }
+      if (response.status !== 200) {
+        throw response.data.message;
+      }
+
+      Notifications.add("Deleting results...", 0);
+      try {
+        response = await axiosInstance.post("/results/deleteAll");
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to delete user results: " + msg, -1);
+        return;
+      }
+      if (response.status !== 200) {
+        throw response.data.message;
+      }
+
+      Notifications.add("Deleting login information...", 0);
+      await firebase.auth().currentUser.delete();
+
+      Notifications.add("Goodbye", 1, 5);
+
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+    } catch (e) {
+      Loader.hide();
+      Notifications.add(e, -1);
+    }
+  },
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = "Reauthenticate to delete"`);
+    }
+  }
+);
+
 list.clearTagPb = new SimplePopup(
   "clearTagPb",
   "text",

@@ -24,7 +24,7 @@ class UserController {
 
   static async deleteUser(req, res, next) {
     try {
-      const { uid } = req.body;
+      const { uid } = req.decodedToken;
       await UsersDAO.deleteUser(uid);
       return res.sendStatus(200);
     } catch (e) {

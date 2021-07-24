@@ -791,6 +791,10 @@ $(".pageSettings #updateAccountPassword").on("click", (e) => {
   SimplePopups.list.updatePassword.show();
 });
 
+$(".pageSettings #deleteAccount").on("click", (e) => {
+  SimplePopups.list.deleteAccount.show();
+});
+
 $(".pageSettings .section.customBackgroundSize .inputAndSave .save").on(
   "click",
   (e) => {

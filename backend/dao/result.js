@@ -19,6 +19,10 @@ class ResultDAO {
     };
   }
 
+  static async deleteAll(uid) {
+    return await mongoDB().collection("results").deleteMany({ uid });
+  }
+
   static async updateTags(uid, resultid, tags) {
     const result = await mongoDB()
       .collection("results")
