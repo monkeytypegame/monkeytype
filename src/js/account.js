@@ -17,6 +17,7 @@ import * as Settings from "./settings";
 import * as ThemePicker from "./theme-picker";
 import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
+import * as AccountController from "./account-controller";
 import axiosInstance from "./axios-instance";
 
 let filterDebug = false;
@@ -37,9 +38,10 @@ export async function getDataAndInit() {
     let msg = e?.response?.data?.message ?? e.message;
     Notifications.add("Failed to get user data: " + msg, -1);
 
-    $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
+    // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
     $("#top #menu .account").css("opacity", 1);
     if ($(".pageLoading").hasClass("active")) UI.changePage("");
+    AccountController.signOut();
     return;
   }
   let snap = DB.getSnapshot();
