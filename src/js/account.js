@@ -912,3 +912,103 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
     event.pageY + 30
   );
 });
+
+$(document).on("click", ".history-wpm-header", (event) => {
+  sortAndRefreshHistory("wpm", ".history-wpm-header");
+});
+
+$(document).on("click", ".history-raw-header", (event) => {
+  sortAndRefreshHistory("rawWpm", ".history-raw-header");
+});
+
+$(document).on("click", ".history-acc-header", (event) => {
+  sortAndRefreshHistory("acc", ".history-acc-header");
+});
+
+$(document).on("click", ".history-correct-chars-header", (event) => {
+  sortAndRefreshHistory("correctChars", ".history-correct-chars-header");
+});
+
+$(document).on("click", ".history-incorrect-chars-header", (event) => {
+  sortAndRefreshHistory("incorrectChars", ".history-incorrect-chars-header");
+});
+
+$(document).on("click", ".history-consistency-header", (event) => {
+  sortAndRefreshHistory("consistency", ".history-consistency-header");
+});
+
+$(document).on("click", ".history-date-header", (event) => {
+  sortAndRefreshHistory("timestamp", ".history-date-header");
+});
+
+// Resets sorting to by date' when applying filers (normal or advanced)
+$(document).on("click", ".buttonsAndTitle .buttons .button", (event) => {
+  // We want to 'force' descending sort:
+  sortAndRefreshHistory("timestamp", ".history-date-header", true);
+});
+
+function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
+  // Removes styling from previous sorting requests:
+  $("td").removeClass("header-sorted");
+  $("td").children("i").remove();
+  $(headerClass).addClass("header-sorted");
+
+  if (filteredResults.length < 2) return;
+
+  // This allows to reverse the sorting order when clicking multiple times on the table header
+  let descending = true;
+  if (forceDescending !== null) {
+    if (forceDescending == true) {
+      $(headerClass).append(
+        '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+      );
+    } else {
+      descending = false;
+      $(headerClass).append(
+        '<i class="fas fa-sort-up" aria-hidden="true"></i>'
+      );
+    }
+  } else if (
+    filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
+  ) {
+    descending = true;
+    $(headerClass).append(
+      '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+    );
+  } else {
+    descending = false;
+    $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
+  }
+
+  let temp = [];
+  let parsedIndexes = [];
+
+  while (temp.length < filteredResults.length) {
+    let lowest = Number.MAX_VALUE;
+    let highest = -1;
+    let idx = -1;
+
+    for (let i = 0; i < filteredResults.length; i++) {
+      //find the lowest wpm with index not already parsed
+      if (!descending) {
+        if (filteredResults[i][key] <= lowest && !parsedIndexes.includes(i)) {
+          lowest = filteredResults[i][key];
+          idx = i;
+        }
+      } else {
+        if (filteredResults[i][key] >= highest && !parsedIndexes.includes(i)) {
+          highest = filteredResults[i][key];
+          idx = i;
+        }
+      }
+    }
+
+    temp.push(filteredResults[idx]);
+    parsedIndexes.push(idx);
+  }
+  filteredResults = temp;
+
+  $(".pageAccount .history table tbody").empty();
+  visibleTableLines = 0;
+  loadMoreLines();
+}

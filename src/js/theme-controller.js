@@ -174,7 +174,10 @@ export function applyCustomBackground() {
     $(".customBackground img").remove();
   } else {
     $("#words").addClass("noErrorBorder");
-    $(".customBackground").html(`<img src="${Config.customBackground}"></img>`);
+    let $img = $("<img>", {
+      src: Config.customBackground,
+    });
+    $(".customBackground").html($img);
   }
 }
 

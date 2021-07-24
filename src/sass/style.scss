@@ -286,15 +286,23 @@ a:hover {
 
 .merchBanner {
   background-color: var(--main-color);
-  padding: 0.5rem;
+  /* padding: .5rem; */
   text-align: center;
   color: var(--bg-color);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-auto-flow: column;
+  gap: 1rem;
+  img {
+    height: 2rem;
+  }
   a:hover {
     color: var(--bg-color);
   }
   .closeButton {
     transition: 0.25s;
-    margin-left: 1rem;
+    // margin-left: 1rem;
     &:hover {
       color: var(--text-color);
       cursor: pointer;
@@ -714,7 +722,8 @@ label.checkbox {
 }
 
 #customWordAmountPopupWrapper,
-#customTestDurationPopupWrapper {
+#customTestDurationPopupWrapper,
+#practiseWordsPopupWrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -728,7 +737,8 @@ label.checkbox {
   padding: 5rem 0;
 
   #customWordAmountPopup,
-  #customTestDurationPopup {
+  #customTestDurationPopup,
+  #practiseWordsPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -744,6 +754,11 @@ label.checkbox {
     .tip {
       font-size: 0.75rem;
       color: var(--sub-color);
+    }
+
+    .text {
+      font-size: 1rem;
+      color: var(--text-color);
     }
   }
 
@@ -2381,7 +2396,7 @@ key {
 #saveScreenshotButton,
 #restartTestButtonWithSameWordset,
 #nextTestButton,
-#practiseMissedWordsButton,
+#practiseWordsButton,
 #watchReplayButton {
   position: relative;
   border-radius: var(--roundness);
@@ -4014,4 +4029,14 @@ key {
   100% {
     background-color: var(--bg-color);
   }
+}
+
+.header-sorted {
+  font-weight: bold;
+}
+
+.sortable:hover {
+  cursor: pointer;
+  user-select: none;
+  background-color: rgba(0, 0, 0, 0.1);
 }

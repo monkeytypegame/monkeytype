@@ -1480,9 +1480,10 @@ export function setCustomBackground(value, nosave) {
   }
   value = value.trim();
   if (
-    /(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
+    (/(https|http):\/\/(www\.|).+\..+\/.+(\.png|\.gif|\.jpeg|\.jpg)/gi.test(
       value
-    ) ||
+    ) &&
+      !/[<>]/.test(value)) ||
     value == ""
   ) {
     config.customBackground = value;
@@ -1554,8 +1555,10 @@ export function setBurstHeatmap(value, nosave) {
     value = false;
   }
   config.burstHeatmap = value;
-  TestUI.applyBurstHeatmap();
-  if (!nosave) saveToLocalStorage();
+  if (!nosave) {
+    TestUI.applyBurstHeatmap();
+    saveToLocalStorage();
+  }
 }
 
 export function apply(configObj) {
