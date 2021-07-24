@@ -17,10 +17,8 @@ import axiosInstance from "./axios-instance";
 const gmailProvider = new firebase.auth.GoogleAuthProvider();
 const githubProvider = new firebase.auth.GithubAuthProvider();
 
-let newSignUp = false;
-
 const authListener = firebase.auth().onAuthStateChanged(function (user) {
-  if (user && !newSignUp) {
+  if (user) {
     loadUser(user);
   } else {
     UI.setPageTransition(false);
@@ -94,8 +92,6 @@ export async function signInWithGoogle() {
 
     if (signedInUser.additionalUserInfo.isNewUser) {
       //ask for username
-      newSignUp = true;
-
       let nameGood = false;
       let name = "";
 
@@ -160,7 +156,6 @@ export async function signInWithGoogle() {
       loadUser(signedInUser.user);
     }
   } catch (e) {
-    newSignUp = false;
     console.log(e);
     Notifications.add("Failed to sign in with Google: " + e.message, -1);
     $(".pageLogin .preloader").addClass("hidden");
@@ -235,8 +230,6 @@ async function signUp() {
     return;
   }
 
-  newSignUp = true;
-
   try {
     const checkNameResponse = await axiosInstance.post("/user/checkName", {
       name: nname,
@@ -253,7 +246,6 @@ async function signUp() {
     Notifications.add(txt, -1);
     $(".pageLogin .preloader").addClass("hidden");
     $(".pageLogin .register .button").removeClass("disabled");
-    newSignUp = false;
     return;
   }
 
@@ -289,7 +281,6 @@ async function signUp() {
       UI.changePage("account");
     }
   } catch (e) {
-    newSignUp = false;
     //make sure to do clean up here
     if (createdAuthUser) {
       await createdAuthUser.user.delete();
