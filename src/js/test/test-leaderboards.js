@@ -156,7 +156,9 @@ export async function check(completedEvent) {
           );
         }, 10000)
       );
-      let lbRes = completedEvent;
+      let lbRes = {
+        ...completedEvent,
+      };
       delete lbRes.keySpacing;
       delete lbRes.keyDuration;
       delete lbRes.chartData;
