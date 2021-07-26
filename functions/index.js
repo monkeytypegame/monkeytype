@@ -2500,6 +2500,7 @@ exports.checkLeaderboards = functions.https.onRequest(
 
     request.name = userData.name;
     request.banned = userData.banned;
+    request.lbdisabled = userData.lbdisabled;
     request.verified = userData.verified;
     request.discordId = userData.discordId;
     request.lbMemory = userData.lbMemory;
@@ -2559,6 +2560,14 @@ exports.checkLeaderboards = functions.https.onRequest(
         response.status(200).send({
           data: {
             banned: true,
+          },
+        });
+        return;
+      }
+      if (request.lbdisabled) {
+        response.status(200).send({
+          data: {
+            lbdisabled: true,
           },
         });
         return;

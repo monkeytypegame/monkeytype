@@ -16,6 +16,8 @@ export function show(data, mode2) {
     string = "update your name to access leaderboards";
   } else if (data.needsToVerify === true) {
     string = "verification needed to access leaderboards";
+  } else if (data.lbdisabled === true) {
+    string = "leaderboards disabled";
   } else {
     const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
     const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
