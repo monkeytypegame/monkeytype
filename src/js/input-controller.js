@@ -807,3 +807,7 @@ $("#wordsInput").focus((event) => {
   event.target.selectionStart = event.target.selectionEnd =
     event.target.value.length;
 });
+
+$("#wordsInput").on("copy paste", (event) => {
+  event.preventDefault();
+});
