@@ -119,6 +119,16 @@ class SimplePopup {
   }
 }
 
+export function hide() {
+  $("#simplePopupWrapper")
+    .stop(true, true)
+    .css("opacity", 1)
+    .removeClass("hidden")
+    .animate({ opacity: 0 }, 125, () => {
+      $("#simplePopupWrapper").addClass("hidden");
+    });
+}
+
 $("#simplePopupWrapper").mousedown((e) => {
   if ($(e.target).attr("id") === "simplePopupWrapper") {
     $("#simplePopupWrapper")
