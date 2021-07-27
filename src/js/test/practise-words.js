@@ -142,3 +142,8 @@ $("#practiseWordsPopup .button.both").click(() => {
   hidePopup();
   init(true, true);
 });
+
+$("#practiseWordsPopup .button.both").on("focusout", (e) => {
+  e.preventDefault();
+  $("#practiseWordsPopup .missed").focus();
+});
