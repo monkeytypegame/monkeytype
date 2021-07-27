@@ -1832,8 +1832,10 @@ key {
     .right a {
       display: grid;
       grid-auto-flow: column;
-      gap: 0.5rem;
-      align-items: center;
+      gap: 0.25rem;
+      align-items: baseline;
+      width: min-content;
+      width: -moz-fit-content;
       &:hover {
         color: var(--text-color);
         cursor: pointer;

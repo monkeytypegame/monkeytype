@@ -29,6 +29,25 @@
   }
 }
 
+@media only screen and (max-width: 1000px) {
+  #bottom {
+    .leftright {
+      .left {
+        gap: 0.25rem 1rem;
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        grid-auto-flow: row;
+        grid-template-columns: auto auto auto auto;
+      }
+      .right {
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        gap: 0.25rem 1rem;
+      }
+    }
+  }
+}
+
 @media only screen and (max-width: 800px) {
   .settingsGroup.quickNav {
     display: none;
@@ -51,21 +70,6 @@
 
       .icon-button {
         padding: 0.25rem;
-      }
-    }
-  }
-  #bottom {
-    .leftright {
-      .left {
-        gap: 0.25rem 1rem;
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-        grid-auto-flow: column;
-      }
-      .right {
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-        gap: 0.25rem 1rem;
       }
     }
   }
@@ -210,7 +214,8 @@
         gap: 0.25rem 1rem;
         display: grid;
         grid-template-rows: 1fr 1fr 1fr;
-        grid-auto-flow: column;
+        grid-template-columns: auto auto auto;
+        grid-auto-flow: row;
       }
       .right {
         display: grid;
