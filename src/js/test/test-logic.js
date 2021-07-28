@@ -328,8 +328,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
     } else if (Math.random() < 0.013) {
       if (currentLanguage == "french") {
         word = ":";
-      }
-      if (currentLanguage == "greek") {
+      } else if (currentLanguage == "greek") {
         word = "·";
       } else {
         word += ":";
@@ -349,8 +348,7 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
     ) {
       if (currentLanguage == "french") {
         word = ";";
-      }
-      if (currentLanguage == "greek") {
+      } else if (currentLanguage == "greek") {
         word = "·";
       } else {
         word += ";";
