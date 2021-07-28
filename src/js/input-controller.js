@@ -183,8 +183,6 @@ function handleBackspace(event) {
         Funbox.toggleScript(TestLogic.words.getCurrent());
         TestUI.updateWordElement(!Config.blindMode);
         TestLogic.input.resetCurrent();
-        TestLogic.input.popHistory();
-        TestLogic.corrected.popHistory();
       } else {
         const regex = new RegExp(
           /[ £§`~!@#$%^&*()_+\\\-=[\]{};':"|,./<>?]/,
