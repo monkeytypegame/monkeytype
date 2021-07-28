@@ -1016,7 +1016,7 @@ export function setTimeConfig(time, nosave) {
     time = 15;
   }
   time = parseInt(time);
-  if (!nosave) setMode("time", nosave);
+  // if (!nosave) setMode("time", nosave);
   config.time = time;
   $("#top .config .time .text-button").removeClass("active");
   if (![15, 30, 60, 120].includes(time)) {
@@ -1066,7 +1066,7 @@ export function setWordCount(wordCount, nosave) {
     wordCount = 10;
   }
   wordCount = parseInt(wordCount);
-  if (!nosave) setMode("words", nosave);
+  // if (!nosave) setMode("words", nosave);
   config.words = wordCount;
   $("#top .config .wordCount .text-button").removeClass("active");
   if (![10, 25, 50, 100, 200].includes(wordCount)) {
