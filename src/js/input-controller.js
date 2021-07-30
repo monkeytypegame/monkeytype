@@ -348,6 +348,64 @@ function handleSpace() {
   }
 }
 
+function isCharCorrect(char, charIndex) {
+  if (Config.mode == "zen") {
+    return true;
+  }
+
+  const originalChar = TestLogic.words.getCurrent()[charIndex];
+
+  if (originalChar == char) {
+    return true;
+  }
+
+  if (Config.language.split("_")[0] == "russian") {
+    if ((char === "е" || char === "e") && originalChar == "ё") {
+      return true;
+    }
+    if (char === "ё" && (originalChar == "е" || originalChar === "e")) {
+      return true;
+    }
+  }
+
+  if (char === "’" && originalChar == "'") {
+    return true;
+  }
+
+  if (char === "'" && originalChar == "’") {
+    return true;
+  }
+
+  if (
+    (char === `’` || char === "'") &&
+    (originalChar == `’` || originalChar === "'")
+  ) {
+    return true;
+  }
+
+  if (
+    (char === `"` ||
+      char === "”" ||
+      char == "“" ||
+      char === "„") &&
+    (originalChar == `"` ||
+      originalChar === "”" ||
+      originalChar === "“" ||
+      originalChar === "„")
+  ) {
+    return true;
+  }
+
+  if (
+    (char === "–" || char === "—" || char == "-") &&
+    (originalChar == "-" || originalChar === "–" || originalChar === "—")
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 function handleChar(char, charIndex) {
   if (TestUI.resultCalculating || TestUI.resultVisible) {
     return;
@@ -385,67 +443,13 @@ function handleChar(char, charIndex) {
   Focus.set(true);
   Caret.stopAnimation();
 
+  let thisCharCorrect = isCharCorrect(char, charIndex);
+
+  if (thisCharCorrect && Config.mode !== "zen") {
+    char = TestLogic.words.getCurrent().charAt(charIndex);
+  }
+
   const resultingWord = TestLogic.input.current.substring(0, charIndex) + char + TestLogic.input.current.substring(charIndex + 1);
-  //check if the char typed was correct
-  let thisCharCorrect;
-  let nextCharInWord;
-  if (Config.mode != "zen") {
-    nextCharInWord = TestLogic.words.getCurrent()[charIndex];
-  }
-
-  if (nextCharInWord == char) {
-    thisCharCorrect = true;
-  } else {
-    thisCharCorrect = false;
-  }
-
-  if (Config.language.split("_")[0] == "russian") {
-    if ((char === "е" || char === "e") && nextCharInWord == "ё") {
-      char = nextCharInWord;
-      thisCharCorrect = true;
-    }
-    if (
-      char === "ё" &&
-      (nextCharInWord == "е" || nextCharInWord === "e")
-    ) {
-      char = nextCharInWord;
-      thisCharCorrect = true;
-    }
-  }
-
-  if (Config.mode == "zen") {
-    thisCharCorrect = true;
-  }
-
-  if (
-    (char === `’` || char === `‘` || char === "'") &&
-    (nextCharInWord == `’` || nextCharInWord === `‘` || nextCharInWord === "'")
-  ) {
-    char = nextCharInWord;
-    thisCharCorrect = true;
-  }
-
-  if (
-    (char === `"` ||
-      char === "”" ||
-      char == "“" ||
-      char === "„") &&
-    (nextCharInWord == `"` ||
-      nextCharInWord === "”" ||
-      nextCharInWord === "“" ||
-      nextCharInWord === "„")
-  ) {
-    char = nextCharInWord;
-    thisCharCorrect = true;
-  }
-
-  if (
-    (char === "–" || char === "—" || char == "-") &&
-    (nextCharInWord == "-" || nextCharInWord === "–" || nextCharInWord === "—")
-  ) {
-    char = nextCharInWord;
-    thisCharCorrect = true;
-  }
 
   if (!thisCharCorrect && Misc.trailingComposeChars.test(resultingWord)) {
     TestLogic.input.current = resultingWord;
