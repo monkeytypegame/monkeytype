@@ -712,6 +712,14 @@ $(document).keydown((event) => {
       ]
     ).toggleClass("dead");
   }
+
+  if (Config.layout !== "default") {
+    const char = LayoutEmulator.getCharFromEvent(event);
+    if (char !== null) {
+      event.preventDefault();
+      handleChar(char, TestLogic.input.current.length);
+    }
+  }
 });
 
 $("#wordsInput").keyup((event) => {
