@@ -608,28 +608,29 @@ function handleChar(char, charIndex) {
 
 $(document).keydown((event) => {
   //autofocus
-  let pageTestActive = !$(".pageTest").hasClass("hidden");
-  let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
-  let leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
-  let wordsFocused = $("#wordsInput").is(":focus");
-  let modePopupVisible =
+  const wordsFocused = $("#wordsInput").is(":focus");
+  const pageTestActive = !$(".pageTest").hasClass("hidden");
+  const commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
+  const leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
+  const modePopupVisible =
     !$("#customTextPopupWrapper").hasClass("hidden") ||
     !$("#customWordAmountPopupWrapper").hasClass("hidden") ||
     !$("#customTestDurationPopupWrapper").hasClass("hidden") ||
     !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
     !$("#wordFilterPopupWrapper").hasClass("hidden");
-  if (
-    pageTestActive &&
+
+  const allowTyping = pageTestActive &&
     !commandLineVisible &&
     !leaderboardsVisible &&
     !modePopupVisible &&
     !TestUI.resultVisible &&
-    !wordsFocused &&
-    event.key !== "Enter"
-  ) {
+    (wordsFocused || event.key !== "Enter");
+
+  if (allowTyping && !wordsFocused) {
     TestUI.focusWords();
-    wordsFocused = true;
-    if (Config.showOutOfFocusWarning) return;
+    if (Config.showOutOfFocusWarning) {
+      event.preventDefault();
+    }
   }
 
   //tab
@@ -639,6 +640,8 @@ $(document).keydown((event) => {
   ) {
     handleTab(event);
   }
+
+  if (!allowTyping) return;
 
   if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     event.preventDefault();
@@ -650,7 +653,7 @@ $(document).keydown((event) => {
   TestStats.setKeypressNotAfk();
 
   //blocking firefox from going back in history with backspace
-  if (event.key === "Backspace" && wordsFocused) {
+  if (event.key === "Backspace") {
     let t = /INPUT|SELECT|TEXTAREA/i;
     if (
       !t.test(event.target.tagName) ||
@@ -663,7 +666,7 @@ $(document).keydown((event) => {
 
   Monkey.type();
 
-  if (event.key === "Backspace" && TestLogic.input.current.length === 0 && wordsFocused) {
+  if (event.key === "Backspace" && TestLogic.input.current.length === 0) {
     backspaceToPrevious();
     if (TestLogic.input.current) $("#wordsInput").val(TestLogic.input.current + " ");
   }
@@ -678,7 +681,7 @@ $(document).keydown((event) => {
     ) {
       TestLogic.setBailout(true);
       TestLogic.finish();
-    } else if (wordsFocused) {
+    } else {
       handleChar("\n", TestLogic.input.current.length);
     }
   }
@@ -698,7 +701,7 @@ $(document).keydown((event) => {
 });
 
 $("#wordsInput").keyup((event) => {
-  if (!event.originalEvent?.isTrusted) {
+  if (!event.originalEvent?.isTrusted || TestUI.testRestarting) {
     event.preventDefault();
     return;
   }
