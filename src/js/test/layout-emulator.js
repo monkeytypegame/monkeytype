@@ -4,7 +4,6 @@ import Layouts from "./layouts";
 
 export function updateEvent(event) {
   function emulatedLayoutShouldShiftKey(event, newKeyPreview) {
-    if (Config.capsLockBackspace) return event.shiftKey;
     const isCapsLockHeld = event.originalEvent.getModifierState("CapsLock");
     if (isCapsLockHeld)
       return Misc.isASCIILetter(newKeyPreview) !== event.shiftKey;

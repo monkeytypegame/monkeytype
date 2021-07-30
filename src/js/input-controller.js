@@ -663,13 +663,7 @@ $(document).keydown((event) => {
 
   Monkey.type();
 
-  // TODO: caps lock backspace
-  //const isBackspace =
-  //  event.key === "Backspace" ||
-  //  (Config.capsLockBackspace && event.key === "CapsLock");
-  const isBackspace = event.key === "Backspace";
-
-  if (isBackspace && TestLogic.input.current.length === 0 && wordsFocused) {
+  if (event.key === "Backspace" && TestLogic.input.current.length === 0 && wordsFocused) {
     backspaceToPrevious();
     if (TestLogic.input.current) $("#wordsInput").val(TestLogic.input.current + " ");
   }
