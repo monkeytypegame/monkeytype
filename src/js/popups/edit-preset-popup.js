@@ -67,14 +67,20 @@ function apply() {
   let action = $("#presetWrapper #presetEdit").attr("action");
   let inputVal = $("#presetWrapper #presetEdit input").val();
   let presetid = $("#presetWrapper #presetEdit").attr("presetid");
-  let configChanges = Config.getConfigChanges();
-  let activeTagIds = [];
-  DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.active) {
-      activeTagIds.push(tag.id);
-    }
-  });
-  configChanges.tags = activeTagIds;
+  let updateConfig = $("#presetWrapper #presetEdit label input").prop(
+    "checked"
+  );
+  let configChanges = null;
+  if (updateConfig) {
+    configChanges = Config.getConfigChanges();
+    let activeTagIds = [];
+    DB.getSnapshot().tags.forEach((tag) => {
+      if (tag.active) {
+        activeTagIds.push(tag.id);
+      }
+    });
+    configChanges.tags = activeTagIds;
+  }
   hide();
   if (action === "add") {
     Loader.show();
@@ -119,7 +125,7 @@ function apply() {
           (preset) => preset.id == presetid
         )[0];
         preset.name = inputVal;
-        preset.config = configChanges;
+        if (configChanges) preset.config = configChanges;
         Settings.update();
       } else if (status === -1) {
         Notifications.add("Invalid preset name", 0);

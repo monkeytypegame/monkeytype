@@ -1953,13 +1953,14 @@ exports.editPreset = functions.https.onCall((request, response) => {
     if (!isTagPresetNameValid(request.name)) {
       return { resultCode: -1 };
     } else {
+      let set = {
+        name: request.name,
+      };
+      if (request.config) set.config = request.config;
       return db
         .collection(`users/${request.uid}/presets`)
         .doc(request.presetid)
-        .set({
-          config: request.config,
-          name: request.name,
-        })
+        .set(set)
         .then((e) => {
           console.log(`user ${request.uid} updated a preset: ${request.name}`);
           return {
