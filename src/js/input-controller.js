@@ -625,18 +625,33 @@ function handleAlpha(event) {
     thisCharCorrect = true;
   }
 
-  if (event.key === "”" && nextCharInWord == '"') {
-    event.key = '"';
+  if (
+    (event.key === `’` || event.key === "'") &&
+    (nextCharInWord == `’` || nextCharInWord === "'")
+  ) {
+    event.key = nextCharInWord;
     thisCharCorrect = true;
   }
 
-  if (event.key === '"' && nextCharInWord == "”") {
-    event.key = "”";
+  if (
+    (event.key === `"` ||
+      event.key === "”" ||
+      event.key == "“" ||
+      event.key === "„") &&
+    (nextCharInWord == `"` ||
+      nextCharInWord === "”" ||
+      nextCharInWord === "“" ||
+      nextCharInWord === "„")
+  ) {
+    event.key = nextCharInWord;
     thisCharCorrect = true;
   }
 
-  if ((event.key === "–" || event.key === "—") && nextCharInWord == "-") {
-    event.key = "-";
+  if (
+    (event.key === "–" || event.key === "—" || event.key == "-") &&
+    (nextCharInWord == "-" || nextCharInWord === "–" || nextCharInWord === "—")
+  ) {
+    event.key = nextCharInWord;
     thisCharCorrect = true;
   }
 
