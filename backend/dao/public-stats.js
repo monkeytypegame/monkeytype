@@ -4,17 +4,21 @@ const { roundTo2 } = require("../handlers/misc");
 
 class PublicStatsDAO {
   //needs to be rewritten, this is public stats not user stats
-  static async increment(started, completed, time) {
+  static async updateStats(restartCount, time) {
     time = roundTo2(time);
     await mongoDB()
-      .collection("users")
-      .updateOne({ name: "startedTests" }, { $inc: { value: started } });
-    await mongoDB()
-      .collection("users")
-      .updateOne({ name: "completedTests" }, { $inc: { value: completed } });
-    await mongoDB()
-      .collection("users")
-      .updateOne({ name: "timeTyping" }, { $inc: { value: time } });
+      .collection("public")
+      .updateOne(
+        { type: "stats" },
+        {
+          $inc: {
+            testsCompleted: 1,
+            testsStarted: restartCount + 1,
+            timeTyping: time,
+          },
+        },
+        { upsert: true }
+      );
     return true;
   }
 }

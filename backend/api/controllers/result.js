@@ -1,6 +1,6 @@
 const ResultDAO = require("../../dao/result");
 const UserDAO = require("../../dao/user");
-// const PublicStatsDAO = require("../../dao/public-stats");
+const PublicStatsDAO = require("../../dao/public-stats");
 const {
   validateObjectValues,
   validateResult,
@@ -167,6 +167,8 @@ class ResultController {
       tt = result.testDuration + result.incompleteTestSeconds - afk;
 
       await UserDAO.updateTypingStats(uid, result.restartCount, tt);
+
+      await PublicStatsDAO.updateStats(result.restartCount, tt);
 
       let addedResult = await ResultDAO.addResult(uid, result);
 
