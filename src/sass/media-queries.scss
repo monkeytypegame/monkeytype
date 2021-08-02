@@ -51,11 +51,6 @@
 @media only screen and (max-width: 948px) {
   .tables {
     grid-template-columns: unset !important;
-    width: 95% !important;
-
-    .titleAndTable {
-      width: 90% !important;
-    }
   }
 }
 
@@ -276,6 +271,13 @@
   #commandLine,
   #commandLineInput {
     width: 300px !important;
+  }
+
+  .tables {
+    width: 95% !important;
+    .titleAndTable {
+      width: 90% !important;
+    }
   }
 }
 

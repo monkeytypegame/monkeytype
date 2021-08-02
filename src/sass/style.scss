@@ -366,7 +366,8 @@ a:hover {
 
   #leaderboards {
     width: 85vw;
-    height: auto;
+    height: calc(95vh - 5rem);
+    overflow-y: auto;
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
