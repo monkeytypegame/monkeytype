@@ -48,6 +48,17 @@
   }
 }
 
+@media only screen and (max-width: 900px) {
+  .merchBanner {
+    img {
+      display: none;
+    }
+    .text {
+      padding: 0.25rem 0;
+    }
+  }
+}
+
 @media only screen and (max-width: 800px) {
   .settingsGroup.quickNav {
     display: none;
