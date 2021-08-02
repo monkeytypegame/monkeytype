@@ -84,7 +84,7 @@ export function apply(themeName) {
 
   $(".keymap-key").attr("style", "");
   $("#currentTheme").attr("href", `themes/${name}.css`);
-  $(".current-theme").text(themeName.replace("_", " "));
+  $(".current-theme .text").text(themeName.replace("_", " "));
 
   if (themeName === "custom") {
     colorVars.forEach((e, index) => {
@@ -106,7 +106,7 @@ export function apply(themeName) {
     $(".keymap-key").attr("style", "");
     ChartController.updateAllChartColors();
     updateFavicon(32, 14);
-    $("#metaThemeColor").attr("content", ThemeColors.main);
+    $("#metaThemeColor").attr("content", ThemeColors.bg);
   }, 500);
 }
 

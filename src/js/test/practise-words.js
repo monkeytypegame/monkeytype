@@ -90,13 +90,18 @@ export function resetBefore() {
   before.numbers = null;
 }
 
-export function showPopup() {
+export function showPopup(focus = false) {
   if ($("#practiseWordsPopupWrapper").hasClass("hidden")) {
     $("#practiseWordsPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100);
+      .animate({ opacity: 1 }, 100, () => {
+        if (focus) {
+          console.log("focusing");
+          $("#practiseWordsPopup .missed").focus();
+        }
+      });
   }
 }
 
@@ -136,4 +141,15 @@ $("#practiseWordsPopup .button.slow").click(() => {
 $("#practiseWordsPopup .button.both").click(() => {
   hidePopup();
   init(true, true);
+});
+
+$("#practiseWordsPopup .button").keypress((e) => {
+  if (e.key == "Enter") {
+    $(e.currentTarget).click();
+  }
+});
+
+$("#practiseWordsPopup .button.both").on("focusout", (e) => {
+  e.preventDefault();
+  $("#practiseWordsPopup .missed").focus();
 });

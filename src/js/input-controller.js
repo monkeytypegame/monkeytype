@@ -140,7 +140,7 @@ function handleBackspace(event) {
       Funbox.toggleScript(TestLogic.words.getCurrent());
       TestUI.updateWordElement(!Config.blindMode);
     }
-  } else {
+  } else if (TestLogic.input.current !== "") {
     if (Config.confidenceMode === "max") return;
     if (event["ctrlKey"] || event["altKey"] || event.metaKey) {
       Replay.addReplayEvent("clearWord");
@@ -183,8 +183,6 @@ function handleBackspace(event) {
         Funbox.toggleScript(TestLogic.words.getCurrent());
         TestUI.updateWordElement(!Config.blindMode);
         TestLogic.input.resetCurrent();
-        TestLogic.input.popHistory();
-        TestLogic.corrected.popHistory();
       } else {
         const regex = new RegExp(
           /[ £§`~!@#$%^&*()_+\\\-=[\]{};':"|,./<>?]/,
@@ -627,18 +625,33 @@ function handleAlpha(event) {
     thisCharCorrect = true;
   }
 
-  if (event.key === "”" && nextCharInWord == '"') {
-    event.key = '"';
+  if (
+    (event.key === `’` || event.key === "'") &&
+    (nextCharInWord == `’` || nextCharInWord === "'")
+  ) {
+    event.key = nextCharInWord;
     thisCharCorrect = true;
   }
 
-  if (event.key === '"' && nextCharInWord == "”") {
-    event.key = "”";
+  if (
+    (event.key === `"` ||
+      event.key === "”" ||
+      event.key == "“" ||
+      event.key === "„") &&
+    (nextCharInWord == `"` ||
+      nextCharInWord === "”" ||
+      nextCharInWord === "“" ||
+      nextCharInWord === "„")
+  ) {
+    event.key = nextCharInWord;
     thisCharCorrect = true;
   }
 
-  if ((event.key === "–" || event.key === "—") && nextCharInWord == "-") {
-    event.key = "-";
+  if (
+    (event.key === "–" || event.key === "—" || event.key == "-") &&
+    (nextCharInWord == "-" || nextCharInWord === "–" || nextCharInWord === "—")
+  ) {
+    event.key = nextCharInWord;
     thisCharCorrect = true;
   }
 

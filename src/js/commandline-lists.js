@@ -1603,6 +1603,7 @@ let commandsWordCount = {
       display: "10",
       configValue: 10,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("10");
         TestLogic.restart();
       },
@@ -1612,6 +1613,7 @@ let commandsWordCount = {
       display: "25",
       configValue: 25,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("25");
         TestLogic.restart();
       },
@@ -1621,6 +1623,7 @@ let commandsWordCount = {
       display: "50",
       configValue: 50,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("50");
         TestLogic.restart();
       },
@@ -1630,6 +1633,7 @@ let commandsWordCount = {
       display: "100",
       configValue: 100,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("100");
         TestLogic.restart();
       },
@@ -1639,6 +1643,7 @@ let commandsWordCount = {
       display: "200",
       configValue: 200,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("200");
         TestLogic.restart();
       },
@@ -1648,6 +1653,7 @@ let commandsWordCount = {
       display: "custom...",
       input: true,
       exec: (input) => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount(input);
         TestLogic.restart();
       },
@@ -1664,6 +1670,7 @@ let commandsQuoteLengthConfig = {
       display: "all",
       configValue: [0, 1, 2, 3],
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength([0, 1, 2, 3]);
         TestLogic.restart();
       },
@@ -1674,6 +1681,7 @@ let commandsQuoteLengthConfig = {
       configValue: 0,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(0);
         TestLogic.restart();
       },
@@ -1684,6 +1692,7 @@ let commandsQuoteLengthConfig = {
       configValue: 1,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(1);
         TestLogic.restart();
       },
@@ -1694,6 +1703,7 @@ let commandsQuoteLengthConfig = {
       configValue: 2,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(2);
         TestLogic.restart();
       },
@@ -1704,6 +1714,7 @@ let commandsQuoteLengthConfig = {
       configValue: 3,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(3);
         TestLogic.restart();
       },
@@ -1869,6 +1880,7 @@ let commandsTimeConfig = {
       display: "15",
       configValue: 15,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("15");
         TestLogic.restart();
       },
@@ -1878,6 +1890,7 @@ let commandsTimeConfig = {
       display: "30",
       configValue: 30,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("30");
         TestLogic.restart();
       },
@@ -1887,6 +1900,7 @@ let commandsTimeConfig = {
       display: "60",
       configValue: 60,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("60");
         TestLogic.restart();
       },
@@ -1896,6 +1910,7 @@ let commandsTimeConfig = {
       display: "120",
       configValue: 120,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("120");
         TestLogic.restart();
       },
@@ -1905,6 +1920,7 @@ let commandsTimeConfig = {
       display: "custom...",
       input: true,
       exec: (input) => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig(input);
         TestLogic.restart();
       },

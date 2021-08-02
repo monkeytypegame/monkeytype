@@ -16,6 +16,7 @@ import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
+import * as TestUI from "./test-ui";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -280,10 +281,10 @@ export function updateWordElement(showError) {
   if (Config.mode === "zen") {
     for (let i = 0; i < TestLogic.input.current.length; i++) {
       if (TestLogic.input.current[i] === "\t") {
-        ret += `<letter class='tabChar correct'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (TestLogic.input.current[i] === "\n") {
         newlineafter = true;
-        ret += `<letter class='nlChar correct'><i class="fas fa-angle-down"></i></letter>`;
+        ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
       } else {
         ret +=
           `<letter class="correct">` + TestLogic.input.current[i] + `</letter>`;
@@ -770,12 +771,22 @@ export function toggleResultWords() {
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
         loadWordsHistory().then(() => {
+          if (Config.burstHeatmap) {
+            TestUI.applyBurstHeatmap();
+          }
           $("#resultWordsHistory")
             .removeClass("hidden")
             .css("display", "none")
-            .slideDown(250);
+            .slideDown(250, () => {
+              if (Config.burstHeatmap) {
+                TestUI.applyBurstHeatmap();
+              }
+            });
         });
       } else {
+        if (Config.burstHeatmap) {
+          TestUI.applyBurstHeatmap();
+        }
         $("#resultWordsHistory")
           .removeClass("hidden")
           .css("display", "none")
@@ -797,7 +808,7 @@ export function applyBurstHeatmap() {
     let min = Math.min(...TestStats.burstHistory);
     let max = Math.max(...TestStats.burstHistory);
 
-    let burstlist = TestStats.burstHistory;
+    let burstlist = [...TestStats.burstHistory];
 
     if (
       TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
@@ -1005,10 +1016,9 @@ $(document.body).on("click", "#restartTestButton", () => {
 });
 
 $(document).on("keypress", "#practiseWordsButton", (event) => {
-  // if (event.keyCode == 13) {
-  //   PractiseWords.init();
-  // }
-  PractiseWords.showPopup();
+  if (event.keyCode == 13) {
+    PractiseWords.showPopup(true);
+  }
 });
 
 $(document.body).on("click", "#practiseWordsButton", () => {
