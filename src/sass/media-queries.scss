@@ -188,6 +188,21 @@
       }
     }
   }
+
+  .leaderboardsTop {
+    .mainTitle {
+      font-size: 4vw !important;
+    }
+
+    .buttonGroup {
+      gap: 0.1rem !important;
+
+      .button {
+        padding: 0.4rem !important;
+        font-size: 0.7rem !important;
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 500px) {

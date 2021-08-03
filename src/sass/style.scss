@@ -380,14 +380,19 @@ a:hover {
     grid-template-columns: 1fr 1fr;
 
     .leaderboardsTop {
-      width: 76vw;
+      width: 200%;
+      min-width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
+
+      .buttonGroup .button {
+        padding: 0.4rem 2.18rem;
+      }
     }
 
     .mainTitle {
-      font-size: 4vw;
+      font-size: 3vw;
       line-height: 3rem;
       grid-area: title;
     }
@@ -512,7 +517,7 @@ a:hover {
       .buttonGroup {
         display: grid;
         grid-auto-flow: column;
-        gap: 0.1rem;
+        gap: 1rem;
         grid-area: 1/2;
       }
     }
@@ -3585,7 +3590,6 @@ key {
   transition: 0.25s;
   padding: 0.4rem;
   border-radius: var(--roundness);
-
   background: rgba(0, 0, 0, 0.1);
   text-align: center;
   -webkit-user-select: none;
