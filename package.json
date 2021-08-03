@@ -54,7 +54,7 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "firebase-admin": "^9.9.0",
+    "firebase-admin": "^9.11.0",
     "helmet": "^4.6.0",
     "howler": "^2.2.1",
     "mongodb": "^3.6.9",
