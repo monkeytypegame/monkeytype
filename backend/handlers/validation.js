@@ -80,8 +80,16 @@ function validateConfig(config) {
     if (!isConfigKeyValid(key)) {
       throw new MonkeyError(500, `Invalid config: ${key} failed regex check`);
     }
-    if (key === "resultFilters") return;
-    if (key === "customBackground") return;
+    // if (key === "resultFilters") return;
+    // if (key === "customBackground") return;
+    if (key === "customBackground" || key === "customLayoutfluid") {
+      if (/[<>]/.test(config[key])) {
+        throw new MonkeyError(
+          500,
+          `Invalid config: ${key}:${config.key} failed regex check`
+        );
+      }
+    }
     let val = config[key];
     if (Array.isArray(val)) {
       val.forEach((valarr) => {
