@@ -3,6 +3,7 @@ const path = require("path");
 config({ path: path.join(__dirname, ".env") });
 const { mongoDB } = require("./init/mongodb");
 const { connectDB } = require("./init/mongodb");
+const { ObjectID } = require("mongodb");
 
 console.log(config());
 
@@ -19,6 +20,7 @@ admin.initializeApp({
 });
 
 var db = admin.firestore();
+var auth = admin.auth();
 
 // Database should be completely clear before this is ran in order to prevent overlapping documents
 // Migrate users
@@ -31,7 +33,104 @@ async function migrateUsers() {
       // console.log('start of foreach');
       querySnapshot.forEach(async (userDoc) => {
         let userData = userDoc.data();
-        console.log(userData);
+        let uid = userDoc.id;
+        try {
+          let userAuth = await auth.getUser(uid);
+          let email = userAuth.email;
+          let userCreatedAt = new Date(
+            userAuth.metadata.creationTime
+          ).getTime();
+
+          let mongoUser = {
+            name: userData.name,
+            email: email,
+            addedAt: userCreatedAt,
+            uid: uid,
+          };
+
+          if (userData.completedTests)
+            mongoUser.completedTests = userData.completedTests;
+          if (userData.startedTests)
+            mongoUser.startedTests = userData.startedTests;
+          if (userData.timeTyping) mongoUser.timeTyping = userData.timeTyping;
+
+          if (userData.personalBests)
+            mongoUser.personalBests = userData.personalBests;
+
+          let tagPairs = {};
+
+          let mongoUserTags = [];
+
+          let tagsSnapshot = await db.collection(`users/${uid}/tags`).get();
+          tagsSnapshot.forEach((tagDoc) => {
+            let tagData = tagDoc.data();
+            let tagId = tagDoc.id;
+            console.log(tagData);
+            let new_id = ObjectID();
+            tagPairs[tagId] = new_id;
+            let tagtopush = { _id: new_id, name: tagData.name };
+            if (tagData.personalBests)
+              tagtopush.personalBests = tagData.personalBests;
+            mongoUserTags.push(tagtopush);
+          });
+
+          mongoUser.tags = mongoUserTags;
+
+          await mongoDB().collection("users").updateOne(
+            { uid: uid },
+            {
+              $set: mongoUser,
+            },
+            { upsert: true }
+          );
+
+          if (userData.config) {
+            await mongoDB()
+              .collection("configs")
+              .updateOne(
+                { uid: uid },
+                {
+                  $set: {
+                    uid: uid,
+                    config: userData.config,
+                  },
+                },
+                { upsert: true }
+              );
+          }
+
+          let presetsSnapshot = await db
+            .collection(`users/${uid}/presets`)
+            .get();
+          presetsSnapshot.forEach(async (presetDoc) => {
+            let presetData = presetDoc.data();
+            let newpreset = {
+              uid: uid,
+              name: presetData.name,
+            };
+            if (presetData.config) newpreset.config = presetData.config;
+            await mongoDB().collection("presets").insertOne(newpreset);
+          });
+
+          let resultsSnapshot = await db
+            .collection(`users/${uid}/results`)
+            .get();
+          resultsSnapshot.forEach(async (resultDoc) => {
+            let resultData = resultDoc.data();
+            resultData.uid = uid;
+            if (resultData.tags && resultData.tags.length > 0) {
+              resultData.tags = resultData.tags.map((tag) => tagPairs[tag]);
+            }
+            await mongoDB().collection("results").insertOne(resultData);
+          });
+
+          console.log(`${uid} migrated`);
+        } catch (err) {
+          console.log(`${uid} failed`);
+          console.log(err);
+        }
+
+        // console.log(userData);
         //   let newUser;
         //   try{
         //     let data = userDoc.data();
@@ -132,7 +231,7 @@ async function init() {
   await connectDB();
   // await migratePublicStats();
   await migrateUsers();
-  process.exit(1);
+  // process.exit(1);
 }
 
 init();
