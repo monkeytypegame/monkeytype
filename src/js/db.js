@@ -129,6 +129,15 @@ export async function getUserResults() {
   } else {
     try {
       let results = await axiosInstance.get("/results");
+      results.data.forEach((result) => {
+        if (result.bailedOut === undefined) result.bailedOut = false;
+        if (result.blindMode === undefined) result.blindMode = false;
+        if (result.difficulty === undefined) result.difficulty = "normal";
+        if (result.funbox === undefined) result.funbox = "none";
+        if (result.language === undefined) result.language = "english";
+        if (result.numbers === undefined) result.numbers = false;
+        if (result.punctuation === undefined) result.punctuation = false;
+      });
       dbSnapshot.results = results.data;
       await TodayTracker.addAllFromToday();
       return true;
