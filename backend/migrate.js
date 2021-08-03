@@ -50,6 +50,7 @@ async function migrateUsers() {
 
           if (userData.completedTests)
             mongoUser.completedTests = userData.completedTests;
+          if (userData.discordId) mongoUser.discordId = userData.discordId;
           if (userData.startedTests)
             mongoUser.startedTests = userData.startedTests;
           if (userData.timeTyping) mongoUser.timeTyping = userData.timeTyping;
