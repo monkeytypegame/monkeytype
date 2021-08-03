@@ -71,7 +71,7 @@ function apply() {
     "checked"
   );
   let configChanges = null;
-  if (updateConfig) {
+  if ((updateConfig && action === "edit") || action === "add") {
     configChanges = Config.getConfigChanges();
     let activeTagIds = [];
     DB.getSnapshot().tags.forEach((tag) => {

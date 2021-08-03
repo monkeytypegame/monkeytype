@@ -294,6 +294,8 @@ a:hover {
   align-items: center;
   grid-auto-flow: column;
   gap: 1rem;
+  // height: 2rem;
+  padding: 0 1rem;
   img {
     height: 2rem;
   }
@@ -1848,8 +1850,8 @@ key {
       grid-auto-flow: column;
       gap: 0.25rem;
       align-items: baseline;
-      width: min-content;
-      width: -moz-fit-content;
+      width: max-content;
+      width: -moz-available;
       &:hover {
         color: var(--text-color);
         cursor: pointer;
