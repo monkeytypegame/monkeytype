@@ -2,14 +2,12 @@ const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
 
 async function addCommand(command, arguments) {
-  return await mongoDB()
-    .collection("bot-commands")
-    .insertOne({
-      command,
-      arguments,
-      executed: false,
-      requestTimestamp: Date.now(),
-    });
+  return await mongoDB().collection("bot-commands").insertOne({
+    command,
+    arguments,
+    executed: false,
+    requestTimestamp: Date.now(),
+  });
 }
 
 class BotDAO {
@@ -21,17 +19,17 @@ class BotDAO {
     return await addCommand("linkDiscord", [discordId, uid]);
   }
 
-  static async announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
-    return await addCommand("sayLbUpdate", [
-      discordId,
-      pos,
-      lb,
-      wpm,
-      raw,
-      acc,
-      con,
-    ]);
-  }
+  // static async announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
+  //   return await addCommand("sayLbUpdate", [
+  //     discordId,
+  //     pos,
+  //     lb,
+  //     wpm,
+  //     raw,
+  //     acc,
+  //     con,
+  //   ]);
+  // }
 
   // this probably will be rewritten but keeping the old code just in case
   // static async announceDailyLbResult(lbdata) {
