@@ -500,10 +500,15 @@ export function updateLbMemory(mode, mode2, type, value) {
 export async function saveConfig(config) {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
+    let response;
     try {
-      let response = await axiosInstance.post("/config/save", { config });
+      response = await axiosInstance.post("/config/save", { config });
     } catch (e) {
-      Notifications.add(e.message, -1);
+      AccountButton.loading(false);
+
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to save config: " + msg, -1);
+      return;
     }
     AccountButton.loading(false);
   }
