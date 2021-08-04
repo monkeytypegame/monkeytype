@@ -53,7 +53,7 @@ class ResultDAO {
     const result = await mongoDB()
       .collection("results")
       .find({ uid })
-      .sort({ timestamp: 1 })
+      .sort({ timestamp: -1 })
       .skip(start)
       .limit(end)
       .toArray(); // this needs to be changed to later take patreon into consideration
