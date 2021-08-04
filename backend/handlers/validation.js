@@ -83,29 +83,31 @@ function validateConfig(config) {
     // if (key === "resultFilters") return;
     // if (key === "customBackground") return;
     if (key === "customBackground" || key === "customLayoutfluid") {
-      if (/[<>]/.test(config[key])) {
-        throw new MonkeyError(
-          500,
-          `Invalid config: ${key}:${config.key} failed regex check`
-        );
-      }
-    }
-    let val = config[key];
-    if (Array.isArray(val)) {
-      val.forEach((valarr) => {
-        if (!isConfigKeyValid(valarr)) {
-          throw new MonkeyError(
-            500,
-            `Invalid config: ${key}:${valarr} failed regex check`
-          );
-        }
-      });
-    } else {
-      if (!isConfigKeyValid(val)) {
+      let val = config[key];
+      if (/[<>]/.test(val)) {
         throw new MonkeyError(
           500,
           `Invalid config: ${key}:${val} failed regex check`
         );
+      }
+    } else {
+      let val = config[key];
+      if (Array.isArray(val)) {
+        val.forEach((valarr) => {
+          if (!isConfigKeyValid(valarr)) {
+            throw new MonkeyError(
+              500,
+              `Invalid config: ${key}:${valarr} failed regex check`
+            );
+          }
+        });
+      } else {
+        if (!isConfigKeyValid(val)) {
+          throw new MonkeyError(
+            500,
+            `Invalid config: ${key}:${val} failed regex check`
+          );
+        }
       }
     }
   });
