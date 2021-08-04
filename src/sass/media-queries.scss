@@ -1,3 +1,11 @@
+@media only screen and (max-width: 1200px) {
+  #leaderboards {
+    .tables {
+      grid-template-columns: unset !important;
+    }
+  }
+}
+
 @media only screen and (max-width: 1050px) {
   #centerContent {
     .pageSettings .section.fullWidth .buttons {
@@ -48,13 +56,13 @@
   }
 }
 
-@media only screen and (max-width: 948px) {
-  .tables {
-    grid-template-columns: unset !important;
-  }
-}
-
 @media only screen and (max-width: 900px) {
+  #leaderboards {
+    .mainTitle {
+      font-size: 1.5rem !important;
+      line-height: 1.5rem !important;
+    }
+  }
   .merchBanner {
     img {
       display: none;
@@ -298,11 +306,12 @@
   #commandLineInput {
     width: 300px !important;
   }
-
-  .tables {
-    width: 95% !important;
-    .titleAndTable {
-      width: 90% !important;
+  #leaderboards {
+    .tables {
+      width: 95% !important;
+      .titleAndTable {
+        width: 90% !important;
+      }
     }
   }
 }
