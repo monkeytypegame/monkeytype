@@ -357,7 +357,7 @@ a:hover {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
-  position: fixed;
+  position: absolute;
   left: 0;
   top: 0;
   z-index: 1000;
@@ -368,17 +368,30 @@ a:hover {
 
   #leaderboards {
     width: 85vw;
-    height: calc(100vh - 10rem);
+    height: calc(95vh - 5rem);
+    overflow-y: auto;
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
     display: grid;
-    gap: 2rem;
+    gap: 2rem 0;
     grid-template-rows: 3rem auto;
     grid-template-areas:
       "title buttons"
       "tables tables";
     grid-template-columns: 1fr 1fr;
+
+    .leaderboardsTop {
+      width: 200%;
+      min-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .buttonGroup .button {
+        padding: 0.4rem 2.18rem;
+      }
+    }
 
     .mainTitle {
       font-size: 3rem;
@@ -399,6 +412,7 @@ a:hover {
       grid-template-columns: 1fr 1fr;
       margin-bottom: 2rem;
       font-size: 0.8rem;
+      width: 100%;
 
       .sub {
         opacity: 0.5;
@@ -410,6 +424,7 @@ a:hover {
 
       .titleAndTable {
         display: grid;
+        width: 100%;
 
         .title {
           grid-area: 1/1;
@@ -428,7 +443,13 @@ a:hover {
         height: calc(100vh - 22rem);
         @extend .ffscroll;
         overflow-y: scroll;
-        overflow-x: hidden;
+        overflow-x: auto;
+      }
+
+      .globalTableWrapper::-webkit-scrollbar,
+      .dailyTableWrapper::-webkit-scrollbar {
+        height: 5px;
+        width: 5px;
       }
 
       table {
@@ -495,13 +516,6 @@ a:hover {
     }
 
     .buttons {
-      grid-area: buttons;
-      display: -ms-grid;
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: 1fr 1fr;
-      align-self: center;
-
       .buttonGroup {
         display: grid;
         grid-auto-flow: column;
@@ -948,7 +962,7 @@ label.checkbox {
 
     .buttons {
       display: grid;
-      gap: 1rem;
+      gap: 0.1rem;
       grid-template-columns: 1fr 1fr 1fr;
     }
   }
@@ -3578,7 +3592,6 @@ key {
   transition: 0.25s;
   padding: 0.4rem;
   border-radius: var(--roundness);
-
   background: rgba(0, 0, 0, 0.1);
   text-align: center;
   -webkit-user-select: none;

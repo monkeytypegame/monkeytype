@@ -1,3 +1,11 @@
+@media only screen and (max-width: 1200px) {
+  #leaderboards {
+    .tables {
+      grid-template-columns: unset !important;
+    }
+  }
+}
+
 @media only screen and (max-width: 1050px) {
   #centerContent {
     .pageSettings .section.fullWidth .buttons {
@@ -49,6 +57,12 @@
 }
 
 @media only screen and (max-width: 900px) {
+  #leaderboards {
+    .mainTitle {
+      font-size: 1.5rem !important;
+      line-height: 1.5rem !important;
+    }
+  }
   .merchBanner {
     img {
       display: none;
@@ -193,6 +207,21 @@
       }
     }
   }
+
+  .leaderboardsTop {
+    .mainTitle {
+      font-size: 4vw !important;
+    }
+
+    .buttonGroup {
+      gap: 0.1rem !important;
+
+      .button {
+        padding: 0.4rem !important;
+        font-size: 0.7rem !important;
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 500px) {
@@ -276,6 +305,14 @@
   #commandLine,
   #commandLineInput {
     width: 300px !important;
+  }
+  #leaderboards {
+    .tables {
+      width: 95% !important;
+      .titleAndTable {
+        width: 90% !important;
+      }
+    }
   }
 }
 
