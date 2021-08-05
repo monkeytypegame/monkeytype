@@ -927,7 +927,18 @@
     </div>
     <div id="commandLineWrapper" class="hidden">
       <div id="commandLine">
-        <input type="text" class="input" placeholder="Type to search" />
+        <div
+          style="
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+          "
+        >
+          <div class="searchicon">
+            <i class="fas fa-search"></i>
+          </div>
+          <input type="text" class="input" placeholder="Type to search" />
+        </div>
         <div class="separator hidden"></div>
         <div class="listTitle">Title</div>
         <div class="suggestions"></div>

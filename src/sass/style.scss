@@ -1222,9 +1222,14 @@ label.checkbox {
     background: var(--bg-color);
     border-radius: var(--roundness);
 
+    .searchicon {
+      color: var(--sub-color);
+      margin: 1rem;
+    }
+
     input {
       background: var(--bg-color);
-      padding: 1rem;
+      padding: 1rem 1rem 1rem 0;
       color: var(--text-color);
       border: none;
       outline: none;
