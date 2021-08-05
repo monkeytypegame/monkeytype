@@ -2447,6 +2447,9 @@ key {
 
 #middle {
   .pageTest {
+    #wordsWrapper {
+      position: relative;
+    }
     #memoryTimer {
       background: var(--main-color);
       color: var(--bg-color);
