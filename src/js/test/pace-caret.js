@@ -6,8 +6,7 @@ import * as DB from "./db";
 export let settings = null;
 
 function resetCaretPosition() {
-  if (Config.paceCaret === "off" && !TestLogic.isPaceRepeat)
-    return;
+  if (Config.paceCaret === "off" && !TestLogic.isPaceRepeat) return;
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
   }
@@ -96,6 +95,9 @@ export async function init() {
   resetCaretPosition();
   TestUI.updateModesNotice();
 }
+
+let currentPositionLeft = 0;
+let currentPositionTop = 0;
 
 export function update(expectedStepEnd) {
   if (settings === null || !TestLogic.active || TestUI.resultVisible) {
@@ -189,7 +191,7 @@ export function update(expectedStepEnd) {
 
     let duration = expectedStepEnd - performance.now();
 
-    if (Config.smoothCaret) {
+    if (Config.smoothCaret && newTop === currentPositionTop) {
       caret.stop(true, true).animate(
         {
           left: newLeft,
@@ -206,6 +208,8 @@ export function update(expectedStepEnd) {
         "linear"
       );
     }
+    currentPositionTop = newTop;
+    currentPositionLeft = newLeft;
     settings.timeout = setTimeout(() => {
       try {
         update(expectedStepEnd + settings.spc * 1000);
