@@ -96,9 +96,6 @@ export async function init() {
   TestUI.updateModesNotice();
 }
 
-let currentPositionLeft = 0;
-let currentPositionTop = 0;
-
 export function update(expectedStepEnd) {
   if (settings === null || !TestLogic.active || TestUI.resultVisible) {
     return;
@@ -191,7 +188,7 @@ export function update(expectedStepEnd) {
 
     let duration = expectedStepEnd - performance.now();
 
-    if (Config.smoothCaret && newTop === currentPositionTop) {
+    if (Config.smoothCaret) {
       caret.stop(true, true).animate(
         {
           left: newLeft,
@@ -208,8 +205,6 @@ export function update(expectedStepEnd) {
         "linear"
       );
     }
-    currentPositionTop = newTop;
-    currentPositionLeft = newLeft;
     settings.timeout = setTimeout(() => {
       try {
         update(expectedStepEnd + settings.spc * 1000);
