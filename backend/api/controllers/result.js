@@ -170,6 +170,14 @@ class ResultController {
 
       await PublicStatsDAO.updateStats(result.restartCount, tt);
 
+      if (result.bailedOut === false) delete result.bailedOut;
+      if (result.blindMode === false) delete result.blindMode;
+      if (result.difficulty === "normal") delete result.difficulty;
+      if (result.funbox === "none") delete result.funbox;
+      if (result.language === "english") delete result.language;
+      if (result.numbers === false) delete result.numbers;
+      if (result.punctuation === false) delete result.punctuation;
+
       let addedResult = await ResultDAO.addResult(uid, result);
 
       return res.status(200).json({
