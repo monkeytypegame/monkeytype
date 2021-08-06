@@ -1,0 +1,15 @@
+:root {
+  --bg-color: #fafbfc;
+  --main-color: #2f363d;
+  --caret-color: #2f363d;
+  --sub-color: #d1d5da;
+  --text-color: #2f363d;
+  --error-color: #f97583;
+  --error-extra-color: #f97583;
+  --colorful-error-color: #f97583;
+  --colorful-error-extra-color: #f97583;
+}
+
+#menu .icon-button {
+  color: #d1d5da;
+}

@@ -573,5 +573,20 @@
     "name": "material",
     "bgColor": "#263238",
     "textColor": "#80cbc4"
-  }
+  },
+	{
+    "name": "github_dark",
+    "bgColor": "#0d1117",
+    "textColor": "#f0f6fc"
+	},
+	{
+    "name": "github_dimmed",
+    "bgColor": "#22272e",
+    "textColor": "#cdd9e5"
+	},
+	{
+    "name": "github_light",
+    "bgColor": "#fafbfc",
+    "textColor": "#2f363d"
+	}
 ]
