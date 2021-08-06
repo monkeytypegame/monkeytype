@@ -989,6 +989,7 @@ $("#wordsInput").on("focusout", () => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 13) {
+    ManualRestart.reset();
     if (
       TestLogic.active &&
       Config.repeatQuotes === "typing" &&
