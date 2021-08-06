@@ -1479,9 +1479,15 @@ export function finish(difficultyFailed = false) {
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
-      correctChars: stats.correctChars + stats.correctSpaces,
-      incorrectChars: stats.incorrectChars,
-      allChars: stats.allChars,
+      // correctChars: stats.correctChars + stats.correctSpaces,
+      // incorrectChars: stats.incorrectChars,
+      // allChars: stats.allChars,
+      charStats: [
+        stats.correctChars + stats.correctSpaces,
+        stats.incorrectChars,
+        stats.extraChars,
+        stats.missedChars,
+      ],
       acc: stats.acc,
       mode: Config.mode,
       mode2: mode2,

@@ -138,6 +138,9 @@ export async function getUserResults() {
         if (result.numbers === undefined) result.numbers = false;
         if (result.punctuation === undefined) result.punctuation = false;
       });
+      results.data = results.data.sort((a, b) => {
+        return a.timestamp < b.timestamp;
+      });
       dbSnapshot.results = results.data;
       await TodayTracker.addAllFromToday();
       return true;

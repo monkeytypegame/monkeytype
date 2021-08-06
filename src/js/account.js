@@ -285,15 +285,21 @@ function loadMoreLines(lineIndex) {
       pb = "";
     }
 
+    let charStats = "-";
+    if (result.charStats) {
+      charStats = result.charStats.join("/");
+    } else {
+      charStats = result.correctChars + "/" + result.incorrectChars + "/-/-";
+    }
+
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
     <td>${result.wpm.toFixed(2)}</td>
     <td>${raw}</td>
     <td>${result.acc.toFixed(2)}%</td>
-    <td>${result.correctChars}</td>
-    <td>${result.incorrectChars}</td>
     <td>${consistency}</td>
+    <td>${charStats}</td>
     <td>${result.mode} ${result.mode2}${withpunc}</td>
     <td class="infoIcons">${icons}</td>
     <td>${tagIcons}</td>

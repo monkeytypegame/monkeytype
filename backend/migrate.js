@@ -176,7 +176,15 @@ async function migrateUsers() {
           if (resultData.tags && resultData.tags.length > 0) {
             resultData.tags = resultData.tags.map((tag) => tagPairs[tag]);
           }
-          newStats.completedTests++;
+          if (!resultData.charStats) {
+            resultData.charStats = [
+              resultData.correctChars,
+              resultData.incorrectChars,
+            ];
+          }
+          delete resultData.correctChars;
+          delete resultData.incorrectChars;
+          resultData.charStats = newStats.completedTests++;
           if (resultData.restartCount) {
             newStats.startedTests += resultData.restartCount + 1;
           } else {
