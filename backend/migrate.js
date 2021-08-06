@@ -5,6 +5,9 @@ const { mongoDB } = require("./init/mongodb");
 const { connectDB } = require("./init/mongodb");
 const { ObjectID } = require("mongodb");
 const { performance } = require("perf_hooks");
+const fs = require("fs");
+
+// const { QuerySnapshotData } = require("firebase-firestore");
 
 console.log(config());
 
@@ -28,11 +31,36 @@ var auth = admin.auth();
 async function migrateUsers() {
   // let UIDOVERRIDE = "ugbG1GiSHxVEYMDmMeLV9byeukl2";
   let UIDOVERRIDE = undefined;
-  let querySnapshot = await db
-    .collection("users")
-    // .where("name", "==", "Miodec")
-    .limit(10000)
-    .get();
+  let lastSnapshot;
+  try {
+    lastSnapshot = JSON.parse(fs.readFileSync("lastSnapshot.txt"));
+    let t = new db.QuerySnapshotData();
+    t.data = lastSnapshot;
+    console.log(t);
+    return;
+  } catch (e) {
+    console.log(e);
+    return;
+  }
+  console.log(lastSnapshot);
+  // return;
+  let querySnapshot;
+  if (lastSnapshot) {
+    querySnapshot = await db
+      .collection("users")
+      // .where("name", "==", "Miodec")
+      .orderBy("name")
+      .startAfter(lastSnapshot)
+      .limit(1)
+      .get();
+  } else {
+    querySnapshot = await db
+      .collection("users")
+      // .where("name", "==", "Miodec")
+      .orderBy("name")
+      .limit(1)
+      .get();
+  }
   // console.log('start of foreach');
   console.log(`migrating ${querySnapshot.docs.length} users`);
   let fulllog = false;
@@ -184,11 +212,14 @@ async function migrateUsers() {
           { upsert: true }
         );
 
-      console.log(`${uid} migrated`);
+      console.log(
+        `${uid} migrated \t\t ${userData.name} \t\t ${total} results`
+      );
     } catch (err) {
       console.log(`${uid} failed`);
       console.log(err);
     }
+    fs.writeFileSync("lastSnapshot.txt", userDoc, "utf8");
     let userend = performance.now();
     let time = (userend - userstart) / 1000;
     totalCompletionTime += time;
@@ -255,6 +286,7 @@ async function migrateUsers() {
     //     userCount++;
     //   }
   }
+
   console.log("Migration complete");
   // console.log('end of foreach');
 }
