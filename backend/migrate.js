@@ -32,16 +32,16 @@ async function migrateUsers() {
   // let UIDOVERRIDE = "ugbG1GiSHxVEYMDmMeLV9byeukl2";
   let UIDOVERRIDE = undefined;
   let lastSnapshot;
-  try {
-    lastSnapshot = JSON.parse(fs.readFileSync("lastSnapshot.txt"));
-    let t = new db.QuerySnapshotData();
-    t.data = lastSnapshot;
-    console.log(t);
-    return;
-  } catch (e) {
-    console.log(e);
-    return;
-  }
+  // try {
+  //   lastSnapshot = JSON.parse(fs.readFileSync("lastSnapshot.txt"));
+  //   let t = new db.QuerySnapshotData();
+  //   t.data = lastSnapshot;
+  //   console.log(t);
+  //   return;
+  // } catch (e) {
+  //   console.log(e);
+  //   return;
+  // }
   console.log(lastSnapshot);
   // return;
   let querySnapshot;
@@ -219,7 +219,7 @@ async function migrateUsers() {
       console.log(`${uid} failed`);
       console.log(err);
     }
-    fs.writeFileSync("lastSnapshot.txt", userDoc, "utf8");
+    // fs.writeFileSync("lastSnapshot.txt", userDoc, "utf8");
     let userend = performance.now();
     let time = (userend - userstart) / 1000;
     totalCompletionTime += time;
