@@ -41,7 +41,7 @@ export async function get(color) {
           ret = colors[color];
         }
         resolve(check());
-      }, 500);
+      }, 250);
     });
   }
   async function check() {
