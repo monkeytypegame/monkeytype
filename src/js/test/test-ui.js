@@ -187,7 +187,7 @@ export function colorful(tc) {
   }
 }
 
-export function screenshot() {
+export async function screenshot() {
   let revealReplay = false;
   function revertScreenshot() {
     $("#notificationCenter").removeClass("hidden");
@@ -222,7 +222,7 @@ export function screenshot() {
   $(".pageTest .loginTip").addClass("hidden");
   try {
     html2canvas(document.body, {
-      backgroundColor: ThemeColors.bg,
+      backgroundColor: await ThemeColors.get("bg"),
       height: sourceHeight + 50,
       width: sourceWidth + 50,
       x: sourceX - 25,

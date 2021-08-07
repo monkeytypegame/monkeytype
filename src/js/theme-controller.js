@@ -21,11 +21,11 @@ export const colorVars = [
   "--colorful-error-extra-color",
 ];
 
-function updateFavicon(size, curveSize) {
+async function updateFavicon(size, curveSize) {
   let maincolor, bgcolor;
 
-  bgcolor = ThemeColors.bg;
-  maincolor = ThemeColors.main;
+  bgcolor = await ThemeColors.get("bg");
+  maincolor = await ThemeColors.get("main");
 
   if (bgcolor == maincolor) {
     bgcolor = "#111";
@@ -62,7 +62,7 @@ function clearCustomTheme() {
   });
 }
 
-export function apply(themeName) {
+export function apply(themeName, preview = false) {
   clearCustomTheme();
 
   let name = "serika_dark";
@@ -86,33 +86,37 @@ export function apply(themeName) {
   $("#currentTheme").attr("href", `themes/${name}.css`);
   $(".current-theme .text").text(themeName.replace("_", " "));
 
-  if (themeName === "custom") {
-    colorVars.forEach((e, index) => {
-      document.documentElement.style.setProperty(
-        e,
-        Config.customThemeColors[index]
-      );
-    });
-  }
+  if (!preview) {
+    if (themeName === "custom") {
+      colorVars.forEach((e, index) => {
+        document.documentElement.style.setProperty(
+          e,
+          Config.customThemeColors[index]
+        );
+      });
+    }
 
-  try {
-    firebase.analytics().logEvent("changedTheme", {
-      theme: themeName,
+    try {
+      firebase.analytics().logEvent("changedTheme", {
+        theme: themeName,
+      });
+    } catch (e) {
+      console.log("Analytics unavailable");
+    }
+
+    ThemeColors.reset();
+    ThemeColors.get("bg").then((bgcolor) => {
+      $(".keymap-key").attr("style", "");
+      ChartController.updateAllChartColors();
+      updateFavicon(32, 14);
+      $("#metaThemeColor").attr("content", bgcolor);
     });
-  } catch (e) {
-    console.log("Analytics unavailable");
   }
-  setTimeout(() => {
-    $(".keymap-key").attr("style", "");
-    ChartController.updateAllChartColors();
-    updateFavicon(32, 14);
-    $("#metaThemeColor").attr("content", ThemeColors.bg);
-  }, 500);
 }
 
 export function preview(themeName) {
   isPreviewingTheme = true;
-  apply(themeName);
+  apply(themeName, true);
 }
 
 export function set(themeName) {

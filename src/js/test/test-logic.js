@@ -1091,7 +1091,7 @@ export async function addWord() {
   TestUI.addWord(randomWord);
 }
 
-export function finish(difficultyFailed = false) {
+export async function finish(difficultyFailed = false) {
   if (!active) return;
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
@@ -1556,7 +1556,7 @@ export function finish(difficultyFailed = false) {
             Config.punctuation,
             Config.language,
             Config.difficulty
-          ).then((highestwpm) => {
+          ).then(async (highestwpm) => {
             PbCrown.hide();
             $("#result .stats .wpm .crown").attr("aria-label", "");
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
@@ -1588,15 +1588,15 @@ export function finish(difficultyFailed = false) {
                 mode: "horizontal",
                 scaleID: "wpm",
                 value: lpb,
-                borderColor: ThemeColors.sub,
+                borderColor: await ThemeColors.get("sub"),
                 borderWidth: 1,
                 borderDash: [2, 2],
                 label: {
-                  backgroundColor: ThemeColors.sub,
+                  backgroundColor: await ThemeColors.get("sub"),
                   fontFamily: Config.fontFamily.replace(/_/g, " "),
                   fontSize: 11,
                   fontStyle: "normal",
-                  fontColor: ThemeColors.bg,
+                  fontColor: await ThemeColors.get("bg"),
                   xPadding: 6,
                   yPadding: 6,
                   cornerRadius: 3,
@@ -1666,15 +1666,15 @@ export function finish(difficultyFailed = false) {
                     mode: "horizontal",
                     scaleID: "wpm",
                     value: tpb,
-                    borderColor: ThemeColors.sub,
+                    borderColor: await ThemeColors.get("sub"),
                     borderWidth: 1,
                     borderDash: [2, 2],
                     label: {
-                      backgroundColor: ThemeColors.sub,
+                      backgroundColor: await ThemeColors.get("sub"),
                       fontFamily: Config.fontFamily.replace(/_/g, " "),
                       fontSize: 11,
                       fontStyle: "normal",
-                      fontColor: ThemeColors.bg,
+                      fontColor: await ThemeColors.get("bg"),
                       xPadding: 6,
                       yPadding: 6,
                       cornerRadius: 3,
@@ -1969,7 +1969,7 @@ export function finish(difficultyFailed = false) {
         fontFamily: Config.fontFamily.replace(/_/g, " "),
         fontSize: 11,
         fontStyle: "normal",
-        fontColor: ThemeColors.sub,
+        fontColor: await ThemeColors.get("sub"),
         xPadding: 6,
         yPadding: 6,
         cornerRadius: 3,
