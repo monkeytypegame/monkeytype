@@ -127,9 +127,9 @@ export function clearPreview() {
   if (isPreviewingTheme) {
     isPreviewingTheme = false;
     if (Config.customTheme) {
-      apply("custom");
+      apply("custom", true);
     } else {
-      apply(Config.theme);
+      apply(Config.theme, true);
     }
   }
 }
