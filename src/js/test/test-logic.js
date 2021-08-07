@@ -1099,7 +1099,7 @@ export function finish(difficultyFailed = false) {
     Replay.replayGetWordsList(input.history);
   }
 
-  TestStats.recordKeypressSpacing();
+  // TestStats.recordKeypressSpacing();
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
