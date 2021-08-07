@@ -31,21 +31,13 @@ var auth = admin.auth();
 async function migrateUsers() {
   // let UIDOVERRIDE = "ugbG1GiSHxVEYMDmMeLV9byeukl2";
   let UIDOVERRIDE = undefined;
-  let lastSnapshot;
-  // try {
-  //   lastSnapshot = JSON.parse(fs.readFileSync("lastSnapshot.txt"));
-  //   let t = new db.QuerySnapshotData();
-  //   t.data = lastSnapshot;
-  //   console.log(t);
-  //   return;
-  // } catch (e) {
-  //   console.log(e);
-  //   return;
-  // }
-  console.log(lastSnapshot);
-  // return;
+  let lastId;
+  try {
+    lastId = fs.readFileSync("./lastId.txt", "utf8");
+  } catch (e) {}
   let querySnapshot;
-  if (lastSnapshot) {
+  if (lastId) {
+    let lastSnapshot = await db.collection("users").doc(lastId).get();
     querySnapshot = await db
       .collection("users")
       // .where("name", "==", "Miodec")
@@ -223,11 +215,17 @@ async function migrateUsers() {
       console.log(
         `${uid} migrated \t\t ${userData.name} \t\t ${total} results`
       );
+      fs.appendFileSync(
+        "log_success.txt",
+        `${uid} ${userData.name} ${total}`,
+        "utf8"
+      );
     } catch (err) {
       console.log(`${uid} failed`);
       console.log(err);
+      fs.appendFileSync("log_failed.txt", `${uid} ${err.message}`, "utf8");
     }
-    // fs.writeFileSync("lastSnapshot.txt", userDoc, "utf8");
+    fs.writeFileSync("lastId.txt", uid, "utf8");
     let userend = performance.now();
     let time = (userend - userstart) / 1000;
     totalCompletionTime += time;
