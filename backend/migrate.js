@@ -217,13 +217,13 @@ async function migrateUsers() {
       );
       fs.appendFileSync(
         "log_success.txt",
-        `${uid} ${userData.name} ${total}`,
+        `${uid} ${userData.name} ${total} \n`,
         "utf8"
       );
     } catch (err) {
       console.log(`${uid} failed`);
       console.log(err);
-      fs.appendFileSync("log_failed.txt", `${uid} ${err.message}`, "utf8");
+      fs.appendFileSync("log_failed.txt", `${uid} ${err.message} \n`, "utf8");
     }
     fs.writeFileSync("lastId.txt", uid, "utf8");
     let userend = performance.now();
