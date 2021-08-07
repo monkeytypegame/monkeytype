@@ -679,7 +679,7 @@ export async function updateColors(chart) {
     chart.data.datasets[1].trendlineLinear.style = subcolor;
   } catch {}
 
-  chart.update({ duration: 0 });
+  chart.update({ duration: 250 });
 }
 
 Chart.prototype.updateColors = function () {
