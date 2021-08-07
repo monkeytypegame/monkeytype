@@ -31,27 +31,29 @@ export async function get(color) {
 
   return check();
 
-  function run() {
-    setTimeout(() => {
-      update();
-      if (color === undefined) {
-        ret = colors;
-      } else {
-        ret = colors[color];
-      }
-      return check();
-    }, 500);
+  async function run() {
+    return new Promise(function (resolve, reject) {
+      window.setTimeout(() => {
+        update();
+        if (color === undefined) {
+          ret = colors;
+        } else {
+          ret = colors[color];
+        }
+        resolve(check());
+      }, 500);
+    });
   }
-  function check() {
+  async function check() {
     if (color === undefined) {
       if (ret.bg === "") {
-        run();
+        return await run();
       } else {
         return ret;
       }
     } else {
       if (ret === "") {
-        run();
+        return await run();
       } else {
         return ret;
       }
