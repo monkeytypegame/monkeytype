@@ -1625,6 +1625,7 @@ export async function finish(difficultyFailed = false) {
             }
             $("#result .stats .tags .bottom").text("");
             let annotationSide = "left";
+            let labelAdjust = 15;
             activeTags.forEach(async (tag) => {
               let tpb = await DB.getLocalTagPB(
                 tag.id,
@@ -1680,14 +1681,17 @@ export async function finish(difficultyFailed = false) {
                       yPadding: 6,
                       cornerRadius: 3,
                       position: annotationSide,
+                      xAdjust: labelAdjust,
                       enabled: true,
                       content: `${tag.name} PB: ${tpb}`,
                     },
                   });
                   if (annotationSide === "left") {
                     annotationSide = "right";
+                    labelAdjust = -15;
                   } else {
                     annotationSide = "left";
+                    labelAdjust = 15;
                   }
                 }
               }
