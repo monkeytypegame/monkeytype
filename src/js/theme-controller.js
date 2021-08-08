@@ -62,7 +62,24 @@ function clearCustomTheme() {
   });
 }
 
-export function apply(themeName, preview = false) {
+let loadStyle = function (name) {
+  return new Promise((resolve, reject) => {
+    let link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.id = "currentTheme";
+    link.onload = () => {
+      resolve();
+    };
+    link.href = `themes/${name}.css`;
+
+    let headScript = document.querySelector("#currentTheme");
+    headScript.replaceWith(link);
+  });
+};
+
+export function apply(themeName) {
+  console.log(`Applying theme ${themeName}`);
   clearCustomTheme();
 
   let name = "serika_dark";
@@ -82,11 +99,13 @@ export function apply(themeName, preview = false) {
     );
   }
 
-  $(".keymap-key").attr("style", "");
-  $("#currentTheme").attr("href", `themes/${name}.css`);
-  $(".current-theme .text").text(themeName.replace("_", " "));
+  ThemeColors.reset();
 
-  if (!preview) {
+  $(".keymap-key").attr("style", "");
+  // $("#currentTheme").attr("href", `themes/${name}.css`);
+  loadStyle(name).then(() => {
+    ThemeColors.update();
+    $(".current-theme .text").text(themeName.replace("_", " "));
     if (themeName === "custom") {
       colorVars.forEach((e, index) => {
         document.documentElement.style.setProperty(
@@ -103,20 +122,19 @@ export function apply(themeName, preview = false) {
     } catch (e) {
       console.log("Analytics unavailable");
     }
-
-    ThemeColors.reset();
-    ThemeColors.get("bg").then((bgcolor) => {
+    ThemeColors.get().then((colors) => {
       $(".keymap-key").attr("style", "");
+      console.log("updating chart colors");
       ChartController.updateAllChartColors();
       updateFavicon(32, 14);
-      $("#metaThemeColor").attr("content", bgcolor);
+      $("#metaThemeColor").attr("content", colors.bg);
     });
-  }
+  });
 }
 
 export function preview(themeName) {
   isPreviewingTheme = true;
-  apply(themeName, true);
+  apply(themeName);
 }
 
 export function set(themeName) {

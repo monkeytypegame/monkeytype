@@ -29,36 +29,38 @@ export async function get(color) {
     ret = colors[color];
   }
 
-  return check();
+  return ret;
 
-  async function run() {
-    return new Promise(function (resolve, reject) {
-      window.setTimeout(() => {
-        update();
-        if (color === undefined) {
-          ret = colors;
-        } else {
-          ret = colors[color];
-        }
-        resolve(check());
-      }, 250);
-    });
-  }
-  async function check() {
-    if (color === undefined) {
-      if (ret.bg === "") {
-        return await run();
-      } else {
-        return ret;
-      }
-    } else {
-      if (ret === "") {
-        return await run();
-      } else {
-        return ret;
-      }
-    }
-  }
+  // return check();
+
+  // async function run() {
+  //   return new Promise(function (resolve, reject) {
+  //     window.setTimeout(() => {
+  //       update();
+  //       if (color === undefined) {
+  //         ret = colors;
+  //       } else {
+  //         ret = colors[color];
+  //       }
+  //       resolve(check());
+  //     }, 250);
+  //   });
+  // }
+  // async function check() {
+  //   if (color === undefined) {
+  //     if (ret.bg === "") {
+  //       return await run();
+  //     } else {
+  //       return ret;
+  //     }
+  //   } else {
+  //     if (ret === "") {
+  //       return await run();
+  //     } else {
+  //       return ret;
+  //     }
+  //   }
+  // }
 }
 
 export function reset() {
