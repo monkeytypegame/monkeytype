@@ -624,6 +624,7 @@ export let miniResult = new Chart($(".pageAccount #miniResultChart"), {
 });
 
 export async function updateColors(chart) {
+  let bgcolor = await ThemeColors.get("bg");
   let subcolor = await ThemeColors.get("sub");
   let maincolor = await ThemeColors.get("main");
 
@@ -678,6 +679,38 @@ export async function updateColors(chart) {
     chart.data.datasets[0].trendlineLinear.style = subcolor;
     chart.data.datasets[1].trendlineLinear.style = subcolor;
   } catch {}
+
+  try {
+    chart.options.annotation.annotations.forEach((annotation) => {
+      annotation.borderColor = subcolor;
+      annotation.label.backgroundColor = subcolor;
+      annotation.label.fontColor = bgcolor;
+    });
+  } catch {}
+
+  // ChartController.result.options.annotation.annotations.push({
+  //   enabled: false,
+  //   type: "line",
+  //   mode: "horizontal",
+  //   scaleID: "wpm",
+  //   value: lpb,
+  //   borderColor: themecolors['sub'],
+  //   borderWidth: 1,
+  //   borderDash: [2, 2],
+  //   label: {
+  //     backgroundColor: themecolors['sub'],
+  //     fontFamily: Config.fontFamily.replace(/_/g, " "),
+  //     fontSize: 11,
+  //     fontStyle: "normal",
+  //     fontColor: themecolors['bg'],
+  //     xPadding: 6,
+  //     yPadding: 6,
+  //     cornerRadius: 3,
+  //     position: "center",
+  //     enabled: true,
+  //     content: `PB: ${lpb}`,
+  //   },
+  // });
 
   chart.update({ duration: 250 });
 }

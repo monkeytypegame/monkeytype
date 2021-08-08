@@ -1581,6 +1581,7 @@ export async function finish(difficultyFailed = false) {
                 );
               }
             }
+            let themecolors = await ThemeColors.get();
             if (lpb > 0) {
               ChartController.result.options.annotation.annotations.push({
                 enabled: false,
@@ -1588,15 +1589,15 @@ export async function finish(difficultyFailed = false) {
                 mode: "horizontal",
                 scaleID: "wpm",
                 value: lpb,
-                borderColor: await ThemeColors.get("sub"),
+                borderColor: themecolors["sub"],
                 borderWidth: 1,
                 borderDash: [2, 2],
                 label: {
-                  backgroundColor: await ThemeColors.get("sub"),
+                  backgroundColor: themecolors["sub"],
                   fontFamily: Config.fontFamily.replace(/_/g, " "),
                   fontSize: 11,
                   fontStyle: "normal",
-                  fontColor: await ThemeColors.get("bg"),
+                  fontColor: themecolors["bg"],
                   xPadding: 6,
                   yPadding: 6,
                   cornerRadius: 3,
@@ -1666,15 +1667,15 @@ export async function finish(difficultyFailed = false) {
                     mode: "horizontal",
                     scaleID: "wpm",
                     value: tpb,
-                    borderColor: await ThemeColors.get("sub"),
+                    borderColor: themecolors["sub"],
                     borderWidth: 1,
                     borderDash: [2, 2],
                     label: {
-                      backgroundColor: await ThemeColors.get("sub"),
+                      backgroundColor: themecolors["sub"],
                       fontFamily: Config.fontFamily.replace(/_/g, " "),
                       fontSize: 11,
                       fontStyle: "normal",
-                      fontColor: await ThemeColors.get("bg"),
+                      fontColor: themecolors["bg"],
                       xPadding: 6,
                       yPadding: 6,
                       cornerRadius: 3,
@@ -1949,7 +1950,7 @@ export async function finish(difficultyFailed = false) {
   } else {
     $("#result .stats .source").addClass("hidden");
   }
-
+  let fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = Config.funbox;
     if (Config.funbox === "layoutfluid") {
@@ -1969,7 +1970,7 @@ export async function finish(difficultyFailed = false) {
         fontFamily: Config.fontFamily.replace(/_/g, " "),
         fontSize: 11,
         fontStyle: "normal",
-        fontColor: await ThemeColors.get("sub"),
+        fontColor: fc,
         xPadding: 6,
         yPadding: 6,
         cornerRadius: 3,
