@@ -62,7 +62,7 @@ Git is optional but we _highly_ recommend you use it. Monkeytype uses the Git so
 
    - In your Firebase console, go to Project Settings > Service Accounts
    - Click "Generate New Private Key"
-   - Save as `serviceAccountKey.json` in the `functions/` directory
+   - Save as `serviceAccountKey.json` inside the `backend/credentials/` directory. You will have to create the credentials folder.
 
 1. Enable Firebase Authentication
 
@@ -70,9 +70,11 @@ Git is optional but we _highly_ recommend you use it. Monkeytype uses the Git so
    - Click on `Email/Password`, enable it, and save
    - Click on `Google`, add a support email and save
 
-## Prerequisite - Mongo Setup
+#### Mongo Setup
 
 1. Install [Mongodb Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running
+
+1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
 
 1. Optional - Install [Mongodb-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown` after the server is started.

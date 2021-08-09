@@ -22,7 +22,7 @@ app.get("/getBananas/:discordId", botAuth, (req, res) => {
 
 app.get("/getUserDiscordData/:uid", botAuth, (req, res) => {
   //for announceDailyLbResult
-  User.findOne({ uid: req.body.uid }, (err, user) => {
+  User.findOne({ uid: req.params.uid }, (err, user) => {
     res.send({ name: user.name, discordId: user.discordId });
   });
 });

@@ -1728,7 +1728,7 @@ export function finish(difficultyFailed = false) {
                       DB.getSnapshot() !== null &&
                       DB.getSnapshot().results !== undefined
                     ) {
-                      DB.getSnapshot().results.push(completedEvent);
+                      DB.getSnapshot().results.unshift(completedEvent);
                       if (DB.getSnapshot().globalStats.time == undefined) {
                         DB.getSnapshot().globalStats.time =
                           testtime +
@@ -1965,7 +1965,7 @@ export function finish(difficultyFailed = false) {
         font-size: 2rem;
         padding: 2rem 0;
       ">Test completed</div>
-    
+
     `);
     $("#middle #result .stats").remove();
     $("#middle #result .chart").remove();
