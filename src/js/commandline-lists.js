@@ -2135,6 +2135,10 @@ export let themeCommands = {
 };
 
 Misc.getThemesList().then((themes) => {
+  //sort themes by name
+  themes = themes.sort((a, b) => {
+    return a.name < b.name;
+  });
   themes.forEach((theme) => {
     themeCommands.list.push({
       id: "changeTheme" + Misc.capitalizeFirstLetter(theme.name),

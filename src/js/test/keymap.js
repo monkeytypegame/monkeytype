@@ -61,7 +61,7 @@ export function highlightKey(currentKey) {
   }
 }
 
-export function flashKey(key, correct) {
+export async function flashKey(key, correct) {
   if (key == undefined) return;
   switch (key) {
     case "\\":
@@ -107,20 +107,22 @@ export function flashKey(key, correct) {
     key = ".key-split-space";
   }
 
+  let themecolors = await ThemeColors.get();
+
   try {
     if (correct || Config.blindMode) {
       $(key)
         .stop(true, true)
         .css({
-          color: ThemeColors.bg,
-          backgroundColor: ThemeColors.main,
-          borderColor: ThemeColors.main,
+          color: themecolors.bg,
+          backgroundColor: themecolors.main,
+          borderColor: themecolors.main,
         })
         .animate(
           {
-            color: ThemeColors.sub,
+            color: themecolors.sub,
             backgroundColor: "transparent",
-            borderColor: ThemeColors.sub,
+            borderColor: themecolors.sub,
           },
           500,
           "easeOutExpo"
@@ -129,15 +131,15 @@ export function flashKey(key, correct) {
       $(key)
         .stop(true, true)
         .css({
-          color: ThemeColors.bg,
-          backgroundColor: ThemeColors.error,
-          borderColor: ThemeColors.error,
+          color: themecolors.bg,
+          backgroundColor: themecolors.error,
+          borderColor: themecolors.error,
         })
         .animate(
           {
-            color: ThemeColors.sub,
+            color: themecolors.sub,
             backgroundColor: "transparent",
-            borderColor: ThemeColors.sub,
+            borderColor: themecolors.sub,
           },
           500,
           "easeOutExpo"

@@ -23,3 +23,4 @@ import "./input-controller";
 import "./ready";
 import "./about-page";
 import * as Account from "./account";
+import * as TestStats from "./test-stats";
