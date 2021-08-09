@@ -1784,19 +1784,29 @@ exports.saveConfig = functions.https.onCall((request, response) => {
       }
       if (err) return;
       if (key === "resultFilters") return;
-      if (key === "customBackground") return;
-      if (key === "customLayoutfluid") return;
       let val = obj[key];
       if (Array.isArray(val)) {
         val.forEach((valarr) => {
-          if (!isConfigKeyValid(valarr)) {
+          if (key === "customBackground" || key === "customLayoutfluid") {
+            if (/[<>]/.test(valarr)) {
+              err = true;
+              console.error(`${key}: ${valarr} failed regex check`);
+              errorMessage = `${key}: ${valarr} failed regex check`;
+            }
+          } else if (!isConfigKeyValid(valarr)) {
             err = true;
             console.error(`${key}: ${valarr} failed regex check`);
             errorMessage = `${key}: ${valarr} failed regex check`;
           }
         });
       } else {
-        if (!isConfigKeyValid(val)) {
+        if (key === "customBackground" || key === "customLayoutfluid") {
+          if (/[<>]/.test(val)) {
+            err = true;
+            console.error(`${key}: ${valarr} failed regex check`);
+            errorMessage = `${key}: ${valarr} failed regex check`;
+          }
+        } else if (!isConfigKeyValid(val)) {
           err = true;
           console.error(`${key}: ${val} failed regex check`);
           errorMessage = `${key}: ${val} failed regex check`;
@@ -1943,13 +1953,14 @@ exports.editPreset = functions.https.onCall((request, response) => {
     if (!isTagPresetNameValid(request.name)) {
       return { resultCode: -1 };
     } else {
+      let set = {
+        name: request.name,
+      };
+      if (request.config) set.config = request.config;
       return db
         .collection(`users/${request.uid}/presets`)
         .doc(request.presetid)
-        .set({
-          config: request.config,
-          name: request.name,
-        })
+        .set(set)
         .then((e) => {
           console.log(`user ${request.uid} updated a preset: ${request.name}`);
           return {
@@ -2490,6 +2501,7 @@ exports.checkLeaderboards = functions.https.onRequest(
 
     request.name = userData.name;
     request.banned = userData.banned;
+    request.lbdisabled = userData.lbdisabled;
     request.verified = userData.verified;
     request.discordId = userData.discordId;
     request.lbMemory = userData.lbMemory;
@@ -2549,6 +2561,14 @@ exports.checkLeaderboards = functions.https.onRequest(
         response.status(200).send({
           data: {
             banned: true,
+          },
+        });
+        return;
+      }
+      if (request.lbdisabled) {
+        response.status(200).send({
+          data: {
+            lbdisabled: true,
           },
         });
         return;

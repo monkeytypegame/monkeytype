@@ -7,7 +7,8 @@
       "english_5k",
       "english_10k",
       "english_25k",
-      "english_450k"
+      "english_450k",
+      "english_commonly_misspelled"
     ]
   },
   {
@@ -218,7 +219,7 @@
   },
   {
     "name": "albanian",
-    "languanges": ["albanian", "albanian_1k"]
+    "languages": ["albanian", "albanian_1k"]
   },
   {
     "name": "code",

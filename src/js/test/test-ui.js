@@ -12,10 +12,11 @@ import * as CommandlineLists from "./commandline-lists";
 import * as Commandline from "./commandline";
 import * as OutOfFocus from "./out-of-focus";
 import * as ManualRestart from "./manual-restart-tracker";
-import * as PractiseMissed from "./practise-missed";
+import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
+import * as TestUI from "./test-ui";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -186,7 +187,7 @@ export function colorful(tc) {
   }
 }
 
-export function screenshot() {
+export async function screenshot() {
   let revealReplay = false;
   function revertScreenshot() {
     $("#notificationCenter").removeClass("hidden");
@@ -221,7 +222,7 @@ export function screenshot() {
   $(".pageTest .loginTip").addClass("hidden");
   try {
     html2canvas(document.body, {
-      backgroundColor: ThemeColors.bg,
+      backgroundColor: await ThemeColors.get("bg"),
       height: sourceHeight + 50,
       width: sourceWidth + 50,
       x: sourceX - 25,
@@ -280,10 +281,10 @@ export function updateWordElement(showError) {
   if (Config.mode === "zen") {
     for (let i = 0; i < TestLogic.input.current.length; i++) {
       if (TestLogic.input.current[i] === "\t") {
-        ret += `<letter class='tabChar correct'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (TestLogic.input.current[i] === "\n") {
         newlineafter = true;
-        ret += `<letter class='nlChar correct'><i class="fas fa-angle-down"></i></letter>`;
+        ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
       } else {
         ret +=
           `<letter class="correct">` + TestLogic.input.current[i] + `</letter>`;
@@ -770,12 +771,22 @@ export function toggleResultWords() {
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
         loadWordsHistory().then(() => {
+          if (Config.burstHeatmap) {
+            TestUI.applyBurstHeatmap();
+          }
           $("#resultWordsHistory")
             .removeClass("hidden")
             .css("display", "none")
-            .slideDown(250);
+            .slideDown(250, () => {
+              if (Config.burstHeatmap) {
+                TestUI.applyBurstHeatmap();
+              }
+            });
         });
       } else {
+        if (Config.burstHeatmap) {
+          TestUI.applyBurstHeatmap();
+        }
         $("#resultWordsHistory")
           .removeClass("hidden")
           .css("display", "none")
@@ -796,6 +807,16 @@ export function applyBurstHeatmap() {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
     let min = Math.min(...TestStats.burstHistory);
     let max = Math.max(...TestStats.burstHistory);
+
+    let burstlist = [...TestStats.burstHistory];
+
+    if (
+      TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
+        .length !== TestLogic.words.getCurrent().length
+    ) {
+      burstlist = burstlist.splice(0, burstlist.length - 1);
+    }
+
     // let step = (max - min) / 5;
     // let steps = [
     //   {
@@ -819,13 +840,13 @@ export function applyBurstHeatmap() {
     //     class: 'heatmap-4'
     //   },
     // ];
-    let median = Misc.median(TestStats.burstHistory);
+    let median = Misc.median(burstlist);
     let adatm = [];
-    TestStats.burstHistory.forEach((burst) => {
+    burstlist.forEach((burst) => {
       adatm.push(Math.abs(median - burst));
     });
     let step = Misc.mean(adatm);
-    // let step = Misc.stdDev(TestStats.burstHistory)/2;
+    // let step = Misc.stdDev(burstlist)/2;
     let steps = [
       {
         val: 0,
@@ -968,6 +989,7 @@ $("#wordsInput").on("focusout", () => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 13) {
+    ManualRestart.reset();
     if (
       TestLogic.active &&
       Config.repeatQuotes === "typing" &&
@@ -994,14 +1016,15 @@ $(document.body).on("click", "#restartTestButton", () => {
   }
 });
 
-$(document).on("keypress", "#practiseMissedWordsButton", (event) => {
+$(document).on("keypress", "#practiseWordsButton", (event) => {
   if (event.keyCode == 13) {
-    PractiseMissed.init();
+    PractiseWords.showPopup(true);
   }
 });
 
-$(document.body).on("click", "#practiseMissedWordsButton", () => {
-  PractiseMissed.init();
+$(document.body).on("click", "#practiseWordsButton", () => {
+  // PractiseWords.init();
+  PractiseWords.showPopup();
 });
 
 $(document).on("keypress", "#nextTestButton", (event) => {

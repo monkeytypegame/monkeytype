@@ -105,11 +105,8 @@ export async function activate(funbox) {
       return;
     }
   }
-  if (Config.mode === "zen" && (funbox == "layoutfluid")) {
-    Notifications.add(
-      `Zen mode does not support the ${funbox} funbox`,
-      0
-    );
+  if (Config.mode === "zen" && funbox == "layoutfluid") {
+    Notifications.add(`Zen mode does not support the ${funbox} funbox`, 0);
     setFunbox("none", null);
     TestLogic.restart();
     return;
@@ -178,7 +175,7 @@ export async function activate(funbox) {
         Config.keymapMode,
         UpdateConfig.setKeymapMode
       );
-      UpdateConfig.setKeymapMode("next");
+      // UpdateConfig.setKeymapMode("next");
       Settings.groups.keymapMode.updateButton();
       // UpdateConfig.setSavedLayout(Config.layout);
       rememberSetting("layout", Config.layout, UpdateConfig.setLayout);

@@ -264,27 +264,15 @@ $(".pageTest #playpauseReplayButton").click(async (event) => {
   }
 });
 
-$("#replayWords").click((event) => {
+$("#replayWords").on("click", "letter", (event) => {
   //allows user to click on the place they want to start their replay at
   pauseReplay();
   const replayWords = document.querySelector("#replayWords");
-  let range;
-  let textNode;
-
-  if (document.caretPositionFromPoint) {
-    // standard
-    range = document.caretPositionFromPoint(event.pageX, event.pageY);
-    textNode = range.offsetNode;
-  } else if (document.caretRangeFromPoint) {
-    // WebKit
-    range = document.caretRangeFromPoint(event.pageX, event.pageY);
-    textNode = range.startContainer;
-  }
 
   const words = [...replayWords.children];
-  targetWordPos = words.indexOf(textNode.parentNode.parentNode);
+  targetWordPos = words.indexOf(event.target.parentNode);
   const letters = [...words[targetWordPos].children];
-  targetCurPos = letters.indexOf(textNode.parentNode);
+  targetCurPos = letters.indexOf(event.target);
 
   initializeReplayPrompt();
   loadOldReplay();

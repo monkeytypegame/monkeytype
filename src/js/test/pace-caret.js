@@ -6,8 +6,7 @@ import * as DB from "./db";
 export let settings = null;
 
 function resetCaretPosition() {
-  if (Config.paceCaret === "off" && !TestLogic.isPaceRepeat)
-    return;
+  if (Config.paceCaret === "off" && !TestLogic.isPaceRepeat) return;
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
   }

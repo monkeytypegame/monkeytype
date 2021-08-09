@@ -42,6 +42,24 @@ export let keypressTimings = {
   },
 };
 
+export function getStats() {
+  return {
+    start,
+    end,
+    wpmHistory,
+    rawHistory,
+    burstHistory,
+    keypressPerSecond,
+    currentKeypress,
+    lastKeypress,
+    currentBurstStart,
+    lastSecondNotRound,
+    missedWords,
+    accuracy,
+    keypressTimings,
+  };
+}
+
 export function restart() {
   start = 0;
   end = 0;
