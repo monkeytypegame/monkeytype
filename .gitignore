@@ -90,3 +90,4 @@ backend/credentials
 backend/.env
 
 static/adtest.html
+backend/migrationStats.txt
