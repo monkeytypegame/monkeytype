@@ -161,7 +161,7 @@ export async function check(completedEvent) {
       delete lbRes.keyDuration;
       delete lbRes.chartData;
       axiosInstance
-        .post("/attemptAddToLeaderboards", {
+        .post("/results/checkLeaderboardQualification", {
           result: lbRes,
         })
         .then((data) => {
