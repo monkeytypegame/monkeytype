@@ -63,15 +63,22 @@ class ResultDAO {
 
   static async getLeaderboard(type, mode, mode2) {
     let count;
+    let startDate = new Date();
+    let start = 0;
     if (type == "global") count = 999;
-    else if (type == "daily") count = 100;
+    else if (type == "daily") {
+      count = 100;
+      startDate.setUTCHours(0, 0, 0, 0); // next midnight UTC
+      start = startDate.getTime();
+    }
     const leaders = await mongoDB()
       .collection("results")
       .aggregate([
         {
           $match: {
             mode: mode,
-            mode2: mode2,
+            mode2: parseInt(mode2),
+            timestamp: { $gt: start },
           },
         },
         { $sort: { wpm: -1 } },
@@ -106,6 +113,7 @@ class ResultDAO {
       return b.wpm - a.wpm;
     });
     let leaderboard = {
+      type: type,
       size: board.length,
       board: board,
     };
@@ -115,6 +123,52 @@ class ResultDAO {
       leaderboard.resetTime = d;
     }
     return leaderboard;
+  }
+
+  static async checkLeaderboardQualification(uid, result) {
+    function processLb(user, lb, result) {
+      let board = lb.board;
+      let data = {};
+      data.foundAt = board.indexOf(
+        board.find((entry) => entry.name === user.name)
+      );
+      let maxSize = 100;
+      if (lb.type === "global") maxSize = 999;
+      if (
+        result.wpm < board[board.length - 1].wpm &&
+        board.length === maxSize
+      ) {
+        data.insertedAt = -1;
+      } else {
+        for (let i = board.length - 1; i > 0; i--) {
+          if (result.wpm < board[i].wpm) {
+            data.insertedAt = i + 1;
+            break;
+          }
+        }
+        if (data.insertedAt === undefined) data.insertedAt = 0;
+      }
+      return data;
+    }
+
+    const user = await mongoDB().collection("users").findOne({ uid: uid });
+    //might need to check if email is verified with firebase
+    if (user.emailVerified === false) return { needsToVerifyEmail: true };
+    if (user.name === undefined) return { noName: true };
+    if (user.banned) return { banned: true };
+    const globalLb = await this.getLeaderboard(
+      "global",
+      result.mode,
+      result.mode2
+    );
+    const dailyLb = await this.getLeaderboard(
+      "daily",
+      result.mode,
+      result.mode2
+    );
+    const globalData = processLb(user, globalLb, result);
+    const dailyData = processLb(user, dailyLb, result);
+    return { global: globalData, daily: dailyData };
   }
 }
 

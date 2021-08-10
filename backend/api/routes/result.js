@@ -14,8 +14,13 @@ router.post("/deleteAll", authenticateRequest, ResultController.deleteAll);
 
 router.get(
   "/getLeaderboard/:type/:mode/:mode2",
-  authenticateRequest,
   ResultController.getLeaderboard
+);
+
+router.post(
+  "/checkLeaderboardQualification",
+  authenticateRequest,
+  ResultController.checkLeaderboardQualification
 );
 
 module.exports = router;
