@@ -36,6 +36,10 @@ app.use(function (e, req, res, next) {
   return res.status(e.status || 500).json(monkeyError);
 });
 
+app.get("/test", (req, res) => {
+  res.send("Hello World!");
+});
+
 app.listen(PORT, async () => {
   console.log(`listening on port ${PORT}`);
   await connectDB();
