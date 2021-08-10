@@ -191,6 +191,20 @@ class ResultController {
       next(e);
     }
   }
+
+  static async getLeaderboard(req, res, next) {
+    try {
+      const { type, mode, mode2 } = req.params;
+      const results = await ResultDAO.getLeaderboard(
+        type,
+        mode,
+        parseInt(mode2)
+      );
+      return res.status(200).json(results);
+    } catch (e) {
+      next(e);
+    }
+  }
 }
 
 module.exports = ResultController;

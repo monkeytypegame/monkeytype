@@ -30,8 +30,12 @@ function update() {
 
   Loader.show();
   Promise.all([
-    axiosInstance.get(`/getLeaderboard/daily/${boardinfo[0]}/${boardinfo[1]}`),
-    axiosInstance.get(`/getLeaderboard/global/${boardinfo[0]}/${boardinfo[1]}`),
+    axiosInstance.get(
+      `/results/getLeaderboard/daily/${boardinfo[0]}/${boardinfo[1]}`
+    ),
+    axiosInstance.get(
+      `/results/getLeaderboard/global/${boardinfo[0]}/${boardinfo[1]}`
+    ),
   ])
     .then((lbdata) => {
       Loader.hide();

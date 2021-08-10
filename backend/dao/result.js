@@ -60,6 +60,62 @@ class ResultDAO {
     if (!result) throw new MonkeyError(404, "Result not found");
     return result;
   }
+
+  static async getLeaderboard(type, mode, mode2) {
+    let count;
+    if (type == "global") count = 999;
+    else if (type == "daily") count = 100;
+    const leaders = await mongoDB()
+      .collection("results")
+      .aggregate([
+        {
+          $match: {
+            mode: mode,
+            mode2: mode2,
+          },
+        },
+        { $sort: { wpm: -1 } },
+        {
+          $group: {
+            _id: "$name",
+            doc: { $first: "$$ROOT" },
+          },
+        },
+        {
+          $replaceRoot: {
+            newRoot: "$doc",
+          },
+        },
+        { $limit: count },
+      ])
+      .toArray();
+    let board = [];
+    leaders.forEach((entry) => {
+      board.push({
+        name: entry.name,
+        wpm: entry.wpm,
+        acc: entry.acc,
+        raw: entry.rawWpm,
+        consistency: entry.consistency,
+        mode: entry.mode,
+        mode2: entry.mode2,
+        timestamp: entry.timestamp,
+      });
+    });
+    board.sort((a, b) => {
+      return b.wpm - a.wpm;
+    });
+    let leaderboard = {
+      size: board.length,
+      board: board,
+    };
+    if (type == "daily") {
+      var d = new Date();
+      d.setUTCHours(24, 0, 0, 0); // next midnight UTC
+      leaderboard.resetTime = d;
+    }
+    return leaderboard;
+  }
 }
 
 module.exports = ResultDAO;
