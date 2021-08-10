@@ -17,7 +17,7 @@ const admin = require("firebase-admin");
 // const { Leaderboard } = require("./models/leaderboard");
 // const { BotCommand } = require("./models/bot-command");
 
-const serviceAccount = require("../functions/serviceAccountKey_live.json");
+const serviceAccount = require("./credentials/serviceAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -69,7 +69,7 @@ async function migrateUsers() {
     averageCompletionTime = migrationStats.averageCompletionTime;
   } catch (e) {}
   let querySnapshot;
-  let limit = 1;
+  let limit = 1000;
   do {
     console.log("starting another loop, getting users");
     if (lastId) {
