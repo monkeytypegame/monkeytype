@@ -52,8 +52,8 @@ let currentUserPromise = null;
 let resolveUser = null;
 
 async function migrateUsers() {
-  let UIDOVERRIDE = "ugbG1GiSHxVEYMDmMeLV9byeukl2";
-  // let UIDOVERRIDE = undefined;
+  // let UIDOVERRIDE = "ugbG1GiSHxVEYMDmMeLV9byeukl2";
+  let UIDOVERRIDE = undefined;
   let lastId;
   let usersSoFar = 0;
   let totalUsers = 330000;
@@ -76,17 +76,17 @@ async function migrateUsers() {
       let lastSnapshot = await db.collection("users").doc(lastId).get();
       querySnapshot = await db
         .collection("users")
-        .where("name", "==", "Miodec")
-        // .orderBy("name")
-        // .startAfter(lastSnapshot)
+        // .where("name", "==", "Miodec")
+        .orderBy("name")
+        .startAfter(lastSnapshot)
         .limit(limit)
         .get();
     } else {
       querySnapshot = await db
         .collection("users")
-        .where("name", "==", "Miodec")
-        // .orderBy("name")
-        // .limit(limit)
+        // .where("name", "==", "Miodec")
+        .orderBy("name")
+        .limit(limit)
         .get();
     }
     // console.log('start of foreach');
