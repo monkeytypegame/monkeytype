@@ -212,7 +212,9 @@ async function migrateUsers() {
             }
             delete resultData.correctChars;
             delete resultData.incorrectChars;
-            resultData.charStats = newStats.completedTests++;
+            delete resultData.allChars;
+
+            newStats.completedTests++;
             if (resultData.restartCount) {
               newStats.startedTests += resultData.restartCount + 1;
             } else {
