@@ -17,7 +17,7 @@ const admin = require("firebase-admin");
 // const { Leaderboard } = require("./models/leaderboard");
 // const { BotCommand } = require("./models/bot-command");
 
-const serviceAccount = require("./credentials/serviceAccountKey.json");
+const serviceAccount = require("./credentials/serviceAccountKey_live.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -52,8 +52,8 @@ let currentUserPromise = null;
 let resolveUser = null;
 
 async function migrateUsers() {
-  // let UIDOVERRIDE = "ugbG1GiSHxVEYMDmMeLV9byeukl2";
-  let UIDOVERRIDE = undefined;
+  let UIDOVERRIDE = "ugbG1GiSHxVEYMDmMeLV9byeukl2";
+  // let UIDOVERRIDE = undefined;
   let lastId;
   let usersSoFar = 0;
   let totalUsers = 330000;
@@ -76,17 +76,17 @@ async function migrateUsers() {
       let lastSnapshot = await db.collection("users").doc(lastId).get();
       querySnapshot = await db
         .collection("users")
-        // .where("name", "==", "Miodec")
-        .orderBy("name")
-        .startAfter(lastSnapshot)
+        .where("name", "==", "Miodec")
+        // .orderBy("name")
+        // .startAfter(lastSnapshot)
         .limit(limit)
         .get();
     } else {
       querySnapshot = await db
         .collection("users")
-        // .where("name", "==", "Miodec")
-        .orderBy("name")
-        .limit(limit)
+        .where("name", "==", "Miodec")
+        // .orderBy("name")
+        // .limit(limit)
         .get();
     }
     // console.log('start of foreach');
@@ -213,6 +213,22 @@ async function migrateUsers() {
             delete resultData.correctChars;
             delete resultData.incorrectChars;
             delete resultData.allChars;
+            delete resultData.keySpacing;
+            delete resultData.keyDuration;
+            delete resultData.theme;
+            delete resultData.name;
+
+            //remove the default fields here
+            if (resultData.bailedOut === false) delete resultData.bailedOut;
+            if (resultData.blindMode === false) delete resultData.blindMode;
+            if (resultData.difficulty === "normal")
+              delete resultData.difficulty;
+            if (resultData.funbox === "none") delete resultData.funbox;
+            if (resultData.language === "english") delete resultData.language;
+            if (resultData.numbers === false) delete resultData.numbers;
+            if (resultData.punctuation === false) delete resultData.punctuation;
+
+            if (resultData.mode !== "custom") delete resultData.customText;
 
             newStats.completedTests++;
             if (resultData.restartCount) {

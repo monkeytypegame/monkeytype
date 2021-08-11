@@ -1505,7 +1505,7 @@ export function finish(difficultyFailed = false) {
       testDuration: testtime,
       afkDuration: afkseconds,
       blindMode: Config.blindMode,
-      theme: Config.theme,
+      // theme: Config.theme,
       tags: activeTagsIds,
       keySpacing: TestStats.keypressTimings.spacing.array,
       keyDuration: TestStats.keypressTimings.duration.array,

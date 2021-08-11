@@ -104,7 +104,7 @@ class ResultController {
       };
 
       const user = await UserDAO.getUser(uid);
-      result.name = user.name;
+      // result.name = user.name;
 
       //check keyspacing and duration here for bots
       if (
@@ -177,6 +177,8 @@ class ResultController {
       if (result.language === "english") delete result.language;
       if (result.numbers === false) delete result.numbers;
       if (result.punctuation === false) delete result.punctuation;
+
+      if (result.mode !== "custom") delete result.customText;
 
       let addedResult = await ResultDAO.addResult(uid, result);
 
