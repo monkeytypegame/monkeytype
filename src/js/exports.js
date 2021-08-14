@@ -27,3 +27,5 @@ global.crownTest = async () => {
 };
 
 global.filterDebug = Account.toggleFilterDebug;
+
+global.stats = TestStats.getStats;

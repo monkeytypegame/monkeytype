@@ -109,8 +109,10 @@
     </div>
     <div class="merchBanner hidden">
       <img src="images/merchdropwebsite2.png" alt="" />
-      We've got brand new merch designs over at
-      <a href="https://monkeytype.store" target="_blank">monkeytype.store</a>
+      <div class="text">
+        We've got brand new merch designs over at
+        <a href="https://monkeytype.store" target="_blank">monkeytype.store</a>
+      </div>
       <i class="fas closeButton fa-times"></i>
     </div>
 
@@ -292,11 +294,13 @@
     </div>
     <div id="leaderboardsWrapper" class="hidden">
       <div id="leaderboards">
-        <div class="mainTitle">Leaderboards</div>
-        <div class="buttons">
-          <div class="buttonGroup">
-            <div class="button active" board="time_15">time 15</div>
-            <div class="button" board="time_60">time 60</div>
+        <div class="leaderboardsTop">
+          <div class="mainTitle">Leaderboards</div>
+          <div class="buttons">
+            <div class="buttonGroup">
+              <div class="button active" board="time_15">time 15</div>
+              <div class="button" board="time_60">time 60</div>
+            </div>
           </div>
         </div>
         <div class="tables">
@@ -923,7 +927,18 @@
     </div>
     <div id="commandLineWrapper" class="hidden">
       <div id="commandLine">
-        <input type="text" class="input" placeholder="Type to search" />
+        <div
+          style="
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+          "
+        >
+          <div class="searchicon">
+            <i class="fas fa-search"></i>
+          </div>
+          <input type="text" class="input" placeholder="Type to search" />
+        </div>
         <div class="separator hidden"></div>
         <div class="listTitle">Title</div>
         <div class="suggestions"></div>
@@ -1126,8 +1141,6 @@
               </div>
               <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
-              <div id="caret" class="default size15"></div>
-              <div id="paceCaret" class="default size15 hidden"></div>
               <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
               <div id="timerNumber" class="timerMain">
                 <div>60</div>
@@ -1143,6 +1156,8 @@
                 Click or press any key to focus
               </div>
               <div id="wordsWrapper">
+                <div id="paceCaret" class="default size15 hidden"></div>
+                <div id="caret" class="default size15"></div>
                 <div id="words" class="size15"></div>
               </div>
               <div class="keymap hidden">
@@ -3963,18 +3978,18 @@
             </div>
             <div class="register side">
               <div class="title">register</div>
-              <form action="" autocomplete="off">
-                <input type="text" placeholder="username" autocomplete="off" />
-                <input type="text" placeholder="email" autocomplete="off" />
+              <form action="" autocomplete="nope">
+                <input type="text" placeholder="username" autocomplete="nope" />
+                <input type="text" placeholder="email" autocomplete="nope" />
                 <input
                   type="password"
                   placeholder="password"
-                  autocomplete="off"
+                  autocomplete="new-password"
                 />
                 <input
                   type="password"
                   placeholder="verify password"
-                  autocomplete="off"
+                  autocomplete="nopeee"
                 />
                 <div class="button">
                   <i class="fas fa-user-plus"></i>

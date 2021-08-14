@@ -284,7 +284,7 @@
       "id": 46
     },
     {
-      "text": "Es ist nichts beständig als die Unbeständigkeit.",
+      "text": "Es ist nichts beständiger als die Unbeständigkeit.",
       "source": "Immanuel Kant",
       "length": 48,
       "id": 47
@@ -828,12 +828,14 @@
       "source": "Stephen Hawking",
       "length": 141,
       "id": 138
-    },{
+    },
+    {
       "text": "Wenn du unsicher über deine Zukunft bist, mach weiter mit dem was vor dir liegt mit ganzem Herzen und Liebe, und das, was für dich bestimmt ist, wird dich finden.",
       "source": "Gurumayi Chidvilasananda",
       "length": 162,
       "id": 139
-    },{
+    },
+    {
       "text": "Das Leben ist da, um gelebt zu werden und nicht um begriffen zu werden, oder sich vorgegebenen Muster zu fügen.",
       "source": "Bruce Lee",
       "length": 111,
@@ -1212,7 +1214,7 @@
       "id": 202
     },
     {
-      "text": "Andererseits war mir Abscheu vor Feigheit anerzogen, und nichts war mir schrecklicher, als auch nur mutlos zu erscheinen. Ich kann wohl sagen, ich hätte mich in einen Abgrund hinunterstürzen können wie die Hunnen in den Geschichtsbüchern, wenn man meinen Mut in Zweifel gezogen hätte. Aber es wäre mehr Stolz und Furcht als Mut gewesen, die mich veranlasst hätten, so zu handeln.",
+      "text": "Andererseits war mir Abscheu vor Feigheit anerzogen und nichts war mir schrecklicher, als auch nur mutlos zu erscheinen. Ich kann wohl sagen, ich hätte mich in einen Abgrund hinunterstürzen können, wie die Hunnen in den Geschichtsbüchern, wenn man meinen Mut in Zweifel gezogen hätte. Aber es wäre mehr Stolz und Furcht als Mut gewesen, die mich veranlasst hätten, so zu handeln.",
       "source": "Arthur Conan Doyle - Professor Challenger",
       "length": 379,
       "id": 203
@@ -1404,22 +1406,22 @@
       "id": 234
     },
     {
-     "text": "Wenn es ein Buch gibt, das du wirklich lesen willst, aber das noch nicht geschrieben wurde, dann musste du es selbst schreiben.",
+      "text": "Wenn es ein Buch gibt, das du wirklich lesen willst, aber das noch nicht geschrieben wurde, dann musste du es selbst schreiben.",
       "source": "Toni Morrison",
-     "length": 127,
+      "length": 127,
       "id": 235
     },
     {
       "text": "Wenn du etwas erreichen willst, lies so viel, wie du nur kannst.",
       "source": "Roald Dahl",
       "length": 64,
-      "id": 236 
+      "id": 236
     },
     {
       "text": "Du bist der, der schwach ist. Du wirst nie wissen, was Liebe ist. Oder Freundschaft. Und deswegen kannst du mir nur leidtun.",
       "source": "Harry Potter und der Orden des Phönix",
       "length": 124,
-      "id": 237 
+      "id": 237
     },
     {
       "text": "Es verlangt sehr viel Tapferkeit, sich seinen Feinden in den Weg zu stellen, aber noch wesentlich mehr noch, sich seinen Freunden in den Weg zu stellen.",
@@ -1464,7 +1466,7 @@
       "id": 244
     },
     {
-       "text": "Du bist der Messias! Und ich muss es wissen, denn ich bin schon einigen gefolgt.",
+      "text": "Du bist der Messias! Und ich muss es wissen, denn ich bin schon einigen gefolgt.",
       "source": "Das Leben des Brian",
       "length": 80,
       "id": 245
@@ -1475,14 +1477,14 @@
       "length": 68,
       "id": 246
     },
-	{
+    {
       "text": "Kopf hoch, Brian! Du weißt doch wie es heißt. Ja, es gibt Dinge im Leben, die sind nun mal nicht schön und das kann einen wirklich manchmal verrückt machen. Und dann passieren wieder Dinge, da schwörst und fluchst du nur. Und wenn du nun am Knorpel des Lebens rum kaust, sei nicht sauer deswegen. Nein, pfeif dir doch eins! Denn Pfeifen hilft dir, die Dinge auf einmal ganz anders zu sehen, verstehst du?",
       "source": "Das Leben des Brian",
       "length": 404,
       "id": 247
     },
     {
-      "text": "Wenn du nicht weißt, wohin du gehst, wird dich jeden Weg dorthin bringen.",
+      "text": "Wenn du nicht weißt, wohin du gehst, wird dich jeder Weg dorthin bringen.",
       "source": "Alice im Wunderland",
       "length": 73,
       "id": 248
@@ -1499,485 +1501,1085 @@
       "length": 81,
       "id": 250
     },
-	{
+    {
       "text": "Wenn du nicht jetzt mit ihm gehst, wirst du es später bereuen. Vielleicht nicht heute, vielleicht nicht morgen, aber bald, und dann bis an dein Lebensende.",
       "source": "Casablanca",
       "length": 155,
       "id": 251
     },
-	{
+    {
       "text": "Am erträglichsten lebt es sich ohne Regeln auf dieser Welt.",
       "source": "Batman – The Dark Knight",
       "length": 59,
       "id": 252
     },
-	{
+    {
       "text": "Bruce, du magst im Inneren noch immer der großartige Junge von früher sein. Aber was man im Inneren ist, zählt nicht. Das, was wir tun, zeigt, wer wir sind.",
       "source": "Batman Begins",
       "length": 156,
       "id": 253
     },
-	{
-      "text": "Am dunkelsten ist die Nacht vor der Dämmerung. Doch ich versprecht ihnen, die Dämmerung bricht an.",
+    {
+      "text": "Am dunkelsten ist die Nacht vor der Dämmerung. Doch ich verspreche ihnen, die Dämmerung bricht an.",
       "source": "Batman – The Dark Knight",
       "length": 98,
       "id": 254
     },
-	{
+    {
       "text": "Nicht gleich auf den Kopf, das verwirrt das Opfer. Dann fühlt er nicht den nächsten Schlag.",
       "source": "Batman – The Dark Knight",
       "length": 91,
       "id": 255
     },
-	{
+    {
       "text": "Weil es das ist, was nötig ist. Weil die Wahrheit manchmal nicht gut genug ist. Manchmal verdienen die Menschen mehr. Manchmal verdienen die Menschen, dass ihr Vertrauen belohnt wird…",
       "source": "Batman – The Dark Knight",
       "length": 183,
       "id": 256
     },
-	{
+    {
       "text": "Alles, was euch interessiert, ist Geld. Diese Stadt verdient ein anderes Kaliber von Verbrechern und ich werde es ihnen geben. Es geht nicht um Geld, sondern darum eine Botschaft zu senden!",
       "source": "Batman – The Dark Knight",
       "length": 189,
       "id": 257
     },
-	{
+    {
       "text": "Ich bin ein läufiger Hund, ich jage nur fahrenden Autos hinterher. Ich wüsste gar nicht, was ich täte, wenn ich eins erwischen würde.",
       "source": "Batman – The Dark Knight",
       "length": 133,
       "id": 258
     },
-	{
-      "text": "Wollen Sie wissen, wieso ich ein Messer benutze? Pistolen sind zu schnell. Man kann sonst die Gefühle und Regungen nicht richtig auskosten. In Ihren letzten Momenten zeigen die Menschen, wer sie wirklich sind, In gewisser Weise kannte ich ihre Freude also besser, als Sie sie jemals kannten. Wüssten sie gern, wer ein Feigling war?",
+    {
+      "text": "Wollen Sie wissen, wieso ich ein Messer benutze? Pistolen sind zu schnell. Man kann sonst die Gefühle und Regungen nicht richtig auskosten. In Ihren letzten Momenten zeigen die Menschen, wer sie wirklich sind, In gewisser Weise kannte ich ihre Freudne also besser, als Sie sie jemals kannten. Wüssten sie gern, wer ein Feigling war?",
       "source": "Batman – The Dark Knight",
       "length": 331,
       "id": 259
     },
-	{
+    {
       "text": "Eigentlich sind alle Tage wundervoll. Bis auf die, die nicht ganz so wundervoll sind. Aber die sind auch wundervoll.",
       "source": "Benjamin Blümchen",
       "length": 116,
       "id": 260
     },
-	{
+    {
       "text": "Dabei war es genau umgekehrt, wir wollen vom Universum bemerkt werden, wir wollen nicht, dass das Universum sich eine Bohne darum schert, wie es uns ergeht, nicht um die kollektive Idee eines Lebens, sondern um jeden Einzelnen von uns als Individuum.",
       "source": "Das Schicksal ist ein Mieser Verräter",
       "length": 250,
       "id": 261
     },
-	{
-      "text": "Es stimmt. Ich liebe dich, und es gehört nicht zu meiner Geschäftspolitik, mir einfach Freuden, wie das Aussprechen von Wahrheiten, zu versagen. Ich liebe dich, und ich weiß, dass Liebe nichts als ein Ruf in die Wüste ist und dass das Versagen unvermeidbar ist und dass wir alle Verdummte sind und dass ein Tag kommt, wenn all unsere Werke zu Staub zerfallen, eine Zeit, wenn sich niemand daran erinnert, dass es einst Kreaturen gab, die in selbstgebauten Maschinen geflogen sind, und ich weiß, dass die Sonne die einzige Erde, die wir je haben, irgendwann verschlucken wird, und ich liebe dich.",
+    {
+      "text": "Es stimmt. Ich liebe dich und es gehört nicht zu meiner Geschäftspolitik, mir einfach Freuden, wie das Aussprechen von Wahrheiten, zu versagen. Ich liebe dich und ich weiß, dass Liebe nichts als ein Ruf in die Wüste ist und, dass das Versagen unvermeidbar ist und dass wir alle Verdummte sind und dass ein Tag kommt, wenn all unsere Werke zu Staub zerfallen, eine Zeit, wenn sich niemand daran erinnert, dass es einst Kreaturen gab, die in selbstgebauten Maschinen geflogen sind, und ich weiß, dass die Sonne die einzige Erde, die wir je haben, irgendwann verschlucken wird und ich liebe dich.",
       "source": "Das Schicksal ist ein mieser Verräter",
       "length": 595,
       "id": 262
     },
-	{
+    {
       "text": "Augustus Waters starb acht Tage nach seiner Vorbeerdigung im Memorial Hospital auf der Intensivstation, als der Krebs, der ein Teil von ihm war, schließlich sein Herz anhielt, das auch ein Teil von ihm war.",
       "source": "Das Schicksal ist ein mieser Verräter",
       "length": 206,
       "id": 263
     },
-	{
+    {
       "text": "Es kommt die Zeit, da wir alle tot sind. Wir alle. Es kommt die Zeit, da es keine Menschen mehr gibt, die sich erinnern können, dass je irgendwer von uns existiert hat oder dass unsere Spezies je irgendwas geleistet hat. Dann ist keiner mehr da, der sich an Aristoteles oder Kleopatra erinnert und erst recht nicht an dich. Alles, was wir getan oder gebaut, geschrieben, gedacht oder entdeckt haben, alles wird vergessen sein, und all das hier hat keine Bedeutung mehr. Vielleicht kommt diese Zeit bald, vielleicht erst in Millionen von Jahren, aber selbst, wenn wir den Kollaps unserer Sonne überleben sollten, überleben wir nicht für immer. Es gab eine Zeit, bevor die Organismen zu Bewusstsein kamen, und es wird eine Zeit danach geben. Und wenn es die Unausweichlichkeit des menschlichen Vergessens ist, die dir Angst macht, dann rate ich dir eins: Ignorier sie einfach. Das ist, weiß Gott, was alle anderen machen.",
       "source": "Das Schicksal ist ein mieser Verräter",
       "length": 917,
       "id": 264
     },
-	{
+    {
       "text": "Wenn du den Regenbogen sehen willst, musst du den Regen aushalten.",
       "source": "Das Schicksal ist ein mieser Verräter",
       "length": 66,
       "id": 265
     },
-	{
+    {
       "text": "Es gibt nur eine Sache, die schlimmer ist, als an Krebs zu sterben - ein Kind zu haben, das an Krebs sterben wird.",
       "source": "Das Schicksal ist ein mieser Verräter",
       "length": 114,
       "id": 266
     },
-	{
+    {
       "text": "Man kann sich nicht aussuchen, ob man verletzt wird auf dieser Welt, aber man kann mitbestimmen, von wem. Ich bin glücklich mit meiner Wahl. Und ich hoffe, sie auch.",
       "source": "Das Schicksal ist ein mieser Verräter",
       "length": 165,
       "id": 267
     },
-	{
+    {
       "text": "Du bist so düster! Sicher, dass du nicht aus dem DC Universum kommst?",
       "source": "Deadpool 2",
       "length": 69,
       "id": 268
     },
-	{
+    {
       "text": "Man muss kein Superheld sein, um das Mädchen zu kriegen. Das richtige Mädchen wird den Helden in dir zum Vorschein bringen.",
       "source": "Deadpool 2",
       "length": 123,
       "id": 269
     },
-	{
+    {
       "text": "Wir werden über Frankreich abgesetzt, als Zivilisten getarnt. Und sobald wir auf feindlichem Gebiet sind, als Guerilla-Kampftruppe im Hinterhalt, haben wir nur noch ein Ziel und ein Ziel allein: Sie töten.",
       "source": "Inglorious Basterds",
       "length": 205,
       "id": 270
     },
-	{
+    {
       "text": "Ich war nicht der Beste, weil ich schnell getötet habe. Ich war der Beste, weil die Menge mich liebte. Gewinne die Menge und du bekommst deine Freiheit.",
       "source": "Gladiator",
       "length": 152,
       "id": 271
     },
-	{
+    {
       "text": "Der Tod lächelt einen Mann täglich an, doch alles was ein Mann machen kann ist zurückzulächeln.",
       "source": "Gladiator",
       "length": 95,
       "id": 272
     },
-	{
+    {
       "text": "Die Menschen leiden mehr unter zu wenig Fantasie als unter zu viel.",
       "source": "Greatest Showman",
       "length": 67,
       "id": 273
     },
-	{
+    {
       "text": "Niemand hat je etwas verändert, indem er so war wie alle anderen.",
       "source": "Greatest Showman",
       "length": 65,
       "id": 274
     },
-	{
+    {
       "text": "Es ist nicht nötig von allen geliebt zu werden. Nur von ein paar wenigen, guten Menschen.",
       "source": "Greatest Showman",
       "length": 89,
       "id": 275
     },
-	{
+    {
       "text": "Die edelste Kunst ist, andere glücklich zu machen.",
       "source": "Greatest Showman",
       "length": 50,
       "id": 276
     },
-	{
+    {
       "text": "Mein Name ist Robert Neville, ich bin ein Überlebender in New York City. Ich sende auf allen Frequenzen. Ich bin jeden Tag am South Street Seaport um die Mittagszeit, wenn die Sonne am höchsten steht. Wenn ihr da draußen seid, wenn irgendjemand da draußen ist… ich kann Nahrung bieten, ich kann Unterkunft bieten, ich kann Schutz bieten… Wenn irgendjemand da draußen ist… irgendjemand… Bitte… Du bist nicht allein.",
       "source": "I Am Legend",
       "length": 414,
       "id": 277
     },
-	{
+    {
       "text": "Die Welt ist stiller geworden. Du musst nur hinhören. Wenn wir hinhören, dann hören wir Gottes Plan.",
       "source": "I Am Legend",
       "length": 100,
       "id": 278
     },
-	{
+    {
       "text": "Träume fühlen sich doch real an, während wir sie träumen? Erst wenn wir aufwachen, fällt uns auf, dass irgendetwas seltsam war.",
       "source": "Inception",
       "length": 127,
       "id": 279
     },
-	{
+    {
       "text": "Oder wird aus Ihnen ein alter Mann, voller Bedauern, der allein auf den Tod wartet?",
       "source": "Inception",
       "length": 83,
       "id": 280
     },
-	{
+    {
       "text": "Welches ist der widerstandsfähigste Parasit? Ein Bakterium, ein Virus, ein Darmwurm? Ein Gedanke! Resistent, hochansteckend. Wenn ein Gedanke einen Verstand erstmal infiziert hat, ist es fast unmöglich, ihn zu entfernen.",
       "source": "Inception",
       "length": 220,
       "id": 281
     },
-	{
+    {
       "text": "Die Welt ändert sich so schnell, dass wir laufen müssen, um nicht zurückzubleiben.",
       "source": "Jurassic Park",
       "length": 82,
       "id": 282
     },
-	{
+    {
       "text": "Einige der schlimmsten Dinge, die man sich überhaupt vorstellen kann, sind in bester Absicht getan worden.",
       "source": "Jurassic Park III",
       "length": 106,
       "id": 283
     },
-	{
+    {
       "text": "Ihre Leute waren nur darauf konzentriert, ob sie es schaffen könnten. Ob sie es tun sollten, die Frage stellte sich keiner.",
       "source": "Jurassic Park",
       "length": 123,
       "id": 284
     },
-	{
+    {
       "text": "Wenn wir einfach nur bei Seite treten und auf die Natur vertrauen, dann wird das Leben einen Weg finden.",
       "source": "Jurassic Park",
       "length": 104,
       "id": 285
     },
-	{
-      "text": "Wenn und die Evolutionsgeschichte eins gelehrt hat, dann das, dass das Leben sich nicht einsperren lässt. Das Leben bahnt sich seinen Weg, es erobert neue Territorien, es überwindet sämtliche Barrieren, ob schmerzlich oder gefährlich.",
+    {
+      "text": "Wenn uns die Evolutionsgeschichte eins gelehrt hat, dann das, dass das Leben sich nicht einsperren lässt. Das Leben bahnt sich seinen Weg, es erobert neue Territorien, es überwindet sämtliche Barrieren, ob schmerzlich oder gefährlich.",
       "source": "Jurassic Park",
       "length": 234,
       "id": 286
     },
-	{
+    {
       "text": "Sollte man je meine Geschichte erzählen, soll man sagen, ich ging meinen Weg mit Giganten. Menschen vergehen wie Weizen im Wind, doch diese Namen vergehen nie.",
       "source": "Troja",
       "length": 159,
       "id": 287
     },
-	{
+    {
       "text": "Krieg bedeutet, dass junge Männer sterben und alte Männer reden. Du weißt das. Schenke der Politik keine Beachtung.",
       "source": "Troja",
       "length": 115,
       "id": 288
     },
-	{
+    {
       "text": "Die Götter beneiden uns. Sie beneiden uns, weil wir sterblich sind, weil jeder Augenblick unser letzter sein könnte. Alles ist so viel schöner, weil wir irgendwann sterben. Nie wirst du zauberhafter sein als in diesem Moment, nie wieder werden wir hier sein.",
       "source": "Troja",
       "length": 258,
       "id": 289
     },
-	{
+    {
       "text": "Er hatte schwarzes Haar und schmale Lippen, und seine rechte Hand, an der keine Haut mehr war, glänzte vor Blut und nassen Muskeln. Noch bevor Stephanie richtig begriffen hatte, was Sache war zog Skulduggery schon seinen Revolver aus dem Mantel. Der Mann bewegte sich, als Schüsse durchs Zimmer hallten, trat zur Seite und wedelte mit der rechten Hand.",
       "source": "Skulduggery Pleasant – Der Gentleman mit der Feuerhand",
       "length": 352,
       "id": 290
     },
-	{
-      "text": "Sie stolpert, und neben ihr bewegte sich etwas. Als sie sich umdrehte, sah sie einen zweiten Mann auf sich zukommen. Irgendetwas stimmte nicht mit ihm - mit seiner Haut, mit seinem Gesicht es sah nicht echt au. Fast wie aus Papier. Sie versuchte, ihn wegzustoßen, doch es war, als boxe man in einen Luftsack. Eine Faust flog ihr entgegen, doch im Gegensatz zu seinem Körper war die Faust kompakt und kräftig, und er riss ihr den Kopf zurück. Sie strauchelte, und er wollte sie packen, doch dann war Skulduggery zur Stelle und schleuderte ihn weg.",
+    {
+      "text": "Sie stolpert und neben ihr bewegte sich etwas. Als sie sich umdrehte, sah sie einen zweiten Mann auf sich zukommen. Irgendetwas stimmte nicht mit ihm - mit seiner Haut, mit seinem Gesicht es sah nicht echt aus. Fast wie aus Papier. Sie versuchte, ihn wegzustoßen, doch es war, als boxe man in einen Luftsack. Eine Faust flog ihr entgegen, doch im Gegensatz zu seinem Körper war die Faust kompakt und kräftig, und er riss ihr den Kopf zurück. Sie strauchelte und er wollte sie packen, doch dann war Skulduggery zur Stelle und schleuderte ihn weg.",
       "source": "Skulduggery Pleasant – Der Gentleman mit der Feuerhand",
       "length": 546,
       "id": 291
     },
-	{
+    {
       "text": "Das Leben ist ein Kreislauf Skulduggery, nicht wahr? Es wiederholt sich alles, das ist unser Schicksal. Du - von meiner Gnade abhängig. Ich - gnadenlos.",
       "source": "Skulduggery Pleasant – Der Gentleman mit der Feuerhand",
       "length": 152,
       "id": 292
     },
-	{
+    {
       "text": "Ich möchte dich etwas fragen: Lass uns mal so tun, nur für einen Augenblick, als lebten wir in deiner Welt, wo alles verrückt ist und die Gesichtslosen echt. Was versprichst du dir davon, wenn du sie rufst? Dass sie dir über den Kopf streicheln?",
       "source": "Skulduggery Pleasant – Der Gentleman mit der Feuerhand",
       "length": 245,
       "id": 293
     },
-	{
+    {
       "text": "Die Falle war ausgezeichnet. Ein richtiges Prachtstück. Damit eine Falle ihren Zweck erfüllt, muss sie eine wichtige Eigenschaft aufweisen, dieselbe, die auch für jeden Zaubertrick nötig ist: Sie muss ablenken. Während du dich auf eine Sache konzentrierst, passiert hinter deinem Rücken eine andere. Ich habe nicht einmal gemerkt, dass es eine Falle war, bis sie zuschnappte. Serpine kannte mich und er wusste, wie ich auf bestimmte Reize reagieren würde. Er wusste zum Beispiel, dass ich, wenn er meine Frau und mein Kind vor meinen Augen ermorden würde, nie auf den Gedanken käme, dass der Dolch, nach dem ich greife, vergiftet sein könnte.",
       "source": "Skulduggery Pleasant – Der Gentleman mit der Feuerhand",
       "length": 643,
       "id": 294
     },
-	{
-      "text": "Ich habe gerade gesehen, wie sich ein sehr guter Freud in eine Statue verwandelt hat, Tanith. Meritorius und Marwenna Crow, zwei der wenigen Menschen auf dieser Welt, vor denen ich Respekt hatte, wurden ermordet. Deshalb hast du recht, wenn du sagst, dass unsere Verbündeten umfallen wie Fliegen. Aber es stand von Anfang an fest, dass dies kein einfacher Kampf werden würde. Tote waren zu erwarten. Und weißt du, was wir tun? Wir machen einen Schritt über sie weg und gehen weiter, weil uns nichts anderes übrigbleibt. Jetzt werde ich Serpine ein für alle Mal stoppen, jeder, der begleiten möchte, ist herzlich willkommen. Wenn mich keiner begleite, macht das nicht den geringsten Unterschied. Ich gehe trotzdem. Serpine muss aufgehalten werden, alles andere spielt keine Rolles",
+    {
+      "text": "Ich habe gerade gesehen, wie sich ein sehr guter Freund in eine Statue verwandelt hat, Tanith. Meritorius und Marwenna Crow, zwei der wenigen Menschen auf dieser Welt, vor denen ich Respekt hatte, wurden ermordet. Deshalb hast du recht, wenn du sagst, dass unsere Verbündeten umfallen wie Fliegen. Aber es stand von Anfang an fest, dass dies kein einfacher Kampf werden würde. Tote waren zu erwarten. Und weißt du, was wir tun? Wir machen einen Schritt über sie weg und gehen weiter, weil uns nichts anderes übrig bleibt. Jetzt werde ich Serpine ein für alle Mal stoppen, jeder, der begleiten möchte, ist herzlich willkommen. Wenn mich keiner begleitet, macht das nicht den geringsten Unterschied. Ich gehe trotzdem. Serpine muss aufgehalten werden, alles andere spielt keine Rolle.",
       "source": "Skulduggery Pleasant – Der Gentleman mit der Feuerhand",
       "length": 779,
       "id": 295
     },
-	{
+    {
       "text": "Wenn man 600 Dollar klaut, kann man einfach verschwinden, aber bei 600 Million, musst du ihnen verkaufen, dass es dich erwischt hat.",
       "source": "Stirb langsam",
       "length": 132,
       "id": 296
     },
-	{
+    {
       "text": "Wenn sie dich anstarren, lass sie einfach starren. Wer etwas ganz Besonderes ist, muss sich nicht verstecken.",
       "source": "Wunder",
       "length": 109,
       "id": 297
     },
-	{
+    {
       "text": " Sei gütig, denn alle Menschen, denen du begegnest, kämpfen einen schweren Kampf. Und wenn man erkennen will, wie Menschen sind, braucht man nichts weiter zu tun, als hinzusehen.",
       "source": "Wunder",
       "length": 178,
       "id": 298
     },
-	{
+    {
       "text": "Wir alle sind die Summen dessen, woran wir uns erinnern. In uns tragen wir die Hoffnungen und Ängste derjenigen, die uns lieben. Und solange die Liebe und die Erinnerung in unserem Herzen lebendig bleiben, ist niemand jemals wahrhaftig vergessen und vergangen.",
       "source": "Chroniken der Unterwelt – City of Heatenly Fire",
       "length": 260,
       "id": 299
     },
-	{
+    {
       "text": "Ich weiß, ich hab dir mal gesagt, dass ich nicht wüsste, ob es einen Gott gibt oder nicht, aber dass wir so oder so auf uns allein gestellt wären. Doch das stimmt nicht: Mit dir zusammen bin ich nie allein.",
       "source": "Chroniken der Unterwelt – City of Lost Souls",
       "length": 206,
       "id": 300
     },
-	{
+    {
       "text": "Du würdest mich wirklich mögen, wenn du mich richtig kennenlernen würdest. Ich kenne mich seit Jahren und liebe mich.",
       "source": "Skulduggery Pleasant – Die Diablerie bittet zum Sterben",
       "length": 117,
       "id": 301
     },
-	{
+    {
       "text": "Mein Bruder ist ziemlich unverwüstlich. Ich habe schon drei Mal versucht ihn umzubringen, aber er bleibt einfach nicht liegen.",
       "source": "Skulduggery Pleasant – Der Gentleman mit der Feuerhand",
       "length": 126,
       "id": 302
     },
-	{
+    {
       "text": "Türen sind für Leute ohne Fantasie.",
       "source": "Skulduggery Pleasant – Der Gentleman mit der Feuerhand",
       "length": 35,
       "id": 303
     },
-	{
+    {
       "text": "Sie schuf nicht eine, sondern viele Geschichten. Geschichten innerhalb von Geschichten. Rätsel und falsche Wendungen und unwahre Enden, in Stein und Wachs und in Rauch.",
       "source": "Das sternenlose Meer",
       "length": 168,
       "id": 304
     },
-	{
+    {
       "text": "Ich möchte, dass jeder dich trifft. Du bist meine Lieblingsperson aller Zeiten.",
       "source": "Tote Mädchen lügen nicht",
       "length": 79,
       "id": 305
     },
-	{
+    {
       "text": "Manchmal behalten wir Geheimnisse für uns, um sie vor anderen Leuten zu verstecken. Manchmal bewahren wir sie, um diese Leute zu schützen.",
       "source": "Tote Mädchen lügen nicht",
       "length": 138,
       "id": 306
     },
-	{
+    {
       "text": "Jeder hat was, was er verbergen will. Aber das klappt nicht immer.",
       "source": "Tote Mädchen lügen nicht",
       "length": 66,
       "id": 307
     },
-	{
+    {
       "text": "Ich mag sie. Durch sie probierst du neue Sachen aus, das tut dir gut. Ich mein’s ernst - du wirst als hättest du weniger Angst, wenn du bei ihr bist. Das ist schön und es macht mich auch irgendwie traurig.",
       "source": "Tote Mädchen lügen nicht",
       "length": 205,
       "id": 308
     },
-	{
+    {
       "text": "Wir alle verbergen irgendwelche Dinge. Manchmal überleben wir dadurch, dass wir Geheimnisse verwahren. Denn in der High School kann dich ein Gerücht, ein Bild oder ein Vorfall für immer brandmarken.",
       "source": "Tote Mädchen lügen nicht",
       "length": 198,
       "id": 309
     },
-	{
+    {
       "text": "Sie dringen in deinen Kopf ein. Leute erzählen Lügen über dich und andere Leute glauben das. Und es geht so weit, dass die Lügen genauso gut die Wahrheit sein könnten.",
       "source": "Tote Mädchen lügen nicht",
       "length": 167,
       "id": 310
     },
-	{
+    {
       "text": "Wenn ich die Sache nicht ändern kann, dann schließe ich lieber damit ab.",
       "source": "Tote Mädchen lügen nicht",
       "length": 72,
       "id": 311
     },
-	{
+    {
       "text": "Millionen sterben an Krankheiten, die wir heilen können. Millionen leben in Armut, obwohl es genug für alle gibt. Wir zerstören unsere Biosphäre, obwohl wir wissen, dass sie unsere einzige Heimat ist. Wir bedrohen uns gegenseitig mit Atomwaffen, auch wenn wir wissen, wohin das führen kann. Wir lieben Lebendiges, lassen aber massenhaftes Artensterben zu. Und dann der Ganze Rest - Genozid, Folter, Versklavung, häusliche Gewalt bis hin zum Mord, Kindesmissbrauch, Schießereien an Schulen, Vergewaltigung, tagtäglich eine schier endlose Zahl skandalöser Gräueltaten. Wir leben mit all diesen Grausamkeiten und sind nicht mal erstaunt, wenn wir trotzdem unser Glück, sogar Liebe finden. Künstliche Intelligenzen sind da weniger gut geschützt.",
       "source": "Maschinen wie ich",
       "length": 741,
       "id": 312
     },
-	{
+    {
       "text": "Werkseinstellungen - ein modernes Synonym für Schicksal.",
       "source": "Maschinen wie ich",
       "length": 56,
       "id": 313
     },
-	{
+    {
       "text": "Allmählich muss ich sagen, dass deine süße Naivität in Wahrheit hinreißende Idiotie ist. Du bist so was wie die niedliche Version eines Dorfdeppen.",
       "source": "Dark Elements",
       "length": 147,
       "id": 314
     },
-	{
+    {
       "text": "Heiliger Müsliriegel. Ich gab mir alle Mühe, nicht abzudrehen, aber das hier war der Sensenmann. Und er hatte mich bereits erwartet.",
       "source": "Dark Elements – Sehnsuchtsvolle Berührung",
       "length": 132,
       "id": 315
     },
-	{
+    {
       "text": "Und dann, wenn Tage ins Land gegangen sind, haltet nach mir Ausschau. Vielleicht schreibe ich in den Wasserdampf am Spiegel, wenn ihr badet, oder spiele mit den Blättern vom Apfelbaum, wenn ihr im Garten draußen seid. Ich könnte in einen Traum schlüpfen. Besuch mein Grab, wenn du kannst, aber mach dir keine Vorwürfe, wenn nicht, oder wenn ihr umzieht und es dann zu weit weg ist. Im Sommer sieht es da hübsch aus. Du könntest ein Picknick mitnehmen und dich zu mir setzten. Das würde mir gefallen.",
       "source": "Bevor ich sterbe",
       "length": 499,
       "id": 316
     },
-	{
+    {
       "text": "Er gibt mir Feuer. Lange Zeit sagen wir nichts, pusten nur unseren Rauch auf die Stadt da unten. Dann sagt er: \"Da unten könnte alles Mögliche passieren, und hier ober würde man es einfach nichts davon merken.\"",
       "source": "Bevor ich sterbe",
       "length": 210,
       "id": 317
     },
-	{
+    {
       "text": "Kaum ist er weg, fehlt er mir schon. Wenn er nicht bei mir ist, kommt es mir so vor, als hätte ich ihn mir ausgedacht.",
       "source": "Bevor ich sterbe",
       "length": 118,
       "id": 318
     },
-	{
+    {
       "text": "Vielleicht bin ich tot. Vielleicht wird da nie noch was sein. Die Lebenden in ihrer Welt weitermachen - sich berühren, gehen. Und ich werde in dieser leeren Welt bleiben und lautlos gegen die Glasscheiben zwischen uns pochen.",
       "source": "Bevor ich sterbe",
       "length": 225,
       "id": 319
     },
-	{
+    {
       "text": "Die Zeichen, die die Menschen setzen, sind viel zu oft Narben.",
       "source": "Das Schicksal ist ein mieser Verräter",
       "length": 62,
       "id": 320
     },
-	{
+    {
       "text": "Menschen, die du liebst, werden dich wie helle Lichter in die andere Welt begleiten.",
       "source": "Everflame – Feuerprobe",
       "length": 84,
       "id": 321
     },
-	{
+    {
       "text": "Sei es richtig oder falsch, kämpfe für das, woran du glaubst.",
       "source": "Du oder das ganze Leben",
       "length": 61,
       "id": 322
     },
-	{
+    {
       "text": "Manchmal müssen gute Menschen Dinge tun, die nicht gut sind.",
       "source": "Du oder das ganze Leben",
       "length": 60,
       "id": 323
     },
-	{
+    {
       "text": "Zuerst ist man völlig betäubt und versucht, es auszublenden. Ich meine, man weiß, dass er fort ist und so, aber es ist, als stecke man in diesem Nebel fest. Dann wird das Leben irgendwie wieder zum Alltag und man fügt sich darin. Irgendwann hört man auf, ständig daran zu denken und lebt einfach sein Leben weiter. Man hat gar keine andere Wahl.",
       "source": "Du oder das ganze Leben",
       "length": 346,
       "id": 324
     },
-	{
+    {
       "text": "Ich möchte, dass ihr alle wisst, dass wir die erste Verteidigungslinie sind. Genau genommen sind wir die einzige Verteidigungslinie. Falls wir scheitern, wird es für die anderen - wer immer das sein wird - nicht mehr allzu viel zu tun geben. Was ich damit sagen will ist, dass Versagen an dieser Stelle keine wirklich clevere Alternative ist. Wir dürfen nicht versagen. Hat das jeder verstanden? Versagen ist negativ und wir tun uns auch auf lange Sicht keinen Gefallen damit und ich glaube, ich habe jetzt den Faden verloren und weiß nicht mehr, was ich eigentlich sagen wollte. Aber ich weiß, womit ich angefangen habe und das müsst ihr euch merken. Hat jemand meinen Hut gesehen?",
       "source": "Skulduggery Pleasant – Das Groteskerium kehrt zurück",
       "length": 686,
       "id": 325
     },
-	{
+    {
       "text": "Falls es schiefgeht, locke ich sie weg. Sobald die Luft rein ist, gehst du zum Wagen zurück. Wenn du mich in fünf Minuten nicht siehst, bin ich wahrscheinlich den Heldentod gestorben. Oh, und lass die Finger vom Autoradio. Ich habe es eben erst auf meinen Lieblingssender eingestellt und will nicht, dass du mir daran herumfummelst.",
       "source": "Skulduggery Pleasant – Das Groteskerium kehrt zurück",
       "length": 332,
       "id": 326
     },
-	{
+    {
       "text": "Letztendlich gibt es weder für die Realität noch für etwas derart Abstraktes wie Vernunft endgültige Beweise. Die Menschheit hat sich auf eine Norm geeinigt, um mit dem Irrsinn des Lebens klarzukommen. Alles, was davon abweicht, gilt als krank oder mangelhaft.",
       "source": "Zwischen jetzt und nie geschehen",
       "length": 260,
       "id": 327
     },
-	{
+    {
       "text": "Todesfurcht ist nichts anderes als die Liebe zum Leben. Es ist ein Geschenk, auch wenn es sich hin und wieder wie ein Geißel auf deinem nackten Rücken anfühlt.",
       "source": "Zwischen jetzt und nie geschehen",
       "length": 159,
       "id": 328
     },
-	{
+    {
       "text": "Wenn du mit der gleichen Kraft hasst, mit der du vergibst, dann gnade Gott deinen Feinden.",
       "source": "Die Alchimistin",
       "length": 90,
       "id": 329
     },
-	{
+    {
       "text": "Verdammt, ich will keine von denen sein, die auf der Couch hocken und immer nur davon reden, was sie mal Großes tun wollen. Ich will es tun.",
       "source": "Eine wie Alaska",
       "length": 140,
       "id": 330
+    },
+    {
+      "text": "Kein Wunder, dass Dad rettungslos in sie verliebt ist. Sie ist hübsch genug, um eine Elfe zu sein.",
+      "source": "Dark Wonderland",
+      "length": 81,
+      "id": 331
+    },
+    {
+      "text": "Man verdient etwas nur, wenn man sich dessen auch als würdig erweist.",
+      "source": "Rush of Love – Erlöst",
+      "length": 98,
+      "id": 332
+    },
+    {
+      "text": "Ich liebte meine Schwester, aber mit der Zeit würde sie mir vergeben. Bei Blaire jedoch bestand die Gefahr, dass ich sie für immer verlor.",
+      "source": "Rush of Love – Erlöst",
+      "length": 138,
+      "id": 333
+    },
+    {
+      "text": "Die Existenz des Lebens ist ein höchst überbewertetes Phänomen.",
+      "source": "Watchmen",
+      "length": 63,
+      "id": 334
+    },
+    {
+      "text": "Es scheint nicht immer nur die Sonne, Liebling, der Regen fällt auf den Gerechten genau wie auf den Ungerechten… außer in Kalifornien.",
+      "source": "Watchmen – Die Wächter",
+      "length": 134,
+      "id": 335
+    },
+    {
+      "text": "Mein Vater war Uhrmacher. Als Einstein entdeckte, dass Zeit relativ ist, gab er den Job auf.",
+      "source": "Watchmen – Die Wächter",
+      "length": 92,
+      "id": 336
+    },
+    {
+      "text": "Die Menschheit arbeitet seit Anbeginn der Zeit daran, sich das Licht auszublasen. Und jetzt haben wir endlich die Macht, das Werk zu vollenden. Und egal was wir tun, sobald die Atombomben hoch gehen, sind wir nur noch Staub.",
+      "source": "Watchmen – Die Wächter",
+      "length": 225,
+      "id": 337
+    },
+    {
+      "text": "Das Schönste, was wir erleben können, ist das Geheimnisvolle. Es ist das Grundgefühl, das an der Wiege von wahrer Kunst und Wissenschaft steht. Wer es nicht kennt und sich nicht mehr wundern, nicht mehr staunen kann, der ist so gut wie tot und seine Augen erloschen.",
+      "source": "Mein Weltbild",
+      "length": 266,
+      "id": 338
+    },
+    {
+      "text": "Welches ist der Sinn unseres Lebens, welches ist der Sinn des Lebens aller Lebewesen überhaupt? Eine Antwort auf diese Frage wissen, heißt religiös sein. Du fragst: hat es denn überhaupt einen Sinn, diese Frage zu stellen? Ich antworte: Wer sein eigenes Leben und das seiner Mitmenschen als sinnlos empfindet, der ist nicht nur unglücklich, sondern auch kaum lebensfähig.",
+      "source": "Mein Weltbild",
+      "length": 371,
+      "id": 339
+    },
+    {
+      "text": "Denkt daran, dass die wunderbaren Dinge, die ihr in euren Schulen kennenlernt, das Werk vieler Generationen sind, das in allen Ländern der Erde in begeistertem Streben und mit großer Mühe geschaffen worden ist. All dies wird als euer Erbe in eure Hände gelegt, damit ihr empfanget, ehret, weiterbildet und treulich euren Kindern einst übermittelt. So sind wir Sterblichen in dem unsterblich, was wir an bleibenden Werken gemeinsam schaffen.",
+      "source": "Mein Weltbild",
+      "length": 440,
+      "id": 340
+    },
+    {
+      "text": "Es gibt weder Glück noch Unglück auf dieser Welt, sondern nur die Vergleichung des einen Zustands mit dem andern. Nur derjenige, welcher das äußerste Unglück empfunden hat, ist fähig, das höchste Glück zu genießen.",
+      "source": "Der Graf von Monte Christo",
+      "length": 214,
+      "id": 341
+    },
+    {
+      "text": "Das Leben ist unberechenbar. Und niemand kann für immer eine Rolle spielen. Irgendwann füllt jede Maske. Und wenn sie gefallen ist, dann muss man in den Spiegel schauen und dem standhalten, was man dort sieht.",
+      "source": "Heaven",
+      "length": 209,
+      "id": 342
+    },
+    {
+      "text": "Es ist keine Schande, etwas nicht zu wissen. Eine Schande ist es, nicht lernen zu wollen.",
+      "source": "Die Gabe",
+      "length": 89,
+      "id": 343
+    },
+    {
+      "text": "Im Leben eines Menschen bieten sich nur wenige Gelegenheiten, eine klare Wahl zu treffen. Der Unterschied zwischen den Menschen besteht darin, wie sie dieser Wahl begegnen.",
+      "source": "Die Gabe",
+      "length": 172,
+      "id": 344
+    },
+    {
+      "text": "Alle Augen schauen, wenige beobachten, sehr wenige erkennen.",
+      "source": "Im Rausch der Stille",
+      "length": 60,
+      "id": 345
+    },
+    {
+      "text": "Bleibt die Frage, wie sich Menschen im Angesicht ihres unweigerlichen Todes verhalten. In der Regel wie Tiere. Vermutlich liegt es in der Natur des Menschen, in Zeiten, in denen er sich wie ein Heiliger verhalten müsste, zu einem reißenden Wolf zu werden. Denn auf den Tod zu warten ist grausamer als der Tod selbst. Die Menschen werden dabei von ihrer Angst ebenso wie vom Teufel verführt und begehen Taten, für die sie vor Gottes Gericht teuer werden bezahlen müssen.",
+      "source": "Seelenfänger – Schwarzer Dolch",
+      "length": 469,
+      "id": 346
+    },
+    {
+      "text": "Man wird nicht zum Helden, indem man mit dem Schwert Butterblumen auf dem Feld köpft. In der Regel haben diejenigen, die irgendwann zu Legenden werden, Berge von Leichen aufgetürmt, Meere von Blut freigesetzt und einen bunten Strauß an Verrat, Betrug und Gewalt zusammen gepflückt.",
+      "source": "Das Reich der blauen Flamme – Der Gebannte",
+      "length": 281,
+      "id": 347
+    },
+    {
+      "text": "Der Tod ist ein Duell mit dem unvermeidlichen. Und der Mensch verliert dieses Duell immer.",
+      "source": "Die Beschwörer – Tag der Geister",
+      "length": 90,
+      "id": 348
+    },
+    {
+      "text": "Manche Menschen glauben daran, dass Geschichten wahr werden, wenn man sie nur oft genug erzählt. Dass ist uns zu dem machen, wer wir sind. Und das macht uns Angst.",
+      "source": "Scary Stories To Tell in the Dark",
+      "length": 163,
+      "id": 349
+    },
+    {
+      "text": "Man sollte nicht einem einzigen so viel Bedeutung beimessen. Es ist nur ein Mensch. Andererseits kann ein einziger Mensch alles bedeuten.",
+      "source": "Die Ankunft",
+      "length": 137,
+      "id": 350
+    },
+    {
+      "text": "Manche glauben, die Sterne würden oben näher erscheinen. Stimmt nicht. Hier oben erkennt man erst, wie fern sie wirklich sind.",
+      "source": "",
+      "length": 126,
+      "id": 351
+    },
+    {
+      "text": "Wenn man immer gewusst hat, wie man jemanden ansehen soll, ist es verwirrend, wenn sich die Perspektive verändert.",
+      "source": "Die Auswahl",
+      "length": 114,
+      "id": 352
+    },
+    {
+      "text": "Stürze dich nie auf einen Vorteil, sobald er offenbar wird. Warte ab, bis du den maximalen Effekt erzielen kannst.",
+      "source": "The Witcher – III – Wild Hunt",
+      "length": 114,
+      "id": 353
+    },
+    {
+      "text": "Wenn ich seinen Namen flüstere, spüre ich Scherben im Mund. Wenn ich sein Bild vor mich befehlen, legt sich Eis auf meine Gedanken. Wenn ich mir vorstelle ihn zu streicheln, öffnen Skalpelle mir Finger und Hände.",
+      "source": "Die Mitte der Welt",
+      "length": 212,
+      "id": 354
+    },
+    {
+      "text": "Eine Rose kann niemals ohne Dornen sein.",
+      "source": "Unbekannt",
+      "length": 40,
+      "id": 355
+    },
+    {
+      "text": "Man lernt nichts aus Erfolgen; man lernt nichts aus Auszeichnungen; man lernt nichts aus Ruhm; man lernt nur durch Wunden und Narben, Fehler und Versagen.",
+      "source": "Jane Fonda",
+      "length": 154,
+      "id": 356
+    },
+    {
+      "text": "Verlasse etwas für jemanden, aber verlasse nie jemanden für etwas.",
+      "source": "Fünf Freunde – Five on a Hike Together",
+      "length": 66,
+      "id": 357
+    },
+    {
+      "text": "Der beste Weg, Hindernisse zu überwinden ist, sie als Trittsteine zu verwenden. Lache über sie, betrete sie und lass dich zu etwas Besserem führen.",
+      "source": "The Circus Series – Mr Galliano’s Circus",
+      "length": 147,
+      "id": 358
+    },
+    {
+      "text": "Wenn der Ozean so klar wie der Himmel wäre und wir alles sehen könnten, was sich darin tummelt, würde keiner je wieder einen Fuß ins Meer setzen. Denn das, was sich in den Tiefen des Ozeans lebt, viele Kilometer unter der Oberfläche, ist das Material für Albträume.",
+      "source": "Die dunklen Mächte",
+      "length": 265,
+      "id": 359
+    },
+    {
+      "text": "Und das musst du verstehen: in jedem Krieg gibt es Gruppierungen – die einen, die Frieden wollen, die andere, die aus einer Myriade von Gründen weiterhin Krieg wollen und jene, deren Wünsche beides übertreffen.",
+      "source": "Die große Stille – Zerrissene Erde",
+      "length": 210,
+      "id": 360
+    },
+    {
+      "text": "Die Routine und Gesellschaft umschlingen einen mit Krallen, unfähig sich zu bewegen. Und ehe man blinzelt, ist ein Jahr vorbei und man kann sich nicht entsinnen, was passiert ist.",
+      "source": "The bloom of Summertime",
+      "length": 179,
+      "id": 361
+    },
+    {
+      "text": "Einen Moment lang schloss Jace die Augen, als würden ihn die Worte schmerzen. Behutsam legte Clary ihm eine Hand an die Wange und er drückte sein Gesicht dagegen, wobei seine Haare ihre Fingerknöchel kitzelten. Und da wurde Clary bewusst, dass sein Gesicht feucht war. Der Junge weinte nie wieder.",
+      "source": "Chroniken der Unterwelt – City of Lost Souls",
+      "length": 297,
+      "id": 362
+    },
+    {
+      "text": "Wenn du halb Engel halb Mensch bist, bedeutet das nur, dass du dir deiner eigenen Schwächen ständig bewusst bist. Du bist kein Engel. Der Himmel liebt dich nicht. Raziel interessiert sich nicht für uns. Wir können noch nicht einmal zu ihm beten. Wir beten zu niemandem. Wir bitten um nichts.",
+      "source": "Chroniken der Unterwelt – City of Lost Souls",
+      "length": 291,
+      "id": 363
+    },
+    {
+      "text": "Zu Clary hatte er einmal gesagt, dass es kein schlimmeres Gefühl gebe, als den Menschen, die man liebt, nicht trauen zu können. Doch damit hatte er sich geirrt. Von den Menschen, die man liebt, gefürchtet zu werden – das war noch viel schlimmer.",
+      "source": "Chroniken der Unterwelt – City of Lost Souls",
+      "length": 245,
+      "id": 364
+    },
+    {
+      "text": "Ich würde dir mein Leben anvertrauen, nur nicht unbedingt meinen Wagen.",
+      "source": "Skulduggery Pleasant – Mitternacht",
+      "length": 71,
+      "id": 365
+    },
+    {
+      "text": "Kein Plan überlebt den ersten Feindkontakt.",
+      "source": "Skulduggery Pleasant – Das Sterben des Lichts",
+      "length": 43,
+      "id": 366
+    },
+    {
+      "text": "Gut und Böse sind sich so nah, als seien sie in der Seele aneinander gekettet.",
+      "source": "Skulduggery Pleasant – Passage der Totenbeschwörer",
+      "length": 78,
+      "id": 367
+    },
+    {
+      "text": "Ich habe es mir einfach nicht gefallen lassen. Wie viele Tote gab es, wie viele Krüppel und gebrochene Knochen, nur weil die Leute es zuließen, dass ihre Wut für einen Augenblick die Überhand über ihren Verstand gewann. Ich bereue das natürlich alles. Ich habe die Kontrolle über mich verloren. Ich habe meiner dunklen Seite viel zu oft nachgegeben. Ich war kein besonders netter Mensch, Mr Prave. Aber ich habe mich geändert. Im Lauf der Jahre bin ich umgänglicher geworden. Jetzt kann ich die kleinen Freuten genießen. Ein gutes Buch. Ein ausgezeichneten Wein. Nette Gesellschaft. All das zaubert mir ein Lächeln ins Gesicht. All das macht mich glücklich. Aber immer mal wieder überkommt mich dieser Drang. Sie wissen, wovon ich rede, nicht wahr? Der Drang zu verletzen, zum Krüppel zu schlagen, zu töten. Es hat schon etwas, diesen Drang zu verspüren, sich davon überrollen zu lassen, ihm nachzugeben. Es macht süchtig. Es lässt einen alles andere darüber vergessen. Man gibt sich ihm hin. Es ist etwas ganz, ganz Wunderbares. Ich spüre ihn, jetzt in dem Moment, da ich mit Ihnen rede. Er klopft die Ränder meines Bewusstseins ab, versucht mich aufzubrechen, seine Finger in mich hineinzubekommen. Und es wäre so leicht, es zuzulassen. Aber so sind wir schließlich alle, nicht wahr? Im tiefsten Innern sind wir alle Barbaren. Wir sind alle wilde, mordlustige Bestien. Ich weiß, dass ich eine bin. Ich bin sicher, Sie sind auch eine. Der einzige Unterschied zwischen Ihnen und mir liegt in der Lautstärke unseres Gebrülls. Ich brülle ausgesprochen laut. Und Sie? Glauben Sie, Sie können es mit mir aufnehmen?",
+      "source": "Skulduggery Pleasant – Passage der Totenbeschwörer",
+      "length": 1610,
+      "id": 368
+    },
+    {
+      "text": "Im Strom des Lebens sind wir lediglich Paddler.",
+      "source": "Skulduggery Pleasant – Passage der Totenbeschwörer",
+      "length": 47,
+      "id": 369
+    },
+    {
+      "text": "Wer über seine Gefühle spricht, nimmt diesen Gefühlen ihren Sinn und Zweck. Sobald man versucht, die menschlichen Erfahrungen in Wort zu fassen, degradiert man sie zu einem bloßen Publikumssport. Alles braucht einen Grund und einen Namen.",
+      "source": "Skulduggery Pleasant – Passage der Totenbeschwörer",
+      "length": 238,
+      "id": 370
+    },
+    {
+      "text": "Umarme deinen inneren Bekloppten. Dann hast du garantiert jede Menge Spaß.",
+      "source": "Skulduggery Pleasant – Passage der Totenbeschwörer",
+      "length": 74,
+      "id": 371
+    },
+    {
+      "text": "Ich beklage mich nicht. Ich artikuliere lediglich mein Missfallen.",
+      "source": "Skulduggery Pleasant – Passage der Totenbeschwörer",
+      "length": 66,
+      "id": 372
+    },
+    {
+      "text": "Aber ein ganzer Nachmittag, an dem die Leute uns sagen, wie toll wir sind – dem konnte ich dich einfach nicht aussetzen. Wir bauchen niemanden, der uns das sagt. Wir wissen es.",
+      "source": "Skulduggery Pleasant – Passage der Totenbeschwörer",
+      "length": 176,
+      "id": 373
+    },
+    {
+      "text": "Nein, die Tatsache, dass ich intelligenter bin, macht mich intelligenter, als du es bist, du weichgekochtes Spatzenhirn.",
+      "source": "Skulduggery Pleasant – Rebellion der Restanten",
+      "length": 120,
+      "id": 374
+    },
+    {
+      "text": "Pläne öffnen Enttäuschungen Tür und Tor.",
+      "source": "Skulduggery Pleasant – Rebellion der Restanten",
+      "length": 40,
+      "id": 375
+    },
+    {
+      "text": "Ich habe in einer Welt des Todes gelebt. Ich habe gesehen wie geliebt Menschen sterben. Manche schnell durch eine Kugel, von anderen blieb nicht genug übrig, um sie zu begraben. Jahrelang habe ich alle meine Geheimnisse bewahrt, doch nun ist die Zeit gekommen, um mich meiner Vergangenheit zu stellen. Und wenn sie mich zur Strecke bringen wollen, erwartet sie der Tod.",
+      "source": "Rambo – V: Last Blood",
+      "length": 369,
+      "id": 376
+    },
+    {
+      "text": "Wenn du dazu gezwungen wirst, ist Töten so einfach wie zu atmen.",
+      "source": "Rambo – IV",
+      "length": 64,
+      "id": 377
+    },
+    {
+      "text": "Lassen Sie mich nur eins sagen: Rambo ist der beste Frontveteran, den ich kenne. Eine fehlerfreie Kampfmaschine mit nur einem Gedanken, einen Krieg zu gewinnen den andere schon verloren haben. Und wenn gewinnen sterben heißt, dann würde er auch das, ohne nachzudenken und ohne Angst.",
+      "source": "Rambo – II",
+      "length": 283,
+      "id": 378
+    },
+    {
+      "text": "Besser jetzt die Möglichkeiten in Betracht ziehen als in zehn Jahren, wenn das Leben die Wahl eventuell begrenzt.",
+      "source": "Hich School Musical",
+      "length": 113,
+      "id": 379
+    },
+    {
+      "text": "Hoffentlich erfindet Ryan wenigstens etwas Sinnvolles, wenn er nach Hause kommt – ein Medikament oder die ewig haltbare Glühbirne.",
+      "source": "Der Soldat James Ryan",
+      "length": 130,
+      "id": 380
+    },
+    {
+      "text": "Der beste Trick, um einzuschlafen ist zu versuchen, sich wachzuhalten.",
+      "source": "Der Soldat James Ryan",
+      "length": 70,
+      "id": 381
+    },
+    {
+      "text": "Der Krieg schult uns die Sinne, weckt in uns den Willen zur Tat, vervollkommnet unsere psychische Konstitution und bringt den Mann dazu sich von jetzt auf gleich Aug in Aug als Mann mit dem Manne zu messen.",
+      "source": "Der Soldat James Ryan",
+      "length": 206,
+      "id": 382
+    },
+    {
+      "text": "Meine liebe Mrs. Ryan, es erfüllt mich mit aufrichtiger Freude, Ihnen mitteilen zu könne, dass Ihr Sohn, Private James Ryan, wohlauf ist, und sich auf dem Heimweg von den Schlachtfeldern Europas befindet. Laut Meldungen von der Front erfüllte James seine Pflicht mit großem Mut und unerschütterlicher Hingabe, selbst nachdem er von dem tragischen Verlust erfahren hatte, den Ihre Familie in diesem Feldzug zur Befreiung der Welt von Tyrannei und Unterdrückung erlitten hat. Im Namen des Kriegsministers, der United States Army, und der Bürger einer dankbaren Nation wünsche ich Ihnen von Herzen Gesundheit, und viele glückliche Jahre, mit Ihrem Sohn James an ihrer Seite.",
+      "source": "Der Soldat James Ryan",
+      "length": 671,
+      "id": 383
+    },
+    {
+      "text": "Es geht nicht darum, all seine Ängste loszuwerden. Das ist unmöglich. Es geht darum, zu lernen, seine Ängste zu beherrschen und sich von ihnen unabhängig zu machen.",
+      "source": "Die Bestimmung – Divergent",
+      "length": 164,
+      "id": 384
+    },
+    {
+      "text": "Der Verstand des Menschen kann jedes Unrecht entschuldigen, deshalb ist es so wichtig, dass wir uns nicht auf ihn verlassen.",
+      "source": "Die Bestimmung – Divergent",
+      "length": 124,
+      "id": 385
+    },
+    {
+      "text": "Es gibt so viele Möglichkeiten, in dieser Welt tapfer zu sein. Manchmal bedeutet Tapferkeit, sein Leben für etwas zu geben, das größer ist als man selbst, manchmal auch für eine andere Person. Manchmal bedeutet es, alles Vertraute hinter sich zu lassen und jeden, den man je geliebt hat, um einer größeren Sachen willen aufzugeben. Aber manchmal bedeutet es das nicht. Manchmal geht es einfach nur darum, die Zähne zusammenzubeißen, Tag für Tag seine Arbeit zu verrichten und Schritt für Schritt in ein besseres Leben zu gehen. Das ist die Tapferkeit, die ich jetzt brauche",
+      "source": "Die Bestimmung – Divergent – Letzte Entscheidung",
+      "length": 573,
+      "id": 386
+    },
+    {
+      "text": "Irgendwo habe ich mal gelesen, dass sich das Weinen wissenschaftlich nicht erklären lässt. Tränen sind nur dazu da, die Augen zu benetzen. Es gibt keinen Grund dafür, dass die Tränendrüsen nur wegen eines Gefühls mehr Tränen produzieren. Ich denke, wir weinen, damit wir den tierischen Regungen in uns Raum geben können, ohne dass wir unsere Menschlichkeit aufgeben. Denn in meinem Inneren ist ein Tier, das knurrt und schnaubt und an seinen Ketten zerrt, um in die Freiheit und vor allem ins Leben zu gelangen. Und sosehr ich mich auch bemühe, ich kann dieses Tier nicht töten. Also schluchze ich stattdessen hinter vorgehaltener Hand.",
+      "source": "Die Bestimmung – Divergent – Tödliche Wahrheit",
+      "length": 636,
+      "id": 387
+    },
+    {
+      "text": "Als Kind habe ich mir so den Himmel vorgestellt. Gleißendes weißes Licht, sonst nichts. Jetzt weiß ich, dass das nicht stimmen kann, denn grelles weißes Licht ist bedrohlich.",
+      "source": "Die Bestimmung – Divergent – Tödliche Wahrheit",
+      "length": 174,
+      "id": 388
+    },
+    {
+      "text": "Einige Vögel sind nicht dazu geschaffen eingesperrt zu werden. Sie haben ein zu glänzendes Gefieder. Und wenn sie davonfliegen, dann jubelt der Teil in mir, der weiß, dass es eine Sünde war ihn einzusperren. Und dennoch ist es da, wo man lebt trauriger und leerer, wenn sie weg sind.",
+      "source": "Die Verurteilten",
+      "length": 283,
+      "id": 389
+    },
+    {
+      "text": "Ich merke, dass ich so aufgeregt bin, dass ich kaum stillsitzen oder einen klaren Gedanken fassen kann. Ich glaube es ist eine Erregung, die nur ein Mensch der frei ist, nachempfinden kann. Ein freier Mann, der am Anfang einer langen Reise steht, deren Ende noch ungewiss ist.",
+      "source": "Die Verurteilten",
+      "length": 276,
+      "id": 390
+    },
+    {
+      "text": "Syndromes Konten sind alle gesperrt. Sollte er auch nur niesen, sind wir sofort mit 'nem Taschentuch und 'n paar Handschellen da.",
+      "source": "Die Unglaublichen",
+      "length": 129,
+      "id": 391
+    },
+    {
+      "text": "Ganz egal wie oft man die Welt rettet, sie schafft es immer wieder sich in Gefahr zu bringen. Ich meine, sie sollte endlich mal gerettet bleiben, nicht wahr? Für 'ne Weile wenigstens.",
+      "source": "Die Unglaublichen",
+      "length": 183,
+      "id": 392
+    },
+    {
+      "text": "Deine Meinung ist mir nicht annähernd wichtig genug für so 'ne Unterhaltung.",
+      "source": "Misson Impossible – III",
+      "length": 76,
+      "id": 393
+    },
+    {
+      "text": "Wie immer gilt, sollten sie oder ein Mitglied ihres IMF Teams gefangen oder getötet werden, wird der Minister jedes Wissen von ihrem Einsatz abstreiten. Dieses Band wird sich innerhalb von fünf Sekunden selbst zerstören. Viel Glück.",
+      "source": "Mission Impossible",
+      "length": 232,
+      "id": 394
+    },
+    {
+      "text": "Es gibt nur eine Person, der ich vertraue und mit der reden Sie gerade.",
+      "source": "Mortal Kombat",
+      "length": 58,
+      "id": 395
+    },
+    {
+      "text": "In der Geschichte wird in verschiedenen Kulturen der Welt immer wieder ein großes Turnier erwähnt - der Champions. Dieses Drachenmal, ich glaube es ist eine Einladung. Zur Teilnahme am sogenannten Mortal Kombat.",
+      "source": "Mortal Kombat",
+      "length": 211,
+      "id": 396
+    },
+    {
+      "text": "Eines Tages werden wir wieder vereint sein. Bis dahin wird mein Geist dir nie von der Seite weichen. Gehe in Frieden, mein Bruder.",
+      "source": "Mortal Kombat",
+      "length": 130,
+      "id": 397
+    },
+    {
+      "text": "Damit aus einem schlechten Tag ein miserabler wird, verbringe ich ihn damit, das Unmöglich zu wollen.",
+      "source": "Calvin und Hobbes",
+      "length": 101,
+      "id": 398
+    },
+    {
+      "text": "Manchmal glaube ich, der beste Beweis dafür, dass es anderswo im Weltall intelligentes Leben gibt, ist der, dass noch niemand versucht hat, Kontakt mit uns aufzunehmen.",
+      "source": "Calvin und Hobbes",
+      "length": 168,
+      "id": 399
+    },
+    {
+      "text": "Menschen hassen, was sie nicht verstehen.",
+      "source": "Batman v Superman: Dawn of Justice",
+      "length": 41,
+      "id": 400
+    },
+    {
+      "text": "Wenn ein Chinese nach Deutschland reist, kartoffelt dann ein Deutschen nach China?",
+      "source": "Unbekannt",
+      "length": 82,
+      "id": 401
+    },
+    {
+      "text": "Die Welt hat sich verändert. Und deshalb müssen auch wir uns verändern.",
+      "source": "Barack Obama",
+      "length": 71,
+      "id": 402
+    },
+    {
+      "text": "Wie soll man auf wenigen Seiten ein Leben in seiner ganzen Wahrhaftigkeit schildern? Vor allem jenes andere Leben, das wir jenseits dessen führten, was ich in diesem Tagebuch niederzuschreiben vermochte? Wie soll ich Bilanz ziehen? Die ganzen Jahre über sah ich ihn in diesen Momenten, wenn ich am Ende einer Schlacht dastand und inständig hoffte, dass er nicht gefallen war. Dann die Freude, ihn wieder zu sehen, wenn er im Feld über den verstümmelten, dampfenden Körpern seiner Gegner stand und das Schwert triumphierend in meine Richtung reckte, ein Gruß, den ich erwiderte. Ich erinnerte mich auch noch daran, wie wir Seite an Seite dastanden, als die Horde bei Tharos auf uns zustürmte. All meine Kameraden und der, den ich am meisten liebte, waren bereit, uns ihnen zu stellen. An die Ruhe, die in diesen Moment von ihm ausging, als beobachte er einen Sonnenuntergang und nicht das Ende der Welt. Seine Ruhe gab mir den Glauben, das wir es schaffen würden. Es fällt mir schwer, mich an eine Zeit zu erinnern, in der er nicht bei mir war. Ich kann all diese Empfindungen nicht richtig zu Papier bringen. Ich wünschte nur, er wäre jetzt hier, das ist alles. Wünschte, er würde nun, da ich sterbe, ein letztes Mal meine Hand halten.",
+      "source": "Schwarzer Sold",
+      "length": 1235,
+      "id": 403
+    },
+    {
+      "text": "Außerdem sind wir hier nicht im Sudan. In Wien explodieren Kinder nur an Neujahr. Wenn überhaupt.",
+      "source": "Die Alchimistin",
+      "length": 97,
+      "id": 404
+    },
+    {
+      "text": "Als ich jünger war, konnte ich nie einen Moment lang alleine sein, immer waren meine fünf Geschwister um mich herum, ständig war irgendetwas los. So was macht es schwer, herauszufinden, wer man selbst ist.",
+      "source": "Woodwalkers: Cargas Verwandlung",
+      "length": 205,
+      "id": 405
+    },
+    {
+      "text": "Während ich mich umblickte, sah ich, dass ein schmales Mädchen mit langen dunklen Haaren gerade an eine runde Schiefertafel schrieb, auf die die Schüler anscheinend Bemerkungen, Sprüche und das Motto für den Tag kritzeln durften. Doch dieses Mädchen kritzelte nicht, sie schrieb sorgfältig, in einer schönen geschwungenen Handschrift. Sie achtete auf niemanden dabei und ich spürte die Einsamkeit, die sie umgab. Auch als sie sich wieder zu ihren Freunden an den Tisch setzte. Eine Einsamkeit, die mindestens so groß war wie meine.",
+      "source": "Woodwalkers: Cargas Verwandlung",
+      "length": 531,
+      "id": 406
+    },
+    {
+      "text": "Der Einzige, der zu all der herrlichen Liebe im Augenblick keinen rechten Zugang zu haben scheint, ist Arthur Hamilton. Jedenfalls rennt er mit einer Miene herum, als ob er im Gefängnis sitzen würde. Wenn er sich unbeobachtet fühlt, spricht er mit sich selbst. „Scheißsand. Scheißmöwen, Scheißsonnenuntergang“, hörte ich ihn neulich murmeln. Es ist nur eine Theorie, aber vielleicht ist er ja unglücklich in jemanden verliebt, den er aus den Augen verloren hat, vermutlich an einem Strand bei Sonnenuntergang.",
+      "source": "Silber – Das dritte Buch der Träume",
+      "length": 509,
+      "id": 407
+    },
+    {
+      "text": "Noch nie hatte ich mich so sehr nach der Zeit zurückgesehnt, als ein böser Traum nach dem Aufwachen wirklich nichts als ein böser Traum gewesen war. In meiner Kehle hatte sich ein dicker Klumpen gebildet, weil die Tränen, die ich im Traum geweint hatte, sich dort angesammelt hatten. Aber ich wusste, wenn ich dem Drang nachgab, würde es wie bei einem Dammbruch sein - nicht mehr zu stoppen.",
+      "source": "Silber – Das zweite Buch der Träume",
+      "length": 391,
+      "id": 408
+    },
+    {
+      "text": "Wenn man das Unmögliche ausgeschlossen hat, muss das, was übrig bleibt, die Wahrheit sein, so unwahrscheinlich sie auch klingen mag. Nur, was blieb übrig, wenn man das Unmögliche eben nicht ausschließen konnte?",
+      "source": "Silber",
+      "length": 210,
+      "id": 409
+    },
+    {
+      "text": "Henry hatte sich nicht verändert. Er antwortete nur auf Fragen, die ihm gefielen. aber das störte mich nicht besonders. Jeder Mensch braucht seine Geheimnisse, und Henry brauchte offenbar mehr als andere Menschen.",
+      "source": "Silber – Das erste Buch der Träume",
+      "length": 213,
+      "id": 410
+    },
+    {
+      "text": "Aber bis dahin kann ich eine Menge falsch machen, wenn nicht sogar eine weltweite Krise auslösen. Fragen sie mal Giordano. Ein falsches Lächeln, eine falsche Referenz, die falsche Kommunikation - und puff! Das 18. Jahrhundert steht in Brand.",
+      "source": "Edelstein Trilogie – Smaragdgrün",
+      "length": 241,
+      "id": 411
+    },
+    {
+      "text": "Alle Montroses lieben Geheimnisse. Das war schon immer so. Nur deshalb hat mein unglückseliger Bruder deine Großmutter überhaupt geheiratet, wenn du mich fragst. Ihr liebreizender Charme kann es auf keinen Fall gewesen sein, denn sie hatte keinen.",
+      "source": "Edelstein Trilogie",
+      "length": 247,
+      "id": 412
+    },
+    {
+      "text": "Soldaten und Kinder tun, was man ihnen sagt. Kinder wachsen irgendwann darüber hinaus, aber Soldaten sterben einfach nur.",
+      "source": "Zwischen den Welten -Daugther of Smoke and Bone – Dreams",
+      "length": 121,
+      "id": 413
+    },
+    {
+      "text": "Es war einmal, da lag ein Engel im Nebel und rang mit dem Tod. Und ein Teufel kniete über ihm und lächelte.",
+      "source": "Zwischen den Welten – Daughter of Smoke and Bone ",
+      "length": 107,
+      "id": 414
+    },
+    {
+      "text": "Als die Welt noch jung und unkompliziert war und keiner der gefallenen Engel sich schon in die Richtung gewandt hatte, in die er sich schließlich wenden würde, hatten Arriane und Tessriel einander immer Lebewohl gesagt, um wieder Hallo zu sagen, und immer trafen und trennten sich ihre Lippen in einem Kuss.",
+      "source": "Engelszeiten",
+      "length": 307,
+      "id": 415
+    },
+    {
+      "text": "Manchmal ging es in der Liebe nichts ums Gewinnen, sondern um ein kluges Opfer und die Verlässlichkeit von Freunden wie Arriane. Freundschaft, begriff Roland, war eine ganz eigene Art von Liebe.",
+      "source": "Engelszeiten",
+      "length": 194,
+      "id": 416
+    },
+    {
+      "text": "Die Menschen, denen du am meisten vertraust, sind auch die, die dich am meisten verletzten werden.",
+      "source": "First",
+      "length": 98,
+      "id": 417
+    },
+    {
+      "text": "Die Welt sieht nur das, was du ihr zu sehen erlaubst, und sie beurteilt dich nach dem, was du ihr enthüllst",
+      "source": "Der verlorene Thron",
+      "length": 107,
+      "id": 418
+    },
+    {
+      "text": "Um zu erreichen, was man will, muss man wissen, was man zu opfern bereit ist.",
+      "source": "Das Duell der Prinzen",
+      "length": 77,
+      "id": 419
+    },
+    {
+      "text": "Zyniker sagen, das Sterben beginne mit der Geburt. Wie jede polarisierte These enthält auch diese drastische Aussage ein Fünkchen Wahrheit. Jeder Mensch erreicht irgendwann einen Punkt, in dem sein Leben endet und das Sterben beginnt. Eine unendlich kleine, aber messbare, logische Sekunde, in der wir eine unsichtbare Grenze überschreiten, die den Wendepunkt unseres Daseins markiert. Hinter der Grenze liegt dann all das, was wir einst als Zukunft betrachtet haben. Und vor uns ist nur noch der Tod. Kaum jemand überschreitet sie wissentlich. Nur wenige Menschen können sagen, wann ihre Lebensphase endet und das Sterben beginnt.",
+      "source": "Der Augensammler",
+      "length": 631,
+      "id": 420
+    },
+    {
+      "text": "Wir hinterfragen meist nur unsere Fehler. Nie unsere Erfolge. Wenn etwas gutgeht, nehmen wir es als gottgegeben hin. Wir grämen uns, wenn wir Geld verlieren oder von der Liebe unseres Lebens verlassen werden. Doch weshalb sie bei uns bleibt, fragen wir uns ebenso selten, wie wir uns über eine bestandene Prüfung wundern. Dabei sind es meiner Meinung nach weniger die Fehler, aus denen wir Menschen lernen können, als die Erfolge, die wir nicht verdienen.",
+      "source": "Der Augensammler",
+      "length": 455,
+      "id": 421
+    },
+    {
+      "text": "Gott hat sich gedacht, wenn er den Menschen das Bewusstsein der Sterblichkeit gibt, dann schafft er ein Paradies auf Erden. Eine Welt voller Individuen, die um die Endlichkeit ihres Lebens wissen und daher die kurze Zeit, die ihnen gegeben ist, sinnvoll nutzen werden.",
+      "source": "Der Augensammler",
+      "length": 268,
+      "id": 422
+    },
+    {
+      "text": "Aber ich glaube nun mal an die Macht der Liebe; Liebe ist eine einzigartige bewegliche Zauberkraft. Ich bezweifele, dass sie in den Sternen steht, aber ich glaube, dass Blut an Blut appelliert, Verstand an Verstand und Herz an Herz.",
+      "source": "Der Anschlag",
+      "length": 232,
+      "id": 423
+    },
+    {
+      "text": "Ich versuchte zu schreien. Aber es kam kein Laut heraus. Meine Stimmbänder haben einfach nicht mitgemacht. Alles in mir war ein Schrei. Ein stummer Schrei, den niemand hören konnte.",
+      "source": "3096 Tage",
+      "length": 181,
+      "id": 424
+    },
+    {
+      "text": "Weil er an Wunder glaubt, geschehen auch Wunder. Weil er sich sicher ist, dass seine Gedanken sein Leben verändern können, verändert sich sein Leben. Weil er sicher ist, dass er der Liebe begegnen wird, begegnet ihm diese Liebe auch.",
+      "source": "Handbuch des Kriegers des Lichts",
+      "length": 233,
+      "id": 425
+    },
+    {
+      "text": "Man ertrinkt nicht, weil man unter Wasser taucht, sondern weil man unter Wasser bleibt.",
+      "source": "Handbuch des Kriegers des Lichts",
+      "length": 87,
+      "id": 426
+    },
+    {
+      "text": "Dann habe ich gemerkt, vielleicht ist das ja okay so. Vielleicht ist es sogar okay, wenn man jemanden liebt, obwohl man weiß, dass es irgendwann zu Ende sein wird, dass man entweder selbst stirbt oder der andere oder dass man wegzieht und den anderen nie wieder sehen wird, weil genau das bedeutet, am Leben zu sein. Darum geht es im Leben. Dass man jemanden liebt.",
+      "source": "Die Chroniken von Anbeginn - Onyx",
+      "length": 365,
+      "id": 427
+    },
+    {
+      "text": "Vor dem Sterben hatte Emma nie Angst gehabt. Aber wozu war das ganze Leben eigentlich gut, wenn sie starb und dann Kate und Michael und Gabriel einfach vergaß? Wenn sie all die Erinnerungen verlor, die sie doch ausmachten?",
+      "source": "Die Chroniken von Anbeginn – Onyx",
+      "length": 222,
+      "id": 428
+    },
+    {
+      "text": "Es ist wirklich ätzend, ein Mensch zu sein, meistens jedenfalls. Videospiele sind das Einzige, was das Leben erträglich macht.",
+      "source": "Ready Player One",
+      "length": 126,
+      "id": 429
+    },
+    {
+      "text": "Dadurch haben wir Klone gemischte Gefühle, was den Krieg angeht. Viele wünschen sich, er wäre nie ausgebrochen. Aber ohne ihn, würden wir Klone nicht existieren.",
+      "source": "Star Wars: The Clone Wars, Staffel 7 Episode 11",
+      "length": 161,
+      "id": 430
     }
   ]
 }
