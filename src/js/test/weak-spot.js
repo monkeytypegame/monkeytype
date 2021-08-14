@@ -48,7 +48,7 @@ export function getWord(wordset) {
   let highScore;
   let randomWord;
   for (let i = 0; i < wordSamples; i++) {
-    let newWord = wordset[Math.floor(Math.random() * wordset.length)];
+    let newWord = wordset.random();
     let newScore = score(newWord);
     if (i == 0 || newScore > highScore) {
       randomWord = newWord;

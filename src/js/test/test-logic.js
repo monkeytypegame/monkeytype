@@ -33,6 +33,7 @@ import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
 import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
+import * as Wordset from "./wordset";
 
 let glarsesMode = false;
 
@@ -511,9 +512,9 @@ export async function init() {
     if (Config.funbox === "plus_two") {
       wordsBound = 3;
     }
-    let wordset = language.words;
+    let wordset = new Wordset.Wordset(language.words);
     if (Config.mode == "custom") {
-      wordset = CustomText.text;
+      wordset = new Wordset.Wordset(CustomText.text);
     }
 
     if (Config.funbox == "poetry") {
@@ -523,7 +524,7 @@ export async function init() {
       });
     } else {
       for (let i = 0; i < wordsBound; i++) {
-        let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+        let randomWord = wordset.random();
         const previousWord = words.get(i - 1);
         const previousWord2 = words.get(i - 2);
         if (
@@ -536,7 +537,7 @@ export async function init() {
           Config.mode == "custom" &&
           (wordset.length < 3 || PractiseWords.before.mode !== null)
         ) {
-          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+          randomWord = wordset.random();
         } else {
           let regenarationCount = 0; //infinite loop emergency stop button
           while (
@@ -547,12 +548,12 @@ export async function init() {
               randomWord.indexOf(" ") > -1)
           ) {
             regenarationCount++;
-            randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+            randomWord = wordset.random();
           }
         }
 
         if (randomWord === undefined) {
-          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+          randomWord = wordset.random();
         }
 
         if (Config.funbox === "rAnDoMcAsE") {
@@ -1020,8 +1021,8 @@ export async function addWord() {
           leftToRight: await Misc.getCurrentLanguage().leftToRight,
           words: CustomText.text,
         };
-  const wordset = language.words;
-  let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+  const wordset = new Wordset.Wordset(language.words);
+  let randomWord = wordset.random();
   const previousWord = words.getLast();
   const previousWordStripped = previousWord
     .replace(/[.?!":\-,]/g, "")
@@ -1036,7 +1037,7 @@ export async function addWord() {
     (CustomText.isWordRandom || CustomText.isTimeRandom) &&
     wordset.length < 3
   ) {
-    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+    randomWord = wordset.random();
   } else if (
     Config.mode == "custom" &&
     !CustomText.isWordRandom &&
@@ -1050,12 +1051,12 @@ export async function addWord() {
       randomWord.indexOf(" ") > -1 ||
       (!Config.punctuation && randomWord == "I")
     ) {
-      randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+      randomWord = wordset.random();
     }
   }
 
   if (randomWord === undefined) {
-    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+    randomWord = wordset.random();
   }
 
   if (Config.funbox === "rAnDoMcAsE") {
