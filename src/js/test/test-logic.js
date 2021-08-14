@@ -512,9 +512,9 @@ export async function init() {
     if (Config.funbox === "plus_two") {
       wordsBound = 3;
     }
-    let wordset = new Wordset.Wordset(language.words);
+    let wordset = Wordset.withWords(language.words);
     if (Config.mode == "custom") {
-      wordset = new Wordset.Wordset(CustomText.text);
+      wordset = Wordset.withWords(CustomText.text);
     }
 
     if (Config.funbox == "poetry") {
@@ -1021,7 +1021,7 @@ export async function addWord() {
           leftToRight: await Misc.getCurrentLanguage().leftToRight,
           words: CustomText.text,
         };
-  const wordset = new Wordset.Wordset(language.words);
+  const wordset = Wordset.withWords(language.words);
   let randomWord = wordset.random();
   const previousWord = words.getLast();
   const previousWordStripped = previousWord
