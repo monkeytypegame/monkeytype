@@ -64,7 +64,7 @@ class WordGenerator extends Wordset {
 
   random() {
     let word = "";
-    for (; ;) {
+    for (;;) {
       const prefix = word.substr(-prefixSize);
       let charDistribution = this.ngrams[prefix];
       if (!charDistribution) {
@@ -89,8 +89,8 @@ export function withWords(words) {
     return currentWordGenerator;
   } else {
     if (currentWordset == null || words !== currentWordset.words) {
-    currentWordset = new Wordset(words);
-  }
+      currentWordset = new Wordset(words);
+    }
     return currentWordset;
   }
 }
