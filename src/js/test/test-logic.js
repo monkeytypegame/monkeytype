@@ -525,7 +525,7 @@ export async function init() {
       });
     } else {
       for (let i = 0; i < wordsBound; i++) {
-        let randomWord = wordset.random();
+        let randomWord = wordset.randomWord();
         const previousWord = words.get(i - 1);
         const previousWord2 = words.get(i - 2);
         if (
@@ -538,7 +538,7 @@ export async function init() {
           Config.mode == "custom" &&
           (wordset.length < 3 || PractiseWords.before.mode !== null)
         ) {
-          randomWord = wordset.random();
+          randomWord = wordset.randomWord();
         } else {
           let regenarationCount = 0; //infinite loop emergency stop button
           while (
@@ -549,12 +549,12 @@ export async function init() {
               randomWord.indexOf(" ") > -1)
           ) {
             regenarationCount++;
-            randomWord = wordset.random();
+            randomWord = wordset.randomWord();
           }
         }
 
         if (randomWord === undefined) {
-          randomWord = wordset.random();
+          randomWord = wordset.randomWord();
         }
 
         if (Config.funbox === "rAnDoMcAsE") {
@@ -1023,7 +1023,7 @@ export async function addWord() {
           words: CustomText.text,
         };
   const wordset = Wordset.withWords(language.words);
-  let randomWord = wordset.random();
+  let randomWord = wordset.randomWord();
   const previousWord = words.getLast();
   const previousWordStripped = previousWord
     .replace(/[.?!":\-,]/g, "")
@@ -1038,7 +1038,7 @@ export async function addWord() {
     (CustomText.isWordRandom || CustomText.isTimeRandom) &&
     wordset.length < 3
   ) {
-    randomWord = wordset.random();
+    randomWord = wordset.randomWord();
   } else if (
     Config.mode == "custom" &&
     !CustomText.isWordRandom &&
@@ -1052,12 +1052,12 @@ export async function addWord() {
       randomWord.indexOf(" ") > -1 ||
       (!Config.punctuation && randomWord == "I")
     ) {
-      randomWord = wordset.random();
+      randomWord = wordset.randomWord();
     }
   }
 
   if (randomWord === undefined) {
-    randomWord = wordset.random();
+    randomWord = wordset.randomWord();
   }
 
   if (Config.funbox === "rAnDoMcAsE") {
