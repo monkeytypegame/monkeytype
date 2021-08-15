@@ -11,7 +11,7 @@ class Wordset {
   }
 }
 
-const prefixSize = 3;
+const prefixSize = 2;
 
 class Gibberish extends Wordset {
   constructor(words) {
@@ -27,7 +27,7 @@ class Gibberish extends Wordset {
           this.prefixes[prefix] = [];
         }
         this.prefixes[prefix].push(c);
-        prefix = prefix.substr(-prefixSize);
+        prefix = (prefix + c).substr(-prefixSize);
       }
     }
   }
@@ -35,12 +35,13 @@ class Gibberish extends Wordset {
   random() {
     let word = '';
     for (; ;) {
-      let nextChoices = this.prefixes[word.substr(-prefixSize)];
+      const prefix = word.substr(-prefixSize);
+      let nextChoices = this.prefixes[prefix];
       if (!nextChoices) {
         word = '';
         continue;
       }
-      const nextChar = nextChoices[Math.floor(Math * nextChoices.length)];
+      const nextChar = nextChoices[Math.floor(Math.random() * nextChoices.length)];
       if (nextChar == ' ') {
         break;
       }
@@ -50,13 +51,24 @@ class Gibberish extends Wordset {
   }
 }
 
-export function withWords(words, gibberish) {
+export function withWords(words) {
   if (
     currentWordset == null ||
     words !== currentWordset.words ||
-    gibberish != (currentWordset instanceof Gibberish)
+    currentWordset instanceof Gibberish
   ) {
     currentWordset = new Wordset(words);
+  }
+  return currentWordset;
+}
+
+export function withGibberishFrom(words) {
+  if (
+    currentWordset == null ||
+    words !== currentWordset.words ||
+    !(currentWordset instanceof Gibberish)
+  ) {
+    currentWordset = new Gibberish(words);
   }
   return currentWordset;
 }

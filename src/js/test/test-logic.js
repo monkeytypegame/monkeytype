@@ -512,10 +512,13 @@ export async function init() {
     if (Config.funbox === "plus_two") {
       wordsBound = 3;
     }
-    let wordset = Wordset.withWords(language.words);
+    let wordList = language.words;
     if (Config.mode == "custom") {
-      wordset = Wordset.withWords(CustomText.text);
+      wordList = CustomText.text;
     }
+    const wordset = Config.funbox == "gibberish2"
+      ? Wordset.withGibberishFrom(wordList)
+      : Wordset.withWords(wordList);
 
     if (Config.funbox == "poetry") {
       let poem = await Poetry.getPoem();

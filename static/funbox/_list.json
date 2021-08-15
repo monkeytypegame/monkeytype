@@ -113,6 +113,11 @@
     "name": "weakspot",
     "type": "script",
     "info": "Focus on slow and mistyped letters."
+  },
+  {
+    "name": "gibberish2",
+    "type": "script",
+    "info": "Word-shaped nonsense."
   }
 ]
 
