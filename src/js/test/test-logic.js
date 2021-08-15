@@ -516,9 +516,9 @@ export async function init() {
     if (Config.mode == "custom") {
       wordList = CustomText.text;
     }
-    const wordset = Config.funbox == "gibberish2"
-      ? Wordset.withGibberishFrom(wordList)
-      : Wordset.withWords(wordList);
+    const wordset = Config.funbox == "jabberwocky"
+      ? Wordset.generateWordsFrom(wordList)
+      : Wordset.useWords(wordList);
 
     if (Config.funbox == "poetry") {
       let poem = await Poetry.getPoem();
@@ -1024,7 +1024,7 @@ export async function addWord() {
           leftToRight: await Misc.getCurrentLanguage().leftToRight,
           words: CustomText.text,
         };
-  const wordset = Wordset.withWords(language.words);
+  const wordset = Wordset.useWords(language.words);
   let randomWord = wordset.random();
   const previousWord = words.getLast();
   const previousWordStripped = previousWord

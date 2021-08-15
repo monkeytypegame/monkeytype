@@ -13,7 +13,7 @@ class Wordset {
 
 const prefixSize = 2;
 
-class Gibberish extends Wordset {
+class WordGenerator extends Wordset {
   constructor(words) {
     super(words);
     this.length = Infinity;
@@ -51,24 +51,24 @@ class Gibberish extends Wordset {
   }
 }
 
-export function withWords(words) {
+export function useWords(words) {
   if (
     currentWordset == null ||
     words !== currentWordset.words ||
-    currentWordset instanceof Gibberish
+    currentWordset instanceof WordGenerator
   ) {
     currentWordset = new Wordset(words);
   }
   return currentWordset;
 }
 
-export function withGibberishFrom(words) {
+export function generateWordsFrom(words) {
   if (
     currentWordset == null ||
     words !== currentWordset.words ||
-    !(currentWordset instanceof Gibberish)
+    !(currentWordset instanceof WordGenerator)
   ) {
-    currentWordset = new Gibberish(words);
+    currentWordset = new WordGenerator(words);
   }
   return currentWordset;
 }
