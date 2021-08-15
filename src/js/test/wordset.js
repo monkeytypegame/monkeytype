@@ -45,14 +45,13 @@ class CharDistribution {
 
 class WordGenerator extends Wordset {
   constructor(words) {
-    console.log("WordGenerator...");
     super(words);
     this.length = Infinity;
 
     this.ngrams = {};
     for (let word of words) {
-      word += ' ';
-      let prefix = '';
+      word += " ";
+      let prefix = "";
       for (const c of word) {
         if (!(prefix in this.ngrams)) {
           this.ngrams[prefix] = new CharDistribution();
@@ -61,20 +60,19 @@ class WordGenerator extends Wordset {
         prefix = (prefix + c).substr(-prefixSize);
       }
     }
-    console.log("...done");
   }
 
   random() {
-    let word = '';
+    let word = "";
     for (; ;) {
       const prefix = word.substr(-prefixSize);
       let charDistribution = this.ngrams[prefix];
       if (!charDistribution) {
-        word = '';
+        word = "";
         continue;
       }
       const nextChar = charDistribution.random();
-      if (nextChar == ' ') {
+      if (nextChar == " ") {
         break;
       }
       word += nextChar;
