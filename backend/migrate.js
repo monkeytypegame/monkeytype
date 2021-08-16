@@ -116,6 +116,10 @@ async function migrateUsers() {
         if (userData.completedTests)
           mongoUser.oldTypingStats.completedTests = userData.completedTests;
         if (userData.discordId) mongoUser.discordId = userData.discordId;
+        if (userData.banned) mongoUser.banned = userData.banned;
+        if (userData.verified) mongoUser.verified = userData.verified;
+        //banned
+        //verified
         if (userData.startedTests)
           mongoUser.oldTypingStats.startedTests = userData.startedTests;
         if (userData.timeTyping)
@@ -143,117 +147,117 @@ async function migrateUsers() {
 
         mongoUser.tags = mongoUserTags;
 
-        if (fulllog) console.log(`${uid} migrating config`);
-        if (userData.config) {
-          await mongoDB()
-            .collection("configs")
-            .updateOne(
-              { uid: UIDOVERRIDE ? UIDOVERRIDE : uid },
-              {
-                $set: {
-                  uid: UIDOVERRIDE ? UIDOVERRIDE : uid,
-                  config: userData.config,
-                },
-              },
-              { upsert: true }
-            );
-        }
+        // if (fulllog) console.log(`${uid} migrating config`);
+        // if (userData.config) {
+        //   await mongoDB()
+        //     .collection("configs")
+        //     .updateOne(
+        //       { uid: UIDOVERRIDE ? UIDOVERRIDE : uid },
+        //       {
+        //         $set: {
+        //           uid: UIDOVERRIDE ? UIDOVERRIDE : uid,
+        //           config: userData.config,
+        //         },
+        //       },
+        //       { upsert: true }
+        //     );
+        // }
 
-        if (fulllog) console.log(`${uid} migrating presets`);
-        let presetsSnapshot = await db.collection(`users/${uid}/presets`).get();
-        await presetsSnapshot.forEach(async (presetDoc) => {
-          let presetData = presetDoc.data();
-          let newpreset = {
-            uid: UIDOVERRIDE ? UIDOVERRIDE : uid,
-            name: presetData.name,
-          };
-          if (presetData.config) newpreset.config = presetData.config;
-          await mongoDB().collection("presets").insertOne(newpreset);
-        });
+        // if (fulllog) console.log(`${uid} migrating presets`);
+        // let presetsSnapshot = await db.collection(`users/${uid}/presets`).get();
+        // await presetsSnapshot.forEach(async (presetDoc) => {
+        //   let presetData = presetDoc.data();
+        //   let newpreset = {
+        //     uid: UIDOVERRIDE ? UIDOVERRIDE : uid,
+        //     name: presetData.name,
+        //   };
+        //   if (presetData.config) newpreset.config = presetData.config;
+        //   await mongoDB().collection("presets").insertOne(newpreset);
+        // });
 
-        let lastcount = 0;
-        let limit = 1000;
-        let lastdoc = "start";
-        let total = 0;
-        let newStats = {
-          completedTests: 0,
-          startedTests: 0,
-          timeTyping: 0,
-        };
-        if (fulllog) console.log(`${uid} migrating results`);
-        do {
-          if (fulllog) console.log(`${total} so far`);
-          let resultsSnapshot;
-          if (lastdoc === "start") {
-            resultsSnapshot = await db
-              .collection(`users/${uid}/results`)
-              .orderBy("timestamp", "desc")
-              .limit(limit)
-              .get();
-          } else {
-            resultsSnapshot = await db
-              .collection(`users/${uid}/results`)
-              .orderBy("timestamp", "desc")
-              .startAfter(lastdoc)
-              .limit(limit)
-              .get();
-          }
-          await resultsSnapshot.forEach(async (resultDoc) => {
-            let resultData = resultDoc.data();
-            resultData.uid = UIDOVERRIDE ? UIDOVERRIDE : uid;
-            if (resultData.tags && resultData.tags.length > 0) {
-              resultData.tags = resultData.tags.map((tag) => tagPairs[tag]);
-            }
-            if (!resultData.charStats) {
-              resultData.charStats = [
-                resultData.correctChars,
-                resultData.incorrectChars,
-              ];
-            }
-            delete resultData.correctChars;
-            delete resultData.incorrectChars;
-            delete resultData.allChars;
-            delete resultData.keySpacing;
-            delete resultData.keyDuration;
-            delete resultData.theme;
-            delete resultData.name;
+        // let lastcount = 0;
+        // let limit = 1000;
+        // let lastdoc = "start";
+        // let total = 0;
+        // let newStats = {
+        //   completedTests: 0,
+        //   startedTests: 0,
+        //   timeTyping: 0,
+        // };
+        // if (fulllog) console.log(`${uid} migrating results`);
+        // do {
+        //   if (fulllog) console.log(`${total} so far`);
+        //   let resultsSnapshot;
+        //   if (lastdoc === "start") {
+        //     resultsSnapshot = await db
+        //       .collection(`users/${uid}/results`)
+        //       .orderBy("timestamp", "desc")
+        //       .limit(limit)
+        //       .get();
+        //   } else {
+        //     resultsSnapshot = await db
+        //       .collection(`users/${uid}/results`)
+        //       .orderBy("timestamp", "desc")
+        //       .startAfter(lastdoc)
+        //       .limit(limit)
+        //       .get();
+        //   }
+        //   await resultsSnapshot.forEach(async (resultDoc) => {
+        //     let resultData = resultDoc.data();
+        //     resultData.uid = UIDOVERRIDE ? UIDOVERRIDE : uid;
+        //     if (resultData.tags && resultData.tags.length > 0) {
+        //       resultData.tags = resultData.tags.map((tag) => tagPairs[tag]);
+        //     }
+        //     if (!resultData.charStats) {
+        //       resultData.charStats = [
+        //         resultData.correctChars,
+        //         resultData.incorrectChars,
+        //       ];
+        //     }
+        //     delete resultData.correctChars;
+        //     delete resultData.incorrectChars;
+        //     delete resultData.allChars;
+        //     delete resultData.keySpacing;
+        //     delete resultData.keyDuration;
+        //     delete resultData.theme;
+        //     delete resultData.name;
 
-            //remove the default fields here
-            if (resultData.bailedOut === false) delete resultData.bailedOut;
-            if (resultData.blindMode === false) delete resultData.blindMode;
-            if (resultData.difficulty === "normal")
-              delete resultData.difficulty;
-            if (resultData.funbox === "none") delete resultData.funbox;
-            if (resultData.language === "english") delete resultData.language;
-            if (resultData.numbers === false) delete resultData.numbers;
-            if (resultData.punctuation === false) delete resultData.punctuation;
+        //     //remove the default fields here
+        //     if (resultData.bailedOut === false) delete resultData.bailedOut;
+        //     if (resultData.blindMode === false) delete resultData.blindMode;
+        //     if (resultData.difficulty === "normal")
+        //       delete resultData.difficulty;
+        //     if (resultData.funbox === "none") delete resultData.funbox;
+        //     if (resultData.language === "english") delete resultData.language;
+        //     if (resultData.numbers === false) delete resultData.numbers;
+        //     if (resultData.punctuation === false) delete resultData.punctuation;
 
-            if (resultData.mode !== "custom") delete resultData.customText;
+        //     if (resultData.mode !== "custom") delete resultData.customText;
 
-            newStats.completedTests++;
-            if (resultData.restartCount) {
-              newStats.startedTests += resultData.restartCount + 1;
-            } else {
-              newStats.startedTests++;
-            }
-            if (resultData.testDuration) {
-              newStats.timeTyping += parseFloat(resultData.testDuration);
-            }
-            if (resultData.incompleteTestSeconds) {
-              newStats.timeTyping += resultData.incompleteTestSeconds;
-            }
-            await mongoDB().collection("results").insertOne(resultData);
-          });
-          lastcount = resultsSnapshot.docs.length;
-          lastdoc = resultsSnapshot.docs[resultsSnapshot.docs.length - 1];
-          total += lastcount;
-        } while (lastcount > 0);
+        //     newStats.completedTests++;
+        //     if (resultData.restartCount) {
+        //       newStats.startedTests += resultData.restartCount + 1;
+        //     } else {
+        //       newStats.startedTests++;
+        //     }
+        //     if (resultData.testDuration) {
+        //       newStats.timeTyping += parseFloat(resultData.testDuration);
+        //     }
+        //     if (resultData.incompleteTestSeconds) {
+        //       newStats.timeTyping += resultData.incompleteTestSeconds;
+        //     }
+        //     await mongoDB().collection("results").insertOne(resultData);
+        //   });
+        //   lastcount = resultsSnapshot.docs.length;
+        //   lastdoc = resultsSnapshot.docs[resultsSnapshot.docs.length - 1];
+        //   total += lastcount;
+        // } while (lastcount > 0);
 
-        if (fulllog) console.log(`${uid} migrated ${total} results`);
+        // if (fulllog) console.log(`${uid} migrated ${total} results`);
 
-        mongoUser.completedTests = newStats.completedTests;
-        mongoUser.startedTests = newStats.startedTests;
-        mongoUser.timeTyping = newStats.timeTyping;
+        // mongoUser.completedTests = newStats.completedTests;
+        // mongoUser.startedTests = newStats.startedTests;
+        // mongoUser.timeTyping = newStats.timeTyping;
 
         if (fulllog) console.log(`${uid} migrating user doc`);
         await mongoDB()
@@ -266,12 +270,10 @@ async function migrateUsers() {
             { upsert: true }
           );
 
-        console.log(
-          `${uid} migrated \t\t ${userData.name} \t\t ${total} results`
-        );
+        console.log(`${uid} migrated \t\t ${userData.name} \t\t`);
         fs.appendFileSync(
           "log_success.txt",
-          `${uid}\t\t${userData.name}\t\t${total}\n`,
+          `${uid}\t\t${userData.name}\t\t`,
           "utf8"
         );
       } catch (err) {
