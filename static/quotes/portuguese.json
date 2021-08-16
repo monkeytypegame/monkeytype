@@ -1,10 +1,22 @@
 {
   "language": "portuguese",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -228,6 +240,96 @@
       "source": "Ashley Audrain, O Impulso",
       "length": 444,
       "id": 36
+    },
+    {
+      "text": "Mas isso não interessa. Talvez o começo do caos não esteja em 2010, na nossa chegada ao Rio, e sim anos depois, quando já estávamos estabelecidos e tínhamos terminado a faculdade. Uma noite em especial cisma de voltar à minha mente. Era março de 2015, nós ainda morávamos juntos, o calor carioca havia diminuído e subia uma brisa gostosa do mar de Copacabana.",
+      "source": "Raphael Montes, Jantar secreto",
+      "length": 359,
+      "id": 37
+    },
+    {
+      "text": "Considerando-se os traumatismos causados pela implantação da ordem burguesa, compreende-se que esse veio cultural não fosse nem único nem homogêneo. As suas diferenças internas somava-se a existência paralela de um pensamento restaurados e um protesto romântico.",
+      "source": "José Paulo Netto, O que é marxismo",
+      "length": 262,
+      "id": 38
+    },
+    {
+      "text": "Outra equipe levantou as calças dele e então o levaram para casa junto com seu cachorro. Depois disso dependia dele manter segredo de tudo. E não, não esperávamos mais nenhuma repressão ao clube da luta.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 203,
+      "id": 39
+    },
+    {
+      "text": "Gerações têm trabalhado em empregos que odeiam para poder comprar coisas de que realmente não precisam - não temos uma grande depressão, mas na verdade temos, sim, é uma grande guerra de espírito. Temos uma grande revolução contra a cultura. A grande depressão é a nossa vida. Temos uma depressão espiritual.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 308,
+      "id": 40
+    },
+    {
+      "text": "Às vezes você faz algo e se ferra. E às vezes as coisas que você não faz é que ferram você.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 91,
+      "id": 41
+    },
+    {
+      "text": "Esta é a terceira regra do clube da luta, quando alguém diz \"pare\" ou fica desacordado, mesmo que esteja fingindo, a luta acaba. Toda hora você vê aquele garoto, e não pode elogiá-lo pela grande luta que teve.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 209,
+      "id": 42
+    },
+    {
+      "text": "A primeira regra do clube da luta é que você não fala sobre o clube da luta.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 76,
+      "id": 43
+    },
+    {
+      "text": "Ele levanta a sobrancelha e diz que algumas pessoas vão viajar e deixam uma vela acesa daquelas bem grandes em cima de uma poça de gasolina. Pessoas em dificuldades financeiras fazem esse tipo de coisa. Pessoas que querem sair do buraco.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 237,
+      "id": 44
+    },
+    {
+      "text": "Então você fica preso em seu belo ninho e as coisas que costumavam ser suas agora mandam em você.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 97,
+      "id": 45
+    },
+    {
+      "text": "Um monte de soldados de bicicletas motorizadas circula de um lado para o outro, gritando e acenando para as pessoas em uma língua estrangeira. Todos os soldados têm armas. Nenhuma das outras pessoas tem armas. Parece que os soldados querem que as pessoas andem mais rápido.",
+      "source": "Morris Gleitzman, Uma vez",
+      "length": 273,
+      "id": 46
+    },
+    {
+      "text": "O prédio onde estamos não vai estar mais aqui em dez minutos. Pegue uma medida de vapor de ácido nítrico concentrado a noventa e oito porcento e adicione mais três medidas de ácido sulfúrico. Faça isso em uma banheira de gelo. Depois adicione glicerina com um conta-gotas, uma gota de cada vez. Assim conseguirá nitroglicerina. Sei disso porque Tyler sabe.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 356,
+      "id": 47
+    },
+    {
+      "text": "Nos esquecemos completamente das manias de assassinato e suicídio de Tyler enquanto assitimos a outro arquivo deslizar pela lateral do prédio e cair, as gavetas se abrirem no ar e pilhas de papéis branos serem apanhados por uma corrente de ar e se espalharem no vento.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 268,
+      "id": 48
+    },
+    {
+      "text": "Os ombros de Bob se levantam quando ele respira fundo e então caem, caem e caem em soluços convulsivos.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 103,
+      "id": 49
+    },
+    {
+      "text": "Chorar é o que sobra na escuridão asfixiante de dentro de outra pessoa, quando você vê que tudo o que já conseguiu na vida terminará no lixo.",
+      "source": "Chuck Palahniuk, Clube da luta",
+      "length": 141,
+      "id": 50
+    },
+    {
+      "text": "O visto para os Estados Unidos deve ter ficado pronto. Meus pais estavam tentando conseguir vistos antes de me levarem para o orfanato. Por isso eles venderam a livraria para poderem abrir outra nos Estados Unidos. Uma vez meu pai me contou uma história sobre um judeu que era livreiro nos Estados Unidos. lá as estantes são feitas de ouro maciço.",
+      "source": "Morris Gleitzman, Uma vez",
+      "length": 347,
+      "id": 51
     }
   ]
 }
