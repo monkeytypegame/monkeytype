@@ -70,18 +70,27 @@
     <meta name="twitter:title" content="Monkeytype" />
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <script type="text/javascript">
+    <!-- <script type="text/javascript">
       window["nitroAds"] = window["nitroAds"] || {
         createAd: function () {
           window.nitroAds.queue.push(["createAd", arguments]);
         },
         queue: [],
       };
-    </script>
-    <script async src="https://s.nitropay.com/ads-693.js"></script>
+    </script> -->
+    <!-- <script async src="https://s.nitropay.com/ads-693.js"></script> -->
+    <script
+      src="https://hb.vntsm.com/v3/live/ad-manager.min.js"
+      type="text/javascript"
+      data-site-id="60b78af12119122b8958910f"
+      data-mode="scan"
+      id="adScript"
+      async
+    ></script>
   </head>
   <div class="customBackground"></div>
   <body>
+    <div id="ad_rich_media" class="hidden"></div>
     <div id="backgroundLoader" style="display: none"></div>
     <div id="notificationCenter">
       <div class="history"></div>
@@ -98,23 +107,31 @@
     >
       Important information about your account. Please click this message.
     </div>
-    <div
-      class="merchBanner hidden"
-      style="
-        background-color: var(--main-color);
-        padding: 0.5rem;
-        text-align: center;
-        color: var(--bg-color);
-      "
-    >
-      Check out our new merchandise over at
-      <a href="https://monkeytype.store" target="_blank">monkeytype.store</a>
-      . We've got some awesome designs for you.
+    <div class="merchBanner hidden">
+      <img src="images/merchdropwebsite2.png" alt="" />
+      <div class="text">
+        We've got brand new merch designs over at
+        <a href="https://monkeytype.store" target="_blank">monkeytype.store</a>
+      </div>
       <i class="fas closeButton fa-times"></i>
     </div>
 
     <div id="simplePopupWrapper" class="hidden">
       <div id="simplePopup" popupId=""></div>
+    </div>
+
+    <div id="practiseWordsPopupWrapper" class="hidden">
+      <div id="practiseWordsPopup" action="">
+        <div class="title">Practice words</div>
+        <div class="text">
+          This will start a new test in custom mode. Words that you mistyped
+          more often or words that you typed much slower will be weighted higher
+          and appear more often.
+        </div>
+        <div class="button missed" tabindex="1">Practice missed</div>
+        <div class="button slow" tabindex="1">Practice slow</div>
+        <div class="button both" tabindex="1">Practice both</div>
+      </div>
     </div>
 
     <div id="settingsImportWrapper" class="hidden">
@@ -277,11 +294,13 @@
     </div>
     <div id="leaderboardsWrapper" class="hidden">
       <div id="leaderboards">
-        <div class="mainTitle">Leaderboards</div>
-        <div class="buttons">
-          <div class="buttonGroup">
-            <div class="button active" board="time_15">time 15</div>
-            <div class="button" board="time_60">time 60</div>
+        <div class="leaderboardsTop">
+          <div class="mainTitle">Leaderboards</div>
+          <div class="buttons">
+            <div class="buttonGroup">
+              <div class="button active" board="time_15">time 15</div>
+              <div class="button" board="time_60">time 60</div>
+            </div>
           </div>
         </div>
         <div class="tables">
@@ -908,7 +927,18 @@
     </div>
     <div id="commandLineWrapper" class="hidden">
       <div id="commandLine">
-        <input type="text" class="input" placeholder="Type to search" />
+        <div
+          style="
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+          "
+        >
+          <div class="searchicon">
+            <i class="fas fa-search"></i>
+          </div>
+          <input type="text" class="input" placeholder="Type to search" />
+        </div>
         <div class="separator hidden"></div>
         <div class="listTitle">Title</div>
         <div class="suggestions"></div>
@@ -921,7 +951,6 @@
       <div id="timer" class="timerMain"></div>
     </div>
     <div style="display: flex; justify-content: space-around">
-      <div id="nitropay_ad_left" class="hidden"></div>
       <div id="centerContent" class="hidden">
         <div id="top">
           <div class="logo">
@@ -1112,8 +1141,6 @@
               </div>
               <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
-              <div id="caret" class="default size15"></div>
-              <div id="paceCaret" class="default size15 hidden"></div>
               <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
               <div id="timerNumber" class="timerMain">
                 <div>60</div>
@@ -1129,6 +1156,8 @@
                 Click or press any key to focus
               </div>
               <div id="wordsWrapper">
+                <div id="paceCaret" class="default size15 hidden"></div>
+                <div id="caret" class="default size15"></div>
                 <div id="words" class="size15"></div>
               </div>
               <div class="keymap hidden">
@@ -1429,123 +1458,128 @@
                 <!-- <div class="title">wpm over time</div> -->
                 <canvas id="wpmChart"></canvas>
               </div>
-              <div id="resultWordsHistory" class="hidden">
-                <div class="title">
-                  input history
-                  <span
-                    id="copyWordsListButton"
-                    class="icon-button"
-                    aria-label="Copy words list"
-                    data-balloon-pos="up"
-                    style="display: inline-block"
-                  >
-                    <i class="fas fa-copy"></i>
-                  </span>
-                  <span
-                    id="toggleBurstHeatmap"
-                    class="icon-button"
-                    aria-label="Toggle burst heatmap"
-                    data-balloon-pos="up"
-                    style="display: inline-block"
-                  >
-                    <i class="fas fa-fire-alt"></i>
-                  </span>
-                  <div class="heatmapLegend hidden">
-                    <div>slow</div>
-                    <div class="boxes">
-                      <div class="box"></div>
-                      <div class="box"></div>
-                      <div class="box"></div>
-                      <div class="box"></div>
-                      <div class="box"></div>
-                    </div>
-                    <div>fast</div>
-                  </div>
-                </div>
-                <div class="words"></div>
-              </div>
-              <div id="resultReplay" class="hidden">
-                <div class="title">
-                  watch replay
-                  <span
-                    id="playpauseReplayButton"
-                    class="icon-button"
-                    aria-label="Start replay"
-                    data-balloon-pos="up"
-                    style="display: inline-block"
-                  >
-                    <i class="fas fa-play"></i>
-                  </span>
-                  <p id="replayStopwatch">0s</p>
-                </div>
-                <div id="wordsWrapper">
-                  <div id="replayWords" class="words"></div>
-                </div>
-              </div>
               <div class="loginTip">
                 <a href="/login" tabindex="9">Sign in</a>
                 to save your results
               </div>
-              <div class="ssWatermark hidden">monkeytype.com</div>
-              <div class="buttons">
-                <div
-                  id="nextTestButton"
-                  aria-label="Next test"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="fas fa-fw fa-chevron-right"></i>
+              <div class="bottom" style="grid-column: 1/3">
+                <div id="resultWordsHistory" class="hidden">
+                  <div class="title">
+                    input history
+                    <span
+                      id="copyWordsListButton"
+                      class="icon-button"
+                      aria-label="Copy words list"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="fas fa-copy"></i>
+                    </span>
+                    <span
+                      id="toggleBurstHeatmap"
+                      class="icon-button"
+                      aria-label="Toggle burst heatmap"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="fas fa-fire-alt"></i>
+                    </span>
+                    <div class="heatmapLegend hidden">
+                      <div>slow</div>
+                      <div class="boxes">
+                        <div class="box"></div>
+                        <div class="box"></div>
+                        <div class="box"></div>
+                        <div class="box"></div>
+                        <div class="box"></div>
+                      </div>
+                      <div>fast</div>
+                    </div>
+                  </div>
+                  <div class="words"></div>
                 </div>
-                <div
-                  id="restartTestButtonWithSameWordset"
-                  aria-label="Repeat test"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="fas fa-fw fa-sync-alt"></i>
+                <div id="resultReplay" class="hidden">
+                  <div class="title">
+                    watch replay
+                    <span
+                      id="playpauseReplayButton"
+                      class="icon-button"
+                      aria-label="Start replay"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="fas fa-play"></i>
+                    </span>
+                    <p id="replayStopwatch">0s</p>
+                  </div>
+                  <div id="wordsWrapper">
+                    <div id="replayWords" class="words"></div>
+                  </div>
                 </div>
-                <div
-                  id="practiseMissedWordsButton"
-                  aria-label="Practise missed words"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="fas fa-fw fa-exclamation-triangle"></i>
-                </div>
-                <div
-                  id="showWordHistoryButton"
-                  aria-label="Toggle words history"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="fas fa-fw fa-align-left"></i>
-                </div>
-                <div
-                  id="watchReplayButton"
-                  aria-label="Watch replay"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="fas fa-fw fa-backward"></i>
-                </div>
-                <div
-                  id="saveScreenshotButton"
-                  aria-label="Save screenshot"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="far fa-fw fa-image"></i>
+                <div class="buttons">
+                  <div
+                    id="nextTestButton"
+                    aria-label="Next test"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-chevron-right"></i>
+                  </div>
+                  <div
+                    id="restartTestButtonWithSameWordset"
+                    aria-label="Repeat test"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-sync-alt"></i>
+                  </div>
+                  <div
+                    id="practiseWordsButton"
+                    aria-label="Practice words"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-exclamation-triangle"></i>
+                  </div>
+                  <div
+                    id="showWordHistoryButton"
+                    aria-label="Toggle words history"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-align-left"></i>
+                  </div>
+                  <div
+                    id="watchReplayButton"
+                    aria-label="Watch replay"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-backward"></i>
+                  </div>
+                  <div
+                    id="saveScreenshotButton"
+                    aria-label="Save screenshot"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="far fa-fw fa-image"></i>
+                  </div>
                 </div>
               </div>
+              <div class="ssWatermark hidden">monkeytype.com</div>
             </div>
           </div>
           <div class="page pageAbout hidden">
+            <div class="scrollToTopButton">
+              <i class="fas fa-angle-double-up"></i>
+            </div>
             <div class="created">
               Created with love by Miodec.
               <a href="#supporters_title">Supported</a>
@@ -1609,7 +1643,7 @@
                 raw wpm and mapped onto a scale from 0 to 100.
               </p>
             </div>
-            <div id="nitropay_ad_about" class="hidden"></div>
+            <div id="ad_about1" class="hidden"></div>
             <div class="section">
               <h1>results screen</h1>
               <p>
@@ -1743,6 +1777,7 @@
                 adding themes and more
               </p>
             </div>
+            <div id="ad_about2" class="hidden"></div>
             <div class="section">
               <h1 id="supporters_title">supporters</h1>
               <div class="supporters">
@@ -2010,6 +2045,7 @@
                 <a href="#group_dangerZone">danger zone</a>
               </div>
             </div>
+            <div id="ad_settings0" class="hidden"></div>
             <div
               id="group_account"
               class="sectionGroupTitle hidden"
@@ -2666,7 +2702,7 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div id="nitropay_ad_settings1" class="hidden"></div>
+            <div id="ad_settings1" class="hidden"></div>
 
             <div id="group_sound" class="sectionGroupTitle" group="sound">
               sound
@@ -3385,7 +3421,7 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div id="nitropay_ad_settings2" class="hidden"></div>
+            <div id="ad_settings2" class="hidden"></div>
 
             <div id="group_theme" class="sectionGroupTitle" group="theme">
               theme
@@ -3710,10 +3746,7 @@
               </div>
               <div class="section showLiveAcc">
                 <h1>live accuracy</h1>
-                <div class="text">
-                  Displays live accuracy during the test. Updates once every
-                  second.
-                </div>
+                <div class="text">Displays live accuracy during the test.</div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">
                     hide
@@ -3945,18 +3978,18 @@
             </div>
             <div class="register side">
               <div class="title">register</div>
-              <form action="" autocomplete="off">
-                <input type="text" placeholder="username" autocomplete="off" />
-                <input type="text" placeholder="email" autocomplete="off" />
+              <form action="" autocomplete="nope">
+                <input type="text" placeholder="username" autocomplete="nope" />
+                <input type="text" placeholder="email" autocomplete="nope" />
                 <input
                   type="password"
                   placeholder="password"
-                  autocomplete="off"
+                  autocomplete="new-password"
                 />
                 <input
                   type="password"
                   placeholder="verify password"
-                  autocomplete="off"
+                  autocomplete="nopeee"
                 />
                 <div class="button">
                   <i class="fas fa-user-plus"></i>
@@ -4109,7 +4142,7 @@
                 </div>
               </div>
 
-              <div id="nitropay_ad_account" class="hidden"></div>
+              <div id="ad_account" class="hidden"></div>
 
               <div class="group topFilters">
                 <!-- <div
@@ -4348,25 +4381,45 @@
                   <thead>
                     <tr>
                       <td></td>
-                      <td>wpm</td>
-                      <td>raw</td>
-                      <td>accuracy</td>
-                      <td>
+                      <td type="button" class="sortable history-wpm-header">
+                        wpm
+                      </td>
+                      <td type="button" class="sortable history-raw-header">
+                        raw
+                      </td>
+                      <td type="button" class="sortable history-acc-header">
+                        accuracy
+                      </td>
+                      <td
+                        type="button"
+                        class="sortable history-correct-chars-header"
+                      >
                         correct
                         <br />
                         chars
                       </td>
-                      <td>
+                      <td
+                        type="button"
+                        class="sortable history-incorrect-chars-header"
+                      >
                         incorrect
                         <br />
                         chars
                       </td>
-                      <td>consistency</td>
+                      <td
+                        type="button"
+                        class="sortable history-consistency-header"
+                      >
+                        consistency
+                      </td>
                       <td>mode</td>
                       <!-- <td>punctuation</td> -->
                       <td>info</td>
                       <td>tags</td>
-                      <td>date</td>
+                      <td type="button" class="sortable history-date-header">
+                        date
+                        <i class="fas fa-sort-down" aria-hidden="true"></i>
+                      </td>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -4391,56 +4444,56 @@
           </div>
           <div class="leftright">
             <div class="left">
-              <div>
+              <a href="mailto:jack@monkeytype.com" target="_blank">
+                <i class="fas fa-fw fa-envelope"></i>
+                <div class="text">Support</div>
+              </a>
+              <a href="https://github.com/Miodec/monkeytype" target="_blank">
                 <i class="fas fa-fw fa-code"></i>
-                <a href="https://github.com/Miodec/monkeytype" target="_blank">
-                  GitHub
-                </a>
-              </div>
-              <div>
+                <div class="text">GitHub</div>
+              </a>
+              <a
+                href="https://www.discord.gg/monkeytype"
+                target="_blank"
+                class="discordLink"
+              >
                 <i class="fab fa-fw fa-discord"></i>
-                <a
-                  href="https://www.discord.gg/monkeytype"
-                  target="_blank"
-                  class="discordLink"
-                >
-                  Discord
-                </a>
-              </div>
-              <div>
+                <div class="text">Discord</div>
+              </a>
+              <a href="https://twitter.com/monkeytypegame" target="_blank">
                 <i class="fab fa-fw fa-twitter"></i>
-                <a href="https://twitter.com/monkeytypegame" target="_blank">
-                  Twitter
-                </a>
-              </div>
-              <div>
+                <div class="text">Twitter</div>
+              </a>
+              <a href="terms-of-service.html" target="_blank">
+                <i class="fas fa-fw fa-file-contract"></i>
+                <div class="text">Terms</div>
+              </a>
+              <a href="security-policy.html" target="_blank">
+                <i class="fas fa-fw fa-shield-alt"></i>
+                <div class="text">Security</div>
+              </a>
+              <a href="privacy-policy.html" target="_blank">
+                <i class="fas fa-fw fa-lock"></i>
+                <div class="text">Privacy</div>
+              </a>
+              <a id="supportMeButton">
                 <i class="fas fa-fw fa-donate"></i>
-                <span id="supportMeButton">Donate</span>
-              </div>
-              <div>
-                <i class="fas fa-shield-alt"></i>
-                <a href="security-policy.html" target="_blank">Security</a>
-              </div>
-              <div>
-                <i class="fas fa-lock"></i>
-                <a href="privacy-policy.html" target="_blank">Privacy</a>
-              </div>
+                <div class="text">Donate</div>
+              </a>
             </div>
             <div class="right">
-              <div>
-                <i class="fas fa-palette"></i>
-                <span
-                  class="current-theme"
-                  aria-label="Shift-click to toggle custom theme"
-                  data-balloon-pos="left"
-                >
-                  serika dark
-                </span>
-              </div>
-              <div>
-                <i class="fas fa-code-branch"></i>
-                <span class="version">version</span>
-              </div>
+              <a
+                class="current-theme"
+                aria-label="Shift-click to toggle custom theme"
+                data-balloon-pos="left"
+              >
+                <i class="fas fa-fw fa-palette"></i>
+                <div class="text">serika dark</div>
+              </a>
+              <a class="version">
+                <i class="fas fa-fw fa-code-branch"></i>
+                <div class="text">version</div>
+              </a>
               <!-- <div>
                 <i class="fas fa-file"></i>
                 Terms & Conditions
@@ -4450,22 +4503,21 @@
         </div>
         <div class="footerads">
           <div
-            id="nitropay_ad_footer"
+            id="ad_footer"
             style="display: flex; justify-content: center; justify-self: center"
           ></div>
           <div
-            id="nitropay_ad_footer2"
+            id="ad_footer2"
             class="hidden"
             style="display: flex; justify-content: center; justify-self: center"
           ></div>
-          <div
-            id="nitropay_ad_footer3"
+          <!-- <div
+            id="ad_footer3"
             class="hidden"
             style="display: flex; justify-content: center; justify-self: center"
-          ></div>
+          ></div> -->
         </div>
       </div>
-      <div id="nitropay_ad_right" class="hidden"></div>
     </div>
   </body>
   <!-- The core Firebase JS SDK is always required and must be listed first -->

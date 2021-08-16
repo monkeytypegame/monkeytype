@@ -12,6 +12,9 @@ let mappedRoutes = {
 };
 
 export function handleInitialPageClasses(pathname) {
+  if (!mappedRoutes[pathname]) {
+    pathname = "/";
+  }
   let el = $(".page." + mappedRoutes[pathname]);
   $(el).removeClass("hidden");
   $(el).addClass("active");

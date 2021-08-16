@@ -5,7 +5,7 @@ import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import * as CustomText from "./custom-text";
 import * as TestStats from "./test-stats";
-import * as PractiseMissed from "./practise-missed";
+import * as PractiseWords from "./practise-words";
 import * as ShiftTracker from "./shift-tracker";
 import * as Focus from "./focus";
 import * as Funbox from "./funbox";
@@ -325,11 +325,16 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       } else {
         word = `(${word})`;
       }
-    } else if (Math.random() < 0.013) {
+    } else if (
+      Math.random() < 0.013 &&
+      Misc.getLastChar(previousWord) != "," &&
+      Misc.getLastChar(previousWord) != "." &&
+      Misc.getLastChar(previousWord) != ";" &&
+      Misc.getLastChar(previousWord) != ":"
+    ) {
       if (currentLanguage == "french") {
         word = ":";
-      }
-      if (currentLanguage == "greek") {
+      } else if (currentLanguage == "greek") {
         word = "·";
       } else {
         word += ":";
@@ -345,12 +350,12 @@ export function punctuateWord(previousWord, currentWord, index, maxindex) {
       Math.random() < 0.015 &&
       Misc.getLastChar(previousWord) != "," &&
       Misc.getLastChar(previousWord) != "." &&
-      Misc.getLastChar(previousWord) != ";"
+      Misc.getLastChar(previousWord) != ";" &&
+      Misc.getLastChar(previousWord) != ":"
     ) {
       if (currentLanguage == "french") {
         word = ";";
-      }
-      if (currentLanguage == "greek") {
+      } else if (currentLanguage == "greek") {
         word = "·";
       } else {
         word += ";";
@@ -529,7 +534,7 @@ export async function init() {
           randomWord = CustomText.text[i];
         } else if (
           Config.mode == "custom" &&
-          (wordset.length < 3 || PractiseMissed.before.mode !== null)
+          (wordset.length < 3 || PractiseWords.before.mode !== null)
         ) {
           randomWord = wordset[Math.floor(Math.random() * wordset.length)];
         } else {
@@ -667,6 +672,7 @@ export async function init() {
     rq.text = rq.text.replace(/\\t/gm, "\t");
     rq.text = rq.text.replace(/\\n/gm, "\n");
     rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+    rq.text = rq.text.trim();
 
     setRandomQuote(rq);
 
@@ -775,15 +781,15 @@ export function restart(
   }
 
   if (
-    PractiseMissed.before.mode !== null &&
+    PractiseWords.before.mode !== null &&
     !withSameWordset &&
     !practiseMissed
   ) {
     Notifications.add("Reverting to previous settings.", 0);
-    UpdateConfig.setMode(PractiseMissed.before.mode);
-    UpdateConfig.setPunctuation(PractiseMissed.before.punctuation);
-    UpdateConfig.setNumbers(PractiseMissed.before.numbers);
-    PractiseMissed.resetBefore();
+    UpdateConfig.setMode(PractiseWords.before.mode);
+    UpdateConfig.setPunctuation(PractiseWords.before.punctuation);
+    UpdateConfig.setNumbers(PractiseWords.before.numbers);
+    PractiseWords.resetBefore();
   }
 
   let repeatWithPace = false;
@@ -804,6 +810,7 @@ export function restart(
   LiveAcc.hide();
   LiveBurst.hide();
   TimerProgress.hide();
+  Replay.pauseReplay();
   setBailout(false);
   PaceCaret.reset();
   $("#showWordHistoryButton").removeClass("loaded");
@@ -941,7 +948,7 @@ export function restart(
             TestTimer.clear();
             if ($("#commandLineWrapper").hasClass("hidden"))
               TestUI.focusWords();
-            ChartController.result.update();
+            // ChartController.result.update();
             TestUI.updateModesNotice();
             UI.setPageTransition(false);
             // console.log(TestStats.incompleteSeconds);
@@ -1071,10 +1078,10 @@ export async function addWord() {
     randomWord = Misc.getASCII();
   }
 
-  if (Config.punctuation && Config.mode != "custom") {
+  if (Config.punctuation) {
     randomWord = punctuateWord(previousWord, randomWord, words.length, 0);
   }
-  if (Config.numbers && Config.mode != "custom") {
+  if (Config.numbers) {
     if (Math.random() < 0.1) {
       randomWord = Misc.getNumbers(4);
     }
@@ -1084,7 +1091,7 @@ export async function addWord() {
   TestUI.addWord(randomWord);
 }
 
-export function finish(difficultyFailed = false) {
+export async function finish(difficultyFailed = false) {
   if (!active) return;
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
@@ -1092,7 +1099,7 @@ export function finish(difficultyFailed = false) {
     Replay.replayGetWordsList(input.history);
   }
 
-  TestStats.recordKeypressSpacing();
+  // TestStats.recordKeypressSpacing();
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
@@ -1393,7 +1400,7 @@ export function finish(difficultyFailed = false) {
     Math.max(TestStats.keypressPerSecond.length - 5, 0)
   );
 
-  kps = kps.map((a) => a.count);
+  kps = kps.map((a) => a.count + a.mod);
 
   kps = kps.reduce((a, b) => a + b, 0);
 
@@ -1549,7 +1556,7 @@ export function finish(difficultyFailed = false) {
             Config.punctuation,
             Config.language,
             Config.difficulty
-          ).then((highestwpm) => {
+          ).then(async (highestwpm) => {
             PbCrown.hide();
             $("#result .stats .wpm .crown").attr("aria-label", "");
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
@@ -1574,6 +1581,7 @@ export function finish(difficultyFailed = false) {
                 );
               }
             }
+            let themecolors = await ThemeColors.get();
             if (lpb > 0) {
               ChartController.result.options.annotation.annotations.push({
                 enabled: false,
@@ -1581,15 +1589,15 @@ export function finish(difficultyFailed = false) {
                 mode: "horizontal",
                 scaleID: "wpm",
                 value: lpb,
-                borderColor: ThemeColors.sub,
+                borderColor: themecolors["sub"],
                 borderWidth: 1,
                 borderDash: [2, 2],
                 label: {
-                  backgroundColor: ThemeColors.sub,
+                  backgroundColor: themecolors["sub"],
                   fontFamily: Config.fontFamily.replace(/_/g, " "),
                   fontSize: 11,
                   fontStyle: "normal",
-                  fontColor: ThemeColors.bg,
+                  fontColor: themecolors["bg"],
                   xPadding: 6,
                   yPadding: 6,
                   cornerRadius: 3,
@@ -1617,6 +1625,7 @@ export function finish(difficultyFailed = false) {
             }
             $("#result .stats .tags .bottom").text("");
             let annotationSide = "left";
+            let labelAdjust = 15;
             activeTags.forEach(async (tag) => {
               let tpb = await DB.getLocalTagPB(
                 tag.id,
@@ -1659,27 +1668,30 @@ export function finish(difficultyFailed = false) {
                     mode: "horizontal",
                     scaleID: "wpm",
                     value: tpb,
-                    borderColor: ThemeColors.sub,
+                    borderColor: themecolors["sub"],
                     borderWidth: 1,
                     borderDash: [2, 2],
                     label: {
-                      backgroundColor: ThemeColors.sub,
+                      backgroundColor: themecolors["sub"],
                       fontFamily: Config.fontFamily.replace(/_/g, " "),
                       fontSize: 11,
                       fontStyle: "normal",
-                      fontColor: ThemeColors.bg,
+                      fontColor: themecolors["bg"],
                       xPadding: 6,
                       yPadding: 6,
                       cornerRadius: 3,
                       position: annotationSide,
+                      xAdjust: labelAdjust,
                       enabled: true,
                       content: `${tag.name} PB: ${tpb}`,
                     },
                   });
                   if (annotationSide === "left") {
                     annotationSide = "right";
+                    labelAdjust = -15;
                   } else {
                     annotationSide = "left";
+                    labelAdjust = 15;
                   }
                 }
               }
@@ -1942,7 +1954,7 @@ export function finish(difficultyFailed = false) {
   } else {
     $("#result .stats .source").addClass("hidden");
   }
-
+  let fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = Config.funbox;
     if (Config.funbox === "layoutfluid") {
@@ -1962,7 +1974,7 @@ export function finish(difficultyFailed = false) {
         fontFamily: Config.fontFamily.replace(/_/g, " "),
         fontSize: 11,
         fontStyle: "normal",
-        fontColor: ThemeColors.sub,
+        fontColor: fc,
         xPadding: 6,
         yPadding: 6,
         cornerRadius: 3,
@@ -2012,7 +2024,7 @@ export function finish(difficultyFailed = false) {
       $("#words").empty();
       ChartController.result.resize();
 
-      if (Config.burstHeatmap) {
+      if (Config.alwaysShowWordsHistory && Config.burstHeatmap) {
         TestUI.applyBurstHeatmap();
       }
       $("#testModesNotice").addClass("hidden");

@@ -175,7 +175,7 @@ function randomColor() {
 /**
  * @param {boolean} good Good power or not?
  */
-export function addPower(good = true, extra = false) {
+export async function addPower(good = true, extra = false) {
   if (!TestLogic.active || Config.monkeyPowerLevel === "off") return;
 
   // Shake
@@ -208,8 +208,8 @@ export function addPower(good = true, extra = false) {
     const color = ["2", "4"].includes(Config.monkeyPowerLevel)
       ? randomColor()
       : good
-      ? ThemeColors.caret
-      : ThemeColors.error;
+      ? await ThemeColors.get("caret")
+      : await ThemeColors.get("error");
     ctx.particles.push(createParticle(...coords, color));
   }
 

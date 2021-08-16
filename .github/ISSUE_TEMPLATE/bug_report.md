@@ -36,4 +36,4 @@ Sometimes things work in incognito mode, which allows me to further track down t
 - Browser Version [] <!-- e.g. 22 -->
 
 
-**Additional context** <!-- Add any other context about the problem here. -->
+**Additional context** <!-- Add any other details about the problem here. -->

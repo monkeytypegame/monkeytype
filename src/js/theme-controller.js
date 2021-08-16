@@ -21,11 +21,11 @@ export const colorVars = [
   "--colorful-error-extra-color",
 ];
 
-function updateFavicon(size, curveSize) {
+async function updateFavicon(size, curveSize) {
   let maincolor, bgcolor;
 
-  bgcolor = ThemeColors.bg;
-  maincolor = ThemeColors.main;
+  bgcolor = await ThemeColors.get("bg");
+  maincolor = await ThemeColors.get("main");
 
   if (bgcolor == maincolor) {
     bgcolor = "#111";
@@ -62,7 +62,24 @@ function clearCustomTheme() {
   });
 }
 
+let loadStyle = function (name) {
+  return new Promise((resolve, reject) => {
+    let link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.id = "currentTheme";
+    link.onload = () => {
+      resolve();
+    };
+    link.href = `themes/${name}.css`;
+
+    let headScript = document.querySelector("#currentTheme");
+    headScript.replaceWith(link);
+  });
+};
+
 export function apply(themeName) {
+  console.log(`Applying theme ${themeName}`);
   clearCustomTheme();
 
   let name = "serika_dark";
@@ -82,32 +99,37 @@ export function apply(themeName) {
     );
   }
 
+  ThemeColors.reset();
+
   $(".keymap-key").attr("style", "");
-  $("#currentTheme").attr("href", `themes/${name}.css`);
-  $(".current-theme").text(themeName.replace("_", " "));
+  // $("#currentTheme").attr("href", `themes/${name}.css`);
+  loadStyle(name).then(() => {
+    ThemeColors.update();
+    $(".current-theme .text").text(themeName.replace("_", " "));
+    if (themeName === "custom") {
+      colorVars.forEach((e, index) => {
+        document.documentElement.style.setProperty(
+          e,
+          Config.customThemeColors[index]
+        );
+      });
+    }
 
-  if (themeName === "custom") {
-    colorVars.forEach((e, index) => {
-      document.documentElement.style.setProperty(
-        e,
-        Config.customThemeColors[index]
-      );
+    try {
+      firebase.analytics().logEvent("changedTheme", {
+        theme: themeName,
+      });
+    } catch (e) {
+      console.log("Analytics unavailable");
+    }
+    ThemeColors.get().then((colors) => {
+      $(".keymap-key").attr("style", "");
+      console.log("updating chart colors");
+      ChartController.updateAllChartColors();
+      updateFavicon(32, 14);
+      $("#metaThemeColor").attr("content", colors.bg);
     });
-  }
-
-  try {
-    firebase.analytics().logEvent("changedTheme", {
-      theme: themeName,
-    });
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
-  setTimeout(() => {
-    $(".keymap-key").attr("style", "");
-    ChartController.updateAllChartColors();
-    updateFavicon(32, 14);
-    $("#metaThemeColor").attr("content", ThemeColors.main);
-  }, 500);
+  });
 }
 
 export function preview(themeName) {
@@ -174,7 +196,10 @@ export function applyCustomBackground() {
     $(".customBackground img").remove();
   } else {
     $("#words").addClass("noErrorBorder");
-    $(".customBackground").html(`<img src="${Config.customBackground}"></img>`);
+    let $img = $("<img>", {
+      src: Config.customBackground,
+    });
+    $(".customBackground").html($img);
   }
 }
 
