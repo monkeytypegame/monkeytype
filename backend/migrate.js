@@ -17,7 +17,7 @@ const admin = require("firebase-admin");
 // const { Leaderboard } = require("./models/leaderboard");
 // const { BotCommand } = require("./models/bot-command");
 
-const serviceAccount = require("./credentials/serviceAccountKey_live.json");
+const serviceAccount = require("./credentials/serviceAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
