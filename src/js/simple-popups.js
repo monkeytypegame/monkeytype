@@ -281,7 +281,7 @@ list.deleteAccount = new SimplePopup(
     },
   ],
   "This is the last time you can change your mind. After pressing the button everything is gone.",
-  "Update",
+  "Delete",
   async (password) => {
     //
     try {
