@@ -16,18 +16,10 @@
   transition: 0.5s;
 }
 
-#top .logo .top {
-  font-family: "Comic Sans MS", "Comic Sans", cursive;
-}
-
 #words .incorrect.extra {
   -webkit-transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
-}
-
-#bottom .leftright .right .current-theme .text {
-  /* font-family: "Comic Sans MS", "Comic Sans", cursive; */
 }
 
 #caret {
@@ -114,10 +106,7 @@
   background: #ff5869;
 }
 
-#menu .icon-button:nth-child(5) {
-  background: #fc76d9;
-}
-
+#menu .icon-button:nth-child(5),
 #menu .icon-button:nth-child(6) {
   background: #fc76d9;
 }
