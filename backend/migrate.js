@@ -76,7 +76,7 @@ async function migrateUsers() {
       let lastSnapshot = await db.collection("users").doc(lastId).get();
       querySnapshot = await db
         .collection("users")
-        // .where("name", "==", "Miodec")
+        .where("banned", "==", true)
         .orderBy("name")
         .startAfter(lastSnapshot)
         .limit(limit)
@@ -84,7 +84,7 @@ async function migrateUsers() {
     } else {
       querySnapshot = await db
         .collection("users")
-        // .where("name", "==", "Miodec")
+        .where("banned", "==", true)
         .orderBy("name")
         .limit(limit)
         .get();
