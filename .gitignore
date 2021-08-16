@@ -87,3 +87,4 @@ purgeCfCache.sh
 static/adtest.html
 backend/lastId.txt
 backend/log_success.txt
+backend/migrationStats.txt
