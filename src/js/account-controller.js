@@ -121,8 +121,6 @@ export async function signInWithGoogle() {
       // try {
       response = await axiosInstance.post("/user/signUp", {
         name,
-        email: signedInUser.user.email,
-        uid: signedInUser.user.uid,
       });
       // } catch (e) {
       //   let msg = e?.response?.data?.message ?? e.message;
@@ -248,6 +246,8 @@ async function signUp() {
     $(".pageLogin .register .button").removeClass("disabled");
     return;
   }
+
+  authListener();
 
   let createdAuthUser;
   try {

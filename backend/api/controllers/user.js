@@ -14,7 +14,8 @@ const fetch = require("node-fetch");
 class UserController {
   static async createNewUser(req, res, next) {
     try {
-      const { name, email, uid } = req.body;
+      const { name } = req.body;
+      const { email, uid } = req.decodedToken;
       await UsersDAO.addUser(name, email, uid);
       return res.sendStatus(200);
     } catch (e) {

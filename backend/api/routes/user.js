@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/", authenticateRequest, UserController.getUser);
 
-router.post("/signup", UserController.createNewUser);
+router.post("/signup", authenticateRequest, UserController.createNewUser);
 
 router.post("/checkName", UserController.checkName);
 
