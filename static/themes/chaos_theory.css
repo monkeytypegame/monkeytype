@@ -1,5 +1,22 @@
 /* def a better way to do most of this but it works */
 
+@keyframes changeLogo {
+  from {
+    content: url(https://i.imgur.com/Qxp0uBZ.png);
+    width: 1em;
+    height: 1em;
+    position: relative;
+    bottom: -1px;
+  }
+  to {
+    content: url(https://i.imgur.com/DramXai.png);
+    width: 1em;
+    height: 1em;
+    position: relative;
+    bottom: -1px;
+  }
+}
+
 :root {
   --bg-color: #141221;
   --main-color: #fd77d7;
@@ -46,6 +63,11 @@
   height: 1em;
   position: relative;
   bottom: -1px;
+}
+
+#bottom .leftright .right .current-theme:hover .fa-palette {
+  -webkit-transform: rotateY(180deg);
+  transition: 0.5s;
 }
 
 .config .toggleButton {
