@@ -1,3 +1,5 @@
+/* def a better way to do most of this but it works */
+
 :root {
   --bg-color: #141221;
   --main-color: #fd77d7;
@@ -10,18 +12,21 @@
   --colorful-error-extra-color: #8f3d78;
 }
 
+/* change monkey type logo */
 #top .logo .bottom {
   -webkit-transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   transition: 0.5s;
 }
 
+/* change incorrect letters to backwards */
 #words .incorrect.extra {
   -webkit-transform: rotateY(180deg);
   unicode-bidi: bidi-override;
   direction: rtl;
 }
 
+/* make the default caret an image from the set*/
 #caret {
   background-color: transparent;
   background-image: url(https://imgur.com/yN31JmJ.png);
@@ -30,10 +35,11 @@
   background-repeat: no-repeat;
 }
 
+/* needed to see image as desired */
 #caret.default {
   width: 4px;
 }
-
+/* add DotNick's logo to the theme selector at the bottom */
 #bottom .leftright .right .current-theme .fa-palette {
   content: url(https://i.imgur.com/Qxp0uBZ.png);
   width: 1em;
