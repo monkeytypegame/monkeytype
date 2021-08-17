@@ -1,9 +1,10 @@
 import * as Loader from "./loader";
 import * as DB from "./db";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as Settings from "./settings";
 import * as Config from "./config";
+import axiosInstance from "./axios-instance";
+import { config } from "dotenv";
 
 export function show(action, id, name) {
   if (action === "add") {
@@ -63,10 +64,11 @@ function hide() {
   }
 }
 
-function apply() {
+async function apply() {
   let action = $("#presetWrapper #presetEdit").attr("action");
   let inputVal = $("#presetWrapper #presetEdit input").val();
   let presetid = $("#presetWrapper #presetEdit").attr("presetid");
+
   let updateConfig = $("#presetWrapper #presetEdit label input").prop(
     "checked"
   );
@@ -81,78 +83,86 @@ function apply() {
     });
     configChanges.tags = activeTagIds;
   }
+
   hide();
   if (action === "add") {
     Loader.show();
-    CloudFunctions.addPreset({
-      uid: firebase.auth().currentUser.uid,
-      obj: {
+    let response;
+    try {
+      response = await axiosInstance.post("/presets/add", {
         name: inputVal,
         config: configChanges,
-      },
-    }).then((e) => {
+      });
+    } catch (e) {
       Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("Preset added", 1, 2);
-        DB.getSnapshot().presets.push({
-          name: inputVal,
-          config: configChanges,
-          id: e.data.id,
-        });
-        Settings.update();
-      } else if (status === -1) {
-        Notifications.add("Invalid preset name", 0);
-      } else if (status === -2) {
-        Notifications.add("You can't add any more presets", 0);
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to add preset: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Preset added", 1, 2);
+      DB.getSnapshot().presets.push({
+        name: inputVal,
+        config: configChanges,
+        _id: response.data.insertedId,
+      });
+      Settings.update();
+    }
   } else if (action === "edit") {
     Loader.show();
-    CloudFunctions.editPreset({
-      uid: firebase.auth().currentUser.uid,
-      name: inputVal,
-      presetid,
-      config: configChanges,
-    }).then((e) => {
+    let response;
+    try {
+      response = await axiosInstance.post("/presets/edit", {
+        name: inputVal,
+        _id: presetid,
+        config: updateConfig === true ? configChanges : null,
+      });
+    } catch (e) {
       Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("Preset updated", 1);
-        let preset = DB.getSnapshot().presets.filter(
-          (preset) => preset.id == presetid
-        )[0];
-        preset.name = inputVal;
-        if (configChanges) preset.config = configChanges;
-        Settings.update();
-      } else if (status === -1) {
-        Notifications.add("Invalid preset name", 0);
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to edit preset: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Preset updated", 1);
+      let preset = DB.getSnapshot().presets.filter(
+        (preset) => preset._id == presetid
+      )[0];
+      preset.name = inputVal;
+      if (updateConfig === true) preset.config = configChanges;
+      Settings.update();
+    }
   } else if (action === "remove") {
     Loader.show();
-    CloudFunctions.removePreset({
-      uid: firebase.auth().currentUser.uid,
-      presetid,
-    }).then((e) => {
+    let response;
+    try {
+      response = await axiosInstance.post("/presets/remove", {
+        _id: presetid,
+      });
+    } catch (e) {
       Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("Preset removed", 1);
-        DB.getSnapshot().presets.forEach((preset, index) => {
-          if (preset.id === presetid) {
-            DB.getSnapshot().presets.splice(index, 1);
-          }
-        });
-        Settings.update();
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to remove preset: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Preset removed", 1);
+      DB.getSnapshot().presets.forEach((preset, index) => {
+        if (preset._id === presetid) {
+          DB.getSnapshot().presets.splice(index, 1);
+        }
+      });
+      Settings.update();
+    }
   }
 }
 

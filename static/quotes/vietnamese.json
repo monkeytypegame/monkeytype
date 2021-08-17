@@ -1,22 +1,10 @@
 {
   "language": "vietnamese",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -48,6 +36,114 @@
       "source": "Ngày mai em đi, Lê Hiếu",
       "length": 194,
       "id": 5
+    },
+    {
+      "text": "Lạc vào những nỗi buồn, lạc vào nơi góc quen để một mình gặm nhấm bản nhạc buồn mới cất lên. Vòng tay đã buông rời nhau, nước mắt em lau bằng tình yêu mới. Thành phố đã quá chật, đừng nên cố níu tay để rồi một lần nữa lại nhận về mình những đắng cay. Đêm nay xin cho ngủ quên để nỗi nhớ kia anh gửi lại bóng đêm.",
+      "source": "Nước mắt em lau bằng tình yêu mới, Da Lab ft. Tóc Tiên",
+      "length": 312,
+      "id": 6
+    },
+    {
+      "text": "Chơi vơi nơi mà loài người nhìn anh phiêu. Ừ thì đâu ai muốn là người bình thường khi yêu? Anh đang mơ màng về bầu trời đầy trăng với sao, em như cô tiên, mình ca múa như 2 con điên trên đồi thảo nguyên.",
+      "source": "Thằng điên, JustaTee",
+      "length": 203,
+      "id": 7
+    },
+    {
+      "text": "Anh cô đơn giữa tinh không này. Muôn con sóng cuốn xô vào đây. Em cô đơn giữa mênh mông người, và ta cô đơn đã hai triệu năm.",
+      "source": "hai triệu năm, Đen",
+      "length": 126,
+      "id": 8
+    },
+    {
+      "text": "Anh cũng cần em nhưng không biết em sao? Anh không care lắm và anh quyết đem trao. Cho em hết nắng cho em hết đêm sao, nhìn mặt anh đi, em nghĩ anh tiếc em sao? Trăm ngàn con sóng từ mọi nơi mà đổ về, và đây là cách mà anh đi tìm kiếm sự vỗ về. Em có quá nhiều bí mật, anh thì không cần gặng hỏi. Em sâu như là đại dương, anh thì không hề lặn giỏi.",
+      "source": "hai triệu năm, Đen",
+      "length": 349,
+      "id": 9
+    },
+    {
+      "text": "Hai bàn tay của ta giống như những người bạn thân, luôn chia sẻ với ta mọi vui buồn trong cuộc sống. Bạn cứ ngẫm mà xem, có phải khi bạn mừng rỡ hay phấn khích, hai bàn tay hăng hái vỗ vào nhau để nhân đôi niềm vui trong lòng bạn. Khi bạn khóc, hai bàn tay lại thay phiên nhau kiên trì lau khô những giọt lệ lăn tròn trên gò má bạn. Hai bàn tay đó giống như những chú chim vàng anh trong cổ tích, cần mẫn tha từng hạt cườm long lanh trên mặt bạn đem gởi vào nắng, vào gió, vào mưa để một chốc sau sự tươi tỉnh lại nhuộm hồng gương mặt mới đây còn tái xanh của bạn.",
+      "source": "Tôi thấy hoa vàng trên cỏ xanh, Nguyễn Nhật Ánh",
+      "length": 564,
+      "id": 10
+    },
+    {
+      "text": "Em vào đời bằng mây trắng, em vào đời bằng nắng xanh. Em vào đời bằng đại lộ; và con đường đó giờ vắng anh.",
+      "source": "Lối Nhỏ, Đen ft. Phương Anh Đào",
+      "length": 108,
+      "id": 11
+    },
+    {
+      "text": "Nếu mỗi người cho ta một ngàn, là ta sẽ có ngay một tỷ đồng. Lấy tiền đó lên vùng xa, xây được mấy cái lớp học vỡ lòng!",
+      "source": "Một triệu like, Đen ft. Thành Đồng",
+      "length": 119,
+      "id": 12
+    },
+    {
+      "text": "Vì biết đâu, sớm mai thức dậy, em không còn đây ôm anh, nhẹ hôn anh để tình ta cứ trôi lững lờ; chờ giông và bão cuốn đi bất ngờ. Rồi lỡ đâu, giấc mơ không thành; em không còn kề vai anh, tình mong manh một người đứng cứ trông với chờ, người kia thì ôm giấc mơ...",
+      "source": "Đã lỡ yêu em nhiều, JustaTee",
+      "length": 265,
+      "id": 13
+    },
+    {
+      "text": "Một, hai, ba, bốn; hai, ba, một. Hình như anh nói anh yêu em rồi.",
+      "source": "Hai phút hơn, Pháo",
+      "length": 65,
+      "id": 14
+    },
+    {
+      "text": "Vì đã lỡ yêu em rồi, chẳng dám hứa xa xôi. Cứ nhắm mắt em lại và feel my love. Dù nắng mưa bao mùa thì tình anh vẫn luôn đây mà, chẳng phải kiếm đâu xa. Vẫn giữ đó bầu trời của riêng chúng ta. Để gió mang đi về 1 nơi không người.",
+      "source": "Đã lỡ yêu em nhiều, JustaTee",
+      "length": 229,
+      "id": 15
+    },
+    {
+      "text": "Và thế là hết, trong một chiều buồn em nói với anh. Những đắm say ngọt ngào giờ đây trôi về nơi rất xa. Ta đã quên môi hôn chiều hôm ấy, anh biết. Và thế là hết! Trong một chiều buồn em nói với anh. Ta nỡ buông đôi tay nhau khi còn đang dở dang. Hai đứa nay đôi nơi vạn dặm mãi muôn đời.",
+      "source": "Và thế là hết, Chillies",
+      "length": 287,
+      "id": 16
+    },
+    {
+      "text": "Người tình ơi còn có nỗi đau nào, sợ rằng người còn lãng quên hôm nào. Thì giờ đây người hãy thêm vào, để trái tim anh thôi thét gào. Dù con tim này đã héo hon rồi, cạn kiệt tình yêu đã trao cho người. Thì giờ đây lệ thấm môi cười; lòng vẫn yêu, yêu mãi em thôi!",
+      "source": "Ngày tình phôi pha, Lê Hiếu",
+      "length": 262,
+      "id": 17
+    },
+    {
+      "text": "Và chúng tôi gọi đó là CHẤT!",
+      "source": "Nguyễn Tử Quảng",
+      "length": 28,
+      "id": 18
+    },
+    {
+      "text": "Hôm nay, tại đây, các bạn sẽ chứng kiến một sự khởi đầu cho một xu hướng mới của thế giới công nghệ trên toàn cầu! Đặt điện thoại cạnh máy tính và dữ liệu của bạn đã được truyền ngay lập tức sang máy tính. Sẽ không phải cắm rút, sẽ không phải cần dùng USB: đơn giản chỉ là chạm, và điều này các bạn chỉ có thể thấy trong các bộ phim viễn tưởng trước đây. Thật không thể tin được! Thật không thể tin nổi, không thể tin nổi! Chính chúng tôi cũng không thể tin nổi khi biết rằng chúng tôi làm được như vậy!",
+      "source": "Nguyễn Tử Quảng",
+      "length": 504,
+      "id": 19
+    },
+    {
+      "text": "Và em đã biết nói tiếng yêu đầu tiên. Và em đã biết thương nhớ, biết giận hờn. Mùa xuân đã đến bên em trao nụ hôn, và mùa xuân đã trao cho em ánh mắt anh. Để rồi, đắm say, để rồi ngất ngây. Để rồi, đắm say. Để rồi ngất ngây.",
+      "source": "Thì thầm mùa xuân, Ngọc Châu",
+      "length": 224,
+      "id": 20
+    },
+    {
+      "text": "Em dạo này ổn không, còn đi làm ở công ty cũ? Còn đi sớm về hôm nhưng mà đồng lương vẫn không khi đủ? Đồng nghiệp của em thế nào, trong thang máy có chào với nhau? Có nói qua nói lại, và những cuộc họp có đào bới nhau? Sếp của em thế nào, dễ tính hay thường gắt gỏng? Anh ta có thương nhân viên hay thường buông lời sắc mỏng? Em có còn thiếu ngủ trong những lần phải chạy deadline? Em quên ăn quên uống, quên cả việc chải lại tóc tai! Những đôi giày cao gót chắc còn làm đau em; và tiền bao nhiêu cho đủ, ai biết ngày sau em? Mắt em còn mỏi không - tám tiếng nhìn màn hình? Những tối đi về đơn độc, em thấy lòng mình lặng thinh...",
+      "source": "Bài Này Chill Phết, Đen Vâu ft. Min",
+      "length": 630,
+      "id": 21
+    },
+    {
+      "text": "Em vào đời bằng vang đỏ, anh vào đời bằng nước trà; bằng cơn mưa thơm mùi đất, và bằng hoa dại mọc trước nhà. Em vào đời bằng kế hoạch, anh vào đời bằng mộng mơ. Lý trí em là công cụ, còn trái tim anh là động cơ!",
+      "source": "Lối Nhỏ, Đen ft. Phương Anh Đào",
+      "length": 212,
+      "id": 22
+    },
+    {
+      "text": "Giữ chặt bàn tay, mình cùng nhau đi hết bao tháng ngày. Mọi điều gian khó ta luôn vượt qua, để khiến ta nhận ra mình gần nhau hơn... Tình yêu cứ thế đong đầy trong anh từng ngày; vì quá yêu em nên anh không thể làm gì khác! Chỉ cần ta mãi luôn dành cho nhau những chân thành, mọi khó khăn cũng chỉ là thử thách. Vì trái tim ta luôn luôn thuộc về nhau.",
+      "source": "Sau tất cả, Erik St.319",
+      "length": 351,
+      "id": 23
     }
   ]
 }

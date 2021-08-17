@@ -227,12 +227,12 @@ export function updateTagCommands() {
       }
 
       commandsTags.list.push({
-        id: "toggleTag" + tag.id,
+        id: "toggleTag" + tag._id,
         noIcon: true,
         display: dis,
         sticky: true,
         exec: () => {
-          TagController.toggle(tag.id);
+          TagController.toggle(tag._id);
           TestUI.updateModesNotice();
           let txt = tag.name;
 
@@ -243,14 +243,14 @@ export function updateTagCommands() {
           }
           if (Commandline.isSingleListCommandLineActive()) {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(
               `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
                 txt
             );
           } else {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(txt);
           }
         },
@@ -273,10 +273,10 @@ export function updatePresetCommands() {
       let dis = preset.name;
 
       commandsPresets.list.push({
-        id: "applyPreset" + preset.id,
+        id: "applyPreset" + preset._id,
         display: dis,
         exec: () => {
-          PresetController.apply(preset.id);
+          PresetController.apply(preset._id);
           TestUI.updateModesNotice();
         },
       });

@@ -7,7 +7,7 @@ export function saveActiveToLocalStorage() {
   try {
     DB.getSnapshot().tags.forEach((tag) => {
       if (tag.active === true) {
-        tags.push(tag.id);
+        tags.push(tag._id);
       }
     });
     // let d = new Date();
@@ -31,7 +31,7 @@ export function clear(nosave = false) {
 
 export function set(tagid, state, nosave = false) {
   DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.id === tagid) {
+    if (tag._id === tagid) {
       tag.active = state;
     }
   });
@@ -41,7 +41,7 @@ export function set(tagid, state, nosave = false) {
 
 export function toggle(tagid, nosave = false) {
   DB.getSnapshot().tags.forEach((tag) => {
-    if (tag.id === tagid) {
+    if (tag._id === tagid) {
       if (tag.active === undefined) {
         tag.active = true;
       } else {

@@ -2,9 +2,9 @@ import * as ResultTagsPopup from "./result-tags-popup";
 import * as ResultFilters from "./result-filters";
 import * as Loader from "./loader";
 import * as DB from "./db";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as Settings from "./settings";
+import axiosInstance from "./axios-instance";
 
 export function show(action, id, name) {
   if (action === "add") {
@@ -64,7 +64,7 @@ function hide() {
   }
 }
 
-function apply() {
+async function apply() {
   // console.log(DB.getSnapshot());
   let action = $("#tagsWrapper #tagsEdit").attr("action");
   let inputVal = $("#tagsWrapper #tagsEdit input").val();
@@ -72,96 +72,108 @@ function apply() {
   hide();
   if (action === "add") {
     Loader.show();
-    CloudFunctions.addTag({
-      uid: firebase.auth().currentUser.uid,
-      name: inputVal,
-    }).then((e) => {
+    let response;
+    try {
+      response = await axiosInstance.post("/user/tags/add", {
+        tagName: inputVal,
+      });
+    } catch (e) {
       Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("Tag added", 1, 2);
-        DB.getSnapshot().tags.push({
-          name: inputVal,
-          id: e.data.id,
-        });
-        ResultTagsPopup.updateButtons();
-        Settings.update();
-        ResultFilters.updateTags();
-      } else if (status === -1) {
-        Notifications.add("Invalid tag name", 0);
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to add tag: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Tag added", 1);
+      DB.getSnapshot().tags.push({
+        name: response.data.name,
+        _id: response.data._id,
+      });
+      ResultTagsPopup.updateButtons();
+      Settings.update();
+      ResultFilters.updateTags();
+    }
   } else if (action === "edit") {
     Loader.show();
-    CloudFunctions.editTag({
-      uid: firebase.auth().currentUser.uid,
-      name: inputVal,
-      tagid: tagid,
-    }).then((e) => {
+    let response;
+    try {
+      response = await axiosInstance.post("/user/tags/edit", {
+        tagid,
+        newname: inputVal,
+      });
+    } catch (e) {
       Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("Tag updated", 1);
-        DB.getSnapshot().tags.forEach((tag) => {
-          if (tag.id === tagid) {
-            tag.name = inputVal;
-          }
-        });
-        ResultTagsPopup.updateButtons();
-        Settings.update();
-        ResultFilters.updateTags();
-      } else if (status === -1) {
-        Notifications.add("Invalid tag name", 0);
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to edit tag: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Tag updated", 1);
+      DB.getSnapshot().tags.forEach((tag) => {
+        if (tag._id === tagid) {
+          tag.name = inputVal;
+        }
+      });
+      ResultTagsPopup.updateButtons();
+      Settings.update();
+      ResultFilters.updateTags();
+    }
   } else if (action === "remove") {
     Loader.show();
-    CloudFunctions.removeTag({
-      uid: firebase.auth().currentUser.uid,
-      tagid: tagid,
-    }).then((e) => {
+    let response;
+    try {
+      response = await axiosInstance.post("/user/tags/remove", { tagid });
+    } catch (e) {
       Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("Tag removed", 1);
-        DB.getSnapshot().tags.forEach((tag, index) => {
-          if (tag.id === tagid) {
-            DB.getSnapshot().tags.splice(index, 1);
-          }
-        });
-        ResultTagsPopup.updateButtons();
-        Settings.update();
-        ResultFilters.updateTags();
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to remove tag: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Tag removed", 1);
+      DB.getSnapshot().tags.forEach((tag, index) => {
+        if (tag._id === tagid) {
+          DB.getSnapshot().tags.splice(index, 1);
+        }
+      });
+      ResultTagsPopup.updateButtons();
+      Settings.update();
+      ResultFilters.updateTags();
+    }
   } else if (action === "clearPb") {
     Loader.show();
-    CloudFunctions.clearTagPb({
-      uid: firebase.auth().currentUser.uid,
-      tagid: tagid,
-    }).then((e) => {
+    let response;
+    try {
+      response = await axiosInstance.post("/user/tags/clearPb", { tagid });
+    } catch (e) {
       Loader.hide();
-      let status = e.data.resultCode;
-      if (status === 1) {
-        Notifications.add("PB cleared", 1);
-        DB.getSnapshot().tags.forEach((tag, index) => {
-          if (tag.id === tagid) {
-            tag.personalBests = {};
-          }
-        });
-        ResultTagsPopup.updateButtons();
-        Settings.update();
-        ResultFilters.updateTags();
-      } else if (status < -1) {
-        Notifications.add("Unknown error: " + e.data.message, -1);
-      }
-    });
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to clear tag pb: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Tag PB cleared", 1);
+      DB.getSnapshot().tags.forEach((tag, index) => {
+        if (tag._id === tagid) {
+          tag.personalBests = {};
+        }
+      });
+      ResultTagsPopup.updateButtons();
+      Settings.update();
+      ResultFilters.updateTags();
+    }
   }
 }
 
