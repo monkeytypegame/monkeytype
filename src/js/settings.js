@@ -378,6 +378,7 @@ export let settingsFillPromise = fillSettingsPage();
 export function hideAccountSection() {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
+  $(`.pageSettings .section.needsAccount`).addClass("hidden");
 }
 
 export function updateDiscordSection() {
@@ -475,6 +476,7 @@ function refreshPresetsSettingsSection() {
 export function showAccountSection() {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
   $(`.settingsGroup.account`).removeClass("hidden");
+  $(`.pageSettings .section.needsAccount`).removeClass("hidden");
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
   updateDiscordSection();
