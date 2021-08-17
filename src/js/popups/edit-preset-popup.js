@@ -118,7 +118,7 @@ async function apply() {
       response = await axiosInstance.post("/presets/edit", {
         name: inputVal,
         _id: presetid,
-        config: override === true ? configChanges : null,
+        config: updateConfig === true ? configChanges : null,
       });
     } catch (e) {
       Loader.hide();
@@ -135,7 +135,7 @@ async function apply() {
         (preset) => preset._id == presetid
       )[0];
       preset.name = inputVal;
-      if (override === true) preset.config = configChanges;
+      if (updateConfig === true) preset.config = configChanges;
       Settings.update();
     }
   } else if (action === "remove") {
