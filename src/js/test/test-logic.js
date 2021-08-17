@@ -1708,10 +1708,11 @@ export async function finish(difficultyFailed = false) {
               completedEvent.mode === "time" &&
               ["15", "60"].includes(String(completedEvent.mode2))
             ) {
-              $("#result .stats .leaderboards").removeClass("hidden");
-              $("#result .stats .leaderboards .bottom").html(
-                `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
-              );
+              //TODO bring back when leaderboards fixed
+              // $("#result .stats .leaderboards").removeClass("hidden");
+              // $("#result .stats .leaderboards .bottom").html(
+              //   `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+              // );
             }
             if (!window.navigator.onLine) {
               AccountButton.loading(false);
