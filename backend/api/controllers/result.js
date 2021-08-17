@@ -87,21 +87,28 @@ class ResultController {
           .json({ message: "Result data doesn't make sense" });
       }
 
-      result.keySpacingStats = {
-        average:
-          result.keySpacing.reduce(
-            (previous, current) => (current += previous)
-          ) / result.keySpacing.length,
-        sd: stdDev(result.keySpacing),
-      };
-
-      result.keyDurationStats = {
-        average:
-          result.keyDuration.reduce(
-            (previous, current) => (current += previous)
-          ) / result.keyDuration.length,
-        sd: stdDev(result.keyDuration),
-      };
+      try {
+        result.keySpacingStats = {
+          average:
+            result.keySpacing.reduce(
+              (previous, current) => (current += previous)
+            ) / result.keySpacing.length,
+          sd: stdDev(result.keySpacing),
+        };
+      } catch (e) {
+        //
+      }
+      try {
+        result.keyDurationStats = {
+          average:
+            result.keyDuration.reduce(
+              (previous, current) => (current += previous)
+            ) / result.keyDuration.length,
+          sd: stdDev(result.keyDuration),
+        };
+      } catch (e) {
+        //
+      }
 
       const user = await UserDAO.getUser(uid);
       // result.name = user.name;
@@ -145,12 +152,18 @@ class ResultController {
       delete result.keySpacing;
       delete result.keyDuration;
 
-      result.keyDurationStats.average = roundTo2(
-        result.keyDurationStats.average
-      );
-      result.keyDurationStats.sd = roundTo2(result.keyDurationStats.sd);
-      result.keySpacingStats.average = roundTo2(result.keySpacingStats.average);
-      result.keySpacingStats.sd = roundTo2(result.keySpacingStats.sd);
+      try {
+        result.keyDurationStats.average = roundTo2(
+          result.keyDurationStats.average
+        );
+        result.keyDurationStats.sd = roundTo2(result.keyDurationStats.sd);
+        result.keySpacingStats.average = roundTo2(
+          result.keySpacingStats.average
+        );
+        result.keySpacingStats.sd = roundTo2(result.keySpacingStats.sd);
+      } catch (e) {
+        //
+      }
 
       const isPb = await UserDAO.checkIfPb(uid, result);
       const tagPbs = await UserDAO.checkIfTagPb(uid, result);
