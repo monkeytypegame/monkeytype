@@ -32,7 +32,14 @@ app.use(function (e, req, res, next) {
   if (req.decodedToken) {
     uid = req.decodedToken.uid;
   }
-  let monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
+  let monkeyError;
+  if (e.errorID) {
+    //its a monkey error
+    monkeyError = e;
+  } else {
+    //its a server error
+    monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
+  }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
     mongoDB().collection("errors").insertOne({
       _id: monkeyError.errorID,
