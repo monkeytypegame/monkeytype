@@ -33,6 +33,16 @@ app.use(function (e, req, res, next) {
     uid = req.decodedToken.uid;
   }
   let monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
+  if (process.env.MODE !== "dev" && monkeyError.status > 400) {
+    connectDB().collection("errors").insertOne({
+      _id: monkeyError.errorID,
+      timestamp: Date.now(),
+      status: monkeyError.status,
+      uid: monkeyError.uid,
+      message: monkeyError.message,
+      stack: monkeyError.stack,
+    });
+  }
   return res.status(e.status || 500).json(monkeyError);
 });
 
