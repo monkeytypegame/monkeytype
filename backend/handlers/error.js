@@ -16,10 +16,11 @@ class MonkeyError {
         : "Internal Server Error " + this.errorID;
 
     console.log("Error", message, stack);
-    if (process.env.MODE !== "dev" && this.status === 500) {
+    if (process.env.MODE !== "dev" && this.status > 400) {
       mongoDB().collection("errors").insertOne({
         _id: this.errorID,
         timestamp: Date.now(),
+        status: this.status,
         uid,
         message,
         stack,
