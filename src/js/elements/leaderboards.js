@@ -237,7 +237,9 @@ function update() {
     })
     .catch((e) => {
       Loader.hide();
-      Notifications.add("Something went wrong: " + e.message, -1);
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to load leaderboards: " + msg, -1);
+      return;
     });
 }
 

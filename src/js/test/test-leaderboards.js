@@ -187,7 +187,9 @@ export async function check(completedEvent) {
         })
         .catch((e) => {
           $("#result .stats .leaderboards").addClass("hidden");
-          Notifications.add(e, -1);
+          let msg = e?.response?.data?.message ?? e.message;
+          Notifications.add("Failed to access leaderboard: " + msg, -1);
+          return;
         });
     }
   } catch (e) {

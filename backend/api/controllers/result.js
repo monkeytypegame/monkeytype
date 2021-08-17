@@ -196,9 +196,12 @@ class ResultController {
 
   static async getLeaderboard(req, res, next) {
     try {
-      const { type, mode, mode2 } = req.params;
-      const results = await ResultDAO.getLeaderboard(type, mode, mode2);
-      return res.status(200).json(results);
+      // const { type, mode, mode2 } = req.params;
+      // const results = await ResultDAO.getLeaderboard(type, mode, mode2);
+      // return res.status(200).json(results);
+      return res
+        .status(503)
+        .json({ message: "Leaderboard temporarily disabled" });
     } catch (e) {
       next(e);
     }
@@ -206,10 +209,13 @@ class ResultController {
 
   static async checkLeaderboardQualification(req, res, next) {
     try {
-      const { uid } = req.decodedToken;
-      const { result } = req.body;
-      const data = await ResultDAO.checkLeaderboardQualification(uid, result);
-      return res.status(200).json(data);
+      // const { uid } = req.decodedToken;
+      // const { result } = req.body;
+      // const data = await ResultDAO.checkLeaderboardQualification(uid, result);
+      // return res.status(200).json(data);
+      return res
+        .status(503)
+        .json({ message: "Leaderboard temporarily disabled" });
     } catch (e) {
       next(e);
     }
