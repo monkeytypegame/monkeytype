@@ -488,6 +488,7 @@ function handleAlpha(event) {
       "End",
       "GroupPrevious",
       "GroupNext",
+      "WakeUp",
       undefined,
     ].includes(event.key)
   ) {

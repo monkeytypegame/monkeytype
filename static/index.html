@@ -43,9 +43,10 @@
     />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
       crossorigin="anonymous"
+      referrerpolicy="no-referrer"
     />
     <meta name="name" content="Monkeytype" />
     <meta name="image" content="https://monkeytype.com/mtsocial.png" />
@@ -3903,7 +3904,7 @@
                   </div>
                 </div>
               </div>
-              <div class="section resetPersonalBests">
+              <div class="section resetPersonalBests needsAccount hidden">
                 <h1>reset personal bests</h1>
                 <div class="text">
                   Resets all your personal bests (but doesn't delete any tests
@@ -3920,7 +3921,7 @@
                   </div>
                 </div>
               </div>
-              <div class="section updateAccountEmail">
+              <div class="section updateAccountEmail needsAccount hidden">
                 <h1>update account email</h1>
                 <div class="text">
                   In case you misspell it or get a new address.
@@ -3936,7 +3937,7 @@
                   </div>
                 </div>
               </div>
-              <div class="section updateAccountPassword">
+              <div class="section updateAccountPassword needsAccount hidden">
                 <h1>update account password</h1>
                 <div class="text">Change the password you use to sign in.</div>
                 <div class="buttons">
@@ -3950,12 +3951,10 @@
                   </div>
                 </div>
               </div>
-              <div class="section deleteAccount hidden">
+              <div class="section deleteAccount needsAccount hidden">
                 <h1>delete account</h1>
                 <div class="text">
-                  This can't be undone! Also, if you want to delete your account
-                  because of a very high 'custom mode' result, you can use
-                  filters on the account page to hide those results.
+                  Deletes your account and all data connected to it.
                 </div>
                 <div class="buttons">
                   <div
@@ -4057,7 +4056,7 @@
                   <div class="val">-</div>
                 </div>
               </div>
-              <div class="group createdDate">asd</div>
+              <div class="group createdDate">Account created on -</div>
               <div class="group">
                 <div class="title">personal bests</div>
                 <div style="display: grid; grid-auto-flow: column; gap: 1rem">
@@ -4392,25 +4391,15 @@
                       </td>
                       <td
                         type="button"
-                        class="sortable history-correct-chars-header"
-                      >
-                        correct
-                        <br />
-                        chars
-                      </td>
-                      <td
-                        type="button"
-                        class="sortable history-incorrect-chars-header"
-                      >
-                        incorrect
-                        <br />
-                        chars
-                      </td>
-                      <td
-                        type="button"
                         class="sortable history-consistency-header"
                       >
                         consistency
+                      </td>
+                      <td
+                        aria-label="correct/incorrect/extra/missed"
+                        data-balloon-pos="up"
+                      >
+                        chars
                       </td>
                       <td>mode</td>
                       <!-- <td>punctuation</td> -->

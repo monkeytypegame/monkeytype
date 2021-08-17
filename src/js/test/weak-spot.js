@@ -25,7 +25,7 @@ class Score {
     }
     const adjustRate = 1.0 / this.count;
     // Keep an exponential moving average of the score over time.
-    this.average = (score * adjustRate) + (this.average * (1 - adjustRate));
+    this.average = score * adjustRate + this.average * (1 - adjustRate);
   }
 }
 
