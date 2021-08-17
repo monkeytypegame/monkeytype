@@ -155,6 +155,10 @@ class UsersDAO {
       return false;
     }
 
+    if (mode === "quote") {
+      return false;
+    }
+
     let pb = checkAndUpdatePb(
       user.personalBests,
       mode,
