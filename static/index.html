@@ -3951,6 +3951,22 @@
                   </div>
                 </div>
               </div>
+              <div class="section deleteAccount">
+                <h1>delete account</h1>
+                <div class="text">
+                  Deletes your account and all data connected to it.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button off danger"
+                    id="deleteAccount"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    delete account
+                  </div>
+                </div>
+              </div>
               <div class="section deleteAccount hidden">
                 <h1>delete account</h1>
                 <div class="text">
@@ -4393,25 +4409,15 @@
                       </td>
                       <td
                         type="button"
-                        class="sortable history-correct-chars-header"
-                      >
-                        correct
-                        <br />
-                        chars
-                      </td>
-                      <td
-                        type="button"
-                        class="sortable history-incorrect-chars-header"
-                      >
-                        incorrect
-                        <br />
-                        chars
-                      </td>
-                      <td
-                        type="button"
                         class="sortable history-consistency-header"
                       >
                         consistency
+                      </td>
+                      <td
+                        aria-label="correct/incorrect/extra/missed"
+                        data-balloon-pos="up"
+                      >
+                        chars
                       </td>
                       <td>mode</td>
                       <!-- <td>punctuation</td> -->

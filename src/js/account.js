@@ -1,6 +1,5 @@
 import * as DB from "./db";
 import * as Misc from "./misc";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as ResultFilters from "./result-filters";
 import * as ThemeColors from "./theme-colors";
@@ -18,6 +17,8 @@ import * as Settings from "./settings";
 import * as ThemePicker from "./theme-picker";
 import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
+import * as AccountController from "./account-controller";
+import axiosInstance from "./axios-instance";
 
 let filterDebug = false;
 //toggle filterdebug
@@ -28,144 +29,145 @@ export function toggleFilterDebug() {
   }
 }
 
-export function getDataAndInit() {
-  DB.initSnapshot()
-    .then(async (e) => {
-      let snap = DB.getSnapshot();
-      $("#menu .icon-button.account .text").text(snap.name);
-      if (snap === null) {
-        throw "Missing db snapshot. Client likely could not connect to the backend.";
-      }
-      let user = firebase.auth().currentUser;
-      if (snap.name === undefined) {
-        //verify username
-        if (Misc.isUsernameValid(user.displayName)) {
-          //valid, just update
-          snap.name = user.displayName;
-          DB.setSnapshot(snap);
-          DB.updateName(user.uid, user.displayName);
-        } else {
-          //invalid, get new
-          // Notifications.add("Invalid name", 0);
-          let promptVal = null;
-          let cdnVal = undefined;
+export async function getDataAndInit() {
+  try {
+    await DB.initSnapshot();
+  } catch (e) {
+    AccountButton.loading(false);
 
-          while (
-            promptVal === null ||
-            cdnVal === undefined ||
-            cdnVal.data.status < 0
-          ) {
-            promptVal = prompt(
-              "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
-            );
-            cdnVal = await CloudFunctions.changeDisplayName({
-              uid: user.uid,
-              name: promptVal,
-            });
+    let msg = e?.response?.data?.message ?? e.message;
+    Notifications.add("Failed to get user data: " + msg, -1);
+
+    // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
+    $("#top #menu .account").css("opacity", 1);
+    if ($(".pageLoading").hasClass("active")) UI.changePage("");
+    AccountController.signOut();
+    return;
+  }
+  let snap = DB.getSnapshot();
+  $("#menu .icon-button.account .text").text(snap.name);
+  // if (snap === null) {
+  //   throw "Missing db snapshot. Client likely could not connect to the backend.";
+  // }
+  let user = firebase.auth().currentUser;
+  if (snap.name === undefined) {
+    //verify username
+    if (Misc.isUsernameValid(user.name)) {
+      //valid, just update
+      snap.name = user.name;
+      DB.setSnapshot(snap);
+      DB.updateName(user.uid, user.name);
+    } else {
+      //invalid, get new
+      // Notifications.add("Invalid name", 0);
+      let promptVal = null;
+      let cdnVal = undefined;
+
+      while (
+        promptVal === null ||
+        cdnVal === undefined ||
+        cdnVal.data.status < 0
+      ) {
+        promptVal = prompt(
+          "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
+        );
+        //TODO update
+        axiosInstance
+          .post("/updateName", {
+            name: promptVal,
+          })
+          .then((cdnVal) => {
             if (cdnVal.data.status === 1) {
               alert("Name updated", 1);
               location.reload();
             } else if (cdnVal.data.status < 0) {
               alert(cdnVal.data.message, 0);
             }
-          }
-        }
+          });
       }
-      if (snap.refactored === false) {
-        CloudFunctions.removeSmallTests({ uid: user.uid });
-      }
-      // if($(".pageAccount").hasClass('active')) update();
-      if ($(".pageLogin").hasClass("active")) UI.changePage("account");
-      if (!UpdateConfig.changedBeforeDb) {
-        if (Config.localStorageConfig === null) {
-          AccountButton.loading(false);
-          UpdateConfig.apply(DB.getSnapshot().config);
-          Settings.update();
-          UpdateConfig.saveToLocalStorage(true);
-          TestLogic.restart(false, true);
-        } else if (DB.getSnapshot().config !== undefined) {
-          //loading db config, keep for now
-          let configsDifferent = false;
-          Object.keys(Config).forEach((key) => {
-            if (!configsDifferent) {
-              try {
-                if (key !== "resultFilters") {
-                  if (Array.isArray(Config[key])) {
-                    Config[key].forEach((arrval, index) => {
-                      if (arrval != DB.getSnapshot().config[key][index]) {
-                        configsDifferent = true;
-                        console.log(
-                          `.config is different: ${arrval} != ${
-                            DB.getSnapshot().config[key][index]
-                          }`
-                        );
-                      }
-                    });
-                  } else {
-                    if (Config[key] != DB.getSnapshot().config[key]) {
-                      configsDifferent = true;
-                      console.log(
-                        `..config is different ${key}: ${Config[key]} != ${
-                          DB.getSnapshot().config[key]
-                        }`
-                      );
-                    }
+    }
+  }
+  // if($(".pageAccount").hasClass('active')) update();
+  if ($(".pageLogin").hasClass("active")) UI.changePage("account");
+  if (!UpdateConfig.changedBeforeDb) {
+    if (Config.localStorageConfig === null) {
+      AccountButton.loading(false);
+      UpdateConfig.apply(DB.getSnapshot().config);
+      Settings.update();
+      UpdateConfig.saveToLocalStorage(true);
+      TestLogic.restart(false, true);
+    } else if (DB.getSnapshot().config !== undefined) {
+      //loading db config, keep for now
+      let configsDifferent = false;
+      Object.keys(Config).forEach((key) => {
+        if (!configsDifferent) {
+          try {
+            if (key !== "resultFilters") {
+              if (Array.isArray(Config[key])) {
+                Config[key].forEach((arrval, index) => {
+                  if (arrval != DB.getSnapshot().config[key][index]) {
+                    configsDifferent = true;
+                    console.log(
+                      `.config is different: ${arrval} != ${
+                        DB.getSnapshot().config[key][index]
+                      }`
+                    );
                   }
+                });
+              } else {
+                if (Config[key] != DB.getSnapshot().config[key]) {
+                  configsDifferent = true;
+                  console.log(
+                    `..config is different ${key}: ${Config[key]} != ${
+                      DB.getSnapshot().config[key]
+                    }`
+                  );
                 }
-              } catch (e) {
-                console.log(e);
-                configsDifferent = true;
-                console.log(`...config is different: ${e.message}`);
               }
             }
-          });
-          if (configsDifferent) {
-            console.log("applying config from db");
-            AccountButton.loading(false);
-            UpdateConfig.apply(DB.getSnapshot().config);
-            Settings.update();
-            UpdateConfig.saveToLocalStorage(true);
-            if ($(".page.pageTest").hasClass("active")) {
-              TestLogic.restart(false, true);
-            }
-            DB.saveConfig(Config);
+          } catch (e) {
+            console.log(e);
+            configsDifferent = true;
+            console.log(`...config is different: ${e.message}`);
           }
         }
-        UpdateConfig.setDbConfigLoaded(true);
-      } else {
+      });
+      if (configsDifferent) {
+        console.log("applying config from db");
         AccountButton.loading(false);
-      }
-      if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-        if (!TestLogic.active) {
-          PaceCaret.init(true);
+        UpdateConfig.apply(DB.getSnapshot().config);
+        Settings.update();
+        UpdateConfig.saveToLocalStorage(true);
+        if ($(".page.pageTest").hasClass("active")) {
+          TestLogic.restart(false, true);
         }
+        DB.saveConfig(Config);
       }
-      if (
-        $(".pageLogin").hasClass("active") ||
-        window.location.pathname === "/account"
-      ) {
-        UI.changePage("account");
-      }
-      ThemePicker.refreshButtons();
-      AccountButton.loading(false);
-      ResultFilters.updateTags();
-      CommandlineLists.updateTagCommands();
-      TagController.loadActiveFromLocalStorage();
-      ResultTagsPopup.updateButtons();
-      Settings.showAccountSection();
-      UI.setPageTransition(false);
-      if ($(".pageLoading").hasClass("active")) UI.changePage("");
-    })
-    .catch((e) => {
-      AccountButton.loading(false);
-      console.error(e);
-      Notifications.add(
-        "Error downloading user data. Client likely could not connect to the backend  - refresh to try again. If error persists try clearing your cache and website data or contact Miodec.",
-        -1
-      );
-      $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
-      $("#top #menu .account").css("opacity", 1);
-    });
+    }
+    UpdateConfig.setDbConfigLoaded(true);
+  } else {
+    AccountButton.loading(false);
+  }
+  if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
+    if (!TestLogic.active) {
+      PaceCaret.init(true);
+    }
+  }
+  if (
+    $(".pageLogin").hasClass("active") ||
+    window.location.pathname === "/account"
+  ) {
+    UI.changePage("account");
+  }
+  ThemePicker.refreshButtons();
+  AccountButton.loading(false);
+  ResultFilters.updateTags();
+  CommandlineLists.updateTagCommands();
+  TagController.loadActiveFromLocalStorage();
+  ResultTagsPopup.updateButtons();
+  Settings.showAccountSection();
+  UI.setPageTransition(false);
+  if ($(".pageLoading").hasClass("active")) UI.changePage("");
 }
 
 let filteredResults = [];
@@ -243,7 +245,7 @@ function loadMoreLines(lineIndex) {
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
         DB.getSnapshot().tags.forEach((snaptag) => {
-          if (tag === snaptag.id) {
+          if (tag === snaptag._id) {
             tagNames += snaptag.name + ", ";
           }
         });
@@ -258,13 +260,13 @@ function loadMoreLines(lineIndex) {
       restags = JSON.stringify(result.tags);
     }
 
-    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="no tags" data-balloon-pos="up" style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
+    let tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="no tags" data-balloon-pos="up" style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
 
     if (tagNames !== "") {
       if (result.tags !== undefined && result.tags.length > 1) {
-        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
+        tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
       } else {
-        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
+        tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
       }
     }
 
@@ -283,15 +285,21 @@ function loadMoreLines(lineIndex) {
       pb = "";
     }
 
+    let charStats = "-";
+    if (result.charStats) {
+      charStats = result.charStats.join("/");
+    } else {
+      charStats = result.correctChars + "/" + result.incorrectChars + "/-/-";
+    }
+
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
     <td>${result.wpm.toFixed(2)}</td>
     <td>${raw}</td>
     <td>${result.acc.toFixed(2)}%</td>
-    <td>${result.correctChars}</td>
-    <td>${result.incorrectChars}</td>
     <td>${consistency}</td>
+    <td>${charStats}</td>
     <td>${result.mode} ${result.mode2}${withpunc}</td>
     <td class="infoIcons">${icons}</td>
     <td>${tagIcons}</td>
@@ -315,6 +323,7 @@ export function update() {
     ChartController.accountHistory.updateColors();
     ChartController.accountActivity.updateColors();
     AllTimeStats.update();
+
     PbTables.update();
 
     let chartData = [];
@@ -484,7 +493,6 @@ export function update() {
         }
 
         let tagHide = true;
-
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
           if (DB.getSnapshot().tags.length > 0) {
@@ -494,7 +502,7 @@ export function update() {
           }
         } else {
           //tags exist
-          let validTags = DB.getSnapshot().tags.map((t) => t.id);
+          let validTags = DB.getSnapshot().tags.map((t) => t._id);
           result.tags.forEach((tag) => {
             //check if i even need to check tags anymore
             if (!tagHide) return;
@@ -548,7 +556,6 @@ export function update() {
         ResultFilters.reset();
         ResultFilters.updateActive();
       }
-
       //filters done
       //=======================================
 
@@ -722,7 +729,6 @@ export function update() {
       });
       lastTimestamp = date;
     });
-
     ChartController.accountActivity.data.datasets[0].data = activityChartData_time;
     ChartController.accountActivity.data.datasets[1].data = activityChartData_avgWpm;
 
@@ -796,9 +802,9 @@ export function update() {
         Math.round(totalCons10 / Math.min(last10, consCount)) + "%"
       );
     }
-
     $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
-
+    console.log("Test count: " + testCount);
+    console.log("Test restarts: " + testRestarts);
     $(".pageAccount .testsCompleted .val").text(
       `${testCount}(${Math.floor(
         (testCount / (testCount + testRestarts)) * 100

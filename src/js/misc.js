@@ -1,4 +1,5 @@
 import * as Loader from "./loader";
+import axiosInstance from "./axios-instance";
 import Config from "./config";
 
 export function getuid() {

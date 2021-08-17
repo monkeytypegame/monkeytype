@@ -1,6 +1,7 @@
-import * as CloudFunctions from "./cloud-functions";
 import * as Loader from "./loader";
 import * as Notifications from "./notifications";
+import * as DB from "./db";
+import axiosInstance from "./axios-instance";
 
 let currentLeaderboard = "time_15";
 
@@ -27,25 +28,14 @@ function update() {
 
   let boardinfo = currentLeaderboard.split("_");
 
-  let uid = null;
-  if (firebase.auth().currentUser !== null) {
-    uid = firebase.auth().currentUser.uid;
-  }
-
   Loader.show();
   Promise.all([
-    CloudFunctions.getLeaderboard({
-      mode: boardinfo[0],
-      mode2: boardinfo[1],
-      type: "daily",
-      uid: uid,
-    }),
-    CloudFunctions.getLeaderboard({
-      mode: boardinfo[0],
-      mode2: boardinfo[1],
-      type: "global",
-      uid: uid,
-    }),
+    axiosInstance.get(
+      `/results/getLeaderboard/daily/${boardinfo[0]}/${boardinfo[1]}`
+    ),
+    axiosInstance.get(
+      `/results/getLeaderboard/global/${boardinfo[0]}/${boardinfo[1]}`
+    ),
   ])
     .then((lbdata) => {
       Loader.hide();
@@ -53,7 +43,8 @@ function update() {
       let globalData = lbdata[1].data;
 
       //daily
-      let diffAsDate = new Date(dailyData.resetTime - Date.now());
+      let nextReset = new Date(dailyData.resetTime);
+      let diffAsDate = new Date(nextReset - Date.now());
 
       let diffHours = diffAsDate.getUTCHours();
       let diffMinutes = diffAsDate.getUTCMinutes();
@@ -91,7 +82,8 @@ function update() {
         dailyData.board.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (entry.currentUser) {
+          //hacky way to get username because auth().currentUser.name isn't working after mongo switch
+          if (DB.getSnapshot() && entry.name == DB.getSnapshot().name) {
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.daily tfoot").html(`
             <tr>
@@ -174,7 +166,7 @@ function update() {
         globalData.board.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (entry.currentUser) {
+          if (DB.getSnapshot() && entry.name == DB.getSnapshot().name) {
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.global tfoot").html(`
             <tr>

@@ -71,6 +71,8 @@ node_modules/
 .vscode
 *.code-workspace
 
+.idea
+
 #firebase
 .firebaserc
 .firebaserc_copy
@@ -87,4 +89,8 @@ purgeCfCache.sh
 static/adtest.html
 backend/lastId.txt
 backend/log_success.txt
+backend/credentials
+backend/.env
+
+static/adtest.html
 backend/migrationStats.txt

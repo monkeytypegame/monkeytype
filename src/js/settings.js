@@ -8,6 +8,7 @@ import * as Notifications from "./notifications";
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as CloudFunctions from "./cloud-functions";
+import axiosInstance from "./axios-instance";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as PresetController from "./preset-controller";
@@ -421,7 +422,7 @@ function refreshTagsSettingsSection() {
       }
       tagsEl.append(`
 
-      <div class="buttons tag" id="${tag.id}">
+      <div class="buttons tag" id="${tag._id}">
         <div class="button tagButton ${tag.active ? "active" : ""}" active="${
         tag.active
       }">
@@ -451,7 +452,7 @@ function refreshPresetsSettingsSection() {
     let presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot().presets.forEach((preset) => {
       presetsEl.append(`
-      <div class="buttons preset" id="${preset.id}">
+      <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
           <div class="title">${preset.name}</div>
         </div>
@@ -788,6 +789,10 @@ $(".pageSettings #updateAccountEmail").on("click", (e) => {
 
 $(".pageSettings #updateAccountPassword").on("click", (e) => {
   SimplePopups.list.updatePassword.show();
+});
+
+$(".pageSettings #deleteAccount").on("click", (e) => {
+  SimplePopups.list.deleteAccount.show();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndSave .save").on(
