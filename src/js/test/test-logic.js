@@ -1731,7 +1731,8 @@ export async function finish(difficultyFailed = false) {
                     );
                   } else {
                     completedEvent._id = response.data.insertedId;
-                    TestLeaderboards.check(completedEvent);
+                    // TODO bring back after leaderboard fixed
+                    // TestLeaderboards.check(completedEvent);
                     if (response.data.isPb) {
                       completedEvent.isPb = true;
                     }
