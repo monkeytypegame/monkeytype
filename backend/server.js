@@ -8,7 +8,7 @@ const cors = require("cors");
 const admin = require("firebase-admin");
 
 const serviceAccount = require("./credentials/serviceAccountKey.json");
-const { connectDB } = require("./init/mongodb");
+const { connectDB, mongoDB } = require("./init/mongodb");
 
 const PORT = process.env.PORT || 5005;
 
@@ -32,9 +32,16 @@ app.use(function (e, req, res, next) {
   if (req.decodedToken) {
     uid = req.decodedToken.uid;
   }
-  let monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
+  let monkeyError;
+  if (e.errorID) {
+    //its a monkey error
+    monkeyError = e;
+  } else {
+    //its a server error
+    monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
+  }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
-    connectDB().collection("errors").insertOne({
+    mongoDB().collection("errors").insertOne({
       _id: monkeyError.errorID,
       timestamp: Date.now(),
       status: monkeyError.status,
