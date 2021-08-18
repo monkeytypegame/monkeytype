@@ -6,15 +6,15 @@ module.exports = {
     try {
       const { authorization } = req.headers;
       if (!authorization)
-        throw new MonkeyError(404, "Unauthorized", "No authorization header");
+        throw new MonkeyError(
+          401,
+          "Unauthorized",
+          `endpoint: ${req.baseUrl} no authrizaion header found`
+        );
       const token = authorization.split(" ");
       if (token[0].trim() !== "Bearer")
         return next(
-          new MonkeyError(
-            400,
-            "Invalid Token",
-            "Only bearer tokens are accepted."
-          )
+          new MonkeyError(400, "Invalid Token", "Incorrect token type")
         );
       req.decodedToken = await verifyIdToken(token[1]);
       return next();
