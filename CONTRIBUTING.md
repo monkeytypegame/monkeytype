@@ -119,6 +119,7 @@ Following the guidelines below will increase your chances of getting your change
 - Verify quotes added aren't duplicates of any already present
 - Verify the `length` property is correct (length of the text in characters)
 - Verify the `id` property is incremented correctly
+- Please do not add extremely short quotes (less than 60 characters)
 
 ## Questions
 
