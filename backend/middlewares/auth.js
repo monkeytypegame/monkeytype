@@ -3,7 +3,6 @@ const { verifyIdToken } = require("../handlers/auth");
 
 module.exports = {
   async authenticateRequest(req, res, next) {
-    console.log();
     try {
       const { authorization } = req.headers;
       if (!authorization)
