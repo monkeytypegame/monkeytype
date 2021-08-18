@@ -89,7 +89,7 @@ class WordGenerator extends Wordset {
 }
 
 export function withWords(words) {
-  if (Config.funbox == "jabberwocky") {
+  if (Config.funbox == "pseudolang") {
     if (currentWordGenerator == null || words !== currentWordGenerator.words) {
       currentWordGenerator = new WordGenerator(words);
     }

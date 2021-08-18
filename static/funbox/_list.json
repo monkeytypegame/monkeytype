@@ -115,7 +115,7 @@
     "info": "Focus on slow and mistyped letters."
   },
   {
-    "name": "jabberwocky",
+    "name": "pseudolang",
     "type": "script",
     "info": "Nonsense words that look like the current language."
   }
