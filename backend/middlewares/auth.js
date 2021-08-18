@@ -6,7 +6,7 @@ module.exports = {
     try {
       const { authorization } = req.headers;
       if (!authorization)
-        throw new MonkeyError(404, "Unauthorized", "No authorization header");
+        throw new MonkeyError(401, "Unauthorized", "No authorization header");
       const token = authorization.split(" ");
       if (token[0].trim() !== "Bearer")
         return next(
