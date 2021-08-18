@@ -67,7 +67,7 @@ export function signIn() {
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then((e) => {
-          loadUser(e);
+          loadUser(e.user);
           // UI.changePage("test");
           //TODO: redirect user to relevant page
         })

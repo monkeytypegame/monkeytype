@@ -80,7 +80,8 @@ export async function getSortedThemesList() {
     if (themesList == null) {
       await getThemesList();
     }
-    const sorted = themesList.sort((a, b) => {
+    let sorted = [...themesList];
+    sorted = sorted.sort((a, b) => {
       let b1 = hexToHSL(a.bgColor);
       let b2 = hexToHSL(b.bgColor);
       return b2.lgt - b1.lgt;

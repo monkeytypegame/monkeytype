@@ -11,7 +11,7 @@ class ResultDAO {
     } catch (e) {
       user = null;
     }
-    if (!user) throw new MonkeyError(404, "User not found");
+    if (!user) throw new MonkeyError(404, "User not found", "add result");
     if (result.uid === undefined) result.uid = uid;
     let res = await mongoDB().collection("results").insertOne(result);
     return {
