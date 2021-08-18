@@ -4,7 +4,7 @@ class MonkeyError {
   constructor(status, message, stack = null, uid) {
     this.status = status ?? 500;
     this.errorID = uuid.v4();
-
+    this.stack = stack;
     this.message =
       process.env.MODE === "dev"
         ? stack
