@@ -14,7 +14,7 @@ If your change is visual (mainly themes) it would be extra awesome if you could 
 
 ---
 
-Resolves #
+Closes #
 
 <!-- the issue(s) your PR resolves if any (delete if that is not the case) -->
 <!-- please also reference any issues and or PRs related to your pull request -->
