@@ -330,13 +330,8 @@ $("#commandLine input").keyup((e) => {
 
 $(document).ready((e) => {
   $(document).keydown((event) => {
-    // array holding key press values
-    var map = [];
-  onkeydown = onkeyup = function(e) {
-      e = e || event; // to deal with IE
-      map[e.keyCode] = e.type == 'keydown';
-    // opens command line if escape, ctrl/cmd + shift + p or tab is pressed if swap escape and tab is enabled
-    if (event.keyCode == 27 || map[17] && map[16] && map[80] || (event.keyCode == 9 && Config.swapEscAndTab)) {
+    // opens command line if escape, ctrl/cmd + shift + p or tab is pressed if the setting swapEscAndTab is enabled
+    if (event.keyCode == 27 || (event.key.toLowerCase() == "p" && (event.metaKey || event.ctrlKey)) && event.shiftKey || (event.keyCode == 9 && Config.swapEscAndTab)) {
       event.preventDefault();
       if (!$("#leaderboardsWrapper").hasClass("hidden")) {
         //maybe add more condition for closing other dialogs in the future as well
@@ -375,8 +370,6 @@ $(document).ready((e) => {
         show();
       }
     }
-  }
-
   });
 });
 
