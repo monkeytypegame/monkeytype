@@ -35,6 +35,13 @@ function handleTab(event) {
   if (TestUI.resultCalculating) {
     event.preventDefault();
   }
+  if (
+    !$("#presetWrapper").hasClass("hidden") ||
+    !$("#tagsWrapper").hasClass("hidden")
+  ) {
+    event.preventDefault();
+    return;
+  }
   if ($("#customTextPopup .textarea").is(":focus")) {
     event.preventDefault();
 
