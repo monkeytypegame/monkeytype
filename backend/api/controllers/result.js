@@ -43,6 +43,7 @@ class ResultController {
     try {
       const { uid } = req.decodedToken;
       const { result } = req.body;
+      result.testDuration = parseFloat(result.testDuration);
       if (validateObjectValues(result) > 0)
         return res.status(400).json({ message: "Bad input" });
       if (
