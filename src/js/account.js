@@ -50,7 +50,7 @@ export async function getDataAndInit() {
   //   throw "Missing db snapshot. Client likely could not connect to the backend.";
   // }
   let user = firebase.auth().currentUser;
-  if (snap.name === undefined) {
+  if (snap.name == undefined) {
     //verify username
     if (Misc.isUsernameValid(user.name)) {
       //valid, just update
@@ -60,30 +60,57 @@ export async function getDataAndInit() {
     } else {
       //invalid, get new
       // Notifications.add("Invalid name", 0);
-      let promptVal = null;
-      let cdnVal = undefined;
+      // let promptVal = null;
+      // let cdnVal = undefined;
 
-      while (
-        promptVal === null ||
-        cdnVal === undefined ||
-        cdnVal.data.status < 0
-      ) {
-        promptVal = prompt(
-          "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
+      // while (
+      //   promptVal === null ||
+      //   cdnVal === undefined ||
+      //   cdnVal.data.status < 0
+      // ) {
+      //   promptVal = prompt(
+      //     "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
+      //   );
+      //   //TODO update
+      //   axiosInstance
+      //     .post("/updateName", {
+      //       name: promptVal,
+      //     })
+      //     .then((cdnVal) => {
+      //       if (cdnVal.data.status === 1) {
+      //         alert("Name updated", 1);
+      //         location.reload();
+      //       } else if (cdnVal.data.status < 0) {
+      //         alert(cdnVal.data.message, 0);
+      //       }
+      //     });
+      // }
+      let nameGood = false;
+      let name = "";
+
+      while (nameGood === false) {
+        name = await prompt(
+          "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
         );
-        //TODO update
-        axiosInstance
-          .post("/updateName", {
-            name: promptVal,
-          })
-          .then((cdnVal) => {
-            if (cdnVal.data.status === 1) {
-              alert("Name updated", 1);
-              location.reload();
-            } else if (cdnVal.data.status < 0) {
-              alert(cdnVal.data.message, 0);
-            }
-          });
+
+        let response;
+        try {
+          response = await axiosInstance.post("/user/updateName", { name });
+        } catch (e) {
+          let msg = e?.response?.data?.message ?? e.message;
+          if (e.response.status >= 500) {
+            Notifications.add("Failed to update name: " + msg, -1);
+            throw e;
+          } else {
+            alert(msg);
+          }
+        }
+        if (response?.status == 200) {
+          nameGood = true;
+          Notifications.add("Name updated", 1);
+          DB.getSnapshot().name = name;
+          $("#menu .icon-button.account .text").text(name);
+        }
       }
     }
   }
@@ -593,7 +620,7 @@ export function update() {
           tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
         }
       } else {
-        tt = result.testDuration;
+        tt = parseFloat(result.testDuration);
       }
 
       tt += (result.incompleteTestSeconds ?? 0) - (result.afkDuration ?? 0);

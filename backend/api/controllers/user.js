@@ -35,13 +35,14 @@ class UserController {
 
   static async updateName(req, res, next) {
     try {
+      const { uid } = req.decodedToken;
       const { name } = req.body;
       if (!isUsernameValid(name))
         return res.status(400).json({
           message:
             "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
         });
-      await UsersDAO.updateName();
+      await UsersDAO.updateName(uid, name);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
@@ -89,8 +90,22 @@ class UserController {
 
   static async getUser(req, res, next) {
     try {
-      const { uid } = req.decodedToken;
-      const userInfo = await UsersDAO.getUser(uid);
+      const { email, uid } = req.decodedToken;
+      let userInfo;
+      try {
+        userInfo = await UsersDAO.getUser(uid);
+      } catch (e) {
+        if (email && uid) {
+          userInfo = await UsersDAO.addUser(undefined, email, uid);
+        } else {
+          throw new MonkeyError(
+            400,
+            "User not found. Could not recreate user document.",
+            "Tried to recreate user document but either email or uid is nullish",
+            uid
+          );
+        }
+      }
       return res.status(200).json(userInfo);
     } catch (e) {
       return next(e);

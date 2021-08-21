@@ -414,9 +414,16 @@ indexexchange.com, 184626, RESELLER, 50b1c356f2c5c8fc
 appnexus.com, 11664 , RESELLER #banner
 contextweb.com, 562258, RESELLER, 89ff185a4c4e857c
 
-#V 20.07.2021 PH 
+#V 12.08.2021 PH 
 
 #------------------------------------------------------------------------------------------------------
+33across.com, 0010b00001rrIFkAAM, DIRECT, bbea06d9c4d2853c                    # 33Across_0_9_6&7
+yahoo.com, 57289, RESELLER,  e1a5b5b6e3255540                                 # 33Across_0_9_6&7
+advertising.com, 12543, RESELLER                                              # 33Across_0_9_6&7
+appnexus.com, 10239, RESELLER, f5ab79cb980f11d1                               # 33Across_0_9_6&7
+rubiconproject.com, 16414, RESELLER, 0bfd66d529a55807                         # 33Across_0_9_6&7
+indexexchange.com, 191973, RESELLER, 50b1c356f2c5c8fc                         # 33Across_0_9_6&7
+acrosspf.com,366,DIRECT                                                       # AcrossMedia
 adagio.io, 1090, DIRECT                                                       # Adagio_0_6
 rubiconproject.com, 19116, RESELLER, 0bfd66d529a55807                         # Adagio_0_6
 pubmatic.com, 159110, RESELLER, 5d62403b186f2ace                              # Adagio_0_6
@@ -489,6 +496,8 @@ indexexchange.com, 183921, DIRECT, 50b1c356f2c5c8fc                           # 
 indexexchange.com, 188416, DIRECT, 50b1c356f2c5c8fc                           # Index Exchange_1_6&7
 indexexchange.com, 193067, DIRECT, 50b1c356f2c5c8fc                           # Index Exchange_2_6&7
 indexexchange.com, 194127, DIRECT, 50b1c356f2c5c8fc                           # Index Exchange_7&4_6&7
+inskinmedia.com, 124902, DIRECT, 7c0396763f74a3d5                             # Inskin_0_6
+indexexchange.com, 184665, RESELLER, 50b1c356f2c5c8fc                         # Inskin_0_6
 appnexus.com, 7118, RESELLER                                                  # Just Premium_0_6
 openx.com, 539640546, RESELLER, 6a698e2ec38604c6                              # Just Premium_0_6
 improvedigital.com, 185, RESELLER                                             # Just Premium_0_6
@@ -501,6 +510,8 @@ eskimi.com, eas-2020000005, RESELLER                                          # 
 rubiconproject.com, 17902, RESELLER, 0bfd66d529a55807                         # Magnite_1_6&7
 rubiconproject.com,  13762, RESELLER, 0bfd66d529a55807                        # Magnite_0&2_6&7
 acexchange.co.kr, 1908143852, RESELLER                                        # nhnACE_0s_6
+ogury.com, 086233d2-e8a8-44fc-907b-f0752e1c85de, DIRECT                       # Ogury_0_6
+appnexus.com, 11470, RESELLER                                                 # Ogury_0_6
 openx.com, 537144009, RESELLER, 6a698e2ec38604c6                              # OpenX_0_6
 openx.com, 540134228, RESELLER, 6a698e2ec38604c6                              # OpenX_0_7
 openx.com, 540368327, RESELLER, 6a698e2ec38604c6                              # OpenX_1_6&7
@@ -536,6 +547,8 @@ appnexus.com, 3703, RESELLER, f5ab79cb980f11d1                                # 
 smaato.com, 1100044045, RESELLER, 07bcf65f187117b4                            # Smart AdServer_0&1&2_6&7
 rhythmone.com, 2564526802, RESELLER, a670c89d4a324e47                         # Smart AdServer_0&1&2_6&7
 axonix.com, 57264, RESELLER                                                   # Smart AdServer_0&1&2_6&7
+smartadserver.com, 4016, DIRECT                                               # Smart AdServer_0&1&2_6&7
+martadserver.com, 4074, DIRECT                                                # Smart AdServer_0&1&2_6&7
 smaato.com, 1100049216, DIRECT, 07bcf65f187117b4                              # Smaato
 smaato.com, 1100004890, DIRECT, 07bcf65f187117b4                              # Smaato
 contextweb.com, 558622, RESELLER, 89ff185a4c4e857c                            # Smaato

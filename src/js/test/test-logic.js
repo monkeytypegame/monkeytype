@@ -1100,7 +1100,7 @@ export async function finish(difficultyFailed = false) {
     Replay.replayGetWordsList(input.history);
   }
 
-  // TestStats.recordKeypressSpacing();
+  TestStats.recordKeypressSpacing(); //this is needed in case there is afk time at the end - to make sure test duration makes sense
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
@@ -1332,10 +1332,17 @@ export async function finish(difficultyFailed = false) {
   let avg = Misc.mean(rawWpmPerSecondRaw);
 
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
+
+  let keyconsistencyarray = TestStats.keypressTimings.spacing.array.slice();
+
+  keyconsistencyarray = keyconsistencyarray.splice(
+    0,
+    keyconsistencyarray.length - 1
+  );
+
   let keyConsistency = Misc.roundTo2(
     Misc.kogasa(
-      Misc.stdDev(TestStats.keypressTimings.spacing.array) /
-        Misc.mean(TestStats.keypressTimings.spacing.array)
+      Misc.stdDev(keyconsistencyarray) / Misc.mean(keyconsistencyarray)
     )
   );
 
