@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npx gulp build",
     "start:dev": "npm run build && concurrently --kill-others \"npx gulp watch\" \"nodemon ./backend/server.js\" \"firebase serve --only hosting\"",
-    "start:dev:nodb": "npm run build && firebase serve --only hosting",
+    "start:dev:nodb": "npm run build && concurrently --kill-others \"npx gulp watch\" \"firebase serve --only hosting\"",
     "deploy:live": "npm run build && firebase deploy -P live --only hosting"
   },
   "engines": {
