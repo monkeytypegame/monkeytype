@@ -183,6 +183,16 @@ const layouts = {
             " "
         ],
     },
+    german_dvorak: {
+        keymapShowTopRow: true,
+        keys: [
+            "^°", "1!", "2", "3§", "4$", "5%", "6&", "7/", "8(", "9)", "0=", "+*", "<>",
+            "üÜ", ",;", ".:", "pP", "yY", "fF", "gG", "cC", "tT", "pP", "zZ", "ß?", "´`",
+            "aA", "oO", "eE", "iI", "uU", "hH", "dD", "rR", "nN", "sS", "lL", "-_",
+            "äÄ", "öÖ", "qQ", "jJ", "kK", "xX", "bB", "mM", "wW", "vV", "#'",
+            " "
+        ]
+    },
     dvorak_L: {
         keymapShowTopRow: true,
         keys: [
