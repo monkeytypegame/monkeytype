@@ -1077,6 +1077,8 @@ export async function addWord() {
     randomWord = Misc.getSpecials();
   } else if (Config.funbox === "ascii") {
     randomWord = Misc.getASCII();
+  } else if (Config.funbox === "weakspot") {
+    randomWord = WeakSpot.getWord(wordset);
   }
 
   if (Config.punctuation) {
