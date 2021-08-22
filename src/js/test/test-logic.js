@@ -803,7 +803,6 @@ export function restart(
   TestStats.restart();
   corrected.reset();
   ShiftTracker.reset();
-  Focus.set(false);
   Caret.hide();
   setActive(false);
   Replay.stopReplayRecording();
@@ -933,6 +932,7 @@ export function restart(
         opacity: 1,
       });
       // resetPaceCaret();
+      Focus.set(false);
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")

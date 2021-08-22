@@ -1701,7 +1701,7 @@ label.checkbox {
     grid-gap: 0.2rem;
     // width: min-content;
     // width: -moz-min-content;
-    // transition: 0.25s;
+    transition: 0.25s;
     /*   margin-bottom: 0.1rem; */
     justify-items: self-end;
 
@@ -1815,6 +1815,7 @@ key {
 
   // margin-bottom: 2rem;
   .keyTips {
+    transition: 0.25s;
     margin-bottom: 2rem;
   }
 
@@ -1872,7 +1873,12 @@ key {
 }
 
 #bottom.focus {
-  opacity: 0 !important;
+  .keyTips {
+    opacity: 0 !important;
+  }
+  a {
+    opacity: 0 !important;
+  }
 }
 
 #result {
