@@ -6,6 +6,15 @@ import * as CustomText from "./custom-text";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
 
+export let active = null;
+
+export function clearActive() {
+  if (active) {
+    Notifications.add("Challenge cleared", 0);
+    active = null;
+  }
+}
+
 export async function setup(challengeName) {
   let list = await Misc.getChallengeList();
   let challenge = list.filter((c) => c.name === challengeName)[0];
@@ -92,10 +101,11 @@ export async function setup(challengeName) {
     $(".page.pageTest").removeClass("hidden");
 
     if (notitext === undefined) {
-      Notifications.add(`Challenge '${challengeName}' loaded.`, 0);
+      Notifications.add(`Challenge '${challenge.display}' loaded.`, 0);
     } else {
       Notifications.add("Challenge loaded. " + notitext, 0);
     }
+    active = challenge;
   } catch (e) {
     Notifications.add("Something went wrong: " + e, -1);
   }

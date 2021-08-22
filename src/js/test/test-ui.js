@@ -17,6 +17,7 @@ import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
 import * as TestUI from "./test-ui";
+import * as ChallengeController from "./challenge-controller";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -472,6 +473,12 @@ export function updateModesNotice() {
   if (TestLogic.hasTab) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+    );
+  }
+
+  if (ChallengeController.active) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${ChallengeController.active.display}</div>`
     );
   }
 
