@@ -170,12 +170,11 @@ class ResultController {
       const isPb = await UserDAO.checkIfPb(uid, result);
       const tagPbs = await UserDAO.checkIfTagPb(uid, result);
 
-      if (isPb && user.discordId) {
-        BotDAO.updateDiscordRole(user.discordId, result.wpm);
-      }
-
       if (result.mode === "time" && String(result.mode2) === "60") {
         UserDAO.incrementBananas(uid, result.wpm);
+        if (isPb && user.discordId) {
+          BotDAO.updateDiscordRole(user.discordId, result.wpm);
+        }
       }
 
       let tt = 0;
