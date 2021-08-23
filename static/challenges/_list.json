@@ -4,39 +4,81 @@
     "display": "One Hour Warrior",
     "autoRole": true,
     "type": "customTime",
-    "parameters": [3600]
+    "parameters": [3600],
+    "requirements" : {
+      "time": {
+        "min": 3600
+      }
+    }
   }
   ,{
     "name": "doubleDown",
     "display": "Double Down",
     "autoRole": true,
     "type": "customTime",
-    "parameters": [7200]
+    "parameters": [7200],
+    "requirements" : {
+      "time": {
+        "min": 7200
+      }
+    }
+  }
+  ,{
+    "name": "tripleTrouble",
+    "display": "Triple Trouble",
+    "autoRole": true,
+    "type": "customTime",
+    "parameters": [10800],
+    "requirements" : {
+      "time": {
+        "min": 10800
+      }
+    }
   }
   ,{
     "name": "quad",
     "display": "Quaaaaad",
     "autoRole": true,
     "type": "customTime",
-    "parameters": [14400]
+    "parameters": [14400],
+    "requirements" : {
+      "time": {
+        "min": 14400
+      }
+    }
   }
   ,{
     "name": "8Ball",
     "display": "8 Ball",
     "type": "customTime",
-    "parameters": [28800]
+    "parameters": [28800],
+    "requirements" : {
+      "time": {
+        "min": 28800
+      }
+    }
   }
   ,{
     "name": "theBig12",
     "display": "The Big 12",
     "type": "customTime",
-    "parameters": [43200]
+    "parameters": [43200],
+    "requirements" : {
+      "time": {
+        "min": 43200
+      }
+    }
   }
   ,{
     "name": "1Day",
     "display": "1 Day",
     "type": "customTime",
-    "parameters": [86400]
+    "parameters": [86400],
+    "requirements" : {
+      "time": {
+        "min": 86400
+      }
+    }
   }
   ,{
     "name": "trueSimp",
@@ -536,6 +578,7 @@
   ,{
     "name": "69",
     "display": "6969696969",
+    "autoRole": true,
     "type": "customTime",
     "parameters": [69],
     "message": "You need to achieve 69 wpm, 69 raw, 69% accuracy and 69% consistency.",
