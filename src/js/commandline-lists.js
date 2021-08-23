@@ -1040,7 +1040,6 @@ export let commandsEnableAds = {
       configValue: "off",
       exec: () => {
         UpdateConfig.setEnableAds("off");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -1049,7 +1048,6 @@ export let commandsEnableAds = {
       configValue: "on",
       exec: () => {
         UpdateConfig.setEnableAds("on");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -1058,7 +1056,6 @@ export let commandsEnableAds = {
       configValue: "max",
       exec: () => {
         UpdateConfig.setEnableAds("max");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
   ],

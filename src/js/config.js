@@ -669,7 +669,13 @@ export function setEnableAds(val, nosave) {
     val = "off";
   }
   config.enableAds = val;
-  if (!nosave) saveToLocalStorage();
+  if (!nosave) {
+    saveToLocalStorage();
+    setTimeout(() => {
+      location.reload();
+    }, 3000);
+    Notifications.add("Ad settings changed. Refreshing...", 0);
+  }
 }
 
 export function setRepeatQuotes(val, nosave) {
