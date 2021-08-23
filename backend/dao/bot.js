@@ -19,6 +19,10 @@ class BotDAO {
     return await addCommand("linkDiscord", [discordId, uid]);
   }
 
+  static async awardChallenge(discordId, challengeName) {
+    return await addCommand("awardChallenge", [discordId, challengeName]);
+  }
+
   // static async announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
   //   return await addCommand("sayLbUpdate", [
   //     discordId,
