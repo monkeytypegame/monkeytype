@@ -1535,8 +1535,6 @@ export async function finish(difficultyFailed = false) {
       customText: cdata,
     };
 
-    completedEvent.challenge = ChallengeContoller.verify(completedEvent);
-
     if (Config.mode !== "custom") {
       delete completedEvent.CustomText;
     }
@@ -1732,6 +1730,9 @@ export async function finish(difficultyFailed = false) {
               AccountButton.loading(false);
               Notifications.add("You are offline. Result not saved.", -1);
             } else {
+              completedEvent.challenge = ChallengeContoller.verify(
+                completedEvent
+              );
               axiosInstance
                 .post("/results/add", {
                   result: completedEvent,
