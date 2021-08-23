@@ -185,7 +185,6 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
-    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -195,6 +194,9 @@
       },
       "afk": {
         "max": 5
+      },
+      "time": {
+        "min": 600
       }
     }
   }
@@ -204,7 +206,6 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
-    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -214,6 +215,9 @@
       },
       "afk": {
         "max": 5
+      },
+      "time": {
+        "min": 1200
       }
     }
   }
@@ -223,7 +227,6 @@
     "autoRole": true,
     "type": "accuracy",
     "parameters": [],
-    "message": "Minimum 60wpm and 100% accuracy required.",
     "requirements" : {
       "wpm": {
         "min": 60
@@ -233,6 +236,9 @@
       },
       "afk": {
         "max": 5
+      },
+      "time": {
+        "min": 1800
       }
     }
   }
