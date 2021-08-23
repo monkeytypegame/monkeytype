@@ -34,6 +34,7 @@ import * as Poetry from "./poetry.js";
 import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
+import * as ChallengeContoller from "./challenge-controller";
 
 let glarsesMode = false;
 
@@ -1533,6 +1534,8 @@ export async function finish(difficultyFailed = false) {
       chartData: chartData,
       customText: cdata,
     };
+
+    completedEvent.challenge = ChallengeContoller.verify(completedEvent);
 
     if (Config.mode !== "custom") {
       delete completedEvent.CustomText;
