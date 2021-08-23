@@ -177,6 +177,10 @@ class ResultController {
         }
       }
 
+      if (result.challenge && user.discordId) {
+        BotDAO.awardChallenge(user.discordId, result.challenge);
+      }
+
       let tt = 0;
       let afk = result.afkDuration;
       if (afk == undefined) {
