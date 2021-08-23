@@ -85,6 +85,10 @@
     "name": "thai",
     "languages": ["thai"]
   },
+ {
+    "name": "tamil",
+    "languages": ["tamil"]
+  },
   {
     "name": "polish",
     "languages": ["polish", "polish_2k", "polish_200k"]
