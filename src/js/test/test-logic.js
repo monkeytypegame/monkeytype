@@ -87,6 +87,18 @@ class Words {
   increaseCurrentIndex() {
     this.currentIndex++;
   }
+  clean() {
+    for (let s of this.list) {
+      if (/ +/.test(s)) {
+        let id = this.list.indexOf(s);
+        let tempList = s.split(" ");
+        this.list.splice(id, 1);
+        for (let i = 0; i < tempList.length; i++) {
+          this.list.splice(id + i, 0, tempList[i]);
+        }
+      }
+    }
+  }
 }
 
 class Input {
@@ -522,6 +534,8 @@ export async function init() {
         words.push(word);
       });
     } else {
+      console.log(`test-logic 537  wordsBound=${wordsBound}`);
+      console.log(`test-logic 53  wordset=${wordset}`);
       for (let i = 0; i < wordsBound; i++) {
         let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
         const previousWord = words.get(i - 1);
@@ -543,8 +557,7 @@ export async function init() {
             regenarationCount < 100 &&
             (randomWord == previousWord ||
               randomWord == previousWord2 ||
-              (!Config.punctuation && randomWord == "I") ||
-              randomWord.indexOf(" ") > -1)
+              (!Config.punctuation && randomWord == "I"))
           ) {
             regenarationCount++;
             randomWord = wordset[Math.floor(Math.random() * wordset.length)];
@@ -602,8 +615,29 @@ export async function init() {
         if (/\t/g.test(randomWord)) {
           setHasTab(true);
         }
+        randomWord = randomWord.trim();
+        randomWord = randomWord.replace(/\\\\t/g, "\t");
+        randomWord = randomWord.replace(/\\\\n/g, "\n");
+        randomWord = randomWord.replace(/\\t/g, "\t");
+        randomWord = randomWord.replace(/\\n/g, "\n");
+        randomWord = randomWord.replace(/ +/g, " ");
+        randomWord = randomWord.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+        randomWord = randomWord.replace(/[\u2060]/g, " ");
+        console.log(`randomwordLast=${randomWord}`);
+        if (/ +/.test(randomWord)) {
+          let randomList = randomWord.split(" ");
+          let id = 0;
+          while (id < randomList.length) {
+            words.push(randomList[id]);
+            id++;
 
-        words.push(randomWord);
+            if (words.length == wordsBound) break;
+          }
+          i = words.length - 1;
+        } else {
+          words.push(randomWord);
+        }
+        console.log(`words=${words.list} i=${i}`);
       }
     }
   } else if (Config.mode == "quote") {

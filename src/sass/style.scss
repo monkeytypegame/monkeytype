@@ -578,10 +578,30 @@ a:hover {
     display: grid;
     gap: 1rem;
     width: 60vw;
-
-    .wordfilter {
-      width: 33%;
-      justify-self: right;
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      justify-content: space-between;
+      .delimiter.switch {
+        display: grid;
+        justify-self: left;
+        grid-template-columns: 1fr 1fr;
+        justify-content: space-evenly;
+        .buttons {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          column-gap: 1rem;
+          .delimiter.button {
+            width: 100px;
+            display: inline-block;
+          }
+        }
+      }
+      .wordfilter {
+        min-width: fit-content;
+        justify-self: right;
+        padding-inline: 1rem;
+      }
     }
 
     textarea {
