@@ -122,7 +122,7 @@ class UserController {
       } catch (e) {
         requser = null;
       }
-      if (user?.banned === true) {
+      if (requser?.banned === true) {
         throw new MonkeyError(403, "Banned accounts cannot link with Discord");
       }
 
