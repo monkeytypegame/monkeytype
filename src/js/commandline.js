@@ -544,7 +544,7 @@ $(document).keydown((e) => {
     if (
       e.key === "ArrowUp" ||
       e.key === "ArrowDown" ||
-      e.code == "Tab" ||
+      e.key === "Tab" ||
       (e.altKey && (e.key.toLowerCase() === 'j' || e.toLowerCase() === 'k'))
     ) {
       e.preventDefault();
@@ -559,7 +559,7 @@ $(document).keydown((e) => {
       });
       if (
         e.key === "ArrowUp" ||
-        (e.code == "Tab" && e.shiftKey) ||
+        (e.key === "Tab" && e.shiftKey) ||
         (e.altKey && e.toLowerCase() === 'k')
       ) {
         entries.removeClass("activeKeyboard");
@@ -573,7 +573,7 @@ $(document).keydown((e) => {
       }
       if (
         e.key === "ArrowDown" ||
-        (e.code == "Tab" && !e.shiftKey) ||
+        (e.key === "Tab" && !e.shiftKey) ||
         (e.altKey && e.key.toLowerCase() === 'j')
       ) {
         entries.removeClass("activeKeyboard");
