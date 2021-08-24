@@ -1,6 +1,7 @@
 {
   "name": "tamil",
   "leftToRight": true,
+  "ligatures": true,
   "words": [
     "என்",
     "என்று",
