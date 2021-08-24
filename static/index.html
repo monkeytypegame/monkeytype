@@ -151,19 +151,19 @@
     </div>
     <div id="customTextPopupWrapper" class="hidden">
       <div id="customTextPopup" action="">
-        <div class="container">
-          <div class="delimiter switch">
+        <!-- <div class="container"> -->
+        <!-- <div class="delimiter switch">
             <div class="text">Delimiter</div>
             <div class="buttons">
               <div class="delimiter button active" delimiter=" ">Space</div>
               <div class="delimiter button" delimiter="|">Pipe(|)</div>
             </div>
-          </div>
-          <div class="wordfilter button">
-            <i class="fas fa-filter"></i>
-            Words filter
-          </div>
+          </div> -->
+        <div class="wordfilter button">
+          <i class="fas fa-filter"></i>
+          Words filter
         </div>
+        <!-- </div> -->
         <textarea class="textarea" placeholder="Custom text"></textarea>
         <div class="inputs">
           <label class="checkbox">
@@ -192,6 +192,15 @@
             Remove Fancy Typography
             <span>
               Standardises typography symbols (for example “ and ” become ")
+            </span>
+          </label>
+          <label class="checkbox delimiterCheck">
+            <input type="checkbox" />
+            <div class="customTextCheckbox customTextDelimiterCheckbox"></div>
+            Pipe Delimiter
+            <span>
+              Change how words are separated. Using the pipe delimiter allows
+              you to randomize groups of words.
             </span>
           </label>
         </div>

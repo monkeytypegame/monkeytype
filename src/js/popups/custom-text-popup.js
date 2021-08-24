@@ -48,6 +48,34 @@ $(`${popup} .delimiter.switch .buttons .delimiter.button`).click((e) => {
   });
 });
 
+$(`${popup} .delimiterCheck input`).change(() => {
+  let delimiter;
+  if ($(`${popup} .delimiterCheck input`).prop("checked")) {
+    delimiter = "|";
+  } else {
+    delimiter = " ";
+  }
+  if (
+    $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
+  ) {
+    let currentText = $(`${popup} textarea`).val();
+    let currentTextSplit = currentText.split(CustomText.delimiter);
+    let newtext = currentTextSplit.join(delimiter);
+    newtext = newtext.replace(/\n /g, "\n");
+    $(`${popup} textarea`).val(newtext);
+  } else {
+    let newtext = CustomText.text.join(delimiter);
+    newtext = newtext.replace(/\n /g, "\n");
+    $(`${popup} textarea`).val(newtext);
+  }
+  CustomText.setDelimiter(delimiter);
+  // $(wrapper).animate({ opacity: 1 }, 100, () => {
+  //   let newtext = CustomText.text.join(CustomText.delimiter);
+  //   newtext = newtext.replace(/\n /g, "\n");
+  //   $(`${popup} textarea`).val(newtext);
+  // });
+});
+
 export function hide() {
   if (!$(wrapper).hasClass("hidden")) {
     $(wrapper)

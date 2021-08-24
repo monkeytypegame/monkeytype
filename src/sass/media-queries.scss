@@ -195,25 +195,9 @@
   }
   #customTextPopupWrapper {
     #customTextPopup {
-      .container {
-        display: flex;
-        flex-direction: column;
-        .delimiter.switch {
-          justify-content: space-between !important;
-          .buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            column-gap: 1rem;
-            .delimiter.button {
-              width: 100%;
-            }
-          }
-        }
-        .wordfilter.button {
-          width: 100% !important;
-          justify-self: auto;
-          margin-top: 1rem;
-        }
+      .wordfilter.button {
+        width: 100% !important;
+        justify-self: auto;
       }
 
       .inputs {
