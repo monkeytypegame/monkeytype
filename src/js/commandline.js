@@ -321,8 +321,7 @@ $("#commandLine input").keyup((e) => {
     e.key === "ArrowDown" ||
     e.key === "Enter" ||
     e.key === "Tab" ||
-    e.code == "AltLeft" ||
-    (e.altKey && (e.key.toLowerCase() === "j" || e.toLowerCase() === "k"))
+    e.code == "AltLeft"
   )
     return;
   updateSuggested();
@@ -332,12 +331,12 @@ $(document).ready((e) => {
   $(document).keydown((event) => {
     // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
     if (
-      event.key === "Esc" ||
+      event.key === "Escape" ||
       (event.key &&
         event.key.toLowerCase() === "p" &&
         (event.metaKey || event.ctrlKey) &&
         event.shiftKey) ||
-        (event.key === "Tab" && Config.swapEscAndTab)
+      (event.key === "Tab" && Config.swapEscAndTab)
     ) {
       event.preventDefault();
       if (!$("#leaderboardsWrapper").hasClass("hidden")) {
@@ -541,12 +540,7 @@ $(document).keydown((e) => {
       trigger(command);
       return;
     }
-    if (
-      e.key === "ArrowUp" ||
-      e.key === "ArrowDown" ||
-      e.key === "Tab" ||
-      (e.altKey && (e.key.toLowerCase() === 'j' || e.toLowerCase() === 'k'))
-    ) {
+    if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Tab") {
       e.preventDefault();
       $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
         "mouseenter mouseleave"
@@ -557,11 +551,7 @@ $(document).keydown((e) => {
       $.each(entries, (index, obj) => {
         if ($(obj).hasClass("activeKeyboard")) activenum = index;
       });
-      if (
-        e.key === "ArrowUp" ||
-        (e.key === "Tab" && e.shiftKey) ||
-        (e.altKey && e.toLowerCase() === 'k')
-      ) {
+      if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
         entries.removeClass("activeKeyboard");
         if (activenum == 0) {
           $(entries[entries.length - 1]).addClass("activeKeyboard");
@@ -571,11 +561,7 @@ $(document).keydown((e) => {
           hoverId = $(entries[activenum]).attr("command");
         }
       }
-      if (
-        e.key === "ArrowDown" ||
-        (e.key === "Tab" && !e.shiftKey) ||
-        (e.altKey && e.key.toLowerCase() === 'j')
-      ) {
+      if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
         entries.removeClass("activeKeyboard");
         if (activenum + 1 == entries.length) {
           $(entries[0]).addClass("activeKeyboard");
