@@ -317,12 +317,12 @@ $("#commandLine input").keyup((e) => {
     "activeMouse"
   );
   if (
-    e.keyCode == 38 ||
-    e.keyCode == 40 ||
-    e.keyCode == 13 ||
-    e.code == "Tab" ||
+    e.key === "ArrowUp" ||
+    e.key === "ArrowDown" ||
+    e.key === "Enter" ||
+    e.key === "Tab" ||
     e.code == "AltLeft" ||
-    (e.altKey && (e.keyCode == 74 || e.keyCode == 75))
+    (e.altKey && (e.key.toLowerCase() === "j" || e.toLowerCase() === "k"))
   )
     return;
   updateSuggested();
@@ -332,12 +332,12 @@ $(document).ready((e) => {
   $(document).keydown((event) => {
     // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
     if (
-      event.keyCode == 27 ||
+      event.key === "Esc" ||
       (event.key &&
-        event.key.toLowerCase() == "p" &&
+        event.key.toLowerCase() === "p" &&
         (event.metaKey || event.ctrlKey) &&
         event.shiftKey) ||
-      (event.keyCode == 9 && Config.swapEscAndTab)
+        (event.key === "Tab" && Config.swapEscAndTab)
     ) {
       event.preventDefault();
       if (!$("#leaderboardsWrapper").hasClass("hidden")) {
@@ -368,7 +368,7 @@ $(document).ready((e) => {
           hide();
         }
         UpdateConfig.setFontFamily(Config.fontFamily, true);
-      } else if (event.keyCode == 9 || !Config.swapEscAndTab) {
+      } else if (event.key === "Tab" || !Config.swapEscAndTab) {
         if (Config.singleListCommandLine == "on") {
           useSingleListCommandLine(false);
         } else {
@@ -381,7 +381,7 @@ $(document).ready((e) => {
 });
 
 $("#commandInput input").keydown((e) => {
-  if (e.keyCode == 13) {
+  if (e.key === "Enter") {
     //enter
     e.preventDefault();
     let command = $("#commandInput input").attr("command");
@@ -528,13 +528,13 @@ $(document).keydown((e) => {
       }
     }
     if (
-      e.keyCode == 8 &&
+      e.key === "Backspace" &&
       $("#commandLine input").val().length == 1 &&
       Config.singleListCommandLine == "manual" &&
       isSingleListCommandLineActive()
     )
       restoreOldCommandLine();
-    if (e.keyCode == 13) {
+    if (e.key === "Enter") {
       //enter
       e.preventDefault();
       let command = $(".suggestions .entry.activeKeyboard").attr("command");
@@ -542,10 +542,10 @@ $(document).keydown((e) => {
       return;
     }
     if (
-      e.keyCode == 38 ||
-      e.keyCode == 40 ||
-      e.code == "Tab" ||
-      (e.altKey && (e.keyCode == 74 || e.keyCode == 75))
+      e.key === "ArrowUp" ||
+      e.key === "ArrowDown" ||
+      e.key === "Tab" ||
+      (e.altKey && (e.key.toLowerCase() === 'j' || e.toLowerCase() === 'k'))
     ) {
       e.preventDefault();
       $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
@@ -558,9 +558,9 @@ $(document).keydown((e) => {
         if ($(obj).hasClass("activeKeyboard")) activenum = index;
       });
       if (
-        e.keyCode == 38 ||
-        (e.code == "Tab" && e.shiftKey) ||
-        (e.altKey && e.keyCode == 75)
+        e.key === "ArrowUp" ||
+        (e.key === "Tab" && e.shiftKey) ||
+        (e.altKey && e.toLowerCase() === 'k')
       ) {
         entries.removeClass("activeKeyboard");
         if (activenum == 0) {
@@ -572,9 +572,9 @@ $(document).keydown((e) => {
         }
       }
       if (
-        e.keyCode == 40 ||
-        (e.code == "Tab" && !e.shiftKey) ||
-        (e.altKey && e.keyCode == 74)
+        e.key === "ArrowDown" ||
+        (e.key === "Tab" && !e.shiftKey) ||
+        (e.altKey && e.key.toLowerCase() === 'j')
       ) {
         entries.removeClass("activeKeyboard");
         if (activenum + 1 == entries.length) {
