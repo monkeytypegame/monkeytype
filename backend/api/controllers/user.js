@@ -141,6 +141,9 @@ class UserController {
           "This Discord account is already linked to a different account"
         );
       }
+      if (user.banned === true) {
+        throw new MonkeyError(403, "Banned accounts cannot link with Discord");
+      }
       await UsersDAO.linkDiscord(uid, did);
       await BotDAO.linkDiscord(uid, did);
       return res.status(200).json({
