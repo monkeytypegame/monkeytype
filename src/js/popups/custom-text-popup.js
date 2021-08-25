@@ -21,7 +21,7 @@ export function show() {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        let newtext = CustomText.text.join(" ");
+        let newtext = CustomText.text.join(CustomText.delimiter);
         newtext = newtext.replace(/\n /g, "\n");
         $(`${popup} textarea`).val(newtext);
         $(`${popup} .wordcount input`).val(CustomText.word);
@@ -33,6 +33,49 @@ export function show() {
     $(`${popup} textarea`).focus();
   }, 150);
 }
+
+$(`${popup} .delimiter.switch .buttons .delimiter.button`).click((e) => {
+  $(`${popup} .delimiter.switch .buttons .delimiter.button.active`).removeClass(
+    "active"
+  );
+  let target = $(e.currentTarget);
+  let delimiter = target.attr("delimiter");
+  target.addClass("active");
+  CustomText.setDelimiter(delimiter);
+  $(wrapper).animate({ opacity: 1 }, 100, () => {
+    let newtext = CustomText.text.join(CustomText.delimiter);
+    newtext = newtext.replace(/\n /g, "\n");
+    $(`${popup} textarea`).val(newtext);
+  });
+});
+
+$(`${popup} .delimiterCheck input`).change(() => {
+  let delimiter;
+  if ($(`${popup} .delimiterCheck input`).prop("checked")) {
+    delimiter = "|";
+  } else {
+    delimiter = " ";
+  }
+  if (
+    $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
+  ) {
+    let currentText = $(`${popup} textarea`).val();
+    let currentTextSplit = currentText.split(CustomText.delimiter);
+    let newtext = currentTextSplit.join(delimiter);
+    newtext = newtext.replace(/\n /g, "\n");
+    $(`${popup} textarea`).val(newtext);
+  } else {
+    let newtext = CustomText.text.join(delimiter);
+    newtext = newtext.replace(/\n /g, "\n");
+    $(`${popup} textarea`).val(newtext);
+  }
+  CustomText.setDelimiter(delimiter);
+  // $(wrapper).animate({ opacity: 1 }, 100, () => {
+  //   let newtext = CustomText.text.join(CustomText.delimiter);
+  //   newtext = newtext.replace(/\n /g, "\n");
+  //   $(`${popup} textarea`).val(newtext);
+  // });
+});
 
 export function hide() {
   if (!$(wrapper).hasClass("hidden")) {
@@ -101,7 +144,7 @@ $("#customTextPopup .apply").click(() => {
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
-  text = text.split(" ");
+  text = text.split(CustomText.delimiter);
   CustomText.setText(text);
   CustomText.setWord(parseInt($("#customTextPopup .wordcount input").val()));
   CustomText.setTime(parseInt($("#customTextPopup .time input").val()));
