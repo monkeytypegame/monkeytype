@@ -113,6 +113,11 @@
     "name": "weakspot",
     "type": "script",
     "info": "Focus on slow and mistyped letters."
+  },
+  {
+    "name": "pseudolang",
+    "type": "script",
+    "info": "Nonsense words that look like the current language."
   }
 ]
 

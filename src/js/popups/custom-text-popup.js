@@ -4,6 +4,7 @@ import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import * as TestLogic from "./test-logic";
 import * as WordFilterPopup from "./word-filter-popup";
+import * as ChallengeController from "./challenge-controller";
 
 let wrapper = "#customTextPopupWrapper";
 let popup = "#customTextPopup";
@@ -194,6 +195,7 @@ $("#customTextPopup .apply").click(() => {
     );
   }
 
+  ChallengeController.clearActive();
   ManualRestart.set();
   TestLogic.restart();
   hide();

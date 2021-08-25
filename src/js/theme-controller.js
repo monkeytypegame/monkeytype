@@ -79,7 +79,6 @@ let loadStyle = function (name) {
 };
 
 export function apply(themeName) {
-  console.log(`Applying theme ${themeName}`);
   clearCustomTheme();
 
   let name = "serika_dark";
@@ -124,7 +123,6 @@ export function apply(themeName) {
     }
     ThemeColors.get().then((colors) => {
       $(".keymap-key").attr("style", "");
-      console.log("updating chart colors");
       ChartController.updateAllChartColors();
       updateFavicon(32, 14);
       $("#metaThemeColor").attr("content", colors.bg);

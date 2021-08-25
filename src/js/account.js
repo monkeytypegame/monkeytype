@@ -620,7 +620,7 @@ export function update() {
           tt = (parseFloat(result.mode2) / parseFloat(result.wpm)) * 60;
         }
       } else {
-        tt = result.testDuration;
+        tt = parseFloat(result.testDuration);
       }
 
       tt += (result.incompleteTestSeconds ?? 0) - (result.afkDuration ?? 0);

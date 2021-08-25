@@ -1,6 +1,7 @@
 const ResultDAO = require("../../dao/result");
 const UserDAO = require("../../dao/user");
 const PublicStatsDAO = require("../../dao/public-stats");
+const BotDAO = require("../../dao/bot");
 const {
   validateObjectValues,
   validateResult,
@@ -43,6 +44,7 @@ class ResultController {
     try {
       const { uid } = req.decodedToken;
       const { result } = req.body;
+      result.testDuration = parseFloat(result.testDuration);
       if (validateObjectValues(result) > 0)
         return res.status(400).json({ message: "Bad input" });
       if (
@@ -170,6 +172,13 @@ class ResultController {
 
       if (result.mode === "time" && String(result.mode2) === "60") {
         UserDAO.incrementBananas(uid, result.wpm);
+        if (isPb && user.discordId) {
+          BotDAO.updateDiscordRole(user.discordId, result.wpm);
+        }
+      }
+
+      if (result.challenge && user.discordId) {
+        BotDAO.awardChallenge(user.discordId, result.challenge);
       }
 
       let tt = 0;

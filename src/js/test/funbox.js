@@ -167,6 +167,7 @@ export async function activate(funbox) {
         UpdateConfig.setKeymapMode
       );
       UpdateConfig.setKeymapMode("off");
+      UpdateConfig.setHighlightMode("letter");
       Settings.groups.keymapMode.updateButton();
       TestLogic.restart();
     } else if (funbox === "layoutfluid") {
