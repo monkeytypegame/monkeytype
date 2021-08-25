@@ -537,8 +537,6 @@ export async function init() {
         words.push(word);
       });
     } else {
-      console.log(`test-logic 537  wordsBound=${wordsBound}`);
-      console.log(`test-logic 53  wordset=${wordset}`);
       for (let i = 0; i < wordsBound; i++) {
         let randomWord = wordset.randomWord();
         const previousWord = words.get(i - 1);
