@@ -626,7 +626,6 @@ export async function init() {
         randomWord = randomWord.replace(/ +/g, " ");
         randomWord = randomWord.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
         randomWord = randomWord.replace(/[\u2060]/g, " ");
-        console.log(`randomwordLast=${randomWord}`);
         if (/ +/.test(randomWord)) {
           let randomList = randomWord.split(" ");
           let id = 0;
@@ -640,7 +639,6 @@ export async function init() {
         } else {
           words.push(randomWord);
         }
-        console.log(`words=${words.list} i=${i}`);
       }
     }
   } else if (Config.mode == "quote") {
