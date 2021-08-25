@@ -17,9 +17,9 @@ import axiosInstance from "./axios-instance";
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 const githubProvider = new firebase.auth.GithubAuthProvider();
 
-const authListener = firebase.auth().onAuthStateChanged(function (user) {
+const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   if (user) {
-    loadUser(user);
+    await loadUser(user);
   } else {
     UI.setPageTransition(false);
     if ($(".pageLoading").hasClass("active")) UI.changePage("");

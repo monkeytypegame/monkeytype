@@ -107,7 +107,7 @@ export function swapElements(
   }
 }
 
-export function changePage(page) {
+export function changePage(page, norestart = false) {
   console.log("change");
   if (pageTransition) {
     return;
@@ -136,7 +136,7 @@ export function changePage(page) {
     // incompleteTestSeconds = 0;
     TestStats.resetIncomplete();
     ManualRestart.set();
-    TestLogic.restart();
+    if (!norestart) TestLogic.restart();
     Funbox.activate(Config.funbox);
   } else if (page == "about") {
     setPageTransition(true);
