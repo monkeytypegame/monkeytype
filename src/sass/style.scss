@@ -8,6 +8,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Comfortaa&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Coming+Soon&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
+
 :root {
   --roundness: 0.25rem;
   --font: "Roboto Mono";
@@ -1661,7 +1663,7 @@ label.checkbox {
   line-height: 2.3rem;
   font-size: 2.3rem;
   /* text-align: center; */
-  transition: 0.25s;
+  // transition: 0.25s;
   padding: 0 5px;
   display: grid;
   grid-auto-flow: column;
@@ -1672,17 +1674,40 @@ label.checkbox {
   user-select: none;
 
   .logo {
-    margin-bottom: 0.6rem;
+    // margin-bottom: 0.6rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+
+    .icon {
+      width: 2.5rem;
+      display: grid;
+      align-items: center;
+      background-color: transparent;
+      // margin-bottom: 0.15rem;
+      svg path {
+        transition: 0.25s;
+        fill: var(--main-color);
+      }
+    }
+    .text {
+      .top {
+        position: absolute;
+        left: 0.25rem;
+        top: -0.1rem;
+        font-size: 0.65rem;
+        line-height: 0.65rem;
+        color: var(--sub-color);
+        transition: 0.25s;
+      }
+      position: relative;
+      font-size: 2rem;
+      margin-bottom: 0.4rem;
+      font-family: "Lexend Deca";
+      transition: 0.25s;
+    }
     white-space: nowrap;
     user-select: none;
-
-    .top {
-      font-size: 0.65rem;
-      line-height: 0.65rem;
-      margin-bottom: -0.4rem;
-      margin-left: -0.1rem;
-      color: var(--sub-color);
-    }
 
     .bottom {
       margin-left: -0.15rem;
@@ -1769,8 +1794,17 @@ label.checkbox {
       opacity: 0 !important;
     }
 
-    .logo .bottom {
+    .icon svg path {
+      fill: var(--sub-color) !important;
+    }
+
+    .logo .text {
       color: var(--sub-color) !important;
+      // opacity: 0 !important;
+    }
+
+    .logo .top {
+      opacity: 0 !important;
     }
 
     .config {
