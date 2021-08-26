@@ -47,6 +47,7 @@
     "chartjs-plugin-annotation": "^0.5.7",
     "chartjs-plugin-trendline": "^0.2.2",
     "howler": "^2.2.1",
+    "meow": "^10.1.1",
     "node-sass": "^4.14.1",
     "tinycolor2": "^1.4.2"
   }
