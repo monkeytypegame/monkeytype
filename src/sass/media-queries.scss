@@ -92,6 +92,7 @@
       gap: 0.5rem;
       font-size: 0.8rem;
       line-height: 0.8rem;
+      margin-top: -0.75rem;
 
       .icon-button {
         padding: 0.25rem;
@@ -233,6 +234,13 @@
   #top {
     align-items: self-end;
     .logo {
+      .icon {
+        width: 1.5rem !important;
+      }
+      .text {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.3rem !important;
+      }
       .bottom {
         font-size: 1.75rem;
         line-height: 1.75rem;
