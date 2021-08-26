@@ -54,6 +54,7 @@
   transition: 0.5s;
 }
 
+/* change the toggle buttons in top right */
 .config .toggleButton {
   -webkit-transform: rotateY(180deg);
   unicode-bidi: bidi-override;
