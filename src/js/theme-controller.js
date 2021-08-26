@@ -25,7 +25,6 @@ export const colorVars = [
 
 async function updateFavicon(size, curveSize) {
   setTimeout(() => {
-    console.log("fav");
     domtoimage
       .toPng(document.querySelector(".logo .icon"))
       .then(function (dataUrl) {
