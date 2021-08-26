@@ -54,7 +54,16 @@ input[type="range"] {
   width: 100%;
   height: 1rem;
   border-radius: var(--roundness);
-  &::-webkit-slider-thumb,
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    padding: 0;
+    border: none;
+    width: 2rem;
+    height: 1rem;
+    border-radius: var(--roundness);
+    background-color: var(--main-color);
+  }
+
   &::-moz-range-thumb {
     -webkit-appearance: none;
     padding: 0;
