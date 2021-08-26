@@ -21,7 +21,7 @@ export function show() {
       .css("opacity", 0)
       .removeClass("hidden")
       .animate({ opacity: 1 }, 100, () => {
-        let newtext = CustomText.text.join(" ");
+        let newtext = CustomText.text.join(CustomText.delimiter);
         newtext = newtext.replace(/\n /g, "\n");
         $(`${popup} textarea`).val(newtext);
         $(`${popup} .wordcount input`).val(CustomText.word);
@@ -33,6 +33,29 @@ export function show() {
     $(`${popup} textarea`).focus();
   }, 150);
 }
+
+$(`${popup} .delimiterCheck input`).change(() => {
+  let delimiter;
+  if ($(`${popup} .delimiterCheck input`).prop("checked")) {
+    delimiter = "|";
+  } else {
+    delimiter = " ";
+  }
+  if (
+    $(`${popup} textarea`).val() != CustomText.text.join(CustomText.delimiter)
+  ) {
+    let currentText = $(`${popup} textarea`).val();
+    let currentTextSplit = currentText.split(CustomText.delimiter);
+    let newtext = currentTextSplit.join(delimiter);
+    newtext = newtext.replace(/\n /g, "\n");
+    $(`${popup} textarea`).val(newtext);
+  } else {
+    let newtext = CustomText.text.join(delimiter);
+    newtext = newtext.replace(/\n /g, "\n");
+    $(`${popup} textarea`).val(newtext);
+  }
+  CustomText.setDelimiter(delimiter);
+});
 
 export function hide() {
   if (!$(wrapper).hasClass("hidden")) {
@@ -101,7 +124,7 @@ $("#customTextPopup .apply").click(() => {
   }
   // text = Misc.remove_non_ascii(text);
   text = text.replace(/[\u2060]/g, "");
-  text = text.split(" ");
+  text = text.split(CustomText.delimiter);
   CustomText.setText(text);
   CustomText.setWord(parseInt($("#customTextPopup .wordcount input").val()));
   CustomText.setTime(parseInt($("#customTextPopup .time input").val()));

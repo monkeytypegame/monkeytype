@@ -916,7 +916,8 @@ export function setHighlightMode(mode, nosave) {
     (config.funbox === "nospace" ||
       config.funbox === "read_ahead" ||
       config.funbox === "read_ahead_easy" ||
-      config.funbox === "read_ahead_hard")
+      config.funbox === "read_ahead_hard" ||
+      config.funbox === "tts")
   ) {
     Notifications.add("Can't use word highlight with this funbox", 0);
     return;
