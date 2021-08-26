@@ -34,21 +34,6 @@ export function show() {
   }, 150);
 }
 
-$(`${popup} .delimiter.switch .buttons .delimiter.button`).click((e) => {
-  $(`${popup} .delimiter.switch .buttons .delimiter.button.active`).removeClass(
-    "active"
-  );
-  let target = $(e.currentTarget);
-  let delimiter = target.attr("delimiter");
-  target.addClass("active");
-  CustomText.setDelimiter(delimiter);
-  $(wrapper).animate({ opacity: 1 }, 100, () => {
-    let newtext = CustomText.text.join(CustomText.delimiter);
-    newtext = newtext.replace(/\n /g, "\n");
-    $(`${popup} textarea`).val(newtext);
-  });
-});
-
 $(`${popup} .delimiterCheck input`).change(() => {
   let delimiter;
   if ($(`${popup} .delimiterCheck input`).prop("checked")) {
@@ -70,11 +55,6 @@ $(`${popup} .delimiterCheck input`).change(() => {
     $(`${popup} textarea`).val(newtext);
   }
   CustomText.setDelimiter(delimiter);
-  // $(wrapper).animate({ opacity: 1 }, 100, () => {
-  //   let newtext = CustomText.text.join(CustomText.delimiter);
-  //   newtext = newtext.replace(/\n /g, "\n");
-  //   $(`${popup} textarea`).val(newtext);
-  // });
 });
 
 export function hide() {
