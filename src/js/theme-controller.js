@@ -53,7 +53,7 @@ function updateFavicon(size, curveSize) {
     ctx.textAlign = "center";
     ctx.fillStyle = maincolor;
     ctx.fillText("mt", size / 2 + 1, (size / 3) * 2.1);
-    $("body").prepend(canvas);
+    // $("body").prepend(canvas);
     $("#favicon").attr("href", canvas.toDataURL("image/png"));
   }, 125);
 }
