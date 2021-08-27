@@ -23,16 +23,38 @@ export const colorVars = [
   "--colorful-error-extra-color",
 ];
 
-async function updateFavicon(size, curveSize) {
-  setTimeout(() => {
-    domtoimage
-      .toPng(document.querySelector(".logo .icon"))
-      .then(function (dataUrl) {
-        // console.log(dataUrl);
-        // ctx.drawImage(dataUrl, 0, 0);
-        // $('body').prepend(canvas);
-        $("#favicon").attr("href", dataUrl);
-      });
+function updateFavicon(size, curveSize) {
+  setTimeout(async () => {
+    let maincolor, bgcolor;
+    bgcolor = await ThemeColors.get("bg");
+    maincolor = await ThemeColors.get("main");
+    if (bgcolor == maincolor) {
+      bgcolor = "#111";
+      maincolor = "#eee";
+    }
+    var canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    let ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(0, curveSize);
+    //top left
+    ctx.quadraticCurveTo(0, 0, curveSize, 0);
+    ctx.lineTo(size - curveSize, 0);
+    //top right
+    ctx.quadraticCurveTo(size, 0, size, curveSize);
+    ctx.lineTo(size, size - curveSize);
+    ctx.quadraticCurveTo(size, size, size - curveSize, size);
+    ctx.lineTo(curveSize, size);
+    ctx.quadraticCurveTo(0, size, 0, size - curveSize);
+    ctx.fillStyle = bgcolor;
+    ctx.fill();
+    ctx.font = "900 " + (size / 2) * 1.2 + "px Lexend Deca";
+    ctx.textAlign = "center";
+    ctx.fillStyle = maincolor;
+    ctx.fillText("mt", size / 2 + 1, (size / 3) * 2.1);
+    $("body").prepend(canvas);
+    $("#favicon").attr("href", canvas.toDataURL("image/png"));
   }, 125);
 }
 
