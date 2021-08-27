@@ -1589,14 +1589,12 @@ export async function finish(difficultyFailed = false) {
     ) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
-
+        $(".pageTest #result #rateQuoteButton .rating").text("");
         RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
           if (quoteStats !== null) {
             $(".pageTest #result #rateQuoteButton .rating").text(
               quoteStats.average
             );
-          } else {
-            $(".pageTest #result #rateQuoteButton .rating").text("");
           }
           $(".pageTest #result #rateQuoteButton")
             .css({ opacity: 0 })
