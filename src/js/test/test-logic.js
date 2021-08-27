@@ -35,6 +35,7 @@ import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
 import * as ChallengeContoller from "./challenge-controller";
+import * as RateQuotePopup from "./rate-quote-popup";
 
 let glarsesMode = false;
 
@@ -707,6 +708,7 @@ export async function init() {
     rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
     rq.text = rq.text.replace(/…/g, "...");
     rq.text = rq.text.trim();
+    rq.language = Config.language.replace(/_\d*k$/g, "");
 
     setRandomQuote(rq);
 
@@ -849,6 +851,7 @@ export function restart(
   $("#showWordHistoryButton").removeClass("loaded");
   TestUI.focusWords();
   Funbox.resetMemoryTimer();
+  RateQuotePopup.clearQuoteStats();
 
   TestUI.reset();
 
@@ -1586,6 +1589,17 @@ export async function finish(difficultyFailed = false) {
     ) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
+
+        let quoteStats = await RateQuotePopup.getQuoteStats(randomQuote);
+        if (quoteStats !== null) {
+          $(".pageTest #result #rateQuoteButton .rating").text(
+            quoteStats.average
+          );
+        } else {
+          $(".pageTest #result #rateQuoteButton .rating").text("");
+        }
+        $(".pageTest #result #rateQuoteButton").removeClass("hidden");
+
         //check local pb
         AccountButton.loading(true);
         let dontShowCrown = false;
@@ -1857,6 +1871,7 @@ export async function finish(difficultyFailed = false) {
           });
         });
       } else {
+        $(".pageTest #result #rateQuoteButton").addClass("hidden");
         try {
           firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
         } catch (e) {

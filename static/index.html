@@ -137,6 +137,75 @@
       </div>
     </div>
 
+    <div id="rateQuotePopupWrapper" class="hidden">
+      <div id="rateQuotePopup" quoteId="">
+        <div class="quote">
+          <div class="text">-</div>
+          <div class="id">
+            <div class="top">id</div>
+            <div class="val">-</div>
+          </div>
+          <div class="length">
+            <div class="top">length</div>
+            <div class="val">-</div>
+          </div>
+          <div class="source">
+            <div class="top">source</div>
+            <div class="val">-</div>
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <div class="ratingStats">
+          <div class="ratingCount">
+            <div class="top">ratings</div>
+            <div class="val">-</div>
+          </div>
+          <div class="ratingAverage">
+            <div class="top">average</div>
+            <div class="val">-</div>
+          </div>
+          <div class="starsWrapper">
+            <div class="top">your rating</div>
+            <div class="stars">
+              <div class="star active" rating="1">
+                <i class="fas fa-fw fa-star"></i>
+              </div>
+              <div class="star active" rating="2">
+                <i class="fas fa-fw fa-star"></i>
+              </div>
+              <div class="star active" rating="3">
+                <i class="fas fa-fw fa-star"></i>
+              </div>
+              <div class="star" rating="4">
+                <i class="fas fa-fw fa-star"></i>
+              </div>
+              <div class="star" rating="5">
+                <i class="fas fa-fw fa-star"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="button rate1">
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+            <i class="far fa-star"></i>
+          </div>
+          <div class="button rate2">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+          </div>
+          <div class="button rate3">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div> -->
+        <div class="icon-button submitButton">
+          <i class="fas fa-chevron-right"></i>
+        </div>
+      </div>
+    </div>
+
     <div id="settingsImportWrapper" class="hidden">
       <div id="settingsImport" action="">
         <input type="text" />
@@ -1498,7 +1567,7 @@
                 <div class="group flat consistency">
                   <div class="top">consistency</div>
                   <div class="bottom" aria-label="" data-balloon-pos="up">
-                    -
+                    2 -
                   </div>
                 </div>
                 <div class="group time">
@@ -1512,7 +1581,19 @@
                 <!-- </div> -->
 
                 <div class="group source hidden">
-                  <div class="top">source</div>
+                  <div class="top">
+                    source
+                    <span
+                      id="rateQuoteButton"
+                      class="icon-button hidden"
+                      aria-label="Rate quote"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="far fa-star"></i>
+                      <span class="rating"></span>
+                    </span>
+                  </div>
                   <div class="bottom">-</div>
                 </div>
 

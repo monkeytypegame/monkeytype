@@ -18,6 +18,7 @@ import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
 import * as TestUI from "./test-ui";
 import * as ChallengeController from "./challenge-controller";
+import * as RateQuotePopup from "./rate-quote-popup";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -932,6 +933,10 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
+});
+
+$(".pageTest #rateQuoteButton").click(async (event) => {
+  RateQuotePopup.show(TestLogic.randomQuote);
 });
 
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {

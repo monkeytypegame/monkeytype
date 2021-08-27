@@ -713,6 +713,114 @@ label.checkbox {
   }
 }
 
+#rateQuotePopupWrapper {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 0;
+
+  #rateQuotePopup {
+    color: var(--sub-color);
+    background: var(--bg-color);
+    border-radius: var(--roundness);
+    padding: 2rem;
+    display: grid;
+    gap: 2rem;
+    width: 1000px;
+
+    display: grid;
+    grid-template-areas: "ratingStats ratingStats submitButton" "spacer spacer spacer" "quote quote quote";
+    grid-template-columns: auto 1fr;
+
+    color: var(--text-color);
+
+    .spacer {
+      grid-area: spacer;
+      grid-column: 1/4;
+      width: 100%;
+      height: 0.1rem;
+      border-radius: var(--roundness);
+      background: var(--sub-color);
+      opacity: 0.25;
+    }
+
+    .submitButton {
+      font-size: 2rem;
+      grid-area: submitButton;
+      color: var(--sub-color);
+      &:hover {
+        color: var(--text-color);
+      }
+    }
+
+    .top {
+      color: var(--sub-color);
+      font-size: 0.8rem;
+    }
+
+    .ratingStats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      grid-area: ratingStats;
+      .top {
+        font-size: 1rem;
+      }
+      .val {
+        font-size: 2rem;
+      }
+    }
+
+    .quote {
+      display: grid;
+      grid-area: quote;
+      gap: 1rem;
+      grid-template-areas:
+        "text text text"
+        "id length source";
+      grid-template-columns: 1fr 1fr 3fr;
+      .text {
+        grid-area: text;
+      }
+      .id {
+        grid-area: id;
+      }
+      .length {
+        grid-area: length;
+      }
+      .source {
+        grid-area: source;
+      }
+    }
+
+    .stars {
+      display: grid;
+      color: var(--sub-color);
+      font-size: 2rem;
+      grid-template-columns: auto auto auto auto auto;
+      justify-content: flex-start;
+      align-items: center;
+      cursor: pointer;
+    }
+    .star {
+      transition: 0.125s;
+    }
+    i {
+      pointer-events: none;
+    }
+    .star.active {
+      color: var(--text-color);
+    }
+  }
+}
+
 #simplePopupWrapper {
   width: 100%;
   height: 100%;
@@ -2129,6 +2237,7 @@ key {
         color: var(--sub-color);
         font-size: 1rem;
         line-height: 1rem;
+        margin-bottom: 0.25rem;
       }
 
       .bottom {
@@ -2145,6 +2254,10 @@ key {
           line-height: 0.75rem;
           margin-left: 0.2rem;
         }
+      }
+
+      &.source #rateQuoteButton {
+        padding: 0 0.5rem;
       }
     }
 
