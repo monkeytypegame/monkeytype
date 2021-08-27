@@ -38,6 +38,9 @@
 }
 
 @media only screen and (max-width: 1000px) {
+  #rateQuotePopup {
+    width: 90vw !important;
+  }
   #bottom {
     .leftright {
       .left {
@@ -121,6 +124,17 @@
 }
 
 @media only screen and (max-width: 650px) {
+  #rateQuotePopup {
+    .ratingStats {
+      grid-template-columns: 1fr 1fr !important;
+    }
+    .quote {
+      grid-template-areas:
+        "text text text"
+        "source source source"
+        "id length length" !important;
+    }
+  }
   .pageSettings .section {
     grid-template-columns: 1fr;
     grid-template-areas:
