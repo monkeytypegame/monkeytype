@@ -54,6 +54,7 @@
     "dom-to-image": "^2.6.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "express-rate-limit": "^5.3.0",
     "firebase-admin": "^9.11.0",
     "helmet": "^4.6.0",
     "howler": "^2.2.1",
