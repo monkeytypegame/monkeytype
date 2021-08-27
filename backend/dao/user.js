@@ -20,9 +20,13 @@ class UsersDAO {
       .collection("users")
       .findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
     if (nameDoc) throw new MonkeyError(409, "Username already taken");
+    let user = await mongoDB().collection("users").findOne({ uid });
+    if (Date.now() - user.lastNameChange < 2592000) {
+      throw new MonkeyError(409, "You can change your name once every 30 days");
+    }
     return await mongoDB()
       .collection("users")
-      .updateOne({ uid }, { $set: { name } });
+      .updateOne({ uid }, { $set: { name, lastNameChange: Date.now() } });
   }
 
   static async clearPb(uid) {
