@@ -1273,6 +1273,7 @@ label.checkbox {
       max-height: calc(100vh - 10rem - 3rem);
       display: grid;
       cursor: pointer;
+      user-select: none;
 
       .entry {
         padding: 0.5rem 1rem;
