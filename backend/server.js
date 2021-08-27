@@ -18,6 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
+app.set("trust proxy", 1);
+
 const userRouter = require("./api/routes/user");
 app.use("/user", userRouter);
 const configRouter = require("./api/routes/config");
