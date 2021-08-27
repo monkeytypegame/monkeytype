@@ -1590,15 +1590,16 @@ export async function finish(difficultyFailed = false) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
 
-        let quoteStats = await RateQuotePopup.getQuoteStats(randomQuote);
-        if (quoteStats !== null) {
-          $(".pageTest #result #rateQuoteButton .rating").text(
-            quoteStats.average
-          );
-        } else {
-          $(".pageTest #result #rateQuoteButton .rating").text("");
-        }
-        $(".pageTest #result #rateQuoteButton").removeClass("hidden");
+        RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
+          if (quoteStats !== null) {
+            $(".pageTest #result #rateQuoteButton .rating").text(
+              quoteStats.average
+            );
+          } else {
+            $(".pageTest #result #rateQuoteButton .rating").text("");
+          }
+          $(".pageTest #result #rateQuoteButton").removeClass("hidden");
+        });
 
         //check local pb
         AccountButton.loading(true);
