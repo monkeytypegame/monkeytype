@@ -56,6 +56,9 @@ class ResultController {
       ) {
         return res.status(400).json({ message: "Bad input" });
       }
+      if (result.wpm == result.raw && result.acc != 100) {
+        return res.status(400).json({ message: "Bad input" });
+      }
       if (
         (result.mode === "time" && result.mode2 < 15 && result.mode2 > 0) ||
         (result.mode === "time" &&
