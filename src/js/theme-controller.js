@@ -106,7 +106,6 @@ export function apply(themeName, isPreview = false) {
   // $("#currentTheme").attr("href", `themes/${name}.css`);
   loadStyle(name).then(() => {
     ThemeColors.update();
-    $(".current-theme .text").text(themeName.replace("_", " "));
     if (themeName === "custom") {
       colorVars.forEach((e, index) => {
         document.documentElement.style.setProperty(
@@ -125,6 +124,7 @@ export function apply(themeName, isPreview = false) {
     }
     if (!isPreview) {
       ThemeColors.get().then((colors) => {
+        $(".current-theme .text").text(themeName.replace("_", " "));
         $(".keymap-key").attr("style", "");
         ChartController.updateAllChartColors();
         updateFavicon(128, 32);
