@@ -40,6 +40,16 @@ class UsersDAO {
     }
   }
 
+  static async updateQuoteRatings(uid, quoteRatings) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user)
+      throw new MonkeyError(404, "User not found", "updateQuoteRatings");
+    await mongoDB()
+      .collection("users")
+      .updateOne({ uid }, { $set: { quoteRatings } });
+    return true;
+  }
+
   static async updateEmail(uid, email) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found", "update email");

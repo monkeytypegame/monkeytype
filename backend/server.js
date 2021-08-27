@@ -26,6 +26,8 @@ const resultRouter = require("./api/routes/result");
 app.use("/results", resultRouter);
 const presetRouter = require("./api/routes/preset");
 app.use("/presets", presetRouter);
+const quoteRatings = require("./api/routes/quote-ratings");
+app.use("/quote-ratings", quoteRatings);
 
 app.use(function (e, req, res, next) {
   let uid = undefined;
