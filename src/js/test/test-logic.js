@@ -1598,7 +1598,10 @@ export async function finish(difficultyFailed = false) {
           } else {
             $(".pageTest #result #rateQuoteButton .rating").text("");
           }
-          $(".pageTest #result #rateQuoteButton").removeClass("hidden");
+          $(".pageTest #result #rateQuoteButton")
+            .css({ opacity: 0 })
+            .removeClass("hidden")
+            .css({ opacity: 1 });
         });
 
         //check local pb
