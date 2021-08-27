@@ -7,6 +7,7 @@ const {
   validateResult,
 } = require("../../handlers/validation");
 const { stdDev, roundTo2 } = require("../../handlers/misc");
+const objecthash = require("object-hash");
 
 class ResultController {
   static async getResults(req, res, next) {
@@ -90,6 +91,21 @@ class ResultController {
         return res
           .status(400)
           .json({ message: "Result data doesn't make sense" });
+      }
+
+      let resulthash = result.hash;
+      delete result.hash;
+      const serverhash = objecthash(result);
+      if (serverhash !== resulthash) {
+        return res.status(400).json({ message: "Incorrect result hash" });
+      }
+
+      let timestampres = await ResultDAO.getResultByTimestamp(
+        uid,
+        result.timestamp
+      );
+      if (timestampres) {
+        return res.status(400).json({ message: "Duplicate result" });
       }
 
       try {

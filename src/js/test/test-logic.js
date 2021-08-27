@@ -37,6 +37,8 @@ import * as Wordset from "./wordset";
 import * as ChallengeContoller from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
 
+const objecthash = require("object-hash");
+
 let glarsesMode = false;
 
 export function toggleGlarses() {
@@ -1781,6 +1783,9 @@ export async function finish(difficultyFailed = false) {
               completedEvent.challenge = ChallengeContoller.verify(
                 completedEvent
               );
+              console.time("hash");
+              completedEvent.hash = objecthash(completedEvent);
+              console.timeEnd("hash");
               axiosInstance
                 .post("/results/add", {
                   result: completedEvent,
