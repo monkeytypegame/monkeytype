@@ -6,6 +6,14 @@ exports.limit60perhour = rateLimit({
   message: {
     message: "Too many requests, please try again later",
   },
+  keyGenerator: (req) => {
+    return `${
+      req.headers["cf-connecting-ip"] ||
+      req.headers["x-forwarded-for"] ||
+      req.ip ||
+      "255.255.255.255"
+    }`;
+  },
 });
 
 exports.limit3perday = rateLimit({
@@ -13,6 +21,14 @@ exports.limit3perday = rateLimit({
   max: 3,
   message: {
     message: "Too many requests, please try again later",
+  },
+  keyGenerator: (req) => {
+    return `${
+      req.headers["cf-connecting-ip"] ||
+      req.headers["x-forwarded-for"] ||
+      req.ip ||
+      "255.255.255.255"
+    }`;
   },
 });
 
@@ -22,6 +38,14 @@ exports.limit1persec = rateLimit({
   message: {
     message: "Too many requests, please try again later",
   },
+  keyGenerator: (req) => {
+    return `${
+      req.headers["cf-connecting-ip"] ||
+      req.headers["x-forwarded-for"] ||
+      req.ip ||
+      "255.255.255.255"
+    }`;
+  },
 });
 
 exports.limit500perhour = rateLimit({
@@ -29,5 +53,13 @@ exports.limit500perhour = rateLimit({
   max: 500,
   message: {
     message: "Too many requests, please try again later",
+  },
+  keyGenerator: (req) => {
+    return `${
+      req.headers["cf-connecting-ip"] ||
+      req.headers["x-forwarded-for"] ||
+      req.ip ||
+      "255.255.255.255"
+    }`;
   },
 });
