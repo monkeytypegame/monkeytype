@@ -8,6 +8,7 @@
   - [Git ](#git)
   - [NodeJS](#nodejs)
   - [Firebase](#firebase)
+  - [Mongo Setup](#mongo-setup)
 - [Building and Running Monkeytype](#building-and-running-monkeytype)
 - [Standards and Guidelines](#standards-and-guidelines)
   - [Theme Guidelines](#theme-guidelines)
@@ -23,11 +24,11 @@ When contributing to Monkeytype, it's good to know our best practices, tips, and
 
 ### Prerequisites
 
-While most contributions don't require that you install dependencies, there are a few minimum requirements you will need to meet to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with a version < 14.
+While most contributions don't require that you install dependencies, there are a few tools you will need to meet to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with a version < 14.
 
 #### Text Editor
 
-If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. A popular and relatively lightweight editor that we recommend is [Visual Studio Code](https://code.visualstudio.com/) or VS Code. It is free and open-source from Microsoft. Simply run the installer and follow the prompts. Once you have VS Code installed, you are ready to start contributing.
+If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. A popular choice we recommend is [Visual Studio Code](https://code.visualstudio.com/).
 
 #### Git
 
@@ -72,18 +73,18 @@ Git is optional but we _highly_ recommend you use it. Monkeytype uses the Git so
 
 #### Mongo Setup
 
-Follow these steps if you want to work on anything involving the database / account system. If not, you can skip this section.
+Follow these steps if you want to work on anything involving the database/account system. If not, you can skip this section.
 
-1. Install [Mongodb Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running
+1. Install [MongodDB Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running
 
 1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
 
-1. Optional - Install [Mongodb-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
+1. Optional - Install [MongoDB-compass](https://www.mongodb.com/try/download/compass?tck=docs_compass). This tool can be used to see and manipulate your data visually.
    1. To connect, type `mongodb://localhost:27017` in the connection string box and press connect. The monkeytype database will be created and shown` after the server is started.
 
 #### NodeJS
 
-The installation process of NodeJS is fairly simple, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `xx.xx.x LTS`. Run the installer once the download has finished.
+To install NodeJS, navigate to the NodeJS [website](https://nodejs.org/en/) and download the `xx.xx.x LTS`. 
 
 ### Building and Running Monkeytype
 
@@ -96,16 +97,17 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 
 Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you `git commit` (if you've followed the above instructions properly).
 
-Following the guidelines below will increase your chances of getting your change accepted.
+We recommend following the guidelines below to increase your chances of getting your change accepted.
 
 #### Theme Guidelines
 
 <!-- TODO: add screenshots to provide examples for dos and don'ts -->
 
-- Make sure your theme is unique and a similar looking one is not already available
-- The text color is either black or white (or very close to)
-- Your theme has been added to the `_list` file and the `textColor` property is the theme's main color
-- Your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
+Make sure...
+    - your theme is unique and isn't visually similar to any we already have.
+    - the text color is either black or white (or very close to these colors)
+    - your theme has been added to the `_list` file and the `textColor` property is the theme's main color
+    - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
 
 #### Language Guidelines
 
@@ -116,7 +118,7 @@ Following the guidelines below will increase your chances of getting your change
 
 #### Quote Guidelines
 
-- Do not include swear words
+- Do not include content that contains any libelous or otherwise unlawful, abusive or obscene text.
 - Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
 - Verify quotes added aren't duplicates of any already present
 - Verify the `length` property is correct (length of the text in characters)
@@ -125,4 +127,4 @@ Following the guidelines below will increase your chances of getting your change
 
 ## Questions
 
-If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec), [Discord](https://discord.gg/monkeytype) in the `#development` channel, or on Monkeytype's [GitHub discussions](https://github.com/Miodec/monkeytype/discussions).
+If you have any questions, comments, concerns, or problems let me know on [GitHub](https://github.com/Miodec), [Discord](https://discord.gg/monkeytype) in the `#development` channel, or ask a question on Monkeytype's [GitHub discussions](https://github.com/Miodec/monkeytype/discussions) and a contributor will be happy to assist you.
