@@ -115,6 +115,17 @@ class UserController {
   static async linkDiscord(req, res, next) {
     try {
       const { uid } = req.decodedToken;
+
+      let requser;
+      try {
+        requser = await UsersDAO.getUser(uid);
+      } catch (e) {
+        requser = null;
+      }
+      if (requser?.banned === true) {
+        throw new MonkeyError(403, "Banned accounts cannot link with Discord");
+      }
+
       let discordFetch = await fetch("https://discord.com/api/users/@me", {
         headers: {
           authorization: `${req.body.data.tokenType} ${req.body.data.accessToken}`,

@@ -17,6 +17,8 @@ import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
 import * as TestUI from "./test-ui";
+import * as ChallengeController from "./challenge-controller";
+import * as RateQuotePopup from "./rate-quote-popup";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -475,6 +477,12 @@ export function updateModesNotice() {
     );
   }
 
+  if (ChallengeController.active) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${ChallengeController.active.display}</div>`
+    );
+  }
+
   if (Config.mode === "zen") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
@@ -925,6 +933,10 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
+});
+
+$(".pageTest #rateQuoteButton").click(async (event) => {
+  RateQuotePopup.show(TestLogic.randomQuote);
 });
 
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {

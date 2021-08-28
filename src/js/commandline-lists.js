@@ -17,6 +17,7 @@ import * as PresetController from "./preset-controller";
 import * as Commandline from "./commandline";
 import * as CustomText from "./custom-text";
 import * as Settings from "./settings";
+import * as ChallengeController from "./challenge-controller";
 
 export let current = [];
 
@@ -1039,7 +1040,6 @@ export let commandsEnableAds = {
       configValue: "off",
       exec: () => {
         UpdateConfig.setEnableAds("off");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -1048,7 +1048,6 @@ export let commandsEnableAds = {
       configValue: "on",
       exec: () => {
         UpdateConfig.setEnableAds("on");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -1057,7 +1056,6 @@ export let commandsEnableAds = {
       configValue: "max",
       exec: () => {
         UpdateConfig.setEnableAds("max");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
   ],
@@ -2151,6 +2149,24 @@ Misc.getThemesList().then((themes) => {
   });
 });
 
+export let commandsChallenges = {
+  title: "Load challenge...",
+  list: [],
+};
+
+Misc.getChallengeList().then((challenges) => {
+  challenges.forEach((challenge) => {
+    commandsChallenges.list.push({
+      id: "loadChallenge" + Misc.capitalizeFirstLetter(challenge.name),
+      noIcon: true,
+      display: challenge.display,
+      exec: () => {
+        ChallengeController.setup(challenge.name);
+      },
+    });
+  });
+});
+
 // export function showFavouriteThemesAtTheTop() {
 export function updateThemeCommands() {
   if (Config.favThemes.length > 0) {
@@ -2789,6 +2805,12 @@ export let defaultCommands = {
       available: () => {
         return canBailOut();
       },
+    },
+    {
+      id: "loadChallenge",
+      display: "Load challenge...",
+      icon: "fa-award",
+      subgroup: commandsChallenges,
     },
     {
       id: "joinDiscord",

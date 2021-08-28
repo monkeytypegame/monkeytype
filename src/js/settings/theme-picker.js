@@ -198,7 +198,7 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
 $(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
 ).on("input", (e) => {
-  UpdateConfig.setCustomTheme(true, true);
+  // UpdateConfig.setCustomTheme(true, true);
   let $colorVar = $(e.currentTarget).attr("id");
   let $pickedColor = $(e.currentTarget).val();
 

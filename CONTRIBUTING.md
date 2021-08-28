@@ -72,6 +72,8 @@ Git is optional but we _highly_ recommend you use it. Monkeytype uses the Git so
 
 #### Mongo Setup
 
+Follow these steps if you want to work on anything involving the database / account system. If not, you can skip this section.
+
 1. Install [Mongodb Community Edition](https://docs.mongodb.com/manual/administration/install-community/) and ensure that it is running
 
 1. Inside the backend folder, copy `example.env` to `.env` in the same directory.
@@ -88,7 +90,7 @@ The installation process of NodeJS is fairly simple, navigate to the NodeJS [web
 Once you have completed the above steps, you are ready to build and run Monkeytype.
 
 1. Run `npm install` in the project root directory to install dependencies.
-1. Run `npm run start:dev` to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
+1. Run `npm run start:dev` (`npm run start:dev:nodb` if you skipped the mongo section) to start a local dev server on [port 5000](http://localhost:5000). It will watch for changes and rebuild when you edit files in `src/` or `public/` directories. Note that rebuilding doesn't happen instantaneously so be patient for changes to appear. Use <kbd>Ctrl+C</kbd> to kill it.
 
 ### Standards and Guidelines
 

@@ -573,5 +573,10 @@
     "name": "material",
     "bgColor": "#263238",
     "textColor": "#80cbc4"
+  },
+  {
+    "name": "godspeed",
+    "bgColor": "#eae4cf",
+    "textColor": "#c0bcab"
   }
 ]
