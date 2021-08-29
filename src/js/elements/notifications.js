@@ -97,7 +97,7 @@ class Notification {
             );
           $(`#notificationCenter .notif[id='${this.id}']`).click(() => {
             this.hide();
-            this.closeCallback();
+            this.clickCallback();
           });
         }
       );
