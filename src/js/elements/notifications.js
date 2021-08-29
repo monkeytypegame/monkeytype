@@ -1,7 +1,14 @@
 const notificationHistory = [];
 let id = 0;
 class Notification {
-  constructor(message, level, duration, customTitle, customIcon) {
+  constructor(
+    message,
+    level,
+    duration,
+    customTitle,
+    customIcon,
+    closeCallback = () => {}
+  ) {
     this.message = message;
     this.level = level;
     if (duration == undefined) {
@@ -16,6 +23,7 @@ class Notification {
     this.customTitle = customTitle;
     this.customIcon = customIcon;
     this.id = id++;
+    this.closeCallback = closeCallback;
   }
   //level
   //0 - notice
@@ -117,6 +125,7 @@ class Notification {
             125,
             () => {
               $(`#notificationCenter .notif[id='${this.id}']`).remove();
+              this.closeCallback();
             }
           );
         }
@@ -124,8 +133,22 @@ class Notification {
   }
 }
 
-export function add(message, level, duration, customTitle, customIcon) {
+export function add(
+  message,
+  level,
+  duration,
+  customTitle,
+  customIcon,
+  closeCallback
+) {
   notificationHistory.push(
-    new Notification(message, level, duration, customTitle, customIcon).show()
+    new Notification(
+      message,
+      level,
+      duration,
+      customTitle,
+      customIcon,
+      closeCallback
+    ).show()
   );
 }

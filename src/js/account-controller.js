@@ -13,6 +13,7 @@ import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
+import * as PSA from "./psa";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -47,6 +48,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
       ChallengeController.setup(challengeName);
     }, 1000);
   }
+  PSA.show();
 });
 
 export function signIn() {
