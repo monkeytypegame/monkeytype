@@ -24,11 +24,11 @@ When contributing to Monkeytype, it's good to know our best practices, tips, and
 
 ### Prerequisites
 
-While most contributions don't require that you install dependencies, there are a few tools you will need to meet to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with a version < 14.
+While most contributions don't require that you install dependencies, there are a few tools you will need to be able to run the project (this is useful and almost always necessary for tasks like creating features and fixing bugs; running the project is also useful if you are contributing a theme and want to view it on the site before you contribute it). You will need a computer with a stable internet connection, a text editor, Git, Firebase, and NodeJS with a version < 14.
 
 #### Text Editor
 
-If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. A popular choice we recommend is [Visual Studio Code](https://code.visualstudio.com/).
+If you are not a developer and wish to contribute themes, new languages, or quotes, having a text editor will make contributions _much_ easier. To make complex edits without installing anything, we recommend using GitHub's VS Code web editor. In your fork of Monkeytype(fork it first), go the to `Code` tab of the repo and press <kbd>.</kbd>. This will open up the repo in a VS Code instance you can use to edit files in the browser. Once you are done making your changes, go the to Source Control tab in the activity bar with <kbd>Ctrl/Cmd + Shift + G</kbd>, click the `+` next to the files you've changed to stage them,type a brief message detailing what you changed in the commit, and press <kbd>Ctrl/Cmd + Enter</kbd> to commmit your changes to your fork(send a pull request to the Monkeytype repository when you are ready).
 
 #### Git
 
