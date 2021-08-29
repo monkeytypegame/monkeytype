@@ -2096,8 +2096,8 @@ export async function finish(difficultyFailed = false) {
 let failReason = "";
 export function fail(reason) {
   failReason = reason;
-  input.pushHistory();
-  corrected.pushHistory();
+  // input.pushHistory();
+  // corrected.pushHistory();
   TestStats.pushKeypressesToHistory();
   finish(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());
