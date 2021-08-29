@@ -7,7 +7,7 @@ class Notification {
     duration,
     customTitle,
     customIcon,
-    closeCallback = () => {}
+    clickCallback = () => {}
   ) {
     this.message = message;
     this.level = level;
@@ -23,7 +23,7 @@ class Notification {
     this.customTitle = customTitle;
     this.customIcon = customIcon;
     this.id = id++;
-    this.closeCallback = closeCallback;
+    this.clickCallback = clickCallback;
   }
   //level
   //0 - notice
@@ -97,6 +97,7 @@ class Notification {
             );
           $(`#notificationCenter .notif[id='${this.id}']`).click(() => {
             this.hide();
+            this.closeCallback();
           });
         }
       );
@@ -125,7 +126,6 @@ class Notification {
             125,
             () => {
               $(`#notificationCenter .notif[id='${this.id}']`).remove();
-              this.closeCallback();
             }
           );
         }
@@ -139,7 +139,7 @@ export function add(
   duration,
   customTitle,
   customIcon,
-  closeCallback
+  clickCallback
 ) {
   notificationHistory.push(
     new Notification(
@@ -148,7 +148,7 @@ export function add(
       duration,
       customTitle,
       customIcon,
-      closeCallback
+      clickCallback
     ).show()
   );
 }
