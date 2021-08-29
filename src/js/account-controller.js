@@ -103,6 +103,7 @@ export async function signInWithGoogle() {
 
         if (name == null) {
           AccountController.signOut();
+          $(".pageLogin .preloader").addClass("hidden");
           return;
         }
 
