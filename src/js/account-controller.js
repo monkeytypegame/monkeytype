@@ -68,8 +68,27 @@ export function signIn() {
       return firebase
         .auth()
         .signInWithEmailAndPassword(email, password)
-        .then((e) => {
-          loadUser(e.user);
+        .then(async (e) => {
+          await loadUser(e.user);
+          if (TestLogic.notSignedInLastResult !== null) {
+            TestLogic.setNotSignedInUid(e.user.uid);
+            let response;
+            try {
+              response = await axiosInstance.post("/results/add", {
+                result: TestLogic.notSignedInLastResult,
+              });
+            } catch (e) {
+              let msg = e?.response?.data?.message ?? e.message;
+              Notifications.add("Failed to save last result: " + msg, -1);
+              return;
+            }
+            if (response.status !== 200) {
+              Notifications.add(response.data.message);
+            } else {
+              Notifications.add("Last test result saved", 1);
+            }
+            // UI.changePage("account");
+          }
           // UI.changePage("test");
           //TODO: redirect user to relevant page
         })
@@ -149,7 +168,7 @@ export async function signInWithGoogle() {
                 DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
               }
             });
-          UI.changePage("account");
+          // UI.changePage("account");
         }
       }
     } else {

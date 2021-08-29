@@ -53,6 +53,8 @@ export let notSignedInLastResult = null;
 
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
+  delete notSignedInLastResult.hash;
+  notSignedInLastResult.hash = objecthash(notSignedInLastResult);
 }
 
 class Words {
