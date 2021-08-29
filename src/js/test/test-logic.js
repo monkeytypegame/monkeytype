@@ -1783,9 +1783,7 @@ export async function finish(difficultyFailed = false) {
               completedEvent.challenge = ChallengeContoller.verify(
                 completedEvent
               );
-              console.time("hash");
               completedEvent.hash = objecthash(completedEvent);
-              console.timeEnd("hash");
               axiosInstance
                 .post("/results/add", {
                   result: completedEvent,
