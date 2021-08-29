@@ -1593,6 +1593,18 @@ export async function finish(difficultyFailed = false) {
         completedEvent.uid = firebase.auth().currentUser.uid;
         if (Config.mode === "quote") {
           $(".pageTest #result #rateQuoteButton .rating").text("");
+          let userqr = DB.getSnapshot().quoteRatings?.[randomQuote.language]?.[
+            randomQuote.id
+          ];
+          if (userqr) {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("far")
+              .addClass("fas");
+          } else {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("fas")
+              .addClass("far");
+          }
           RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
             if (quoteStats !== null) {
               $(".pageTest #result #rateQuoteButton .rating").text(
