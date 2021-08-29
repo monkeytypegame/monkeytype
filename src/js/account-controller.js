@@ -2,6 +2,7 @@ import * as Notifications from "./notifications";
 import * as UpdateConfig from "./config";
 import * as AccountButton from "./account-button";
 import * as Account from "./account";
+import * as AccountController from "./account-controller";
 import * as CommandlineLists from "./commandline-lists";
 import * as VerificationController from "./verification-controller";
 import * as Misc from "./misc";
@@ -120,6 +121,12 @@ export async function signInWithGoogle() {
         name = await prompt(
           "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
         );
+
+        if (name == null) {
+          AccountController.signOut();
+          $(".pageLogin .preloader").addClass("hidden");
+          return;
+        }
 
         let response;
         try {
