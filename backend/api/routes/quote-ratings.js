@@ -1,22 +1,22 @@
 const { authenticateRequest } = require("../../middlewares/auth");
 const { Router } = require("express");
-const ConfigController = require("../controllers/config");
+const QuoteRatingsController = require("../controllers/quote-ratings");
 const RateLimit = require("../../middlewares/rate-limit");
 
 const router = Router();
 
 router.get(
-  "/",
-  RateLimit.limit60perhour,
+  "/get",
+  RateLimit.limit500perhour,
   authenticateRequest,
-  ConfigController.getConfig
+  QuoteRatingsController.getRating
 );
 
 router.post(
-  "/save",
+  "/submit",
   RateLimit.limit500perhour,
   authenticateRequest,
-  ConfigController.saveConfig
+  QuoteRatingsController.submitRating
 );
 
 module.exports = router;

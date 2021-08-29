@@ -35,6 +35,9 @@ import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
 import * as ChallengeContoller from "./challenge-controller";
+import * as RateQuotePopup from "./rate-quote-popup";
+
+const objecthash = require("object-hash");
 
 let glarsesMode = false;
 
@@ -707,6 +710,7 @@ export async function init() {
     rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
     rq.text = rq.text.replace(/…/g, "...");
     rq.text = rq.text.trim();
+    rq.language = Config.language.replace(/_\d*k$/g, "");
 
     setRandomQuote(rq);
 
@@ -849,6 +853,7 @@ export function restart(
   $("#showWordHistoryButton").removeClass("loaded");
   TestUI.focusWords();
   Funbox.resetMemoryTimer();
+  RateQuotePopup.clearQuoteStats();
 
   TestUI.reset();
 
@@ -1586,6 +1591,33 @@ export async function finish(difficultyFailed = false) {
     ) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
+        if (Config.mode === "quote") {
+          $(".pageTest #result #rateQuoteButton .rating").text("");
+          let userqr = DB.getSnapshot().quoteRatings?.[randomQuote.language]?.[
+            randomQuote.id
+          ];
+          if (userqr) {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("far")
+              .addClass("fas");
+          } else {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("fas")
+              .addClass("far");
+          }
+          RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
+            if (quoteStats !== null) {
+              $(".pageTest #result #rateQuoteButton .rating").text(
+                quoteStats.average
+              );
+            }
+            $(".pageTest #result #rateQuoteButton")
+              .css({ opacity: 0 })
+              .removeClass("hidden")
+              .css({ opacity: 1 });
+          });
+        }
+
         //check local pb
         AccountButton.loading(true);
         let dontShowCrown = false;
@@ -1763,6 +1795,7 @@ export async function finish(difficultyFailed = false) {
               completedEvent.challenge = ChallengeContoller.verify(
                 completedEvent
               );
+              completedEvent.hash = objecthash(completedEvent);
               axiosInstance
                 .post("/results/add", {
                   result: completedEvent,
@@ -1857,6 +1890,7 @@ export async function finish(difficultyFailed = false) {
           });
         });
       } else {
+        $(".pageTest #result #rateQuoteButton").addClass("hidden");
         try {
           firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
         } catch (e) {

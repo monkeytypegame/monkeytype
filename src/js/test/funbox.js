@@ -82,6 +82,7 @@ export function toggleScript(...params) {
     var msg = new SpeechSynthesisUtterance();
     console.log("Speaking");
     msg.text = params[0];
+    if (!msg.text) return;
     msg.lang = "en-US";
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(msg);

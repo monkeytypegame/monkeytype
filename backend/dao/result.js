@@ -47,6 +47,10 @@ class ResultDAO {
     return result;
   }
 
+  static async getResultByTimestamp(uid, timestamp) {
+    return await mongoDB().collection("results").findOne({ uid, timestamp });
+  }
+
   static async getResults(uid, start, end) {
     start = start ?? 0;
     end = end ?? 1000;

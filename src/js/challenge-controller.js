@@ -5,6 +5,7 @@ import * as CustomText from "./custom-text";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
 import Config, * as UpdateConfig from "./config";
+import * as UI from "./ui";
 
 export let active = null;
 
@@ -124,6 +125,10 @@ export function verify(result) {
 }
 
 export async function setup(challengeName) {
+  if (!$(".page.pageTest").hasClass("active")) {
+    UI.changePage("", true);
+  }
+
   let list = await Misc.getChallengeList();
   let challenge = list.filter((c) => c.name === challengeName)[0];
   let notitext;
