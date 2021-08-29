@@ -18,6 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
+app.set("trust proxy", 1);
+
 const userRouter = require("./api/routes/user");
 app.use("/user", userRouter);
 const configRouter = require("./api/routes/config");
@@ -26,6 +28,8 @@ const resultRouter = require("./api/routes/result");
 app.use("/results", resultRouter);
 const presetRouter = require("./api/routes/preset");
 app.use("/presets", presetRouter);
+const quoteRatings = require("./api/routes/quote-ratings");
+app.use("/quote-ratings", quoteRatings);
 
 app.use(function (e, req, res, next) {
   let uid = undefined;

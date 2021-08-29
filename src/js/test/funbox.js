@@ -82,6 +82,7 @@ export function toggleScript(...params) {
     var msg = new SpeechSynthesisUtterance();
     console.log("Speaking");
     msg.text = params[0];
+    if (!msg.text) return;
     msg.lang = "en-US";
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(msg);
@@ -167,6 +168,7 @@ export async function activate(funbox) {
         UpdateConfig.setKeymapMode
       );
       UpdateConfig.setKeymapMode("off");
+      UpdateConfig.setHighlightMode("letter");
       Settings.groups.keymapMode.updateButton();
       TestLogic.restart();
     } else if (funbox === "layoutfluid") {

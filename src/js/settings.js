@@ -789,6 +789,10 @@ $(".pageSettings #updateAccountEmail").on("click", (e) => {
   SimplePopups.list.updateEmail.show();
 });
 
+$(".pageSettings #updateAccountName").on("click", (e) => {
+  SimplePopups.list.updateName.show();
+});
+
 $(".pageSettings #updateAccountPassword").on("click", (e) => {
   SimplePopups.list.updatePassword.show();
 });

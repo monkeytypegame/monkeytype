@@ -54,6 +54,7 @@ export async function initSnapshot() {
       started: 0,
       completed: 0,
     },
+    quoteRatings: undefined,
   };
   let snap = defaultSnap;
   try {
@@ -70,6 +71,7 @@ export async function initSnapshot() {
       started: userData.startedTests,
       completed: userData.completedTests,
     };
+    snap.quoteRatings = userData.quoteRatings;
     snap.favouriteThemes =
       userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
     try {

@@ -34,6 +34,10 @@ import * as Poetry from "./poetry.js";
 import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
+import * as ChallengeContoller from "./challenge-controller";
+import * as RateQuotePopup from "./rate-quote-popup";
+
+const objecthash = require("object-hash");
 
 let glarsesMode = false;
 
@@ -87,6 +91,18 @@ class Words {
   }
   increaseCurrentIndex() {
     this.currentIndex++;
+  }
+  clean() {
+    for (let s of this.list) {
+      if (/ +/.test(s)) {
+        let id = this.list.indexOf(s);
+        let tempList = s.split(" ");
+        this.list.splice(id, 1);
+        for (let i = 0; i < tempList.length; i++) {
+          this.list.splice(id + i, 0, tempList[i]);
+        }
+      }
+    }
   }
 }
 
@@ -545,8 +561,7 @@ export async function init() {
             regenarationCount < 100 &&
             (randomWord == previousWord ||
               randomWord == previousWord2 ||
-              (!Config.punctuation && randomWord == "I") ||
-              randomWord.indexOf(" ") > -1)
+              (!Config.punctuation && randomWord == "I"))
           ) {
             regenarationCount++;
             randomWord = wordset.randomWord();
@@ -604,8 +619,27 @@ export async function init() {
         if (/\t/g.test(randomWord)) {
           setHasTab(true);
         }
+        randomWord = randomWord.trim();
+        randomWord = randomWord.replace(/\\\\t/g, "\t");
+        randomWord = randomWord.replace(/\\\\n/g, "\n");
+        randomWord = randomWord.replace(/\\t/g, "\t");
+        randomWord = randomWord.replace(/\\n/g, "\n");
+        randomWord = randomWord.replace(/ +/g, " ");
+        randomWord = randomWord.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+        randomWord = randomWord.replace(/[\u2060]/g, " ");
+        if (/ +/.test(randomWord)) {
+          let randomList = randomWord.split(" ");
+          let id = 0;
+          while (id < randomList.length) {
+            words.push(randomList[id]);
+            id++;
 
-        words.push(randomWord);
+            if (words.length == wordsBound) break;
+          }
+          i = words.length - 1;
+        } else {
+          words.push(randomWord);
+        }
       }
     }
   } else if (Config.mode == "quote") {
@@ -676,6 +710,7 @@ export async function init() {
     rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
     rq.text = rq.text.replace(/…/g, "...");
     rq.text = rq.text.trim();
+    rq.language = Config.language.replace(/_\d*k$/g, "");
 
     setRandomQuote(rq);
 
@@ -818,6 +853,7 @@ export function restart(
   $("#showWordHistoryButton").removeClass("loaded");
   TestUI.focusWords();
   Funbox.resetMemoryTimer();
+  RateQuotePopup.clearQuoteStats();
 
   TestUI.reset();
 
@@ -1555,6 +1591,21 @@ export async function finish(difficultyFailed = false) {
     ) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
+        if (Config.mode === "quote") {
+          $(".pageTest #result #rateQuoteButton .rating").text("");
+          RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
+            if (quoteStats !== null) {
+              $(".pageTest #result #rateQuoteButton .rating").text(
+                quoteStats.average
+              );
+            }
+            $(".pageTest #result #rateQuoteButton")
+              .css({ opacity: 0 })
+              .removeClass("hidden")
+              .css({ opacity: 1 });
+          });
+        }
+
         //check local pb
         AccountButton.loading(true);
         let dontShowCrown = false;
@@ -1729,6 +1780,12 @@ export async function finish(difficultyFailed = false) {
               AccountButton.loading(false);
               Notifications.add("You are offline. Result not saved.", -1);
             } else {
+              completedEvent.challenge = ChallengeContoller.verify(
+                completedEvent
+              );
+              console.time("hash");
+              completedEvent.hash = objecthash(completedEvent);
+              console.timeEnd("hash");
               axiosInstance
                 .post("/results/add", {
                   result: completedEvent,
@@ -1823,6 +1880,7 @@ export async function finish(difficultyFailed = false) {
           });
         });
       } else {
+        $(".pageTest #result #rateQuoteButton").addClass("hidden");
         try {
           firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
         } catch (e) {

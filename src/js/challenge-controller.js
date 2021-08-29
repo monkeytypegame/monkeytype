@@ -1,10 +1,11 @@
 import * as Misc from "./misc";
 import * as Notifications from "./notifications";
-import * as UpdateConfig from "./config";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as CustomText from "./custom-text";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
+import Config, * as UpdateConfig from "./config";
+import * as UI from "./ui";
 
 export let active = null;
 
@@ -15,7 +16,119 @@ export function clearActive() {
   }
 }
 
+export function verify(result) {
+  if (active) {
+    let afk = (result.afkDuration / result.testDuration) * 100;
+
+    if (afk > 10) {
+      Notifications.add(`Challenge failed: AFK time is greater than 10%`, 0);
+      return null;
+    }
+
+    if (!active.requirements) {
+      Notifications.add(`${active.display} challenge passed!`, 1);
+      return active.name;
+    } else {
+      let requirementsMet = true;
+      let failReasons = [];
+      for (let requirementType in active.requirements) {
+        if (requirementsMet == false) return;
+        let requirementValue = active.requirements[requirementType];
+        if (requirementType == "wpm") {
+          let wpmMode = Object.keys(requirementValue)[0];
+          if (wpmMode == "exact") {
+            if (Math.round(result.wpm) != requirementValue.exact) {
+              requirementsMet = false;
+              failReasons.push(`WPM not ${requirementValue.exact}`);
+            }
+          } else if (wpmMode == "min") {
+            if (result.wpm < requirementValue.min) {
+              requirementsMet = false;
+              failReasons.push(`WPM below ${requirementValue.min}`);
+            }
+          }
+        } else if (requirementType == "acc") {
+          let accMode = Object.keys(requirementValue)[0];
+          if (accMode == "exact") {
+            if (Math.round(result.acc) != requirementValue.exact) {
+              requirementsMet = false;
+              failReasons.push(`Accuracy not ${requirementValue.exact}`);
+            }
+          } else if (accMode == "min") {
+            if (result.acc < requirementValue.min) {
+              requirementsMet = false;
+              failReasons.push(`Accuracy below ${requirementValue.min}`);
+            }
+          }
+        } else if (requirementType == "afk") {
+          let afkMode = Object.keys(requirementValue)[0];
+          if (afkMode == "max") {
+            if (Math.round(afk) > requirementValue.max) {
+              requirementsMet = false;
+              failReasons.push(`AFK percentage above ${requirementValue.max}`);
+            }
+          }
+        } else if (requirementType == "time") {
+          let timeMode = Object.keys(requirementValue)[0];
+          if (timeMode == "min") {
+            if (Math.round(result.testDuration) < requirementValue.min) {
+              requirementsMet = false;
+              failReasons.push(`Test time below ${requirementValue.min}`);
+            }
+          }
+        } else if (requirementType == "funbox") {
+          let funboxMode = requirementValue[0];
+          if (funboxMode != result.funbox) {
+            requirementsMet = false;
+            failReasons.push(`${funboxMode} funbox not active`);
+          }
+        } else if (requirementType == "raw") {
+          let rawMode = Object.keys(requirementValue)[0];
+          if (rawMode == "exact") {
+            if (Math.round(result.rawWpm) != requirementValue.exact) {
+              requirementsMet = false;
+              failReasons.push(`Raw WPM not ${requirementValue.exact}`);
+            }
+          }
+        } else if (requirementType == "con") {
+          let conMode = Object.keys(requirementValue)[0];
+          if (conMode == "exact") {
+            if (Math.round(result.consistency) != requirementValue.exact) {
+              requirementsMet = false;
+              failReasons.push(`Consistency not ${requirementValue.exact}`);
+            }
+          }
+        } else if (requirementType == "config") {
+          for (let configKey in requirementValue) {
+            let configValue = requirementValue[configKey];
+            if (Config[configKey] != configValue) {
+              requirementsMet = false;
+              failReasons.push(`${configKey} not set to ${configValue}`);
+            }
+          }
+        }
+      }
+      if (requirementsMet) {
+        Notifications.add(`${active.display} challenge passed!`, 1);
+        return active.name;
+      } else {
+        Notifications.add(
+          `${active.display} challenge failed: ${failReasons.join(", ")}`,
+          0
+        );
+        return null;
+      }
+    }
+  } else {
+    return null;
+  }
+}
+
 export async function setup(challengeName) {
+  if (!$(".page.pageTest").hasClass("active")) {
+    UI.changePage("", true);
+  }
+
   let list = await Misc.getChallengeList();
   let challenge = list.filter((c) => c.name === challengeName)[0];
   let notitext;

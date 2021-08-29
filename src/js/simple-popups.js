@@ -208,7 +208,11 @@ list.updateEmail = new SimplePopup(
           }
         });
     } catch (e) {
-      Notifications.add("Something went wrong: " + e, -1);
+      if (e.code == "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
     }
   },
   () => {
@@ -219,6 +223,89 @@ list.updateEmail = new SimplePopup(
       eval(
         `this.text = "You can't change your email when using Google Authentication";`
       );
+    }
+  }
+);
+
+list.updateName = new SimplePopup(
+  "updateName",
+  "text",
+  "Update Name",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+    {
+      placeholder: "New name",
+      type: "text",
+      initVal: "",
+    },
+  ],
+  "",
+  "Update",
+  async (pass, newName) => {
+    try {
+      const user = firebase.auth().currentUser;
+      if (user.providerData[0].providerId === "password") {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          pass
+        );
+        await user.reauthenticateWithCredential(credential);
+      }
+      Loader.show();
+
+      let response;
+      try {
+        response = await axiosInstance.post("/user/checkName", {
+          name: newName,
+        });
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to check name: " + msg, -1);
+        return;
+      }
+      Loader.hide();
+      if (response.status !== 200) {
+        Notifications.add(response.data.message);
+        return;
+      }
+      try {
+        response = await axiosInstance.post("/user/updateName", {
+          name: newName,
+        });
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to update name: " + msg, -1);
+        return;
+      }
+      Loader.hide();
+      if (response.status !== 200) {
+        Notifications.add(response.data.message);
+        return;
+      } else {
+        Notifications.add("Name updated", 1);
+        DB.getSnapshot().name = newName;
+        $("#menu .icon-button.account .text").text(newName);
+      }
+    } catch (e) {
+      Loader.hide();
+      if (e.code == "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
+    }
+  },
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs.shift()`);
+      eval(`this.buttonText = "Reauthenticate to update"`);
     }
   }
 );
@@ -264,7 +351,11 @@ list.updatePassword = new SimplePopup(
       Notifications.add("Password updated", 1);
     } catch (e) {
       Loader.hide();
-      Notifications.add(e, -1);
+      if (e.code == "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
     }
   },
   () => {
@@ -344,7 +435,11 @@ list.deleteAccount = new SimplePopup(
       }, 3000);
     } catch (e) {
       Loader.hide();
-      Notifications.add(e, -1);
+      if (e.code == "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
     }
   },
   () => {
@@ -385,10 +480,11 @@ list.clearTagPb = new SimplePopup(
       })
       .catch((e) => {
         Loader.hide();
-        Notifications.add(
-          "Something went wrong while clearing tag pb " + e,
-          -1
-        );
+        if (e.code == "auth/wrong-password") {
+          Notifications.add("Incorrect password", -1);
+        } else {
+          Notifications.add("Something went wrong: " + e, -1);
+        }
       });
     // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
   },
