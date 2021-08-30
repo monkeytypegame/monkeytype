@@ -57,7 +57,7 @@
     },
     {
       "text": "Kay hirap mabuhay sa sariling bayan, kung ika'y alipin ng mga dayuhan. Ang bayang sinisiil, babangon, lalaban din. Ang silanga'y pupula sa timyas ng paglaya.",
-      "source": "Ang Bayan Kong Pilipinas",
+      "source": "Bayan Ko",
       "length": 157,
       "id": 9
     },
@@ -84,6 +84,24 @@
       "source": "Dekada 70, Lualhati Bautista",
       "length": 558,
       "id": 13
+    },
+    {
+      "text": "Ang payapang pampang ay para lang sa mga pangahas na sasalunga sa alimpuyo ng mga alon sa panahon ng unos.",
+      "source": "Dekada 70, Lualhati Bautista",
+      "length": 106,
+      "id": 14
+    },
+    {
+      "text": "Ang bayan kong Pilipinas, lupain ng ginto't bulaklak. Pag-ibig na sa kanyang palad, nag-alay ng ganda't dilag. At sa kanyang yumi at ganda, dayuhan ay nahalina. Bayan ko, binihag ka, nasadlak sa dusa.",
+      "source": "Bayan Ko",
+      "length": 200,
+      "id": 15
+    },
+    {
+      "text": "May araw ding ang luha mo'y masasaid, matutuyo. May araw ding di na luha sa mata mong namumugto ang dadaloy, kundi apoy, at apoy na kulay dugo, samantalang ang dugo mo ay aserong kumukulo. Sisigaw kang buong giting sa liyab ng libong sulo, at ang lumang tanikala'y lalagutin mo ng punglo!",
+      "source": "Kung Tuyo Na Ang Luha Mo, Aking Bayan, Amado V. Hernandez",
+      "length": 288,
+      "id": 16
     }
   ]
 }
