@@ -38,6 +38,9 @@
 }
 
 @media only screen and (max-width: 1000px) {
+  #rateQuotePopup {
+    width: 90vw !important;
+  }
   #bottom {
     .leftright {
       .left {
@@ -92,6 +95,7 @@
       gap: 0.5rem;
       font-size: 0.8rem;
       line-height: 0.8rem;
+      margin-top: -0.5rem;
 
       .icon-button {
         padding: 0.25rem;
@@ -120,6 +124,17 @@
 }
 
 @media only screen and (max-width: 650px) {
+  #rateQuotePopup {
+    .ratingStats {
+      grid-template-columns: 1fr 1fr !important;
+    }
+    .quote {
+      grid-template-areas:
+        "text text text"
+        "source source source"
+        "id length length" !important;
+    }
+  }
   .pageSettings .section {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -233,6 +248,13 @@
   #top {
     align-items: self-end;
     .logo {
+      .icon {
+        width: 1.5rem !important;
+      }
+      .text {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.3rem !important;
+      }
       .bottom {
         font-size: 1.75rem;
         line-height: 1.75rem;

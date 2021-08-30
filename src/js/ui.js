@@ -107,7 +107,7 @@ export function swapElements(
   }
 }
 
-export function changePage(page) {
+export function changePage(page, norestart = false) {
   console.log("change");
   if (pageTransition) {
     return;
@@ -136,7 +136,7 @@ export function changePage(page) {
     // incompleteTestSeconds = 0;
     TestStats.resetIncomplete();
     ManualRestart.set();
-    TestLogic.restart();
+    if (!norestart) TestLogic.restart();
     Funbox.activate(Config.funbox);
   } else if (page == "about") {
     setPageTransition(true);
@@ -205,6 +205,8 @@ export function changePage(page) {
   }
 }
 
+//checking if the project is the development site
+/*
 if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
   $("#top .logo .bottom").text("monkey-dev");
   $("head title").text("Monkey Dev");
@@ -212,6 +214,7 @@ if (firebase.app().options.projectId === "monkey-type-dev-67af4") {
     `<div class="devIndicator tr">DEV</div><div class="devIndicator bl">DEV</div>`
   );
 }
+*/
 
 if (window.location.hostname === "localhost") {
   window.onerror = function (error) {
@@ -219,9 +222,13 @@ if (window.location.hostname === "localhost") {
   };
   $("#top .logo .top").text("localhost");
   $("head title").text($("head title").text() + " (localhost)");
-  firebase.functions().useFunctionsEmulator("http://localhost:5001");
+  //firebase.functions().useFunctionsEmulator("http://localhost:5001");
   $("body").append(
     `<div class="devIndicator tl">local</div><div class="devIndicator br">local</div>`
+  );
+  $(".pageSettings .discordIntegration .buttons a").attr(
+    "href",
+    "https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fverify&response_type=token&scope=identify"
   );
 }
 

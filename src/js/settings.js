@@ -8,6 +8,7 @@ import * as Notifications from "./notifications";
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as CloudFunctions from "./cloud-functions";
+import axiosInstance from "./axios-instance";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as PresetController from "./preset-controller";
@@ -377,6 +378,7 @@ export let settingsFillPromise = fillSettingsPage();
 export function hideAccountSection() {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
+  $(`.pageSettings .section.needsAccount`).addClass("hidden");
 }
 
 export function updateDiscordSection() {
@@ -421,7 +423,7 @@ function refreshTagsSettingsSection() {
       }
       tagsEl.append(`
 
-      <div class="buttons tag" id="${tag.id}">
+      <div class="buttons tag" id="${tag._id}">
         <div class="button tagButton ${tag.active ? "active" : ""}" active="${
         tag.active
       }">
@@ -451,7 +453,7 @@ function refreshPresetsSettingsSection() {
     let presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot().presets.forEach((preset) => {
       presetsEl.append(`
-      <div class="buttons preset" id="${preset.id}">
+      <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
           <div class="title">${preset.name}</div>
         </div>
@@ -474,6 +476,7 @@ function refreshPresetsSettingsSection() {
 export function showAccountSection() {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
   $(`.settingsGroup.account`).removeClass("hidden");
+  $(`.pageSettings .section.needsAccount`).removeClass("hidden");
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
   updateDiscordSection();
@@ -786,8 +789,16 @@ $(".pageSettings #updateAccountEmail").on("click", (e) => {
   SimplePopups.list.updateEmail.show();
 });
 
+$(".pageSettings #updateAccountName").on("click", (e) => {
+  SimplePopups.list.updateName.show();
+});
+
 $(".pageSettings #updateAccountPassword").on("click", (e) => {
   SimplePopups.list.updatePassword.show();
+});
+
+$(".pageSettings #deleteAccount").on("click", (e) => {
+  SimplePopups.list.deleteAccount.show();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndSave .save").on(

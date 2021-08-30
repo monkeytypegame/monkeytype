@@ -7,11 +7,14 @@ import * as RouteController from "./route-controller";
 import * as UI from "./ui";
 import * as SignOutButton from "./sign-out-button";
 import * as MonkeyPower from "./monkey-power";
+import * as NewVersionNotification from "./new-version-notification";
 
 ManualRestart.set();
 Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
-Misc.getReleasesFromGitHub();
+Misc.getReleasesFromGitHub().then((v) => {
+  NewVersionNotification.show(v[0].name);
+});
 
 RouteController.handleInitialPageClasses(window.location.pathname);
 $(document).ready(() => {
@@ -46,6 +49,8 @@ $(document).ready(() => {
           });
           history.replaceState("/", null, "/");
         }
+        let page = window.location.pathname.replace("/", "");
+        UI.changePage(page);
       } else if (window.location.pathname === "/account") {
         // history.replaceState("/", null, "/");
       } else if (/challenge_.+/g.test(window.location.pathname)) {

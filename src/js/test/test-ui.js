@@ -17,6 +17,9 @@ import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
 import * as TestUI from "./test-ui";
+import * as ChallengeController from "./challenge-controller";
+import * as RateQuotePopup from "./rate-quote-popup";
+import * as UI from "./ui";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -475,6 +478,12 @@ export function updateModesNotice() {
     );
   }
 
+  if (ChallengeController.active) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${ChallengeController.active.display}</div>`
+    );
+  }
+
   if (Config.mode === "zen") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
@@ -483,7 +492,12 @@ export function updateModesNotice() {
 
   // /^[0-9a-zA-Z_.-]+$/.test(name);
 
-  if (/_\d+k$/g.test(Config.language) && Config.mode !== "quote") {
+  if (
+    (/_\d+k$/g.test(Config.language) ||
+      /code_/g.test(Config.language) ||
+      Config.language == "english_commonly_misspelled") &&
+    Config.mode !== "quote"
+  ) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
         /_/g,
@@ -922,8 +936,16 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   }
 });
 
+$(".pageTest #rateQuoteButton").click(async (event) => {
+  RateQuotePopup.show(TestLogic.randomQuote);
+});
+
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
+});
+
+$(".pageTest .loginTip .link").click(async (event) => {
+  UI.changePage("login");
 });
 
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {

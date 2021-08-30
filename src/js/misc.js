@@ -1,4 +1,5 @@
 import * as Loader from "./loader";
+import axiosInstance from "./axios-instance";
 import Config from "./config";
 
 export function getuid() {
@@ -79,7 +80,8 @@ export async function getSortedThemesList() {
     if (themesList == null) {
       await getThemesList();
     }
-    const sorted = themesList.sort((a, b) => {
+    let sorted = [...themesList];
+    sorted = sorted.sort((a, b) => {
       let b1 = hexToHSL(a.bgColor);
       let b2 = hexToHSL(b.bgColor);
       return b2.lgt - b1.lgt;
@@ -382,8 +384,8 @@ export function median(arr) {
   }
 }
 
-export function getReleasesFromGitHub() {
-  $.getJSON(
+export async function getReleasesFromGitHub() {
+  return $.getJSON(
     "https://api.github.com/repos/Miodec/monkeytype/releases",
     (data) => {
       $("#bottom .version .text").text(data[0].name);

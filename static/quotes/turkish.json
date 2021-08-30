@@ -234,6 +234,96 @@
       "source": "Harry Potter ve Felsefe Taşı - J. K. Rowling",
       "length": 165,
       "id": 40
+    },
+    {
+      "text": "Bir fizik kuramı yalnızca bir varsayım olmak bakımından her zaman koşullu ve kesinlikten yoksundur, asla kanıtlayamazsınız. Deney sonuçları sayısız kez kuramla uygunluk gösterse de, bir sonraki deneyin sonucunun kuramla çelişmeyeceğini hiç bir zaman kesin olarak söyleyemezsiniz.",
+      "source": "Zamanın Kısa Tarihi - Stephen W. Hawking",
+      "length": 279,
+      "id": 41
+    },
+    {
+      "text": "Görelik kuramında biricik bir mutlak zaman yoktur, bunun yerine herkesin, nerede olduğuna ve nasıl devindiğine bağlı olarak işleyen kendi özel zaman ölçüsü vardır.",
+      "source": "Zamanın Kısa Tarihi - Stephen W. Hawking",
+      "length": 163,
+      "id": 42
+    },
+    {
+      "text": "Zorluk, sonsuz statik evrende hemen hemen her görüş çizgisinin bir yıldızın yüzeyinde sonlanacağından kaynaklanmaktadır. Bu yüzden bütün gökyüzünün, gece bile, güneş gibi parlak olması gerekirdi.",
+      "source": "Zamanın Kısa Tarihi - Stephen W. Hawking",
+      "length": 195,
+      "id": 43
+    },
+    {
+      "text": "İnsan, insan olmaya geliyor dünyaya. Kesinlikle bir tercihi yok. Hiçbir şeyi seçemeden de gömülüyor toprağa. Yerin iki metre altındayken de bin bir böceğe lunapark oluyor daha önce bin bir dudağın öptüğü bedeni...",
+      "source": "Kinyas ve Kayra - Hakan Günday",
+      "length": 213,
+      "id": 44
+    },
+    {
+      "text": "Her yerde olan fakirlik açlık ya da açıklık değildir. Fakirlik para ve altına sahip olamama da değildir. Fakirlik, sahafta satılmamış bir kitabın üzerindeki tozdur. Fakirlik, kağıt imha makinasında, gazete parçalayan bir bıçaktır. Fakirlik, arabanın camından dışarıya atılmış muz kabuğudur. Fakirlik yemeksiz geçirilen bir gece değildir, fakirlik düşünmeden geçirilen bir gecedir.",
+      "source": "Anne Baba Biz Suçluyuz - Ali Şeriati",
+      "length": 380,
+      "id": 45
+    },
+    {
+      "text": "Beni bir gün unutacaksan bir gün bırakıp gideceksen boşuna yorma derdi boş yere mağaramdan çıkarma beni alışkanlıklarımı özellikle yalnızlığa alışkanlığımı kaybettirme boşuna.",
+      "source": "Tutunamayanlar - Oğuz Atay",
+      "length": 175,
+      "id": 46
+    },
+    {
+      "text": "İçimin yeni heyecanlar için dolduğunu hissetmiyorum. Fakat, bilmeden yeni yaşantılara hazırlıyorum kendimi. İçimde bir Selim ölürken kalan bütün gücüyle yeni bir Selim yaratıyor.",
+      "source": "Tutunamayanlar - Oğuz Atay",
+      "length": 178,
+      "id": 47
+    },
+    {
+      "text": "Birazdan göreceğimiz gibi, var olabilmemiz için evrenin karbon gibi elementler içermesi gerekir; bu elementler yıldızların içinde pişen daha hafif elementlerden üretilir. O halde, karbon bir süpernova patlaması ile uzaya dağılmış, daha sonra yoğunlaşarak yeni nesil Güneş sistemindeki bir gezegenin parçası haline gelmiş olmalı.",
+      "source": "Büyük Tasarım - Stephen W. Hawking",
+      "length": 328,
+      "id": 48
+    },
+    {
+      "text": "İnsanların trafik kurallarına uyumasını sağlamanın zor olduğunu düşünüyorsanız eğer, bir asteroidi bir elips üzerinde hareket ettirmesi için ikna etmeye çalıştığınızı hayal edin bir de.",
+      "source": "Büyük Tasarım - Stephen W. Hawking",
+      "length": 185,
+      "id": 49
+    },
+    {
+      "text": "Zaten sevgi her zaman nefretten üstün değil miydi?",
+      "source": "İki Şehrin Hikayesi - Charles Dickens",
+      "length": 50,
+      "id": 50
+    },
+    {
+      "text": "Dualar benim içimden geliyor, Jerry. Başkaca bir değerleri yok.",
+      "source": "İki Şehrin Hikayesi - Charles Dickens",
+      "length": 63,
+      "id": 51
+    },
+    {
+      "text": "Bunca kötülükten iyi bir şeyin çıkması mümkün değildi; böylesine mutsuz bir başlangıca mutlu son yakışmazdı!",
+      "source": "İki Şehrin Hikayesi - Charles Dickens",
+      "length": 108,
+      "id": 52
+    },
+    {
+      "text": "İnsanın iyi olmak için akla ihtiyacı yoktur. Çok zeki birini ele al, hemen hiçbir zaman iyi biri olmadığını görürsün.",
+      "source": "Fareler ve İnsanlar - John Steinbeck",
+      "length": 117,
+      "id": 53
+    },
+    {
+      "text": "Biz öyle değiliz! Neden değiliz? Çünkü sen bana bakarsın, ben sana bakarım da ondan. Can yoldaşı oluruz birbirimizin. Bizi umursayan bir can var, işte ondan.",
+      "source": "Fareler ve İnsanlar - John Steinbeck",
+      "length": 157,
+      "id": 54
+    },
+    {
+      "text": "Bazen gerçek olmayacağını bildiği hayaller kurar insan. O kadar çok hayal eder ki istediği şeyi, sonunda bir gün gerçek olabileceğine aniden inanır. İnandıkça daha çok düşünür, daha çok hayal eder... Ama hayatın unutulan gerçekleri çok geçmeden karşısına çıkıverir.",
+      "source": "Fareler ve İnsanlar - John Steinbeck",
+      "length": 265,
+      "id": 55
     }
   ]
 }

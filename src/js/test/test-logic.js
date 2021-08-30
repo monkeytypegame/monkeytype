@@ -26,13 +26,18 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "./account-button";
 import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
-import * as CloudFunctions from "./cloud-functions";
 import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
+import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
 import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
+import * as Wordset from "./wordset";
+import * as ChallengeContoller from "./challenge-controller";
+import * as RateQuotePopup from "./rate-quote-popup";
+
+const objecthash = require("object-hash");
 
 let glarsesMode = false;
 
@@ -48,6 +53,8 @@ export let notSignedInLastResult = null;
 
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
+  delete notSignedInLastResult.hash;
+  notSignedInLastResult.hash = objecthash(notSignedInLastResult);
 }
 
 class Words {
@@ -86,6 +93,18 @@ class Words {
   }
   increaseCurrentIndex() {
     this.currentIndex++;
+  }
+  clean() {
+    for (let s of this.list) {
+      if (/ +/.test(s)) {
+        let id = this.list.indexOf(s);
+        let tempList = s.split(" ");
+        this.list.splice(id, 1);
+        for (let i = 0; i < tempList.length; i++) {
+          this.list.splice(id + i, 0, tempList[i]);
+        }
+      }
+    }
   }
 }
 
@@ -511,10 +530,11 @@ export async function init() {
     if (Config.funbox === "plus_two") {
       wordsBound = 3;
     }
-    let wordset = language.words;
+    let wordList = language.words;
     if (Config.mode == "custom") {
-      wordset = CustomText.text;
+      wordList = CustomText.text;
     }
+    const wordset = Wordset.withWords(wordList);
 
     if (Config.funbox == "poetry") {
       let poem = await Poetry.getPoem();
@@ -523,7 +543,7 @@ export async function init() {
       });
     } else {
       for (let i = 0; i < wordsBound; i++) {
-        let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+        let randomWord = wordset.randomWord();
         const previousWord = words.get(i - 1);
         const previousWord2 = words.get(i - 2);
         if (
@@ -536,23 +556,22 @@ export async function init() {
           Config.mode == "custom" &&
           (wordset.length < 3 || PractiseWords.before.mode !== null)
         ) {
-          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+          randomWord = wordset.randomWord();
         } else {
           let regenarationCount = 0; //infinite loop emergency stop button
           while (
             regenarationCount < 100 &&
             (randomWord == previousWord ||
               randomWord == previousWord2 ||
-              (!Config.punctuation && randomWord == "I") ||
-              randomWord.indexOf(" ") > -1)
+              (!Config.punctuation && randomWord == "I"))
           ) {
             regenarationCount++;
-            randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+            randomWord = wordset.randomWord();
           }
         }
 
         if (randomWord === undefined) {
-          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+          randomWord = wordset.randomWord();
         }
 
         if (Config.funbox === "rAnDoMcAsE") {
@@ -602,8 +621,27 @@ export async function init() {
         if (/\t/g.test(randomWord)) {
           setHasTab(true);
         }
+        randomWord = randomWord.trim();
+        randomWord = randomWord.replace(/\\\\t/g, "\t");
+        randomWord = randomWord.replace(/\\\\n/g, "\n");
+        randomWord = randomWord.replace(/\\t/g, "\t");
+        randomWord = randomWord.replace(/\\n/g, "\n");
+        randomWord = randomWord.replace(/ +/g, " ");
+        randomWord = randomWord.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+        randomWord = randomWord.replace(/[\u2060]/g, " ");
+        if (/ +/.test(randomWord)) {
+          let randomList = randomWord.split(" ");
+          let id = 0;
+          while (id < randomList.length) {
+            words.push(randomList[id]);
+            id++;
 
-        words.push(randomWord);
+            if (words.length == wordsBound) break;
+          }
+          i = words.length - 1;
+        } else {
+          words.push(randomWord);
+        }
       }
     }
   } else if (Config.mode == "quote") {
@@ -674,6 +712,7 @@ export async function init() {
     rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
     rq.text = rq.text.replace(/…/g, "...");
     rq.text = rq.text.trim();
+    rq.language = Config.language.replace(/_\d*k$/g, "");
 
     setRandomQuote(rq);
 
@@ -803,7 +842,6 @@ export function restart(
   TestStats.restart();
   corrected.reset();
   ShiftTracker.reset();
-  Focus.set(false);
   Caret.hide();
   setActive(false);
   Replay.stopReplayRecording();
@@ -817,6 +855,7 @@ export function restart(
   $("#showWordHistoryButton").removeClass("loaded");
   TestUI.focusWords();
   Funbox.resetMemoryTimer();
+  RateQuotePopup.clearQuoteStats();
 
   TestUI.reset();
 
@@ -933,6 +972,7 @@ export function restart(
         opacity: 1,
       });
       // resetPaceCaret();
+      Focus.set(false);
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -1021,8 +1061,8 @@ export async function addWord() {
           leftToRight: await Misc.getCurrentLanguage().leftToRight,
           words: CustomText.text,
         };
-  const wordset = language.words;
-  let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+  const wordset = Wordset.withWords(language.words);
+  let randomWord = wordset.randomWord();
   const previousWord = words.getLast();
   const previousWordStripped = previousWord
     .replace(/[.?!":\-,]/g, "")
@@ -1037,7 +1077,7 @@ export async function addWord() {
     (CustomText.isWordRandom || CustomText.isTimeRandom) &&
     wordset.length < 3
   ) {
-    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+    randomWord = wordset.randomWord();
   } else if (
     Config.mode == "custom" &&
     !CustomText.isWordRandom &&
@@ -1051,12 +1091,12 @@ export async function addWord() {
       randomWord.indexOf(" ") > -1 ||
       (!Config.punctuation && randomWord == "I")
     ) {
-      randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+      randomWord = wordset.randomWord();
     }
   }
 
   if (randomWord === undefined) {
-    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+    randomWord = wordset.randomWord();
   }
 
   if (Config.funbox === "rAnDoMcAsE") {
@@ -1077,6 +1117,8 @@ export async function addWord() {
     randomWord = Misc.getSpecials();
   } else if (Config.funbox === "ascii") {
     randomWord = Misc.getASCII();
+  } else if (Config.funbox === "weakspot") {
+    randomWord = WeakSpot.getWord(wordset);
   }
 
   if (Config.punctuation) {
@@ -1100,7 +1142,7 @@ export async function finish(difficultyFailed = false) {
     Replay.replayGetWordsList(input.history);
   }
 
-  // TestStats.recordKeypressSpacing();
+  TestStats.recordKeypressSpacing(); //this is needed in case there is afk time at the end - to make sure test duration makes sense
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
@@ -1116,23 +1158,21 @@ export async function finish(difficultyFailed = false) {
   TimerProgress.hide();
   Funbox.activate("none", null);
 
+  let stats = TestStats.calculateStats();
+
   if (TestStats.burstHistory.length !== input.getHistory().length) {
     //auto ended test, need one more calculation for the last word
     let burst = TestStats.calculateBurst();
     TestStats.pushBurstToHistory(burst);
   }
 
-  if (
-    Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0 &&
-    Config.mode !== "time"
-  ) {
+  if (stats.time % 1 != 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
 
   if (Config.mode == "zen" || bailout) {
     TestStats.removeAfkData();
   }
-  let stats = TestStats.calculateStats();
   if (stats === undefined) {
     stats = {
       wpm: 0,
@@ -1334,10 +1374,17 @@ export async function finish(difficultyFailed = false) {
   let avg = Misc.mean(rawWpmPerSecondRaw);
 
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
+
+  let keyconsistencyarray = TestStats.keypressTimings.spacing.array.slice();
+
+  keyconsistencyarray = keyconsistencyarray.splice(
+    0,
+    keyconsistencyarray.length - 1
+  );
+
   let keyConsistency = Misc.roundTo2(
     Misc.kogasa(
-      Misc.stdDev(TestStats.keypressTimings.spacing.array) /
-        Misc.mean(TestStats.keypressTimings.spacing.array)
+      Misc.stdDev(keyconsistencyarray) / Misc.mean(keyconsistencyarray)
     )
   );
 
@@ -1452,7 +1499,7 @@ export async function finish(difficultyFailed = false) {
       DB.getSnapshot().tags.forEach((tag) => {
         if (tag.active === true) {
           activeTags.push(tag);
-          activeTagsIds.push(tag.id);
+          activeTagsIds.push(tag._id);
         }
       });
     } catch (e) {}
@@ -1487,9 +1534,15 @@ export async function finish(difficultyFailed = false) {
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
-      correctChars: stats.correctChars + stats.correctSpaces,
-      incorrectChars: stats.incorrectChars,
-      allChars: stats.allChars,
+      // correctChars: stats.correctChars + stats.correctSpaces,
+      // incorrectChars: stats.incorrectChars,
+      // allChars: stats.allChars,
+      charStats: [
+        stats.correctChars + stats.correctSpaces,
+        stats.incorrectChars,
+        stats.extraChars,
+        stats.missedChars,
+      ],
       acc: stats.acc,
       mode: Config.mode,
       mode2: mode2,
@@ -1507,7 +1560,7 @@ export async function finish(difficultyFailed = false) {
       testDuration: testtime,
       afkDuration: afkseconds,
       blindMode: Config.blindMode,
-      theme: Config.theme,
+      // theme: Config.theme,
       tags: activeTagsIds,
       keySpacing: TestStats.keypressTimings.spacing.array,
       keyDuration: TestStats.keypressTimings.duration.array,
@@ -1540,6 +1593,33 @@ export async function finish(difficultyFailed = false) {
     ) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
+        if (Config.mode === "quote") {
+          $(".pageTest #result #rateQuoteButton .rating").text("");
+          let userqr = DB.getSnapshot().quoteRatings?.[randomQuote.language]?.[
+            randomQuote.id
+          ];
+          if (userqr) {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("far")
+              .addClass("fas");
+          } else {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("fas")
+              .addClass("far");
+          }
+          RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
+            if (quoteStats !== null) {
+              $(".pageTest #result #rateQuoteButton .rating").text(
+                quoteStats.average
+              );
+            }
+            $(".pageTest #result #rateQuoteButton")
+              .css({ opacity: 0 })
+              .removeClass("hidden")
+              .css({ opacity: 1 });
+          });
+        }
+
         //check local pb
         AccountButton.loading(true);
         let dontShowCrown = false;
@@ -1629,7 +1709,7 @@ export async function finish(difficultyFailed = false) {
             let labelAdjust = 15;
             activeTags.forEach(async (tag) => {
               let tpb = await DB.getLocalTagPB(
-                tag.id,
+                tag._id,
                 Config.mode,
                 mode2,
                 Config.punctuation,
@@ -1637,13 +1717,13 @@ export async function finish(difficultyFailed = false) {
                 Config.difficulty
               );
               $("#result .stats .tags .bottom").append(`
-                <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
+                <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
               `);
               if (Config.mode != "quote") {
                 if (tpb < stats.wpm) {
                   //new pb for that tag
                   DB.saveLocalTagPB(
-                    tag.id,
+                    tag._id,
                     Config.mode,
                     mode2,
                     Config.punctuation,
@@ -1655,12 +1735,11 @@ export async function finish(difficultyFailed = false) {
                     consistency
                   );
                   $(
-                    `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
+                    `#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`
                   ).removeClass("hidden");
-                  $(`#result .stats .tags .bottom div[tagid="${tag.id}"]`).attr(
-                    "aria-label",
-                    "+" + Misc.roundTo2(stats.wpm - tpb)
-                  );
+                  $(
+                    `#result .stats .tags .bottom div[tagid="${tag._id}"]`
+                  ).attr("aria-label", "+" + Misc.roundTo2(stats.wpm - tpb));
                   // console.log("new pb for tag " + tag.name);
                 } else {
                   ChartController.result.options.annotation.annotations.push({
@@ -1705,61 +1784,37 @@ export async function finish(difficultyFailed = false) {
               completedEvent.mode === "time" &&
               ["15", "60"].includes(String(completedEvent.mode2))
             ) {
-              $("#result .stats .leaderboards").removeClass("hidden");
-              $("#result .stats .leaderboards .bottom").html(
-                `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
-              );
+              //TODO bring back when leaderboards fixed
+              // $("#result .stats .leaderboards").removeClass("hidden");
+              // $("#result .stats .leaderboards .bottom").html(
+              //   `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+              // );
             }
             if (!window.navigator.onLine) {
               AccountButton.loading(false);
               Notifications.add("You are offline. Result not saved.", -1);
             } else {
-              CloudFunctions.testCompleted({
-                uid: firebase.auth().currentUser.uid,
-                obj: completedEvent,
-              })
-                .then((e) => {
+              completedEvent.challenge = ChallengeContoller.verify(
+                completedEvent
+              );
+              completedEvent.hash = objecthash(completedEvent);
+              axiosInstance
+                .post("/results/add", {
+                  result: completedEvent,
+                })
+                .then((response) => {
                   AccountButton.loading(false);
-                  if (e.data == null) {
+
+                  if (response.status !== 200) {
                     Notifications.add(
-                      "Unexpected response from the server: " + e.data,
+                      "Result not saved. " + response.data.message,
                       -1
                     );
-                    return;
-                  }
-                  if (e.data.resultCode === -1) {
-                    Notifications.add("Could not save result", -1);
-                  } else if (e.data.resultCode === -2) {
-                    Notifications.add(
-                      "Possible bot detected. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -3) {
-                    Notifications.add(
-                      "Could not verify keypress stats. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -4) {
-                    Notifications.add(
-                      "Result data does not make sense. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -5) {
-                    Notifications.add("Test too short. Result not saved.", -1);
-                  } else if (e.data.resultCode === -999) {
-                    console.error("internal error: " + e.data.message);
-                    Notifications.add(
-                      "Internal error. Result might not be saved. " +
-                        e.data.message,
-                      -1
-                    );
-                  } else if (
-                    e.data.resultCode === 1 ||
-                    e.data.resultCode === 2
-                  ) {
-                    completedEvent.id = e.data.createdId;
-                    TestLeaderboards.check(completedEvent);
-                    if (e.data.resultCode === 2) {
+                  } else {
+                    completedEvent._id = response.data.insertedId;
+                    // TODO bring back after leaderboard fixed
+                    // TestLeaderboards.check(completedEvent);
+                    if (response.data.isPb) {
                       completedEvent.isPb = true;
                     }
                     if (
@@ -1799,7 +1854,7 @@ export async function finish(difficultyFailed = false) {
                       console.log("Analytics unavailable");
                     }
 
-                    if (e.data.resultCode === 2) {
+                    if (response.data.isPb) {
                       //new pb
                       PbCrown.show();
                       $("#result .stats .wpm .crown").attr(
@@ -1817,7 +1872,7 @@ export async function finish(difficultyFailed = false) {
                         stats.wpmRaw,
                         consistency
                       );
-                    } else if (e.data.resultCode === 1) {
+                    } else {
                       PbCrown.hide();
                       // if (localPb) {
                       //   Notifications.add(
@@ -1830,13 +1885,14 @@ export async function finish(difficultyFailed = false) {
                 })
                 .catch((e) => {
                   AccountButton.loading(false);
-                  console.error(e);
-                  Notifications.add("Could not save result. " + e, -1);
+                  let msg = e?.response?.data?.message ?? e.message;
+                  Notifications.add("Failed to save result: " + msg, -1);
                 });
             }
           });
         });
       } else {
+        $(".pageTest #result #rateQuoteButton").addClass("hidden");
         try {
           firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
         } catch (e) {
@@ -2003,7 +2059,7 @@ export async function finish(difficultyFailed = false) {
         font-size: 2rem;
         padding: 2rem 0;
       ">Test completed</div>
-    
+
     `);
     $("#middle #result .stats").remove();
     $("#middle #result .chart").remove();
@@ -2042,8 +2098,8 @@ export async function finish(difficultyFailed = false) {
 let failReason = "";
 export function fail(reason) {
   failReason = reason;
-  input.pushHistory();
-  corrected.pushHistory();
+  // input.pushHistory();
+  // corrected.pushHistory();
   TestStats.pushKeypressesToHistory();
   finish(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());
