@@ -208,9 +208,15 @@ export async function screenshot() {
   }
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
+  $(".pageTest .ssWatermark").text(
+    new Date().toLocaleString() + " | monkeytype.com "
+  );
   if (firebase.auth().currentUser != null) {
     $(".pageTest .ssWatermark").text(
-      DB.getSnapshot().name + " | monkeytype.com"
+      DB.getSnapshot().name +
+        " | " +
+        new Date().toLocaleString() +
+        " | monkeytype.com  "
     );
   }
   $(".pageTest .buttons").addClass("hidden");
