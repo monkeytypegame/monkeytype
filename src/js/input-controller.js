@@ -759,6 +759,8 @@ function handleAlpha(event) {
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
+    TestLogic.input.pushHistory();
+    TestLogic.corrected.pushHistory();
     TestLogic.fail("difficulty");
     return;
   }

@@ -384,8 +384,8 @@ export function median(arr) {
   }
 }
 
-export function getReleasesFromGitHub() {
-  $.getJSON(
+export async function getReleasesFromGitHub() {
+  return $.getJSON(
     "https://api.github.com/repos/Miodec/monkeytype/releases",
     (data) => {
       $("#bottom .version .text").text(data[0].name);

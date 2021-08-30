@@ -53,6 +53,8 @@ export let notSignedInLastResult = null;
 
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
+  delete notSignedInLastResult.hash;
+  notSignedInLastResult.hash = objecthash(notSignedInLastResult);
 }
 
 class Words {
@@ -1593,6 +1595,18 @@ export async function finish(difficultyFailed = false) {
         completedEvent.uid = firebase.auth().currentUser.uid;
         if (Config.mode === "quote") {
           $(".pageTest #result #rateQuoteButton .rating").text("");
+          let userqr = DB.getSnapshot().quoteRatings?.[randomQuote.language]?.[
+            randomQuote.id
+          ];
+          if (userqr) {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("far")
+              .addClass("fas");
+          } else {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("fas")
+              .addClass("far");
+          }
           RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
             if (quoteStats !== null) {
               $(".pageTest #result #rateQuoteButton .rating").text(
@@ -1783,9 +1797,7 @@ export async function finish(difficultyFailed = false) {
               completedEvent.challenge = ChallengeContoller.verify(
                 completedEvent
               );
-              console.time("hash");
               completedEvent.hash = objecthash(completedEvent);
-              console.timeEnd("hash");
               axiosInstance
                 .post("/results/add", {
                   result: completedEvent,
@@ -2086,8 +2098,8 @@ export async function finish(difficultyFailed = false) {
 let failReason = "";
 export function fail(reason) {
   failReason = reason;
-  input.pushHistory();
-  corrected.pushHistory();
+  // input.pushHistory();
+  // corrected.pushHistory();
   TestStats.pushKeypressesToHistory();
   finish(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());
