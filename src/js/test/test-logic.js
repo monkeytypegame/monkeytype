@@ -549,7 +549,13 @@ export async function init() {
           !CustomText.isWordRandom &&
           !CustomText.isTimeRandom
         ) {
+          console.log(`customText.text=${CustomText.text}`);
           randomWord = CustomText.text[i];
+          console.log(
+            `randomWord at 553=${randomWord} contains \\n=${randomWord.indexOf(
+              "\n"
+            )}`
+          );
         } else if (
           Config.mode == "custom" &&
           (wordset.length < 3 || PractiseWords.before.mode !== null)
@@ -619,27 +625,76 @@ export async function init() {
         if (/\t/g.test(randomWord)) {
           setHasTab(true);
         }
-        randomWord = randomWord.trim();
-        randomWord = randomWord.replace(/\\\\t/g, "\t");
-        randomWord = randomWord.replace(/\\\\n/g, "\n");
-        randomWord = randomWord.replace(/\\t/g, "\t");
-        randomWord = randomWord.replace(/\\n/g, "\n");
-        randomWord = randomWord.replace(/ +/g, " ");
-        randomWord = randomWord.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-        randomWord = randomWord.replace(/[\u2060]/g, " ");
+
+        // randomWord = randomWord.replace(/\\\\t/g, "\t");
+        // console.log(
+        //   `randomWord at 635=${randomWord} contains \\n=${randomWord.indexOf(
+        //     "\n"
+        //   )}`
+        // );
+        // randomWord = randomWord.replace(/\\\\n/g, "\n");
+        // console.log(
+        //   `randomWord at 641=${randomWord} contains \\n=${randomWord.indexOf(
+        //     "\n"
+        //   )}`
+        // );
+        // randomWord = randomWord.replace(/\\t/g, "\t");
+        // console.log(
+        //   `randomWord at 647=${randomWord} contains \\n=${randomWord.indexOf(
+        //     "\n"
+        //   )}`
+        // );
+        // randomWord = randomWord.replace(/\\n/g, "\n");
+        // console.log(
+        //   `randomWord at 653=${randomWord} contains \\n=${randomWord.indexOf(
+        //     "\n"
+        //   )}`
+        // );
+        // randomWord = randomWord.replace(/ +/g, " ");
+        // console.log(
+        //   `randomWord at 659=${randomWord} contains \\n=${randomWord.indexOf(
+        //     "\n"
+        //   )}`
+        // );
+
+        // randomWord = randomWord.replace(/[\u2060]/g, " ");
+        // console.log(
+        //   `randomWord at 671=${randomWord} contains \\n=${randomWord.indexOf(
+        //     "\n"
+        //   )}`
+        // );
+
         if (/ +/.test(randomWord)) {
+          console.log(`randomWord.indexOf(" ")=${randomWord.indexOf(" ")}`);
           let randomList = randomWord.split(" ");
+          console.log(`randomList=${randomList}`);
           let id = 0;
           while (id < randomList.length) {
             words.push(randomList[id]);
             id++;
 
-            if (words.length == wordsBound) break;
+            if (
+              words.length == wordsBound &&
+              Config.mode == "custom" &&
+              CustomText.isWordRandom
+            ) {
+              console.log(`wordsBound=${wordsBound}`);
+              break;
+            }
           }
-          i = words.length - 1;
+          if (
+            Config.mode == "custom" &&
+            !CustomText.isWordRandom &&
+            !CustomText.isTimeRandom
+          ) {
+          } else {
+            i = words.length - 1;
+          }
         } else {
           words.push(randomWord);
         }
+
+        console.log(`wordList at 646=${words.list}`);
       }
     }
   } else if (Config.mode == "quote") {
