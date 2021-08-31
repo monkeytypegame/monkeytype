@@ -549,13 +549,7 @@ export async function init() {
           !CustomText.isWordRandom &&
           !CustomText.isTimeRandom
         ) {
-          console.log(`customText.text=${CustomText.text}`);
           randomWord = CustomText.text[i];
-          console.log(
-            `randomWord at 553=${randomWord} contains \\n=${randomWord.indexOf(
-              "\n"
-            )}`
-          );
         } else if (
           Config.mode == "custom" &&
           (wordset.length < 3 || PractiseWords.before.mode !== null)
@@ -626,48 +620,8 @@ export async function init() {
           setHasTab(true);
         }
 
-        // randomWord = randomWord.replace(/\\\\t/g, "\t");
-        // console.log(
-        //   `randomWord at 635=${randomWord} contains \\n=${randomWord.indexOf(
-        //     "\n"
-        //   )}`
-        // );
-        // randomWord = randomWord.replace(/\\\\n/g, "\n");
-        // console.log(
-        //   `randomWord at 641=${randomWord} contains \\n=${randomWord.indexOf(
-        //     "\n"
-        //   )}`
-        // );
-        // randomWord = randomWord.replace(/\\t/g, "\t");
-        // console.log(
-        //   `randomWord at 647=${randomWord} contains \\n=${randomWord.indexOf(
-        //     "\n"
-        //   )}`
-        // );
-        // randomWord = randomWord.replace(/\\n/g, "\n");
-        // console.log(
-        //   `randomWord at 653=${randomWord} contains \\n=${randomWord.indexOf(
-        //     "\n"
-        //   )}`
-        // );
-        // randomWord = randomWord.replace(/ +/g, " ");
-        // console.log(
-        //   `randomWord at 659=${randomWord} contains \\n=${randomWord.indexOf(
-        //     "\n"
-        //   )}`
-        // );
-
-        // randomWord = randomWord.replace(/[\u2060]/g, " ");
-        // console.log(
-        //   `randomWord at 671=${randomWord} contains \\n=${randomWord.indexOf(
-        //     "\n"
-        //   )}`
-        // );
-
         if (/ +/.test(randomWord)) {
-          console.log(`randomWord.indexOf(" ")=${randomWord.indexOf(" ")}`);
           let randomList = randomWord.split(" ");
-          console.log(`randomList=${randomList}`);
           let id = 0;
           while (id < randomList.length) {
             words.push(randomList[id]);
@@ -678,7 +632,6 @@ export async function init() {
               Config.mode == "custom" &&
               CustomText.isWordRandom
             ) {
-              console.log(`wordsBound=${wordsBound}`);
               break;
             }
           }
@@ -693,8 +646,6 @@ export async function init() {
         } else {
           words.push(randomWord);
         }
-
-        console.log(`wordList at 646=${words.list}`);
       }
     }
   } else if (Config.mode == "quote") {
