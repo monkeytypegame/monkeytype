@@ -138,6 +138,7 @@ let commandsFunbox = {
       id: "changeFunboxNone",
       display: "none",
       configValue: "none",
+      alias: "off",
       exec: () => {
         if (Funbox.setFunbox("none", null)) {
           TestLogic.restart();
