@@ -1,9 +1,9 @@
 import * as Loader from "./loader";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as AccountController from "./account-controller";
 import * as DB from "./db";
 import * as Settings from "./settings";
+import axiosInstance from "./axios-instance";
 import * as UpdateConfig from "./config";
 
 export let list = {};
@@ -49,7 +49,12 @@ class SimplePopup {
 
     this.initInputs();
 
-    el.find(".button").text(this.buttonText);
+    if (!this.buttonText) {
+      el.find(".button").remove();
+    } else {
+      el.find(".button").text(this.buttonText);
+    }
+
     // }
   }
 
@@ -64,11 +69,11 @@ class SimplePopup {
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
-          if(input.type){
+          if (input.type) {
             el.find(".inputs").append(`
             <input type="${input.type}" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
             `);
-          }else{
+          } else {
             el.find(".inputs").append(`
             <input type="text" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
             `);
@@ -114,6 +119,16 @@ class SimplePopup {
   }
 }
 
+export function hide() {
+  $("#simplePopupWrapper")
+    .stop(true, true)
+    .css("opacity", 1)
+    .removeClass("hidden")
+    .animate({ opacity: 0 }, 125, () => {
+      $("#simplePopupWrapper").addClass("hidden");
+    });
+}
+
 $("#simplePopupWrapper").mousedown((e) => {
   if ($(e.target).attr("id") === "simplePopupWrapper") {
     $("#simplePopupWrapper")
@@ -150,56 +165,150 @@ list.updateEmail = new SimplePopup(
       initVal: "",
     },
     {
-      placeholder: "Current email",
+      placeholder: "New email",
       initVal: "",
     },
     {
-      placeholder: "New email",
+      placeholder: "Confirm new email",
       initVal: "",
     },
   ],
   "",
   "Update",
-  (pass,previousEmail, newEmail) => {
+  async (password, email, emailConfirm) => {
     try {
       const user = firebase.auth().currentUser;
-      const credential = firebase.auth.EmailAuthProvider.credential(
-          user.email, 
-          pass
-      );
+      if (email !== emailConfirm) {
+        Notifications.add("Emails don't match", 0);
+        return;
+      }
+      if (user.providerData[0].providerId === "password") {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          password
+        );
+        await user.reauthenticateWithCredential(credential);
+      }
       Loader.show();
-      user.reauthenticateWithCredential(credential).then(() => {
-        CloudFunctions.updateEmail({
+      axiosInstance
+        .post("/user/updateEmail", {
           uid: user.uid,
-          previousEmail: previousEmail,
-          newEmail: newEmail,
-        }).then((data) => {
+          previousEmail: user.email,
+          newEmail: email,
+        })
+        .then((data) => {
           Loader.hide();
-          if (data.data.resultCode === 1) {
+          if (data.status === 200) {
             Notifications.add("Email updated", 0);
             setTimeout(() => {
               AccountController.signOut();
             }, 1000);
-          } else if (data.data.resultCode === -1) {
-            Notifications.add("Current email doesn't match", 0);
           } else {
-            Notifications.add(
-              "Something went wrong: " + JSON.stringify(data.data),
-              -1
-            );
+            Notifications.add(data.message);
           }
         });
-      }).catch(e => {
-        Loader.hide();
-        Notifications.add("Incorrect current password", -1);
-      })
     } catch (e) {
-      Notifications.add("Something went wrong: " + e, -1);
+      if (e.code == "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
     }
   },
-  () => {}
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = undefined`);
+      eval(
+        `this.text = "You can't change your email when using Google Authentication";`
+      );
+    }
+  }
 );
 
+list.updateName = new SimplePopup(
+  "updateName",
+  "text",
+  "Update Name",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+    {
+      placeholder: "New name",
+      type: "text",
+      initVal: "",
+    },
+  ],
+  "",
+  "Update",
+  async (pass, newName) => {
+    try {
+      const user = firebase.auth().currentUser;
+      if (user.providerData[0].providerId === "password") {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          pass
+        );
+        await user.reauthenticateWithCredential(credential);
+      }
+      Loader.show();
+
+      let response;
+      try {
+        response = await axiosInstance.post("/user/checkName", {
+          name: newName,
+        });
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to check name: " + msg, -1);
+        return;
+      }
+      Loader.hide();
+      if (response.status !== 200) {
+        Notifications.add(response.data.message);
+        return;
+      }
+      try {
+        response = await axiosInstance.post("/user/updateName", {
+          name: newName,
+        });
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to update name: " + msg, -1);
+        return;
+      }
+      Loader.hide();
+      if (response.status !== 200) {
+        Notifications.add(response.data.message);
+        return;
+      } else {
+        Notifications.add("Name updated", 1);
+        DB.getSnapshot().name = newName;
+        $("#menu .icon-button.account .text").text(newName);
+      }
+    } catch (e) {
+      Loader.hide();
+      if (e.code == "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
+    }
+  },
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs.shift()`);
+      eval(`this.buttonText = "Reauthenticate to update"`);
+    }
+  }
+);
 
 list.updatePassword = new SimplePopup(
   "updatePassword",
@@ -207,7 +316,7 @@ list.updatePassword = new SimplePopup(
   "Update Password",
   [
     {
-      placeholder: "Current password",
+      placeholder: "Password",
       type: "password",
       initVal: "",
     },
@@ -228,11 +337,11 @@ list.updatePassword = new SimplePopup(
     try {
       const user = firebase.auth().currentUser;
       const credential = firebase.auth.EmailAuthProvider.credential(
-          user.email, 
-          previousPass
+        user.email,
+        previousPass
       );
-      if(newPass !== newPassConfirm){
-        Notifications.add("New passwords don't match",0);
+      if (newPass !== newPassConfirm) {
+        Notifications.add("New passwords don't match", 0);
         return;
       }
       Loader.show();
@@ -242,12 +351,105 @@ list.updatePassword = new SimplePopup(
       Notifications.add("Password updated", 1);
     } catch (e) {
       Loader.hide();
-      Notifications.add(e, -1);
+      if (e.code == "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
     }
   },
-  () => {}
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = undefined`);
+      eval(
+        `this.text = "You can't change your password when using Google Authentication";`
+      );
+    }
+  }
 );
 
+list.deleteAccount = new SimplePopup(
+  "deleteAccount",
+  "text",
+  "Delete Account",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "This is the last time you can change your mind. After pressing the button everything is gone.",
+  "Delete",
+  async (password) => {
+    //
+    try {
+      const user = firebase.auth().currentUser;
+      if (user.providerData[0].providerId === "password") {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          password
+        );
+        await user.reauthenticateWithCredential(credential);
+      } else if (user.providerData[0].providerId === "google.com") {
+        await user.reauthenticateWithPopup(AccountController.gmailProvider);
+      }
+      Loader.show();
+
+      Notifications.add("Deleting stats...", 0);
+      let response;
+      try {
+        response = await axiosInstance.post("/user/delete");
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to delete user stats: " + msg, -1);
+        return;
+      }
+      if (response.status !== 200) {
+        throw response.data.message;
+      }
+
+      Notifications.add("Deleting results...", 0);
+      try {
+        response = await axiosInstance.post("/results/deleteAll");
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to delete user results: " + msg, -1);
+        return;
+      }
+      if (response.status !== 200) {
+        throw response.data.message;
+      }
+
+      Notifications.add("Deleting login information...", 0);
+      await firebase.auth().currentUser.delete();
+
+      Notifications.add("Goodbye", 1, 5);
+
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+    } catch (e) {
+      Loader.hide();
+      if (e.code == "auth/wrong-password") {
+        Notifications.add("Incorrect password", -1);
+      } else {
+        Notifications.add("Something went wrong: " + e, -1);
+      }
+    }
+  },
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = "Reauthenticate to delete"`);
+    }
+  }
+);
 
 list.clearTagPb = new SimplePopup(
   "clearTagPb",
@@ -259,10 +461,10 @@ list.clearTagPb = new SimplePopup(
   () => {
     let tagid = eval("this.parameters[0]");
     Loader.show();
-    CloudFunctions.clearTagPb({
-      uid: firebase.auth().currentUser.uid,
-      tagid: tagid,
-    })
+    axiosInstance
+      .post("/user/tags/clearPb", {
+        tagid: tagid,
+      })
       .then((res) => {
         Loader.hide();
         if (res.data.resultCode === 1) {
@@ -278,10 +480,11 @@ list.clearTagPb = new SimplePopup(
       })
       .catch((e) => {
         Loader.hide();
-        Notifications.add(
-          "Something went wrong while clearing tag pb " + e,
-          -1
-        );
+        if (e.code == "auth/wrong-password") {
+          Notifications.add("Incorrect password", -1);
+        } else {
+          Notifications.add("Something went wrong: " + e, -1);
+        }
       });
     // console.log(`clearing for ${eval("this.parameters[0]")} ${eval("this.parameters[1]")}`);
   },
@@ -310,37 +513,57 @@ list.resetPersonalBests = new SimplePopup(
   "resetPersonalBests",
   "text",
   "Reset Personal Bests",
-  [],
-  "Are you sure you want to reset all your personal bests?",
+  [
+    {
+      placeholder: "Password",
+      type: "password",
+      initVal: "",
+    },
+  ],
+  "",
   "Reset",
-  () => {
+  async (password) => {
     try {
+      const user = firebase.auth().currentUser;
+      if (user.providerData[0].providerId === "password") {
+        const credential = firebase.auth.EmailAuthProvider.credential(
+          user.email,
+          password
+        );
+        await user.reauthenticateWithCredential(credential);
+      } else if (user.providerData[0].providerId === "google.com") {
+        await user.reauthenticateWithPopup(AccountController.gmailProvider);
+      }
       Loader.show();
 
-      CloudFunctions.resetPersonalBests({
-        uid: firebase.auth().currentUser.uid,
-      }).then((res) => {
-        if (res) {
-          Loader.hide();
-          Notifications.add(
-            "Personal bests removed, refreshing the page...",
-            0
-          );
-          setTimeout(() => {
-            location.reload();
-          }, 1500);
-        } else {
-          Notifications.add(
-            "Something went wrong while removing personal bests...",
-            -1
-          );
-        }
-      });
+      let response;
+      try {
+        response = await axiosInstance.post("/user/clearPb");
+      } catch (e) {
+        Loader.hide();
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to reset personal bests: " + msg, -1);
+        return;
+      }
+      Loader.hide();
+      if (response.status !== 200) {
+        Notifications.add(response.data.message);
+      } else {
+        Notifications.add("Personal bests have been reset", 1);
+        DB.getSnapshot().personalBests = {};
+      }
     } catch (e) {
-      Notifications.add("Something went wrong: " + e, -1);
+      Loader.hide();
+      Notifications.add(e, -1);
     }
   },
-  () => {}
+  () => {
+    const user = firebase.auth().currentUser;
+    if (user.providerData[0].providerId === "google.com") {
+      eval(`this.inputs = []`);
+      eval(`this.buttonText = "Reauthenticate to reset"`);
+    }
+  }
 );
 
 list.resetSettings = new SimplePopup(
@@ -352,9 +575,9 @@ list.resetSettings = new SimplePopup(
   "Reset",
   () => {
     UpdateConfig.reset();
-    setTimeout(() => {
-      location.reload();
-    }, 1000);
+    // setTimeout(() => {
+    //   location.reload();
+    // }, 1000);
   },
   () => {}
 );
@@ -366,22 +589,25 @@ list.unlinkDiscord = new SimplePopup(
   [],
   "Are you sure you want to unlink your Discord account?",
   "Unlink",
-  () => {
+  async () => {
     Loader.show();
-    CloudFunctions.unlinkDiscord({
-      uid: firebase.auth().currentUser.uid,
-    }).then((ret) => {
+    let response;
+    try {
+      response = await axiosInstance.post("/user/discord/unlink", {});
+    } catch (e) {
       Loader.hide();
-      console.log(ret);
-      if (ret.data.status === 1) {
-        DB.getSnapshot().discordId = null;
-        Notifications.add("Accounts unlinked", 0);
-        Settings.updateDiscordSection();
-      } else {
-        Notifications.add("Something went wrong: " + ret.data.message, -1);
-        Settings.updateDiscordSection();
-      }
-    });
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to unlink Discord: " + msg, -1);
+      return;
+    }
+    Loader.hide();
+    if (response.status !== 200) {
+      Notifications.add(response.data.message);
+    } else {
+      Notifications.add("Accounts unlinked", 1);
+      DB.getSnapshot().discordId = undefined;
+      Settings.updateDiscordSection();
+    }
   },
   () => {}
 );

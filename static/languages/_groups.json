@@ -7,7 +7,8 @@
       "english_5k",
       "english_10k",
       "english_25k",
-      "english_450k"
+      "english_450k",
+      "english_commonly_misspelled"
     ]
   },
   {
@@ -84,6 +85,14 @@
     "name": "thai",
     "languages": ["thai"]
   },
+ {
+    "name": "tamil",
+    "languages": ["tamil"]
+  },
+  {
+    "name": "tamil",
+    "languages": ["tamil"]
+  },
   {
     "name": "polish",
     "languages": ["polish", "polish_2k", "polish_200k"]
@@ -139,6 +148,10 @@
   {
     "name": "finnish",
     "languages": ["finnish", "finnish_1k", "finnish_10k"]
+  },
+  {
+    "name": "welsh",
+    "languages": ["welsh", "welsh_1k"]
   },
   {
     "name": "persian",
@@ -213,12 +226,17 @@
     "languages": ["urdu", "urdu_1k"]
   },
   {
+    "name": "albanian",
+    "languages": ["albanian", "albanian_1k"]
+  },
+  {
     "name": "code",
     "languages": [
       "code_python",
       "code_c",
       "code_csharp",
       "code_c++",
+      "code_dart",
       "code_javascript",
       "code_javascript_1k",
       "code_html",

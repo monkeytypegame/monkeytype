@@ -4,6 +4,11 @@ import Config, * as UpdateConfig from "./config";
 import * as Focus from "./focus";
 import * as CommandlineLists from "./commandline-lists";
 import * as TestUI from "./test-ui";
+import * as PractiseWords from "./practise-words";
+import * as SimplePopups from "./simple-popups";
+import * as CustomWordAmountPopup from "./custom-word-amount-popup";
+import * as CustomTestDurationPopup from "./custom-test-duration-popup";
+import * as CustomTextPopup from "./custom-text-popup";
 
 let commandLineMouseMode = false;
 
@@ -242,6 +247,7 @@ function addChildCommands(
     commandItemDisplay =
       parentCommandDisplay + " > " + icon + commandItemDisplay;
   if (commandItem.subgroup) {
+    if (commandItem.beforeSubgroup) commandItem.beforeSubgroup();
     try {
       commandItem.subgroup.list.forEach((cmd) => {
         commandItem.configKey = commandItem.subgroup.configKey;
@@ -311,12 +317,11 @@ $("#commandLine input").keyup((e) => {
     "activeMouse"
   );
   if (
-    e.keyCode == 38 ||
-    e.keyCode == 40 ||
-    e.keyCode == 13 ||
-    e.code == "Tab" ||
-    e.code == "AltLeft" ||
-    (e.altKey && (e.keyCode == 74 || e.keyCode == 75))
+    e.key === "ArrowUp" ||
+    e.key === "ArrowDown" ||
+    e.key === "Enter" ||
+    e.key === "Tab" ||
+    e.code == "AltLeft"
   )
     return;
   updateSuggested();
@@ -324,13 +329,35 @@ $("#commandLine input").keyup((e) => {
 
 $(document).ready((e) => {
   $(document).keydown((event) => {
-    //escape
-    if (event.keyCode == 27 || (event.keyCode == 9 && Config.swapEscAndTab)) {
+    // opens command line if escape, ctrl/cmd + shift + p, or tab is pressed if the setting swapEscAndTab is enabled
+    if (
+      event.key === "Escape" ||
+      (event.key &&
+        event.key.toLowerCase() === "p" &&
+        (event.metaKey || event.ctrlKey) &&
+        event.shiftKey) ||
+      (event.key === "Tab" && Config.swapEscAndTab)
+    ) {
       event.preventDefault();
       if (!$("#leaderboardsWrapper").hasClass("hidden")) {
         //maybe add more condition for closing other dialogs in the future as well
         event.preventDefault();
         Leaderboards.hide();
+      } else if (!$("#practiseWordsPopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        PractiseWords.hide();
+      } else if (!$("#simplePopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        SimplePopups.hide();
+      } else if (!$("#customWordAmountPopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        CustomWordAmountPopup.hide();
+      } else if (!$("#customTestDurationPopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        CustomTestDurationPopup.hide();
+      } else if (!$("#customTextPopupWrapper").hasClass("hidden")) {
+        event.preventDefault();
+        CustomTextPopup.hide();
       } else if (!$("#commandLineWrapper").hasClass("hidden")) {
         if (CommandlineLists.current.length > 1) {
           CommandlineLists.current.pop();
@@ -340,7 +367,7 @@ $(document).ready((e) => {
           hide();
         }
         UpdateConfig.setFontFamily(Config.fontFamily, true);
-      } else if (event.keyCode == 9 || !Config.swapEscAndTab) {
+      } else if (event.key === "Tab" || !Config.swapEscAndTab) {
         if (Config.singleListCommandLine == "on") {
           useSingleListCommandLine(false);
         } else {
@@ -353,7 +380,7 @@ $(document).ready((e) => {
 });
 
 $("#commandInput input").keydown((e) => {
-  if (e.keyCode == 13) {
+  if (e.key === "Enter") {
     //enter
     e.preventDefault();
     let command = $("#commandInput input").attr("command");
@@ -500,25 +527,20 @@ $(document).keydown((e) => {
       }
     }
     if (
-      e.keyCode == 8 &&
+      e.key === "Backspace" &&
       $("#commandLine input").val().length == 1 &&
       Config.singleListCommandLine == "manual" &&
       isSingleListCommandLineActive()
     )
       restoreOldCommandLine();
-    if (e.keyCode == 13) {
+    if (e.key === "Enter") {
       //enter
       e.preventDefault();
       let command = $(".suggestions .entry.activeKeyboard").attr("command");
       trigger(command);
       return;
     }
-    if (
-      e.keyCode == 38 ||
-      e.keyCode == 40 ||
-      e.code == "Tab" ||
-      (e.altKey && (e.keyCode == 74 || e.keyCode == 75))
-    ) {
+    if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "Tab") {
       e.preventDefault();
       $("#commandLineWrapper #commandLine .suggestions .entry").unbind(
         "mouseenter mouseleave"
@@ -529,11 +551,7 @@ $(document).keydown((e) => {
       $.each(entries, (index, obj) => {
         if ($(obj).hasClass("activeKeyboard")) activenum = index;
       });
-      if (
-        e.keyCode == 38 ||
-        (e.code == "Tab" && e.shiftKey) ||
-        (e.altKey && e.keyCode == 75)
-      ) {
+      if (e.key === "ArrowUp" || (e.key === "Tab" && e.shiftKey)) {
         entries.removeClass("activeKeyboard");
         if (activenum == 0) {
           $(entries[entries.length - 1]).addClass("activeKeyboard");
@@ -543,11 +561,7 @@ $(document).keydown((e) => {
           hoverId = $(entries[activenum]).attr("command");
         }
       }
-      if (
-        e.keyCode == 40 ||
-        (e.code == "Tab" && !e.shiftKey) ||
-        (e.altKey && e.keyCode == 74)
-      ) {
+      if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
         entries.removeClass("activeKeyboard");
         if (activenum + 1 == entries.length) {
           $(entries[0]).addClass("activeKeyboard");

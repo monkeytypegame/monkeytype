@@ -12,9 +12,14 @@ import * as CommandlineLists from "./commandline-lists";
 import * as Commandline from "./commandline";
 import * as OutOfFocus from "./out-of-focus";
 import * as ManualRestart from "./manual-restart-tracker";
-import * as PractiseMissed from "./practise-missed";
+import * as PractiseWords from "./practise-words";
 import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
+import * as Misc from "./misc";
+import * as TestUI from "./test-ui";
+import * as ChallengeController from "./challenge-controller";
+import * as RateQuotePopup from "./rate-quote-popup";
+import * as UI from "./ui";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -185,12 +190,13 @@ export function colorful(tc) {
   }
 }
 
-export function screenshot() {
+export async function screenshot() {
   let revealReplay = false;
   function revertScreenshot() {
     $("#notificationCenter").removeClass("hidden");
     $("#commandLineMobileButton").removeClass("hidden");
     $(".pageTest .ssWatermark").addClass("hidden");
+    $(".pageTest .ssWatermark").text("monkeytype.com");
     $(".pageTest .buttons").removeClass("hidden");
     if (revealReplay) $("#resultReplay").removeClass("hidden");
     if (firebase.auth().currentUser == null)
@@ -203,6 +209,11 @@ export function screenshot() {
   }
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
+  if (firebase.auth().currentUser != null) {
+    $(".pageTest .ssWatermark").text(
+      DB.getSnapshot().name + " | monkeytype.com"
+    );
+  }
   $(".pageTest .buttons").addClass("hidden");
   let src = $("#middle");
   var sourceX = src.position().left; /*X position from div#target*/
@@ -214,7 +225,7 @@ export function screenshot() {
   $(".pageTest .loginTip").addClass("hidden");
   try {
     html2canvas(document.body, {
-      backgroundColor: ThemeColors.bg,
+      backgroundColor: await ThemeColors.get("bg"),
       height: sourceHeight + 50,
       width: sourceWidth + 50,
       x: sourceX - 25,
@@ -273,10 +284,10 @@ export function updateWordElement(showError) {
   if (Config.mode === "zen") {
     for (let i = 0; i < TestLogic.input.current.length; i++) {
       if (TestLogic.input.current[i] === "\t") {
-        ret += `<letter class='tabChar correct'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
+        ret += `<letter class='tabChar correct' style="opacity: 0"><i class="fas fa-long-arrow-alt-right"></i></letter>`;
       } else if (TestLogic.input.current[i] === "\n") {
         newlineafter = true;
-        ret += `<letter class='nlChar correct'><i class="fas fa-angle-down"></i></letter>`;
+        ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
       } else {
         ret +=
           `<letter class="correct">` + TestLogic.input.current[i] + `</letter>`;
@@ -467,6 +478,12 @@ export function updateModesNotice() {
     );
   }
 
+  if (ChallengeController.active) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${ChallengeController.active.display}</div>`
+    );
+  }
+
   if (Config.mode === "zen") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
@@ -475,7 +492,12 @@ export function updateModesNotice() {
 
   // /^[0-9a-zA-Z_.-]+$/.test(name);
 
-  if (/_\d+k$/g.test(Config.language) && Config.mode !== "quote") {
+  if (
+    (/_\d+k$/g.test(Config.language) ||
+      /code_/g.test(Config.language) ||
+      Config.language == "english_commonly_misspelled") &&
+    Config.mode !== "quote"
+  ) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
         /_/g,
@@ -763,12 +785,22 @@ export function toggleResultWords() {
           `<div class="preloader"><i class="fas fa-fw fa-spin fa-circle-notch"></i></div>`
         );
         loadWordsHistory().then(() => {
+          if (Config.burstHeatmap) {
+            TestUI.applyBurstHeatmap();
+          }
           $("#resultWordsHistory")
             .removeClass("hidden")
             .css("display", "none")
-            .slideDown(250);
+            .slideDown(250, () => {
+              if (Config.burstHeatmap) {
+                TestUI.applyBurstHeatmap();
+              }
+            });
         });
       } else {
+        if (Config.burstHeatmap) {
+          TestUI.applyBurstHeatmap();
+        }
         $("#resultWordsHistory")
           .removeClass("hidden")
           .css("display", "none")
@@ -781,6 +813,91 @@ export function toggleResultWords() {
         $("#resultWordsHistory").addClass("hidden");
       });
     }
+  }
+}
+
+export function applyBurstHeatmap() {
+  if (Config.burstHeatmap) {
+    $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
+    let min = Math.min(...TestStats.burstHistory);
+    let max = Math.max(...TestStats.burstHistory);
+
+    let burstlist = [...TestStats.burstHistory];
+
+    if (
+      TestLogic.input.getHistory(TestLogic.input.getHistory().length - 1)
+        .length !== TestLogic.words.getCurrent().length
+    ) {
+      burstlist = burstlist.splice(0, burstlist.length - 1);
+    }
+
+    // let step = (max - min) / 5;
+    // let steps = [
+    //   {
+    //     val: min,
+    //     class: 'heatmap-0'
+    //   },
+    //   {
+    //     val: min + (step * 1),
+    //     class: 'heatmap-1'
+    //   },
+    //   {
+    //     val: min + (step * 2),
+    //     class: 'heatmap-2'
+    //   },
+    //   {
+    //     val: min + (step * 3),
+    //     class: 'heatmap-3'
+    //   },
+    //   {
+    //     val: min + (step * 4),
+    //     class: 'heatmap-4'
+    //   },
+    // ];
+    let median = Misc.median(burstlist);
+    let adatm = [];
+    burstlist.forEach((burst) => {
+      adatm.push(Math.abs(median - burst));
+    });
+    let step = Misc.mean(adatm);
+    // let step = Misc.stdDev(burstlist)/2;
+    let steps = [
+      {
+        val: 0,
+        class: "heatmap-0",
+      },
+      {
+        val: median - step * 1.5,
+        class: "heatmap-1",
+      },
+      {
+        val: median - step * 0.5,
+        class: "heatmap-2",
+      },
+      {
+        val: median + step * 0.5,
+        class: "heatmap-3",
+      },
+      {
+        val: median + step * 1.5,
+        class: "heatmap-4",
+      },
+    ];
+    $("#resultWordsHistory .words .word").each((index, word) => {
+      let wordBurstVal = parseInt($(word).attr("burst"));
+      let cls = "";
+      steps.forEach((step) => {
+        if (wordBurstVal > step.val) cls = step.class;
+      });
+      $(word).addClass(cls);
+    });
+  } else {
+    $("#resultWordsHistory .heatmapLegend").addClass("hidden");
+    $("#resultWordsHistory .words .word").removeClass("heatmap-0");
+    $("#resultWordsHistory .words .word").removeClass("heatmap-1");
+    $("#resultWordsHistory .words .word").removeClass("heatmap-2");
+    $("#resultWordsHistory .words .word").removeClass("heatmap-3");
+    $("#resultWordsHistory .words .word").removeClass("heatmap-4");
   }
 }
 
@@ -817,6 +934,18 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   } catch (e) {
     Notifications.add("Could not copy to clipboard: " + e, -1);
   }
+});
+
+$(".pageTest #rateQuoteButton").click(async (event) => {
+  RateQuotePopup.show(TestLogic.randomQuote);
+});
+
+$(".pageTest #toggleBurstHeatmap").click(async (event) => {
+  UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
+});
+
+$(".pageTest .loginTip .link").click(async (event) => {
+  UI.changePage("login");
 });
 
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
@@ -882,6 +1011,7 @@ $("#wordsInput").on("focusout", () => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 13) {
+    ManualRestart.reset();
     if (
       TestLogic.active &&
       Config.repeatQuotes === "typing" &&
@@ -908,14 +1038,15 @@ $(document.body).on("click", "#restartTestButton", () => {
   }
 });
 
-$(document).on("keypress", "#practiseMissedWordsButton", (event) => {
+$(document).on("keypress", "#practiseWordsButton", (event) => {
   if (event.keyCode == 13) {
-    PractiseMissed.init();
+    PractiseWords.showPopup(true);
   }
 });
 
-$(document.body).on("click", "#practiseMissedWordsButton", () => {
-  PractiseMissed.init();
+$(document.body).on("click", "#practiseWordsButton", () => {
+  // PractiseWords.init();
+  PractiseWords.showPopup();
 });
 
 $(document).on("keypress", "#nextTestButton", (event) => {

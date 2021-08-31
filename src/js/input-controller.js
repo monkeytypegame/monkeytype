@@ -23,6 +23,7 @@ import * as Focus from "./focus";
 import * as ShiftTracker from "./shift-tracker";
 import * as Replay from "./replay.js";
 import * as MonkeyPower from "./monkey-power";
+import * as WeakSpot from "./weak-spot";
 
 $("#wordsInput").keypress((event) => {
   event.preventDefault();
@@ -33,6 +34,13 @@ let dontInsertSpace = false;
 function handleTab(event) {
   if (TestUI.resultCalculating) {
     event.preventDefault();
+  }
+  if (
+    !$("#presetWrapper").hasClass("hidden") ||
+    !$("#tagsWrapper").hasClass("hidden")
+  ) {
+    event.preventDefault();
+    return;
   }
   if ($("#customTextPopup .textarea").is(":focus")) {
     event.preventDefault();
@@ -68,7 +76,11 @@ function handleTab(event) {
         ) {
           //ignore
         } else {
-          if (event.shiftKey) ManualRestart.set();
+          if (event.shiftKey) {
+            ManualRestart.set();
+          } else {
+            ManualRestart.reset();
+          }
           event.preventDefault();
           if (
             TestLogic.active &&
@@ -139,7 +151,7 @@ function handleBackspace(event) {
       Funbox.toggleScript(TestLogic.words.getCurrent());
       TestUI.updateWordElement(!Config.blindMode);
     }
-  } else {
+  } else if (TestLogic.input.current !== "") {
     if (Config.confidenceMode === "max") return;
     if (event["ctrlKey"] || event["altKey"] || event.metaKey) {
       Replay.addReplayEvent("clearWord");
@@ -165,7 +177,11 @@ function handleBackspace(event) {
       //   TestLogic.input.appendCurrent(limiter);
       // }
 
-      if (/^[ £§`~!@#$%^&*()_+-=[]{};':"\|,.\/<>\?]*$/g.test(TestLogic.input.getCurrent())) {
+      if (
+        /^[ £§`~!@#$%^&*()_+\\\-=[\]{};':"|,./<>?]*$/g.test(
+          TestLogic.input.getCurrent()
+        )
+      ) {
         //pop current and previous
         TestLogic.input.resetCurrent();
         TestLogic.input.popHistory();
@@ -178,21 +194,30 @@ function handleBackspace(event) {
         Funbox.toggleScript(TestLogic.words.getCurrent());
         TestUI.updateWordElement(!Config.blindMode);
         TestLogic.input.resetCurrent();
-        TestLogic.input.popHistory();
-        TestLogic.corrected.popHistory();
       } else {
-        const regex = new RegExp(/[ £§`~!@#$%^&*()_+-=[]{};':"\|,.\/<>\?]/, "g");
+        const regex = new RegExp(
+          /[ £§`~!@#$%^&*()_+\\\-=[\]{};':"|,./<>?]/,
+          "g"
+        );
 
         let input = TestLogic.input.getCurrent();
 
         regex.test(input);
         // let puncIndex = regex.lastIndex;
-        let puncIndex = input.lastIndexOfRegex(/\W/g);
-        while (/\W/g.test(input.slice(-1))) {
+        let puncIndex = input.lastIndexOfRegex(
+          /[ £§`~!@#$%^&*()_+\\\-=[\]{};':"|,./<>?]/g
+        );
+        while (
+          /[ £§`~!@#$%^&*()_+\\\-=[\]{};':"|,./<>?]/g.test(input.slice(-1))
+        ) {
           input = input.substring(0, input.length - 1);
         }
-        puncIndex = input.lastIndexOfRegex(/\W/g);
-        TestLogic.input.setCurrent(input.substring(0, puncIndex + 1));
+        puncIndex = input.lastIndexOfRegex(
+          /[ £§`~!@#$%^&*()_+\\\-=[\]{};':"|,./<>?]/g
+        );
+        TestLogic.input.setCurrent(
+          input.substring(0, puncIndex == 0 ? 0 : puncIndex + 1)
+        );
       }
     } else {
       TestLogic.input.setCurrent(
@@ -289,7 +314,6 @@ function handleSpace(event, isEnter) {
   } else {
     //incorrect word
     MonkeyPower.addPower(false, true);
-    PaceCaret.handleSpace(false, currentWord);
     if (Config.funbox !== "nospace") {
       if (!Config.playSoundOnError || Config.blindMode) {
         Sound.playClick(Config.playSoundOnClick);
@@ -326,6 +350,7 @@ function handleSpace(event, isEnter) {
       }
       return;
     }
+    PaceCaret.handleSpace(false, currentWord);
     if (Config.blindMode) $("#words .word.active letter").addClass("correct");
     TestLogic.input.pushHistory();
     TestUI.highlightBadWord(TestUI.currentWordElementIndex, !Config.blindMode);
@@ -470,6 +495,7 @@ function handleAlpha(event) {
       "End",
       "GroupPrevious",
       "GroupNext",
+      "WakeUp",
       undefined,
     ].includes(event.key)
   ) {
@@ -611,18 +637,33 @@ function handleAlpha(event) {
     thisCharCorrect = true;
   }
 
-  if (event.key === "”" && nextCharInWord == '"') {
-    event.key = '"';
+  if (
+    (event.key === `’` || event.key === "'") &&
+    (nextCharInWord == `’` || nextCharInWord === "'")
+  ) {
+    event.key = nextCharInWord;
     thisCharCorrect = true;
   }
 
-  if (event.key === '"' && nextCharInWord == "”") {
-    event.key = "”";
+  if (
+    (event.key === `"` ||
+      event.key === "”" ||
+      event.key == "“" ||
+      event.key === "„") &&
+    (nextCharInWord == `"` ||
+      nextCharInWord === "”" ||
+      nextCharInWord === "“" ||
+      nextCharInWord === "„")
+  ) {
+    event.key = nextCharInWord;
     thisCharCorrect = true;
   }
 
-  if ((event.key === "–" || event.key === "—") && nextCharInWord == "-") {
-    event.key = "-";
+  if (
+    (event.key === "–" || event.key === "—" || event.key == "-") &&
+    (nextCharInWord == "-" || nextCharInWord === "–" || nextCharInWord === "—")
+  ) {
+    event.key = nextCharInWord;
     thisCharCorrect = true;
   }
 
@@ -652,6 +693,7 @@ function handleAlpha(event) {
       );
     }
   }
+  WeakSpot.updateScore(nextCharInWord, thisCharCorrect);
 
   if (thisCharCorrect) {
     Sound.playClick(Config.playSoundOnClick);
@@ -717,6 +759,8 @@ function handleAlpha(event) {
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
+    TestLogic.input.pushHistory();
+    TestLogic.corrected.pushHistory();
     TestLogic.fail("difficulty");
     return;
   }
@@ -821,6 +865,7 @@ $(document).keydown(function (event) {
   //autofocus
   let pageTestActive = !$(".pageTest").hasClass("hidden");
   let commandLineVisible = !$("#commandLineWrapper").hasClass("hidden");
+  let leaderboardsVisible = !$("#leaderboardsWrapper").hasClass("hidden");
   let wordsFocused = $("#wordsInput").is(":focus");
   let modePopupVisible =
     !$("#customTextPopupWrapper").hasClass("hidden") ||
@@ -831,6 +876,7 @@ $(document).keydown(function (event) {
   if (
     pageTestActive &&
     !commandLineVisible &&
+    !leaderboardsVisible &&
     !modePopupVisible &&
     !TestUI.resultVisible &&
     !wordsFocused &&
@@ -886,7 +932,7 @@ $(document).keydown(function (event) {
     handleSpace(event, false);
   }
 
-  if (wordsFocused && !commandLineVisible) {
+  if (wordsFocused && !commandLineVisible && !leaderboardsVisible) {
     handleAlpha(event);
   }
 

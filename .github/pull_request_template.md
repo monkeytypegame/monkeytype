@@ -1,29 +1,20 @@
-<!-- please read the comments -->
+<!-- Adding a language or a theme?
+For languages, make sure to edit the `_list.json`, `_groups.json` files, and add the `language.json` file as well.
+ For themes, make sure to add the `theme.css` file. It will not work if you don't follow these steps!
 
-<!-- Adding a language or a theme? For languages, make sure to edit the `_list.json`, `_groups.json` files, and add the `language.json` file as well. For themes, make sure to add the `theme.css` file. It will not work if you don't follow these steps! 
-
-If your change is visual (mainly themes) it would be extra awesome if you could include a screenshot. 
+If your change is visual (mainly themes) it would be extra awesome if you could include a screenshot.
 
  -->
 
 ### Description
+
 <!-- Please describe the change(s) made in your PR -->
 
-
-
-<!-- please check the items you have completed -->
-### Checklist 
-- [] I have read the [`CODE_OF_CONDUCT.md`](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md) and the [`CONTRIBUTING.md`](https://github.com/Miodec/monkeytype/blob/master/CONTRIBUTING.md)
-- [] I checked if my PR has any bugs or other issues that could reduce the stability of the project
-- [] I understand that the maintainer has the right to reject my contribution and it may not get accepted.
-- [] If my PR is a new language or theme I modified the appropriate files to incorporate the language or theme   <!-- Delete if that is not the case-->
-
-
+Closes #
 
 <!-- the issue(s) your PR resolves if any (delete if that is not the case) -->
 <!-- please also reference any issues and or PRs related to your pull request -->
 
-Resolves #
+<!-- pro tip: you can mention an issue, PR, or discussion on GitHub by referencing its hash number e.g: [#1234](https://github.com/Miodec/monkeytype/pull/1234) -->
 
-
-<!-- pro tip: you can check checkboxes by putting an x inside the brackets   [x] -->
+<!-- pro tip: you can press . (dot or period) in the code tab of any GitHub repo to get access to GitHub's VS Code web editor Enjoy! :) -->

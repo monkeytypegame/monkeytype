@@ -8,7 +8,7 @@ import * as ThemeController from "./theme-controller";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
-import * as PractiseMissed from "./practise-missed";
+import * as PractiseWords from "./practise-words";
 import * as TestUI from "./test-ui";
 import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
@@ -17,6 +17,7 @@ import * as PresetController from "./preset-controller";
 import * as Commandline from "./commandline";
 import * as CustomText from "./custom-text";
 import * as Settings from "./settings";
+import * as ChallengeController from "./challenge-controller";
 
 export let current = [];
 
@@ -201,7 +202,7 @@ let commandsTags = {
 };
 
 export function updateTagCommands() {
-  if (DB.getSnapshot().tags.length > 0) {
+  if (DB.getSnapshot()?.tags?.length > 0) {
     commandsTags.list = [];
 
     commandsTags.list.push({
@@ -227,12 +228,12 @@ export function updateTagCommands() {
       }
 
       commandsTags.list.push({
-        id: "toggleTag" + tag.id,
+        id: "toggleTag" + tag._id,
         noIcon: true,
         display: dis,
         sticky: true,
         exec: () => {
-          TagController.toggle(tag.id);
+          TagController.toggle(tag._id);
           TestUI.updateModesNotice();
           let txt = tag.name;
 
@@ -243,14 +244,14 @@ export function updateTagCommands() {
           }
           if (Commandline.isSingleListCommandLineActive()) {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(
               `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
                 txt
             );
           } else {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(txt);
           }
         },
@@ -266,17 +267,17 @@ let commandsPresets = {
 };
 
 export function updatePresetCommands() {
-  if (DB.getSnapshot().presets.length > 0) {
+  if (DB.getSnapshot()?.presets?.length > 0) {
     commandsPresets.list = [];
 
     DB.getSnapshot().presets.forEach((preset) => {
       let dis = preset.name;
 
       commandsPresets.list.push({
-        id: "applyPreset" + preset.id,
+        id: "applyPreset" + preset._id,
         display: dis,
         exec: () => {
-          PresetController.apply(preset.id);
+          PresetController.apply(preset._id);
           TestUI.updateModesNotice();
         },
       });
@@ -431,7 +432,7 @@ let commandsKeyTips = {
       display: "off",
       configValue: false,
       exec: () => {
-        UpdateConfig.setShowKeyTips(false);
+        UpdateConfig.setKeyTips(false);
       },
     },
     {
@@ -439,7 +440,7 @@ let commandsKeyTips = {
       display: "on",
       configValue: true,
       exec: () => {
-        UpdateConfig.setShowKeyTips(true);
+        UpdateConfig.setKeyTips(true);
       },
     },
   ],
@@ -1039,7 +1040,6 @@ export let commandsEnableAds = {
       configValue: "off",
       exec: () => {
         UpdateConfig.setEnableAds("off");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -1048,7 +1048,6 @@ export let commandsEnableAds = {
       configValue: "on",
       exec: () => {
         UpdateConfig.setEnableAds("on");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -1057,7 +1056,6 @@ export let commandsEnableAds = {
       configValue: "max",
       exec: () => {
         UpdateConfig.setEnableAds("max");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
   ],
@@ -1603,6 +1601,7 @@ let commandsWordCount = {
       display: "10",
       configValue: 10,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("10");
         TestLogic.restart();
       },
@@ -1612,6 +1611,7 @@ let commandsWordCount = {
       display: "25",
       configValue: 25,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("25");
         TestLogic.restart();
       },
@@ -1621,6 +1621,7 @@ let commandsWordCount = {
       display: "50",
       configValue: 50,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("50");
         TestLogic.restart();
       },
@@ -1630,6 +1631,7 @@ let commandsWordCount = {
       display: "100",
       configValue: 100,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("100");
         TestLogic.restart();
       },
@@ -1639,6 +1641,7 @@ let commandsWordCount = {
       display: "200",
       configValue: 200,
       exec: () => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount("200");
         TestLogic.restart();
       },
@@ -1648,6 +1651,7 @@ let commandsWordCount = {
       display: "custom...",
       input: true,
       exec: (input) => {
+        UpdateConfig.setMode("words");
         UpdateConfig.setWordCount(input);
         TestLogic.restart();
       },
@@ -1664,6 +1668,7 @@ let commandsQuoteLengthConfig = {
       display: "all",
       configValue: [0, 1, 2, 3],
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength([0, 1, 2, 3]);
         TestLogic.restart();
       },
@@ -1674,6 +1679,7 @@ let commandsQuoteLengthConfig = {
       configValue: 0,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(0);
         TestLogic.restart();
       },
@@ -1684,6 +1690,7 @@ let commandsQuoteLengthConfig = {
       configValue: 1,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(1);
         TestLogic.restart();
       },
@@ -1694,6 +1701,7 @@ let commandsQuoteLengthConfig = {
       configValue: 2,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(2);
         TestLogic.restart();
       },
@@ -1704,6 +1712,7 @@ let commandsQuoteLengthConfig = {
       configValue: 3,
       configValueMode: "include",
       exec: () => {
+        UpdateConfig.setMode("quote");
         UpdateConfig.setQuoteLength(3);
         TestLogic.restart();
       },
@@ -1869,6 +1878,7 @@ let commandsTimeConfig = {
       display: "15",
       configValue: 15,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("15");
         TestLogic.restart();
       },
@@ -1878,6 +1888,7 @@ let commandsTimeConfig = {
       display: "30",
       configValue: 30,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("30");
         TestLogic.restart();
       },
@@ -1887,6 +1898,7 @@ let commandsTimeConfig = {
       display: "60",
       configValue: 60,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("60");
         TestLogic.restart();
       },
@@ -1896,6 +1908,7 @@ let commandsTimeConfig = {
       display: "120",
       configValue: 120,
       exec: () => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig("120");
         TestLogic.restart();
       },
@@ -1905,6 +1918,7 @@ let commandsTimeConfig = {
       display: "custom...",
       input: true,
       exec: (input) => {
+        UpdateConfig.setMode("time");
         UpdateConfig.setTimeConfig(input);
         TestLogic.restart();
       },
@@ -2082,6 +2096,36 @@ let commandsPageWidth = {
   ],
 };
 
+let commandsPractiseWords = {
+  title: "Practice words...",
+  list: [
+    {
+      id: "practiseWordsMissed",
+      display: "missed",
+      noIcon: true,
+      exec: () => {
+        PractiseWords.init(true, false);
+      },
+    },
+    {
+      id: "practiseWordsSlow",
+      display: "slow",
+      noIcon: true,
+      exec: () => {
+        PractiseWords.init(false, true);
+      },
+    },
+    {
+      id: "practiseWordsBoth",
+      display: "both",
+      noIcon: true,
+      exec: () => {
+        PractiseWords.init(true, true);
+      },
+    },
+  ],
+};
+
 export let themeCommands = {
   title: "Theme...",
   configKey: "theme",
@@ -2100,6 +2144,24 @@ Misc.getThemesList().then((themes) => {
       },
       exec: () => {
         UpdateConfig.setTheme(theme.name);
+      },
+    });
+  });
+});
+
+export let commandsChallenges = {
+  title: "Load challenge...",
+  list: [],
+};
+
+Misc.getChallengeList().then((challenges) => {
+  challenges.forEach((challenge) => {
+    commandsChallenges.list.push({
+      id: "loadChallenge" + Misc.capitalizeFirstLetter(challenge.name),
+      noIcon: true,
+      display: challenge.display,
+      exec: () => {
+        ChallengeController.setup(challenge.name);
       },
     });
   });
@@ -2170,30 +2232,36 @@ let commandsCopyWordsToClipboard = {
 
 let commandsMonkeyPowerLevel = {
   title: "Power mode...",
+  configKey: "monkeyPowerLevel",
   list: [
     {
       id: "monkeyPowerLevelOff",
       display: "off",
+      configValue: "off",
       exec: () => UpdateConfig.setMonkeyPowerLevel("off"),
     },
     {
       id: "monkeyPowerLevel1",
       display: "mellow",
+      configValue: "1",
       exec: () => UpdateConfig.setMonkeyPowerLevel("1"),
     },
     {
       id: "monkeyPowerLevel2",
       display: "high",
+      configValue: "2",
       exec: () => UpdateConfig.setMonkeyPowerLevel("2"),
     },
     {
       id: "monkeyPowerLevel3",
       display: "ultra",
+      configValue: "3",
       exec: () => UpdateConfig.setMonkeyPowerLevel("3"),
     },
     {
       id: "monkeyPowerLevel4",
       display: "over 9000",
+      configValue: "4",
       exec: () => UpdateConfig.setMonkeyPowerLevel("4"),
     },
   ],
@@ -2483,10 +2551,28 @@ export let defaultCommands = {
       subgroup: commandsEnableAds,
     },
     {
+      id: "changeTheme",
+      display: "Theme...",
+      icon: "fa-palette",
+      subgroup: themeCommands,
+    },
+    {
       id: "setCustomTheme",
       display: "Custom theme...",
       icon: "fa-palette",
       subgroup: commandsCustomTheme,
+    },
+    {
+      id: "changeRandomTheme",
+      display: "Random theme...",
+      icon: "fa-random",
+      subgroup: commandsRandomTheme,
+    },
+    {
+      id: "randomizeTheme",
+      display: "Next random theme",
+      icon: "fa-random",
+      exec: () => ThemeController.randomizeTheme(),
     },
     {
       id: "changeDifficulty",
@@ -2551,18 +2637,6 @@ export let defaultCommands = {
       exec: (input) => {
         UpdateConfig.setCustomBackground(input);
       },
-    },
-    {
-      id: "changeTheme",
-      display: "Theme...",
-      icon: "fa-palette",
-      subgroup: themeCommands,
-    },
-    {
-      id: "changeRandomTheme",
-      display: "Random theme...",
-      icon: "fa-random",
-      subgroup: commandsRandomTheme,
     },
     {
       id: "changeLanguage",
@@ -2657,12 +2731,6 @@ export let defaultCommands = {
       subgroup: commandsPageWidth,
     },
     {
-      id: "randomizeTheme",
-      display: "Next random theme",
-      icon: "fa-palette",
-      exec: () => ThemeController.randomizeTheme(),
-    },
-    {
       id: "viewTypingPage",
       display: "View Typing Page",
       alias: "start begin type test",
@@ -2739,6 +2807,12 @@ export let defaultCommands = {
       },
     },
     {
+      id: "loadChallenge",
+      display: "Load challenge...",
+      icon: "fa-award",
+      subgroup: commandsChallenges,
+    },
+    {
       id: "joinDiscord",
       display: "Join the Discord server",
       icon: "fa-users",
@@ -2758,16 +2832,12 @@ export let defaultCommands = {
       },
     },
     {
-      id: "practiceMissedWords",
-      display: "Practice missed words",
+      id: "practiseWords",
+      display: "Practice words...",
       icon: "fa-exclamation-triangle",
-      exec: () => {
-        PractiseMissed.init();
-      },
+      subgroup: commandsPractiseWords,
       available: () => {
-        return (
-          TestUI.resultVisible && Object.keys(TestStats.missedWords).length > 0
-        );
+        return TestUI.resultVisible;
       },
     },
     {
@@ -2855,11 +2925,7 @@ export let defaultCommands = {
       alias: "powermode",
       icon: "fa-egg",
       visible: false,
-      subgroup: true,
-      exec: () => {
-        current.push(commandsMonkeyPowerLevel);
-        Commandline.show();
-      },
+      subgroup: commandsMonkeyPowerLevel,
     },
   ],
 };

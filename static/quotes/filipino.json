@@ -1,22 +1,10 @@
 {
   "language": "filipino",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -54,6 +42,12 @@
       "source": "Noypi, Bamboo",
       "length": 54,
       "id": 6
+    },
+    {
+      "text": "Kaharap ko sa jeep ang isang ale. Nagrorosaryo, mata niya'y nakapikit. Pumara sa may kumbento \"Sa baba lang po\", sabi ng tsuper, \"kasi may nanghuhuli\". Mura parin nang mura ang ale.",
+      "source": "Banal na Aso Santong Kabayo, Yano",
+      "length": 181,
+      "id": 7
     }
   ]
 }

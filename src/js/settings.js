@@ -8,6 +8,7 @@ import * as Notifications from "./notifications";
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as CloudFunctions from "./cloud-functions";
+import axiosInstance from "./axios-instance";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as PresetController from "./preset-controller";
@@ -377,6 +378,7 @@ export let settingsFillPromise = fillSettingsPage();
 export function hideAccountSection() {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
+  $(`.pageSettings .section.needsAccount`).addClass("hidden");
 }
 
 export function updateDiscordSection() {
@@ -421,17 +423,20 @@ function refreshTagsSettingsSection() {
       }
       tagsEl.append(`
 
-      <div class="buttons tag" id="${tag.id}">
+      <div class="buttons tag" id="${tag._id}">
         <div class="button tagButton ${tag.active ? "active" : ""}" active="${
         tag.active
       }">
           <div class="title">${tag.name}</div>
         </div>
+        <div class="clearPbButton button">
+          <i class="fas fa-crown fa-fw"></i>
+        </div>
         <div class="editButton button">
-          <i class="fas fa-pen"></i>
+          <i class="fas fa-pen fa-fw"></i>
         </div>
         <div class="removeButton button">
-          <i class="fas fa-trash"></i>
+          <i class="fas fa-trash fa-fw"></i>
         </div>
       </div>
 
@@ -448,15 +453,15 @@ function refreshPresetsSettingsSection() {
     let presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot().presets.forEach((preset) => {
       presetsEl.append(`
-      <div class="buttons preset" id="${preset.id}">
+      <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
           <div class="title">${preset.name}</div>
         </div>
         <div class="editButton button">
-          <i class="fas fa-pen"></i>
+          <i class="fas fa-pen fa-fw"></i>
         </div>
         <div class="removeButton button">
-          <i class="fas fa-trash"></i>
+          <i class="fas fa-trash fa-fw"></i>
         </div>
       </div>
       
@@ -471,6 +476,7 @@ function refreshPresetsSettingsSection() {
 export function showAccountSection() {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
   $(`.settingsGroup.account`).removeClass("hidden");
+  $(`.pageSettings .section.needsAccount`).removeClass("hidden");
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
   updateDiscordSection();
@@ -715,22 +721,27 @@ $(document).on(
 
 $(document).on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
+  ".pageSettings .section.tags .tagsList .tag .editButton",
   (e) => {
-    let target = e.currentTarget;
-    let tagid = $(target).parent(".tag").attr("id");
-    let tagname = $(target).siblings(".title")[0].innerHTML;
-    SimplePopups.list.clearTagPb.show([tagid, tagname]);
+    let tagid = $(e.currentTarget).parent(".tag").attr("id");
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
+    EditTagsPopup.show("edit", tagid, name);
   }
 );
 
 $(document).on(
   "click",
-  ".pageSettings .section.tags .tagsList .tag .editButton",
+  ".pageSettings .section.tags .tagsList .tag .clearPbButton",
   (e) => {
     let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget).siblings(".title").text();
-    EditTagsPopup.show("edit", tagid, name);
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
+    EditTagsPopup.show("clearPb", tagid, name);
   }
 );
 
@@ -739,7 +750,10 @@ $(document).on(
   ".pageSettings .section.tags .tagsList .tag .removeButton",
   (e) => {
     let tagid = $(e.currentTarget).parent(".tag").attr("id");
-    let name = $(e.currentTarget).siblings(".title").text();
+    let name = $(e.currentTarget)
+      .siblings(".tagButton")
+      .children(".title")
+      .text();
     EditTagsPopup.show("remove", tagid, name);
   }
 );
@@ -775,8 +789,16 @@ $(".pageSettings #updateAccountEmail").on("click", (e) => {
   SimplePopups.list.updateEmail.show();
 });
 
+$(".pageSettings #updateAccountName").on("click", (e) => {
+  SimplePopups.list.updateName.show();
+});
+
 $(".pageSettings #updateAccountPassword").on("click", (e) => {
   SimplePopups.list.updatePassword.show();
+});
+
+$(".pageSettings #deleteAccount").on("click", (e) => {
+  SimplePopups.list.deleteAccount.show();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndSave .save").on(

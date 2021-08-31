@@ -8,10 +8,13 @@ let mappedRoutes = {
   "/settings": "pageSettings",
   "/about": "pageAbout",
   "/account": "pageAccount",
-  "/verify": "pageTest",
+  "/verify": "pageLoading",
 };
 
 export function handleInitialPageClasses(pathname) {
+  if (!mappedRoutes[pathname]) {
+    pathname = "/";
+  }
   let el = $(".page." + mappedRoutes[pathname]);
   $(el).removeClass("hidden");
   $(el).addClass("active");

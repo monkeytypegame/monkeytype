@@ -1,4 +1,5 @@
 import * as Loader from "./loader";
+import axiosInstance from "./axios-instance";
 import Config from "./config";
 
 export function getuid() {
@@ -79,7 +80,8 @@ export async function getSortedThemesList() {
     if (themesList == null) {
       await getThemesList();
     }
-    const sorted = themesList.sort((a, b) => {
+    let sorted = [...themesList];
+    sorted = sorted.sort((a, b) => {
       let b1 = hexToHSL(a.bgColor);
       let b2 = hexToHSL(b.bgColor);
       return b2.lgt - b1.lgt;
@@ -371,11 +373,23 @@ export function mean(array) {
   }
 }
 
-export function getReleasesFromGitHub() {
-  $.getJSON(
+//https://www.w3resource.com/javascript-exercises/fundamental/javascript-fundamental-exercise-88.php
+export function median(arr) {
+  try {
+    const mid = Math.floor(arr.length / 2),
+      nums = [...arr].sort((a, b) => a - b);
+    return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+  } catch (e) {
+    return 0;
+  }
+}
+
+export async function getReleasesFromGitHub() {
+  return $.getJSON(
     "https://api.github.com/repos/Miodec/monkeytype/releases",
     (data) => {
-      $("#bottom .version").text(data[0].name).css("opacity", 1);
+      $("#bottom .version .text").text(data[0].name);
+      $("#bottom .version").css("opacity", 1);
       $("#versionHistory .releases").empty();
       data.forEach((release) => {
         if (!release.draft && !release.prerelease) {
@@ -495,7 +509,7 @@ export function getGibberish() {
   return ret;
 }
 
-export function secondsToString(sec) {
+export function secondsToString(sec, full = false) {
   const hours = Math.floor(sec / 3600);
   const minutes = Math.floor((sec % 3600) / 60);
   const seconds = roundTo2((sec % 3600) % 60);
@@ -504,13 +518,13 @@ export function secondsToString(sec) {
   let secondsString;
   hours < 10 ? (hoursString = "0" + hours) : (hoursString = hours);
   minutes < 10 ? (minutesString = "0" + minutes) : (minutesString = minutes);
-  seconds < 10 && (minutes > 0 || hours > 0)
+  seconds < 10 && (minutes > 0 || hours > 0 || full)
     ? (secondsString = "0" + seconds)
     : (secondsString = seconds);
 
   let ret = "";
-  if (hours > 0) ret += hoursString + ":";
-  if (minutes > 0 || hours > 0) ret += minutesString + ":";
+  if (hours > 0 || full) ret += hoursString + ":";
+  if (minutes > 0 || hours > 0 || full) ret += minutesString + ":";
   ret += secondsString;
   return ret;
 }

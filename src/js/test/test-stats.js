@@ -42,6 +42,24 @@ export let keypressTimings = {
   },
 };
 
+export function getStats() {
+  return {
+    start,
+    end,
+    wpmHistory,
+    rawHistory,
+    burstHistory,
+    keypressPerSecond,
+    currentKeypress,
+    lastKeypress,
+    currentBurstStart,
+    lastSecondNotRound,
+    missedWords,
+    accuracy,
+    keypressTimings,
+  };
+}
+
 export function restart() {
   start = 0;
   end = 0;
@@ -371,7 +389,12 @@ function countChars() {
 }
 
 export function calculateStats() {
-  let testSeconds = TestStats.calculateTestSeconds();
+  let testSeconds;
+  if (Config.mode == "custom") {
+    testSeconds = TestStats.calculateTestSeconds();
+  } else {
+    testSeconds = Misc.roundTo2(TestStats.calculateTestSeconds());
+  }
   let chars = countChars();
   let wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5
