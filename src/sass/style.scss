@@ -2155,7 +2155,7 @@ key {
         .word {
           //flex-direction: row-reverse;
           direction: rtl;
-          font-family: "Lalezar" !important;
+          font-family: "Lalezar";
         }
       }
       &.withLigatures {
@@ -2472,7 +2472,7 @@ key {
     .word {
       //flex-direction: row-reverse;
       direction: rtl;
-      font-family: "Lalezar" !important;
+      font-family: "Lalezar" tant;
     }
   }
   &.withLigatures {
