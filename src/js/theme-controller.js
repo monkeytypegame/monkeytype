@@ -134,9 +134,9 @@ export function apply(themeName, isPreview = false) {
   });
 }
 
-export function preview(themeName) {
+export function preview(themeName, randomTheme = false) {
   isPreviewingTheme = true;
-  apply(themeName, true);
+  apply(themeName, true && !randomTheme);
 }
 
 export function set(themeName) {
@@ -176,7 +176,7 @@ export function randomizeTheme() {
     const previousTheme = randomTheme;
     randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
 
-    preview(randomTheme);
+    preview(randomTheme, true);
 
     if (previousTheme != randomTheme) {
       // Notifications.add(randomTheme.replace(/_/g, " "), 0);
