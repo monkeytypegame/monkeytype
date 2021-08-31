@@ -55,17 +55,6 @@
         display: flex;
       }
     </style>
-    <script defer>
-      // TODO: Add notification that appears when username copy is successful from notifications module
-      function copyUserName() {
-        if (true) {
-          navigator.clipboard.writeText("Miodec#1512");
-          alert("Copied To Clipboard!");
-        } else {
-          alert("Unable to copy username");
-        }
-      }
-    </script>
   </head>
 
   <body>
@@ -361,4 +350,19 @@
     </div>
     <!-- TODO: Add image to go back to top of page -->
   </body>
+  <script defer>
+    // TODO: Add notification that appears when username copy is successful from notifications module
+    function copyUserName() {
+      if (true) {
+        navigator.clipboard.writeText("Miodec#1512");
+        alert("Copied To Clipboard!");
+      } else {
+        alert("Unable to copy username");
+      }
+    }
+
+    document.querySelector("#top").addEventListener("click", () => {
+      window.location = "/";
+    });
+  </script>
 </html>
