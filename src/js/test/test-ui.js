@@ -209,9 +209,15 @@ export async function screenshot() {
   }
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
+  $(".pageTest .ssWatermark").text(
+    moment(Date.now()).format("DD MMM YYYY HH:mm") + " | monkeytype.com "
+  );
   if (firebase.auth().currentUser != null) {
     $(".pageTest .ssWatermark").text(
-      DB.getSnapshot().name + " | monkeytype.com"
+      DB.getSnapshot().name +
+        " | " +
+        moment(Date.now()).format("DD MMM YYYY HH:mm") +
+        " | monkeytype.com  "
     );
   }
   $(".pageTest .buttons").addClass("hidden");
