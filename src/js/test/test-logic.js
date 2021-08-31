@@ -1629,7 +1629,8 @@ export async function finish(difficultyFailed = false) {
           mode2,
           Config.punctuation,
           Config.language,
-          Config.difficulty
+          Config.difficulty,
+          Config.funbox
         ).then((lpb) => {
           DB.getUserHighestWpm(
             Config.mode,
