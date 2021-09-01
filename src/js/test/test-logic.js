@@ -621,14 +621,7 @@ export async function init() {
         if (/\t/g.test(randomWord)) {
           setHasTab(true);
         }
-        randomWord = randomWord.trim();
-        randomWord = randomWord.replace(/\\\\t/g, "\t");
-        randomWord = randomWord.replace(/\\\\n/g, "\n");
-        randomWord = randomWord.replace(/\\t/g, "\t");
-        randomWord = randomWord.replace(/\\n/g, "\n");
-        randomWord = randomWord.replace(/ +/g, " ");
-        randomWord = randomWord.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-        randomWord = randomWord.replace(/[\u2060]/g, " ");
+
         if (/ +/.test(randomWord)) {
           let randomList = randomWord.split(" ");
           let id = 0;
@@ -636,9 +629,22 @@ export async function init() {
             words.push(randomList[id]);
             id++;
 
-            if (words.length == wordsBound) break;
+            if (
+              words.length == wordsBound &&
+              Config.mode == "custom" &&
+              CustomText.isWordRandom
+            ) {
+              break;
+            }
           }
-          i = words.length - 1;
+          if (
+            Config.mode == "custom" &&
+            !CustomText.isWordRandom &&
+            !CustomText.isTimeRandom
+          ) {
+          } else {
+            i = words.length - 1;
+          }
         } else {
           words.push(randomWord);
         }
