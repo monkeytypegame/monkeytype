@@ -33,10 +33,10 @@ export function refreshButtons() {
         if (Config.favThemes.includes(theme.name)) {
           let activeTheme = activeThemeName === theme.name ? "active" : "";
           favThemesEl.append(
-            `<div class="theme button" theme='${theme.name}' style="color:${
-              theme.textColor
-            };background:${theme.bgColor}">
-          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
+            `<div class="theme button ${activeTheme}" theme='${
+              theme.name
+            }' style="color:${theme.textColor};background:${theme.bgColor}">
+          <div class="activeIndicator"><i class="fas fa-circle"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="favButton active"><i class="fas fa-star"></i></div></div>`
           );
@@ -50,10 +50,10 @@ export function refreshButtons() {
       if (!Config.favThemes.includes(theme.name)) {
         let activeTheme = activeThemeName === theme.name ? "active" : "";
         themesEl.append(
-          `<div class="theme button" theme='${theme.name}' style="color:${
-            theme.textColor
-          };background:${theme.bgColor}">
-          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
+          `<div class="theme button ${activeTheme}" theme='${
+            theme.name
+          }' style="color:${theme.textColor};background:${theme.bgColor}">
+          <div class="activeIndicator"><i class="fas fa-circle"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="favButton"><i class="far fa-star"></i></div></div>`
         );
