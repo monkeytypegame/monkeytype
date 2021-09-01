@@ -9,6 +9,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Coming+Soon&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lalezar&display=swap");
 
 :root {
   --roundness: 0.5rem;
@@ -2154,6 +2155,7 @@ key {
         .word {
           //flex-direction: row-reverse;
           direction: rtl;
+          font-family: "Lalezar";
         }
       }
       &.withLigatures {
@@ -2470,6 +2472,7 @@ key {
     .word {
       //flex-direction: row-reverse;
       direction: rtl;
+      font-family: "Lalezar";
     }
   }
   &.withLigatures {
