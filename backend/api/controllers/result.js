@@ -108,6 +108,10 @@ class ResultController {
         return res.status(400).json({ message: "Duplicate result" });
       }
 
+      if (result.timestamp > Date.now()) {
+        return res.status(400).json({ message: "Time traveler detected" });
+      }
+
       try {
         result.keySpacingStats = {
           average:
