@@ -186,7 +186,7 @@ export async function setup(challengeName) {
       UpdateConfig.setMode("time", true);
       UpdateConfig.setDifficulty("master", true);
     } else if (challenge.type === "funbox") {
-      Funbox.activate(challenge.parameters[0]);
+      UpdateConfig.setFunbox(challenge.parameters[0], true);
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.parameters[1] === "words") {
         UpdateConfig.setWordCount(challenge.parameters[2], true);
