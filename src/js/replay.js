@@ -256,6 +256,13 @@ function playReplay() {
   );
 }
 
+function getReplayExport() {
+  return JSON.stringify({
+    replayData: replayData,
+    wordsList: wordsList,
+  });
+}
+
 $(".pageTest #playpauseReplayButton").click(async (event) => {
   if (toggleButton.className === "fas fa-play") {
     playReplay();
@@ -293,4 +300,5 @@ export {
   stopReplayRecording,
   addReplayEvent,
   replayGetWordsList,
+  getReplayExport,
 };
