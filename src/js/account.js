@@ -93,6 +93,11 @@ export async function getDataAndInit() {
           "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
         );
 
+        if (name == null) {
+          AccountController.signOut();
+          return;
+        }
+
         let response;
         try {
           response = await axiosInstance.post("/user/updateName", { name });

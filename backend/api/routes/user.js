@@ -19,7 +19,7 @@ router.post(
   UserController.createNewUser
 );
 
-router.post("/checkName", RateLimit.limit60perhour, UserController.checkName);
+router.post("/checkName", RateLimit.limit1persec, UserController.checkName);
 
 router.post(
   "/delete",

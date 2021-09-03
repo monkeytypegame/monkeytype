@@ -292,8 +292,13 @@ export async function getLocalPB(
   mode2,
   punctuation,
   language,
-  difficulty
+  difficulty,
+  funbox
 ) {
+  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+    return 0;
+  }
+
   function cont() {
     let ret = 0;
     try {

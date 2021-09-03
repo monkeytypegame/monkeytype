@@ -19,6 +19,7 @@ import * as Misc from "./misc";
 import * as TestUI from "./test-ui";
 import * as ChallengeController from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
+import * as UI from "./ui";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -208,9 +209,15 @@ export async function screenshot() {
   }
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
+  $(".pageTest .ssWatermark").text(
+    moment(Date.now()).format("DD MMM YYYY HH:mm") + " | monkeytype.com "
+  );
   if (firebase.auth().currentUser != null) {
     $(".pageTest .ssWatermark").text(
-      DB.getSnapshot().name + " | monkeytype.com"
+      DB.getSnapshot().name +
+        " | " +
+        moment(Date.now()).format("DD MMM YYYY HH:mm") +
+        " | monkeytype.com  "
     );
   }
   $(".pageTest .buttons").addClass("hidden");
@@ -941,6 +948,10 @@ $(".pageTest #rateQuoteButton").click(async (event) => {
 
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
+});
+
+$(".pageTest .loginTip .link").click(async (event) => {
+  UI.changePage("login");
 });
 
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
