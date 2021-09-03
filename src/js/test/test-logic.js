@@ -53,6 +53,8 @@ export let notSignedInLastResult = null;
 
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
+  delete notSignedInLastResult.hash;
+  notSignedInLastResult.hash = objecthash(notSignedInLastResult);
 }
 
 class Words {
@@ -619,14 +621,7 @@ export async function init() {
         if (/\t/g.test(randomWord)) {
           setHasTab(true);
         }
-        randomWord = randomWord.trim();
-        randomWord = randomWord.replace(/\\\\t/g, "\t");
-        randomWord = randomWord.replace(/\\\\n/g, "\n");
-        randomWord = randomWord.replace(/\\t/g, "\t");
-        randomWord = randomWord.replace(/\\n/g, "\n");
-        randomWord = randomWord.replace(/ +/g, " ");
-        randomWord = randomWord.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
-        randomWord = randomWord.replace(/[\u2060]/g, " ");
+
         if (/ +/.test(randomWord)) {
           let randomList = randomWord.split(" ");
           let id = 0;
@@ -634,9 +629,22 @@ export async function init() {
             words.push(randomList[id]);
             id++;
 
-            if (words.length == wordsBound) break;
+            if (
+              words.length == wordsBound &&
+              Config.mode == "custom" &&
+              CustomText.isWordRandom
+            ) {
+              break;
+            }
           }
-          i = words.length - 1;
+          if (
+            Config.mode == "custom" &&
+            !CustomText.isWordRandom &&
+            !CustomText.isTimeRandom
+          ) {
+          } else {
+            i = words.length - 1;
+          }
         } else {
           words.push(randomWord);
         }
@@ -1593,6 +1601,18 @@ export async function finish(difficultyFailed = false) {
         completedEvent.uid = firebase.auth().currentUser.uid;
         if (Config.mode === "quote") {
           $(".pageTest #result #rateQuoteButton .rating").text("");
+          let userqr = DB.getSnapshot().quoteRatings?.[randomQuote.language]?.[
+            randomQuote.id
+          ];
+          if (userqr) {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("far")
+              .addClass("fas");
+          } else {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("fas")
+              .addClass("far");
+          }
           RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
             if (quoteStats !== null) {
               $(".pageTest #result #rateQuoteButton .rating").text(
@@ -1615,7 +1635,8 @@ export async function finish(difficultyFailed = false) {
           mode2,
           Config.punctuation,
           Config.language,
-          Config.difficulty
+          Config.difficulty,
+          Config.funbox
         ).then((lpb) => {
           DB.getUserHighestWpm(
             Config.mode,
@@ -1776,107 +1797,100 @@ export async function finish(difficultyFailed = false) {
               //   `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
               // );
             }
-            if (!window.navigator.onLine) {
-              AccountButton.loading(false);
-              Notifications.add("You are offline. Result not saved.", -1);
-            } else {
-              completedEvent.challenge = ChallengeContoller.verify(
-                completedEvent
-              );
-              console.time("hash");
-              completedEvent.hash = objecthash(completedEvent);
-              console.timeEnd("hash");
-              axiosInstance
-                .post("/results/add", {
-                  result: completedEvent,
-                })
-                .then((response) => {
-                  AccountButton.loading(false);
+            completedEvent.challenge = ChallengeContoller.verify(
+              completedEvent
+            );
+            completedEvent.hash = objecthash(completedEvent);
+            axiosInstance
+              .post("/results/add", {
+                result: completedEvent,
+              })
+              .then((response) => {
+                AccountButton.loading(false);
 
-                  if (response.status !== 200) {
-                    Notifications.add(
-                      "Result not saved. " + response.data.message,
-                      -1
-                    );
-                  } else {
-                    completedEvent._id = response.data.insertedId;
-                    // TODO bring back after leaderboard fixed
-                    // TestLeaderboards.check(completedEvent);
-                    if (response.data.isPb) {
-                      completedEvent.isPb = true;
-                    }
-                    if (
-                      DB.getSnapshot() !== null &&
-                      DB.getSnapshot().results !== undefined
-                    ) {
-                      DB.getSnapshot().results.unshift(completedEvent);
-                      if (DB.getSnapshot().globalStats.time == undefined) {
-                        DB.getSnapshot().globalStats.time =
-                          testtime +
-                          completedEvent.incompleteTestSeconds -
-                          afkseconds;
-                      } else {
-                        DB.getSnapshot().globalStats.time +=
-                          testtime +
-                          completedEvent.incompleteTestSeconds -
-                          afkseconds;
-                      }
-                      if (DB.getSnapshot().globalStats.started == undefined) {
-                        DB.getSnapshot().globalStats.started =
-                          TestStats.restartCount + 1;
-                      } else {
-                        DB.getSnapshot().globalStats.started +=
-                          TestStats.restartCount + 1;
-                      }
-                      if (DB.getSnapshot().globalStats.completed == undefined) {
-                        DB.getSnapshot().globalStats.completed = 1;
-                      } else {
-                        DB.getSnapshot().globalStats.completed += 1;
-                      }
-                    }
-                    try {
-                      firebase
-                        .analytics()
-                        .logEvent("testCompleted", completedEvent);
-                    } catch (e) {
-                      console.log("Analytics unavailable");
-                    }
-
-                    if (response.data.isPb) {
-                      //new pb
-                      PbCrown.show();
-                      $("#result .stats .wpm .crown").attr(
-                        "aria-label",
-                        "+" + Misc.roundTo2(pbDiff)
-                      );
-                      DB.saveLocalPB(
-                        Config.mode,
-                        mode2,
-                        Config.punctuation,
-                        Config.language,
-                        Config.difficulty,
-                        stats.wpm,
-                        stats.acc,
-                        stats.wpmRaw,
-                        consistency
-                      );
+                if (response.status !== 200) {
+                  Notifications.add(
+                    "Result not saved. " + response.data.message,
+                    -1
+                  );
+                } else {
+                  completedEvent._id = response.data.insertedId;
+                  // TODO bring back after leaderboard fixed
+                  // TestLeaderboards.check(completedEvent);
+                  if (response.data.isPb) {
+                    completedEvent.isPb = true;
+                  }
+                  if (
+                    DB.getSnapshot() !== null &&
+                    DB.getSnapshot().results !== undefined
+                  ) {
+                    DB.getSnapshot().results.unshift(completedEvent);
+                    if (DB.getSnapshot().globalStats.time == undefined) {
+                      DB.getSnapshot().globalStats.time =
+                        testtime +
+                        completedEvent.incompleteTestSeconds -
+                        afkseconds;
                     } else {
-                      PbCrown.hide();
-                      // if (localPb) {
-                      //   Notifications.add(
-                      //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
-                      //     15000
-                      //   );
-                      // }
+                      DB.getSnapshot().globalStats.time +=
+                        testtime +
+                        completedEvent.incompleteTestSeconds -
+                        afkseconds;
+                    }
+                    if (DB.getSnapshot().globalStats.started == undefined) {
+                      DB.getSnapshot().globalStats.started =
+                        TestStats.restartCount + 1;
+                    } else {
+                      DB.getSnapshot().globalStats.started +=
+                        TestStats.restartCount + 1;
+                    }
+                    if (DB.getSnapshot().globalStats.completed == undefined) {
+                      DB.getSnapshot().globalStats.completed = 1;
+                    } else {
+                      DB.getSnapshot().globalStats.completed += 1;
                     }
                   }
-                })
-                .catch((e) => {
-                  AccountButton.loading(false);
-                  let msg = e?.response?.data?.message ?? e.message;
-                  Notifications.add("Failed to save result: " + msg, -1);
-                });
-            }
+                  try {
+                    firebase
+                      .analytics()
+                      .logEvent("testCompleted", completedEvent);
+                  } catch (e) {
+                    console.log("Analytics unavailable");
+                  }
+
+                  if (response.data.isPb) {
+                    //new pb
+                    PbCrown.show();
+                    $("#result .stats .wpm .crown").attr(
+                      "aria-label",
+                      "+" + Misc.roundTo2(pbDiff)
+                    );
+                    DB.saveLocalPB(
+                      Config.mode,
+                      mode2,
+                      Config.punctuation,
+                      Config.language,
+                      Config.difficulty,
+                      stats.wpm,
+                      stats.acc,
+                      stats.wpmRaw,
+                      consistency
+                    );
+                  } else {
+                    PbCrown.hide();
+                    // if (localPb) {
+                    //   Notifications.add(
+                    //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
+                    //     15000
+                    //   );
+                    // }
+                  }
+                }
+              })
+              .catch((e) => {
+                AccountButton.loading(false);
+                let msg = e?.response?.data?.message ?? e.message;
+                Notifications.add("Failed to save result: " + msg, -1);
+              });
           });
         });
       } else {
@@ -2086,8 +2100,8 @@ export async function finish(difficultyFailed = false) {
 let failReason = "";
 export function fail(reason) {
   failReason = reason;
-  input.pushHistory();
-  corrected.pushHistory();
+  // input.pushHistory();
+  // corrected.pushHistory();
   TestStats.pushKeypressesToHistory();
   finish(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());

@@ -126,6 +126,8 @@ const refactoredSrc = [
   "./src/js/elements/loader.js",
   "./src/js/elements/sign-out-button.js",
   "./src/js/elements/about-page.js",
+  "./src/js/elements/psa.js",
+  "./src/js/elements/new-version-notification.js",
 
   "./src/js/popups/custom-text-popup.js",
   "./src/js/popups/quote-search-popup.js",
