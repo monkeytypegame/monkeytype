@@ -22,7 +22,7 @@ app.set("trust proxy", 1);
 
 app.use((req, res, next) => {
   if (process.env.MAINTENANCE === "true") {
-    res.status(503).json({ message: "Site is down for maintenance" });
+    res.status(503).json({ message: "Server is down for maintenance" });
   } else {
     next();
   }
