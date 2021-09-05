@@ -96,6 +96,17 @@ module.exports = {
       });
     }
 
+    let topIndex = 0;
+    let topWpm = 0;
+    obj[mode][mode2].forEach((pb, index) => {
+      delete pb.best;
+      if (pb.wpm > topWpm) {
+        topIndex = index;
+        topWpm = pb.wpm;
+      }
+    });
+    obj[mode][mode2][topIndex].best = true;
+
     return {
       isPb,
       obj,
