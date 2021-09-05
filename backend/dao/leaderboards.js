@@ -19,68 +19,29 @@ class LeaderboardsDAO {
   }
 
   static async update(mode, mode2, language, uid = undefined) {
-    let str = `personalBests.${mode}.${mode2}`;
+    let str = `lbPersonalBests.${mode}.${mode2}.${language}`;
     let lb = await mongoDB()
       .collection("users")
       .aggregate([
         {
-          $unset: [
-            "_id",
-            "addedAt",
-            "email",
-            "oldTypingStats",
-            "tags",
-            "bananas",
-            "discordId",
-            "timeTyping",
-            "startedTests",
-            "completedTests",
-          ],
-        },
-        {
           $match: {
-            banned: {
-              $exists: false,
+            [str + ".wpm"]: {
+              $exists: true,
             },
-            [str]: {
-              $elemMatch: {
-                language: "english",
-                difficulty: "normal",
-                timestamp: {
-                  $exists: true,
-                },
-              },
+            [str + ".acc"]: {
+              $exists: true,
             },
-          },
-        },
-        {
-          $replaceWith: {
-            name: "$name",
-            uid: "$uid",
-            result: "$" + str,
-          },
-        },
-        {
-          $unwind: {
-            path: "$result",
-          },
-        },
-        {
-          $match: {
-            "result.language": language,
-            "result.difficulty": "normal",
-            "result.punctuation": false,
           },
         },
         {
           $set: {
-            "result.name": "$name",
-            "result.uid": "$uid",
+            [str + ".uid"]: "$uid",
+            [str + ".name"]: "$name",
           },
         },
         {
           $replaceRoot: {
-            newRoot: "$result",
+            newRoot: "$" + str,
           },
         },
         {
