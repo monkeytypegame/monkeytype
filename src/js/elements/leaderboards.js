@@ -30,87 +30,66 @@ function update() {
 
   Loader.show();
   Promise.all([
-    axiosInstance.get(
-      `/results/getLeaderboard/daily/${boardinfo[0]}/${boardinfo[1]}`
-    ),
-    axiosInstance.get(
-      `/results/getLeaderboard/global/${boardinfo[0]}/${boardinfo[1]}`
-    ),
+    axiosInstance.get(`/leaderboards`, {
+      params: {
+        language: "english",
+        mode: "time",
+        mode2: "15",
+      },
+    }),
+    axiosInstance.get(`/leaderboards`, {
+      params: {
+        language: "english",
+        mode: "time",
+        mode2: "60",
+      },
+    }),
   ])
     .then((lbdata) => {
       Loader.hide();
-      let dailyData = lbdata[0].data;
-      let globalData = lbdata[1].data;
+      let time15data = lbdata[0].data;
+      let time60data = lbdata[1].data;
 
-      //daily
-      let nextReset = new Date(dailyData.resetTime);
-      let diffAsDate = new Date(nextReset - Date.now());
-
-      let diffHours = diffAsDate.getUTCHours();
-      let diffMinutes = diffAsDate.getUTCMinutes();
-      let diffSeconds = diffAsDate.getUTCSeconds();
-
-      let resetString = "";
-      if (diffHours > 0) {
-        resetString = `resets in ${diffHours} ${
-          diffHours == 1 ? "hour" : "hours"
-        } ${diffMinutes} ${diffMinutes == 1 ? "minute" : "minutes"}
-        `;
-      } else if (diffMinutes > 0) {
-        resetString = `resets in ${diffMinutes} ${
-          diffMinutes == 1 ? "minute" : "minutes"
-        } ${diffSeconds} ${diffSeconds == 1 ? "second" : "seconds"}`;
-      } else if (diffSeconds > 0) {
-        resetString = `resets in ${diffSeconds} ${
-          diffSeconds == 1 ? "second" : "seconds"
-        }`;
-      }
-
-      $("#leaderboardsWrapper .subtitle").text(resetString);
-
-      $("#leaderboardsWrapper table.daily tfoot").html(`
+      $("#leaderboardsWrapper table.left tfoot").html(`
       <tr>
         <td><br><br></td>
         <td colspan="4" style="text-align:center;">Not qualified</>
         <td><br><br></td>
       </tr>
       `);
-      //daily
-      $("#leaderboardsWrapper table.daily tbody").empty();
+      //left
+      $("#leaderboardsWrapper table.left tbody").empty();
       let dindex = 0;
-      if (dailyData.board !== undefined) {
-        dailyData.board.forEach((entry) => {
+      if (time15data !== undefined) {
+        time15data.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          //hacky way to get username because auth().currentUser.name isn't working after mongo switch
-          if (DB.getSnapshot() && entry.name == DB.getSnapshot().name) {
+          if (entry.name == DB.getSnapshot().name) {
             meClassString = ' class="me"';
-            $("#leaderboardsWrapper table.daily tfoot").html(`
-            <tr>
-            <td>${dindex + 1}</td>
-            <td>You</td>
-            <td class="alignRight">${entry.wpm.toFixed(
-              2
-            )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
-            <td class="alignRight">${entry.raw.toFixed(
-              2
-            )}<br><div class="sub">${
+            $("#leaderboardsWrapper table.left tfoot").html(`
+              <tr>
+              <td>${dindex + 1}</td>
+              <td>You</td>
+              <td class="alignRight">${entry.wpm.toFixed(
+                2
+              )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
+              <td class="alignRight">${entry.raw.toFixed(
+                2
+              )}<br><div class="sub">${
               entry.consistency === "-"
                 ? "-"
                 : entry.consistency.toFixed(2) + "%"
             }</div></td>
-            <td class="alignRight">${entry.mode}<br><div class="sub">${
-              entry.mode2
-            }</div></td>
-            <td class="alignRight">${moment(entry.timestamp).format(
-              "DD MMM YYYY"
-            )}<br><div class='sub'>${moment(entry.timestamp).format(
+              <td class="alignRight">time<br><div class="sub">15</div></td>
+              <td class="alignRight">${moment(entry.timestamp).format(
+                "DD MMM YYYY"
+              )}<br><div class='sub'>${moment(entry.timestamp).format(
               "HH:mm"
             )}</div></td>
-          </tr>
+            </tr>
             `);
           }
-          $("#leaderboardsWrapper table.daily tbody").append(`
+          $("#leaderboardsWrapper table.left tbody").append(`
           <tr>
           <td>${
             dindex === 0 ? '<i class="fas fa-fw fa-crown"></i>' : dindex + 1
@@ -122,9 +101,7 @@ function update() {
           <td class="alignRight">${entry.raw.toFixed(2)}<br><div class="sub">${
             entry.consistency === "-" ? "-" : entry.consistency.toFixed(2) + "%"
           }</div></td>
-          <td class="alignRight">${entry.mode}<br><div class="sub">${
-            entry.mode2
-          }</div></td>
+          <td class="alignRight">time<br><div class="sub">15</div></td>
           <td class="alignRight">${moment(entry.timestamp).format(
             "DD MMM YYYY"
           )}<br><div class='sub'>${moment(entry.timestamp).format(
@@ -135,24 +112,8 @@ function update() {
           dindex++;
         });
       }
-      let lenDaily = 0;
-      if (dailyData.board !== undefined) lenDaily = dailyData.board.length;
-      if (dailyData.length === 0 || lenDaily !== dailyData.size) {
-        for (let i = lenDaily; i < dailyData.size; i++) {
-          $("#leaderboardsWrapper table.daily tbody").append(`
-          <tr>
-                <td>${i + 1}</td>
-                <td>-</td>
-                <td class="alignRight">-</td>
-                <td class="alignRight">-</td>
-                <td class="alignRight">-</td>
-                <td class="alignRight">-<br>-</td>
-              </tr>
-        `);
-        }
-      }
 
-      $("#leaderboardsWrapper table.global tfoot").html(`
+      $("#leaderboardsWrapper table.right tfoot").html(`
       <tr>
       <td><br><br></td>
       <td colspan="4" style="text-align:center;">Not qualified</>
@@ -160,15 +121,15 @@ function update() {
       </tr>
       `);
       //global
-      $("#leaderboardsWrapper table.global tbody").empty();
+      $("#leaderboardsWrapper table.right tbody").empty();
       let index = 0;
-      if (globalData.board !== undefined) {
-        globalData.board.forEach((entry) => {
+      if (time60data !== undefined) {
+        time60data.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (DB.getSnapshot() && entry.name == DB.getSnapshot().name) {
+          if (entry.name == DB.getSnapshot().name) {
             meClassString = ' class="me"';
-            $("#leaderboardsWrapper table.global tfoot").html(`
+            $("#leaderboardsWrapper table.right tfoot").html(`
             <tr>
             <td>${index + 1}</td>
             <td>You</td>
@@ -182,9 +143,7 @@ function update() {
                 ? "-"
                 : entry.consistency.toFixed(2) + "%"
             }</div></td>
-            <td class="alignRight">${entry.mode}<br><div class="sub">${
-              entry.mode2
-            }</div></td>
+            <td class="alignRight">time<br><div class="sub">60</div></td>
             <td class="alignRight">${moment(entry.timestamp).format(
               "DD MMM YYYY"
             )}<br><div class='sub'>${moment(entry.timestamp).format(
@@ -193,7 +152,7 @@ function update() {
           </tr>
             `);
           }
-          $("#leaderboardsWrapper table.global tbody").append(`
+          $("#leaderboardsWrapper table.right tbody").append(`
           <tr>
           <td>${
             index === 0 ? '<i class="fas fa-fw fa-crown"></i>' : index + 1
@@ -205,9 +164,7 @@ function update() {
           <td class="alignRight">${entry.raw.toFixed(2)}<br><div class="sub">${
             entry.consistency === "-" ? "-" : entry.consistency.toFixed(2) + "%"
           }</div></td>
-          <td class="alignRight">${entry.mode}<br><div class="sub">${
-            entry.mode2
-          }</div></td>
+          <td class="alignRight">time<br><div class="sub">60</div></td>
           <td class="alignRight">${moment(entry.timestamp).format(
             "DD MMM YYYY"
           )}<br><div class='sub'>${moment(entry.timestamp).format(
@@ -217,22 +174,6 @@ function update() {
         `);
           index++;
         });
-      }
-      let lenGlobal = 0;
-      if (globalData.board !== undefined) lenGlobal = globalData.board.length;
-      if (globalData.length === 0 || lenGlobal !== globalData.size) {
-        for (let i = lenGlobal; i < globalData.size; i++) {
-          $("#leaderboardsWrapper table.global tbody").append(`
-        <tr>
-              <td>${i + 1}</td>
-              <td>-</td>
-              <td class="alignRight">-</td>
-              <td class="alignRight">-</td>
-              <td class="alignRight">-</td>
-              <td class="alignRight">-<br>-</td>
-            </tr>
-      `);
-        }
       }
     })
     .catch((e) => {

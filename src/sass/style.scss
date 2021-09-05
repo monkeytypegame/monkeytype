@@ -452,16 +452,16 @@ a:hover {
         }
       }
 
-      .globalTableWrapper,
-      .dailyTableWrapper {
+      .leftTableWrapper,
+      .rightTableWrapper {
         height: calc(100vh - 22rem);
         @extend .ffscroll;
         overflow-y: scroll;
         overflow-x: auto;
       }
 
-      .globalTableWrapper::-webkit-scrollbar,
-      .dailyTableWrapper::-webkit-scrollbar {
+      .leftTableWrapper::-webkit-scrollbar,
+      .rightTableWrapper::-webkit-scrollbar {
         height: 5px;
         width: 5px;
       }
