@@ -34,7 +34,18 @@ export async function getDataAndInit() {
     await DB.initSnapshot();
   } catch (e) {
     AccountButton.loading(false);
-
+    if (e.response.status === 429) {
+      Notifications.add(
+        "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
+        0,
+        0
+      );
+      Notifications.add(
+        "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enalbed) to restart the test.",
+        0,
+        0
+      );
+    }
     let msg = e?.response?.data?.message ?? e.message;
     Notifications.add("Failed to get user data: " + msg, -1);
 
