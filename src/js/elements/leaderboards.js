@@ -76,7 +76,7 @@ function update() {
               <td class="alignRight">${entry.raw.toFixed(
                 2
               )}<br><div class="sub">${
-              entry.consistency === "-"
+              !entry.consistency || entry.consistency === "-"
                 ? "-"
                 : entry.consistency.toFixed(2) + "%"
             }</div></td>
@@ -99,7 +99,9 @@ function update() {
             2
           )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
           <td class="alignRight">${entry.raw.toFixed(2)}<br><div class="sub">${
-            entry.consistency === "-" ? "-" : entry.consistency.toFixed(2) + "%"
+            !entry.consistency || entry.consistency === "-"
+              ? "-"
+              : entry.consistency.toFixed(2) + "%"
           }</div></td>
           <td class="alignRight">time<br><div class="sub">15</div></td>
           <td class="alignRight">${moment(entry.timestamp).format(
@@ -139,7 +141,7 @@ function update() {
             <td class="alignRight">${entry.raw.toFixed(
               2
             )}<br><div class="sub">${
-              entry.consistency === "-"
+              !entry.consistency || entry.consistency === "-"
                 ? "-"
                 : entry.consistency.toFixed(2) + "%"
             }</div></td>
@@ -162,7 +164,9 @@ function update() {
             2
           )}<br><div class="sub">${entry.acc.toFixed(2)}%</td>
           <td class="alignRight">${entry.raw.toFixed(2)}<br><div class="sub">${
-            entry.consistency === "-" ? "-" : entry.consistency.toFixed(2) + "%"
+            !entry.consistency || entry.consistency === "-"
+              ? "-"
+              : entry.consistency.toFixed(2) + "%"
           }</div></td>
           <td class="alignRight">time<br><div class="sub">60</div></td>
           <td class="alignRight">${moment(entry.timestamp).format(
@@ -177,6 +181,7 @@ function update() {
       }
     })
     .catch((e) => {
+      console.log(e);
       Loader.hide();
       let msg = e?.response?.data?.message ?? e.message;
       Notifications.add("Failed to load leaderboards: " + msg, -1);
