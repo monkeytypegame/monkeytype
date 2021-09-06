@@ -15,10 +15,7 @@ let currentRank = {
   60: {},
 };
 
-let currentlyShown = {
-  15: 0,
-  60: 0,
-};
+let leaderboardSingleLimit = 30;
 
 export function hide() {
   $("#leaderboardsWrapper")
@@ -44,13 +41,16 @@ function update() {
     `#leaderboardsWrapper .buttons .button[board=${currentLeaderboard}]`
   ).addClass("active");
 
-  Loader.show();
+  // Loader.show();
+  showLoader(15);
+  showLoader(60);
   Promise.all([
     axiosInstance.get(`/leaderboard`, {
       params: {
         language: "english",
         mode: "time",
         mode2: "15",
+        skip: 0,
       },
     }),
     axiosInstance.get(`/leaderboard`, {
@@ -58,6 +58,7 @@ function update() {
         language: "english",
         mode: "time",
         mode2: "60",
+        skip: 0,
       },
     }),
     axiosInstance.get(`/leaderboard/rank`, {
@@ -76,7 +77,9 @@ function update() {
     }),
   ])
     .then((lbdata) => {
-      Loader.hide();
+      // Loader.hide();
+      hideLoader(15);
+      hideLoader(60);
       currentData[15] = lbdata[0].data;
       currentData[60] = lbdata[1].data;
       currentRank[15] = lbdata[2].data;
@@ -106,7 +109,7 @@ export function clearTable(lb) {
   }
 }
 
-export function loadMore(lb) {
+export function loadMore(lb, prepend) {
   let side;
   if (lb === 15) {
     side = "left";
@@ -115,7 +118,15 @@ export function loadMore(lb) {
   }
   let loggedInUserName = DB.getSnapshot()?.name;
   let loaded = 0;
-  for (let i = currentlyShown[lb]; i < currentlyShown[lb] + 20; i++) {
+
+  let a = currentData[lb].length - leaderboardSingleLimit;
+  let b = currentData[lb].length;
+  if (prepend) {
+    a = 0;
+    b = prepend;
+  }
+  let html = "";
+  for (let i = a; i < b; i++) {
     let entry = currentData[lb][i];
     if (!entry) {
       break;
@@ -125,7 +136,7 @@ export function loadMore(lb) {
     if (entry.name == loggedInUserName) {
       meClassString = ' class="me"';
     }
-    $(`#leaderboardsWrapper table.${side} tbody`).append(`
+    html += `
     <tr>
     <td>${
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
@@ -144,10 +155,13 @@ export function loadMore(lb) {
       "DD MMM YYYY"
     )}<br><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></td>
   </tr>
-  `);
-    loaded++;
+  `;
   }
-  currentlyShown[lb] += loaded;
+  if (!prepend) {
+    $(`#leaderboardsWrapper table.${side} tbody`).append(html);
+  } else {
+    $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
+  }
 }
 
 export function updateFooter(lb) {
@@ -187,6 +201,71 @@ export function updateFooter(lb) {
   }
 }
 
+async function requestMore(lb, prepend = false) {
+  if (prepend && currentData[lb][0].rank === 1) return;
+  showLoader(lb);
+  let skipVal = currentData[lb][currentData[lb].length - 1].rank;
+  if (prepend) {
+    skipVal = currentData[lb][0].rank - leaderboardSingleLimit;
+  }
+  let limitVal;
+  if (skipVal < 0) {
+    limitVal = Math.abs(skipVal) - 1;
+    skipVal = 0;
+  }
+  let data = await axiosInstance.get(`/leaderboard`, {
+    params: {
+      language: "english",
+      mode: "time",
+      mode2: "15",
+      skip: skipVal,
+      limit: limitVal,
+    },
+  });
+  data = data.data;
+  if (data.length === 0) {
+    hideLoader(lb);
+    return;
+  }
+  if (prepend) {
+    currentData[lb].unshift(...data);
+  } else {
+    currentData[lb].push(...data);
+  }
+  loadMore(lb, limitVal);
+  hideLoader(lb);
+}
+
+async function requestNew(lb, skip) {
+  showLoader(lb);
+  let data = await axiosInstance.get(`/leaderboard`, {
+    params: {
+      language: "english",
+      mode: "time",
+      mode2: lb,
+      skip: skip,
+    },
+  });
+  clearTable(lb);
+  if (lb === 15) {
+    currentData = {
+      15: [],
+    };
+  } else if (lb === 60) {
+    currentData = {
+      60: [],
+    };
+  }
+  data = data.data;
+  if (data.length === 0) {
+    hideLoader(lb);
+    return;
+  }
+  currentData[lb] = data;
+  loadMore(lb);
+  hideLoader(lb);
+}
+
 function reset() {
   currentData = {
     15: [],
@@ -196,11 +275,6 @@ function reset() {
   currentRank = {
     15: {},
     60: {},
-  };
-
-  currentlyShown = {
-    15: 0,
-    60: 0,
   };
 }
 
@@ -222,6 +296,22 @@ export function show() {
   }
 }
 
+function showLoader(lb) {
+  if (lb === 15) {
+    $(`#leaderboardsWrapper .leftTableLoader`).removeClass("hidden");
+  } else if (lb === 60) {
+    $(`#leaderboardsWrapper .rightTableLoader`).removeClass("hidden");
+  }
+}
+
+function hideLoader(lb) {
+  if (lb === 15) {
+    $(`#leaderboardsWrapper .leftTableLoader`).addClass("hidden");
+  } else if (lb === 60) {
+    $(`#leaderboardsWrapper .rightTableLoader`).addClass("hidden");
+  }
+}
+
 $("#leaderboardsWrapper").click((e) => {
   if ($(e.target).attr("id") === "leaderboardsWrapper") {
     hide();
@@ -233,10 +323,97 @@ $("#leaderboardsWrapper").click((e) => {
 //   update();
 // });
 
+let leftScrollEnabled = true;
+
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
+  if (!leftScrollEnabled) return;
+  let elem = $(e.currentTarget);
+  if (elem.scrollTop() == 0) {
+    requestMore(15, true);
+  }
+});
+
+$("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
+  if (!leftScrollEnabled) return;
   let elem = $(e.currentTarget);
   if (elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
-    loadMore(15);
-    console.log("scrolled to the bottom");
+    requestMore(15);
   }
+});
+
+let rightScrollEnabled = true;
+
+$("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
+  if (!rightScrollEnabled) return;
+  let elem = $(e.currentTarget);
+  if (elem.scrollTop() == 0) {
+    requestMore(60, true);
+  }
+});
+
+$("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
+  let elem = $(e.currentTarget);
+  if (elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
+    requestMore(60);
+  }
+});
+
+$("#leaderboardsWrapper #leaderboards .leftTableJumpToTop").click(async (e) => {
+  leftScrollEnabled = false;
+  $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scrollTop(0);
+  await requestNew(15, 0);
+  leftScrollEnabled = true;
+});
+
+$("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").click(async (e) => {
+  if (currentRank[15].rank === undefined) return;
+  leftScrollEnabled = false;
+  await requestNew(15, currentRank[15].rank - leaderboardSingleLimit / 2);
+  $("#leaderboardsWrapper #leaderboards .leftTableWrapper").animate(
+    {
+      scrollTop:
+        $("#leaderboardsWrapper #leaderboards .leftTableWrapper")[0]
+          .scrollHeight /
+          2 -
+        $(
+          "#leaderboardsWrapper #leaderboards .leftTableWrapper"
+        ).outerHeight() /
+          2,
+    },
+    0,
+    () => {
+      leftScrollEnabled = true;
+    }
+  );
+});
+
+$("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").click(
+  async (e) => {
+    rightScrollEnabled = false;
+    $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scrollTop(0);
+    await requestNew(60, 0);
+    rightScrollEnabled = true;
+  }
+);
+
+$("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").click(async (e) => {
+  if (currentRank[60].rank === undefined) return;
+  rightScrollEnabled = false;
+  await requestNew(60, currentRank[60].rank - leaderboardSingleLimit / 2);
+  $("#leaderboardsWrapper #leaderboards .rightTableWrapper").animate(
+    {
+      scrollTop:
+        $("#leaderboardsWrapper #leaderboards .rightTableWrapper")[0]
+          .scrollHeight /
+          2 -
+        $(
+          "#leaderboardsWrapper #leaderboards .rightTableWrapper"
+        ).outerHeight() /
+          2,
+    },
+    0,
+    () => {
+      rightScrollEnabled = true;
+    }
+  );
 });

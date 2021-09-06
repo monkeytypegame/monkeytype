@@ -424,7 +424,6 @@ a:hover {
       display: grid;
       gap: 1rem;
       grid-template-columns: 1fr 1fr;
-      margin-bottom: 2rem;
       font-size: 0.8rem;
       width: 100%;
 
@@ -440,8 +439,27 @@ a:hover {
         display: grid;
         width: 100%;
 
+        .titleAndButtons {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          .buttons {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr;
+            align-items: center;
+            // margin-top: .1rem;
+            gap: 1rem;
+            color: var(--sub-color);
+            .button {
+              padding-left: 1rem;
+              padding-right: 1rem;
+            }
+          }
+        }
+
         .title {
           grid-area: 1/1;
+          margin-bottom: 0;
+          line-height: 2.5rem;
         }
 
         .subtitle {
