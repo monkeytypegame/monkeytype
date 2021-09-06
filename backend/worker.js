@@ -72,4 +72,5 @@ async function refactor() {
       .updateOne({ _id: user._id }, { $set: { lbPersonalBests: lbPb } });
     console.log(`updated ${user.name}`);
   }
+  console.log("done");
 }
