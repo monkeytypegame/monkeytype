@@ -90,7 +90,8 @@ input[type="color"]::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-input[type="color"]::-webkit-color-swatch {
+input[type="color"]::-webkit-color-swatch,
+::-moz-color-swatch {
   border: none;
 }
 
