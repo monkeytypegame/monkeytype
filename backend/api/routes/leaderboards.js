@@ -6,13 +6,9 @@ const { Router } = require("express");
 
 const router = Router();
 
-router.get(
-  "/",
-  RateLimit.limit1persec,
-  authenticateRequest,
-  LeaderboardsController.get
-);
+router.get("/", RateLimit.limit1persec, LeaderboardsController.get);
 
+//TODO remove me
 router.post(
   "/debug_update",
   RateLimit.limit1persec,
