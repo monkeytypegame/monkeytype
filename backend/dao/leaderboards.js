@@ -3,8 +3,9 @@ const { mongoDB } = require("../init/mongodb");
 const { ObjectID } = require("mongodb");
 
 class LeaderboardsDAO {
-  static async get(mode, mode2, language, skip, limit = 30) {
-    if (limit > 30 || limit === 0) limit = 30;
+  static async get(mode, mode2, language, skip, limit = 100) {
+    if (limit > 100 || limit <= 0) limit = 100;
+    if (skip < 0) skip = 0;
     const preset = await mongoDB()
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .find()
