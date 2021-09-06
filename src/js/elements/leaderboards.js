@@ -15,6 +15,8 @@ export function hide() {
       },
       100,
       () => {
+        $("#leaderboardsWrapper table.left tbody").empty();
+        $("#leaderboardsWrapper table.right tbody").empty();
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
@@ -26,7 +28,7 @@ function update() {
     `#leaderboardsWrapper .buttons .button[board=${currentLeaderboard}]`
   ).addClass("active");
 
-  let boardinfo = currentLeaderboard.split("_");
+  let loggedInUserName = DB.getSnapshot()?.name;
 
   Loader.show();
   Promise.all([
@@ -64,7 +66,7 @@ function update() {
         time15data.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (entry.name == DB.getSnapshot().name) {
+          if (entry.name == loggedInUserName) {
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.left tfoot").html(`
               <tr>
@@ -129,7 +131,7 @@ function update() {
         time60data.forEach((entry) => {
           if (entry.hidden) return;
           let meClassString = "";
-          if (entry.name == DB.getSnapshot().name) {
+          if (entry.name == loggedInUserName) {
             meClassString = ' class="me"';
             $("#leaderboardsWrapper table.right tfoot").html(`
             <tr>
