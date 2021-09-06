@@ -15,7 +15,7 @@ let currentRank = {
   60: {},
 };
 
-let leaderboardSingleLimit = 30;
+let leaderboardSingleLimit = 100;
 
 export function hide() {
   $("#leaderboardsWrapper")
@@ -89,8 +89,10 @@ function update() {
       clearTable(60);
       updateFooter(15);
       updateFooter(60);
-      loadMore(15);
-      loadMore(60);
+      fillTable(15);
+      fillTable(60);
+      $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
+      $("#leaderboardsWrapper .rightTableWrapper").removeClass("invisible");
     })
     .catch((e) => {
       console.log(e);
@@ -109,7 +111,7 @@ export function clearTable(lb) {
   }
 }
 
-export function loadMore(lb, prepend) {
+export function fillTable(lb, prepend) {
   let side;
   if (lb === 15) {
     side = "left";
@@ -121,6 +123,7 @@ export function loadMore(lb, prepend) {
 
   let a = currentData[lb].length - leaderboardSingleLimit;
   let b = currentData[lb].length;
+  if (a < 0) a = 0;
   if (prepend) {
     a = 0;
     b = prepend;
@@ -232,7 +235,7 @@ async function requestMore(lb, prepend = false) {
   } else {
     currentData[lb].push(...data);
   }
-  loadMore(lb, limitVal);
+  fillTable(lb, limitVal);
   hideLoader(lb);
 }
 
@@ -262,7 +265,7 @@ async function requestNew(lb, skip) {
     return;
   }
   currentData[lb] = data;
-  loadMore(lb);
+  fillTable(lb);
   hideLoader(lb);
 }
 
@@ -369,16 +372,17 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").click(async (e) => {
   if (currentRank[15].rank === undefined) return;
   leftScrollEnabled = false;
   await requestNew(15, currentRank[15].rank - leaderboardSingleLimit / 2);
+  let rowHeight = $(
+    "#leaderboardsWrapper #leaderboards .leftTableWrapper table tbody td"
+  ).outerHeight();
   $("#leaderboardsWrapper #leaderboards .leftTableWrapper").animate(
     {
       scrollTop:
-        $("#leaderboardsWrapper #leaderboards .leftTableWrapper")[0]
-          .scrollHeight /
-          2 -
+        rowHeight * currentRank[15].rank -
         $(
           "#leaderboardsWrapper #leaderboards .leftTableWrapper"
         ).outerHeight() /
-          2,
+          2.25,
     },
     0,
     () => {

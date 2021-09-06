@@ -3786,6 +3786,10 @@ key {
   display: none !important;
 }
 
+.invisible {
+  opacity: 0 !important;
+}
+
 .button {
   color: var(--text-color);
   cursor: pointer;
