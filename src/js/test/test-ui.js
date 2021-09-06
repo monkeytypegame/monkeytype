@@ -395,7 +395,7 @@ export function updateWordElement(showError) {
     }
 
     if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
-      if (input.length > currentWord.length) {
+      if (input.length > currentWord.length && !Config.blindMode) {
         $(wordAtIndex).addClass("error");
       } else if (input.length == currentWord.length) {
         $(wordAtIndex).removeClass("error");
