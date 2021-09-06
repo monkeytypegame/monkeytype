@@ -33,7 +33,7 @@ app.use("/quote-ratings", quoteRatings);
 const psaRouter = require("./api/routes/psa");
 app.use("/psa", psaRouter);
 const leaderboardsRouter = require("./api/routes/leaderboards");
-app.use("/leaderboards", leaderboardsRouter);
+app.use("/leaderboard", leaderboardsRouter);
 
 app.use(function (e, req, res, next) {
   let uid = undefined;
