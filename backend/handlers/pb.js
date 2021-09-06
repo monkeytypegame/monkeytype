@@ -96,20 +96,50 @@ module.exports = {
       });
     }
 
-    let topIndex = 0;
-    let topWpm = 0;
-    obj[mode][mode2].forEach((pb, index) => {
-      delete pb.best;
-      if (pb.wpm > topWpm) {
-        topIndex = index;
-        topWpm = pb.wpm;
+    let lbPb;
+    if (isPb && mode === "time" && (mode2 == "15" || mode2 == "60")) {
+      lbPb = {
+        time: {
+          15: {},
+          60: {},
+        },
+      };
+      let bestForEveryLanguage = {};
+      if (obj?.time?.[15]) {
+        obj.time[15].forEach((pb) => {
+          if (!bestForEveryLanguage[pb.language]) {
+            bestForEveryLanguage[pb.language] = pb;
+          } else {
+            if (bestForEveryLanguage[pb.language].wpm < pb.wpm) {
+              bestForEveryLanguage[pb.language] = pb;
+            }
+          }
+        });
+        Object.keys(bestForEveryLanguage).forEach((key) => {
+          lbPb.time[15][key] = bestForEveryLanguage[key];
+        });
+        bestForEveryLanguage = {};
       }
-    });
-    obj[mode][mode2][topIndex].best = true;
+      if (obj?.time?.[60]) {
+        obj.time[60].forEach((pb) => {
+          if (!bestForEveryLanguage[pb.language]) {
+            bestForEveryLanguage[pb.language] = pb;
+          } else {
+            if (bestForEveryLanguage[pb.language].wpm < pb.wpm) {
+              bestForEveryLanguage[pb.language] = pb;
+            }
+          }
+        });
+        Object.keys(bestForEveryLanguage).forEach((key) => {
+          lbPb.time[60][key] = bestForEveryLanguage[key];
+        });
+      }
+    }
 
     return {
       isPb,
       obj,
+      lbPb,
     };
   },
 };

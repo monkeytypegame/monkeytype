@@ -191,6 +191,11 @@ class UsersDAO {
       await mongoDB()
         .collection("users")
         .updateOne({ uid }, { $set: { personalBests: pb.obj } });
+      if (pb.lbPb) {
+        await mongoDB()
+          .collection("users")
+          .updateOne({ uid }, { $set: { lbPersonalBests: pb.lbPb } });
+      }
       return true;
     } else {
       return false;
