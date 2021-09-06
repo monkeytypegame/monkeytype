@@ -19,6 +19,22 @@ class LeaderboardsController {
     }
   }
 
+  static async getRank(req, res, next) {
+    try {
+      const { language, mode, mode2 } = req.query;
+      const { uid } = req.decodedToken;
+      if (!language || !mode || !mode2 || !uid) {
+        return res.status(400).json({
+          message: "Missing parameters",
+        });
+      }
+      let retval = await LeaderboardsDAO.getRank(mode, mode2, language, uid);
+      return res.status(200).json(retval);
+    } catch (e) {
+      return next(e);
+    }
+  }
+
   static async update(req, res, next) {
     try {
       const { language, mode, mode2 } = req.body;

@@ -15,7 +15,7 @@ class LeaderboardsDAO {
     const res = await mongoDB()
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .findOne({ uid });
-    return res.rank;
+    return res;
   }
 
   static async update(mode, mode2, language, uid = undefined) {

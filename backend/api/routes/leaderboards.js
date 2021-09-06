@@ -8,6 +8,13 @@ const router = Router();
 
 router.get("/", RateLimit.limit1persec, LeaderboardsController.get);
 
+router.get(
+  "/rank",
+  RateLimit.limit1persec,
+  authenticateRequest,
+  LeaderboardsController.getRank
+);
+
 //TODO remove me
 router.post(
   "/debug_update",
