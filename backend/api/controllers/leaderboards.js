@@ -103,7 +103,8 @@ class LeaderboardsController {
           user?.lbPersonalBests?.[result.mode]?.[result.mode2]?.[
             result.language
           ]?.wpm;
-        if (lbpb && result.wpm > lbpb) {
+        if (!lbpb) lbpb = 0;
+        if (result.wpm >= lbpb) {
           //run update
           let retval = await LeaderboardsDAO.update(
             result.mode,
@@ -128,7 +129,12 @@ class LeaderboardsController {
             result.language,
             uid
           );
-          rank = rank.rank;
+          rank = rank?.rank;
+          if (!rank) {
+            return res.status(400).json({
+              message: "User has a lbPb but was not found on the leaderboard",
+            });
+          }
           await UserDAO.updateLbMemory(
             uid,
             result.mode,
