@@ -58,11 +58,11 @@ class LeaderboardsDAO {
       ])
       .toArray();
 
-    let rerval = undefined;
+    let retval = undefined;
     lb.forEach((lbEntry, index) => {
       lbEntry.rank = index + 1;
       if (uid && lbEntry.uid === uid) {
-        rerval = index + 1;
+        retval = index + 1;
       }
     });
 
@@ -75,7 +75,7 @@ class LeaderboardsDAO {
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .insertMany(lb);
 
-    if (rerval) {
+    if (retval) {
       return {
         message: "Successfully updated leaderboard",
         rank: retval,
