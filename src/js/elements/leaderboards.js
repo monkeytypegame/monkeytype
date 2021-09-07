@@ -139,6 +139,9 @@ export function fillTable(lb, prepend) {
     if (entry.name == loggedInUserName) {
       meClassString = ' class="me"';
     }
+    if (entry.uid === firebase.auth().currentUser?.uid) {
+      DB.updateLbMemory("time", lb, "english", entry.rank, true);
+    }
     html += `
     <tr>
     <td>${
