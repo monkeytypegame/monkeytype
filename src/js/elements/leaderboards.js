@@ -249,7 +249,7 @@ async function requestMore(lb, prepend = false) {
     currentData[lb].push(...data);
   }
   if (prepend && !limitVal) {
-    limitVal = leaderboardSingleLimit;
+    limitVal = leaderboardSingleLimit - 1;
   }
   fillTable(lb, limitVal);
   hideLoader(lb);
