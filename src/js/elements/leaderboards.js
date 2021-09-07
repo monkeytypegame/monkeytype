@@ -233,7 +233,7 @@ async function requestMore(lb, prepend = false) {
     params: {
       language: "english",
       mode: "time",
-      mode2: "15",
+      mode2: lb,
       skip: skipVal,
       limit: limitVal,
     },
