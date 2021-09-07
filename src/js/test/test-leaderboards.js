@@ -12,6 +12,8 @@ export function show(data, mode2, language) {
     string = `please verify your email<br>to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`;
   } else if (data.banned || data.lbBanned) {
     string = "banned";
+  } else if (data.lbdisabled) {
+    string = "leaderboards disabled";
   } else if (data.rank) {
     const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
     const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
