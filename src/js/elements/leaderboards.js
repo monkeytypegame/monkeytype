@@ -405,22 +405,23 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToTop").click(
 
 $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").click(async (e) => {
   if (currentRank[60].rank === undefined) return;
-  rightScrollEnabled = false;
+  leftScrollEnabled = false;
   await requestNew(60, currentRank[60].rank - leaderboardSingleLimit / 2);
+  let rowHeight = $(
+    "#leaderboardsWrapper #leaderboards .rightTableWrapper table tbody td"
+  ).outerHeight();
   $("#leaderboardsWrapper #leaderboards .rightTableWrapper").animate(
     {
       scrollTop:
-        $("#leaderboardsWrapper #leaderboards .rightTableWrapper")[0]
-          .scrollHeight /
-          2 -
+        rowHeight * currentRank[60].rank -
         $(
           "#leaderboardsWrapper #leaderboards .rightTableWrapper"
         ).outerHeight() /
-          2,
+          2.25,
     },
     0,
     () => {
-      rightScrollEnabled = true;
+      leftScrollEnabled = true;
     }
   );
 });
