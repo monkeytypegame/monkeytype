@@ -149,6 +149,24 @@ class UsersDAO {
       );
   }
 
+  static async updateLbMemory(uid, mode, mode2, language, rank) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found", "get user");
+    if (user.lbMemory === undefined) user.lbMemory = {};
+    if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
+    if (user.lbMemory[mode][mode2] === undefined)
+      user.lbMemory[mode][mode2] = {};
+    user.lbMemory[mode][mode2][language] = rank;
+    return await mongoDB()
+      .collection("users")
+      .updateOne(
+        { uid },
+        {
+          $set: { lbMemory: user.lbMemory },
+        }
+      );
+  }
+
   static async checkIfPb(uid, result) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found", "check if pb");
@@ -174,8 +192,12 @@ class UsersDAO {
       return false;
     }
 
+    let lbpb = user.lbPersonalBests;
+    if (!lbpb) lbpb = {};
+
     let pb = checkAndUpdatePb(
       user.personalBests,
+      lbpb,
       mode,
       mode2,
       acc,
@@ -191,10 +213,10 @@ class UsersDAO {
       await mongoDB()
         .collection("users")
         .updateOne({ uid }, { $set: { personalBests: pb.obj } });
-      if (pb.lbPb) {
+      if (pb.lbObj) {
         await mongoDB()
           .collection("users")
-          .updateOne({ uid }, { $set: { lbPersonalBests: pb.lbPb } });
+          .updateOne({ uid }, { $set: { lbPersonalBests: pb.lbObj } });
       }
       return true;
     } else {
@@ -246,6 +268,7 @@ class UsersDAO {
     tagsToCheck.forEach(async (tag) => {
       let tagpb = checkAndUpdatePb(
         tag.personalBests,
+        undefined,
         mode,
         mode2,
         acc,

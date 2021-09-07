@@ -40,6 +40,8 @@ const quoteRatings = require("./api/routes/quote-ratings");
 app.use("/quote-ratings", quoteRatings);
 const psaRouter = require("./api/routes/psa");
 app.use("/psa", psaRouter);
+const leaderboardsRouter = require("./api/routes/leaderboards");
+app.use("/leaderboard", leaderboardsRouter);
 
 app.use(function (e, req, res, next) {
   let uid = undefined;
@@ -78,4 +80,56 @@ app.listen(PORT, async () => {
     credential: admin.credential.cert(serviceAccount),
   });
   console.log("Database Connected");
+
+  // refactor();
 });
+
+async function refactor() {
+  let users = await mongoDB().collection("users").find({}).toArray();
+
+  for (let user of users) {
+    let obj = user.personalBests;
+
+    lbPb = {
+      time: {
+        15: {},
+        60: {},
+      },
+    };
+    let bestForEveryLanguage = {};
+    if (obj?.time?.[15]) {
+      obj.time[15].forEach((pb) => {
+        if (!bestForEveryLanguage[pb.language]) {
+          bestForEveryLanguage[pb.language] = pb;
+        } else {
+          if (bestForEveryLanguage[pb.language].wpm < pb.wpm) {
+            bestForEveryLanguage[pb.language] = pb;
+          }
+        }
+      });
+      Object.keys(bestForEveryLanguage).forEach((key) => {
+        lbPb.time[15][key] = bestForEveryLanguage[key];
+      });
+      bestForEveryLanguage = {};
+    }
+    if (obj?.time?.[60]) {
+      obj.time[60].forEach((pb) => {
+        if (!bestForEveryLanguage[pb.language]) {
+          bestForEveryLanguage[pb.language] = pb;
+        } else {
+          if (bestForEveryLanguage[pb.language].wpm < pb.wpm) {
+            bestForEveryLanguage[pb.language] = pb;
+          }
+        }
+      });
+      Object.keys(bestForEveryLanguage).forEach((key) => {
+        lbPb.time[60][key] = bestForEveryLanguage[key];
+      });
+    }
+
+    await mongoDB()
+      .collection("users")
+      .updateOne({ _id: user._id }, { $set: { lbPersonalBests: lbPb } });
+    console.log(`updated ${user.name}`);
+  }
+}

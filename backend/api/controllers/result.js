@@ -195,6 +195,10 @@ class ResultController {
       const isPb = await UserDAO.checkIfPb(uid, result);
       const tagPbs = await UserDAO.checkIfTagPb(uid, result);
 
+      if (isPb) {
+        result.isPb = true;
+      }
+
       if (result.mode === "time" && String(result.mode2) === "60") {
         UserDAO.incrementBananas(uid, result.wpm);
         if (isPb && user.discordId) {
@@ -204,6 +208,8 @@ class ResultController {
 
       if (result.challenge && user.discordId) {
         BotDAO.awardChallenge(user.discordId, result.challenge);
+      } else {
+        delete result.challenge;
       }
 
       let tt = 0;

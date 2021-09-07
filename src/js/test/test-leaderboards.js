@@ -6,127 +6,42 @@ import axiosInstance from "./axios-instance";
 
 let textTimeouts = [];
 
-export function show(data, mode2) {
+export function show(data, mode2, language) {
   let string = "";
   if (data.needsToVerifyEmail === true) {
     string = `please verify your email<br>to access leaderboards - <a onClick="sendVerificationEmail()">resend email</a>`;
   } else if (data.banned || data.lbBanned) {
     string = "banned";
-  } else if (data.name === false) {
-    string = "update your name to access leaderboards";
-  } else if (data.needsToVerify === true) {
-    string = "verification needed to access leaderboards";
-  } else if (data.lbdisabled === true) {
+  } else if (data.lbdisabled) {
     string = "leaderboards disabled";
-  } else {
+  } else if (data.rank) {
     const lbUpIcon = `<i class="fas fa-angle-up"></i>`;
     const lbDownIcon = `<i class="fas fa-angle-down"></i>`;
     const lbRightIcon = `<i class="fas fa-angle-right"></i>`;
 
-    //global
-    let globalLbString = "";
-    const glb = data.global;
-    let glbMemory;
-    try {
-      glbMemory = DB.getSnapshot().lbMemory[Config.mode + mode2].global;
-    } catch {
-      glbMemory = null;
+    const rank = data.rank;
+    let rankMemory = DB.getSnapshot().lbMemory?.time?.[mode2]?.[language];
+    let dontShowRankDiff = !rankMemory ? true : false;
+    let lbDiff;
+    if (rankMemory) {
+      lbDiff = rankMemory - rank;
     }
-    let dontShowGlobalDiff =
-      glbMemory == null || glbMemory === -1 ? true : false;
-    let globalLbDiff = null;
-    if (glb.status === -999) {
-      globalLbString = "global: error - " + glb.message;
-    } else if (glb === null) {
-      globalLbString = "global: not found";
-    } else if (glb.insertedAt === -1) {
-      dontShowGlobalDiff = true;
-      globalLbDiff = glbMemory - glb.insertedAt;
-      DB.updateLbMemory(Config.mode, mode2, "global", glb.insertedAt);
+    DB.updateLbMemory("time", mode2, language, rank);
+    let str = Misc.getPositionString(rank);
+    string = `${language}: ${str}`;
 
-      globalLbString = "global: not qualified";
-    } else if (glb.insertedAt >= 0) {
-      if (glb.newBest) {
-        globalLbDiff = glbMemory - glb.insertedAt;
-        DB.updateLbMemory(Config.mode, mode2, "global", glb.insertedAt);
-        let str = Misc.getPositionString(glb.insertedAt + 1);
-        globalLbString = `global: ${str}`;
-      } else {
-        globalLbDiff = glbMemory - glb.foundAt;
-        DB.updateLbMemory(Config.mode, mode2, "global", glb.foundAt);
-        let str = Misc.getPositionString(glb.foundAt + 1);
-        globalLbString = `global: ${str}`;
+    if (!dontShowRankDiff) {
+      let sString = lbDiff === 1 || lbDiff === -1 ? "" : "s";
+      if (lbDiff > 0) {
+        string += ` <span class="lbChange" aria-label="You've gained ${lbDiff} position${sString}" data-balloon-pos="left">(${lbUpIcon}${lbDiff})</span>`;
+      } else if (lbDiff === 0) {
+        string += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="left">(${lbRightIcon}${lbDiff})</span>`;
+      } else if (lbDiff < 0) {
+        string += ` <span class="lbChange" aria-label="You've lost ${lbDiff} position${sString}" data-balloon-pos="left">(${lbDownIcon}${lbDiff})</span>`;
       }
     }
-    if (!dontShowGlobalDiff) {
-      let sString = globalLbDiff === 1 || globalLbDiff === -1 ? "" : "s";
-      if (globalLbDiff > 0) {
-        globalLbString += ` <span class="lbChange" aria-label="You've gained ${globalLbDiff} position${sString}" data-balloon-pos="left">(${lbUpIcon}${globalLbDiff})</span>`;
-      } else if (globalLbDiff === 0) {
-        globalLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="left">(${lbRightIcon}${globalLbDiff})</span>`;
-      } else if (globalLbDiff < 0) {
-        globalLbString += ` <span class="lbChange" aria-label="You've lost ${globalLbDiff} position${sString}" data-balloon-pos="left">(${lbDownIcon}${globalLbDiff})</span>`;
-      }
-    }
-
-    //daily
-    let dailyLbString = "";
-    const dlb = data.daily;
-    let dlbMemory;
-    try {
-      dlbMemory = DB.getSnapshot().lbMemory[Config.mode + mode2].daily;
-    } catch {
-      dlbMemory = null;
-    }
-    let dontShowDailyDiff =
-      dlbMemory == null || dlbMemory === -1 ? true : false;
-    let dailyLbDiff = null;
-    if (dlb.status === -999) {
-      dailyLbString = "daily: error - " + dlb.message;
-    } else if (dlb === null) {
-      dailyLbString = "daily: not found";
-    } else if (dlb.insertedAt === -1) {
-      dontShowDailyDiff = true;
-      dailyLbDiff = dlbMemory - dlb.insertedAt;
-      DB.updateLbMemory(Config.mode, mode2, "daily", dlb.insertedAt);
-      dailyLbString = "daily: not qualified";
-    } else if (dlb.insertedAt >= 0) {
-      if (dlb.newBest) {
-        dailyLbDiff = dlbMemory - dlb.insertedAt;
-        DB.updateLbMemory(Config.mode, mode2, "daily", dlb.insertedAt);
-        let str = Misc.getPositionString(dlb.insertedAt + 1);
-        dailyLbString = `daily: ${str}`;
-      } else {
-        dailyLbDiff = dlbMemory - dlb.foundAt;
-        DB.updateLbMemory(Config.mode, mode2, "daily", dlb.foundAt);
-        let str = Misc.getPositionString(dlb.foundAt + 1);
-        dailyLbString = `daily: ${str}`;
-      }
-    }
-    if (!dontShowDailyDiff) {
-      let sString = dailyLbDiff === 1 || dailyLbDiff === -1 ? "" : "s";
-      if (dailyLbDiff > 0) {
-        dailyLbString += ` <span class="lbChange" aria-label="You've gained ${dailyLbDiff} position${sString}" data-balloon-pos="left">(${lbUpIcon}${dailyLbDiff})</span>`;
-      } else if (dailyLbDiff === 0) {
-        dailyLbString += ` <span class="lbChange" aria-label="Your position remained the same" data-balloon-pos="left">(${lbRightIcon}${dailyLbDiff})</span>`;
-      } else if (dailyLbDiff < 0) {
-        dailyLbString += ` <span class="lbChange" aria-label="You've lost ${dailyLbDiff} position${sString}" data-balloon-pos="left">(${lbDownIcon}${dailyLbDiff})</span>`;
-      }
-    }
-    string = globalLbString + "<br>" + dailyLbString;
-
-    // CloudFunctions.saveLbMemory({
-    //   uid: firebase.auth().currentUser.uid,
-    //   obj: DB.getSnapshot().lbMemory,
-    // }).then((d) => {
-    //   if (d.data.returnCode === 1) {
-    //   } else {
-    //     Notifications.add(
-    //       `Error saving lb memory ${d.data.message}`,
-    //       4000
-    //     );
-    //   }
-    // });
+  } else {
+    Notifications.add(data + " " + mode2 + " " + language, -1);
   }
   $("#result .stats .leaderboards").removeClass("hidden");
   $("#result .stats .leaderboards .bottom").html(string);
@@ -135,8 +50,6 @@ export function show(data, mode2) {
 export async function check(completedEvent) {
   try {
     if (
-      completedEvent.funbox === "none" &&
-      completedEvent.language === "english" &&
       completedEvent.mode === "time" &&
       ["15", "60"].includes(String(completedEvent.mode2))
     ) {
@@ -158,39 +71,27 @@ export async function check(completedEvent) {
           );
         }, 10000)
       );
-      let lbRes = {
-        ...completedEvent,
-      };
-      delete lbRes.keySpacing;
-      delete lbRes.keyDuration;
-      delete lbRes.chartData;
-      axiosInstance
-        .post("/results/checkLeaderboardQualification", {
-          result: lbRes,
-        })
-        .then((data) => {
-          if (data.data.status === -999) {
-            if (data.data.message === "Bad token") {
-              $("#result .stats .leaderboards").addClass("hidden");
-              Notifications.add(
-                "Bad token. This could mean your client is out of date and is sending data in the old format. Please refresh and clear your cache.",
-                -1
-              );
-            } else {
-              $("#result .stats .leaderboards").addClass("hidden");
-              Notifications.add(data.data.message, -1);
-            }
-          } else {
-            Misc.clearTimeouts(textTimeouts);
-            show(data.data, completedEvent.mode2);
-          }
-        })
-        .catch((e) => {
-          $("#result .stats .leaderboards").addClass("hidden");
-          let msg = e?.response?.data?.message ?? e.message;
-          Notifications.add("Failed to access leaderboard: " + msg, -1);
-          return;
+
+      let response;
+      try {
+        response = await axiosInstance.post("/leaderboard/update", {
+          rid: completedEvent._id,
         });
+      } catch (e) {
+        Misc.clearTimeouts(textTimeouts);
+        $("#result .stats .leaderboards").addClass("hidden");
+        let msg = e?.response?.data?.message ?? e.message;
+        Notifications.add("Failed to check leaderboard: " + msg, -1);
+        return;
+      }
+      if (response.status !== 200) {
+        Notifications.add(response.data.message);
+        Misc.clearTimeouts(textTimeouts);
+        $("#result .stats .leaderboards").addClass("hidden");
+      } else {
+        Misc.clearTimeouts(textTimeouts);
+        show(response.data, completedEvent.mode2, completedEvent.language);
+      }
     }
   } catch (e) {
     Notifications.add(`Error while checking leaderboards: ${e}`, -1);
