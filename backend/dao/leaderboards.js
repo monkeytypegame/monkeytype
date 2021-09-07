@@ -35,6 +35,7 @@ class LeaderboardsDAO {
             [str + ".acc"]: {
               $exists: true,
             },
+            banned: { $exists: false },
           },
         },
         {
