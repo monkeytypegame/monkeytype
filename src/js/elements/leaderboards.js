@@ -44,7 +44,8 @@ function update() {
   // Loader.show();
   showLoader(15);
   showLoader(60);
-  Promise.all([
+
+  let requestsToAwait = [
     axiosInstance.get(`/leaderboard`, {
       params: {
         language: "english",
@@ -61,29 +62,38 @@ function update() {
         skip: 0,
       },
     }),
-    axiosInstance.get(`/leaderboard/rank`, {
-      params: {
-        language: "english",
-        mode: "time",
-        mode2: "15",
-      },
-    }),
-    axiosInstance.get(`/leaderboard/rank`, {
-      params: {
-        language: "english",
-        mode: "time",
-        mode2: "60",
-      },
-    }),
-  ])
+  ];
+
+  if (firebase.auth().currentUser) {
+    requestsToAwait.push(
+      axiosInstance.get(`/leaderboard/rank`, {
+        params: {
+          language: "english",
+          mode: "time",
+          mode2: "15",
+        },
+      })
+    );
+    requestsToAwait.push(
+      axiosInstance.get(`/leaderboard/rank`, {
+        params: {
+          language: "english",
+          mode: "time",
+          mode2: "60",
+        },
+      })
+    );
+  }
+
+  Promise.all(requestsToAwait)
     .then((lbdata) => {
       // Loader.hide();
       hideLoader(15);
       hideLoader(60);
-      currentData[15] = lbdata[0].data;
-      currentData[60] = lbdata[1].data;
-      currentRank[15] = lbdata[2].data;
-      currentRank[60] = lbdata[3].data;
+      currentData[15] = lbdata[0]?.data;
+      currentData[60] = lbdata[1]?.data;
+      currentRank[15] = lbdata[2]?.data;
+      currentRank[60] = lbdata[3]?.data;
 
       clearTable(15);
       clearTable(60);
@@ -139,7 +149,7 @@ export function fillTable(lb, prepend) {
     if (entry.name == loggedInUserName) {
       meClassString = ' class="me"';
     }
-    if (entry.uid === firebase.auth().currentUser?.uid) {
+    if (entry.uid && entry.uid === firebase.auth().currentUser?.uid) {
       DB.updateLbMemory("time", lb, "english", entry.rank, true);
     }
     html += `
