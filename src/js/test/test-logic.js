@@ -1815,7 +1815,10 @@ export async function finish(difficultyFailed = false) {
                   );
                 } else {
                   completedEvent._id = response.data.insertedId;
-                  if (response.data.isPb) {
+                  if (
+                    response.data.isPb &&
+                    ["enligsh"].includes(completedEvent.language)
+                  ) {
                     completedEvent.isPb = true;
                     TestLeaderboards.check(completedEvent);
                   }
