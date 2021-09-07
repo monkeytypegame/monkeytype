@@ -493,13 +493,15 @@ a:hover {
           text-align: center;
         }
 
-        td {
-          padding: 0.5rem 0.5rem;
-
-          &.me {
+        tr.me {
+          td {
             color: var(--main-color);
             font-weight: 900;
           }
+        }
+
+        td {
+          padding: 0.5rem 0.5rem;
         }
 
         thead {

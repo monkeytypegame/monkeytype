@@ -153,11 +153,11 @@ export function fillTable(lb, prepend) {
       DB.updateLbMemory("time", lb, "english", entry.rank, true);
     }
     html += `
-    <tr>
+    <tr ${meClassString}>
     <td>${
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
-    <td ${meClassString}>${entry.name}</td>
+    <td>${entry.name}</td>
     <td class="alignRight">${entry.wpm.toFixed(
       2
     )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
