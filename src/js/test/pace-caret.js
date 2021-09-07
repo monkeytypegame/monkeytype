@@ -46,7 +46,8 @@ export async function init() {
       mode2,
       Config.punctuation,
       Config.language,
-      Config.difficulty
+      Config.difficulty,
+      Config.funbox
     );
   } else if (Config.paceCaret === "average") {
     let mode2 = "";

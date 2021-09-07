@@ -2,6 +2,7 @@ import * as Notifications from "./notifications";
 import * as UpdateConfig from "./config";
 import * as AccountButton from "./account-button";
 import * as Account from "./account";
+import * as AccountController from "./account-controller";
 import * as CommandlineLists from "./commandline-lists";
 import * as VerificationController from "./verification-controller";
 import * as Misc from "./misc";
@@ -13,6 +14,7 @@ import * as DB from "./db";
 import * as TestLogic from "./test-logic";
 import * as UI from "./ui";
 import axiosInstance from "./axios-instance";
+import * as PSA from "./psa";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 const githubProvider = new firebase.auth.GithubAuthProvider();
@@ -47,6 +49,7 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
       ChallengeController.setup(challengeName);
     }, 1000);
   }
+  PSA.show();
 });
 
 export function signIn() {
@@ -66,8 +69,27 @@ export function signIn() {
       return firebase
         .auth()
         .signInWithEmailAndPassword(email, password)
-        .then((e) => {
-          loadUser(e.user);
+        .then(async (e) => {
+          await loadUser(e.user);
+          if (TestLogic.notSignedInLastResult !== null) {
+            TestLogic.setNotSignedInUid(e.user.uid);
+            let response;
+            try {
+              response = await axiosInstance.post("/results/add", {
+                result: TestLogic.notSignedInLastResult,
+              });
+            } catch (e) {
+              let msg = e?.response?.data?.message ?? e.message;
+              Notifications.add("Failed to save last result: " + msg, -1);
+              return;
+            }
+            if (response.status !== 200) {
+              Notifications.add(response.data.message);
+            } else {
+              Notifications.add("Last test result saved", 1);
+            }
+            // UI.changePage("account");
+          }
           // UI.changePage("test");
           //TODO: redirect user to relevant page
         })
@@ -99,6 +121,12 @@ export async function signInWithGoogle() {
         name = await prompt(
           "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
         );
+
+        if (name == null) {
+          AccountController.signOut();
+          $(".pageLogin .preloader").addClass("hidden");
+          return;
+        }
 
         let response;
         try {
@@ -147,7 +175,7 @@ export async function signInWithGoogle() {
                 DB.getSnapshot().results.push(TestLogic.notSignedInLastResult);
               }
             });
-          UI.changePage("account");
+          // UI.changePage("account");
         }
       }
     } else {
@@ -188,6 +216,19 @@ export function linkWithGoogle() {
   firebase
     .auth()
     .currentUser.linkWithPopup(gmailProvider)
+    .then(function (result) {
+      console.log(result);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
+export function linkWithEmail(email, password) {
+  var credential = firebase.auth.EmailAuthProvider.credential(email, password);
+  firebase
+    .auth()
+    .currentUser.linkWithCredential(credential)
     .then(function (result) {
       console.log(result);
     })

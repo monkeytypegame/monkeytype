@@ -100,7 +100,7 @@ export async function getQuoteStats(quote) {
     Notifications.add(response.data.message);
   } else {
     quoteStats = response.data;
-    if (quoteStats) {
+    if (quoteStats && !quoteStats.average) {
       quoteStats.average = (
         Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
       ).toFixed(1);

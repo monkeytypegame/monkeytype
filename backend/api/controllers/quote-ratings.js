@@ -35,6 +35,8 @@ class QuoteRatingsController {
         );
       }
 
+      rating = Math.round(rating);
+
       //check if user already submitted a rating
       let user = await UserDAO.getUser(uid);
 

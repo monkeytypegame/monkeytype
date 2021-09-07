@@ -20,6 +20,14 @@ app.use(cors());
 
 app.set("trust proxy", 1);
 
+app.use((req, res, next) => {
+  if (process.env.MAINTENANCE === "true") {
+    res.status(503).json({ message: "Server is down for maintenance" });
+  } else {
+    next();
+  }
+});
+
 const userRouter = require("./api/routes/user");
 app.use("/user", userRouter);
 const configRouter = require("./api/routes/config");
@@ -30,6 +38,8 @@ const presetRouter = require("./api/routes/preset");
 app.use("/presets", presetRouter);
 const quoteRatings = require("./api/routes/quote-ratings");
 app.use("/quote-ratings", quoteRatings);
+const psaRouter = require("./api/routes/psa");
+app.use("/psa", psaRouter);
 
 app.use(function (e, req, res, next) {
   let uid = undefined;
