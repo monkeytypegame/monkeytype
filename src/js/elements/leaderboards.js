@@ -208,7 +208,7 @@ export function updateFooter(lb) {
         ? "-"
         : entry.consistency.toFixed(2) + "%"
     }</div></td>
-    <td class="alignRight">time<br><div class="sub">15</div></td>
+    <td class="alignRight">time<br><div class="sub">${lb}</div></td>
     <td class="alignRight">${moment(entry.timestamp).format(
       "DD MMM YYYY"
     )}<br><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></td>
