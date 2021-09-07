@@ -208,6 +208,8 @@ class ResultController {
 
       if (result.challenge && user.discordId) {
         BotDAO.awardChallenge(user.discordId, result.challenge);
+      } else {
+        delete result.challenge;
       }
 
       let tt = 0;
