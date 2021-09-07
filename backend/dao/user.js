@@ -149,6 +149,24 @@ class UsersDAO {
       );
   }
 
+  static async updateLbMemory(uid, mode, mode2, language, rank) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found", "get user");
+    if (user.lbMemory === undefined) user.lbMemory = {};
+    if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
+    if (user.lbMemory[mode][mode2] === undefined)
+      user.lbMemory[mode][mode2] = {};
+    user.lbMemory[mode][mode2][language] = rank;
+    return await mongoDB()
+      .collection("users")
+      .updateOne(
+        { uid },
+        {
+          $set: { lbMemory: user.lbMemory },
+        }
+      );
+  }
+
   static async checkIfPb(uid, result) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found", "check if pb");
