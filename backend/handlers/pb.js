@@ -43,6 +43,7 @@ custom: {
 module.exports = {
   checkAndUpdatePb(
     obj,
+    lbObj,
     mode,
     mode2,
     acc,
@@ -96,17 +97,15 @@ module.exports = {
       });
     }
 
-    let lbPb;
-    if (isPb && mode === "time" && (mode2 == "15" || mode2 == "60")) {
-      lbPb = {
-        time: {
-          15: {},
-          60: {},
-        },
-      };
+    if (lbObj && mode === "time" && (mode2 == "15" || mode2 == "60")) {
+      //updating lbpersonalbests object
+      //verify structure first
+      if (lbObj[mode] === undefined) lbObj[mode] = {};
+      if (lbObj[mode][mode2] === undefined) lbObj[mode][mode2] = {};
+
       let bestForEveryLanguage = {};
-      if (obj?.time?.[15]) {
-        obj.time[15].forEach((pb) => {
+      if (obj?.[mode]?.[mode2]) {
+        obj[mode][mode2].forEach((pb) => {
           if (!bestForEveryLanguage[pb.language]) {
             bestForEveryLanguage[pb.language] = pb;
           } else {
@@ -116,30 +115,22 @@ module.exports = {
           }
         });
         Object.keys(bestForEveryLanguage).forEach((key) => {
-          lbPb.time[15][key] = bestForEveryLanguage[key];
+          if (lbObj[mode][mode2][key] === undefined) {
+            lbObj[mode][mode2][key] = bestForEveryLanguage[key];
+          } else {
+            if (lbObj[mode][mode2][key].wpm < bestForEveryLanguage[key].wpm) {
+              lbObj[mode][mode2][key] = bestForEveryLanguage[key];
+            }
+          }
         });
         bestForEveryLanguage = {};
-      }
-      if (obj?.time?.[60]) {
-        obj.time[60].forEach((pb) => {
-          if (!bestForEveryLanguage[pb.language]) {
-            bestForEveryLanguage[pb.language] = pb;
-          } else {
-            if (bestForEveryLanguage[pb.language].wpm < pb.wpm) {
-              bestForEveryLanguage[pb.language] = pb;
-            }
-          }
-        });
-        Object.keys(bestForEveryLanguage).forEach((key) => {
-          lbPb.time[60][key] = bestForEveryLanguage[key];
-        });
       }
     }
 
     return {
       isPb,
       obj,
-      lbPb,
+      lbObj,
     };
   },
 };
