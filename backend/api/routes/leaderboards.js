@@ -22,11 +22,4 @@ router.post(
   LeaderboardsController.update
 );
 
-//TODO remove me
-router.post(
-  "/debug_update",
-  RateLimit.limit1persec,
-  LeaderboardsController.debugUpdate
-);
-
 module.exports = router;
