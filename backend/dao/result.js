@@ -42,7 +42,9 @@ class ResultDAO {
   }
 
   static async getResult(uid, id) {
-    const result = await mongoDB().collection("results").findOne({ id, uid });
+    const result = await mongoDB()
+      .collection("results")
+      .findOne({ _id: ObjectID(id), uid });
     if (!result) throw new MonkeyError(404, "Result not found");
     return result;
   }
