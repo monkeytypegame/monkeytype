@@ -579,7 +579,7 @@ export async function init() {
           Config.britishEnglish &&
           Config.language.replace(/_\d*k$/g, "") === "english"
         ) {
-          let britishWord = await BritishEnglish.replace(w[i]);
+          let britishWord = await BritishEnglish.replace(randomWord);
           if (britishWord) randomWord = britishWord;
         }
 
@@ -1125,7 +1125,7 @@ export async function addWord() {
     Config.britishEnglish &&
     Config.language.replace(/_\d*k$/g, "") === "english"
   ) {
-    let britishWord = await BritishEnglish.replace(w[i]);
+    let britishWord = await BritishEnglish.replace(randomWord);
     if (britishWord) randomWord = britishWord;
   }
 
