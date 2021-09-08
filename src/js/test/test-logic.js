@@ -1817,7 +1817,7 @@ export async function finish(difficultyFailed = false) {
                   completedEvent._id = response.data.insertedId;
                   if (
                     response.data.isPb &&
-                    ["enligsh"].includes(completedEvent.language)
+                    ["english"].includes(completedEvent.language)
                   ) {
                     completedEvent.isPb = true;
                     TestLeaderboards.check(completedEvent);
