@@ -1,14 +1,3 @@
-/*
-TODO:
-  Export replay as video
-  Export replay as typing test file?
-    .ttr file extension (stands for typing test record)
-      Should just be json, but fields should be specified by some format
-        metadata field with rules, website source, mode, name of typist
-        data field should be a list of objects, like monkeytype replay uses
-        signature or verfication field should be able to check file validity with server
-    And add ability to upload file to watch replay
-*/
 import config from "./config";
 import * as Sound from "./sound";
 
