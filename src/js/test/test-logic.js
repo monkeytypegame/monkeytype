@@ -575,6 +575,14 @@ export async function init() {
           randomWord = wordset.randomWord();
         }
 
+        if (
+          Config.britishEnglish &&
+          Config.language.replace(/_\d*k$/g, "") === "english"
+        ) {
+          let britishWord = await BritishEnglish.replace(w[i]);
+          if (britishWord) randomWord = britishWord;
+        }
+
         if (Config.funbox === "rAnDoMcAsE") {
           let randomcaseword = "";
           for (let i = 0; i < randomWord.length; i++) {
@@ -1111,6 +1119,14 @@ export async function addWord() {
 
   if (randomWord === undefined) {
     randomWord = wordset.randomWord();
+  }
+
+  if (
+    Config.britishEnglish &&
+    Config.language.replace(/_\d*k$/g, "") === "english"
+  ) {
+    let britishWord = await BritishEnglish.replace(w[i]);
+    if (britishWord) randomWord = britishWord;
   }
 
   if (Config.funbox === "rAnDoMcAsE") {
