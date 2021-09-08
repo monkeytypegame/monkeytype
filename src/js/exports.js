@@ -9,23 +9,15 @@ global.getuid = Misc.getuid;
 global.snapshot = DB.getSnapshot;
 global.config = Config;
 // global.addnotif = Notifications.add;
-global.link = AccountController.linkWithGoogle;
+global.linkToGoogle = AccountController.linkWithGoogle;
+global.linkToEmail = AccountController.linkWithEmail;
 
 global.filters = ResultFilters.getFilters();
 
 global.glarsesMode = toggleGlarses;
 
-global.crownTest = async () => {
-  console.log(
-    "local pb",
-    await DB.getLocalPB("time", 60, false, "english", "normal")
-  );
-  console.log(
-    "local highest wpm",
-    await DB.getUserHighestWpm("time", 60, false, "english", "normal")
-  );
-};
-
 global.filterDebug = Account.toggleFilterDebug;
 
 global.stats = TestStats.getStats;
+
+global.replay = Replay.getReplayExport;

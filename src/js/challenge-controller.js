@@ -6,11 +6,13 @@ import * as TestLogic from "./test-logic";
 import * as Funbox from "./funbox";
 import Config, * as UpdateConfig from "./config";
 import * as UI from "./ui";
+import * as TestUI from "./test-ui";
 
 export let active = null;
+let challengeLoading = false;
 
 export function clearActive() {
-  if (active) {
+  if (active && !challengeLoading && !TestUI.testRestarting) {
     Notifications.add("Challenge cleared", 0);
     active = null;
   }
@@ -125,6 +127,7 @@ export function verify(result) {
 }
 
 export async function setup(challengeName) {
+  challengeLoading = true;
   if (!$(".page.pageTest").hasClass("active")) {
     UI.changePage("", true);
   }
@@ -183,7 +186,7 @@ export async function setup(challengeName) {
       UpdateConfig.setMode("time", true);
       UpdateConfig.setDifficulty("master", true);
     } else if (challenge.type === "funbox") {
-      Funbox.activate(challenge.parameters[0]);
+      UpdateConfig.setFunbox(challenge.parameters[0], true);
       UpdateConfig.setDifficulty("normal", true);
       if (challenge.parameters[1] === "words") {
         UpdateConfig.setWordCount(challenge.parameters[2], true);
@@ -219,6 +222,7 @@ export async function setup(challengeName) {
       Notifications.add("Challenge loaded. " + notitext, 0);
     }
     active = challenge;
+    challengeLoading = false;
   } catch (e) {
     Notifications.add("Something went wrong: " + e, -1);
   }

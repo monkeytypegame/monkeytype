@@ -232,6 +232,17 @@ class UserController {
       return next(e);
     }
   }
+
+  static async updateLbMemory(req, res, next) {
+    try {
+      const { uid } = req.decodedToken;
+      const { mode, mode2, language, rank } = req.body;
+      await UsersDAO.updateLbMemory(uid, mode, mode2, language, rank);
+      return res.sendStatus(200);
+    } catch (e) {
+      return next(e);
+    }
+  }
 }
 
 module.exports = UserController;

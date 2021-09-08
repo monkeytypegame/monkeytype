@@ -224,6 +224,19 @@ export function linkWithGoogle() {
     });
 }
 
+export function linkWithEmail(email, password) {
+  var credential = firebase.auth.EmailAuthProvider.credential(email, password);
+  firebase
+    .auth()
+    .currentUser.linkWithCredential(credential)
+    .then(function (result) {
+      console.log(result);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
 export function signOut() {
   firebase
     .auth()

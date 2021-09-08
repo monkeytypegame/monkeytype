@@ -9,9 +9,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Coming+Soon&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lalezar&display=swap");
 
 :root {
-  --roundness: 0.25rem;
+  --roundness: 0.5rem;
   --font: "Roboto Mono";
   // scroll-behavior: smooth;
   scroll-padding-top: 2rem;
@@ -89,7 +90,8 @@ input[type="color"]::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-input[type="color"]::-webkit-color-swatch {
+input[type="color"]::-webkit-color-swatch,
+::-moz-color-swatch {
   border: none;
 }
 
@@ -423,7 +425,6 @@ a:hover {
       display: grid;
       gap: 1rem;
       grid-template-columns: 1fr 1fr;
-      margin-bottom: 2rem;
       font-size: 0.8rem;
       width: 100%;
 
@@ -439,8 +440,27 @@ a:hover {
         display: grid;
         width: 100%;
 
+        .titleAndButtons {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          .buttons {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr;
+            align-items: center;
+            // margin-top: .1rem;
+            gap: 1rem;
+            color: var(--sub-color);
+            .button {
+              padding-left: 1rem;
+              padding-right: 1rem;
+            }
+          }
+        }
+
         .title {
           grid-area: 1/1;
+          margin-bottom: 0;
+          line-height: 2.5rem;
         }
 
         .subtitle {
@@ -451,16 +471,16 @@ a:hover {
         }
       }
 
-      .globalTableWrapper,
-      .dailyTableWrapper {
+      .leftTableWrapper,
+      .rightTableWrapper {
         height: calc(100vh - 22rem);
         @extend .ffscroll;
         overflow-y: scroll;
         overflow-x: auto;
       }
 
-      .globalTableWrapper::-webkit-scrollbar,
-      .dailyTableWrapper::-webkit-scrollbar {
+      .leftTableWrapper::-webkit-scrollbar,
+      .rightTableWrapper::-webkit-scrollbar {
         height: 5px;
         width: 5px;
       }
@@ -474,13 +494,15 @@ a:hover {
           text-align: center;
         }
 
-        td {
-          padding: 0.5rem 0.5rem;
-
-          &.me {
+        tr.me {
+          td {
             color: var(--main-color);
             font-weight: 900;
           }
+        }
+
+        td {
+          padding: 0.5rem 0.5rem;
         }
 
         thead {
@@ -2154,6 +2176,7 @@ key {
         .word {
           //flex-direction: row-reverse;
           direction: rtl;
+          font-family: "Lalezar";
         }
       }
       &.withLigatures {
@@ -2470,6 +2493,7 @@ key {
     .word {
       //flex-direction: row-reverse;
       direction: rtl;
+      font-family: "Lalezar";
     }
   }
   &.withLigatures {
@@ -3763,6 +3787,10 @@ key {
 
 .hidden {
   display: none !important;
+}
+
+.invisible {
+  opacity: 0 !important;
 }
 
 .button {

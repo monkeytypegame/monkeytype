@@ -536,7 +536,7 @@
     "display": "I kInDa LiKe HoW iNeFfIcIeNt QwErTy Is",
     "autoRole": true,
     "type": "funbox",
-    "parameters": ["randomcase","time",3600],
+    "parameters": ["rAnDoMcAsE","time",3600],
     "requirements" : {
       "wpm": {
         "min": 100
@@ -544,7 +544,7 @@
       "time": {
         "min": 60
       },
-      "funbox": "randomcase"
+      "funbox": "rAnDoMcAsE"
     }
   }
   ,{
