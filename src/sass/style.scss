@@ -3490,6 +3490,19 @@ key {
     gap: 2rem;
   }
 
+  .timePbTable,
+  .wordsPbTable {
+    .sub {
+      opacity: 0.5;
+    }
+    td {
+      text-align: right;
+    }
+    tbody td:nth-child(1) {
+      font-size: 1.5rem;
+    }
+  }
+
   .topFilters .buttons {
     display: flex;
     justify-content: space-evenly;

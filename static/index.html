@@ -3752,16 +3752,29 @@
               <div class="group createdDate">Account created on -</div>
               <div class="group">
                 <div class="title">personal bests</div>
-                <div style="display: grid; grid-auto-flow: column; gap: 1rem">
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 2rem;
+                  "
+                >
                   <div class="titleAndTable timePbTable">
                     <table width="100%">
                       <thead>
                         <tr>
-                          <td>time</td>
-                          <td>wpm</td>
-                          <td>raw</td>
-                          <td>accuracy</td>
-                          <td>consistency</td>
+                          <td width="1%">time</td>
+                          <td width="33%">
+                            wpm
+                            <br />
+                            <span class="sub">accuracy</span>
+                          </td>
+                          <td width="33%">
+                            raw
+                            <br />
+                            <span class="sub">consistency</span>
+                          </td>
+                          <td width="33%">date</td>
                         </tr>
                       </thead>
                       <tbody>
@@ -3796,11 +3809,18 @@
                     <table width="100%">
                       <thead>
                         <tr>
-                          <td>words</td>
-                          <td>wpm</td>
-                          <td>raw</td>
-                          <td>accuracy</td>
-                          <td>consistency</td>
+                          <td width="1%">words</td>
+                          <td width="33%">
+                            wpm
+                            <br />
+                            <span class="sub">accuracy</span>
+                          </td>
+                          <td width="33%">
+                            raw
+                            <br />
+                            <span class="sub">consistency</span>
+                          </td>
+                          <td width="33%">date</td>
                         </tr>
                       </thead>
                       <tbody>
