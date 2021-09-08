@@ -127,6 +127,7 @@ let defaultConfig = {
   minBurst: "off",
   minBurstCustomSpeed: 100,
   burstHeatmap: false,
+  britishEnglish: false,
 };
 
 function isConfigKeyValid(name) {
@@ -1290,6 +1291,14 @@ export function setRandomTheme(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+export function setBritishEnglish(val, nosave) {
+  if (!val) {
+    val = false;
+  }
+  config.britishEnglish = val;
+  if (!nosave) saveToLocalStorage();
+}
+
 export function toggleCustomTheme(nosave) {
   if (config.customTheme) {
     setCustomTheme(false);
@@ -1671,6 +1680,7 @@ export function apply(configObj) {
     setRepeatQuotes(configObj.repeatQuotes, true);
     setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
     setBurstHeatmap(configObj.burstHeatmap, true);
+    setBritishEnglish(configObj.britishEnglish, true);
 
     LanguagePicker.setActiveGroup();
 

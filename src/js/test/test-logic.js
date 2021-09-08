@@ -36,6 +36,7 @@ import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
 import * as ChallengeContoller from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
+import * as BritishEnglish from "./british-english";
 
 const objecthash = require("object-hash");
 
@@ -726,6 +727,13 @@ export async function init() {
     for (let i = 0; i < w.length; i++) {
       if (/\t/g.test(w[i])) {
         setHasTab(true);
+      }
+      if (
+        Config.britishEnglish &&
+        Config.language.replace(/_\d*k$/g, "") === "english"
+      ) {
+        let britishWord = await BritishEnglish.replace(w[i]);
+        if (britishWord) w[i] = britishWord;
       }
       words.push(w[i]);
     }
