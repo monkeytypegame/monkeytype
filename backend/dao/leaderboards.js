@@ -27,7 +27,7 @@ class LeaderboardsDAO {
 
   static async update(mode, mode2, language, uid = undefined) {
     let str = `lbPersonalBests.${mode}.${mode2}.${language}`;
-    let start = performance.now();
+    let start1 = performance.now();
     let lb = await mongoDB()
       .collection("users")
       .aggregate([
@@ -62,7 +62,9 @@ class LeaderboardsDAO {
         },
       ])
       .toArray();
+    let end1 = performance.now();
 
+    let start2 = performance.now();
     let retval = undefined;
     lb.forEach((lbEntry, index) => {
       lbEntry.rank = index + 1;
@@ -70,7 +72,8 @@ class LeaderboardsDAO {
         retval = index + 1;
       }
     });
-
+    let end2 = performance.now();
+    let start3 = performance.now();
     try {
       await mongoDB()
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
@@ -79,13 +82,14 @@ class LeaderboardsDAO {
     await mongoDB()
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .insertMany(lb);
-
-    let end = performance.now();
-    let timeToRunSec = (end - start) / 1000;
+    let end3 = performance.now();
+    let timeToRunAggregate = (end1 - start1) / 1000;
+    let timeToRunLoop = (end2 - start2) / 1000;
+    let timeToRunInsert = (end3 - start3) / 1000;
 
     Logger.log(
       `lb_update_${language}_${mode}_${mode2}`,
-      `Update took ${timeToRunSec} seconds`,
+      `Aggregate ${timeToRunAggregate}s, loop ${timeToRunLoop}s, insert ${timeToRunInsert}s`,
       uid
     );
 
