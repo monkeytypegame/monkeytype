@@ -2,6 +2,7 @@ const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
 const { ObjectID } = require("mongodb");
 const Logger = require("../handlers/logger");
+const { performance } = require("perf_hooks");
 
 class LeaderboardsDAO {
   static async get(mode, mode2, language, skip, limit = 100) {
@@ -10,6 +11,7 @@ class LeaderboardsDAO {
     const preset = await mongoDB()
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .find()
+      .sort({ rank: 1 })
       .skip(parseInt(skip))
       .limit(parseInt(limit))
       .toArray();
