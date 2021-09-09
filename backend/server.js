@@ -57,6 +57,11 @@ app.use(function (e, req, res, next) {
     monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
   }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
+    Logger.log(
+      `system_error`,
+      `${monkeyError.status} ${monkeyError.message}`,
+      monkeyError.uid
+    );
     mongoDB().collection("errors").insertOne({
       _id: monkeyError.errorID,
       timestamp: Date.now(),

@@ -266,14 +266,9 @@ class ResultController {
       if (isPb) {
         Logger.log(
           "user_new_pb",
-          {
-            rid: addedResult.insertedId,
-            mode: result.mode + " " + result.mode2,
-            wpm: result.wpm,
-            acc: result.acc,
-            raw: result.rawWpm,
-            con: result.consistency,
-          },
+          `${result.mode + " " + result.mode2} ${result.wpm} ${result.acc}% ${
+            result.rawWpm
+          } ${result.consistency}% (${addedResult.insertedId})`,
           uid
         );
       }
