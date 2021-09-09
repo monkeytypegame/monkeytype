@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.12.5",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "chart.js": "^2.9.4",
     "chartjs-plugin-annotation": "^0.5.7",
     "chartjs-plugin-trendline": "^0.2.2",
