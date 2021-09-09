@@ -391,7 +391,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").click(async (e) => {
   $("#leaderboardsWrapper #leaderboards .leftTableWrapper").animate(
     {
       scrollTop:
-        rowHeight * Math.min(currentRank[15].rank, 50) -
+        rowHeight * Math.min(currentRank[15].rank, leaderboardSingleLimit / 2) -
         $(
           "#leaderboardsWrapper #leaderboards .leftTableWrapper"
         ).outerHeight() /
@@ -423,7 +423,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").click(async (e) => {
   $("#leaderboardsWrapper #leaderboards .rightTableWrapper").animate(
     {
       scrollTop:
-        rowHeight * Math.min(currentRank[60].rank, 50) -
+        rowHeight * Math.min(currentRank[60].rank, leaderboardSingleLimit / 2) -
         $(
           "#leaderboardsWrapper #leaderboards .rightTableWrapper"
         ).outerHeight() /
