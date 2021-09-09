@@ -8,6 +8,7 @@ const {
 } = require("../../handlers/validation");
 const { stdDev, roundTo2 } = require("../../handlers/misc");
 const objecthash = require("object-hash");
+const Logger = require("../../handlers/logger");
 
 class ResultController {
   static async getResults(req, res, next) {
@@ -234,6 +235,12 @@ class ResultController {
       if (result.mode !== "custom") delete result.customText;
 
       let addedResult = await ResultDAO.addResult(uid, result);
+
+      if (isPb) {
+        Logger.log("result_saved_pb", addedResult.insertedId, uid);
+      } else {
+        Logger.log("result_saved_nopb", addedResult.insertedId, uid);
+      }
 
       return res.status(200).json({
         message: "Result saved",
