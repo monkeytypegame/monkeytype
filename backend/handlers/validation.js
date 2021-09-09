@@ -1,5 +1,5 @@
 const MonkeyError = require("./error");
-const Logger = require("../../handlers/logger");
+const Logger = require("../handlers/logger");
 const { roundTo2 } = require("./misc");
 
 function isUsernameValid(name) {
