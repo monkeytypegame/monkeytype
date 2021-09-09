@@ -238,8 +238,6 @@ class ResultController {
 
       if (isPb) {
         Logger.log("result_saved_pb", addedResult.insertedId, uid);
-      } else {
-        Logger.log("result_saved_nopb", addedResult.insertedId, uid);
       }
 
       return res.status(200).json({
