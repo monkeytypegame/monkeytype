@@ -11,7 +11,7 @@ class LeaderboardsDAO {
     const preset = await mongoDB()
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .find()
-      .sort({ rank: 1 })
+      // .sort({ rank: 1 })
       .skip(parseInt(skip))
       .limit(parseInt(limit))
       .toArray();
