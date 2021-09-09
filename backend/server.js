@@ -42,6 +42,8 @@ const psaRouter = require("./api/routes/psa");
 app.use("/psa", psaRouter);
 const leaderboardsRouter = require("./api/routes/leaderboards");
 app.use("/leaderboard", leaderboardsRouter);
+const newQuotesRouter = require("./api/routes/new-quotes");
+app.use("/new-quotes", newQuotesRouter);
 
 app.use(function (e, req, res, next) {
   let uid = undefined;
