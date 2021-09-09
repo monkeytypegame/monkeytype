@@ -47,6 +47,7 @@ class ResultController {
       const { uid } = req.decodedToken;
       const { result } = req.body;
       result.testDuration = parseFloat(result.testDuration);
+      result.uid = uid;
       if (validateObjectValues(result) > 0)
         return res.status(400).json({ message: "Bad input" });
       if (
@@ -159,6 +160,19 @@ class ResultController {
               (result.wpm > 200 && result.consistency < 70)
             ) {
               //possible bot
+              Logger.log(
+                "anticheat_triggered",
+                {
+                  durationSD: result.keyDurationStats.sd,
+                  durationAvg: result.keyDurationStats.average,
+                  spacingSD: result.keySpacingStats.sd,
+                  spacingAvg: result.keySpacingStats.average,
+                  wpm: result.wpm,
+                  acc: result.acc,
+                  consistency: result.consistency,
+                },
+                uid
+              );
               return res.status(400).json({ message: "Possible bot detected" });
             }
             if (
@@ -170,6 +184,19 @@ class ResultController {
                 result.keyDurationStats.average <= 20)
             ) {
               //close to the bot detection threshold
+              Logger.log(
+                "anticheat_close",
+                {
+                  durationSD: result.keyDurationStats.sd,
+                  durationAvg: result.keyDurationStats.average,
+                  spacingSD: result.keySpacingStats.sd,
+                  spacingAvg: result.keySpacingStats.average,
+                  wpm: result.wpm,
+                  acc: result.acc,
+                  consistency: result.consistency,
+                },
+                uid
+              );
             }
           } else {
             return res.status(400).json({ message: "Missing key data" });
