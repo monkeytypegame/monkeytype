@@ -88,7 +88,7 @@ class LeaderboardsDAO {
     let timeToRunInsert = (end3 - start3) / 1000;
 
     Logger.log(
-      `lb_update_${language}_${mode}_${mode2}`,
+      `system_lb_update_${language}_${mode}_${mode2}`,
       `Aggregate ${timeToRunAggregate}s, loop ${timeToRunLoop}s, insert ${timeToRunInsert}s`,
       uid
     );
