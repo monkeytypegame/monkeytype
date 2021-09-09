@@ -1,6 +1,7 @@
 const MonkeyError = require("../handlers/error");
 const { mongoDB } = require("../init/mongodb");
 const { ObjectID } = require("mongodb");
+const Logger = require("../handlers/logger");
 
 class LeaderboardsDAO {
   static async get(mode, mode2, language, skip, limit = 100) {
@@ -24,6 +25,7 @@ class LeaderboardsDAO {
 
   static async update(mode, mode2, language, uid = undefined) {
     let str = `lbPersonalBests.${mode}.${mode2}.${language}`;
+    let start = performance.now();
     let lb = await mongoDB()
       .collection("users")
       .aggregate([
@@ -75,6 +77,15 @@ class LeaderboardsDAO {
     await mongoDB()
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .insertMany(lb);
+
+    let end = performance.now();
+    let timeToRunSec = (end - start) / 1000;
+
+    Logger.log(
+      `lb_update_${language}_${mode}_${mode2}`,
+      `Update took ${timeToRunSec} seconds`,
+      uid
+    );
 
     if (retval) {
       return {
