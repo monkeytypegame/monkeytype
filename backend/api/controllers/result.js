@@ -264,7 +264,18 @@ class ResultController {
       let addedResult = await ResultDAO.addResult(uid, result);
 
       if (isPb) {
-        Logger.log("result_saved_pb", addedResult.insertedId, uid);
+        Logger.log(
+          "user_new_pb",
+          {
+            rid: addedResult.insertedId,
+            mode: result.mode + " " + result.mode2,
+            wpm: result.wpm,
+            acc: result.acc,
+            raw: result.rawWpm,
+            con: result.consistency,
+          },
+          uid
+        );
       }
 
       return res.status(200).json({
