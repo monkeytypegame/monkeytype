@@ -89,9 +89,8 @@ app.listen(PORT, async () => {
   console.log("Database Connected");
 
   let lbjob = new CronJob("0 */5 * * * *", async () => {
-    await LeaderboardsDAO.update("time", "15", "english");
-
-    await LeaderboardsDAO.update("time", "60", "english");
+    LeaderboardsDAO.update("time", "15", "english");
+    LeaderboardsDAO.update("time", "60", "english");
   });
   lbjob.start();
 });
