@@ -4,15 +4,16 @@ export let rightState = false;
 $(document).keydown((e) => {
   if (e.code === "ShiftLeft") {
     leftState = true;
+    rightState = false;
   } else if (e.code === "ShiftRight") {
+    leftState = false;
     rightState = true;
   }
 });
 
 $(document).keyup((e) => {
-  if (e.code === "ShiftLeft") {
+  if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
     leftState = false;
-  } else if (e.code === "ShiftRight") {
     rightState = false;
   }
 });

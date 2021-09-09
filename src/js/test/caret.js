@@ -27,11 +27,11 @@ export function hide() {
   $("#caret").addClass("hidden");
 }
 
-export function updatePosition() {
+export async function updatePosition() {
   if ($("#wordsWrapper").hasClass("hidden")) return;
-  if ($("#caret").hasClass("off")) {
-    return;
-  }
+  // if ($("#caret").hasClass("off")) {
+  //   return;
+  // }
 
   let caret = $("#caret");
 
@@ -56,7 +56,8 @@ export function updatePosition() {
     }
 
     if (Config.mode != "zen" && $(currentLetter).length == 0) return;
-    const isLanguageLeftToRight = Misc.getCurrentLanguage().leftToRight;
+    const currentLanguage = await Misc.getCurrentLanguage();
+    const isLanguageLeftToRight = currentLanguage.leftToRight;
     let currentLetterPosLeft = isLanguageLeftToRight
       ? currentLetter.offsetLeft
       : currentLetter.offsetLeft + $(currentLetter).width();

@@ -8,6 +8,7 @@
     <link
       href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
       rel="stylesheet"
+      crossorigin="anonymous"
     />
     <link rel="stylesheet" href="css/balloon.css" />
     <link rel="stylesheet" href="css/style.css" />
@@ -15,7 +16,7 @@
     <link rel="stylesheet" href="themes/serika_dark.css" id="currentTheme" />
     <link rel="stylesheet" href="" id="funBoxTheme" />
     <link id="favicon" rel="shortcut icon" href="images/fav.png" />
-    <link rel="shortcut icon" href="images/favicon/fav.png" />
+    <!-- <link rel="shortcut icon" href="images/favicon/fav.png" /> -->
     <link
       href="images/favicon/apple-touch-icon-180x180.png"
       rel="apple-touch-icon"
@@ -43,9 +44,10 @@
     />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
       crossorigin="anonymous"
+      referrerpolicy="no-referrer"
     />
     <meta name="name" content="Monkeytype" />
     <meta name="image" content="https://monkeytype.com/mtsocial.png" />
@@ -55,7 +57,7 @@
     />
     <meta
       name="keywords"
-      content="typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkeytypes, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
+      content="typing speed test, typing speedtest, typing test, speetest, speed test, typing, test, typing-test, typing test, monkey-type, monkeytype, monkey type, monkey-types, monkeytypes, monkey types, types, monkey, type, miodec, wpm, words per minute, typing website, minimalistic, custom typing test, customizable, customisable, themes, random words, smooth caret, smooth, new, new typing site, new typing website, minimalist typing website, minimalistic typing website, minimalist typing test"
     />
     <meta name="author" content="Miodec" />
     <meta property="og:title" content="Monkeytype" />
@@ -70,18 +72,28 @@
     <meta name="twitter:title" content="Monkeytype" />
     <meta name="twitter:image" content="https://monkeytype.com/mtsocial.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <script type="text/javascript">
+    <!-- <script type="text/javascript">
       window["nitroAds"] = window["nitroAds"] || {
         createAd: function () {
           window.nitroAds.queue.push(["createAd", arguments]);
         },
         queue: [],
       };
-    </script>
-    <script async src="https://s.nitropay.com/ads-693.js"></script>
+    </script> -->
+    <!-- <script async src="https://s.nitropay.com/ads-693.js"></script> -->
+    <script
+      src="https://hb.vntsm.com/v3/live/ad-manager.min.js"
+      type="text/javascript"
+      data-site-id="60b78af12119122b8958910f"
+      data-mode="scan"
+      id="adScript"
+      async
+    ></script>
   </head>
   <div class="customBackground"></div>
+
   <body>
+    <div id="ad_rich_media" class="hidden"></div>
     <div id="backgroundLoader" style="display: none"></div>
     <div id="notificationCenter">
       <div class="history"></div>
@@ -98,23 +110,102 @@
     >
       Important information about your account. Please click this message.
     </div>
-    <div
-      class="merchBanner hidden"
-      style="
-        background-color: var(--main-color);
-        padding: 0.5rem;
-        text-align: center;
-        color: var(--bg-color);
-      "
-    >
-      Check out our new merchandise over at
-      <a href="https://monkeytype.store" target="_blank">monkeytype.store</a>
-      . We've got some awesome designs for you.
+    <div class="merchBanner hidden">
+      <img src="images/merchdropwebsite2.png" alt="" />
+      <div class="text">
+        We've got brand new merch designs over at
+        <a href="https://monkeytype.store" target="_blank">monkeytype.store</a>
+      </div>
       <i class="fas closeButton fa-times"></i>
     </div>
 
     <div id="simplePopupWrapper" class="hidden">
       <div id="simplePopup" popupId=""></div>
+    </div>
+
+    <div id="practiseWordsPopupWrapper" class="hidden">
+      <div id="practiseWordsPopup" action="">
+        <div class="title">Practice words</div>
+        <div class="text">
+          This will start a new test in custom mode. Words that you mistyped
+          more often or words that you typed much slower will be weighted higher
+          and appear more often.
+        </div>
+        <div class="button missed" tabindex="1">Practice missed</div>
+        <div class="button slow" tabindex="1">Practice slow</div>
+        <div class="button both" tabindex="1">Practice both</div>
+      </div>
+    </div>
+
+    <div id="rateQuotePopupWrapper" class="hidden">
+      <div id="rateQuotePopup" quoteId="">
+        <div class="quote">
+          <div class="text">-</div>
+          <div class="id">
+            <div class="top">id</div>
+            <div class="val">-</div>
+          </div>
+          <div class="length">
+            <div class="top">length</div>
+            <div class="val">-</div>
+          </div>
+          <div class="source">
+            <div class="top">source</div>
+            <div class="val">-</div>
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <div class="ratingStats">
+          <div class="ratingCount">
+            <div class="top">ratings</div>
+            <div class="val">-</div>
+          </div>
+          <div class="ratingAverage">
+            <div class="top">average</div>
+            <div class="val">-</div>
+          </div>
+          <div class="starsWrapper">
+            <div class="top">your rating</div>
+            <div class="stars">
+              <div class="star active" rating="1">
+                <i class="fas fa-fw fa-star"></i>
+              </div>
+              <div class="star active" rating="2">
+                <i class="fas fa-fw fa-star"></i>
+              </div>
+              <div class="star active" rating="3">
+                <i class="fas fa-fw fa-star"></i>
+              </div>
+              <div class="star" rating="4">
+                <i class="fas fa-fw fa-star"></i>
+              </div>
+              <div class="star" rating="5">
+                <i class="fas fa-fw fa-star"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="button rate1">
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+            <i class="far fa-star"></i>
+          </div>
+          <div class="button rate2">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+          </div>
+          <div class="button rate3">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div> -->
+        <span aria-label="Submit review" data-balloon-pos="up">
+          <div class="icon-button submitButton">
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </span>
+      </div>
     </div>
 
     <div id="settingsImportWrapper" class="hidden">
@@ -164,6 +255,15 @@
             Remove Fancy Typography
             <span>
               Standardises typography symbols (for example “ and ” become ")
+            </span>
+          </label>
+          <label class="checkbox delimiterCheck">
+            <input type="checkbox" />
+            <div class="customTextCheckbox customTextDelimiterCheckbox"></div>
+            Pipe Delimiter
+            <span>
+              Change how words are separated. Using the pipe delimiter allows
+              you to randomize groups of words.
             </span>
           </label>
         </div>
@@ -277,18 +377,38 @@
     </div>
     <div id="leaderboardsWrapper" class="hidden">
       <div id="leaderboards">
-        <div class="mainTitle">Leaderboards</div>
-        <div class="buttons">
-          <div class="buttonGroup">
-            <div class="button active" board="time_15">time 15</div>
-            <div class="button" board="time_60">time 60</div>
-          </div>
+        <div class="leaderboardsTop">
+          <div class="mainTitle">Leaderboards</div>
+          <!-- <div class="buttons">
+            <div class="buttonGroup">
+              <div class="button active" board="time_15">time 15</div>
+              <div class="button" board="time_60">time 60</div>
+            </div>
+          </div> -->
         </div>
         <div class="tables">
           <div class="titleAndTable">
-            <div class="title">Global</div>
-            <div class="globalTableWrapper">
-              <table class="global">
+            <div class="titleAndButtons">
+              <div class="title">
+                English Time 15
+                <i
+                  class="hidden leftTableLoader fas fa-fw fa-spin fa-circle-notch"
+                ></i>
+              </div>
+              <div class="buttons">
+                Jump to:
+                <div class="button leftTableJumpToTop">
+                  <i class="fas fa-fw fas fa-crown"></i>
+                  <!-- Top -->
+                </div>
+                <div class="button leftTableJumpToMe">
+                  <i class="fas fa-fw fas fa-user"></i>
+                  <!-- Me -->
+                </div>
+              </div>
+            </div>
+            <div class="leftTableWrapper invisible">
+              <table class="left">
                 <thead>
                   <tr>
                     <td width="1%">#</td>
@@ -307,271 +427,33 @@
                     <td class="alignRight" width="22%">date</td>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td>-</td>
-                    <td>You</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                </tfoot>
+                <tbody></tbody>
+                <tfoot></tfoot>
               </table>
             </div>
           </div>
           <div class="titleAndTable">
-            <div class="title">Daily</div>
-            <div class="subtitle">-</div>
-            <div class="dailyTableWrapper">
-              <table class="daily">
+            <div class="titleAndButtons">
+              <div class="title">
+                English Time 60
+                <i
+                  class="hidden rightTableLoader fas fa-fw fa-spin fa-circle-notch"
+                ></i>
+              </div>
+              <div class="buttons">
+                Jump to:
+                <div class="button rightTableJumpToTop">
+                  <i class="fas fa-fw fas fa-crown"></i>
+                  <!-- Top -->
+                </div>
+                <div class="button rightTableJumpToMe">
+                  <i class="fas fa-fw fas fa-user"></i>
+                  <!-- Me -->
+                </div>
+              </div>
+            </div>
+            <div class="rightTableWrapper invisible">
+              <table class="right">
                 <thead>
                   <tr>
                     <td width="1%">#</td>
@@ -590,263 +472,8 @@
                     <td class="alignRight" width="22%">date</td>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td>-</td>
-                    <td>You</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                </tfoot>
+                <tbody></tbody>
+                <tfoot></tfoot>
               </table>
             </div>
           </div>
@@ -908,7 +535,18 @@
     </div>
     <div id="commandLineWrapper" class="hidden">
       <div id="commandLine">
-        <input type="text" class="input" placeholder="Type to search" />
+        <div
+          style="
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+          "
+        >
+          <div class="searchicon">
+            <i class="fas fa-search"></i>
+          </div>
+          <input type="text" class="input" placeholder="Type to search" />
+        </div>
         <div class="separator hidden"></div>
         <div class="listTitle">Title</div>
         <div class="suggestions"></div>
@@ -921,12 +559,64 @@
       <div id="timer" class="timerMain"></div>
     </div>
     <div style="display: flex; justify-content: space-around">
-      <div id="nitropay_ad_left" class="hidden"></div>
       <div id="centerContent" class="hidden">
         <div id="top">
-          <div class="logo">
+          <!-- <div class="logo">
             <div class="top">monkey see</div>
             <div class="bottom">monkeytype</div>
+          </div> -->
+          <div class="logo">
+            <div class="icon">
+              <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="isolation:isolate" viewBox="-621 -935 270 160" ><g><path d="M -401 -835 L -401 -835 C -395.481 -835 -391 -830.519 -391 -825 L -391 -825 C -391 -819.481 -395.481 -815 -401 -815 L -401 -815 C -406.519 -815 -411 -819.481 -411 -825 L -411 -825 C -411 -830.519 -406.519 -835 -401 -835 Z" /><path d="M -571 -835 L -561 -835 C -555.481 -835 -551 -830.519 -551 -825 L -551 -825 C -551 -819.481 -555.481 -815 -561 -815 L -571 -815 C -576.519 -815 -581 -819.481 -581 -825 L -581 -825 C -581 -830.519 -576.519 -835 -571 -835 Z" /><path d="M -531 -835 L -461 -835 C -455.481 -835 -451 -830.519 -451 -825 L -451 -825 C -451 -819.481 -455.481 -815 -461 -815 L -531 -815 C -536.519 -815 -541 -819.481 -541 -825 L -541 -825 C -541 -830.519 -536.519 -835 -531 -835 Z" /><path d="M -431 -865 L -431 -865 C -425.481 -865 -421 -860.519 -421 -855 L -421 -825 C -421 -819.481 -425.481 -815 -431 -815 L -431 -815 C -436.519 -815 -441 -819.481 -441 -825 L -441 -855 C -441 -860.519 -436.519 -865 -431 -865 Z" /><path d="M -461 -865 L -401 -865 C -395.481 -865 -391 -860.519 -391 -855 L -391 -855 C -391 -849.481 -395.481 -845 -401 -845 L -461 -845 C -466.519 -845 -471 -849.481 -471 -855 L -471 -855 C -471 -860.519 -466.519 -865 -461 -865 Z" /><path d="M -431 -895 L -401 -895 C -395.481 -895 -391 -890.519 -391 -885 L -391 -885 C -391 -879.481 -395.481 -875 -401 -875 L -431 -875 C -436.519 -875 -441 -879.481 -441 -885 L -441 -885 C -441 -890.519 -436.519 -895 -431 -895 Z" /><path d="M -465 -895 L -461 -895 C -455.481 -895 -451 -890.519 -451 -885 L -451 -885 C -451 -879.481 -455.481 -875 -461 -875 L -465 -875 C -470.519 -875 -475 -879.481 -475 -885 L -475 -885 C -475 -890.519 -470.519 -895 -465 -895 Z" /><path d=" M -501 -865 L -481 -865 L -481 -855 C -481 -849.481 -485.481 -845 -491 -845 L -491 -845 C -496.519 -845 -501 -849.481 -501 -855 L -501 -865 Z "/><path d=" M -541 -865 L -521 -865 L -521 -855 C -521 -849.481 -525.481 -845 -531 -845 L -531 -845 C -536.519 -845 -541 -849.481 -541 -855 L -541 -865 Z "/><path d=" M -581 -865 L -561 -865 L -561 -855 C -561 -849.481 -565.481 -845 -571 -845 L -571 -845 C -576.519 -845 -581 -849.481 -581 -855 L -581 -865 Z "/><path d=" M -501 -865 L -501 -865 C -501 -870.519 -505.481 -875 -511 -875 L -511 -875 L -511 -895 L -511 -895 C -494.443 -895 -481 -881.557 -481 -865 L -481 -865 L -501 -865 Z "/><path d=" M -541 -865 L -541 -865 C -541 -870.519 -545.481 -875 -551 -875 L -551 -875 L -551 -895 L -551 -895 C -534.443 -895 -521 -881.557 -521 -865 L -521 -865 L -541 -865 Z "/><path d=" M -511 -875 L -511 -875 C -516.519 -875 -521 -870.519 -521 -865 L -521 -865 L -541 -865 L -541 -865 C -541 -881.557 -527.557 -895 -511 -895 L -511 -895 L -511 -875 Z "/><path d=" M -551 -875 L -551 -875 C -556.519 -875 -561 -870.519 -561 -865 L -561 -865 L -581 -865 L -581 -865 C -581 -881.557 -567.557 -895 -551 -895 L -551 -895 L -551 -875 Z "/><path d=" M -601 -845 L -621 -845 L -621 -885 C -621 -912.596 -598.596 -935 -571 -935 L -401 -935 C -373.404 -935 -351 -912.596 -351 -885 L -351 -825 C -351 -797.404 -373.404 -775 -401 -775 L -571 -775 C -598.596 -775 -621 -797.404 -621 -825 L -621 -845 L -601 -845 L -601 -825 C -601 -808.443 -587.557 -795 -571 -795 L -401 -795 C -384.443 -795 -371 -808.443 -371 -825 L -371 -885 C -371 -901.557 -384.443 -915 -401 -915 L -571 -915 C -587.557 -915 -601 -901.557 -601 -885 L -601 -845 Z "/></g></svg> -->
+              <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="isolation:isolate" viewBox="-600 -930 250 160"><g><path d="M -400 -830 L -400 -830 C -394.481 -830 -390 -825.519 -390 -820 L -390 -820 C -390 -814.481 -394.481 -810 -400 -810 L -400 -810 C -405.519 -810 -410 -814.481 -410 -820 L -410 -820 C -410 -825.519 -405.519 -830 -400 -830 Z"/><path d=" M -505 -830 L -460 -830 C -454.481 -830 -450 -825.519 -450 -820 L -450 -820 C -450 -814.481 -454.481 -810 -460 -810 L -505 -810 C -510.519 -810 -515 -814.481 -515 -820 L -515 -820 C -515 -825.519 -510.519 -830 -505 -830 Z "/><path d="M -430 -860 L -430 -860 C -424.481 -860 -420 -855.519 -420 -850 L -420 -820 C -420 -814.481 -424.481 -810 -430 -810 L -430 -810 C -435.519 -810 -440 -814.481 -440 -820 L -440 -850 C -440 -855.519 -435.519 -860 -430 -860 Z"/><path d="M -460 -860 L -400 -860 C -394.481 -860 -390 -855.519 -390 -850 L -390 -850 C -390 -844.481 -394.481 -840 -400 -840 L -460 -840 C -465.519 -840 -470 -844.481 -470 -850 L -470 -850 C -470 -855.519 -465.519 -860 -460 -860 Z"/><path d="M -430 -890 L -400 -890 C -394.481 -890 -390 -885.519 -390 -880 L -390 -880 C -390 -874.481 -394.481 -870 -400 -870 L -430 -870 C -435.519 -870 -440 -874.481 -440 -880 L -440 -880 C -440 -885.519 -435.519 -890 -430 -890 Z"/><path d=" M -550 -830 L -535 -830 C -529.481 -830 -525 -825.519 -525 -820 L -525 -820 C -525 -814.481 -529.481 -810 -535 -810 L -550 -810 C -555.519 -810 -560 -814.481 -560 -820 L -560 -820 C -560 -825.519 -555.519 -830 -550 -830 Z "/><path d="M -464 -890 L -460 -890 C -454.481 -890 -450 -885.519 -450 -880 L -450 -880 C -450 -874.481 -454.481 -870 -460 -870 L -464 -870 C -469.519 -870 -474 -874.481 -474 -880 L -474 -880 C -474 -885.519 -469.519 -890 -464 -890 Z"/><path d=" M -500 -860 L -480 -860 L -480 -850 C -480 -844.481 -484.481 -840 -490 -840 L -490 -840 C -495.519 -840 -500 -844.481 -500 -850 L -500 -860 Z "/><path d=" M -530 -860 L -510 -860 L -510 -850 C -510 -844.481 -514.481 -840 -520 -840 L -520 -840 C -525.519 -840 -530 -844.481 -530 -850 L -530 -860 Z "/><path d=" M -560 -860 L -540 -860 L -540 -850 C -540 -844.481 -544.481 -840 -550 -840 L -550 -840 C -555.519 -840 -560 -844.481 -560 -850 L -560 -860 Z "/><path d=" M -500 -860 L -500 -865 C -500 -867.76 -502.24 -870 -505 -870 L -505 -870 L -505 -890 L -505 -890 C -491.202 -890 -480 -878.798 -480 -865 L -480 -860 L -500 -860 Z "/><path d=" M -530 -860 L -530 -865 C -530 -867.76 -532.24 -870 -535 -870 L -535 -870 L -535 -890 L -535 -890 C -521.202 -890 -510 -878.798 -510 -865 L -510 -860 L -530 -860 Z "/><path d=" M -510 -860 L -510 -865 C -510 -867.76 -507.76 -870 -505 -870 L -505 -870 L -505 -890 L -505 -890 C -518.798 -890 -530 -878.798 -530 -865 L -530 -860 L -510 -860 Z "/><path d=" M -540 -860 L -540 -865 C -540 -867.76 -537.76 -870 -535 -870 L -535 -870 L -535 -890 L -535 -890 C -548.798 -890 -560 -878.798 -560 -865 L -560 -860 L -540 -860 Z "/><path d=" M -580 -840 L -600 -840 L -600 -880 C -600 -907.596 -577.596 -930 -550 -930 L -400 -930 C -372.404 -930 -350 -907.596 -350 -880 L -350 -820 C -350 -792.404 -372.404 -770 -400 -770 L -550 -770 C -577.596 -770 -600 -792.404 -600 -820 L -600 -840 L -580 -840 L -580 -820 C -580 -803.443 -566.557 -790 -550 -790 L -400 -790 C -383.443 -790 -370 -803.443 -370 -820 L -370 -880 C -370 -896.557 -383.443 -910 -400 -910 L -550 -910 C -566.557 -910 -580 -896.557 -580 -880 L -580 -840 Z "/></g></svg> -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                style="isolation: isolate"
+                viewBox="-680 -1030 300 180"
+              >
+                <g>
+                  <path
+                    d="M -430 -910 L -430 -910 C -424.481 -910 -420 -905.519 -420 -900 L -420 -900 C -420 -894.481 -424.481 -890 -430 -890 L -430 -890 C -435.519 -890 -440 -894.481 -440 -900 L -440 -900 C -440 -905.519 -435.519 -910 -430 -910 Z"
+                  />
+                  <path
+                    d=" M -570 -910 L -510 -910 C -504.481 -910 -500 -905.519 -500 -900 L -500 -900 C -500 -894.481 -504.481 -890 -510 -890 L -570 -890 C -575.519 -890 -580 -894.481 -580 -900 L -580 -900 C -580 -905.519 -575.519 -910 -570 -910 Z "
+                  />
+                  <path
+                    d="M -590 -970 L -590 -970 C -584.481 -970 -580 -965.519 -580 -960 L -580 -940 C -580 -934.481 -584.481 -930 -590 -930 L -590 -930 C -595.519 -930 -600 -934.481 -600 -940 L -600 -960 C -600 -965.519 -595.519 -970 -590 -970 Z"
+                  />
+                  <path
+                    d=" M -639.991 -960.515 C -639.72 -976.836 -626.385 -990 -610 -990 L -610 -990 C -602.32 -990 -595.31 -987.108 -590 -982.355 C -584.69 -987.108 -577.68 -990 -570 -990 L -570 -990 C -553.615 -990 -540.28 -976.836 -540.009 -960.515 C -540.001 -960.345 -540 -960.172 -540 -960 L -540 -960 L -540 -940 C -540 -934.481 -544.481 -930 -550 -930 L -550 -930 C -555.519 -930 -560 -934.481 -560 -940 L -560 -960 L -560 -960 C -560 -965.519 -564.481 -970 -570 -970 C -575.519 -970 -580 -965.519 -580 -960 L -580 -960 L -580 -960 L -580 -940 C -580 -934.481 -584.481 -930 -590 -930 L -590 -930 C -595.519 -930 -600 -934.481 -600 -940 L -600 -960 L -600 -960 L -600 -960 L -600 -960 L -600 -960 L -600 -960 L -600 -960 L -600 -960 C -600 -965.519 -604.481 -970 -610 -970 C -615.519 -970 -620 -965.519 -620 -960 L -620 -960 L -620 -940 C -620 -934.481 -624.481 -930 -630 -930 L -630 -930 C -635.519 -930 -640 -934.481 -640 -940 L -640 -960 L -640 -960 C -640 -960.172 -639.996 -960.344 -639.991 -960.515 Z "
+                  />
+                  <path
+                    d=" M -460 -930 L -460 -900 C -460 -894.481 -464.481 -890 -470 -890 L -470 -890 C -475.519 -890 -480 -894.481 -480 -900 L -480 -930 L -508.82 -930 C -514.99 -930 -520 -934.481 -520 -940 L -520 -940 C -520 -945.519 -514.99 -950 -508.82 -950 L -431.18 -950 C -425.01 -950 -420 -945.519 -420 -940 L -420 -940 C -420 -934.481 -425.01 -930 -431.18 -930 L -460 -930 Z "
+                  />
+                  <path
+                    d="M -470 -990 L -430 -990 C -424.481 -990 -420 -985.519 -420 -980 L -420 -980 C -420 -974.481 -424.481 -970 -430 -970 L -470 -970 C -475.519 -970 -480 -974.481 -480 -980 L -480 -980 C -480 -985.519 -475.519 -990 -470 -990 Z"
+                  />
+                  <path
+                    d=" M -630 -910 L -610 -910 C -604.481 -910 -600 -905.519 -600 -900 L -600 -900 C -600 -894.481 -604.481 -890 -610 -890 L -630 -890 C -635.519 -890 -640 -894.481 -640 -900 L -640 -900 C -640 -905.519 -635.519 -910 -630 -910 Z "
+                  />
+                  <path
+                    d=" M -515 -990 L -510 -990 C -504.481 -990 -500 -985.519 -500 -980 L -500 -980 C -500 -974.481 -504.481 -970 -510 -970 L -515 -970 C -520.519 -970 -525 -974.481 -525 -980 L -525 -980 C -525 -985.519 -520.519 -990 -515 -990 Z "
+                  />
+                  <path
+                    d=" M -660 -910 L -680 -910 L -680 -980 C -680 -1007.596 -657.596 -1030 -630 -1030 L -430 -1030 C -402.404 -1030 -380 -1007.596 -380 -980 L -380 -900 C -380 -872.404 -402.404 -850 -430 -850 L -630 -850 C -657.596 -850 -680 -872.404 -680 -900 L -680 -920 L -660 -920 L -660 -900 C -660 -883.443 -646.557 -870 -630 -870 L -430 -870 C -413.443 -870 -400 -883.443 -400 -900 L -400 -980 C -400 -996.557 -413.443 -1010 -430 -1010 L -630 -1010 C -646.557 -1010 -660 -996.557 -660 -980 L -660 -910 Z "
+                  />
+                </g>
+              </svg>
+              <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="isolation:isolate" viewBox="-140 -910 220 100"><g><path d=" M -60 -880 L -60 -880 C -60 -885.519 -64.481 -890 -70 -890 L -70 -890 L -70 -910 L -70 -910 C -53.443 -910 -40 -896.557 -40 -880 L -40 -880 L -60 -880 Z " fill="rgb(0,0,0)"/><path d=" M -100 -880 L -100 -880 C -100 -885.519 -104.481 -890 -110 -890 L -110 -890 L -110 -910 L -110 -910 C -93.443 -910 -80 -896.557 -80 -880 L -80 -880 L -100 -880 Z " fill="rgb(0,0,0)"/><path d=" M -80 -880 L -80 -880 C -80 -885.519 -75.519 -890 -70 -890 L -70 -890 L -70 -910 L -70 -910 C -86.557 -910 -100 -896.557 -100 -880 L -100 -880 L -80 -880 Z " fill="rgb(0,0,0)"/><path d=" M -120 -880 L -120 -880 C -120 -885.519 -115.519 -890 -110 -890 L -110 -890 L -110 -910 L -110 -910 C -126.557 -910 -140 -896.557 -140 -880 L -140 -880 L -120 -880 Z " fill="rgb(0,0,0)"/><path d="M 70 -830 L 70 -830 C 75.519 -830 80 -825.519 80 -820 L 80 -820 C 80 -814.481 75.519 -810 70 -810 L 70 -810 C 64.481 -810 60 -814.481 60 -820 L 60 -820 C 60 -825.519 64.481 -830 70 -830 Z"/><path d=" M -70 -830 L -10 -830 C -4.481 -830 0 -825.519 0 -820 L 0 -820 C 0 -814.481 -4.481 -810 -10 -810 L -70 -810 C -75.519 -810 -80 -814.481 -80 -820 L -80 -820 C -80 -825.519 -75.519 -830 -70 -830 Z " fill="rgb(0,0,0)"/><path d="M 30 -860 L 30 -860 C 35.519 -860 40 -855.519 40 -850 L 40 -820 C 40 -814.481 35.519 -810 30 -810 L 30 -810 C 24.481 -810 20 -814.481 20 -820 L 20 -850 C 20 -855.519 24.481 -860 30 -860 Z"/><path d="M -50 -890 L -50 -890 C -44.481 -890 -40 -885.519 -40 -880 L -40 -860 C -40 -854.481 -44.481 -850 -50 -850 L -50 -850 C -55.519 -850 -60 -854.481 -60 -860 L -60 -880 C -60 -885.519 -55.519 -890 -50 -890 Z"/><path d="M -90 -890 L -90 -890 C -84.481 -890 -80 -885.519 -80 -880 L -80 -860 C -80 -854.481 -84.481 -850 -90 -850 L -90 -850 C -95.519 -850 -100 -854.481 -100 -860 L -100 -880 C -100 -885.519 -95.519 -890 -90 -890 Z"/><path d="M -90 -890 L -90 -890 C -95.519 -890 -100 -885.519 -100 -880 L -100 -860 C -100 -854.481 -95.519 -850 -90 -850 L -90 -850 C -84.481 -850 -80 -854.481 -80 -860 L -80 -880 C -80 -885.519 -84.481 -890 -90 -890 Z"/><path d="M -130 -890 L -130 -890 C -135.519 -890 -140 -885.519 -140 -880 L -140 -860 C -140 -854.481 -135.519 -850 -130 -850 L -130 -850 C -124.481 -850 -120 -854.481 -120 -860 L -120 -880 C -120 -885.519 -124.481 -890 -130 -890 Z"/><path d="M -8.82 -870 L 68.82 -870 C 74.99 -870 80 -865.519 80 -860 L 80 -860 C 80 -854.481 74.99 -850 68.82 -850 L -8.82 -850 C -14.99 -850 -20 -854.481 -20 -860 L -20 -860 C -20 -865.519 -14.99 -870 -8.82 -870 Z"/><path d="M 30 -910 L 70 -910 C 75.519 -910 80 -905.519 80 -900 L 80 -900 C 80 -894.481 75.519 -890 70 -890 L 30 -890 C 24.481 -890 20 -894.481 20 -900 L 20 -900 C 20 -905.519 24.481 -910 30 -910 Z"/><path d=" M -130 -830 L -110 -830 C -104.481 -830 -100 -825.519 -100 -820 L -100 -820 C -100 -814.481 -104.481 -810 -110 -810 L -130 -810 C -135.519 -810 -140 -814.481 -140 -820 L -140 -820 C -140 -825.519 -135.519 -830 -130 -830 Z " fill="rgb(0,0,0)"/><path d="M -14 -910 L -10 -910 C -4.481 -910 0 -905.519 0 -900 L 0 -900 C 0 -894.481 -4.481 -890 -10 -890 L -14 -890 C -19.519 -890 -24 -894.481 -24 -900 L -24 -900 C -24 -905.519 -19.519 -910 -14 -910 Z"/></g></svg> -->
+              <!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="isolation:isolate" viewBox="-160 -930 260 140"><path d=" M 20 -850 L 20 -850 L 20 -820 C 20 -814.481 24.481 -810 30 -810 L 30 -810 C 35.519 -810 40 -814.481 40 -820 L 40 -850 L 40 -850 L 68.82 -850 C 74.99 -850 80 -854.481 80 -860 L 80 -860 C 80 -865.519 74.99 -870 68.82 -870 L -8.82 -870 C -14.99 -870 -20 -865.519 -20 -860 L -20 -860 C -20 -854.481 -14.99 -850 -8.82 -850 L 20 -850 L 20 -850 L 20 -850 L 20 -850 Z  M -40.009 -880.515 C -40.28 -896.836 -53.615 -910 -70 -910 L -70 -910 L -70 -910 L -70 -890 L -70 -890 L -70 -890 L -70 -910 L -70 -910 C -77.68 -910 -84.69 -907.108 -90 -902.355 L -90 -902.355 C -95.31 -907.108 -102.32 -910 -110 -910 L -110 -910 C -126.385 -910 -139.72 -896.836 -139.991 -880.515 L -139.991 -880.515 C -139.996 -880.344 -140 -880.172 -140 -880 L -140 -880 L -140 -860 C -140 -854.481 -135.519 -850 -130 -850 L -130 -850 C -124.481 -850 -120 -854.481 -120 -860 L -120 -880 L -120 -880 C -120 -885.519 -115.519 -890 -110 -890 L -110 -890 L -110 -890 L -110 -890 L -110 -890 C -104.481 -890 -100 -885.519 -100 -880 L -100 -880 L -100 -880 L -100 -880 L -100 -880 L -100 -880 L -100 -880 L -100 -880 L -100 -880 L -100 -860 C -100 -854.481 -95.519 -850 -90 -850 L -90 -850 C -84.481 -850 -80 -854.481 -80 -860 L -80 -860 L -80 -880 L -80 -880 L -80 -880 L -80 -880 L -80 -880 L -80 -880 L -80 -880 C -80 -885.519 -75.519 -890 -70 -890 L -70 -890 L -70 -890 L -70 -890 L -70 -890 C -64.481 -890 -60 -885.519 -60 -880 L -60 -880 L -60 -860 C -60 -854.481 -55.519 -850 -50 -850 L -50 -850 C -44.481 -850 -40 -854.481 -40 -860 L -40 -880 L -40 -880 C -40 -880.172 -40.004 -880.344 -40.009 -880.515 L -40.009 -880.515 L -40.009 -880.515 L -40.009 -880.515 L -40.009 -880.515 Z  M 70 -830 L 70 -830 C 75.519 -830 80 -825.519 80 -820 L 80 -820 C 80 -814.481 75.519 -810 70 -810 L 70 -810 C 64.481 -810 60 -814.481 60 -820 L 60 -820 C 60 -825.519 64.481 -830 70 -830 L 70 -830 L 70 -830 L 70 -830 L 70 -830 L 70 -830 L 70 -830 L 70 -830 Z  M -70 -830 L -10 -830 C -4.481 -830 0 -825.519 0 -820 L 0 -820 C 0 -814.481 -4.481 -810 -10 -810 L -70 -810 C -75.519 -810 -80 -814.481 -80 -820 L -80 -820 C -80 -825.519 -75.519 -830 -70 -830 L -70 -830 L -70 -830 L -70 -830 L -70 -830 L -70 -830 L -70 -830 Z  M 30 -910 L 70 -910 C 75.519 -910 80 -905.519 80 -900 L 80 -900 C 80 -894.481 75.519 -890 70 -890 L 30 -890 C 24.481 -890 20 -894.481 20 -900 L 20 -900 C 20 -905.519 24.481 -910 30 -910 L 30 -910 L 30 -910 Z  M -130 -830 L -110 -830 C -104.481 -830 -100 -825.519 -100 -820 L -100 -820 C -100 -814.481 -104.481 -810 -110 -810 L -130 -810 C -135.519 -810 -140 -814.481 -140 -820 L -140 -820 C -140 -825.519 -135.519 -830 -130 -830 L -130 -830 Z  M -131.156 -930 L 71.156 -930 C 87.075 -930 100 -917.075 100 -901.156 L 100 -818.844 C 100 -802.925 87.075 -790 71.156 -790 L -131.156 -790 C -147.075 -790 -160 -802.925 -160 -818.844 L -160 -901.156 C -160 -917.075 -147.075 -930 -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 L -131.156 -930 Z  M -15 -910 L -10 -910 C -4.481 -910 0 -905.519 0 -900 L 0 -900 C 0 -894.481 -4.481 -890 -10 -890 L -15 -890 C -20.519 -890 -25 -894.481 -25 -900 L -25 -900 C -25 -905.519 -20.519 -910 -15 -910 Z " fill-rule="evenodd"/></svg> -->
+            </div>
+            <div class="text">
+              <div class="top">monkey see</div>
+              monkeytype
+            </div>
+            <!-- <image fill="red" xlink:href="images/logo1.svg" width="96" height="96"/> -->
+            <!-- <svg>
+              <use src="images/logo1.svg" style="--color_fill: #000;"></use>
+            </svg> -->
+            <!-- <img src="images/logo1.svg" alt="" width="200px" height="100px"> -->
           </div>
           <div id="menu">
             <div
@@ -1005,7 +695,9 @@
           </div>
 
           <div class="config hidden">
-            <div style="display: grid; grid-auto-flow: column">
+            <div
+              style="display: grid; grid-auto-flow: column; padding-top: 0.1rem"
+            >
               <div class="group punctuationMode">
                 <!--           <div class="title">time</div> -->
                 <div class="buttons">
@@ -1099,6 +791,11 @@
           </div>
         </div>
         <div id="middle">
+          <div class="page pageLoading hidden">
+            <div class="preloader">
+              <i class="fas fa-fw fa-spin fa-circle-notch"></i>
+            </div>
+          </div>
           <div class="page pageTest hidden">
             <div id="typingTest">
               <div id="capsWarning" class="hidden">
@@ -1107,8 +804,6 @@
               </div>
               <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
-              <div id="caret" class="default size15"></div>
-              <div id="paceCaret" class="default size15 hidden"></div>
               <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
               <div id="timerNumber" class="timerMain">
                 <div>60</div>
@@ -1117,12 +812,15 @@
                 <div class="time hidden">1:00</div>
                 <div class="wpm">60</div>
                 <div class="acc">100%</div>
+                <div class="burst">1</div>
               </div>
               <div class="outOfFocusWarning hidden">
                 <i class="fas fa-mouse-pointer"></i>
                 Click or press any key to focus
               </div>
-              <div id="wordsWrapper">
+              <div id="wordsWrapper" translate="no">
+                <div id="paceCaret" class="default size15 hidden"></div>
+                <div id="caret" class="default size15"></div>
                 <div id="words" class="size15"></div>
               </div>
               <div class="keymap hidden">
@@ -1302,6 +1000,7 @@
               <div id="largeLiveWpmAndAcc" class="timerMain">
                 <div id="liveWpm" class="hidden">123</div>
                 <div id="liveAcc" class="hidden">100%%</div>
+                <div id="liveBurst" class="hidden">1</div>
               </div>
               <div
                 id="restartTestButton"
@@ -1395,7 +1094,7 @@
                 <div class="group flat consistency">
                   <div class="top">consistency</div>
                   <div class="bottom" aria-label="" data-balloon-pos="up">
-                    -
+                    2 -
                   </div>
                 </div>
                 <div class="group time">
@@ -1403,12 +1102,25 @@
                   <div class="bottom" aria-label="" data-balloon-pos="up">
                     <div class="text">-</div>
                     <div class="afk"></div>
+                    <div class="timeToday"></div>
                   </div>
                 </div>
                 <!-- </div> -->
 
                 <div class="group source hidden">
-                  <div class="top">source</div>
+                  <div class="top">
+                    source
+                    <span
+                      id="rateQuoteButton"
+                      class="icon-button hidden"
+                      aria-label="Rate quote"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="icon far fa-star"></i>
+                      <span class="rating"></span>
+                    </span>
+                  </div>
                   <div class="bottom">-</div>
                 </div>
 
@@ -1421,103 +1133,130 @@
                 <!-- <div class="title">wpm over time</div> -->
                 <canvas id="wpmChart"></canvas>
               </div>
-              <div id="resultWordsHistory" class="hidden">
-                <div class="title">
-                  input history
-                  <span
-                    id="copyWordsListButton"
-                    class="icon-button"
-                    aria-label="Copy words list"
-                    data-balloon-pos="up"
-                    style="display: inline-block"
-                  >
-                    <i class="fas fa-copy"></i>
-                  </span>
-                </div>
-                <div class="words"></div>
-              </div>
-              <div id="resultReplay" class="hidden">
-                <div class="title">
-                  watch replay
-                  <span
-                    id="playpauseReplayButton"
-                    class="icon-button"
-                    aria-label="Start replay"
-                    data-balloon-pos="up"
-                    style="display: inline-block"
-                  >
-                    <i class="fas fa-play"></i>
-                  </span>
-                  <p id="replayStopwatch">0s</p>
-                </div>
-                <div id="wordsWrapper">
-                  <div id="replayWords" class="words"></div>
-                </div>
-              </div>
               <div class="loginTip">
-                <a href="/login" tabindex="9">Sign in</a>
-                to save your results
+                <span class="link" style="text-decoration: underline">
+                  Sign in
+                </span>
+                to save your result
+              </div>
+              <div class="bottom" style="grid-column: 1/3">
+                <div id="resultWordsHistory" class="hidden">
+                  <div class="title">
+                    input history
+                    <span
+                      id="copyWordsListButton"
+                      class="icon-button"
+                      aria-label="Copy words list"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="fas fa-copy"></i>
+                    </span>
+                    <span
+                      id="toggleBurstHeatmap"
+                      class="icon-button"
+                      aria-label="Toggle burst heatmap"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="fas fa-fire-alt"></i>
+                    </span>
+                    <div class="heatmapLegend hidden">
+                      <div>slow</div>
+                      <div class="boxes">
+                        <div class="box"></div>
+                        <div class="box"></div>
+                        <div class="box"></div>
+                        <div class="box"></div>
+                        <div class="box"></div>
+                      </div>
+                      <div>fast</div>
+                    </div>
+                  </div>
+                  <div class="words"></div>
+                </div>
+                <div id="resultReplay" class="hidden">
+                  <div class="title">
+                    watch replay
+                    <span
+                      id="playpauseReplayButton"
+                      class="icon-button"
+                      aria-label="Start replay"
+                      data-balloon-pos="up"
+                      style="display: inline-block"
+                    >
+                      <i class="fas fa-play"></i>
+                    </span>
+                    <p id="replayStopwatch">0s</p>
+                  </div>
+                  <div id="wordsWrapper">
+                    <div id="replayWords" class="words"></div>
+                  </div>
+                </div>
+                <div class="buttons">
+                  <div
+                    id="nextTestButton"
+                    aria-label="Next test"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-chevron-right"></i>
+                  </div>
+                  <div
+                    id="restartTestButtonWithSameWordset"
+                    aria-label="Repeat test"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-sync-alt"></i>
+                  </div>
+                  <div
+                    id="practiseWordsButton"
+                    aria-label="Practice words"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-exclamation-triangle"></i>
+                  </div>
+                  <div
+                    id="showWordHistoryButton"
+                    aria-label="Toggle words history"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-align-left"></i>
+                  </div>
+                  <div
+                    id="watchReplayButton"
+                    aria-label="Watch replay"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="fas fa-fw fa-backward"></i>
+                  </div>
+                  <div
+                    id="saveScreenshotButton"
+                    aria-label="Save screenshot"
+                    data-balloon-pos="down"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    <i class="far fa-fw fa-image"></i>
+                  </div>
+                </div>
               </div>
               <div class="ssWatermark hidden">monkeytype.com</div>
-              <div class="buttons">
-                <div
-                  id="nextTestButton"
-                  aria-label="Next test"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="fas fa-fw fa-chevron-right"></i>
-                </div>
-                <div
-                  id="restartTestButtonWithSameWordset"
-                  aria-label="Repeat test"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="fas fa-fw fa-sync-alt"></i>
-                </div>
-                <div
-                  id="practiseMissedWordsButton"
-                  aria-label="Practise missed words"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="fas fa-fw fa-exclamation-triangle"></i>
-                </div>
-                <div
-                  id="showWordHistoryButton"
-                  aria-label="Toggle words history"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="fas fa-fw fa-align-left"></i>
-                </div>
-                <div
-                  id="watchReplayButton"
-                  aria-label="Watch replay"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="fas fa-fw fa-backward"></i>
-                </div>
-                <div
-                  id="saveScreenshotButton"
-                  aria-label="Save screenshot"
-                  data-balloon-pos="down"
-                  tabindex="0"
-                  onclick="this.blur();"
-                >
-                  <i class="far fa-fw fa-image"></i>
-                </div>
-              </div>
             </div>
           </div>
           <div class="page pageAbout hidden">
+            <div class="scrollToTopButton">
+              <i class="fas fa-angle-double-up"></i>
+            </div>
             <div class="created">
               Created with love by Miodec.
               <a href="#supporters_title">Supported</a>
@@ -1552,9 +1291,8 @@
                 <key>enter</key>
                 (or just
                 <key>tab</key>
-                if you have
-                <a href="settings">quick tab mode enabled</a>
-                ) to restart the typing test. Open the command line by pressing
+                if you have quick tab mode enabled) to restart the typing test.
+                Open the command line by pressing
                 <key>esc</key>
                 - there you can access all the functionality you need without
                 touching your mouse
@@ -1581,7 +1319,7 @@
                 raw wpm and mapped onto a scale from 0 to 100.
               </p>
             </div>
-            <div id="nitropay_ad_about" class="hidden"></div>
+            <div id="ad_about1" class="hidden"></div>
             <div class="section">
               <h1>results screen</h1>
               <p>
@@ -1598,33 +1336,88 @@
               <h1>bug report or feature request</h1>
               <p>
                 If you encounter a bug, or have a feature request - join the
-                <a href="https://discord.gg/yENzqcB" target="_blank">Discord</a>
-                server,
-                <a href="https://www.reddit.com/users/Miodec" target="_blank">
-                  send me a message on Reddit
-                </a>
-                or
-                <a
-                  href="https://github.com/Miodec/monkeytype/issues"
-                  target="_blank"
-                >
-                  create an issue on GitHub.
-                </a>
+                Discord server, send me an email, a direct message on Twitter or
+                create an issue on GitHub.
               </p>
             </div>
             <div class="section">
-              <h1>support</h1>
+              <div class="title">support</div>
               <p>
-                If you wish to support this project, help pay for hosting and
-                fuel my caffeine addiction, you can
-                <a class="aboutEnableAds">enable ads,</a>
-                join the
-                <a href="https://www.patreon.com/monkeytype">Patreon,</a>
-                donate via
-                <a href="https://www.paypal.me/jackbartnik">PayPal</a>
-                or buy a
-                <a href="https://monkeytype.store">tshirt.</a>
+                Thanks to everyone who has supported this project. It would not
+                be possible without you and your continued support.
               </p>
+              <div class="supportButtons">
+                <a class="button ads">
+                  <div class="fas fas fa-ad"></div>
+                  Ads
+                </a>
+                <a
+                  class="button"
+                  href="https://ko-fi.com/monkeytype"
+                  target="_blank"
+                >
+                  <div class="fas fa-donate"></div>
+                  Ko-Fi
+                </a>
+                <a
+                  class="button"
+                  href="https://www.patreon.com/monkeytype"
+                  target="_blank"
+                >
+                  <div class="fab fa-patreon"></div>
+                  Patreon
+                </a>
+                <a
+                  class="button"
+                  href="https://monkeytype.store"
+                  target="_blank"
+                >
+                  <div class="fas fa-tshirt"></div>
+                  Merch
+                </a>
+              </div>
+            </div>
+            <div class="section">
+              <div class="title">contact</div>
+              <p>
+                If you encounter a bug, have a feature request or just want to
+                say hi - here are the different ways you can contact me
+                directly.
+              </p>
+              <div class="contactButtons">
+                <a
+                  class="button"
+                  href="mailto:jack@monkeytype.com"
+                  target="_blank"
+                >
+                  <div class="fas fa-envelope"></div>
+                  Mail
+                </a>
+                <a
+                  class="button"
+                  href="https://twitter.com/monkeytypegame"
+                  target="_blank"
+                >
+                  <div class="fab fa-twitter"></div>
+                  Twitter
+                </a>
+                <a
+                  class="button"
+                  href="https://discord.gg/monkeytype"
+                  target="_blank"
+                >
+                  <div class="fab fa-discord"></div>
+                  Discord
+                </a>
+                <a
+                  class="button"
+                  href="https://github.com/Miodec/monkeytype"
+                  target="_blank"
+                >
+                  <div class="fab fa-github"></div>
+                  GitHub
+                </a>
+              </div>
             </div>
             <div class="section">
               <div class="title">credits</div>
@@ -1660,6 +1453,7 @@
                 adding themes and more
               </p>
             </div>
+            <div id="ad_about2" class="hidden"></div>
             <div class="section">
               <h1 id="supporters_title">supporters</h1>
               <div class="supporters">
@@ -1927,6 +1721,7 @@
                 <a href="#group_dangerZone">danger zone</a>
               </div>
             </div>
+            <div id="ad_settings0" class="hidden"></div>
             <div
               id="group_account"
               class="sectionGroupTitle hidden"
@@ -1934,6 +1729,40 @@
             >
               account
               <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="section discordIntegration">
+              <h1>discord integration</h1>
+              <div class="text">
+                When you connect your monkeytype account to your Discord
+                account, you will be automatically assigned a new role every
+                time you achieve a new personal best in a 60 second test. If you
+                pair your accounts before joining the Discord server the bot
+                <i>will not</i>
+                give you a role.
+              </div>
+              <div class="buttons">
+                <a
+                  class="button"
+                  href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
+                  style="text-decoration: none"
+                >
+                  Link with Discord
+                </a>
+              </div>
+              <div class="info hidden">
+                <div>
+                  <i class="fas fa-check"></i>
+                  Your accounts are paired!
+                </div>
+                <div
+                  id="unlinkDiscordButton"
+                  class="text-button"
+                  aria-label="Unlink"
+                  data-balloon-pos="up"
+                >
+                  <i class="fas fa-unlink" aria-hidden="true"></i>
+                </div>
+              </div>
             </div>
             <div class="settingsGroup account hidden">
               <div class="section tags">
@@ -1960,45 +1789,12 @@
                   <div class="addTagButton"><i class="fas fa-plus"></i></div>
                 </div>
               </div>
-              <div class="section discordIntegration">
-                <h1>discord integration</h1>
-                <div class="text">
-                  When you connect your monkeytype account to your Discord
-                  account, you will be automatically assigned a new role every
-                  time you achieve a new personal best in a 60 second test.
-                  <br />
-                  <br />
-                  Don't pair your account before joining the Discord server, as
-                  it might result in the bot not being able to give you a role.
-                </div>
-                <div class="buttons">
-                  <a
-                    class="button"
-                    href="https://discord.com/api/oauth2/authorize?client_id=798272335035498557&redirect_uri=https%3A%2F%2Fmonkeytype.com%2Fverify&response_type=token&scope=identify"
-                    style="text-decoration: none"
-                  >
-                    Verify with Discord
-                  </a>
-                </div>
-                <div class="info hidden">
-                  <div>
-                    <i class="fas fa-check"></i>
-                    Your accounts are paired!
-                  </div>
-                  <div
-                    id="unlinkDiscordButton"
-                    class="text-button"
-                    aria-label="Unlink"
-                    data-balloon-pos="up"
-                  >
-                    <i class="fas fa-unlink" aria-hidden="true"></i>
-                  </div>
-                </div>
-              </div>
               <div class="section presets">
                 <h1>presets</h1>
                 <div class="text">
-                  Create settings presets that can be applied with one click
+                  Create settings presets that can be applied with one click.
+                  Remember to edit your preset if you make any changes - they
+                  don't save on their own.
                 </div>
                 <div class="presetsListAndButton">
                   <div class="presetsList">
@@ -2188,31 +1984,43 @@
                   Automatically fails a test if your WPM falls below a
                   threshold.
                 </div>
-                <div class="buttons">
-                  <div
-                    class="button"
-                    minWpm="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="min wpm"
+                      class="input customMinWpmSpeed"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    minWpm="custom"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    custom
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      minWpm="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      minWpm="custom"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      custom
+                    </div>
                   </div>
-                  <input
-                    type="number"
-                    step="1"
-                    class="customMinWpmSpeed"
-                    placeholder="wpm"
-                    min="0"
-                    value=""
-                  />
                 </div>
               </div>
               <div class="section minAcc" section="">
@@ -2221,31 +2029,119 @@
                   Automatically fails a test if your accuracy falls below a
                   threshold.
                 </div>
-                <div class="buttons">
-                  <div
-                    class="button"
-                    minAcc="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="min accuracy"
+                      class="input customMinAcc"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    minAcc="custom"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    custom
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      minAcc="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      minAcc="custom"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      custom
+                    </div>
                   </div>
-                  <input
-                    type="number"
-                    step="1"
-                    class="customMinAcc"
-                    placeholder="acc"
-                    min="0"
-                    value=""
-                  />
+                </div>
+              </div>
+              <div class="section minBurst" section="">
+                <h1>min burst</h1>
+                <div class="text">
+                  Automatically fails a test if your raw for a single word falls
+                  below this threshold. Selecting 'flex' allows for this
+                  threshold to automatically decrease for longer words.
+                </div>
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="min burst"
+                      class="input customMinBurst"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
+                  </div>
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      minBurst="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      minBurst="fixed"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      fixed
+                    </div>
+                    <div
+                      class="button"
+                      minBurst="flex"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      flex
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="section britishEnglish" section="">
+                <h1>british english</h1>
+                <div class="text">
+                  When enabled, the website will use the British spelling
+                  instead of American. Note that this might not replace all
+                  words correctly. If you find any issues, please let us know.
+                </div>
+                <div>
+                  <div class="buttons">
+                    <div
+                      class="button off active"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div class="button on" tabindex="0" onclick="this.blur();">
+                      on
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="section languageGroups fullWidth">
@@ -2505,7 +2401,7 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div id="nitropay_ad_settings1" class="hidden"></div>
+            <div id="ad_settings1" class="hidden"></div>
 
             <div id="group_sound" class="sectionGroupTitle" group="sound">
               sound
@@ -2649,64 +2545,69 @@
                 <h1>pace caret</h1>
                 <div class="text">
                   Displays a second caret that moves at constant speed. The
-                  repeat option enables a pace caret when a test is repeated
-                  that will have the wpm of the previous test.
+                  'average' option average the speed of last 10 results.
                 </div>
-                <div class="buttons">
-                  <div
-                    class="button"
-                    paceCaret="off"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    off
+                <div>
+                  <div class="inputAndSave">
+                    <input
+                      type="number"
+                      placeholder="wpm"
+                      class="input customPaceCaretSpeed"
+                      tabindex="0"
+                      min="0"
+                      step="1"
+                      value=""
+                    />
+                    <div
+                      class="button save"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      <i class="fas fa-save fa-fw"></i>
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    paceCaret="average"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    average
+                  <div class="buttons">
+                    <div
+                      class="button"
+                      paceCaret="off"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div
+                      class="button"
+                      paceCaret="average"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      average
+                    </div>
+                    <div
+                      class="button"
+                      paceCaret="pb"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      pb
+                    </div>
+                    <div
+                      class="button"
+                      paceCaret="custom"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      custom
+                    </div>
                   </div>
-                  <div
-                    class="button"
-                    paceCaret="pb"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    pb
-                  </div>
-                  <div
-                    class="button"
-                    paceCaret="repeat"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    repeat
-                  </div>
-                  <div
-                    class="button"
-                    paceCaret="custom"
-                    tabindex="0"
-                    onclick="this.blur();"
-                  >
-                    custom
-                  </div>
-                  <input
-                    type="number"
-                    step="1"
-                    class="customPaceCaretSpeed"
-                    placeholder="wpm"
-                    min="0"
-                    value=""
-                  />
                 </div>
               </div>
               <div class="section repeatedPace" section="">
                 <h1>repeated pace</h1>
                 <div class="text">
-                  When repeating a test, a pace caret will automatically be enabled for one test with the speed of your previous test. It does not override the pace caret if it's already enabled.
+                  When repeating a test, a pace caret will automatically be
+                  enabled for one test with the speed of your previous test. It
+                  does not override the pace caret if it's already enabled.
                 </div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">
@@ -3043,6 +2944,14 @@
                   >
                     3
                   </div>
+                  <div
+                    class="button"
+                    fontsize="4"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    4
+                  </div>
                 </div>
               </div>
               <div class="section fontFamily fullWidth">
@@ -3211,7 +3120,7 @@
               <div class="sectionSpacer"></div>
             </div>
 
-            <div id="nitropay_ad_settings2" class="hidden"></div>
+            <div id="ad_settings2" class="hidden"></div>
 
             <div id="group_theme" class="sectionGroupTitle" group="theme">
               theme
@@ -3257,7 +3166,7 @@
                   fully visible. Max fits the image corner to corner.
                 </div>
                 <div>
-                  <div class="inputAndButton">
+                  <div class="inputAndSave">
                     <input
                       type="text"
                       placeholder="image url"
@@ -3387,7 +3296,7 @@
                   </div>
                 </div>
               </div>
-              <div class="section themes">
+              <div class="section themes fullWidth">
                 <h1>theme</h1>
                 <div class="tabs">
                   <div
@@ -3536,9 +3445,21 @@
               </div>
               <div class="section showLiveAcc">
                 <h1>live accuracy</h1>
+                <div class="text">Displays live accuracy during the test.</div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    hide
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    show
+                  </div>
+                </div>
+              </div>
+              <div class="section showLiveBurst">
+                <h1>live burst</h1>
                 <div class="text">
-                  Displays live accuracy during the test. Updates once every
-                  second.
+                  Displays live burst during the test of the last word you
+                  typed.
                 </div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">
@@ -3681,7 +3602,7 @@
                   </div>
                 </div>
               </div>
-              <div class="section resetPersonalBests">
+              <div class="section resetPersonalBests needsAccount hidden">
                 <h1>reset personal bests</h1>
                 <div class="text">
                   Resets all your personal bests (but doesn't delete any tests
@@ -3698,7 +3619,24 @@
                   </div>
                 </div>
               </div>
-              <div class="section updateAccountEmail">
+              <div class="section updateAccountName needsAccount hidden">
+                <h1>update account name</h1>
+                <div class="text">
+                  Change the name of your account. You can only do this once
+                  every 30 days.
+                </div>
+                <div class="buttons">
+                  <div
+                    class="button off danger"
+                    id="updateAccountName"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    update name
+                  </div>
+                </div>
+              </div>
+              <div class="section updateAccountEmail needsAccount hidden">
                 <h1>update account email</h1>
                 <div class="text">
                   In case you misspell it or get a new address.
@@ -3714,12 +3652,24 @@
                   </div>
                 </div>
               </div>
-              <div class="section deleteAccount hidden">
+              <div class="section updateAccountPassword needsAccount hidden">
+                <h1>update account password</h1>
+                <div class="text">Change the password you use to sign in.</div>
+                <div class="buttons">
+                  <div
+                    class="button off danger"
+                    id="updateAccountPassword"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    update password
+                  </div>
+                </div>
+              </div>
+              <div class="section deleteAccount needsAccount hidden">
                 <h1>delete account</h1>
                 <div class="text">
-                  This can't be undone! Also, if you want to delete your account
-                  because of a very high 'custom mode' result, you can use
-                  filters on the account page to hide those results.
+                  Deletes your account and all data connected to it.
                 </div>
                 <div class="buttons">
                   <div
@@ -3742,11 +3692,19 @@
             </div>
             <div class="register side">
               <div class="title">register</div>
-              <form action="" autocomplete="off">
-                <input type="text" placeholder="username" />
-                <input type="text" placeholder="email" />
-                <input type="password" placeholder="password" />
-                <input type="password" placeholder="verify password" />
+              <form action="" autocomplete="nope">
+                <input type="text" placeholder="username" autocomplete="nope" />
+                <input type="email" placeholder="email" autocomplete="nope" />
+                <input
+                  type="password"
+                  placeholder="password"
+                  autocomplete="new-password"
+                />
+                <input
+                  type="password"
+                  placeholder="verify password"
+                  autocomplete="nopeee"
+                />
                 <div class="button">
                   <i class="fas fa-user-plus"></i>
                   Sign Up
@@ -3757,7 +3715,7 @@
               <div class="title">login</div>
               <div id="forgotPasswordButton">Forgot password?</div>
               <form action="">
-                <input type="text" placeholder="email" autocomplete="email" />
+                <input type="email" placeholder="email" autocomplete="email" />
                 <input
                   type="password"
                   placeholder="password"
@@ -3779,6 +3737,10 @@
                   <i class="fab fa-google"></i>
                   Google Sign In
                 </div>
+                <!-- <div class="button signInWithGitHub">
+                  <i class="fab fa-github"></i>
+                  GitHub Sign In
+                </div> -->
               </form>
             </div>
           </div>
@@ -3809,19 +3771,32 @@
                   <div class="val">-</div>
                 </div>
               </div>
-              <div class="group createdDate">asd</div>
+              <div class="group createdDate">Account created on -</div>
               <div class="group">
                 <div class="title">personal bests</div>
-                <div style="display: grid; grid-auto-flow: column; gap: 1rem">
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 2rem;
+                  "
+                >
                   <div class="titleAndTable timePbTable">
                     <table width="100%">
                       <thead>
                         <tr>
-                          <td>time</td>
-                          <td>wpm</td>
-                          <td>raw</td>
-                          <td>accuracy</td>
-                          <td>consistency</td>
+                          <td width="1%">time</td>
+                          <td width="33%">
+                            wpm
+                            <br />
+                            <span class="sub">accuracy</span>
+                          </td>
+                          <td width="33%">
+                            raw
+                            <br />
+                            <span class="sub">consistency</span>
+                          </td>
+                          <td width="33%">date</td>
                         </tr>
                       </thead>
                       <tbody>
@@ -3856,11 +3831,18 @@
                     <table width="100%">
                       <thead>
                         <tr>
-                          <td>words</td>
-                          <td>wpm</td>
-                          <td>raw</td>
-                          <td>accuracy</td>
-                          <td>consistency</td>
+                          <td width="1%">words</td>
+                          <td width="33%">
+                            wpm
+                            <br />
+                            <span class="sub">accuracy</span>
+                          </td>
+                          <td width="33%">
+                            raw
+                            <br />
+                            <span class="sub">consistency</span>
+                          </td>
+                          <td width="33%">date</td>
                         </tr>
                       </thead>
                       <tbody>
@@ -3894,7 +3876,7 @@
                 </div>
               </div>
 
-              <div id="nitropay_ad_account" class="hidden"></div>
+              <div id="ad_account" class="hidden"></div>
 
               <div class="group topFilters">
                 <!-- <div
@@ -4039,6 +4021,28 @@
                 </div>
               </div>
               <div class="triplegroup stats">
+                <div class="group testsStarted">
+                  <div class="title">tests started</div>
+                  <div class="val">-</div>
+                </div>
+                <div class="group testsCompleted">
+                  <div class="title">
+                    tests completed
+                    <span
+                      data-balloon-length="xlarge"
+                      aria-label="Due to the increasing number of results in the database, you can now only see your last 1000 results in detail. Total time spent typing, started and completed tests stats will still be up to date at the top of the page, above the filters."
+                      data-balloon-pos="up"
+                    >
+                      <i class="fas fa-question-circle"></i>
+                    </span>
+                  </div>
+                  <div class="val">-</div>
+                  <div class="avgres">-</div>
+                </div>
+                <div class="group timeTotalFiltered">
+                  <div class="title">time typing</div>
+                  <div class="val">-</div>
+                </div>
                 <div class="group highestWpm">
                   <div class="title">highest wpm</div>
                   <div class="val">-</div>
@@ -4074,36 +4078,7 @@
                   </div>
                   <div class="val">-</div>
                 </div>
-
-                <div class="group testsStarted">
-                  <div class="title">tests started</div>
-                  <div class="val">-</div>
-                </div>
-                <div class="group testsCompleted">
-                  <div class="title">
-                    tests completed
-                    <span
-                      data-balloon-length="xlarge"
-                      aria-label="Due to the increasing number of results in the database, you can now only see your last 1000 results in detail. Total time spent typing, started and completed tests stats will still be up to date at the top of the page, above the filters."
-                      data-balloon-pos="up"
-                    >
-                      <i class="fas fa-question-circle"></i>
-                    </span>
-                  </div>
-                  <div class="val">-</div>
-                </div>
-                <div class="group avgRestart">
-                  <div class="title">
-                    avg restarts
-                    <br />
-                    per completed test
-                  </div>
-                  <div class="val">-</div>
-                </div>
-                <div class="group timeTotalFiltered">
-                  <div class="title">time typing</div>
-                  <div class="val">-</div>
-                </div>
+                <div></div>
                 <div class="group avgAcc">
                   <div class="title">avg accuracy</div>
                   <div class="val">-</div>
@@ -4140,25 +4115,35 @@
                   <thead>
                     <tr>
                       <td></td>
-                      <td>wpm</td>
-                      <td>raw</td>
-                      <td>accuracy</td>
-                      <td>
-                        correct
-                        <br />
+                      <td type="button" class="sortable history-wpm-header">
+                        wpm
+                      </td>
+                      <td type="button" class="sortable history-raw-header">
+                        raw
+                      </td>
+                      <td type="button" class="sortable history-acc-header">
+                        accuracy
+                      </td>
+                      <td
+                        type="button"
+                        class="sortable history-consistency-header"
+                      >
+                        consistency
+                      </td>
+                      <td
+                        aria-label="correct/incorrect/extra/missed"
+                        data-balloon-pos="up"
+                      >
                         chars
                       </td>
-                      <td>
-                        incorrect
-                        <br />
-                        chars
-                      </td>
-                      <td>consistency</td>
                       <td>mode</td>
                       <!-- <td>punctuation</td> -->
                       <td>info</td>
                       <td>tags</td>
-                      <td>date</td>
+                      <td type="button" class="sortable history-date-header">
+                        date
+                        <i class="fas fa-sort-down" aria-hidden="true"></i>
+                      </td>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -4183,52 +4168,56 @@
           </div>
           <div class="leftright">
             <div class="left">
-              <div>
+              <a href="mailto:jack@monkeytype.com" target="_blank">
+                <i class="fas fa-fw fa-envelope"></i>
+                <div class="text">Support</div>
+              </a>
+              <a href="https://github.com/Miodec/monkeytype" target="_blank">
                 <i class="fas fa-fw fa-code"></i>
-                <a href="https://github.com/Miodec/monkeytype" target="_blank">
-                  GitHub
-                </a>
-              </div>
-              <div>
+                <div class="text">GitHub</div>
+              </a>
+              <a
+                href="https://www.discord.gg/monkeytype"
+                target="_blank"
+                class="discordLink"
+              >
                 <i class="fab fa-fw fa-discord"></i>
-                <a
-                  href="https://www.discord.gg/monkeytype"
-                  target="_blank"
-                  class="discordLink"
-                >
-                  Discord
-                </a>
-              </div>
-              <div>
+                <div class="text">Discord</div>
+              </a>
+              <a href="https://twitter.com/monkeytypegame" target="_blank">
                 <i class="fab fa-fw fa-twitter"></i>
-                <a href="https://twitter.com/monkeytypegame" target="_blank">
-                  Twitter
-                </a>
-              </div>
-              <div>
+                <div class="text">Twitter</div>
+              </a>
+              <a href="terms-of-service.html" target="_blank">
+                <i class="fas fa-fw fa-file-contract"></i>
+                <div class="text">Terms</div>
+              </a>
+              <a href="security-policy.html" target="_blank">
+                <i class="fas fa-fw fa-shield-alt"></i>
+                <div class="text">Security</div>
+              </a>
+              <a href="privacy-policy.html" target="_blank">
+                <i class="fas fa-fw fa-lock"></i>
+                <div class="text">Privacy</div>
+              </a>
+              <a id="supportMeButton">
                 <i class="fas fa-fw fa-donate"></i>
-                <span id="supportMeButton">Donate</span>
-              </div>
-              <div>
-                <i class="fas fa-user-shield"></i>
-                <a href="privacy-policy.html" target="_blank">Privacy Policy</a>
-              </div>
+                <div class="text">Donate</div>
+              </a>
             </div>
             <div class="right">
-              <div>
-                <i class="fas fa-palette"></i>
-                <span
-                  class="current-theme"
-                  aria-label="Shift-click to toggle custom theme"
-                  data-balloon-pos="left"
-                >
-                  serika dark
-                </span>
-              </div>
-              <div>
-                <i class="fas fa-code-branch"></i>
-                <span class="version">version</span>
-              </div>
+              <a
+                class="current-theme"
+                aria-label="Shift-click to toggle custom theme"
+                data-balloon-pos="left"
+              >
+                <i class="fas fa-fw fa-palette"></i>
+                <div class="text">serika dark</div>
+              </a>
+              <a class="version">
+                <i class="fas fa-fw fa-code-branch"></i>
+                <div class="text">version</div>
+              </a>
               <!-- <div>
                 <i class="fas fa-file"></i>
                 Terms & Conditions
@@ -4238,33 +4227,32 @@
         </div>
         <div class="footerads">
           <div
-            id="nitropay_ad_footer"
+            id="ad_footer"
             style="display: flex; justify-content: center; justify-self: center"
           ></div>
           <div
-            id="nitropay_ad_footer2"
+            id="ad_footer2"
             class="hidden"
             style="display: flex; justify-content: center; justify-self: center"
           ></div>
-          <div
-            id="nitropay_ad_footer3"
+          <!-- <div
+            id="ad_footer3"
             class="hidden"
             style="display: flex; justify-content: center; justify-self: center"
-          ></div>
+          ></div> -->
         </div>
       </div>
-      <div id="nitropay_ad_right" class="hidden"></div>
     </div>
   </body>
   <!-- The core Firebase JS SDK is always required and must be listed first -->
-  <script src="/__/firebase/8.0.2/firebase-app.js"></script>
+  <script src="/__/firebase/8.4.2/firebase-app.js"></script>
 
   <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
-  <script src="/__/firebase/8.0.2/firebase-analytics.js"></script>
-  <script src="/__/firebase/8.0.2/firebase-auth.js"></script>
-  <script src="/__/firebase/8.0.2/firebase-firestore.js"></script>
-  <script src="/__/firebase/8.0.2/firebase-functions.js"></script>
+  <script src="/__/firebase/8.4.2/firebase-analytics.js"></script>
+  <script src="/__/firebase/8.4.2/firebase-auth.js"></script>
+  <script src="/__/firebase/8.4.2/firebase-firestore.js"></script>
+  <script src="/__/firebase/8.4.2/firebase-functions.js"></script>
 
   <!-- Initialize Firebase -->
   <script src="/__/firebase/init.js"></script>

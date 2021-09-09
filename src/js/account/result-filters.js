@@ -74,6 +74,7 @@ Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
     defaultResultFilters.funbox[funbox.name] = true;
   });
   // filters = defaultResultFilters;
+  load();
 });
 
 export function getFilters() {
@@ -98,7 +99,7 @@ export function getFilter(group, filter) {
 
 export function loadTags(tags) {
   tags.forEach((tag) => {
-    defaultResultFilters.tags[tag.id] = true;
+    defaultResultFilters.tags[tag._id] = true;
   });
 }
 
@@ -110,7 +111,12 @@ export function load() {
   // let newTags = $.cookie("activeTags");
   try {
     let newResultFilters = window.localStorage.getItem("resultFilters");
-    if (newResultFilters != undefined && newResultFilters !== "") {
+    if (
+      newResultFilters != undefined &&
+      newResultFilters !== "" &&
+      Misc.countAllKeys(newResultFilters) >=
+        Misc.countAllKeys(defaultResultFilters)
+    ) {
       filters = JSON.parse(newResultFilters);
       save();
     } else {
@@ -128,8 +134,6 @@ export function reset() {
   filters = defaultResultFilters;
   save();
 }
-
-load();
 
 export function updateActive() {
   let aboveChartDisplay = {};
@@ -202,9 +206,9 @@ export function updateActive() {
         ret += aboveChartDisplay.tags.array
           .map((id) => {
             if (id == "none") return id;
-            let name = DB.getSnapshot().tags.filter((t) => t.id == id)[0];
+            let name = DB.getSnapshot().tags.filter((t) => t._id == id)[0];
             if (name !== undefined) {
-              return DB.getSnapshot().tags.filter((t) => t.id == id)[0].name;
+              return DB.getSnapshot().tags.filter((t) => t._id == id)[0].name;
             }
           })
           .join(", ");
@@ -301,7 +305,7 @@ export function updateTags() {
     DB.getSnapshot().tags.forEach((tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-      ).append(`<div class="button" filter="${tag.id}">${tag.name}</div>`);
+      ).append(`<div class="button" filter="${tag._id}">${tag.name}</div>`);
     });
   } else {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
@@ -398,17 +402,17 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
     filters["language"][Config.language] = true;
   }
 
-  if (Funbox.active === "none") {
+  if (Config.funbox === "none") {
     filters.funbox.none = true;
   } else {
-    filters.funbox[Funbox.active] = true;
+    filters.funbox[Config.funbox] = true;
   }
 
   filters["tags"]["none"] = true;
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
       filters["tags"]["none"] = false;
-      filters["tags"][tag.id] = true;
+      filters["tags"][tag._id] = true;
     }
   });
 

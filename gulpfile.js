@@ -1,4 +1,5 @@
 const { task, src, dest, series, watch } = require("gulp");
+const axios = require("axios");
 const browserify = require("browserify");
 const babelify = require("babelify");
 const concat = require("gulp-concat");
@@ -7,8 +8,8 @@ const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const vinylPaths = require("vinyl-paths");
 const eslint = require("gulp-eslint");
-var sass = require("gulp-sass");
-sass.compiler = require("dart-sass");
+var sass = require("gulp-sass")(require("dart-sass"));
+// sass.compiler = require("dart-sass");
 
 let eslintConfig = {
   parser: "babel-eslint",
@@ -86,6 +87,7 @@ let eslintConfig = {
 //refactored files, which should be es6 modules
 //once all files are moved here, then can we use a bundler to its full potential
 const refactoredSrc = [
+  "./src/js/axios-instance.js",
   "./src/js/db.js",
   "./src/js/cloud-functions.js",
   "./src/js/misc.js",
@@ -109,6 +111,7 @@ const refactoredSrc = [
   "./src/js/input-controller.js",
   "./src/js/route-controller.js",
   "./src/js/ready.js",
+  "./src/js/monkey-power.js",
 
   "./src/js/account/all-time-stats.js",
   "./src/js/account/pb-tables.js",
@@ -122,9 +125,13 @@ const refactoredSrc = [
   "./src/js/elements/account-button.js",
   "./src/js/elements/loader.js",
   "./src/js/elements/sign-out-button.js",
+  "./src/js/elements/about-page.js",
+  "./src/js/elements/psa.js",
+  "./src/js/elements/new-version-notification.js",
 
   "./src/js/popups/custom-text-popup.js",
   "./src/js/popups/quote-search-popup.js",
+  "./src/js/popups/rate-quote-popup.js",
   "./src/js/popups/version-popup.js",
   "./src/js/popups/support-popup.js",
   "./src/js/popups/custom-word-amount-popup.js",
@@ -142,18 +149,20 @@ const refactoredSrc = [
   "./src/js/settings/settings-group.js",
 
   "./src/js/test/custom-text.js",
+  "./src/js/test/british-english.js",
   "./src/js/test/shift-tracker.js",
   "./src/js/test/out-of-focus.js",
   "./src/js/test/caret.js",
   "./src/js/test/manual-restart-tracker.js",
   "./src/js/test/test-stats.js",
   "./src/js/test/focus.js",
-  "./src/js/test/practise-missed.js",
+  "./src/js/test/practise-words.js",
   "./src/js/test/test-ui.js",
   "./src/js/test/keymap.js",
   "./src/js/test/live-wpm.js",
   "./src/js/test/caps-warning.js",
   "./src/js/test/live-acc.js",
+  "./src/js/test/live-burst.js",
   "./src/js/test/test-leaderboards.js",
   "./src/js/test/timer-progress.js",
   "./src/js/test/test-logic.js",
@@ -163,6 +172,10 @@ const refactoredSrc = [
   "./src/js/test/test-timer.js",
   "./src/js/test/test-config.js",
   "./src/js/test/layout-emulator.js",
+  "./src/js/test/poetry.js",
+  "./src/js/test/today-tracker.js",
+  "./src/js/test/weak-spot.js",
+  "./src/js/test/wordset.js",
   "./src/js/replay.js",
 ];
 
@@ -187,7 +200,7 @@ task("sass", function () {
 });
 
 task("static", function () {
-  return src("./static/**/*").pipe(dest("./dist/"));
+  return src("./static/**/*", { dot: true }).pipe(dest("./dist/"));
 });
 
 //copies refactored js files to dist/gen so that they can be required by dist/gen/index.js

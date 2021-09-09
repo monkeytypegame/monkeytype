@@ -40,7 +40,7 @@ export function start() {
 
       let acc = Misc.roundTo2(TestStats.calculateAccuracy());
 
-      if (Funbox.active === "layoutfluid" && Config.mode === "time") {
+      if (Config.funbox === "layoutfluid" && Config.mode === "time") {
         const layouts = Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")
           : ["qwerty", "dvorak", "colemak"];
@@ -88,13 +88,21 @@ export function start() {
 
       TestStats.pushKeypressesToHistory();
       if (
-        (Config.minWpm === "custom" &&
-          wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
-          TestLogic.words.currentIndex > 3) ||
-        (Config.minAcc === "custom" && acc < parseInt(Config.minAccCustom))
+        Config.minWpm === "custom" &&
+        wpmAndRaw.wpm < parseInt(Config.minWpmCustomSpeed) &&
+        TestLogic.words.currentIndex > 3
       ) {
         clearTimeout(timer);
-        TestLogic.fail();
+        TestLogic.fail("min wpm");
+        return;
+      }
+      if (
+        Config.minAcc === "custom" &&
+        acc < parseInt(Config.minAccCustom) &&
+        TestLogic.words.currentIndex > 3
+      ) {
+        clearTimeout(timer);
+        TestLogic.fail("min accuracy");
         return;
       }
       if (

@@ -37,7 +37,7 @@
   {
     "name": "layoutfluid",
     "type": "script",
-    "info": "Switch between QWERTY, Dvorak and Colemak after a third of the test."
+    "info": "Switch between layouts specified below proportionately to the length of the test."
   },
   {
     "name": "earthquake",
@@ -75,6 +75,11 @@
     "info": "React quickly! Only one future word is visible."
   },
   {
+    "name": "plus_two",
+    "type": "script",
+    "info": "Only two future word are visible."
+  },
+  {
     "name": "read_ahead_easy",
     "type": "style",
     "info": "Only the current word is invisible."
@@ -98,6 +103,21 @@
     "name": "nospace",
     "type": "script",
     "info": "Whoneedsspacesanyway?"
+  },
+  {
+    "name": "poetry",
+    "type": "script",
+    "info": "Practice typing some beautiful prose."
+  },
+  {
+    "name": "weakspot",
+    "type": "script",
+    "info": "Focus on slow and mistyped letters."
+  },
+  {
+    "name": "pseudolang",
+    "type": "script",
+    "info": "Nonsense words that look like the current language."
   }
 ]
 

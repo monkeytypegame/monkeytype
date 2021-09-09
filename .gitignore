@@ -71,15 +71,12 @@ node_modules/
 .vscode
 *.code-workspace
 
+.idea
+
 #firebase
-functions/serviceAccountKey.json
-functions/serviceAccountKey_live.json
-functions/serviceAccountKey_copy.json
-functions/serviceAccountKey_live_copy.json
 .firebaserc
 .firebaserc_copy
-functions/serviceAccountKey_copy.json
-functions/serviceAccountKey_live_copy.json
+serviceAccountKey*.json
 
 #generated files
 dist/
@@ -88,3 +85,12 @@ dist/
 .cloudflareKey.txt
 .cloudflareKey_copy.txt
 purgeCfCache.sh
+
+static/adtest.html
+backend/lastId.txt
+backend/log_success.txt
+backend/credentials
+backend/.env
+
+static/adtest.html
+backend/migrationStats.txt

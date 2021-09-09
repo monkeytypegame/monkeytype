@@ -6,8 +6,7 @@ import * as DB from "./db";
 export let settings = null;
 
 function resetCaretPosition() {
-  if (Config.paceCaret === "off" && !TestLogic.isPaceRepeat)
-    return;
+  if (Config.paceCaret === "off" && !TestLogic.isPaceRepeat) return;
   if (!$("#paceCaret").hasClass("hidden")) {
     $("#paceCaret").addClass("hidden");
   }
@@ -47,7 +46,8 @@ export async function init() {
       mode2,
       Config.punctuation,
       Config.language,
-      Config.difficulty
+      Config.difficulty,
+      Config.funbox
     );
   } else if (Config.paceCaret === "average") {
     let mode2 = "";

@@ -1,16 +1,20 @@
 import * as Funbox from "./funbox";
 import * as UI from "./ui";
+import Config from "./config";
 
 let mappedRoutes = {
-  "/": "pageTest",
+  "/": "pageLoading",
   "/login": "pageLogin",
   "/settings": "pageSettings",
   "/about": "pageAbout",
   "/account": "pageAccount",
-  "/verify": "pageTest",
+  "/verify": "pageLoading",
 };
 
 export function handleInitialPageClasses(pathname) {
+  if (!mappedRoutes[pathname]) {
+    pathname = "/";
+  }
   let el = $(".page." + mappedRoutes[pathname]);
   $(el).removeClass("hidden");
   $(el).addClass("active");
@@ -19,7 +23,7 @@ export function handleInitialPageClasses(pathname) {
 (function (history) {
   var pushState = history.pushState;
   history.pushState = function (state) {
-    if (Funbox.active === "memory" && state !== "/") {
+    if (Config.funbox === "memory" && state !== "/") {
       Funbox.resetMemoryTimer();
     }
     return pushState.apply(history, arguments);

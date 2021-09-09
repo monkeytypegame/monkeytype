@@ -1,3 +1,11 @@
+@media only screen and (max-width: 1200px) {
+  #leaderboards {
+    .tables {
+      grid-template-columns: unset !important;
+    }
+  }
+}
+
 @media only screen and (max-width: 1050px) {
   #centerContent {
     .pageSettings .section.fullWidth .buttons {
@@ -18,6 +26,52 @@
           line-height: 3rem !important;
         }
       }
+    }
+  }
+  #customTextPopup {
+    width: 80vw !important;
+
+    .wordfilter.button {
+      width: 50% !important;
+    }
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  #rateQuotePopup {
+    width: 90vw !important;
+  }
+  #bottom {
+    .leftright {
+      .left {
+        gap: 0.25rem 1rem;
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        grid-auto-flow: row;
+        grid-template-columns: auto auto auto auto;
+      }
+      .right {
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        gap: 0.25rem 1rem;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  #leaderboards {
+    .mainTitle {
+      font-size: 1.5rem !important;
+      line-height: 1.5rem !important;
+    }
+  }
+  .merchBanner {
+    img {
+      display: none;
+    }
+    .text {
+      padding: 0.25rem 0;
     }
   }
 }
@@ -41,24 +95,10 @@
       gap: 0.5rem;
       font-size: 0.8rem;
       line-height: 0.8rem;
+      margin-top: -0.5rem;
 
       .icon-button {
         padding: 0.25rem;
-      }
-    }
-  }
-  #bottom {
-    .leftright {
-      .left {
-        gap: 0.25rem 1rem;
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-        grid-auto-flow: column;
-      }
-      .right {
-        display: grid;
-        grid-template-rows: 1fr 1fr;
-        gap: 0.25rem 1rem;
       }
     }
   }
@@ -84,6 +124,17 @@
 }
 
 @media only screen and (max-width: 650px) {
+  #rateQuotePopup {
+    .ratingStats {
+      grid-template-columns: 1fr 1fr !important;
+    }
+    .quote {
+      grid-template-areas:
+        "text text text"
+        "source source source"
+        "id length length" !important;
+    }
+  }
   .pageSettings .section {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -144,7 +195,7 @@
         "chart chart"
         "morestats morestats";
       .stats {
-        grid-template-areas: "wpm acc";
+        grid-template-areas: "wpm acc burst";
         gap: 4rem;
       }
       .stats.morestats {
@@ -157,6 +208,35 @@
   #commandLineInput {
     width: 500px !important;
   }
+  #customTextPopupWrapper {
+    #customTextPopup {
+      .wordfilter.button {
+        width: 100% !important;
+        justify-self: auto;
+      }
+
+      .inputs {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+    }
+  }
+
+  .leaderboardsTop {
+    .mainTitle {
+      font-size: 4vw !important;
+    }
+
+    .buttonGroup {
+      gap: 0.1rem !important;
+
+      .button {
+        padding: 0.4rem !important;
+        font-size: 0.7rem !important;
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 500px) {
@@ -168,6 +248,13 @@
   #top {
     align-items: self-end;
     .logo {
+      .icon {
+        width: 1.5rem !important;
+      }
+      .text {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.3rem !important;
+      }
       .bottom {
         font-size: 1.75rem;
         line-height: 1.75rem;
@@ -189,7 +276,8 @@
         gap: 0.25rem 1rem;
         display: grid;
         grid-template-rows: 1fr 1fr 1fr;
-        grid-auto-flow: column;
+        grid-template-columns: auto auto auto;
+        grid-auto-flow: row;
       }
       .right {
         display: grid;
@@ -239,6 +327,14 @@
   #commandLine,
   #commandLineInput {
     width: 300px !important;
+  }
+  #leaderboards {
+    .tables {
+      width: 95% !important;
+      .titleAndTable {
+        width: 90% !important;
+      }
+    }
   }
 }
 

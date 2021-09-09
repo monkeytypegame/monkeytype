@@ -6,18 +6,22 @@ import * as Settings from "./settings";
 import * as RouteController from "./route-controller";
 import * as UI from "./ui";
 import * as SignOutButton from "./sign-out-button";
+import * as MonkeyPower from "./monkey-power";
+import * as NewVersionNotification from "./new-version-notification";
 
 ManualRestart.set();
 Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
-Misc.getReleasesFromGitHub();
+Misc.getReleasesFromGitHub().then((v) => {
+  NewVersionNotification.show(v[0].name);
+});
 
+RouteController.handleInitialPageClasses(window.location.pathname);
 $(document).ready(() => {
-  RouteController.handleInitialPageClasses(window.location.pathname);
   if (window.location.pathname === "/") {
-    $("#top .config").removeClass("hidden");
+    // $("#top .config").removeClass("hidden");
   }
-  $("body").css("transition", ".25s");
+  $("body").css("transition", "all .25s, transform .05s");
   if (Config.quickTab) {
     $("#restartTestButton").addClass("hidden");
   }
@@ -45,6 +49,8 @@ $(document).ready(() => {
           });
           history.replaceState("/", null, "/");
         }
+        let page = window.location.pathname.replace("/", "");
+        UI.changePage(page);
       } else if (window.location.pathname === "/account") {
         // history.replaceState("/", null, "/");
       } else if (/challenge_.+/g.test(window.location.pathname)) {
@@ -56,4 +62,5 @@ $(document).ready(() => {
       }
     });
   Settings.settingsFillPromise.then(Settings.update);
+  MonkeyPower.init();
 });

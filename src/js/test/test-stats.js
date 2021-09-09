@@ -8,6 +8,7 @@ export let invalid = false;
 export let start, end;
 export let wpmHistory = [];
 export let rawHistory = [];
+export let burstHistory = [];
 
 export let keypressPerSecond = [];
 export let currentKeypress = {
@@ -16,8 +17,8 @@ export let currentKeypress = {
   errors: 0,
   words: [],
 };
-
 export let lastKeypress;
+export let currentBurstStart = 0;
 
 // export let errorsPerSecond = [];
 // export let currentError = {
@@ -41,12 +42,31 @@ export let keypressTimings = {
   },
 };
 
+export function getStats() {
+  return {
+    start,
+    end,
+    wpmHistory,
+    rawHistory,
+    burstHistory,
+    keypressPerSecond,
+    currentKeypress,
+    lastKeypress,
+    currentBurstStart,
+    lastSecondNotRound,
+    missedWords,
+    accuracy,
+    keypressTimings,
+  };
+}
+
 export function restart() {
   start = 0;
   end = 0;
   invalid = false;
   wpmHistory = [];
   rawHistory = [];
+  burstHistory = [];
   keypressPerSecond = [];
   currentKeypress = {
     count: 0,
@@ -54,6 +74,7 @@ export function restart() {
     errors: 0,
     words: [],
   };
+  currentBurstStart = 0;
   // errorsPerSecond = [];
   // currentError = {
   //   count: 0,
@@ -156,12 +177,53 @@ export function pushKeypressesToHistory() {
   };
 }
 
-export function calculateAfkSeconds() {
-  return keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0).length;
+export function calculateAfkSeconds(testSeconds) {
+  let extraAfk = 0;
+  if (testSeconds !== undefined) {
+    if (Config.mode === "time") {
+      extraAfk = Math.round(testSeconds) - keypressPerSecond.length;
+    } else {
+      extraAfk = Math.ceil(testSeconds) - keypressPerSecond.length;
+    }
+    if (extraAfk < 0) extraAfk = 0;
+    // console.log("-- extra afk debug");
+    // console.log("should be " + Math.ceil(testSeconds));
+    // console.log(keypressPerSecond.length);
+    // console.log(
+    //   `gonna add extra ${extraAfk} seconds of afk because of no keypress data`
+    // );
+  }
+  let ret = keypressPerSecond.filter((x) => x.count == 0 && x.mod == 0).length;
+  return ret + extraAfk;
 }
 
 export function setLastSecondNotRound() {
   lastSecondNotRound = true;
+}
+
+export function setBurstStart(time) {
+  currentBurstStart = time;
+}
+
+export function calculateBurst() {
+  let timeToWrite = (performance.now() - currentBurstStart) / 1000;
+  let wordLength;
+  if (Config.mode === "zen") {
+    wordLength = TestLogic.input.getCurrent().length;
+  } else {
+    wordLength = TestLogic.words.getCurrent().length;
+  }
+  let speed = Misc.roundTo2((wordLength * (60 / timeToWrite)) / 5);
+  return Math.round(speed);
+}
+
+export function pushBurstToHistory(speed) {
+  if (burstHistory[TestLogic.words.currentIndex] === undefined) {
+    burstHistory.push(speed);
+  } else {
+    //repeated word - override
+    burstHistory[TestLogic.words.currentIndex] = speed;
+  }
 }
 
 export function calculateAccuracy() {
@@ -310,7 +372,7 @@ function countChars() {
       spaces++;
     }
   }
-  if (Funbox.active === "nospace") {
+  if (Config.funbox === "nospace") {
     spaces = 0;
     correctspaces = 0;
   }
@@ -327,7 +389,12 @@ function countChars() {
 }
 
 export function calculateStats() {
-  let testSeconds = TestStats.calculateTestSeconds();
+  let testSeconds;
+  if (Config.mode == "custom") {
+    testSeconds = TestStats.calculateTestSeconds();
+  } else {
+    testSeconds = Misc.roundTo2(TestStats.calculateTestSeconds());
+  }
   let chars = countChars();
   let wpm = Misc.roundTo2(
     ((chars.correctWordChars + chars.correctSpaces) * (60 / testSeconds)) / 5

@@ -1,15 +1,16 @@
 import { loadTags } from "./result-filters";
 import * as AccountButton from "./account-button";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
-
-const db = firebase.firestore();
-db.settings({ experimentalForceLongPolling: true });
+import axiosInstance from "./axios-instance";
+import * as TodayTracker from "./today-tracker";
 
 let dbSnapshot = null;
 
 export function updateName(uid, name) {
-  db.collection(`users`).doc(uid).set({ name: name }, { merge: true });
+  //TODO update
+  axiosInstance.post("/updateName", {
+    name: name,
+  });
 }
 
 export function getSnapshot() {
@@ -27,129 +28,88 @@ export function setSnapshot(newSnapshot) {
 }
 
 export async function initSnapshot() {
-  let user = firebase.auth().currentUser;
-  if (user == null) return false;
-  let snap = {
+  //send api request with token that returns tags, presets, and data needed for snap
+  let defaultSnap = {
     results: undefined,
     personalBests: {},
     name: undefined,
     presets: [],
     tags: [],
     favouriteThemes: [],
-    refactored: false,
     banned: undefined,
     verified: undefined,
     emailVerified: undefined,
-    lbMemory: {
-      time15: {
-        global: null,
-        daily: null,
-      },
-      time60: {
-        global: null,
-        daily: null,
-      },
-    },
+    lbMemory: {},
     globalStats: {
       time: 0,
       started: 0,
       completed: 0,
     },
+    quoteRatings: undefined,
   };
+  let snap = defaultSnap;
   try {
-    await db
-      .collection(`users/${user.uid}/tags/`)
-      .get()
-      .then((data) => {
-        data.docs.forEach((doc) => {
-          let tag = doc.data();
-          tag.id = doc.id;
-          if (tag.personalBests === undefined) {
-            tag.personalBests = {};
-          }
-          snap.tags.push(tag);
-        });
-        snap.tags = snap.tags.sort((a, b) => {
-          if (a.name > b.name) {
-            return 1;
-          } else if (a.name < b.name) {
-            return -1;
-          } else {
-            return 0;
-          }
-        });
-      })
-      .catch((e) => {
-        throw e;
-      });
-    await db
-      .collection(`users/${user.uid}/presets/`)
-      .get()
-      .then((data) => {
-        data.docs.forEach((doc) => {
-          // console.log(doc);
-          let preset = doc.data();
-          preset.id = doc.id;
-          snap.presets.push(preset);
-        });
-        snap.presets = snap.presets.sort((a, b) => {
-          if (a.name > b.name) {
-            return 1;
-          } else if (a.name < b.name) {
-            return -1;
-          } else {
-            return 0;
-          }
-        });
-      })
-      .catch((e) => {
-        throw e;
-      });
-    await db
-      .collection("users")
-      .doc(user.uid)
-      .get()
-      .then((res) => {
-        let data = res.data();
-        if (data === undefined) return;
-        if (data.personalBests !== undefined) {
-          snap.personalBests = data.personalBests;
-        }
-        snap.name = data.name;
-        snap.discordId = data.discordId;
-        snap.pairingCode =
-          data.discordPairingCode == null ? undefined : data.discordPairingCode;
-        snap.config = data.config;
-        snap.favouriteThemes =
-          data.favouriteThemes === undefined ? [] : data.favouriteThemes;
-        snap.refactored = data.refactored === true ? true : false;
-        snap.globalStats = {
-          time: data.timeTyping,
-          started: data.startedTests,
-          completed: data.completedTests,
-        };
-        snap.banned = data.banned;
-        snap.verified = data.verified;
-        snap.emailVerified = user.emailVerified;
-        try {
-          if (data.lbMemory.time15 !== undefined) {
-            snap.lbMemory.time15 = data.lbMemory.time15;
-          }
-          if (data.lbMemory.time60 !== undefined) {
-            snap.lbMemory.time60 = data.lbMemory.time60;
-          }
-        } catch {}
-      })
-      .catch((e) => {
-        throw e;
-      });
-    // console.log(snap.presets);
+    if (firebase.auth().currentUser == null) return false;
+    let userData = await axiosInstance.get("/user");
+    userData = userData.data;
+    snap.name = userData.name;
+    snap.personalBests = userData.personalBests;
+    snap.banned = userData.banned;
+    snap.verified = userData.verified;
+    snap.discordId = userData.discordId;
+    snap.globalStats = {
+      time: userData.timeTyping,
+      started: userData.startedTests,
+      completed: userData.completedTests,
+    };
+    snap.quoteRatings = userData.quoteRatings;
+    snap.favouriteThemes =
+      userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
+
+    if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
+      //old memory format
+      snap.lbMemory = {};
+    } else if (userData.lbMemory) {
+      snap.lbMemory = userData.lbMemory;
+    }
+
+    let configData = await axiosInstance.get("/config");
+    configData = configData.data;
+    if (configData) {
+      snap.config = configData.config;
+    }
+
+    let tagsData = await axiosInstance.get("/user/tags");
+    snap.tags = tagsData.data;
+    snap.tags = snap.tags.sort((a, b) => {
+      if (a.name > b.name) {
+        return 1;
+      } else if (a.name < b.name) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+
+    let presetsData = await axiosInstance.get("/presets");
+    snap.presets = presetsData.data;
+    snap.presets = snap.presets.sort((a, b) => {
+      if (a.name > b.name) {
+        return 1;
+      } else if (a.name < b.name) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+
     dbSnapshot = snap;
+    loadTags(dbSnapshot.tags);
+    return dbSnapshot;
   } catch (e) {
-    console.error(e);
+    dbSnapshot = defaultSnap;
+    throw e;
   }
-  loadTags(dbSnapshot.tags);
-  return dbSnapshot;
 }
 
 export async function getUserResults() {
@@ -160,17 +120,41 @@ export async function getUserResults() {
     return true;
   } else {
     try {
+      let results = await axiosInstance.get("/results");
+      results.data.forEach((result) => {
+        if (result.bailedOut === undefined) result.bailedOut = false;
+        if (result.blindMode === undefined) result.blindMode = false;
+        if (result.difficulty === undefined) result.difficulty = "normal";
+        if (result.funbox === undefined) result.funbox = "none";
+        if (result.language === undefined) result.language = "english";
+        if (result.numbers === undefined) result.numbers = false;
+        if (result.punctuation === undefined) result.punctuation = false;
+      });
+      results.data = results.data.sort((a, b) => {
+        return a.timestamp < b.timestamp;
+      });
+      dbSnapshot.results = results.data;
+      await TodayTracker.addAllFromToday();
+      return true;
+    } catch (e) {
+      Notifications.add("Error getting results", -1);
+      return false;
+    }
+  }
+  /*
+    try {
       return await db
         .collection(`users/${user.uid}/results/`)
         .orderBy("timestamp", "desc")
         .limit(1000)
         .get()
-        .then((data) => {
+        .then(async (data) => {
           dbSnapshot.results = [];
           data.docs.forEach((doc) => {
             let result = doc.data();
             result.id = doc.id;
 
+            //this should be done server-side
             if (result.bailedOut === undefined) result.bailedOut = false;
             if (result.blindMode === undefined) result.blindMode = false;
             if (result.difficulty === undefined) result.difficulty = "normal";
@@ -181,6 +165,7 @@ export async function getUserResults() {
 
             dbSnapshot.results.push(result);
           });
+          await TodayTracker.addAllFromToday();
           return true;
         })
         .catch((e) => {
@@ -191,6 +176,7 @@ export async function getUserResults() {
       return false;
     }
   }
+  */
 }
 
 export async function getUserHighestWpm(
@@ -296,8 +282,13 @@ export async function getLocalPB(
   mode2,
   punctuation,
   language,
-  difficulty
+  difficulty,
+  funbox
 ) {
+  if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
+    return 0;
+  }
+
   function cont() {
     let ret = 0;
     try {
@@ -372,6 +363,7 @@ export async function saveLocalPB(
       }
     } catch (e) {
       //that mode or mode2 is not found
+      dbSnapshot.personalBests = {};
       dbSnapshot.personalBests[mode] = {};
       dbSnapshot.personalBests[mode][mode2] = [
         {
@@ -403,7 +395,7 @@ export async function getLocalTagPB(
 ) {
   function cont() {
     let ret = 0;
-    let filteredtag = dbSnapshot.tags.filter((t) => t.id === tagId)[0];
+    let filteredtag = dbSnapshot.tags.filter((t) => t._id === tagId)[0];
     try {
       filteredtag.personalBests[mode][mode2].forEach((pb) => {
         if (
@@ -414,10 +406,10 @@ export async function getLocalTagPB(
           ret = pb.wpm;
         }
       });
-      return ret;
     } catch (e) {
-      return ret;
+      console.log(e);
     }
+    return ret;
   }
 
   let retval;
@@ -443,7 +435,7 @@ export async function saveLocalTagPB(
 ) {
   if (mode == "quote") return;
   function cont() {
-    let filteredtag = dbSnapshot.tags.filter((t) => t.id === tagId)[0];
+    let filteredtag = dbSnapshot.tags.filter((t) => t._id === tagId)[0];
     try {
       let found = false;
       if (filteredtag.personalBests[mode][mode2] === undefined) {
@@ -478,6 +470,7 @@ export async function saveLocalTagPB(
       }
     } catch (e) {
       //that mode or mode2 is not found
+      filteredtag.personalBests = {};
       filteredtag.personalBests[mode] = {};
       filteredtag.personalBests[mode][mode2] = [
         {
@@ -499,23 +492,38 @@ export async function saveLocalTagPB(
   }
 }
 
-export function updateLbMemory(mode, mode2, type, value) {
-  getSnapshot().lbMemory[mode + mode2][type] = value;
+export function updateLbMemory(mode, mode2, language, rank, api = false) {
+  //could dbSnapshot just be used here instead of getSnapshot()
+  if (dbSnapshot.lbMemory === undefined) dbSnapshot.lbMemory = {};
+  if (dbSnapshot.lbMemory[mode] === undefined) dbSnapshot.lbMemory[mode] = {};
+  if (dbSnapshot.lbMemory[mode][mode2] === undefined)
+    dbSnapshot.lbMemory[mode][mode2] = {};
+  let current = dbSnapshot.lbMemory[mode][mode2][language];
+  dbSnapshot.lbMemory[mode][mode2][language] = rank;
+  if (api && current != rank) {
+    axiosInstance.post("/user/updateLbMemory", {
+      mode,
+      mode2,
+      language,
+      rank,
+    });
+  }
 }
 
 export async function saveConfig(config) {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
-    CloudFunctions.saveConfig({
-      uid: firebase.auth().currentUser.uid,
-      obj: config,
-    }).then((d) => {
+    let response;
+    try {
+      response = await axiosInstance.post("/config/save", { config });
+    } catch (e) {
       AccountButton.loading(false);
-      if (d.data.resultCode !== 1) {
-        Notifications.add(`Error saving config to DB! ${d.data.message}`, 4000);
-      }
+
+      let msg = e?.response?.data?.message ?? e.message;
+      Notifications.add("Failed to save config: " + msg, -1);
       return;
-    });
+    }
+    AccountButton.loading(false);
   }
 }
 
@@ -543,7 +551,7 @@ export async function saveConfig(config) {
 // export async functio(tagId, wpm) {
 //   function cont() {
 //     dbSnapshot.tags.forEach((tag) => {
-//       if (tag.id === tagId) {
+//       if (tag._id === tagId) {
 //         tag.pb = wpm;
 //       }
 //     });

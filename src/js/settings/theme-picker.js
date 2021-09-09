@@ -33,10 +33,10 @@ export function refreshButtons() {
         if (Config.favThemes.includes(theme.name)) {
           let activeTheme = activeThemeName === theme.name ? "active" : "";
           favThemesEl.append(
-            `<div class="theme button" theme='${theme.name}' style="color:${
-              theme.textColor
-            };background:${theme.bgColor}">
-          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
+            `<div class="theme button ${activeTheme}" theme='${
+              theme.name
+            }' style="color:${theme.textColor};background:${theme.bgColor}">
+          <div class="activeIndicator"><i class="fas fa-circle"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="favButton active"><i class="fas fa-star"></i></div></div>`
           );
@@ -50,10 +50,10 @@ export function refreshButtons() {
       if (!Config.favThemes.includes(theme.name)) {
         let activeTheme = activeThemeName === theme.name ? "active" : "";
         themesEl.append(
-          `<div class="theme button" theme='${theme.name}' style="color:${
-            theme.textColor
-          };background:${theme.bgColor}">
-          <div class="activeIndicator ${activeTheme}"><i class="fas fa-circle"></i></div>
+          `<div class="theme button ${activeTheme}" theme='${
+            theme.name
+          }' style="color:${theme.textColor};background:${theme.bgColor}">
+          <div class="activeIndicator"><i class="fas fa-circle"></i></div>
           <div class="text">${theme.name.replace(/_/g, " ")}</div>
           <div class="favButton"><i class="far fa-star"></i></div></div>`
         );
@@ -198,7 +198,7 @@ $(document).on("click", ".pageSettings .section.themes .theme.button", (e) => {
 $(
   ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
 ).on("input", (e) => {
-  UpdateConfig.setCustomTheme(true, true);
+  // UpdateConfig.setCustomTheme(true, true);
   let $colorVar = $(e.currentTarget).attr("id");
   let $pickedColor = $(e.currentTarget).val();
 
@@ -228,29 +228,31 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
     document.documentElement.style.setProperty(e, "");
   });
 
-  setTimeout(() => {
+  setTimeout(async () => {
     ChartController.updateAllChartColors();
+
+    let themecolors = await ThemeColors.get();
 
     ThemeController.colorVars.forEach((colorName) => {
       let color;
       if (colorName === "--bg-color") {
-        color = ThemeColors.bg;
+        color = themecolors.bg;
       } else if (colorName === "--main-color") {
-        color = ThemeColors.main;
+        color = themecolors.main;
       } else if (colorName === "--sub-color") {
-        color = ThemeColors.sub;
+        color = themecolors.sub;
       } else if (colorName === "--caret-color") {
-        color = ThemeColors.caret;
+        color = themecolors.caret;
       } else if (colorName === "--text-color") {
-        color = ThemeColors.text;
+        color = themecolors.text;
       } else if (colorName === "--error-color") {
-        color = ThemeColors.error;
+        color = themecolors.error;
       } else if (colorName === "--error-extra-color") {
-        color = ThemeColors.errorExtra;
+        color = themecolors.errorExtra;
       } else if (colorName === "--colorful-error-color") {
-        color = ThemeColors.colorfulError;
+        color = themecolors.colorfulError;
       } else if (colorName === "--colorful-error-extra-color") {
-        color = ThemeColors.colorfulErrorExtra;
+        color = themecolors.colorfulErrorExtra;
       }
       $(".colorPicker #" + colorName).attr("value", color);
       $(".colorPicker #" + colorName).val(color);

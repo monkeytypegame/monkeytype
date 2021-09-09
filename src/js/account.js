@@ -1,6 +1,5 @@
 import * as DB from "./db";
 import * as Misc from "./misc";
-import * as CloudFunctions from "./cloud-functions";
 import * as Notifications from "./notifications";
 import * as ResultFilters from "./result-filters";
 import * as ThemeColors from "./theme-colors";
@@ -18,141 +17,200 @@ import * as Settings from "./settings";
 import * as ThemePicker from "./theme-picker";
 import * as AllTimeStats from "./all-time-stats";
 import * as PbTables from "./pb-tables";
+import * as AccountController from "./account-controller";
+import axiosInstance from "./axios-instance";
 
-export function getDataAndInit() {
-  DB.initSnapshot()
-    .then(async (e) => {
-      let snap = DB.getSnapshot();
-      $("#menu .icon-button.account .text").text(snap.name);
-      if (snap === null) {
-        throw "Missing db snapshot. Client likely could not connect to the backend.";
-      }
-      let user = firebase.auth().currentUser;
-      if (snap.name === undefined) {
-        //verify username
-        if (Misc.isUsernameValid(user.displayName)) {
-          //valid, just update
-          snap.name = user.displayName;
-          DB.setSnapshot(snap);
-          DB.updateName(user.uid, user.displayName);
-        } else {
-          //invalid, get new
-          // Notifications.add("Invalid name", 0);
-          let promptVal = null;
-          let cdnVal = undefined;
+let filterDebug = false;
+//toggle filterdebug
+export function toggleFilterDebug() {
+  filterDebug = !filterDebug;
+  if (filterDebug) {
+    console.log("filterDebug is on");
+  }
+}
 
-          while (
-            promptVal === null ||
-            cdnVal === undefined ||
-            cdnVal.data.status < 0
-          ) {
-            promptVal = prompt(
-              "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
-            );
-            cdnVal = await CloudFunctions.changeDisplayName({
-              uid: user.uid,
-              name: promptVal,
-            });
-            if (cdnVal.data.status === 1) {
-              alert("Name updated", 1);
-              location.reload();
-            } else if (cdnVal.data.status < 0) {
-              alert(cdnVal.data.message, 0);
-            }
+export async function getDataAndInit() {
+  try {
+    await DB.initSnapshot();
+  } catch (e) {
+    AccountButton.loading(false);
+    if (e.response.status === 429) {
+      Notifications.add(
+        "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
+        0,
+        0
+      );
+      Notifications.add(
+        "You will run into this error if you refresh the website to restart the test. It is NOT recommended to do that. Instead, use tab + enter or just tab (with quick tab mode enalbed) to restart the test.",
+        0,
+        0
+      );
+    }
+    let msg = e?.response?.data?.message ?? e.message;
+    Notifications.add("Failed to get user data: " + msg, -1);
+
+    // $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
+    $("#top #menu .account").css("opacity", 1);
+    if ($(".pageLoading").hasClass("active")) UI.changePage("");
+    AccountController.signOut();
+    return;
+  }
+  let snap = DB.getSnapshot();
+  $("#menu .icon-button.account .text").text(snap.name);
+  // if (snap === null) {
+  //   throw "Missing db snapshot. Client likely could not connect to the backend.";
+  // }
+  let user = firebase.auth().currentUser;
+  if (snap.name == undefined) {
+    //verify username
+    if (Misc.isUsernameValid(user.name)) {
+      //valid, just update
+      snap.name = user.name;
+      DB.setSnapshot(snap);
+      DB.updateName(user.uid, user.name);
+    } else {
+      //invalid, get new
+      // Notifications.add("Invalid name", 0);
+      // let promptVal = null;
+      // let cdnVal = undefined;
+
+      // while (
+      //   promptVal === null ||
+      //   cdnVal === undefined ||
+      //   cdnVal.data.status < 0
+      // ) {
+      //   promptVal = prompt(
+      //     "Your name is either invalid or unavailable (you also need to do this if you used Google Sign Up). Please provide a new display name (cannot be longer than 14 characters, can only contain letters, numbers, underscores, dots and dashes):"
+      //   );
+      //   //TODO update
+      //   axiosInstance
+      //     .post("/updateName", {
+      //       name: promptVal,
+      //     })
+      //     .then((cdnVal) => {
+      //       if (cdnVal.data.status === 1) {
+      //         alert("Name updated", 1);
+      //         location.reload();
+      //       } else if (cdnVal.data.status < 0) {
+      //         alert(cdnVal.data.message, 0);
+      //       }
+      //     });
+      // }
+      let nameGood = false;
+      let name = "";
+
+      while (nameGood === false) {
+        name = await prompt(
+          "Please provide a new username (cannot be longer than 16 characters, can only contain letters, numbers, underscores, dots and dashes):"
+        );
+
+        if (name == null) {
+          AccountController.signOut();
+          return;
+        }
+
+        let response;
+        try {
+          response = await axiosInstance.post("/user/updateName", { name });
+        } catch (e) {
+          let msg = e?.response?.data?.message ?? e.message;
+          if (e.response.status >= 500) {
+            Notifications.add("Failed to update name: " + msg, -1);
+            throw e;
+          } else {
+            alert(msg);
           }
         }
+        if (response?.status == 200) {
+          nameGood = true;
+          Notifications.add("Name updated", 1);
+          DB.getSnapshot().name = name;
+          $("#menu .icon-button.account .text").text(name);
+        }
       }
-      if (snap.refactored === false) {
-        CloudFunctions.removeSmallTests({ uid: user.uid });
-      }
-      if (!UpdateConfig.changedBeforeDb) {
-        if (Config.localStorageConfig === null) {
-          AccountButton.loading(false);
-          UpdateConfig.apply(DB.getSnapshot().config);
-          Settings.update();
-          UpdateConfig.saveToLocalStorage(true);
-          TestLogic.restart(false, true);
-        } else if (DB.getSnapshot().config !== undefined) {
-          //loading db config, keep for now
-          let configsDifferent = false;
-          Object.keys(Config).forEach((key) => {
-            if (!configsDifferent) {
-              try {
-                if (key !== "resultFilters") {
-                  if (Array.isArray(Config[key])) {
-                    Config[key].forEach((arrval, index) => {
-                      if (arrval != DB.getSnapshot().config[key][index]) {
-                        configsDifferent = true;
-                        console.log(
-                          `.config is different: ${arrval} != ${
-                            DB.getSnapshot().config[key][index]
-                          }`
-                        );
-                      }
-                    });
-                  } else {
-                    if (Config[key] != DB.getSnapshot().config[key]) {
-                      configsDifferent = true;
-                      console.log(
-                        `..config is different ${key}: ${Config[key]} != ${
-                          DB.getSnapshot().config[key]
-                        }`
-                      );
-                    }
+    }
+  }
+  // if($(".pageAccount").hasClass('active')) update();
+  if ($(".pageLogin").hasClass("active")) UI.changePage("account");
+  if (!UpdateConfig.changedBeforeDb) {
+    if (Config.localStorageConfig === null) {
+      AccountButton.loading(false);
+      UpdateConfig.apply(DB.getSnapshot().config);
+      Settings.update();
+      UpdateConfig.saveToLocalStorage(true);
+      TestLogic.restart(false, true);
+    } else if (DB.getSnapshot().config !== undefined) {
+      //loading db config, keep for now
+      let configsDifferent = false;
+      Object.keys(Config).forEach((key) => {
+        if (!configsDifferent) {
+          try {
+            if (key !== "resultFilters") {
+              if (Array.isArray(Config[key])) {
+                Config[key].forEach((arrval, index) => {
+                  if (arrval != DB.getSnapshot().config[key][index]) {
+                    configsDifferent = true;
+                    console.log(
+                      `.config is different: ${arrval} != ${
+                        DB.getSnapshot().config[key][index]
+                      }`
+                    );
                   }
+                });
+              } else {
+                if (Config[key] != DB.getSnapshot().config[key]) {
+                  configsDifferent = true;
+                  console.log(
+                    `..config is different ${key}: ${Config[key]} != ${
+                      DB.getSnapshot().config[key]
+                    }`
+                  );
                 }
-              } catch (e) {
-                console.log(e);
-                configsDifferent = true;
-                console.log(`...config is different: ${e.message}`);
               }
             }
-          });
-          if (configsDifferent) {
-            console.log("applying config from db");
-            AccountButton.loading(false);
-            UpdateConfig.apply(DB.getSnapshot().config);
-            Settings.update();
-            UpdateConfig.saveToLocalStorage(true);
-            if ($(".page.pageTest").hasClass("active")) {
-              TestLogic.restart(false, true);
-            }
-            DB.saveConfig(Config);
+          } catch (e) {
+            console.log(e);
+            configsDifferent = true;
+            console.log(`...config is different: ${e.message}`);
           }
         }
-        UpdateConfig.setDbConfigLoaded(true);
-      } else {
+      });
+      if (configsDifferent) {
+        console.log("applying config from db");
         AccountButton.loading(false);
-      }
-      if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
-        if (!TestLogic.active) {
-          PaceCaret.init(true);
+        UpdateConfig.apply(DB.getSnapshot().config);
+        Settings.update();
+        UpdateConfig.saveToLocalStorage(true);
+        if ($(".page.pageTest").hasClass("active")) {
+          TestLogic.restart(false, true);
         }
+        DB.saveConfig(Config);
       }
-      if (
-        $(".pageLogin").hasClass("active") ||
-        window.location.pathname === "/account"
-      ) {
-        UI.changePage("account");
-      }
-      ThemePicker.refreshButtons();
-      AccountButton.loading(false);
-      ResultFilters.updateTags();
-      CommandlineLists.updateTagCommands();
-      TagController.loadActiveFromLocalStorage();
-      ResultTagsPopup.updateButtons();
-      Settings.showAccountSection();
-    })
-    .catch((e) => {
-      AccountButton.loading(false);
-      console.error(e);
-      Notifications.add(
-        "Error downloading user data. Client likely could not connect to the backend  - refresh to try again. If error persists try clearing your cache and website data or contact Miodec.",
-        -1
-      );
-      $("#top #menu .account .icon").html('<i class="fas fa-fw fa-times"></i>');
-      $("#top #menu .account").css("opacity", 1);
-    });
+    }
+    UpdateConfig.setDbConfigLoaded(true);
+  } else {
+    AccountButton.loading(false);
+  }
+  if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
+    if (!TestLogic.active) {
+      PaceCaret.init(true);
+    }
+  }
+  if (
+    $(".pageLogin").hasClass("active") ||
+    window.location.pathname === "/account"
+  ) {
+    UI.changePage("account");
+  }
+  ThemePicker.refreshButtons();
+  AccountButton.loading(false);
+  ResultFilters.updateTags();
+  CommandlineLists.updateTagCommands();
+  TagController.loadActiveFromLocalStorage();
+  ResultTagsPopup.updateButtons();
+  Settings.showAccountSection();
+  UI.setPageTransition(false);
+  if ($(".pageLoading").hasClass("active")) UI.changePage("");
 }
 
 let filteredResults = [];
@@ -230,7 +288,7 @@ function loadMoreLines(lineIndex) {
     if (result.tags !== undefined && result.tags.length > 0) {
       result.tags.forEach((tag) => {
         DB.getSnapshot().tags.forEach((snaptag) => {
-          if (tag === snaptag.id) {
+          if (tag === snaptag._id) {
             tagNames += snaptag.name + ", ";
           }
         });
@@ -245,13 +303,13 @@ function loadMoreLines(lineIndex) {
       restags = JSON.stringify(result.tags);
     }
 
-    let tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="no tags" data-balloon-pos="up" style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
+    let tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="no tags" data-balloon-pos="up" style="opacity: .25"><i class="fas fa-fw fa-tag"></i></span>`;
 
     if (tagNames !== "") {
       if (result.tags !== undefined && result.tags.length > 1) {
-        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
+        tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tags"></i></span>`;
       } else {
-        tagIcons = `<span id="resultEditTags" resultId="${result.id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
+        tagIcons = `<span id="resultEditTags" resultId="${result._id}" tags='${restags}' aria-label="${tagNames}" data-balloon-pos="up"><i class="fas fa-fw fa-tag"></i></span>`;
       }
     }
 
@@ -270,15 +328,21 @@ function loadMoreLines(lineIndex) {
       pb = "";
     }
 
+    let charStats = "-";
+    if (result.charStats) {
+      charStats = result.charStats.join("/");
+    } else {
+      charStats = result.correctChars + "/" + result.incorrectChars + "/-/-";
+    }
+
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
     <td>${result.wpm.toFixed(2)}</td>
     <td>${raw}</td>
     <td>${result.acc.toFixed(2)}%</td>
-    <td>${result.correctChars}</td>
-    <td>${result.incorrectChars}</td>
     <td>${consistency}</td>
+    <td>${charStats}</td>
     <td>${result.mode} ${result.mode2}${withpunc}</td>
     <td class="infoIcons">${icons}</td>
     <td>${tagIcons}</td>
@@ -302,6 +366,7 @@ export function update() {
     ChartController.accountHistory.updateColors();
     ChartController.accountActivity.updateColors();
     AllTimeStats.update();
+
     PbTables.update();
 
     let chartData = [];
@@ -365,21 +430,37 @@ export function update() {
         if (resdiff == undefined) {
           resdiff = "normal";
         }
-        if (!ResultFilters.getFilter("difficulty", resdiff)) return;
-        if (!ResultFilters.getFilter("mode", result.mode)) return;
+        if (!ResultFilters.getFilter("difficulty", resdiff)) {
+          if (filterDebug)
+            console.log(`skipping result due to difficulty filter`, result);
+          return;
+        }
+        if (!ResultFilters.getFilter("mode", result.mode)) {
+          if (filterDebug)
+            console.log(`skipping result due to mode filter`, result);
+          return;
+        }
 
         if (result.mode == "time") {
           let timefilter = "custom";
           if ([15, 30, 60, 120].includes(parseInt(result.mode2))) {
             timefilter = result.mode2;
           }
-          if (!ResultFilters.getFilter("time", timefilter)) return;
+          if (!ResultFilters.getFilter("time", timefilter)) {
+            if (filterDebug)
+              console.log(`skipping result due to time filter`, result);
+            return;
+          }
         } else if (result.mode == "words") {
           let wordfilter = "custom";
           if ([10, 25, 50, 100, 200].includes(parseInt(result.mode2))) {
             wordfilter = result.mode2;
           }
-          if (!ResultFilters.getFilter("words", wordfilter)) return;
+          if (!ResultFilters.getFilter("words", wordfilter)) {
+            if (filterDebug)
+              console.log(`skipping result due to word filter`, result);
+            return;
+          }
         }
 
         if (result.quoteLength != null) {
@@ -396,11 +477,17 @@ export function update() {
           if (
             filter !== null &&
             !ResultFilters.getFilter("quoteLength", filter)
-          )
+          ) {
+            if (filterDebug)
+              console.log(`skipping result due to quoteLength filter`, result);
             return;
+          }
         }
 
-        let langFilter = ResultFilters.getFilter("language", result.language);
+        let langFilter = ResultFilters.getFilter(
+          "language",
+          result.language ?? "english"
+        );
 
         if (
           result.language === "english_expanded" &&
@@ -408,28 +495,47 @@ export function update() {
         ) {
           langFilter = true;
         }
-        if (!langFilter) return;
+        if (!langFilter) {
+          if (filterDebug)
+            console.log(`skipping result due to language filter`, result);
+          return;
+        }
 
         let puncfilter = "off";
         if (result.punctuation) {
           puncfilter = "on";
         }
-        if (!ResultFilters.getFilter("punctuation", puncfilter)) return;
+        if (!ResultFilters.getFilter("punctuation", puncfilter)) {
+          if (filterDebug)
+            console.log(`skipping result due to punctuation filter`, result);
+          return;
+        }
 
         let numfilter = "off";
         if (result.numbers) {
           numfilter = "on";
         }
-        if (!ResultFilters.getFilter("numbers", numfilter)) return;
+        if (!ResultFilters.getFilter("numbers", numfilter)) {
+          if (filterDebug)
+            console.log(`skipping result due to numbers filter`, result);
+          return;
+        }
 
         if (result.funbox === "none" || result.funbox === undefined) {
-          if (!ResultFilters.getFilter("funbox", "none")) return;
+          if (!ResultFilters.getFilter("funbox", "none")) {
+            if (filterDebug)
+              console.log(`skipping result due to funbox filter`, result);
+            return;
+          }
         } else {
-          if (!ResultFilters.getFilter("funbox", result.funbox)) return;
+          if (!ResultFilters.getFilter("funbox", result.funbox)) {
+            if (filterDebug)
+              console.log(`skipping result due to funbox filter`, result);
+            return;
+          }
         }
 
         let tagHide = true;
-
         if (result.tags === undefined || result.tags.length === 0) {
           //no tags, show when no tag is enabled
           if (DB.getSnapshot().tags.length > 0) {
@@ -439,7 +545,7 @@ export function update() {
           }
         } else {
           //tags exist
-          let validTags = DB.getSnapshot().tags.map((t) => t.id);
+          let validTags = DB.getSnapshot().tags.map((t) => t._id);
           result.tags.forEach((tag) => {
             //check if i even need to check tags anymore
             if (!tagHide) return;
@@ -454,7 +560,11 @@ export function update() {
           });
         }
 
-        if (tagHide) return;
+        if (tagHide) {
+          if (filterDebug)
+            console.log(`skipping result due to tag filter`, result);
+          return;
+        }
 
         let timeSinceTest = Math.abs(result.timestamp - Date.now()) / 1000;
 
@@ -472,7 +582,11 @@ export function update() {
           datehide = false;
         }
 
-        if (datehide) return;
+        if (datehide) {
+          if (filterDebug)
+            console.log(`skipping result due to date filter`, result);
+          return;
+        }
 
         filteredResults.push(result);
       } catch (e) {
@@ -485,7 +599,6 @@ export function update() {
         ResultFilters.reset();
         ResultFilters.updateActive();
       }
-
       //filters done
       //=======================================
 
@@ -499,12 +612,17 @@ export function update() {
       if (Object.keys(activityChartData).includes(String(resultDate))) {
         activityChartData[resultDate].amount++;
         activityChartData[resultDate].time +=
-          result.testDuration + result.incompleteTestSeconds;
+          result.testDuration +
+          result.incompleteTestSeconds -
+          (result.afkDuration ?? 0);
         activityChartData[resultDate].totalWpm += result.wpm;
       } else {
         activityChartData[resultDate] = {
           amount: 1,
-          time: result.testDuration + result.incompleteTestSeconds,
+          time:
+            result.testDuration +
+            result.incompleteTestSeconds -
+            (result.afkDuration ?? 0),
           totalWpm: result.wpm,
         };
       }
@@ -520,11 +638,14 @@ export function update() {
       } else {
         tt = parseFloat(result.testDuration);
       }
-      if (result.incompleteTestSeconds != undefined) {
-        tt += result.incompleteTestSeconds;
-      } else if (result.restartCount != undefined && result.restartCount > 0) {
-        tt += (tt / 4) * result.restartCount;
-      }
+
+      tt += (result.incompleteTestSeconds ?? 0) - (result.afkDuration ?? 0);
+
+      // if (result.incompleteTestSeconds != undefined) {
+      //   tt += result.incompleteTestSeconds;
+      // } else if (result.restartCount != undefined && result.restartCount > 0) {
+      //   tt += (tt / 4) * result.restartCount;
+      // }
       totalSecondsFiltered += tt;
 
       if (last10 < 10) {
@@ -586,7 +707,10 @@ export function update() {
           ? ",<br> " + (result.punctuation ? "&" : "") + "with numbers"
           : "";
         topWpm = result.wpm;
-        topMode = result.mode + " " + result.mode2 + puncsctring + numbsctring;
+        if (result.mode == "custom") topMode = result.mode;
+        else
+          topMode =
+            result.mode + " " + result.mode2 + puncsctring + numbsctring;
       }
 
       totalWpm += result.wpm;
@@ -648,7 +772,6 @@ export function update() {
       });
       lastTimestamp = date;
     });
-
     ChartController.accountActivity.data.datasets[0].data = activityChartData_time;
     ChartController.accountActivity.data.datasets[1].data = activityChartData_avgWpm;
 
@@ -685,24 +808,9 @@ export function update() {
       $(".pageAccount .triplegroup.stats").removeClass("hidden");
     }
 
-    let th = Math.floor(totalSeconds / 3600);
-    let tm = Math.floor((totalSeconds % 3600) / 60);
-    let ts = Math.floor((totalSeconds % 3600) % 60);
-    $(".pageAccount .timeTotal .val").text(`
-
-      ${th < 10 ? "0" + th : th}:${tm < 10 ? "0" + tm : tm}:${
-      ts < 10 ? "0" + ts : ts
-    }
-    `);
-    let tfh = Math.floor(totalSecondsFiltered / 3600);
-    let tfm = Math.floor((totalSecondsFiltered % 3600) / 60);
-    let tfs = Math.floor((totalSecondsFiltered % 3600) % 60);
-    $(".pageAccount .timeTotalFiltered .val").text(`
-
-    ${tfh < 10 ? "0" + tfh : tfh}:${tfm < 10 ? "0" + tfm : tfm}:${
-      tfs < 10 ? "0" + tfs : tfs
-    }
-  `);
+    $(".pageAccount .timeTotalFiltered .val").text(
+      Misc.secondsToString(Math.round(totalSecondsFiltered), true)
+    );
 
     $(".pageAccount .highestWpm .val").text(topWpm);
     $(".pageAccount .averageWpm .val").text(Math.round(totalWpm / testCount));
@@ -737,18 +845,18 @@ export function update() {
         Math.round(totalCons10 / Math.min(last10, consCount)) + "%"
       );
     }
-
     $(".pageAccount .testsStarted .val").text(`${testCount + testRestarts}`);
-
+    console.log("Test count: " + testCount);
+    console.log("Test restarts: " + testRestarts);
     $(".pageAccount .testsCompleted .val").text(
       `${testCount}(${Math.floor(
         (testCount / (testCount + testRestarts)) * 100
       )}%)`
     );
 
-    $(".pageAccount .avgRestart .val").text(
-      (testRestarts / testCount).toFixed(1)
-    );
+    $(".pageAccount .testsCompleted .avgres").text(`
+      ${(testRestarts / testCount).toFixed(1)} restarts per completed test
+    `);
 
     if (ChartController.accountHistory.data.datasets[0].data.length > 0) {
       ChartController.accountHistory.options.plugins.trendlineLinear = true;
@@ -834,7 +942,7 @@ $(".pageAccount #accountHistoryChart").click((e) => {
   loadMoreLines(index);
   $([document.documentElement, document.body]).animate(
     {
-      scrollTop: $(`#result-${index}`).offset().top - ($(window).height()/2),
+      scrollTop: $(`#result-${index}`).offset().top - $(window).height() / 2,
     },
     500
   );
@@ -853,3 +961,103 @@ $(document).on("click", ".pageAccount .miniResultChartButton", (event) => {
     event.pageY + 30
   );
 });
+
+$(document).on("click", ".history-wpm-header", (event) => {
+  sortAndRefreshHistory("wpm", ".history-wpm-header");
+});
+
+$(document).on("click", ".history-raw-header", (event) => {
+  sortAndRefreshHistory("rawWpm", ".history-raw-header");
+});
+
+$(document).on("click", ".history-acc-header", (event) => {
+  sortAndRefreshHistory("acc", ".history-acc-header");
+});
+
+$(document).on("click", ".history-correct-chars-header", (event) => {
+  sortAndRefreshHistory("correctChars", ".history-correct-chars-header");
+});
+
+$(document).on("click", ".history-incorrect-chars-header", (event) => {
+  sortAndRefreshHistory("incorrectChars", ".history-incorrect-chars-header");
+});
+
+$(document).on("click", ".history-consistency-header", (event) => {
+  sortAndRefreshHistory("consistency", ".history-consistency-header");
+});
+
+$(document).on("click", ".history-date-header", (event) => {
+  sortAndRefreshHistory("timestamp", ".history-date-header");
+});
+
+// Resets sorting to by date' when applying filers (normal or advanced)
+$(document).on("click", ".buttonsAndTitle .buttons .button", (event) => {
+  // We want to 'force' descending sort:
+  sortAndRefreshHistory("timestamp", ".history-date-header", true);
+});
+
+function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
+  // Removes styling from previous sorting requests:
+  $("td").removeClass("header-sorted");
+  $("td").children("i").remove();
+  $(headerClass).addClass("header-sorted");
+
+  if (filteredResults.length < 2) return;
+
+  // This allows to reverse the sorting order when clicking multiple times on the table header
+  let descending = true;
+  if (forceDescending !== null) {
+    if (forceDescending == true) {
+      $(headerClass).append(
+        '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+      );
+    } else {
+      descending = false;
+      $(headerClass).append(
+        '<i class="fas fa-sort-up" aria-hidden="true"></i>'
+      );
+    }
+  } else if (
+    filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
+  ) {
+    descending = true;
+    $(headerClass).append(
+      '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+    );
+  } else {
+    descending = false;
+    $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
+  }
+
+  let temp = [];
+  let parsedIndexes = [];
+
+  while (temp.length < filteredResults.length) {
+    let lowest = Number.MAX_VALUE;
+    let highest = -1;
+    let idx = -1;
+
+    for (let i = 0; i < filteredResults.length; i++) {
+      //find the lowest wpm with index not already parsed
+      if (!descending) {
+        if (filteredResults[i][key] <= lowest && !parsedIndexes.includes(i)) {
+          lowest = filteredResults[i][key];
+          idx = i;
+        }
+      } else {
+        if (filteredResults[i][key] >= highest && !parsedIndexes.includes(i)) {
+          highest = filteredResults[i][key];
+          idx = i;
+        }
+      }
+    }
+
+    temp.push(filteredResults[idx]);
+    parsedIndexes.push(idx);
+  }
+  filteredResults = temp;
+
+  $(".pageAccount .history table tbody").empty();
+  visibleTableLines = 0;
+  loadMoreLines();
+}

@@ -6,9 +6,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Settings from "./settings";
 
-export let active = "none";
-export let funboxSaved = "none";
-export let modeSaved = null;
+let modeSaved = null;
 let memoryTimer = null;
 let memoryInterval = null;
 
@@ -76,33 +74,43 @@ export function startMemoryTimer() {
 }
 
 export function reset() {
-  active = "none";
   resetMemoryTimer();
 }
 
 export function toggleScript(...params) {
-  if (active === "tts") {
+  if (Config.funbox === "tts") {
     var msg = new SpeechSynthesisUtterance();
+    console.log("Speaking");
     msg.text = params[0];
+    if (!msg.text) return;
     msg.lang = "en-US";
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(msg);
   }
 }
 
-export async function activate(funbox, mode) {
+export async function activate(funbox) {
+  let mode = modeSaved;
+
   if (funbox === undefined || funbox === null) {
-    funbox = funboxSaved;
+    funbox = Config.funbox;
   }
-  if (Misc.getCurrentLanguage().ligatures) {
+
+  if (await Misc.getCurrentLanguage().ligatures) {
     if (funbox == "choo_choo" || funbox == "earthquake") {
       Notifications.add(
         "Current language does not support this funbox mode",
         0
       );
-      activate("none", null);
+      setFunbox("none", null);
       return;
     }
+  }
+  if (Config.mode === "zen" && funbox == "layoutfluid") {
+    Notifications.add(`Zen mode does not support the ${funbox} funbox`, 0);
+    setFunbox("none", null);
+    TestLogic.restart();
+    return;
   }
   $("#funBoxTheme").attr("href", ``);
   $("#words").removeClass("nospace");
@@ -124,10 +132,8 @@ export async function activate(funbox, mode) {
 
   ManualRestart.set();
   if (mode === "style") {
-    if (funbox != undefined) {
+    if (funbox != undefined)
       $("#funBoxTheme").attr("href", `funbox/${funbox}.css`);
-      active = funbox;
-    }
 
     if (funbox === "simon_says") {
       rememberSetting(
@@ -162,6 +168,7 @@ export async function activate(funbox, mode) {
         UpdateConfig.setKeymapMode
       );
       UpdateConfig.setKeymapMode("off");
+      UpdateConfig.setHighlightMode("letter");
       Settings.groups.keymapMode.updateButton();
       TestLogic.restart();
     } else if (funbox === "layoutfluid") {
@@ -170,7 +177,7 @@ export async function activate(funbox, mode) {
         Config.keymapMode,
         UpdateConfig.setKeymapMode
       );
-      UpdateConfig.setKeymapMode("next");
+      // UpdateConfig.setKeymapMode("next");
       Settings.groups.keymapMode.updateButton();
       // UpdateConfig.setSavedLayout(Config.layout);
       rememberSetting("layout", Config.layout, UpdateConfig.setLayout);
@@ -220,7 +227,6 @@ export async function activate(funbox, mode) {
       UpdateConfig.setHighlightMode("letter", true);
       TestLogic.restart(false, true);
     }
-    active = funbox;
   }
 
   // if (funbox !== "layoutfluid" || mode !== "script") {
@@ -233,16 +239,8 @@ export async function activate(funbox, mode) {
   return true;
 }
 export function setFunbox(funbox, mode) {
-  if (TestLogic.active || TestUI.resultVisible) {
-    Notifications.add(
-      "You can only change the funbox before starting a test.",
-      0
-    );
-    return false;
-  }
   if (funbox === "none") loadMemory();
-  funboxSaved = funbox;
   modeSaved = mode;
-  active = funbox;
+  UpdateConfig.setFunbox(funbox);
   return true;
 }
