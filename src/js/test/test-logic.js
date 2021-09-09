@@ -973,12 +973,14 @@ export function restart(
         UpdateConfig.setLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         UpdateConfig.setKeymapLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         Keymap.highlightKey(
           words

@@ -265,8 +265,8 @@ export function setMode(mode, nosave) {
     setPunctuation(false, true);
     setNumbers(false, true);
   } else if (config.mode == "quote") {
-    setPunctuation(false, nosave);
-    setNumbers(false, nosave);
+    setPunctuation(false, true);
+    setNumbers(false, true);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
