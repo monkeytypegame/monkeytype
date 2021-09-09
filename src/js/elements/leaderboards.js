@@ -15,7 +15,7 @@ let currentRank = {
   60: {},
 };
 
-let leaderboardSingleLimit = 100;
+let leaderboardSingleLimit = 50;
 
 export function hide() {
   $("#leaderboardsWrapper")
@@ -148,9 +148,6 @@ export function fillTable(lb, prepend) {
     let meClassString = "";
     if (entry.name == loggedInUserName) {
       meClassString = ' class="me"';
-    }
-    if (entry.uid && entry.uid === firebase.auth().currentUser?.uid) {
-      DB.updateLbMemory("time", lb, "english", entry.rank, true);
     }
     html += `
     <tr ${meClassString}>

@@ -5,8 +5,8 @@ const Logger = require("../handlers/logger");
 const { performance } = require("perf_hooks");
 
 class LeaderboardsDAO {
-  static async get(mode, mode2, language, skip, limit = 100) {
-    if (limit > 100 || limit <= 0) limit = 100;
+  static async get(mode, mode2, language, skip, limit = 50) {
+    if (limit > 50 || limit <= 0) limit = 50;
     if (skip < 0) skip = 0;
     const preset = await mongoDB()
       .collection(`leaderboards.${language}.${mode}.${mode2}`)

@@ -163,7 +163,6 @@ const refactoredSrc = [
   "./src/js/test/caps-warning.js",
   "./src/js/test/live-acc.js",
   "./src/js/test/live-burst.js",
-  "./src/js/test/test-leaderboards.js",
   "./src/js/test/timer-progress.js",
   "./src/js/test/test-logic.js",
   "./src/js/test/funbox.js",

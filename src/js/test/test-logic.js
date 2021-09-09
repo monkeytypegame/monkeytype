@@ -26,7 +26,6 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "./account-button";
 import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
-import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
 import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
@@ -1846,7 +1845,6 @@ export async function finish(difficultyFailed = false) {
                     ["english"].includes(completedEvent.language)
                   ) {
                     completedEvent.isPb = true;
-                    TestLeaderboards.check(completedEvent);
                   }
                   if (
                     DB.getSnapshot() !== null &&
