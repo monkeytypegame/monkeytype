@@ -809,7 +809,7 @@ export function update() {
     }
 
     $(".pageAccount .timeTotalFiltered .val").text(
-      Misc.secondsToString(Math.round(totalSecondsFiltered), true)
+      Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
     );
 
     $(".pageAccount .highestWpm .val").text(topWpm);
