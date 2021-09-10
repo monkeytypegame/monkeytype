@@ -85,12 +85,16 @@ class LeaderboardsDAO {
     let end3 = performance.now();
 
     let start4 = performance.now();
-    await mongoDB().collection("leaderboards").createIndex({
-      uid: -1,
-    });
-    await mongoDB().collection("leaderboards").createIndex({
-      rank: 1,
-    });
+    await mongoDB()
+      .collection(`leaderboards.${language}.${mode}.${mode2}`)
+      .createIndex({
+        uid: -1,
+      });
+    await mongoDB()
+      .collection(`leaderboards.${language}.${mode}.${mode2}`)
+      .createIndex({
+        rank: 1,
+      });
     let end4 = performance.now();
 
     let timeToRunAggregate = (end1 - start1) / 1000;
