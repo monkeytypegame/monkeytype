@@ -3,6 +3,7 @@ import * as Notifications from "./notifications";
 import Config from "./config";
 import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
+import * as QuoteSubmitPopup from "./quote-submit-popup";
 
 export let selectedId = 1;
 
@@ -134,6 +135,11 @@ $("#quoteSearchPopupWrapper").click((e) => {
 $(document).on("click", "#quoteSearchResults .searchResult", (e) => {
   selectedId = parseInt($(e.currentTarget).attr("id"));
   apply(selectedId);
+});
+
+$(document).on("click", "#gotoSubmitQuoteButton", (e) => {
+  hide();
+  QuoteSubmitPopup.show();
 });
 
 // $("#quoteSearchPopup input").keypress((e) => {

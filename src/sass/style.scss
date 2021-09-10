@@ -37,7 +37,8 @@ a {
   display: inline-block;
 }
 
-input {
+input,
+textarea {
   outline: none;
   border: none;
   border-radius: var(--roundness);
@@ -593,7 +594,7 @@ a:hover {
   }
 }
 
-#customTextPopupWrapper {
+.popupWrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -605,7 +606,9 @@ a:hover {
   justify-content: center;
   align-items: center;
   padding: 5rem 0;
+}
 
+#customTextPopupWrapper {
   #customTextPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -687,18 +690,6 @@ label.checkbox {
 }
 
 #wordFilterPopupWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #wordFilterPopup {
     color: var(--sub-color);
     background: var(--bg-color);
@@ -736,18 +727,6 @@ label.checkbox {
 }
 
 #rateQuotePopupWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #rateQuotePopup {
     color: var(--sub-color);
     background: var(--bg-color);
@@ -844,18 +823,6 @@ label.checkbox {
 }
 
 #simplePopupWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #simplePopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -884,18 +851,6 @@ label.checkbox {
 #customWordAmountPopupWrapper,
 #customTestDurationPopupWrapper,
 #practiseWordsPopupWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #customWordAmountPopup,
   #customTestDurationPopup,
   #practiseWordsPopup {
@@ -955,18 +910,6 @@ label.checkbox {
 }
 
 #quoteSearchPopupWrapper {
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.75);
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  padding: 5rem 0;
-
   #quoteSearchPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -977,14 +920,25 @@ label.checkbox {
     height: 80vh;
     grid-template-rows: auto auto auto 1fr;
 
+    #quoteSearchTop {
+      display: flex;
+      justify-content: space-between;
+
+      .title {
+        font-size: 1.5rem;
+        color: var(--sub-color);
+      }
+
+      #submitQuoteButton {
+        padding: 10px;
+      }
+    }
+
     #extraResults {
       text-align: center;
       color: var(--sub-color);
     }
-    .title {
-      font-size: 1.5rem;
-      color: var(--sub-color);
-    }
+
     #quoteSearchResults {
       display: grid;
       gap: 0.5rem;
@@ -1058,6 +1012,28 @@ label.checkbox {
     }
   }
 }
+
+#quoteSubmitPopup {
+  background: var(--bg-color);
+  border-radius: var(--roundness);
+  padding: 2rem;
+  display: grid;
+  gap: 1rem;
+  width: 1000px;
+  height: 80vh;
+  grid-template-rows: auto auto 1fr auto auto auto auto 1fr;
+
+  .title {
+    font-size: 1.5rem;
+    color: var(--sub-color);
+  }
+  textarea {
+    resize: none;
+    padding: 10px;
+    line-height: 1.2rem;
+  }
+}
+
 #settingsImportWrapper {
   width: 100%;
   height: 100%;

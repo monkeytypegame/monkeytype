@@ -861,7 +861,7 @@ $(document).keydown(function (event) {
     !$("#customTextPopupWrapper").hasClass("hidden") ||
     !$("#customWordAmountPopupWrapper").hasClass("hidden") ||
     !$("#customTestDurationPopupWrapper").hasClass("hidden") ||
-    !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
+    !$("#quotePopupWrapper").hasClass("hidden") ||
     !$("#wordFilterPopupWrapper").hasClass("hidden");
   if (
     pageTestActive &&
