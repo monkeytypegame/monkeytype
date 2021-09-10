@@ -6,7 +6,7 @@ config({ path: path.join(__dirname, ".env") });
 const CronJob = require("cron").CronJob;
 const cors = require("cors");
 const admin = require("firebase-admin");
-
+const Logger = require("./handlers/logger.js");
 const serviceAccount = require("./credentials/serviceAccountKey.json");
 const { connectDB, mongoDB } = require("./init/mongodb");
 
