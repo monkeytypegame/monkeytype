@@ -33,6 +33,8 @@ class NewQuotesDAO {
         }
         return true;
       });
+    } else {
+      return { languageError: 1 };
     }
     if (duplicateId != -1) {
       return { duplicateId, similarityScore };

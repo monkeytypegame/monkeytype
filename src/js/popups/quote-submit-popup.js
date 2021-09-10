@@ -14,9 +14,6 @@ async function submitQuote() {
     language: $("#submitQuoteLanguage").val(),
   };
   let response = await axiosInstance.post("/new-quotes/add", data);
-  $("#submitQuoteText").val("");
-  $("#submitQuoteSource").val("");
-  $("#submitQuoteLanguage").val("");
   if (response.data.similarityScore) {
     Notifications.add(
       `Likely duplicate of quote with id ${
@@ -25,8 +22,13 @@ async function submitQuote() {
       -1,
       10
     );
+  } else if (response.data.languageError) {
+    Notifications.add("Language not found", -1, 10);
   } else {
     Notifications.add("Quote added successfully", 1, 10);
+    $("#submitQuoteText").val("");
+    $("#submitQuoteSource").val("");
+    $("#submitQuoteLanguage").val("");
   }
 }
 
