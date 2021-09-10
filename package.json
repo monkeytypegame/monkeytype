@@ -65,6 +65,7 @@
     "object-hash": "^2.2.0",
     "path": "^0.12.7",
     "simple-git": "^2.45.1",
+    "string-similarity": "^4.0.4",
     "tinycolor2": "^1.4.2",
     "uuid": "^8.3.2"
   }

@@ -17,7 +17,17 @@ async function submitQuote() {
   $("#submitQuoteText").val("");
   $("#submitQuoteSource").val("");
   $("#submitQuoteLanguage").val("");
-  Notifications.add("Quote added successfully", 1, 10);
+  if (response.data.similarityScore) {
+    Notifications.add(
+      `Likely duplicate of quote with id ${
+        response.data.duplicateId
+      }.\n Confidence: ${response.data.similarityScore * 100}%`,
+      -1,
+      10
+    );
+  } else {
+    Notifications.add("Quote added successfully", 1, 10);
+  }
 }
 
 export async function show() {

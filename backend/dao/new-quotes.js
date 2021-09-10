@@ -3,6 +3,7 @@ const { mongoDB } = require("../init/mongodb");
 const fs = require("fs");
 const simpleGit = require("simple-git");
 const git = simpleGit();
+const stringSimilarity = require("string-similarity");
 
 class NewQuotesDAO {
   static async add(text, source, language, uid) {
@@ -14,7 +15,28 @@ class NewQuotesDAO {
       timestamp: Date.now(),
       approved: false,
     };
-    //check for duplicate first, give chance of being a duplicate score
+    //check for duplicate first
+    const fileDir = `../monkeytype/static/quotes/${language}.json`;
+    let duplicateId = -1;
+    let similarityScore = -1;
+    if (fs.existsSync(fileDir)) {
+      let quoteFile = fs.readFileSync(fileDir);
+      quoteFile = JSON.parse(quoteFile.toString());
+      quoteFile.quotes.every((old) => {
+        if (stringSimilarity.compareTwoStrings(old.text, quote.text) > 0.9) {
+          duplicateId = old.id;
+          similarityScore = stringSimilarity.compareTwoStrings(
+            old.text,
+            quote.text
+          );
+          return false;
+        }
+        return true;
+      });
+    }
+    if (duplicateId != -1) {
+      return { duplicateId, similarityScore };
+    }
     return await mongoDB().collection("new-quotes").insertOne(quote);
   }
 
@@ -81,7 +103,13 @@ class NewQuotesDAO {
       .collection("new-quotes")
       .updateOne(
         { _id: quoteId },
-        { $set: { approvedBy: modUid, approved: true } }
+        {
+          $set: {
+            approvedBy: modUid,
+            approved: true,
+            approvedTime: Date.now(),
+          },
+        }
       );
   }
 }
