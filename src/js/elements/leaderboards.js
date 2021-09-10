@@ -2,6 +2,7 @@ import * as Loader from "./loader";
 import * as Notifications from "./notifications";
 import * as DB from "./db";
 import axiosInstance from "./axios-instance";
+import * as Misc from "./misc";
 
 let currentLeaderboard = "time_15";
 
@@ -30,6 +31,7 @@ export function hide() {
         clearTable(15);
         clearTable(60);
         reset();
+        stopTimer();
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
@@ -307,6 +309,7 @@ export function show() {
         125,
         () => {
           update();
+          startTimer();
         }
       );
   }
@@ -326,6 +329,30 @@ function hideLoader(lb) {
   } else if (lb === 60) {
     $(`#leaderboardsWrapper .rightTableLoader`).addClass("hidden");
   }
+}
+
+let updateTimer;
+function startTimer() {
+  updateTimerElement();
+  updateTimer = setInterval(() => {
+    updateTimerElement();
+  }, 1000);
+}
+
+function updateTimerElement() {
+  let date = new Date();
+  let minutesToNextUpdate = 4 - (date.getMinutes() % 5);
+  let secondsToNextUpdate = 60 - date.getSeconds();
+  let totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
+  $("#leaderboards .subTitle").text(
+    "Next update in: " + Misc.secondsToString(totalSeconds, true)
+  );
+}
+
+function stopTimer() {
+  clearInterval(updateTimer);
+  updateTimer = undefined;
+  $("#leaderboards .subTitle").text("Next update in: --:--");
 }
 
 $("#leaderboardsWrapper").click((e) => {

@@ -414,6 +414,10 @@ a:hover {
       grid-area: title;
     }
 
+    .subTitle {
+      color: var(--sub-color);
+    }
+
     .title {
       font-size: 2rem;
       line-height: 2rem;
