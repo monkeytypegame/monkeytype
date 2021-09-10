@@ -6,11 +6,10 @@ const git = simpleGit();
 
 class NewQuotesDAO {
   static async add(text, source, language, uid) {
-    //additional properties: length
     let quote = {
       text: text,
       source: source,
-      langauge: language,
+      language: language.toLowerCase(),
       submittedBy: uid,
       timestamp: Date.now(),
       approved: false,
