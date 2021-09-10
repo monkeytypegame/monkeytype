@@ -101,6 +101,8 @@ function update() {
       clearTable(60);
       updateFooter(15);
       updateFooter(60);
+      checkLbMemory(15);
+      checkLbMemory(60);
       fillTable(15);
       fillTable(60);
       $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
@@ -312,6 +314,40 @@ export function show() {
           startTimer();
         }
       );
+  }
+}
+
+function checkLbMemory(lb) {
+  let side;
+  if (lb === 15) {
+    side = "left";
+  } else {
+    side = "right";
+  }
+
+  let memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.english;
+
+  if (memory && currentRank[lb]) {
+    let difference = memory - currentRank[lb].rank;
+    if (difference > 0) {
+      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
+      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
+        ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
+          difference
+        )} since you last checked)`
+      );
+    } else if (difference < 0) {
+      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
+      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
+        ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
+          difference
+        )} since you last checked)`
+      );
+    } else {
+      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
+        ` (= since you last checked)`
+      );
+    }
   }
 }
 
