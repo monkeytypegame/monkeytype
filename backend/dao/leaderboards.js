@@ -11,7 +11,7 @@ class LeaderboardsDAO {
     const preset = await mongoDB()
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .find()
-      // .sort({ rank: 1 })
+      .sort({ rank: 1 })
       .skip(parseInt(skip))
       .limit(parseInt(limit))
       .toArray();
@@ -83,13 +83,24 @@ class LeaderboardsDAO {
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .insertMany(lb);
     let end3 = performance.now();
+
+    let start4 = performance.now();
+    await mongoDB().collection("leaderboards").createIndex({
+      uid: -1,
+    });
+    await mongoDB().collection("leaderboards").createIndex({
+      rank: 1,
+    });
+    let end4 = performance.now();
+
     let timeToRunAggregate = (end1 - start1) / 1000;
     let timeToRunLoop = (end2 - start2) / 1000;
     let timeToRunInsert = (end3 - start3) / 1000;
+    let timeToRunIndex = (end4 - start4) / 1000;
 
     Logger.log(
       `system_lb_update_${language}_${mode}_${mode2}`,
-      `Aggregate ${timeToRunAggregate}s, loop ${timeToRunLoop}s, insert ${timeToRunInsert}s`,
+      `Aggregate ${timeToRunAggregate}s, loop ${timeToRunLoop}s, insert ${timeToRunInsert}s, index ${timeToRunIndex}s`,
       uid
     );
 
