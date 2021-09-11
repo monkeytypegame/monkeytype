@@ -1226,7 +1226,7 @@ export async function finish(difficultyFailed = false) {
 
   lastTestWpm = stats.wpm;
 
-  let testtime = stats.time;
+  let testtime = parseFloat(stats.time);
 
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
     let wpmAndRaw = calculateWpmAndRaw();
