@@ -51,6 +51,10 @@ export function toggleGlarses() {
 
 export let notSignedInLastResult = null;
 
+export function clearNotSignedInResult() {
+  notSignedInLastResult = null;
+}
+
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
   delete notSignedInLastResult.hash;
