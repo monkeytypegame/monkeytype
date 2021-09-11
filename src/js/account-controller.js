@@ -92,6 +92,7 @@ export function signIn() {
             if (response.status !== 200) {
               Notifications.add(response.data.message);
             } else {
+              TestLogic.notSignedInLastResult = null;
               Notifications.add("Last test result saved", 1);
             }
             // UI.changePage("account");
