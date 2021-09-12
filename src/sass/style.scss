@@ -90,7 +90,8 @@ input[type="color"]::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-input[type="color"]::-webkit-color-swatch {
+input[type="color"]::-webkit-color-swatch,
+::-moz-color-swatch {
   border: none;
 }
 
@@ -382,7 +383,7 @@ a:hover {
 
   #leaderboards {
     width: 85vw;
-    height: calc(95vh - 5rem);
+    // height: calc(95vh - 5rem);
     overflow-y: auto;
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -413,6 +414,10 @@ a:hover {
       grid-area: title;
     }
 
+    .subTitle {
+      color: var(--sub-color);
+    }
+
     .title {
       font-size: 2rem;
       line-height: 2rem;
@@ -424,7 +429,6 @@ a:hover {
       display: grid;
       gap: 1rem;
       grid-template-columns: 1fr 1fr;
-      margin-bottom: 2rem;
       font-size: 0.8rem;
       width: 100%;
 
@@ -440,8 +444,27 @@ a:hover {
         display: grid;
         width: 100%;
 
+        .titleAndButtons {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          .buttons {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr;
+            align-items: center;
+            // margin-top: .1rem;
+            gap: 1rem;
+            color: var(--sub-color);
+            .button {
+              padding-left: 1rem;
+              padding-right: 1rem;
+            }
+          }
+        }
+
         .title {
           grid-area: 1/1;
+          margin-bottom: 0;
+          line-height: 2.5rem;
         }
 
         .subtitle {
@@ -452,16 +475,16 @@ a:hover {
         }
       }
 
-      .globalTableWrapper,
-      .dailyTableWrapper {
+      .leftTableWrapper,
+      .rightTableWrapper {
         height: calc(100vh - 22rem);
         @extend .ffscroll;
         overflow-y: scroll;
         overflow-x: auto;
       }
 
-      .globalTableWrapper::-webkit-scrollbar,
-      .dailyTableWrapper::-webkit-scrollbar {
+      .leftTableWrapper::-webkit-scrollbar,
+      .rightTableWrapper::-webkit-scrollbar {
         height: 5px;
         width: 5px;
       }
@@ -475,13 +498,15 @@ a:hover {
           text-align: center;
         }
 
-        td {
-          padding: 0.5rem 0.5rem;
-
-          &.me {
+        tr.me {
+          td {
             color: var(--main-color);
             font-weight: 900;
           }
+        }
+
+        td {
+          padding: 0.5rem 0.5rem;
         }
 
         thead {
@@ -3469,6 +3494,19 @@ key {
     gap: 2rem;
   }
 
+  .timePbTable,
+  .wordsPbTable {
+    .sub {
+      opacity: 0.5;
+    }
+    td {
+      text-align: right;
+    }
+    tbody td:nth-child(1) {
+      font-size: 1.5rem;
+    }
+  }
+
   .topFilters .buttons {
     display: flex;
     justify-content: space-evenly;
@@ -3766,6 +3804,10 @@ key {
 
 .hidden {
   display: none !important;
+}
+
+.invisible {
+  opacity: 0 !important;
 }
 
 .button {

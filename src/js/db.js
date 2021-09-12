@@ -39,16 +39,7 @@ export async function initSnapshot() {
     banned: undefined,
     verified: undefined,
     emailVerified: undefined,
-    lbMemory: {
-      time15: {
-        global: null,
-        daily: null,
-      },
-      time60: {
-        global: null,
-        daily: null,
-      },
-    },
+    lbMemory: {},
     globalStats: {
       time: 0,
       started: 0,
@@ -74,14 +65,13 @@ export async function initSnapshot() {
     snap.quoteRatings = userData.quoteRatings;
     snap.favouriteThemes =
       userData.favouriteThemes === undefined ? [] : userData.favouriteThemes;
-    try {
-      if (userData.lbMemory.time15 !== undefined) {
-        snap.lbMemory.time15 = userData.lbMemory.time15;
-      }
-      if (userData.lbMemory.time60 !== undefined) {
-        snap.lbMemory.time60 = userData.lbMemory.time60;
-      }
-    } catch {}
+
+    if (userData.lbMemory?.time15 || userData.lbMemory?.time60) {
+      //old memory format
+      snap.lbMemory = {};
+    } else if (userData.lbMemory) {
+      snap.lbMemory = userData.lbMemory;
+    }
 
     let configData = await axiosInstance.get("/config");
     configData = configData.data;
@@ -502,9 +492,22 @@ export async function saveLocalTagPB(
   }
 }
 
-export function updateLbMemory(mode, mode2, type, value) {
+export function updateLbMemory(mode, mode2, language, rank, api = false) {
   //could dbSnapshot just be used here instead of getSnapshot()
-  getSnapshot().lbMemory[mode + mode2][type] = value;
+  if (dbSnapshot.lbMemory === undefined) dbSnapshot.lbMemory = {};
+  if (dbSnapshot.lbMemory[mode] === undefined) dbSnapshot.lbMemory[mode] = {};
+  if (dbSnapshot.lbMemory[mode][mode2] === undefined)
+    dbSnapshot.lbMemory[mode][mode2] = {};
+  let current = dbSnapshot.lbMemory[mode][mode2][language];
+  dbSnapshot.lbMemory[mode][mode2][language] = rank;
+  if (api && current != rank) {
+    axiosInstance.post("/user/updateLbMemory", {
+      mode,
+      mode2,
+      language,
+      rank,
+    });
+  }
 }
 
 export async function saveConfig(config) {

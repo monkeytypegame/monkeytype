@@ -627,19 +627,9 @@ function handleAlpha(event) {
     thisCharCorrect = true;
   }
 
-  if (event.key === "’" && nextCharInWord == "'") {
-    event.key = "'";
-    thisCharCorrect = true;
-  }
-
-  if (event.key === "'" && nextCharInWord == "’") {
-    event.key = "’";
-    thisCharCorrect = true;
-  }
-
   if (
-    (event.key === `’` || event.key === "'") &&
-    (nextCharInWord == `’` || nextCharInWord === "'")
+    (event.key === `’` || event.key === `‘` || event.key === "'") &&
+    (nextCharInWord == `’` || nextCharInWord === `‘` || nextCharInWord === "'")
   ) {
     event.key = nextCharInWord;
     thisCharCorrect = true;

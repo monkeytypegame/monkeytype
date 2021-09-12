@@ -1430,6 +1430,31 @@ let commandsKeymapLegendStyle = {
   ],
 };
 
+let commandsBritishEnglish = {
+  title: "British english...",
+  configKey: "britishEnglish",
+  list: [
+    {
+      id: "setBritishEnglishOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setBritishEnglish(false);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setBritishEnglishOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setBritishEnglish(true);
+        TestLogic.restart();
+      },
+    },
+  ],
+};
+
 let commandsHighlightMode = {
   title: "Highlight mode...",
   configKey: "highlightMode",
@@ -2644,6 +2669,12 @@ export let defaultCommands = {
       display: "Language...",
       icon: "fa-language",
       subgroup: commandsLanguages,
+    },
+    {
+      id: "changeBritishEnglish",
+      display: "British english...",
+      icon: "fa-language",
+      subgroup: commandsBritishEnglish,
     },
     {
       id: "changeFunbox",

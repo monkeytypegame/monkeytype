@@ -26,7 +26,6 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "./account-button";
 import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
-import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
 import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
@@ -36,6 +35,7 @@ import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
 import * as ChallengeContoller from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
+import * as BritishEnglish from "./british-english";
 
 const objecthash = require("object-hash");
 
@@ -50,6 +50,10 @@ export function toggleGlarses() {
 }
 
 export let notSignedInLastResult = null;
+
+export function clearNotSignedInResult() {
+  notSignedInLastResult = null;
+}
 
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
@@ -574,6 +578,14 @@ export async function init() {
           randomWord = wordset.randomWord();
         }
 
+        if (
+          Config.britishEnglish &&
+          Config.language.replace(/_\d*k$/g, "") === "english"
+        ) {
+          let britishWord = await BritishEnglish.replace(randomWord);
+          if (britishWord) randomWord = britishWord;
+        }
+
         if (Config.funbox === "rAnDoMcAsE") {
           let randomcaseword = "";
           for (let i = 0; i < randomWord.length; i++) {
@@ -726,6 +738,13 @@ export async function init() {
     for (let i = 0; i < w.length; i++) {
       if (/\t/g.test(w[i])) {
         setHasTab(true);
+      }
+      if (
+        Config.britishEnglish &&
+        Config.language.replace(/_\d*k$/g, "") === "english"
+      ) {
+        let britishWord = await BritishEnglish.replace(w[i]);
+        if (britishWord) w[i] = britishWord;
       }
       words.push(w[i]);
     }
@@ -957,12 +976,14 @@ export function restart(
         UpdateConfig.setLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         UpdateConfig.setKeymapLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         Keymap.highlightKey(
           words
@@ -1105,6 +1126,14 @@ export async function addWord() {
     randomWord = wordset.randomWord();
   }
 
+  if (
+    Config.britishEnglish &&
+    Config.language.replace(/_\d*k$/g, "") === "english"
+  ) {
+    let britishWord = await BritishEnglish.replace(randomWord);
+    if (britishWord) randomWord = britishWord;
+  }
+
   if (Config.funbox === "rAnDoMcAsE") {
     let randomcaseword = "";
     for (let i = 0; i < randomWord.length; i++) {
@@ -1201,7 +1230,7 @@ export async function finish(difficultyFailed = false) {
 
   lastTestWpm = stats.wpm;
 
-  let testtime = stats.time;
+  let testtime = parseFloat(stats.time);
 
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
     let wpmAndRaw = calculateWpmAndRaw();
@@ -1815,9 +1844,10 @@ export async function finish(difficultyFailed = false) {
                   );
                 } else {
                   completedEvent._id = response.data.insertedId;
-                  // TODO bring back after leaderboard fixed
-                  // TestLeaderboards.check(completedEvent);
-                  if (response.data.isPb) {
+                  if (
+                    response.data.isPb &&
+                    ["english"].includes(completedEvent.language)
+                  ) {
                     completedEvent.isPb = true;
                   }
                   if (

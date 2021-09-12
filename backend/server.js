@@ -3,10 +3,10 @@ const { config } = require("dotenv");
 const path = require("path");
 const MonkeyError = require("./handlers/error");
 config({ path: path.join(__dirname, ".env") });
-
+const CronJob = require("cron").CronJob;
 const cors = require("cors");
 const admin = require("firebase-admin");
-
+const Logger = require("./handlers/logger.js");
 const serviceAccount = require("./credentials/serviceAccountKey.json");
 const { connectDB, mongoDB } = require("./init/mongodb");
 
@@ -20,6 +20,14 @@ app.use(cors());
 
 app.set("trust proxy", 1);
 
+app.use((req, res, next) => {
+  if (process.env.MAINTENANCE === "true") {
+    res.status(503).json({ message: "Server is down for maintenance" });
+  } else {
+    next();
+  }
+});
+
 const userRouter = require("./api/routes/user");
 app.use("/user", userRouter);
 const configRouter = require("./api/routes/config");
@@ -32,6 +40,8 @@ const quoteRatings = require("./api/routes/quote-ratings");
 app.use("/quote-ratings", quoteRatings);
 const psaRouter = require("./api/routes/psa");
 app.use("/psa", psaRouter);
+const leaderboardsRouter = require("./api/routes/leaderboards");
+app.use("/leaderboard", leaderboardsRouter);
 
 app.use(function (e, req, res, next) {
   let uid = undefined;
@@ -47,6 +57,11 @@ app.use(function (e, req, res, next) {
     monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
   }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
+    Logger.log(
+      `system_error`,
+      `${monkeyError.status} ${monkeyError.message}`,
+      monkeyError.uid
+    );
     mongoDB().collection("errors").insertOne({
       _id: monkeyError.errorID,
       timestamp: Date.now(),
@@ -63,6 +78,8 @@ app.get("/test", (req, res) => {
   res.send("Hello World!");
 });
 
+const LeaderboardsDAO = require("./dao/leaderboards");
+
 app.listen(PORT, async () => {
   console.log(`listening on port ${PORT}`);
   await connectDB();
@@ -70,4 +87,10 @@ app.listen(PORT, async () => {
     credential: admin.credential.cert(serviceAccount),
   });
   console.log("Database Connected");
+
+  let lbjob = new CronJob("30 4/5 * * * *", async () => {
+    LeaderboardsDAO.update("time", "15", "english");
+    LeaderboardsDAO.update("time", "60", "english");
+  });
+  lbjob.start();
 });

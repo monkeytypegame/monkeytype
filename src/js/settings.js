@@ -132,6 +132,10 @@ async function initGroups() {
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory
   );
+  groups.britishEnglish = new SettingsGroup(
+    "britishEnglish",
+    UpdateConfig.setBritishEnglish
+  );
   groups.singleListCommandLine = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine

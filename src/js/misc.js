@@ -509,7 +509,7 @@ export function getGibberish() {
   return ret;
 }
 
-export function secondsToString(sec, full = false) {
+export function secondsToString(sec, fullMinutes = false, fullHours = false) {
   const hours = Math.floor(sec / 3600);
   const minutes = Math.floor((sec % 3600) / 60);
   const seconds = roundTo2((sec % 3600) % 60);
@@ -518,13 +518,13 @@ export function secondsToString(sec, full = false) {
   let secondsString;
   hours < 10 ? (hoursString = "0" + hours) : (hoursString = hours);
   minutes < 10 ? (minutesString = "0" + minutes) : (minutesString = minutes);
-  seconds < 10 && (minutes > 0 || hours > 0 || full)
+  seconds < 10 && (minutes > 0 || hours > 0 || fullMinutes)
     ? (secondsString = "0" + seconds)
     : (secondsString = seconds);
 
   let ret = "";
-  if (hours > 0 || full) ret += hoursString + ":";
-  if (minutes > 0 || hours > 0 || full) ret += minutesString + ":";
+  if (hours > 0 || fullHours) ret += hoursString + ":";
+  if (minutes > 0 || hours > 0 || fullMinutes) ret += minutesString + ":";
   ret += secondsString;
   return ret;
 }

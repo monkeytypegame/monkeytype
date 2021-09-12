@@ -43,6 +43,7 @@ custom: {
 module.exports = {
   checkAndUpdatePb(
     obj,
+    lbObj,
     mode,
     mode2,
     acc,
@@ -96,9 +97,40 @@ module.exports = {
       });
     }
 
+    if (lbObj && mode === "time" && (mode2 == "15" || mode2 == "60")) {
+      //updating lbpersonalbests object
+      //verify structure first
+      if (lbObj[mode] === undefined) lbObj[mode] = {};
+      if (lbObj[mode][mode2] === undefined) lbObj[mode][mode2] = {};
+
+      let bestForEveryLanguage = {};
+      if (obj?.[mode]?.[mode2]) {
+        obj[mode][mode2].forEach((pb) => {
+          if (!bestForEveryLanguage[pb.language]) {
+            bestForEveryLanguage[pb.language] = pb;
+          } else {
+            if (bestForEveryLanguage[pb.language].wpm < pb.wpm) {
+              bestForEveryLanguage[pb.language] = pb;
+            }
+          }
+        });
+        Object.keys(bestForEveryLanguage).forEach((key) => {
+          if (lbObj[mode][mode2][key] === undefined) {
+            lbObj[mode][mode2][key] = bestForEveryLanguage[key];
+          } else {
+            if (lbObj[mode][mode2][key].wpm < bestForEveryLanguage[key].wpm) {
+              lbObj[mode][mode2][key] = bestForEveryLanguage[key];
+            }
+          }
+        });
+        bestForEveryLanguage = {};
+      }
+    }
+
     return {
       isPb,
       obj,
+      lbObj,
     };
   },
 };
