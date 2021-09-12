@@ -577,7 +577,9 @@ export function update() {
           (ResultFilters.getFilter("date", "last_week") &&
             timeSinceTest <= 604800) ||
           (ResultFilters.getFilter("date", "last_month") &&
-            timeSinceTest <= 2592000)
+            timeSinceTest <= 2592000) ||
+          (ResultFilters.getFilter("date", "last_3months") &&
+            timeSinceTest <= 7776000)
         ) {
           datehide = false;
         }
