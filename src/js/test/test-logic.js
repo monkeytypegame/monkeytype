@@ -51,6 +51,10 @@ export function toggleGlarses() {
 
 export let notSignedInLastResult = null;
 
+export function clearNotSignedInResult() {
+  notSignedInLastResult = null;
+}
+
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
   delete notSignedInLastResult.hash;
@@ -1226,7 +1230,7 @@ export async function finish(difficultyFailed = false) {
 
   lastTestWpm = stats.wpm;
 
-  let testtime = stats.time;
+  let testtime = parseFloat(stats.time);
 
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
     let wpmAndRaw = calculateWpmAndRaw();
