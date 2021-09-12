@@ -124,7 +124,7 @@ export function apply(themeName, isPreview = false) {
     }
     if (!isPreview) {
       ThemeColors.get().then((colors) => {
-        $(".current-theme .text").text(themeName.replace("_", " "));
+        $(".current-theme .text").text(themeName.replace(/_/g, " "));
         $(".keymap-key").attr("style", "");
         ChartController.updateAllChartColors();
         updateFavicon(128, 32);

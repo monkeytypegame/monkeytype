@@ -2,6 +2,7 @@ import * as Loader from "./loader";
 import * as Notifications from "./notifications";
 import * as DB from "./db";
 import axiosInstance from "./axios-instance";
+import * as Misc from "./misc";
 
 let currentLeaderboard = "time_15";
 
@@ -15,7 +16,7 @@ let currentRank = {
   60: {},
 };
 
-let leaderboardSingleLimit = 100;
+let leaderboardSingleLimit = 50;
 
 export function hide() {
   $("#leaderboardsWrapper")
@@ -30,6 +31,7 @@ export function hide() {
         clearTable(15);
         clearTable(60);
         reset();
+        stopTimer();
         $("#leaderboardsWrapper").addClass("hidden");
       }
     );
@@ -44,7 +46,8 @@ function update() {
   // Loader.show();
   showLoader(15);
   showLoader(60);
-  Promise.all([
+
+  let requestsToAwait = [
     axiosInstance.get(`/leaderboard`, {
       params: {
         language: "english",
@@ -61,34 +64,45 @@ function update() {
         skip: 0,
       },
     }),
-    axiosInstance.get(`/leaderboard/rank`, {
-      params: {
-        language: "english",
-        mode: "time",
-        mode2: "15",
-      },
-    }),
-    axiosInstance.get(`/leaderboard/rank`, {
-      params: {
-        language: "english",
-        mode: "time",
-        mode2: "60",
-      },
-    }),
-  ])
+  ];
+
+  if (firebase.auth().currentUser) {
+    requestsToAwait.push(
+      axiosInstance.get(`/leaderboard/rank`, {
+        params: {
+          language: "english",
+          mode: "time",
+          mode2: "15",
+        },
+      })
+    );
+    requestsToAwait.push(
+      axiosInstance.get(`/leaderboard/rank`, {
+        params: {
+          language: "english",
+          mode: "time",
+          mode2: "60",
+        },
+      })
+    );
+  }
+
+  Promise.all(requestsToAwait)
     .then((lbdata) => {
       // Loader.hide();
       hideLoader(15);
       hideLoader(60);
-      currentData[15] = lbdata[0].data;
-      currentData[60] = lbdata[1].data;
-      currentRank[15] = lbdata[2].data;
-      currentRank[60] = lbdata[3].data;
+      currentData[15] = lbdata[0]?.data;
+      currentData[60] = lbdata[1]?.data;
+      currentRank[15] = lbdata[2]?.data;
+      currentRank[60] = lbdata[3]?.data;
 
       clearTable(15);
       clearTable(60);
       updateFooter(15);
       updateFooter(60);
+      checkLbMemory(15);
+      checkLbMemory(60);
       fillTable(15);
       fillTable(60);
       $("#leaderboardsWrapper .leftTableWrapper").removeClass("invisible");
@@ -139,15 +153,12 @@ export function fillTable(lb, prepend) {
     if (entry.name == loggedInUserName) {
       meClassString = ' class="me"';
     }
-    if (entry.uid === firebase.auth().currentUser?.uid) {
-      DB.updateLbMemory("time", lb, "english", entry.rank, true);
-    }
     html += `
-    <tr>
+    <tr ${meClassString}>
     <td>${
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
-    <td ${meClassString}>${entry.name}</td>
+    <td>${entry.name}</td>
     <td class="alignRight">${entry.wpm.toFixed(
       2
     )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
@@ -156,7 +167,7 @@ export function fillTable(lb, prepend) {
         ? "-"
         : entry.consistency.toFixed(2) + "%"
     }</div></td>
-    <td class="alignRight">time<br><div class="sub">15</div></td>
+    <td class="alignRight">time<br><div class="sub">${lb}</div></td>
     <td class="alignRight">${moment(entry.timestamp).format(
       "DD MMM YYYY"
     )}<br><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></td>
@@ -198,7 +209,7 @@ export function updateFooter(lb) {
         ? "-"
         : entry.consistency.toFixed(2) + "%"
     }</div></td>
-    <td class="alignRight">time<br><div class="sub">15</div></td>
+    <td class="alignRight">time<br><div class="sub">${lb}</div></td>
     <td class="alignRight">${moment(entry.timestamp).format(
       "DD MMM YYYY"
     )}<br><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></td>
@@ -223,7 +234,7 @@ async function requestMore(lb, prepend = false) {
     params: {
       language: "english",
       mode: "time",
-      mode2: "15",
+      mode2: lb,
       skip: skipVal,
       limit: limitVal,
     },
@@ -237,6 +248,9 @@ async function requestMore(lb, prepend = false) {
     currentData[lb].unshift(...data);
   } else {
     currentData[lb].push(...data);
+  }
+  if (prepend && !limitVal) {
+    limitVal = leaderboardSingleLimit - 1;
   }
   fillTable(lb, limitVal);
   hideLoader(lb);
@@ -297,8 +311,43 @@ export function show() {
         125,
         () => {
           update();
+          startTimer();
         }
       );
+  }
+}
+
+function checkLbMemory(lb) {
+  let side;
+  if (lb === 15) {
+    side = "left";
+  } else {
+    side = "right";
+  }
+
+  let memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.english;
+
+  if (memory && currentRank[lb]) {
+    let difference = memory - currentRank[lb].rank;
+    if (difference > 0) {
+      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
+      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
+        ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
+          difference
+        )} since you last checked)`
+      );
+    } else if (difference < 0) {
+      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
+      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
+        ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
+          difference
+        )} since you last checked)`
+      );
+    } else {
+      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
+        ` (= since you last checked)`
+      );
+    }
   }
 }
 
@@ -316,6 +365,30 @@ function hideLoader(lb) {
   } else if (lb === 60) {
     $(`#leaderboardsWrapper .rightTableLoader`).addClass("hidden");
   }
+}
+
+let updateTimer;
+function startTimer() {
+  updateTimerElement();
+  updateTimer = setInterval(() => {
+    updateTimerElement();
+  }, 1000);
+}
+
+function updateTimerElement() {
+  let date = new Date();
+  let minutesToNextUpdate = 4 - (date.getMinutes() % 5);
+  let secondsToNextUpdate = 60 - date.getSeconds();
+  let totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
+  $("#leaderboards .subTitle").text(
+    "Next update in: " + Misc.secondsToString(totalSeconds, true)
+  );
+}
+
+function stopTimer() {
+  clearInterval(updateTimer);
+  updateTimer = undefined;
+  $("#leaderboards .subTitle").text("Next update in: --:--");
 }
 
 $("#leaderboardsWrapper").click((e) => {
@@ -381,7 +454,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").click(async (e) => {
   $("#leaderboardsWrapper #leaderboards .leftTableWrapper").animate(
     {
       scrollTop:
-        rowHeight * currentRank[15].rank -
+        rowHeight * Math.min(currentRank[15].rank, leaderboardSingleLimit / 2) -
         $(
           "#leaderboardsWrapper #leaderboards .leftTableWrapper"
         ).outerHeight() /
@@ -413,7 +486,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").click(async (e) => {
   $("#leaderboardsWrapper #leaderboards .rightTableWrapper").animate(
     {
       scrollTop:
-        rowHeight * currentRank[60].rank -
+        rowHeight * Math.min(currentRank[60].rank, leaderboardSingleLimit / 2) -
         $(
           "#leaderboardsWrapper #leaderboards .rightTableWrapper"
         ).outerHeight() /

@@ -60,12 +60,12 @@
 }
 
 @media only screen and (max-width: 900px) {
-  #leaderboards {
-    .mainTitle {
-      font-size: 1.5rem !important;
-      line-height: 1.5rem !important;
-    }
-  }
+  // #leaderboards {
+  //   .mainTitle {
+  //     font-size: 1.5rem !important;
+  //     line-height: 1.5rem !important;
+  //   }
+  // }
   .merchBanner {
     img {
       display: none;
@@ -120,6 +120,17 @@
   #commandLine,
   #commandLineInput {
     width: 600px !important;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  #leaderboardsWrapper {
+    #leaderboards {
+      .leaderboardsTop {
+        flex-direction: column;
+        align-items: baseline;
+      }
+    }
   }
 }
 
@@ -222,18 +233,24 @@
       }
     }
   }
-
-  .leaderboardsTop {
+  #leaderboardsWrapper #leaderboards {
+    padding: 1rem;
+    gap: 1rem;
     .mainTitle {
-      font-size: 4vw !important;
+      font-size: 2rem;
+      line-height: 2rem;
     }
+    .title {
+      font-size: 1rem;
+    }
+    .leaderboardsTop {
+      .buttonGroup {
+        gap: 0.1rem !important;
 
-    .buttonGroup {
-      gap: 0.1rem !important;
-
-      .button {
-        padding: 0.4rem !important;
-        font-size: 0.7rem !important;
+        .button {
+          padding: 0.4rem !important;
+          font-size: 0.7rem !important;
+        }
       }
     }
   }
@@ -328,13 +345,9 @@
   #commandLineInput {
     width: 300px !important;
   }
-  #leaderboards {
-    .tables {
-      width: 95% !important;
-      .titleAndTable {
-        width: 90% !important;
-      }
-    }
+
+  #leaderboardsWrapper #leaderboards .tables .titleAndTable .titleAndButtons {
+    grid-template-columns: unset;
   }
 }
 

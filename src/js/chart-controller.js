@@ -360,6 +360,7 @@ export let accountActivity = new Chart(
             if (tooltipItem.datasetIndex === 0) {
               return `Time Typing: ${Misc.secondsToString(
                 Math.round(resultData.y),
+                true,
                 true
               )}\nTests Completed: ${resultData.amount}`;
             } else if (tooltipItem.datasetIndex === 1) {

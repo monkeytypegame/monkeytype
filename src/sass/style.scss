@@ -90,7 +90,8 @@ input[type="color"]::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-input[type="color"]::-webkit-color-swatch {
+input[type="color"]::-webkit-color-swatch,
+::-moz-color-swatch {
   border: none;
 }
 
@@ -382,7 +383,7 @@ a:hover {
 
   #leaderboards {
     width: 85vw;
-    height: calc(95vh - 5rem);
+    // height: calc(95vh - 5rem);
     overflow-y: auto;
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -411,6 +412,10 @@ a:hover {
       font-size: 3rem;
       line-height: 3rem;
       grid-area: title;
+    }
+
+    .subTitle {
+      color: var(--sub-color);
     }
 
     .title {
@@ -493,13 +498,15 @@ a:hover {
           text-align: center;
         }
 
-        td {
-          padding: 0.5rem 0.5rem;
-
-          &.me {
+        tr.me {
+          td {
             color: var(--main-color);
             font-weight: 900;
           }
+        }
+
+        td {
+          padding: 0.5rem 0.5rem;
         }
 
         thead {
@@ -3485,6 +3492,19 @@ key {
   .content {
     display: grid;
     gap: 2rem;
+  }
+
+  .timePbTable,
+  .wordsPbTable {
+    .sub {
+      opacity: 0.5;
+    }
+    td {
+      text-align: right;
+    }
+    tbody td:nth-child(1) {
+      font-size: 1.5rem;
+    }
   }
 
   .topFilters .buttons {

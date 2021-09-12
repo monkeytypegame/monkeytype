@@ -1,5 +1,5 @@
 import * as Notifications from "./notifications";
-import * as UpdateConfig from "./config";
+import Config, * as UpdateConfig from "./config";
 import * as AccountButton from "./account-button";
 import * as Account from "./account";
 import * as AccountController from "./account-controller";
@@ -8,7 +8,6 @@ import * as VerificationController from "./verification-controller";
 import * as Misc from "./misc";
 import * as Settings from "./settings";
 import * as ChallengeController from "./challenge-controller";
-import Config from "./config";
 import * as AllTimeStats from "./all-time-stats";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
@@ -20,6 +19,7 @@ export const gmailProvider = new firebase.auth.GoogleAuthProvider();
 const githubProvider = new firebase.auth.GithubAuthProvider();
 
 const authListener = firebase.auth().onAuthStateChanged(async function (user) {
+  // await UpdateConfig.loadPromise;
   if (user) {
     await loadUser(user);
   } else {
@@ -43,11 +43,17 @@ const authListener = firebase.auth().onAuthStateChanged(async function (user) {
     Settings.setCustomThemeInputs();
   }
   if (/challenge_.+/g.test(window.location.pathname)) {
-    Notifications.add("Loading challenge", 0);
-    let challengeName = window.location.pathname.split("_")[1];
-    setTimeout(() => {
-      ChallengeController.setup(challengeName);
-    }, 1000);
+    Notifications.add(
+      "Challenge links temporarily disabled. Please use the command line to load the challenge manually",
+      0,
+      7
+    );
+    return;
+    // Notifications.add("Loading challenge", 0);
+    // let challengeName = window.location.pathname.split("_")[1];
+    // setTimeout(() => {
+    //   ChallengeController.setup(challengeName);
+    // }, 1000);
   }
   PSA.show();
 });
@@ -86,6 +92,7 @@ export function signIn() {
             if (response.status !== 200) {
               Notifications.add(response.data.message);
             } else {
+              TestLogic.clearNotSignedInResult();
               Notifications.add("Last test result saved", 1);
             }
             // UI.changePage("account");
@@ -509,7 +516,7 @@ async function loadUser(user) {
   UI.setPageTransition(false);
   AccountButton.update();
   AccountButton.loading(true);
-  Account.getDataAndInit();
+  await Account.getDataAndInit();
   // var displayName = user.displayName;
   // var email = user.email;
   // var emailVerified = user.emailVerified;

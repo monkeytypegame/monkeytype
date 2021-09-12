@@ -3,10 +3,10 @@ const { config } = require("dotenv");
 const path = require("path");
 const MonkeyError = require("./handlers/error");
 config({ path: path.join(__dirname, ".env") });
-
+const CronJob = require("cron").CronJob;
 const cors = require("cors");
 const admin = require("firebase-admin");
-
+const Logger = require("./handlers/logger.js");
 const serviceAccount = require("./credentials/serviceAccountKey.json");
 const { connectDB, mongoDB } = require("./init/mongodb");
 
@@ -57,6 +57,11 @@ app.use(function (e, req, res, next) {
     monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
   }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
+    Logger.log(
+      `system_error`,
+      `${monkeyError.status} ${monkeyError.message}`,
+      monkeyError.uid
+    );
     mongoDB().collection("errors").insertOne({
       _id: monkeyError.errorID,
       timestamp: Date.now(),
@@ -73,6 +78,8 @@ app.get("/test", (req, res) => {
   res.send("Hello World!");
 });
 
+const LeaderboardsDAO = require("./dao/leaderboards");
+
 app.listen(PORT, async () => {
   console.log(`listening on port ${PORT}`);
   await connectDB();
@@ -81,55 +88,9 @@ app.listen(PORT, async () => {
   });
   console.log("Database Connected");
 
-  // refactor();
+  let lbjob = new CronJob("30 4/5 * * * *", async () => {
+    LeaderboardsDAO.update("time", "15", "english");
+    LeaderboardsDAO.update("time", "60", "english");
+  });
+  lbjob.start();
 });
-
-async function refactor() {
-  let users = await mongoDB().collection("users").find({}).toArray();
-
-  for (let user of users) {
-    let obj = user.personalBests;
-
-    lbPb = {
-      time: {
-        15: {},
-        60: {},
-      },
-    };
-    let bestForEveryLanguage = {};
-    if (obj?.time?.[15]) {
-      obj.time[15].forEach((pb) => {
-        if (!bestForEveryLanguage[pb.language]) {
-          bestForEveryLanguage[pb.language] = pb;
-        } else {
-          if (bestForEveryLanguage[pb.language].wpm < pb.wpm) {
-            bestForEveryLanguage[pb.language] = pb;
-          }
-        }
-      });
-      Object.keys(bestForEveryLanguage).forEach((key) => {
-        lbPb.time[15][key] = bestForEveryLanguage[key];
-      });
-      bestForEveryLanguage = {};
-    }
-    if (obj?.time?.[60]) {
-      obj.time[60].forEach((pb) => {
-        if (!bestForEveryLanguage[pb.language]) {
-          bestForEveryLanguage[pb.language] = pb;
-        } else {
-          if (bestForEveryLanguage[pb.language].wpm < pb.wpm) {
-            bestForEveryLanguage[pb.language] = pb;
-          }
-        }
-      });
-      Object.keys(bestForEveryLanguage).forEach((key) => {
-        lbPb.time[60][key] = bestForEveryLanguage[key];
-      });
-    }
-
-    await mongoDB()
-      .collection("users")
-      .updateOne({ _id: user._id }, { $set: { lbPersonalBests: lbPb } });
-    console.log(`updated ${user.name}`);
-  }
-}
