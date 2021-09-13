@@ -48,6 +48,24 @@
       "source": "GitHub - CodingTrain/ColorClassifer-TensorFlow.js",
       "length": 236,
       "id": 7
+    },
+    {
+      "text": "$('button').click(function(){\\n\\t$.post('demo_test_post.asp',\\n{\\n\\t\\tname: 'Donald Duck',\\n\\t\\tcity: 'Duckburg'\\n\\t},\n\\tfunction(data, status){\\n\\t\\talert('Data: ' + data + '\nStatus: ' + status);\\n\\t});\\n});",
+      "source": "W3Schools - jQuery Get/Post",
+      "length": 228,
+      "id": 8
+    },
+    {
+      "text": "const points = [40, 100, 1, 5, 25, 10];\\n\\nfor (let i = points.length -1; i > 0; i--) {\\n\\tlet j = Math.floor(Math.random() * i)\\n\\tlet k = points[i]\\n\\tpoints[i] = points[j]\\n\\tpoints[j] = k\\n}",
+      "source": "W3Schools JS Array Sort - Fisher Bates Method",
+      "length": 205,
+      "id": 9
+    },
+    {
+      "text": "function quicksort(arr){\\n\\tvar pivot = arr[0];\\n\\n\\tvar left = [];\\n\\tvar right = [];\\n\\n\\tfor (var i = 1; i < arr.length; i++) {\\n\\t\\tarr[i] < pivot ? left.push(arr[i]) : right.push(arr[i]);\\n\\t}\\n\\n\\treturn quicksort(left).concat(pivot, quicksort(right));\\n}",
+      "source": "JavaScript Quicksort Algorithm",
+      "length": 280,
+      "id": 10
     }
   ]
 }
