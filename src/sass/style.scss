@@ -3858,7 +3858,7 @@ key {
     opacity: 0.5;
     cursor: default;
     &:hover {
-      color: var(--sub-color);
+      color: var(--text-color);
       background: rgba(0, 0, 0, 0.1);
       outline: none;
     }
