@@ -203,6 +203,7 @@ async function initGroups() {
     "capsLockBackspace",
     UpdateConfig.setCapsLockBackspace
   );
+  groups.lazyMode = new SettingsGroup("lazyMode", UpdateConfig.setLazyMode);
   groups.layout = new SettingsGroup("layout", UpdateConfig.setLayout);
   groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
   groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);

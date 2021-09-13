@@ -528,6 +528,12 @@ export function updateModesNotice() {
     );
   }
 
+  if (Config.lazyMode) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsLazyMode"><i class="fas fa-couch"></i>lazy</div>`
+    );
+  }
+
   if (
     Config.paceCaret !== "off" ||
     (Config.repeatedPace && TestLogic.isPaceRepeat)

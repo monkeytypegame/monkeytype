@@ -36,6 +36,7 @@ import * as Wordset from "./wordset";
 import * as ChallengeContoller from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
 import * as BritishEnglish from "./british-english";
+import * as LazyMode from "./lazy-mode";
 
 const objecthash = require("object-hash");
 
@@ -469,6 +470,11 @@ export async function init() {
     language = await Misc.getLanguage(Config.language);
   }
 
+  if (Config.lazyMode === true && language.noLazyMode) {
+    Notifications.add("This language does not support lazy mode.", 0);
+    UpdateConfig.setLazyMode(false);
+  }
+
   if (
     Config.mode == "time" ||
     Config.mode == "words" ||
@@ -581,6 +587,10 @@ export async function init() {
         if (Config.britishEnglish && /english/.test(Config.language)) {
           let britishWord = await BritishEnglish.replace(randomWord);
           if (britishWord) randomWord = britishWord;
+        }
+
+        if (Config.lazyMode === true && language.accents) {
+          randomWord = LazyMode.replaceAccents(randomWord);
         }
 
         if (Config.funbox === "rAnDoMcAsE") {
@@ -743,6 +753,11 @@ export async function init() {
         let britishWord = await BritishEnglish.replace(w[i]);
         if (britishWord) w[i] = britishWord;
       }
+
+      if (Config.lazyMode === true && language.accents) {
+        w[i] = LazyMode.replaceAccents(w[i]);
+      }
+
       words.push(w[i]);
     }
   }
@@ -1581,6 +1596,7 @@ export async function finish(difficultyFailed = false) {
       quoteLength: quoteLength,
       punctuation: Config.punctuation,
       numbers: Config.numbers,
+      lazyMode: Config.lazyMode,
       timestamp: Date.now(),
       language: lang,
       restartCount: TestStats.restartCount,
@@ -1662,6 +1678,7 @@ export async function finish(difficultyFailed = false) {
           Config.punctuation,
           Config.language,
           Config.difficulty,
+          Config.lazyMode,
           Config.funbox
         ).then((lpb) => {
           DB.getUserHighestWpm(
@@ -1669,7 +1686,8 @@ export async function finish(difficultyFailed = false) {
             mode2,
             Config.punctuation,
             Config.language,
-            Config.difficulty
+            Config.difficulty,
+            Config.lazyMode
           ).then(async (highestwpm) => {
             PbCrown.hide();
             $("#result .stats .wpm .crown").attr("aria-label", "");
@@ -1747,7 +1765,8 @@ export async function finish(difficultyFailed = false) {
                 mode2,
                 Config.punctuation,
                 Config.language,
-                Config.difficulty
+                Config.difficulty,
+                Config.lazyMode
               );
               $("#result .stats .tags .bottom").append(`
                 <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
@@ -1762,6 +1781,7 @@ export async function finish(difficultyFailed = false) {
                     Config.punctuation,
                     Config.language,
                     Config.difficulty,
+                    Config.lazyMode,
                     stats.wpm,
                     stats.acc,
                     stats.wpmRaw,
@@ -1985,6 +2005,9 @@ export async function finish(difficultyFailed = false) {
   }
   if (Config.blindMode) {
     testType += "<br>blind";
+  }
+  if (Config.lazyMode) {
+    testType += "<br>lazy";
   }
   if (Config.funbox !== "none") {
     testType += "<br>" + Config.funbox.replace(/_/g, " ");

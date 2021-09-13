@@ -1,6 +1,7 @@
 {
   "name": "dutch",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "als",
     "zijn",
