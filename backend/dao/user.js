@@ -67,7 +67,7 @@ class UsersDAO {
 
   static async getUser(uid) {
     const user = await mongoDB().collection("users").findOne({ uid });
-    if (user) throw new MonkeyError(404, "User not found", "get user");
+    if (!user) throw new MonkeyError(404, "User not found", "get user");
     return user;
   }
 
