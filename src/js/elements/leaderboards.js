@@ -300,6 +300,21 @@ function reset() {
 
 export function show() {
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
+    if (firebase.auth().currentUser) {
+      $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
+        "disabled"
+      );
+      $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").removeClass(
+        "disabled"
+      );
+    } else {
+      $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").addClass(
+        "disabled"
+      );
+      $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").addClass(
+        "disabled"
+      );
+    }
     $("#leaderboardsWrapper")
       .stop(true, true)
       .css("opacity", 0)
