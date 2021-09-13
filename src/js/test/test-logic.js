@@ -589,7 +589,7 @@ export async function init() {
           if (britishWord) randomWord = britishWord;
         }
 
-        if (Config.lazyMode === true && language.accents) {
+        if (Config.lazyMode === true && !language.noLazyMode) {
           randomWord = LazyMode.replaceAccents(randomWord);
         }
 
