@@ -44,17 +44,16 @@ const leaderboardsRouter = require("./api/routes/leaderboards");
 app.use("/leaderboard", leaderboardsRouter);
 
 app.use(function (e, req, res, next) {
-  let uid = undefined;
-  if (req.decodedToken) {
-    uid = req.decodedToken.uid;
-  }
   let monkeyError;
   if (e.errorID) {
     //its a monkey error
     monkeyError = e;
   } else {
     //its a server error
-    monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
+    monkeyError = new MonkeyError(e.status, e.message, e.stack);
+  }
+  if (!monkeyError.uid && req.decodedToken) {
+    monkeyError.uid = req.decodedToken.uid;
   }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
     Logger.log(
