@@ -90,7 +90,10 @@ input[type="color"]::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-input[type="color"]::-webkit-color-swatch,
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+}
+
 ::-moz-color-swatch {
   border: none;
 }
