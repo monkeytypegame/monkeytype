@@ -6,6 +6,9 @@ const { updateAuthEmail } = require("../handlers/auth");
 
 class UsersDAO {
   static async addUser(name, email, uid) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (user)
+      throw new MonkeyError(400, "User document already exists", "addUser");
     return await mongoDB()
       .collection("users")
       .insertOne({ name, email, uid, addedAt: Date.now() });
@@ -64,7 +67,7 @@ class UsersDAO {
 
   static async getUser(uid) {
     const user = await mongoDB().collection("users").findOne({ uid });
-    if (!user) throw new MonkeyError(404, "User not found", "get user");
+    if (user) throw new MonkeyError(404, "User not found", "get user");
     return user;
   }
 
