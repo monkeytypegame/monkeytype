@@ -415,7 +415,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
   if (!leftScrollEnabled) return;
   let elem = $(e.currentTarget);
-  if (elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
+  if (elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
     requestMore(15);
   }
 });
@@ -432,7 +432,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
 
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   let elem = $(e.currentTarget);
-  if (elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
+  if (elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
     requestMore(60);
   }
 });
