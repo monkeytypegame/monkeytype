@@ -205,6 +205,7 @@ function trigger(command) {
 }
 
 export let show = () => {
+  if (!$(".page.pageLoading").hasClass("hidden")) return;
   Focus.set(false);
   $("#commandLine").removeClass("hidden");
   $("#commandInput").addClass("hidden");
