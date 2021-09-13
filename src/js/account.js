@@ -268,6 +268,10 @@ function loadMoreLines(lineIndex) {
       icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
     }
 
+    if (result.lazyMode) {
+      icons += `<span aria-label="lazy mode" data-balloon-pos="up"><i class="fas fa-fw fa-couch"></i></span>`;
+    }
+
     if (result.funbox !== "none" && result.funbox !== undefined) {
       icons += `<span aria-label="${result.funbox.replace(
         /_/g,

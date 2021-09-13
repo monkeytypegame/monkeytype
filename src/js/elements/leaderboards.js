@@ -300,6 +300,21 @@ function reset() {
 
 export function show() {
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
+    if (firebase.auth().currentUser) {
+      $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
+        "disabled"
+      );
+      $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").removeClass(
+        "disabled"
+      );
+    } else {
+      $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").addClass(
+        "disabled"
+      );
+      $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").addClass(
+        "disabled"
+      );
+    }
     $("#leaderboardsWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -415,7 +430,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
   if (!leftScrollEnabled) return;
   let elem = $(e.currentTarget);
-  if (elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
+  if (elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
     requestMore(15);
   }
 });
@@ -432,7 +447,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
 
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   let elem = $(e.currentTarget);
-  if (elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
+  if (elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
     requestMore(60);
   }
 });

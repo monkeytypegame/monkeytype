@@ -771,6 +771,31 @@ let commandsStartGraphsAtZero = {
   ],
 };
 
+let commandsLazyMode = {
+  title: "Lazy mode...",
+  configKey: "lazyMode",
+  list: [
+    {
+      id: "setLazyModeOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setLazyMode(false);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setLazyModeOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setLazyMode(true);
+        TestLogic.restart();
+      },
+    },
+  ],
+};
+
 let commandsSwapEscAndTab = {
   title: "Swap esc and tab...",
   configKey: "swapEscAndTab",
@@ -2551,6 +2576,12 @@ export let defaultCommands = {
       display: "Swap esc and tab...",
       icon: "fa-exchange-alt",
       subgroup: commandsSwapEscAndTab,
+    },
+    {
+      id: "changeLazyMode",
+      display: "Lazy mode...",
+      icon: "fa-couch",
+      subgroup: commandsLazyMode,
     },
     {
       id: "changeShowAllLines",

@@ -1,6 +1,7 @@
 {
   "name": "code_dart",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "()",
     "[]",

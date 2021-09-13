@@ -128,6 +128,7 @@ let defaultConfig = {
   minBurstCustomSpeed: 100,
   burstHeatmap: false,
   britishEnglish: false,
+  lazyMode: false,
 };
 
 function isConfigKeyValid(name) {
@@ -1299,6 +1300,14 @@ export function setBritishEnglish(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+export function setLazyMode(val, nosave) {
+  if (!val) {
+    val = false;
+  }
+  config.lazyMode = val;
+  if (!nosave) saveToLocalStorage();
+}
+
 export function toggleCustomTheme(nosave) {
   if (config.customTheme) {
     setCustomTheme(false);
@@ -1681,6 +1690,7 @@ export function apply(configObj) {
     setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
     setBurstHeatmap(configObj.burstHeatmap, true);
     setBritishEnglish(configObj.britishEnglish, true);
+    setLazyMode(configObj.lazyMode, true);
 
     LanguagePicker.setActiveGroup();
 
