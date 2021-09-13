@@ -578,10 +578,7 @@ export async function init() {
           randomWord = wordset.randomWord();
         }
 
-        if (
-          Config.britishEnglish &&
-          Config.language.replace(/_\d*k$/g, "") === "english"
-        ) {
+        if (Config.britishEnglish && /english/.test(Config.language)) {
           let britishWord = await BritishEnglish.replace(randomWord);
           if (britishWord) randomWord = britishWord;
         }
