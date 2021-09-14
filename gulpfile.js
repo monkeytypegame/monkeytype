@@ -89,7 +89,6 @@ let eslintConfig = {
 const refactoredSrc = [
   "./src/js/axios-instance.js",
   "./src/js/db.js",
-  "./src/js/cloud-functions.js",
   "./src/js/misc.js",
   "./src/js/layouts.js",
   "./src/js/sound.js",
