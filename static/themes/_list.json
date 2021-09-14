@@ -588,5 +588,10 @@
     "name": "terror_below",
     "bgColor": "#0b1e1a",
     "textColor": "#66ac92"
+  },
+  {
+    "name": "fruit_chew",
+    "bgColor": "#a55ba8",
+    "textColor": "ffffff"
   }
 ]
