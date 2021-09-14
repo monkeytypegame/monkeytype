@@ -689,8 +689,12 @@ export function cleanTypographySymbols(textToClean) {
     "–": "-",
     " ": " ",
     " ": " ",
+    " ": " ",
   };
-  return textToClean.replace(/[“”’‘—,…«»–  ]/g, (char) => specials[char] || "");
+  return textToClean.replace(
+    /[“”’‘—,…«»–   ]/g,
+    (char) => specials[char] || ""
+  );
 }
 
 export function isUsernameValid(name) {
