@@ -8,7 +8,6 @@ import * as Notifications from "./notifications";
 import * as DB from "./db";
 import * as Loader from "./loader";
 import * as CloudFunctions from "./cloud-functions";
-import axiosInstance from "./axios-instance";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as PresetController from "./preset-controller";
@@ -422,10 +421,10 @@ function refreshTagsSettingsSection() {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot().tags.forEach((tag) => {
-      let tagPbString = "No PB found";
-      if (tag.pb != undefined && tag.pb > 0) {
-        tagPbString = `PB: ${tag.pb}`;
-      }
+      // let tagPbString = "No PB found";
+      // if (tag.pb != undefined && tag.pb > 0) {
+      //   tagPbString = `PB: ${tag.pb}`;
+      // }
       tagsEl.append(`
 
       <div class="buttons tag" id="${tag._id}">
