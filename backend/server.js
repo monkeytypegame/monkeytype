@@ -88,7 +88,7 @@ app.listen(PORT, async () => {
   });
   console.log("Database Connected");
 
-  let lbjob = new CronJob("*/20 * * * * *", async () => {
+  let lbjob = new CronJob("30 4/5 * * * *", async () => {
     let before15 = await mongoDB()
       .collection("leaderboards.english.time.15")
       .find()
