@@ -4,7 +4,6 @@ import * as Notifications from "./notifications";
 import * as Settings from "./settings";
 import * as Config from "./config";
 import axiosInstance from "./axios-instance";
-import { config } from "dotenv";
 
 export function show(action, id, name) {
   if (action === "add") {
