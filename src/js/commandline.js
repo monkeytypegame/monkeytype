@@ -527,13 +527,20 @@ $(document).keydown((e) => {
         return;
       }
     }
-    if (
-      e.key === "Backspace" &&
-      $("#commandLine input").val()[0] == ">" &&
-      Config.singleListCommandLine == "manual" &&
-      isSingleListCommandLineActive()
-    )
-      restoreOldCommandLine(false);
+
+    if (e.key === "Backspace") {
+      setTimeout(() => {
+        let inputVal = $("#commandLine input").val();
+        if (
+          Config.singleListCommandLine == "manual" &&
+          isSingleListCommandLineActive() &&
+          inputVal[0] !== ">"
+        ) {
+          restoreOldCommandLine();
+        }
+      }, 1);
+    }
+
     if (e.key === "Enter") {
       //enter
       e.preventDefault();

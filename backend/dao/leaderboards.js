@@ -46,6 +46,7 @@ class LeaderboardsDAO {
           $set: {
             [str + ".uid"]: "$uid",
             [str + ".name"]: "$name",
+            [str + ".discordId"]: "$discordId",
           },
         },
         {

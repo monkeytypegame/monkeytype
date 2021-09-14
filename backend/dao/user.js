@@ -3,6 +3,7 @@ const { mongoDB } = require("../init/mongodb");
 const { ObjectID } = require("mongodb");
 const { checkAndUpdatePb } = require("../handlers/pb");
 const { updateAuthEmail } = require("../handlers/auth");
+const { isUsernameValid } = require("../handlers/validation");
 
 class UsersDAO {
   static async addUser(name, email, uid) {
@@ -24,7 +25,10 @@ class UsersDAO {
       .findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
     if (nameDoc) throw new MonkeyError(409, "Username already taken");
     let user = await mongoDB().collection("users").findOne({ uid });
-    if (Date.now() - user.lastNameChange < 2592000000) {
+    if (
+      Date.now() - user.lastNameChange < 2592000000 &&
+      isUsernameValid(user.name)
+    ) {
       throw new MonkeyError(409, "You can change your name once every 30 days");
     }
     return await mongoDB()

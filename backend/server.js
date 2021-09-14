@@ -9,6 +9,7 @@ const admin = require("firebase-admin");
 const Logger = require("./handlers/logger.js");
 const serviceAccount = require("./credentials/serviceAccountKey.json");
 const { connectDB, mongoDB } = require("./init/mongodb");
+const BotDAO = require("./dao/bot");
 
 const PORT = process.env.PORT || 5005;
 
@@ -88,8 +89,72 @@ app.listen(PORT, async () => {
   console.log("Database Connected");
 
   let lbjob = new CronJob("30 4/5 * * * *", async () => {
-    LeaderboardsDAO.update("time", "15", "english");
-    LeaderboardsDAO.update("time", "60", "english");
+    let before15 = await mongoDB()
+      .collection("leaderboards.english.time.15")
+      .find()
+      .limit(10)
+      .toArray();
+    LeaderboardsDAO.update("time", "15", "english").then(async () => {
+      let after15 = await mongoDB()
+        .collection("leaderboards.english.time.15")
+        .find()
+        .limit(10)
+        .toArray();
+
+      let changed;
+      for (let index in before15) {
+        if (before15[index].uid !== after15[index].uid) {
+          //something changed at this index
+          changed = after15[index];
+          break;
+        }
+      }
+      if (changed) {
+        let name = changed.discordId ?? changed.name;
+        BotDAO.announceLbUpdate(
+          name,
+          changed.rank,
+          "time 15 english",
+          changed.wpm,
+          changed.raw,
+          changed.acc,
+          changed.consistency
+        );
+      }
+    });
+
+    let before60 = await mongoDB()
+      .collection("leaderboards.english.time.60")
+      .find()
+      .limit(10)
+      .toArray();
+    LeaderboardsDAO.update("time", "60", "english").then(async () => {
+      let after60 = await mongoDB()
+        .collection("leaderboards.english.time.60")
+        .find()
+        .limit(10)
+        .toArray();
+      let changed;
+      for (let index in before60) {
+        if (before60[index].uid !== after60[index].uid) {
+          //something changed at this index
+          changed = after60[index];
+          break;
+        }
+      }
+      if (changed) {
+        let name = changed.discordId ?? changed.name;
+        BotDAO.announceLbUpdate(
+          name,
+          changed.rank,
+          "time 60 english",
+          changed.wpm,
+          changed.raw,
+          changed.acc,
+          changed.consistency
+        );
+      }
+    });
   });
   lbjob.start();
 
