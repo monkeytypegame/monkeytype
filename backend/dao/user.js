@@ -6,6 +6,9 @@ const { updateAuthEmail } = require("../handlers/auth");
 
 class UsersDAO {
   static async addUser(name, email, uid) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (user)
+      throw new MonkeyError(400, "User document already exists", "addUser");
     return await mongoDB()
       .collection("users")
       .insertOne({ name, email, uid, addedAt: Date.now() });
@@ -177,6 +180,7 @@ class UsersDAO {
       acc,
       consistency,
       difficulty,
+      lazyMode,
       language,
       punctuation,
       rawWpm,
@@ -203,6 +207,7 @@ class UsersDAO {
       acc,
       consistency,
       difficulty,
+      lazyMode,
       language,
       punctuation,
       rawWpm,
@@ -238,6 +243,7 @@ class UsersDAO {
       acc,
       consistency,
       difficulty,
+      lazyMode,
       language,
       punctuation,
       rawWpm,
@@ -274,6 +280,7 @@ class UsersDAO {
         acc,
         consistency,
         difficulty,
+        lazyMode,
         language,
         punctuation,
         rawWpm,

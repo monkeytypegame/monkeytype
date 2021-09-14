@@ -44,17 +44,16 @@ const leaderboardsRouter = require("./api/routes/leaderboards");
 app.use("/leaderboard", leaderboardsRouter);
 
 app.use(function (e, req, res, next) {
-  let uid = undefined;
-  if (req.decodedToken) {
-    uid = req.decodedToken.uid;
-  }
   let monkeyError;
   if (e.errorID) {
     //its a monkey error
     monkeyError = e;
   } else {
     //its a server error
-    monkeyError = new MonkeyError(e.status, e.message, e.stack, uid);
+    monkeyError = new MonkeyError(e.status, e.message, e.stack);
+  }
+  if (!monkeyError.uid && req.decodedToken) {
+    monkeyError.uid = req.decodedToken.uid;
   }
   if (process.env.MODE !== "dev" && monkeyError.status > 400) {
     Logger.log(
@@ -93,4 +92,16 @@ app.listen(PORT, async () => {
     LeaderboardsDAO.update("time", "60", "english");
   });
   lbjob.start();
+
+  let logjob = new CronJob("0 0 0 * * *", async () => {
+    let data = await mongoDB()
+      .collection("logs")
+      .deleteMany({ timestamp: { $lt: Date.now() - 604800000 } });
+    Logger.log(
+      "system_logs_deleted",
+      `${data.deletedCount} logs deleted older than 7 days`,
+      undefined
+    );
+  });
+  logjob.start();
 });

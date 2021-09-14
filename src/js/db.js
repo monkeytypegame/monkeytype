@@ -124,6 +124,7 @@ export async function getUserResults() {
       results.data.forEach((result) => {
         if (result.bailedOut === undefined) result.bailedOut = false;
         if (result.blindMode === undefined) result.blindMode = false;
+        if (result.lazyMode === undefined) result.lazyMode = false;
         if (result.difficulty === undefined) result.difficulty = "normal";
         if (result.funbox === undefined) result.funbox = "none";
         if (result.language === undefined) result.language = "english";
@@ -184,7 +185,8 @@ export async function getUserHighestWpm(
   mode2,
   punctuation,
   language,
-  difficulty
+  difficulty,
+  lazyMode
 ) {
   function cont() {
     let topWpm = 0;
@@ -194,7 +196,9 @@ export async function getUserHighestWpm(
         result.mode2 == mode2 &&
         result.punctuation == punctuation &&
         result.language == language &&
-        result.difficulty == difficulty
+        result.difficulty == difficulty &&
+        (result.lazyMode === lazyMode ||
+          (result.lazyMode === undefined && lazyMode === false))
       ) {
         if (result.wpm > topWpm) {
           topWpm = result.wpm;
@@ -218,7 +222,8 @@ export async function getUserAverageWpm10(
   mode2,
   punctuation,
   language,
-  difficulty
+  difficulty,
+  lazyMode
 ) {
   function cont() {
     let wpmSum = 0;
@@ -231,7 +236,9 @@ export async function getUserAverageWpm10(
         result.mode == mode &&
         result.punctuation == punctuation &&
         result.language == language &&
-        result.difficulty == difficulty
+        result.difficulty == difficulty &&
+        (result.lazyMode === lazyMode ||
+          (result.lazyMode === undefined && lazyMode === false))
       ) {
         // Continue if the mode2 doesn't match unless it's a quote.
         if (result.mode2 != mode2 && mode != "quote") {
@@ -283,6 +290,7 @@ export async function getLocalPB(
   punctuation,
   language,
   difficulty,
+  lazyMode,
   funbox
 ) {
   if (funbox !== "none" && funbox !== "plus_one" && funbox !== "plus_two") {
@@ -296,7 +304,9 @@ export async function getLocalPB(
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
-          pb.language == language
+          pb.language == language &&
+          (pb.lazyMode === lazyMode ||
+            (pb.lazyMode === undefined && lazyMode === false))
         ) {
           ret = pb.wpm;
         }
@@ -322,6 +332,7 @@ export async function saveLocalPB(
   punctuation,
   language,
   difficulty,
+  lazyMode,
   wpm,
   acc,
   raw,
@@ -338,7 +349,9 @@ export async function saveLocalPB(
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
-          pb.language == language
+          pb.language == language &&
+          (pb.lazyMode === lazyMode ||
+            (pb.lazyMode === undefined && lazyMode === false))
         ) {
           found = true;
           pb.wpm = wpm;
@@ -346,6 +359,7 @@ export async function saveLocalPB(
           pb.raw = raw;
           pb.timestamp = Date.now();
           pb.consistency = consistency;
+          pb.lazyMode = lazyMode;
         }
       });
       if (!found) {
@@ -353,6 +367,7 @@ export async function saveLocalPB(
         dbSnapshot.personalBests[mode][mode2].push({
           language: language,
           difficulty: difficulty,
+          lazyMode: lazyMode,
           punctuation: punctuation,
           wpm: wpm,
           acc: acc,
@@ -369,6 +384,7 @@ export async function saveLocalPB(
         {
           language: language,
           difficulty: difficulty,
+          lazyMode: lazyMode,
           punctuation: punctuation,
           wpm: wpm,
           acc: acc,
@@ -391,7 +407,8 @@ export async function getLocalTagPB(
   mode2,
   punctuation,
   language,
-  difficulty
+  difficulty,
+  lazyMode
 ) {
   function cont() {
     let ret = 0;
@@ -401,7 +418,9 @@ export async function getLocalTagPB(
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
-          pb.language == language
+          pb.language == language &&
+          (pb.lazyMode === lazyMode ||
+            (pb.lazyMode === undefined && lazyMode === false))
         ) {
           ret = pb.wpm;
         }
@@ -428,6 +447,7 @@ export async function saveLocalTagPB(
   punctuation,
   language,
   difficulty,
+  lazyMode,
   wpm,
   acc,
   raw,
@@ -445,7 +465,9 @@ export async function saveLocalTagPB(
         if (
           pb.punctuation == punctuation &&
           pb.difficulty == difficulty &&
-          pb.language == language
+          pb.language == language &&
+          (pb.lazyMode === lazyMode ||
+            (pb.lazyMode === undefined && lazyMode === false))
         ) {
           found = true;
           pb.wpm = wpm;
@@ -453,6 +475,7 @@ export async function saveLocalTagPB(
           pb.raw = raw;
           pb.timestamp = Date.now();
           pb.consistency = consistency;
+          pb.lazyMode = lazyMode;
         }
       });
       if (!found) {
@@ -460,6 +483,7 @@ export async function saveLocalTagPB(
         filteredtag.personalBests[mode][mode2].push({
           language: language,
           difficulty: difficulty,
+          lazyMode: lazyMode,
           punctuation: punctuation,
           wpm: wpm,
           acc: acc,
@@ -476,6 +500,7 @@ export async function saveLocalTagPB(
         {
           language: language,
           difficulty: difficulty,
+          lazyMode: lazyMode,
           punctuation: punctuation,
           wpm: wpm,
           acc: acc,

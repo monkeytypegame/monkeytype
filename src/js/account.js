@@ -268,6 +268,10 @@ function loadMoreLines(lineIndex) {
       icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
     }
 
+    if (result.lazyMode) {
+      icons += `<span aria-label="lazy mode" data-balloon-pos="up"><i class="fas fa-fw fa-couch"></i></span>`;
+    }
+
     if (result.funbox !== "none" && result.funbox !== undefined) {
       icons += `<span aria-label="${result.funbox.replace(
         /_/g,
@@ -577,7 +581,9 @@ export function update() {
           (ResultFilters.getFilter("date", "last_week") &&
             timeSinceTest <= 604800) ||
           (ResultFilters.getFilter("date", "last_month") &&
-            timeSinceTest <= 2592000)
+            timeSinceTest <= 2592000) ||
+          (ResultFilters.getFilter("date", "last_3months") &&
+            timeSinceTest <= 7776000)
         ) {
           datehide = false;
         }
