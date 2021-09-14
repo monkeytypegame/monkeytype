@@ -1,6 +1,7 @@
 {
   "name": "english_25k",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "plug",
     "rounders",
@@ -9235,7 +9236,7 @@
     "accenting",
     "vitriol",
     "stipend",
-    "licence",
+    "license",
     "intromission",
     "palaeontology",
     "abates",
@@ -23686,7 +23687,6 @@
     "comprise",
     "underscore",
     "overreach",
-    "retarded",
     "vainglorious",
     "caiman",
     "simulate",
@@ -23716,7 +23716,6 @@
     "parole",
     "vascularity",
     "buffoon",
-    "retard",
     "siskin",
     "jejunum",
     "anaemic",

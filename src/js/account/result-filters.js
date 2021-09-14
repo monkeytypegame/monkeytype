@@ -51,6 +51,7 @@ let defaultResultFilters = {
     last_day: false,
     last_week: false,
     last_month: false,
+    last_3months: false,
     all: true,
   },
   tags: {

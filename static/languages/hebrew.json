@@ -2,6 +2,7 @@
   "name": "hebrew",
   "leftToRight": false,
   "ligatures": true,
+  "noLazyMode": true,
   "words": [
     "של",
     "את",

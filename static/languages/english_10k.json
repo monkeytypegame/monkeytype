@@ -1,6 +1,7 @@
 {
   "name": "english_10k",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "a",
     "abandoned",

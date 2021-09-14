@@ -2,6 +2,7 @@
   "name": "arabic_10k",
   "leftToRight": false,
   "ligatures": true,
+  "noLazyMode": true,
   "words": [
     "اكتشف",
     "فيجب",

@@ -1,6 +1,7 @@
 {
   "name": "dutch_1k",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "aan",
     "aanbod",

@@ -56,6 +56,7 @@ class UserController {
     try {
       const { uid } = req.decodedToken;
       await UsersDAO.clearPb(uid);
+      Logger.log("user_cleared_pbs", ``, uid);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
@@ -159,6 +160,7 @@ class UserController {
       }
       await UsersDAO.linkDiscord(uid, did);
       await BotDAO.linkDiscord(uid, did);
+      Logger.log("user_discord_link", `linked to ${did}`, uid);
       return res.status(200).json({
         message: "Discord account linked",
         did,
@@ -172,6 +174,7 @@ class UserController {
     try {
       const { uid } = req.decodedToken;
       await UsersDAO.unlinkDiscord(uid);
+      Logger.log("user_discord_unlinked", ``, uid);
       return res.status(200).send();
     } catch (e) {
       return next(e);

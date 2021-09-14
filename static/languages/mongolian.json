@@ -1,6 +1,7 @@
 {
   "name": "mongolian",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "аавын",
     "аан",

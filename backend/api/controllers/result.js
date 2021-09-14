@@ -252,6 +252,7 @@ class ResultController {
 
       if (result.bailedOut === false) delete result.bailedOut;
       if (result.blindMode === false) delete result.blindMode;
+      if (result.lazyMode === false) delete result.lazyMode;
       if (result.difficulty === "normal") delete result.difficulty;
       if (result.funbox === "none") delete result.funbox;
       if (result.language === "english") delete result.language;

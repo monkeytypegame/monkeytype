@@ -205,6 +205,7 @@ function trigger(command) {
 }
 
 export let show = () => {
+  if (!$(".page.pageLoading").hasClass("hidden")) return;
   Focus.set(false);
   $("#commandLine").removeClass("hidden");
   $("#commandInput").addClass("hidden");
@@ -287,19 +288,19 @@ export function isSingleListCommandLineActive() {
   return $("#commandLine").hasClass("allCommands");
 }
 
-function useSingleListCommandLine(show = true) {
+function useSingleListCommandLine(sshow = true) {
   let allCommands = generateSingleListOfCommands();
-  if (Config.singleListCommandLine == "manual") {
-    CommandlineLists.pushCurrent(allCommands);
-  } else if (Config.singleListCommandLine == "on") {
-    CommandlineLists.setCurrent([allCommands]);
-  }
+  // if (Config.singleListCommandLine == "manual") {
+  // CommandlineLists.pushCurrent(allCommands);
+  // } else if (Config.singleListCommandLine == "on") {
+  CommandlineLists.setCurrent([allCommands]);
+  // }
   if (Config.singleListCommandLine != "off")
     $("#commandLine").addClass("allCommands");
-  if (show) show();
+  if (sshow) show();
 }
 
-function restoreOldCommandLine(show = true) {
+function restoreOldCommandLine(sshow = true) {
   if (isSingleListCommandLineActive()) {
     $("#commandLine").removeClass("allCommands");
     CommandlineLists.setCurrent(
@@ -308,7 +309,7 @@ function restoreOldCommandLine(show = true) {
     if (CommandlineLists.current.length < 1)
       CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
   }
-  if (show) show();
+  if (sshow) show();
 }
 
 $("#commandLine input").keyup((e) => {
@@ -518,7 +519,7 @@ $(document).keydown((e) => {
     $("#commandLine input").focus();
     if (e.key == ">" && Config.singleListCommandLine == "manual") {
       if (!isSingleListCommandLineActive()) {
-        useSingleListCommandLine();
+        useSingleListCommandLine(false);
         return;
       } else if ($("#commandLine input").val() == ">") {
         //so that it will ignore succeeding ">" when input is already ">"
@@ -528,11 +529,11 @@ $(document).keydown((e) => {
     }
     if (
       e.key === "Backspace" &&
-      $("#commandLine input").val().length == 1 &&
+      $("#commandLine input").val()[0] == ">" &&
       Config.singleListCommandLine == "manual" &&
       isSingleListCommandLineActive()
     )
-      restoreOldCommandLine();
+      restoreOldCommandLine(false);
     if (e.key === "Enter") {
       //enter
       e.preventDefault();
