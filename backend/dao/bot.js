@@ -23,17 +23,17 @@ class BotDAO {
     return await addCommand("awardChallenge", [discordId, challengeName]);
   }
 
-  // static async announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
-  //   return await addCommand("sayLbUpdate", [
-  //     discordId,
-  //     pos,
-  //     lb,
-  //     wpm,
-  //     raw,
-  //     acc,
-  //     con,
-  //   ]);
-  // }
+  static async announceLbUpdate(discordId, pos, lb, wpm, raw, acc, con) {
+    return await addCommand("sayLbUpdate", [
+      discordId,
+      pos,
+      lb,
+      wpm,
+      raw,
+      acc,
+      con,
+    ]);
+  }
 
   // this probably will be rewritten but keeping the old code just in case
   // static async announceDailyLbResult(lbdata) {
