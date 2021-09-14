@@ -1923,6 +1923,7 @@ export async function finish(difficultyFailed = false) {
                       Config.punctuation,
                       Config.language,
                       Config.difficulty,
+                      Config.lazyMode,
                       stats.wpm,
                       stats.acc,
                       stats.wpmRaw,
