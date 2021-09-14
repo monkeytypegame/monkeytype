@@ -20,16 +20,12 @@ let accents = [
 ];
 
 export function replaceAccents(word) {
-  if (!accents) return newWord;
-
   let newWord = word;
-
+  if (!accents) return newWord;
   let regex;
-
   for (let i = 0; i < accents.length; i++) {
     regex = new RegExp(`[${accents[i][0]}]`, "gi");
     newWord = newWord.replace(regex, accents[i][1]);
   }
-
   return newWord;
 }
