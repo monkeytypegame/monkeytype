@@ -35,18 +35,10 @@
 #menu .icon-button:hover,
 #top .config .group .buttons .text-button:hover,
 a:hover {
-  animation-name: shadow-repeat;
-  animation-duration: 3s;
-  animation-iteration-count: infinite;
-  animation-fill-mode: forwards;
-  animation-timing-function: linear;
+  animation: shadow-repeat 3s linear infinite forwards;
 }
 
 #logo,
 #typingTest .word letter.correct {
-  animation-name: shadow;
-  animation-duration: 5s;
-  animation-iteration-count: 1;
-  animation-fill-mode: forwards;
-  animation-timing-function: linear;
+  animation: shadow 5s linear 1 forwards;
 }
