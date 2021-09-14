@@ -3,7 +3,6 @@ import * as DB from "./db";
 import Config from "./config";
 import * as Notifications from "./notifications";
 import * as Account from "./account";
-import * as Funbox from "./funbox";
 
 let defaultResultFilters = {
   difficulty: {
@@ -65,6 +64,33 @@ let defaultResultFilters = {
 
 export let filters = defaultResultFilters;
 
+function save() {
+  window.localStorage.setItem("resultFilters", JSON.stringify(filters));
+}
+
+function load() {
+  // let newTags = $.cookie("activeTags");
+  try {
+    let newResultFilters = window.localStorage.getItem("resultFilters");
+    if (
+      newResultFilters != undefined &&
+      newResultFilters !== "" &&
+      Misc.countAllKeys(newResultFilters) >=
+        Misc.countAllKeys(defaultResultFilters)
+    ) {
+      filters = JSON.parse(newResultFilters);
+      save();
+    } else {
+      filters = defaultResultFilters;
+      save();
+    }
+  } catch {
+    console.log("error in loading result filters");
+    filters = defaultResultFilters;
+    save();
+  }
+}
+
 Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
   let languages = values[0];
   let funboxModes = values[1];
@@ -102,33 +128,6 @@ export function loadTags(tags) {
   tags.forEach((tag) => {
     defaultResultFilters.tags[tag._id] = true;
   });
-}
-
-export function save() {
-  window.localStorage.setItem("resultFilters", JSON.stringify(filters));
-}
-
-export function load() {
-  // let newTags = $.cookie("activeTags");
-  try {
-    let newResultFilters = window.localStorage.getItem("resultFilters");
-    if (
-      newResultFilters != undefined &&
-      newResultFilters !== "" &&
-      Misc.countAllKeys(newResultFilters) >=
-        Misc.countAllKeys(defaultResultFilters)
-    ) {
-      filters = JSON.parse(newResultFilters);
-      save();
-    } else {
-      filters = defaultResultFilters;
-      save();
-    }
-  } catch {
-    console.log("error in loading result filters");
-    filters = defaultResultFilters;
-    save();
-  }
 }
 
 export function reset() {
