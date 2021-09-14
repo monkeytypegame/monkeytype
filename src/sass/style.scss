@@ -347,10 +347,7 @@ a:hover {
   position: fixed;
   width: 100%;
   background: var(--main-color);
-  animation-name: loader;
-  animation-iteration-count: infinite;
-  animation-duration: 2s;
-  animation-timing-function: cubic-bezier(0.38, 0.16, 0.57, 0.82);
+  animation: loader 2s cubic-bezier(0.38, 0.16, 0.57, 0.82) infinite;
   z-index: 9999;
 }
 
@@ -1601,10 +1598,7 @@ label.checkbox {
 #caret {
   height: 1.5rem;
   background: var(--caret-color);
-  animation-name: caretFlashSmooth;
-  /* animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955); */
-  animation-iteration-count: infinite;
-  animation-duration: 1s;
+  animation: caretFlashSmooth 1s infinite;
   position: absolute;
   border-radius: var(--roundness);
   // transition: 0.05s;
@@ -4017,10 +4011,7 @@ key {
   }
 
   &.flash {
-    animation-name: flashKey;
-    animation-duration: 1s;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    animation-fill-mode: forwards;
+    animation: flashKey 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 }
 
@@ -4047,9 +4038,7 @@ key {
   width: 308px;
   height: 0;
   margin: 0 auto;
-  animation: shake;
-  animation-duration: 0s;
-  animation-iteration-count: infinite;
+  animation: shake 0s infinite;
   div {
     height: 200px;
     width: 308px;

@@ -51,10 +51,7 @@
 .pageSettings .section .buttons .button.active,
 .pageSettings .section.languages .buttons .language.active,
 .pageAccount .group.filterButtons .buttons .button.active {
-  animation-name: rgb-bg !important;
-  animation-duration: 5s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
+  animation: rgb-bg 5s linear infinite;
 }
 
 #top.focus .button.discord::after,
@@ -69,17 +66,12 @@
 #top .config .group .buttons .text-button:hover,
 a:hover,
 #words.flipped .word {
-  animation-name: rgb;
-  animation-duration: 5s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
+  animation: rgb 5s linear infinite;
 }
 
 /* .word letter.correct{
-    animation-name: rgb;
-    animation-duration: 5s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
+  animation: rgb 5s linear infinite;
+
 }  */
 
 #words.flipped .word letter.correct {
@@ -87,8 +79,5 @@ a:hover,
 }
 
 #words:not(.flipped) .word letter.correct {
-  animation-name: rgb;
-  animation-duration: 5s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
+  animation: rgb 5s linear infinite;
 }
