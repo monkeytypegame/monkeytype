@@ -1,5 +1,4 @@
 import * as Loader from "./loader";
-import axiosInstance from "./axios-instance";
 import Config from "./config";
 
 export function getuid() {
@@ -266,10 +265,6 @@ export function showNotification(text, time) {
 }
 
 let currentLanguage;
-export async function getCurrentLanguage() {
-  return await getLanguage(Config.language);
-}
-
 export async function getLanguage(lang) {
   try {
     if (currentLanguage == null || currentLanguage.name !== lang) {
@@ -288,6 +283,10 @@ export async function getLanguage(lang) {
     });
     return currentLanguage;
   }
+}
+
+export async function getCurrentLanguage() {
+  return await getLanguage(Config.language);
 }
 
 export function migrateFromCookies() {
@@ -753,17 +752,6 @@ export function clearTimeouts(timeouts) {
 export function setCharAt(str, index, chr) {
   if (index > str.length - 1) return str;
   return str.substring(0, index) + chr + str.substring(index + 1);
-}
-
-//https://www.reddit.com/r/learnjavascript/comments/8ohug3/how_to_recursively_count_keys_in_an_object/e03fytn/
-function countAllKeys(obj) {
-  if (typeof obj !== "object" || obj === null) {
-    return 0;
-  }
-  const keys = Object.keys(obj);
-  let sum = keys.length;
-  keys.forEach((key) => (sum += countAllKeys(obj[key])));
-  return sum;
 }
 
 //https://stackoverflow.com/questions/273789/is-there-a-version-of-javascripts-string-indexof-that-allows-for-regular-expr
