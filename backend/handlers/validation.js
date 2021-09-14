@@ -7,7 +7,7 @@ function isUsernameValid(name) {
   if (/miodec/.test(name.toLowerCase())) return false;
   //sorry for the bad words
   if (
-    /bitly|fuck|bitch|shit|pussy|nigga|niqqa|niqqer|nigger|ni99a|ni99er|niga|niger|cunt|faggot|retard/.test(
+    /bitly|fuck|bitch|shit|pussy|nigga|niqqa|niqqer|nigger|ni99a|ni99er|niggas|niga|niger|cunt|faggot|retard/.test(
       name.toLowerCase()
     )
   )
