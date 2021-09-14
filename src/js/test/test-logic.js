@@ -595,6 +595,9 @@ export async function init() {
           randomWord = LazyMode.replaceAccents(randomWord);
         }
 
+        randomWord = randomWord.replace(/ +/gm, " ");
+        randomWord = randomWord.replace(/^\s+|\s+$/gm, "");
+
         if (Config.funbox === "rAnDoMcAsE") {
           let randomcaseword = "";
           for (let i = 0; i < randomWord.length; i++) {
