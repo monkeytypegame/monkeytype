@@ -398,7 +398,7 @@ export function update() {
       max: 0,
     };
 
-    let totalSeconds = 0;
+    // let totalSeconds = 0;
     totalSecondsFiltered = 0;
 
     let totalCons = 0;
@@ -426,7 +426,7 @@ export function update() {
       } else if (result.restartCount != undefined && result.restartCount > 0) {
         tt += (tt / 4) * result.restartCount;
       }
-      totalSeconds += tt;
+      // totalSeconds += tt;
 
       //apply filters
       try {
@@ -925,6 +925,72 @@ export function update() {
   }
 }
 
+function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
+  // Removes styling from previous sorting requests:
+  $("td").removeClass("header-sorted");
+  $("td").children("i").remove();
+  $(headerClass).addClass("header-sorted");
+
+  if (filteredResults.length < 2) return;
+
+  // This allows to reverse the sorting order when clicking multiple times on the table header
+  let descending = true;
+  if (forceDescending !== null) {
+    if (forceDescending == true) {
+      $(headerClass).append(
+        '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+      );
+    } else {
+      descending = false;
+      $(headerClass).append(
+        '<i class="fas fa-sort-up" aria-hidden="true"></i>'
+      );
+    }
+  } else if (
+    filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
+  ) {
+    descending = true;
+    $(headerClass).append(
+      '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+    );
+  } else {
+    descending = false;
+    $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
+  }
+
+  let temp = [];
+  let parsedIndexes = [];
+
+  while (temp.length < filteredResults.length) {
+    let lowest = Number.MAX_VALUE;
+    let highest = -1;
+    let idx = -1;
+
+    for (let i = 0; i < filteredResults.length; i++) {
+      //find the lowest wpm with index not already parsed
+      if (!descending) {
+        if (filteredResults[i][key] <= lowest && !parsedIndexes.includes(i)) {
+          lowest = filteredResults[i][key];
+          idx = i;
+        }
+      } else {
+        if (filteredResults[i][key] >= highest && !parsedIndexes.includes(i)) {
+          highest = filteredResults[i][key];
+          idx = i;
+        }
+      }
+    }
+
+    temp.push(filteredResults[idx]);
+    parsedIndexes.push(idx);
+  }
+  filteredResults = temp;
+
+  $(".pageAccount .history table tbody").empty();
+  visibleTableLines = 0;
+  loadMoreLines();
+}
+
 $(".pageAccount .toggleAccuracyOnChart").click((e) => {
   UpdateConfig.toggleChartAccuracy();
 });
@@ -1001,69 +1067,3 @@ $(document).on("click", ".buttonsAndTitle .buttons .button", (event) => {
   // We want to 'force' descending sort:
   sortAndRefreshHistory("timestamp", ".history-date-header", true);
 });
-
-function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
-  // Removes styling from previous sorting requests:
-  $("td").removeClass("header-sorted");
-  $("td").children("i").remove();
-  $(headerClass).addClass("header-sorted");
-
-  if (filteredResults.length < 2) return;
-
-  // This allows to reverse the sorting order when clicking multiple times on the table header
-  let descending = true;
-  if (forceDescending !== null) {
-    if (forceDescending == true) {
-      $(headerClass).append(
-        '<i class="fas fa-sort-down" aria-hidden="true"></i>'
-      );
-    } else {
-      descending = false;
-      $(headerClass).append(
-        '<i class="fas fa-sort-up" aria-hidden="true"></i>'
-      );
-    }
-  } else if (
-    filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
-  ) {
-    descending = true;
-    $(headerClass).append(
-      '<i class="fas fa-sort-down" aria-hidden="true"></i>'
-    );
-  } else {
-    descending = false;
-    $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
-  }
-
-  let temp = [];
-  let parsedIndexes = [];
-
-  while (temp.length < filteredResults.length) {
-    let lowest = Number.MAX_VALUE;
-    let highest = -1;
-    let idx = -1;
-
-    for (let i = 0; i < filteredResults.length; i++) {
-      //find the lowest wpm with index not already parsed
-      if (!descending) {
-        if (filteredResults[i][key] <= lowest && !parsedIndexes.includes(i)) {
-          lowest = filteredResults[i][key];
-          idx = i;
-        }
-      } else {
-        if (filteredResults[i][key] >= highest && !parsedIndexes.includes(i)) {
-          highest = filteredResults[i][key];
-          idx = i;
-        }
-      }
-    }
-
-    temp.push(filteredResults[idx]);
-    parsedIndexes.push(idx);
-  }
-  filteredResults = temp;
-
-  $(".pageAccount .history table tbody").empty();
-  visibleTableLines = 0;
-  loadMoreLines();
-}
