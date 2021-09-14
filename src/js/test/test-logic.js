@@ -595,6 +595,9 @@ export async function init() {
           randomWord = LazyMode.replaceAccents(randomWord);
         }
 
+        randomWord = randomWord.replace(/ +/gm, " ");
+        randomWord = randomWord.replace(/^\s+|\s+$/gm, "");
+
         if (Config.funbox === "rAnDoMcAsE") {
           let randomcaseword = "";
           for (let i = 0; i < randomWord.length; i++) {
@@ -1920,6 +1923,7 @@ export async function finish(difficultyFailed = false) {
                       Config.punctuation,
                       Config.language,
                       Config.difficulty,
+                      Config.lazyMode,
                       stats.wpm,
                       stats.acc,
                       stats.wpmRaw,
