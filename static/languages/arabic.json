@@ -2,7 +2,6 @@
   "name": "arabic",
   "leftToRight": false,
   "ligatures": true,
-  "noLazyMode": true,
   "words": [
     "اتمنى",
     "اثق",
