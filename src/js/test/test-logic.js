@@ -42,6 +42,8 @@ const objecthash = require("object-hash");
 
 let glarsesMode = false;
 
+let failReason = "";
+
 export function toggleGlarses() {
   glarsesMode = true;
   console.log(
@@ -661,6 +663,7 @@ export async function init() {
             !CustomText.isWordRandom &&
             !CustomText.isTimeRandom
           ) {
+            //
           } else {
             i = words.length - 1;
           }
@@ -2147,7 +2150,6 @@ export async function finish(difficultyFailed = false) {
   );
 }
 
-let failReason = "";
 export function fail(reason) {
   failReason = reason;
   // input.pushHistory();

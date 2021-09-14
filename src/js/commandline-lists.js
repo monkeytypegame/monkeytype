@@ -3,7 +3,6 @@ import * as Misc from "./misc";
 import layouts from "./layouts";
 import * as Notifications from "./notifications";
 import * as Sound from "./sound";
-import * as TestStats from "./test-stats";
 import * as ThemeController from "./theme-controller";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ManualRestart from "./manual-restart-tracker";
@@ -2980,7 +2979,7 @@ export let defaultCommands = {
       icon: "fa-cog",
       input: true,
       defaultValue: "",
-      exec: (input) => {},
+      exec: () => {},
     },
     {
       id: "monkeyPower",

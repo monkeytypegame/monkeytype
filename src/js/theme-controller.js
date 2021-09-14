@@ -1,12 +1,9 @@
 import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "./misc";
-import * as Notifications from "./notifications";
 import Config from "./config";
 import * as UI from "./ui";
 import tinycolor from "tinycolor2";
-
-const domtoimage = require("dom-to-image");
 
 let isPreviewingTheme = false;
 export let randomTheme = null;

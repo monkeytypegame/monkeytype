@@ -92,4 +92,16 @@ app.listen(PORT, async () => {
     LeaderboardsDAO.update("time", "60", "english");
   });
   lbjob.start();
+
+  let logjob = new CronJob("0 0 0 * * *", async () => {
+    let data = await mongoDB()
+      .collection("logs")
+      .deleteMany({ timestamp: { $lt: Date.now() - 604800000 } });
+    Logger.log(
+      "system_logs_deleted",
+      `${data.deletedCount} logs deleted older than 7 days`,
+      undefined
+    );
+  });
+  logjob.start();
 });

@@ -1,6 +1,5 @@
 import * as TestLogic from "./test-logic";
 import Config from "./config";
-import * as Funbox from "./funbox";
 import * as Misc from "./misc";
 import * as TestStats from "./test-stats";
 

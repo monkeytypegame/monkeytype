@@ -26,6 +26,10 @@ function showInput(command, placeholder, defaultValue = "") {
   }
 }
 
+export function isSingleListCommandLineActive() {
+  return $("#commandLine").hasClass("allCommands");
+}
+
 function showFound() {
   $("#commandLine .suggestions").empty();
   let commandsHTML = "";
@@ -143,6 +147,28 @@ function updateSuggested() {
   showFound();
 }
 
+export let show = () => {
+  if (!$(".page.pageLoading").hasClass("hidden")) return;
+  Focus.set(false);
+  $("#commandLine").removeClass("hidden");
+  $("#commandInput").addClass("hidden");
+  if ($("#commandLineWrapper").hasClass("hidden")) {
+    $("#commandLineWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate(
+        {
+          opacity: 1,
+        },
+        100
+      );
+  }
+  $("#commandLine input").val("");
+  updateSuggested();
+  $("#commandLine input").focus();
+};
+
 function hide() {
   UpdateConfig.previewFontFamily(Config.fontFamily);
   // applyCustomThemeColors();
@@ -204,28 +230,6 @@ function trigger(command) {
   }
 }
 
-export let show = () => {
-  if (!$(".page.pageLoading").hasClass("hidden")) return;
-  Focus.set(false);
-  $("#commandLine").removeClass("hidden");
-  $("#commandInput").addClass("hidden");
-  if ($("#commandLineWrapper").hasClass("hidden")) {
-    $("#commandLineWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate(
-        {
-          opacity: 1,
-        },
-        100
-      );
-  }
-  $("#commandLine input").val("");
-  updateSuggested();
-  $("#commandLine input").focus();
-};
-
 function addChildCommands(
   unifiedCommands,
   commandItem,
@@ -282,10 +286,6 @@ function generateSingleListOfCommands() {
     title: "All Commands",
     list: allCommands,
   };
-}
-
-export function isSingleListCommandLineActive() {
-  return $("#commandLine").hasClass("allCommands");
 }
 
 function useSingleListCommandLine(sshow = true) {

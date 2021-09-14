@@ -53,7 +53,7 @@ let eslintConfig = {
     "no-import-assign": "error",
     "no-inner-declarations": "error",
     "no-invalid-regexp": "error",
-    "no-irregular-whitespace": "error",
+    "no-irregular-whitespace": "warn",
     "no-misleading-character-class": "error",
     "no-mixed-spaces-and-tabs": "error",
     "no-new-symbol": "error",
@@ -89,7 +89,6 @@ let eslintConfig = {
 const refactoredSrc = [
   "./src/js/axios-instance.js",
   "./src/js/db.js",
-  "./src/js/cloud-functions.js",
   "./src/js/misc.js",
   "./src/js/layouts.js",
   "./src/js/sound.js",

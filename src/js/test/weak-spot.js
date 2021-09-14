@@ -44,6 +44,18 @@ export function updateScore(char, isCorrect) {
   scores[char].update(score);
 }
 
+function score(word) {
+  let total = 0.0;
+  let numChars = 0;
+  for (const c of word) {
+    if (c in scores) {
+      total += scores[c].average;
+      numChars++;
+    }
+  }
+  return numChars == 0 ? 0.0 : total / numChars;
+}
+
 export function getWord(wordset) {
   let highScore;
   let randomWord;
@@ -56,16 +68,4 @@ export function getWord(wordset) {
     }
   }
   return randomWord;
-}
-
-function score(word) {
-  let total = 0.0;
-  let numChars = 0;
-  for (const c of word) {
-    if (c in scores) {
-      total += scores[c].average;
-      numChars++;
-    }
-  }
-  return numChars == 0 ? 0.0 : total / numChars;
 }

@@ -247,7 +247,7 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
         label: function () {
           return;
         },
-        afterLabel: function (tooltip, data) {
+        afterLabel: function (tooltip) {
           Account.setActiveChartIndex(tooltip.index);
           return;
         },
