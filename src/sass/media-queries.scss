@@ -1,7 +1,13 @@
 @media only screen and (max-width: 1200px) {
-  #leaderboards {
-    .tables {
-      grid-template-columns: unset !important;
+  #leaderboardsWrapper {
+    #leaderboards {
+      .tables {
+        grid-template-columns: unset;
+      }
+      .tables .rightTableWrapper,
+      .tables .leftTableWrapper {
+        height: calc(50vh - 12rem);
+      }
     }
   }
 }
