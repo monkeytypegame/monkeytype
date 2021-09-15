@@ -3,6 +3,7 @@ import * as TestStats from "./test-stats";
 import * as ThemeColors from "./theme-colors";
 import * as Misc from "./misc";
 import * as Account from "./account";
+import Config, * as UpdateConfig from "./config";
 
 export let result = new Chart($("#wpmChart"), {
   type: "line",
@@ -212,9 +213,7 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
             )}%\nacc: ${Misc.roundTo2(100 - resultData.y)}%`;
           }
           let label =
-            `${data.datasets[tooltipItem.datasetIndex].label}: ${
-              tooltipItem.yLabel
-            }` +
+            `${Config.alwaysShowCPM ? "cpm" : "wpm"}: ${tooltipItem.yLabel}` +
             "\n" +
             `raw: ${resultData.raw}` +
             "\n" +
@@ -364,7 +363,9 @@ export let accountActivity = new Chart(
                 true
               )}\nTests Completed: ${resultData.amount}`;
             } else if (tooltipItem.datasetIndex === 1) {
-              return `Average Wpm: ${Misc.roundTo2(resultData.y)}`;
+              return `Average ${
+                Config.alwaysShowCPM ? "Cpm" : "Wpm"
+              }: ${Misc.roundTo2(resultData.y)}`;
             }
           },
           label: function () {
