@@ -528,7 +528,7 @@ $(document).keydown((e) => {
       }
     }
 
-    if (e.key === "Backspace") {
+    if (e.key === "Backspace" || e.key === "Delete") {
       setTimeout(() => {
         let inputVal = $("#commandLine input").val();
         if (
@@ -536,7 +536,7 @@ $(document).keydown((e) => {
           isSingleListCommandLineActive() &&
           inputVal[0] !== ">"
         ) {
-          restoreOldCommandLine();
+          restoreOldCommandLine(false);
         }
       }, 1);
     }
