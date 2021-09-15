@@ -596,7 +596,7 @@ export async function init() {
         }
 
         randomWord = randomWord.replace(/ +/gm, " ");
-        randomWord = randomWord.replace(/^\s+|\s+$/gm, "");
+        randomWord = randomWord.replace(/^ | $/gm, "");
 
         if (Config.funbox === "rAnDoMcAsE") {
           let randomcaseword = "";
