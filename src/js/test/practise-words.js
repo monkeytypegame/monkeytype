@@ -52,6 +52,11 @@ export function init(missed, slow) {
   // console.log(sortableMissedWords);
   // console.log(sortableSlowWords);
 
+  if (sortableMissedWords.length == 0 && sortableSlowWords.length == 0) {
+    Notifications.add("Could not start a new custom test", 0);
+    return;
+  }
+
   let newCustomText = [];
   sortableMissedWords.forEach((missed, index) => {
     for (let i = 0; i < missed[1]; i++) {
