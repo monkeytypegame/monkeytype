@@ -228,67 +228,78 @@ export function setMode(mode, nosave) {
   config.mode = mode;
   $("#top .config .mode .text-button").removeClass("active");
   $("#top .config .mode .text-button[mode='" + mode + "']").addClass("active");
-  if (config.mode == "time") {
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").removeClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-  } else if (config.mode == "words") {
-    $("#top .config .wordCount").removeClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-  } else if (config.mode == "custom") {
-    if (
-      config.funbox === "58008" ||
-      config.funbox === "gibberish" ||
-      config.funbox === "ascii"
-    ) {
-      Funbox.setActive("none");
-      TestUI.updateModesNotice();
-    }
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").removeClass("hidden");
-    $("#top .config .punctuationMode").removeClass("disabled");
-    $("#top .config .numbersMode").removeClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-    setPunctuation(false, true);
-    setNumbers(false, true);
-  } else if (config.mode == "quote") {
-    setPunctuation(false, true);
-    setNumbers(false, true);
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("disabled");
-    $("#top .config .numbersMode").addClass("disabled");
-    $("#top .config .punctuationMode").removeClass("hidden");
-    $("#top .config .numbersMode").removeClass("hidden");
-    $("#result .stats .source").removeClass("hidden");
-    $("#top .config .quoteLength").removeClass("hidden");
-  } else if (config.mode == "zen") {
-    $("#top .config .wordCount").addClass("hidden");
-    $("#top .config .time").addClass("hidden");
-    $("#top .config .customText").addClass("hidden");
-    $("#top .config .punctuationMode").addClass("hidden");
-    $("#top .config .numbersMode").addClass("hidden");
-    $("#top .config .quoteLength").addClass("hidden");
-    if (config.paceCaret != "off") {
-      Notifications.add(`Pace caret will not work with zen mode.`, 0);
-    }
-    // setPaceCaret("off", true);
-  }
+
+  const configActionsByMode = {
+    time: () => {
+      $("#top .config .wordCount").addClass("hidden");
+      $("#top .config .time").removeClass("hidden");
+      $("#top .config .customText").addClass("hidden");
+      $("#top .config .punctuationMode").removeClass("disabled");
+      $("#top .config .numbersMode").removeClass("disabled");
+      $("#top .config .punctuationMode").removeClass("hidden");
+      $("#top .config .numbersMode").removeClass("hidden");
+      $("#top .config .quoteLength").addClass("hidden");
+    },
+    words: () => {
+      $("#top .config .wordCount").removeClass("hidden");
+      $("#top .config .time").addClass("hidden");
+      $("#top .config .customText").addClass("hidden");
+      $("#top .config .punctuationMode").removeClass("disabled");
+      $("#top .config .numbersMode").removeClass("disabled");
+      $("#top .config .punctuationMode").removeClass("hidden");
+      $("#top .config .numbersMode").removeClass("hidden");
+      $("#top .config .quoteLength").addClass("hidden");
+    },
+    custom: () => {
+      if (
+        config.funbox === "58008" ||
+        config.funbox === "gibberish" ||
+        config.funbox === "ascii"
+      ) {
+        Funbox.setActive("none");
+        TestUI.updateModesNotice();
+      }
+      $("#top .config .wordCount").addClass("hidden");
+      $("#top .config .time").addClass("hidden");
+      $("#top .config .customText").removeClass("hidden");
+      $("#top .config .punctuationMode").removeClass("disabled");
+      $("#top .config .numbersMode").removeClass("disabled");
+      $("#top .config .punctuationMode").removeClass("hidden");
+      $("#top .config .numbersMode").removeClass("hidden");
+      $("#top .config .quoteLength").addClass("hidden");
+      setPunctuation(false, true);
+      setNumbers(false, true);
+    },
+    quote: () => {
+      setPunctuation(false, true);
+      setNumbers(false, true);
+      $("#top .config .wordCount").addClass("hidden");
+      $("#top .config .time").addClass("hidden");
+      $("#top .config .customText").addClass("hidden");
+      $("#top .config .punctuationMode").addClass("disabled");
+      $("#top .config .numbersMode").addClass("disabled");
+      $("#top .config .punctuationMode").removeClass("hidden");
+      $("#top .config .numbersMode").removeClass("hidden");
+      $("#result .stats .source").removeClass("hidden");
+      $("#top .config .quoteLength").removeClass("hidden");
+    },
+    zen: () => {
+      $("#top .config .wordCount").addClass("hidden");
+      $("#top .config .time").addClass("hidden");
+      $("#top .config .customText").addClass("hidden");
+      $("#top .config .punctuationMode").addClass("hidden");
+      $("#top .config .numbersMode").addClass("hidden");
+      $("#top .config .quoteLength").addClass("hidden");
+      if (config.paceCaret != "off") {
+        Notifications.add(`Pace caret will not work with zen mode.`, 0);
+      }
+      // setPaceCaret("off", true);
+    },
+  };
+
+  const configAction = configActionsByMode[config.mode];
+  configAction();
+
   ChallengeContoller.clearActive();
   if (!nosave) saveToLocalStorage();
 }
