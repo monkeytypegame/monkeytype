@@ -94,6 +94,10 @@ input[type="color"]::-webkit-color-swatch {
   border: none;
 }
 
+::-moz-color-swatch {
+  border: none;
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
@@ -343,10 +347,7 @@ a:hover {
   position: fixed;
   width: 100%;
   background: var(--main-color);
-  animation-name: loader;
-  animation-iteration-count: infinite;
-  animation-duration: 2s;
-  animation-timing-function: cubic-bezier(0.38, 0.16, 0.57, 0.82);
+  animation: loader 2s cubic-bezier(0.38, 0.16, 0.57, 0.82) infinite;
   z-index: 9999;
 }
 
@@ -371,7 +372,7 @@ a:hover {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   z-index: 1000;
@@ -382,7 +383,7 @@ a:hover {
 
   #leaderboards {
     width: 85vw;
-    height: calc(95vh - 5rem);
+    // height: calc(95vh - 5rem);
     overflow-y: auto;
     background: var(--bg-color);
     border-radius: var(--roundness);
@@ -413,6 +414,10 @@ a:hover {
       grid-area: title;
     }
 
+    .subTitle {
+      color: var(--sub-color);
+    }
+
     .title {
       font-size: 2rem;
       line-height: 2rem;
@@ -424,7 +429,6 @@ a:hover {
       display: grid;
       gap: 1rem;
       grid-template-columns: 1fr 1fr;
-      margin-bottom: 2rem;
       font-size: 0.8rem;
       width: 100%;
 
@@ -440,8 +444,27 @@ a:hover {
         display: grid;
         width: 100%;
 
+        .titleAndButtons {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          .buttons {
+            display: grid;
+            grid-template-columns: auto 1fr 1fr;
+            align-items: center;
+            // margin-top: .1rem;
+            gap: 1rem;
+            color: var(--sub-color);
+            .button {
+              padding-left: 1rem;
+              padding-right: 1rem;
+            }
+          }
+        }
+
         .title {
           grid-area: 1/1;
+          margin-bottom: 0;
+          line-height: 2.5rem;
         }
 
         .subtitle {
@@ -452,16 +475,16 @@ a:hover {
         }
       }
 
-      .globalTableWrapper,
-      .dailyTableWrapper {
+      .leftTableWrapper,
+      .rightTableWrapper {
         height: calc(100vh - 22rem);
         @extend .ffscroll;
         overflow-y: scroll;
         overflow-x: auto;
       }
 
-      .globalTableWrapper::-webkit-scrollbar,
-      .dailyTableWrapper::-webkit-scrollbar {
+      .leftTableWrapper::-webkit-scrollbar,
+      .rightTableWrapper::-webkit-scrollbar {
         height: 5px;
         width: 5px;
       }
@@ -475,13 +498,15 @@ a:hover {
           text-align: center;
         }
 
-        td {
-          padding: 0.5rem 0.5rem;
-
-          &.me {
+        tr.me {
+          td {
             color: var(--main-color);
             font-weight: 900;
           }
+        }
+
+        td {
+          padding: 0.5rem 0.5rem;
         }
 
         thead {
@@ -775,7 +800,7 @@ label.checkbox {
         font-size: 1rem;
       }
       .val {
-        font-size: 2rem;
+        font-size: 2.25rem;
       }
     }
 
@@ -1573,10 +1598,7 @@ label.checkbox {
 #caret {
   height: 1.5rem;
   background: var(--caret-color);
-  animation-name: caretFlashSmooth;
-  /* animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955); */
-  animation-iteration-count: infinite;
-  animation-duration: 1s;
+  animation: caretFlashSmooth 1s infinite;
   position: absolute;
   border-radius: var(--roundness);
   // transition: 0.05s;
@@ -3469,6 +3491,19 @@ key {
     gap: 2rem;
   }
 
+  .timePbTable,
+  .wordsPbTable {
+    .sub {
+      opacity: 0.5;
+    }
+    td {
+      text-align: right;
+    }
+    tbody td:nth-child(1) {
+      font-size: 1.5rem;
+    }
+  }
+
   .topFilters .buttons {
     display: flex;
     justify-content: space-evenly;
@@ -3768,6 +3803,10 @@ key {
   display: none !important;
 }
 
+.invisible {
+  opacity: 0 !important;
+}
+
 .button {
   color: var(--text-color);
   cursor: pointer;
@@ -3813,7 +3852,7 @@ key {
     opacity: 0.5;
     cursor: default;
     &:hover {
-      color: var(--sub-color);
+      color: var(--text-color);
       background: rgba(0, 0, 0, 0.1);
       outline: none;
     }
@@ -3972,10 +4011,7 @@ key {
   }
 
   &.flash {
-    animation-name: flashKey;
-    animation-duration: 1s;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    animation-fill-mode: forwards;
+    animation: flashKey 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 }
 
@@ -4002,9 +4038,7 @@ key {
   width: 308px;
   height: 0;
   margin: 0 auto;
-  animation: shake;
-  animation-duration: 0s;
-  animation-iteration-count: infinite;
+  animation: shake 0s infinite;
   div {
     height: 200px;
     width: 308px;

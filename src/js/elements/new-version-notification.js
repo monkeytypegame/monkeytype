@@ -1,6 +1,14 @@
 import * as Notifications from "./notifications";
 import * as VersionPopup from "./version-popup";
 
+function setMemory(v) {
+  window.localStorage.setItem("lastSeenVersion", v);
+}
+
+function getMemory() {
+  return window.localStorage.getItem("lastSeenVersion") ?? "";
+}
+
 export async function show(version) {
   const memory = await getMemory();
   if (memory === "") {
@@ -19,12 +27,4 @@ export async function show(version) {
     }
   );
   setMemory(version);
-}
-
-function setMemory(v) {
-  window.localStorage.setItem("lastSeenVersion", v);
-}
-
-function getMemory() {
-  return window.localStorage.getItem("lastSeenVersion") ?? "";
 }

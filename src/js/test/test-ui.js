@@ -395,7 +395,7 @@ export function updateWordElement(showError) {
     }
 
     if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
-      if (input.length > currentWord.length) {
+      if (input.length > currentWord.length && !Config.blindMode) {
         $(wordAtIndex).addClass("error");
       } else if (input.length == currentWord.length) {
         $(wordAtIndex).removeClass("error");
@@ -525,6 +525,12 @@ export function updateModesNotice() {
   if (Config.blindMode) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button blind"><i class="fas fa-eye-slash"></i>blind</div>`
+    );
+  }
+
+  if (Config.lazyMode) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsLazyMode"><i class="fas fa-couch"></i>lazy</div>`
     );
   }
 
@@ -825,8 +831,6 @@ export function toggleResultWords() {
 export function applyBurstHeatmap() {
   if (Config.burstHeatmap) {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
-    let min = Math.min(...TestStats.burstHistory);
-    let max = Math.max(...TestStats.burstHistory);
 
     let burstlist = [...TestStats.burstHistory];
 
@@ -837,36 +841,12 @@ export function applyBurstHeatmap() {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }
 
-    // let step = (max - min) / 5;
-    // let steps = [
-    //   {
-    //     val: min,
-    //     class: 'heatmap-0'
-    //   },
-    //   {
-    //     val: min + (step * 1),
-    //     class: 'heatmap-1'
-    //   },
-    //   {
-    //     val: min + (step * 2),
-    //     class: 'heatmap-2'
-    //   },
-    //   {
-    //     val: min + (step * 3),
-    //     class: 'heatmap-3'
-    //   },
-    //   {
-    //     val: min + (step * 4),
-    //     class: 'heatmap-4'
-    //   },
-    // ];
     let median = Misc.median(burstlist);
     let adatm = [];
     burstlist.forEach((burst) => {
       adatm.push(Math.abs(median - burst));
     });
     let step = Misc.mean(adatm);
-    // let step = Misc.stdDev(burstlist)/2;
     let steps = [
       {
         val: 0,

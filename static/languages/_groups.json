@@ -79,7 +79,7 @@
   },
   {
     "name": "italian",
-    "languages": ["italian", "italian_1k", "italian_7k"]
+    "languages": ["italian", "italian_1k", "italian_7k", "italian_60k", "italian_280k"]
   },
   {
     "name": "thai",

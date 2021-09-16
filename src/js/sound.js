@@ -1,5 +1,5 @@
 import Config from "./config";
-import { Howl, Howler } from "howler";
+import { Howl } from "howler";
 
 let errorSound = new Howl({ src: ["../sound/error.wav"] });
 let clickSounds = null;

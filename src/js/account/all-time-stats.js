@@ -13,7 +13,11 @@ export function update() {
     // let tm = Math.floor((DB.getSnapshot().globalStats.time % 3600) / 60);
     // let ts = Math.floor((DB.getSnapshot().globalStats.time % 3600) % 60);
     $(".pageAccount .globalTimeTyping .val").text(
-      Misc.secondsToString(Math.round(DB.getSnapshot().globalStats.time), true)
+      Misc.secondsToString(
+        Math.round(DB.getSnapshot().globalStats.time),
+        true,
+        true
+      )
     );
   }
   if (DB.getSnapshot().globalStats.started != undefined) {

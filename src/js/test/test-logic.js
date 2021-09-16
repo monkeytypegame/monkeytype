@@ -26,7 +26,6 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "./account-button";
 import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
-import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
 import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
@@ -36,10 +35,14 @@ import * as WeakSpot from "./weak-spot";
 import * as Wordset from "./wordset";
 import * as ChallengeContoller from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
+import * as BritishEnglish from "./british-english";
+import * as LazyMode from "./lazy-mode";
 
 const objecthash = require("object-hash");
 
 let glarsesMode = false;
+
+let failReason = "";
 
 export function toggleGlarses() {
   glarsesMode = true;
@@ -50,6 +53,10 @@ export function toggleGlarses() {
 }
 
 export let notSignedInLastResult = null;
+
+export function clearNotSignedInResult() {
+  notSignedInLastResult = null;
+}
 
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
@@ -465,6 +472,11 @@ export async function init() {
     language = await Misc.getLanguage(Config.language);
   }
 
+  if (Config.lazyMode === true && language.noLazyMode) {
+    Notifications.add("This language does not support lazy mode.", 0);
+    UpdateConfig.setLazyMode(false);
+  }
+
   if (
     Config.mode == "time" ||
     Config.mode == "words" ||
@@ -574,6 +586,18 @@ export async function init() {
           randomWord = wordset.randomWord();
         }
 
+        if (Config.britishEnglish && /english/.test(Config.language)) {
+          let britishWord = await BritishEnglish.replace(randomWord);
+          if (britishWord) randomWord = britishWord;
+        }
+
+        if (Config.lazyMode === true && !language.noLazyMode) {
+          randomWord = LazyMode.replaceAccents(randomWord);
+        }
+
+        randomWord = randomWord.replace(/ +/gm, " ");
+        randomWord = randomWord.replace(/^ | $/gm, "");
+
         if (Config.funbox === "rAnDoMcAsE") {
           let randomcaseword = "";
           for (let i = 0; i < randomWord.length; i++) {
@@ -642,6 +666,7 @@ export async function init() {
             !CustomText.isWordRandom &&
             !CustomText.isTimeRandom
           ) {
+            //
           } else {
             i = words.length - 1;
           }
@@ -727,6 +752,18 @@ export async function init() {
       if (/\t/g.test(w[i])) {
         setHasTab(true);
       }
+      if (
+        Config.britishEnglish &&
+        Config.language.replace(/_\d*k$/g, "") === "english"
+      ) {
+        let britishWord = await BritishEnglish.replace(w[i]);
+        if (britishWord) w[i] = britishWord;
+      }
+
+      if (Config.lazyMode === true && !language.noLazyMode) {
+        w[i] = LazyMode.replaceAccents(w[i]);
+      }
+
       words.push(w[i]);
     }
   }
@@ -957,12 +994,14 @@ export function restart(
         UpdateConfig.setLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         UpdateConfig.setKeymapLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         Keymap.highlightKey(
           words
@@ -1105,6 +1144,14 @@ export async function addWord() {
     randomWord = wordset.randomWord();
   }
 
+  if (
+    Config.britishEnglish &&
+    Config.language.replace(/_\d*k$/g, "") === "english"
+  ) {
+    let britishWord = await BritishEnglish.replace(randomWord);
+    if (britishWord) randomWord = britishWord;
+  }
+
   if (Config.funbox === "rAnDoMcAsE") {
     let randomcaseword = "";
     for (let i = 0; i < randomWord.length; i++) {
@@ -1201,7 +1248,7 @@ export async function finish(difficultyFailed = false) {
 
   lastTestWpm = stats.wpm;
 
-  let testtime = stats.time;
+  let testtime = parseFloat(stats.time);
 
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
     let wpmAndRaw = calculateWpmAndRaw();
@@ -1416,18 +1463,28 @@ export async function finish(difficultyFailed = false) {
     );
   }
 
-  ChartController.result.data.datasets[0].data = TestStats.wpmHistory;
-  ChartController.result.data.datasets[1].data = rawWpmPerSecond;
+  ChartController.result.options.scales.yAxes[0].scaleLabel.labelString = Config.alwaysShowCPM
+    ? "Character per Minute"
+    : "Words per Minute";
+  let chartData1 = Config.alwaysShowCPM
+    ? TestStats.wpmHistory.map((a) => a * 5)
+    : TestStats.wpmHistory;
+  let chartData2 = Config.alwaysShowCPM
+    ? rawWpmPerSecond.map((a) => a * 5)
+    : rawWpmPerSecond;
+
+  ChartController.result.data.datasets[0].data = chartData1;
+  ChartController.result.data.datasets[1].data = chartData2;
 
   let maxChartVal = Math.max(
-    ...[Math.max(...rawWpmPerSecond), Math.max(...TestStats.wpmHistory)]
+    ...[Math.max(...chartData2), Math.max(...chartData1)]
   );
   if (!Config.startGraphsAtZero) {
     ChartController.result.options.scales.yAxes[0].ticks.min = Math.min(
-      ...TestStats.wpmHistory
+      ...chartData1
     );
     ChartController.result.options.scales.yAxes[1].ticks.min = Math.min(
-      ...TestStats.wpmHistory
+      ...chartData1
     );
   } else {
     ChartController.result.options.scales.yAxes[0].ticks.min = 0;
@@ -1555,6 +1612,7 @@ export async function finish(difficultyFailed = false) {
       quoteLength: quoteLength,
       punctuation: Config.punctuation,
       numbers: Config.numbers,
+      lazyMode: Config.lazyMode,
       timestamp: Date.now(),
       language: lang,
       restartCount: TestStats.restartCount,
@@ -1636,6 +1694,7 @@ export async function finish(difficultyFailed = false) {
           Config.punctuation,
           Config.language,
           Config.difficulty,
+          Config.lazyMode,
           Config.funbox
         ).then((lpb) => {
           DB.getUserHighestWpm(
@@ -1643,7 +1702,8 @@ export async function finish(difficultyFailed = false) {
             mode2,
             Config.punctuation,
             Config.language,
-            Config.difficulty
+            Config.difficulty,
+            Config.lazyMode
           ).then(async (highestwpm) => {
             PbCrown.hide();
             $("#result .stats .wpm .crown").attr("aria-label", "");
@@ -1670,13 +1730,14 @@ export async function finish(difficultyFailed = false) {
               }
             }
             let themecolors = await ThemeColors.get();
+            let chartlpb = Config.alwaysShowCPM ? lpb * 5 : lpb;
             if (lpb > 0) {
               ChartController.result.options.annotation.annotations.push({
                 enabled: false,
                 type: "line",
                 mode: "horizontal",
                 scaleID: "wpm",
-                value: lpb,
+                value: chartlpb,
                 borderColor: themecolors["sub"],
                 borderWidth: 1,
                 borderDash: [2, 2],
@@ -1691,11 +1752,14 @@ export async function finish(difficultyFailed = false) {
                   cornerRadius: 3,
                   position: "center",
                   enabled: true,
-                  content: `PB: ${lpb}`,
+                  content: `PB: ${chartlpb}`,
                 },
               });
-              if (maxChartVal >= lpb - 15 && maxChartVal <= lpb + 15) {
-                maxChartVal = lpb + 15;
+              if (
+                maxChartVal >= chartlpb - 15 &&
+                maxChartVal <= chartlpb + 15
+              ) {
+                maxChartVal = chartlpb + 15;
               }
               ChartController.result.options.scales.yAxes[0].ticks.max = Math.round(
                 maxChartVal
@@ -1721,7 +1785,8 @@ export async function finish(difficultyFailed = false) {
                 mode2,
                 Config.punctuation,
                 Config.language,
-                Config.difficulty
+                Config.difficulty,
+                Config.lazyMode
               );
               $("#result .stats .tags .bottom").append(`
                 <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
@@ -1736,6 +1801,7 @@ export async function finish(difficultyFailed = false) {
                     Config.punctuation,
                     Config.language,
                     Config.difficulty,
+                    Config.lazyMode,
                     stats.wpm,
                     stats.acc,
                     stats.wpmRaw,
@@ -1754,7 +1820,7 @@ export async function finish(difficultyFailed = false) {
                     type: "line",
                     mode: "horizontal",
                     scaleID: "wpm",
-                    value: tpb,
+                    value: Config.alwaysShowCPM ? tpb * 5 : tpb,
                     borderColor: themecolors["sub"],
                     borderWidth: 1,
                     borderDash: [2, 2],
@@ -1770,7 +1836,9 @@ export async function finish(difficultyFailed = false) {
                       position: annotationSide,
                       xAdjust: labelAdjust,
                       enabled: true,
-                      content: `${tag.name} PB: ${tpb}`,
+                      content: `${tag.name} PB: ${
+                        Config.alwaysShowCPM ? tpb * 5 : tpb
+                      }`,
                     },
                   });
                   if (annotationSide === "left") {
@@ -1815,9 +1883,10 @@ export async function finish(difficultyFailed = false) {
                   );
                 } else {
                   completedEvent._id = response.data.insertedId;
-                  // TODO bring back after leaderboard fixed
-                  // TestLeaderboards.check(completedEvent);
-                  if (response.data.isPb) {
+                  if (
+                    response.data.isPb &&
+                    ["english"].includes(completedEvent.language)
+                  ) {
                     completedEvent.isPb = true;
                   }
                   if (
@@ -1870,6 +1939,7 @@ export async function finish(difficultyFailed = false) {
                       Config.punctuation,
                       Config.language,
                       Config.difficulty,
+                      Config.lazyMode,
                       stats.wpm,
                       stats.acc,
                       stats.wpmRaw,
@@ -1958,6 +2028,9 @@ export async function finish(difficultyFailed = false) {
   }
   if (Config.blindMode) {
     testType += "<br>blind";
+  }
+  if (Config.lazyMode) {
+    testType += "<br>lazy";
   }
   if (Config.funbox !== "none") {
     testType += "<br>" + Config.funbox.replace(/_/g, " ");
@@ -2097,7 +2170,6 @@ export async function finish(difficultyFailed = false) {
   );
 }
 
-let failReason = "";
 export function fail(reason) {
   failReason = reason;
   // input.pushHistory();

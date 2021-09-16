@@ -2,6 +2,7 @@
   "name": "bangla",
   "leftToRight": true,
   "ligatures": true,
+  "noLazyMode": true,
   "words": [
     "।",
     "আমি",

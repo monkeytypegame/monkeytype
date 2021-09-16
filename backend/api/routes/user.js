@@ -36,6 +36,13 @@ router.post(
 );
 
 router.post(
+  "/updateLbMemory",
+  RateLimit.limit1persec,
+  authenticateRequest,
+  UserController.updateLbMemory
+);
+
+router.post(
   "/updateEmail",
   RateLimit.limit60perhour,
   authenticateRequest,

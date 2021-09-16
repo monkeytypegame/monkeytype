@@ -9,7 +9,8 @@ global.getuid = Misc.getuid;
 global.snapshot = DB.getSnapshot;
 global.config = Config;
 // global.addnotif = Notifications.add;
-global.link = AccountController.linkWithGoogle;
+global.linkToGoogle = AccountController.linkWithGoogle;
+global.linkToEmail = AccountController.linkWithEmail;
 
 global.filters = ResultFilters.getFilters();
 

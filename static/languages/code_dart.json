@@ -1,6 +1,7 @@
 {
   "name": "code_dart",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "()",
     "[]",
@@ -17,7 +18,7 @@
     "case",
     "catch",
     "class",
-    "const ",
+    "const",
     "continue",
     "default",
     "dependencies",

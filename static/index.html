@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      document.addEventListener("keydown", function (e) {
+        if (e.key == "Escape") e.preventDefault();
+      });
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monkeytype</title>
@@ -379,18 +384,37 @@
       <div id="leaderboards">
         <div class="leaderboardsTop">
           <div class="mainTitle">Leaderboards</div>
-          <div class="buttons">
+          <div class="subTitle">Next update in: --:--</div>
+          <!-- <div class="buttons">
             <div class="buttonGroup">
               <div class="button active" board="time_15">time 15</div>
               <div class="button" board="time_60">time 60</div>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="tables">
           <div class="titleAndTable">
-            <div class="title">Global</div>
-            <div class="globalTableWrapper">
-              <table class="global">
+            <div class="titleAndButtons">
+              <div class="title">
+                English Time 15
+                <i
+                  class="hidden leftTableLoader fas fa-fw fa-spin fa-circle-notch"
+                ></i>
+              </div>
+              <div class="buttons">
+                Jump to:
+                <div class="button leftTableJumpToTop">
+                  <i class="fas fa-fw fas fa-crown"></i>
+                  <!-- Top -->
+                </div>
+                <div class="button leftTableJumpToMe">
+                  <i class="fas fa-fw fas fa-user"></i>
+                  <!-- Me -->
+                </div>
+              </div>
+            </div>
+            <div class="leftTableWrapper invisible">
+              <table class="left">
                 <thead>
                   <tr>
                     <td width="1%">#</td>
@@ -409,271 +433,33 @@
                     <td class="alignRight" width="22%">date</td>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td>-</td>
-                    <td>You</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                </tfoot>
+                <tbody></tbody>
+                <tfoot></tfoot>
               </table>
             </div>
           </div>
           <div class="titleAndTable">
-            <div class="title">Daily</div>
-            <div class="subtitle">-</div>
-            <div class="dailyTableWrapper">
-              <table class="daily">
+            <div class="titleAndButtons">
+              <div class="title">
+                English Time 60
+                <i
+                  class="hidden rightTableLoader fas fa-fw fa-spin fa-circle-notch"
+                ></i>
+              </div>
+              <div class="buttons">
+                Jump to:
+                <div class="button rightTableJumpToTop">
+                  <i class="fas fa-fw fas fa-crown"></i>
+                  <!-- Top -->
+                </div>
+                <div class="button rightTableJumpToMe">
+                  <i class="fas fa-fw fas fa-user"></i>
+                  <!-- Me -->
+                </div>
+              </div>
+            </div>
+            <div class="rightTableWrapper invisible">
+              <table class="right">
                 <thead>
                   <tr>
                     <td width="1%">#</td>
@@ -692,263 +478,8 @@
                     <td class="alignRight" width="22%">date</td>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">-</td>
-                    <td class="alignRight">
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td>-</td>
-                    <td>You</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>
-                      -
-                      <br />
-                      -
-                    </td>
-                  </tr>
-                </tfoot>
+                <tbody></tbody>
+                <tfoot></tfoot>
               </table>
             </div>
           </div>
@@ -1293,7 +824,7 @@
                 <i class="fas fa-mouse-pointer"></i>
                 Click or press any key to focus
               </div>
-              <div id="wordsWrapper">
+              <div id="wordsWrapper" translate="no">
                 <div id="paceCaret" class="default size15 hidden"></div>
                 <div id="caret" class="default size15"></div>
                 <div id="words" class="size15"></div>
@@ -1766,7 +1297,7 @@
                 <key>enter</key>
                 (or just
                 <key>tab</key>
-                if you have quick tab mode enabled ) to restart the typing test.
+                if you have quick tab mode enabled) to restart the typing test.
                 Open the command line by pressing
                 <key>esc</key>
                 - there you can access all the functionality you need without
@@ -2597,6 +2128,28 @@
                   </div>
                 </div>
               </div>
+              <div class="section britishEnglish" section="">
+                <h1>british english</h1>
+                <div class="text">
+                  When enabled, the website will use the British spelling
+                  instead of American. Note that this might not replace all
+                  words correctly. If you find any issues, please let us know.
+                </div>
+                <div>
+                  <div class="buttons">
+                    <div
+                      class="button off active"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div class="button on" tabindex="0" onclick="this.blur();">
+                      on
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div class="section languageGroups fullWidth">
                 <h1>language groups</h1>
                 <div class="buttons"></div>
@@ -2833,6 +2386,20 @@
               <div class="section capsLockBackspace">
                 <h1>caps lock backspace</h1>
                 <div class="text">Makes caps lock act like backspace.</div>
+                <div class="buttons">
+                  <div class="button off" tabindex="0" onclick="this.blur();">
+                    off
+                  </div>
+                  <div class="button on" tabindex="0" onclick="this.blur();">
+                    on
+                  </div>
+                </div>
+              </div>
+              <div class="section lazyMode">
+                <h1>lazy mode</h1>
+                <div class="text">
+                  Replaces accented letters with their normal equivalents.
+                </div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">
                     off
@@ -4227,16 +3794,29 @@
               <div class="group createdDate">Account created on -</div>
               <div class="group">
                 <div class="title">personal bests</div>
-                <div style="display: grid; grid-auto-flow: column; gap: 1rem">
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 2rem;
+                  "
+                >
                   <div class="titleAndTable timePbTable">
                     <table width="100%">
                       <thead>
                         <tr>
-                          <td>time</td>
-                          <td>wpm</td>
-                          <td>raw</td>
-                          <td>accuracy</td>
-                          <td>consistency</td>
+                          <td width="1%">time</td>
+                          <td width="33%">
+                            wpm
+                            <br />
+                            <span class="sub">accuracy</span>
+                          </td>
+                          <td width="33%">
+                            raw
+                            <br />
+                            <span class="sub">consistency</span>
+                          </td>
+                          <td width="33%">date</td>
                         </tr>
                       </thead>
                       <tbody>
@@ -4271,11 +3851,18 @@
                     <table width="100%">
                       <thead>
                         <tr>
-                          <td>words</td>
-                          <td>wpm</td>
-                          <td>raw</td>
-                          <td>accuracy</td>
-                          <td>consistency</td>
+                          <td width="1%">words</td>
+                          <td width="33%">
+                            wpm
+                            <br />
+                            <span class="sub">accuracy</span>
+                          </td>
+                          <td width="33%">
+                            raw
+                            <br />
+                            <span class="sub">consistency</span>
+                          </td>
+                          <td width="33%">date</td>
                         </tr>
                       </thead>
                       <tbody>
@@ -4338,6 +3925,9 @@
                     <div class="button" filter="last_day">last day</div>
                     <div class="button" filter="last_week">last week</div>
                     <div class="button" filter="last_month">last month</div>
+                    <div class="button" filter="last_3months">
+                      last 3 months
+                    </div>
                     <div class="button" filter="all">all time</div>
                   </div>
                 </div>

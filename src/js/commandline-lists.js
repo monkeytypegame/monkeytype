@@ -3,7 +3,6 @@ import * as Misc from "./misc";
 import layouts from "./layouts";
 import * as Notifications from "./notifications";
 import * as Sound from "./sound";
-import * as TestStats from "./test-stats";
 import * as ThemeController from "./theme-controller";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ManualRestart from "./manual-restart-tracker";
@@ -771,6 +770,31 @@ let commandsStartGraphsAtZero = {
   ],
 };
 
+let commandsLazyMode = {
+  title: "Lazy mode...",
+  configKey: "lazyMode",
+  list: [
+    {
+      id: "setLazyModeOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setLazyMode(false);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setLazyModeOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setLazyMode(true);
+        TestLogic.restart();
+      },
+    },
+  ],
+};
+
 let commandsSwapEscAndTab = {
   title: "Swap esc and tab...",
   configKey: "swapEscAndTab",
@@ -1425,6 +1449,31 @@ let commandsKeymapLegendStyle = {
       configValue: "blank",
       exec: () => {
         UpdateConfig.setKeymapLegendStyle("blank");
+      },
+    },
+  ],
+};
+
+let commandsBritishEnglish = {
+  title: "British english...",
+  configKey: "britishEnglish",
+  list: [
+    {
+      id: "setBritishEnglishOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setBritishEnglish(false);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setBritishEnglishOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setBritishEnglish(true);
+        TestLogic.restart();
       },
     },
   ],
@@ -2528,6 +2577,12 @@ export let defaultCommands = {
       subgroup: commandsSwapEscAndTab,
     },
     {
+      id: "changeLazyMode",
+      display: "Lazy mode...",
+      icon: "fa-couch",
+      subgroup: commandsLazyMode,
+    },
+    {
       id: "changeShowAllLines",
       display: "Show all lines...",
       icon: "fa-align-left",
@@ -2644,6 +2699,12 @@ export let defaultCommands = {
       display: "Language...",
       icon: "fa-language",
       subgroup: commandsLanguages,
+    },
+    {
+      id: "changeBritishEnglish",
+      display: "British english...",
+      icon: "fa-language",
+      subgroup: commandsBritishEnglish,
     },
     {
       id: "changeFunbox",
@@ -2918,7 +2979,7 @@ export let defaultCommands = {
       icon: "fa-cog",
       input: true,
       defaultValue: "",
-      exec: (input) => {},
+      exec: () => {},
     },
     {
       id: "monkeyPower",

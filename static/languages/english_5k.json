@@ -1,6 +1,7 @@
 {
   "name": "english_5k",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "the",
     "of",
@@ -3982,7 +3983,6 @@
     "mechanism",
     "camping",
     "ee",
-    "jewellery",
     "meets",
     "welfare",
     "peer",

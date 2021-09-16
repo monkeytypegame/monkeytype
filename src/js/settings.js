@@ -6,9 +6,6 @@ import layouts from "./layouts";
 import * as LanguagePicker from "./language-picker";
 import * as Notifications from "./notifications";
 import * as DB from "./db";
-import * as Loader from "./loader";
-import * as CloudFunctions from "./cloud-functions";
-import axiosInstance from "./axios-instance";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as PresetController from "./preset-controller";
@@ -132,6 +129,10 @@ async function initGroups() {
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory
   );
+  groups.britishEnglish = new SettingsGroup(
+    "britishEnglish",
+    UpdateConfig.setBritishEnglish
+  );
   groups.singleListCommandLine = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine
@@ -199,6 +200,7 @@ async function initGroups() {
     "capsLockBackspace",
     UpdateConfig.setCapsLockBackspace
   );
+  groups.lazyMode = new SettingsGroup("lazyMode", UpdateConfig.setLazyMode);
   groups.layout = new SettingsGroup("layout", UpdateConfig.setLayout);
   groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
   groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);
@@ -417,10 +419,10 @@ function refreshTagsSettingsSection() {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot().tags.forEach((tag) => {
-      let tagPbString = "No PB found";
-      if (tag.pb != undefined && tag.pb > 0) {
-        tagPbString = `PB: ${tag.pb}`;
-      }
+      // let tagPbString = "No PB found";
+      // if (tag.pb != undefined && tag.pb > 0) {
+      //   tagPbString = `PB: ${tag.pb}`;
+      // }
       tagsEl.append(`
 
       <div class="buttons tag" id="${tag._id}">
@@ -630,33 +632,6 @@ $(document).on(
     LanguagePicker.setActiveGroup(group, true);
   }
 );
-
-//discord
-$(
-  ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
-).click((e) => {
-  Loader.show();
-  CloudFunctions.generatePairingCode({
-    uid: firebase.auth().currentUser.uid,
-  })
-    .then((ret) => {
-      Loader.hide();
-      if (ret.data.status === 1 || ret.data.status === 2) {
-        DB.getSnapshot().pairingCode = ret.data.pairingCode;
-        $(".pageSettings .section.discordIntegration .code .bottom").text(
-          ret.data.pairingCode
-        );
-        $(".pageSettings .section.discordIntegration .howtocode").text(
-          ret.data.pairingCode
-        );
-        updateDiscordSection();
-      }
-    })
-    .catch((e) => {
-      Loader.hide();
-      Notifications.add("Something went wrong. Error: " + e.message, -1);
-    });
-});
 
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   (e) => {
