@@ -94,12 +94,18 @@ function updateFooter(lb) {
       <td><br><br></td>
     </tr>
     `);
+  let toppercent;
+  if (currentRank[lb]) {
+    toppercent = `Top ${Math.round(
+      (currentRank[lb].rank / currentRank[lb].count) * 100
+    )}%`;
+  }
   if (currentRank[lb]) {
     let entry = currentRank[lb];
     $(`#leaderboardsWrapper table.${side} tfoot`).html(`
     <tr>
     <td>${entry.rank}</td>
-    <td>You</td>
+    <td><span class="top">You</span><br><span class="sub">${toppercent}</span></td>
     <td class="alignRight">${entry.wpm.toFixed(
       2
     )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
@@ -131,21 +137,21 @@ function checkLbMemory(lb) {
     let difference = memory - currentRank[lb].rank;
     if (difference > 0) {
       DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
-      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
+      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
         ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
           difference
         )} since you last checked)`
       );
     } else if (difference < 0) {
       DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
-      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
+      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
         ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
           difference
         )} since you last checked)`
       );
     } else {
-      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
-        ` (= since you last checked)`
+      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
+        ` ( = since you last checked)`
       );
     }
   }
