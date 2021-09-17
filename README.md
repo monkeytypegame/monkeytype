@@ -40,7 +40,7 @@ Refer to [CONTRIBUTING.md.](https://github.com/Miodec/monkeytype/blob/master/CON
 
 # Code of Conduct
 
-Before contributing to this repository please read the [code of conduct.](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)
+Before contributing to this repository, please read the [code of conduct.](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)
 
 # Credits
 
