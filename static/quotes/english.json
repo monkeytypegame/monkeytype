@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -32772,7 +32784,7 @@
       "id": 5518
     },
     {
-      "text": "One of the main differences between introverts and extroverts is that extroverts get their energy from hanging out with other people, and introverts are mentally ill.",
+      "text": "One of the main differences between introverts and extroverts is that extroverts get their energy from hanging out with other people, and introverts aren't mentally ill.",
       "source": "Exurb1a",
       "length": 166,
       "id": 5519
