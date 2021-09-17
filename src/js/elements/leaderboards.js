@@ -96,9 +96,14 @@ function updateFooter(lb) {
     `);
   let toppercent;
   if (currentRank[lb]) {
-    toppercent = `Top ${Math.round(
+    let num = Misc.roundTo2(
       (currentRank[lb].rank / currentRank[lb].count) * 100
-    )}%`;
+    );
+    if (num == 0) {
+      num = 0.01;
+    }
+
+    toppercent = `Top ${num}%`;
   }
   if (currentRank[lb]) {
     let entry = currentRank[lb];
