@@ -25,7 +25,7 @@ class LeaderboardsDAO {
     if (res)
       res.count = await mongoDB()
         .collection(`leaderboards.${language}.${mode}.${mode2}`)
-        .count();
+        .estimatedDocumentCount();
     return res;
   }
 
