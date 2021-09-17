@@ -1,22 +1,10 @@
 {
   "language": "portuguese",
   "groups": [
-    [
-      0,
-      100
-    ],
-    [
-      101,
-      300
-    ],
-    [
-      301,
-      600
-    ],
-    [
-      601,
-      9999
-    ]
+    [0, 100],
+    [101, 300],
+    [301, 600],
+    [601, 9999]
   ],
   "quotes": [
     {
@@ -38,7 +26,7 @@
       "id": 3
     },
     {
-      "text": "Minha Pátria é minha língua. Pouco se me dá que Portugal seja invádido, desde que não mexam comigo.",
+      "text": "Minha Pátria é minha língua. Pouco se me dá que Portugal seja invadido, desde que não mexam comigo.",
       "source": "Fernando Pessoa",
       "length": 99,
       "id": 3

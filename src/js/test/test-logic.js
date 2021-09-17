@@ -1463,18 +1463,28 @@ export async function finish(difficultyFailed = false) {
     );
   }
 
-  ChartController.result.data.datasets[0].data = TestStats.wpmHistory;
-  ChartController.result.data.datasets[1].data = rawWpmPerSecond;
+  ChartController.result.options.scales.yAxes[0].scaleLabel.labelString = Config.alwaysShowCPM
+    ? "Character per Minute"
+    : "Words per Minute";
+  let chartData1 = Config.alwaysShowCPM
+    ? TestStats.wpmHistory.map((a) => a * 5)
+    : TestStats.wpmHistory;
+  let chartData2 = Config.alwaysShowCPM
+    ? rawWpmPerSecond.map((a) => a * 5)
+    : rawWpmPerSecond;
+
+  ChartController.result.data.datasets[0].data = chartData1;
+  ChartController.result.data.datasets[1].data = chartData2;
 
   let maxChartVal = Math.max(
-    ...[Math.max(...rawWpmPerSecond), Math.max(...TestStats.wpmHistory)]
+    ...[Math.max(...chartData2), Math.max(...chartData1)]
   );
   if (!Config.startGraphsAtZero) {
     ChartController.result.options.scales.yAxes[0].ticks.min = Math.min(
-      ...TestStats.wpmHistory
+      ...chartData1
     );
     ChartController.result.options.scales.yAxes[1].ticks.min = Math.min(
-      ...TestStats.wpmHistory
+      ...chartData1
     );
   } else {
     ChartController.result.options.scales.yAxes[0].ticks.min = 0;
@@ -1720,13 +1730,14 @@ export async function finish(difficultyFailed = false) {
               }
             }
             let themecolors = await ThemeColors.get();
+            let chartlpb = Config.alwaysShowCPM ? lpb * 5 : lpb;
             if (lpb > 0) {
               ChartController.result.options.annotation.annotations.push({
                 enabled: false,
                 type: "line",
                 mode: "horizontal",
                 scaleID: "wpm",
-                value: lpb,
+                value: chartlpb,
                 borderColor: themecolors["sub"],
                 borderWidth: 1,
                 borderDash: [2, 2],
@@ -1741,11 +1752,14 @@ export async function finish(difficultyFailed = false) {
                   cornerRadius: 3,
                   position: "center",
                   enabled: true,
-                  content: `PB: ${lpb}`,
+                  content: `PB: ${chartlpb}`,
                 },
               });
-              if (maxChartVal >= lpb - 15 && maxChartVal <= lpb + 15) {
-                maxChartVal = lpb + 15;
+              if (
+                maxChartVal >= chartlpb - 15 &&
+                maxChartVal <= chartlpb + 15
+              ) {
+                maxChartVal = chartlpb + 15;
               }
               ChartController.result.options.scales.yAxes[0].ticks.max = Math.round(
                 maxChartVal
@@ -1806,7 +1820,7 @@ export async function finish(difficultyFailed = false) {
                     type: "line",
                     mode: "horizontal",
                     scaleID: "wpm",
-                    value: tpb,
+                    value: Config.alwaysShowCPM ? tpb * 5 : tpb,
                     borderColor: themecolors["sub"],
                     borderWidth: 1,
                     borderDash: [2, 2],
@@ -1822,7 +1836,9 @@ export async function finish(difficultyFailed = false) {
                       position: annotationSide,
                       xAdjust: labelAdjust,
                       enabled: true,
-                      content: `${tag.name} PB: ${tpb}`,
+                      content: `${tag.name} PB: ${
+                        Config.alwaysShowCPM ? tpb * 5 : tpb
+                      }`,
                     },
                   });
                   if (annotationSide === "left") {

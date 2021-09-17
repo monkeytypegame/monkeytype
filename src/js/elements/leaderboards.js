@@ -3,6 +3,7 @@ import * as Notifications from "./notifications";
 import * as DB from "./db";
 import axiosInstance from "./axios-instance";
 import * as Misc from "./misc";
+import Config, * as UpdateConfig from "./config";
 
 let currentLeaderboard = "time_15";
 
@@ -183,10 +184,14 @@ function fillTable(lb, prepend) {
       entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
     }</td>
     <td>${entry.name}</td>
-    <td class="alignRight">${entry.wpm.toFixed(
-      2
-    )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${entry.raw.toFixed(2)}<br><div class="sub">${
+    <td class="alignRight">${(Config.alwaysShowCPM
+      ? entry.wpm * 5
+      : entry.wpm
+    ).toFixed(2)}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
+    <td class="alignRight">${(Config.alwaysShowCPM
+      ? entry.raw * 5
+      : entry.raw
+    ).toFixed(2)}<br><div class="sub">${
       !entry.consistency || entry.consistency === "-"
         ? "-"
         : entry.consistency.toFixed(2) + "%"
@@ -387,6 +392,15 @@ export function show() {
       );
       $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").addClass(
         "disabled"
+      );
+    }
+    if (Config.alwaysShowCPM) {
+      $("#leaderboards table thead tr td:nth-child(3)").html(
+        'cpm<br><div class="sub">accuracy</div>'
+      );
+    } else {
+      $("#leaderboards table thead tr td:nth-child(3)").html(
+        'wpm<br><div class="sub">accuracy</div>'
       );
     }
     $("#leaderboardsWrapper")
