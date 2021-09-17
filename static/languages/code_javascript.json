@@ -1,6 +1,7 @@
 {
   "name": "code_javascript",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "this",
     "let",

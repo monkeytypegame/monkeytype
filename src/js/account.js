@@ -235,7 +235,9 @@ function loadMoreLines(lineIndex) {
 
     let raw;
     try {
-      raw = result.rawWpm.toFixed(2);
+      raw = Config.alwaysShowCPM
+        ? (result.rawWpm * 5).toFixed(2)
+        : result.rawWpm.toFixed(2);
       if (raw == undefined) {
         raw = "-";
       }
@@ -266,6 +268,10 @@ function loadMoreLines(lineIndex) {
 
     if (result.blindMode) {
       icons += `<span aria-label="blind mode" data-balloon-pos="up"><i class="fas fa-fw fa-eye-slash"></i></span>`;
+    }
+
+    if (result.lazyMode) {
+      icons += `<span aria-label="lazy mode" data-balloon-pos="up"><i class="fas fa-fw fa-couch"></i></span>`;
     }
 
     if (result.funbox !== "none" && result.funbox !== undefined) {
@@ -338,7 +344,7 @@ function loadMoreLines(lineIndex) {
     $(".pageAccount .history table tbody").append(`
     <tr class="resultRow" id="result-${i}">
     <td>${pb}</td>
-    <td>${result.wpm.toFixed(2)}</td>
+    <td>${(Config.alwaysShowCPM ? result.wpm * 5 : result.wpm).toFixed(2)}</td>
     <td>${raw}</td>
     <td>${result.acc.toFixed(2)}%</td>
     <td>${consistency}</td>
@@ -394,7 +400,7 @@ export function update() {
       max: 0,
     };
 
-    let totalSeconds = 0;
+    // let totalSeconds = 0;
     totalSecondsFiltered = 0;
 
     let totalCons = 0;
@@ -422,7 +428,7 @@ export function update() {
       } else if (result.restartCount != undefined && result.restartCount > 0) {
         tt += (tt / 4) * result.restartCount;
       }
-      totalSeconds += tt;
+      // totalSeconds += tt;
 
       //apply filters
       try {
@@ -577,7 +583,9 @@ export function update() {
           (ResultFilters.getFilter("date", "last_week") &&
             timeSinceTest <= 604800) ||
           (ResultFilters.getFilter("date", "last_month") &&
-            timeSinceTest <= 2592000)
+            timeSinceTest <= 2592000) ||
+          (ResultFilters.getFilter("date", "last_3months") &&
+            timeSinceTest <= 7776000)
         ) {
           datehide = false;
         }
@@ -683,7 +691,7 @@ export function update() {
 
       chartData.push({
         x: result.timestamp,
-        y: result.wpm,
+        y: Config.alwaysShowCPM ? Misc.roundTo2(result.wpm * 5) : result.wpm,
         acc: result.acc,
         mode: result.mode,
         mode2: result.mode2,
@@ -691,7 +699,9 @@ export function update() {
         language: result.language,
         timestamp: result.timestamp,
         difficulty: result.difficulty,
-        raw: result.rawWpm,
+        raw: Config.alwaysShowCPM
+          ? Misc.roundTo2(result.rawWpm * 5)
+          : result.rawWpm,
       });
 
       wpmChartData.push(result.wpm);
@@ -715,6 +725,17 @@ export function update() {
 
       totalWpm += result.wpm;
     });
+
+    if (Config.alwaysShowCPM) {
+      $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
+        "cpm"
+      );
+    } else {
+      $(".pageAccount .group.history table thead tr td:nth-child(2)").text(
+        "wpm"
+      );
+    }
+
     loadMoreLines();
     ////////
 
@@ -767,13 +788,32 @@ export function update() {
       activityChartData_avgWpm.push({
         x: parseInt(date),
         y: Misc.roundTo2(
-          activityChartData[date].totalWpm / activityChartData[date].amount
+          (Config.alwaysShowCPM
+            ? activityChartData[date].totalWpm * 5
+            : activityChartData[date].totalWpm) / activityChartData[date].amount
         ),
       });
       lastTimestamp = date;
     });
+
+    if (Config.alwaysShowCPM) {
+      ChartController.accountActivity.options.scales.yAxes[1].scaleLabel.labelString =
+        "Average Cpm";
+    } else {
+      ChartController.accountActivity.options.scales.yAxes[1].scaleLabel.labelString =
+        "Average Wpm";
+    }
+
     ChartController.accountActivity.data.datasets[0].data = activityChartData_time;
     ChartController.accountActivity.data.datasets[1].data = activityChartData_avgWpm;
+
+    if (Config.alwaysShowCPM) {
+      ChartController.accountHistory.options.scales.yAxes[0].scaleLabel.labelString =
+        "Characters per Minute";
+    } else {
+      ChartController.accountHistory.options.scales.yAxes[0].scaleLabel.labelString =
+        "Words per Minute";
+    }
 
     ChartController.accountHistory.data.datasets[0].data = chartData;
     ChartController.accountHistory.data.datasets[1].data = accChartData;
@@ -812,19 +852,75 @@ export function update() {
       Misc.secondsToString(Math.round(totalSecondsFiltered), true, true)
     );
 
-    $(".pageAccount .highestWpm .val").text(topWpm);
-    $(".pageAccount .averageWpm .val").text(Math.round(totalWpm / testCount));
-    $(".pageAccount .averageWpm10 .val").text(
-      Math.round(wpmLast10total / last10)
-    );
+    if (Config.alwaysShowCPM) {
+      $(".pageAccount .highestWpm .title").text("highest cpm");
+      $(".pageAccount .highestWpm .val").text(Misc.roundTo2(topWpm * 5));
+    } else {
+      $(".pageAccount .highestWpm .title").text("highest wpm");
+      $(".pageAccount .highestWpm .val").text(Misc.roundTo2(topWpm));
+    }
 
-    $(".pageAccount .highestRaw .val").text(rawWpm.max);
-    $(".pageAccount .averageRaw .val").text(
-      Math.round(rawWpm.total / rawWpm.count)
-    );
-    $(".pageAccount .averageRaw10 .val").text(
-      Math.round(rawWpm.last10Total / rawWpm.last10Count)
-    );
+    if (Config.alwaysShowCPM) {
+      $(".pageAccount .averageWpm .title").text("average cpm");
+      $(".pageAccount .averageWpm .val").text(
+        Math.round((totalWpm * 5) / testCount)
+      );
+    } else {
+      $(".pageAccount .averageWpm .title").text("average wpm");
+      $(".pageAccount .averageWpm .val").text(Math.round(totalWpm / testCount));
+    }
+
+    if (Config.alwaysShowCPM) {
+      $(".pageAccount .averageWpm10 .title").text(
+        "average cpm (last 10 tests)"
+      );
+      $(".pageAccount .averageWpm10 .val").text(
+        Math.round((wpmLast10total * 5) / last10)
+      );
+    } else {
+      $(".pageAccount .averageWpm10 .title").text(
+        "average wpm (last 10 tests)"
+      );
+      $(".pageAccount .averageWpm10 .val").text(
+        Math.round(wpmLast10total / last10)
+      );
+    }
+
+    if (Config.alwaysShowCPM) {
+      $(".pageAccount .highestRaw .title").text("highest raw cpm");
+      $(".pageAccount .highestRaw .val").text(Misc.roundTo2(rawWpm.max * 5));
+    } else {
+      $(".pageAccount .highestRaw .title").text("highest raw wpm");
+      $(".pageAccount .highestRaw .val").text(Misc.roundTo2(rawWpm.max));
+    }
+
+    if (Config.alwaysShowCPM) {
+      $(".pageAccount .averageRaw .title").text("average raw cpm");
+      $(".pageAccount .averageRaw .val").text(
+        Math.round((rawWpm.total * 5) / rawWpm.count)
+      );
+    } else {
+      $(".pageAccount .averageRaw .title").text("average raw wpm");
+      $(".pageAccount .averageRaw .val").text(
+        Math.round(rawWpm.total / rawWpm.count)
+      );
+    }
+
+    if (Config.alwaysShowCPM) {
+      $(".pageAccount .averageRaw10 .title").text(
+        "average raw cpm (last 10 tests)"
+      );
+      $(".pageAccount .averageRaw10 .val").text(
+        Math.round((rawWpm.last10Total * 5) / rawWpm.last10Count)
+      );
+    } else {
+      $(".pageAccount .averageRaw10 .title").text(
+        "average raw wpm (last 10 tests)"
+      );
+      $(".pageAccount .averageRaw10 .val").text(
+        Math.round(rawWpm.last10Total / rawWpm.last10Count)
+      );
+    }
 
     $(".pageAccount .highestWpm .mode").html(topMode);
     $(".pageAccount .testsTaken .val").text(testCount);
@@ -882,8 +978,11 @@ export function update() {
 
     $(".pageAccount .group.chart .below .text").text(
       `Speed change per hour spent typing: ${
-        plus + Misc.roundTo2(wpmChangePerHour)
-      } wpm.`
+        plus +
+        Misc.roundTo2(
+          Config.alwaysShowCPM ? wpmChangePerHour * 5 : wpmChangePerHour
+        )
+      } ${Config.alwaysShowCPM ? "cpm" : "wpm"}.`
     );
 
     ChartController.accountHistory.update({ duration: 0 });
@@ -917,6 +1016,72 @@ export function update() {
       Notifications.add(`Something went wrong: ${e}`, -1);
     }
   }
+}
+
+function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
+  // Removes styling from previous sorting requests:
+  $("td").removeClass("header-sorted");
+  $("td").children("i").remove();
+  $(headerClass).addClass("header-sorted");
+
+  if (filteredResults.length < 2) return;
+
+  // This allows to reverse the sorting order when clicking multiple times on the table header
+  let descending = true;
+  if (forceDescending !== null) {
+    if (forceDescending == true) {
+      $(headerClass).append(
+        '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+      );
+    } else {
+      descending = false;
+      $(headerClass).append(
+        '<i class="fas fa-sort-up" aria-hidden="true"></i>'
+      );
+    }
+  } else if (
+    filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
+  ) {
+    descending = true;
+    $(headerClass).append(
+      '<i class="fas fa-sort-down" aria-hidden="true"></i>'
+    );
+  } else {
+    descending = false;
+    $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
+  }
+
+  let temp = [];
+  let parsedIndexes = [];
+
+  while (temp.length < filteredResults.length) {
+    let lowest = Number.MAX_VALUE;
+    let highest = -1;
+    let idx = -1;
+
+    for (let i = 0; i < filteredResults.length; i++) {
+      //find the lowest wpm with index not already parsed
+      if (!descending) {
+        if (filteredResults[i][key] <= lowest && !parsedIndexes.includes(i)) {
+          lowest = filteredResults[i][key];
+          idx = i;
+        }
+      } else {
+        if (filteredResults[i][key] >= highest && !parsedIndexes.includes(i)) {
+          highest = filteredResults[i][key];
+          idx = i;
+        }
+      }
+    }
+
+    temp.push(filteredResults[idx]);
+    parsedIndexes.push(idx);
+  }
+  filteredResults = temp;
+
+  $(".pageAccount .history table tbody").empty();
+  visibleTableLines = 0;
+  loadMoreLines();
 }
 
 $(".pageAccount .toggleAccuracyOnChart").click((e) => {
@@ -995,69 +1160,3 @@ $(document).on("click", ".buttonsAndTitle .buttons .button", (event) => {
   // We want to 'force' descending sort:
   sortAndRefreshHistory("timestamp", ".history-date-header", true);
 });
-
-function sortAndRefreshHistory(key, headerClass, forceDescending = null) {
-  // Removes styling from previous sorting requests:
-  $("td").removeClass("header-sorted");
-  $("td").children("i").remove();
-  $(headerClass).addClass("header-sorted");
-
-  if (filteredResults.length < 2) return;
-
-  // This allows to reverse the sorting order when clicking multiple times on the table header
-  let descending = true;
-  if (forceDescending !== null) {
-    if (forceDescending == true) {
-      $(headerClass).append(
-        '<i class="fas fa-sort-down" aria-hidden="true"></i>'
-      );
-    } else {
-      descending = false;
-      $(headerClass).append(
-        '<i class="fas fa-sort-up" aria-hidden="true"></i>'
-      );
-    }
-  } else if (
-    filteredResults[0][key] <= filteredResults[filteredResults.length - 1][key]
-  ) {
-    descending = true;
-    $(headerClass).append(
-      '<i class="fas fa-sort-down" aria-hidden="true"></i>'
-    );
-  } else {
-    descending = false;
-    $(headerClass).append('<i class="fas fa-sort-up", aria-hidden="true"></i>');
-  }
-
-  let temp = [];
-  let parsedIndexes = [];
-
-  while (temp.length < filteredResults.length) {
-    let lowest = Number.MAX_VALUE;
-    let highest = -1;
-    let idx = -1;
-
-    for (let i = 0; i < filteredResults.length; i++) {
-      //find the lowest wpm with index not already parsed
-      if (!descending) {
-        if (filteredResults[i][key] <= lowest && !parsedIndexes.includes(i)) {
-          lowest = filteredResults[i][key];
-          idx = i;
-        }
-      } else {
-        if (filteredResults[i][key] >= highest && !parsedIndexes.includes(i)) {
-          highest = filteredResults[i][key];
-          idx = i;
-        }
-      }
-    }
-
-    temp.push(filteredResults[idx]);
-    parsedIndexes.push(idx);
-  }
-  filteredResults = temp;
-
-  $(".pageAccount .history table tbody").empty();
-  visibleTableLines = 0;
-  loadMoreLines();
-}

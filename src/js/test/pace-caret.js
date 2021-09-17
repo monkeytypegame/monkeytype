@@ -47,6 +47,7 @@ export async function init() {
       Config.punctuation,
       Config.language,
       Config.difficulty,
+      Config.lazyMode,
       Config.funbox
     );
   } else if (Config.paceCaret === "average") {
@@ -65,7 +66,8 @@ export async function init() {
       mode2,
       Config.punctuation,
       Config.language,
-      Config.difficulty
+      Config.difficulty,
+      Config.lazyMode
     );
     console.log("avg pace " + wpm);
   } else if (Config.paceCaret === "custom") {

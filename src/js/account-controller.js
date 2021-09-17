@@ -7,7 +7,6 @@ import * as CommandlineLists from "./commandline-lists";
 import * as VerificationController from "./verification-controller";
 import * as Misc from "./misc";
 import * as Settings from "./settings";
-import * as ChallengeController from "./challenge-controller";
 import * as AllTimeStats from "./all-time-stats";
 import * as DB from "./db";
 import * as TestLogic from "./test-logic";
@@ -16,7 +15,47 @@ import axiosInstance from "./axios-instance";
 import * as PSA from "./psa";
 
 export const gmailProvider = new firebase.auth.GoogleAuthProvider();
-const githubProvider = new firebase.auth.GithubAuthProvider();
+// const githubProvider = new firebase.auth.GithubAuthProvider();
+
+async function loadUser(user) {
+  // User is signed in.
+  $(".pageAccount .content p.accountVerificatinNotice").remove();
+  if (user.emailVerified === false) {
+    $(".pageAccount .content").prepend(
+      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
+    );
+  }
+  UI.setPageTransition(false);
+  AccountButton.update();
+  AccountButton.loading(true);
+  await Account.getDataAndInit();
+  // var displayName = user.displayName;
+  // var email = user.email;
+  // var emailVerified = user.emailVerified;
+  // var photoURL = user.photoURL;
+  // var isAnonymous = user.isAnonymous;
+  // var uid = user.uid;
+  // var providerData = user.providerData;
+  $(".pageLogin .preloader").addClass("hidden");
+
+  // showFavouriteThemesAtTheTop();
+  CommandlineLists.updateThemeCommands();
+
+  let text = "Account created on " + user.metadata.creationTime;
+
+  const date1 = new Date(user.metadata.creationTime);
+  const date2 = new Date();
+  const diffTime = Math.abs(date2 - date1);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
+
+  $(".pageAccount .group.createdDate").text(text);
+
+  if (VerificationController.data !== null) {
+    VerificationController.verify(user);
+  }
+}
 
 const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
@@ -277,7 +316,7 @@ async function signUp() {
   }
 
   try {
-    const checkNameResponse = await axiosInstance.post("/user/checkName", {
+    await axiosInstance.post("/user/checkName", {
       name: nname,
     });
   } catch (e) {
@@ -302,7 +341,7 @@ async function signUp() {
     createdAuthUser = await firebase
       .auth()
       .createUserWithEmailAndPassword(email, password);
-    const createdDbUser = await axiosInstance.post("/user/signup", {
+    await axiosInstance.post("/user/signup", {
       name: nname,
       email,
       uid: createdAuthUser.user.uid,
@@ -504,46 +543,6 @@ $(".pageLogin .login .button.signInWithGoogle").click((e) => {
 $(".signOut").click((e) => {
   signOut();
 });
-
-async function loadUser(user) {
-  // User is signed in.
-  $(".pageAccount .content p.accountVerificatinNotice").remove();
-  if (user.emailVerified === false) {
-    $(".pageAccount .content").prepend(
-      `<p class="accountVerificatinNotice" style="text-align:center">Your account is not verified. Click <a onClick="sendVerificationEmail()">here</a> to resend the verification email.`
-    );
-  }
-  UI.setPageTransition(false);
-  AccountButton.update();
-  AccountButton.loading(true);
-  await Account.getDataAndInit();
-  // var displayName = user.displayName;
-  // var email = user.email;
-  // var emailVerified = user.emailVerified;
-  // var photoURL = user.photoURL;
-  // var isAnonymous = user.isAnonymous;
-  // var uid = user.uid;
-  // var providerData = user.providerData;
-  $(".pageLogin .preloader").addClass("hidden");
-
-  // showFavouriteThemesAtTheTop();
-  CommandlineLists.updateThemeCommands();
-
-  let text = "Account created on " + user.metadata.creationTime;
-
-  const date1 = new Date(user.metadata.creationTime);
-  const date2 = new Date();
-  const diffTime = Math.abs(date2 - date1);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  text += ` (${diffDays} day${diffDays != 1 ? "s" : ""} ago)`;
-
-  $(".pageAccount .group.createdDate").text(text);
-
-  if (VerificationController.data !== null) {
-    VerificationController.verify(user);
-  }
-}
 
 $(".pageLogin .register input").keyup((e) => {
   if ($(".pageLogin .register .button").hasClass("disabled")) return;

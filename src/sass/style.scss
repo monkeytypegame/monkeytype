@@ -90,7 +90,10 @@ input[type="color"]::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-input[type="color"]::-webkit-color-swatch,
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+}
+
 ::-moz-color-swatch {
   border: none;
 }
@@ -344,10 +347,7 @@ a:hover {
   position: fixed;
   width: 100%;
   background: var(--main-color);
-  animation-name: loader;
-  animation-iteration-count: infinite;
-  animation-duration: 2s;
-  animation-timing-function: cubic-bezier(0.38, 0.16, 0.57, 0.82);
+  animation: loader 2s cubic-bezier(0.38, 0.16, 0.57, 0.82) infinite;
   z-index: 9999;
 }
 
@@ -372,7 +372,7 @@ a:hover {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   z-index: 1000;
@@ -501,7 +501,7 @@ a:hover {
         tr.me {
           td {
             color: var(--main-color);
-            font-weight: 900;
+            // font-weight: 900;
           }
         }
 
@@ -533,12 +533,12 @@ a:hover {
 
         tfoot {
           td {
-            padding: 0.5rem;
+            padding: 1rem 0.5rem;
             position: -webkit-sticky;
             position: sticky;
             bottom: 0;
             background: var(--bg-color);
-            color: var(--sub-color);
+            color: var(--main-color);
             z-index: 4;
           }
         }
@@ -800,7 +800,7 @@ label.checkbox {
         font-size: 1rem;
       }
       .val {
-        font-size: 2rem;
+        font-size: 2.25rem;
       }
     }
 
@@ -1598,10 +1598,7 @@ label.checkbox {
 #caret {
   height: 1.5rem;
   background: var(--caret-color);
-  animation-name: caretFlashSmooth;
-  /* animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955); */
-  animation-iteration-count: infinite;
-  animation-duration: 1s;
+  animation: caretFlashSmooth 1s infinite;
   position: absolute;
   border-radius: var(--roundness);
   // transition: 0.05s;
@@ -1872,7 +1869,7 @@ label.checkbox {
     grid-gap: 0.2rem;
     // width: min-content;
     // width: -moz-min-content;
-    transition: 0.25s;
+    // transition: 0.25s;
     /*   margin-bottom: 0.1rem; */
     justify-items: self-end;
 
@@ -3855,7 +3852,7 @@ key {
     opacity: 0.5;
     cursor: default;
     &:hover {
-      color: var(--sub-color);
+      color: var(--text-color);
       background: rgba(0, 0, 0, 0.1);
       outline: none;
     }
@@ -4014,10 +4011,7 @@ key {
   }
 
   &.flash {
-    animation-name: flashKey;
-    animation-duration: 1s;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    animation-fill-mode: forwards;
+    animation: flashKey 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 }
 
@@ -4044,9 +4038,7 @@ key {
   width: 308px;
   height: 0;
   margin: 0 auto;
-  animation: shake;
-  animation-duration: 0s;
-  animation-iteration-count: infinite;
+  animation: shake 0s infinite;
   div {
     height: 200px;
     width: 308px;

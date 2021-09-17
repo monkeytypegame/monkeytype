@@ -3,6 +3,7 @@ import * as Notifications from "./notifications";
 import * as DB from "./db";
 import axiosInstance from "./axios-instance";
 import * as Misc from "./misc";
+import Config, * as UpdateConfig from "./config";
 
 let currentLeaderboard = "time_15";
 
@@ -17,6 +18,208 @@ let currentRank = {
 };
 
 let leaderboardSingleLimit = 50;
+
+let updateTimer;
+
+function clearTable(lb) {
+  if (lb === 15) {
+    $("#leaderboardsWrapper table.left tbody").empty();
+  } else if (lb === 60) {
+    $("#leaderboardsWrapper table.right tbody").empty();
+  }
+}
+
+function reset() {
+  currentData = {
+    15: [],
+    60: [],
+  };
+
+  currentRank = {
+    15: {},
+    60: {},
+  };
+}
+
+function stopTimer() {
+  clearInterval(updateTimer);
+  updateTimer = undefined;
+  $("#leaderboards .subTitle").text("Next update in: --:--");
+}
+
+function updateTimerElement() {
+  let date = new Date();
+  let minutesToNextUpdate = 4 - (date.getMinutes() % 5);
+  let secondsToNextUpdate = 60 - date.getSeconds();
+  let totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
+  $("#leaderboards .subTitle").text(
+    "Next update in: " + Misc.secondsToString(totalSeconds, true)
+  );
+}
+
+function startTimer() {
+  updateTimerElement();
+  updateTimer = setInterval(() => {
+    updateTimerElement();
+  }, 1000);
+}
+
+function showLoader(lb) {
+  if (lb === 15) {
+    $(`#leaderboardsWrapper .leftTableLoader`).removeClass("hidden");
+  } else if (lb === 60) {
+    $(`#leaderboardsWrapper .rightTableLoader`).removeClass("hidden");
+  }
+}
+
+function hideLoader(lb) {
+  if (lb === 15) {
+    $(`#leaderboardsWrapper .leftTableLoader`).addClass("hidden");
+  } else if (lb === 60) {
+    $(`#leaderboardsWrapper .rightTableLoader`).addClass("hidden");
+  }
+}
+
+function updateFooter(lb) {
+  let side;
+  if (lb === 15) {
+    side = "left";
+  } else {
+    side = "right";
+  }
+  $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+      <td><br><br></td>
+      <td colspan="4" style="text-align:center;">Not qualified</>
+      <td><br><br></td>
+    </tr>
+    `);
+  let toppercent;
+  if (currentRank[lb]) {
+    let num = Misc.roundTo2(
+      (currentRank[lb].rank / currentRank[lb].count) * 100
+    );
+    if (num == 0) {
+      num = 0.01;
+    }
+
+    toppercent = `Top ${num}%`;
+  }
+  if (currentRank[lb]) {
+    let entry = currentRank[lb];
+    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
+    <tr>
+    <td>${entry.rank}</td>
+    <td><span class="top">You</span><br><span class="sub">${toppercent}</span></td>
+    <td class="alignRight">${entry.wpm.toFixed(
+      2
+    )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
+    <td class="alignRight">${entry.raw.toFixed(2)}<br><div class="sub">${
+      !entry.consistency || entry.consistency === "-"
+        ? "-"
+        : entry.consistency.toFixed(2) + "%"
+    }</div></td>
+    <td class="alignRight">time<br><div class="sub">${lb}</div></td>
+    <td class="alignRight">${moment(entry.timestamp).format(
+      "DD MMM YYYY"
+    )}<br><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></td>
+  </tr>
+  `);
+  }
+}
+
+function checkLbMemory(lb) {
+  let side;
+  if (lb === 15) {
+    side = "left";
+  } else {
+    side = "right";
+  }
+
+  let memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.english;
+
+  if (memory && currentRank[lb]) {
+    let difference = memory - currentRank[lb].rank;
+    if (difference > 0) {
+      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
+      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
+        ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
+          difference
+        )} since you last checked)`
+      );
+    } else if (difference < 0) {
+      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
+      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
+        ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
+          difference
+        )} since you last checked)`
+      );
+    } else {
+      $(`#leaderboardsWrapper table.${side} tfoot tr td .top`).append(
+        ` ( = since you last checked)`
+      );
+    }
+  }
+}
+
+function fillTable(lb, prepend) {
+  let side;
+  if (lb === 15) {
+    side = "left";
+  } else {
+    side = "right";
+  }
+  let loggedInUserName = DB.getSnapshot()?.name;
+
+  let a = currentData[lb].length - leaderboardSingleLimit;
+  let b = currentData[lb].length;
+  if (a < 0) a = 0;
+  if (prepend) {
+    a = 0;
+    b = prepend;
+  }
+  let html = "";
+  for (let i = a; i < b; i++) {
+    let entry = currentData[lb][i];
+    if (!entry) {
+      break;
+    }
+    if (entry.hidden) return;
+    let meClassString = "";
+    if (entry.name == loggedInUserName) {
+      meClassString = ' class="me"';
+    }
+    html += `
+    <tr ${meClassString}>
+    <td>${
+      entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
+    }</td>
+    <td>${entry.name}</td>
+    <td class="alignRight">${(Config.alwaysShowCPM
+      ? entry.wpm * 5
+      : entry.wpm
+    ).toFixed(2)}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
+    <td class="alignRight">${(Config.alwaysShowCPM
+      ? entry.raw * 5
+      : entry.raw
+    ).toFixed(2)}<br><div class="sub">${
+      !entry.consistency || entry.consistency === "-"
+        ? "-"
+        : entry.consistency.toFixed(2) + "%"
+    }</div></td>
+    <td class="alignRight">time<br><div class="sub">${lb}</div></td>
+    <td class="alignRight">${moment(entry.timestamp).format(
+      "DD MMM YYYY"
+    )}<br><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></td>
+  </tr>
+  `;
+  }
+  if (!prepend) {
+    $(`#leaderboardsWrapper table.${side} tbody`).append(html);
+  } else {
+    $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
+  }
+}
 
 export function hide() {
   $("#leaderboardsWrapper")
@@ -117,107 +320,6 @@ function update() {
     });
 }
 
-export function clearTable(lb) {
-  if (lb === 15) {
-    $("#leaderboardsWrapper table.left tbody").empty();
-  } else if (lb === 60) {
-    $("#leaderboardsWrapper table.right tbody").empty();
-  }
-}
-
-export function fillTable(lb, prepend) {
-  let side;
-  if (lb === 15) {
-    side = "left";
-  } else {
-    side = "right";
-  }
-  let loggedInUserName = DB.getSnapshot()?.name;
-  let loaded = 0;
-
-  let a = currentData[lb].length - leaderboardSingleLimit;
-  let b = currentData[lb].length;
-  if (a < 0) a = 0;
-  if (prepend) {
-    a = 0;
-    b = prepend;
-  }
-  let html = "";
-  for (let i = a; i < b; i++) {
-    let entry = currentData[lb][i];
-    if (!entry) {
-      break;
-    }
-    if (entry.hidden) return;
-    let meClassString = "";
-    if (entry.name == loggedInUserName) {
-      meClassString = ' class="me"';
-    }
-    html += `
-    <tr ${meClassString}>
-    <td>${
-      entry.rank === 1 ? '<i class="fas fa-fw fa-crown"></i>' : entry.rank
-    }</td>
-    <td>${entry.name}</td>
-    <td class="alignRight">${entry.wpm.toFixed(
-      2
-    )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${entry.raw.toFixed(2)}<br><div class="sub">${
-      !entry.consistency || entry.consistency === "-"
-        ? "-"
-        : entry.consistency.toFixed(2) + "%"
-    }</div></td>
-    <td class="alignRight">time<br><div class="sub">${lb}</div></td>
-    <td class="alignRight">${moment(entry.timestamp).format(
-      "DD MMM YYYY"
-    )}<br><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></td>
-  </tr>
-  `;
-  }
-  if (!prepend) {
-    $(`#leaderboardsWrapper table.${side} tbody`).append(html);
-  } else {
-    $(`#leaderboardsWrapper table.${side} tbody`).prepend(html);
-  }
-}
-
-export function updateFooter(lb) {
-  let side;
-  if (lb === 15) {
-    side = "left";
-  } else {
-    side = "right";
-  }
-  $(`#leaderboardsWrapper table.${side} tfoot`).html(`
-    <tr>
-      <td><br><br></td>
-      <td colspan="4" style="text-align:center;">Not qualified</>
-      <td><br><br></td>
-    </tr>
-    `);
-  if (currentRank[lb]) {
-    let entry = currentRank[lb];
-    $(`#leaderboardsWrapper table.${side} tfoot`).html(`
-    <tr>
-    <td>${entry.rank}</td>
-    <td>You</td>
-    <td class="alignRight">${entry.wpm.toFixed(
-      2
-    )}<br><div class="sub">${entry.acc.toFixed(2)}%</div></td>
-    <td class="alignRight">${entry.raw.toFixed(2)}<br><div class="sub">${
-      !entry.consistency || entry.consistency === "-"
-        ? "-"
-        : entry.consistency.toFixed(2) + "%"
-    }</div></td>
-    <td class="alignRight">time<br><div class="sub">${lb}</div></td>
-    <td class="alignRight">${moment(entry.timestamp).format(
-      "DD MMM YYYY"
-    )}<br><div class='sub'>${moment(entry.timestamp).format("HH:mm")}</div></td>
-  </tr>
-  `);
-  }
-}
-
 async function requestMore(lb, prepend = false) {
   if (prepend && currentData[lb][0].rank === 1) return;
   showLoader(lb);
@@ -286,20 +388,32 @@ async function requestNew(lb, skip) {
   hideLoader(lb);
 }
 
-function reset() {
-  currentData = {
-    15: [],
-    60: [],
-  };
-
-  currentRank = {
-    15: {},
-    60: {},
-  };
-}
-
 export function show() {
   if ($("#leaderboardsWrapper").hasClass("hidden")) {
+    if (firebase.auth().currentUser) {
+      $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").removeClass(
+        "disabled"
+      );
+      $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").removeClass(
+        "disabled"
+      );
+    } else {
+      $("#leaderboardsWrapper #leaderboards .rightTableJumpToMe").addClass(
+        "disabled"
+      );
+      $("#leaderboardsWrapper #leaderboards .leftTableJumpToMe").addClass(
+        "disabled"
+      );
+    }
+    if (Config.alwaysShowCPM) {
+      $("#leaderboards table thead tr td:nth-child(3)").html(
+        'cpm<br><div class="sub">accuracy</div>'
+      );
+    } else {
+      $("#leaderboards table thead tr td:nth-child(3)").html(
+        'wpm<br><div class="sub">accuracy</div>'
+      );
+    }
     $("#leaderboardsWrapper")
       .stop(true, true)
       .css("opacity", 0)
@@ -315,80 +429,6 @@ export function show() {
         }
       );
   }
-}
-
-function checkLbMemory(lb) {
-  let side;
-  if (lb === 15) {
-    side = "left";
-  } else {
-    side = "right";
-  }
-
-  let memory = DB.getSnapshot()?.lbMemory?.time?.[lb]?.english;
-
-  if (memory && currentRank[lb]) {
-    let difference = memory - currentRank[lb].rank;
-    if (difference > 0) {
-      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
-      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
-        ` (<i class="fas fa-fw fa-angle-up"></i>${Math.abs(
-          difference
-        )} since you last checked)`
-      );
-    } else if (difference < 0) {
-      DB.updateLbMemory("time", lb, "english", currentRank[lb].rank, true);
-      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
-        ` (<i class="fas fa-fw fa-angle-down"></i>${Math.abs(
-          difference
-        )} since you last checked)`
-      );
-    } else {
-      $($(`#leaderboardsWrapper table.${side} tfoot tr td`)[1]).append(
-        ` (= since you last checked)`
-      );
-    }
-  }
-}
-
-function showLoader(lb) {
-  if (lb === 15) {
-    $(`#leaderboardsWrapper .leftTableLoader`).removeClass("hidden");
-  } else if (lb === 60) {
-    $(`#leaderboardsWrapper .rightTableLoader`).removeClass("hidden");
-  }
-}
-
-function hideLoader(lb) {
-  if (lb === 15) {
-    $(`#leaderboardsWrapper .leftTableLoader`).addClass("hidden");
-  } else if (lb === 60) {
-    $(`#leaderboardsWrapper .rightTableLoader`).addClass("hidden");
-  }
-}
-
-let updateTimer;
-function startTimer() {
-  updateTimerElement();
-  updateTimer = setInterval(() => {
-    updateTimerElement();
-  }, 1000);
-}
-
-function updateTimerElement() {
-  let date = new Date();
-  let minutesToNextUpdate = 4 - (date.getMinutes() % 5);
-  let secondsToNextUpdate = 60 - date.getSeconds();
-  let totalSeconds = minutesToNextUpdate * 60 + secondsToNextUpdate;
-  $("#leaderboards .subTitle").text(
-    "Next update in: " + Misc.secondsToString(totalSeconds, true)
-  );
-}
-
-function stopTimer() {
-  clearInterval(updateTimer);
-  updateTimer = undefined;
-  $("#leaderboards .subTitle").text("Next update in: --:--");
 }
 
 $("#leaderboardsWrapper").click((e) => {
@@ -415,7 +455,7 @@ $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
 $("#leaderboardsWrapper #leaderboards .leftTableWrapper").scroll((e) => {
   if (!leftScrollEnabled) return;
   let elem = $(e.currentTarget);
-  if (elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
+  if (elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
     requestMore(15);
   }
 });
@@ -432,7 +472,7 @@ $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
 
 $("#leaderboardsWrapper #leaderboards .rightTableWrapper").scroll((e) => {
   let elem = $(e.currentTarget);
-  if (elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
+  if (elem[0].scrollHeight - elem.scrollTop() <= elem.outerHeight()) {
     requestMore(60);
   }
 });

@@ -3,7 +3,6 @@ import * as Misc from "./misc";
 import layouts from "./layouts";
 import * as Notifications from "./notifications";
 import * as Sound from "./sound";
-import * as TestStats from "./test-stats";
 import * as ThemeController from "./theme-controller";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ManualRestart from "./manual-restart-tracker";
@@ -766,6 +765,31 @@ let commandsStartGraphsAtZero = {
       configValue: true,
       exec: () => {
         UpdateConfig.setStartGraphsAtZero(true);
+      },
+    },
+  ],
+};
+
+let commandsLazyMode = {
+  title: "Lazy mode...",
+  configKey: "lazyMode",
+  list: [
+    {
+      id: "setLazyModeOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setLazyMode(false);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setLazyModeOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setLazyMode(true);
+        TestLogic.restart();
       },
     },
   ],
@@ -2553,6 +2577,12 @@ export let defaultCommands = {
       subgroup: commandsSwapEscAndTab,
     },
     {
+      id: "changeLazyMode",
+      display: "Lazy mode...",
+      icon: "fa-couch",
+      subgroup: commandsLazyMode,
+    },
+    {
       id: "changeShowAllLines",
       display: "Show all lines...",
       icon: "fa-align-left",
@@ -2949,7 +2979,7 @@ export let defaultCommands = {
       icon: "fa-cog",
       input: true,
       defaultValue: "",
-      exec: (input) => {},
+      exec: () => {},
     },
     {
       id: "monkeyPower",

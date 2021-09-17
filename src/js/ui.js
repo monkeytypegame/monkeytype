@@ -255,7 +255,7 @@ $(".merchBanner .fas").click((event) => {
 });
 
 $(".scrollToTopButton").click((event) => {
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 $(document).on("click", "#bottom .leftright .right .current-theme", (e) => {

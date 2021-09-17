@@ -89,6 +89,13 @@ export function toggleScript(...params) {
   }
 }
 
+export function setFunbox(funbox, mode) {
+  if (funbox === "none") loadMemory();
+  modeSaved = mode;
+  UpdateConfig.setFunbox(funbox, false);
+  return true;
+}
+
 export async function activate(funbox) {
   let mode = modeSaved;
 
@@ -238,11 +245,5 @@ export async function activate(funbox) {
   //   }
   // }
   TestUI.updateModesNotice();
-  return true;
-}
-export function setFunbox(funbox, mode) {
-  if (funbox === "none") loadMemory();
-  modeSaved = mode;
-  UpdateConfig.setFunbox(funbox, false);
   return true;
 }
