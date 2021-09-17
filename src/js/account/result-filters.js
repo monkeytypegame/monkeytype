@@ -3,7 +3,6 @@ import * as DB from "./db";
 import Config from "./config";
 import * as Notifications from "./notifications";
 import * as Account from "./account";
-import * as Funbox from "./funbox";
 
 let defaultResultFilters = {
   difficulty: {
@@ -51,6 +50,7 @@ let defaultResultFilters = {
     last_day: false,
     last_week: false,
     last_month: false,
+    last_3months: false,
     all: true,
   },
   tags: {
@@ -63,6 +63,33 @@ let defaultResultFilters = {
 };
 
 export let filters = defaultResultFilters;
+
+function save() {
+  window.localStorage.setItem("resultFilters", JSON.stringify(filters));
+}
+
+function load() {
+  // let newTags = $.cookie("activeTags");
+  try {
+    let newResultFilters = window.localStorage.getItem("resultFilters");
+    if (
+      newResultFilters != undefined &&
+      newResultFilters !== "" &&
+      Misc.countAllKeys(newResultFilters) >=
+        Misc.countAllKeys(defaultResultFilters)
+    ) {
+      filters = JSON.parse(newResultFilters);
+      save();
+    } else {
+      filters = defaultResultFilters;
+      save();
+    }
+  } catch {
+    console.log("error in loading result filters");
+    filters = defaultResultFilters;
+    save();
+  }
+}
 
 Promise.all([Misc.getLanguageList(), Misc.getFunboxList()]).then((values) => {
   let languages = values[0];
@@ -99,35 +126,8 @@ export function getFilter(group, filter) {
 
 export function loadTags(tags) {
   tags.forEach((tag) => {
-    defaultResultFilters.tags[tag.id] = true;
+    defaultResultFilters.tags[tag._id] = true;
   });
-}
-
-export function save() {
-  window.localStorage.setItem("resultFilters", JSON.stringify(filters));
-}
-
-export function load() {
-  // let newTags = $.cookie("activeTags");
-  try {
-    let newResultFilters = window.localStorage.getItem("resultFilters");
-    if (
-      newResultFilters != undefined &&
-      newResultFilters !== "" &&
-      Misc.countAllKeys(newResultFilters) >=
-        Misc.countAllKeys(defaultResultFilters)
-    ) {
-      filters = JSON.parse(newResultFilters);
-      save();
-    } else {
-      filters = defaultResultFilters;
-      save();
-    }
-  } catch {
-    console.log("error in loading result filters");
-    filters = defaultResultFilters;
-    save();
-  }
 }
 
 export function reset() {
@@ -206,9 +206,9 @@ export function updateActive() {
         ret += aboveChartDisplay.tags.array
           .map((id) => {
             if (id == "none") return id;
-            let name = DB.getSnapshot().tags.filter((t) => t.id == id)[0];
+            let name = DB.getSnapshot().tags.filter((t) => t._id == id)[0];
             if (name !== undefined) {
-              return DB.getSnapshot().tags.filter((t) => t.id == id)[0].name;
+              return DB.getSnapshot().tags.filter((t) => t._id == id)[0].name;
             }
           })
           .join(", ");
@@ -305,7 +305,7 @@ export function updateTags() {
     DB.getSnapshot().tags.forEach((tag) => {
       $(
         ".pageAccount .content .filterButtons .buttonsAndTitle.tags .buttons"
-      ).append(`<div class="button" filter="${tag.id}">${tag.name}</div>`);
+      ).append(`<div class="button" filter="${tag._id}">${tag.name}</div>`);
     });
   } else {
     $(".pageAccount .content .filterButtons .buttonsAndTitle.tags").addClass(
@@ -412,7 +412,7 @@ $(".pageAccount .topFilters .button.currentConfigFilter").click((e) => {
   DB.getSnapshot().tags.forEach((tag) => {
     if (tag.active === true) {
       filters["tags"]["none"] = false;
-      filters["tags"][tag.id] = true;
+      filters["tags"][tag._id] = true;
     }
   });
 

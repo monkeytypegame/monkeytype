@@ -1,6 +1,4 @@
-# monkeytype
-
-[![](https://github.com/Miodec/monkeytype/blob/master/static/images/mtsocial.png?raw=true)](https://monkeytype.com/)
+[![](https://github.com/Miodec/monkeytype/blob/master/static/images/githubbanner2.png?raw=true)](https://monkeytype.com/)
 <br />
 
 <img align="left" alt="JavaScript" width="26px" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" />
@@ -30,7 +28,7 @@ Monkeytype is a minimalistic, customizable typing test, featuring many test mode
 
 # Discord bot
 
-On the [monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to auto-assign roles on our server. You can find its code over at https://github.com/Miodec/monkey-bot
+On the [Monkeytype Discord server](https://www.discord.gg/monkeytype), we added a Discord bot to auto-assign roles on our server. You can find its code over at https://github.com/Miodec/monkey-bot
 
 # Bug report or Feature request
 
@@ -42,7 +40,7 @@ Refer to [CONTRIBUTING.md.](https://github.com/Miodec/monkeytype/blob/master/CON
 
 # Code of Conduct
 
-Before contributing to this repository please carefully read and understand the [code of conduct.](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)
+Before contributing to this repository, please read the [code of conduct.](https://github.com/Miodec/monkeytype/blob/master/CODE_OF_CONDUCT.md)
 
 # Credits
 

@@ -79,11 +79,15 @@
   },
   {
     "name": "italian",
-    "languages": ["italian", "italian_1k", "italian_7k"]
+    "languages": ["italian", "italian_1k", "italian_7k", "italian_60k", "italian_280k"]
   },
   {
     "name": "thai",
     "languages": ["thai"]
+  },
+ {
+    "name": "tamil",
+    "languages": ["tamil"]
   },
   {
     "name": "polish",
@@ -228,6 +232,7 @@
       "code_c",
       "code_csharp",
       "code_c++",
+      "code_dart",
       "code_javascript",
       "code_javascript_1k",
       "code_html",

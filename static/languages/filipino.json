@@ -1,6 +1,7 @@
 {
   "name": "filipino",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "sa",
     "na",

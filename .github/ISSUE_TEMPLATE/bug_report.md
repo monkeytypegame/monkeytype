@@ -17,7 +17,6 @@ Sometimes your browser has old files cached and the bug you are experiencing mig
 <!-- **Did it happen in incognito mode?**
 Sometimes things work in incognito mode, which allows me to further track down the issue. -->
 
-
 **To Reproduce** <!-- Steps to reproduce the behavior: -->
 
 1. Go to '...'
@@ -34,6 +33,5 @@ Sometimes things work in incognito mode, which allows me to further track down t
 - OS: [] <!-- e.g. Windows 10, MacOS, Linux-->
 - Browser [] <!-- e.g. Chrome, Firefox, Safari, etc... -->
 - Browser Version [] <!-- e.g. 22 -->
-
 
 **Additional context** <!-- Add any other details about the problem here. -->

@@ -2,6 +2,7 @@
   "name": "bangla_letters",
   "leftToRight": true,
   "ligatures": true,
+  "noLazyMode": true,
   "words": [
     "অ",
     "আ",

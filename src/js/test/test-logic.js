@@ -26,15 +26,23 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "./account-button";
 import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
-import * as CloudFunctions from "./cloud-functions";
-import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
+import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
 import * as Poetry from "./poetry.js";
 import * as TodayTracker from "./today-tracker";
 import * as WeakSpot from "./weak-spot";
+import * as Wordset from "./wordset";
+import * as ChallengeContoller from "./challenge-controller";
+import * as RateQuotePopup from "./rate-quote-popup";
+import * as BritishEnglish from "./british-english";
+import * as LazyMode from "./lazy-mode";
+
+const objecthash = require("object-hash");
 
 let glarsesMode = false;
+
+let failReason = "";
 
 export function toggleGlarses() {
   glarsesMode = true;
@@ -46,8 +54,14 @@ export function toggleGlarses() {
 
 export let notSignedInLastResult = null;
 
+export function clearNotSignedInResult() {
+  notSignedInLastResult = null;
+}
+
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
+  delete notSignedInLastResult.hash;
+  notSignedInLastResult.hash = objecthash(notSignedInLastResult);
 }
 
 class Words {
@@ -86,6 +100,18 @@ class Words {
   }
   increaseCurrentIndex() {
     this.currentIndex++;
+  }
+  clean() {
+    for (let s of this.list) {
+      if (/ +/.test(s)) {
+        let id = this.list.indexOf(s);
+        let tempList = s.split(" ");
+        this.list.splice(id, 1);
+        for (let i = 0; i < tempList.length; i++) {
+          this.list.splice(id + i, 0, tempList[i]);
+        }
+      }
+    }
   }
 }
 
@@ -446,6 +472,11 @@ export async function init() {
     language = await Misc.getLanguage(Config.language);
   }
 
+  if (Config.lazyMode === true && language.noLazyMode) {
+    Notifications.add("This language does not support lazy mode.", 0);
+    UpdateConfig.setLazyMode(false);
+  }
+
   if (
     Config.mode == "time" ||
     Config.mode == "words" ||
@@ -511,10 +542,11 @@ export async function init() {
     if (Config.funbox === "plus_two") {
       wordsBound = 3;
     }
-    let wordset = language.words;
+    let wordList = language.words;
     if (Config.mode == "custom") {
-      wordset = CustomText.text;
+      wordList = CustomText.text;
     }
+    const wordset = Wordset.withWords(wordList);
 
     if (Config.funbox == "poetry") {
       let poem = await Poetry.getPoem();
@@ -523,7 +555,7 @@ export async function init() {
       });
     } else {
       for (let i = 0; i < wordsBound; i++) {
-        let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+        let randomWord = wordset.randomWord();
         const previousWord = words.get(i - 1);
         const previousWord2 = words.get(i - 2);
         if (
@@ -536,24 +568,35 @@ export async function init() {
           Config.mode == "custom" &&
           (wordset.length < 3 || PractiseWords.before.mode !== null)
         ) {
-          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+          randomWord = wordset.randomWord();
         } else {
           let regenarationCount = 0; //infinite loop emergency stop button
           while (
             regenarationCount < 100 &&
             (randomWord == previousWord ||
               randomWord == previousWord2 ||
-              (!Config.punctuation && randomWord == "I") ||
-              randomWord.indexOf(" ") > -1)
+              (!Config.punctuation && randomWord == "I"))
           ) {
             regenarationCount++;
-            randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+            randomWord = wordset.randomWord();
           }
         }
 
         if (randomWord === undefined) {
-          randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+          randomWord = wordset.randomWord();
         }
+
+        if (Config.britishEnglish && /english/.test(Config.language)) {
+          let britishWord = await BritishEnglish.replace(randomWord);
+          if (britishWord) randomWord = britishWord;
+        }
+
+        if (Config.lazyMode === true && !language.noLazyMode) {
+          randomWord = LazyMode.replaceAccents(randomWord);
+        }
+
+        randomWord = randomWord.replace(/ +/gm, " ");
+        randomWord = randomWord.replace(/^ | $/gm, "");
 
         if (Config.funbox === "rAnDoMcAsE") {
           let randomcaseword = "";
@@ -603,7 +646,33 @@ export async function init() {
           setHasTab(true);
         }
 
-        words.push(randomWord);
+        if (/ +/.test(randomWord)) {
+          let randomList = randomWord.split(" ");
+          let id = 0;
+          while (id < randomList.length) {
+            words.push(randomList[id]);
+            id++;
+
+            if (
+              words.length == wordsBound &&
+              Config.mode == "custom" &&
+              CustomText.isWordRandom
+            ) {
+              break;
+            }
+          }
+          if (
+            Config.mode == "custom" &&
+            !CustomText.isWordRandom &&
+            !CustomText.isTimeRandom
+          ) {
+            //
+          } else {
+            i = words.length - 1;
+          }
+        } else {
+          words.push(randomWord);
+        }
       }
     }
   } else if (Config.mode == "quote") {
@@ -672,7 +741,9 @@ export async function init() {
     rq.text = rq.text.replace(/\\t/gm, "\t");
     rq.text = rq.text.replace(/\\n/gm, "\n");
     rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
+    rq.text = rq.text.replace(/…/g, "...");
     rq.text = rq.text.trim();
+    rq.language = Config.language.replace(/_\d*k$/g, "");
 
     setRandomQuote(rq);
 
@@ -681,6 +752,18 @@ export async function init() {
       if (/\t/g.test(w[i])) {
         setHasTab(true);
       }
+      if (
+        Config.britishEnglish &&
+        Config.language.replace(/_\d*k$/g, "") === "english"
+      ) {
+        let britishWord = await BritishEnglish.replace(w[i]);
+        if (britishWord) w[i] = britishWord;
+      }
+
+      if (Config.lazyMode === true && !language.noLazyMode) {
+        w[i] = LazyMode.replaceAccents(w[i]);
+      }
+
       words.push(w[i]);
     }
   }
@@ -802,7 +885,6 @@ export function restart(
   TestStats.restart();
   corrected.reset();
   ShiftTracker.reset();
-  Focus.set(false);
   Caret.hide();
   setActive(false);
   Replay.stopReplayRecording();
@@ -816,6 +898,7 @@ export function restart(
   $("#showWordHistoryButton").removeClass("loaded");
   TestUI.focusWords();
   Funbox.resetMemoryTimer();
+  RateQuotePopup.clearQuoteStats();
 
   TestUI.reset();
 
@@ -911,12 +994,14 @@ export function restart(
         UpdateConfig.setLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         UpdateConfig.setKeymapLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         Keymap.highlightKey(
           words
@@ -932,6 +1017,7 @@ export function restart(
         opacity: 1,
       });
       // resetPaceCaret();
+      Focus.set(false);
       $("#typingTest")
         .css("opacity", 0)
         .removeClass("hidden")
@@ -948,7 +1034,7 @@ export function restart(
             TestTimer.clear();
             if ($("#commandLineWrapper").hasClass("hidden"))
               TestUI.focusWords();
-            ChartController.result.update();
+            // ChartController.result.update();
             TestUI.updateModesNotice();
             UI.setPageTransition(false);
             // console.log(TestStats.incompleteSeconds);
@@ -1020,8 +1106,8 @@ export async function addWord() {
           leftToRight: await Misc.getCurrentLanguage().leftToRight,
           words: CustomText.text,
         };
-  const wordset = language.words;
-  let randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+  const wordset = Wordset.withWords(language.words);
+  let randomWord = wordset.randomWord();
   const previousWord = words.getLast();
   const previousWordStripped = previousWord
     .replace(/[.?!":\-,]/g, "")
@@ -1036,7 +1122,7 @@ export async function addWord() {
     (CustomText.isWordRandom || CustomText.isTimeRandom) &&
     wordset.length < 3
   ) {
-    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+    randomWord = wordset.randomWord();
   } else if (
     Config.mode == "custom" &&
     !CustomText.isWordRandom &&
@@ -1050,12 +1136,20 @@ export async function addWord() {
       randomWord.indexOf(" ") > -1 ||
       (!Config.punctuation && randomWord == "I")
     ) {
-      randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+      randomWord = wordset.randomWord();
     }
   }
 
   if (randomWord === undefined) {
-    randomWord = wordset[Math.floor(Math.random() * wordset.length)];
+    randomWord = wordset.randomWord();
+  }
+
+  if (
+    Config.britishEnglish &&
+    Config.language.replace(/_\d*k$/g, "") === "english"
+  ) {
+    let britishWord = await BritishEnglish.replace(randomWord);
+    if (britishWord) randomWord = britishWord;
   }
 
   if (Config.funbox === "rAnDoMcAsE") {
@@ -1076,6 +1170,8 @@ export async function addWord() {
     randomWord = Misc.getSpecials();
   } else if (Config.funbox === "ascii") {
     randomWord = Misc.getASCII();
+  } else if (Config.funbox === "weakspot") {
+    randomWord = WeakSpot.getWord(wordset);
   }
 
   if (Config.punctuation) {
@@ -1091,7 +1187,7 @@ export async function addWord() {
   TestUI.addWord(randomWord);
 }
 
-export function finish(difficultyFailed = false) {
+export async function finish(difficultyFailed = false) {
   if (!active) return;
   if (Config.mode == "zen" && input.current.length != 0) {
     input.pushHistory();
@@ -1099,7 +1195,7 @@ export function finish(difficultyFailed = false) {
     Replay.replayGetWordsList(input.history);
   }
 
-  TestStats.recordKeypressSpacing();
+  TestStats.recordKeypressSpacing(); //this is needed in case there is afk time at the end - to make sure test duration makes sense
 
   TestUI.setResultCalculating(true);
   TestUI.setResultVisible(true);
@@ -1115,23 +1211,21 @@ export function finish(difficultyFailed = false) {
   TimerProgress.hide();
   Funbox.activate("none", null);
 
+  let stats = TestStats.calculateStats();
+
   if (TestStats.burstHistory.length !== input.getHistory().length) {
     //auto ended test, need one more calculation for the last word
     let burst = TestStats.calculateBurst();
     TestStats.pushBurstToHistory(burst);
   }
 
-  if (
-    Misc.roundTo2(TestStats.calculateTestSeconds()) % 1 != 0 &&
-    Config.mode !== "time"
-  ) {
+  if (stats.time % 1 != 0 && Config.mode !== "time") {
     TestStats.setLastSecondNotRound();
   }
 
   if (Config.mode == "zen" || bailout) {
     TestStats.removeAfkData();
   }
-  let stats = TestStats.calculateStats();
   if (stats === undefined) {
     stats = {
       wpm: 0,
@@ -1154,7 +1248,7 @@ export function finish(difficultyFailed = false) {
 
   lastTestWpm = stats.wpm;
 
-  let testtime = stats.time;
+  let testtime = parseFloat(stats.time);
 
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
     let wpmAndRaw = calculateWpmAndRaw();
@@ -1333,10 +1427,17 @@ export function finish(difficultyFailed = false) {
   let avg = Misc.mean(rawWpmPerSecondRaw);
 
   let consistency = Misc.roundTo2(Misc.kogasa(stddev / avg));
+
+  let keyconsistencyarray = TestStats.keypressTimings.spacing.array.slice();
+
+  keyconsistencyarray = keyconsistencyarray.splice(
+    0,
+    keyconsistencyarray.length - 1
+  );
+
   let keyConsistency = Misc.roundTo2(
     Misc.kogasa(
-      Misc.stdDev(TestStats.keypressTimings.spacing.array) /
-        Misc.mean(TestStats.keypressTimings.spacing.array)
+      Misc.stdDev(keyconsistencyarray) / Misc.mean(keyconsistencyarray)
     )
   );
 
@@ -1362,18 +1463,28 @@ export function finish(difficultyFailed = false) {
     );
   }
 
-  ChartController.result.data.datasets[0].data = TestStats.wpmHistory;
-  ChartController.result.data.datasets[1].data = rawWpmPerSecond;
+  ChartController.result.options.scales.yAxes[0].scaleLabel.labelString = Config.alwaysShowCPM
+    ? "Character per Minute"
+    : "Words per Minute";
+  let chartData1 = Config.alwaysShowCPM
+    ? TestStats.wpmHistory.map((a) => a * 5)
+    : TestStats.wpmHistory;
+  let chartData2 = Config.alwaysShowCPM
+    ? rawWpmPerSecond.map((a) => a * 5)
+    : rawWpmPerSecond;
+
+  ChartController.result.data.datasets[0].data = chartData1;
+  ChartController.result.data.datasets[1].data = chartData2;
 
   let maxChartVal = Math.max(
-    ...[Math.max(...rawWpmPerSecond), Math.max(...TestStats.wpmHistory)]
+    ...[Math.max(...chartData2), Math.max(...chartData1)]
   );
   if (!Config.startGraphsAtZero) {
     ChartController.result.options.scales.yAxes[0].ticks.min = Math.min(
-      ...TestStats.wpmHistory
+      ...chartData1
     );
     ChartController.result.options.scales.yAxes[1].ticks.min = Math.min(
-      ...TestStats.wpmHistory
+      ...chartData1
     );
   } else {
     ChartController.result.options.scales.yAxes[0].ticks.min = 0;
@@ -1451,7 +1562,7 @@ export function finish(difficultyFailed = false) {
       DB.getSnapshot().tags.forEach((tag) => {
         if (tag.active === true) {
           activeTags.push(tag);
-          activeTagsIds.push(tag.id);
+          activeTagsIds.push(tag._id);
         }
       });
     } catch (e) {}
@@ -1486,15 +1597,22 @@ export function finish(difficultyFailed = false) {
     let completedEvent = {
       wpm: stats.wpm,
       rawWpm: stats.wpmRaw,
-      correctChars: stats.correctChars + stats.correctSpaces,
-      incorrectChars: stats.incorrectChars,
-      allChars: stats.allChars,
+      // correctChars: stats.correctChars + stats.correctSpaces,
+      // incorrectChars: stats.incorrectChars,
+      // allChars: stats.allChars,
+      charStats: [
+        stats.correctChars + stats.correctSpaces,
+        stats.incorrectChars,
+        stats.extraChars,
+        stats.missedChars,
+      ],
       acc: stats.acc,
       mode: Config.mode,
       mode2: mode2,
       quoteLength: quoteLength,
       punctuation: Config.punctuation,
       numbers: Config.numbers,
+      lazyMode: Config.lazyMode,
       timestamp: Date.now(),
       language: lang,
       restartCount: TestStats.restartCount,
@@ -1506,7 +1624,7 @@ export function finish(difficultyFailed = false) {
       testDuration: testtime,
       afkDuration: afkseconds,
       blindMode: Config.blindMode,
-      theme: Config.theme,
+      // theme: Config.theme,
       tags: activeTagsIds,
       keySpacing: TestStats.keypressTimings.spacing.array,
       keyDuration: TestStats.keypressTimings.duration.array,
@@ -1539,6 +1657,33 @@ export function finish(difficultyFailed = false) {
     ) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
+        if (Config.mode === "quote") {
+          $(".pageTest #result #rateQuoteButton .rating").text("");
+          let userqr = DB.getSnapshot().quoteRatings?.[randomQuote.language]?.[
+            randomQuote.id
+          ];
+          if (userqr) {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("far")
+              .addClass("fas");
+          } else {
+            $(".pageTest #result #rateQuoteButton .icon")
+              .removeClass("fas")
+              .addClass("far");
+          }
+          RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
+            if (quoteStats !== null) {
+              $(".pageTest #result #rateQuoteButton .rating").text(
+                quoteStats.average
+              );
+            }
+            $(".pageTest #result #rateQuoteButton")
+              .css({ opacity: 0 })
+              .removeClass("hidden")
+              .css({ opacity: 1 });
+          });
+        }
+
         //check local pb
         AccountButton.loading(true);
         let dontShowCrown = false;
@@ -1548,15 +1693,18 @@ export function finish(difficultyFailed = false) {
           mode2,
           Config.punctuation,
           Config.language,
-          Config.difficulty
+          Config.difficulty,
+          Config.lazyMode,
+          Config.funbox
         ).then((lpb) => {
           DB.getUserHighestWpm(
             Config.mode,
             mode2,
             Config.punctuation,
             Config.language,
-            Config.difficulty
-          ).then((highestwpm) => {
+            Config.difficulty,
+            Config.lazyMode
+          ).then(async (highestwpm) => {
             PbCrown.hide();
             $("#result .stats .wpm .crown").attr("aria-label", "");
             if (lpb < stats.wpm && stats.wpm < highestwpm) {
@@ -1581,32 +1729,37 @@ export function finish(difficultyFailed = false) {
                 );
               }
             }
+            let themecolors = await ThemeColors.get();
+            let chartlpb = Config.alwaysShowCPM ? lpb * 5 : lpb;
             if (lpb > 0) {
               ChartController.result.options.annotation.annotations.push({
                 enabled: false,
                 type: "line",
                 mode: "horizontal",
                 scaleID: "wpm",
-                value: lpb,
-                borderColor: ThemeColors.sub,
+                value: chartlpb,
+                borderColor: themecolors["sub"],
                 borderWidth: 1,
                 borderDash: [2, 2],
                 label: {
-                  backgroundColor: ThemeColors.sub,
+                  backgroundColor: themecolors["sub"],
                   fontFamily: Config.fontFamily.replace(/_/g, " "),
                   fontSize: 11,
                   fontStyle: "normal",
-                  fontColor: ThemeColors.bg,
+                  fontColor: themecolors["bg"],
                   xPadding: 6,
                   yPadding: 6,
                   cornerRadius: 3,
                   position: "center",
                   enabled: true,
-                  content: `PB: ${lpb}`,
+                  content: `PB: ${chartlpb}`,
                 },
               });
-              if (maxChartVal >= lpb - 15 && maxChartVal <= lpb + 15) {
-                maxChartVal = lpb + 15;
+              if (
+                maxChartVal >= chartlpb - 15 &&
+                maxChartVal <= chartlpb + 15
+              ) {
+                maxChartVal = chartlpb + 15;
               }
               ChartController.result.options.scales.yAxes[0].ticks.max = Math.round(
                 maxChartVal
@@ -1624,40 +1777,42 @@ export function finish(difficultyFailed = false) {
             }
             $("#result .stats .tags .bottom").text("");
             let annotationSide = "left";
+            let labelAdjust = 15;
             activeTags.forEach(async (tag) => {
               let tpb = await DB.getLocalTagPB(
-                tag.id,
+                tag._id,
                 Config.mode,
                 mode2,
                 Config.punctuation,
                 Config.language,
-                Config.difficulty
+                Config.difficulty,
+                Config.lazyMode
               );
               $("#result .stats .tags .bottom").append(`
-                <div tagid="${tag.id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
+                <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
               `);
               if (Config.mode != "quote") {
                 if (tpb < stats.wpm) {
                   //new pb for that tag
                   DB.saveLocalTagPB(
-                    tag.id,
+                    tag._id,
                     Config.mode,
                     mode2,
                     Config.punctuation,
                     Config.language,
                     Config.difficulty,
+                    Config.lazyMode,
                     stats.wpm,
                     stats.acc,
                     stats.wpmRaw,
                     consistency
                   );
                   $(
-                    `#result .stats .tags .bottom div[tagid="${tag.id}"] .fas`
+                    `#result .stats .tags .bottom div[tagid="${tag._id}"] .fas`
                   ).removeClass("hidden");
-                  $(`#result .stats .tags .bottom div[tagid="${tag.id}"]`).attr(
-                    "aria-label",
-                    "+" + Misc.roundTo2(stats.wpm - tpb)
-                  );
+                  $(
+                    `#result .stats .tags .bottom div[tagid="${tag._id}"]`
+                  ).attr("aria-label", "+" + Misc.roundTo2(stats.wpm - tpb));
                   // console.log("new pb for tag " + tag.name);
                 } else {
                   ChartController.result.options.annotation.annotations.push({
@@ -1665,28 +1820,33 @@ export function finish(difficultyFailed = false) {
                     type: "line",
                     mode: "horizontal",
                     scaleID: "wpm",
-                    value: tpb,
-                    borderColor: ThemeColors.sub,
+                    value: Config.alwaysShowCPM ? tpb * 5 : tpb,
+                    borderColor: themecolors["sub"],
                     borderWidth: 1,
                     borderDash: [2, 2],
                     label: {
-                      backgroundColor: ThemeColors.sub,
+                      backgroundColor: themecolors["sub"],
                       fontFamily: Config.fontFamily.replace(/_/g, " "),
                       fontSize: 11,
                       fontStyle: "normal",
-                      fontColor: ThemeColors.bg,
+                      fontColor: themecolors["bg"],
                       xPadding: 6,
                       yPadding: 6,
                       cornerRadius: 3,
                       position: annotationSide,
+                      xAdjust: labelAdjust,
                       enabled: true,
-                      content: `${tag.name} PB: ${tpb}`,
+                      content: `${tag.name} PB: ${
+                        Config.alwaysShowCPM ? tpb * 5 : tpb
+                      }`,
                     },
                   });
                   if (annotationSide === "left") {
                     annotationSide = "right";
+                    labelAdjust = -15;
                   } else {
                     annotationSide = "left";
+                    labelAdjust = 15;
                   }
                 }
               }
@@ -1699,138 +1859,112 @@ export function finish(difficultyFailed = false) {
               completedEvent.mode === "time" &&
               ["15", "60"].includes(String(completedEvent.mode2))
             ) {
-              $("#result .stats .leaderboards").removeClass("hidden");
-              $("#result .stats .leaderboards .bottom").html(
-                `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
-              );
+              //TODO bring back when leaderboards fixed
+              // $("#result .stats .leaderboards").removeClass("hidden");
+              // $("#result .stats .leaderboards .bottom").html(
+              //   `checking <i class="fas fa-spin fa-fw fa-circle-notch"></i>`
+              // );
             }
-            if (!window.navigator.onLine) {
-              AccountButton.loading(false);
-              Notifications.add("You are offline. Result not saved.", -1);
-            } else {
-              CloudFunctions.testCompleted({
-                uid: firebase.auth().currentUser.uid,
-                obj: completedEvent,
+            completedEvent.challenge = ChallengeContoller.verify(
+              completedEvent
+            );
+            completedEvent.hash = objecthash(completedEvent);
+            axiosInstance
+              .post("/results/add", {
+                result: completedEvent,
               })
-                .then((e) => {
-                  AccountButton.loading(false);
-                  if (e.data == null) {
-                    Notifications.add(
-                      "Unexpected response from the server: " + e.data,
-                      -1
-                    );
-                    return;
-                  }
-                  if (e.data.resultCode === -1) {
-                    Notifications.add("Could not save result", -1);
-                  } else if (e.data.resultCode === -2) {
-                    Notifications.add(
-                      "Possible bot detected. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -3) {
-                    Notifications.add(
-                      "Could not verify keypress stats. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -4) {
-                    Notifications.add(
-                      "Result data does not make sense. Result not saved.",
-                      -1
-                    );
-                  } else if (e.data.resultCode === -5) {
-                    Notifications.add("Test too short. Result not saved.", -1);
-                  } else if (e.data.resultCode === -999) {
-                    console.error("internal error: " + e.data.message);
-                    Notifications.add(
-                      "Internal error. Result might not be saved. " +
-                        e.data.message,
-                      -1
-                    );
-                  } else if (
-                    e.data.resultCode === 1 ||
-                    e.data.resultCode === 2
-                  ) {
-                    completedEvent.id = e.data.createdId;
-                    TestLeaderboards.check(completedEvent);
-                    if (e.data.resultCode === 2) {
-                      completedEvent.isPb = true;
-                    }
-                    if (
-                      DB.getSnapshot() !== null &&
-                      DB.getSnapshot().results !== undefined
-                    ) {
-                      DB.getSnapshot().results.unshift(completedEvent);
-                      if (DB.getSnapshot().globalStats.time == undefined) {
-                        DB.getSnapshot().globalStats.time =
-                          testtime +
-                          completedEvent.incompleteTestSeconds -
-                          afkseconds;
-                      } else {
-                        DB.getSnapshot().globalStats.time +=
-                          testtime +
-                          completedEvent.incompleteTestSeconds -
-                          afkseconds;
-                      }
-                      if (DB.getSnapshot().globalStats.started == undefined) {
-                        DB.getSnapshot().globalStats.started =
-                          TestStats.restartCount + 1;
-                      } else {
-                        DB.getSnapshot().globalStats.started +=
-                          TestStats.restartCount + 1;
-                      }
-                      if (DB.getSnapshot().globalStats.completed == undefined) {
-                        DB.getSnapshot().globalStats.completed = 1;
-                      } else {
-                        DB.getSnapshot().globalStats.completed += 1;
-                      }
-                    }
-                    try {
-                      firebase
-                        .analytics()
-                        .logEvent("testCompleted", completedEvent);
-                    } catch (e) {
-                      console.log("Analytics unavailable");
-                    }
+              .then((response) => {
+                AccountButton.loading(false);
 
-                    if (e.data.resultCode === 2) {
-                      //new pb
-                      PbCrown.show();
-                      $("#result .stats .wpm .crown").attr(
-                        "aria-label",
-                        "+" + Misc.roundTo2(pbDiff)
-                      );
-                      DB.saveLocalPB(
-                        Config.mode,
-                        mode2,
-                        Config.punctuation,
-                        Config.language,
-                        Config.difficulty,
-                        stats.wpm,
-                        stats.acc,
-                        stats.wpmRaw,
-                        consistency
-                      );
-                    } else if (e.data.resultCode === 1) {
-                      PbCrown.hide();
-                      // if (localPb) {
-                      //   Notifications.add(
-                      //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
-                      //     15000
-                      //   );
-                      // }
+                if (response.status !== 200) {
+                  Notifications.add(
+                    "Result not saved. " + response.data.message,
+                    -1
+                  );
+                } else {
+                  completedEvent._id = response.data.insertedId;
+                  if (
+                    response.data.isPb &&
+                    ["english"].includes(completedEvent.language)
+                  ) {
+                    completedEvent.isPb = true;
+                  }
+                  if (
+                    DB.getSnapshot() !== null &&
+                    DB.getSnapshot().results !== undefined
+                  ) {
+                    DB.getSnapshot().results.unshift(completedEvent);
+                    if (DB.getSnapshot().globalStats.time == undefined) {
+                      DB.getSnapshot().globalStats.time =
+                        testtime +
+                        completedEvent.incompleteTestSeconds -
+                        afkseconds;
+                    } else {
+                      DB.getSnapshot().globalStats.time +=
+                        testtime +
+                        completedEvent.incompleteTestSeconds -
+                        afkseconds;
+                    }
+                    if (DB.getSnapshot().globalStats.started == undefined) {
+                      DB.getSnapshot().globalStats.started =
+                        TestStats.restartCount + 1;
+                    } else {
+                      DB.getSnapshot().globalStats.started +=
+                        TestStats.restartCount + 1;
+                    }
+                    if (DB.getSnapshot().globalStats.completed == undefined) {
+                      DB.getSnapshot().globalStats.completed = 1;
+                    } else {
+                      DB.getSnapshot().globalStats.completed += 1;
                     }
                   }
-                })
-                .catch((e) => {
-                  AccountButton.loading(false);
-                  console.error(e);
-                  Notifications.add("Could not save result. " + e, -1);
-                });
-            }
+                  try {
+                    firebase
+                      .analytics()
+                      .logEvent("testCompleted", completedEvent);
+                  } catch (e) {
+                    console.log("Analytics unavailable");
+                  }
+
+                  if (response.data.isPb) {
+                    //new pb
+                    PbCrown.show();
+                    $("#result .stats .wpm .crown").attr(
+                      "aria-label",
+                      "+" + Misc.roundTo2(pbDiff)
+                    );
+                    DB.saveLocalPB(
+                      Config.mode,
+                      mode2,
+                      Config.punctuation,
+                      Config.language,
+                      Config.difficulty,
+                      Config.lazyMode,
+                      stats.wpm,
+                      stats.acc,
+                      stats.wpmRaw,
+                      consistency
+                    );
+                  } else {
+                    PbCrown.hide();
+                    // if (localPb) {
+                    //   Notifications.add(
+                    //     "Local PB data is out of sync! Refresh the page to resync it or contact Miodec on Discord.",
+                    //     15000
+                    //   );
+                    // }
+                  }
+                }
+              })
+              .catch((e) => {
+                AccountButton.loading(false);
+                let msg = e?.response?.data?.message ?? e.message;
+                Notifications.add("Failed to save result: " + msg, -1);
+              });
           });
         });
       } else {
+        $(".pageTest #result #rateQuoteButton").addClass("hidden");
         try {
           firebase.analytics().logEvent("testCompletedNoLogin", completedEvent);
         } catch (e) {
@@ -1895,6 +2029,9 @@ export function finish(difficultyFailed = false) {
   if (Config.blindMode) {
     testType += "<br>blind";
   }
+  if (Config.lazyMode) {
+    testType += "<br>lazy";
+  }
   if (Config.funbox !== "none") {
     testType += "<br>" + Config.funbox.replace(/_/g, " ");
   }
@@ -1949,7 +2086,7 @@ export function finish(difficultyFailed = false) {
   } else {
     $("#result .stats .source").addClass("hidden");
   }
-
+  let fc = await ThemeColors.get("sub");
   if (Config.funbox !== "none") {
     let content = Config.funbox;
     if (Config.funbox === "layoutfluid") {
@@ -1969,7 +2106,7 @@ export function finish(difficultyFailed = false) {
         fontFamily: Config.fontFamily.replace(/_/g, " "),
         fontSize: 11,
         fontStyle: "normal",
-        fontColor: ThemeColors.sub,
+        fontColor: fc,
         xPadding: 6,
         yPadding: 6,
         cornerRadius: 3,
@@ -1997,7 +2134,7 @@ export function finish(difficultyFailed = false) {
         font-size: 2rem;
         padding: 2rem 0;
       ">Test completed</div>
-    
+
     `);
     $("#middle #result .stats").remove();
     $("#middle #result .chart").remove();
@@ -2033,11 +2170,10 @@ export function finish(difficultyFailed = false) {
   );
 }
 
-let failReason = "";
 export function fail(reason) {
   failReason = reason;
-  input.pushHistory();
-  corrected.pushHistory();
+  // input.pushHistory();
+  // corrected.pushHistory();
   TestStats.pushKeypressesToHistory();
   finish(true);
   let testSeconds = TestStats.calculateTestSeconds(performance.now());

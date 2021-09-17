@@ -37,7 +37,7 @@
   {
     "name": "layoutfluid",
     "type": "script",
-    "info": "Switch between QWERTY, Dvorak and Colemak after a third of the test."
+    "info": "Switch between layouts specified below proportionately to the length of the test."
   },
   {
     "name": "earthquake",
@@ -113,6 +113,11 @@
     "name": "weakspot",
     "type": "script",
     "info": "Focus on slow and mistyped letters."
+  },
+  {
+    "name": "pseudolang",
+    "type": "script",
+    "info": "Nonsense words that look like the current language."
   }
 ]
 

@@ -17,6 +17,9 @@ import * as Replay from "./replay";
 import * as TestStats from "./test-stats";
 import * as Misc from "./misc";
 import * as TestUI from "./test-ui";
+import * as ChallengeController from "./challenge-controller";
+import * as RateQuotePopup from "./rate-quote-popup";
+import * as UI from "./ui";
 
 export let currentWordElementIndex = 0;
 export let resultVisible = false;
@@ -187,7 +190,7 @@ export function colorful(tc) {
   }
 }
 
-export function screenshot() {
+export async function screenshot() {
   let revealReplay = false;
   function revertScreenshot() {
     $("#notificationCenter").removeClass("hidden");
@@ -206,9 +209,15 @@ export function screenshot() {
   }
   $("#resultReplay").addClass("hidden");
   $(".pageTest .ssWatermark").removeClass("hidden");
+  $(".pageTest .ssWatermark").text(
+    moment(Date.now()).format("DD MMM YYYY HH:mm") + " | monkeytype.com "
+  );
   if (firebase.auth().currentUser != null) {
     $(".pageTest .ssWatermark").text(
-      DB.getSnapshot().name + " | monkeytype.com"
+      DB.getSnapshot().name +
+        " | " +
+        moment(Date.now()).format("DD MMM YYYY HH:mm") +
+        " | monkeytype.com  "
     );
   }
   $(".pageTest .buttons").addClass("hidden");
@@ -222,7 +231,7 @@ export function screenshot() {
   $(".pageTest .loginTip").addClass("hidden");
   try {
     html2canvas(document.body, {
-      backgroundColor: ThemeColors.bg,
+      backgroundColor: await ThemeColors.get("bg"),
       height: sourceHeight + 50,
       width: sourceWidth + 50,
       x: sourceX - 25,
@@ -386,7 +395,7 @@ export function updateWordElement(showError) {
     }
 
     if (Config.highlightMode === "letter" && Config.hideExtraLetters) {
-      if (input.length > currentWord.length) {
+      if (input.length > currentWord.length && !Config.blindMode) {
         $(wordAtIndex).addClass("error");
       } else if (input.length == currentWord.length) {
         $(wordAtIndex).removeClass("error");
@@ -475,6 +484,12 @@ export function updateModesNotice() {
     );
   }
 
+  if (ChallengeController.active) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsChallenges"><i class="fas fa-award"></i>${ChallengeController.active.display}</div>`
+    );
+  }
+
   if (Config.mode === "zen") {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button"><i class="fas fa-poll"></i>shift + enter to finish zen </div>`
@@ -483,7 +498,12 @@ export function updateModesNotice() {
 
   // /^[0-9a-zA-Z_.-]+$/.test(name);
 
-  if (/_\d+k$/g.test(Config.language) && Config.mode !== "quote") {
+  if (
+    (/_\d+k$/g.test(Config.language) ||
+      /code_/g.test(Config.language) ||
+      Config.language == "english_commonly_misspelled") &&
+    Config.mode !== "quote"
+  ) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button" commands="commandsLanguages"><i class="fas fa-globe-americas"></i>${Config.language.replace(
         /_/g,
@@ -505,6 +525,12 @@ export function updateModesNotice() {
   if (Config.blindMode) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button blind"><i class="fas fa-eye-slash"></i>blind</div>`
+    );
+  }
+
+  if (Config.lazyMode) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsLazyMode"><i class="fas fa-couch"></i>lazy</div>`
     );
   }
 
@@ -805,8 +831,6 @@ export function toggleResultWords() {
 export function applyBurstHeatmap() {
   if (Config.burstHeatmap) {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
-    let min = Math.min(...TestStats.burstHistory);
-    let max = Math.max(...TestStats.burstHistory);
 
     let burstlist = [...TestStats.burstHistory];
 
@@ -817,36 +841,12 @@ export function applyBurstHeatmap() {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }
 
-    // let step = (max - min) / 5;
-    // let steps = [
-    //   {
-    //     val: min,
-    //     class: 'heatmap-0'
-    //   },
-    //   {
-    //     val: min + (step * 1),
-    //     class: 'heatmap-1'
-    //   },
-    //   {
-    //     val: min + (step * 2),
-    //     class: 'heatmap-2'
-    //   },
-    //   {
-    //     val: min + (step * 3),
-    //     class: 'heatmap-3'
-    //   },
-    //   {
-    //     val: min + (step * 4),
-    //     class: 'heatmap-4'
-    //   },
-    // ];
     let median = Misc.median(burstlist);
     let adatm = [];
     burstlist.forEach((burst) => {
       adatm.push(Math.abs(median - burst));
     });
     let step = Misc.mean(adatm);
-    // let step = Misc.stdDev(burstlist)/2;
     let steps = [
       {
         val: 0,
@@ -922,8 +922,16 @@ $(".pageTest #copyWordsListButton").click(async (event) => {
   }
 });
 
+$(".pageTest #rateQuoteButton").click(async (event) => {
+  RateQuotePopup.show(TestLogic.randomQuote);
+});
+
 $(".pageTest #toggleBurstHeatmap").click(async (event) => {
   UpdateConfig.setBurstHeatmap(!Config.burstHeatmap);
+});
+
+$(".pageTest .loginTip .link").click(async (event) => {
+  UI.changePage("login");
 });
 
 $(document).on("mouseleave", "#resultWordsHistory .words .word", (e) => {
@@ -989,6 +997,7 @@ $("#wordsInput").on("focusout", () => {
 
 $(document).on("keypress", "#restartTestButton", (event) => {
   if (event.keyCode == 13) {
+    ManualRestart.reset();
     if (
       TestLogic.active &&
       Config.repeatQuotes === "typing" &&

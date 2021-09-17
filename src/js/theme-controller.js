@@ -1,7 +1,6 @@
 import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "./misc";
-import * as Notifications from "./notifications";
 import Config from "./config";
 import * as UI from "./ui";
 import tinycolor from "tinycolor2";
@@ -22,38 +21,38 @@ export const colorVars = [
 ];
 
 function updateFavicon(size, curveSize) {
-  let maincolor, bgcolor;
-
-  bgcolor = ThemeColors.bg;
-  maincolor = ThemeColors.main;
-
-  if (bgcolor == maincolor) {
-    bgcolor = "#111";
-    maincolor = "#eee";
-  }
-
-  var canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  let ctx = canvas.getContext("2d");
-  ctx.beginPath();
-  ctx.moveTo(0, curveSize);
-  //top left
-  ctx.quadraticCurveTo(0, 0, curveSize, 0);
-  ctx.lineTo(size - curveSize, 0);
-  //top right
-  ctx.quadraticCurveTo(size, 0, size, curveSize);
-  ctx.lineTo(size, size - curveSize);
-  ctx.quadraticCurveTo(size, size, size - curveSize, size);
-  ctx.lineTo(curveSize, size);
-  ctx.quadraticCurveTo(0, size, 0, size - curveSize);
-  ctx.fillStyle = bgcolor;
-  ctx.fill();
-  ctx.font = "900 " + (size / 2) * 1.2 + "px Roboto Mono";
-  ctx.textAlign = "center";
-  ctx.fillStyle = maincolor;
-  ctx.fillText("mt", size / 2 + size / 32, (size / 3) * 2.1);
-  $("#favicon").attr("href", canvas.toDataURL("image/png"));
+  setTimeout(async () => {
+    let maincolor, bgcolor;
+    bgcolor = await ThemeColors.get("bg");
+    maincolor = await ThemeColors.get("main");
+    if (bgcolor == maincolor) {
+      bgcolor = "#111";
+      maincolor = "#eee";
+    }
+    var canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    let ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(0, curveSize);
+    //top left
+    ctx.quadraticCurveTo(0, 0, curveSize, 0);
+    ctx.lineTo(size - curveSize, 0);
+    //top right
+    ctx.quadraticCurveTo(size, 0, size, curveSize);
+    ctx.lineTo(size, size - curveSize);
+    ctx.quadraticCurveTo(size, size, size - curveSize, size);
+    ctx.lineTo(curveSize, size);
+    ctx.quadraticCurveTo(0, size, 0, size - curveSize);
+    ctx.fillStyle = bgcolor;
+    ctx.fill();
+    ctx.font = "900 " + (size / 2) * 1.2 + "px Lexend Deca";
+    ctx.textAlign = "center";
+    ctx.fillStyle = maincolor;
+    ctx.fillText("mt", size / 2 + 1, (size / 3) * 2.1);
+    // $("body").prepend(canvas);
+    $("#favicon").attr("href", canvas.toDataURL("image/png"));
+  }, 125);
 }
 
 function clearCustomTheme() {
@@ -62,7 +61,23 @@ function clearCustomTheme() {
   });
 }
 
-export function apply(themeName) {
+let loadStyle = function (name) {
+  return new Promise((resolve, reject) => {
+    let link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.id = "currentTheme";
+    link.onload = () => {
+      resolve();
+    };
+    link.href = `themes/${name}.css`;
+
+    let headScript = document.querySelector("#currentTheme");
+    headScript.replaceWith(link);
+  });
+};
+
+export function apply(themeName, isPreview = false) {
   clearCustomTheme();
 
   let name = "serika_dark";
@@ -82,37 +97,43 @@ export function apply(themeName) {
     );
   }
 
+  ThemeColors.reset();
+
   $(".keymap-key").attr("style", "");
-  $("#currentTheme").attr("href", `themes/${name}.css`);
-  $(".current-theme .text").text(themeName.replace("_", " "));
+  // $("#currentTheme").attr("href", `themes/${name}.css`);
+  loadStyle(name).then(() => {
+    ThemeColors.update();
+    if (themeName === "custom") {
+      colorVars.forEach((e, index) => {
+        document.documentElement.style.setProperty(
+          e,
+          Config.customThemeColors[index]
+        );
+      });
+    }
 
-  if (themeName === "custom") {
-    colorVars.forEach((e, index) => {
-      document.documentElement.style.setProperty(
-        e,
-        Config.customThemeColors[index]
-      );
-    });
-  }
-
-  try {
-    firebase.analytics().logEvent("changedTheme", {
-      theme: themeName,
-    });
-  } catch (e) {
-    console.log("Analytics unavailable");
-  }
-  setTimeout(() => {
-    $(".keymap-key").attr("style", "");
-    ChartController.updateAllChartColors();
-    updateFavicon(32, 14);
-    $("#metaThemeColor").attr("content", ThemeColors.bg);
-  }, 500);
+    try {
+      firebase.analytics().logEvent("changedTheme", {
+        theme: themeName,
+      });
+    } catch (e) {
+      console.log("Analytics unavailable");
+    }
+    if (!isPreview) {
+      ThemeColors.get().then((colors) => {
+        $(".current-theme .text").text(themeName.replace(/_/g, " "));
+        $(".keymap-key").attr("style", "");
+        ChartController.updateAllChartColors();
+        updateFavicon(128, 32);
+        $("#metaThemeColor").attr("content", colors.bg);
+      });
+    }
+  });
 }
 
-export function preview(themeName) {
+export function preview(themeName, randomTheme = false) {
   isPreviewingTheme = true;
-  apply(themeName);
+  apply(themeName, true && !randomTheme);
 }
 
 export function set(themeName) {
@@ -152,7 +173,7 @@ export function randomizeTheme() {
     const previousTheme = randomTheme;
     randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
 
-    preview(randomTheme);
+    preview(randomTheme, true);
 
     if (previousTheme != randomTheme) {
       // Notifications.add(randomTheme.replace(/_/g, " "), 0);

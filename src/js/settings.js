@@ -6,8 +6,6 @@ import layouts from "./layouts";
 import * as LanguagePicker from "./language-picker";
 import * as Notifications from "./notifications";
 import * as DB from "./db";
-import * as Loader from "./loader";
-import * as CloudFunctions from "./cloud-functions";
 import * as Funbox from "./funbox";
 import * as TagController from "./tag-controller";
 import * as PresetController from "./preset-controller";
@@ -131,6 +129,10 @@ async function initGroups() {
     "alwaysShowWordsHistory",
     UpdateConfig.setAlwaysShowWordsHistory
   );
+  groups.britishEnglish = new SettingsGroup(
+    "britishEnglish",
+    UpdateConfig.setBritishEnglish
+  );
   groups.singleListCommandLine = new SettingsGroup(
     "singleListCommandLine",
     UpdateConfig.setSingleListCommandLine
@@ -198,6 +200,7 @@ async function initGroups() {
     "capsLockBackspace",
     UpdateConfig.setCapsLockBackspace
   );
+  groups.lazyMode = new SettingsGroup("lazyMode", UpdateConfig.setLazyMode);
   groups.layout = new SettingsGroup("layout", UpdateConfig.setLayout);
   groups.language = new SettingsGroup("language", UpdateConfig.setLanguage);
   groups.fontSize = new SettingsGroup("fontSize", UpdateConfig.setFontSize);
@@ -377,6 +380,7 @@ export let settingsFillPromise = fillSettingsPage();
 export function hideAccountSection() {
   $(`.sectionGroupTitle[group='account']`).addClass("hidden");
   $(`.settingsGroup.account`).addClass("hidden");
+  $(`.pageSettings .section.needsAccount`).addClass("hidden");
 }
 
 export function updateDiscordSection() {
@@ -415,13 +419,13 @@ function refreshTagsSettingsSection() {
   if (firebase.auth().currentUser !== null && DB.getSnapshot() !== null) {
     let tagsEl = $(".pageSettings .section.tags .tagsList").empty();
     DB.getSnapshot().tags.forEach((tag) => {
-      let tagPbString = "No PB found";
-      if (tag.pb != undefined && tag.pb > 0) {
-        tagPbString = `PB: ${tag.pb}`;
-      }
+      // let tagPbString = "No PB found";
+      // if (tag.pb != undefined && tag.pb > 0) {
+      //   tagPbString = `PB: ${tag.pb}`;
+      // }
       tagsEl.append(`
 
-      <div class="buttons tag" id="${tag.id}">
+      <div class="buttons tag" id="${tag._id}">
         <div class="button tagButton ${tag.active ? "active" : ""}" active="${
         tag.active
       }">
@@ -451,7 +455,7 @@ function refreshPresetsSettingsSection() {
     let presetsEl = $(".pageSettings .section.presets .presetsList").empty();
     DB.getSnapshot().presets.forEach((preset) => {
       presetsEl.append(`
-      <div class="buttons preset" id="${preset.id}">
+      <div class="buttons preset" id="${preset._id}">
         <div class="button presetButton">
           <div class="title">${preset.name}</div>
         </div>
@@ -474,6 +478,7 @@ function refreshPresetsSettingsSection() {
 export function showAccountSection() {
   $(`.sectionGroupTitle[group='account']`).removeClass("hidden");
   $(`.settingsGroup.account`).removeClass("hidden");
+  $(`.pageSettings .section.needsAccount`).removeClass("hidden");
   refreshTagsSettingsSection();
   refreshPresetsSettingsSection();
   updateDiscordSection();
@@ -628,33 +633,6 @@ $(document).on(
   }
 );
 
-//discord
-$(
-  ".pageSettings .section.discordIntegration .buttons .generateCodeButton"
-).click((e) => {
-  Loader.show();
-  CloudFunctions.generatePairingCode({
-    uid: firebase.auth().currentUser.uid,
-  })
-    .then((ret) => {
-      Loader.hide();
-      if (ret.data.status === 1 || ret.data.status === 2) {
-        DB.getSnapshot().pairingCode = ret.data.pairingCode;
-        $(".pageSettings .section.discordIntegration .code .bottom").text(
-          ret.data.pairingCode
-        );
-        $(".pageSettings .section.discordIntegration .howtocode").text(
-          ret.data.pairingCode
-        );
-        updateDiscordSection();
-      }
-    })
-    .catch((e) => {
-      Loader.hide();
-      Notifications.add("Something went wrong. Error: " + e.message, -1);
-    });
-});
-
 $(".pageSettings .section.discordIntegration #unlinkDiscordButton").click(
   (e) => {
     SimplePopups.list.unlinkDiscord.show();
@@ -786,8 +764,16 @@ $(".pageSettings #updateAccountEmail").on("click", (e) => {
   SimplePopups.list.updateEmail.show();
 });
 
+$(".pageSettings #updateAccountName").on("click", (e) => {
+  SimplePopups.list.updateName.show();
+});
+
 $(".pageSettings #updateAccountPassword").on("click", (e) => {
   SimplePopups.list.updatePassword.show();
+});
+
+$(".pageSettings #deleteAccount").on("click", (e) => {
+  SimplePopups.list.deleteAccount.show();
 });
 
 $(".pageSettings .section.customBackgroundSize .inputAndSave .save").on(

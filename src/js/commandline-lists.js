@@ -3,7 +3,6 @@ import * as Misc from "./misc";
 import layouts from "./layouts";
 import * as Notifications from "./notifications";
 import * as Sound from "./sound";
-import * as TestStats from "./test-stats";
 import * as ThemeController from "./theme-controller";
 import * as CustomTextPopup from "./custom-text-popup";
 import * as ManualRestart from "./manual-restart-tracker";
@@ -17,6 +16,7 @@ import * as PresetController from "./preset-controller";
 import * as Commandline from "./commandline";
 import * as CustomText from "./custom-text";
 import * as Settings from "./settings";
+import * as ChallengeController from "./challenge-controller";
 
 export let current = [];
 
@@ -137,6 +137,7 @@ let commandsFunbox = {
       id: "changeFunboxNone",
       display: "none",
       configValue: "none",
+      alias: "off",
       exec: () => {
         if (Funbox.setFunbox("none", null)) {
           TestLogic.restart();
@@ -227,12 +228,12 @@ export function updateTagCommands() {
       }
 
       commandsTags.list.push({
-        id: "toggleTag" + tag.id,
+        id: "toggleTag" + tag._id,
         noIcon: true,
         display: dis,
         sticky: true,
         exec: () => {
-          TagController.toggle(tag.id);
+          TagController.toggle(tag._id);
           TestUI.updateModesNotice();
           let txt = tag.name;
 
@@ -243,14 +244,14 @@ export function updateTagCommands() {
           }
           if (Commandline.isSingleListCommandLineActive()) {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(
               `<div class="icon"><i class="fas fa-fw fa-tag"></i></div><div>Tags  > ` +
                 txt
             );
           } else {
             $(
-              `#commandLine .suggestions .entry[command='toggleTag${tag.id}']`
+              `#commandLine .suggestions .entry[command='toggleTag${tag._id}']`
             ).html(txt);
           }
         },
@@ -273,10 +274,10 @@ export function updatePresetCommands() {
       let dis = preset.name;
 
       commandsPresets.list.push({
-        id: "applyPreset" + preset.id,
+        id: "applyPreset" + preset._id,
         display: dis,
         exec: () => {
-          PresetController.apply(preset.id);
+          PresetController.apply(preset._id);
           TestUI.updateModesNotice();
         },
       });
@@ -769,6 +770,31 @@ let commandsStartGraphsAtZero = {
   ],
 };
 
+let commandsLazyMode = {
+  title: "Lazy mode...",
+  configKey: "lazyMode",
+  list: [
+    {
+      id: "setLazyModeOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setLazyMode(false);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setLazyModeOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setLazyMode(true);
+        TestLogic.restart();
+      },
+    },
+  ],
+};
+
 let commandsSwapEscAndTab = {
   title: "Swap esc and tab...",
   configKey: "swapEscAndTab",
@@ -1039,7 +1065,6 @@ export let commandsEnableAds = {
       configValue: "off",
       exec: () => {
         UpdateConfig.setEnableAds("off");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -1048,7 +1073,6 @@ export let commandsEnableAds = {
       configValue: "on",
       exec: () => {
         UpdateConfig.setEnableAds("on");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
     {
@@ -1057,7 +1081,6 @@ export let commandsEnableAds = {
       configValue: "max",
       exec: () => {
         UpdateConfig.setEnableAds("max");
-        Notifications.add("Don't forget to refresh the page!", 0);
       },
     },
   ],
@@ -1426,6 +1449,31 @@ let commandsKeymapLegendStyle = {
       configValue: "blank",
       exec: () => {
         UpdateConfig.setKeymapLegendStyle("blank");
+      },
+    },
+  ],
+};
+
+let commandsBritishEnglish = {
+  title: "British english...",
+  configKey: "britishEnglish",
+  list: [
+    {
+      id: "setBritishEnglishOff",
+      display: "off",
+      configValue: false,
+      exec: () => {
+        UpdateConfig.setBritishEnglish(false);
+        TestLogic.restart();
+      },
+    },
+    {
+      id: "setBritishEnglishOn",
+      display: "on",
+      configValue: true,
+      exec: () => {
+        UpdateConfig.setBritishEnglish(true);
+        TestLogic.restart();
       },
     },
   ],
@@ -2151,6 +2199,24 @@ Misc.getThemesList().then((themes) => {
   });
 });
 
+export let commandsChallenges = {
+  title: "Load challenge...",
+  list: [],
+};
+
+Misc.getChallengeList().then((challenges) => {
+  challenges.forEach((challenge) => {
+    commandsChallenges.list.push({
+      id: "loadChallenge" + Misc.capitalizeFirstLetter(challenge.name),
+      noIcon: true,
+      display: challenge.display,
+      exec: () => {
+        ChallengeController.setup(challenge.name);
+      },
+    });
+  });
+});
+
 // export function showFavouriteThemesAtTheTop() {
 export function updateThemeCommands() {
   if (Config.favThemes.length > 0) {
@@ -2511,6 +2577,12 @@ export let defaultCommands = {
       subgroup: commandsSwapEscAndTab,
     },
     {
+      id: "changeLazyMode",
+      display: "Lazy mode...",
+      icon: "fa-couch",
+      subgroup: commandsLazyMode,
+    },
+    {
       id: "changeShowAllLines",
       display: "Show all lines...",
       icon: "fa-align-left",
@@ -2627,6 +2699,12 @@ export let defaultCommands = {
       display: "Language...",
       icon: "fa-language",
       subgroup: commandsLanguages,
+    },
+    {
+      id: "changeBritishEnglish",
+      display: "British english...",
+      icon: "fa-language",
+      subgroup: commandsBritishEnglish,
     },
     {
       id: "changeFunbox",
@@ -2791,6 +2869,12 @@ export let defaultCommands = {
       },
     },
     {
+      id: "loadChallenge",
+      display: "Load challenge...",
+      icon: "fa-award",
+      subgroup: commandsChallenges,
+    },
+    {
       id: "joinDiscord",
       display: "Join the Discord server",
       icon: "fa-users",
@@ -2895,7 +2979,7 @@ export let defaultCommands = {
       icon: "fa-cog",
       input: true,
       defaultValue: "",
-      exec: (input) => {},
+      exec: () => {},
     },
     {
       id: "monkeyPower",

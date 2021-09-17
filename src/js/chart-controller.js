@@ -3,6 +3,7 @@ import * as TestStats from "./test-stats";
 import * as ThemeColors from "./theme-colors";
 import * as Misc from "./misc";
 import * as Account from "./account";
+import Config, * as UpdateConfig from "./config";
 
 export let result = new Chart($("#wpmChart"), {
   type: "line",
@@ -162,7 +163,6 @@ export let result = new Chart($("#wpmChart"), {
 });
 
 export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
-  animationSteps: 60,
   type: "line",
   data: {
     datasets: [
@@ -213,9 +213,7 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
             )}%\nacc: ${Misc.roundTo2(100 - resultData.y)}%`;
           }
           let label =
-            `${data.datasets[tooltipItem.datasetIndex].label}: ${
-              tooltipItem.yLabel
-            }` +
+            `${Config.alwaysShowCPM ? "cpm" : "wpm"}: ${tooltipItem.yLabel}` +
             "\n" +
             `raw: ${resultData.raw}` +
             "\n" +
@@ -248,14 +246,11 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
         label: function () {
           return;
         },
-        afterLabel: function (tooltip, data) {
+        afterLabel: function (tooltip) {
           Account.setActiveChartIndex(tooltip.index);
           return;
         },
       },
-    },
-    animation: {
-      duration: 250,
     },
     legend: {
       display: false,
@@ -322,7 +317,6 @@ export let accountHistory = new Chart($(".pageAccount #accountHistoryChart"), {
 export let accountActivity = new Chart(
   $(".pageAccount #accountActivityChart"),
   {
-    animationSteps: 60,
     type: "bar",
     data: {
       datasets: [
@@ -365,19 +359,19 @@ export let accountActivity = new Chart(
             if (tooltipItem.datasetIndex === 0) {
               return `Time Typing: ${Misc.secondsToString(
                 Math.round(resultData.y),
+                true,
                 true
               )}\nTests Completed: ${resultData.amount}`;
             } else if (tooltipItem.datasetIndex === 1) {
-              return `Average Wpm: ${Misc.roundTo2(resultData.y)}`;
+              return `Average ${
+                Config.alwaysShowCPM ? "Cpm" : "Wpm"
+              }: ${Misc.roundTo2(resultData.y)}`;
             }
           },
           label: function () {
             return;
           },
         },
-      },
-      animation: {
-        duration: 250,
       },
       legend: {
         display: false,
@@ -631,63 +625,96 @@ export let miniResult = new Chart($(".pageAccount #miniResultChart"), {
   },
 });
 
-export function updateColors(chart) {
-  if (ThemeColors.main == "") {
-    ThemeColors.update();
-  }
-  chart.data.datasets[0].borderColor = ThemeColors.main;
-  chart.data.datasets[1].borderColor = ThemeColors.sub;
+export async function updateColors(chart) {
+  let bgcolor = await ThemeColors.get("bg");
+  let subcolor = await ThemeColors.get("sub");
+  let maincolor = await ThemeColors.get("main");
+
+  chart.data.datasets[0].borderColor = maincolor;
+  chart.data.datasets[1].borderColor = subcolor;
 
   if (chart.data.datasets[0].type === undefined) {
     if (chart.config.type === "line") {
-      chart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
+      chart.data.datasets[0].pointBackgroundColor = maincolor;
     } else if (chart.config.type === "bar") {
-      chart.data.datasets[0].backgroundColor = ThemeColors.main;
+      chart.data.datasets[0].backgroundColor = maincolor;
     }
   } else if (chart.data.datasets[0].type === "bar") {
-    chart.data.datasets[0].backgroundColor = ThemeColors.main;
+    chart.data.datasets[0].backgroundColor = maincolor;
   } else if (chart.data.datasets[0].type === "line") {
-    chart.data.datasets[0].pointBackgroundColor = ThemeColors.main;
+    chart.data.datasets[0].pointBackgroundColor = maincolor;
   }
 
   if (chart.data.datasets[1].type === undefined) {
     if (chart.config.type === "line") {
-      chart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
+      chart.data.datasets[1].pointBackgroundColor = subcolor;
     } else if (chart.config.type === "bar") {
-      chart.data.datasets[1].backgroundColor = ThemeColors.sub;
+      chart.data.datasets[1].backgroundColor = subcolor;
     }
   } else if (chart.data.datasets[1].type === "bar") {
-    chart.data.datasets[1].backgroundColor = ThemeColors.sub;
+    chart.data.datasets[1].backgroundColor = subcolor;
   } else if (chart.data.datasets[1].type === "line") {
-    chart.data.datasets[1].pointBackgroundColor = ThemeColors.sub;
+    chart.data.datasets[1].pointBackgroundColor = subcolor;
   }
 
   try {
-    chart.options.scales.xAxes[0].ticks.minor.fontColor = ThemeColors.sub;
-    chart.options.scales.xAxes[0].scaleLabel.fontColor = ThemeColors.sub;
+    chart.options.scales.xAxes[0].ticks.minor.fontColor = subcolor;
+    chart.options.scales.xAxes[0].scaleLabel.fontColor = subcolor;
   } catch {}
 
   try {
-    chart.options.scales.yAxes[0].ticks.minor.fontColor = ThemeColors.sub;
-    chart.options.scales.yAxes[0].scaleLabel.fontColor = ThemeColors.sub;
+    chart.options.scales.yAxes[0].ticks.minor.fontColor = subcolor;
+    chart.options.scales.yAxes[0].scaleLabel.fontColor = subcolor;
   } catch {}
 
   try {
-    chart.options.scales.yAxes[1].ticks.minor.fontColor = ThemeColors.sub;
-    chart.options.scales.yAxes[1].scaleLabel.fontColor = ThemeColors.sub;
+    chart.options.scales.yAxes[1].ticks.minor.fontColor = subcolor;
+    chart.options.scales.yAxes[1].scaleLabel.fontColor = subcolor;
   } catch {}
 
   try {
-    chart.options.scales.yAxes[2].ticks.minor.fontColor = ThemeColors.sub;
-    chart.options.scales.yAxes[2].scaleLabel.fontColor = ThemeColors.sub;
+    chart.options.scales.yAxes[2].ticks.minor.fontColor = subcolor;
+    chart.options.scales.yAxes[2].scaleLabel.fontColor = subcolor;
   } catch {}
 
   try {
-    chart.data.datasets[0].trendlineLinear.style = ThemeColors.sub;
-    chart.data.datasets[1].trendlineLinear.style = ThemeColors.sub;
+    chart.data.datasets[0].trendlineLinear.style = subcolor;
+    chart.data.datasets[1].trendlineLinear.style = subcolor;
   } catch {}
 
-  chart.update();
+  try {
+    chart.options.annotation.annotations.forEach((annotation) => {
+      annotation.borderColor = subcolor;
+      annotation.label.backgroundColor = subcolor;
+      annotation.label.fontColor = bgcolor;
+    });
+  } catch {}
+
+  // ChartController.result.options.annotation.annotations.push({
+  //   enabled: false,
+  //   type: "line",
+  //   mode: "horizontal",
+  //   scaleID: "wpm",
+  //   value: lpb,
+  //   borderColor: themecolors['sub'],
+  //   borderWidth: 1,
+  //   borderDash: [2, 2],
+  //   label: {
+  //     backgroundColor: themecolors['sub'],
+  //     fontFamily: Config.fontFamily.replace(/_/g, " "),
+  //     fontSize: 11,
+  //     fontStyle: "normal",
+  //     fontColor: themecolors['bg'],
+  //     xPadding: 6,
+  //     yPadding: 6,
+  //     cornerRadius: 3,
+  //     position: "center",
+  //     enabled: true,
+  //     content: `PB: ${lpb}`,
+  //   },
+  // });
+
+  chart.update({ duration: 250 });
 }
 
 Chart.prototype.updateColors = function () {

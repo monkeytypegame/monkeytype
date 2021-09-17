@@ -35,6 +35,13 @@ function handleTab(event) {
   if (TestUI.resultCalculating) {
     event.preventDefault();
   }
+  if (
+    !$("#presetWrapper").hasClass("hidden") ||
+    !$("#tagsWrapper").hasClass("hidden")
+  ) {
+    event.preventDefault();
+    return;
+  }
   if ($("#customTextPopup .textarea").is(":focus")) {
     event.preventDefault();
 
@@ -69,7 +76,11 @@ function handleTab(event) {
         ) {
           //ignore
         } else {
-          if (event.shiftKey) ManualRestart.set();
+          if (event.shiftKey) {
+            ManualRestart.set();
+          } else {
+            ManualRestart.reset();
+          }
           event.preventDefault();
           if (
             TestLogic.active &&
@@ -484,6 +495,7 @@ function handleAlpha(event) {
       "End",
       "GroupPrevious",
       "GroupNext",
+      "WakeUp",
       undefined,
     ].includes(event.key)
   ) {
@@ -615,19 +627,9 @@ function handleAlpha(event) {
     thisCharCorrect = true;
   }
 
-  if (event.key === "’" && nextCharInWord == "'") {
-    event.key = "'";
-    thisCharCorrect = true;
-  }
-
-  if (event.key === "'" && nextCharInWord == "’") {
-    event.key = "’";
-    thisCharCorrect = true;
-  }
-
   if (
-    (event.key === `’` || event.key === "'") &&
-    (nextCharInWord == `’` || nextCharInWord === "'")
+    (event.key === `’` || event.key === `‘` || event.key === "'") &&
+    (nextCharInWord == `’` || nextCharInWord === `‘` || nextCharInWord === "'")
   ) {
     event.key = nextCharInWord;
     thisCharCorrect = true;
@@ -747,6 +749,8 @@ function handleAlpha(event) {
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
+    TestLogic.input.pushHistory();
+    TestLogic.corrected.pushHistory();
     TestLogic.fail("difficulty");
     return;
   }

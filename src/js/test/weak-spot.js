@@ -25,7 +25,7 @@ class Score {
     }
     const adjustRate = 1.0 / this.count;
     // Keep an exponential moving average of the score over time.
-    this.average = (score * adjustRate) + (this.average * (1 - adjustRate));
+    this.average = score * adjustRate + this.average * (1 - adjustRate);
   }
 }
 
@@ -44,20 +44,6 @@ export function updateScore(char, isCorrect) {
   scores[char].update(score);
 }
 
-export function getWord(wordset) {
-  let highScore;
-  let randomWord;
-  for (let i = 0; i < wordSamples; i++) {
-    let newWord = wordset[Math.floor(Math.random() * wordset.length)];
-    let newScore = score(newWord);
-    if (i == 0 || newScore > highScore) {
-      randomWord = newWord;
-      highScore = newScore;
-    }
-  }
-  return randomWord;
-}
-
 function score(word) {
   let total = 0.0;
   let numChars = 0;
@@ -68,4 +54,18 @@ function score(word) {
     }
   }
   return numChars == 0 ? 0.0 : total / numChars;
+}
+
+export function getWord(wordset) {
+  let highScore;
+  let randomWord;
+  for (let i = 0; i < wordSamples; i++) {
+    let newWord = wordset.randomWord();
+    let newScore = score(newWord);
+    if (i == 0 || newScore > highScore) {
+      randomWord = newWord;
+      highScore = newScore;
+    }
+  }
+  return randomWord;
 }
