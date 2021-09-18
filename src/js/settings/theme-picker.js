@@ -65,15 +65,18 @@ export function refreshButtons() {
 
 export function setCustomInputs() {
   $(
-    ".pageSettings .section.themes .tabContainer .customTheme input[type=color]"
+    ".pageSettings .section.themes .tabContainer .customTheme .colorPicker"
   ).each((n, index) => {
+    console.log(index);
     let currentColor =
       Config.customThemeColors[
-        ThemeController.colorVars.indexOf($(index).attr("id"))
+        ThemeController.colorVars.indexOf(
+          $(index).find("input[type=color]").attr("id")
+        )
       ];
-    $(index).val(currentColor);
-    $(index).attr("value", currentColor);
-    $(index).prev().text(currentColor);
+    $(index).find("input[type=color]").val(currentColor);
+    $(index).find("input[type=color]").attr("value", currentColor);
+    $(index).find("input[type=text]").val(currentColor);
   });
 }
 
@@ -204,7 +207,21 @@ $(
 
   document.documentElement.style.setProperty($colorVar, $pickedColor);
   $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
-  $(".colorPicker [for=" + $colorVar + "]").text($pickedColor);
+  $(".colorPicker #" + $colorVar).val($pickedColor);
+  $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
+});
+
+$(
+  ".pageSettings .section.themes .tabContainer .customTheme input[type=text]"
+).on("input", (e) => {
+  // UpdateConfig.setCustomTheme(true, true);
+  let $colorVar = $(e.currentTarget).attr("id").replace("-txt", "");
+  let $pickedColor = $(e.currentTarget).val();
+
+  document.documentElement.style.setProperty($colorVar, $pickedColor);
+  $(".colorPicker #" + $colorVar).attr("value", $pickedColor);
+  $(".colorPicker #" + $colorVar).val($pickedColor);
+  $(".colorPicker #" + $colorVar + "-txt").val($pickedColor);
 });
 
 $(".pageSettings .saveCustomThemeButton").click((e) => {
@@ -254,9 +271,9 @@ $(".pageSettings #loadCustomColorsFromPreset").click((e) => {
       } else if (colorName === "--colorful-error-extra-color") {
         color = themecolors.colorfulErrorExtra;
       }
-      $(".colorPicker #" + colorName).attr("value", color);
-      $(".colorPicker #" + colorName).val(color);
-      $(".colorPicker [for=" + colorName + "]").text(color);
+      //$(".colorPicker #" + colorName).attr("value", color);
+      //$(".colorPicker #" + colorName).val(color);
+      // $(".colorPicker [for=" + colorName + "]").text(color);
     });
   }, 250);
 });
