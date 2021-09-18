@@ -158,7 +158,7 @@ class UsersDAO {
 
   static async updateLbMemory(uid, mode, mode2, language, rank) {
     const user = await mongoDB().collection("users").findOne({ uid });
-    if (!user) throw new MonkeyError(404, "User not found", "get user");
+    if (!user) throw new MonkeyError(404, "User not found", "update lb memory");
     if (user.lbMemory === undefined) user.lbMemory = {};
     if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
     if (user.lbMemory[mode][mode2] === undefined)

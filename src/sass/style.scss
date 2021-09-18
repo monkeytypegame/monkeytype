@@ -501,7 +501,7 @@ a:hover {
         tr.me {
           td {
             color: var(--main-color);
-            font-weight: 900;
+            // font-weight: 900;
           }
         }
 
@@ -533,12 +533,12 @@ a:hover {
 
         tfoot {
           td {
-            padding: 0.5rem;
+            padding: 1rem 0.5rem;
             position: -webkit-sticky;
             position: sticky;
             bottom: 0;
             background: var(--bg-color);
-            color: var(--sub-color);
+            color: var(--main-color);
             z-index: 4;
           }
         }
@@ -1869,7 +1869,7 @@ label.checkbox {
     grid-gap: 0.2rem;
     // width: min-content;
     // width: -moz-min-content;
-    transition: 0.25s;
+    // transition: 0.25s;
     /*   margin-bottom: 0.1rem; */
     justify-items: self-end;
 

@@ -22,6 +22,10 @@ class LeaderboardsDAO {
     const res = await mongoDB()
       .collection(`leaderboards.${language}.${mode}.${mode2}`)
       .findOne({ uid });
+    if (res)
+      res.count = await mongoDB()
+        .collection(`leaderboards.${language}.${mode}.${mode2}`)
+        .estimatedDocumentCount();
     return res;
   }
 
