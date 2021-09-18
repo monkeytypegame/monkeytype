@@ -1,6 +1,11 @@
 const bannedChars = ["—", "_", " "];
-const maxWords = 100;
+var maxWords = 100;
 const apiURL = "https://poetrydb.org/random";
+import Config from './config';
+
+if (Config.mode === "words") {
+  maxWords = Config.words;
+}
 
 export class Poem {
   constructor(title, author, words) {
