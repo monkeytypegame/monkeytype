@@ -39,7 +39,7 @@ export function updateKeytips() {
     )`);
     $("#bottom .keyTips").html(`
     <key>tab</key> - restart test<br>
-      <key>esc</key> - command line`);
+      <key>esc</key> or <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> - command line`);
   }
 }
 
