@@ -8,6 +8,7 @@ const {
 } = require("../../handlers/validation");
 const { stdDev, roundTo2 } = require("../../handlers/misc");
 const objecthash = require("object-hash");
+const Logger = require("../../handlers/logger");
 
 class ResultController {
   static async getResults(req, res, next) {
@@ -45,7 +46,7 @@ class ResultController {
     try {
       const { uid } = req.decodedToken;
       const { result } = req.body;
-      result.testDuration = parseFloat(result.testDuration);
+      result.uid = uid;
       if (validateObjectValues(result) > 0)
         return res.status(400).json({ message: "Bad input" });
       if (
@@ -100,6 +101,12 @@ class ResultController {
         return res.status(400).json({ message: "Incorrect result hash" });
       }
 
+      // if (result.timestamp > Date.now()) {
+      //   return res.status(400).json({ message: "Time traveler detected" });
+      // }
+
+      result.timestamp = Math.round(Date.now() / 1000) * 1000;
+
       let timestampres = await ResultDAO.getResultByTimestamp(
         uid,
         result.timestamp
@@ -152,6 +159,19 @@ class ResultController {
               (result.wpm > 200 && result.consistency < 70)
             ) {
               //possible bot
+              Logger.log(
+                "anticheat_triggered",
+                {
+                  durationSD: result.keyDurationStats.sd,
+                  durationAvg: result.keyDurationStats.average,
+                  spacingSD: result.keySpacingStats.sd,
+                  spacingAvg: result.keySpacingStats.average,
+                  wpm: result.wpm,
+                  acc: result.acc,
+                  consistency: result.consistency,
+                },
+                uid
+              );
               return res.status(400).json({ message: "Possible bot detected" });
             }
             if (
@@ -163,6 +183,19 @@ class ResultController {
                 result.keyDurationStats.average <= 20)
             ) {
               //close to the bot detection threshold
+              Logger.log(
+                "anticheat_close",
+                {
+                  durationSD: result.keyDurationStats.sd,
+                  durationAvg: result.keyDurationStats.average,
+                  spacingSD: result.keySpacingStats.sd,
+                  spacingAvg: result.keySpacingStats.average,
+                  wpm: result.wpm,
+                  acc: result.acc,
+                  consistency: result.consistency,
+                },
+                uid
+              );
             }
           } else {
             return res.status(400).json({ message: "Missing key data" });
@@ -189,6 +222,10 @@ class ResultController {
       const isPb = await UserDAO.checkIfPb(uid, result);
       const tagPbs = await UserDAO.checkIfTagPb(uid, result);
 
+      if (isPb) {
+        result.isPb = true;
+      }
+
       if (result.mode === "time" && String(result.mode2) === "60") {
         UserDAO.incrementBananas(uid, result.wpm);
         if (isPb && user.discordId) {
@@ -198,6 +235,8 @@ class ResultController {
 
       if (result.challenge && user.discordId) {
         BotDAO.awardChallenge(user.discordId, result.challenge);
+      } else {
+        delete result.challenge;
       }
 
       let tt = 0;
@@ -213,6 +252,7 @@ class ResultController {
 
       if (result.bailedOut === false) delete result.bailedOut;
       if (result.blindMode === false) delete result.blindMode;
+      if (result.lazyMode === false) delete result.lazyMode;
       if (result.difficulty === "normal") delete result.difficulty;
       if (result.funbox === "none") delete result.funbox;
       if (result.language === "english") delete result.language;
@@ -222,6 +262,16 @@ class ResultController {
       if (result.mode !== "custom") delete result.customText;
 
       let addedResult = await ResultDAO.addResult(uid, result);
+
+      if (isPb) {
+        Logger.log(
+          "user_new_pb",
+          `${result.mode + " " + result.mode2} ${result.wpm} ${result.acc}% ${
+            result.rawWpm
+          } ${result.consistency}% (${addedResult.insertedId})`,
+          uid
+        );
+      }
 
       return res.status(200).json({
         message: "Result saved",

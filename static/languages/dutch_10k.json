@@ -1,6 +1,7 @@
 {
   "name": "dutch_10k",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "aambeeld",
     "achtergrondstudie",

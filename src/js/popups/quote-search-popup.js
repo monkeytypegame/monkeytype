@@ -136,16 +136,16 @@ $(document).on("click", "#quoteSearchResults .searchResult", (e) => {
   apply(selectedId);
 });
 
-$("#quoteSearchPopup input").keypress((e) => {
-  if (e.keyCode == 13) {
-    if (!isNaN(document.getElementById("searchBox").value)) {
-      apply();
-    } else {
-      let results = document.getElementsByClassName("searchResult");
-      if (results.length > 0) {
-        selectedId = parseInt(results[0].getAttribute("id"));
-        apply(selectedId);
-      }
-    }
-  }
-});
+// $("#quoteSearchPopup input").keypress((e) => {
+//   if (e.keyCode == 13) {
+//     if (!isNaN(document.getElementById("searchBox").value)) {
+//       apply();
+//     } else {
+//       let results = document.getElementsByClassName("searchResult");
+//       if (results.length > 0) {
+//         selectedId = parseInt(results[0].getAttribute("id"));
+//         apply(selectedId);
+//       }
+//     }
+//   }
+// });

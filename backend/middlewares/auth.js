@@ -4,6 +4,20 @@ const { verifyIdToken } = require("../handlers/auth");
 module.exports = {
   async authenticateRequest(req, res, next) {
     try {
+      if (process.env.MODE === "dev" && !req.headers.authorization) {
+        if (req.body.uid) {
+          req.decodedToken = {
+            uid: req.body.uid,
+          };
+          console.log("Running authorization in dev mode");
+          return next();
+        } else {
+          throw new MonkeyError(
+            400,
+            "Running authorization in dev mode but still no uid was provided"
+          );
+        }
+      }
       const { authorization } = req.headers;
       if (!authorization)
         throw new MonkeyError(

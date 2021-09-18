@@ -6,10 +6,8 @@ import * as TestStats from "./test-stats";
 import * as Monkey from "./monkey";
 import * as Misc from "./misc";
 import * as Notifications from "./notifications";
-import * as Funbox from "./funbox";
 import * as TestLogic from "./test-logic";
 import * as Caret from "./caret";
-import * as Keymap from "./keymap";
 
 export let time = 0;
 let timer = null;
@@ -44,8 +42,8 @@ export function start() {
         const layouts = Config.customLayoutfluid
           ? Config.customLayoutfluid.split("#")
           : ["qwerty", "dvorak", "colemak"];
-        console.log(Config.customLayoutfluid);
-        console.log(layouts);
+        // console.log(Config.customLayoutfluid);
+        // console.log(layouts);
         const numLayouts = layouts.length;
         let index = 0;
         index = Math.floor(time / (Config.time / numLayouts));
@@ -71,19 +69,9 @@ export function start() {
 
         if (Config.layout !== layouts[index] && layouts[index] !== undefined) {
           Notifications.add(`--- !!! ${layouts[index]} !!! ---`, 0);
+          UpdateConfig.setLayout(layouts[index], true);
+          UpdateConfig.setKeymapLayout(layouts[index], true);
         }
-        UpdateConfig.setLayout(layouts[index]);
-        UpdateConfig.setKeymapLayout(layouts[index]);
-        Keymap.highlightKey(
-          TestLogic.words
-            .getCurrent()
-            .substring(
-              TestLogic.input.current.length,
-              TestLogic.input.current.length + 1
-            )
-            .toString()
-            .toUpperCase()
-        );
       }
 
       TestStats.pushKeypressesToHistory();

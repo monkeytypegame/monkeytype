@@ -1,6 +1,7 @@
 {
   "name": "english",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "the",
     "be",

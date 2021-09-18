@@ -1,6 +1,7 @@
 {
   "name": "code_ruby",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "BEGIN",
     "class",
