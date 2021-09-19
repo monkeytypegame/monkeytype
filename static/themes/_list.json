@@ -588,5 +588,15 @@
     "name": "terror_below",
     "bgColor": "#0b1e1a",
     "textColor": "#66ac92"
+  },
+  {
+    "name": "sewing_tin_light",
+    "bgColor": "#ffffff",
+    "textColor": "#2d2076"
+  },
+  {
+    "name": "sewing_tin_dark",
+    "bgColor": "#241963",
+    "textColor": "#ffffff"
   }
 ]
