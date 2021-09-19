@@ -53,6 +53,7 @@
   height: 1em;
   position: relative;
   bottom: -1px;
+  transition: 0.4s;
 }
 
 .config .toggleButton {
@@ -100,6 +101,10 @@
   direction: ltr;
 }
 
+#bottom .leftright .right .current-theme:hover .fas.fa-fw.fa-palette {
+  -webkit-transform: rotateY(180deg);
+  transition: 0.5s;
+}
 #menu {
   gap: 0.5rem;
 }
