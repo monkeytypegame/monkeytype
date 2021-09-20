@@ -588,5 +588,10 @@
     "name": "terror_below",
     "bgColor": "#0b1e1a",
     "textColor": "#66ac92"
+  },
+  {
+    "name": "soaring_skies",
+    "bgColor": "#fdeedd",
+    "textColor": "#1e107a"
   }
 ]
