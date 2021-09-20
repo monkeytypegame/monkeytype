@@ -590,13 +590,8 @@
     "textColor": "#66ac92"
   },
   {
-    "name": "sewing_tin_light",
-    "bgColor": "#ffffff",
-    "textColor": "#2d2076"
-  },
-  {
-    "name": "sewing_tin_dark",
+    "name": "sewing_tin",
     "bgColor": "#241963",
-    "textColor": "#ffffff"
+    "textColor": "#f2ce83"
   }
 ]
