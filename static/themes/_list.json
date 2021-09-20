@@ -603,5 +603,10 @@
     "name": "soaring_skies",
     "bgColor": "#fdeedd",
     "textColor": "#1e107a"
+  },
+  {
+    "name": "sewing_tin_light",
+    "bgColor": "#ffffff",
+    "textColor": "#2d2076"
   }
 ]
