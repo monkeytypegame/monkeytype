@@ -2095,7 +2095,8 @@ key {
     // grid-column: 1/3;
     margin-bottom: 1rem;
     .icon-button {
-      padding: 0 0.5rem;
+      padding: 0;
+      margin-left: 0.5rem;
     }
     .heatmapLegend {
       display: inline-grid;
