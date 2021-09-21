@@ -31,6 +31,7 @@ export function toggleFilterDebug() {
 
 export async function getDataAndInit() {
   try {
+    console.log("getting account data");
     await DB.initSnapshot();
   } catch (e) {
     AccountButton.loading(false);
@@ -131,8 +132,9 @@ export async function getDataAndInit() {
     }
   }
   // if($(".pageAccount").hasClass('active')) update();
-  if ($(".pageLogin").hasClass("active")) UI.changePage("account");
+  // if ($(".pageLogin").hasClass("active")) UI.changePage("account");
   if (!UpdateConfig.changedBeforeDb) {
+    console.log("config changed before db");
     if (Config.localStorageConfig === null) {
       AccountButton.loading(false);
       UpdateConfig.apply(DB.getSnapshot().config);
@@ -210,6 +212,7 @@ export async function getDataAndInit() {
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
   UI.setPageTransition(false);
+  console.log("account loading finished");
   if ($(".pageLoading").hasClass("active")) UI.changePage("");
 }
 
