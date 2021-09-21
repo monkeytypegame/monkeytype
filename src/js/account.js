@@ -134,7 +134,9 @@ export async function getDataAndInit() {
   // if($(".pageAccount").hasClass('active')) update();
   // if ($(".pageLogin").hasClass("active")) UI.changePage("account");
   if (!UpdateConfig.changedBeforeDb) {
+    //config didnt change before db loaded
     if (Config.localStorageConfig === null) {
+      console.log("no local config, applying db");
       AccountButton.loading(false);
       UpdateConfig.apply(DB.getSnapshot().config);
       Settings.update();
@@ -177,7 +179,7 @@ export async function getDataAndInit() {
         }
       });
       if (configsDifferent) {
-        console.log("applying config from db");
+        console.log("configs are different, applying config from db");
         AccountButton.loading(false);
         UpdateConfig.apply(DB.getSnapshot().config);
         Settings.update();
