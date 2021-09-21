@@ -59,6 +59,7 @@ async function loadUser(user) {
 
 const authListener = firebase.auth().onAuthStateChanged(async function (user) {
   // await UpdateConfig.loadPromise;
+  console.log(`auth state changed, user ${user ? true : false}`);
   if (user) {
     await loadUser(user);
   } else {
