@@ -134,7 +134,6 @@ export async function getDataAndInit() {
   // if($(".pageAccount").hasClass('active')) update();
   // if ($(".pageLogin").hasClass("active")) UI.changePage("account");
   if (!UpdateConfig.changedBeforeDb) {
-    console.log("config changed before db");
     if (Config.localStorageConfig === null) {
       AccountButton.loading(false);
       UpdateConfig.apply(DB.getSnapshot().config);
@@ -191,6 +190,7 @@ export async function getDataAndInit() {
     }
     UpdateConfig.setDbConfigLoaded(true);
   } else {
+    console.log("config changed before db");
     AccountButton.loading(false);
   }
   if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
