@@ -1,6 +1,9 @@
 {
   "name": "pinyin",
   "leftToRight": true,
+  "accents": [
+    ["üǖǘǚǜ", "v"]
+  ],
   "words": [
     "de",
     "yī",
