@@ -1,5 +1,10 @@
 [
   {
+    "name" : "Chaos_Theory",
+    "bgColor" : "#141221",
+    "textColor":"#fd77d7"
+  },
+  {
     "name": "dark",
     "bgColor": "#111",
     "textColor": "#eee"
@@ -588,5 +593,20 @@
     "name": "terror_below",
     "bgColor": "#0b1e1a",
     "textColor": "#66ac92"
+  },
+  {
+    "name": "sewing_tin",
+    "bgColor": "#241963",
+    "textColor": "#f2ce83"
+  },
+  {
+    "name": "soaring_skies",
+    "bgColor": "#fdeedd",
+    "textColor": "#1e107a"
+  },
+  {
+    "name": "sewing_tin_light",
+    "bgColor": "#ffffff",
+    "textColor": "#2d2076"
   }
 ]

@@ -1,5 +1,5 @@
 import * as DB from "./db";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 
 export function update() {
   $(".pageAccount .timePbTable tbody").html(`

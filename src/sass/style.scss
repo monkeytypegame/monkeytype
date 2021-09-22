@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Fira+Code&family=IBM+Plex+Sans:wght@600&family=Inconsolata&family=Roboto+Mono&family=Source+Code+Pro&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code&family=IBM+Plex+Sans:wght@600&family=Inconsolata&family=Roboto+Mono&family=Source+Code+Pro&family=JetBrains+Mono&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap");
@@ -501,7 +501,7 @@ a:hover {
         tr.me {
           td {
             color: var(--main-color);
-            font-weight: 900;
+            // font-weight: 900;
           }
         }
 
@@ -533,12 +533,12 @@ a:hover {
 
         tfoot {
           td {
-            padding: 0.5rem;
+            padding: 1rem 0.5rem;
             position: -webkit-sticky;
             position: sticky;
             bottom: 0;
             background: var(--bg-color);
-            color: var(--sub-color);
+            color: var(--main-color);
             z-index: 4;
           }
         }
@@ -1869,7 +1869,7 @@ label.checkbox {
     grid-gap: 0.2rem;
     // width: min-content;
     // width: -moz-min-content;
-    transition: 0.25s;
+    // transition: 0.25s;
     /*   margin-bottom: 0.1rem; */
     justify-items: self-end;
 
@@ -2095,7 +2095,8 @@ key {
     // grid-column: 1/3;
     margin-bottom: 1rem;
     .icon-button {
-      padding: 0 0.5rem;
+      padding: 0;
+      margin-left: 0.5rem;
     }
     .heatmapLegend {
       display: inline-grid;

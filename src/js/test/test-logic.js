@@ -592,7 +592,7 @@ export async function init() {
         }
 
         if (Config.lazyMode === true && !language.noLazyMode) {
-          randomWord = LazyMode.replaceAccents(randomWord);
+          randomWord = LazyMode.replaceAccents(randomWord, language.accents);
         }
 
         randomWord = randomWord.replace(/ +/gm, " ");
@@ -761,7 +761,7 @@ export async function init() {
       }
 
       if (Config.lazyMode === true && !language.noLazyMode) {
-        w[i] = LazyMode.replaceAccents(w[i]);
+        w[i] = LazyMode.replaceAccents(w[i], language.accents);
       }
 
       words.push(w[i]);

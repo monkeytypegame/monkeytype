@@ -31,6 +31,7 @@ export function toggleFilterDebug() {
 
 export async function getDataAndInit() {
   try {
+    console.log("getting account data");
     await DB.initSnapshot();
   } catch (e) {
     AccountButton.loading(false);
@@ -131,9 +132,11 @@ export async function getDataAndInit() {
     }
   }
   // if($(".pageAccount").hasClass('active')) update();
-  if ($(".pageLogin").hasClass("active")) UI.changePage("account");
+  // if ($(".pageLogin").hasClass("active")) UI.changePage("account");
   if (!UpdateConfig.changedBeforeDb) {
+    //config didnt change before db loaded
     if (Config.localStorageConfig === null) {
+      console.log("no local config, applying db");
       AccountButton.loading(false);
       UpdateConfig.apply(DB.getSnapshot().config);
       Settings.update();
@@ -176,7 +179,7 @@ export async function getDataAndInit() {
         }
       });
       if (configsDifferent) {
-        console.log("applying config from db");
+        console.log("configs are different, applying config from db");
         AccountButton.loading(false);
         UpdateConfig.apply(DB.getSnapshot().config);
         Settings.update();
@@ -189,6 +192,7 @@ export async function getDataAndInit() {
     }
     UpdateConfig.setDbConfigLoaded(true);
   } else {
+    console.log("config changed before db");
     AccountButton.loading(false);
   }
   if (Config.paceCaret === "pb" || Config.paceCaret === "average") {
@@ -210,6 +214,7 @@ export async function getDataAndInit() {
   ResultTagsPopup.updateButtons();
   Settings.showAccountSection();
   UI.setPageTransition(false);
+  console.log("account loading finished");
   if ($(".pageLoading").hasClass("active")) UI.changePage("");
 }
 

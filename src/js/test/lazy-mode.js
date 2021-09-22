@@ -29,13 +29,14 @@ let accents = [
   ["ّ", ""],
 ];
 
-export function replaceAccents(word) {
+export function replaceAccents(word, accentsOverride) {
   let newWord = word;
-  if (!accents) return newWord;
+  if (!accents && !accentsOverride) return newWord;
   let regex;
-  for (let i = 0; i < accents.length; i++) {
-    regex = new RegExp(`[${accents[i][0]}]`, "gi");
-    newWord = newWord.replace(regex, accents[i][1]);
+  let list = accentsOverride || accents;
+  for (let i = 0; i < list.length; i++) {
+    regex = new RegExp(`[${list[i][0]}]`, "gi");
+    newWord = newWord.replace(regex, list[i][1]);
   }
   return newWord;
 }

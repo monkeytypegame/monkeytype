@@ -3,7 +3,7 @@ import * as TestStats from "./test-stats";
 import * as ThemeColors from "./theme-colors";
 import * as Misc from "./misc";
 import * as Account from "./account";
-import Config, * as UpdateConfig from "./config";
+import Config from "./config";
 
 export let result = new Chart($("#wpmChart"), {
   type: "line",
