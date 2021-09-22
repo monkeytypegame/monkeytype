@@ -1,8 +1,13 @@
 import Config from "./config";
 import { Howl } from "howler";
 
-let errorSound = new Howl({ src: ["../sound/error.wav"] });
+let errorSound = null;
 let clickSounds = null;
+
+export function initErrorSound() {
+  if (errorSound !== null) return;
+  errorSound = new Howl({ src: ["../sound/error.wav"] });
+}
 
 export function init() {
   if (clickSounds !== null) return;
@@ -139,6 +144,7 @@ export function playClick() {
 
 export function playError() {
   if (!Config.playSoundOnError) return;
+  if (errorSound === null) initErrorSound();
   errorSound.seek(0);
   errorSound.play();
 }
