@@ -1,4 +1,4 @@
-const layouts = {
+const layouts = window.layouts = {
     default: {},
     qwerty: {
         keymapShowTopRow: false,
