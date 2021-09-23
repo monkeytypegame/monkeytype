@@ -30992,7 +30992,7 @@
       "id": 5217
     },
     {
-      "text": "'I don't feel very much like Pooh today,' said Pooh.\\n'There, there,' said Piglet. 'I'll bring you tea and honey until you do.'",
+      "text": "'I don't feel very much like Pooh today,' said Pooh. 'There, there,' said Piglet. 'I'll bring you tea and honey until you do.'",
       "source": "Pooh and Piglet, Winnie-the-Pooh",
       "length": 127,
       "id": 5218
@@ -31016,7 +31016,7 @@
       "id": 5221
     },
     {
-      "text": "\"What a long time whoever lives here is answering this door.\" And he knocked again.\\n\"But Pooh,\" said Piglet, \"it's your own house!\"\\n\"Oh!\" Said Pooh. \"So it is,\" he said. \"Well, let's go in.\"",
+      "text": "\"What a long time whoever lives here is answering this door.\" And he knocked again.\"But Pooh,\" said Piglet, \"it's your own house!\" \"Oh!\" Said Pooh. \"So it is,\" he said. \"Well, let's go in.\"",
       "source": "Pooh and Piglet, Winnie-the-Pooh",
       "length": 192,
       "id": 5222
@@ -31442,12 +31442,6 @@
       "id": 5292
     },
     {
-      "text": "Smoke me a kipper, I'll be back for breakfast.",
-      "source": "Ace Rimmer, Red Dwarf",
-      "length": 46,
-      "id": 5293
-    },
-    {
       "text": "Actually, I never did any of these things. Teddy Roosevelt did. I was manufactured in a mannequin factory in Poughkeepsie. I never shot a wild beast. I'm not even brave enough to tell that beautiful woman I love her. But you... you gotta finish the job this time. You can't quit.",
       "source": "Teddy Roosevelt statue, Night at the Museum",
       "length": 279,
@@ -31752,12 +31746,6 @@
       "source": "Bill Watterson",
       "length": 73,
       "id": 5344
-    },
-    {
-      "text": "Women and tigers are exactly alike. They have the same temperament, emotions, and vulnerabilities. They must be spoken to softly - but it doesn't hurt to carry a big stick just in case.",
-      "source": "Roy",
-      "length": 185,
-      "id": 5345
     },
     {
       "text": "It's hard to see Heaven when you know you're Hell-bound.",
