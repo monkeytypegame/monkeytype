@@ -304,7 +304,13 @@ list.updateName = new SimplePopup(
   () => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs.shift()`);
+      eval(`this.inputs = [
+        {
+          placeholder: "New name",
+          type: "text",
+          initVal: "",
+        },
+      ]`);
       eval(`this.buttonText = "Reauthenticate to update"`);
     }
   }
