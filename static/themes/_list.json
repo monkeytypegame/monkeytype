@@ -1,10 +1,5 @@
 [
   {
-    "name" : "Chaos_Theory",
-    "bgColor" : "#141221",
-    "textColor":"#fd77d7"
-  },
-  {
     "name": "dark",
     "bgColor": "#111",
     "textColor": "#eee"
@@ -608,5 +603,10 @@
     "name": "sewing_tin_light",
     "bgColor": "#ffffff",
     "textColor": "#2d2076"
+  },
+  {
+    "name" : "chaos_theory",
+    "bgColor" : "#141221",
+    "textColor":"#fd77d7"
   }
 ]
