@@ -220,8 +220,13 @@ class ResultController {
         //
       }
 
-      const isPb = await UserDAO.checkIfPb(uid, result);
-      const tagPbs = await UserDAO.checkIfTagPb(uid, result);
+      let isPb = false;
+      let tagPbs = [];
+
+      if (!result.bailedOut) {
+        isPb = await UserDAO.checkIfPb(uid, result);
+        tagPbs = await UserDAO.checkIfTagPb(uid, result);
+      }
 
       if (isPb) {
         result.isPb = true;
