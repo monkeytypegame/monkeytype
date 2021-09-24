@@ -887,7 +887,8 @@ label.checkbox {
 
 #customWordAmountPopupWrapper,
 #customTestDurationPopupWrapper,
-#practiseWordsPopupWrapper {
+#practiseWordsPopupWrapper,
+#pbTablesPopupWrapper {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.75);
@@ -902,7 +903,8 @@ label.checkbox {
 
   #customWordAmountPopup,
   #customTestDurationPopup,
-  #practiseWordsPopup {
+  #practiseWordsPopup,
+  #pbTablesPopup {
     background: var(--bg-color);
     border-radius: var(--roundness);
     padding: 2rem;
@@ -930,6 +932,58 @@ label.checkbox {
     .preview {
       font-size: 0.75rem;
       color: var(--sub-color);
+    }
+  }
+}
+
+#pbTablesPopupWrapper #pbTablesPopup {
+  .title {
+    color: var(--text-color);
+  }
+  min-width: 50rem;
+  max-height: calc(100vh - 10rem);
+  overflow-y: scroll;
+  table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    color: var(--text-color);
+
+    td {
+      padding: 0.5rem 0.5rem;
+    }
+
+    thead {
+      color: var(--sub-color);
+      font-size: 0.75rem;
+    }
+
+    tbody tr:nth-child(odd) td {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    td.infoIcons span {
+      margin: 0 0.1rem;
+    }
+    .miniResultChartButton {
+      opacity: 0.25;
+      transition: 0.25s;
+      cursor: pointer;
+      &:hover {
+        opacity: 1;
+      }
+    }
+    .sub {
+      opacity: 0.5;
+    }
+    td {
+      text-align: right;
+    }
+    td:nth-child(6),
+    td:nth-child(7) {
+      text-align: center;
+    }
+    tbody td:nth-child(1) {
+      font-size: 1.5rem;
     }
   }
 }
@@ -3503,6 +3557,11 @@ key {
     tbody td:nth-child(1) {
       font-size: 1.5rem;
     }
+  }
+
+  .showAllTimePbs,
+  .showAllWordsPbs {
+    margin-top: 1rem;
   }
 
   .topFilters .buttons {

@@ -128,6 +128,35 @@
       <div id="simplePopup" popupId=""></div>
     </div>
 
+    <div id="pbTablesPopupWrapper" class="hidden">
+      <div id="pbTablesPopup">
+        <!-- <div class="title">All words personal bests</div> -->
+        <table>
+          <thead>
+            <tr>
+              <td width="1%">words</td>
+              <td>
+                wpm
+                <br />
+                <span class="sub">accuracy</span>
+              </td>
+              <td>
+                raw
+                <br />
+                <span class="sub">consistency</span>
+              </td>
+              <td>difficulty</td>
+              <td>language</td>
+              <td>punctuation</td>
+              <td>lazy mode</td>
+              <td>date</td>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
     <div id="practiseWordsPopupWrapper" class="hidden">
       <div id="practiseWordsPopup" action="">
         <div class="title">Practice words</div>
@@ -3858,6 +3887,7 @@
                         </tr>
                       </tbody>
                     </table>
+                    <div class="button showAllTimePbs">show all</div>
                   </div>
                   <div class="titleAndTable wordsPbTable">
                     <table width="100%">
@@ -3904,6 +3934,7 @@
                         </tr>
                       </tbody>
                     </table>
+                    <div class="button showAllWordsPbs">show all</div>
                   </div>
                 </div>
               </div>

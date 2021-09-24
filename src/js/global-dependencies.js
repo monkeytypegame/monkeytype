@@ -22,6 +22,7 @@ import "./import-settings-popup";
 import "./input-controller";
 import "./ready";
 import "./about-page";
+import "./pb-tables-popup";
 import * as Account from "./account";
 import * as TestStats from "./test-stats";
 import * as Replay from "./replay";
