@@ -123,7 +123,6 @@ class UserController {
           "255.255.255.255",
         os: agent.os.name + " " + agent.os.version,
         browser: agent.browser.name + " " + agent.browser.version,
-        device: agent.device.vendor + " " + agent.device.model,
       };
       if (agent.device.vendor) {
         logobj.device =
