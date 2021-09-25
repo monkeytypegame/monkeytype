@@ -201,7 +201,7 @@ function refreshUserList() {
         room.isLeader && user.sid !== socket.id
           ? `<div class='userSettings' sid='` +
             user.sid +
-            `' aria-label="User settigns" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
+            `' aria-label="User settings" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
           : ``
       }
     </div>
@@ -221,7 +221,7 @@ function refreshUserList() {
         room.isLeader && user.sid !== socket.id
           ? `<div class='userSettings' sid='` +
             user.sid +
-            `' aria-label="User settigns" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
+            `' aria-label="User settings" data-balloon-pos="up"><div class="icon"><i class="fas fa-fw fa-cog"></i></div></div>`
           : ``
       }
     </div>
