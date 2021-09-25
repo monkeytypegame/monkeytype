@@ -121,8 +121,14 @@ class UserController {
           req.headers["x-forwarded-for"] ||
           req.ip ||
           "255.255.255.255",
-        os: agent.os.name + " " + agent.os.version,
-        browser: agent.browser.name + " " + agent.browser.version,
+        agent:
+          agent.os.name +
+          " " +
+          agent.os.version +
+          " " +
+          agent.browser.name +
+          " " +
+          agent.browser.version,
       };
       if (agent.device.vendor) {
         logobj.device =
