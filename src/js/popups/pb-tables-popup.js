@@ -33,15 +33,17 @@ function update(mode) {
         <td>
           ${pb.wpm}
           <br />
-          <span class="sub">${pb.acc}%</span>
+          <span class="sub">${pb.acc ? pb.acc + "%" : "-"}</span>
         </td>
         <td>
-          ${pb.raw}
+          ${pb.raw ? pb.raw : "-"}
           <br />
-          <span class="sub">${pb.consistency}%</span>
+          <span class="sub">${
+            pb.consistency ? pb.consistency + "%" : "-"
+          }</span>
         </td>
         <td>${pb.difficulty}</td>
-        <td>${pb.language.replace(/_/g, " ")}</td>
+        <td>${pb.language ? pb.language.replace(/_/g, " ") : "-"}</td>
         <td>${pb.punctuation ? '<i class="fas fa-check"></i>' : ""}</td>
         <td>${pb.lazyMode ? '<i class="fas fa-check"></i>' : ""}</td>
         <td>${moment(pb.timestamp).format(
