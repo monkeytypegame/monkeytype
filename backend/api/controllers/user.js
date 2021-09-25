@@ -113,7 +113,18 @@ class UserController {
           );
         }
       }
-      Logger.log("user_data_requested", ``, uid);
+      Logger.log(
+        "user_data_requested",
+        {
+          ip:
+            req.headers["cf-connecting-ip"] ||
+            req.headers["x-forwarded-for"] ||
+            req.ip ||
+            "255.255.255.255",
+          userAgent: req.headers["user-agent"],
+        },
+        uid
+      );
       return res.status(200).json(userInfo);
     } catch (e) {
       return next(e);
