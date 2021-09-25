@@ -2,7 +2,7 @@ import * as DB from "./db";
 
 function update(mode) {
   $("#pbTablesPopup table tbody").empty();
-  $("#pbTablesPopup table thead td[0]").text(mode);
+  $($("#pbTablesPopup table thead tr td")[0]).text(mode);
 
   let allmode2 = DB.getSnapshot().personalBests[mode];
 
