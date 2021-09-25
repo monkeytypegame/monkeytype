@@ -7,6 +7,7 @@ const {
 const MonkeyError = require("../../handlers/error");
 const fetch = require("node-fetch");
 const Logger = require("./../../handlers/logger.js");
+const uaparser = require("ua-parser-js");
 
 // import UsersDAO from "../../dao/user";
 // import BotDAO from "../../dao/bot";
@@ -113,6 +114,7 @@ class UserController {
           );
         }
       }
+      let agent = uaparser(req.headers["user-agent"]);
       Logger.log(
         "user_data_requested",
         {
@@ -121,7 +123,9 @@ class UserController {
             req.headers["x-forwarded-for"] ||
             req.ip ||
             "255.255.255.255",
-          userAgent: req.headers["user-agent"],
+          os: agent.os.name + " " + agent.os.version,
+          browser: agent.browser.name + " " + agent.browser.version,
+          device: agent.device.vendor + " " + agent.device.model,
         },
         uid
       );

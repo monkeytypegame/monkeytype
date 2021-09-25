@@ -65,6 +65,7 @@
     "object-hash": "^2.2.0",
     "path": "^0.12.7",
     "tinycolor2": "^1.4.2",
+    "ua-parser-js": "^0.7.28",
     "uuid": "^8.3.2"
   }
 }
