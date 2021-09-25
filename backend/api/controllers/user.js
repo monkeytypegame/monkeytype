@@ -115,20 +115,25 @@ class UserController {
         }
       }
       let agent = uaparser(req.headers["user-agent"]);
-      Logger.log(
-        "user_data_requested",
-        {
-          ip:
-            req.headers["cf-connecting-ip"] ||
-            req.headers["x-forwarded-for"] ||
-            req.ip ||
-            "255.255.255.255",
-          os: agent.os.name + " " + agent.os.version,
-          browser: agent.browser.name + " " + agent.browser.version,
-          device: agent.device.vendor + " " + agent.device.model,
-        },
-        uid
-      );
+      let logobj = {
+        ip:
+          req.headers["cf-connecting-ip"] ||
+          req.headers["x-forwarded-for"] ||
+          req.ip ||
+          "255.255.255.255",
+        os: agent.os.name + " " + agent.os.version,
+        browser: agent.browser.name + " " + agent.browser.version,
+        device: agent.device.vendor + " " + agent.device.model,
+      };
+      if (agent.device.vendor) {
+        logobj.device =
+          agent.device.vendor +
+          " " +
+          agent.device.model +
+          " " +
+          agent.device.type;
+      }
+      Logger.log("user_data_requested", logobj, uid);
       return res.status(200).json(userInfo);
     } catch (e) {
       return next(e);
