@@ -104,9 +104,15 @@ export async function updatePosition() {
       let contentHeight = document.body.scrollHeight;
 
       if (newTop >= middlePos && contentHeight > browserHeight) {
+        let newscrolltop = newTop - middlePos / 2;
+        // console.log('---------');
+        // console.log(newTop);
+        // console.log(middlePos);
+        // console.log(browserHeight);
+        // console.log(contentHeight);
         window.scrollTo({
           left: 0,
-          top: newTop - middlePos,
+          top: newscrolltop,
           behavior: "smooth",
         });
       }
