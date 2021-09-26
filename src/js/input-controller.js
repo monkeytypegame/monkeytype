@@ -447,7 +447,8 @@ function handleSpace(event, isEnter) {
   if (
     Config.mode == "time" ||
     Config.mode == "words" ||
-    Config.mode == "custom"
+    Config.mode == "custom" ||
+    Config.mode == "quote"
   ) {
     TestLogic.addWord();
   }
