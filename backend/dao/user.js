@@ -3,9 +3,13 @@ const { mongoDB } = require("../init/mongodb");
 const { ObjectID } = require("mongodb");
 const { checkAndUpdatePb } = require("../handlers/pb");
 const { updateAuthEmail } = require("../handlers/auth");
+const { isUsernameValid } = require("../handlers/validation");
 
 class UsersDAO {
   static async addUser(name, email, uid) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (user)
+      throw new MonkeyError(400, "User document already exists", "addUser");
     return await mongoDB()
       .collection("users")
       .insertOne({ name, email, uid, addedAt: Date.now() });
@@ -21,7 +25,10 @@ class UsersDAO {
       .findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
     if (nameDoc) throw new MonkeyError(409, "Username already taken");
     let user = await mongoDB().collection("users").findOne({ uid });
-    if (Date.now() - user.lastNameChange < 2592000) {
+    if (
+      Date.now() - user.lastNameChange < 2592000000 &&
+      isUsernameValid(user.name)
+    ) {
       throw new MonkeyError(409, "You can change your name once every 30 days");
     }
     return await mongoDB()
@@ -149,6 +156,24 @@ class UsersDAO {
       );
   }
 
+  static async updateLbMemory(uid, mode, mode2, language, rank) {
+    const user = await mongoDB().collection("users").findOne({ uid });
+    if (!user) throw new MonkeyError(404, "User not found", "update lb memory");
+    if (user.lbMemory === undefined) user.lbMemory = {};
+    if (user.lbMemory[mode] === undefined) user.lbMemory[mode] = {};
+    if (user.lbMemory[mode][mode2] === undefined)
+      user.lbMemory[mode][mode2] = {};
+    user.lbMemory[mode][mode2][language] = rank;
+    return await mongoDB()
+      .collection("users")
+      .updateOne(
+        { uid },
+        {
+          $set: { lbMemory: user.lbMemory },
+        }
+      );
+  }
+
   static async checkIfPb(uid, result) {
     const user = await mongoDB().collection("users").findOne({ uid });
     if (!user) throw new MonkeyError(404, "User not found", "check if pb");
@@ -159,6 +184,7 @@ class UsersDAO {
       acc,
       consistency,
       difficulty,
+      lazyMode,
       language,
       punctuation,
       rawWpm,
@@ -174,13 +200,18 @@ class UsersDAO {
       return false;
     }
 
+    let lbpb = user.lbPersonalBests;
+    if (!lbpb) lbpb = {};
+
     let pb = checkAndUpdatePb(
       user.personalBests,
+      lbpb,
       mode,
       mode2,
       acc,
       consistency,
       difficulty,
+      lazyMode,
       language,
       punctuation,
       rawWpm,
@@ -191,6 +222,11 @@ class UsersDAO {
       await mongoDB()
         .collection("users")
         .updateOne({ uid }, { $set: { personalBests: pb.obj } });
+      if (pb.lbObj) {
+        await mongoDB()
+          .collection("users")
+          .updateOne({ uid }, { $set: { lbPersonalBests: pb.lbObj } });
+      }
       return true;
     } else {
       return false;
@@ -211,6 +247,7 @@ class UsersDAO {
       acc,
       consistency,
       difficulty,
+      lazyMode,
       language,
       punctuation,
       rawWpm,
@@ -241,11 +278,13 @@ class UsersDAO {
     tagsToCheck.forEach(async (tag) => {
       let tagpb = checkAndUpdatePb(
         tag.personalBests,
+        undefined,
         mode,
         mode2,
         acc,
         consistency,
         difficulty,
+        lazyMode,
         language,
         punctuation,
         rawWpm,

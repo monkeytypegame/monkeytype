@@ -53,7 +53,7 @@ let eslintConfig = {
     "no-import-assign": "error",
     "no-inner-declarations": "error",
     "no-invalid-regexp": "error",
-    "no-irregular-whitespace": "error",
+    "no-irregular-whitespace": "warn",
     "no-misleading-character-class": "error",
     "no-mixed-spaces-and-tabs": "error",
     "no-new-symbol": "error",
@@ -89,7 +89,6 @@ let eslintConfig = {
 const refactoredSrc = [
   "./src/js/axios-instance.js",
   "./src/js/db.js",
-  "./src/js/cloud-functions.js",
   "./src/js/misc.js",
   "./src/js/layouts.js",
   "./src/js/sound.js",
@@ -149,6 +148,8 @@ const refactoredSrc = [
   "./src/js/settings/settings-group.js",
 
   "./src/js/test/custom-text.js",
+  "./src/js/test/british-english.js",
+  "./src/js/test/lazy-mode.js",
   "./src/js/test/shift-tracker.js",
   "./src/js/test/out-of-focus.js",
   "./src/js/test/caret.js",
@@ -162,7 +163,6 @@ const refactoredSrc = [
   "./src/js/test/caps-warning.js",
   "./src/js/test/live-acc.js",
   "./src/js/test/live-burst.js",
-  "./src/js/test/test-leaderboards.js",
   "./src/js/test/timer-progress.js",
   "./src/js/test/test-logic.js",
   "./src/js/test/funbox.js",

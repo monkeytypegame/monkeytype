@@ -9959,6 +9959,7 @@ naghatid 5
 naghatol 1
 naghawak-kamay 1
 naghawaan 1
+hawak-kamay 1
 naghihimagsik 2
 naghihinala 1
 naghihingalo 1
@@ -9972,6 +9973,7 @@ naghubad 1
 naghuhubad 1
 naghuhumiyaw 1
 naghuhunos 1
+hunos-dili 1
 naghuhusga 1
 nagiging 20
 nagigipit 1
@@ -9991,6 +9993,7 @@ nagkahugis 1
 nagkahulihan 1
 nagkaibigan 1
 nagkaisang 1
+nagkaisag 1
 nagkakagulong 1
 nagkakagulo 1
 nagkakahalagang 1
@@ -10005,6 +10008,10 @@ nagkakamit 1
 nagkakapunit-punit 1
 punit-punit 1
 punit 1
+<<<<<<< HEAD
+=======
+napunit 1
+>>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagkakaroon 4
 nagkakasakit 1
 nagkakasala 2
@@ -10023,6 +10030,7 @@ nagkamaling 1
 nagkamit 1
 nagkapalad 2
 nagkapit-bisig 1
+kapit-bisig 1
 nagkaproblema 1
 nagkaroon 1
 nagkasakit 4
@@ -10040,6 +10048,7 @@ nagkataong 1
 nagkatinig 1
 nagkaulam 1
 nagkausap 1
+nakakapagpabagabag 1
 nagkawanggawa 1
 nagkayayaan 3
 nagkikikibo 1
@@ -10065,6 +10074,7 @@ nagkuwento 1
 naglaan 1
 naglabas 1
 naglabas-masok 2
+labas-pasok 1
 naglagare 1
 naglagda 14
 naglagos 1
@@ -10112,6 +10122,7 @@ nagliliwanag 1
 nagliliyab 1
 naglimos 1
 naglingkod 3
+naglipana 1
 naglipanang 1
 naglista 1
 naglitawan 1
@@ -10176,6 +10187,10 @@ nagpabagsak 1
 nagpabaya 1
 nagpabiling-biling 1
 nagpabilin 1
+<<<<<<< HEAD
+=======
+nagpabuway 1
+>>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpadala 2
 nagpadentista 1
 dentista 1
@@ -10185,6 +10200,11 @@ punongguro 1
 nagpagalaw 1
 nagpagalit 1
 nagpagawa 2
+<<<<<<< HEAD
+=======
+pagbabasa 1
+napagkasunduang 1
+>>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpagod 1
 nagpahalaga 1
 nagpahalik 1
@@ -10202,8 +10222,13 @@ nagpakadalubhasa 1
 nagpakagambala 1
 nagpakahinahon 1
 nagpakahinhing 1
+<<<<<<< HEAD
 nagpakahinhin 1
 nagpakahulugan 1
+=======
+napakahinhing 1
+nagpakahulog 1
+>>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpakahusay 3
 nagpakamatay 1
 nagpakana 2
@@ -10230,6 +10255,7 @@ nagpamana 1
 nagpamanang 1
 nagpanatili 1
 nagpanggap 1
+<<<<<<< HEAD
 nagpaalila 1
 panggap 1
 patintero 1
@@ -10237,6 +10263,8 @@ piko 1
 sungka 1
 saranggola 1
 holen 1
+=======
+>>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpanukala 1
 nagpapaalala 1
 nagpapaalam 1
@@ -10268,6 +10296,7 @@ nagpapahirap 3
 nagpapahiwatig 2
 nagpapaibabaw 1
 nagpapailalim 1
+isinailalim 1
 nagpapakababa 1
 nagpapakabulag 1
 nagpapakahulugan 1
@@ -10281,20 +10310,27 @@ nagpapalaganap 1
 nagpapalakas 1
 nagpapalawig 1
 nagpapalaya 1
+<<<<<<< HEAD
 nagpapaliku-liko 1
 liku-liko 1
+=======
+>>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpapalimos 1
 nagpapalipat 1
-nagpapalipat-lipat 1
 nagpapalitan 1
 nagpapaluwag 2
-nagpapamanhik 1
+nagpapamanhid 1
 nagpapanatili 1
 nagpapapista 1
 nagpaparangal 2
 nagpapasalamat 3
+<<<<<<< HEAD
 nagpapasasa 3
 pasasa 1
+=======
+nagpasasa 3
+magpasasa 1
+>>>>>>> 13f73db7cb74ec2884ba38ea961cad1e5a2c26ae
 nagpapasigla 1
 nagpapasimple 1
 nagpapasulong 1
@@ -10339,7 +10375,6 @@ nagpatay 1
 nagpatibay 2
 nagpatibok 1
 nagpatindi 1
-nagpatinghiga 1
 nagpatingkad 2
 nagpatotoo 2
 nagpatuloy 17
@@ -10347,19 +10382,25 @@ nagpatunay 1
 nagpatupad 1
 nagpaunawa 2
 nagpaunlad 2
-nagpaunlak 1
 nagpautang 1
+walang-bisa 1
+walang-saysay 1
 nagpawalang-bisa 1
 nagpawalang-saysay 1
 nagpepenitensiyang 1
 penitensiya 1
 pagtitiis 1
+nagpepenitensiya 1
+nagpenitensiya 1
 nagpigil 2
 nagpipigil 1
 nagpipiglas 1
 nagpipikit 1
 nagpipiket 1
 piket 1
+nagpipikit 1
+pinipikit 1
+pagpikit 1
 nagpipilit 1
 nagpirmahan 1
 nagpoprotestang 1
@@ -10380,11 +10421,10 @@ nagputol 1
 nagreklamo 1
 nagrekomenda 1
 nagrerebelde 2
-nagrerebolusyon 1 <-- NARITO AKO
+nagrerebolusyon 1
 nagresulta 2
-nagsa 1
 nagsabi 6
-nagsabing 2
+nagsabing 2 <-- NARITO AKO
 nagsabit 2
 nagsabong 1
 nagsagawa 6
@@ -14845,8 +14885,8 @@ pasang-ayong 1
 pasanin 3
 pasaning 1
 pasaporte 1
-pasas 1
-pasasa 1
+pas 1
+magpasasa 1
 pasasabugin 1
 pasasalamat 2
 pasay 38

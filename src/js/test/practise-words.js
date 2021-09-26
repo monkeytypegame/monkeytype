@@ -11,6 +11,7 @@ export let before = {
 };
 
 export function init(missed, slow) {
+  if (Config.mode === "zen") return;
   let limit;
   if ((missed && !slow) || (!missed && slow)) {
     limit = 20;
@@ -50,6 +51,11 @@ export function init(missed, slow) {
 
   // console.log(sortableMissedWords);
   // console.log(sortableSlowWords);
+
+  if (sortableMissedWords.length == 0 && sortableSlowWords.length == 0) {
+    Notifications.add("Could not start a new custom test", 0);
+    return;
+  }
 
   let newCustomText = [];
   sortableMissedWords.forEach((missed, index) => {
@@ -92,6 +98,10 @@ export function resetBefore() {
 
 export function showPopup(focus = false) {
   if ($("#practiseWordsPopupWrapper").hasClass("hidden")) {
+    if (Config.mode === "zen") {
+      Notifications.add("Practice words is unsupported in zen mode", 0);
+      return;
+    }
     $("#practiseWordsPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)

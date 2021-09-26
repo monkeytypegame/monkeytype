@@ -1,12 +1,9 @@
 import * as ThemeColors from "./theme-colors";
 import * as ChartController from "./chart-controller";
 import * as Misc from "./misc";
-import * as Notifications from "./notifications";
 import Config from "./config";
 import * as UI from "./ui";
 import tinycolor from "tinycolor2";
-
-const domtoimage = require("dom-to-image");
 
 let isPreviewingTheme = false;
 export let randomTheme = null;
@@ -124,7 +121,7 @@ export function apply(themeName, isPreview = false) {
     }
     if (!isPreview) {
       ThemeColors.get().then((colors) => {
-        $(".current-theme .text").text(themeName.replace("_", " "));
+        $(".current-theme .text").text(themeName.replace(/_/g, " "));
         $(".keymap-key").attr("style", "");
         ChartController.updateAllChartColors();
         updateFavicon(128, 32);
@@ -134,9 +131,9 @@ export function apply(themeName, isPreview = false) {
   });
 }
 
-export function preview(themeName) {
+export function preview(themeName, randomTheme = false) {
   isPreviewingTheme = true;
-  apply(themeName, true);
+  apply(themeName, true && !randomTheme);
 }
 
 export function set(themeName) {
@@ -176,7 +173,7 @@ export function randomizeTheme() {
     const previousTheme = randomTheme;
     randomTheme = randomList[Math.floor(Math.random() * randomList.length)];
 
-    preview(randomTheme);
+    preview(randomTheme, true);
 
     if (previousTheme != randomTheme) {
       // Notifications.add(randomTheme.replace(/_/g, " "), 0);

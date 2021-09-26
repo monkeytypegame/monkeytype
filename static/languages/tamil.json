@@ -1,6 +1,7 @@
 {
   "name": "tamil",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "அ",
     "ஆ",

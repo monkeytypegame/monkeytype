@@ -127,6 +127,8 @@ let defaultConfig = {
   minBurst: "off",
   minBurstCustomSpeed: 100,
   burstHeatmap: false,
+  britishEnglish: false,
+  lazyMode: false,
 };
 
 function isConfigKeyValid(name) {
@@ -264,8 +266,8 @@ export function setMode(mode, nosave) {
     setPunctuation(false, true);
     setNumbers(false, true);
   } else if (config.mode == "quote") {
-    setPunctuation(false, nosave);
-    setNumbers(false, nosave);
+    setPunctuation(false, true);
+    setNumbers(false, true);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
@@ -1290,6 +1292,22 @@ export function setRandomTheme(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+export function setBritishEnglish(val, nosave) {
+  if (!val) {
+    val = false;
+  }
+  config.britishEnglish = val;
+  if (!nosave) saveToLocalStorage();
+}
+
+export function setLazyMode(val, nosave) {
+  if (!val) {
+    val = false;
+  }
+  config.lazyMode = val;
+  if (!nosave) saveToLocalStorage();
+}
+
 export function toggleCustomTheme(nosave) {
   if (config.customTheme) {
     setCustomTheme(false);
@@ -1671,6 +1689,8 @@ export function apply(configObj) {
     setRepeatQuotes(configObj.repeatQuotes, true);
     setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
     setBurstHeatmap(configObj.burstHeatmap, true);
+    setBritishEnglish(configObj.britishEnglish, true);
+    setLazyMode(configObj.lazyMode, true);
 
     LanguagePicker.setActiveGroup();
 

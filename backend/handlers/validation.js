@@ -1,11 +1,17 @@
 const MonkeyError = require("./error");
-
+const Logger = require("../handlers/logger");
 const { roundTo2 } = require("./misc");
 
 function isUsernameValid(name) {
   if (name === null || name === undefined || name === "") return false;
-  if (/miodec/.test(name.toLowerCase())) return false;
-  if (/bitly/.test(name.toLowerCase())) return false;
+  if (/.*miodec.*/.test(name.toLowerCase())) return false;
+  //sorry for the bad words
+  if (
+    /.*(bitly|fuck|bitch|shit|pussy|nigga|niqqa|niqqer|nigger|ni99a|ni99er|niggas|niga|niger|cunt|faggot|retard).*/.test(
+      name.toLowerCase()
+    )
+  )
+    return false;
   if (name.length > 14) return false;
   if (/^\..*/.test(name.toLowerCase())) return false;
   return /^[0-9a-zA-Z_.-]+$/.test(name);
@@ -13,8 +19,10 @@ function isUsernameValid(name) {
 
 function validateResult(result) {
   if (result.wpm > result.rawWpm) {
-    console.error(
-      `Could not validate result for ${result.uid}. ${result.wpm} > ${result.rawWpm}`
+    Logger.log(
+      "result_validation_error",
+      `${result.wpm} wpm > ${result.rawWpm} raw`,
+      result.uid
     );
     return false;
   }
@@ -23,8 +31,10 @@ function validateResult(result) {
     wpm < result.wpm - result.wpm * 0.01 ||
     wpm > result.wpm + result.wpm * 0.01
   ) {
-    console.error(
-      `Could not validate result for ${result.uid}. wpm ${wpm} != ${result.wpm}`
+    Logger.log(
+      "result_validation_error",
+      `wpm ${wpm} != ${result.wpm}`,
+      result.uid
     );
     return false;
   }
@@ -37,8 +47,10 @@ function validateResult(result) {
       keyPressTimeSum < result.testDuration - 1 ||
       keyPressTimeSum > result.testDuration + 1
     ) {
-      console.error(
-        `Could not validate key spacing sum for ${result.uid}. ${keyPressTimeSum} !~ ${result.testDuration}`
+      Logger.log(
+        "result_validation_error",
+        `key spacing sum ${keyPressTimeSum} !~ ${result.testDuration}`,
+        result.uid
       );
       return false;
     }
@@ -47,8 +59,10 @@ function validateResult(result) {
       result.testDuration < result.mode2 - 1 ||
       result.testDuration > result.mode2 + 1
     ) {
-      console.error(
-        `Could not validate test duration for ${result.uid}. ${result.testDuration} !~ ${result.mode2}`
+      Logger.log(
+        "result_validation_error",
+        `test duration ${result.testDuration} !~ ${result.mode2}`,
+        result.uid
       );
       return false;
     }

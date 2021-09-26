@@ -578,5 +578,15 @@
     "name": "godspeed",
     "bgColor": "#eae4cf",
     "textColor": "#c0bcab"
+  },
+  {
+    "name": "witch_girl",
+    "bgColor": "#f3dbda",
+    "textColor": "#56786a"
+  },
+  {
+    "name": "terror_below",
+    "bgColor": "#0b1e1a",
+    "textColor": "#66ac92"
   }
 ]

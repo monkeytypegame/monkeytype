@@ -1,6 +1,7 @@
 {
   "name": "indonesian",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "abu",
     "ada",

@@ -29,9 +29,9 @@ export function hide() {
 
 export async function updatePosition() {
   if ($("#wordsWrapper").hasClass("hidden")) return;
-  if ($("#caret").hasClass("off")) {
-    return;
-  }
+  // if ($("#caret").hasClass("off")) {
+  //   return;
+  // }
 
   let caret = $("#caret");
 
