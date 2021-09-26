@@ -806,23 +806,25 @@ function handleAlpha(event) {
     });
   }
 
-  let newActiveTop = document.querySelector("#words .word.active").offsetTop;
-  //stop the word jump by slicing off the last character, update word again
-  if (
-    activeWordTopBeforeJump < newActiveTop &&
-    !TestUI.lineTransition &&
-    TestLogic.input.current.length > 1
-  ) {
-    if (Config.mode == "zen") {
-      let currentTop = Math.floor(
-        document.querySelectorAll("#words .word")[
-          TestUI.currentWordElementIndex - 1
-        ].offsetTop
-      );
-      if (!Config.showAllLines) TestUI.lineJump(currentTop);
-    } else {
-      TestLogic.input.setCurrent(TestLogic.input.current.slice(0, -1));
-      TestUI.updateWordElement(!Config.blindMode);
+  if (!Config.hideExtraLetters) {
+    let newActiveTop = document.querySelector("#words .word.active").offsetTop;
+    //stop the word jump by slicing off the last character, update word again
+    if (
+      activeWordTopBeforeJump < newActiveTop &&
+      !TestUI.lineTransition &&
+      TestLogic.input.current.length > 1
+    ) {
+      if (Config.mode == "zen") {
+        let currentTop = Math.floor(
+          document.querySelectorAll("#words .word")[
+            TestUI.currentWordElementIndex - 1
+          ].offsetTop
+        );
+        if (!Config.showAllLines) TestUI.lineJump(currentTop);
+      } else {
+        TestLogic.input.setCurrent(TestLogic.input.current.slice(0, -1));
+        TestUI.updateWordElement(!Config.blindMode);
+      }
     }
   }
   if (originalEvent.code !== "Enter") Caret.updatePosition();
