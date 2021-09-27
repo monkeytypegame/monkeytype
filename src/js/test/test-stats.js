@@ -42,7 +42,7 @@ export let keypressTimings = {
 };
 
 export function getStats() {
-  return {
+  let ret = {
     start,
     end,
     wpmHistory,
@@ -57,6 +57,31 @@ export function getStats() {
     accuracy,
     keypressTimings,
   };
+
+  try {
+    ret.keySpacingStats = {
+      average:
+        keypressTimings.spacing.array.reduce(
+          (previous, current) => (current += previous)
+        ) / keypressTimings.spacing.array.length,
+      sd: Misc.stdDev(keypressTimings.spacing.array),
+    };
+  } catch (e) {
+    //
+  }
+  try {
+    ret.keyDurationStats = {
+      average:
+        keypressTimings.duration.array.reduce(
+          (previous, current) => (current += previous)
+        ) / keypressTimings.duration.array.length,
+      sd: Misc.stdDev(keypressTimings.duration.array),
+    };
+  } catch (e) {
+    //
+  }
+
+  return ret;
 }
 
 export function restart() {
