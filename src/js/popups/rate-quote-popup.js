@@ -162,12 +162,17 @@ async function submit() {
       if (quoteRatings[currentQuote.language][currentQuote.id] == undefined)
         quoteRatings[currentQuote.language][currentQuote.id] = undefined;
       quoteRatings[currentQuote.language][currentQuote.id] = rating;
-      quoteStats = {
-        ratings: 1,
-        totalRating: parseInt(rating),
-        quoteId: currentQuote.id,
-        language: currentQuote.language,
-      };
+      if (quoteStats) {
+        quoteStats.ratings++;
+        quoteStats.totalRating += parseInt(rating);
+      } else {
+        quoteStats = {
+          ratings: 1,
+          totalRating: parseInt(rating),
+          quoteId: currentQuote.id,
+          language: currentQuote.language,
+        };
+      }
       Notifications.add("Rating submitted", 1);
     }
     quoteStats.average = (
