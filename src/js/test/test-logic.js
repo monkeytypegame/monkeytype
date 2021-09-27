@@ -753,9 +753,7 @@ export async function init() {
 
     let w = randomQuote.textSplit;
 
-    if (Config.showAllLines) {
-      wordsBound = Math.min(wordsBound, w.length);
-    }
+    wordsBound = Math.min(wordsBound, w.length);
 
     for (let i = 0; i < wordsBound; i++) {
       if (/\t/g.test(w[i])) {
@@ -1542,6 +1540,12 @@ export async function finish(difficultyFailed = false) {
     lang = Config.language.replace(/_\d*k$/g, "");
   }
 
+  $(".pageTest #result #rateQuoteButton .icon")
+    .removeClass("fas")
+    .addClass("far");
+  $(".pageTest #result #rateQuoteButton .rating").text("");
+  $(".pageTest #result #rateQuoteButton").addClass("hidden");
+
   if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, 1);
   } else if (afkDetected) {
@@ -1671,7 +1675,6 @@ export async function finish(difficultyFailed = false) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
         if (Config.mode === "quote") {
-          $(".pageTest #result #rateQuoteButton .rating").text("");
           let userqr = DB.getSnapshot().quoteRatings?.[randomQuote.language]?.[
             randomQuote.id
           ];
@@ -1679,10 +1682,6 @@ export async function finish(difficultyFailed = false) {
             $(".pageTest #result #rateQuoteButton .icon")
               .removeClass("far")
               .addClass("fas");
-          } else {
-            $(".pageTest #result #rateQuoteButton .icon")
-              .removeClass("fas")
-              .addClass("far");
           }
           RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
             if (quoteStats !== null) {
