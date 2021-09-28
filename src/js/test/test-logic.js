@@ -1137,8 +1137,7 @@ export async function addWord() {
     !CustomText.isTimeRandom
   ) {
     randomWord = CustomText.text[words.length];
-  }
-  if (Config.mode === "quote") {
+  } else if (Config.mode === "quote") {
     randomWord = randomQuote.textSplit[words.length];
   } else {
     while (
