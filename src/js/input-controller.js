@@ -418,7 +418,7 @@ function handleChar(char, charIndex) {
     char = " ";
   }
 
-  if (char === " ") {
+  if (/\s/.test(char)) {
     handleSpace();
 
     //insert space for expert and master or strict space,
