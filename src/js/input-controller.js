@@ -26,6 +26,7 @@ import * as MonkeyPower from "./monkey-power";
 import * as WeakSpot from "./weak-spot";
 
 let dontInsertSpace = false;
+let correctShiftUsed = true;
 
 function handleTab(event) {
   if (TestUI.resultCalculating) {
@@ -349,6 +350,8 @@ function handleSpace() {
 }
 
 function isCharCorrect(char, charIndex) {
+  if (!correctShiftUsed) return false;
+
   if (Config.mode == "zen") {
     return true;
   }
@@ -484,6 +487,8 @@ function handleChar(char, charIndex) {
       Sound.playError(Config.playSoundOnError);
     }
   }
+
+  if (!correctShiftUsed) return;
 
   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
   if (TestLogic.corrected.current === "") {
@@ -700,6 +705,10 @@ $(document).keydown((event) => {
         TestLogic.input.current.length
       ]
     ).toggleClass("dead");
+  }
+
+  if (Config.oppositeShiftMode === "on") {
+    correctShiftUsed = ShiftTracker.isUsingOppositeShift(event) !== false;
   }
 
   if (Config.layout !== "default") {
