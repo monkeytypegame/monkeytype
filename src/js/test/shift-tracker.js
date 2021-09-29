@@ -23,69 +23,69 @@ export function reset() {
   rightState = false;
 }
 
-let leftSideChars = [
-  "Q",
-  "W",
-  "E",
-  "R",
-  "T",
+let leftSideKeys = [
+  "KeyQ",
+  "KeyW",
+  "KeyE",
+  "KeyR",
+  "KeyT",
 
-  "A",
-  "S",
-  "D",
-  "F",
-  "G",
+  "KeyA",
+  "KeyS",
+  "KeyD",
+  "KeyF",
+  "KeyG",
 
-  "Z",
-  "X",
-  "C",
-  "V",
+  "KeyZ",
+  "KeyX",
+  "KeyC",
+  "KeyV",
 
-  "`",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
+  "Backquote",
+  "Digit1",
+  "Digit2",
+  "Digit3",
+  "Digit4",
+  "Digit5",
 ];
 
-let rightSideChars = [
-  "U",
-  "I",
-  "O",
-  "P",
+let rightSideKeys = [
+  "KeyU",
+  "KeyI",
+  "KeyO",
+  "KeyP",
 
-  "H",
-  "J",
-  "K",
-  "L",
+  "KeyH",
+  "KeyJ",
+  "KeyK",
+  "KeyL",
 
-  "N",
-  "M",
+  "KeyN",
+  "KeyM",
 
-  "7",
-  "8",
-  "9",
-  "0",
+  "Digit7",
+  "Digit8",
+  "Digit9",
+  "Digit0",
 
-  "\\",
-  "[",
-  "]",
-  ";",
-  "'",
-  ",",
-  ".",
-  "/",
+  "Backslash",
+  "BracketLeft",
+  "BracketRight",
+  "Semicolon",
+  "Quote",
+  "Comma",
+  "Period",
+  "Slash",
 ];
 
-export function isUsingOppositeShift(char) {
+export function isUsingOppositeShift(event) {
   if (!leftState && !rightState) return null;
-  if (!rightSideChars.includes(char) && !leftSideChars.includes(char))
+  if (!rightSideKeys.includes(event.code) && !leftSideKeys.includes(event.code))
     return null;
 
   if (
-    (leftState && rightSideChars.includes(char)) ||
-    (rightState && leftSideChars.includes(char))
+    (leftState && rightSideKeys.includes(event.code)) ||
+    (rightState && leftSideKeys.includes(event.code))
   ) {
     return true;
   } else {

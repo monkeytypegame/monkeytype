@@ -349,13 +349,6 @@ function handleSpace() {
 }
 
 function isCharCorrect(char, charIndex) {
-  if (
-    Config.oppositeShiftMode === "on" &&
-    ShiftTracker.isUsingOppositeShift(char) === false
-  ) {
-    return false;
-  }
-
   if (Config.mode == "zen") {
     return true;
   }
@@ -490,13 +483,6 @@ function handleChar(char, charIndex) {
     } else {
       Sound.playError(Config.playSoundOnError);
     }
-  }
-
-  if (
-    Config.oppositeShiftMode === "on" &&
-    ShiftTracker.isUsingOppositeShift(char) === false
-  ) {
-    return;
   }
 
   //update current corrected version. if its empty then add the current char. if its not then replace the last character with the currently pressed one / add it
