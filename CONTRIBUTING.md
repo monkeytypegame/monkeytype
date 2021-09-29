@@ -103,7 +103,12 @@ We recommend following the guidelines below to increase your chances of getting 
 
 <!-- TODO: add screenshots to provide examples for dos and don'ts -->
 
-Make sure... - your theme is unique and isn't visually similar to any we already have. - the text color is either black or white (or very close to these colors) - your theme has been added to the `_list` file and the `textColor` property is the theme's main color - your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
+Before submitting a theme:
+
+- your theme is unique and isn't visually similar to any we already have.
+- the text color is either black or white (or very close to these colors)
+- your theme has been added to the `_list` file and the `textColor` property is the theme's main color
+- your theme is clear and readable with both `flip test colors` and `colorful mode` enabled and disabled
 
 #### Language Guidelines
 
