@@ -148,7 +148,8 @@ function backspaceToPrevious() {
   if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
       TestLogic.words
-        .getCurrent().charAt(TestLogic.input.current.length)
+        .getCurrent()
+        .charAt(TestLogic.input.current.length)
         .toString()
         .toUpperCase()
     );
@@ -200,7 +201,8 @@ function handleSpace() {
   TestStats.pushBurstToHistory(burst);
 
   //correct word or in zen mode
-  const isWordCorrect = currentWord == TestLogic.input.current || Config.mode == "zen";
+  const isWordCorrect =
+    currentWord == TestLogic.input.current || Config.mode == "zen";
   MonkeyPower.addPower(isWordCorrect, true);
   TestStats.incrementAccuracy(isWordCorrect);
   if (isWordCorrect) {
@@ -387,10 +389,7 @@ function isCharCorrect(char, charIndex) {
   }
 
   if (
-    (char === `"` ||
-      char === "”" ||
-      char == "“" ||
-      char === "„") &&
+    (char === `"` || char === "”" || char == "“" || char === "„") &&
     (originalChar == `"` ||
       originalChar === "”" ||
       originalChar === "“" ||
@@ -424,7 +423,11 @@ function handleChar(char, charIndex) {
     //insert space for expert and master or strict space,
     //or for stop on error set to word,
     //otherwise dont do anything
-    if (Config.difficulty !== "normal" || Config.strictSpace || Config.stopOnError === "word") {
+    if (
+      Config.difficulty !== "normal" ||
+      Config.strictSpace ||
+      Config.stopOnError === "word"
+    ) {
       if (dontInsertSpace) {
         dontInsertSpace = false;
         return;
@@ -452,7 +455,10 @@ function handleChar(char, charIndex) {
     char = TestLogic.words.getCurrent().charAt(charIndex);
   }
 
-  const resultingWord = TestLogic.input.current.substring(0, charIndex) + char + TestLogic.input.current.substring(charIndex + 1);
+  const resultingWord =
+    TestLogic.input.current.substring(0, charIndex) +
+    char +
+    TestLogic.input.current.substring(charIndex + 1);
 
   if (!thisCharCorrect && Misc.trailingComposeChars.test(resultingWord)) {
     TestLogic.input.current = resultingWord;
@@ -471,10 +477,7 @@ function handleChar(char, charIndex) {
   }
 
   WeakSpot.updateScore(
-    Config.mode === "zen"
-      ? char
-      : TestLogic.words
-          .getCurrent()[charIndex],
+    Config.mode === "zen" ? char : TestLogic.words.getCurrent()[charIndex],
     thisCharCorrect
   );
 
@@ -528,7 +531,8 @@ function handleChar(char, charIndex) {
   //max length of the input is 20 unless in zen mode then its 30
   if (
     (Config.mode === "zen" && charIndex < 30) ||
-    (Config.mode !== "zen" && charIndex < TestLogic.words.getCurrent().length + 20)
+    (Config.mode !== "zen" &&
+      charIndex < TestLogic.words.getCurrent().length + 20)
   ) {
     TestLogic.input.current = resultingWord;
     $("#wordsInput").val(" " + TestLogic.input.current);
@@ -547,7 +551,8 @@ function handleChar(char, charIndex) {
   } else if (Config.keymapMode === "next" && Config.mode !== "zen") {
     Keymap.highlightKey(
       TestLogic.words
-        .getCurrent().charAt(TestLogic.input.current.length)
+        .getCurrent()
+        .charAt(TestLogic.input.current.length)
         .toString()
         .toUpperCase()
     );
@@ -572,10 +577,11 @@ function handleChar(char, charIndex) {
     }
   }
 
+  let activeWordTopBeforeJump = document.querySelector("#words .word.active")
+    .offsetTop;
+  TestUI.updateWordElement();
+
   if (!Config.hideExtraLetters) {
-    let activeWordTopBeforeJump = document.querySelector("#words .word.active")
-      .offsetTop;
-    TestUI.updateWordElement();
     let newActiveTop = document.querySelector("#words .word.active").offsetTop;
     //stop the word jump by slicing off the last character, update word again
     if (
@@ -600,8 +606,7 @@ function handleChar(char, charIndex) {
   //simulate space press in nospace funbox
   if (
     (Config.funbox === "nospace" &&
-      TestLogic.input.current.length ===
-        TestLogic.words.getCurrent().length) ||
+      TestLogic.input.current.length === TestLogic.words.getCurrent().length) ||
     (char === "\n" && thisCharCorrect)
   ) {
     handleSpace();
@@ -627,7 +632,8 @@ $(document).keydown((event) => {
     !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
     !$("#wordFilterPopupWrapper").hasClass("hidden");
 
-  const allowTyping = pageTestActive &&
+  const allowTyping =
+    pageTestActive &&
     !commandLineVisible &&
     !leaderboardsVisible &&
     !modePopupVisible &&
@@ -676,7 +682,8 @@ $(document).keydown((event) => {
 
   if (event.key === "Backspace" && TestLogic.input.current.length === 0) {
     backspaceToPrevious();
-    if (TestLogic.input.current) $("#wordsInput").val(" " + TestLogic.input.current + " ");
+    if (TestLogic.input.current)
+      $("#wordsInput").val(" " + TestLogic.input.current + " ");
   }
 
   if (event.key === "Enter") {
@@ -762,10 +769,7 @@ $("#wordsInput").on("input", (event) => {
     TestUI.updateWordElement();
     Caret.updatePosition();
     if (!Misc.trailingComposeChars.test(TestLogic.input.current)) {
-      Replay.addReplayEvent(
-        "setLetterIndex",
-        TestLogic.input.current.length
-      );
+      Replay.addReplayEvent("setLetterIndex", TestLogic.input.current.length);
     }
   } else if (inputValue !== TestLogic.input.current) {
     let diffStart = 0;
