@@ -839,7 +839,15 @@
               </div>
               <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
-              <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
+              <input
+                id="wordsInput"
+                class=""
+                tabindex="0"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                autocorrect="off"
+              >
               <div id="timerNumber" class="timerMain">
                 <div>60</div>
               </div>
@@ -2415,18 +2423,6 @@
                 <div class="text">
                   Swap the behavior of tab and escape keys.
                 </div>
-                <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
-                    off
-                  </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
-                    on
-                  </div>
-                </div>
-              </div>
-              <div class="section capsLockBackspace">
-                <h1>caps lock backspace</h1>
-                <div class="text">Makes caps lock act like backspace.</div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">
                     off

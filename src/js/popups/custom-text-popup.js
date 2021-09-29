@@ -107,7 +107,7 @@ $(`${popup} .randomInputFields .time input`).keypress((e) => {
 });
 
 $("#customTextPopup .apply").click(() => {
-  let text = $("#customTextPopup textarea").val();
+  let text = $("#customTextPopup textarea").val().normalize();
   text = text.trim();
   // text = text.replace(/[\r]/gm, " ");
   text = text.replace(/\\\\t/gm, "\t");
