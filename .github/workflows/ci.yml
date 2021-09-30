@@ -49,7 +49,7 @@ jobs:
   run-if-failed:
     runs-on: ubuntu-latest
     needs: [lint_and_format]
-    if: always() && (needs.lint_and_format.result == 'failure')
+    if: failure()
     steps:
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v1
