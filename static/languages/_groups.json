@@ -225,6 +225,10 @@
     "name": "albanian",
     "languages": ["albanian", "albanian_1k"]
   },
+    {
+    "name": "japanese",
+    "languages": ["japanese_hiragana", "japanese_katakana"]
+  }, 
   {
     "name": "code",
     "languages": [
