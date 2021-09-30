@@ -39,10 +39,10 @@ jobs:
       - name: Run Prettier
         run: npx pretty-quick --branch ${{github.event.pull_request.base.sha}}
 
-      - name: Commit and push
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git add --update
-          git commit -m "Auto-format with Prettier" || :
-          git push origin HEAD:${{github.event.pull_request.head.ref}}
+#       - name: Commit and push
+#         run: |
+#           git config user.name "GitHub Actions Bot"
+#           git config user.email "<>"
+#           git add --update
+#           git commit -m "Auto-format with Prettier" || :
+#           git push origin HEAD:${{github.event.pull_request.head.ref}}
