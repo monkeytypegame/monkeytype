@@ -19,7 +19,7 @@ jobs:
           ref: ${{github.event.pull_request.base.sha}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
       - run: |
-          git pull origin ${{github.event.pull_request.head.ref}}
+          git pull origin ${{github.event.pull_request.head.ref}} --rebase
           git checkout ${{github.event.pull_request.head.ref}}
 
 
