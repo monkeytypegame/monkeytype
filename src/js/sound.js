@@ -169,6 +169,52 @@ export function init() {
         counter: 0,
       },
     ],
+    6: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/click6/click6_1.wav" }),
+          new Howl({ src: "../sound/click6/click6_11.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click6/click6_2.wav" }),
+          new Howl({ src: "../sound/click6/click6_22.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click6/click6_3.wav" }),
+          new Howl({ src: "../sound/click6/click6_33.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
+    7: [
+      {
+        sounds: [
+          new Howl({ src: "../sound/click7/click7_1.wav" }),
+          new Howl({ src: "../sound/click7/click7_11.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click7/click7_2.wav" }),
+          new Howl({ src: "../sound/click7/click7_22.wav" }),
+        ],
+        counter: 0,
+      },
+      {
+        sounds: [
+          new Howl({ src: "../sound/click7/click7_3.wav" }),
+          new Howl({ src: "../sound/click7/click7_33.wav" }),
+        ],
+        counter: 0,
+      },
+    ],
   };
 }
 

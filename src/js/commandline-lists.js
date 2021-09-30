@@ -917,7 +917,7 @@ let commandsSoundOnClick = {
     },
     {
       id: "setSoundOnClick1",
-      display: "1",
+      display: "click",
       configValue: "1",
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("1");
@@ -926,7 +926,7 @@ let commandsSoundOnClick = {
     },
     {
       id: "setSoundOnClick2",
-      display: "2",
+      display: "beep",
       configValue: "2",
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("2");
@@ -935,7 +935,7 @@ let commandsSoundOnClick = {
     },
     {
       id: "setSoundOnClick3",
-      display: "3",
+      display: "pop",
       configValue: "3",
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("3");
@@ -944,7 +944,7 @@ let commandsSoundOnClick = {
     },
     {
       id: "setSoundOnClick4",
-      display: "4",
+      display: "nk creams",
       configValue: "4",
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("4");
@@ -953,10 +953,28 @@ let commandsSoundOnClick = {
     },
     {
       id: "setSoundOnClick5",
-      display: "5",
+      display: "typewriter",
       configValue: "5",
       exec: () => {
         UpdateConfig.setPlaySoundOnClick("5");
+        Sound.playClick(Config.playSoundOnClick);
+      },
+    },
+    {
+      id: "setSoundOnClick6",
+      display: "osu",
+      configValue: "6",
+      exec: () => {
+        UpdateConfig.setPlaySoundOnClick("6");
+        Sound.playClick(Config.playSoundOnClick);
+      },
+    },
+    {
+      id: "setSoundOnClick7",
+      display: "hitmarker",
+      configValue: "7",
+      exec: () => {
+        UpdateConfig.setPlaySoundOnClick("7");
         Sound.playClick(Config.playSoundOnClick);
       },
     },
