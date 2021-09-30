@@ -46,12 +46,9 @@ jobs:
           git add --update
           git commit -m "Auto-format with Prettier" || :
           git push origin HEAD:${{github.event.pull_request.head.ref}}
-  run-if-failed:
-    runs-on: ubuntu-latest
-    needs: [lint_and_format]
-    if: failure()
-    steps:
+          
       - name: Comment PR
+        if: failure()
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: "It seems like your PR failed for some reason! Click on 'Files changed' in the GitHub UI and look for red errors (dont worry about unchanged files)"
