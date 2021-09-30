@@ -9,6 +9,8 @@ import * as SignOutButton from "./sign-out-button";
 import * as MonkeyPower from "./monkey-power";
 import * as NewVersionNotification from "./new-version-notification";
 
+console.log(                    "please autoformat"   + ' this'                 )     ;
+
 ManualRestart.set();
 Misc.migrateFromCookies();
 UpdateConfig.loadFromLocalStorage();
