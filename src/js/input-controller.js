@@ -111,8 +111,6 @@ function handleTab(event) {
 function backspaceToPrevious() {
   if (!TestLogic.active) return;
 
-  Sound.playClick(Config.playSoundOnClick);
-
   if (
     TestLogic.input.history.length == 0 ||
     TestUI.currentWordElementIndex == 0
@@ -668,6 +666,7 @@ $(document).keydown((event) => {
 
   //blocking firefox from going back in history with backspace
   if (event.key === "Backspace") {
+    Sound.playClick(Config.playSoundOnClick);
     let t = /INPUT|SELECT|TEXTAREA/i;
     if (
       !t.test(event.target.tagName) ||
