@@ -73,5 +73,9 @@ export function getCharFromEvent(event) {
   const newKeyPreview = layoutMap[mapIndex][0];
   const shift = emulatedLayoutShouldShiftKey(event, newKeyPreview) ? 1 : 0;
   const char = layoutMap[mapIndex][shift];
-  return char;
+  if (char) {
+    return char;
+  } else {
+    return event.key;
+  }
 }
