@@ -39,17 +39,10 @@ jobs:
       - name: Run Prettier
         run: npx pretty-quick --branch ${{github.event.pull_request.base.sha}}
 
-      - name: Commit and push
-        run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git add --update
-          git commit -m "Auto-format with Prettier" || :
-          git push origin HEAD:${{github.event.pull_request.head.ref}}
-          
-      - name: Comment PR
-        if: failure()
-        uses: thollander/actions-comment-pull-request@v1
-        with:
-          message: "It seems like your PR failed for some reason! Click on 'Files changed' in the GitHub UI and look for red errors (dont worry about unchanged files)"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       - name: Commit and push
+#         run: |
+#           git config user.name "GitHub Actions Bot"
+#           git config user.email "<>"
+#           git add --update
+#           git commit -m "Auto-format with Prettier" || :
+#           git push origin HEAD:${{github.event.pull_request.head.ref}}

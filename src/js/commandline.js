@@ -317,12 +317,14 @@ $("#commandLine input").keyup((e) => {
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeMouse"
   );
+  console.log(e);
   if (
     e.key === "ArrowUp" ||
     e.key === "ArrowDown" ||
     e.key === "Enter" ||
     e.key === "Tab" ||
-    e.code == "AltLeft"
+    e.code == "AltLeft" ||
+    (e.key.length > 1 && e.key !== "Backspace" && e.key !== "Delete")
   )
     return;
   updateSuggested();
