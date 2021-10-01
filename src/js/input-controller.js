@@ -28,86 +28,6 @@ import * as WeakSpot from "./weak-spot";
 let dontInsertSpace = false;
 let correctShiftUsed = true;
 
-function handleTab(event) {
-  if (TestUI.resultCalculating) {
-    event.preventDefault();
-  }
-  if (
-    !$("#presetWrapper").hasClass("hidden") ||
-    !$("#tagsWrapper").hasClass("hidden")
-  ) {
-    event.preventDefault();
-    return;
-  }
-  if ($("#customTextPopup .textarea").is(":focus")) {
-    event.preventDefault();
-
-    let area = $("#customTextPopup .textarea")[0];
-
-    var start = area.selectionStart;
-    var end = area.selectionEnd;
-
-    // set textarea value to: text before caret + tab + text after caret
-    area.value =
-      area.value.substring(0, start) + "\t" + area.value.substring(end);
-
-    // put caret at right position again
-    area.selectionStart = area.selectionEnd = start + 1;
-
-    return;
-  } else if (
-    !TestUI.resultCalculating &&
-    $("#commandLineWrapper").hasClass("hidden") &&
-    $("#simplePopupWrapper").hasClass("hidden") &&
-    !$(".page.pageLogin").hasClass("active")
-  ) {
-    if ($(".pageTest").hasClass("active")) {
-      if (Config.quickTab) {
-        if (
-          TestUI.resultVisible ||
-          !(
-            (Config.mode == "zen" && !event.shiftKey) ||
-            (TestLogic.hasTab && !event.shiftKey)
-          )
-        ) {
-          if (event.shiftKey) {
-            ManualRestart.set();
-          } else {
-            ManualRestart.reset();
-          }
-          event.preventDefault();
-          if (
-            TestLogic.active &&
-            Config.repeatQuotes === "typing" &&
-            Config.mode === "quote"
-          ) {
-            TestLogic.restart(true, false, event);
-          } else {
-            TestLogic.restart(false, false, event);
-          }
-        } else {
-          event.preventDefault();
-          handleChar("\t", TestLogic.input.current.length);
-        }
-      } else if (!TestUI.resultVisible) {
-        if (
-          (TestLogic.hasTab && event.shiftKey) ||
-          (!TestLogic.hasTab && Config.mode !== "zen") ||
-          (Config.mode === "zen" && event.shiftKey)
-        ) {
-          event.preventDefault();
-          $("#restartTestButton").focus();
-        } else {
-          event.preventDefault();
-          handleChar("\t", TestLogic.input.current.length);
-        }
-      }
-    } else if (Config.quickTab) {
-      UI.changePage("test");
-    }
-  }
-}
-
 function backspaceToPrevious() {
   if (!TestLogic.active) return;
 
@@ -620,6 +540,86 @@ function handleChar(char, charIndex) {
   }
 
   $("#wordsInput").val(" " + TestLogic.input.current);
+}
+
+function handleTab(event) {
+  if (TestUI.resultCalculating) {
+    event.preventDefault();
+  }
+  if (
+    !$("#presetWrapper").hasClass("hidden") ||
+    !$("#tagsWrapper").hasClass("hidden")
+  ) {
+    event.preventDefault();
+    return;
+  }
+  if ($("#customTextPopup .textarea").is(":focus")) {
+    event.preventDefault();
+
+    let area = $("#customTextPopup .textarea")[0];
+
+    var start = area.selectionStart;
+    var end = area.selectionEnd;
+
+    // set textarea value to: text before caret + tab + text after caret
+    area.value =
+      area.value.substring(0, start) + "\t" + area.value.substring(end);
+
+    // put caret at right position again
+    area.selectionStart = area.selectionEnd = start + 1;
+
+    return;
+  } else if (
+    !TestUI.resultCalculating &&
+    $("#commandLineWrapper").hasClass("hidden") &&
+    $("#simplePopupWrapper").hasClass("hidden") &&
+    !$(".page.pageLogin").hasClass("active")
+  ) {
+    if ($(".pageTest").hasClass("active")) {
+      if (Config.quickTab) {
+        if (
+          TestUI.resultVisible ||
+          !(
+            (Config.mode == "zen" && !event.shiftKey) ||
+            (TestLogic.hasTab && !event.shiftKey)
+          )
+        ) {
+          if (event.shiftKey) {
+            ManualRestart.set();
+          } else {
+            ManualRestart.reset();
+          }
+          event.preventDefault();
+          if (
+            TestLogic.active &&
+            Config.repeatQuotes === "typing" &&
+            Config.mode === "quote"
+          ) {
+            TestLogic.restart(true, false, event);
+          } else {
+            TestLogic.restart(false, false, event);
+          }
+        } else {
+          event.preventDefault();
+          handleChar("\t", TestLogic.input.current.length);
+        }
+      } else if (!TestUI.resultVisible) {
+        if (
+          (TestLogic.hasTab && event.shiftKey) ||
+          (!TestLogic.hasTab && Config.mode !== "zen") ||
+          (Config.mode === "zen" && event.shiftKey)
+        ) {
+          event.preventDefault();
+          $("#restartTestButton").focus();
+        } else {
+          event.preventDefault();
+          handleChar("\t", TestLogic.input.current.length);
+        }
+      }
+    } else if (Config.quickTab) {
+      UI.changePage("test");
+    }
+  }
 }
 
 $(document).keydown((event) => {

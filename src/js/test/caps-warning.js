@@ -1,5 +1,3 @@
-import Config from "./config";
-
 function show() {
   if ($("#capsWarning").hasClass("hidden")) {
     $("#capsWarning").removeClass("hidden");
