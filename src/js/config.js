@@ -19,6 +19,7 @@ import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
 import LayoutList from "./layouts";
 import * as ChallengeContoller from "./challenge-controller";
+import * as TTS from "./tts";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -339,8 +340,14 @@ export function setFavThemes(themes, nosave) {
 }
 
 export function setFunbox(funbox, nosave) {
-  config.funbox = funbox ? funbox : "none";
+  let val = funbox ? funbox : "none";
+  config.funbox = val;
   ChallengeContoller.clearActive();
+  if (val === "none") {
+    TTS.clear();
+  } else if (val === "tts") {
+    TTS.init();
+  }
   if (!nosave) {
     saveToLocalStorage();
   }
@@ -1332,6 +1339,9 @@ export function setLanguage(language, nosave) {
     language = "english";
   }
   config.language = language;
+  if (config.funbox === "tts") {
+    TTS.setLanguage();
+  }
   try {
     firebase.analytics().logEvent("changedLanguage", {
       language: language,

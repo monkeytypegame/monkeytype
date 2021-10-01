@@ -5,6 +5,7 @@ import * as Misc from "./misc";
 import * as ManualRestart from "./manual-restart-tracker";
 import Config, * as UpdateConfig from "./config";
 import * as Settings from "./settings";
+import * as TTS from "./tts";
 
 let modeSaved = null;
 let memoryTimer = null;
@@ -79,13 +80,7 @@ export function reset() {
 
 export function toggleScript(...params) {
   if (Config.funbox === "tts") {
-    var msg = new SpeechSynthesisUtterance();
-    console.log("Speaking");
-    msg.text = params[0];
-    if (!msg.text) return;
-    msg.lang = "en-US";
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(msg);
+    TTS.speak(params[0]);
   }
 }
 
