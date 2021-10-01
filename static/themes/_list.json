@@ -5,6 +5,11 @@
     "textColor": "#eee"
   },
   {
+    "name": "b-w",
+    "bgColor": "#FFFFFF",
+    "textColor": "#000000"
+  },
+  {
     "name": "muted",
     "bgColor": "#525252",
     "textColor": "#B1E4E3"
