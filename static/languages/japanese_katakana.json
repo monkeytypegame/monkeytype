@@ -2,6 +2,7 @@
   "name": "japanese_katakana",
   "leftToRight": true,
   "noLazyMode": true,
+  "bcp47": "jp-JP",
   "words": [
     "アクセス",
     "アドレス",

@@ -2,6 +2,7 @@
   "name": "russian",
   "leftToRight": true,
   "noLazyMode": true,
+  "bcp47": "ru-RU",
   "words": [
     "и",
     "в",

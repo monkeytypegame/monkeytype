@@ -2,6 +2,7 @@
   "name": "arabic_10k",
   "leftToRight": false,
   "ligatures": true,
+  "bcp47": "ar-SA",
   "words": [
     " اِكْتَشَفَ",
     " فَيَجِبُ",

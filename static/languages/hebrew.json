@@ -3,6 +3,7 @@
   "leftToRight": false,
   "ligatures": true,
   "noLazyMode": true,
+  "bcp47": "he-IL",
   "words": [
     "של",
     "את",

@@ -1,6 +1,7 @@
 {
   "name": "french_10k",
   "leftToRight": true,
+  "bcp47": "fr-FR",
   "words": [
     "a",
     "à",

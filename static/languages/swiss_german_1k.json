@@ -2,6 +2,7 @@
   "name": "swiss_german_1k",
   "_comment": "Sourced from: https://1000mostcommonwords.com/1000-most-common-swiss-german-words/.",
   "leftToRight": true,
+  "bcp47": "de-CH",
   "words": [
     "wie",
     "ich",
