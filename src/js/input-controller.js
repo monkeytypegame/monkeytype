@@ -440,10 +440,6 @@ function handleChar(char, charIndex) {
     return;
   }
 
-  if (TestLogic.input.current === "") {
-    TestStats.setBurstStart(performance.now());
-  }
-
   Focus.set(true);
   Caret.stopAnimation();
 
@@ -451,6 +447,15 @@ function handleChar(char, charIndex) {
 
   if (thisCharCorrect && Config.mode !== "zen") {
     char = TestLogic.words.getCurrent().charAt(charIndex);
+  }
+
+  if (!thisCharCorrect && char === "\n") {
+    if (TestLogic.input.current === "") return;
+    char = " ";
+  }
+
+  if (TestLogic.input.current === "") {
+    TestStats.setBurstStart(performance.now());
   }
 
   const resultingWord =
@@ -577,7 +582,6 @@ function handleChar(char, charIndex) {
 
   let activeWordTopBeforeJump = document.querySelector("#words .word.active")
     .offsetTop;
-  TestUI.updateWordElement();
 
   if (!Config.hideExtraLetters) {
     let newActiveTop = document.querySelector("#words .word.active").offsetTop;
@@ -596,10 +600,11 @@ function handleChar(char, charIndex) {
         if (!Config.showAllLines) TestUI.lineJump(currentTop);
       } else {
         TestLogic.input.current = TestLogic.input.current.slice(0, -1);
-        TestUI.updateWordElement();
       }
     }
   }
+
+  TestUI.updateWordElement();
 
   //simulate space press in nospace funbox
   if (
