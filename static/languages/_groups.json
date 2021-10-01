@@ -21,7 +21,7 @@
   },
   {
     "name": "arabic",
-    "languages": ["arabic", "arabic_10k"]
+    "languages": ["arabic", "arabic_10k", "arabic_diacritic", "arabic_diacritic_10k" ]
   },
   {
     "name": "malagasy",
