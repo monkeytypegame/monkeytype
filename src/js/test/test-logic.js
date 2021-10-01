@@ -906,7 +906,6 @@ export function restart(
   TestUI.focusWords();
   Funbox.resetMemoryTimer();
   RateQuotePopup.clearQuoteStats();
-  $("#wordsInput").val(" ");
 
   TestUI.reset();
 
@@ -940,6 +939,7 @@ export function restart(
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
+      $("#wordsInput").val(" ");
       if (!withSameWordset) {
         setRepeated(false);
         setPaceRepeat(repeatWithPace);
@@ -1221,6 +1221,7 @@ export async function finish(difficultyFailed = false) {
   LiveBurst.hide();
   TimerProgress.hide();
   Funbox.activate("none", null);
+  $("#wordsInput").blur();
 
   let stats = TestStats.calculateStats();
 
