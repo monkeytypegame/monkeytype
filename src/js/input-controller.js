@@ -355,6 +355,10 @@ function handleChar(char, charIndex) {
     }
   }
 
+  if (TestLogic.words.getCurrent()[charIndex] !== "\n" && char === "\n") {
+    return;
+  }
+
   //start the test
   if (!TestLogic.active && !TestLogic.startTest()) {
     return;
