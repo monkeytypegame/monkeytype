@@ -28,15 +28,6 @@ import * as WeakSpot from "./weak-spot";
 let dontInsertSpace = false;
 let correctShiftUsed = true;
 
-function setWordsInput(value) {
-  // Only change #wordsInput if it's not already the wanted value
-  // Avoids Safari triggering unneeded events, causing issues with
-  // dead keys.
-  if (value !== $("#wordsInput").val()) {
-    $("#wordsInput").val(value);
-  }
-}
-
 function backspaceToPrevious() {
   if (!TestLogic.active) return;
 
@@ -394,7 +385,7 @@ function handleChar(char, charIndex) {
 
   if (!thisCharCorrect && Misc.trailingComposeChars.test(resultingWord)) {
     TestLogic.input.current = resultingWord;
-    setWordsInput(" " + TestLogic.input.current);
+    $("#wordsInput").val(" " + TestLogic.input.current);
     TestUI.updateWordElement();
     Caret.updatePosition();
     return;
@@ -467,7 +458,7 @@ function handleChar(char, charIndex) {
       charIndex < TestLogic.words.getCurrent().length + 20)
   ) {
     TestLogic.input.current = resultingWord;
-    setWordsInput(" " + TestLogic.input.current);
+    $("#wordsInput").val(" " + TestLogic.input.current);
   }
 
   if (!thisCharCorrect && Config.difficulty == "master") {
@@ -548,7 +539,7 @@ function handleChar(char, charIndex) {
     Caret.updatePosition();
   }
 
-  setWordsInput(" " + TestLogic.input.current);
+  $("#wordsInput").val(" " + TestLogic.input.current);
 }
 
 function handleTab(event) {
@@ -696,7 +687,7 @@ $(document).keydown((event) => {
   if (event.key === "Backspace" && TestLogic.input.current.length === 0) {
     backspaceToPrevious();
     if (TestLogic.input.current)
-      setWordsInput(" " + TestLogic.input.current + " ");
+      $("#wordsInput").val(" " + TestLogic.input.current + " ");
   }
 
   if (event.key === "Enter") {
@@ -794,7 +785,7 @@ $("#wordsInput").on("input", (event) => {
     }
   }
 
-  setWordsInput(" " + TestLogic.input.current);
+  event.target.value = " " + TestLogic.input.current;
 
   let acc = Misc.roundTo2(TestStats.calculateAccuracy());
   LiveAcc.update(acc);
