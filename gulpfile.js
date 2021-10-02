@@ -199,6 +199,7 @@ task("cat", function () {
 
 task("sass", function () {
   return src("./src/sass/*.scss")
+    .pipe(concat("style.scss"))
     .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
     .pipe(dest("dist/css"));
 });

@@ -1,0 +1,365 @@
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code&family=IBM+Plex+Sans:wght@600&family=Inconsolata&family=Roboto+Mono&family=Source+Code+Pro&family=JetBrains+Mono&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend+Deca&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Oxygen&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Itim&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Coming+Soon&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lalezar&display=swap");
+
+:root {
+  --roundness: 0.5rem;
+  --font: "Roboto Mono";
+  // scroll-behavior: smooth;
+  scroll-padding-top: 2rem;
+}
+
+::placeholder {
+  color: var(--sub-color);
+  opacity: 1;
+  /* Firefox */
+}
+
+.ffscroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sub-color) transparent;
+}
+
+html {
+  @extend .ffscroll;
+  overflow-y: scroll;
+}
+
+a {
+  display: inline-block;
+  color: var(--sub-color);
+  transition: 0.25s;
+  &:hover {
+    color: var(--text-color);
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--text-color);
+  overflow-x: hidden;
+  background: var(--bg-color);
+}
+
+.customBackground {
+  content: "";
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: -999;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.merchBanner {
+  background-color: var(--main-color);
+  /* padding: .5rem; */
+  text-align: center;
+  color: var(--bg-color);
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-auto-flow: column;
+  gap: 1rem;
+  // height: 2rem;
+  padding: 0 1rem;
+  img {
+    height: 2rem;
+  }
+  a:hover {
+    color: var(--bg-color);
+  }
+  .closeButton {
+    transition: 0.25s;
+    // margin-left: 1rem;
+    &:hover {
+      color: var(--text-color);
+      cursor: pointer;
+    }
+  }
+}
+
+#backgroundLoader {
+  height: 3px;
+  position: fixed;
+  width: 100%;
+  background: var(--main-color);
+  animation: loader 2s cubic-bezier(0.38, 0.16, 0.57, 0.82) infinite;
+  z-index: 9999;
+}
+
+label.checkbox {
+  span {
+    display: block;
+    font-size: 0.76rem;
+    color: var(--sub-color);
+    margin-left: 1.5rem;
+  }
+
+  input {
+    margin: 0 !important;
+    cursor: pointer;
+    width: 0;
+    height: 0;
+    display: none;
+
+    & ~ .customTextCheckbox {
+      width: 12px;
+      height: 12px;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 2px;
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      margin: 0 0.5rem 0 0.25rem;
+      transition: 0.25s;
+    }
+
+    &:checked ~ .customTextCheckbox {
+      background: var(--main-color);
+    }
+  }
+}
+
+#centerContent {
+  max-width: 1000px;
+  // min-width: 500px;
+  // margin: 0 auto;
+  display: grid;
+  grid-auto-flow: row;
+  min-height: 100vh;
+  padding: 2rem;
+  gap: 2rem;
+  align-items: center;
+  z-index: 999;
+  grid-template-rows: auto 1fr auto;
+  width: 100%;
+  &.wide125 {
+    max-width: 1250px;
+  }
+  &.wide150 {
+    max-width: 1500px;
+  }
+  &.wide200 {
+    max-width: 2000px;
+  }
+  &.widemax {
+    max-width: unset;
+  }
+}
+
+key {
+  color: var(--bg-color);
+  background-color: var(--sub-color);
+  /* font-weight: bold; */
+  padding: 0.1rem 0.3rem;
+  margin: 3px 0;
+  border-radius: 0.1rem;
+  display: inline-block;
+  font-size: 0.7rem;
+  line-height: 0.7rem;
+}
+
+.pageLoading {
+  display: grid;
+  justify-content: center;
+  .preloader {
+    font-size: 2rem;
+    justify-self: center;
+    color: var(--main-color);
+  }
+}
+
+.devIndicator {
+  position: fixed;
+  font-size: 3rem;
+  color: var(--sub-color);
+  opacity: 0.25;
+  z-index: -1;
+
+  &.tl {
+    top: 2rem;
+    left: 2rem;
+  }
+
+  &.tr {
+    top: 2rem;
+    right: 2rem;
+  }
+
+  &.bl {
+    bottom: 2rem;
+    left: 2rem;
+  }
+
+  &.br {
+    bottom: 2rem;
+    right: 2rem;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.invisible {
+  opacity: 0 !important;
+}
+
+.button {
+  color: var(--text-color);
+  cursor: pointer;
+  transition: 0.25s;
+  padding: 0.4rem;
+  border-radius: var(--roundness);
+  background: rgba(0, 0, 0, 0.1);
+  text-align: center;
+  -webkit-user-select: none;
+  // display: grid;
+  align-content: center;
+  height: min-content;
+  height: -moz-min-content;
+  line-height: 1rem;
+
+  &:hover {
+    color: var(--bg-color);
+    background: var(--text-color);
+    outline: none;
+  }
+  &:focus {
+    color: var(--main-color);
+    background: var(--sub-color);
+    outline: none;
+  }
+
+  &.active {
+    background: var(--main-color);
+    color: var(--bg-color);
+    &:hover {
+      // color: var(--text-color);
+      background: var(--text-color);
+      outline: none;
+    }
+    &:focus {
+      color: var(--bg-color);
+      background: var(--main-color);
+      outline: none;
+    }
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: default;
+    &:hover {
+      color: var(--text-color);
+      background: rgba(0, 0, 0, 0.1);
+      outline: none;
+    }
+  }
+
+  &.disabled.active {
+    opacity: 0.5;
+    cursor: default;
+    &:hover {
+      color: var(--bg-color);
+      background: var(--main-color);
+      outline: none;
+    }
+  }
+}
+
+.text-button {
+  transition: 0.25s;
+  color: var(--sub-color);
+  cursor: pointer;
+  margin-right: 0.25rem;
+  cursor: pointer;
+  outline: none;
+
+  &.active {
+    color: var(--main-color);
+  }
+
+  &:hover,
+  &:focus {
+    color: var(--text-color);
+  }
+}
+
+.icon-button {
+  display: grid;
+  grid-auto-flow: column;
+  align-content: center;
+  transition: 0.25s;
+  padding: 0.5rem;
+  border-radius: var(--roundness);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-color);
+  }
+  &:focus {
+    // background: var(--sub-color);
+    color: var(--sub-color);
+    border: none;
+    outline: none;
+  }
+}
+
+.scrollToTopButton {
+  bottom: 2rem;
+  right: 2rem;
+  position: fixed;
+  font-size: 2rem;
+  width: 4rem;
+  height: 4rem;
+  text-align: center;
+  line-height: 4rem;
+  background: var(--bg-color);
+  border-radius: 99rem;
+  z-index: 99;
+  cursor: pointer;
+  color: var(--sub-color);
+  transition: 0.25s;
+  &:hover {
+    color: var(--text-color);
+  }
+}
+
+#commandLineMobileButton {
+  display: none;
+  top: -4rem;
+  left: 0;
+  position: absolute;
+  font-size: 1rem;
+  width: 3rem;
+  height: 3rem;
+  text-align: center;
+  line-height: 3rem;
+  background: var(--main-color);
+  border-radius: 99rem;
+  z-index: 99;
+  cursor: pointer;
+  color: var(--bg-color);
+  transition: 0.25s;
+}
