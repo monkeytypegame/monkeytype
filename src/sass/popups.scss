@@ -342,9 +342,8 @@
         font-size: 1.5rem;
         color: var(--sub-color);
       }
-
-      #submitQuoteButton {
-        padding: 10px;
+      .button {
+        width: 33%;
       }
     }
 
@@ -445,7 +444,7 @@
   gap: 1rem;
   width: 1000px;
   height: 80vh;
-  grid-template-rows: auto auto 1fr auto auto auto auto 1fr;
+  grid-template-rows: auto auto auto 1fr auto auto auto auto 1fr;
 
   .title {
     font-size: 1.5rem;

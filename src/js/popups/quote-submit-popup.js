@@ -5,13 +5,26 @@ import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
 import axiosInstance from "./axios-instance";
 
-export let selectedId = 1;
+let dropdownReady = false;
+async function initDropdown() {
+  if (dropdownReady) return;
+  let languages = await Misc.getLanguageList();
+  languages.forEach((language) => {
+    if (!/_\d*k$/g.test(language)) {
+      $("#quoteSubmitPopup #submitQuoteLanguage").append(
+        `<option value="${language}">${language.replace(/_/g, " ")}</option>`
+      );
+    }
+  });
+  $("#quoteSubmitPopup #submitQuoteLanguage").select2();
+  dropdownReady = true;
+}
 
 async function submitQuote() {
   let data = {
-    text: $("#submitQuoteText").val(),
-    source: $("#submitQuoteSource").val(),
-    language: $("#submitQuoteLanguage").val(),
+    text: $("#quoteSubmitPopup #submitQuoteText").val(),
+    source: $("#quoteSubmitPopup #submitQuoteSource").val(),
+    language: $("#quoteSubmitPopup #submitQuoteLanguage").val(),
   };
   let response = await axiosInstance.post("/new-quotes/add", data);
   if (response.data.similarityScore) {
@@ -26,14 +39,15 @@ async function submitQuote() {
     Notifications.add("Language not found", -1, 10);
   } else {
     Notifications.add("Quote added successfully", 1, 10);
-    $("#submitQuoteText").val("");
-    $("#submitQuoteSource").val("");
-    $("#submitQuoteLanguage").val("");
+    $("#quoteSubmitPopup #submitQuoteText").val("");
+    $("#quoteSubmitPopup #submitQuoteSource").val("");
+    $("#quoteSubmitPopup #submitQuoteLanguage").val("");
   }
 }
 
 export async function show() {
   if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
+    initDropdown();
     $("#quoteSubmitPopup input").val("");
     $("#quoteSubmitPopupWrapper")
       .stop(true, true)
@@ -69,6 +83,6 @@ $("#quoteSubmitPopupWrapper").click((e) => {
   }
 });
 
-$(document).on("click", "#submitQuoteButton", (e) => {
+$(document).on("click", "#quoteSubmitPopup #submitQuoteButton", (e) => {
   submitQuote();
 });
