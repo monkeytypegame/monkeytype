@@ -77,7 +77,7 @@ export function hide() {
   }
 }
 
-$("#quoteSubmitPopupWrapper").click((e) => {
+$("#quoteSubmitPopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "quoteSubmitPopupWrapper") {
     hide();
   }
