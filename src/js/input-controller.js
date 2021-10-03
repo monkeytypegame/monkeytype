@@ -510,6 +510,7 @@ function handleChar(char, charIndex) {
 
   let activeWordTopBeforeJump = document.querySelector("#words .word.active")
     .offsetTop;
+  TestUI.updateWordElement();
 
   if (!Config.hideExtraLetters) {
     let newActiveTop = document.querySelector("#words .word.active").offsetTop;
@@ -528,11 +529,10 @@ function handleChar(char, charIndex) {
         if (!Config.showAllLines) TestUI.lineJump(currentTop);
       } else {
         TestLogic.input.current = TestLogic.input.current.slice(0, -1);
+        TestUI.updateWordElement();
       }
     }
   }
-
-  TestUI.updateWordElement();
 
   //simulate space press in nospace funbox
   if (
