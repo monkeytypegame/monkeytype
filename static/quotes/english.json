@@ -33779,30 +33779,29 @@
       "length": 118,
       "id": 5701
     },
-	{
-	  "text": "When you live your life by poor standards, you inflict damage on everyone who crosses your path, especially those you love.",
-	  "source": "The Wolf Of Wall Street",
-	  "length": 123,
-	  "id": 5702
-	},
-	{
-	  "text": "You show me a pay stub for $72,000, i quit my job right now and work for you.",
-	  "source": "The Wolf Of Wall Street",
-	  "length": 77,
-	  "id": 5703
-	},
-	{
-	  "text": "On a daily basis I consume enough drugs to sedate Manhattan, Long Island, and Queens for a month. I take Quaaludes 10-15 times a day for my 'back pain', Adderall to stay focused, Xanax to take the edge off, pot to mellow me out, cocaine to wake me back up again, and morphine... Well, because it's awesome.",
-	  "source": "The Wolf Of Wall Street",
-	  "length": 306,
-	  "id": 5704
-	},
-	{
-	  "text": "My name is Jordan Belfort. The year I turned 26, I made 49 million dollars, which really pissed me off because it was three shy of a million a week.",
-	  "source": "The Wolf Of Wall Street",
-	  "length": 148,
-	  "id": 5705
-	}
-
+    {
+      "text": "When you live your life by poor standards, you inflict damage on everyone who crosses your path, especially those you love.",
+      "source": "The Wolf Of Wall Street",
+      "length": 123,
+      "id": 5702
+    },
+    {
+      "text": "You show me a pay stub for $72,000, I quit my job right now and work for you.",
+      "source": "The Wolf Of Wall Street",
+      "length": 77,
+      "id": 5703
+    },
+    {
+      "text": "On a daily basis I consume enough drugs to sedate Manhattan, Long Island, and Queens for a month. I take Quaaludes 10-15 times a day for my 'back pain', Adderall to stay focused, Xanax to take the edge off, pot to mellow me out, cocaine to wake me back up again, and morphine... Well, because it's awesome.",
+      "source": "The Wolf Of Wall Street",
+      "length": 306,
+      "id": 5704
+    },
+    {
+      "text": "My name is Jordan Belfort. The year I turned 26, I made 49 million dollars, which really pissed me off because it was three shy of a million a week.",
+      "source": "The Wolf Of Wall Street",
+      "length": 148,
+      "id": 5705
+    }
   ]
 }
