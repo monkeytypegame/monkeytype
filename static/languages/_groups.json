@@ -61,6 +61,7 @@
       "german",
       "german_1k",
       "german_10k",
+      "german_250k",
       "swiss_german",
       "swiss_german_1k"
     ]
@@ -79,13 +80,19 @@
   },
   {
     "name": "italian",
-    "languages": ["italian", "italian_1k", "italian_7k", "italian_60k", "italian_280k"]
+    "languages": [
+      "italian",
+      "italian_1k",
+      "italian_7k",
+      "italian_60k",
+      "italian_280k"
+    ]
   },
   {
     "name": "thai",
     "languages": ["thai"]
   },
- {
+  {
     "name": "tamil",
     "languages": ["tamil"]
   },
@@ -224,6 +231,10 @@
   {
     "name": "albanian",
     "languages": ["albanian", "albanian_1k"]
+  },
+  {
+    "name": "japanese",
+    "languages": ["japanese_hiragana", "japanese_katakana"]
   },
   {
     "name": "code",

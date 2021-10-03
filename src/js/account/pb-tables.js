@@ -1,4 +1,6 @@
 import * as DB from "./db";
+import Config from "./config";
+import * as Misc from "./misc";
 
 export function update() {
   $(".pageAccount .timePbTable tbody").html(`
@@ -62,19 +64,31 @@ export function update() {
   </tr>
   `);
 
+  if (Config.alwaysShowCPM) {
+    $(
+      ".pageAccount .timePbTable thead tr td:nth-child(2), .pageAccount .wordsPbTable thead tr td:nth-child(2)"
+    ).html('cpm<br><span class="sub">accuracy</span>');
+  } else {
+    $(
+      ".pageAccount .timePbTable thead tr td:nth-child(2), .pageAccount .wordsPbTable thead tr td:nth-child(2)"
+    ).html('wpm<br><span class="sub">accuracy</span>');
+  }
+
   const pb = DB.getSnapshot().personalBests;
   let pbData;
   let text;
+
+  let multiplier = Config.alwaysShowCPM ? 5 : 1;
 
   text = "";
   try {
     pbData = pb.time[15].sort((a, b) => b.wpm - a.wpm)[0];
     text += `<tr>
       <td>15</td>
-      <td>${pbData.wpm}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
       <td>${moment(pbData.timestamp).format(
@@ -95,10 +109,10 @@ export function update() {
     pbData = pb.time[30].sort((a, b) => b.wpm - a.wpm)[0];
     text += `<tr>
     <td>30</td>
-      <td>${pbData.wpm}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
       <td>${moment(pbData.timestamp).format(
@@ -119,10 +133,10 @@ export function update() {
     pbData = pb.time[60].sort((a, b) => b.wpm - a.wpm)[0];
     text += `<tr>
       <td>60</td>
-      <td>${pbData.wpm}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
       <td>${moment(pbData.timestamp).format(
@@ -143,10 +157,10 @@ export function update() {
     pbData = pb.time[120].sort((a, b) => b.wpm - a.wpm)[0];
     text += `<tr>
       <td>120</td>
-      <td>${pbData.wpm}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
       <td>${moment(pbData.timestamp).format(
@@ -170,10 +184,10 @@ export function update() {
     pbData = pb.words[10].sort((a, b) => b.wpm - a.wpm)[0];
     text += `<tr>
       <td>10</td>
-      <td>${pbData.wpm}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
       <td>${moment(pbData.timestamp).format(
@@ -194,10 +208,10 @@ export function update() {
     pbData = pb.words[25].sort((a, b) => b.wpm - a.wpm)[0];
     text += `<tr>
       <td>25</td>
-      <td>${pbData.wpm}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
       <td>${moment(pbData.timestamp).format(
@@ -218,10 +232,10 @@ export function update() {
     pbData = pb.words[50].sort((a, b) => b.wpm - a.wpm)[0];
     text += `<tr>
       <td>50</td>
-      <td>${pbData.wpm}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
       <td>${moment(pbData.timestamp).format(
@@ -242,10 +256,10 @@ export function update() {
     pbData = pb.words[100].sort((a, b) => b.wpm - a.wpm)[0];
     text += `<tr>
       <td>100</td>
-      <td>${pbData.wpm}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.wpm * multiplier)}<br><span class="sub">${
       pbData.acc === undefined ? "-" : pbData.acc + "%"
     }</span></td>
-      <td>${pbData.raw}<br><span class="sub">${
+      <td>${Misc.roundTo2(pbData.raw * multiplier)}<br><span class="sub">${
       pbData.consistency === undefined ? "-" : pbData.consistency + "%"
     }</span></td>
       <td>${moment(pbData.timestamp).format(

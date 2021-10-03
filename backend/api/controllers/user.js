@@ -6,6 +6,8 @@ const {
 } = require("../../handlers/validation");
 const MonkeyError = require("../../handlers/error");
 const fetch = require("node-fetch");
+const Logger = require("./../../handlers/logger.js");
+const uaparser = require("ua-parser-js");
 
 // import UsersDAO from "../../dao/user";
 // import BotDAO from "../../dao/bot";
@@ -17,6 +19,7 @@ class UserController {
       const { name } = req.body;
       const { email, uid } = req.decodedToken;
       await UsersDAO.addUser(name, email, uid);
+      Logger.log("user_created", `${name} ${email}`, uid);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
@@ -26,7 +29,9 @@ class UserController {
   static async deleteUser(req, res, next) {
     try {
       const { uid } = req.decodedToken;
+      const userInfo = await UsersDAO.getUser(uid);
       await UsersDAO.deleteUser(uid);
+      Logger.log("user_deleted", `${userInfo.email} ${userInfo.name}`, uid);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
@@ -43,6 +48,7 @@ class UserController {
             "Username invalid. Name cannot contain special characters or contain more than 14 characters. Can include _ . and -",
         });
       await UsersDAO.updateName(uid, name);
+      Logger.log("user_name_updated", `changed name to ${name}`, uid);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
@@ -53,6 +59,7 @@ class UserController {
     try {
       const { uid } = req.decodedToken;
       await UsersDAO.clearPb(uid);
+      Logger.log("user_cleared_pbs", ``, uid);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
@@ -82,6 +89,7 @@ class UserController {
       const { uid } = req.decodedToken;
       const { newEmail } = req.body;
       await UsersDAO.updateEmail(uid, newEmail);
+      Logger.log("user_email_updated", `changed email to ${newEmail}`, uid);
       return res.sendStatus(200);
     } catch (e) {
       return next(e);
@@ -106,6 +114,31 @@ class UserController {
           );
         }
       }
+      let agent = uaparser(req.headers["user-agent"]);
+      let logobj = {
+        ip:
+          req.headers["cf-connecting-ip"] ||
+          req.headers["x-forwarded-for"] ||
+          req.ip ||
+          "255.255.255.255",
+        agent:
+          agent.os.name +
+          " " +
+          agent.os.version +
+          " " +
+          agent.browser.name +
+          " " +
+          agent.browser.version,
+      };
+      if (agent.device.vendor) {
+        logobj.device =
+          agent.device.vendor +
+          " " +
+          agent.device.model +
+          " " +
+          agent.device.type;
+      }
+      Logger.log("user_data_requested", logobj, uid);
       return res.status(200).json(userInfo);
     } catch (e) {
       return next(e);
@@ -154,6 +187,7 @@ class UserController {
       }
       await UsersDAO.linkDiscord(uid, did);
       await BotDAO.linkDiscord(uid, did);
+      Logger.log("user_discord_link", `linked to ${did}`, uid);
       return res.status(200).json({
         message: "Discord account linked",
         did,
@@ -167,6 +201,7 @@ class UserController {
     try {
       const { uid } = req.decodedToken;
       await UsersDAO.unlinkDiscord(uid);
+      Logger.log("user_discord_unlinked", ``, uid);
       return res.status(200).send();
     } catch (e) {
       return next(e);

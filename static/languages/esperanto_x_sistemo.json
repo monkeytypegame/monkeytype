@@ -1,6 +1,7 @@
 {
   "name": "esperanto_x_sistemo",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "la",
     "mi",

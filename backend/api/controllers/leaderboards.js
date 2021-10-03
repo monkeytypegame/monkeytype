@@ -62,6 +62,10 @@ class LeaderboardsController {
 
   static async update(req, res, next) {
     try {
+      return res.status(200).json({
+        message: "Leaderboards disabled",
+        lbdisabled: true,
+      });
       if (process.env.LBDISABLED === true) {
         return res.status(200).json({
           message: "Leaderboards disabled",

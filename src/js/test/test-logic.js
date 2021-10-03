@@ -26,7 +26,6 @@ import * as OutOfFocus from "./out-of-focus";
 import * as AccountButton from "./account-button";
 import * as DB from "./db";
 import * as ThemeColors from "./theme-colors";
-import * as TestLeaderboards from "./test-leaderboards";
 import * as Replay from "./replay.js";
 import axiosInstance from "./axios-instance";
 import * as MonkeyPower from "./monkey-power";
@@ -37,10 +36,13 @@ import * as Wordset from "./wordset";
 import * as ChallengeContoller from "./challenge-controller";
 import * as RateQuotePopup from "./rate-quote-popup";
 import * as BritishEnglish from "./british-english";
+import * as LazyMode from "./lazy-mode";
 
 const objecthash = require("object-hash");
 
 let glarsesMode = false;
+
+let failReason = "";
 
 export function toggleGlarses() {
   glarsesMode = true;
@@ -51,6 +53,10 @@ export function toggleGlarses() {
 }
 
 export let notSignedInLastResult = null;
+
+export function clearNotSignedInResult() {
+  notSignedInLastResult = null;
+}
 
 export function setNotSignedInUid(uid) {
   notSignedInLastResult.uid = uid;
@@ -466,71 +472,79 @@ export async function init() {
     language = await Misc.getLanguage(Config.language);
   }
 
+  if (Config.lazyMode === true && language.noLazyMode) {
+    Notifications.add("This language does not support lazy mode.", 0);
+    UpdateConfig.setLazyMode(false);
+  }
+
+  let wordsBound = 100;
+  if (Config.showAllLines) {
+    if (Config.mode === "quote") {
+      wordsBound = 100;
+    } else if (Config.mode === "custom") {
+      if (CustomText.isWordRandom) {
+        wordsBound = CustomText.word;
+      } else if (CustomText.isTimeRandom) {
+        wordsBound = 100;
+      } else {
+        wordsBound = CustomText.text.length;
+      }
+    } else if (Config.mode != "time") {
+      wordsBound = Config.words;
+    }
+  } else {
+    if (Config.mode === "words" && Config.words < wordsBound) {
+      wordsBound = Config.words;
+    }
+    if (
+      Config.mode == "custom" &&
+      CustomText.isWordRandom &&
+      CustomText.word < wordsBound
+    ) {
+      wordsBound = CustomText.word;
+    }
+    if (
+      Config.mode == "custom" &&
+      CustomText.isTimeRandom &&
+      CustomText.time < wordsBound
+    ) {
+      wordsBound = 100;
+    }
+    if (
+      Config.mode == "custom" &&
+      !CustomText.isWordRandom &&
+      CustomText.text.length < wordsBound
+    ) {
+      wordsBound = CustomText.text.length;
+    }
+  }
+
+  if (
+    (Config.mode === "custom" &&
+      CustomText.isWordRandom &&
+      CustomText.word == 0) ||
+    (Config.mode === "custom" &&
+      CustomText.isTimeRandom &&
+      CustomText.time == 0)
+  ) {
+    wordsBound = 100;
+  }
+
+  if (Config.mode === "words" && Config.words === 0) {
+    wordsBound = 100;
+  }
+  if (Config.funbox === "plus_one") {
+    wordsBound = 2;
+  }
+  if (Config.funbox === "plus_two") {
+    wordsBound = 3;
+  }
+
   if (
     Config.mode == "time" ||
     Config.mode == "words" ||
     Config.mode == "custom"
   ) {
-    let wordsBound = 100;
-    if (Config.showAllLines) {
-      if (Config.mode === "custom") {
-        if (CustomText.isWordRandom) {
-          wordsBound = CustomText.word;
-        } else if (CustomText.isTimeRandom) {
-          wordsBound = 100;
-        } else {
-          wordsBound = CustomText.text.length;
-        }
-      } else if (Config.mode != "time") {
-        wordsBound = Config.words;
-      }
-    } else {
-      if (Config.mode === "words" && Config.words < wordsBound) {
-        wordsBound = Config.words;
-      }
-      if (
-        Config.mode == "custom" &&
-        CustomText.isWordRandom &&
-        CustomText.word < wordsBound
-      ) {
-        wordsBound = CustomText.word;
-      }
-      if (
-        Config.mode == "custom" &&
-        CustomText.isTimeRandom &&
-        CustomText.time < wordsBound
-      ) {
-        wordsBound = 100;
-      }
-      if (
-        Config.mode == "custom" &&
-        !CustomText.isWordRandom &&
-        CustomText.text.length < wordsBound
-      ) {
-        wordsBound = CustomText.text.length;
-      }
-    }
-
-    if (
-      (Config.mode === "custom" &&
-        CustomText.isWordRandom &&
-        CustomText.word == 0) ||
-      (Config.mode === "custom" &&
-        CustomText.isTimeRandom &&
-        CustomText.time == 0)
-    ) {
-      wordsBound = 100;
-    }
-
-    if (Config.mode === "words" && Config.words === 0) {
-      wordsBound = 100;
-    }
-    if (Config.funbox === "plus_one") {
-      wordsBound = 2;
-    }
-    if (Config.funbox === "plus_two") {
-      wordsBound = 3;
-    }
     let wordList = language.words;
     if (Config.mode == "custom") {
       wordList = CustomText.text;
@@ -575,13 +589,17 @@ export async function init() {
           randomWord = wordset.randomWord();
         }
 
-        if (
-          Config.britishEnglish &&
-          Config.language.replace(/_\d*k$/g, "") === "english"
-        ) {
+        if (Config.britishEnglish && /english/.test(Config.language)) {
           let britishWord = await BritishEnglish.replace(randomWord);
           if (britishWord) randomWord = britishWord;
         }
+
+        if (Config.lazyMode === true && !language.noLazyMode) {
+          randomWord = LazyMode.replaceAccents(randomWord, language.accents);
+        }
+
+        randomWord = randomWord.replace(/ +/gm, " ");
+        randomWord = randomWord.replace(/^ | $/gm, "");
 
         if (Config.funbox === "rAnDoMcAsE") {
           let randomcaseword = "";
@@ -651,6 +669,7 @@ export async function init() {
             !CustomText.isWordRandom &&
             !CustomText.isTimeRandom
           ) {
+            //
           } else {
             i = words.length - 1;
           }
@@ -727,12 +746,16 @@ export async function init() {
     rq.text = rq.text.replace(/( *(\r\n|\r|\n) *)/g, "\n ");
     rq.text = rq.text.replace(/…/g, "...");
     rq.text = rq.text.trim();
+    rq.textSplit = rq.text.split(" ");
     rq.language = Config.language.replace(/_\d*k$/g, "");
 
     setRandomQuote(rq);
 
-    let w = randomQuote.text.trim().split(" ");
-    for (let i = 0; i < w.length; i++) {
+    let w = randomQuote.textSplit;
+
+    wordsBound = Math.min(wordsBound, w.length);
+
+    for (let i = 0; i < wordsBound; i++) {
       if (/\t/g.test(w[i])) {
         setHasTab(true);
       }
@@ -743,6 +766,11 @@ export async function init() {
         let britishWord = await BritishEnglish.replace(w[i]);
         if (britishWord) w[i] = britishWord;
       }
+
+      if (Config.lazyMode === true && !language.noLazyMode) {
+        w[i] = LazyMode.replaceAccents(w[i], language.accents);
+      }
+
       words.push(w[i]);
     }
   }
@@ -878,6 +906,7 @@ export function restart(
   TestUI.focusWords();
   Funbox.resetMemoryTimer();
   RateQuotePopup.clearQuoteStats();
+  $("#wordsInput").val(" ");
 
   TestUI.reset();
 
@@ -911,6 +940,7 @@ export function restart(
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
+      $("#wordsInput").val(" ");
       if (!withSameWordset) {
         setRepeated(false);
         setPaceRepeat(repeatWithPace);
@@ -973,12 +1003,14 @@ export function restart(
         UpdateConfig.setLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         UpdateConfig.setKeymapLayout(
           Config.customLayoutfluid
             ? Config.customLayoutfluid.split("#")[0]
-            : "qwerty"
+            : "qwerty",
+          true
         );
         Keymap.highlightKey(
           words
@@ -1072,7 +1104,8 @@ export async function addWord() {
       CustomText.word != 0) ||
     (Config.mode === "custom" &&
       !CustomText.isWordRandom &&
-      words.length >= CustomText.text.length)
+      words.length >= CustomText.text.length) ||
+    (Config.mode === "quote" && words.length >= randomQuote.textSplit.length)
   )
     return;
   const language =
@@ -1106,6 +1139,8 @@ export async function addWord() {
     !CustomText.isTimeRandom
   ) {
     randomWord = CustomText.text[words.length];
+  } else if (Config.mode === "quote") {
+    randomWord = randomQuote.textSplit[words.length];
   } else {
     while (
       previousWordStripped == randomWord ||
@@ -1187,6 +1222,7 @@ export async function finish(difficultyFailed = false) {
   LiveBurst.hide();
   TimerProgress.hide();
   Funbox.activate("none", null);
+  $("#wordsInput").blur();
 
   let stats = TestStats.calculateStats();
 
@@ -1225,7 +1261,7 @@ export async function finish(difficultyFailed = false) {
 
   lastTestWpm = stats.wpm;
 
-  let testtime = stats.time;
+  let testtime = parseFloat(stats.time);
 
   if (TestStats.lastSecondNotRound && !difficultyFailed) {
     let wpmAndRaw = calculateWpmAndRaw();
@@ -1440,18 +1476,28 @@ export async function finish(difficultyFailed = false) {
     );
   }
 
-  ChartController.result.data.datasets[0].data = TestStats.wpmHistory;
-  ChartController.result.data.datasets[1].data = rawWpmPerSecond;
+  ChartController.result.options.scales.yAxes[0].scaleLabel.labelString = Config.alwaysShowCPM
+    ? "Character per Minute"
+    : "Words per Minute";
+  let chartData1 = Config.alwaysShowCPM
+    ? TestStats.wpmHistory.map((a) => a * 5)
+    : TestStats.wpmHistory;
+  let chartData2 = Config.alwaysShowCPM
+    ? rawWpmPerSecond.map((a) => a * 5)
+    : rawWpmPerSecond;
+
+  ChartController.result.data.datasets[0].data = chartData1;
+  ChartController.result.data.datasets[1].data = chartData2;
 
   let maxChartVal = Math.max(
-    ...[Math.max(...rawWpmPerSecond), Math.max(...TestStats.wpmHistory)]
+    ...[Math.max(...chartData2), Math.max(...chartData1)]
   );
   if (!Config.startGraphsAtZero) {
     ChartController.result.options.scales.yAxes[0].ticks.min = Math.min(
-      ...TestStats.wpmHistory
+      ...chartData1
     );
     ChartController.result.options.scales.yAxes[1].ticks.min = Math.min(
-      ...TestStats.wpmHistory
+      ...chartData1
     );
   } else {
     ChartController.result.options.scales.yAxes[0].ticks.min = 0;
@@ -1474,15 +1520,9 @@ export async function finish(difficultyFailed = false) {
 
   ChartController.result.data.datasets[2].data = errorsArray;
 
-  let kps = TestStats.keypressPerSecond.slice(
-    Math.max(TestStats.keypressPerSecond.length - 5, 0)
-  );
+  let kps = TestStats.keypressPerSecond.slice(-5);
 
-  kps = kps.map((a) => a.count + a.mod);
-
-  kps = kps.reduce((a, b) => a + b, 0);
-
-  let afkDetected = kps === 0 ? true : false;
+  let afkDetected = kps.every((second) => second.afk);
 
   if (bailout) afkDetected = false;
 
@@ -1495,6 +1535,12 @@ export async function finish(difficultyFailed = false) {
     quoteLength = randomQuote.group;
     lang = Config.language.replace(/_\d*k$/g, "");
   }
+
+  $(".pageTest #result #rateQuoteButton .icon")
+    .removeClass("fas")
+    .addClass("far");
+  $(".pageTest #result #rateQuoteButton .rating").text("");
+  $(".pageTest #result #rateQuoteButton").addClass("hidden");
 
   if (difficultyFailed) {
     Notifications.add(`Test failed - ${failReason}`, 0, 1);
@@ -1579,6 +1625,7 @@ export async function finish(difficultyFailed = false) {
       quoteLength: quoteLength,
       punctuation: Config.punctuation,
       numbers: Config.numbers,
+      lazyMode: Config.lazyMode,
       timestamp: Date.now(),
       language: lang,
       restartCount: TestStats.restartCount,
@@ -1624,7 +1671,6 @@ export async function finish(difficultyFailed = false) {
       if (firebase.auth().currentUser != null) {
         completedEvent.uid = firebase.auth().currentUser.uid;
         if (Config.mode === "quote") {
-          $(".pageTest #result #rateQuoteButton .rating").text("");
           let userqr = DB.getSnapshot().quoteRatings?.[randomQuote.language]?.[
             randomQuote.id
           ];
@@ -1632,10 +1678,6 @@ export async function finish(difficultyFailed = false) {
             $(".pageTest #result #rateQuoteButton .icon")
               .removeClass("far")
               .addClass("fas");
-          } else {
-            $(".pageTest #result #rateQuoteButton .icon")
-              .removeClass("fas")
-              .addClass("far");
           }
           RateQuotePopup.getQuoteStats(randomQuote).then((quoteStats) => {
             if (quoteStats !== null) {
@@ -1660,6 +1702,7 @@ export async function finish(difficultyFailed = false) {
           Config.punctuation,
           Config.language,
           Config.difficulty,
+          Config.lazyMode,
           Config.funbox
         ).then((lpb) => {
           DB.getUserHighestWpm(
@@ -1667,7 +1710,8 @@ export async function finish(difficultyFailed = false) {
             mode2,
             Config.punctuation,
             Config.language,
-            Config.difficulty
+            Config.difficulty,
+            Config.lazyMode
           ).then(async (highestwpm) => {
             PbCrown.hide();
             $("#result .stats .wpm .crown").attr("aria-label", "");
@@ -1694,13 +1738,14 @@ export async function finish(difficultyFailed = false) {
               }
             }
             let themecolors = await ThemeColors.get();
+            let chartlpb = Config.alwaysShowCPM ? lpb * 5 : lpb;
             if (lpb > 0) {
               ChartController.result.options.annotation.annotations.push({
                 enabled: false,
                 type: "line",
                 mode: "horizontal",
                 scaleID: "wpm",
-                value: lpb,
+                value: chartlpb,
                 borderColor: themecolors["sub"],
                 borderWidth: 1,
                 borderDash: [2, 2],
@@ -1715,11 +1760,14 @@ export async function finish(difficultyFailed = false) {
                   cornerRadius: 3,
                   position: "center",
                   enabled: true,
-                  content: `PB: ${lpb}`,
+                  content: `PB: ${chartlpb}`,
                 },
               });
-              if (maxChartVal >= lpb - 15 && maxChartVal <= lpb + 15) {
-                maxChartVal = lpb + 15;
+              if (
+                maxChartVal >= chartlpb - 15 &&
+                maxChartVal <= chartlpb + 15
+              ) {
+                maxChartVal = chartlpb + 15;
               }
               ChartController.result.options.scales.yAxes[0].ticks.max = Math.round(
                 maxChartVal
@@ -1745,7 +1793,8 @@ export async function finish(difficultyFailed = false) {
                 mode2,
                 Config.punctuation,
                 Config.language,
-                Config.difficulty
+                Config.difficulty,
+                Config.lazyMode
               );
               $("#result .stats .tags .bottom").append(`
                 <div tagid="${tag._id}" aria-label="PB: ${tpb}" data-balloon-pos="up">${tag.name}<i class="fas fa-crown hidden"></i></div>
@@ -1760,6 +1809,7 @@ export async function finish(difficultyFailed = false) {
                     Config.punctuation,
                     Config.language,
                     Config.difficulty,
+                    Config.lazyMode,
                     stats.wpm,
                     stats.acc,
                     stats.wpmRaw,
@@ -1778,7 +1828,7 @@ export async function finish(difficultyFailed = false) {
                     type: "line",
                     mode: "horizontal",
                     scaleID: "wpm",
-                    value: tpb,
+                    value: Config.alwaysShowCPM ? tpb * 5 : tpb,
                     borderColor: themecolors["sub"],
                     borderWidth: 1,
                     borderDash: [2, 2],
@@ -1794,7 +1844,9 @@ export async function finish(difficultyFailed = false) {
                       position: annotationSide,
                       xAdjust: labelAdjust,
                       enabled: true,
-                      content: `${tag.name} PB: ${tpb}`,
+                      content: `${tag.name} PB: ${
+                        Config.alwaysShowCPM ? tpb * 5 : tpb
+                      }`,
                     },
                   });
                   if (annotationSide === "left") {
@@ -1844,7 +1896,6 @@ export async function finish(difficultyFailed = false) {
                     ["english"].includes(completedEvent.language)
                   ) {
                     completedEvent.isPb = true;
-                    TestLeaderboards.check(completedEvent);
                   }
                   if (
                     DB.getSnapshot() !== null &&
@@ -1896,6 +1947,7 @@ export async function finish(difficultyFailed = false) {
                       Config.punctuation,
                       Config.language,
                       Config.difficulty,
+                      Config.lazyMode,
                       stats.wpm,
                       stats.acc,
                       stats.wpmRaw,
@@ -1984,6 +2036,9 @@ export async function finish(difficultyFailed = false) {
   }
   if (Config.blindMode) {
     testType += "<br>blind";
+  }
+  if (Config.lazyMode) {
+    testType += "<br>lazy";
   }
   if (Config.funbox !== "none") {
     testType += "<br>" + Config.funbox.replace(/_/g, " ");
@@ -2112,6 +2167,7 @@ export async function finish(difficultyFailed = false) {
       if (Config.alwaysShowWordsHistory && Config.burstHeatmap) {
         TestUI.applyBurstHeatmap();
       }
+      $("#result").focus();
       $("#testModesNotice").addClass("hidden");
     },
     () => {
@@ -2123,7 +2179,6 @@ export async function finish(difficultyFailed = false) {
   );
 }
 
-let failReason = "";
 export function fail(reason) {
   failReason = reason;
   // input.pushHistory();

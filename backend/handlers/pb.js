@@ -49,6 +49,7 @@ module.exports = {
     acc,
     consistency,
     difficulty,
+    lazyMode = false,
     language,
     punctuation,
     raw,
@@ -65,6 +66,8 @@ module.exports = {
     obj[mode][mode2].forEach((pb) => {
       //check if we should compare first
       if (
+        (pb.lazyMode === lazyMode ||
+          (pb.lazyMode === undefined && lazyMode === false)) &&
         pb.difficulty === difficulty &&
         pb.language === language &&
         pb.punctuation === punctuation
@@ -76,6 +79,10 @@ module.exports = {
           isPb = true;
           pb.acc = acc;
           pb.consistency = consistency;
+          pb.difficulty = difficulty;
+          pb.language = language;
+          pb.punctuation = punctuation;
+          pb.lazyMode = lazyMode;
           pb.raw = raw;
           pb.wpm = wpm;
           pb.timestamp = Date.now();
@@ -89,6 +96,7 @@ module.exports = {
         acc,
         consistency,
         difficulty,
+        lazyMode,
         language,
         punctuation,
         raw,
@@ -97,7 +105,12 @@ module.exports = {
       });
     }
 
-    if (lbObj && mode === "time" && (mode2 == "15" || mode2 == "60")) {
+    if (
+      lbObj &&
+      mode === "time" &&
+      (mode2 == "15" || mode2 == "60") &&
+      !lazyMode
+    ) {
       //updating lbpersonalbests object
       //verify structure first
       if (lbObj[mode] === undefined) lbObj[mode] = {};

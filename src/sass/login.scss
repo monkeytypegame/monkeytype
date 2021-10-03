@@ -1,0 +1,61 @@
+.pageLogin {
+  display: flex;
+  grid-auto-flow: column;
+  gap: 1rem;
+  justify-content: space-around;
+  align-items: center;
+
+  .side {
+    display: grid;
+    gap: 0.5rem;
+    justify-content: center;
+
+    &.login {
+      grid-template-areas:
+        "title forgotButton"
+        "form form";
+
+      .title {
+        grid-area: title;
+      }
+
+      #forgotPasswordButton {
+        grid-area: forgotButton;
+        font-size: 0.75rem;
+        line-height: 0.75rem;
+        height: fit-content;
+        height: -moz-fit-content;
+        align-self: center;
+        justify-self: right;
+        padding: 0.25rem 0;
+        color: var(--sub-color);
+        cursor: pointer;
+        transition: 0.25s;
+
+        &:hover {
+          color: var(--text-color);
+        }
+      }
+
+      form {
+        grid-area: form;
+      }
+    }
+  }
+
+  form {
+    display: grid;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .preloader {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    font-size: 2rem;
+    transform: translate(-50%, -50%);
+    color: var(--main-color);
+    transition: 0.25s;
+  }
+}

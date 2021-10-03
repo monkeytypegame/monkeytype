@@ -1,6 +1,7 @@
 {
   "name": "code_javascript_1k",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "var",
     "if",

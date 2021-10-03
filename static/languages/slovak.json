@@ -1,6 +1,7 @@
 {
   "name": "slovak",
   "leftToRight": true,
+  "bcp47": "sk-SK",
   "words": [
     "ja",
     "jeho",

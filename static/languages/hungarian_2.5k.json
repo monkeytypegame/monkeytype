@@ -1,6 +1,7 @@
 {
   "name": "hungarian_2.5k",
   "leftToRight": true,
+  "bcp47": "hu-HU",
   "words": [
     "a",
     "az",

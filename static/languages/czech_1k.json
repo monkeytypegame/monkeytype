@@ -1,6 +1,7 @@
 {
   "name": "czech_1k",
   "leftToRight": true,
+  "bcp47": "cs-CZ",
   "words": [
     "a",
     "se",

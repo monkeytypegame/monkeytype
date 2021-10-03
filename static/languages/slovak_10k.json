@@ -1,6 +1,7 @@
 {
   "name": "slovak_10k",
   "leftToRight": true,
+  "bcp47": "sk-SK",
   "words": [
     "to",
     "sa",

@@ -275,9 +275,7 @@ export async function screenshot() {
   }, 3000);
 }
 
-export function updateWordElement(showError) {
-  // if (Config.mode == "zen") return;
-
+export function updateWordElement(showError = !Config.blindMode) {
   let input = TestLogic.input.current;
   let wordAtIndex;
   let currentWord;
@@ -295,28 +293,31 @@ export function updateWordElement(showError) {
         newlineafter = true;
         ret += `<letter class='nlChar correct' style="opacity: 0"><i class="fas fa-angle-down"></i></letter>`;
       } else {
-        ret +=
-          `<letter class="correct">` + TestLogic.input.current[i] + `</letter>`;
+        ret += `<letter class="correct">${TestLogic.input.current[i]}</letter>`;
       }
     }
   } else {
     let correctSoFar = false;
-    if (currentWord.slice(0, input.length) == input) {
-      // this is when input so far is correct
+
+    // slice earlier if input has trailing compose characters
+    const inputWithoutComposeLength = Misc.trailingComposeChars.test(input)
+      ? input.search(Misc.trailingComposeChars)
+      : input.length;
+    if (
+      input.search(Misc.trailingComposeChars) < currentWord.length &&
+      currentWord.slice(0, inputWithoutComposeLength) ===
+        input.slice(0, inputWithoutComposeLength)
+    ) {
       correctSoFar = true;
     }
+
     let wordHighlightClassString = correctSoFar ? "correct" : "incorrect";
     if (Config.blindMode) {
       wordHighlightClassString = "correct";
     }
 
     for (let i = 0; i < input.length; i++) {
-      let charCorrect;
-      if (currentWord[i] == input[i]) {
-        charCorrect = true;
-      } else {
-        charCorrect = false;
-      }
+      let charCorrect = currentWord[i] == input[i];
 
       let correctClass = "correct";
       if (Config.highlightMode == "off") {
@@ -334,51 +335,64 @@ export function updateWordElement(showError) {
         currentLetter = `<i class="fas fa-angle-down"></i>`;
       }
 
+      if (
+        Misc.trailingComposeChars.test(input) &&
+        i > input.search(Misc.trailingComposeChars)
+      )
+        continue;
+
       if (charCorrect) {
         ret += `<letter class="${
           Config.highlightMode == "word"
             ? wordHighlightClassString
             : correctClass
         } ${tabChar}${nlChar}">${currentLetter}</letter>`;
-      } else {
-        if (!showError) {
-          if (currentLetter !== undefined) {
-            ret += `<letter class="${
-              Config.highlightMode == "word"
-                ? wordHighlightClassString
-                : correctClass
-            } ${tabChar}${nlChar}">${currentLetter}</letter>`;
-          }
-        } else {
-          if (currentLetter == undefined) {
-            if (!Config.hideExtraLetters) {
-              let letter = input[i];
-              if (letter == " " || letter == "\t" || letter == "\n") {
-                letter = "_";
-              }
-              ret += `<letter class="${
-                Config.highlightMode == "word"
-                  ? wordHighlightClassString
-                  : "incorrect"
-              } extra ${tabChar}${nlChar}">${letter}</letter>`;
-            }
-          } else {
-            ret +=
-              `<letter class="${
-                Config.highlightMode == "word"
-                  ? wordHighlightClassString
-                  : "incorrect"
-              } ${tabChar}${nlChar}">` +
-              currentLetter +
-              (Config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
-              "</letter>";
-          }
+      } else if (
+        currentLetter !== undefined &&
+        Misc.trailingComposeChars.test(input) &&
+        i === input.search(Misc.trailingComposeChars)
+      ) {
+        ret += `<letter class="${
+          Config.highlightMode == "word" ? wordHighlightClassString : ""
+        } dead">${currentLetter}</letter>`;
+      } else if (!showError) {
+        if (currentLetter !== undefined) {
+          ret += `<letter class="${
+            Config.highlightMode == "word"
+              ? wordHighlightClassString
+              : correctClass
+          } ${tabChar}${nlChar}">${currentLetter}</letter>`;
         }
+      } else if (currentLetter === undefined) {
+        if (!Config.hideExtraLetters) {
+          let letter = input[i];
+          if (letter == " " || letter == "\t" || letter == "\n") {
+            letter = "_";
+          }
+          ret += `<letter class="${
+            Config.highlightMode == "word"
+              ? wordHighlightClassString
+              : "incorrect"
+          } extra ${tabChar}${nlChar}">${letter}</letter>`;
+        }
+      } else {
+        ret +=
+          `<letter class="${
+            Config.highlightMode == "word"
+              ? wordHighlightClassString
+              : "incorrect"
+          } ${tabChar}${nlChar}">` +
+          currentLetter +
+          (Config.indicateTypos ? `<hint>${input[i]}</hint>` : "") +
+          "</letter>";
       }
     }
 
-    if (input.length < currentWord.length) {
-      for (let i = input.length; i < currentWord.length; i++) {
+    const inputWithSingleComposeLength = Misc.trailingComposeChars.test(input)
+      ? input.search(Misc.trailingComposeChars) + 1
+      : input.length;
+    if (inputWithSingleComposeLength < currentWord.length) {
+      for (let i = inputWithSingleComposeLength; i < currentWord.length; i++) {
         if (currentWord[i] === "\t") {
           ret += `<letter class='tabChar'><i class="fas fa-long-arrow-alt-right"></i></letter>`;
         } else if (currentWord[i] === "\n") {
@@ -525,6 +539,12 @@ export function updateModesNotice() {
   if (Config.blindMode) {
     $(".pageTest #testModesNotice").append(
       `<div class="text-button blind"><i class="fas fa-eye-slash"></i>blind</div>`
+    );
+  }
+
+  if (Config.lazyMode) {
+    $(".pageTest #testModesNotice").append(
+      `<div class="text-button" commands="commandsLazyMode"><i class="fas fa-couch"></i>lazy</div>`
     );
   }
 
@@ -825,8 +845,6 @@ export function toggleResultWords() {
 export function applyBurstHeatmap() {
   if (Config.burstHeatmap) {
     $("#resultWordsHistory .heatmapLegend").removeClass("hidden");
-    let min = Math.min(...TestStats.burstHistory);
-    let max = Math.max(...TestStats.burstHistory);
 
     let burstlist = [...TestStats.burstHistory];
 
@@ -837,36 +855,12 @@ export function applyBurstHeatmap() {
       burstlist = burstlist.splice(0, burstlist.length - 1);
     }
 
-    // let step = (max - min) / 5;
-    // let steps = [
-    //   {
-    //     val: min,
-    //     class: 'heatmap-0'
-    //   },
-    //   {
-    //     val: min + (step * 1),
-    //     class: 'heatmap-1'
-    //   },
-    //   {
-    //     val: min + (step * 2),
-    //     class: 'heatmap-2'
-    //   },
-    //   {
-    //     val: min + (step * 3),
-    //     class: 'heatmap-3'
-    //   },
-    //   {
-    //     val: min + (step * 4),
-    //     class: 'heatmap-4'
-    //   },
-    // ];
     let median = Misc.median(burstlist);
     let adatm = [];
     burstlist.forEach((burst) => {
       adatm.push(Math.abs(median - burst));
     });
     let step = Misc.mean(adatm);
-    // let step = Misc.stdDev(burstlist)/2;
     let steps = [
       {
         val: 0,

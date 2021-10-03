@@ -17,6 +17,70 @@ function reset() {
   $("#rateQuotePopup .ratingAverage .val").text("-");
 }
 
+export async function getQuoteStats(quote) {
+  if (quote) currentQuote = quote;
+  let response;
+  try {
+    response = await axiosInstance.get("/quote-ratings/get", {
+      params: { quoteId: currentQuote.id, language: currentQuote.language },
+    });
+  } catch (e) {
+    Loader.hide();
+    let msg = e?.response?.data?.message ?? e.message;
+    Notifications.add("Failed to get quote ratings: " + msg, -1);
+    return;
+  }
+  Loader.hide();
+  if (response.status !== 200) {
+    Notifications.add(response.data.message);
+  } else {
+    quoteStats = response.data;
+    if (quoteStats && !quoteStats.average) {
+      quoteStats.average = (
+        Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
+      ).toFixed(1);
+    }
+    return response.data;
+  }
+}
+
+function refreshStars(force) {
+  let limit = force ? parseInt(force) : rating;
+  $(`#rateQuotePopup .star`).removeClass("active");
+  for (let i = 1; i <= limit; i++) {
+    $(`#rateQuotePopup .star[rating=${i}]`).addClass("active");
+  }
+}
+
+async function updateRatingStats() {
+  if (quoteStats === null) await getQuoteStats();
+  if (quoteStats === undefined) {
+    $("#rateQuotePopup .ratingCount .val").text("0");
+    $("#rateQuotePopup .ratingAverage .val").text("-");
+  } else {
+    $("#rateQuotePopup .ratingCount .val").text(quoteStats.ratings);
+    $("#rateQuotePopup .ratingAverage .val").text(quoteStats.average);
+  }
+}
+
+function updateData() {
+  let lengthDesc;
+  if (currentQuote.group == 0) {
+    lengthDesc = "short";
+  } else if (currentQuote.group == 1) {
+    lengthDesc = "medium";
+  } else if (currentQuote.group == 2) {
+    lengthDesc = "long";
+  } else if (currentQuote.group == 3) {
+    lengthDesc = "thicc";
+  }
+  $(`#rateQuotePopup .quote .text`).text(currentQuote.text);
+  $(`#rateQuotePopup .quote .source .val`).text(currentQuote.source);
+  $(`#rateQuotePopup .quote .id .val`).text(currentQuote.id);
+  $(`#rateQuotePopup .quote .length .val`).text(lengthDesc);
+  updateRatingStats();
+}
+
 export function show(quote) {
   if ($("#rateQuotePopupWrapper").hasClass("hidden")) {
     reset();
@@ -56,72 +120,8 @@ function hide() {
   }
 }
 
-function refreshStars(force) {
-  let limit = force ? parseInt(force) : rating;
-  $(`#rateQuotePopup .star`).removeClass("active");
-  for (let i = 1; i <= limit; i++) {
-    $(`#rateQuotePopup .star[rating=${i}]`).addClass("active");
-  }
-}
-
-function updateData() {
-  let lengthDesc;
-  if (currentQuote.group == 0) {
-    lengthDesc = "short";
-  } else if (currentQuote.group == 1) {
-    lengthDesc = "medium";
-  } else if (currentQuote.group == 2) {
-    lengthDesc = "long";
-  } else if (currentQuote.group == 3) {
-    lengthDesc = "thicc";
-  }
-  $(`#rateQuotePopup .quote .text`).text(currentQuote.text);
-  $(`#rateQuotePopup .quote .source .val`).text(currentQuote.source);
-  $(`#rateQuotePopup .quote .id .val`).text(currentQuote.id);
-  $(`#rateQuotePopup .quote .length .val`).text(lengthDesc);
-  updateRatingStats();
-}
-
-export async function getQuoteStats(quote) {
-  if (quote) currentQuote = quote;
-  let response;
-  try {
-    response = await axiosInstance.get("/quote-ratings/get", {
-      params: { quoteId: currentQuote.id, language: currentQuote.language },
-    });
-  } catch (e) {
-    Loader.hide();
-    let msg = e?.response?.data?.message ?? e.message;
-    Notifications.add("Failed to get quote ratings: " + msg, -1);
-    return;
-  }
-  Loader.hide();
-  if (response.status !== 200) {
-    Notifications.add(response.data.message);
-  } else {
-    quoteStats = response.data;
-    if (quoteStats && !quoteStats.average) {
-      quoteStats.average = (
-        Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
-      ).toFixed(1);
-    }
-    return response.data;
-  }
-}
-
 export function clearQuoteStats() {
   quoteStats = undefined;
-}
-
-async function updateRatingStats() {
-  if (quoteStats === null) await getQuoteStats();
-  if (quoteStats === undefined) {
-    $("#rateQuotePopup .ratingCount .val").text("0");
-    $("#rateQuotePopup .ratingAverage .val").text("-");
-  } else {
-    $("#rateQuotePopup .ratingCount .val").text(quoteStats.ratings);
-    $("#rateQuotePopup .ratingAverage .val").text(quoteStats.average);
-  }
 }
 
 async function submit() {
@@ -162,18 +162,25 @@ async function submit() {
       if (quoteRatings[currentQuote.language][currentQuote.id] == undefined)
         quoteRatings[currentQuote.language][currentQuote.id] = undefined;
       quoteRatings[currentQuote.language][currentQuote.id] = rating;
-      quoteStats = {
-        ratings: 1,
-        totalRating: parseInt(rating),
-        quoteId: currentQuote.id,
-        language: currentQuote.language,
-      };
+      if (quoteStats) {
+        quoteStats.ratings++;
+        quoteStats.totalRating += parseInt(rating);
+      } else {
+        quoteStats = {
+          ratings: 1,
+          totalRating: parseInt(rating),
+          quoteId: currentQuote.id,
+          language: currentQuote.language,
+        };
+      }
       Notifications.add("Rating submitted", 1);
     }
     quoteStats.average = (
       Math.round((quoteStats.totalRating / quoteStats.ratings) * 10) / 10
     ).toFixed(1);
     $(".pageTest #result #rateQuoteButton .rating").text(quoteStats.average);
+    $(".pageTest #result #rateQuoteButton .icon").removeClass("far");
+    $(".pageTest #result #rateQuoteButton .icon").addClass("fas");
   }
 }
 
