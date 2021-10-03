@@ -355,7 +355,11 @@ function handleChar(char, charIndex) {
     }
   }
 
-  if (TestLogic.words.getCurrent()[charIndex] !== "\n" && char === "\n") {
+  if (
+    Config.mode !== "zen" &&
+    TestLogic.words.getCurrent()[charIndex] !== "\n" &&
+    char === "\n"
+  ) {
     return;
   }
 
