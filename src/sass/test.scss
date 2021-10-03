@@ -16,6 +16,18 @@
     /*   background: red; */
     // transition: 1s linear;
     z-index: -1;
+
+    &.timerMain {
+      background: var(--main-color);
+    }
+
+    &.timerSub {
+      background: var(--sub-color);
+    }
+
+    &.timerText {
+      background: var(--text-color);
+    }
   }
 }
 
