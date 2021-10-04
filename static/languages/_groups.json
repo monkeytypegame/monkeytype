@@ -12,6 +12,10 @@
     ]
   },
   {
+    "name": "georgian",
+    "languages": ["georgian"]
+  },
+  {
     "name": "spanish",
     "languages": ["spanish", "spanish_1k", "spanish_10k"]
   },
@@ -80,13 +84,19 @@
   },
   {
     "name": "italian",
-    "languages": ["italian", "italian_1k", "italian_7k", "italian_60k", "italian_280k"]
+    "languages": [
+      "italian",
+      "italian_1k",
+      "italian_7k",
+      "italian_60k",
+      "italian_280k"
+    ]
   },
   {
     "name": "thai",
     "languages": ["thai"]
   },
- {
+  {
     "name": "tamil",
     "languages": ["tamil"]
   },
