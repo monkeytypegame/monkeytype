@@ -443,8 +443,10 @@
   display: grid;
   gap: 1rem;
   width: 1000px;
-  height: 80vh;
-  grid-template-rows: auto auto auto 1fr auto auto auto auto 1fr;
+  grid-template-rows: auto auto auto 5rem auto auto auto auto auto;
+  height: 100%;
+  max-height: 36rem;
+  overflow-y: scroll;
 
   .title {
     font-size: 1.5rem;
