@@ -63,16 +63,6 @@ function backspaceToPrevious() {
   TestUI.updateActiveElement(true);
   Funbox.toggleScript(TestLogic.words.getCurrent());
 
-  if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    Keymap.highlightKey(
-      TestLogic.words
-        .getCurrent()
-        .charAt(TestLogic.input.current.length)
-        .toString()
-        .toUpperCase()
-    );
-  }
-
   Caret.updatePosition();
   Replay.addReplayEvent("backWord");
 }
@@ -242,14 +232,6 @@ function handleSpace() {
 
   if (Config.keymapMode === "react") {
     Keymap.flashKey("Space", true);
-  } else if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    Keymap.highlightKey(
-      TestLogic.words
-        .getCurrent()
-        .charAt(TestLogic.input.current.length)
-        .toString()
-        .toUpperCase()
-    );
   }
   if (
     Config.mode === "words" ||
@@ -479,14 +461,6 @@ function handleChar(char, charIndex) {
   //keymap
   if (Config.keymapMode === "react") {
     Keymap.flashKey(char, thisCharCorrect);
-  } else if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    Keymap.highlightKey(
-      TestLogic.words
-        .getCurrent()
-        .charAt(TestLogic.input.current.length)
-        .toString()
-        .toUpperCase()
-    );
   }
 
   if (Config.mode != "zen") {
@@ -797,6 +771,16 @@ $("#wordsInput").on("input", (event) => {
 
   let acc = Misc.roundTo2(TestStats.calculateAccuracy());
   LiveAcc.update(acc);
+
+  if (Config.keymapMode === "next" && Config.mode !== "zen") {
+    Keymap.highlightKey(
+      TestLogic.words
+        .getCurrent()
+        .charAt(TestLogic.input.current.length)
+        .toString()
+        .toUpperCase()
+    );
+  }
 
   // force caret at end of input
   // doing it on next cycle because Chromium on Android won't let me edit
