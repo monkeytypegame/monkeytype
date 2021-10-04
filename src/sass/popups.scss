@@ -400,7 +400,8 @@
     padding: 2rem;
     display: grid;
     gap: 1rem;
-    width: 1000px;
+    width: 80vw;
+    max-width: 1000px;
     height: 80vh;
     grid-template-rows: auto auto auto 1fr;
 
