@@ -49,18 +49,15 @@ class NewQuotesDAO {
       .toArray();
   }
 
-  static async approve(quoteId, modUid) {
+  static async approve(quoteId, editQuote, editSource) {
     //check mod status
-    const user = await mongoDB().collection("users").findOne({ uid: modUid });
-    if (user.quoteMod != true)
-      return { status: "Quote not approved. You are not a mod" };
     let quote = await mongoDB()
       .collection("new-quotes")
       .findOne({ _id: quoteId });
     language = quote.language;
     quote = {
-      text: quote.text,
-      source: quote.source,
+      text: editQuote ? editQuote : quote.text,
+      source: editSource ? editSource : quote.source,
       length: quote.text.length,
     };
     const fileDir = `../monkeytype/static/quotes/${language}.json`;
@@ -101,18 +98,11 @@ class NewQuotesDAO {
     git.add([`static/quotes/${language}.json`]);
     git.commit(`Added quote to ${language}.json`);
     git.push("origin", "master");
-    return await mongoDB()
-      .collection("new-quotes")
-      .updateOne(
-        { _id: quoteId },
-        {
-          $set: {
-            approvedBy: modUid,
-            approved: true,
-            approvedTime: Date.now(),
-          },
-        }
-      );
+    return await mongoDB().collection("new-quotes").deleteOne({ _id: quoteId });
+  }
+
+  static async refuse(quoteId) {
+    return await mongoDB().collection("new-quotes").deleteOne({ _id: quoteId });
   }
 }
 

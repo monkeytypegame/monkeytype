@@ -14,7 +14,7 @@ router.get(
 
 router.post(
   "/add",
-  RateLimit.limit500perhour,
+  RateLimit.limit60perhour,
   authenticateRequest,
   NewQuotesController.addQuote
 );
@@ -25,6 +25,14 @@ router.post(
   authenticateRequest,
   NewQuotesController.approve
 );
+
+router.post(
+  "/refuse",
+  RateLimit.limit500perhour,
+  authenticateRequest,
+  NewQuotesController.refuse
+);
+
 //Add route to allow moderator to edit before submisison
 
 module.exports = router;
