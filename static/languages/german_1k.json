@@ -2,6 +2,7 @@
   "name": "german_1k",
   "_comment": "http://wortschatz.informatik.uni-leipzig.de/index_js.html",
   "leftToRight": true,
+  "bcp47": "de-DE",
   "words": [
     "der",
     "die",

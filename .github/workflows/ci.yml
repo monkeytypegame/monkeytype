@@ -1,0 +1,48 @@
+name: Lint and auto-format PRs
+
+permissions:
+  contents: write
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  lint_and_format:
+    name: Lint and auto-format
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout previous commit and then pull, to fetch everything in between
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.pull_request.base.sha}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
+      - run: |
+          git pull origin ${{github.event.pull_request.head.ref}} --rebase
+          git checkout ${{github.event.pull_request.head.ref}}
+
+
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.3.0
+        with:
+         node-version: 14
+         cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npx gulp lint
+
+      - name: Run Prettier
+        run: npx pretty-quick --branch ${{github.event.pull_request.base.sha}}
+
+#       - name: Commit and push
+#         run: |
+#           git config user.name "GitHub Actions Bot"
+#           git config user.email "<>"
+#           git add --update
+#           git commit -m "Auto-format with Prettier" || :
+#           git push origin HEAD:${{github.event.pull_request.head.ref}}

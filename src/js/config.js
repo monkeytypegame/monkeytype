@@ -19,6 +19,7 @@ import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
 import LayoutList from "./layouts";
 import * as ChallengeContoller from "./challenge-controller";
+import * as TTS from "./tts";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -74,7 +75,6 @@ let defaultConfig = {
   caretStyle: "default",
   paceCaretStyle: "default",
   flipTestColors: false,
-  capsLockBackspace: false,
   layout: "default",
   funbox: "none",
   confidenceMode: "off",
@@ -340,8 +340,14 @@ export function setFavThemes(themes, nosave) {
 }
 
 export function setFunbox(funbox, nosave) {
-  config.funbox = funbox ? funbox : "none";
+  let val = funbox ? funbox : "none";
+  config.funbox = val;
   ChallengeContoller.clearActive();
+  if (val === "none") {
+    TTS.clear();
+  } else if (val === "tts") {
+    TTS.init();
+  }
   if (!nosave) {
     saveToLocalStorage();
   }
@@ -1333,6 +1339,9 @@ export function setLanguage(language, nosave) {
     language = "english";
   }
   config.language = language;
+  if (config.funbox === "tts") {
+    TTS.setLanguage();
+  }
   try {
     firebase.analytics().logEvent("changedLanguage", {
       language: language,
@@ -1364,18 +1373,6 @@ export function setMonkey(monkey, nosave) {
     $("#monkey").addClass("hidden");
   }
   if (!nosave) saveToLocalStorage();
-}
-
-export function setCapsLockBackspace(capsLockBackspace, nosave) {
-  if (capsLockBackspace === null || capsLockBackspace === undefined) {
-    capsLockBackspace = false;
-  }
-  config.capsLockBackspace = capsLockBackspace;
-  if (!nosave) saveToLocalStorage();
-}
-
-export function toggleCapsLockBackspace() {
-  setCapsLockBackspace(!config.capsLockBackspace, false);
 }
 
 export function setKeymapMode(mode, nosave) {
@@ -1624,7 +1621,6 @@ export function apply(configObj) {
     setQuoteLength(configObj.quoteLength, true);
     setWordCount(configObj.words, true);
     setLanguage(configObj.language, true);
-    setCapsLockBackspace(configObj.capsLockBackspace, true);
     // setSavedLayout(configObj.savedLayout, true);
     setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);

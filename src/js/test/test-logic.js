@@ -906,6 +906,7 @@ export function restart(
   TestUI.focusWords();
   Funbox.resetMemoryTimer();
   RateQuotePopup.clearQuoteStats();
+  $("#wordsInput").val(" ");
 
   TestUI.reset();
 
@@ -939,6 +940,7 @@ export function restart(
       $("#monkey .fast").stop(true, true).css("opacity", 0);
       $("#monkey").stop(true, true).css({ animationDuration: "0s" });
       $("#typingTest").css("opacity", 0).removeClass("hidden");
+      $("#wordsInput").val(" ");
       if (!withSameWordset) {
         setRepeated(false);
         setPaceRepeat(repeatWithPace);
@@ -1137,8 +1139,7 @@ export async function addWord() {
     !CustomText.isTimeRandom
   ) {
     randomWord = CustomText.text[words.length];
-  }
-  if (Config.mode === "quote") {
+  } else if (Config.mode === "quote") {
     randomWord = randomQuote.textSplit[words.length];
   } else {
     while (
@@ -1221,6 +1222,7 @@ export async function finish(difficultyFailed = false) {
   LiveBurst.hide();
   TimerProgress.hide();
   Funbox.activate("none", null);
+  $("#wordsInput").blur();
 
   let stats = TestStats.calculateStats();
 
@@ -1518,15 +1520,9 @@ export async function finish(difficultyFailed = false) {
 
   ChartController.result.data.datasets[2].data = errorsArray;
 
-  let kps = TestStats.keypressPerSecond.slice(
-    Math.max(TestStats.keypressPerSecond.length - 5, 0)
-  );
+  let kps = TestStats.keypressPerSecond.slice(-5);
 
-  kps = kps.map((a) => a.count + a.mod);
-
-  kps = kps.reduce((a, b) => a + b, 0);
-
-  let afkDetected = kps === 0 ? true : false;
+  let afkDetected = kps.every((second) => second.afk);
 
   if (bailout) afkDetected = false;
 
@@ -2171,6 +2167,7 @@ export async function finish(difficultyFailed = false) {
       if (Config.alwaysShowWordsHistory && Config.burstHeatmap) {
         TestUI.applyBurstHeatmap();
       }
+      $("#result").focus();
       $("#testModesNotice").addClass("hidden");
     },
     () => {

@@ -538,9 +538,8 @@ export function updateLbMemory(mode, mode2, language, rank, api = false) {
 export async function saveConfig(config) {
   if (firebase.auth().currentUser !== null) {
     AccountButton.loading(true);
-    let response;
     try {
-      response = await axiosInstance.post("/config/save", { config });
+      await axiosInstance.post("/config/save", { config });
     } catch (e) {
       AccountButton.loading(false);
 

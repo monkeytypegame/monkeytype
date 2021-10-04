@@ -1,6 +1,7 @@
 {
   "name": "hungarian",
   "leftToRight": true,
+  "bcp47": "hu-HU",
   "words": [
     "lapát",
     "vödör",

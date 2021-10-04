@@ -839,7 +839,15 @@
               </div>
               <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
-              <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
+              <input
+                id="wordsInput"
+                class=""
+                tabindex="0"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                autocorrect="off"
+              />
               <div id="timerNumber" class="timerMain">
                 <div>60</div>
               </div>
@@ -1062,7 +1070,7 @@
               <div id="premidTestMode" class="hidden"></div>
               <div id="premidSecondsLeft" class="hidden"></div>
             </div>
-            <div id="result" class="hidden">
+            <div id="result" tabindex="0" class="hidden">
               <div class="stats">
                 <!-- <div class="info">words 10<br>punctuation</div> -->
 
@@ -1501,6 +1509,7 @@
                 <div>Not Gate</div>
                 <div>Corey</div>
                 <div>Jashe</div>
+                <div>Nubby</div>
                 <div>Nick</div>
                 <div>Eugeniu</div>
                 <div>Weedle</div>
@@ -2424,18 +2433,6 @@
                   </div>
                 </div>
               </div>
-              <div class="section capsLockBackspace">
-                <h1>caps lock backspace</h1>
-                <div class="text">Makes caps lock act like backspace.</div>
-                <div class="buttons">
-                  <div class="button off" tabindex="0" onclick="this.blur();">
-                    off
-                  </div>
-                  <div class="button on" tabindex="0" onclick="this.blur();">
-                    on
-                  </div>
-                </div>
-              </div>
               <div class="section lazyMode">
                 <h1>lazy mode</h1>
                 <div class="text">
@@ -2469,7 +2466,7 @@
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="settingsGroup sound">
-              <div class="section playSoundOnClick">
+              <div class="section playSoundOnClick fullWidth">
                 <h1>play sound on click</h1>
                 <div class="text">
                   Plays a short sound when you press a key.
@@ -2489,7 +2486,7 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    1
+                    click
                   </div>
                   <div
                     class="button"
@@ -2497,7 +2494,7 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    2
+                    beep
                   </div>
                   <div
                     class="button"
@@ -2505,7 +2502,7 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    3
+                    pop
                   </div>
                   <div
                     class="button"
@@ -2513,7 +2510,31 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    4
+                    nk creams
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="5"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    typewriter
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="6"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    osu
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="7"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    hitmarker
                   </div>
                 </div>
               </div>

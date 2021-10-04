@@ -1,6 +1,7 @@
 {
   "name": "turkish",
   "leftToRight": true,
+  "bcp47": "tr-TR",
   "words": [
     "bir",
     "ve",

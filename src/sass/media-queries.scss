@@ -312,6 +312,17 @@
   #centerContent {
     padding: 1rem;
   }
+  #middle {
+    #result {
+      .stats {
+        grid-template-areas:
+          "wpm"
+          "acc"
+          "burst";
+        gap: 1rem;
+      }
+    }
+  }
   #result {
     .buttons {
       grid-template-rows: 1fr 1fr 1fr 1fr;
