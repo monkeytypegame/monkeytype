@@ -1,6 +1,7 @@
 const NewQuotesDAO = require("../../dao/new-quotes");
 const MonkeyError = require("../../handlers/error");
 const UserDAO = require("../../dao/user");
+const Logger = require("../../handlers/logger.js");
 
 class NewQuotesController {
   static async getQuotes(req, res, next) {
@@ -21,10 +22,6 @@ class NewQuotesController {
     try {
       let { uid } = req.decodedToken;
       let { text, source, language } = req.body;
-      const userInfo = await UsersDAO.getUser(uid);
-      if (!userInfo.quoteMod) {
-        throw new MonkeyError(403, "You don't have permission to do this");
-      }
       let data = await NewQuotesDAO.add(text, source, language, uid);
       return res.status(200).json(data);
     } catch (e) {
@@ -41,6 +38,7 @@ class NewQuotesController {
         throw new MonkeyError(403, "You don't have permission to do this");
       }
       let data = await NewQuotesDAO.approve(quoteId, uid);
+      Logger.log("system_quote_approved", data, uid);
       return res.status(200).json(data);
     } catch (e) {
       return next(e);

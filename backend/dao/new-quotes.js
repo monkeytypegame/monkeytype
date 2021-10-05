@@ -100,7 +100,8 @@ class NewQuotesDAO {
     git.add([`static/quotes/${language}.json`]);
     git.commit(`Added quote to ${language}.json`);
     git.push("origin", "master");
-    return await mongoDB().collection("new-quotes").deleteOne({ _id: quoteId });
+    await mongoDB().collection("new-quotes").deleteOne({ _id: quoteId });
+    return quote;
   }
 
   static async refuse(quoteId) {
