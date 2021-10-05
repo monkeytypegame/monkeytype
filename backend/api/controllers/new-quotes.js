@@ -7,7 +7,7 @@ class NewQuotesController {
   static async getQuotes(req, res, next) {
     try {
       const { uid } = req.decodedToken;
-      const userInfo = await UsersDAO.getUser(uid);
+      const userInfo = await UserDAO.getUser(uid);
       if (!userInfo.quoteMod) {
         throw new MonkeyError(403, "You don't have permission to do this");
       }
@@ -33,7 +33,7 @@ class NewQuotesController {
     try {
       let { uid } = req.decodedToken;
       let { quoteId } = req.body;
-      const userInfo = await UsersDAO.getUser(uid);
+      const userInfo = await UserDAO.getUser(uid);
       if (!userInfo.quoteMod) {
         throw new MonkeyError(403, "You don't have permission to do this");
       }
