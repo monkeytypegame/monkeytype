@@ -556,23 +556,7 @@ function handleTab(event) {
     event.preventDefault();
     return;
   }
-  if ($("#customTextPopup .textarea").is(":focus")) {
-    event.preventDefault();
-
-    let area = $("#customTextPopup .textarea")[0];
-
-    var start = area.selectionStart;
-    var end = area.selectionEnd;
-
-    // set textarea value to: text before caret + tab + text after caret
-    area.value =
-      area.value.substring(0, start) + "\t" + area.value.substring(end);
-
-    // put caret at right position again
-    area.selectionStart = area.selectionEnd = start + 1;
-
-    return;
-  } else if (
+  if (
     !TestUI.resultCalculating &&
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden") &&
@@ -626,6 +610,23 @@ function handleTab(event) {
     }
   }
 }
+
+$("#customTextPopup .textarea").keydown((event) => {
+  if (event.key !== "Tab") return;
+
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  let area = event.target;
+  var start = area.selectionStart;
+  var end = area.selectionEnd;
+
+  // set textarea value to: text before caret + tab + text after caret
+  area.value =
+    area.value.substring(0, start) + "\t" + area.value.substring(end);
+
+  // put caret at right position again
+  area.selectionStart = area.selectionEnd = start + 1;
+})
 
 $(document).keydown((event) => {
   //autofocus
