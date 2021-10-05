@@ -47,7 +47,7 @@ class NewQuotesDAO {
       .collection("new-quotes")
       .find({ approved: false })
       .orderBy({ timestamp: 1 })
-      .limit(10)
+      .limit(50)
       .toArray();
   }
 

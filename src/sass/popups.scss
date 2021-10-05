@@ -342,8 +342,14 @@
         font-size: 1.5rem;
         color: var(--sub-color);
       }
-      .button {
+
+      .buttons {
         width: 33%;
+        display: grid;
+        gap: 0.5rem;
+        .button {
+          width: 100%;
+        }
       }
     }
 
