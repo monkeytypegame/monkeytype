@@ -710,6 +710,16 @@ $(document).keydown((event) => {
       event.preventDefault();
       handleChar(char, TestLogic.input.current.length);
     }
+
+    if (Config.keymapMode === "next" && Config.mode !== "zen") {
+      Keymap.highlightKey(
+        TestLogic.words
+          .getCurrent()
+          .charAt(TestLogic.input.current.length)
+          .toString()
+          .toUpperCase()
+      );
+    }
   }
 });
 
