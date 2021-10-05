@@ -556,58 +556,59 @@ function handleTab(event) {
     event.preventDefault();
     return;
   }
-  if (
+
+  if (!(
     !TestUI.resultCalculating &&
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden") &&
-    !$(".page.pageLogin").hasClass("active")
-  ) {
-    if ($(".pageTest").hasClass("active")) {
-      if (Config.quickTab) {
-        if (
-          TestUI.resultVisible ||
-          !(
-            (Config.mode == "zen" && !event.shiftKey) ||
-            (TestLogic.hasTab && !event.shiftKey)
-          )
-        ) {
-          if (event.shiftKey) {
-            ManualRestart.set();
-          } else {
-            ManualRestart.reset();
-          }
-          event.preventDefault();
-          if (
-            TestLogic.active &&
-            Config.repeatQuotes === "typing" &&
-            Config.mode === "quote"
-          ) {
-            TestLogic.restart(true, false, event);
-          } else {
-            TestLogic.restart(false, false, event);
-          }
+    !$(".page.pageLogin").hasClass("active"))
+  ) return;
+
+  if ($(".pageTest").hasClass("active")) {
+    if (Config.quickTab) {
+      if (
+        TestUI.resultVisible ||
+        !(
+          (Config.mode == "zen" && !event.shiftKey) ||
+          (TestLogic.hasTab && !event.shiftKey)
+        )
+      ) {
+        if (event.shiftKey) {
+          ManualRestart.set();
         } else {
-          event.preventDefault();
-          handleChar("\t", TestLogic.input.current.length);
-          setWordsInput(" " + TestLogic.input.current);
+          ManualRestart.reset();
         }
-      } else if (!TestUI.resultVisible) {
+        event.preventDefault();
         if (
-          (TestLogic.hasTab && event.shiftKey) ||
-          (!TestLogic.hasTab && Config.mode !== "zen") ||
-          (Config.mode === "zen" && event.shiftKey)
+          TestLogic.active &&
+          Config.repeatQuotes === "typing" &&
+          Config.mode === "quote"
         ) {
-          event.preventDefault();
-          $("#restartTestButton").focus();
+          TestLogic.restart(true, false, event);
         } else {
-          event.preventDefault();
-          handleChar("\t", TestLogic.input.current.length);
-          setWordsInput(" " + TestLogic.input.current);
+          TestLogic.restart(false, false, event);
         }
+      } else {
+        event.preventDefault();
+        handleChar("\t", TestLogic.input.current.length);
+        setWordsInput(" " + TestLogic.input.current);
       }
-    } else if (Config.quickTab) {
-      UI.changePage("test");
+    } else if (!TestUI.resultVisible) {
+      if (
+        (TestLogic.hasTab && event.shiftKey) ||
+        (!TestLogic.hasTab && Config.mode !== "zen") ||
+        (Config.mode === "zen" && event.shiftKey)
+      ) {
+        event.preventDefault();
+        $("#restartTestButton").focus();
+      } else {
+        event.preventDefault();
+        handleChar("\t", TestLogic.input.current.length);
+        setWordsInput(" " + TestLogic.input.current);
+      }
     }
+  } else if (Config.quickTab) {
+    UI.changePage("test");
   }
 }
 
