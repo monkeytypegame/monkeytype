@@ -473,11 +473,70 @@
   gap: 1rem;
   width: 1000px;
   height: 80vh;
-  grid-template-rows: auto auto auto 1fr;
+  grid-template-rows: auto 1fr;
 
-  .title {
-    font-size: 1.5rem;
-    color: var(--sub-color);
+  .top {
+    display: flex;
+    justify-content: space-between;
+    .title {
+      font-size: 1.5rem;
+      color: var(--sub-color);
+    }
+    .button {
+      width: 33%;
+    }
+  }
+
+  .quotes {
+    display: grid;
+    gap: 1rem;
+    height: auto;
+    overflow-y: scroll;
+    align-content: baseline;
+
+    .quote {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-auto-rows: 4rem 2rem;
+      width: 100%;
+      gap: 1rem;
+      transition: 0.25s;
+      box-sizing: border-box;
+      user-select: none;
+      cursor: pointer;
+      height: min-content;
+      margin-bottom: 1rem;
+
+      .text {
+        grid-column: 1/2;
+        grid-row: 1/2;
+        overflow: visible;
+        color: var(--text-color);
+        resize: vertical;
+        min-height: 4rem;
+      }
+      .source {
+        grid-column: 1/2;
+        grid-row: 2/3;
+        color: var(--text-color);
+      }
+      .buttons {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-right: 1rem;
+        grid-column: 2/3;
+        grid-row: 1/3;
+        color: var(--sub-color);
+      }
+      .sub {
+        opacity: 0.5;
+      }
+    }
+    .searchResult:hover {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+    }
   }
 }
 
