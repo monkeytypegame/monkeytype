@@ -497,7 +497,7 @@
     .quote {
       display: grid;
       grid-template-columns: 1fr auto;
-      grid-auto-rows: 4rem 2rem;
+      grid-auto-rows: auto 2rem;
       width: 100%;
       gap: 1rem;
       transition: 0.25s;
@@ -523,7 +523,7 @@
       .buttons {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: center;
         margin-right: 1rem;
         grid-column: 2/3;
         grid-row: 1/3;
