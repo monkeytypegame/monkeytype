@@ -24,6 +24,9 @@ function updateList() {
           <div class="icon-button edit hidden" aria-label="Edit and approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-pen"></i></div>
         </div>
         <div class="bottom">
+          <div class="length ${
+            quote.text.length < 60 ? "red" : ""
+          }">Quote length: ${quote.text.length}</div>
           <div class="language">Language: ${quote.language}</div>
           <div class="timestamp">Submitted on: ${moment(quote.timestamp).format(
             "DD MMM YYYY HH:mm"
@@ -33,6 +36,18 @@ function updateList() {
     `);
     $("#quoteApprovePopupWrapper .quotes").append(quoteEl);
   });
+}
+
+function updateQuoteLength(index) {
+  let len = $(`#quoteApprovePopup .quote[id=${index}] .text`).val().length;
+  $(`#quoteApprovePopup .quote[id=${index}] .length`).text(
+    "Quote length: " + len
+  );
+  if (len < 60) {
+    $(`#quoteApprovePopup .quote[id=${index}] .length`).addClass("red");
+  } else {
+    $(`#quoteApprovePopup .quote[id=${index}] .length`).removeClass("red");
+  }
 }
 
 async function getQuotes() {
@@ -103,6 +118,7 @@ $(document).on("click", "#quoteApprovePopup .quote .undo", async (e) => {
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).addClass("disabled");
   $(`#quoteApprovePopup .quote[id=${index}] .approve`).removeClass("hidden");
   $(`#quoteApprovePopup .quote[id=${index}] .edit`).addClass("hidden");
+  updateQuoteLength(index);
 });
 
 $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
@@ -166,6 +182,7 @@ $(document).on("input", "#quoteApprovePopup .quote .text", async (e) => {
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).removeClass("disabled");
   $(`#quoteApprovePopup .quote[id=${index}] .approve`).addClass("hidden");
   $(`#quoteApprovePopup .quote[id=${index}] .edit`).removeClass("hidden");
+  updateQuoteLength(index);
 });
 
 $(document).on("input", "#quoteApprovePopup .quote .source", async (e) => {

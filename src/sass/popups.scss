@@ -533,6 +533,9 @@
         display: flex;
         justify-content: space-around;
         color: var(--sub-color);
+        .length.red {
+          color: var(--error-color);
+        }
       }
 
       .sub {
