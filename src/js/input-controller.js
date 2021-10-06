@@ -545,6 +545,22 @@ function handleChar(char, charIndex) {
 
 }
 
+function focusRestartOrRestart(event) {
+  if (Config.quickTab) {
+    if (
+      TestLogic.active &&
+      Config.repeatQuotes === "typing" &&
+      Config.mode === "quote"
+    ) {
+      TestLogic.restart(true, false, event);
+    } else {
+      TestLogic.restart(false, false, event);
+    }
+  } else if (!TestUI.resultVisible) {
+    $("#restartTestButton").focus();
+  }
+}
+
 function handleTab(event) {
   if (TestUI.resultCalculating) {
     event.preventDefault();
@@ -565,35 +581,27 @@ function handleTab(event) {
   ) return;
 
   if ($(".pageTest").hasClass("active")) {
-    if ((TestLogic.hasTab || Config.mode === "zen") && !event.shiftKey) {
+    if (!TestUI.resultVisible) {
       event.preventDefault();
-      handleChar("\t", TestLogic.input.current.length);
-      setWordsInput(" " + TestLogic.input.current);
-      return;
     }
 
-    if (Config.quickTab) {
-      event.preventDefault();
-
-      if (event.shiftKey) {
-        ManualRestart.set();
-      } else {
-        ManualRestart.reset();
+    if (event.key == "Tab") {
+      if ((TestLogic.hasTab || Config.mode === "zen") && !event.shiftKey) {
+        handleChar("\t", TestLogic.input.current.length);
+        setWordsInput(" " + TestLogic.input.current);
+        return;
       }
 
-      if (
-        TestLogic.active &&
-        Config.repeatQuotes === "typing" &&
-        Config.mode === "quote"
-      ) {
-        TestLogic.restart(true, false, event);
-      } else {
-        TestLogic.restart(false, false, event);
+      if (Config.quickTab) {
+        if (event.shiftKey) {
+          ManualRestart.set();
+        } else {
+          ManualRestart.reset();
+        }
       }
-    } else if (!TestUI.resultVisible){
-      event.preventDefault();
-      $("#restartTestButton").focus();
     }
+
+    focusRestartOrRestart(event);
   } else if (Config.quickTab) {
     UI.changePage("test");
   }
