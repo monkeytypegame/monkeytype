@@ -317,7 +317,6 @@ $("#commandLine input").keyup((e) => {
   $("#commandLineWrapper #commandLine .suggestions .entry").removeClass(
     "activeMouse"
   );
-  console.log(e);
   if (
     e.key === "ArrowUp" ||
     e.key === "ArrowDown" ||
