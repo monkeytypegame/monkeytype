@@ -157,6 +157,10 @@
     "languages": ["finnish", "finnish_1k", "finnish_10k"]
   },
   {
+    "name": "estonian",
+    "languages": ["estonian", "estonian_1k", "estonian_10k"]
+  },
+  {
     "name": "welsh",
     "languages": ["welsh", "welsh_1k"]
   },
