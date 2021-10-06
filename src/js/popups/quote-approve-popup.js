@@ -128,7 +128,7 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
 
   let response;
   try {
-    response = await axiosInstance.get("/new-quotes/approve", {
+    response = await axiosInstance.post("/new-quotes/approve", {
       quoteId: dbid,
     });
   } catch (e) {
@@ -156,7 +156,7 @@ $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
 
   let response;
   try {
-    response = await axiosInstance.get("/new-quotes/approve", {
+    response = await axiosInstance.post("/new-quotes/approve", {
       quoteId: dbid,
       editText,
       editSource,
