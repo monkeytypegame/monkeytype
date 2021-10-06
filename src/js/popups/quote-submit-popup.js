@@ -1,8 +1,5 @@
 import * as Misc from "./misc";
 import * as Notifications from "./notifications";
-import Config from "./config";
-import * as ManualRestart from "./manual-restart-tracker";
-import * as TestLogic from "./test-logic";
 import axiosInstance from "./axios-instance";
 
 let dropdownReady = false;
