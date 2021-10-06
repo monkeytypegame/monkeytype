@@ -465,6 +465,22 @@
   }
 }
 
+#quoteApprovePopup {
+  background: var(--bg-color);
+  border-radius: var(--roundness);
+  padding: 2rem;
+  display: grid;
+  gap: 1rem;
+  width: 1000px;
+  height: 80vh;
+  grid-template-rows: auto auto auto 1fr;
+
+  .title {
+    font-size: 1.5rem;
+    color: var(--sub-color);
+  }
+}
+
 #resultEditTagsPanelWrapper {
   #resultEditTagsPanel {
     background: var(--bg-color);

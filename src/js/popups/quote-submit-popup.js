@@ -45,7 +45,7 @@ async function submitQuote() {
   }
 }
 
-export async function show() {
+export async function show(noAnim = false) {
   if ($("#quoteSubmitPopupWrapper").hasClass("hidden")) {
     initDropdown();
     $("#quoteSubmitPopup input").val("");
@@ -53,7 +53,7 @@ export async function show() {
       .stop(true, true)
       .css("opacity", 0)
       .removeClass("hidden")
-      .animate({ opacity: 1 }, 100, (e) => {
+      .animate({ opacity: 1 }, noAnim ? 0 : 100, (e) => {
         $("#quoteSubmitPopup textarea").focus().select();
         //updateResults("");
       });
