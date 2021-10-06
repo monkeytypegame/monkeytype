@@ -12,7 +12,7 @@ function updateList() {
   $("#quoteApprovePopupWrapper .quotes").empty();
   quotes.forEach((quote, index) => {
     let quoteEl = $(`
-      <div class="quote" id="${index}">
+      <div class="quote" id="${index}" dbid="${quote._id}">
         <textarea class="text">${quote.text}</textarea>
         <input type="text" class="source" placeholder="Source" value="${
           quote.source
@@ -101,14 +101,46 @@ $(document).on("click", "#quoteApprovePopup .quote .undo", async (e) => {
   $(`#quoteApprovePopup .quote[id=${index}] .text`).val(quotes[index].text);
   $(`#quoteApprovePopup .quote[id=${index}] .source`).val(quotes[index].source);
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).addClass("disabled");
+  $(`#quoteApprovePopup .quote[id=${index}] .approve`).removeClass("hidden");
+  $(`#quoteApprovePopup .quote[id=${index}] .edit`).addClass("hidden");
+});
+
+$(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
+  if (!confirm("Are you sure?")) return;
+  let index = parseInt($(e.target).closest(".quote").attr("id"));
+  let dbid = parseInt($(e.target).closest(".quote").attr("dbid"));
+
+  let response;
+  try {
+    response = await axiosInstance.get("/new-quotes/approve", {
+      quoteId: dbid,
+    });
+  } catch (e) {
+    Loader.hide();
+    let msg = e?.response?.data?.message ?? e.message;
+    Notifications.add("Failed to approve quote: " + msg, -1);
+    return;
+  }
+  Loader.hide();
+  if (response.status !== 200) {
+    Notifications.add(response.data.message);
+  } else {
+    Notifications.add("Quote approved", 1);
+    quotes.splice(index, 1);
+    updateList();
+  }
 });
 
 $(document).on("input", "#quoteApprovePopup .quote .text", async (e) => {
   let index = parseInt($(e.target).closest(".quote").attr("id"));
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).removeClass("disabled");
+  $(`#quoteApprovePopup .quote[id=${index}] .approve`).addClass("hidden");
+  $(`#quoteApprovePopup .quote[id=${index}] .edit`).removeClass("hidden");
 });
 
 $(document).on("input", "#quoteApprovePopup .quote .source", async (e) => {
   let index = parseInt($(e.target).closest(".quote").attr("id"));
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).removeClass("disabled");
+  $(`#quoteApprovePopup .quote[id=${index}] .approve`).addClass("hidden");
+  $(`#quoteApprovePopup .quote[id=${index}] .edit`).removeClass("hidden");
 });
