@@ -6,8 +6,11 @@ import * as TestLogic from "./test-logic";
 import axiosInstance from "./axios-instance";
 import * as Loader from "./loader";
 
+let quotes = [];
+
 export async function show(noAnim = false) {
   if ($("#quoteApprovePopupWrapper").hasClass("hidden")) {
+    quotes = [];
     getQuotes();
     $("#quoteApprovePopupWrapper")
       .stop(true, true)
@@ -35,6 +38,22 @@ export function hide() {
   }
 }
 
+function updateList() {
+  $("#quoteApprovePopupWrapper .quotes").empty();
+  quotes.forEach((quote) => {
+    let quoteEl = $(`
+      <div class="quote">
+        <div class="quote-text">${quote.text}</div>
+        <div class="quote-author">${quote.source}</div>
+      </div>
+    `);
+    quoteEl.click(() => {
+      // approveQuote(quote);
+    });
+    $("#quoteApprovePopupWrapper .quotes").append(quoteEl);
+  });
+}
+
 async function getQuotes() {
   Loader.show();
   let response;
@@ -50,7 +69,8 @@ async function getQuotes() {
   if (response.status !== 200) {
     Notifications.add(response.data.message);
   } else {
-    console.log(response.data);
+    quotes = response.data;
+    updateList();
   }
 }
 
