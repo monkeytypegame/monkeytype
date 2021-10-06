@@ -10,21 +10,27 @@ let quotes = [];
 
 function updateList() {
   $("#quoteApprovePopupWrapper .quotes").empty();
-  quotes.forEach((quote) => {
+  quotes.forEach((quote, index) => {
     let quoteEl = $(`
-      <div class="quote">
+      <div class="quote" id="${index}">
         <textarea class="text">${quote.text}</textarea>
-        <input type="text" class="source" placeholder="Source" value="${quote.source}">
+        <input type="text" class="source" placeholder="Source" value="${
+          quote.source
+        }">
         <div class="buttons">
-          <div class="icon-button" aria-label="Undo changes" data-balloon-pos="left"><i class="fas fa-fw fa-undo-alt"></i></div>
-          <div class="icon-button" aria-label="Refuse quote" data-balloon-pos="left"><i class="fas fa-fw fa-times"></i></div>
-          <div class="icon-button" aria-label="Approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-check"></i></div>
+          <div class="icon-button disabled undo" aria-label="Undo changes" data-balloon-pos="left"><i class="fas fa-fw fa-undo-alt"></i></div>
+          <div class="icon-button refuse" aria-label="Refuse quote" data-balloon-pos="left"><i class="fas fa-fw fa-times"></i></div>
+          <div class="icon-button approve" aria-label="Approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-check"></i></div>
+          <div class="icon-button edit hidden" aria-label="Edit and approve quote" data-balloon-pos="left"><i class="fas fa-fw fa-pen"></i></div>
+        </div>
+        <div class="bottom">
+          <div class="language">Language: ${quote.language}</div>
+          <div class="timestamp">Submitted on: ${moment(quote.timestamp).format(
+            "DD MMM YYYY HH:mm"
+          )}</div>
         </div>
       </div>
     `);
-    quoteEl.click(() => {
-      // approveQuote(quote);
-    });
     $("#quoteApprovePopupWrapper .quotes").append(quoteEl);
   });
 }
@@ -87,4 +93,21 @@ $("#quoteApprovePopupWrapper").on("mousedown", (e) => {
 
 $("#quoteApprovePopupWrapper .button.refreshList").on("click", (e) => {
   getQuotes();
+});
+
+$(document).on("click", "#quoteApprovePopup .quote .undo", async (e) => {
+  let index = parseInt($(e.target).closest(".quote").attr("id"));
+  $(`#quoteApprovePopup .quote[id=${index}] .text`).val(quotes[index].text);
+  $(`#quoteApprovePopup .quote[id=${index}] .source`).val(quotes[index].source);
+  $(`#quoteApprovePopup .quote[id=${index}] .undo`).addClass("disabled");
+});
+
+$(document).on("input", "#quoteApprovePopup .quote .text", async (e) => {
+  let index = parseInt($(e.target).closest(".quote").attr("id"));
+  $(`#quoteApprovePopup .quote[id=${index}] .undo`).removeClass("disabled");
+});
+
+$(document).on("input", "#quoteApprovePopup .quote .source", async (e) => {
+  let index = parseInt($(e.target).closest(".quote").attr("id"));
+  $(`#quoteApprovePopup .quote[id=${index}] .undo`).removeClass("disabled");
 });

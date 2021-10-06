@@ -503,7 +503,6 @@
       transition: 0.25s;
       box-sizing: border-box;
       user-select: none;
-      cursor: pointer;
       height: min-content;
       margin-bottom: 1rem;
 
@@ -526,9 +525,16 @@
         justify-content: center;
         margin-right: 1rem;
         grid-column: 2/3;
-        grid-row: 1/3;
+        grid-row: 1/4;
         color: var(--sub-color);
       }
+
+      .bottom {
+        display: flex;
+        justify-content: space-around;
+        color: var(--sub-color);
+      }
+
       .sub {
         opacity: 0.5;
       }
