@@ -570,12 +570,15 @@ function focusRestartOrRestart(event) {
     }
 
     if (Config.quickTab) {
-      if (event.shiftKey) {
-        ManualRestart.set();
+      if (event.key === "Tab") {
+        if (event.shiftKey) {
+          ManualRestart.set();
+        } else {
+          ManualRestart.reset();
+        }
       } else {
-        ManualRestart.reset();
+        ManualRestart.set();
       }
-
       if (
         TestLogic.active &&
         Config.repeatQuotes === "typing" &&
