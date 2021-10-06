@@ -494,7 +494,7 @@ export function updateModesNotice() {
 
   if (TestLogic.hasTab) {
     $(".pageTest #testModesNotice").append(
-      `<div class="text-button"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to restart</div>`
+      `<div class="text-button"><i class="fas fa-long-arrow-alt-right"></i>shift + tab to ${Config.swapEscAndTab ? "open command line" : "restart"}</div>`
     );
   }
 
