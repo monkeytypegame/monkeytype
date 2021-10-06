@@ -131,6 +131,36 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   }
 });
 
+$(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
+  if (!confirm("Are you sure?")) return;
+  let index = parseInt($(e.target).closest(".quote").attr("id"));
+  let dbid = parseInt($(e.target).closest(".quote").attr("dbid"));
+  let editText = $(`#quoteApprovePopup .quote[id=${index}] .text`).val();
+  let editSource = $(`#quoteApprovePopup .quote[id=${index}] .source`).val();
+
+  let response;
+  try {
+    response = await axiosInstance.get("/new-quotes/approve", {
+      quoteId: dbid,
+      editText,
+      editSource,
+    });
+  } catch (e) {
+    Loader.hide();
+    let msg = e?.response?.data?.message ?? e.message;
+    Notifications.add("Failed to approve quote: " + msg, -1);
+    return;
+  }
+  Loader.hide();
+  if (response.status !== 200) {
+    Notifications.add(response.data.message);
+  } else {
+    Notifications.add("Quote edited and approved", 1);
+    quotes.splice(index, 1);
+    updateList();
+  }
+});
+
 $(document).on("input", "#quoteApprovePopup .quote .text", async (e) => {
   let index = parseInt($(e.target).closest(".quote").attr("id"));
   $(`#quoteApprovePopup .quote[id=${index}] .undo`).removeClass("disabled");
