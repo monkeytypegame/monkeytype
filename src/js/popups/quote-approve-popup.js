@@ -124,7 +124,7 @@ $(document).on("click", "#quoteApprovePopup .quote .undo", async (e) => {
 $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   if (!confirm("Are you sure?")) return;
   let index = parseInt($(e.target).closest(".quote").attr("id"));
-  let dbid = parseInt($(e.target).closest(".quote").attr("dbid"));
+  let dbid = $(e.target).closest(".quote").attr("dbid");
 
   let response;
   try {
@@ -150,7 +150,7 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
 $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
   if (!confirm("Are you sure?")) return;
   let index = parseInt($(e.target).closest(".quote").attr("id"));
-  let dbid = parseInt($(e.target).closest(".quote").attr("dbid"));
+  let dbid = $(e.target).closest(".quote").attr("dbid");
   let editText = $(`#quoteApprovePopup .quote[id=${index}] .text`).val();
   let editSource = $(`#quoteApprovePopup .quote[id=${index}] .source`).val();
 
