@@ -92,6 +92,7 @@ $("#quoteApprovePopupWrapper").on("mousedown", (e) => {
 });
 
 $("#quoteApprovePopupWrapper .button.refreshList").on("click", (e) => {
+  $("#quoteApprovePopupWrapper .quotes").empty();
   getQuotes();
 });
 

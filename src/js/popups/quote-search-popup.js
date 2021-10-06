@@ -5,6 +5,7 @@ import * as ManualRestart from "./manual-restart-tracker";
 import * as TestLogic from "./test-logic";
 import * as QuoteSubmitPopup from "./quote-submit-popup";
 import * as QuoteApprovePopup from "./quote-approve-popup";
+import * as DB from "./db";
 
 export let selectedId = 1;
 
@@ -74,6 +75,13 @@ async function updateResults(searchText) {
 export async function show() {
   if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
     $("#quoteSearchPopup input").val("");
+
+    if (DB.getSnapshot().quoteMod) {
+      $("#quoteSearchPopup #goToApproveQuotes").removeClass("hidden");
+    } else {
+      $("#quoteSearchPopup #goToApproveQuotes").addClass("hidden");
+    }
+
     $("#quoteSearchPopupWrapper")
       .stop(true, true)
       .css("opacity", 0)
