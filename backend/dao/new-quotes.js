@@ -46,8 +46,8 @@ class NewQuotesDAO {
     return await mongoDB()
       .collection("new-quotes")
       .find({ approved: false })
-      .orderBy({ timestamp: 1 })
-      .limit(50)
+      .sort({ timestamp: 1 })
+      .limit(10)
       .toArray();
   }
 
