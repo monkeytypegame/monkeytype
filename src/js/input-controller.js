@@ -37,6 +37,21 @@ function setWordsInput(value) {
   }
 }
 
+function updateUI() {
+  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
+  LiveAcc.update(acc);
+
+  if (Config.keymapMode === "next" && Config.mode !== "zen") {
+    Keymap.highlightKey(
+      TestLogic.words
+        .getCurrent()
+        .charAt(TestLogic.input.current.length)
+        .toString()
+        .toUpperCase()
+    );
+  }
+}
+
 function backspaceToPrevious() {
   if (!TestLogic.active) return;
 
@@ -718,16 +733,7 @@ $(document).keydown((event) => {
     if (char !== null) {
       event.preventDefault();
       handleChar(char, TestLogic.input.current.length);
-    }
-
-    if (Config.keymapMode === "next" && Config.mode !== "zen") {
-      Keymap.highlightKey(
-        TestLogic.words
-          .getCurrent()
-          .charAt(TestLogic.input.current.length)
-          .toString()
-          .toUpperCase()
-      );
+      updateUI();
     }
   }
 });
@@ -787,19 +793,7 @@ $("#wordsInput").on("input", (event) => {
   }
 
   setWordsInput(" " + TestLogic.input.current);
-
-  let acc = Misc.roundTo2(TestStats.calculateAccuracy());
-  LiveAcc.update(acc);
-
-  if (Config.keymapMode === "next" && Config.mode !== "zen") {
-    Keymap.highlightKey(
-      TestLogic.words
-        .getCurrent()
-        .charAt(TestLogic.input.current.length)
-        .toString()
-        .toUpperCase()
-    );
-  }
+  updateUI();
 
   // force caret at end of input
   // doing it on next cycle because Chromium on Android won't let me edit
