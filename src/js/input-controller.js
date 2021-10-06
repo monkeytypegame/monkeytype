@@ -565,47 +565,34 @@ function handleTab(event) {
   ) return;
 
   if ($(".pageTest").hasClass("active")) {
+    if ((TestLogic.hasTab || Config.mode === "zen") && !event.shiftKey) {
+      event.preventDefault();
+      handleChar("\t", TestLogic.input.current.length);
+      setWordsInput(" " + TestLogic.input.current);
+      return;
+    }
+
     if (Config.quickTab) {
-      if (
-        TestUI.resultVisible ||
-        !(
-          (Config.mode == "zen" && !event.shiftKey) ||
-          (TestLogic.hasTab && !event.shiftKey)
-        )
-      ) {
-        if (event.shiftKey) {
-          ManualRestart.set();
-        } else {
-          ManualRestart.reset();
-        }
-        event.preventDefault();
-        if (
-          TestLogic.active &&
-          Config.repeatQuotes === "typing" &&
-          Config.mode === "quote"
-        ) {
-          TestLogic.restart(true, false, event);
-        } else {
-          TestLogic.restart(false, false, event);
-        }
+      event.preventDefault();
+
+      if (event.shiftKey) {
+        ManualRestart.set();
       } else {
-        event.preventDefault();
-        handleChar("\t", TestLogic.input.current.length);
-        setWordsInput(" " + TestLogic.input.current);
+        ManualRestart.reset();
       }
-    } else if (!TestUI.resultVisible) {
+
       if (
-        (TestLogic.hasTab && event.shiftKey) ||
-        (!TestLogic.hasTab && Config.mode !== "zen") ||
-        (Config.mode === "zen" && event.shiftKey)
+        TestLogic.active &&
+        Config.repeatQuotes === "typing" &&
+        Config.mode === "quote"
       ) {
-        event.preventDefault();
-        $("#restartTestButton").focus();
+        TestLogic.restart(true, false, event);
       } else {
-        event.preventDefault();
-        handleChar("\t", TestLogic.input.current.length);
-        setWordsInput(" " + TestLogic.input.current);
+        TestLogic.restart(false, false, event);
       }
+    } else if (!TestUI.resultVisible){
+      event.preventDefault();
+      $("#restartTestButton").focus();
     }
   } else if (Config.quickTab) {
     UI.changePage("test");
