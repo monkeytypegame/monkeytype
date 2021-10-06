@@ -4,6 +4,7 @@ const fs = require("fs");
 const simpleGit = require("simple-git");
 const git = simpleGit();
 const stringSimilarity = require("string-similarity");
+const { ObjectID } = require("mongodb");
 
 class NewQuotesDAO {
   static async add(text, source, language, uid) {
@@ -55,7 +56,7 @@ class NewQuotesDAO {
     //check mod status
     let quote = await mongoDB()
       .collection("new-quotes")
-      .findOne({ _id: quoteId });
+      .findOne({ _id: ObjectID(quoteId) });
     if (!quote) {
       throw new MonkeyError(404, "Quote not found");
     }
