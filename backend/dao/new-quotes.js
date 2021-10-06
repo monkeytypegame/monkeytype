@@ -56,6 +56,9 @@ class NewQuotesDAO {
     let quote = await mongoDB()
       .collection("new-quotes")
       .findOne({ _id: quoteId });
+    if (!quote) {
+      throw new MonkeyError(404, "Quote not found");
+    }
     language = quote.language;
     quote = {
       text: editQuote ? editQuote : quote.text,
