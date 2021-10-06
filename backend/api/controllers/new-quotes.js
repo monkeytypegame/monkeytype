@@ -32,10 +32,13 @@ class NewQuotesController {
   static async approve(req, res, next) {
     try {
       let { uid } = req.decodedToken;
-      let { quoteId } = req.body;
+      let { quoteId, editQuote, editSource } = req.body;
       const userInfo = await UserDAO.getUser(uid);
       if (!userInfo.quoteMod) {
         throw new MonkeyError(403, "You don't have permission to do this");
+      }
+      if (editQuote === "" || editSource === "") {
+        throw new MonkeyError(400, "Please fill all the fields");
       }
       let data = await NewQuotesDAO.approve(quoteId, uid);
       Logger.log("system_quote_approved", data, uid);
