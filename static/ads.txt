@@ -414,7 +414,7 @@ indexexchange.com, 184626, RESELLER, 50b1c356f2c5c8fc
 appnexus.com, 11664 , RESELLER #banner
 contextweb.com, 562258, RESELLER, 89ff185a4c4e857c
 
-#V 09.09.2021 PH 
+#V 27.09.2021 PH 
 
 #------------------------------------------------------------------------------------------------------
 33across.com, 0010b00001rrIFkAAM, DIRECT, bbea06d9c4d2853c                    # 33Across_0_9_6&7
@@ -461,6 +461,7 @@ contextweb.com,562541,RESELLER,89ff185a4c4e857c                               # 
 emxdgt.com,2009,RESELLER,1e1d41537f7cad7f                                     # Amazon_3_6&7
 sharethrough.com,7144eb80,RESELLER                                            # Amazon_3_6&7
 admanmedia.com,726,RESELLER                                                   # Amazon_3_6&7
+themediagrid.com, JTQKMP, RESELLER, 35d5010d7789b49d                          # Amazon_3_6&7
 aniview.com, 5f2063121d82c82557194737, RESELLER, 78b21b97965ec3f8             # Aniview_5_7
 google.com, pub-5717092533913515, RESELLER, f08c47fec0942fa0                  # Aniview_5_7
 google.com, pub-3565385483761681, DIRECT, f08c47fec0942fa0                    # Aniview_5_7
@@ -491,6 +492,7 @@ conversantmedia.com, 41150, DIRECT, 03113cd04947736d                          # 
 pubmatic.com, 158100, RESELLER, 5d62403b186f2ace                              # Epsilon_2_6&7
 openx.com, 540031703, RESELLER, 6a698e2ec38604c6                              # Epsilon_2_6&7
 appnexus.com, 4052, RESELLER                                                  # Epsilon_2_6&7
+rubiconproject.com, 23644, RESELLER, 0bfd66d529a55807                         # Epsilon_2_6&7
 adingo.jp, 24379, DIRECT                                                      # Fluct_1_6&7
 freewheel.tv, 211121, DIRECT                                                  # Freewheel_0_7
 freewheel.tv, 211129, DIRECT                                                  # Freewheel_0_7
@@ -515,6 +517,11 @@ smartyads.com,100034, RESELLER, fd2bde0ff2e62c5d                              # 
 eskimi.com, eas-2020000005, RESELLER                                          # Loopme_4_6&7
 rubiconproject.com, 17902, RESELLER, 0bfd66d529a55807                         # Magnite_1_6&7
 rubiconproject.com,  13762, RESELLER, 0bfd66d529a55807                        # Magnite_0&2_6&7
+nativo.com, 5712, DIRECT, 59521ca7cc5e9fee                                    # Nativo_2_6
+33across.com, 0010b00002OCUmCAAX, RESELLER, bbea06d9c4d2853c                  # Nativo_2_6
+appnexus.com, 8035, RESELLER, f5ab79cb980f11d1                                # Nativo_2_6
+contextweb.com, 560921, RESELLER, 89ff185a4c4e857c                            # Nativo_2_6
+districtm.io, 101810, RESELLER, 3fd707be9c4527c3                              # Nativo_2_6
 acexchange.co.kr, 1908143852, RESELLER                                        # nhnACE_0s_6
 ogury.com, 086233d2-e8a8-44fc-907b-f0752e1c85de, DIRECT                       # Ogury_0_6
 appnexus.com, 11470, RESELLER                                                 # Ogury_0_6
@@ -601,11 +608,6 @@ appnexus.com, 12475, RESELLER, f5ab79cb980f11d1                               # 
 advertising.com, 22762, RESELLER                                              # Vidoomy_8_7
 spotxchange.com, 218443, RESELLER, 7842df1d2fe2db34                           # Vidoomy_8_7
 spotx.tv, 218443, RESELLER, 7842df1d2fe2db34                                  # Vidoomy_8_7
-openx.com, 540022851, RESELLER, 6a698e2ec38604c6                              # Viralize_4_7
-adform.com, 2727, RESELLER, 9f5210a2f0999e32                                  # Viralize_4_7
-appnexus.com, 11487, RESELLER, f5ab79cb980f11d1                               # Viralize_4_7
-conversantmedia.com, 100098, RESELLER, 03113cd04947736d                       # Viralize_4_7
-pubmatic.com, 120391, RESELLER, 5d62403b186f2ace                              # Viralize_4_7
 appnexus.com, 806, DIRECT, f5ab79cb980f11d1                                   # Xandr_0&2_6&7
 appnexus.com,1908,RESELLER,f5ab79cb980f11d1                                   # Xandr_0&2_6&7
 yieldmo.com, 2440034292147889057, DIRECT                                      # Yieldmo_1_6&7
