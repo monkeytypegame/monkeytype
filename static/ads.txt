@@ -414,6 +414,9 @@ indexexchange.com, 184626, RESELLER, 50b1c356f2c5c8fc
 appnexus.com, 11664 , RESELLER #banner
 contextweb.com, 562258, RESELLER, 89ff185a4c4e857c
 
+
+venatusmedia.com, 60b78af12119122b8958910f, DIRECT
+
 #V 27.09.2021 PH 
 
 #------------------------------------------------------------------------------------------------------
