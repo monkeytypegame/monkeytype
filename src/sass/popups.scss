@@ -454,6 +454,11 @@
   max-height: 36rem;
   overflow-y: scroll;
 
+  label {
+    color: var(--sub-color);
+    margin-bottom: -1rem;
+  }
+
   .title {
     font-size: 1.5rem;
     color: var(--sub-color);
