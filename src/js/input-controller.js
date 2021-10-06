@@ -718,6 +718,7 @@ $(document).keydown((event) => {
     if (char !== null) {
       event.preventDefault();
       handleChar(char, TestLogic.input.current.length);
+      setWordsInput(" " + TestLogic.input.current);
     }
 
     if (Config.keymapMode === "next" && Config.mode !== "zen") {
