@@ -542,7 +542,6 @@ function handleChar(char, charIndex) {
   if (char !== "\n") {
     Caret.updatePosition();
   }
-
 }
 
 function handleTab(event) {
@@ -782,7 +781,10 @@ $("#wordsInput").on("input", (event) => {
   // input will be modified even with the preventDefault() in
   // beforeinput/keydown if it's part of a compose sequence. this undoes
   // the effects of that and takes the input out of compose mode.
-  if (Config.layut !== "default" && inputValue.length >= TestLogic.input.current.length) {
+  if (
+    Config.layout !== "default" &&
+    inputValue.length >= TestLogic.input.current.length
+  ) {
     setWordsInput(" " + TestLogic.input.current);
     return;
   }
