@@ -285,16 +285,6 @@ const layouts = {
             " "
         ]
     },
-    MTGAP_ISEA: {
-        keymapShowTopRow: false,
-        keys: [
-            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
-            "yY", "cC", "oO", "uU", "jJ", "kK", "pP", "dD", "lL", "wW", "xX", "zZ", "\\|",
-            "iI", "sS", "eE", "aA", ",;", "mM", "hH", "tT", "nN", "rR", "'\"",
-            "\\|", "[{", "]}", "/<", ".>", ":?", "bB", "fF", "gG", "vV", "qQ",
-            " "
-        ]
-    },
     soul: {
         keymapShowTopRow: false,
         keys: [
