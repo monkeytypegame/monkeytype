@@ -40,7 +40,7 @@ function canBailOut() {
 }
 
 let commandsLayouts = {
-  title: "Layout...",
+  title: "Layout emulator...",
   configKey: "layout",
   list: [
     {
@@ -55,7 +55,7 @@ if (Object.keys(layouts).length > 0) {
   Object.keys(layouts).forEach((layout) => {
     commandsLayouts.list.push({
       id: "changeLayout" + Misc.capitalizeFirstLetter(layout),
-      display: layout.replace(/_/g, " "),
+      display: layout === "default" ? "off" : layout.replace(/_/g, " "),
       configValue: layout,
       exec: () => {
         // UpdateConfig.setSavedLayout(layout);
@@ -81,7 +81,7 @@ if (Object.keys(layouts).length > 0) {
   commandsKeymapLayouts.list = [];
   commandsKeymapLayouts.list.push({
     id: "changeKeymapLayoutOverrideSync",
-    display: "override sync",
+    display: "emulator sync",
     configValue: "overrideSync",
     exec: () => {
       UpdateConfig.setKeymapLayout("overrideSync");
@@ -2719,7 +2719,7 @@ export let defaultCommands = {
     },
     {
       id: "changeLayout",
-      display: "Layout...",
+      display: "Layout emulator...",
       icon: "fa-keyboard",
       subgroup: commandsLayouts,
     },
