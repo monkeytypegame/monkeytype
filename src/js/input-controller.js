@@ -773,6 +773,14 @@ $("#wordsInput").on("input", (event) => {
   const realInputValue = event.target.value.normalize();
   const inputValue = realInputValue.slice(1);
 
+  // input will be modified even with the preventDefault() in
+  // beforeinput/keydown if it's part of a compose sequence. this undoes
+  // the effects of that and takes the input out of compose mode.
+  if (Config.layut !== "default" && inputValue.length >= TestLogic.input.current.length) {
+    setWordsInput(" " + TestLogic.input.current);
+    return;
+  }
+
   if (realInputValue.length === 0 && TestLogic.input.current.length === 0) {
     // fallback for when no Backspace keydown event (mobile)
     backspaceToPrevious();
