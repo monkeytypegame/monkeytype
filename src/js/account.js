@@ -35,7 +35,7 @@ export async function getDataAndInit() {
     await DB.initSnapshot();
   } catch (e) {
     AccountButton.loading(false);
-    if (e.response.status === 429) {
+    if (e?.response?.status === 429) {
       Notifications.add(
         "Doing so will save you bandwidth, make the next test be ready faster and will not sign you out (which could mean your new personal best would not save to your account).",
         0,
