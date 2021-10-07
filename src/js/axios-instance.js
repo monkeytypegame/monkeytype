@@ -9,6 +9,7 @@ if (window.location.hostname === "localhost") {
 
 const axiosInstance = axios.create({
   baseURL: baseURL,
+  timeout: 1000,
 });
 
 // Request interceptor for API calls
