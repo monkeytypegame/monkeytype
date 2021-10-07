@@ -96,7 +96,7 @@ Once you have completed the above steps, you are ready to build and run Monkeyty
 
 ## Standards and Guidelines
 
-Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you `git commit` (if you've followed the above instructions properly).
+Code style is enforced by [Prettier](https://prettier.io/docs/en/install.html), which automatically runs every time you make a commit(`git commit`) (if you've followed the above instructions properly).
 
 We recommend following the guidelines below to increase your chances of getting your change accepted.
 
@@ -104,7 +104,7 @@ We recommend following the guidelines below to increase your chances of getting 
 
 <!-- TODO: add screenshots to provide examples for dos and don'ts -->
 
-Before submitting a theme:
+Before submitting a theme make sure...
 
 - your theme is unique and isn't visually similar to any we already have.
 - the text color is either black or white (or very close to these colors)
@@ -116,7 +116,7 @@ Before submitting a theme:
 - Do not include swear words
 - Ensure that your contribution meets JSON standards (no trailing comma at the end of a list)
 - Be sure to add your language to the `_list` and `_groups` files
-- Make sure the number of words corresponds to the file name (for example: `languageName.json` is 200 words, `langugeName_1k.json` is 1000 words, and so on)
+- Make sure the number of words in the file corresponds to the file name (for example: `languageName.json` is 200 words, `langugeName_1k.json` is 1000 words, and so on)
 
 #### Quote Guidelines
 
