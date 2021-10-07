@@ -728,7 +728,13 @@ $(document).keydown((event) => {
     correctShiftUsed = ShiftTracker.isUsingOppositeShift(event) !== false;
   }
 
-  if (Config.layout !== "default") {
+  if (
+    Config.layout !== "default" &&
+    !(
+      event.ctrlKey ||
+      (event.altKey && window.navigator.platform.search("Linux") > -1)
+    )
+  ) {
     const char = LayoutEmulator.getCharFromEvent(event);
     if (char !== null) {
       event.preventDefault();
