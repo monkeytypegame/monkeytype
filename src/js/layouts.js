@@ -325,6 +325,16 @@ const layouts = {
             " "
         ],
     },
+    ISRT_Angle: {
+        keymapShowTopRow: false,
+        keys: [
+            "`~", "1!", "2@", "3#", "4$", "5%", "6^", "7&", "8*", "9(", "0)", "-_", "=+",
+            "yY", "cC", "lL", "mM", "kK", "zZ", "fF", "uU", ",<", "'\"", "[{", "]}", "\\|",
+            "iI", "sS", "rR", "tT", "gG", "pP", "nN", "eE", "aA", "oO", ";:",
+            "\\|", "vV", "wW", "dD", "jJ", "qQ", "bB", "hH", "/?", ".>", "xX",
+            " "
+        ],
+    },
     colemak_Qix: {
         keymapShowTopRow: true,
         keys: [
