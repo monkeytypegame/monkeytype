@@ -32,6 +32,7 @@ function setWordsInput(value) {
   // Only change #wordsInput if it's not already the wanted value
   // Avoids Safari triggering unneeded events, causing issues with
   // dead keys.
+  console.log("settings words input to " + value);
   if (value !== $("#wordsInput").val()) {
     $("#wordsInput").val(value);
   }
@@ -739,8 +740,8 @@ $(document).keydown((event) => {
       event.preventDefault();
       handleChar(char, TestLogic.input.current.length);
       updateUI();
+      setWordsInput(" " + TestLogic.input.current);
     }
-    setWordsInput(" " + TestLogic.input.current);
   }
 });
 
