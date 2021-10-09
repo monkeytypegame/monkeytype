@@ -621,8 +621,8 @@
     //   "wpm raw time nothing infoAndTags leaderboards source";
     grid-template-areas:
       "wpm"
-      "acc"
-      "burst";
+      "acc";
+    margin-bottom: 1rem;
 
     &.morestats {
       display: grid;
