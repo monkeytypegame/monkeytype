@@ -293,6 +293,22 @@
       }
     }
   }
+  #middle {
+    #result {
+      grid-template-areas:
+        "stats stats"
+        "chart chart"
+        "morestats morestats";
+      .stats {
+        grid-template-areas: "wpm acc burst";
+        gap: 4rem;
+      }
+      .stats.morestats {
+        grid-template-rows: 1fr 1fr 1fr;
+        gap: 1rem;
+      }
+    }
+  }
   #bottom {
     .leftright {
       .left {
@@ -311,17 +327,6 @@
   }
   #centerContent {
     padding: 1rem;
-  }
-  #middle {
-    #result {
-      .stats {
-        grid-template-areas:
-          "wpm"
-          "acc"
-          "burst";
-        gap: 1rem;
-      }
-    }
   }
   #result {
     .buttons {
@@ -353,7 +358,22 @@
       line-height: 0.65rem;
     }
   }
-
+  #middle {
+    #result {
+      grid-template-areas:
+        "stats stats"
+        "chart chart"
+        "morestats morestats";
+      .stats {
+        grid-template-areas: "wpm acc burst";
+        gap: 4rem;
+      }
+      .stats.morestats {
+        grid-template-rows: 1fr 1fr 1fr;
+        gap: 1rem;
+      }
+    }
+  }
   #bottom {
     font-size: 0.65rem;
   }
