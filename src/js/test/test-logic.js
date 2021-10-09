@@ -1288,29 +1288,39 @@ export async function finish(difficultyFailed = false) {
       if (inf) {
         $("#result .stats .wpm .bottom").text("Infinite");
       } else {
-        $("#result .stats .wpm .bottom").text(Misc.roundTo2(stats.wpm));
+        $("#result .stats .wpm .bottom").text(
+          Misc.roundTo2(stats.wpm).toFixed(2)
+        );
       }
-      $("#result .stats .raw .bottom").text(Misc.roundTo2(stats.wpmRaw));
+      $("#result .stats .raw .bottom").text(
+        Misc.roundTo2(stats.wpmRaw).toFixed(2)
+      );
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        Misc.roundTo2(stats.wpm * 5) + " cpm"
+        Misc.roundTo2(stats.wpm * 5).toFixed(2) + " cpm"
       );
     } else {
       $("#result .stats .wpm .top .text").text("cpm");
       if (inf) {
         $("#result .stats .wpm .bottom").text("Infinite");
       } else {
-        $("#result .stats .wpm .bottom").text(Misc.roundTo2(stats.wpm * 5));
+        $("#result .stats .wpm .bottom").text(
+          Misc.roundTo2(stats.wpm * 5).toFixed(2)
+        );
       }
-      $("#result .stats .raw .bottom").text(Misc.roundTo2(stats.wpmRaw * 5));
+      $("#result .stats .raw .bottom").text(
+        Misc.roundTo2(stats.wpmRaw * 5).toFixed(2)
+      );
       $("#result .stats .wpm .bottom").attr(
         "aria-label",
-        Misc.roundTo2(stats.wpm) + " wpm"
+        Misc.roundTo2(stats.wpm).toFixed(2) + " wpm"
       );
     }
 
-    $("#result .stats .acc .bottom").text(Misc.roundTo2(stats.acc) + "%");
-    let time = Misc.roundTo2(testtime) + "s";
+    $("#result .stats .acc .bottom").text(
+      stats.acc == 100 ? "100%" : Misc.roundTo2(stats.acc).toFixed(2) + "%"
+    );
+    let time = Misc.roundTo2(testtime).toFixed(2) + "s";
     if (testtime > 61) {
       time = Misc.secondsToString(Misc.roundTo2(testtime));
     }
@@ -1460,11 +1470,11 @@ export async function finish(difficultyFailed = false) {
 
   if (Config.alwaysShowDecimalPlaces) {
     $("#result .stats .consistency .bottom").text(
-      Misc.roundTo2(consistency) + "%"
+      Misc.roundTo2(consistency).toFixed(2) + "%"
     );
     $("#result .stats .consistency .bottom").attr(
       "aria-label",
-      `${keyConsistency}% key`
+      `${keyConsistency.toFixed(2)}% key`
     );
   } else {
     $("#result .stats .consistency .bottom").text(
