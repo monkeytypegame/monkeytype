@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      document.addEventListener("keydown", function (e) {
+        if (e.key == "Escape") e.preventDefault();
+      });
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monkeytype</title>
@@ -121,6 +126,35 @@
 
     <div id="simplePopupWrapper" class="hidden">
       <div id="simplePopup" popupId=""></div>
+    </div>
+
+    <div id="pbTablesPopupWrapper" class="hidden">
+      <div id="pbTablesPopup">
+        <!-- <div class="title">All words personal bests</div> -->
+        <table>
+          <thead>
+            <tr>
+              <td width="1%">words</td>
+              <td>
+                wpm
+                <br />
+                <span class="sub">accuracy</span>
+              </td>
+              <td>
+                raw
+                <br />
+                <span class="sub">consistency</span>
+              </td>
+              <td>difficulty</td>
+              <td>language</td>
+              <td>punctuation</td>
+              <td>lazy mode</td>
+              <td>date</td>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
 
     <div id="practiseWordsPopupWrapper" class="hidden">
@@ -319,7 +353,7 @@
         <input type="number" value="1" min="1" max="10000" />
         <div class="tip">
           You can start an infinite test by inputting 0. Then, to stop the test,
-          use the Bail Out feature (esc > Bail Out)
+          use the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
         </div>
         <div class="button">ok</div>
       </div>
@@ -331,7 +365,7 @@
         <input value="1" />
         <div class="tip">
           You can start an infinite test by inputting 0. Then, to stop the test,
-          use the Bail Out feature (esc > Bail Out)
+          use the Bail Out feature (esc or ctrl/cmd + shift + p > Bail Out)
         </div>
         <div class="button">ok</div>
       </div>
@@ -379,6 +413,7 @@
       <div id="leaderboards">
         <div class="leaderboardsTop">
           <div class="mainTitle">Leaderboards</div>
+          <div class="subTitle">Next update in: --:--</div>
           <!-- <div class="buttons">
             <div class="buttonGroup">
               <div class="button active" board="time_15">time 15</div>
@@ -804,7 +839,15 @@
               </div>
               <div id="memoryTimer">Time left to memorise all words: 0s</div>
               <div id="testModesNotice"></div>
-              <input id="wordsInput" class="" tabindex="0" autocomplete="off" />
+              <input
+                id="wordsInput"
+                class=""
+                tabindex="0"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                autocorrect="off"
+              />
               <div id="timerNumber" class="timerMain">
                 <div>60</div>
               </div>
@@ -1027,7 +1070,7 @@
               <div id="premidTestMode" class="hidden"></div>
               <div id="premidSecondsLeft" class="hidden"></div>
             </div>
-            <div id="result" class="hidden">
+            <div id="result" tabindex="0" class="hidden">
               <div class="stats">
                 <!-- <div class="info">words 10<br>punctuation</div> -->
 
@@ -1150,7 +1193,7 @@
                       data-balloon-pos="up"
                       style="display: inline-block"
                     >
-                      <i class="fas fa-copy"></i>
+                      <i class="fas fa-fw fa-copy"></i>
                     </span>
                     <span
                       id="toggleBurstHeatmap"
@@ -1159,7 +1202,7 @@
                       data-balloon-pos="up"
                       style="display: inline-block"
                     >
-                      <i class="fas fa-fire-alt"></i>
+                      <i class="fas fa-fw fa-fire-alt"></i>
                     </span>
                     <div class="heatmapLegend hidden">
                       <div>slow</div>
@@ -1293,6 +1336,12 @@
                 <key>tab</key>
                 if you have quick tab mode enabled) to restart the typing test.
                 Open the command line by pressing
+                <key>ctrl/cmd</key>
+                +
+                <key>shift</key>
+                +
+                <key>p</key>
+                or
                 <key>esc</key>
                 - there you can access all the functionality you need without
                 touching your mouse
@@ -1460,6 +1509,7 @@
                 <div>Not Gate</div>
                 <div>Corey</div>
                 <div>Jashe</div>
+                <div>Nubby</div>
                 <div>Nick</div>
                 <div>Eugeniu</div>
                 <div>Weedle</div>
@@ -1704,6 +1754,12 @@
             <div class="tip">
               tip: You can also change all these settings quickly using the
               command line (
+              <key>ctrl/cmd</key>
+              +
+              <key>shift</key>
+              +
+              <key>p</key>
+              or
               <key>esc</key>
               )
             </div>
@@ -2122,6 +2178,28 @@
                   </div>
                 </div>
               </div>
+              <div class="section britishEnglish" section="">
+                <h1>british english</h1>
+                <div class="text">
+                  When enabled, the website will use the British spelling
+                  instead of American. Note that this might not replace all
+                  words correctly. If you find any issues, please let us know.
+                </div>
+                <div>
+                  <div class="buttons">
+                    <div
+                      class="button off active"
+                      tabindex="0"
+                      onclick="this.blur();"
+                    >
+                      off
+                    </div>
+                    <div class="button on" tabindex="0" onclick="this.blur();">
+                      on
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div class="section languageGroups fullWidth">
                 <h1>language groups</h1>
                 <div class="buttons"></div>
@@ -2355,9 +2433,11 @@
                   </div>
                 </div>
               </div>
-              <div class="section capsLockBackspace">
-                <h1>caps lock backspace</h1>
-                <div class="text">Makes caps lock act like backspace.</div>
+              <div class="section lazyMode">
+                <h1>lazy mode</h1>
+                <div class="text">
+                  Replaces accented letters with their normal equivalents.
+                </div>
                 <div class="buttons">
                   <div class="button off" tabindex="0" onclick="this.blur();">
                     off
@@ -2368,11 +2448,11 @@
                 </div>
               </div>
               <div class="section layout fullWidth">
-                <h1>layout override</h1>
+                <h1>layout emulator</h1>
                 <div class="text">
                   With this setting you can emulate other layouts. This setting
-                  is best kept default, as it can break things like dead keys
-                  and alt layers.
+                  is best kept off, as it can break things like dead keys and
+                  alt layers.
                 </div>
                 <div class="buttons"></div>
               </div>
@@ -2386,7 +2466,7 @@
               <i class="fas fa-chevron-down"></i>
             </div>
             <div class="settingsGroup sound">
-              <div class="section playSoundOnClick">
+              <div class="section playSoundOnClick fullWidth">
                 <h1>play sound on click</h1>
                 <div class="text">
                   Plays a short sound when you press a key.
@@ -2406,7 +2486,7 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    1
+                    click
                   </div>
                   <div
                     class="button"
@@ -2414,7 +2494,7 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    2
+                    beep
                   </div>
                   <div
                     class="button"
@@ -2422,7 +2502,7 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    3
+                    pop
                   </div>
                   <div
                     class="button"
@@ -2430,7 +2510,31 @@
                     tabindex="0"
                     onclick="this.blur();"
                   >
-                    4
+                    nk creams
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="5"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    typewriter
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="6"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    osu
+                  </div>
+                  <div
+                    class="button"
+                    playSoundOnClick="7"
+                    tabindex="0"
+                    onclick="this.blur();"
+                  >
+                    hitmarker
                   </div>
                 </div>
               </div>
@@ -3752,16 +3856,29 @@
               <div class="group createdDate">Account created on -</div>
               <div class="group">
                 <div class="title">personal bests</div>
-                <div style="display: grid; grid-auto-flow: column; gap: 1rem">
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 2rem;
+                  "
+                >
                   <div class="titleAndTable timePbTable">
                     <table width="100%">
                       <thead>
                         <tr>
-                          <td>time</td>
-                          <td>wpm</td>
-                          <td>raw</td>
-                          <td>accuracy</td>
-                          <td>consistency</td>
+                          <td width="1%">time</td>
+                          <td width="33%">
+                            wpm
+                            <br />
+                            <span class="sub">accuracy</span>
+                          </td>
+                          <td width="33%">
+                            raw
+                            <br />
+                            <span class="sub">consistency</span>
+                          </td>
+                          <td width="33%">date</td>
                         </tr>
                       </thead>
                       <tbody>
@@ -3791,16 +3908,24 @@
                         </tr>
                       </tbody>
                     </table>
+                    <div class="button showAllTimePbs">show all</div>
                   </div>
                   <div class="titleAndTable wordsPbTable">
                     <table width="100%">
                       <thead>
                         <tr>
-                          <td>words</td>
-                          <td>wpm</td>
-                          <td>raw</td>
-                          <td>accuracy</td>
-                          <td>consistency</td>
+                          <td width="1%">words</td>
+                          <td width="33%">
+                            wpm
+                            <br />
+                            <span class="sub">accuracy</span>
+                          </td>
+                          <td width="33%">
+                            raw
+                            <br />
+                            <span class="sub">consistency</span>
+                          </td>
+                          <td width="33%">date</td>
                         </tr>
                       </thead>
                       <tbody>
@@ -3830,6 +3955,7 @@
                         </tr>
                       </tbody>
                     </table>
+                    <div class="button showAllWordsPbs">show all</div>
                   </div>
                 </div>
               </div>
@@ -3863,6 +3989,9 @@
                     <div class="button" filter="last_day">last day</div>
                     <div class="button" filter="last_week">last week</div>
                     <div class="button" filter="last_month">last month</div>
+                    <div class="button" filter="last_3months">
+                      last 3 months
+                    </div>
                     <div class="button" filter="all">all time</div>
                   </div>
                 </div>
@@ -4121,6 +4250,12 @@
             <key>enter</key>
             - Restart Test
             <br />
+            <key>ctrl/cmd</key>
+            +
+            <key>shift</key>
+            +
+            <key>p</key>
+            or
             <key>esc</key>
             - Command Line
           </div>

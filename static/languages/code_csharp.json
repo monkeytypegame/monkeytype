@@ -1,6 +1,7 @@
 {
   "name": "code_csharp",
   "leftToRight": true,
+  "noLazyMode": true,
   "words": [
     "abstract",
     "as",

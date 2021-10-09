@@ -1,6 +1,8 @@
 {
   "name": "russian_1k",
   "leftToRight": true,
+  "noLazyMode": true,
+  "bcp47": "ru-RU",
   "words": [
     "и",
     "в",

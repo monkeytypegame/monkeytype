@@ -19,6 +19,7 @@ import * as CommandlineLists from "./commandline-lists";
 import * as BackgroundFilter from "./custom-background-filter";
 import LayoutList from "./layouts";
 import * as ChallengeContoller from "./challenge-controller";
+import * as TTS from "./tts";
 
 export let localStorageConfig = null;
 export let dbConfigLoaded = false;
@@ -74,7 +75,6 @@ let defaultConfig = {
   caretStyle: "default",
   paceCaretStyle: "default",
   flipTestColors: false,
-  capsLockBackspace: false,
   layout: "default",
   funbox: "none",
   confidenceMode: "off",
@@ -127,6 +127,8 @@ let defaultConfig = {
   minBurst: "off",
   minBurstCustomSpeed: 100,
   burstHeatmap: false,
+  britishEnglish: false,
+  lazyMode: false,
 };
 
 function isConfigKeyValid(name) {
@@ -264,8 +266,8 @@ export function setMode(mode, nosave) {
     setPunctuation(false, true);
     setNumbers(false, true);
   } else if (config.mode == "quote") {
-    setPunctuation(false, nosave);
-    setNumbers(false, nosave);
+    setPunctuation(false, true);
+    setNumbers(false, true);
     $("#top .config .wordCount").addClass("hidden");
     $("#top .config .time").addClass("hidden");
     $("#top .config .customText").addClass("hidden");
@@ -338,8 +340,14 @@ export function setFavThemes(themes, nosave) {
 }
 
 export function setFunbox(funbox, nosave) {
-  config.funbox = funbox ? funbox : "none";
+  let val = funbox ? funbox : "none";
+  config.funbox = val;
   ChallengeContoller.clearActive();
+  if (val === "none") {
+    TTS.clear();
+  } else if (val === "tts") {
+    TTS.init();
+  }
   if (!nosave) {
     saveToLocalStorage();
   }
@@ -1147,11 +1155,11 @@ export function setQuickTabMode(mode, nosave) {
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
       .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
-      <key>esc</key> - command line`);
+      <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   } else {
     $("#restartTestButton").addClass("hidden");
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
-      <key>esc</key> - command line`);
+    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
   if (!nosave) saveToLocalStorage();
 }
@@ -1163,11 +1171,11 @@ export function toggleQuickTabMode() {
     $("#restartTestButton").css("opacity", 1);
     $("#bottom .keyTips")
       .html(`<key>tab</key> and <key>enter</key> / <key>space</key> - restart test<br>
-      <key>esc</key> - command line`);
+      <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   } else {
     $("#restartTestButton").addClass("hidden");
     $("#bottom .keyTips").html(`<key>tab</key> - restart test<br>
-      <key>esc</key> - command line`);
+    <key>ctrl/cmd</key>+<key>shift</key>+<key>p</key> or <key>esc</key> - command line`);
   }
   saveToLocalStorage();
 }
@@ -1290,6 +1298,22 @@ export function setRandomTheme(val, nosave) {
   if (!nosave) saveToLocalStorage();
 }
 
+export function setBritishEnglish(val, nosave) {
+  if (!val) {
+    val = false;
+  }
+  config.britishEnglish = val;
+  if (!nosave) saveToLocalStorage();
+}
+
+export function setLazyMode(val, nosave) {
+  if (!val) {
+    val = false;
+  }
+  config.lazyMode = val;
+  if (!nosave) saveToLocalStorage();
+}
+
 export function toggleCustomTheme(nosave) {
   if (config.customTheme) {
     setCustomTheme(false);
@@ -1315,6 +1339,9 @@ export function setLanguage(language, nosave) {
     language = "english";
   }
   config.language = language;
+  if (config.funbox === "tts") {
+    TTS.setLanguage();
+  }
   try {
     firebase.analytics().logEvent("changedLanguage", {
       language: language,
@@ -1346,18 +1373,6 @@ export function setMonkey(monkey, nosave) {
     $("#monkey").addClass("hidden");
   }
   if (!nosave) saveToLocalStorage();
-}
-
-export function setCapsLockBackspace(capsLockBackspace, nosave) {
-  if (capsLockBackspace === null || capsLockBackspace === undefined) {
-    capsLockBackspace = false;
-  }
-  config.capsLockBackspace = capsLockBackspace;
-  if (!nosave) saveToLocalStorage();
-}
-
-export function toggleCapsLockBackspace() {
-  setCapsLockBackspace(!config.capsLockBackspace, false);
 }
 
 export function setKeymapMode(mode, nosave) {
@@ -1606,7 +1621,6 @@ export function apply(configObj) {
     setQuoteLength(configObj.quoteLength, true);
     setWordCount(configObj.words, true);
     setLanguage(configObj.language, true);
-    setCapsLockBackspace(configObj.capsLockBackspace, true);
     // setSavedLayout(configObj.savedLayout, true);
     setLayout(configObj.layout, true);
     setFontSize(configObj.fontSize, true);
@@ -1671,6 +1685,8 @@ export function apply(configObj) {
     setRepeatQuotes(configObj.repeatQuotes, true);
     setMonkeyPowerLevel(configObj.monkeyPowerLevel, true);
     setBurstHeatmap(configObj.burstHeatmap, true);
+    setBritishEnglish(configObj.britishEnglish, true);
+    setLazyMode(configObj.lazyMode, true);
 
     LanguagePicker.setActiveGroup();
 

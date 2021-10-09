@@ -1,6 +1,7 @@
 {
   "name": "french_10k",
   "leftToRight": true,
+  "bcp47": "fr-FR",
   "words": [
     "a",
     "à",
@@ -3949,7 +3950,6 @@
     "prône",
     "disons",
     "thaïlandais",
-    "retarder",
     "leurs",
     "tendant",
     "prononcées",
@@ -6528,7 +6528,6 @@
     "loge",
     "christ",
     "mir",
-    "retards",
     "métalliques",
     "gouvernail",
     "gradins",

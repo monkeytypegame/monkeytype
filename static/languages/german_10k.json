@@ -2,6 +2,7 @@
   "name": "german_10k",
   "_comment": "Sourced from: https://wortschatz.uni-leipzig.de/de/download/German and https://en.wiktionary.org/wiki/Wiktionary:Frequency_lists#German",
   "leftToRight": true,
+  "bcp47": "de-DE",
   "words": [
     "Aachen",
     "Ab",

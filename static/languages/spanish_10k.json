@@ -1,6 +1,7 @@
 {
   "name": "spanish_10k",
   "_comment": "Source from corpus.rae.es/lfrecuencias.html",
+  "bcp47": "es-ES",
   "leftToRight": true,
   "words": [
     "de",
@@ -7243,7 +7244,7 @@
     "creativo",
     "poseía",
     "reunidos",
-    "incomptente",
+    "incompetente",
     "temporadas",
     "anti",
     "concluido",

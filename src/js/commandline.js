@@ -26,6 +26,10 @@ function showInput(command, placeholder, defaultValue = "") {
   }
 }
 
+export function isSingleListCommandLineActive() {
+  return $("#commandLine").hasClass("allCommands");
+}
+
 function showFound() {
   $("#commandLine .suggestions").empty();
   let commandsHTML = "";
@@ -143,6 +147,28 @@ function updateSuggested() {
   showFound();
 }
 
+export let show = () => {
+  if (!$(".page.pageLoading").hasClass("hidden")) return;
+  Focus.set(false);
+  $("#commandLine").removeClass("hidden");
+  $("#commandInput").addClass("hidden");
+  if ($("#commandLineWrapper").hasClass("hidden")) {
+    $("#commandLineWrapper")
+      .stop(true, true)
+      .css("opacity", 0)
+      .removeClass("hidden")
+      .animate(
+        {
+          opacity: 1,
+        },
+        100
+      );
+  }
+  $("#commandLine input").val("");
+  updateSuggested();
+  $("#commandLine input").focus();
+};
+
 function hide() {
   UpdateConfig.previewFontFamily(Config.fontFamily);
   // applyCustomThemeColors();
@@ -204,27 +230,6 @@ function trigger(command) {
   }
 }
 
-export let show = () => {
-  Focus.set(false);
-  $("#commandLine").removeClass("hidden");
-  $("#commandInput").addClass("hidden");
-  if ($("#commandLineWrapper").hasClass("hidden")) {
-    $("#commandLineWrapper")
-      .stop(true, true)
-      .css("opacity", 0)
-      .removeClass("hidden")
-      .animate(
-        {
-          opacity: 1,
-        },
-        100
-      );
-  }
-  $("#commandLine input").val("");
-  updateSuggested();
-  $("#commandLine input").focus();
-};
-
 function addChildCommands(
   unifiedCommands,
   commandItem,
@@ -283,23 +288,19 @@ function generateSingleListOfCommands() {
   };
 }
 
-export function isSingleListCommandLineActive() {
-  return $("#commandLine").hasClass("allCommands");
-}
-
-function useSingleListCommandLine(show = true) {
+function useSingleListCommandLine(sshow = true) {
   let allCommands = generateSingleListOfCommands();
-  if (Config.singleListCommandLine == "manual") {
-    CommandlineLists.pushCurrent(allCommands);
-  } else if (Config.singleListCommandLine == "on") {
-    CommandlineLists.setCurrent([allCommands]);
-  }
+  // if (Config.singleListCommandLine == "manual") {
+  // CommandlineLists.pushCurrent(allCommands);
+  // } else if (Config.singleListCommandLine == "on") {
+  CommandlineLists.setCurrent([allCommands]);
+  // }
   if (Config.singleListCommandLine != "off")
     $("#commandLine").addClass("allCommands");
-  if (show) show();
+  if (sshow) show();
 }
 
-function restoreOldCommandLine(show = true) {
+function restoreOldCommandLine(sshow = true) {
   if (isSingleListCommandLineActive()) {
     $("#commandLine").removeClass("allCommands");
     CommandlineLists.setCurrent(
@@ -308,7 +309,7 @@ function restoreOldCommandLine(show = true) {
     if (CommandlineLists.current.length < 1)
       CommandlineLists.setCurrent([CommandlineLists.defaultCommands]);
   }
-  if (show) show();
+  if (sshow) show();
 }
 
 $("#commandLine input").keyup((e) => {
@@ -321,7 +322,8 @@ $("#commandLine input").keyup((e) => {
     e.key === "ArrowDown" ||
     e.key === "Enter" ||
     e.key === "Tab" ||
-    e.code == "AltLeft"
+    e.code == "AltLeft" ||
+    (e.key.length > 1 && e.key !== "Backspace" && e.key !== "Delete")
   )
     return;
   updateSuggested();
@@ -518,7 +520,7 @@ $(document).keydown((e) => {
     $("#commandLine input").focus();
     if (e.key == ">" && Config.singleListCommandLine == "manual") {
       if (!isSingleListCommandLineActive()) {
-        useSingleListCommandLine();
+        useSingleListCommandLine(false);
         return;
       } else if ($("#commandLine input").val() == ">") {
         //so that it will ignore succeeding ">" when input is already ">"
@@ -526,13 +528,20 @@ $(document).keydown((e) => {
         return;
       }
     }
-    if (
-      e.key === "Backspace" &&
-      $("#commandLine input").val().length == 1 &&
-      Config.singleListCommandLine == "manual" &&
-      isSingleListCommandLineActive()
-    )
-      restoreOldCommandLine();
+
+    if (e.key === "Backspace" || e.key === "Delete") {
+      setTimeout(() => {
+        let inputVal = $("#commandLine input").val();
+        if (
+          Config.singleListCommandLine == "manual" &&
+          isSingleListCommandLineActive() &&
+          inputVal[0] !== ">"
+        ) {
+          restoreOldCommandLine(false);
+        }
+      }, 1);
+    }
+
     if (e.key === "Enter") {
       //enter
       e.preventDefault();

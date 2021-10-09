@@ -1,6 +1,7 @@
 {
   "name": "spanish",
   "leftToRight": true,
+  "bcp47": "es-ES",
   "words": [
     "como",
     "su",

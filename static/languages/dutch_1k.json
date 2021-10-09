@@ -1,6 +1,8 @@
 {
   "name": "dutch_1k",
   "leftToRight": true,
+  "noLazyMode": true,
+  "bcp47": "nl-NL",
   "words": [
     "aan",
     "aanbod",

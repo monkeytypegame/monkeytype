@@ -64,18 +64,30 @@ class SimplePopup {
       if (this.type === "number") {
         this.inputs.forEach((input) => {
           el.find(".inputs").append(`
-        <input type="number" min="1" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
+        <input type="number" min="1" val="${input.initVal}" placeholder="${
+            input.placeholder
+          }" class="${input.hidden ? "hidden" : ""}" ${
+            input.hidden ? "" : "required"
+          } autocomplete="off">
         `);
         });
       } else if (this.type === "text") {
         this.inputs.forEach((input) => {
           if (input.type) {
             el.find(".inputs").append(`
-            <input type="${input.type}" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
+            <input type="${input.type}" val="${input.initVal}" placeholder="${
+              input.placeholder
+            }" class="${input.hidden ? "hidden" : ""}" ${
+              input.hidden ? "" : "required"
+            } autocomplete="off">
             `);
           } else {
             el.find(".inputs").append(`
-            <input type="text" val="${input.initVal}" placeholder="${input.placeholder}" required autocomplete="off">
+            <input type="text" val="${input.initVal}" placeholder="${
+              input.placeholder
+            }" class="${input.hidden ? "hidden" : ""}" ${
+              input.hidden ? "" : "required"
+            } autocomplete="off">
             `);
           }
         });
@@ -254,6 +266,8 @@ list.updateName = new SimplePopup(
           pass
         );
         await user.reauthenticateWithCredential(credential);
+      } else if (user.providerData[0].providerId === "google.com") {
+        await user.reauthenticateWithPopup(AccountController.gmailProvider);
       }
       Loader.show();
 
@@ -304,7 +318,7 @@ list.updateName = new SimplePopup(
   () => {
     const user = firebase.auth().currentUser;
     if (user.providerData[0].providerId === "google.com") {
-      eval(`this.inputs.shift()`);
+      eval(`this.inputs[0].hidden = true`);
       eval(`this.buttonText = "Reauthenticate to update"`);
     }
   }

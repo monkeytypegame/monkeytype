@@ -124,18 +124,21 @@ export function update() {
     Config.mode === "custom" ||
     Config.mode === "quote"
   ) {
+    let outof = TestLogic.words.length;
+    if (Config.mode === "words") {
+      outof = Config.words;
+    }
+    if (Config.mode === "custom") {
+      if (CustomText.isWordRandom) {
+        outof = CustomText.word;
+      } else {
+        outof = CustomText.text.length;
+      }
+    }
+    if (Config.mode === "quote") {
+      outof = TestLogic.randomQuote.textSplit.length;
+    }
     if (Config.timerStyle === "bar") {
-      let outof = TestLogic.words.length;
-      if (Config.mode === "words") {
-        outof = Config.words;
-      }
-      if (Config.mode === "custom") {
-        if (CustomText.isWordRandom) {
-          outof = CustomText.word;
-        } else {
-          outof = CustomText.text.length;
-        }
-      }
       let percent = Math.floor(
         ((TestLogic.words.currentIndex + 1) / outof) * 100
       );
@@ -148,17 +151,6 @@ export function update() {
           250
         );
     } else if (Config.timerStyle === "text") {
-      let outof = TestLogic.words.length;
-      if (Config.mode === "words") {
-        outof = Config.words;
-      }
-      if (Config.mode === "custom") {
-        if (CustomText.isWordRandom) {
-          outof = CustomText.word;
-        } else {
-          outof = CustomText.text.length;
-        }
-      }
       if (outof === 0) {
         $("#timerNumber").html(
           "<div>" + `${TestLogic.input.history.length}` + "</div>"
@@ -169,17 +161,6 @@ export function update() {
         );
       }
     } else if (Config.timerStyle === "mini") {
-      let outof = TestLogic.words.length;
-      if (Config.mode === "words") {
-        outof = Config.words;
-      }
-      if (Config.mode === "custom") {
-        if (CustomText.isWordRandom) {
-          outof = CustomText.word;
-        } else {
-          outof = CustomText.text.length;
-        }
-      }
       if (Config.words === 0) {
         $("#miniTimerAndLiveWpm .time").html(
           `${TestLogic.input.history.length}`

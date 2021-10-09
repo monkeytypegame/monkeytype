@@ -22,7 +22,10 @@ let eslintConfig = {
     "ClipboardItem",
   ],
   envs: ["es6", "browser", "node"],
+  plugins: ["json"],
+  extends: ["plugin:json/recommended"],
   rules: {
+    "json/*": ["error"],
     "constructor-super": "error",
     "for-direction": "error",
     "getter-return": "error",
@@ -53,7 +56,7 @@ let eslintConfig = {
     "no-import-assign": "error",
     "no-inner-declarations": "error",
     "no-invalid-regexp": "error",
-    "no-irregular-whitespace": "error",
+    "no-irregular-whitespace": "warn",
     "no-misleading-character-class": "error",
     "no-mixed-spaces-and-tabs": "error",
     "no-new-symbol": "error",
@@ -89,7 +92,6 @@ let eslintConfig = {
 const refactoredSrc = [
   "./src/js/axios-instance.js",
   "./src/js/db.js",
-  "./src/js/cloud-functions.js",
   "./src/js/misc.js",
   "./src/js/layouts.js",
   "./src/js/sound.js",
@@ -130,6 +132,7 @@ const refactoredSrc = [
   "./src/js/elements/new-version-notification.js",
 
   "./src/js/popups/custom-text-popup.js",
+  "./src/js/popups/pb-tables-popup.js",
   "./src/js/popups/quote-search-popup.js",
   "./src/js/popups/rate-quote-popup.js",
   "./src/js/popups/version-popup.js",
@@ -149,6 +152,8 @@ const refactoredSrc = [
   "./src/js/settings/settings-group.js",
 
   "./src/js/test/custom-text.js",
+  "./src/js/test/british-english.js",
+  "./src/js/test/lazy-mode.js",
   "./src/js/test/shift-tracker.js",
   "./src/js/test/out-of-focus.js",
   "./src/js/test/caret.js",
@@ -162,7 +167,6 @@ const refactoredSrc = [
   "./src/js/test/caps-warning.js",
   "./src/js/test/live-acc.js",
   "./src/js/test/live-burst.js",
-  "./src/js/test/test-leaderboards.js",
   "./src/js/test/timer-progress.js",
   "./src/js/test/test-logic.js",
   "./src/js/test/funbox.js",
@@ -175,6 +179,7 @@ const refactoredSrc = [
   "./src/js/test/today-tracker.js",
   "./src/js/test/weak-spot.js",
   "./src/js/test/wordset.js",
+  "./src/js/test/tts.js",
   "./src/js/replay.js",
 ];
 
@@ -194,6 +199,7 @@ task("cat", function () {
 
 task("sass", function () {
   return src("./src/sass/*.scss")
+    .pipe(concat("style.scss"))
     .pipe(sass({ outputStyle: "compressed" }).on("error", sass.logError))
     .pipe(dest("dist/css"));
 });
@@ -232,7 +238,9 @@ task("browserify", function () {
 
 //lints only the refactored files
 task("lint", function () {
-  return src(refactoredSrc)
+  let filelist = refactoredSrc;
+  filelist.push("./static/**/*.json");
+  return src(filelist)
     .pipe(eslint(eslintConfig))
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());

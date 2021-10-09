@@ -1,6 +1,20 @@
 import axiosInstance from "./axios-instance";
 import * as Notifications from "./notifications";
 
+function clearMemory() {
+  window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
+}
+
+function getMemory() {
+  return JSON.parse(window.localStorage.getItem("confirmedPSAs")) ?? [];
+}
+
+function setMemory(id) {
+  let list = getMemory();
+  list.push(id);
+  window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
+}
+
 async function getLatest() {
   let psa = await axiosInstance.get("/psa");
   return psa.data;
@@ -19,18 +33,4 @@ export async function show() {
       setMemory(psa._id);
     });
   });
-}
-
-function setMemory(id) {
-  let list = getMemory();
-  list.push(id);
-  window.localStorage.setItem("confirmedPSAs", JSON.stringify(list));
-}
-
-function clearMemory() {
-  window.localStorage.setItem("confirmedPSAs", JSON.stringify([]));
-}
-
-function getMemory() {
-  return JSON.parse(window.localStorage.getItem("confirmedPSAs")) ?? [];
 }

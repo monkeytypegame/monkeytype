@@ -86,21 +86,23 @@ function handleDisplayLogic(item, nosound = false) {
       //if letter is an extra
       myElement = document.createElement("letter");
       myElement.classList.add("extra");
-      myElement.innerHTML = item.letter;
+      myElement.innerHTML = item.value;
       activeWord.appendChild(myElement);
     }
     myElement = activeWord.children[curPos];
     myElement.classList.add("incorrect");
     curPos++;
-  } else if (item.action === "deleteLetter") {
+  } else if (item.action === "setLetterIndex") {
     if (!nosound) playSound();
-    let myElement = activeWord.children[curPos - 1];
-    if (myElement.classList.contains("extra")) {
-      myElement.remove();
-    } else {
-      myElement.className = "";
+    curPos = item.value;
+    // remove all letters from cursor to end of word
+    for (const myElement of [...activeWord.children].slice(curPos)) {
+      if (myElement.classList.contains("extra")) {
+        myElement.remove();
+      } else {
+        myElement.className = "";
+      }
     }
-    curPos--;
   } else if (item.action === "submitCorrectWord") {
     if (!nosound) playSound();
     wordPos++;
@@ -109,15 +111,6 @@ function handleDisplayLogic(item, nosound = false) {
     if (!nosound) playSound(true);
     activeWord.classList.add("error");
     wordPos++;
-    curPos = 0;
-  } else if (item.action === "clearWord") {
-    if (!nosound) playSound();
-    let promptWord = document.createElement("div");
-    let wordArr = wordsList[wordPos].split("");
-    wordArr.forEach((letter) => {
-      promptWord.innerHTML += `<letter>${letter}</letter>`;
-    });
-    activeWord.innerHTML = promptWord.innerHTML;
     curPos = 0;
   } else if (item.action === "backWord") {
     if (!nosound) playSound();
@@ -195,16 +188,13 @@ function stopReplayRecording() {
   replayRecording = false;
 }
 
-function addReplayEvent(action, letter = undefined) {
-  if (replayRecording === false) {
+function addReplayEvent(action, value) {
+  if (!replayRecording) {
     return;
   }
+
   let timeDelta = performance.now() - replayStartTime;
-  if (action === "incorrectLetter" || action === "correctLetter") {
-    replayData.push({ action: action, letter: letter, time: timeDelta });
-  } else {
-    replayData.push({ action: action, time: timeDelta });
-  }
+  replayData.push({ action: action, value: value, time: timeDelta });
 }
 
 function playReplay() {
