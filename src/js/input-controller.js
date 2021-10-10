@@ -637,7 +637,9 @@ $(document).keydown((event) => {
     !$("#customTextPopupWrapper").hasClass("hidden") ||
     !$("#customWordAmountPopupWrapper").hasClass("hidden") ||
     !$("#customTestDurationPopupWrapper").hasClass("hidden") ||
-    !$("#quotePopupWrapper").hasClass("hidden") ||
+    !$("#quoteSearchPopupWrapper").hasClass("hidden") ||
+    !$("#quoteSubmitPopupWrapper").hasClass("hidden") ||
+    !$("#quoteApprovePopupWrapper").hasClass("hidden") ||
     !$("#wordFilterPopupWrapper").hasClass("hidden");
 
   const allowTyping =
