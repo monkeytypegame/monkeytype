@@ -33,9 +33,9 @@ async function submitQuote() {
       10
     );
   } else if (response.data.languageError) {
-    Notifications.add("Language not found", -1, 10);
+    Notifications.add("Language not found", -1);
   } else {
-    Notifications.add("Quote added successfully", 1, 10);
+    Notifications.add("Quote added successfully", 1);
     $("#quoteSubmitPopup #submitQuoteText").val("");
     $("#quoteSubmitPopup #submitQuoteSource").val("");
     $("#quoteSubmitPopup #submitQuoteLanguage").val("");
