@@ -134,6 +134,8 @@ const refactoredSrc = [
   "./src/js/popups/custom-text-popup.js",
   "./src/js/popups/pb-tables-popup.js",
   "./src/js/popups/quote-search-popup.js",
+  "./src/js/popups/quote-submit-popup.js",
+  "./src/js/popups/quote-approve-popup.js",
   "./src/js/popups/rate-quote-popup.js",
   "./src/js/popups/version-popup.js",
   "./src/js/popups/support-popup.js",

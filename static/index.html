@@ -124,7 +124,7 @@
       <i class="fas closeButton fa-times"></i>
     </div>
 
-    <div id="simplePopupWrapper" class="hidden">
+    <div id="simplePopupWrapper" class="popupWrapper hidden">
       <div id="simplePopup" popupId=""></div>
     </div>
 
@@ -157,7 +157,7 @@
       </div>
     </div>
 
-    <div id="practiseWordsPopupWrapper" class="hidden">
+    <div id="practiseWordsPopupWrapper" class="popupWrapper hidden">
       <div id="practiseWordsPopup" action="">
         <div class="title">Practice words</div>
         <div class="text">
@@ -171,7 +171,7 @@
       </div>
     </div>
 
-    <div id="rateQuotePopupWrapper" class="hidden">
+    <div id="rateQuotePopupWrapper" class="popupWrapper hidden">
       <div id="rateQuotePopup" quoteId="">
         <div class="quote">
           <div class="text">-</div>
@@ -255,7 +255,7 @@
         <div class="button">ok</div>
       </div>
     </div>
-    <div id="customTextPopupWrapper" class="hidden">
+    <div id="customTextPopupWrapper" class="popupWrapper hidden">
       <div id="customTextPopup" action="">
         <div class="wordfilter button">
           <i class="fas fa-filter"></i>
@@ -304,7 +304,7 @@
         <div class="button apply">ok</div>
       </div>
     </div>
-    <div id="wordFilterPopupWrapper" class="hidden">
+    <div id="wordFilterPopupWrapper" class="popupWrapper hidden">
       <div id="wordFilterPopup">
         <div class="group">
           <div class="title">language</div>
@@ -347,7 +347,7 @@
         <div class="button">add</div>
       </div>
     </div>
-    <div id="customWordAmountPopupWrapper" class="hidden">
+    <div id="customWordAmountPopupWrapper" class="popupWrapper hidden">
       <div id="customWordAmountPopup">
         <div class="title">Word amount</div>
         <input type="number" value="1" min="1" max="10000" />
@@ -358,7 +358,7 @@
         <div class="button">ok</div>
       </div>
     </div>
-    <div id="customTestDurationPopupWrapper" class="hidden">
+    <div id="customTestDurationPopupWrapper" class="popupWrapper hidden">
       <div id="customTestDurationPopup">
         <div class="title">Test duration</div>
         <div class="preview"></div>
@@ -370,9 +370,21 @@
         <div class="button">ok</div>
       </div>
     </div>
-    <div id="quoteSearchPopupWrapper" class="hidden">
+    <div id="quoteSearchPopupWrapper" class="popupWrapper hidden">
       <div id="quoteSearchPopup" mode="">
-        <div class="title">Quote Search</div>
+        <div id="quoteSearchTop">
+          <div class="title">Quote Search</div>
+          <div class="buttons">
+            <div id="gotoSubmitQuoteButton" class="button">
+              <i class="fas fa-plus"></i>
+              Submit a quote
+            </div>
+            <div id="goToApproveQuotes" class="button">
+              <i class="fas fa-check"></i>
+              Approve quotes
+            </div>
+          </div>
+        </div>
         <input
           id="searchBox"
           class="searchBox"
@@ -382,6 +394,45 @@
         />
         <div id="extraResults">No search results</div>
         <div id="quoteSearchResults" class="quoteSearchResults"></div>
+      </div>
+    </div>
+    <div id="quoteSubmitPopupWrapper" class="popupWrapper hidden">
+      <div id="quoteSubmitPopup" mode="">
+        <div class="title">Submit a Quote</div>
+        <ul>
+          <li>
+            Do not include content that contains any libelous or otherwise
+            unlawful, abusive or obscene text.
+          </li>
+          <li>Verify quotes added aren't duplicates of any already present</li>
+          <li>
+            Please do not add extremely short quotes (less than 60 characters)
+          </li>
+        </ul>
+        <label>Quote</label>
+        <textarea
+          id="submitQuoteText"
+          class=""
+          type="text"
+          autocomplete="off"
+        ></textarea>
+        <label>Source</label>
+        <input id="submitQuoteSource" class="" type="text" autocomplete="off" />
+        <label>Language</label>
+        <select name="language" id="submitQuoteLanguage"></select>
+        <div id="submitQuoteButton" class="button">Submit</div>
+      </div>
+    </div>
+    <div id="quoteApprovePopupWrapper" class="popupWrapper hidden">
+      <div id="quoteApprovePopup" mode="">
+        <div class="top">
+          <div class="title">Approve Quotes</div>
+          <div class="button refreshList">
+            <i class="fas fa-sync-alt"></i>
+            Refresh list
+          </div>
+        </div>
+        <div class="quotes"></div>
       </div>
     </div>
     <div id="tagsWrapper" class="wrapper hidden">
