@@ -157,6 +157,39 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   }
 });
 
+$(document).on("click", "#quoteApprovePopup .quote .refuse", async (e) => {
+  if (!confirm("Are you sure?")) return;
+  let index = parseInt($(e.target).closest(".quote").attr("id"));
+  let dbid = $(e.target).closest(".quote").attr("dbid");
+  let target = e.target;
+  $(target).closest(".quote").find(".icon-button").addClass("disabled");
+  $(target).closest(".quote").find("textarea, input").prop("disabled", true);
+  Loader.show();
+  let response;
+  try {
+    response = await axiosInstance.post("/new-quotes/refuse", {
+      quoteId: dbid,
+    });
+  } catch (e) {
+    Loader.hide();
+    let msg = e?.response?.data?.message ?? e.message;
+    Notifications.add("Failed to refuse quote: " + msg, -1);
+    resetButtons(target);
+    $(target).closest(".quote").find("textarea, input").prop("disabled", false);
+    return;
+  }
+  Loader.hide();
+  if (response.status !== 200) {
+    Notifications.add(response.data.message);
+    resetButtons(target);
+    $(target).closest(".quote").find("textarea, input").prop("disabled", false);
+  } else {
+    Notifications.add("Quote refused.", 1);
+    quotes.splice(index, 1);
+    updateList();
+  }
+});
+
 $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
   if (!confirm("Are you sure?")) return;
   let index = parseInt($(e.target).closest(".quote").attr("id"));
