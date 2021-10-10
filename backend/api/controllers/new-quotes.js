@@ -40,7 +40,7 @@ class NewQuotesController {
       if (editQuote === "" || editSource === "") {
         throw new MonkeyError(400, "Please fill all the fields");
       }
-      let data = await NewQuotesDAO.approve(quoteId, uid);
+      let data = await NewQuotesDAO.approve(quoteId);
       Logger.log("system_quote_approved", data, uid);
       return res.status(200).json(data);
     } catch (e) {
