@@ -20,7 +20,7 @@ class NewQuotesDAO {
     //check for duplicate first
     const fileDir = path.join(
       __dirname,
-      `../monkeytype-new-quotes/static/quotes/${language}.json`
+      `../../../monkeytype-new-quotes/static/quotes/${language}.json`
     );
     let duplicateId = -1;
     let similarityScore = -1;
@@ -84,15 +84,15 @@ class NewQuotesDAO {
           throw new MonkeyError(409, "Duplicate quote");
         }
       });
-      let newid =
-        Math.max.apply(
-          Math,
-          quoteFile.quotes.map(function (q) {
-            return q.id;
-          })
-        ) + 1;
-      quote.id = newid;
+      let maxid = 0;
+      quoteFile.quotes.map(function (q) {
+        if (q.id > maxid) {
+          maxid = q.id;
+        }
+      });
+      quote.id = maxid + 1;
       quoteFile.quotes.push(quote);
+      fs.writeFileSync(fileDir, JSON.stringify(quoteFile, null, 2));
       message = `Added quote to ${language}.json.`;
     } else {
       //file doesnt exist, create it
@@ -115,12 +115,16 @@ class NewQuotesDAO {
     await git.add([`static/quotes/${language}.json`]);
     await git.commit(`Added quote to ${language}.json`);
     await git.push("origin", "master");
-    await mongoDB().collection("new-quotes").deleteOne({ _id: quoteId });
+    await mongoDB()
+      .collection("new-quotes")
+      .deleteOne({ _id: ObjectID(quoteId) });
     return { quote, message };
   }
 
   static async refuse(quoteId) {
-    return await mongoDB().collection("new-quotes").deleteOne({ _id: quoteId });
+    return await mongoDB()
+      .collection("new-quotes")
+      .deleteOne({ _id: ObjectID(quoteId) });
   }
 }
 
