@@ -32,7 +32,7 @@ function setWordsInput(value) {
   // Only change #wordsInput if it's not already the wanted value
   // Avoids Safari triggering unneeded events, causing issues with
   // dead keys.
-  console.log("settings words input to " + value);
+  // console.log("settings words input to " + value);
   if (value !== $("#wordsInput").val()) {
     $("#wordsInput").val(value);
   }
