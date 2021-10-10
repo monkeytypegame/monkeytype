@@ -76,7 +76,13 @@ export async function show() {
   if ($("#quoteSearchPopupWrapper").hasClass("hidden")) {
     $("#quoteSearchPopup input").val("");
 
-    if (DB.getSnapshot().quoteMod) {
+    if (!firebase.auth().currentUser) {
+      $("#quoteSearchPopup #gotoSubmitQuoteButton").addClass("hidden");
+    } else {
+      $("#quoteSearchPopup #gotoSubmitQuoteButton").removeClass("hidden");
+    }
+
+    if (DB.getSnapshot()?.quoteMod) {
       $("#quoteSearchPopup #goToApproveQuotes").removeClass("hidden");
     } else {
       $("#quoteSearchPopup #goToApproveQuotes").addClass("hidden");
