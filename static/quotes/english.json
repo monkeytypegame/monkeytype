@@ -1,10 +1,22 @@
 {
   "language": "english",
   "groups": [
-    [0, 100],
-    [101, 300],
-    [301, 600],
-    [601, 9999]
+    [
+      0,
+      100
+    ],
+    [
+      101,
+      300
+    ],
+    [
+      301,
+      600
+    ],
+    [
+      601,
+      9999
+    ]
   ],
   "quotes": [
     {
@@ -33802,6 +33814,12 @@
       "source": "The Wolf Of Wall Street",
       "length": 148,
       "id": 5705
+    },
+    {
+      "text": "The only thing that we're allowed to believe is that we won't regret the choice we made. ",
+      "source": "Hajime Isayama, Attack on Titan",
+      "length": 89,
+      "id": 5706
     }
   ]
 }
