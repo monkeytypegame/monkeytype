@@ -96,6 +96,13 @@ export function hide() {
   }
 }
 
+function resetButtons(target) {
+  $(target).closest(".quote").find(".icon-button").removeClass("disabled");
+  if ($(target).closest(".quote").find(".edit").hasClass("hidden")) {
+    $(target).closest(".quote").find(".undo").addClass("disabled");
+  }
+}
+
 $("#quoteApprovePopupWrapper").on("mousedown", (e) => {
   if ($(e.target).attr("id") === "quoteApprovePopupWrapper") {
     hide();
@@ -121,6 +128,9 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   if (!confirm("Are you sure?")) return;
   let index = parseInt($(e.target).closest(".quote").attr("id"));
   let dbid = $(e.target).closest(".quote").attr("dbid");
+  let target = e.target;
+  $(target).closest(".quote").find(".icon-button").addClass("disabled");
+  $(target).closest(".quote").find("textarea, input").prop("disabled", true);
   Loader.show();
   let response;
   try {
@@ -131,11 +141,15 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
     Loader.hide();
     let msg = e?.response?.data?.message ?? e.message;
     Notifications.add("Failed to approve quote: " + msg, -1);
+    resetButtons(target);
+    $(target).closest(".quote").find("textarea, input").prop("disabled", false);
     return;
   }
   Loader.hide();
   if (response.status !== 200) {
     Notifications.add(response.data.message);
+    resetButtons(target);
+    $(target).closest(".quote").find("textarea, input").prop("disabled", false);
   } else {
     Notifications.add("Quote approved. " + response.data.message ?? "", 1);
     quotes.splice(index, 1);
@@ -149,6 +163,9 @@ $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
   let dbid = $(e.target).closest(".quote").attr("dbid");
   let editText = $(`#quoteApprovePopup .quote[id=${index}] .text`).val();
   let editSource = $(`#quoteApprovePopup .quote[id=${index}] .source`).val();
+  let target = e.target;
+  $(target).closest(".quote").find(".icon-button").addClass("disabled");
+  $(target).closest(".quote").find("textarea, input").prop("disabled", true);
   Loader.show();
   let response;
   try {
@@ -161,11 +178,15 @@ $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
     Loader.hide();
     let msg = e?.response?.data?.message ?? e.message;
     Notifications.add("Failed to approve quote: " + msg, -1);
+    resetButtons(target);
+    $(target).closest(".quote").find("textarea, input").prop("disabled", false);
     return;
   }
   Loader.hide();
   if (response.status !== 200) {
     Notifications.add(response.data.message);
+    resetButtons(target);
+    $(target).closest(".quote").find("textarea, input").prop("disabled", false);
   } else {
     Notifications.add(
       "Quote edited and approved. " + response.data.message ?? "",
