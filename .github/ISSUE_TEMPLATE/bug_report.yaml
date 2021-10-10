@@ -52,7 +52,6 @@ body:
         - OS:
         - Browser:
         - Browser Version:
-      render: markdown
     validations:
       required: false
   - type: textarea
@@ -69,12 +68,12 @@ body:
       label: Did you check incognito mode?
       description: Sometimes bugs may be dependent on your config. If the issue does not show up in incognito mode, then this could mean it's an issue with your settings.
       options:
-        - label: I have cleared my cache
+        - label: I have checked incognito mode
           required: false
   - type: textarea
     attributes:
       label: Config
-      description: If your issue DOES NOT happen in incognito, please export your config and paste it here.
+      description: If your issue DOES NOT happen in incognito, please export your config and paste it here. Go to the Settings page, scroll all the way down to `import/export settings` and click `export`.
       placeholder: '{"theme":"cyberspace","showKeyTips":false,"showLiveWpm":false,"showTimerProgress":false, ... "smoothCaret":true}'
     validations:
       required: false
