@@ -1,6 +1,7 @@
 import * as Misc from "./misc";
 import * as Notifications from "./notifications";
 import axiosInstance from "./axios-instance";
+import * as Loader from "./loader";
 
 let dropdownReady = false;
 async function initDropdown() {
@@ -23,19 +24,22 @@ async function submitQuote() {
     source: $("#quoteSubmitPopup #submitQuoteSource").val(),
     language: $("#quoteSubmitPopup #submitQuoteLanguage").val(),
   };
-  let response = await axiosInstance.post("/new-quotes/add", data);
-  if (response.data.similarityScore) {
-    Notifications.add(
-      `Likely duplicate of quote with id ${
-        response.data.duplicateId
-      }.\n Confidence: ${response.data.similarityScore * 100}%`,
-      -1,
-      10
-    );
-  } else if (response.data.languageError) {
-    Notifications.add("Language not found", -1);
+
+  Loader.show();
+  let response;
+  try {
+    response = await axiosInstance.post("/new-quotes/add", data);
+  } catch (e) {
+    Loader.hide();
+    let msg = e?.response?.data?.message ?? e.message;
+    Notifications.add("Failed to submit quote: " + msg, -1);
+    return;
+  }
+  Loader.hide();
+  if (response.status !== 200) {
+    Notifications.add(response.data.message);
   } else {
-    Notifications.add("Quote added successfully", 1);
+    Notifications.add("Quote submitted.", 1);
     $("#quoteSubmitPopup #submitQuoteText").val("");
     $("#quoteSubmitPopup #submitQuoteSource").val("");
     $("#quoteSubmitPopup #submitQuoteLanguage").val("");
@@ -82,4 +86,10 @@ $("#quoteSubmitPopupWrapper").on("mousedown", (e) => {
 
 $(document).on("click", "#quoteSubmitPopup #submitQuoteButton", (e) => {
   submitQuote();
+});
+
+$("#quoteSubmitPopup input").on("keydown", (e) => {
+  if (e.keyCode === 13) {
+    submitQuote();
+  }
 });
