@@ -121,7 +121,7 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   if (!confirm("Are you sure?")) return;
   let index = parseInt($(e.target).closest(".quote").attr("id"));
   let dbid = $(e.target).closest(".quote").attr("dbid");
-
+  Loader.show();
   let response;
   try {
     response = await axiosInstance.post("/new-quotes/approve", {
@@ -149,7 +149,7 @@ $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
   let dbid = $(e.target).closest(".quote").attr("dbid");
   let editText = $(`#quoteApprovePopup .quote[id=${index}] .text`).val();
   let editSource = $(`#quoteApprovePopup .quote[id=${index}] .source`).val();
-
+  Loader.show();
   let response;
   try {
     response = await axiosInstance.post("/new-quotes/approve", {
