@@ -137,7 +137,7 @@ $(document).on("click", "#quoteApprovePopup .quote .approve", async (e) => {
   if (response.status !== 200) {
     Notifications.add(response.data.message);
   } else {
-    Notifications.add("Quote approved", 1);
+    Notifications.add("Quote approved. " + response.data.message ?? "", 1);
     quotes.splice(index, 1);
     updateList();
   }
@@ -167,7 +167,10 @@ $(document).on("click", "#quoteApprovePopup .quote .edit", async (e) => {
   if (response.status !== 200) {
     Notifications.add(response.data.message);
   } else {
-    Notifications.add("Quote edited and approved", 1);
+    Notifications.add(
+      "Quote edited and approved. " + response.data.message ?? "",
+      1
+    );
     quotes.splice(index, 1);
     updateList();
   }
