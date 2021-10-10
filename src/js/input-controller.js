@@ -576,7 +576,7 @@ function handleTab(event) {
     !TestUI.resultCalculating &&
     $("#commandLineWrapper").hasClass("hidden") &&
     $("#simplePopupWrapper").hasClass("hidden") &&
-    $("#quoteSubmitPopup").hasClass("hidden") &&
+    $("#quoteSubmitPopupWrapper").hasClass("hidden") &&
     !$(".page.pageLogin").hasClass("active")
   ) {
     if ($(".pageTest").hasClass("active")) {
