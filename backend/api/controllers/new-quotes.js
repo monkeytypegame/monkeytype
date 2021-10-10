@@ -22,6 +22,9 @@ class NewQuotesController {
     try {
       let { uid } = req.decodedToken;
       let { text, source, language } = req.body;
+      if (text === "" || source === "") {
+        throw new MonkeyError(400, "Please fill all the fields");
+      }
       let data = await NewQuotesDAO.add(text, source, language, uid);
       return res.status(200).json(data);
     } catch (e) {
