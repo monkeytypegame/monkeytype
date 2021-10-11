@@ -974,7 +974,9 @@ $(document).on("mouseenter", "#resultWordsHistory .words .word", (e) => {
             .replace(/>/g, "&gt")}
           </div>
           <div class="speed">
-          ${burst}wpm
+          ${Math.round(Config.alwaysShowCPM ? burst * 5 : burst)}${
+          Config.alwaysShowCPM ? "cpm" : "wpm"
+        }
           </div>
           </div>`
       );
