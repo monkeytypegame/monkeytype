@@ -3,12 +3,18 @@ const { mongoDB } = require("../init/mongodb");
 const fs = require("fs");
 const simpleGit = require("simple-git");
 const path = require("path");
-const git = simpleGit(path.join(__dirname, "../../../monkeytype-new-quotes"));
+let git;
+try {
+  git = simpleGit(path.join(__dirname, "../../../monkeytype-new-quotes"));
+} catch (e) {
+  git = undefined;
+}
 const stringSimilarity = require("string-similarity");
 const { ObjectID } = require("mongodb");
 
 class NewQuotesDAO {
   static async add(text, source, language, uid) {
+    if (!git) throw new MonkeyError(500, "Git not available.");
     let quote = {
       text: text,
       source: source,
@@ -48,6 +54,7 @@ class NewQuotesDAO {
   }
 
   static async get() {
+    if (!git) throw new MonkeyError(500, "Git not available.");
     return await mongoDB()
       .collection("new-quotes")
       .find({ approved: false })
@@ -57,6 +64,7 @@ class NewQuotesDAO {
   }
 
   static async approve(quoteId, editQuote, editSource) {
+    if (!git) throw new MonkeyError(500, "Git not available.");
     //check mod status
     let quote = await mongoDB()
       .collection("new-quotes")
@@ -122,6 +130,7 @@ class NewQuotesDAO {
   }
 
   static async refuse(quoteId) {
+    if (!git) throw new MonkeyError(500, "Git not available.");
     return await mongoDB()
       .collection("new-quotes")
       .deleteOne({ _id: ObjectID(quoteId) });
